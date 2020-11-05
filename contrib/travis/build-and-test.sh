@@ -22,13 +22,21 @@ mv bin/fbc bin/fbc1
 make -j$(nproc) clean-compiler
 
 # Rebuild fbc with itself
+if [ "$FBTRAVIS_FBC_BACKEND" = "gas64" ]; then
+make -j$(nproc) compiler FBC='bin/fbc1 -i inc -gen gas64' </dev/null
+else
 make -j$(nproc) compiler FBC='bin/fbc1 -i inc' </dev/null
+fi
+
 rm bin/fbc1
 
 # Run fbc tests
 FBC_FOR_TESTS="$PWD/bin/fbc -i $PWD/inc"
 if [ "$FBTRAVIS_TESTS_DEBUG" = "1" ]; then
 	FBC_FOR_TESTS="$FBC_FOR_TESTS -g -exx"
+fi
+if [ "$FBTRAVIS_FBC_BACKEND" = "gas64" ]; then
+	FBC_FOR_TESTS="$FBC_FOR_TESTS -gen gas64"
 fi
 
 cd tests

@@ -1,0 +1,9 @@
+----parser-assignment.bas ----
+none expected
+warning expected
+	Suffix ignored in 'let%'
+none expected
+warning expected
+	Suffix ignored in 'let%'
+----String Functions ----
+none expected

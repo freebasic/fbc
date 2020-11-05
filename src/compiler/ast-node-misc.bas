@@ -159,7 +159,10 @@ function astNewDBG _
 	dim as ASTNODE ptr n = any
 
 	if( env.clopt.debuginfo = FALSE ) then
-		return NULL
+		''for gas64 AST_OP_DBG_LINEEND used to indicate the end of line so mandatory
+		if ( (fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS64 ) or ( op <> AST_OP_DBG_LINEEND ) ) then
+			return null
+		end if
 	end if
 
 	n = astNewNode( AST_NODECLASS_DBG, FB_DATATYPE_INVALID )

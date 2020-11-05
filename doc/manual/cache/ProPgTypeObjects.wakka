@@ -2,9 +2,13 @@
 An example of the overloadable operators and member procedures
 
 {{fbdoc item="desc"}}
-!!! WRITEME !!!
-
-{{fbdoc item="filename" value="examples/manual/proguide/object-class.bas"}}%%(freebasic)
+	When a Type structure is used to define a user object, many procedure kinds can also be added to the data field skeleton to simplify its use by any user:
+		**""-""** Sub, Function and Properties members.
+		**""-""** Constructors and Destructor.
+		**""-""** Overload Operators (inside and outside Type definition).
+		
+	The following example is just a syntactic template for their declarations and definitions:
+		{{fbdoc item="filename" value="examples/manual/proguide/object-class.bas"}}%%(freebasic)
 '' Sample Type showing available methods and operators
 '' Practically this is a pointless example, as the only
 '' data member is an Integer.  It serves only as a
@@ -542,8 +546,7 @@ dim Xlist as T ptr = new T[10]
 
 '' Deallocate object vector
 delete[] Xlist
-%%
-
+		%%
 {{fbdoc item="see"}}
 	- ##[[KeyPgType|Type]]##
 

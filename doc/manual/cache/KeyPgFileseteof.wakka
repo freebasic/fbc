@@ -1,0 +1,58 @@
+{{fbdoc item="title" value="FILESETEOF"}}----
+Sets the length of a open file bound to a file number
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **""FileSetEof""** ( [[KeyPgByval|byval]] //filenum// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
+##
+{{fbdoc item="usage"}}##
+	#include "file.bi"
+	//result// = **""FileSetEof""**(//fnum//)
+##
+{{fbdoc item="param"}}
+	##//filenum//##
+		File number of bound file or device.
+
+{{fbdoc item="ret"}}
+	Returns zero (0) for success or an error code if the end of file (file size) could not be set.
+
+{{fbdoc item="desc"}}
+	##**""FileSetEof""**## Sets the end of file based on the current file position.  File position as in ##[[KeyPgSeekset|Seek]]## is one based.
+	
+	When the current file position is before the end of the file, the file is truncated.  File contents before the the current file position are kept, and file contents on or after the current file position are deleted.  When the current position is beyond the end of file, the file is extended with zero value bytes.  After ##**""FileSetEof""**## completes, the current file position is at the end of the file.
+	
+	To set a file having a length of //N-bytes// where the file is opened for ##binary##, ##output##, or ##append##, it is necessary to ##[[KeyPgSeekset|seek]]## to position //N-bytes + 1//.  To set a file having a length of //N-records// where the file is opened for ##random##, it is necessary to ##[[KeyPgSeekset|seek]]## to position //N-records + 1//.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/system/fileseteof1.bas"}}%%(freebasic)
+#include "file.bi"
+
+'' create a zero length file
+open "file.dat" for binary as #1
+FileSetEof 1
+close #1
+
+'' open same file and extend to 10000 bytes size
+open "file.dat" for binary as #1
+seek #1, (10000 + 1)
+FileSetEof 1
+close #1
+
+'' open same file and truncate to 5000 bytes size
+open "file.dat" for binary as #1
+seek #1, (5000 + 1)
+FileSetEof 1
+close #1
+
+'' clean-up
+kill "file.dat"
+%%
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC"".
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgEof|Eof]]##
+	- ##[[KeyPgLof|Lof]]##
+	- ##[[KeyPgSeekset|seek]]##
+
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

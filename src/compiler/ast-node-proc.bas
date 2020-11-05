@@ -573,7 +573,7 @@ private function hMaybeCallResultCtor _
 	dim as FBSYMBOL ptr res = any, defctor = any
 
 	'' Not returning BYVAL, or BYVAL but not an UDT?
-	if( symbIsRef( sym ) or (symbGetType( sym ) <> FB_DATATYPE_STRUCT) ) then
+	if( symbIsReturnByRef( sym ) or (symbGetType( sym ) <> FB_DATATYPE_STRUCT) ) then
 		return head_node
 	end if
 
@@ -825,10 +825,10 @@ private sub hLoadProcResult( byval proc as FBSYMBOL ptr )
 	'' will be trashed when the function returns (also, the string returned will be
 	'' set as temp, so any assignment or when passed as parameter to another proc
 	'' will deallocate this string)
-	if( (symbGetType( proc ) = FB_DATATYPE_STRING) and (not symbIsRef( proc )) ) then
+	if( (symbGetType( proc ) = FB_DATATYPE_STRING) and (not symbIsReturnByRef( proc )) ) then
 		n = rtlStrAllocTmpResult( astNewVAR( s ) )
 
-		if( env.clopt.backend = FB_BACKEND_GCC ) then
+		if( ( env.clopt.backend = FB_BACKEND_GCC ) or ( env.clopt.backend = FB_BACKEND_LLVM ) or ( env.clopt.backend = FB_BACKEND_GAS64 ) ) then
 			n = astNewLOAD( n, symbGetFullType( proc ), TRUE )
 		end if
 	else
@@ -1340,7 +1340,7 @@ private sub hCallStaticCtor _
 end sub
 
 private sub hCallStaticDtor( byval sym as FBSYMBOL ptr )
-	assert( symbIsRef( sym ) = FALSE )
+	assert( symbIsReturnByRef( sym ) = FALSE )
 
 	'' dynamic?
 	if( symbIsDynamic( sym ) ) then
@@ -1402,7 +1402,7 @@ function astProcAddStaticInstance _
 	dim as FB_DTORWRAPPER ptr wrap = any
 	dim as FBSYMBOL ptr proc = any
 
-	assert( symbIsRef( sym ) = FALSE )
+	assert( symbIsReturnByRef( sym ) = FALSE )
 
 	dtorlist = parser.currproc->proc.ext->statdtor
 
@@ -1418,7 +1418,7 @@ function astProcAddStaticInstance _
     wrap = listNewNode( dtorlist )
 
 	proc = symbAddProc( symbPreAddProc( NULL ), symbUniqueLabel( ), NULL, FB_DATATYPE_VOID, NULL, _
-	                    FB_SYMBATTRIB_PRIVATE, FB_FUNCMODE_CDECL, FB_SYMBOPT_DECLARING )
+	                    FB_SYMBATTRIB_PRIVATE, FB_PROCATTRIB_NONE, FB_FUNCMODE_CDECL, FB_SYMBOPT_DECLARING )
 
     wrap->proc = proc
     wrap->sym = sym
@@ -1466,7 +1466,7 @@ private sub hGlobCtorBegin( byval is_ctor as integer )
 	'' sub ctorname|dtorname cdecl( ) constructor|destructor
 	proc = symbAddProc( symbPreAddProc( NULL ), symbUniqueLabel( ), _
 	                    iif( is_ctor, @FB_GLOBCTORNAME, @FB_GLOBDTORNAME ), _
-	                    FB_DATATYPE_VOID, NULL, FB_SYMBATTRIB_PRIVATE, _
+	                    FB_DATATYPE_VOID, NULL, FB_SYMBATTRIB_PRIVATE, FB_PROCATTRIB_NONE, _
 	                    FB_FUNCMODE_CDECL, FB_SYMBOPT_DECLARING )
 
 	if( is_ctor ) then

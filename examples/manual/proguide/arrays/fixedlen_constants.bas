@@ -15,3 +15,4 @@ Dim arrayOfStrings(myLowerBound To myUpperBound) As String
 '' Declares a one-dimensional fixed-length array of bytes,
 '' big enough to hold an INTEGER.
 Dim arrayOfBytes(0 To SizeOf(Integer) - 1) As Byte
+		

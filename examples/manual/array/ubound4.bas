@@ -9,7 +9,7 @@
 '' determining whether an array is empty
 Dim array() As Integer
 
-Print "lbound: "; LBound( array ), "ubound: "; UBound( array )  '' 1 and 0
+Print "lbound: "; LBound( array ), "ubound: "; UBound( array )  ''  0 and -1
 
 If LBound( array ) > UBound( array ) Then
 	Print "array is empty"

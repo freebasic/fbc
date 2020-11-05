@@ -9,6 +9,8 @@ typedef struct {
 	FBSTRING  fmtstr;
 } FB_PRINTUSGCTX;
 
+#define fb_PRINTUSGCTX_Destructor NULL
+
 #define BUFFERLEN 2048
 #define MIN_EXPDIGS 3
 #define MAX_EXPDIGS 5

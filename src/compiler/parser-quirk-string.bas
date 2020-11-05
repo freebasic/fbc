@@ -16,7 +16,7 @@ function cMidStmt( ) as integer
 	function = FALSE
 
 	'' MID
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_STRING_SUFFIX )
 
 	'' '('
 	hMatchLPRNT()
@@ -70,7 +70,7 @@ function cLRSetStmt(byval tk as FB_TOKEN) as integer
 
 	'' (LSET|RSET)
 	is_rset = (tk = FB_TK_RSET)
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' Expression
 	dstexpr = cVarOrDeref( )
@@ -163,6 +163,9 @@ function cLRSetStmt(byval tk as FB_TOKEN) as integer
 			astDelTree( dstexpr )
 			return TRUE
 		end if
+
+		assert( symbGetLen( dst->subtype ) > 0 )
+		assert( symbGetLen( src->subtype ) > 0 )
 
 		function = rtlMemCopyClear( dstexpr, symbGetLen( dst->subtype ), _
 		                            srcexpr, symbGetLen( src->subtype ) )
@@ -337,7 +340,7 @@ end function
 ''
 function cCVXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	'' CVD | CVS | CVI | CVL | CVSHORT | CVLONGINT
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	dim as FB_DATATYPE dtype = FB_DATATYPE_INVALID
 
@@ -503,7 +506,7 @@ end function
 ''
 function cMKXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	'' MKD | MKS | MKI | MKL | MKSHORT | MKLONGINT
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_STRING_SUFFIX )
 
 	dim as FB_DATATYPE dtype = FB_DATATYPE_INVALID
 
@@ -640,7 +643,7 @@ function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	'' W|STR '(' Expression{bool|int|float|double|wstring} ')'
 	case FB_TK_STR, FB_TK_WSTR
 		is_wstr = (tk = FB_TK_WSTR)
-		lexSkipToken( )
+		lexSkipToken( iif( is_wstr, LEXCHECK_POST_SUFFIX, LEXCHECK_POST_STRING_SUFFIX ) )
 
 		hMatchLPRNT( )
 		hMatchExpressionEx( expr1, FB_DATATYPE_INTEGER )
@@ -660,7 +663,7 @@ function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 
 	'' MID '(' Expression ',' Expression (',' Expression)? ')'
 	case FB_TK_MID
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_STRING_SUFFIX )
 
 		hMatchLPRNT( )
 		hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
@@ -684,7 +687,8 @@ function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	'' W|STRING '(' Expression ',' Expression{int|str} ')'
 	case FB_TK_STRING, FB_TK_WSTRING
 		is_wstr = (tk = FB_TK_WSTRING)
-		lexSkipToken( )
+		lexSkipToken( iif( is_wstr, LEXCHECK_POST_SUFFIX, LEXCHECK_POST_STRING_SUFFIX ) )
+
 
 		hMatchLPRNT( )
 		hMatchExpressionEx( expr1, FB_DATATYPE_INTEGER )
@@ -707,28 +711,28 @@ function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	'' W|CHR '(' Expression (',' Expression )* ')'
 	case FB_TK_CHR, FB_TK_WCHR
 		is_wstr = (tk = FB_TK_WCHR)
-		lexSkipToken( )
+		lexSkipToken( iif( is_wstr, LEXCHECK_POST_SUFFIX, LEXCHECK_POST_STRING_SUFFIX ) )
 
 		function = cStrCHR(is_wstr)
 
 	'' ASC '(' Expression (',' Expression)? ')'
 	case FB_TK_ASC
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		function = cStrASC()
 
 	case FB_TK_INSTR
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		hMatchLPRNT( )
 		hMatchExpressionEx( expr1, FB_DATATYPE_INTEGER )
 		hMatchCOMMA( )
-		is_any = hMatch( FB_TK_ANY )
+		is_any = hMatch( FB_TK_ANY, LEXCHECK_POST_SUFFIX )
 		hMatchExpressionEx( expr2, FB_DATATYPE_STRING )
 		expr3 = NULL
 		if( is_any = FALSE ) then
 			if( hMatch( CHAR_COMMA ) ) then
-				is_any = hMatch( FB_TK_ANY )
+				is_any = hMatch( FB_TK_ANY, LEXCHECK_POST_SUFFIX )
 				hMatchExpressionEx( expr3, FB_DATATYPE_STRING )
 			end if
 		end if
@@ -748,12 +752,12 @@ function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		function = expr1
 
 	case FB_TK_INSTRREV
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		hMatchLPRNT( )
 		hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
 		hMatchCOMMA( )
-		is_any = hMatch( FB_TK_ANY )
+		is_any = hMatch( FB_TK_ANY, LEXCHECK_POST_SUFFIX )
 		hMatchExpressionEx( expr2, FB_DATATYPE_STRING )
 		if( hMatch( CHAR_COMMA ) ) then
 			hMatchExpressionEx( expr3, FB_DATATYPE_INTEGER )
@@ -771,12 +775,12 @@ function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		function = expr1
 
 	case FB_TK_TRIM, FB_TK_LTRIM, FB_TK_RTRIM
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_STRING_SUFFIX )
 
 		hMatchLPRNT( )
 		hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
 		if( hMatch( CHAR_COMMA ) ) then
-			is_any = hMatch( FB_TK_ANY )
+			is_any = hMatch( FB_TK_ANY, LEXCHECK_POST_SUFFIX )
 			hMatchExpressionEx( expr2, FB_DATATYPE_STRING )
 		else
 			is_any = FALSE
@@ -802,7 +806,7 @@ function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 
 	'' LCASE|UCASE '(' Expression{string} [, Expression{integer}] ')'
 	case FB_TK_LCASE, FB_TK_UCASE
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_STRING_SUFFIX )
 
 		hMatchLPRNT( )
 		hMatchExpressionEx( expr1, FB_DATATYPE_STRING )

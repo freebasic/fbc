@@ -32,6 +32,8 @@ typedef struct _FB_ERRORCTX {
 	void         *resnxt_lbl;
 } FB_ERRORCTX;
 
+#define fb_ERRORCTX_Destructor NULL
+
 #define FB_ERRMSG_SIZE 1024
 extern char __fb_errmsg[FB_ERRMSG_SIZE];
 

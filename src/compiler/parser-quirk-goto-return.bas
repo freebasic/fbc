@@ -30,7 +30,7 @@ private function hFuncReturn _
 	end if
 
 	'' skip RETURN
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' function?
 	if( symbGetType( parser.currproc ) <> FB_DATATYPE_VOID ) then
@@ -94,7 +94,7 @@ private function hGetLabelId _
 		end if
 	end if
 
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	function = sym
 
@@ -103,7 +103,8 @@ end function
 private sub hGosubBranch()
 	dim as FBSYMBOL ptr l = any
 
-	lexSkipToken( )
+	'' GOSUB
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	l = hGetLabelId( )
 	if( l <> NULL ) then
@@ -119,7 +120,7 @@ private function hGosubReturn _
 	dim as FBSYMBOL ptr l = any
 
 	'' it's a GOSUB's RETURN..
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' Comment|StmtSep|EOF|ELSE|END IF|ENDIF? just return
 	select case as const lexGetToken( )
@@ -158,7 +159,7 @@ function cGotoStmt _
 	select case as const tk
 	'' GOTO LABEL
 	case FB_TK_GOTO
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		l = hGetLabelId( )
 		if( l <> NULL ) then
@@ -207,9 +208,9 @@ function cGotoStmt _
 			return TRUE
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
-		rtlErrorResume( hMatch( FB_TK_NEXT ) )
+		rtlErrorResume( hMatch( FB_TK_NEXT, LEXCHECK_POST_SUFFIX ) )
 
 		function = TRUE
 	end select

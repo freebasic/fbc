@@ -59,9 +59,13 @@ Preprocessor symbols defined by the compiler.
 	=={{fbdoc item="keyword" value="KeyPgDdFBMinVersion|__FB_MIN_VERSION__"}}==
 		Macro to check for a minimum compiler version.
 	=={{fbdoc item="keyword" value="KeyPgDdFBBuildDate|__FB_BUILD_DATE__"}}==
-		Defined as a string literal of the compiler build date.
+		Defined as a string literal of the compiler build date in "mm-dd-yyyy" format.
+	=={{fbdoc item="keyword" value="KeyPgDdfbbuilddateiso|__FB_BUILD_DATE_ISO__"}}==
+		Defined as a string literal of the compiler build date in "yyyy-mm-dd" format.
 	=={{fbdoc item="keyword" value="KeyPgDdfbsignature|__FB_SIGNATURE__"}}== 
 		Defined as a string literal of the compiler signature.
+	=={{fbdoc item="keyword" value="KeyPgDdfbbuildsha1|__FB_BUILD_SHA1__"}}== 
+		Defined as a string literal of the compiler's source revision sha-1.
 
 {{anchor name="CMDLINE"}}{{fbdoc item="section" value="Command-line switches"}}
 	=={{fbdoc item="keyword" value="KeyPgDdfbasm|__FB_ASM__"}}==

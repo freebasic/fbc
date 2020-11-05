@@ -99,7 +99,7 @@ myprintf( !"string=%s, string=%s\n", "foo", s )
 	- On 32-bit targets, gas backend: ##type **cva_list** as any alias "char" ptr##.
 	- On 32-bit targets, gcc backend: ##type **cva_list** as any alias """__builtin_va_list""" ptr##
 	- On Windows 64-bit, gcc backend: ##type **cva_list** as any alias """__builtin_va_list""" ptr##
-	- On Linux x86_64, gcc backend: ##type **cva_list** as """__va_list_tag""" alias """__builtin_va_list[]"""##
+	- On Linux x86_64, gcc backend: ##type **cva_list** as ""__va_list_tag"" alias """__builtin_va_list[]"""##
 	- On arm64, gcc backend: ##type **cva_list** as ""__va_list alias"" """__builtin_va_list"""##
 
 {{fbdoc item="lang"}}

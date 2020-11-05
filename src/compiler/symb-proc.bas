@@ -59,7 +59,7 @@ function symbProcReturnsOnStack( byval proc as FBSYMBOL ptr ) as integer
 
 	'' BYREF result never is on stack, instead it's always a pointer,
 	'' which will always be returned in registers
-	if( symbIsRef( proc ) ) then
+	if( symbIsReturnByRef( proc ) ) then
 		exit function
 	end if
 
@@ -67,7 +67,12 @@ function symbProcReturnsOnStack( byval proc as FBSYMBOL ptr ) as integer
 	if( symbGetType( proc ) = FB_DATATYPE_STRUCT ) then
 		'' Real type is an UDT pointer (instead of INTEGER/LONGINT)?
 		'' Then it's returned on stack (instead of in registers)
-		function = (typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( FB_DATATYPE_STRUCT ))
+
+		if( (proc->subtype <> NULL) andalso (proc->subtype->udt.retin2regs <> FB_STRUCT_NONE) ) then ''for gas64
+			exit function
+		else
+			function = (typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( FB_DATATYPE_STRUCT ))
+		end if
 	end if
 end function
 
@@ -190,7 +195,8 @@ function symbAddProcParam _
 		byval subtype as FBSYMBOL ptr, _
 		byval dimensions as integer, _
 		byval mode as integer, _
-		byval attrib as FB_SYMBATTRIB _
+		byval attrib as FB_SYMBATTRIB, _
+		byval pattrib as FB_PROCATTRIB _
 	) as FBSYMBOL ptr
 
     dim as FBSYMBOL ptr param = any
@@ -202,7 +208,7 @@ function symbAddProcParam _
 	param = symbNewSymbol( FB_SYMBOPT_PRESERVECASE, NULL, _
 	                       @proc->proc.paramtb, NULL, _
 	                       FB_SYMBCLASS_PARAM, _
-	                       id, NULL, dtype, subtype, attrib )
+	                       id, NULL, dtype, subtype, attrib, FB_PROCATTRIB_NONE )
     if( param = NULL ) then
     	exit function
     end if
@@ -298,7 +304,7 @@ sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 	dtype = symbGetFullType( proc )
 	subtype = symbGetSubtype( proc )
 
-	if( symbIsRef( proc ) ) then
+	if( symbIsReturnByRef( proc ) ) then
 		dtype = typeAddrOf( dtype )
 	end if
 
@@ -406,6 +412,7 @@ private function hAddOvlProc _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval attrib as FB_SYMBATTRIB, _
+		byval pattrib as FB_PROCATTRIB, _
 		byval preservecase as integer _
 	) as FBSYMBOL ptr
 
@@ -419,13 +426,13 @@ private function hAddOvlProc _
 	end if
 
 	'' only one them is a property?
-	if( ((attrib and FB_SYMBATTRIB_PROPERTY) <> 0) <> symbIsProperty( ovl_head_proc ) ) then
+	if( ((pattrib and FB_PROCATTRIB_PROPERTY) <> 0) <> symbIsProperty( ovl_head_proc ) ) then
 		exit function
 	end if
 
 	'' not arg-less?
 	params = symbGetProcParams( proc )
-	if( (attrib and FB_SYMBATTRIB_METHOD) <> 0 ) then
+	if( (pattrib and FB_PROCATTRIB_METHOD) <> 0 ) then
 		params -= 1
 	end if
 
@@ -455,7 +462,7 @@ private function hAddOvlProc _
 		end if
 
 		'' property? handle get/set accessors dups
-		if( (attrib and FB_SYMBATTRIB_PROPERTY) <> 0 ) then
+		if( (pattrib and FB_PROCATTRIB_PROPERTY) <> 0 ) then
 			'' get?
 			if( dtype <> FB_DATATYPE_VOID ) then
 				'' don't check if it's set
@@ -574,7 +581,7 @@ private function hAddOvlProc _
 
     '' add the new proc symbol, w/o adding it to the hash table
 	proc = symbNewSymbol( iif( preservecase, FB_SYMBOPT_PRESERVECASE, FB_SYMBOPT_NONE ), _
-	                      proc, symtb, hashtb, FB_SYMBCLASS_PROC, id, id_alias, dtype, subtype, attrib )
+	                      proc, symtb, hashtb, FB_SYMBCLASS_PROC, id, id_alias, dtype, subtype, attrib, pattrib )
 	if( proc = NULL ) then
 		exit function
 	end if
@@ -611,7 +618,8 @@ private function hAddOpOvlProc _
 		byval id_alias as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval attrib as FB_SYMBATTRIB _
+		byval attrib as FB_SYMBATTRIB, _
+		byval pattrib as FB_PROCATTRIB _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr ovl = any
@@ -619,7 +627,7 @@ private function hAddOpOvlProc _
 	'' if it's not the type casting op, overloaded as an ordinary proc
 	if( op <> AST_OP_CAST ) then
 		return hAddOvlProc( proc, ovl_head_proc, symtb, hashtb, NULL, id_alias, _
-		                    dtype, subtype, attrib, FALSE )
+		                    dtype, subtype, attrib, pattrib, FALSE )
 	end if
 
 	'' type casting, must check the return type, not the parameter..
@@ -643,7 +651,7 @@ private function hAddOpOvlProc _
 
     '' add it
 	proc = symbNewSymbol( FB_SYMBOPT_NONE, proc, symtb, hashtb, _
-	                      FB_SYMBCLASS_PROC, NULL, id_alias, dtype, subtype, attrib )
+	                      FB_SYMBCLASS_PROC, NULL, id_alias, dtype, subtype, attrib, pattrib )
 
 	'' there's no id so it can't be added to the chain list
 
@@ -661,7 +669,8 @@ private function hSetupProc _
 		byval id_alias as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval attrib as integer, _
+		byval attrib as FB_SYMBATTRIB, _
+		byval pattrib as FB_PROCATTRIB, _
 		byval mode as integer, _
 		byval options as FB_SYMBOPT _
 	) as FBSYMBOL ptr
@@ -677,11 +686,11 @@ private function hSetupProc _
 	'' UDT namespace that have neither, for example proc symbols backing
 	'' procptrs or the dtor call wrapper procs created for static vars
 	'' declared inside methods.
-	if( attrib and FB_SYMBATTRIB_METHOD ) then
+	if( pattrib and FB_PROCATTRIB_METHOD ) then
 		assert( (attrib and FB_SYMBATTRIB_STATIC) = 0 )
 		assert( symbIsStruct( parent ) )
 	elseif( attrib and FB_SYMBATTRIB_STATIC ) then
-		assert( (attrib and FB_SYMBATTRIB_METHOD) = 0 )
+		assert( (pattrib and FB_PROCATTRIB_METHOD) = 0 )
 		assert( symbIsStruct( parent ) )
 	end if
 #endif
@@ -706,19 +715,19 @@ private function hSetupProc _
 	head_proc = NULL
 
 	'' ctor/dtor?
-	if( (attrib and (FB_SYMBATTRIB_CONSTRUCTOR or _
-					 FB_SYMBATTRIB_DESTRUCTOR)) <> 0 ) then
+	if( (pattrib and (FB_PROCATTRIB_CONSTRUCTOR or _
+					 FB_PROCATTRIB_DESTRUCTOR)) <> 0 ) then
 
-		assert( attrib and FB_SYMBATTRIB_METHOD )
+		assert( pattrib and FB_PROCATTRIB_METHOD )
 
 		'' ctors/dtors don't have THIS CONSTness, disable the checks
 		'' We can't just rely on the ctor/dtor flags for this because those
 		'' can't be propagated to procptrs currently (e.g. here we assume any
 		'' PROC with these flags is a proper proc, not a procptr)
-		attrib or= FB_SYMBATTRIB_NOTHISCONSTNESS
+		pattrib or= FB_PROCATTRIB_NOTHISCONSTNESS
 
 		'' ctor?
-		if( (attrib and FB_SYMBATTRIB_CONSTRUCTOR) <> 0 ) then
+		if( (pattrib and FB_PROCATTRIB_CONSTRUCTOR) <> 0 ) then
 			head_proc = symbGetCompCtorHead( parent )
 		else
 			head_proc = symbGetCompDtor( parent )
@@ -728,10 +737,10 @@ private function hSetupProc _
 		if( head_proc = NULL ) then
 			proc = symbNewSymbol( FB_SYMBOPT_NONE, sym, symtb, hashtb, _
 			                      FB_SYMBCLASS_PROC, NULL, id_alias, _
-			                      FB_DATATYPE_VOID, NULL, attrib )
+			                      FB_DATATYPE_VOID, NULL, attrib, pattrib )
 
 			'' ctor?
-			if( (attrib and FB_SYMBATTRIB_CONSTRUCTOR) <> 0 ) then
+			if( (pattrib and FB_PROCATTRIB_CONSTRUCTOR) <> 0 ) then
 				symbSetCompCtorHead( parent, proc )
 			else
 				symbSetCompDtor( parent, proc )
@@ -739,25 +748,25 @@ private function hSetupProc _
 		'' otherwise, try to overload
 		else
 			'' dtor?
-			if( (attrib and FB_SYMBATTRIB_DESTRUCTOR) <> 0 ) then
+			if( (pattrib and FB_PROCATTRIB_DESTRUCTOR) <> 0 ) then
 				'' can't overload
 				return NULL
 			end if
 
 			proc = hAddOvlProc( sym, head_proc, symtb, hashtb, NULL, id_alias, _
-			                    FB_DATATYPE_VOID, NULL, attrib, FALSE )
+			                    FB_DATATYPE_VOID, NULL, attrib, pattrib, FALSE )
 			if( proc = NULL ) then
 				exit function
 			end if
 		end if
 
 		'' ctor? check for special ctors..
-		if( (attrib and FB_SYMBATTRIB_CONSTRUCTOR) <> 0 ) then
+		if( (pattrib and FB_PROCATTRIB_CONSTRUCTOR) <> 0 ) then
 			symbCheckCompCtor( parent, proc )
 		end if
 
 	'' operator?
-	elseif( (attrib and FB_SYMBATTRIB_OPERATOR) <> 0 ) then
+	elseif( (pattrib and FB_PROCATTRIB_OPERATOR) <> 0 ) then
 
 		'' op not set? (because error recovery)
 		if( sym->proc.ext = NULL ) then
@@ -774,14 +783,14 @@ private function hSetupProc _
         if( head_proc = NULL ) then
 			proc = symbNewSymbol( FB_SYMBOPT_NONE, sym, symtb, hashtb, _
 			                      FB_SYMBCLASS_PROC, NULL, id_alias, _
-			                      dtype, subtype, attrib )
+			                      dtype, subtype, attrib, pattrib )
 
         	symbSetCompOpOvlHead( parent, proc )
 
         '' otherwise, try to overload
         else
 			proc = hAddOpOvlProc( sym, head_proc, symtb, hashtb, op, id_alias, _
-			                      dtype, subtype, attrib )
+			                      dtype, subtype, attrib, pattrib )
 			if( proc = NULL ) then
 				exit function
 			end if
@@ -799,7 +808,7 @@ add_proc:
 		preserve_case = (options and FB_SYMBOPT_PRESERVECASE) <> 0
 
 		proc = symbNewSymbol( options or FB_SYMBOPT_DOHASH, sym, symtb, hashtb, _
-		                      FB_SYMBCLASS_PROC, id, id_alias, dtype, subtype, attrib )
+		                      FB_SYMBCLASS_PROC, id, id_alias, dtype, subtype, attrib, pattrib )
 
 		'' dup def?
 		if( proc = NULL ) then
@@ -818,25 +827,25 @@ add_proc:
 
 			'' try to overload..
 			proc = hAddOvlProc( sym, head_proc, symtb, hashtb, id, id_alias, _
-			                    dtype, subtype, attrib, preserve_case )
+			                    dtype, subtype, attrib, pattrib, preserve_case )
 			if( proc = NULL ) then
 				exit function
 			end if
 
-			proc->attrib or= FB_SYMBATTRIB_OVERLOADED
+			proc->pattrib or= FB_PROCATTRIB_OVERLOADED
 
 		else
 			'' only if not the RTL
 			if( (options and FB_SYMBOPT_RTL) = 0 ) then
 				'' check overloading
-				if( (attrib and FB_SYMBATTRIB_OVERLOADED) <> 0 ) then
+				if( (pattrib and FB_PROCATTRIB_OVERLOADED) <> 0 ) then
 					if( hCanOverload( sym ) = FALSE ) then
 						exit function
 					end if
 
 				elseif( fbLangOptIsSet( FB_LANG_OPT_ALWAYSOVL ) ) then
 					if( hCanOverload( sym ) ) then
-						proc->attrib or= FB_SYMBATTRIB_OVERLOADED
+						proc->pattrib or= FB_PROCATTRIB_OVERLOADED
 					end if
 				end if
 			end if
@@ -986,7 +995,8 @@ function symbAddProc _
 		byval id_alias as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval attrib as integer, _
+		byval attrib as FB_SYMBATTRIB, _
+		byval pattrib as FB_PROCATTRIB, _
 		byval mode as integer, _
 		byval options as FB_SYMBOPT _
 	) as FBSYMBOL ptr
@@ -1009,7 +1019,7 @@ function symbAddProc _
 	assert( (attrib and FB_SYMBATTRIB_LOCAL) = 0 )
 
 	function = hSetupProc( proc, parent, symtb, hashtb, id, id_alias, _
-	                       dtype, subtype, attrib, mode, options )
+	                       dtype, subtype, attrib, pattrib, mode, options )
 
 end function
 
@@ -1020,7 +1030,8 @@ function symbAddOperator _
 		byval id_alias as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval attrib as integer, _
+		byval attrib as FB_SYMBATTRIB, _
+		byval pattrib as FB_PROCATTRIB, _
 		byval mode as integer, _
 		byval options as FB_SYMBOPT _
 	) as FBSYMBOL ptr
@@ -1030,7 +1041,7 @@ function symbAddOperator _
 	symbProcAllocExt( proc )
 	proc->proc.ext->opovl.op = op
 
-	sym = symbAddProc( proc, NULL, id_alias, dtype, subtype, attrib, mode, options )
+	sym = symbAddProc( proc, NULL, id_alias, dtype, subtype, attrib, pattrib, mode, options )
 	if( sym = NULL ) then
 		symbProcFreeExt( proc )
 		exit function
@@ -1043,17 +1054,19 @@ function symbAddCtor _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval id_alias as zstring ptr, _
-		byval attrib as integer, _
+		byval attrib as FB_SYMBATTRIB, _
+		byval pattrib as FB_PROCATTRIB, _
 		byval mode as integer, _
 		byval options as FB_SYMBOPT _
 	) as FBSYMBOL ptr
-	function = symbAddProc( proc, NULL, id_alias, FB_DATATYPE_VOID, NULL, attrib, mode, options )
+	function = symbAddProc( proc, NULL, id_alias, FB_DATATYPE_VOID, NULL, attrib, pattrib, mode, options )
 end function
 
 function symbLookupInternallyMangledSubtype _
 	( _
 		byval id as zstring ptr, _
-		byref attrib as integer, _
+		byref attrib as FB_SYMBATTRIB, _
+		byref pattrib as FB_PROCATTRIB, _
 		byref parent as FBSYMBOL ptr, _
 		byref symtb as FBSYMBOLTB ptr, _
 		byref hashtb as FBHASHTB ptr _
@@ -1098,7 +1111,8 @@ function symbAddProcPtr _
 		byval proc as FBSYMBOL ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval attrib as integer, _
+		byval attrib as FB_SYMBATTRIB, _
+		byval pattrib as FB_PROCATTRIB, _
 		byval mode as integer _
 	) as FBSYMBOL ptr
 
@@ -1132,6 +1146,8 @@ function symbAddProcPtr _
 	'' C++ mangling functions directly (instead of having to encode
 	'' parameters & function result manually).
 	proc->attrib or= attrib
+	proc->pattrib or= pattrib
+
 	assert( proc->typ = FB_DATATYPE_INVALID )
 	proc->typ = dtype
 	proc->subtype = subtype
@@ -1160,14 +1176,14 @@ function symbAddProcPtr _
 	id += "$"
 	id += hex( mode )
 
-	sym = symbLookupInternallyMangledSubtype( id, attrib, parent, symtb, hashtb )
+	sym = symbLookupInternallyMangledSubtype( id, attrib, pattrib, parent, symtb, hashtb )
 	if( sym ) then
 		return sym
 	end if
 
 	'' create a new prototype
 	sym = hSetupProc( proc, parent, symtb, hashtb, id, symbUniqueId( ), _
-	                  dtype, subtype, attrib, mode, _
+	                  dtype, subtype, attrib, pattrib, mode, _
 	                  FB_SYMBOPT_DECLARING or FB_SYMBOPT_PRESERVECASE )
 
 	if( sym <> NULL ) then
@@ -1191,7 +1207,7 @@ function symbAddProcPtrFromFunction _
 	var param = symbGetProcHeadParam( base_proc )
     do while( param <> NULL )
 		var p = symbAddProcParam( proc, NULL, param->typ, param->subtype, _
-				param->param.bydescdimensions, param->param.mode, param->attrib )
+				param->param.bydescdimensions, param->param.mode, param->attrib, param->pattrib )
 
 		if( symbGetDontInit( param ) ) then
 			symbSetDontInit( p )
@@ -1204,13 +1220,15 @@ function symbAddProcPtrFromFunction _
 
 	'' attribs to copy from the proc to the procptr
 	'' (anything needed for procptr call checking)
-	var attribmask = FB_SYMBATTRIB_REF '' return byref
-	attribmask or= FB_SYMBATTRIB_CONST '' THIS CONSTness, needed for symbCalcProcMatch() type checking
-	attribmask or= FB_SYMBATTRIB_NOTHISCONSTNESS '' method call THIS CONSTness checking
+	
+	var attribmask = FB_SYMBATTRIB_CONST '' THIS CONSTness, needed for symbCalcProcMatch() type checking
+
+	var pattribmask = FB_PROCATTRIB_RETURNBYREF '' return byref
+	pattribmask or = FB_PROCATTRIB_NOTHISCONSTNESS '' method call THIS CONSTness checking
 
 	function = symbAddProcPtr( proc, _
 			symbGetFullType( base_proc ), symbGetSubtype( base_proc ), _
-			base_proc->attrib and attribmask, _
+			base_proc->attrib and attribmask, base_proc->pattrib and pattribmask, _
 			symbGetProcMode( base_proc ) )
 
 end function
@@ -1221,7 +1239,8 @@ function symbPreAddProc( byval symbol as zstring ptr ) as FBSYMBOL ptr
 	proc = listNewNode( @symb.symlist )
 
 	proc->class = FB_SYMBCLASS_PROC
-	proc->attrib = 0
+	proc->attrib = FB_SYMBATTRIB_NONE
+	proc->pattrib = FB_PROCATTRIB_NONE
 	proc->stats = 0
 	proc->id.name = symbol
 	proc->id.alias = NULL
@@ -1394,7 +1413,7 @@ function symbAddProcResultVar( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	dtype = proc->typ
 
 	'' Returning byref? Then the implicit result var is actually a pointer.
-	if( symbIsRef( proc ) ) then
+	if( symbIsReturnByRef( proc ) ) then
 		dtype = typeAddrOf( dtype )
 	end if
 
@@ -1434,7 +1453,7 @@ sub symbAddProcInstanceParam _
 	end if
 
 	symbAddProcParam( proc, FB_INSTANCEPTR, dtype, parent, 0, _
-	                  FB_PARAMMODE_BYREF, FB_SYMBATTRIB_INSTANCEPARAM )
+	                  FB_PARAMMODE_BYREF, FB_SYMBATTRIB_INSTANCEPARAM, FB_PROCATTRIB_NONE )
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -2721,7 +2740,7 @@ function symbCalcProcMatch _
 	''   which doesn't take result type into account.
 	'' - SUBs have VOID result type and will be handled here too
 	var match = typeCalcMatch( l->typ, l->subtype, _
-			iif( symbIsRef( l ), FB_PARAMMODE_BYREF, FB_PARAMMODE_BYVAL ), _
+			iif( symbIsReturnByRef( l ), FB_PARAMMODE_BYREF, FB_PARAMMODE_BYVAL ), _
 			r->typ, r->subtype )
 	if( match = FB_OVLPROC_NO_MATCH ) then
 		errmsg = FB_ERRMSG_OVERRIDERETTYPEDIFFERS
@@ -2729,7 +2748,7 @@ function symbCalcProcMatch _
 	end if
 
 	'' Does one have a BYREF result, but not the other?
-	if( symbIsRef( l ) <> symbIsRef( r ) ) then
+	if( symbIsReturnByRef( l ) <> symbIsReturnByRef( r ) ) then
 		errmsg = FB_ERRMSG_OVERRIDERETTYPEDIFFERS
 		return FB_OVLPROC_NO_MATCH
 	end if
@@ -2994,7 +3013,7 @@ end sub
 private sub hResultToStr( byref s as string, byval proc as FBSYMBOL ptr )
 	'' Function result
 	if( symbGetType( proc ) <> FB_DATATYPE_VOID ) then
-		if( symbIsRef( proc ) ) then
+		if( symbIsReturnByRef( proc ) ) then
 			s += " byref"
 		end if
 		s += " as " + symbTypeToStr( proc->typ, proc->subtype )

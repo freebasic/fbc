@@ -19,9 +19,9 @@ FBCALL void *fb_DylibLoad( FBSTRING *library )
 		FirstDyLibCall = 1;
 	}
 
-	libname[MAX_PATH-1] = '\0';
 	if( (library) && (library->data) ) {
 		snprintf( libname, MAX_PATH-1, libnameformat, library->data );
+		libname[MAX_PATH-1] = '\0';
 		fb_hConvertPath( libname );
 		res = dlopen( libname, RTLD_GLOBAL + RTLD_LAZY);
 	}

@@ -47,7 +47,7 @@ sub symbVarInit( )
 	symb.fbarray_data  = 0
 	symb.fbarray_ptr   = env.pointersize     '' behind: data
 	symb.fbarray_size  = env.pointersize * 2 '' behind: data, ptr
-	symb.fbarray_dimtb = env.pointersize * 5 '' behind: data, ptr, size, element_len, dimensions
+	symb.fbarray_dimtb = env.pointersize * 6 '' behind: data, ptr, size, element_len, dimensions, flags
 
 	'' FBARRAYDIM
 	symb.fbarraydim_lbound = env.pointersize      '' behind: elements
@@ -96,7 +96,7 @@ function symbGetDescTypeDimensions( byval desctype as FBSYMBOL ptr ) as integer
 	end if
 
 	'' dimensions = sizeof(dimTB) \ sizeof(FBARRAYDIM)
-	dimtbsize = symbGetLen( desctype ) - (env.pointersize * 5)
+	dimtbsize = symbGetLen( desctype ) - (env.pointersize * 6)
 	dimensions = dimtbsize \ (env.pointersize * 3)
 
 	assert( (dimensions > 0) and (dimensions <= FB_MAXARRAYDIMS) )
@@ -117,7 +117,7 @@ function symbAddArrayDescriptorType _
 	dim as FBSYMBOL ptr sym = any, parent = any
 	dim as FBSYMBOLTB ptr symtb = any
 	dim as FBHASHTB ptr hashtb = any
-	dim as integer attrib = any
+	dim as integer attrib = any, pattrib = any
 
 	'' Note: the arraydtype may even be FB_DATATYPE_VOID, e.g. in case of
 	'' "array() as any" parameters.
@@ -173,8 +173,9 @@ function symbAddArrayDescriptorType _
 	'' It's not safe to always make it global because it may reference local
 	'' symbols through the arraydtype (e.g. an array with a local UDT as its
 	'' dtype), that may end up being deleted before the global.
-	attrib = 0
-	sym = symbLookupInternallyMangledSubtype( id, attrib, NULL, symtb, hashtb )
+	attrib = FB_SYMBATTRIB_NONE
+	pattrib = FB_PROCATTRIB_NONE
+	sym = symbLookupInternallyMangledSubtype( id, attrib, pattrib, NULL, symtb, hashtb )
 	if( sym ) then
 		return sym
 	end if
@@ -197,6 +198,7 @@ function symbAddArrayDescriptorType _
 	symbAddField( sym, "size", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
 	symbAddField( sym, "element_len", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
 	symbAddField( sym, "dimensions", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
+	symbAddField( sym, "flags", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
 	'' If dimensions are unknown, the descriptor type must have room for
 	'' FB_MAXARRAYDIMS
 	if( dimensions = -1 ) then
@@ -326,7 +328,7 @@ function symbAddArrayDesc( byval array as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 	desc = symbNewSymbol( FB_SYMBOPT_PRESERVECASE, NULL, symtb, NULL, _
 	                      FB_SYMBCLASS_VAR, id, id_alias, _
-	                      FB_DATATYPE_STRUCT, desctype, attrib )
+	                      FB_DATATYPE_STRUCT, desctype, attrib, FB_PROCATTRIB_NONE )
 	if( desc = NULL ) then
 		exit function
 	end if
@@ -532,7 +534,7 @@ function symbAddVar _
 		byval lgt as longint, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
-		byval attrib as integer, _
+		byval attrib as FB_SYMBATTRIB, _
 		byval options as FB_SYMBOPT _
 	) as FBSYMBOL ptr
 
@@ -599,7 +601,7 @@ function symbAddVar _
 	end if
 
 	s = symbNewSymbol( options or FB_SYMBOPT_DOHASH, NULL, symtb, hashtb, _
-	                   FB_SYMBCLASS_VAR, id, id_alias, dtype, subtype, attrib )
+	                   FB_SYMBCLASS_VAR, id, id_alias, dtype, subtype, attrib, FB_PROCATTRIB_NONE )
 	if( s = NULL ) then
 		exit function
 	end if

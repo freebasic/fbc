@@ -1,0 +1,169 @@
+{{fbdoc item="title" value="Constants and Enumerations"}}----
+**Enumeration**, a special User-Defined Type composed of a number of named **constants**.
+
+{{fbdoc item="section" value="Syntax"}}
+	##[[KeyPgEnum|Enum]] [//typename// [ Explicit ] ]
+		//symbolname// [= //expression//] [, ...]
+		...
+	End Enum##
+
+{{fbdoc item="section" value="Parameters"}}
+	##//typename//##
+		Name of the ##**Enum**##
+	##//symbolname//##
+		Name of the constant
+	##//expression//##
+		A constant expression
+	##Explicit##
+		Requires that symbols must be explicitly referred to by ##//typename//.//symbolname//##
+
+{{fbdoc item="section" value="Description"}}
+	An enumeration is a User-Defined Type that consists of a set of named integer constants.
+	Enumerations are useful for defining sequences and states, particularly when there is a natural progression through those states.
+	
+	An enumeration provides context to describe a range of values which are represented as named constants through symbols.
+	Unlike namespaces, enumerations can be also defined in any scope blocks, and their symbols are only visible throughout the scope in which the enumeration is declared.
+	
+	Enumerations lend themselves to more maintainable code because they are symbolic, allowing you to work with integer values ​​while using an explicit name.
+	Enumerations are value Types, which means they contain their own value, can not inherit or be inherited from.
+	
+	##Enum## can not contain any member procedure or member data (only symbols), but it can be included (named or unnamed) in a ##Type## by having.
+
+{{fbdoc item="section" value="Usage"}}
+	Every symbol in an enumeration is implicitly assigned an integer value (positive or negative) that corresponds to its place in the order of the values in the enumeration.
+	Every symbol is treated as a constant. 
+	
+	By default, the first value is assigned 0, the next one is assigned 1, and so on.
+	But you can explicitly set the value of any symbol (and the next symbol will be implicitly set to the previous value plus an increment of one).
+	
+	The values given to the symbols do not have to be unique.
+	
+	When an enumeration is qualified as ##Explicit##, access to any ##//symbolname//## must be always prefixed by ##//typename//##.
+	Prefixing can also be used to solve ambiguity with other entities.
+	
+	An ##Enum## instance can be passed, as any User-Defined Type instance, to a procedure (including for the definition of overloaded operators).
+	The size of an ##Enum## instance will be always that of an ##Integer## (no matter how many defined symbols are just declarations for the compiler assignment).
+	
+	An ##Enum## instance (or ##Enum## symbol) can be implicitly converted to an integer.
+	**Note:**
+		**""-""** In many languages, an integer is never implicitly convertible to a scoped enumeration type instance, this one being strongly typed (declaration equivalent to the ##Enum## qualified as ##Explicit## with FreeBASIC), and an explicit cast is required for such a conversion,
+		**""-""** but FreeBASIC accepts it (even if the numeric value does not match any ##Enum## symbol defined). This is just one of the many lacks of FreeBASIC on the normal ##Enum## features.
+
+{{fbdoc item="section" value="Example"}}
+	Simple example of use:
+		{{fbdoc item="filename" value="examples/manual/proguide/enumerations1.bas"}}%%(freebasic)
+Enum Colors
+	black
+	blue
+	green
+	cyan
+	red
+	pink
+	yellow
+	grey
+	dark_grey
+	bright_blue
+	bright_green
+	bright_cyan
+	bright_red
+	bright_pink
+	bright_yellow
+	white
+End Enum
+
+Sub print_fbc (Byval foreground As Colors, Byval background As Colors)
+	Color foreground, background
+	Print " " & __FB_SIGNATURE__ & " "
+End Sub
+
+
+Dim As Colors std_foreground, std_background
+std_foreground = Loword(Color())
+std_background = Hiword(Color())
+
+Dim As Colors my_foreground, my_background
+my_foreground = bright_yellow
+my_background = cyan
+
+print_fbc(my_foreground, my_background)
+
+Color std_foreground, std_background
+Print "end"
+
+Sleep
+		%%
+	Same result, but with a ##Type## interfacing ##Enum## to impose explicit casting when assigning numeric values to ##Enum## instances (see 'Note' above):
+		{{fbdoc item="filename" value="examples/manual/proguide/enumerations2.bas"}}%%(freebasic)
+Enum Colors Explicit
+	black
+	blue
+	green
+	cyan
+	red
+	pink
+	yellow
+	grey
+	dark_grey
+	bright_blue
+	bright_green
+	bright_cyan
+	bright_red
+	bright_pink
+	bright_yellow
+	white
+End Enum
+
+Type Console_Colors
+	Public:
+		Declare Property foreground () As Colors
+		Declare Property foreground (Byval c As Colors)
+		Declare Property background () As Colors
+		Declare Property background (Byval c As Colors)
+	Private:
+		Dim As Colors _foreground
+		Dim As Colors _background
+End Type
+
+Property Console_Colors.foreground () As Colors
+	Return This._foreground
+End Property
+
+Property Console_Colors.foreground (Byval c As Colors)
+	This._foreground = c
+End Property
+
+Property Console_Colors.background () As Colors
+	Return This._background
+End Property
+
+Property Console_Colors.background (Byval c As Colors)
+	This._background = c
+End Property
+
+Sub print_fbc (Byval foreground As Colors, Byval background As Colors)
+	Color foreground, background
+	Print " " & __FB_SIGNATURE__ & " "
+End Sub
+
+
+Dim As Console_Colors std_colors
+std_colors.foreground = Cast(Colors, Loword(Color()))  '' explicit cast mandatory because of property declaration
+std_colors.background = Cast(Colors, Hiword(Color()))  '' explicit cast mandatory because of property declaration
+
+Dim As Console_Colors my_colors
+my_colors.foreground = Colors.bright_yellow
+my_colors.background = Colors.cyan
+
+print_fbc(my_colors.foreground, my_colors.background)
+
+Color std_colors.foreground, std_colors.background
+Print "end"
+
+Sleep
+		%%
+{{fbdoc item="section" value="See also"}}
+	- ##[[KeyPgEnum|Enum]]##
+	- ##[[KeyPgType|Type]]##
+	- [[ProPgConstants|Constants]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

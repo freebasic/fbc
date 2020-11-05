@@ -57,8 +57,6 @@ static FB_DYLIB gl_lib = NULL;
 static GLXFUNCS __fb_glX = { NULL, NULL, NULL, NULL, NULL };
 static GLXContext context;
 
-
-
 void *fb_hGL_GetProcAddress(const char *proc)
 {
 	void *addr;
@@ -111,10 +109,12 @@ static void opengl_window_exit(void)
 	fb_hX11WaitUnmapped(fb_x11.window);
 	if (fb_x11.flags & DRIVER_FULLSCREEN) {
 		XUnmapWindow(fb_x11.display, fb_x11.fswindow);
-	XSync(fb_x11.display, False);
+		XSync(fb_x11.display, False);
 	} else {
-		XUnmapWindow(fb_x11.display, fb_x11.wmwindow);
-		fb_hX11WaitUnmapped(fb_x11.wmwindow);
+		if( !(fb_x11.flags & DRIVER_NO_FRAME) ) {
+			XUnmapWindow(fb_x11.display, fb_x11.wmwindow);
+			fb_hX11WaitUnmapped(fb_x11.wmwindow);
+		}
 	}
 	//usleep(500);
 	XSync(fb_x11.display, False);
@@ -218,7 +218,10 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 		return -1;
 	}
 
-	if (__fb_gl_params.scale>1){
+	__fb_gl_params.mode_2d = __fb_gl_params.init_mode_2d;
+
+	if (__fb_gl_params.init_scale>1){
+		__fb_gl_params.init_scale = __fb_gl_params.init_scale;
 		free(__fb_gfx->dirty);
 		__fb_gfx->dirty = (char *)calloc(1, __fb_gfx->h * __fb_gfx->scanline_size* __fb_gl_params.scale);
 	}
@@ -239,10 +242,10 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	if ((samples_attrib) && (*samples_attrib > 0))
 		__fb_gl.Enable(GL_MULTISAMPLE_ARB);
 
-	if (__fb_gl_params.mode_2d!=0)
+	if (__fb_gl_params.mode_2d != DRIVER_OGL_2D_NONE)
 		fb_hGL_ScreenCreate();
 
-	if (__fb_gl_params.mode_2d==2){
+	if (__fb_gl_params.mode_2d == DRIVER_OGL_2D_AUTO_SYNC){
 		__fb_glX.MakeCurrent(fb_x11.display, None, NULL);
 		fb_x11.update = opengl_window_update;
 	}
@@ -263,7 +266,7 @@ static void driver_exit(void)
 static void driver_flip(void)
 {
 	fb_hX11Lock();
-	if (__fb_gl_params.mode_2d==1)
+	if (__fb_gl_params.mode_2d == DRIVER_OGL_2D_MANUAL_SYNC)
 		fb_hGL_SetupProjection();
 
 	__fb_glX.SwapBuffers(fb_x11.display, fb_x11.window);

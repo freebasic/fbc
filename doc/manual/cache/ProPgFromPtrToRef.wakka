@@ -1,0 +1,70 @@
+{{fbdoc item="title" value="From Pointers to References"}}----
+**References** do not fully offer the same capabilities as **Pointers**, but using them instead can simplify coding.
+
+**Preamble:**
+
+	References and pointers are closely related.
+	Indeed, a variable and its different references hold the same address, since they allow access to the same object.
+	
+	The reference encapsulates the manipulation of the address of the object and is used as a dereferenced pointer.
+	The difference lies here in the fact that one does not have to perform the dereferencing.
+	
+	References are much easier to handle than pointers, so they make code much safer.
+
+{{fbdoc item="section" value="Reminder on pointers"}}
+	An address is a value. User can store this value in a variable. Pointers are precisely variables that contain the address of other objects, for example the address of another variable.
+	The value of a pointer may change. This does not usually mean that the pointed variable is moved to memory, but rather that the pointer points to something else.
+	In order to precise what is pointed by a pointer, the pointers have a type. This type is usually constructed from the type of the pointed object. This allows the compiler to verify that the manipulations made in memory via the pointer are valid.
+	
+	The most common use of pointers is when sent in the parameters of a procedure. They make it possible to manipulate in a simple way data which can be important (instead of providing to a procedure a very big data block, one could for example provide a pointer to this one).
+	Another use is when doing dynamic allocation in memory, with the '[C]Allocate' and 'New' keywords which return the address of the memory that has been allocated. This address must be stored somewhere and know how to use it.
+	Finally, pointers can also be used to manipulate tables, but their interest is lower with FB because user has the capacity to declare static and dynamic arrays and to use the dedicated '()' (Array Index) operator to access their elements.
+	
+	It is also possible to create pointers to procedures, and to use these pointers to parameterize an algorithm, the behavior of which will depend on the procedures thus pointed out.
+	
+	It is very important to make sure that the pointers that user is manipulating are all initialized (that is, they contain the address of a valid object, not just anything). Indeed, to access a variable by means of an uninitialized pointer amounts to read or, more seriously, to write in the memory at a completely random place (according to the initial value of the pointer at the time of its creation).
+	In general, pointers are initialized as soon as they are created, or if they are to be used later, they are initialized with the null value. This will allow future tests on the validity of the pointer or at least to detect errors. Indeed, using a pointer with a null value to access a variable can often generate a program protection fault, but will always generate an error message at run-time if the program was compiled with the option '-exx'.
+	
+	With the dereferencing operators '*' and '[]', it is possible to access the variables from pointers.
+	The 'Any Ptr' pointers are a special type of pointer. They can point to a variable of any type. You can not use the '*' and '[]' dereferencing operators on an 'Any Ptr' pointer. It must first be converted into a pointer of a given type.
+	Similarly, a typed pointer can also be converted into a pointer of any other type (if necessary converting first through an 'Any Ptr' pointer).
+	For object pointers ('po'), it's more convenient to use the single '->' operator rather than combining the "*" and "." to access object members (use 'po->member' instead of '(*po).member').
+	
+	A pointer can also be declared with a type different but compatible with the address types of objects to be pointed (as a simple example, 'Zstring Ptr' and 'Ubyte Ptr' are two compatible pointer types in both directions). In a more evolved way in case of inheritance structure, derived type objects can be referenced with pointers constructed from the type of one among those of their common bases (allowing to activate the polymorphism when a virtual and overridden method is called on such pointers).
+	
+	Pointers have their own arithmetic. Increment/decrement is special for this type. This is done by multiplying the size of the type of the pointer by the value that one wants to add/remove to it. This makes it possible to properly move the pointer forward or back from the number of elements indicated.
+	The only operation allowed between pointers is the subtraction, provided the pointers are of the same type. This operation only makes sense if the pointers point to the same homogeneous structure of elements (of the type of the pointers), because the result corresponds to a difference in number of elements.
+
+{{fbdoc item="section" value="Notion of reference"}}
+	In higher-level languages, the use of pointers tends to be suppressed, in favor of references and dynamic arrays managed by the compiler. References fulfill some pointer functions by removing explicit user access to memory. This avoids many problems, in return some uses and optimizations are no longer possible.
+	
+	In addition to the two classic ways to access data represented in memory: use its name (if it is a variable or a constant) or dereference a pointer containing its address, there is a third method, the use of references, which is absolutely essential in some cases and provides, in addition, an alternative to the use of a pointer.
+	
+	A reference is a way to associate a new name with an already existing object.
+	It is not a means to create a new object, even if the syntax to create a reference variable leads to an expression strangely resembling the definition of an initialized variable.
+	This assignment of a new name does not deprive the object concerned of its original name, if it had one. The new name simply becomes a synonym for the old one, meaning that they both refer to the same object.
+		
+	To pass/return a variable by reference instead of doing it by value avoids making a copy of the transmitted object. When the object in question is very large, the copy operation can be expensive in run-time and in memory.
+	
+	In the manner of a pointer, a reference has its own type, which must be identical to that of the referenced object, otherwise compatible at least. In this last case only (type compatible but not the same), references (like pointers) can not do all same operations than with the original object.
+	
+	The use of a reference to an object makes it possible to obtain the advantages associated with the use of a "pointer to object" (speed and memory savings) while avoiding the heaviness of writing implied by the use of an object pointer (usage of the '@' operator, and '*' or '[]' operators).
+	
+	**Note:**
+		**""-""** The arrays of references are not supported yet in FB.
+		**""-""** The non-static reference fields for UDT are not supported yet in FB.
+		**""-""** The references to procedures are not supported in FB (only references to pointers to procedures).
+
+{{fbdoc item="section" value="Using references"}}
+	See the next page of this "References" section:
+		**""-""** the '[[ProPgReferences|Using References]]' page.
+
+{{fbdoc item="section" value="See also"}}
+	- ##[[KeyPgAllocate|Allocate]]##, ##[[KeyPgCallocate|Callocate]]##, ##[[KeyPgOpNew|New (Expression)]]##
+	- ##[[KeyPgOpAt|Operator @ (Address of)]]##, ##[[KeyPgOpValueOf|Operator * (Value of)]]##, ##{{fbdoc item="keyword" value="KeyPgOpPtrIndex|Operator [] (Pointer index)"}}##
+	- ##[[KeyPgOpMemberAccess|Operator . (Member access)]]##, ##[[KeyPgOpPtrMemberAccess|Operator -> (Pointer to member access)]]##
+	- [[ProPgPointers|Pointer Overview]]
+	- [[ProPgPtrArithmetic|Pointer Arithmetic]]
+	- [[ProPgReferences|Using References]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

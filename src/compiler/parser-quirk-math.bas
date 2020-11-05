@@ -11,7 +11,9 @@
 
 private function hMathOp(byval op as AST_OP) as ASTNODE ptr
 	dim as ASTNODE ptr expr = any
-	lexSkipToken( )
+
+	'' ABS|SGN|FIX|FRAC|INT|SIN|ASIN|COS|ACOS|TAN|ATN|SQR|LOG|EXP
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 	hMatchLPRNT( )
 	hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 	hMatchRPRNT( )
@@ -29,7 +31,7 @@ private function hAtan2() as ASTNODE ptr
 	dim as ASTNODE ptr expr = any, expr2 = any
 
 	'' ATAN2( Expression ',' Expression )
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 	hMatchLPRNT( )
 	hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 	hMatchCOMMA( )
@@ -112,7 +114,7 @@ private function hLenSizeof( byval tk as integer, byval isasm as integer ) as AS
 	dim as FBSYMBOL ptr subtype = any
 
 	'' LEN | SIZEOF
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' '('
 	hMatchLPRNT( )
@@ -126,6 +128,27 @@ private function hLenSizeof( byval tk as integer, byval isasm as integer ) as AS
 		if( astIsNIDXARRAY( expr ) ) then
 			tk = FB_TK_SIZEOF
 			expr = astRemoveNIDXARRAY( expr )
+		end if
+
+	'' then must be a type
+	elseif( tk = FB_TK_SIZEOF ) then
+		dim is_fixlenstr as integer
+		cUdtTypeMember( dtype, subtype, lgt, is_fixlenstr )
+
+	elseif( tk = FB_TK_LEN ) then
+		dim is_fixlenstr as integer
+		cUdtTypeMember( dtype, subtype, lgt, is_fixlenstr )
+
+		if( is_fixlenstr ) then
+			'' assume that constant string has no embedded nulls
+			select case typeGetDtAndPtrOnly( dtype )
+			case FB_DATATYPE_CHAR, FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
+				lgt -= typeGetSize( FB_DATATYPE_CHAR )
+				lgt /= typeGetSize( FB_DATATYPE_CHAR )
+			case FB_DATATYPE_WCHAR
+				lgt -= typeGetSize( FB_DATATYPE_WCHAR )
+				lgt /= typeGetSize( FB_DATATYPE_WCHAR )
+			end select
 		end if
 	end if
 

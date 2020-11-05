@@ -21,6 +21,8 @@ Shifts right and assigns a value to a variable
 		##//lhs// = //lhs// [[KeyPgOpShiftRight|Shr]] //rhs//##
 		
 	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]## using the appropriate syntax.
+	
+	//Note: Similarly to the operator '=[>]' (assign), the alternative symbol 'Shr=>' can be also used.//
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/shr-assign.bas"}}%%(freebasic)

@@ -1,0 +1,1782 @@
+{{fbdoc item="title" value="Critical Sections FAQ"}}----
+The "**Critical Sections**" related questions in multi-threading.
+{{anchor name="ProPgMtCriticalSectionsFAQtop"}}
+=={{fbdoc item="section" value="'Critical sections' related questions"}}==
+	**{{anchor name="ProPgMtCriticalSectionsFAQ1|1. When is it not mandatory to protect by a mutex one shared variable between several threads?"}}**
+	**{{anchor name="ProPgMtCriticalSectionsFAQ2|2. What is the chronology of code execution of 2 critical sections (with a mutex locking and a conditional variable signaling) that compete between 2 threads?"}}**
+	**{{anchor name="ProPgMtCriticalSectionsFAQ3|3. What happens if calling 'Condsignal()' or 'Condbroadcast()' without mutex locked?"}}**
+	**{{anchor name="ProPgMtCriticalSectionsFAQ4|4. Why it is mandatory to put 'Condwait' within a 'While...Wend' loop for checking a Boolean predicate (set by other thread before activate 'Condsignal' or 'Condbroadcast', and reset after the 'Wend')?"}}**
+		**{{anchor name="ProPgMtCriticalSectionsFAQ4.1|4.1. Is 'Condwait' (and 'Condsignal' or 'Condbroadcast') still useful when there is already a 'While' loop for checking a Boolean predicate set by other thread?"}}**
+	**{{anchor name="ProPgMtCriticalSectionsFAQ5|5. How to implement a user input-line function fully thread-safe?"}}**
+	**{{anchor name="ProPgMtCriticalSectionsFAQ6|6. How to use 'Screenlock' with multi-threading?"}}**
+	**{{anchor name="ProPgMtCriticalSectionsFAQ7|7. How to use 'video paging (double buffering or page flipping)' with multi-threading?"}}**
+	**{{anchor name="ProPgMtCriticalSectionsFAQ8|8. How to use the FB runtime library for multi-threaded applications (gfxlib2) with multi-threading?"}}**
+	**{{anchor name="ProPgMtCriticalSectionsFAQ9|9. How to use console statements and keyboard inputs with multi-threading?"}}**
+	**{{anchor name="ProPgMtCriticalSectionsFAQ10|10. Is it better to take precautions when using the keyword 'Sleep' in threads?"}}**
+	**{{anchor name="ProPgMtCriticalSectionsFAQ11|11. Can all tools to handle multi-threading be encapsulated in a base Class (that the user extends with a derived Type for his own implementing)?"}}**
+	
+----
+
+
+
+@@**===='Critical sections' related questions====**@@
+
+{{anchor name="ProPgMtCriticalSectionsFAQ1"}}
+{{fbdoc item="section" value="1. When is it not mandatory to protect by a mutex one shared variable between several threads?"}}
+		When accessing to shared variables between several threads, all their accesses must be generally put inside blocks ##//Mutexlock...Mutexunlock//##, in all threads:
+			**""-""** When the shared variable is only one simple predefined numeric type of ##//size <= sizeof(integer)//## (only one assembler instruction for access), the mutex use may be not mandatory.
+			**""-""** But if this is for example one shared variable ##//""LongInt""//## with a win32 compilation, it is advised here to use a mutex (otherwise the reading phase by a thread may be interlaced with the writing phase of another thread).
+			
+		That is because to access a variable in memory (for reading or for writing), a processor uses its internal registers.
+		A N-bit processor has N-bit registers but none greater:
+			**""-""** So one only assembler instruction allows it to access a N-bit variable in memory.
+			**""-""** At opposite, to access a 2N-bit variable, it must use 2 assembler instructions.
+			**""-""** If between these two assembler instructions (for writing), another thread accesses this same variable (for reading), the got value may be incoherent (N-bit highest and N-bit lowest incoherent together).
+			
+		This behavior can be checked with a graphic program using two threads and a shared ##//""LongInt""//## (64-bit) without mutex:
+			**""-""** by compiling in 32-bit, many read values are incoherent.
+			**""-""** by compiling in 64-bit, no read value is incoherent.
+			
+		Compile the below test program:
+			**""-""** in 32-bit => Many erroneous points not on the circle but anywhere in the square containing the circle. If you uncomment the four lines 37/39/58/60 to activate the mutex, then all the got points are now on the circle only.
+			**""-""** in 64-bit => All points are valid, on the circle only, even if the mutex is not activated.
+			{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq1.bas"}}%%(freebasic)
+'   - The "user-defined thread" computes the points coordinates on a circle,
+'     and write those in a LongInt (32-bit & 32-bit = 64-bit)
+'   - The "main thread" plots the points from the LongInt value.
+'
+'   Behavior:
+'      - The first point must be pre-determined.
+'      - Nothing prevents that a same calculated point could be plotted several times
+'      (depends on execution times of the loops between main thread and user thread).
+'      - Nothing prevents that a calculated point could be not plotted
+'      (same remark on the loop times).
+'
+'   Remark:
+'      Voluntarily, there is no Sleep in the loop of each thread (normally strongly discouraged),
+'      but this is just in this special case to amplify the behavior effects to observe.
+
+
+Union Point2D
+	Dim As Longint xy
+	Type
+		Dim As Long y
+		Dim As Long x
+	End Type
+End Union
+
+Dim As Any Ptr handle
+Dim Shared As Any Ptr mutex
+Dim Shared As Integer quit
+
+Sub Thread (ByVal param As Any Ptr)
+	Const pi As Single = 4 * Atn(1)
+	Dim As Point2D Ptr p = param
+	Do
+		Dim As Point2D P2D0
+		Dim As Single teta = 2 * pi * Rnd
+		P2D0.x = 320 + 200 * Cos(teta)
+		P2D0.y = 240 + 200 * Sin(teta)
+'        Mutexlock(mutex)
+		p->xy = P2D0.xy
+'        Mutexunlock(mutex)
+'        Sleep 5, 1
+	Loop Until quit = 1
+End Sub
+
+
+Screen 12
+
+Dim As Point2D P2D
+P2D.x = 520
+P2D.y = 240
+
+mutex = MutexCreate
+handle = ThreadCreate(@Thread, @P2D)
+
+Dim As Integer c
+
+Do
+	Dim As Point2D P2D0
+'    Mutexlock(mutex)
+	P2D0.xy = P2D.xy
+'    Mutexunlock(mutex)
+	PSet (P2D0.x, P2D0.y), c
+	c = (c Mod 15) + 1
+'    Sleep 5, 1
+Loop Until Inkey <> ""
+ 
+quit = 1
+ThreadWait(handle)
+Mutexdestroy(mutex)
+			%%
+@@{{anchor name="ProPgMtCriticalSectionsFAQtop|Back to top"}}@@
+----
+{{anchor name="ProPgMtCriticalSectionsFAQ2"}}
+{{fbdoc item="section" value="2. What is the chronology of code execution of 2 critical sections (with a mutex locking and a conditional variable signaling) that compete between 2 threads?"}}
+		Chronology for one thread signaling which occurs:
+			""a) ""while another thread is waiting (within a While loop on predicate),
+			""b) ""before another thread is waiting (within a While loop on predicate).
+			{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq2.bas"}}%%(freebasic)
+#define while_loop_on_predicate
+
+Dim As Any Ptr handle
+Dim Shared As Any Ptr mutex
+Dim Shared As Any Ptr cond
+Dim As Integer sleep0
+Dim As Integer sleep1
+#ifdef while_loop_on_predicate
+Dim Shared As Integer ready
+#endif
+
+
+Sub Thread1 (ByVal param As Any Ptr)
+	Sleep *Cast(Integer Ptr, param), 1
+	Mutexlock(mutex)
+	Color 11 : Print "        Thread#1 locks the mutex"
+	Color 11 : Print "        Thread#1 executes code with exclusion"
+	#ifdef while_loop_on_predicate
+	ready = 1
+	#endif
+	Color 11 : Print "        Thread#1 is signaling"
+	CondSignal(cond)
+	Color 11 : Print "        Thread#1 executes post-code with exclusion"
+	Color 11 : Print "        Thread#1 unlocks the mutex"
+	Mutexunlock(mutex)
+End Sub
+
+Sub Thread0 (ByVal param As Any Ptr)
+	Sleep *Cast(Integer Ptr, param), 1
+	Mutexlock(mutex)
+	Color 10 : Print "    Thread#0 locks the mutex"
+	Color 10 : Print "    Thread#0 executes pre-code with exclusion"
+	#ifdef while_loop_on_predicate
+	While ready <> 1
+	#endif
+		Color 10 : Print "    Thread#0 is waiting"
+		CondWait(cond, mutex)
+		Color 10 : Print "    Thread#0 is waked"
+	#ifdef while_loop_on_predicate
+	Wend
+	#endif
+	Color 10 : Print "    Thread#0 executes code with exclusion"
+	#ifdef while_loop_on_predicate
+	ready = 0
+	#endif
+	Color 10 : Print "    Thread#0 unlocks the mutex"
+	Mutexunlock(mutex)
+End Sub
+
+
+mutex = MutexCreate
+cond = CondCreate
+
+sleep0 = 0
+sleep1 = 1000
+Color 7 : Print "Chronology for Thread#1 signaling while Thread#0 is waiting:"
+handle = ThreadCreate(@Thread1, @sleep1)
+Thread0(@sleep0)
+ThreadWait(handle)
+Color 7 : Print "Thread#1 finished": Print
+Sleep 1000, 1
+
+sleep0 = 1000
+sleep1 = 0
+Color 7 : Print "Chronology for Thread#1 signaling before Thread#0 is waiting:"
+handle = ThreadCreate(@Thread1, @sleep1)
+Thread0(@sleep0)
+ThreadWait(handle)
+Color 7 : Print "Thread#1 finished": Print
+
+
+Mutexdestroy(mutex)
+CondDestroy(cond)
+Sleep
+			%%
+			Output part a - Chronology for Thread#1 signaling while Thread#0 is waiting:
+				%%
+Chronology for Thread#1 signaling while Thread#0 is waiting:
+	Thread#0 locks the mutex
+	Thread#0 executes pre-code with exclusion
+	Thread#0 is waiting
+		Thread#1 locks the mutex
+		Thread#1 executes code with exclusion
+		Thread#1 is signaling
+		Thread#1 executes post-code with exclusion
+		Thread#1 unlocks the mutex
+	Thread#0 is waked
+	Thread#0 executes code with exclusion
+	Thread#0 unlocks the mutex
+Thread#1 finished
+				%%
+			Output part b - Chronology for Thread#1 signaling before Thread#0 is waiting:
+				%%
+Chronology for Thread#1 signaling before Thread#0 is waiting:
+		Thread#1 locks the mutex
+		Thread#1 executes code with exclusion
+		Thread#1 is signaling
+		Thread#1 executes post-code with exclusion
+		Thread#1 unlocks the mutex
+	Thread#0 locks the mutex
+	Thread#0 executes pre-code with exclusion
+	Thread#0 executes code with exclusion
+	Thread#0 unlocks the mutex
+Thread#1 finished	
+				%%
+			**Note:** If ##//""CondWait""//## is not within a ##//While//## loop on predicate (by putting in comment the first line of above program), one can check in the second case (thread#1 signaling before thread#0 waiting), that thread#0 remains blocked in its waiting phase (Ctrl-C to quit).
+			
+@@{{anchor name="ProPgMtCriticalSectionsFAQtop|Back to top"}}@@
+----
+{{anchor name="ProPgMtCriticalSectionsFAQ3"}}
+{{fbdoc item="section" value="3. What happens if calling 'Condsignal()' or 'Condbroadcast()' without mutex locked?"}}
+		Referring to the example 2 on the ##[[ProPgMtCriticalSections|Critical Sections]]##, one takes this opportunity to recall that:
+			**""-""** The mutex must always be also locked while executing ##//""Condsignal()""//## or ##//""Condbroadcast()""//## to wake up a thread (it may be unlocked but only after ##//""Condsignal()""//## or ##//""Condbroadcast()""//##).
+			**""-""** If the mutex is not locked (or even if the mutex is unlocked only just before executing ##//""Condsignal()""//## or ##//""Condbroadcast()""//##), the behavior may become unpredictable (it may work or not, depending on the threads configuration and execution real time).
+			
+		In the example 2 on the ##[[ProPgMtCriticalSections|Critical Sections]]## "Synchronous method example using a condwait then a condbroadcast (and a mutex) for all threads":
+			**""-""** If one at least ##//Mutexunlock()//## is moved just before its ##//""Condbroadcast()""//##, the program hangs very quickly.
+			**""-""** Although some users certify that the mutex can always be unlocked just before ##//""Condsignal()""//## or ##//""Condbroadcast()""//##, and others more cautious assert that one can do it only for a ##//""Condbroadcast()""//##, experiment shows the opposite!
+			
+		The general rule is that:
+			**""-""** The condition must not be signaled (by ##//""Condsignal()""//## or ##//""Condbroadcast()""//##) between the time a thread locks the mutex and the time it waits on the condition variable (##//""CondWait()""//##), otherwise it seems that it may damage the waiting queue of threads on that condition variable.
+			**""-""** Thus to avoid that and follow this rule, it is necessary that the mutex remains locked when the condition is signaled.
+			
+@@{{anchor name="ProPgMtCriticalSectionsFAQtop|Back to top"}}@@
+----
+{{anchor name="ProPgMtCriticalSectionsFAQ4"}}
+{{fbdoc item="section" value="4. Why it is mandatory to put 'Condwait' within a 'While...Wend' loop for checking a Boolean predicate (set by other thread before activate 'Condsignal' or 'Condbroadcast', and reset after the 'Wend')?"}}
+		**##//While predicate <> True
+			Condwait(conditionalid, mutexid)
+		Wend
+		predicate = False//##**
+		
+		In all documentations, it is highly advisable to do so, mainly justified to fight against eventual spurious wake-ups.
+		
+		This is probably true, but it is also advisable to do so to avoid to loose a ##//""CondSignal""//## (or ##//""CondBroadcast""//##) if it is prematurely activated while the receiving thread is not yet waiting on ##//""CondWait""//## (the signal is lost forever):
+			**""-""** In that case, the receiving thread has even not yet locked the mutex before that ##//""CondSignal""//## (or ##//""CondBroadcast""//##) is activated.
+			**""-""** So the predicate will already true before the receiving thread reaches the 'While...Wend' loop, inducing that ##//""CondWait""//## is downright skipped, so avoiding a definitive blocking phenomenon.
+			
+		Let two threads (thread #0 in main program, thread #1 in a user procedure, each that prints its number in a loop), having about the same execution time, and each one synchronizing the other in order to well interlace their numbers (by using one mutex, two condition variables and ##//""CondSignal""//##/##//""CondWait""//##):
+			- Without a 'While...Wend' loop on predicate, the program hangs quickly (Ctrl-C to quit):
+					%%
+'            Thread#0                           XOR + <==>                       Thread#1
+'   .....                                                             .....
+'   MutexLock(mut) <-------------------------.             .----------> MutexLock(mut)
+'   ( atomic_mutex_unlock(mut) ) ------.     |             |            Do_something_with_exclusion
+'   CondWait(cond#1, mut) <----------- | --- | ----------- | ---------- CondSignal(cond#1)
+'   ( atomic_mutex_re-lock(mut) ) <--- | ----'----.        |     .----- ( atomic_mutex_unlock(mut) )
+'   Do_something_with_exclusion        |     .--- | ------ | --- | ---> CondWait(cond#2, mut)
+'   CondSignal(cond#2) --------------- | ----'    |    .---'---- | ---> ( atomic_mutex_re-lock(mut) )
+'   Do_something_with_exclusion        |     .--- | ---'         |      Do_something_with_exclusion
+'   MutexUnlock(mut) ------------------'-----'    '--------------'----- MutexUnlock(mut)
+'   .....                                                               .....
+'
+'  (connecting lines join the sender(s) and receiver(s) impacted by each action occurring during the sequence)
+					%%
+					%%(freebasic)
+Dim As Any Ptr handle
+Dim Shared As Any Ptr mutex
+Dim Shared As Any Ptr cond1
+Dim Shared As Any Ptr cond2
+Dim Shared As Integer quit
+
+Sub Thread (ByVal param As Any Ptr)
+	Do
+		Mutexlock(mutex)
+		Print "1";
+		CondSignal(cond1)
+		CondWait(cond2, mutex)
+		If quit = 1 Then
+			Mutexunlock(mutex)
+			Exit DO
+		End If
+		Mutexunlock(mutex)
+		Sleep 1, 1
+	Loop
+End Sub
+
+
+mutex = MutexCreate
+cond1 = CondCreate
+cond2 = CondCreate
+handle = ThreadCreate(@Thread)
+
+Do
+	Mutexlock(mutex)
+	CondWait(cond1, mutex)
+	Print "0";
+	CondSignal(cond2)
+	If Inkey <> "" Then
+		quit = 1
+		Mutexunlock(mutex)
+		Exit Do
+	End If
+	Mutexunlock(mutex)
+	Sleep 1, 1
+Loop
+ 
+ThreadWait(handle)
+Mutexdestroy(mutex)
+CondDestroy(cond1)
+CondDestroy(cond2)
+Print
+
+Sleep
+					%%
+			- With a 'While...Wend' loop on predicate around each ##//""CondWait""//##, no blocking phenomenon:
+					%%
+'            Thread#0                                 XOR + <==>                            Thread#1
+'   .....                                                                          .....
+'   MutexLock(mut) <-----------------------------.                          .----> MutexLock(mut)
+'   While bool#1 <> true <---------------------- | --------.                |      Do_something_with_exclusion
+'       ( atomic_mutex_unlock(mut) ) ------.     |         '--------------- | ---- bool#1 = true
+'       CondWait(cond#1, mut) <----------- | --- | ------------------------ | ---- CondSignal(cond#1)
+'       ( atomic_mutex_re-lock(mut) ) <--- | ----'----.    .--------------- | ---> While bool#2 <> true
+'   Wend                                   |          |    |          .---- | -------- ( atomic_mutex_unlock(mut) )
+'   bool#1 = false                .------- | -------- | ---'  .------ | --- |--------> CondWait(cond#2, mut)
+'   Do_something_with_exclusion   |   .--- | -------- | ------'  .--- | ----'--------> ( atomic_mutex_re-lock(mut) )
+'   bool#2 = true ----------------'   |    |     .--- | ---------'    |            Wend
+'   CondSignal(cond#2) ---------------'    |     |    |               |            bool#2 = false
+'   Do_something_with_exclusion            |     |    |               |            Do_something_with_exclusion
+'   MutexUnlock(mut) ----------------------'-----'    '---------------'----------- MutexUnlock(mut)
+'   .....                                                                          .....
+'
+'  (connecting lines join the sender(s) and receiver(s) impacted by each action occurring during the sequence)
+					%%
+					{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq4.bas"}}%%(freebasic)
+Dim As Any Ptr handle
+Dim Shared As Any Ptr mutex
+Dim Shared As Any Ptr cond1
+Dim Shared As Any Ptr cond2
+Dim Shared As Integer new1
+Dim Shared As Integer new2
+Dim Shared As Integer quit
+
+Sub Thread (ByVal param As Any Ptr)
+	Do
+		Mutexlock(mutex)
+		Print "1";
+		new1 = 1
+		CondSignal(cond1)
+		While new2 <> 1
+			CondWait(cond2, mutex)
+		Wend
+		new2 = 0
+		If quit = 1 Then
+			Mutexunlock(mutex)
+			Exit DO
+		End If
+		Mutexunlock(mutex)
+		Sleep 1, 1
+	Loop
+End Sub
+
+
+mutex = MutexCreate
+cond1 = CondCreate
+cond2 = CondCreate
+handle = ThreadCreate(@Thread)
+
+Do
+	Mutexlock(mutex)
+	While new1 <> 1
+		CondWait(cond1, mutex)
+	Wend
+	new1 = 0
+	Print "0";
+	new2 = 1
+	CondSignal(cond2)
+	If Inkey <> "" Then
+		quit = 1
+		Mutexunlock(mutex)
+		Exit Do
+	End If
+	Mutexunlock(mutex)
+	Sleep 1, 1
+Loop
+ 
+ThreadWait(handle)
+Mutexdestroy(mutex)
+CondDestroy(cond1)
+CondDestroy(cond2)
+Print
+
+Sleep
+					%%{{anchor name="ProPgMtCriticalSectionsFAQ4.1"}}
+	{{fbdoc item="section" value="4.1. Is 'Condwait' (and 'Condsignal' or 'Condbroadcast') still useful when there is already a 'While...Wend' loop for checking a Boolean predicate set by other thread?"}}
+		##//(another question induced by the previous one)//##
+			**""-""** The recommended structure is as follows:
+				%%
+'  Principle of mutual exclusion + CONDWAIT in a While...Wend loop with predicate check, for a thread sub-section
+'  (connecting lines join the sender(s) and receiver(s) impacted by each action occurring during the sequence)
+'
+'
+'          Thread                                        Other Thread
+'      MUTEXLOCK(mutexID) <------------------------- from ( atomic_mutex_unlock(mutexID) ) or MUTEXUNLOCK(mutexID)
+'      .......
+'      While booleanT <> True <--------------------- from booleanT = True
+'          ( atomic_mutex_unlock(mutexID) ) -------> to MUTEXLOCK(mutexID) or ( atomic_mutex_re-lock(mutexID) )
+'          CONDWAIT(conditionalID, mutexID) <------- from CONDSIGNAL(conditionalID)
+'          ( atomic_mutex_re-lock(mutexID) ) <------ from ( atomic_mutex_unlock(mutexID) ) or MUTEXUNLOCK(mutexID)
+'      Wend
+'      booleanT = False
+'      .......
+'      MUTEXUNLOCK(mutexID) -----------------------> to MUTEXLOCK(mutexID) or ( atomic_mutex_re-lock(mutexID) )
+				%%
+				%%
+'  Principle of mutual exclusion + CONDSIGNAL with predicate check, for a thread sub-section
+'  (connecting lines join the sender(s) and receiver(s) impacted by each action occurring during the sequence)
+'
+'          Thread                                        Other Thread
+'      MUTEXLOCK(mutexID) <------------------------- from ( atomic_mutex_unlock(mutexID) ) or MUTEXUNLOCK(mutexID)
+'      .......
+'      booleanOT = True ---------------------------> to While booleanOT <> True
+'      CONDSIGNAL(conditionalID) ------------------> to CONDWAIT(conditionalID, mutexID)
+'      .......
+'      MUTEXUNLOCK(mutexID) -----------------------> to MUTEXLOCK(mutexID) or ( atomic_mutex_re-lock(mutexID) )
+				%%
+			**""-""** If ""'CondWait'"" is not used, it is mandatory to put instead a 'Sleep x, 1' instruction in the 'While...Wend' loop on the Boolean flag, in order to release time-slice when looping (in addition, this 'Sleep x, 1' must be put inside a ['Mutexunlock'...'Mutexlock'] block to release another thread):
+				%%
+'  Principle of mutual exclusion + SLEEP in a While...Wend loop with predicate check, for a thread sub-section
+'  (connecting lines join the sender(s) and receiver(s) impacted by each action occurring during the sequence)
+'
+'          Thread                                        Other Thread
+'      MUTEXLOCK(mutexID) <------------------------- from MUTEXUNLOCK(mutexID)
+'      .......
+'      While booleanT <> True <--------------------- from booleanT = True
+'          MUTEXUNLOCK(mutexID) -------------------> to MUTEXLOCK(mutexID)
+'          SLEEP(tempo, 1)
+'          MUTEXLOCK(mutexID) <--------------------- from MUTEXUNLOCK(mutexID)
+'      Wend
+'      booleanT = False
+'      .......
+'      MUTEXUNLOCK(mutexID) -----------------------> to MUTEXLOCK(mutexID)
+				%%
+				%%
+'  Principle of mutual exclusion + predicate check only, for a thread sub-section
+'  (connecting lines join the sender(s) and receiver(s) impacted by each action occurring during the sequence)
+'
+'          Thread                                        Other Thread
+'      MUTEXLOCK(mutexID) <------------------------- from MUTEXUNLOCK(mutexID)
+'      .......
+'      booleanOT = True ---------------------------> to While booleanOT <> True
+'      .......
+'      MUTEXUNLOCK(mutexID) -----------------------> to MUTEXLOCK(mutexID)
+				%%
+			During ""'CondWait'"", the thread execution is suspended and does not consume any CPU time until the condition variable is signaled.
+			But if 'Sleep x, 1' is put instead, the waiting time is predetermined and not self adaptive like that of ""'CondWait'"".
+			
+			**=>** ""'CondWait'"" is useful to optimize the execution time.
+			
+@@{{anchor name="ProPgMtCriticalSectionsFAQtop|Back to top"}}@@
+----
+{{anchor name="ProPgMtCriticalSectionsFAQ5"}}
+{{fbdoc item="section" value="5. How to implement a user input-line function fully thread-safe?"}}
+		The ##//Input//## keyword may be not thread-safe, when another thread must also access to input/output resource:
+			**""-""** When executing the ##//Input//## statement, the other running threads must not change the position of the text cursor, which prohibits instructions such as ##//Locate//##, ##//Print//##, ...
+			**""-""** Moreover, one cannot enclosed the ##//Input//## keyword inside a mutex locking (as we can do it for the ##//Inkey//## keyword), because while the inputting line would be not completed and validated, the other threads that want to also access to input/output would be fully blocked (waiting for mutex unlocking).
+			
+		Thread-safe input-line function (versus input/output resource):
+			Input position, prompt message, sleeping time, line-blanking command, mutex pointer can be passed to the following ##//threadInput()//## function that simulates a simplified input function, but thread-safe, by using a looping around the ##//Inkey//## keyword (all input/output keywords must be enclosed inside a mutex locking block, and the cursor position must be restored at each mutex locking block ending):
+				%%(freebasic)
+Function threadInput (ByVal row As Integer, ByVal column As Integer, ByRef prompt As String = "", _
+					  ByVal sleeptime As Integer = 15, ByVal blank As Integer = 0, ByVal mutex As Any Ptr = 0 _
+					  ) As String
+	Dim As String inputchr
+	Dim As String inputline
+	Dim As Integer cursor
+	Dim As Integer cursor0
+	Dim As Integer r
+	Dim As Integer c
+
+ 
+	MutexLock(mutex)
+	r = CsrLin()
+	c = Pos()
+	Locate row, column
+	Print prompt & " _";
+	cursor0 = Pos() - 1
+	Locate r, c
+	MutexUnlock(mutex)
+
+	Do
+		MutexLock(mutex)
+		r = CsrLin()
+		c = Pos()
+		inputchr = Inkey
+		If inputchr <> "" Then
+			If inputchr >= Chr(32) And inputchr < Chr(255) Then
+				inputline = Left(inputline, cursor) & inputchr & Mid(inputline, cursor + 1)
+				cursor += 1
+			ElseIf inputchr = Chr(08) And Cursor > 0 Then                         'BkSp
+				cursor -= 1
+				inputline = Left(inputline, cursor) & Mid(inputline, cursor + 2)
+			Elseif inputchr = Chr(255) & "S" And Cursor < Len(inputline) Then     'Del
+				inputline = Left(inputline, cursor) & Mid(inputline, cursor + 2)
+			Elseif inputchr = Chr(255) + "M" AND Cursor < LEN(inputline) THEN     'Right
+				Cursor += 1
+			Elseif inputchr = Chr(255) + "K" AND Cursor > 0 THEN                  'Left
+				Cursor -= 1
+			End If
+			If inputchr = Chr(27) Then                                            'Esc
+				Locate row, cursor0
+				Print Space(Len(inputline) + 1);
+				inputline = ""
+				cursor = 0
+			End If
+			Locate row, cursor0
+			Print Left(inputline, cursor) & Chr(95) & Mid(inputline, cursor + 1) & " ";
+		End If
+		Locate r, c
+		MutexUnlock(mutex)
+		Sleep sleeptime, 1
+	Loop Until inputchr = Chr(13)
+
+	If blank <> 0 Then
+		MutexLock(mutex)
+		r = CsrLin()
+		c = Pos()
+		Locate row, cursor0
+		Print Space(Len(inputline) + 1);
+		Locate r, c
+		MutexUnlock(mutex)
+	End If
+
+	Return inputline
+End Function
+				%%
+			- From the example 1 on the ##[[ProPgMtCriticalSections|Critical Sections]]## page "Asynchronous method example using a mutex for all threads", now the running multi-threading code is waiting for the "quit" command in order to exit the program:
+					%%
+'   User thread algorithm:
+'
+'     Do
+'     |  Mutexlock
+'     |  .....
+'     |  Critical section of code
+'     |  .....
+'     |  Mutexunlock
+'     |  Sleep my_tempo, 1
+'     Loop Until quit = true
+'
+'   There is no any advantage or disadvantage between threads for running their critical sections.
+					%%
+					{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq5.bas"}}%%(freebasic)
+Function threadInput (ByVal row As Integer, ByVal column As Integer, ByRef prompt As String = "", _
+					  ByVal sleeptime As Integer = 15, ByVal blank As Integer = 0, ByVal mutex As Any Ptr = 0 _
+					  ) As String
+	Dim As String inputchr
+	Dim As String inputline
+	Dim As Integer cursor
+	Dim As Integer cursor0
+	Dim As Integer r
+	Dim As Integer c
+
+ 
+	MutexLock(mutex)
+	r = CsrLin()
+	c = Pos()
+	Locate row, column
+	Print prompt & " _";
+	cursor0 = Pos() - 1
+	Locate r, c
+	MutexUnlock(mutex)
+
+	Do
+		MutexLock(mutex)
+		r = CsrLin()
+		c = Pos()
+		inputchr = Inkey
+		If inputchr <> "" Then
+			If inputchr >= Chr(32) And inputchr < Chr(255) Then
+				inputline = Left(inputline, cursor) & inputchr & Mid(inputline, cursor + 1)
+				cursor += 1
+			ElseIf inputchr = Chr(08) And Cursor > 0 Then                         'BkSp
+				cursor -= 1
+				inputline = Left(inputline, cursor) & Mid(inputline, cursor + 2)
+			Elseif inputchr = Chr(255) & "S" And Cursor < Len(inputline) Then     'Del
+				inputline = Left(inputline, cursor) & Mid(inputline, cursor + 2)
+			Elseif inputchr = Chr(255) + "M" AND Cursor < LEN(inputline) THEN     'Right
+				Cursor += 1
+			Elseif inputchr = Chr(255) + "K" AND Cursor > 0 THEN                  'Left
+				Cursor -= 1
+			End If
+			If inputchr = Chr(27) Then                                            'Esc
+				Locate row, cursor0
+				Print Space(Len(inputline) + 1);
+				inputline = ""
+				cursor = 0
+			End If
+			Locate row, cursor0
+			Print Left(inputline, cursor) & Chr(95) & Mid(inputline, cursor + 1) & " ";
+		End If
+		Locate r, c
+		MutexUnlock(mutex)
+		Sleep sleeptime, 1
+	Loop Until inputchr = Chr(13)
+
+	If blank <> 0 Then
+		MutexLock(mutex)
+		r = CsrLin()
+		c = Pos()
+		Locate row, cursor0
+		Print Space(Len(inputline) + 1);
+		Locate r, c
+		MutexUnlock(mutex)
+	End If
+
+	Return inputline
+End Function
+
+'------------------------------------------------------------------------------
+
+Type UDT
+	Dim As Integer number
+	Dim As Integer tempo
+	Dim As Any Ptr pThread
+	Dim As ULongInt count
+	Static As Any Ptr pMutex
+	Static As Integer numberMax
+	Static As Integer quit
+End Type
+Dim As Any Ptr UDT.pMutex
+Dim As Integer UDT.numberMax
+Dim As Integer UDT.quit
+
+Sub Counter (ByVal pt As UDT Ptr)
+	With *pt
+		Locate .number, .number, 0
+		Sleep 5, 1
+		.count += 1
+		Print .count;
+	End With
+End Sub
+
+Sub Thread (ByVal p As Any Ptr)
+	Dim As Integer myquit
+	Dim As UDT Ptr pUDT = p
+	With *pUDT
+		Do
+			MutexLock(.pMutex)
+			Counter(pUDT)
+			myquit = .quit
+			MutexUnlock(.pMutex)
+			Sleep .tempo, 1
+		Loop Until myquit = 1
+	End With
+End Sub
+
+
+Screen 12
+UDT.numberMax = 6
+
+Dim As UDT u(0 To UDT.numberMax)
+For I As Integer = 0 To UDT.numberMax
+	u(I).number = i
+	u(I).tempo = 100 + 15 * I - 95 * Sgn(I)
+Next I
+UDT.pMutex = MutexCreate
+
+Dim As Single t = Timer
+For I As Integer = 1 To UDT.numberMax
+	u(I).pThread = ThreadCreate(@Thread, @u(I))
+Next I
+
+Do
+Loop Until LCase(threadInput(8, 1, """quit"" for exit?", 10, 1, UDT.pMutex)) = "quit"
+
+UDT.quit = 1
+
+For I As Integer = 1 To UDT.numberMax
+	ThreadWait(u(I).pThread)
+Next I
+t = Timer - t
+
+MutexDestroy(UDT.pMutex)
+Dim As ULongInt c
+For I As Integer = 1 To UDT.numberMax
+	c += u(I).count
+Next I
+Locate UDT.numberMax + 4, 1
+Print CULngInt(c / t) & " increments per second"
+
+Sleep
+					%%
+		**Note:**
+			Otherwise, by using only graphics keywords (using the only position of the graphic cursor) as ##//Line//##, ##//Draw String//##, ##//Put//## in the thread, induces a thread-safe procedure that is compatible with the ##//Line Input//## keyword in the main code with no mutex:
+				{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq5bis.bas"}}%%(freebasic)
+Type UDT
+	Dim As Integer number
+	Dim As Integer tempo
+	Dim As Any Ptr pThread
+	Dim As ULongInt count
+	Dim As Any Ptr img
+	Static As Integer numberMax
+	Static As Integer quit
+End Type
+Dim As Integer UDT.numberMax
+Dim As Integer UDT.quit
+
+Const As String prompt = "Enter ""quit"" for exit"
+Dim As String s
+
+Sub Counter (ByVal pt As UDT Ptr)  ' for a graphic character size 8x16
+	With *pt
+		Line .img, (0, 0)-(20 * 8 - 1, 16 - 1), 0, BF            ' clearing the image buffer
+		Sleep 5, 1
+		.count += 1
+		Draw String .img, (0, 0), Str(.count)                    ' drawing in the image buffer
+		Put ((.number - 1) * 8, (.number - 1) * 16), .img, Pset  ' copying the image buffer to screen
+	End With
+End Sub
+
+Sub Thread (ByVal p As Any Ptr)    ' for a graphic character size 8x16
+	Dim As UDT Ptr pUDT = p
+	With *pUDT
+		.img = ImageCreate(20 * 8, 16)  ' using an image buffer to avoid flickering
+		Do
+			Counter(pUDT)
+			Sleep .tempo, 1
+		Loop Until .quit = 1
+		ImageDestroy .img  ' destroying the image buffer
+	End With
+End Sub
+
+
+Screen 12
+UDT.numberMax = 6
+
+Dim As UDT u(0 To UDT.numberMax)
+For I As Integer = 0 To UDT.numberMax
+	u(I).number = i
+	u(I).tempo = 100 + 15 * I - 95 * Sgn(I)
+Next I
+
+Dim As Single t = Timer
+For I As Integer = 1 To UDT.numberMax
+	u(I).pThread = ThreadCreate(@Thread, @u(I))
+Next I
+
+Do
+	Locate 8, 1, 0
+	Line Input; prompt; s
+	Locate , Len(prompt) + 3
+	Print Space(Len(s));
+Loop Until LCase(s) = "quit"
+UDT.quit = 1
+
+For I As Integer = 1 To UDT.numberMax
+	ThreadWait(u(I).pThread)
+Next I
+t = Timer - t
+
+Dim As ULongInt c
+For I As Integer = 1 To UDT.numberMax
+	c += u(I).count
+Next I
+Locate UDT.numberMax + 4, 1
+Print CULngInt(c / t) & " increments per second"
+
+Sleep
+				%%
+@@{{anchor name="ProPgMtCriticalSectionsFAQtop|Back to top"}}@@
+----
+{{anchor name="ProPgMtCriticalSectionsFAQ6"}}
+{{fbdoc item="section" value="6. How to use 'Screenlock' with multi-threading?"}}
+		**""-""** ##//Screenlock...Scrennunlock//## blocks are not compatible with multi-threading (otherwise, the program hangs). This is why a mutex block must be used around each such block to ensure the mutual exclusion.
+		**""-""** The input keywords (like for keyboard, mouse) cannot be safely run when the screen is locked, therefore a such keyword must be outside of any ##//Screenlock...Screenunlock//## block, so outside any ##//Screenlock...Screenunlock//## block in its own thread, and protected of all ##//Screenlock...Screenunlock//## blocks of other threads by a mutex block. Therefore, ##//Getkey//## and ##//Input//##, the statements that wait for keypress or line input are unusable, but ##//Inkey//## that does not wait can work.
+		
+		By applying some rules scrupulously, one can use ##//Screenlock//##/##//Screenunlock//## inside the threads.
+		Principle of coding for all threads including the main code (main thread):
+			%%
+Do
+	' instructions without display (printing/drawing, ...) neither input (input/inkey/mouse getting, ...)
+	MutexLock(m)
+	Screenlock
+	' instructions with only display (printing/drawing, ...)
+	Screenunlock
+	' instructions with only input without waiting (inkey/mouse getting, ...)
+	MutexUnlock(m)
+	Sleep tempo, 1
+Loop Until condition
+			%%
+		- For example, it is mandatory to use one ##//Mutexlock...Mutexunlock//## block around each ##//Screenlock...Screenunlock//## block, and one other around the ##//Inkey//## instruction which itself must always be outside of any ##//Screenlock...Screenunlock//## bloc:
+				{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq6.bas"}}%%(freebasic)
+Type ThreadUDT
+	Dim handle As Any Ptr
+	Static sync As Any Ptr
+	Static quit As Byte
+End Type
+Dim ThreadUDT.sync As Any Ptr
+Dim ThreadUDT.quit As Byte
+
+Function ClockTime () As String
+	Return Time
+End Function
+
+Function Counter () As Integer
+	Static C As Integer
+	C = (C + 1) MOD 1000000
+	Return C
+End Function
+
+Sub ProcedureThread (Byval param As Any Ptr)
+	With *Cast(ThreadUDT Ptr, param)
+		Do
+			MutexLock(.sync)
+			Screenlock
+			Line (544, 0)-(639, 49), 0, BF  'clear the print area
+			Sleep 100, 1
+			Locate 2, 71
+			Print ClockTime();
+			Screenunlock
+			MutexUnlock(.sync)
+			Sleep 100, 1
+		Loop Until .quit = 1
+	End With
+End Sub
+
+Screen 12
+Locate 30, 2
+Print "<q/Q> : quit";
+
+Dim TTptr As ThreadUDT Ptr = New ThreadUDT
+ThreadUDT.sync = MutexCreate
+TTptr->handle = ThreadCreate(@ProcedureThread, TTptr)
+
+Dim As String s
+Do
+	MutexLock(ThreadUDT.sync)
+	Screenlock
+	Line (296, 208)-(376, 256), 0, BF  'clear the print area
+	Sleep 100, 1
+	Locate 15,40
+	Print Using "######"; Counter();
+	Screenunlock
+	s = Inkey
+	MutexUnlock(ThreadUDT.sync)
+	Sleep 100, 1
+Loop Until Lcase(s) = "q"
+ 
+ThreadUDT.quit = 1
+ThreadWait(TTptr->handle)
+MutexDestroy(ThreadUDT.sync)
+Delete TTptr
+				%%Note: The ##//Sleep x, 1//## keyword just after the 'clear the print area' lines is only here to highlight the flickering if no screen locking is used.
+				
+@@{{anchor name="ProPgMtCriticalSectionsFAQtop|Back to top"}}@@
+----
+{{anchor name="ProPgMtCriticalSectionsFAQ7"}}
+{{fbdoc item="section" value="7. How to use 'video paging (double buffering or page flipping)' with multi-threading?"}}
+		Instead of "screen locking" (see the above paragraph), "video paging (double buffering or page flipping)" can more simply be used with multi-threading, but be careful that many states in the gfxlib2 are thread-dependent like ##//Screenset//## (and also ##//View//## settings, graphic cursor position, graphic colors, ...).
+		Therefore, the setting for the working page and the visible page must always be controlled in each thread code which want to work with a multi-video page configuration.
+		
+		- Example for a double buffering method (at each step, each thread needs to update the working page and copy it to the visible page, from within a mutual exclusion mutex code block):
+				{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq7-1.bas"}}%%(freebasic)
+Type ThreadUDT
+	Dim handle As Any Ptr
+	Static sync As Any Ptr
+	Static quit As Byte
+End Type
+Dim ThreadUDT.sync As Any Ptr
+Dim ThreadUDT.quit As Byte
+
+Function ClockTime () As String
+	Return Time
+End Function
+
+Function Counter () As Integer
+	Static C As Integer
+	C = (C + 1) MOD 1000000
+	Return C
+End Function
+
+Sub ProcedureThread (Byval param As Any Ptr)
+	Screenset 1, 0  '' setting to define in each thread
+	With *Cast(ThreadUDT Ptr, param)
+		Do
+			MutexLock(.sync)
+			Line (544, 0)-(639, 49), 0, BF  '' clear the print area
+			Sleep 100, 1
+			Locate 2, 71
+			Print ClockTime();
+			Screencopy
+			MutexUnlock(.sync)
+			Sleep 100, 1
+		Loop Until .quit = 1
+	End With
+End Sub
+
+Screen 12, , 2
+Screenset 1, 0  '' setting to define in each thread
+Locate 30, 2
+Print "<q/Q> : quit";
+Screencopy
+
+Dim TTptr As ThreadUDT Ptr = New ThreadUDT
+ThreadUDT.sync = MutexCreate
+TTptr->handle = ThreadCreate(@ProcedureThread, TTptr)
+
+Dim s As String
+Do
+	MutexLock(ThreadUDT.sync)
+	Line (296, 208)-(376, 256), 0, BF  '' clear the print area
+	Sleep 100, 1
+	Locate 15,40
+	Print Using "######"; Counter();
+	Screencopy
+	s = Inkey
+	MutexUnlock(ThreadUDT.sync)
+	Sleep 100, 1
+Loop Until Lcase(s) = "q"
+ 
+ThreadUDT.quit = 1
+ThreadWait(TTptr->handle)
+MutexDestroy(ThreadUDT.sync)
+Delete TTptr
+				%%Note: The ##//Sleep x, 1//## keyword just after the 'clear the print area' lines is only here to highlight the flickering if no double buffering is used.
+				
+		- Example for a two page flipping method (at each step, each thread needs to update and flip, from within the same exclusion mutex code block, the two screen pages):
+				{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq7-2.bas"}}%%(freebasic)
+Type ThreadUDT
+	Dim handle As Any Ptr
+	Static sync As Any Ptr
+	Static quit As Byte
+End Type
+Dim ThreadUDT.sync As Any Ptr
+Dim ThreadUDT.quit As Byte
+
+Function ClockTime () As String
+	Return Time
+End Function
+
+Function Counter () As Integer
+	Static C As Integer
+	C = (C + 1) MOD 1000000
+	Return C
+End Function
+
+Sub ProcedureThread (Byval param As Any Ptr)
+	Dim p0 As Integer = 0
+	Dim p1 As Integer = 1
+	Screenset 1, 0  '' setting to define in each thread
+	With *Cast(ThreadUDT Ptr, param)
+		Do
+			MutexLock(.sync)
+			Dim s As String = ClockTime()
+			For I As Integer = 1 To 2  '' updating the two screen pages
+				Line (544, 0)-(639, 49), 0, BF  '' clear the print area
+				Sleep 100, 1
+				Locate 2, 71
+				Print s;
+				Screenset p0, p1
+				Swap p0, p1
+			Next I
+			MutexUnlock(.sync)
+			Sleep 100, 1
+		Loop Until .quit = 1
+	End With
+End Sub
+
+Screen 12, , 2
+Dim p0 As Integer = 0
+Dim p1 As Integer = 1
+Screenset 1, 0  '' setting to define in each thread
+For I As Integer = 1 To 2  '' updating the two screen pages
+	Locate 30, 2
+	Print "<q/Q> : quit";
+	Screenset p0, p1
+	Swap p0, p1
+Next I
+
+Dim TTptr As ThreadUDT Ptr = New ThreadUDT
+ThreadUDT.sync = MutexCreate
+TTptr->handle = ThreadCreate(@ProcedureThread, TTptr)
+
+Dim s As String
+Do
+	MutexLock(ThreadUDT.sync)
+	Dim C As Integer = Counter()
+	For I As Integer = 1 To 2  '' updating the two screen pages
+		Line (296, 208)-(376, 256), 0, BF  '' clear the print area
+		Sleep 100, 1
+		Locate 15,40
+		Print Using "######"; c;
+		Screenset p0, p1
+		Swap p0, p1
+	Next I
+	s = Inkey
+	MutexUnlock(ThreadUDT.sync)
+	Sleep 100, 1
+Loop Until Lcase(s) = "q"
+ 
+ThreadUDT.quit = 1
+ThreadWait(TTptr->handle)
+MutexDestroy(ThreadUDT.sync)
+Delete TTptr
+				%%Note: The ##//Sleep x, 1//## keyword just after the 'clear the print area' lines is only here to highlight the flickering if no two page flipping is used.
+				
+		**Note:** In these two examples, a mutual exclusion mutex code block is mandatory in the two threads, not only because of using console statements + ##//Inkey//##, but around also the graphics statements + ##//Screencopy//## only because of using double buffering method (without anti-flickering process, the graphics statements could be outside the exclusion mutex code block).
+		
+@@{{anchor name="ProPgMtCriticalSectionsFAQtop|Back to top"}}@@
+----
+{{anchor name="ProPgMtCriticalSectionsFAQ8"}}
+{{fbdoc item="section" value="8. How to use the FB runtime library for multi-threaded applications (gfxlib2) with multi-threading?"}}
+		The source code of gfxlib2 uses TLS (Thread Local Storage) to store many states, so many things are thread-specific.
+		Since gfxlib2 is thread-safe, mutual mutex exclusion between threads is not necessary for the graphics statements themselves (including ##//Draw String//##).
+		In contrast, console statements such as ##//Locate//##, ##//Print//##, ... are not thread-safe as previously mentioned (for example, text cursor position is common to all threads).
+		
+		- Simple example showing that graphic states (such as graphic cursor position, graphic colors) are thread-dependent:
+				{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq8-1.bas"}}%%(freebasic)
+Screen 12
+
+Sub thread(Byval p As Any Ptr)
+	Color 10
+	Pset(150, 10)
+	For I As Integer = 1 To 40
+		Line -Step(10, 10)
+		Sleep 150, 1
+	Next I
+	Draw String Step (-40, 10), "user thread"
+End Sub
+
+Dim As Any Ptr p = Threadcreate(@thread)
+
+Color 14
+Pset(10, 100)
+For I As Integer = 1 To 24
+	Line -Step(10, 10)
+	Sleep 250, 1
+Next I
+Draw String Step (-40, 10), "main thread"
+
+Threadwait(p)
+
+Color 15
+Locate 4, 2
+Print "Any key for exit"
+
+Sleep
+				%%
+		- Example showing that graphics statements (such as Line and Draw String and Screencopy) in a thread can compete with console statements (such as Inkey) in another thread, without using any exclusion (by mutex):
+				{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq8-2.bas"}}%%(freebasic)
+#include "vbcompat.bi"
+
+Screen 12, , 2
+Screenset 1, 0   
+Color 0, 7
+Cls
+
+Dim Shared terminate As Integer = 0
+
+Sub thread (byval param As Any Ptr)   
+	Screenset 1, 0
+	Do
+		Line (16, 432)-Step(96, 32), 11, BF  'clear print area
+		Sleep 100, 1
+		Draw String (24, 432), Format(Now,"dd/mm/yyyy"), 0
+		Draw String (32, 448), Format(Now,"hh:mm:ss"), 0
+		Screencopy
+		Sleep 100, 1
+	Loop Until terminate = 1
+End Sub
+
+Dim As String reply
+Locate 2, 2
+Print "Enter ""q"" to quit"
+Screencopy
+
+Dim p As Any Ptr = ThreadCreate(@thread)
+
+Do
+	reply = Inkey
+	Sleep 100, 1
+Loop Until Lcase(reply) = "q"
+
+Print " Stop the thread"
+Screencopy
+terminate=1
+Threadwait (p)
+Print " Thread terminated"
+Screencopy
+
+Sleep
+				%%Note: The ##//Sleep x, 1//## keyword just after the 'clear the print area' line is only here to highlight the flickering if no double buffering is used.
+				
+		- From the above example, if the date displaying and the time displaying are now two separate threads, a mutual exclusion mutex code block between these two threads is mandatory, not due to the graphics statements themselves competing, but only due to the double buffering method used (against flickering) that puts competing these two threads:
+				{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq8-3.bas"}}%%(freebasic)
+#include "vbcompat.bi"
+
+Screen 12, , 2
+Screenset 1, 0   
+Color 0, 7
+Cls
+
+Dim Shared terminate As Integer = 0
+Dim Shared mutex As Any Ptr
+
+Sub thread1 (byval param As Any Ptr)   
+	Screenset 1, 0
+	Do
+		Mutexlock(mutex)
+		Line (16, 432)-Step(96, 16), 11, BF  'clear the print area
+		Sleep 200, 1
+		Draw String (24, 432), Format(Now,"dd/mm/yyyy"), 0
+		Screencopy
+		Mutexunlock(mutex)
+		Sleep 100, 1
+	Loop Until terminate = 1
+End Sub
+
+Sub thread2 (byval param As Any Ptr)   
+	Screenset 1, 0
+	Do
+		Mutexlock(mutex)
+		Line (16, 448)-Step(96, 16), 11, BF  'clear the print area
+		Sleep 100, 1
+		Draw String (32, 448), Format(Now,"hh:mm:ss"), 0
+		Screencopy
+		Mutexunlock(mutex)
+		Sleep 100, 1
+	Loop Until terminate = 1
+End Sub
+
+Dim As String reply
+Locate 2, 2
+Print "Enter ""q"" to quit"
+Screencopy
+
+mutex = Mutexcreate
+Dim p1 As Any Ptr = ThreadCreate(@thread1)
+Dim p2 As Any Ptr = ThreadCreate(@thread2)
+
+Do
+	reply = Inkey
+	Sleep 100, 1
+Loop Until Lcase(reply) = "q"
+
+Print " Stop the threads"
+Screencopy
+terminate=1
+Threadwait (p1)
+Threadwait (p2)
+Mutexdestroy(mutex)
+Print " Threads terminated"
+Screencopy
+
+Sleep
+				%%Note: The ##//Sleep x, 1//## keyword just after the 'clear the print area' lines is only here to highlight the flickering if no double buffering is used, or if no mutex is used.
+				
+@@{{anchor name="ProPgMtCriticalSectionsFAQtop|Back to top"}}@@
+----
+{{anchor name="ProPgMtCriticalSectionsFAQ9"}}
+{{fbdoc item="section" value="9. How to use console statements and keyboard inputs with multi-threading?"}}
+		Console statements (such as ##//Locate//##, ##//Print//##, ##//Color//##, ...), as well as ##//Locate//## and ##//Print//## on Graphics window (but not ##//Color//## on Graphics Window), and keyboard inputs (such as ##//Inkey//##, ##//Getkey//##, ##//Input//##, ...) are not thread-safe:
+			**""-""** Thus when they are used in competing sections of different threads, mutual exclusion is mandatory by means of mutex locking blocks in which in addition code can restore states (such as text cursor position, console color, ...) at end of the block (after its own usage), as they were before (at begin of the block).
+			**""-""** But the ##//Getkey//## or ##//Input//## keyword cannot be enclosed inside a mutex locking block (as it can be do with the ##//Inkey//## keyword), because as long as the keyboard input is not completed, the other threads in compete would be fully blocked (waiting for the mutex unlocking).
+			
+			- Example showing that the keywords ##//Locate//## and ##//Print//## are not thread-safe both when applied on a console window or when applied on a graphics window (the text cursor states being not thread dependent in the two cases):
+					%%(freebasic)
+Sub Thread (Byval p As Any Ptr)
+	Locate Cast(Integer, p), Cast(Integer, p)
+	For I As Integer = 1 To 50 - 2 * Cast(Integer, p)
+		Sleep 20 * Cast(Integer, p), 1
+		Print Str(Cast(Integer, p));
+	Next I
+End Sub
+
+Sub test ()
+	Dim As Any Ptr p(1 To 9)
+	For I As Integer = 1 To 9
+		p(I) = Threadcreate(@Thread, Cast(Any Ptr, I))
+		Sleep 25, 1
+	Next I
+	For I As Integer = 1 To 9
+		Threadwait(p(I))
+	Next I
+End Sub
+
+Screen 0
+test()
+Locate 15, 1
+Print "Any key to continue"
+Sleep
+
+Screen 12
+test()
+Locate 15, 1
+Print "Any key to quit"
+Sleep
+					%%Note: One can see that each thread does not write on its own line corresponding to its thread number (id between 1 and 9), on the console window and on the graphics window.
+					
+			- From the above example, the thread code has been completed in its competing sections by mutex locking blocks and by saving/restoring cursor states before/after its own cursor moving:
+					{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq9-1.bas"}}%%(freebasic)
+Dim Shared As Any Ptr mutex
+
+Sub Thread (Byval p As Any Ptr)
+	Mutexlock(mutex)
+	Dim As Long l0 = Locate()
+	Locate Cast(Integer, p), Cast(Integer, p)
+	Dim As Long l = Locate()
+	Locate Hibyte(Loword(l0)), Lobyte(Loword(l0)), Hiword(l0)
+	Mutexunlock(mutex)
+	For I As Integer = 1 To 50 - 2 * Cast(Integer, p)
+		Sleep 20 * Cast(Integer, p), 1
+		Mutexlock(mutex)
+		l0 = Locate()
+		Locate Hibyte(Loword(l)), Lobyte(Loword(l)), Hiword(l)
+		Print Str(Cast(Integer, p));
+		l = Locate()
+		Locate Hibyte(Loword(l0)), Lobyte(Loword(l0)), Hiword(l0)
+		Mutexunlock(mutex)
+	Next I
+End Sub
+
+Sub test ()
+	Dim As Any Ptr p(1 To 9)
+	For I As Integer = 1 To 9
+		p(I) = Threadcreate(@Thread, Cast(Any Ptr, I))
+		Sleep 25, 1
+	Next I
+	For I As Integer = 1 To 9
+		Threadwait(p(I))
+	Next I
+End Sub
+
+mutex = Mutexcreate
+
+Screen 0
+test()
+Locate 15, 1
+Print "Any key to continue"
+Sleep
+
+Screen 12
+test()
+Locate 15, 1
+Print "Any key to quit"
+Sleep
+
+Mutexdestroy(mutex)
+					%%Note: One can see that each thread writes now on its own line corresponding to its thread number (id between 1 and 9), on the console window and on the graphics window.
+					
+			- Example showing that the ##//Color//## keyword is not thread-safe when applied on a console window, but is thread-safe when applied on a graphics window (the color states being thread dependent in that case):
+					{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq9-2.bas"}}%%(freebasic)
+Sub Thread (Byval p As Any Ptr)
+	Color Cast(Integer, p) + 8, Cast(Integer, p)
+	For I As Integer = 1 To 50 - 2 * Cast(Integer, p)
+		Print " " & Cast(Integer, p) & " ";
+		Sleep 20 * Cast(Integer, p), 1
+	Next I
+End Sub
+
+Sub test ()
+	Dim As Any Ptr p(1 To 9)
+	Locate 1, 1
+	For I As Integer = 1 To 9
+		p(I) = Threadcreate(@Thread, Cast(Any Ptr, I))
+		Sleep 25, 1
+	Next I
+	For I As Integer = 1 To 9
+		Threadwait(p(I))
+	Next I
+	Locate 16, 1
+End Sub
+
+Screen 0
+test()
+Print "Any key to continue"
+Sleep
+
+Screen 12
+test()
+Print "Any key to quit"
+Sleep
+					%%Note: One can see that the foreground/background colors are not specific to the thread number (id between 1 and 9) on the console window, but this works great on the graphics window.
+					
+			- From the above example, the thread code has been completed in its competing sections by mutex locking blocks and by saving/restoring color states before/after its own color values usage:
+					{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq9-3.bas"}}%%(freebasic)
+Dim Shared As Any Ptr mutex
+
+Sub Thread (Byval p As Any Ptr)
+	Mutexlock(mutex)
+	Dim As Ulong c0 = Color(Cast(Integer, p) + 8, Cast(Integer, p))
+	Dim As Ulong c = Color()
+	Color(Loword(c0), Hiword(c0))
+	Mutexunlock(mutex)
+	For I As Integer = 1 To 50 - 2 * Cast(Integer, p)
+		Mutexlock(mutex)
+		c0 = Color(Loword(c), Hiword(c))
+		Print " " & Cast(Integer, p) & " ";
+		Color(Loword(c0), Hiword(c0))
+		Mutexunlock(mutex)
+		Sleep 20 * Cast(Integer, p), 1
+	Next I
+End Sub
+
+Sub test ()
+	Dim As Any Ptr p(1 To 9)
+	Locate 1, 1
+	For I As Integer = 1 To 9
+		p(I) = Threadcreate(@Thread, Cast(Any Ptr, I))
+		Sleep 25, 1
+	Next I
+	For I As Integer = 1 To 9
+		Threadwait(p(I))
+	Next I
+	Locate 16, 1
+End Sub
+
+mutex = Mutexcreate
+
+Screen 0
+test()
+Print "Any key to continue"
+Sleep
+
+Screen 12
+test()
+Print "Any key to quit"
+Sleep
+
+Mutexdestroy(mutex)
+					%%Note: One can see that the foreground/background colors are now specific to the thread number (id between 1 and 9) on the console window (obviously this always works on the graphics window).
+					
+		Therefore, for using Getkey or Input in competing sections of threads:
+			**""-""** Only a single thread (for example, the main thread) can uses ##//Getkey//## or ##//Input//## in addition to console statements (such as ##//Locate//##, ##//Print//##, ##//Color//##, ...) and also ##//Inkey//##, in its competing sections.
+			**""-""** The other threads must not to use in their competing sections any console statement neither any keyboard input keyword, but can use by cons graphics statements (such as ##//Pset//##, ##//Line//##, ##//Circle//##, ##//Draw String//##, graphic ##//Color//##, ...) which are themselves thread-safe (they can interlace graphically with the main thread without any problem).
+			**""-""** ##//Input//## and ##//Getkey//## also exclude the screen locking usage in competing sections of threads (double buffering is recommended as anti-flickering method).
+			
+			- Example showing that graphics statements (such as ##//Line//## and ##//Draw String//## and ##//Screencopy//##) in a thread (user thread here) can compete with console statements (such as ##//Locate//## and ##//Print//## and ##//Input//##) in another thread (main thread here), without using any mutual exclusion (by mutex):
+					{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq9-4.bas"}}%%(freebasic)
+#include "vbcompat.bi"
+
+Screen 12, , 2
+Screenset 1, 0   
+Color 0, 7
+Cls
+
+Dim Shared terminate As Integer = 0
+
+Sub thread (byval param As Any Ptr)   
+	Screenset 1, 0
+	Do
+		Line (16, 432)-Step(96, 32), 11, BF  'clear the print area
+		Sleep 100, 1
+		Draw String (24, 432), Format(Now,"dd/mm/yyyy"), 0
+		Draw String (32, 448), Format(Now,"hh:mm:ss"), 0
+		Screencopy
+		Sleep 100, 1
+	Loop Until terminate = 1
+End Sub
+
+Dim As String reply
+Locate 2, 2
+Print "Enter ""quit"" to quit"
+Screencopy
+
+Dim p As Any Ptr = ThreadCreate(@thread)
+
+Do
+	Locate 3, 2
+	Print Space(Len(reply) + 2);
+	Locate 3, 2
+	Input reply
+Loop Until Lcase(reply) = "quit"
+
+Print " Stop the thread"
+Screencopy
+terminate=1
+Threadwait (p)
+Print " Thread terminated"
+Screencopy
+
+Sleep
+					%%Note: The ##//Sleep x, 1//## keyword just after the 'clear the print area' line is only here to highlight the flickering if no double buffering is used (screen locking being forbidden by Input usage).
+					
+			- From the above example, if the date displaying and the time displaying are now two separate user threads, a mutual exclusion mutex code block between these two threads only is mandatory, not due to the graphics statements themselves competing, but only due to the double buffering method used (against flickering) that puts competing these two user threads only:
+					{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq9-5.bas"}}%%(freebasic)
+#include "vbcompat.bi"
+
+Screen 12, , 2
+Screenset 1, 0   
+Color 0, 7
+Cls
+
+Dim Shared terminate As Integer = 0
+Dim Shared mutex As Any Ptr
+
+Sub thread1 (byval param As Any Ptr)   
+	Screenset 1, 0
+	Do
+		Mutexlock(mutex)
+		Line (16, 432)-Step(96, 16), 11, BF  'clear the print area
+		Sleep 200, 1
+		Draw String (24, 432), Format(Now,"dd/mm/yyyy"), 0
+		Screencopy
+		Mutexunlock(mutex)
+		Sleep 100, 1
+	Loop Until terminate = 1
+End Sub
+
+Sub thread2 (byval param As Any Ptr)   
+	Screenset 1, 0
+	Do
+		Mutexlock(mutex)
+		Line (16, 448)-Step(96, 16), 11, BF  'clear the print area
+		Sleep 100, 1
+		Draw String (32, 448), Format(Now,"hh:mm:ss"), 0
+		Screencopy
+		Mutexunlock(mutex)
+		Sleep 100, 1
+	Loop Until terminate = 1
+End Sub
+
+Dim As String reply
+Locate 2, 2
+Print "Enter ""quit"" to quit"
+Screencopy
+
+mutex = Mutexcreate
+Dim p1 As Any Ptr = ThreadCreate(@thread1)
+Dim p2 As Any Ptr = ThreadCreate(@thread2)
+
+Do
+	Locate 3, 2
+	Print Space(Len(reply) + 2);
+	Locate 3, 2
+	Input reply
+Loop Until Lcase(reply) = "quit"
+
+Print " Stop the threads"
+Screencopy
+terminate=1
+Threadwait (p1)
+Threadwait (p2)
+Mutexdestroy(mutex)
+Print " Threads terminated"
+Screencopy
+
+Sleep
+					%%Note: The ##//Sleep x, 1//## keyword just after the 'clear the print area' lines is only here to highlight the flickering if no double buffering is used (screen locking being forbidden by Input usage).
+					
+@@{{anchor name="ProPgMtCriticalSectionsFAQtop|Back to top"}}@@
+----
+{{anchor name="ProPgMtCriticalSectionsFAQ10"}}
+{{fbdoc item="section" value="10. Is it better to take precautions when using the keyword 'Sleep' in threads?"}}
+		There is still some doubt about the perfect behavior of the keyword ##//Sleep//## in a multi-threading context.
+		
+		It is therefore advisable to take the following precautions for its use:
+			**""-""** If it is absolutely necessary in a critical section of a thread, the syntax ##//Sleep x//## or ##//Sleep x, 0//##, because inducing an internal test of a key-press, must for greatest safety be preferably treated in the same way as the ##//Inkey//## keyword to avoid as much as possible any concurrent conflict with other threads.
+			**""-""** Otherwise, the syntax ##//Sleep x, 1//## (inducing no internal test of key-press) is rather advised when there is no protection by mutual exclusion, which is very often the case in order to release time-slice for the other threads.
+			
+@@{{anchor name="ProPgMtCriticalSectionsFAQtop|Back to top"}}@@
+----
+{{anchor name="ProPgMtCriticalSectionsFAQ11"}}
+{{fbdoc item="section" value="11. Can all tools to handle multi-threading be encapsulated in a base Class (that the user extends with a derived Type for his own implementing)?"}}
+		A simple 'threadUDT' base Class can be defined as follows:
+			**""-""** with a private 'Any Ptr' non-static member field for each handle,
+			**""-""** with a private 'Any Ptr' static member field for one shared mutex,
+			**""-""** with a private 'Any Ptr' static member field for one shared conditional variable,
+			**""-""** with its own public member procedures 'Sub()' calling the corresponding built-in procedures for multi-threading (with same procedure names), including also value integrity tests on the 3 above pointers (non-static procedures for the 3 'thread...()' member Subs, and static procedures for the 4 'mutex...()' member Subs and the 5 'cond...()' member Subs),
+			**""-""** with an abstract private 'Sub()' thread to be overridden by another 'Sub()' from inside the user derived Type (therefore its static address is available in the virtual table of the object, and the hidden 'This' parameter passed by reference is compatible with the 'Any Ptr' parameter to be passed to the thread).
+				%%(freebasic)
+#include once "fbthread.bi"
+Type threadUDT Extends Object
+	Public:
+		Declare Sub threadCreate ()
+		Declare Sub threadWait ()
+		Declare Sub threadDetach ()
+		Declare Static Sub mutexCreate ()
+		Declare Static Sub mutexLock ()
+		Declare Static Sub mutexUnlock ()
+		Declare Static Sub mutexDestroy ()
+		Declare Static Sub condCreate ()
+		Declare Static Sub condWait ()
+		Declare Static Sub condSignal ()
+		Declare Static Sub condBroadcast ()
+		Declare Static Sub condDestroy ()
+	Private:
+		Declare Abstract Sub thread ()
+		Dim As Any Ptr pThread
+		Static As Any Ptr pMutex
+		Static As Any Ptr pCond
+End Type
+Dim As Any Ptr threadUDT.pMutex
+Dim As Any Ptr threadUDT.pCond
+
+Sub threadUDT.threadCreate ()
+	If This.pThread = 0 Then
+	  This.pThread = .Threadcreate(Cast(Any Ptr Ptr Ptr, @This)[0][0], @This)
+	End If
+End Sub
+
+Sub threadUDT.threadWait ()
+	If This.pThread > 0 Then
+		.Threadwait(This.pThread)
+		This.pThread = 0
+	End If
+End Sub
+
+Sub threadUDT.threadDetach ()
+	If This.pThread > 0 Then
+		.Threaddetach(This.pThread)
+		This.pThread = 0
+	End If
+End Sub
+  
+Sub threadUDT.mutexCreate ()
+	If threadUDT.pMutex = 0 Then
+		threadUDT.pMutex = .Mutexcreate
+	End If
+End Sub
+  
+Sub threadUDT.mutexLock ()
+	If threadUDT.pMutex > 0 Then
+		.Mutexlock(threadUDT.pMutex)
+	End If
+End Sub
+
+Sub threadUDT.mutexUnlock ()
+	If threadUDT.pMutex > 0 Then
+		.Mutexunlock(threadUDT.pMutex)
+	End If
+End Sub
+
+Sub threadUDT.mutexDestroy ()
+	If threadUDT.pMutex > 0 Then
+		.Mutexdestroy(threadUDT.pMutex)
+		threadUDT.pMutex = 0
+	End If
+End Sub
+
+Sub threadUDT.condCreate ()
+	If threadUDT.pCond = 0 Then
+		threadUDT.pCond = .Condcreate
+	End If
+End Sub
+
+Sub threadUDT.condWait ()
+	If threadUDT.pCond > 0 And threadUDT.pMutex > 0 Then
+		.Condwait(threadUDT.pCond, threadUDT.pMutex)
+	End If
+End Sub
+
+Sub threadUDT.condSignal ()
+	If threadUDT.pCond > 0 And threadUDT.pMutex > 0 Then
+		.Condsignal(threadUDT.pCond)
+	End If
+End Sub
+
+Sub threadUDT.condBroadcast ()
+	If threadUDT.pCond > 0 And threadUDT.pMutex > 0 Then
+		.Condbroadcast(threadUDT.pCond)
+	End If
+End Sub
+
+Sub threadUDT.condDestroy ()
+	If threadUDT.pCond > 0 Then
+		.Conddestroy(threadUDT.pCond)
+		threadUDT.pCond = 0
+	End If
+End Sub
+				%%
+		- From the example 2 on the ##[[ProPgMtCriticalSections|Critical Sections]]## page "Synchronous method example using a condwait then a condbroadcast (and a mutex) for all threads", now the user implementation is modified to be compatible with the base Class 'threadUDT':
+				{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq10-1.bas"}}%%(freebasic)
+#include once "fbthread.bi"
+Type threadUDT Extends Object
+	Public:
+		Declare Sub threadCreate ()
+		Declare Sub threadWait ()
+		Declare Sub threadDetach ()
+		Declare Static Sub mutexCreate ()
+		Declare Static Sub mutexLock ()
+		Declare Static Sub mutexUnlock ()
+		Declare Static Sub mutexDestroy ()
+		Declare Static Sub condCreate ()
+		Declare Static Sub condWait ()
+		Declare Static Sub condSignal ()
+		Declare Static Sub condBroadcast ()
+		Declare Static Sub condDestroy ()
+	Private:
+		Declare Abstract Sub thread ()
+		Dim As Any Ptr pThread
+		Static As Any Ptr pMutex
+		Static As Any Ptr pCond
+End Type
+Dim As Any Ptr threadUDT.pMutex
+Dim As Any Ptr threadUDT.pCond
+
+Sub threadUDT.threadCreate ()
+	If This.pThread = 0 Then
+	  This.pThread = .Threadcreate(Cast(Any Ptr Ptr Ptr, @This)[0][0], @This)
+	End If
+End Sub
+
+Sub threadUDT.threadWait ()
+	If This.pThread > 0 Then
+		.Threadwait(This.pThread)
+		This.pThread = 0
+	End If
+End Sub
+
+Sub threadUDT.threadDetach ()
+	If This.pThread > 0 Then
+		.Threaddetach(This.pThread)
+		This.pThread = 0
+	End If
+End Sub
+  
+Sub threadUDT.mutexCreate ()
+	If threadUDT.pMutex = 0 Then
+		threadUDT.pMutex = .Mutexcreate
+	End If
+End Sub
+  
+Sub threadUDT.mutexLock ()
+	If threadUDT.pMutex > 0 Then
+		.Mutexlock(threadUDT.pMutex)
+	End If
+End Sub
+
+Sub threadUDT.mutexUnlock ()
+	If threadUDT.pMutex > 0 Then
+		.Mutexunlock(threadUDT.pMutex)
+	End If
+End Sub
+
+Sub threadUDT.mutexDestroy ()
+	If threadUDT.pMutex > 0 Then
+		.Mutexdestroy(threadUDT.pMutex)
+		threadUDT.pMutex = 0
+	End If
+End Sub
+
+Sub threadUDT.condCreate ()
+	If threadUDT.pCond = 0 Then
+		threadUDT.pCond = .Condcreate
+	End If
+End Sub
+
+Sub threadUDT.condWait ()
+	If threadUDT.pCond > 0 And threadUDT.pMutex > 0 Then
+		.Condwait(threadUDT.pCond, threadUDT.pMutex)
+	End If
+End Sub
+
+Sub threadUDT.condSignal ()
+	If threadUDT.pCond > 0 And threadUDT.pMutex > 0 Then
+		.Condsignal(threadUDT.pCond)
+	End If
+End Sub
+
+Sub threadUDT.condBroadcast ()
+	If threadUDT.pCond > 0 And threadUDT.pMutex > 0 Then
+		.Condbroadcast(threadUDT.pCond)
+	End If
+End Sub
+
+Sub threadUDT.condDestroy ()
+	If threadUDT.pCond > 0 Then
+		.Conddestroy(threadUDT.pCond)
+		threadUDT.pCond = 0
+	End If
+End Sub
+
+'------------------------------------------------------------------------------
+
+Type UDT Extends threadUDT
+	Declare Sub counter ()
+	Declare Sub thread ()
+	Dim As Integer number
+	Dim As Integer tempo
+	Dim As ULongInt count
+	Static As Integer threadPriorityNumber
+	Static As Integer numberMax
+	Static As Integer quit
+End Type
+Dim As Integer UDT.threadPriorityNumber
+Dim As Integer UDT.numberMax
+Dim As Integer UDT.quit
+
+Sub UDT.counter ()
+	Locate This.number, This.number, 0
+	Sleep 5, 1
+	This.count += 1
+	Print This.count;
+	Locate This.number, 30 + This.number, 0
+End Sub
+
+Sub UDT.Thread ()
+	Dim As Integer myquit
+	Do
+		This.mutexLock()
+		While UDT.threadPriorityNumber <> This.number  '' synchronous condwait for expected condition
+			This.condWait()
+		Wend
+		This.counter()
+		myquit = UDT.quit
+		UDT.threadPriorityNumber = (UDT.threadPriorityNumber + 1) Mod (UDT.numberMax + 1)
+		This.condBroadcast()
+		This.mutexUnlock()
+		Sleep This.tempo, 1
+	Loop Until myquit = 1
+End Sub
+
+
+UDT.numberMax = 6
+Dim As UDT u(0 To UDT.numberMax)
+For I As Integer = 0 To UDT.numberMax
+	u(I).number = i
+	u(I).tempo = 100 + 15 * I - 95 * Sgn(I)
+Next I
+UDT.mutexCreate()
+UDT.condCreate()
+
+Dim As Single t = Timer
+For I As Integer = 1 To UDT.numberMax
+	u(I).threadCreate()
+Next I
+
+Dim As String s
+Do
+	UDT.mutexLock()
+	While UDT.threadPriorityNumber <> u(0).number
+		UDT.condWait()
+	Wend
+	s = Inkey
+	If s <> "" Then
+		UDT.quit = 1
+	End If
+	UDT.threadPriorityNumber = (UDT.threadPriorityNumber + 1) Mod (UDT.numberMax + 1)
+	UDT.condBroadcast()
+	UDT.mutexUnlock()
+	Sleep u(0).tempo, 1
+Loop Until s <> ""
+
+For I As Integer = 1 To UDT.numberMax
+	u(I).threadWait()
+Next I
+t = Timer - t
+
+UDT.mutexDestroy()
+UDT.condDestroy()
+Dim As ULongInt c
+For I As Integer = 1 To UDT.numberMax
+	c += u(I).count
+Next I
+Locate UDT.numberMax+2, 1
+Print CULngInt(c / t) & " increments per second"
+
+Sleep
+				%%
+@@{{anchor name="ProPgMtCriticalSectionsFAQtop|Back to top"}}@@
+----
+
+{{fbdoc item="section" value="See also"}}
+	- [[ProPgMultiThreading|Multi-Threading Overview]]
+	- [[ProPgMtThreads|Threads]]
+	- [[ProPgMtMutualExclusion|Mutual Exclusion]]
+	- [[ProPgMtConditionalVariables|Conditional Variables]]
+	- [[ProPgMtCriticalSections|Critical Sections]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

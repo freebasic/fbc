@@ -25,7 +25,7 @@ function symbStructBegin _
 		byval isunion as integer, _
 		byval align as integer, _
 		byval is_derived as integer, _
-		byval attrib as integer, _
+		byval attrib as FB_SYMBATTRIB, _
 		byval options as integer _
 	) as FBSYMBOL ptr
 
@@ -33,17 +33,17 @@ function symbStructBegin _
 
 	function = NULL
 
-    '' no explict alias given?
-    if( id_alias = NULL ) then
-    	'' only preserve a case-sensitive version if in BASIC mangling
-    	if( parser.mangling <> FB_MANGLING_BASIC ) then
-    		id_alias = id
-    	end if
-    end if
+	'' no explict alias given?
+	if( id_alias = NULL ) then
+		'' only preserve a case-sensitive version if in BASIC mangling
+		if( parser.mangling <> FB_MANGLING_BASIC ) then
+			id_alias = id
+		end if
+	end if
 
 	s = symbNewSymbol( options or FB_SYMBOPT_DOHASH, NULL, symtb, hashtb, _
-	                   FB_SYMBCLASS_STRUCT, id, id_alias, _
-	                   FB_DATATYPE_STRUCT, NULL, attrib )
+					   FB_SYMBCLASS_STRUCT, id, id_alias, _
+					   FB_DATATYPE_STRUCT, NULL, attrib, FB_PROCATTRIB_NONE )
 	if( s = NULL ) then
 		exit function
 	end if
@@ -64,8 +64,8 @@ function symbStructBegin _
 		symbSetUDTIsAnon( s )
 	end if
 
-    '' unused (while mixins aren't supported)
-    s->udt.ns.ext = NULL
+	'' unused (while mixins aren't supported)
+	s->udt.ns.ext = NULL
 
 	''
 	s->ofs = 0
@@ -143,7 +143,7 @@ function typeCalcNaturalAlign _
 	'' but 8-byte aligned on other systems (Win32/Win64, 64bit Linux/BSD,
 	'' ARM Linux)
 	if( (fbGetCpuFamily( ) = FB_CPUFAMILY_X86) and _
-	    (env.clopt.target <> FB_COMPTARGET_WIN32) ) then
+		(env.clopt.target <> FB_COMPTARGET_WIN32) ) then
 		'' As a result, on 32bit x86 Linux/DOS/BSD, everything that is
 		'' otherwise 8-byte aligned, is actually 4-byte aligned.
 		if( align = 8 ) then
@@ -225,8 +225,8 @@ function symbCheckBitField _
 	'' not an integer type?
 	select case as const typeGet( dtype )
 	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, _
-	     FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
-	     FB_DATATYPE_BOOLEAN
+		 FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
+		 FB_DATATYPE_BOOLEAN
 		return TRUE
 
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
@@ -270,7 +270,7 @@ function symbAddField _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as longint, _
 		byval bits as integer, _
-		byval attrib as integer _
+		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr sym = any, tail = any, base_parent = any, _
@@ -281,7 +281,7 @@ function symbAddField _
 	function = NULL
 	desc = NULL
 
-    '' calc length if it wasn't given
+	'' calc length if it wasn't given
 	if( lgt <= 0 ) then
 		lgt	= symbCalcLen( dtype, subtype )
 	end if
@@ -376,7 +376,7 @@ function symbAddField _
 					'' follow the GCC ABI..
 					if( bits <= pad * 8 ) then
 						lgt = pad
-                        pad = 0
+						pad = 0
 
 						'' remap type
 						select case lgt
@@ -419,10 +419,10 @@ function symbAddField _
 		end if
 	end if
 
-    '' use the base parent hashtb if it's an anonymous type
-    base_parent = parent
-    do while( symbGetUDTIsAnon( base_parent ) )
-    	base_parent = symbGetUDTAnonParent( base_parent )
+	'' use the base parent hashtb if it's an anonymous type
+	base_parent = parent
+	do while( symbGetUDTIsAnon( base_parent ) )
+		base_parent = symbGetUDTAnonParent( base_parent )
 	loop
 
 	'' Preserve LOCAL
@@ -440,7 +440,7 @@ function symbAddField _
 	sym = symbNewSymbol( options, NULL, _
 			@symbGetUDTSymbTb( parent ), @symbGetUDTHashTb( base_parent ), _
 			FB_SYMBCLASS_FIELD, id, NULL, dtype, subtype, _
-			attrib )
+			attrib, FB_PROCATTRIB_NONE )
 	if( sym = NULL ) then
 		exit function
 	end if
@@ -568,22 +568,22 @@ sub symbInsertInnerUDT _
 		end if
 	end if
 
-    '' move the nodes from inner to parent
-    fld = inner->udt.ns.symtb.head
+	'' move the nodes from inner to parent
+	fld = inner->udt.ns.symtb.head
 
-    '' unless it's a fake struct
-    if( fld = NULL ) then
-    	exit sub
-    end if
+	'' unless it's a fake struct
+	if( fld = NULL ) then
+		exit sub
+	end if
 
-    fld->prev = parent->udt.ns.symtb.tail
-    if( parent->udt.ns.symtb.tail = NULL ) then
-    	parent->udt.ns.symtb.head = fld
-    else
-    	parent->udt.ns.symtb.tail->next = fld
-    end if
+	fld->prev = parent->udt.ns.symtb.tail
+	if( parent->udt.ns.symtb.tail = NULL ) then
+		parent->udt.ns.symtb.head = fld
+	else
+		parent->udt.ns.symtb.tail->next = fld
+	end if
 
-    symtb = @parent->udt.ns.symtb
+	symtb = @parent->udt.ns.symtb
 
 	'' Link fields to the parent, so lookups will find them, but without
 	'' breaking their FBSYMBOL.parent pointers which are needed for
@@ -601,7 +601,7 @@ sub symbInsertInnerUDT _
 		fld = fld->next
 	wend
 
-    parent->udt.ns.symtb.tail = inner->udt.ns.symtb.tail
+	parent->udt.ns.symtb.tail = inner->udt.ns.symtb.tail
 
 	'' struct? update ofs + len
 	if( symbGetUDTIsUnion( parent ) = FALSE ) then
@@ -620,14 +620,14 @@ sub symbInsertInnerUDT _
 		parent->udt.natalign = inner->udt.natalign
 	end if
 
-    '' reset bitfield
-    parent->udt.bitpos = 0
+	'' reset bitfield
+	parent->udt.bitpos = 0
 
-    '' remove from inner udt list
-    inner->udt.ns.symtb.head = NULL
-    inner->udt.ns.symtb.tail = NULL
+	'' remove from inner udt list
+	inner->udt.ns.symtb.head = NULL
+	inner->udt.ns.symtb.tail = NULL
 
-    inner->parent = parent
+	inner->parent = parent
 
 	'' Propagate FB_UDTOPT_HASBITFIELD flag, for the C backend
 	if( symbGetUdtHasBitfield( inner ) ) then
@@ -635,6 +635,87 @@ sub symbInsertInnerUDT _
 	end if
 
 end sub
+''================================================
+'' for Linux structure parameters size<=16
+''================================================
+sub struct_analyze(byval fld as FBSYMBOL ptr,byref part1 as integer,byref part2 as integer,byref limit as integer)
+	dim as integer lgt=fld->lgt
+	fld = symbUdtGetFirstField(fld)
+	while fld
+		if limit=7 and fld->ofs>7 then
+			limit+=8
+			part2=8
+		end if
+
+		if typegetclass(fld->typ)=FB_DATACLASS_UDT then
+			struct_analyze(fld->subtype,part1,part2,limit)
+		elseif typegetclass(fld->typ)=FB_DATACLASS_INTEGER then
+			if limit=7 then
+				part1=1
+			else
+				part2=4
+			end if
+		end if
+		fld=symbUdtGetNextField(fld)
+	wend
+
+	if lgt>8 then
+		''case array in type eg type udt / array(0 to 1) as integer /end type
+		if part1+part2=1 then
+			part1=5
+		elseif part1+part2=2 then
+			part1=10
+		end if
+	end if
+
+end sub
+
+private function hGetReturnTypeGas64Linux( byval sym as FBSYMBOL ptr ) as integer
+
+	assert( env.clopt.backend = FB_BACKEND_GAS64 )
+	assert( env.clopt.target = FB_COMPTARGET_LINUX )
+
+	''Linux gas64 could use 2 registers	
+
+	if( sym->lgt <= typeGetSize( FB_DATATYPE_LONGINT ) * 2 ) then
+
+		''by default floating point for first register
+		dim as integer part1 = 2
+		dim as integer part2 = 0
+		dim as integer limit = 7
+
+		struct_analyze( sym, part1, part2, limit )
+
+		select case as const part1+part2
+			case 1 ''only integers in RAX
+				'' don't set retin2regs, it's handled by datatype only 
+				'' sym->udt.retin2regs = FB_STRUCT_R
+				return FB_DATATYPE_LONGINT
+			case 2 ''only floats in XMM0
+				'' don't set retin2regs, it's handled by datatype only
+				'' sym->udt.retin2regs = FB_STRUCT_X
+				return FB_DATATYPE_DOUBLE
+			case 5 ''only integers in RAX/RDX
+				sym->udt.retin2regs = FB_STRUCT_RR
+				return FB_DATATYPE_STRUCT
+			case 9 ''first part in RAX then in XMMO
+				 sym->udt.retin2regs = FB_STRUCT_RX
+				 return FB_DATATYPE_STRUCT
+			case 6 ''first part in XMMO then in RAX
+				sym->udt.retin2regs = FB_STRUCT_XR
+				return typeAddrOf( FB_DATATYPE_STRUCT )
+			case 10 ''only floats in XMM0/XMM1
+				sym->udt.retin2regs = FB_STRUCT_XX
+				return FB_DATATYPE_STRUCT
+			case else
+				return FB_DATATYPE_STRUCT
+		end select
+	end if
+
+	''size>16 --> FB_DATATYPE_STRUCT
+	return typeAddrOf( FB_DATATYPE_STRUCT )
+
+end function
 
 private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 	dim as FBSYMBOL ptr fld = any
@@ -658,10 +739,23 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 		return FB_DATATYPE_STRUCT
 	end if
 
-	'' On Linux & co structures are never returned in registers
+	'' 64-bit + gas64 + linux?
+	if( fbIs64Bit() ) then
+		if( env.clopt.backend = FB_BACKEND_GAS64 ) then
+			'' linux 64bit allows structure returned in registers
+			if( env.clopt.target = FB_COMPTARGET_LINUX ) then
+				return hGetReturnTypeGas64Linux( sym )
+			end if
+		end if
+	end if
+
+	'' Otherwise, on Linux & co structures are never returned in registers
 	if( (env.target.options and FB_TARGETOPT_RETURNINREGS) = 0 ) then
 		return typeAddrOf( FB_DATATYPE_STRUCT )
 	end if
+
+	'' Otherwise, 32-bit gas (linux / dos) &  64-bit (gas64 windows)
+	'' compute a usable return type
 
 	res = FB_DATATYPE_VOID
 
@@ -755,7 +849,6 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 		if( res = FB_DATATYPE_VOID ) then
 			res = FB_DATATYPE_LONGINT
 		end if
-
 	end select
 
 	'' Nothing matched?
@@ -797,6 +890,12 @@ sub symbStructEnd _
 	'' Determine how to return this structure from procedures
 	'' (must be done after declaring default members because it depends on
 	'' symbCompIsTrivial() which depends on knowing all ctors/dtors)
+
+	'' set default for 'udt.retin2regs' first
+	'' side effect of calling hGetReturnType() will be setting 'sym->udt.retin2regs'
+	sym->udt.retin2regs = FB_STRUCT_NONE ''for gas64
+
+	'' compute the return type
 	sym->udt.retdtype = hGetReturnType( sym )
 
 	''

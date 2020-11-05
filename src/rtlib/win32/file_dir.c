@@ -18,15 +18,27 @@ typedef struct {
 #endif
 } FB_DIRCTX;
 
+static void close_dir_internal ( FB_DIRCTX *ctx )
+{
+#ifdef HOST_MINGW
+	_findclose( ctx->handle );
+#else
+	FindClose( ctx->handle );
+#endif
+	ctx->in_use = FALSE;
+}
+
+void fb_DIRCTX_Destructor ( void* data )
+{
+	FB_DIRCTX *ctx = ( FB_DIRCTX *)data;
+	if( ctx->in_use )
+		close_dir_internal( ctx );
+}
+
 static void close_dir ( void )
 {
 	FB_DIRCTX *ctx = FB_TLSGETCTX( DIR );
-#ifdef HOST_MINGW
-    _findclose( ctx->handle );
-#else
-    FindClose( ctx->handle );
-#endif
-	ctx->in_use = FALSE;
+	close_dir_internal( ctx );
 }
 
 static char *find_next ( int *attrib )

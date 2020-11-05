@@ -114,5 +114,6 @@ loop while inkey = ""
 	- ##[[KeyPgSetmouse|Setmouse]]##
 	- ##[[KeyPgMultikey|Multikey]]##
 	- ##[[KeyPgGetjoystick|Getjoystick]]##
+	- ##[[KeyPgEvent|Event]]##
 
 {{fbdoc item="back" value="CatPgGfxInput|User Input Functions"}}

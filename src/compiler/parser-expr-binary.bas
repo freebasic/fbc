@@ -81,7 +81,7 @@ function cBoolExpression( ) as ASTNODE ptr
 			exit do
 		end if
 
-    	lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' LogExpression
 		'' The second operand expression however only conditionally
@@ -140,7 +140,7 @@ function cLogExpression _
 			exit do
 		end if
 
-    	lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
     	'' LogOrExpression
     	expr = cLogOrExpression( )
@@ -192,7 +192,7 @@ function cLogOrExpression _
 			exit do
 		end if
 
-    	lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
     	'' LogAndExpression
     	expr = cLogAndExpression(  )
@@ -244,7 +244,7 @@ function cLogAndExpression _
 			exit do
 		end if
 
-    	lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
     	'' RelExpression
     	expr = cRelExpression( )
@@ -371,7 +371,8 @@ function cIsExpression _
 		isexpr = astNewCONSTi( 0 )
 	end if
 
-	lexSkipToken( )
+	'' IS
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' SymbolType
 	dim as integer dtype = any
@@ -560,7 +561,7 @@ function cShiftExpression _
 			exit do
 		end if
 
-    	lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
     	'' ModExpression
     	expr = cModExpression(  )
@@ -611,7 +612,7 @@ function cModExpression _
 			exit do
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
     	'' IntDivExpression
     	expr = cIntDivExpression( )

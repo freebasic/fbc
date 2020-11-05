@@ -35,9 +35,6 @@
 /* Maximum number of array dimensions. */
 #define FB_MAXDIMENSIONS      8
 
-/* Maximum number of temporary array descriptors. */
-#define FB_ARRAY_TMPDESCRIPTORS (FB_STR_TMPDESCRIPTORS / 4)
-
 /* The padding width (for PRINT ,). */
 #define FB_TAB_WIDTH          14
 
@@ -112,6 +109,8 @@
 	FBCALL void fb_StrUnlock( void );
 	FBCALL void fb_GraphicsLock  ( void );
 	FBCALL void fb_GraphicsUnlock( void );
+	FBCALL void fb_MathLock  ( void );
+	FBCALL void fb_MathUnlock( void );
 	/* NOTE: if both locks are acquired, FB_LOCK() must be called before
            FB_STRLOCK() in order to avoid deadlocking */
 	#define FB_LOCK()      fb_Lock()
@@ -122,6 +121,8 @@
            required. See bug #885 */
 	#define FB_GRAPHICS_LOCK()   fb_GraphicsLock()
 	#define FB_GRAPHICS_UNLOCK() fb_GraphicsUnlock()
+	#define FB_MATH_LOCK()   fb_MathLock()
+	#define FB_MATH_UNLOCK() fb_MathUnlock()
 #else
 	#define FB_LOCK()
 	#define FB_UNLOCK()
@@ -129,6 +130,8 @@
 	#define FB_STRUNLOCK()
 	#define FB_GRAPHICS_LOCK()
 	#define FB_GRAPHICS_UNLOCK()
+	#define FB_MATH_LOCK()
+	#define FB_MATH_UNLOCK()
 #endif
 
 /* CPU-dependent macros and inline functions */

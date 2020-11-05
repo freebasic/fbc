@@ -1,0 +1,126 @@
+{{fbdoc item="title" value="Composition, Aggregation, Inheritance"}}----
+Properly choice between **Composition**, **Aggregation**, and **Inheritance**, for User Defined Types.
+
+**Preamble:**
+
+	Complex type structures can be built through composition, aggregation, and inheritance.
+	Composition or aggregation (specialized form of association) is the process of creating more complex types from simple ones, while inheritance is the process of creating more complex type by acquiring the attributes and behaviors of existing ones.
+	
+	There is a very famous design principle which says “Favor composition over inheritance“, or also "Don’t use inheritance just to get code reuse".
+	One other reason to favor composition with FreeBASIC (as with many other languages) is it does not support multiple inheritance.
+
+{{fbdoc item="section" value="Definition of composition, aggregation, inheritance"}}
+	The right question to ask himself for choosing the type of relationship to use is to determine if this relationship is rather //"HAS-A"// or //"USES-A"// or //"IS-A"// throughout the lifetime of the application (see example below).
+	
+	When user needs to use property and behavior of a type without modifying it inside its type, then association is a better option.
+	Whereas if needed to use and modify property and behavior of a type inside the user type, it is best to use inheritance.
+	
+	__Definition of each relationship__
+		Composition (strong association) establishes a //"HAS-A"// relationship between objects:
+			**""-""** In composition, the component object exists solely for the use of its composite object.
+			**""-""** If the composite object is destroyed, the component object is destroyed as well:
+					> because the type contains the object itself.
+			**""-""** Syntax of the member field to add in the //type// for //object'//s composition (or similar syntax):
+					##//objectname// [[KeyPgAs|As]] //objecttypename// [= //initializer//]##
+					
+		Aggregation (weak association) establishes a //“USES-A”// relationship between objects:
+			**""-""** In aggregation, the component object can have an existence independent of its use in the aggregate object.
+			**""-""** Destroying the aggregate does not destroy the component:
+					> because the type contains only a pointer to the object.
+			**""-""** Syntax of the member field to add in the //type// for //object'//s aggregation (or similar syntax):
+					##//objectptrname// [[KeyPgAs|As]] //objecttypename// [[KeyPgPtr|Ptr]] [= //initializer//]##
+					
+		Inheritance establishes an //“IS-A”// relationship between instantiable types:
+			**""-""** The derived-type has the same features and functionality as its base-type, with some extensions.
+			**""-""** Syntax of the //type'//s declaration header for //object'//s inheritance:
+					##[[KeyPgType|Type]] //typename// [[[KeyPgAlias|Alias]] //alternatename//] [[KeyPgExtends|Extends]] //objecttypename// [[[KeyPgField|Field]] = alignment]##
+
+{{fbdoc item="section" value="Advantages of object association (composition/aggregation) over inheritance"}}
+	In most cases //"HAS-A"// or //"USES-A"// relationship is more semantically correct than //"IS-A"// relationship.
+	
+	Aggregation is more flexible than inheritance.
+	Implementation of type can be changed at run-time by changing the component object, but this cannot be do with inheritance (behavior of base type cannot be changed at run-time).
+	
+	A design based on object association usually will have less types.
+	
+	It is possible to implement a pseudo "multiple inheritance" (in languages which do not support it) by composing multiple objects into one.
+	There is no conflict between procedures/properties names, which might occur with inheritance.
+
+{{fbdoc item="section" value="Downsides of object association (composition/aggregation) compared to inheritance"}}
+	When using aggregation, the behavior of the system may be harder to understand just by looking at the source code, since it's more dynamic and more interaction between types happens in run-time, rather than compile time.
+	
+	Association approach might require more code and time effort.
+	A design based on object association usually will have more objects.
+
+{{fbdoc item="section" value="Example"}}
+	Simple illustrative example that mixes composition, aggregation, and inheritance:
+		{{fbdoc item="filename" value="examples/manual/proguide/udt/compo-agreg-inherit.bas"}}%%(freebasic)
+' Between the different types "Driver", "Person", "Driver_license" and "Vehicle", the respective relationships are:
+'    - A driver “IS-A” person (driver is a person): => "INHERITANCE".
+'    - A driver “HAS-A” driver's license (driver license only existing for the driver): => "COMPOSITION".
+'    - A driver “USES-A” vehicle (vehicle lifetime independent of the driver life): => "AGGREGATION".
+
+
+Type Person
+	Public:
+		Dim As String full_name
+		Declare Constructor (Byref _full_name As String)
+	Protected:  '' to forbid at compile time the default-construction attempt of a Person instance
+		Declare Constructor ()
+End Type
+Constructor Person (Byref _full_name As String)
+	This.full_name = _full_name
+End Constructor
+
+Type Driver_license
+	Public:
+		Dim As Integer number
+End Type
+
+Type Vehicle
+	Public:
+		Dim As String registration
+		Declare Constructor (Byref _registration As String)
+End Type
+Constructor Vehicle (Byref _registration As String)
+	This.registration = _registration
+End Constructor
+
+Type Driver Extends Person        '' inheritance
+	Public:
+		Dim As Driver_license dl  '' composition
+		Dim As Vehicle Ptr pv     '' aggregation
+		Declare Constructor (Byref _full_name As String, Byref _dl As Driver_license)
+End Type
+Constructor Driver (Byref _full_name As String, Byref _dl As Driver_license)
+	Base(_full_name)
+	This.dl = _dl
+End Constructor
+
+
+Dim As Driver d1 = Driver("User fxm", Type<Driver_license>(123456789))
+
+Dim As Vehicle Ptr pv1 = New Vehicle("ABCDEFGHI")
+d1.pv = pv1
+
+Print "Person full name      : " & d1.full_name
+Print "Driver license number : " & d1.dl.number
+Print "Vehicle registration  : " & d1.pv->registration
+
+Delete pv1
+d1.pv = 0
+
+Sleep
+		%%Output:
+			%%
+Person full name      : User fxm
+Driver license number : 123456789
+Vehicle registration  : ABCDEFGHI
+%%
+{{fbdoc item="section" value="See also"}}
+	- ##[[KeyPgType|Type (UDT)]]##
+	- ##[[KeyPgExtends|Extends]]##
+	- [[ProPgPolymorphism|Inheritance Polymorphism]]
+	- [[ProPgObjectRtti|OBJECT built-in and RTTI info]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

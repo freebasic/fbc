@@ -16,7 +16,7 @@ int fb_DevFileWrite( FB_FILE *handle, const void* value, size_t valuelen )
 	}
 
 	/* do write */
-	if( fwrite( value, 1, valuelen, fp ) != valuelen ) {
+	if( FB_FWRITE_LARGE( value, valuelen, fp ) != valuelen ) {
 		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_FILEIO );
 	}

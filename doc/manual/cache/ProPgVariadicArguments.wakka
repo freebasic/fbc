@@ -1,0 +1,365 @@
+{{fbdoc item="title" value="Variadic Arguments"}}----
+Allows a procedure to accept a **variable** number of **arguments**.
+
+**Preamble:**
+
+	Normal procedures take a fixed number of arguments. When such a procedure is defined, the data-type of each argument is specified.
+	Every call to this procedure should supply the expected number of arguments, with types that can be converted to the specified ones.
+	
+	Variadic arguments allow to define procedures which accept a variable number of arguments.
+	Support for variadic procedures differs widely among programming languages.
+	
+	Variadic procedures can expose type-safety problems because the language support for variadic procedures is not type-safe:
+		""-"" it allows to extract any number of arguments from the stack or elsewhere,
+		""-"" and this while defining their types from entered user parameters.
+	If the variable arguments are all of same type or compatible with the same type, a dynamically sized array can be passed instead, but this requires slightly more work at the caller level.
+
+{{fbdoc item="section" value="Syntax for declaring and calling variadic procedures"}}
+	The ellipsis ##"..."## (three dots), as last parameter, is used in procedure declarations (and definitions) to indicate a variable length argument list:
+		**""-""** A first fixed parameter (at least) must always be specified:
+				The fixed parameters(s) can provide information about how many variadic arguments there are, by an unspecified mechanism.
+				Otherwise a terminal argument can be added in the variable length argument list, but this reserves a special argument value forbidden to the useful variadic arguments.
+					(if one choose to pass the variable arguments all by pointer, in this case an obvious terminal argument is the null pointer)
+		**""-""** The procedure must be called with the C calling convention ##[[KeyPgCdecl|cdecl]]##.
+		**""-""** A variadic procedure can never be overloaded:
+				so this also excludes its use in UDT for constructors and properties,
+				but otherwise it can be declared abstract or virtual or even overriding.
+		**""-""** For variadic procedure members, the implicit passed [[KeyPgThis|this]] parameter is not taken into account as first fixed parameter (at least one explicit fixed parameter must always be specified).
+		
+	__Declaration syntax__
+		[[KeyPgDeclare|declare]] { [[KeyPgSub|sub]] | [[KeyPgFunction|function]] } //proc_name// [[KeyPgCdecl|cdecl]] ( //param_list//, **...** )  { | [ [[KeyPgByrefFunction|byref]] ] [[KeyPgAs|as]] //return_type// }
+			##//param_list//##
+				Parenthesized comma-separated list of fixed parameters.
+			##//return_type//##
+				The return type of a ##[[KeyPgFunction|Function]]##.
+			##//proc_name//##
+				The name or symbol of the procedure.
+				
+	__Calling syntax__
+		There is nothing special to do for calling a variadic procedure.
+		The procedure is simply called by writing the arguments for the fixed parameters, followed by the additional variable arguments, as usual.
+		
+		Only numeric types and pointers are supported as variable arguments:
+			**""-""** All bytes and shorts passed on variable arguments are implicitly converted to integers.
+			**""-""** All singles passed on variable arguments are implicitly converted to doubles.
+			**""-""** ##[[KeyPgString|String]]##s ##(or [[KeyPgWstring|Wstring]]##s##)## can be directly passed by user, in which case a ##[[KeyPgZstring|Zstring]] [[KeyPgPtr|Ptr]]## ##(or a [[KeyPgWstring|Wstring]] [[KeyPgPtr|Ptr]])## to the string (or the wstring) data is taken into account as internal passed argument.
+
+{{fbdoc item="section" value="Two ' va_* ' support's keywords families to retrieve the variable arguments in procedure body"}}
+	Variable arguments my use the stack, or registers, as per the normal conventions for the compiler:
+		**""-""** For some compilers in the past, while registers were used for normal procedures, stack was (always) used for variadic procedures.
+		**""-""** The gcc compiler family all seem to agree that the call signatures for variadic procedures are exactly the same as properly specified procedures. This means that some of the variable arguments may be in registers and some may be on the stack if there are too many.
+		
+	The ##va_*## support's keywords create an interface to retrieve these variable arguments in procedure body:
+		**""-""** The first ""FreeBASIC"" ##va_*## support's keywords family developed have been the FB's ##va_*## support's keywords family:
+				These FB's ##va_*## support's keywords are very x86-specific and only work with the gas for x86 GAS assembly backend, because using a pointer to the argument stack.
+				These FB's ##va_*## support's keywords don't work on all targets (like 64-bit) because arguments can be passed to procedures in cpu registers.
+				These FB's ##va_*## support's keywords are now deprecated but kept for backwards compatibility on some targets.
+		**""-""** More recently, a ""FreeBASIC"" update added a new support's keywords family for variadic procedure argument lists:
+				This is the C's ##va_*## support's keywords family compatible for all target platforms.
+				These C's ##va_*## support's keywords are now recommended for all new coding.
+				
+	- __' FB's va_* ' support's keywords family__ (deprecated but kept for backwards compatibility on some targets)
+			There are 3 FB's ##va_*## support's keywords (##**va_first**##, ##**va_arg**##, ##**va_next**##):
+				##//pointer_variable// = **va_first**( )##
+					##**va_first**## provides an untyped [[ProPgPointers|pointer]] value that points to the first variable argument passed to a procedure.
+					
+				##//variable// = **va_arg**( //argument_list//, [[DataType|datatype]] )##
+					##**va_arg**## returns the current argument in the list, ##//argument_list//##, with an expected data type of ##//datatype//##.
+					(before first ##**va_arg**## use, ##//argument_list//## must be initialized with the command ##**va_first**##)
+					
+				##//argument_pointer// = **va_next**( //argument_list//, [[DataType|datatype]] )##
+					##**va_next**## provides a ##//datatype//## pointer value that points to the next argument within the list ##//argument_list//##, ##//datatype//## being the type of the current argument being stepped over.
+					
+			Note:
+				##//pointer_variable// = **va_first**( )##
+				computes the address in the stack following the address of the last passed fixed parameter.
+				
+				##//variable// = **va_arg**( //argument_list//, [[DataType|datatype]] )##
+				is equivalent to:
+				##//variable// = [[KeyPgOpValueOf|*]][[KeyPgCptr|cptr]]( [[DataType|datatype]] [[KeyPgPtr|ptr]], [[KeyPgCptr|cptr]]( [[KeyPgAny|any]] [[KeyPgPtr|ptr]], //argument_list// ) )##
+				
+				##//argument_pointer// = **va_next**( //argument_list//, [[DataType|datatype]] )##
+				is equivalent to:
+				##//argument_pointer// = [[KeyPgCptr|cptr]]( [[DataType|datatype]] [[KeyPgPtr|ptr]], [[KeyPgCptr|cptr]]( [[KeyPgAny|any]] [[KeyPgPtr|ptr]], //argument_list// ) ) + 1##
+				
+			Examples:
+				{{fbdoc item="filename" value="examples/manual/proguide/variadic_arguments/va_.bas"}}%%(freebasic)
+' Variadic function:
+'    The first(fixed) parameter provides the number of elements.
+'    The variable arguments are all strings except the last one which must be a float.
+'    The user's string arguments are in fact passed under the hood through zstring pointers.
+
+Function concatenation Cdecl (Byval count As Integer, ...) As String
+	Dim arg As Any Ptr
+	Dim s As String
+   
+	arg = va_first()
+
+	For i As Integer = 1 To count
+		If i < count Then
+			s &= *va_arg(arg, Zstring Ptr)
+			arg = va_next(arg, Zstring Ptr)
+		Else
+			s &= va_arg(arg, Double)
+		End If
+	Next
+   
+	Return s
+End Function
+
+Print concatenation(6, "Free", "BASIC", " ", "version", " ", 0.13)
+
+Sleep
+
+' Output: FreeBASIC version 0.13
+				%%
+				{{fbdoc item="filename" value="examples/manual/proguide/variadic_arguments/va_2.bas"}}%%(freebasic)
+' Variadic sub:
+'    The first(fixed) parameter provides the number of elements.
+'    The variable arguments are all UDT Ptr.
+
+Type UDT
+	Dim As String s
+	Dim As Single d
+End Type
+
+Sub printUDT CDecl (ByVal count As Integer, ...)
+	Dim arg As Any Ptr
+	Dim pu As UDT Ptr
+   
+	arg = va_first()
+
+	For i As Integer = 1 To count
+		pu = va_arg(arg, UDT Ptr)
+		Print pu->s, pu->d
+		arg = va_next(arg, UDT Ptr)
+	Next
+End Sub
+
+Dim As UDT u1, u2, u3
+u1.s = "4*Atn(1)" : u1.d = 4 * Atn(1)
+u2.s = "Sqr(2)"   : u2.d = Sqr(2)
+u3.s = "Log(10)"  : u3.d = Log(10)
+
+printUDT(3, @u1, @u2, @u3)
+
+Sleep
+
+' Output:
+' 4*Atn(1)       3.141593
+' Sqr(2)         1.414214
+' Log(10)        2.302585
+				%%
+				{{fbdoc item="filename" value="examples/manual/proguide/variadic_arguments/va_3.bas"}}%%(freebasic)
+' Variadic sub:
+'    The first (fixed) parameter is the type of the variable arguments (Integer Ptr or Double Ptr).
+'    One terminal argument (added after the useful arguments) must be the null pointer.
+
+Sub printNumericList CDecl (ByRef argtype As String, ...)
+	Dim As Integer datatype = 0
+	If UCase(argtype) = "INTEGER PTR" Then
+		datatype = 1
+		Print "List of integers : ";
+	ElseIf UCase(argtype) = "DOUBLE PTR" Then
+		datatype = 2
+		Print "List of doubles : ";
+	Else
+		Print "Invalid argument type"
+		Exit Sub
+	End If
+   
+	Dim arg As Any Ptr
+	Dim pn As Any Ptr
+   
+	arg = va_first()
+
+	Do
+		pn = va_arg(arg, Any Ptr)
+		If pn = 0 Then Exit Do
+		Print ,
+		Select Case As Const datatype
+		Case 1
+			Print *CPtr(Integer Ptr, pn);
+		Case 2
+			Print *CPtr(Double Ptr, pn);
+		End Select    
+		arg = va_next(arg, Any Ptr)
+	Loop
+   
+	Print
+End Sub
+
+printNumericList("Integer Ptr", @Type<Integer>(123), @Type<Integer>(456), @Type<Integer>(789), Cptr(Integer Ptr, 0))
+printNumericList("Double Ptr", @Type<Double>(1.2), @Type<Double>(3.4), @Type<Double>(5.6), @Type<Double>(7.8), Cptr(Double Ptr, 0))
+
+Sleep
+
+' Output:
+' List of integers :           123           456           789
+' List of doubles :            1.2           3.4           5.6           7.8
+				%%
+	- __' C's va_* ' support's keywords family__ (recommended for all new coding)
+			There are 5 C's ##va_*## support's keywords (##**cva_list**##, ##**cva_start**##, ##**cva_copy**##, ##**cva_arg**##, ##**cva_end**##):
+				##[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] **cva_list**##
+					##**cva_list**## is a built in data type for working with the variable length argument list in a variadic procedure.
+					
+				##**cva_start**( //argument_list//, //last_param// )##
+					##**cva_start**## "constructs" the ##//argument_list//## object declared of ##**cva_list**## data-type, settling on the ##//last_param//## declared in the procedures parameter list before the [[KeyPgDots|ellipsis]] ##[[KeyPgDots|"..."]]##.
+					
+				##**cva_copy**( //dst_list//, //src_list// )##
+					##**cva_copy**## "copy-constructs" the ##//dst_list//## object declared of ##**cva_list**## data-type, from an already constructed ##//src_list//## object.
+					
+				##//variable// = **cva_arg**( //argument_list//, [[DataType|datatype]] )##
+					##**cva_arg**## returns the current argument in the ##//argument_list//##, with an expected data-type of ##//datatype//##.
+					(##**cva_arg**## automatically increments ##//argument_list//## to the next argument within the list after obtaining the value of the current argument)
+					
+				##**cva_end**( //argument_list// )##
+					##**cva_end**## "destructs" the ##//argument_list//## object of ##**cva_list**## data-type (previously "constructed" with ##**cva_start**## or ##**cva_copy**##).
+					
+			The implementation and code emitted for ##**cva_list**##, ##**cva_start**##, ##**cva_copy**##, ##**cva_arg**##, ##**cva_end**## varies depending on target, backend, and architecture.
+			
+			Note:
+				The exact type and size of ##**cva_list**## depends on ##-target##, ##-arch##, ##-gen## command line options:
+					In ##-gen gas##, ##**cva_list**## is a pointer.
+					In ##-gen gcc##, ##**cva_list**## is a pointer, a struct, or a struct array. The ##**cva_list**## type is replaced by ##"""__builtin_va_list"""## in gcc.
+					On 32-bit targets, gas backend: ##type **cva_list** as any alias "char" ptr##
+					On 32-bit targets, gcc backend: ##type **cva_list** as any alias """__builtin_va_list""" ptr##
+					On Windows 64-bit, gcc backend: ##type **cva_list** as any alias """__builtin_va_list""" ptr##
+					On Linux x86_64, gcc backend: ##type **cva_list** as ""__va_list_tag"" alias """__builtin_va_list[]"""##
+					On arm64, gcc backend: ##type **cva_list** as ""__va_list"" alias """__builtin_va_list"""##
+					
+				##**cva_start** (or **cva_copy**)## is like a constructor (or a copy-constructor) for the variadic ##//argument_list//## object and must finally have a matching call to ##**cva_end**##, which is like a destructor.
+				After ##**cva_end**## for ##//argument_list//## has been called, ##//argument_list//## can be reused and reinitialized with another call to ##**cva_start** (or **cva_copy**)##.
+				The ##**cva_start** (or **cva_copy**)## and ##**cva_end**## calls must both be called in pairs in the same procedure (for cross platform compatibility).
+				
+			Examples:
+				{{fbdoc item="filename" value="examples/manual/proguide/variadic_arguments/cva_.bas"}}%%(freebasic)
+' Variadic function:
+'    The first(fixed) parameter provides the number of elements.
+'    The variable arguments are all strings except the last one which must be a float.
+'    The user's string arguments are in fact passed under the hood through zstring pointers.
+
+Function concatenation Cdecl (Byval count As Integer, ...) As String
+	Dim s As String
+	Dim args As cva_list
+	
+	cva_start(args, count)
+	
+	For i As Integer = 1 To count
+		If i < count Then
+			s &= *cva_arg(args, Zstring Ptr)
+		Else
+			s &= cva_arg(args, Double)
+		End If
+	Next
+	
+	cva_end(args)
+   
+	Return s
+End Function
+
+Print concatenation(6, "Free", "BASIC", " ", "version", " ", 1.07)
+
+Sleep
+
+' Output: FreeBASIC version 1.07
+				%%
+				{{fbdoc item="filename" value="examples/manual/proguide/variadic_arguments/cva_2.bas"}}%%(freebasic)
+' Variadic sub:
+'    The first(fixed) parameter provides the number of elements.
+'    The variable arguments are all UDT Ptr.
+
+Type UDT
+	Dim As String s
+	Dim As Single d
+End Type
+
+Sub printUDT CDecl (ByVal count As Integer, ...)
+	Dim args As cva_list
+	Dim pu As UDT Ptr
+   
+	cva_start(args, count)
+
+	For i As Integer = 1 To count
+		pu = cva_arg(args, UDT Ptr)
+		Print pu->s, pu->d
+	Next
+	
+	cva_end(args)
+End Sub
+
+Dim As UDT u1, u2, u3
+u1.s = "4*Atn(1)" : u1.d = 4 * Atn(1)
+u2.s = "Sqr(2)"   : u2.d = Sqr(2)
+u3.s = "Log(10)"  : u3.d = Log(10)
+
+printUDT(3, @u1, @u2, @u3)
+
+Sleep
+
+' Output:
+' 4*Atn(1)       3.141593
+' Sqr(2)         1.414214
+' Log(10)        2.302585
+				%%
+				{{fbdoc item="filename" value="examples/manual/proguide/variadic_arguments/cva_3.bas"}}%%(freebasic)
+' Variadic sub:
+'    The first (fixed) parameter is the type of the variable arguments (Integer Ptr or Double Ptr).
+'    One terminal argument (added after the useful arguments) must be the null pointer.
+
+Sub printNumericList CDecl (ByRef argtype As String, ...)
+	Dim As Integer datatype = 0
+	If UCase(argtype) = "INTEGER PTR" Then
+		datatype = 1
+		Print "List of integers : ";
+	ElseIf UCase(argtype) = "DOUBLE PTR" Then
+		datatype = 2
+		Print "List of doubles : ";
+	Else
+		Print "Invalid argument type"
+		Exit Sub
+	End If
+   
+	Dim args As cva_list
+	Dim pn As Any Ptr
+   
+	cva_start(args, argtype)
+   
+	Do
+		pn = cva_arg(args, Any Ptr)
+		If pn = 0 Then Exit Do
+		Print ,
+		Select Case As Const datatype
+		Case 1
+			Print *CPtr(Integer Ptr, pn);
+		Case 2
+			Print *CPtr(Double Ptr, pn);
+		End Select    
+	Loop
+   
+	Print
+   
+	cva_end(args)
+End Sub
+
+printNumericList("Integer Ptr", @Type<Integer>(123), @Type<Integer>(456), @Type<Integer>(789), Cptr(Integer Ptr, 0))
+printNumericList("Double Ptr", @Type<Double>(1.2), @Type<Double>(3.4), @Type<Double>(5.6), @Type<Double>(7.8), Cptr(Double Ptr, 0))
+
+Sleep
+
+' Output:
+' List of integers :           123           456           789
+' List of doubles :            1.2           3.4           5.6           7.8
+				%%
+{{fbdoc item="see"}}
+	- [[KeyPgDots|... (Ellipsis)]]
+	- ##[[KeyPgVaFirst|va_first]]##
+	- ##[[KeyPgVaArg|va_arg]]##
+	- ##[[KeyPgVaNext|va_next]]##
+	- ##[[KeyPgCvaList|cva_list]]##
+	- ##[[KeyPgCvaStart|cva_start]]##
+	- ##[[KeyPgCvaCopy|cva_copy]]##
+	- ##[[KeyPgCvaArg|cva_arg]]##
+	- ##[[KeyPgCvaEnd|cva_end]]##
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

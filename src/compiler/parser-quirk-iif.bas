@@ -19,7 +19,7 @@ function cIIFFunct() as ASTNODE ptr
 	'' the true/false expressions only conditionally though.
 
 	'' IIF
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' '('
 	hMatchLPRNT( )

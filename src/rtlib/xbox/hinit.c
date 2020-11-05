@@ -6,12 +6,15 @@
 static CRITICAL_SECTION __fb_global_mutex;
 static CRITICAL_SECTION __fb_string_mutex;
 static CRITICAL_SECTION __fb_graphics_mutex;
+static CRITICAL_SECTION __fb_math_mutex;
 FBCALL void fb_Lock( void )      { EnterCriticalSection( &__fb_global_mutex ); }
 FBCALL void fb_Unlock( void )    { LeaveCriticalSection( &__fb_global_mutex ); }
 FBCALL void fb_StrLock( void )   { EnterCriticalSection( &__fb_string_mutex ); }
 FBCALL void fb_StrUnlock( void ) { LeaveCriticalSection( &__fb_string_mutex ); }
 FBCALL void fb_GraphicsLock  ( void ) { EnterCriticalSection( &__fb_graphics_mutex ); }
 FBCALL void fb_GraphicsUnlock( void ) { LeaveCriticalSection( &__fb_graphics_mutex ); }
+FBCALL void fb_MathLock  ( void ) { EnterCriticalSection( &__fb_math_mutex ); }
+FBCALL void fb_MathUnlock( void ) { LeaveCriticalSection( &__fb_math_mutex ); }
 #endif
 
 void fb_hInit( void )
@@ -31,6 +34,7 @@ void fb_hInit( void )
 	InitializeCriticalSection(&__fb_global_mutex);
 	InitializeCriticalSection(&__fb_string_mutex);
 	InitializeCriticalSection(&__fb_graphics_mutex);
+	InitializeCriticalSection(&__fb_math_mutex);
 #endif
 }
 
@@ -40,5 +44,6 @@ void fb_hEnd( int unused )
 	DeleteCriticalSection(&__fb_global_mutex);
 	DeleteCriticalSection(&__fb_string_mutex);
 	DeleteCriticalSection(&__fb_graphics_mutex);
+	DeleteCriticalSection(&__fb_math_mutex);
 #endif
 }

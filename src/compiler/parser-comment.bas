@@ -27,9 +27,9 @@ function cComment _
 		'' to the lexSkipToken() calls for '$' and from cDirective(),
 		'' when parsing a $ meta command)
 		lex.ctx->reclevel += 1
-		lexSkipToken( LEX_FLAGS or LEXCHECK_ALLOWSUFFIX )
+		lexSkipToken( LEX_FLAGS )
 		if( lexGetToken( LEX_FLAGS ) = FB_TK_DIRECTIVECHAR ) then
-			lexSkipToken( LEX_FLAGS or LEXCHECK_ALLOWSUFFIX )
+			lexSkipToken( LEX_FLAGS )
 			cDirective( )
 		else
 			lexSkipLine( )
@@ -59,6 +59,7 @@ private sub cDirective( ) static
 		if( fbLangOptIsSet( FB_LANG_OPT_METACMD ) = FALSE ) then
 		    errReportNotAllowed( FB_LANG_OPT_METACMD )
 		else
+			'' DYNAMIC
 			lexSkipToken( )
 			env.opt.dynamic = TRUE
 
@@ -73,6 +74,7 @@ private sub cDirective( ) static
 		if( fbLangOptIsSet( FB_LANG_OPT_METACMD ) = FALSE ) then
 		    errReportNotAllowed( FB_LANG_OPT_METACMD )
 		else
+			'' STATIC
 			lexSkipToken( )
 			env.opt.dynamic = FALSE
 
@@ -89,7 +91,7 @@ private sub cDirective( ) static
 			lexSkipToken( )
 
 			'' ONCE?
-			isonce = hMatchIdOrKw( "ONCE" )
+			isonce = hMatchIdOrKw( "ONCE", LEXCHECK_POST_SUFFIX )
 
 			'' ':'
 			if( hMatch( FB_TK_STMTSEP ) = FALSE ) then
@@ -170,6 +172,6 @@ private sub cDirective( ) static
 		case FB_TK_EOL, FB_TK_EOF
 			exit do
 		end select
-		lexSkipToken( LEX_FLAGS or LEXCHECK_ALLOWSUFFIX )
+		lexSkipToken( LEX_FLAGS )
 	loop
 end sub

@@ -192,7 +192,7 @@ private function hMockParam _
 		dtype = FB_DATATYPE_INTEGER
 	end if
 
-	function = symbAddProcParam( proc, NULL, dtype, NULL, iif( pmode = FB_PARAMMODE_BYDESC, -1, 0 ), pmode, 0 )
+	function = symbAddProcParam( proc, NULL, dtype, NULL, iif( pmode = FB_PARAMMODE_BYDESC, -1, 0 ), pmode, 0, 0 )
 end function
 
 '':::::
@@ -248,7 +248,7 @@ private function hParamDecl _
 			end if
 
 			return symbAddProcParam( proc, NULL, FB_DATATYPE_INVALID, NULL, _
-			                         0, FB_PARAMMODE_VARARG, 0 )
+			                         0, FB_PARAMMODE_VARARG, 0, 0 )
 
 		'' syntax error..
 		else
@@ -263,10 +263,10 @@ private function hParamDecl _
 	select case lexGetToken( )
 	case FB_TK_BYVAL
 		mode = FB_PARAMMODE_BYVAL
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 	case FB_TK_BYREF
 		mode = FB_PARAMMODE_BYREF
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 	case else
 		mode = INVALID
 	end select
@@ -326,10 +326,10 @@ private function hParamDecl _
 		*id = *lexGetText( )
 		dotpos = lexGetPeriodPos( )
 
+		lexCheckToken( LEXCHECK_POST_LANG_SUFFIX )
 		dtype = lexGetType( )
-		hCheckSuffix( dtype )
-
 		lexSkipToken( )
+
 	else
 		'' no id
 		dtype  = FB_DATATYPE_INVALID
@@ -377,7 +377,7 @@ private function hParamDecl _
 	'' (AS SymbolType)?
 	doskip = FALSE
 	if( lexGetToken( ) = FB_TK_AS ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		if( dtype <> FB_DATATYPE_INVALID ) then
 			hParamError( proc, id )
 			exit function
@@ -479,7 +479,7 @@ private function hParamDecl _
 
 	'' Add new param
 	param = symbAddProcParam( proc, iif( isproto, cptr( zstring ptr, NULL ), id ), _
-	                          dtype, subtype, dimensions, mode, attrib )
+	                          dtype, subtype, dimensions, mode, attrib, FB_PROCATTRIB_NONE )
 	if( param = NULL ) then
 		exit function
 	end if
@@ -497,7 +497,7 @@ private function hParamDecl _
 		if( mode = FB_PARAMMODE_BYDESC ) then
 			'' ANY?
 			if( lexGetToken( ) = FB_TK_ANY ) then
-				lexSkipToken( )
+				lexSkipToken( LEXCHECK_POST_SUFFIX )
 				symbSetDontInit( param )
 			else
 				hParamError( proc, id, , 0 )

@@ -462,7 +462,8 @@ function symbNewSymbol _
 		byval id_alias as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval attrib as FB_SYMBATTRIB _
+		byval attrib as FB_SYMBATTRIB, _
+		byval pattrib as FB_PROCATTRIB _
 	) as FBSYMBOL ptr
 
     dim as integer slen = any, delok = any
@@ -506,6 +507,7 @@ function symbNewSymbol _
     ''
     s->class = class_
 	s->attrib = attrib
+	s->pattrib = pattrib
 	s->stats = 0
 	s->mangling = parser.mangling
 
@@ -2108,7 +2110,7 @@ private function hSymbCheckConstAssignFuncPtr _
 
 	'' check for identical return type
 	var match = typeCalcMatch( lsubtype->typ, lsubtype->subtype, _
-			iif( symbIsRef( lsubtype ), FB_PARAMMODE_BYREF, FB_PARAMMODE_BYVAL ), _
+			iif( symbIsReturnByRef( lsubtype ), FB_PARAMMODE_BYREF, FB_PARAMMODE_BYVAL ), _
 			rsubtype->typ, rsubtype->subtype )
 	if( match = FB_OVLPROC_NO_MATCH ) then
 		wrnmsg = FB_WARNINGMSG_RETURNTYPEMISMATCH
@@ -2116,7 +2118,7 @@ private function hSymbCheckConstAssignFuncPtr _
 	end if
 
 	'' Does one have a BYREF result, but not the other?
-	if( symbIsRef( lsubtype ) <> symbIsRef( rsubtype ) ) then
+	if( symbIsReturnByRef( lsubtype ) <> symbIsReturnByRef( rsubtype ) ) then
 		wrnmsg = FB_WARNINGMSG_RETURNMETHODMISMATCH
 		exit function
 	end if
@@ -2279,7 +2281,8 @@ static shared as zstring ptr classnames(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIMPOR
 function typeDumpToStr _
 	( _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval subtype as FBSYMBOL ptr, _
+		byval verbose as boolean _
 	) as string
 
 	dim as string dump
@@ -2409,6 +2412,13 @@ function typeDumpToStr _
 
 	dump += "]"
 
+	if( verbose ) then
+		'' function pointer?
+		if( typeGetDtOnly( dtype ) = FB_DATATYPE_FUNCTION ) then
+			dump += "{" & symbDumpToStr( subtype, verbose ) & "}"
+		end if
+	end if
+
 	function = dump
 end function
 
@@ -2441,7 +2451,12 @@ private sub hDumpName( byref s as string, byval sym as FBSYMBOL ptr )
 #endif
 end sub
 
-function symbDumpToStr( byval sym as FBSYMBOL ptr ) as string
+function symbDumpToStr _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval verbose as boolean _
+	) as string
+
 	dim as string s
 
 	if( sym = NULL ) then
@@ -2477,36 +2492,37 @@ function symbDumpToStr( byval sym as FBSYMBOL ptr ) as string
 	checkAttrib( LOCAL )
 	checkAttrib( EXPORT )
 	checkAttrib( IMPORT )
-	checkAttrib( OVERLOADED )
-	if( symbIsProc( sym ) ) then
-		checkAttrib( METHOD )
-	else
-		checkAttrib( INSTANCEPARAM )
-	end if
-	checkAttrib( CONSTRUCTOR )
-	checkAttrib( DESTRUCTOR )
-	checkAttrib( OPERATOR )
-	checkAttrib( PROPERTY )
+	checkAttrib( INSTANCEPARAM )
 	checkAttrib( PARAMBYDESC )
 	checkAttrib( PARAMBYVAL )
 	checkAttrib( PARAMBYREF )
 	checkAttrib( LITERAL )
 	checkAttrib( CONST )
-	checkAttrib( STATICLOCALS )
 	checkAttrib( TEMP )
 	checkAttrib( DESCRIPTOR )
 	checkAttrib( FUNCRESULT )
 	checkAttrib( REF )
 	checkAttrib( VIS_PRIVATE )
 	checkAttrib( VIS_PROTECTED )
-	if( symbIsProc( sym ) ) then
-		checkAttrib( NAKED )
-	else
-		checkAttrib( SUFFIXED )
-	end if
-	checkAttrib( ABSTRACT )
-	checkAttrib( VIRTUAL )
-	checkAttrib( NOTHISCONSTNESS )
+	checkAttrib( SUFFIXED )
+
+	#macro checkPattrib( ID )
+		if( sym->pattrib and FB_PROCATTRIB_##ID ) then
+			s += lcase( #ID ) + " "
+		end if
+	#endmacro
+
+	checkPAttrib( OVERLOADED )
+	checkPAttrib( METHOD )
+	checkPAttrib( CONSTRUCTOR )
+	checkPAttrib( DESTRUCTOR )
+	checkPAttrib( OPERATOR )
+	checkPAttrib( PROPERTY )
+	checkPAttrib( RETURNBYREF )
+	checkPAttrib( STATICLOCALS )
+	checkPAttrib( ABSTRACT )
+	checkPAttrib( VIRTUAL )
+	checkPAttrib( NOTHISCONSTNESS )
 #endif
 
 #if 1
@@ -2552,14 +2568,14 @@ function symbDumpToStr( byval sym as FBSYMBOL ptr ) as string
 	else
 		checkStat( WSTRING )
 	end if
-	checkStat( RTL_CONST )
+
 	checkStat( EMITTED )
 	checkStat( BEINGEMITTED )
 #endif
 
 	if( sym->class = FB_SYMBCLASS_NSIMPORT ) then
 		s += "from: "
-		s += symbDumpToStr( sym->nsimp.imp_ns )
+		s += symbDumpToStr( sym->nsimp.imp_ns, verbose )
 		return s
 	end if
 
@@ -2574,19 +2590,19 @@ function symbDumpToStr( byval sym as FBSYMBOL ptr ) as string
 		case FB_FUNCMODE_CDECL      : s += " cdecl"
 		end select
 
-#if 0
-		'' Dump parameters recursively (if any)
-		s += "("
-		var param = symbGetProcHeadParam( sym )
-		while( param )
-			s += symbDumpToStr( param )
-			param = param->next
-			if( param ) then
-				s += ", "
-			end if
-		wend
-		s += ")"
-#endif
+		if( verbose ) then
+			'' Dump parameters recursively (if any)
+			s += "("
+			var param = symbGetProcHeadParam( sym )
+			while( param )
+				s += symbDumpToStr( param, verbose )
+				param = param->next
+				if( param ) then
+					s += ", "
+				end if
+			wend
+			s += ")"
+		end if
 
 	case FB_SYMBCLASS_PARAM
 		select case( symbGetParamMode( sym ) )
@@ -2660,7 +2676,7 @@ function symbDumpToStr( byval sym as FBSYMBOL ptr ) as string
 				s += typeDumpToStr( sym->typ, NULL )
 			end select
 		else
-			s += typeDumpToStr( sym->typ, sym->subtype )
+			s += typeDumpToStr( sym->typ, sym->subtype, verbose )
 		end if
 	end if
 

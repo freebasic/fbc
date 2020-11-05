@@ -1,9 +1,230 @@
-{{fbdoc item="title" value="Dynamic Object and Data Lifetime (IN PROGRESS...)"}}----
+{{fbdoc item="title" value="Dynamic Object and Data Lifetime"}}----
 **Lifetime** of **Dynamic Object** and its **Data**, created from declaration keyword for dynamic memory allocation.
 
 **Preamble:**
-	- The Lifetime of an object (and of its data) is the time period in which its instance name exists (and refers to valid data). But in absolute terms, the instance name of the object and its associated data can have two independent lifetimes (the Scope referring to the program part where the instance name is visible).
-	- The dynamic objects considered are the predefined pseudo-objects such as the variable-length strings/arrays, and the instances of complex UDT (with dynamic data allocated). Simple variables but dynamically allocated are also considered.
-	- The declaration keywords for dynamic memory allocation are: 'Allocate'/'Callocate'/'Reallocate', 'New', 'Imagecreate' (for deallocation: 'Deallocate', 'Delete', 'Imagedestroy').
+
+	- The Lifetime of an object (and of its data) is the time period in which its identifier variable exists (and refers to valid data). But in absolute terms, the identifier variable of the object and its associated data can have two independent lifetimes (the Scope referring to the program part where the identifier variable is visible).
+	- The dynamic objects considered are the predefined pseudo-objects such as the variable-length strings/arrays, and the instances of complex UDT (with its own dynamic data allocated).
+	- Simple variables but allocated in a dynamic way are also considered, and finally the dynamic objects which are allocated as well in a dynamic way.
+	- The declaration keywords for dynamic memory allocation are: 'Allocate'/'Callocate'/'Reallocate', 'New', ""'ImageCreate'"" (for deallocation: 'Deallocate', 'Delete', ""'ImageDestroy'"").
+
 	
-For such objects and data dynamically allocated as defined above, the lifetime of the instance name of the object generally matches the surrounding scope (otherwise it can be greater than this one), but the lifetime of associated data may mismatch this one because the allocation/deallocation of associated data is triggered by the user himself.
+	For such objects and data dynamically allocated as defined above, the lifetime of the identifier variable of the object generally matches the surrounding scope (otherwise it can be greater than this one), but the lifetime of associated data may mismatch this one because the allocation/deallocation of associated data is triggered by the user himself.
+
+{{fbdoc item="section" value="Case of predefined pseudo-objects allocated in a static way by user"}}
+	Even though these predefined type variables (variable-length strings ##(1)##, or variable-length arrays ##(2)##) are allocated in a static way as follows (or similar syntax):
+			##(1)	[[KeyPgDim|Dim]] [[[KeyPgShared|Shared]]] [[KeyPgAs|As]] [[KeyPgString|String]] //stringname// ...##
+		or
+			##(2)	[[KeyPgDim|Dim]] [[[KeyPgShared|Shared]]] [[KeyPgAs|As]] [[DataType|datatype]] //arrayname()// ...##
+	these variables can be considered as dynamic pseudo-objects because they are assemblies of two entities:
+		**""-""** a descriptor associated to the identifier variable (//stringname// ##(1)##, or //arrayname()// ##(2)##), the first entity
+		**""-""** referencing a dynamic allocation in memory (the string data ##(1)##, or the array data ##(2)##), the second entity (unnamed).
+		
+	The descriptor is allocated in the .BSS or .DATA section, if 'Shared' is used, otherwise on the program stack.
+	The string data are allocated/reallocated/deallocated in the heap by string assigning, also updating the descriptor accordingly (assigning an empty string does not destroy the descriptor but just resets it).
+	The array data are allocated/reallocated in the heap by 'Redim' and deallocated by 'Erase', also updating the descriptor accordingly ('Erase' does not destroy the descriptor but just re-initializes it).
+	So whatever such a user command applied, the identifier variable remains always defined in its scope, at cons the memory allocation can be dynamically modified/freed in this same scope (accordingly to the user command).
+
+{{fbdoc item="section" value="Case of dynamic objects allocated in a static way by user"}}
+	The user can also define a dynamic object through a complex UDT with member procedures to allocate/reallocate/deallocate dynamic data associated to it.
+	The member procedures normally used to perform this are the constructors (for allocation), the assignment operators (for reallocation) and the destructor (for deallocation).
+	
+	Even if the object identifier variable is allocated in a static way (similarly to above):
+		##[[KeyPgDim|Dim]] [[[KeyPgShared|Shared]]] [[KeyPgAs|As]] //complexUDT// //instancename// ...##
+	inducing automatic allocation and deallocation of object data following the identifier variable scope (by means of implicit call to UDT constructor then destructor), between the two, the dynamic data allocation can be deeply impacted by user commands (such as explicit calls to operators overloaded for the UDT).
+
+{{fbdoc item="section" value="Case of simple variables but allocated in a dynamic way by user"}}
+	The keywords ('Allocate', 'Reallocate', 'New', ""'ImageCreate'""), used to declare a dynamic allocation, create an unnamed entity whose the lifetime depends on other user commands ('Deallocate', 'Delete', ""'ImageDestroy'"").
+	Generally, these allocation keywords are included in expressions used to initialize ##(1|3)##, or assign ##(2|4)##, a simple variable (a pointer ##(1|2)##, or a reference ##(3|4)##), as for example:
+				##(1)	[[KeyPgDim|Dim]] [[KeyPgAs|As]] [[DataType|datatype]] [[KeyPgPtr|Ptr]] //DATApointername// = [[KeyPgOpNew|New]] [[DataType|datatype]] ...##
+			##or##
+				##(2)	[[KeyPgDim|Dim]] [[[KeyPgShared|Shared]]] [[KeyPgAs|As]] [[DataType|datatype]] [[KeyPgPtr|Ptr]] //DATApointername//##
+				##(2)	.....##
+				##(2)	//DATApointername// = [[KeyPgOpNew|New]] [[DataType|datatype]] ...##
+		or
+				##(3)	[[KeyPgDim|Dim]] [[KeyPgByrefVariables|Byref]] [[KeyPgAs|As]] [[DataType|datatype]] //DATAreferencename// = [[KeyPgOpValueOf|*]][[KeyPgOpNew|New]] [[DataType|datatype]] ...##
+			##or##
+				##(4)	[[KeyPgDim|Dim]] [[[KeyPgShared|Shared]]] [[KeyPgByrefVariables|Byref]] [[KeyPgAs|As]] [[DataType|datatype]] //DATAreferencename// = [[KeyPgOpValueOf|*]][[KeyPgCptr|Cptr]]([[DataType|datatype]] [[KeyPgPtr|Ptr]], 0)##
+				##(4)	.....##
+				##(4)	[[KeyPgOpAt|@]]//DATAreferencename// = [[KeyPgOpNew|New]] [[DataType|datatype]] ...##
+				
+	Therefore, in this case, there are two distinct entities:
+		**""-""** a named pointer ##(1|2)## or a reference ##(3|4)##, the first entity,
+		**""-""** pointing ##(1|2)## or referring ##(3|4)## to an allocated memory, the second entity (unnamed).
+		
+	Do not confuse the two entities, each has its own lifetime.
+	'Deallocate', 'Delete', ""'ImageDestroy'"", deallocating only the second entity (not the first), as for example using:
+			##(1|2)	[[KeyPgOpDelete|Delete]] //DATApointername//##
+		or
+			##(3|4)	[[KeyPgOpDelete|Delete]] [[KeyPgOpAt|@]]//DATAreferencename//##
+
+{{fbdoc item="section" value="Case of dynamic objects allocated as well in a dynamic way by user"}}
+	The dynamic object (complex UDT) can also be allocated as well in a dynamic way (similarly to above), by initializing ##(1|3)##, or assigning ##(2|4)##, a simple variable (a pointer ##(1|2)##, or a reference ##(3|4)##), as for example:
+				##(1)	[[KeyPgDim|Dim]] [[KeyPgAs|As]] //complexUDT// [[KeyPgPtr|Ptr]] //UDTpointername// = [[KeyPgOpNew|New]] //complexUDT// ...##
+			##or##
+				##(2)	[[KeyPgDim|Dim]] [[[KeyPgShared|Shared]]] [[KeyPgAs|As]] //complexUDT// [[KeyPgPtr|Ptr]] //UDTpointername//##
+				##(2)	.....##
+				##(2)	//UDTpointername// = [[KeyPgOpNew|New]] //complexUDT// ...##
+		or
+				##(3)	[[KeyPgDim|Dim]] [[KeyPgByrefVariables|Byref]] [[KeyPgAs|As]] //complexUDT// //UDTreferencename// = [[KeyPgOpValueOf|*]][[KeyPgOpNew|New]] //complexUDT// ...##
+			##or##
+				##(4)	[[KeyPgDim|Dim]] [[[KeyPgShared|Shared]]] [[KeyPgByrefVariables|Byref]] [[KeyPgAs|As]] //complexUDT// //UDTreferencename// = [[KeyPgOpValueOf|*]][[KeyPgCptr|Cptr]](//complexUDT// [[KeyPgPtr|Ptr]], 0)##
+				##(4)	.....##
+				##(4)	[[KeyPgOpAt|@]]//UDTreferencename// = [[KeyPgOpNew|New]] //complexUDT// ...##
+				
+	Therefore, in this last case, three entities can be considered:
+		**""-""** a named pointer ##(1|2)## or a reference ##(3|4)##, the first entity,
+		**""-""** pointing ##(1|2)## or referring ##(3|4)## to the allocated fields of the object, the second entity (unnamed),
+		**""-""** and addressing the dynamic allocated associated data, the third entity (unnamed).
+		
+	Do not confuse the three entities, each has its own lifetime.
+	'Delete' deallocates the second entity (not the first), which begins to deallocate the third at first (by calling its destructor), as for example using:
+			##(1|2)	[[KeyPgOpDelete|Delete]] //UDTpointername//##
+		or
+			##(3|4)	[[KeyPgOpDelete|Delete]] [[KeyPgOpAt|@]]//UDTreferencename//##
+
+{{fbdoc item="section" value="Example"}}
+	Dynamic object (complex UDT) allocated as well in a dynamic way by user:
+		**""-""** first entity: the UDT reference, statically allocated on the program stack,
+		**""-""** second entity: the UDT instance with its zstring pointer field (referred by the UDT reference), dynamically allocated in the heap by the user,
+		**""-""** third entity: the zstring data (referred by the zstring pointer field), dynamically reallocated in the heap by the UDT procedure members (constructors, let operator, destructor).
+		{{fbdoc item="filename" value="examples/manual/proguide/objectlifetime/dynamicobject.bas"}}%%(freebasic)
+Type complexUDT
+	Public:
+		Declare Constructor ()
+		Declare Constructor (Byval p As Zstring Ptr)
+		Declare Operator Let (Byval p As Zstring Ptr)
+		Declare Operator Cast () As String
+		Declare Property info () As String ' allocation address, allocation size, string length
+		Declare Destructor ()
+	Private:
+		Dim As Zstring Ptr pz
+End Type
+
+Declare Sub prntInfo_printString (Byref u As complexUDT)
+  
+  
+Print "'Dim Byref As complexUDT ref = *New complexUDT(""Beginning"")':"
+Dim Byref As complexUDT ref = *New complexUDT("Beginning")
+prntInfo_printString(ref)
+
+Print "'ref = """"':"
+ref = ""
+prntInfo_printString(ref)
+
+Print "'ref = ""FreeBASIC""':"
+ref = "FreeBASIC"
+prntInfo_printString(ref)
+
+Print "'ref = ""Programmer's Guide / Declarations / Dynamic Object and Data Lifetime""':"
+ref = "Programmer's Guide / Declarations / Dynamic Object and Data Lifetime"
+prntInfo_printString(ref)
+
+Print "'ref.Destructor()':"
+ref.Destructor()
+prntInfo_printString(ref)
+
+Print "'ref.Constructor()':"
+ref.Constructor()
+prntInfo_printString(ref)
+
+Print "'ref.Constructor(""End"")':"
+ref.Constructor("End")
+prntInfo_printString(ref)
+
+Print "'Delete @ref':"
+Delete @ref
+@ref = 0 ' systematic safety to avoid double-delete on same allocation
+
+Sleep
+
+
+Constructor complexUDT ()
+	Print "    complexUDT.Constructor()"
+	This.pz = Reallocate(This.pz, 1)
+	(*This.pz)[0] = 0
+End Constructor
+
+Constructor complexUDT (Byval p As Zstring Ptr)
+	Print "    complexUDT.Constructor(Byval As Zstring Ptr)"
+	This.pz = Reallocate(This.pz, Len(*p) + 1)
+	*This.pz = *p
+End Constructor
+
+Operator complexUDT.Let (Byval p As Zstring Ptr)
+	Print "    complexUDT.Let(Byval As Zstring Ptr)"
+	This.pz = Reallocate(This.pz, Len(*p) + 1)
+	*This.pz = *p
+End Operator
+
+Operator complexUDT.Cast () As String
+	Return """" & *This.pz & """"
+End Operator
+
+Property complexUDT.info () As String
+	Return "&h" & Hex(This.pz, Sizeof(Any Ptr) * 2) & ", " & _     ' allocation address
+			Len(*This.pz) + Sgn(Cast(Integer, This.pz)) & ", " & _ ' allocation size
+			Len(*This.pz)                                          ' string length
+End Property
+
+Destructor complexUDT ()
+	Print "    complexUDT.Destructor()"
+	This.pz = Reallocate(This.pz, 0)
+End Destructor
+
+
+Sub prntInfo_printString (Byref u As complexUDT)
+	Print "        " & u.info
+	Print "        " & u
+	Print
+End Sub
+			%%Output:
+				%%
+'Dim Byref As complexUDT ref = *New complexUDT("Beginning")':
+	complexUDT.Constructor(Byval As Zstring Ptr)
+		&h001F2AD0, 10, 9
+		"Beginning"
+
+'ref = ""':
+	complexUDT.Let(Byval As Zstring Ptr)
+		&h001F2AD0, 1, 0
+		""
+
+'ref = "FreeBASIC"':
+	complexUDT.Let(Byval As Zstring Ptr)
+		&h001F2AD0, 10, 9
+		"FreeBASIC"
+
+'ref = "Programmer's Guide / Declarations / Dynamic Object and Data Lifetime"':
+	complexUDT.Let(Byval As Zstring Ptr)
+		&h001F2AD0, 69, 68
+		"Programmer's Guide / Declarations / Dynamic Object and Data Lifetime"
+
+'ref.Destructor()':
+	complexUDT.Destructor()
+		&h00000000, 0, 0
+		""
+
+'ref.Constructor()':
+	complexUDT.Constructor()
+		&h001F2AD0, 1, 0
+		""
+
+'ref.Constructor("End")':
+	complexUDT.Constructor(Byval As Zstring Ptr)
+		&h001F2AE0, 4, 3
+		"End"
+
+'Delete @ref':
+	complexUDT.Destructor()
+%%
+{{fbdoc item="section" value="See also"}}
+	- ##[[KeyPgAllocate|Allocate]]##, ##[[KeyPgCallocate|Callocate]]##, ##[[KeyPgReallocate|Reallocate]]##, ##[[KeyPgDeallocate|Deallocate]]##
+	- ##[[KeyPgOpNew|New (Expression)]]##, ##[[KeyPgOpDelete|Delete (Statement)]]##
+	- ##[[KeyPgImagecreate|ImageCreate]]##, ##[[KeyPgImageDestroy|ImageDestroy]]##
+	- ##[[KeyPgRedim|Redim]]##, ##[[KeyPgErase|Erase]]##
+	- [[ProPgStorageClasses|Storage Classes]]
+	- [[ProPgVariableScope|Variable Scope]]
+	- [[ProPgVariableLifetime|Simple Variable Lifetime vs Scope]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

@@ -9,6 +9,9 @@ Control flow statement.
 {{fbdoc item="desc"}}
 	##**Wend**## specifies the end of a ##[[KeyPgWhilewend|While...Wend]]## loop block.
 
+{{fbdoc item="ex"}}
+	See example at ##[[KeyPgWhilewend|While...Wend]]##.
+
 {{fbdoc item="diff"}}
 	- None
 

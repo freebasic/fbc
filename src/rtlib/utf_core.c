@@ -26,6 +26,24 @@ const UTF_32 __fb_utf8_offsetsTb[6] =
 		0x00000000UL, 0x00003080UL, 0x000E2080UL, 0x03C82080UL, 0xFA082080UL, 0x82082080UL
 	};
 
+/*
+	void fb_hCharToUTF8( const char *src, ssize_t chars, char *dst, ssize_t *total_bytes )
+
+		'src' is the address of the source ascii string and must not
+		be null if 'chars' > 0.
+
+		'chars' is  number of ascii characters to convert including
+		embedded or terminating null characters.
+
+		'dst' is the destination buffer for the utf-8 encoded string
+		and must not be null if 'chars' > 0.
+
+		'total_bytes' is set to the total number of bytes written 
+		to 'dst' on return and must not be null if 'chars' > 0.
+
+		no return value
+*/
+
 void fb_hCharToUTF8( const char *src, ssize_t chars, char *dst, ssize_t *total_bytes )
 {
 	UTF_8 c;

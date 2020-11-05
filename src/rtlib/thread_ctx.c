@@ -3,6 +3,7 @@
 #include "fb.h"
 #include "fb_private_thread.h"
 #include "fb_gfx_private.h"
+#include <assert.h>
 
 #if defined ENABLE_MT && defined HOST_UNIX
 	#define FB_TLSENTRY           pthread_key_t
@@ -32,15 +33,31 @@
 
 static FB_TLSENTRY __fb_tls_ctxtb[FB_TLSKEYS];
 
+#define FB_TLS_DATA_TO_HEADER( data ) ( ( ( FB_TLS_CTX_HEADER *)data ) - 1 )
+#define FB_TLS_HEADER_TO_DATA( header ) ( ( void *) ( header + 1 ) )
+
 /* Retrieve or create new TLS context for given key */
-FBCALL void *fb_TlsGetCtx( int index, size_t len )
+FBCALL void *fb_TlsGetCtx( int index, size_t len, FB_TLS_DESTRUCTOR destructorFn )
 {
 	void *ctx = (void *)FB_TLSGET( __fb_tls_ctxtb[index] );
 
 	if( ctx == NULL ) {
-		ctx = (void *)calloc( 1, len );
-		FB_TLSSET( __fb_tls_ctxtb[index], ctx );
+		FB_TLS_CTX_HEADER *ctxHeader = (FB_TLS_CTX_HEADER *)calloc( 1, len + sizeof(FB_TLS_CTX_HEADER) );
+		if( ctxHeader != NULL ) {
+			ctxHeader->destructor = destructorFn;
+			ctx = FB_TLS_HEADER_TO_DATA( ctxHeader );
+			FB_TLSSET( __fb_tls_ctxtb[index], ctx );
+			
+                }
+
 	}
+#ifdef DEBUG
+	else {
+		FB_TLS_CTX_HEADER *ctxHeader = FB_TLS_DATA_TO_HEADER( ctx );
+		/* The && is intentional here so if the assert fires, the message is displayed too */
+		assert( (ctxHeader->destructor == destructorFn) && "fb_TlsGetCtx trying to set different destructor for existing data" );
+	}
+#endif
 
 	return ctx;
 }
@@ -51,14 +68,11 @@ FBCALL void fb_TlsDelCtx( int index )
 
 	/* free mem block if any */
 	if( ctx != NULL ) {
-		if( index == FB_TLSKEY_GFX ) {
-			/* gfxlib2's TLS context is a special case: it stores
-			   some malloc'ed data that stays alive forever, so it
-			   so it requires extra clean-up when the thread exits.
-			   see also gfxlib2's fb_hGetContext() */
-			free( ((FB_GFXCTX *)ctx)->line );
+		FB_TLS_CTX_HEADER *ctxHeader = FB_TLS_DATA_TO_HEADER( ctx );
+		if( ctxHeader->destructor ) {
+			( ctxHeader->destructor )( ctx );
 		}
-		free( ctx );
+		free( ctxHeader );
 		FB_TLSSET( __fb_tls_ctxtb[index], NULL );
 	}
 }

@@ -306,7 +306,7 @@ private function hFindId _
 					hComplainIfAbstractClass( FB_DATATYPE_STRUCT, sym )
 
 					'' skip ID, ctorCall() is also used by type<>(...)
-					lexSkipToken( )
+					lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 					return cStrIdxOrMemberDeref( cCtorCall( sym ) )
 				end if
@@ -318,7 +318,7 @@ private function hFindId _
 					hComplainIfAbstractClass( FB_DATATYPE_STRUCT, symbGetSubtype( sym ) )
 
 					'' skip ID, ctorCall() is also used by type<>(...)
-					lexSkipToken( )
+					lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 					return cStrIdxOrMemberDeref( cCtorCall( symbGetSubtype( sym ) ) )
 				end if
@@ -371,7 +371,7 @@ private function hBaseMemberAccess _
 		end if
 
 		'' BASE
-		lexSkipToken( LEXCHECK_NOPERIOD )
+		lexSkipToken( LEXCHECK_NOPERIOD or LEXCHECK_POST_SUFFIX )
 
 		'' '.'
 		if( hMatch( CHAR_DOT ) = FALSE ) then

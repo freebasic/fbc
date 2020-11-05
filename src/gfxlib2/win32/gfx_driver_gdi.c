@@ -32,6 +32,7 @@ GFXDRIVER fb_gfxDriverGDI =
 static BITMAPINFO *bitmap_info;
 static HPALETTE palette;
 static unsigned char *buffer;
+static int switched_to_fullscreen;
 
 static void alpha_remover_blitter(unsigned char *dest, int pitch)
 {
@@ -41,7 +42,9 @@ static void alpha_remover_blitter(unsigned char *dest, int pitch)
 	char *dirty = __fb_gfx->dirty;
 	int x, y;
 
-	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
+	DBG_ASSERT((fb_win32.depth == 32) && (__fb_gfx->scanline_size == 1));
+
+	for (y = __fb_gfx->h; y; y--) {
 		if (*dirty) {
 			s = (unsigned int *)src;
 			d = (unsigned int *)dest;
@@ -110,7 +113,7 @@ static int gdi_init(void)
 		} else if (ChangeDisplaySettings(&mode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
 			return -1;
 		}
-		
+		switched_to_fullscreen = 1;
 		style = WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 	} else {
 		style = WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME;
@@ -146,7 +149,7 @@ static int gdi_init(void)
 		y = monitor_info.rcMonitor.top;
 	}
 
-	if (fb_hInitWindow(style | WS_VISIBLE, ex_style, x, y, rect.right, rect.bottom))
+	if (fb_hInitWindow(style, ex_style, x, y, rect.right, rect.bottom))
 		return -1;
 	if (fb_win32.flags & DRIVER_SHAPED_WINDOW) {
 		if (!fb_win32.SetLayeredWindowAttributes)
@@ -165,25 +168,25 @@ static int gdi_init(void)
 	bitmap_info->bmiHeader.biClrUsed = 256;
 	bitmap_info->bmiHeader.biCompression = BI_RGB;
 
-	if ((fb_win32.depth >= 16) || (fb_win32.w & 0x3)) {
-		if (fb_win32.depth == 16) {
+	if ((fb_win32.depth >= 16) || (fb_win32.w & 0x3) || (__fb_gfx->scanline_size > 1)) {
+		if ((fb_win32.flags & DRIVER_SHAPED_WINDOW) && (fb_win32.depth == 32)) {
+			fb_win32.blitter = alpha_remover_blitter;
+		}
+		else if (fb_win32.depth == 16) {
 			fb_win32.blitter = fb_hGetBlitter(15, FALSE);
 			if (!fb_win32.blitter)
 				return -1;
 		}
-		else if (fb_win32.w & 0x3) {
+		else if ((fb_win32.w & 0x3) || (__fb_gfx->scanline_size > 1)) {
 			fb_win32.blitter = fb_hGetBlitter(fb_win32.depth, FALSE);
 			if (!fb_win32.blitter)
 				return -1;
 		}
-		if (fb_win32.flags & DRIVER_SHAPED_WINDOW)
-		{
-			if( fb_win32.depth == 32 )
-				fb_win32.blitter = alpha_remover_blitter;
+		if(fb_win32.blitter) {
+			buffer = malloc(((fb_win32.w + 3) & ~3) * fb_win32.h * __fb_gfx->bpp);
+			if (!buffer)
+				return -1;
 		}
-		buffer = malloc(((fb_win32.w + 3) & ~3) * fb_win32.h * __fb_gfx->bpp);
-		if (!buffer)
-			return -1;
 	}
 
 	hdc = GetDC(fb_win32.wnd);
@@ -198,6 +201,8 @@ static int gdi_init(void)
 
 	ReleaseDC(fb_win32.wnd, hdc);
 
+	ShowWindow(fb_win32.wnd, SW_SHOWNORMAL);
+
 	return 0;
 }
 
@@ -208,9 +213,11 @@ static void gdi_exit(void)
 	if (bitmap_info)
 		free(bitmap_info);
 	if (fb_win32.wnd) {
-		if (fb_win32.flags & DRIVER_FULLSCREEN)
-			ChangeDisplaySettings(NULL, 0);
 		DestroyWindow(fb_win32.wnd);
+	}
+	if(switched_to_fullscreen) {
+		switched_to_fullscreen = 0;
+		ChangeDisplaySettings(NULL, 0);
 	}
 	if (palette)
 		DeleteObject(palette);
@@ -223,7 +230,7 @@ static DWORD WINAPI gdi_thread( LPVOID param )
 #endif
 {
 	HANDLE running_event = param;
-	int i, y1, y2, h;
+	int i, y1, y2, h, scanline_size;
 	unsigned char *source, keystate[256];
 	HDC hdc;
 	RECT rect;
@@ -239,6 +246,7 @@ static DWORD WINAPI gdi_thread( LPVOID param )
 	while (fb_win32.is_running)
 	{
 		fb_hWin32Lock();
+		scanline_size = __fb_gfx->scanline_size;
 
 		hdc = GetDC(fb_win32.wnd);
 		if (fb_win32.is_palette_changed) {
@@ -255,19 +263,22 @@ static DWORD WINAPI gdi_thread( LPVOID param )
 			fb_win32.is_palette_changed = FALSE;
 		}
 		/* Only do a single SetDIBitsToDevice call per frame */
-		for (y1 = 0; y1 < fb_win32.h; y1++) {
+		for (y1 = 0; y1 < __fb_gfx->h; y1++) {
 			if (__fb_gfx->dirty[y1]) {
-				for (y2 = fb_win32.h - 1; !__fb_gfx->dirty[y2]; y2--)
+				for (y2 = __fb_gfx->h - 1; !__fb_gfx->dirty[y2]; y2--)
 					;
-				h = y2 - y1 + 1;
+
 				if (fb_win32.blitter) {
-					fb_win32.blitter(buffer, (__fb_gfx->pitch + 3) & ~3);
+					y1 *= scanline_size;
+					y2 *= scanline_size;
+					fb_win32.blitter(buffer, (__fb_gfx->pitch + 3) & ~0x3);
 					source = buffer + (y1 * ((__fb_gfx->pitch + 3) & ~0x3));
 				}
 				else
 				{
 					source = __fb_gfx->framebuffer + (y1 * __fb_gfx->pitch);
 				}
+				h = (y2 - y1 + 1);
 
 				SetDIBitsToDevice(hdc, 0, y1, fb_win32.w, h, 0, 0, 0, h, source, bitmap_info, DIB_RGB_COLORS);
 				

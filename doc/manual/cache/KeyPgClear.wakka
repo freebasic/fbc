@@ -18,7 +18,7 @@ Clears or initializes some memory
 {{fbdoc item="desc"}}
 	##**Clear**## sets one or more bytes in memory to a certain value (the default value is zero (##0##) if not specified). The starting address is taken from a reference to a variable or array element.
 	
-	**NOTE:** In order to clear memory referenced by a ##[[KeyPgPtr|Pointer]]##, it must be dereferenced first.  Otherwise, ##**Clear**## will try to clear the bytes at the **pointer variable**'s memory location.
+	**NOTE:** In order to clear memory referenced by a ##[[KeyPgPtr|Pointer]]##, it must be dereferenced first (or else specifying in argument term the ##[[KeyPgByval|Byval]]## keyword in front of the pointer name). Otherwise, ##**Clear**## will try to clear the bytes at the **pointer variable**'s memory location.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/array/clear.bas"}}%%(freebasic)

@@ -20,9 +20,14 @@ int fb_hArrayRealloc
 	ssize_t lbTB[FB_MAXDIMENSIONS];
 	ssize_t ubTB[FB_MAXDIMENSIONS];
 	unsigned char *this_;
+	void *reallocTemp;
 
 	/* ditto, see fb_hArrayAlloc() */
 	if( (dimensions != array->dimensions) && (array->dimensions != 0) )
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+
+	/* fixed length? */
+	if( array->flags & FBARRAY_FLAGS_FIXED_LEN )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
     /* load bounds */
@@ -52,10 +57,11 @@ int fb_hArrayRealloc
     size = elements * element_len;
 
 	/* realloc */
-    array->ptr = realloc( array->ptr, size );
-    if( array->ptr == NULL )
+    reallocTemp = realloc( array->ptr, size );
+    if( reallocTemp == NULL )
         return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
 
+    array->ptr = reallocTemp;
     /* Have remainder? */
     if( size > array->size ) {
         /* Construct or clear new array elements: */
@@ -134,25 +140,6 @@ int fb_ArrayRedimPresvEx
 
 	va_start( ap, dimensions );
     res = hRedim( array, element_len, doclear, isvarlen, dimensions, ap );
-    va_end( ap );
-
-    return res;
-}
-
-int fb_ArrayRedimPresv
-	(
-		FBARRAY *array,
-		size_t element_len,
-		int isvarlen,
-		size_t dimensions,
-		...
-	)
-{
-	va_list ap;
-	int res;
-
-	va_start( ap, dimensions );
-    res = hRedim( array, element_len, TRUE, isvarlen, dimensions, ap );
     va_end( ap );
 
     return res;

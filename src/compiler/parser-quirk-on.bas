@@ -48,7 +48,7 @@ private function cGOTBStmt _
 	end if
 
 	'' GOTO|GOSUB
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' store expression into a temp var
 	sym = symbAddTempVar( FB_DATATYPE_UINT )
@@ -74,7 +74,7 @@ private function cGOTBStmt _
 				'' them to the table anymore
 			end if
 
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		case else
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
@@ -135,10 +135,10 @@ function cOnStmt _
 	function = FALSE
 
 	'' ON
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' LOCAL?
-	if( hMatch( FB_TK_LOCAL ) ) then
+	if( hMatch( FB_TK_LOCAL, LEXCHECK_POST_SUFFIX ) ) then
 		if( fbIsModLevel( ) ) then
 			errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
 			exit function
@@ -151,7 +151,7 @@ function cOnStmt _
 	'' ERROR | Expression
 	expr = NULL
 	if( lexGetToken( ) = FB_TK_ERROR ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 	else
 		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 	end if
@@ -195,7 +195,7 @@ function cOnStmt _
 	'' on error?
 	if( expr = NULL ) then
 		'' GOTO|GOSUB
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		isrestore = FALSE
 		'' ON ERROR GOTO 0?
@@ -215,7 +215,7 @@ function cOnStmt _
 				label = symbAddLabel( lexGetText( ), FB_SYMBOPT_CREATEALIAS )
 			end if
 
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			expr = astNewADDROF( astNewVAR( label ) )
 			rtlErrorSetHandler( expr, (islocal = TRUE) )

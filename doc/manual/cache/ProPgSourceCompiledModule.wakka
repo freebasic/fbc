@@ -1,0 +1,48 @@
+{{fbdoc item="title" value="Manage Reusable Procedures by Including Source vs Compiled Modules"}}----
+How to **manage** ""FreeBASIC"" **reusable procedures** by **including source modules** versus **including compiled modules**.
+**##//(written with help of Josep Roca's posts)//##**
+
+**Preamble:**
+
+	When old OSs (like DOS) were used, compiling by separate modules was mandatory as soon as the program was not very short, because of the small memory size available for the compiler (about 200 KB with Quick Basic 4.5).
+	Now, with modern PC and OS, this compilation limit is pushed back by a factor of about 10000, and the compile time for a large file in one go has become acceptable especially with ""FreeBASIC"".
+	This allows to use another method (than a library of compiled files) to manage the reusable user procedures.
+	
+	First, the reusable user procedures source codes are grouped into different source modules, for example by functionality.
+	Then the process is different depending on each method used.
+	
+	To simplify the explanation that follows, it is considered that there is only one source file containing the main program, which calls the various user procedures contained in source modules for reuse.
+	But one can easily complete these methods to take into account a main program spread over several source files.
+
+{{fbdoc item="section" value="First method: The compiled modules stored in a library file are included in the linking process with the compiled main program"}}
+	The principle of this method is by only accessing to the compiled user procedures.
+	
+	The different modules (containing the sources of the user procedures to be reused) are turned in to object files and then stored into a library file (using the ##[[CompilerOptlib|-lib]]## compile option).
+	Finally the source file of the main program is compiled, then linked to the library, to make an executable (using the ##[[CompilerOptl|-l < libname >]]## compile option, or the ##[[KeyPgInclib|#inclib "libname"]]## directive put at beginning of the main program source code).
+	
+	For each compiled module, if at least one procedure is called, then the entire module will be added in the final executable.
+	
+	Thus, the granularity of the added code to the executable is at the module level (coarse granularity).
+
+{{fbdoc item="section" value="Second method: The source modules are included directly in the main source program to be compiled in one go"}}
+	The principle of this method is by fully accessing to the sources of user procedures.
+	
+	The different modules (containing the sources of the user procedures to be reused) are directly included in the source of the main program (using the ##[[KeyPgInclude|#include "file"]]## directive for each module, put at the beginning of the main program source code).
+	Finally, the big resulting source file is compiled in one go to make it an executable.
+	
+	Since the compiler processes a single source file, all reusable user procedures can be declared as ##[[KeyPgPrivate|Private]]## (which is obviously impossible when using library because the external links are required during the linkage).
+	As a result, only the Private procedures really called will be kept in the executable.
+	
+	Thus, the granularity of the code added to the executable is at the elementary procedure level (fine granularity).
+	
+	**Note:**
+		The compiler removes the Private procedures that are not called, but this does not currently work for Private procedures that are only called by other Private procedures that are not called themselves, because the first ones appear as being called.
+		The problem is that the one-pass compiler only uses a simple flag to track the "used" state of a procedure, which is set whenever the procedure is accessed, no matter from where.
+
+{{fbdoc item="see"}}
+	- [[CompilerCmdLine|fbc command-line]]
+	- [[ProPgSourceFiles|Source Files (.bas)]]
+	- [[ProPgHeaderFiles|Header Files (.bi)]]
+	- [[ProPgPrebuiltLibraries|Using Prebuilt Libraries]]	
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

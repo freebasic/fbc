@@ -4,5 +4,10 @@
 
 FBCALL void fb_ArrayStrErase( FBARRAY *array )
 {
-	fb_ArrayErase( array, -1 );
+	fb_ArrayDestructStr( array );
+
+	/* only free the memory if it's not a fixed length array */
+	if( array && !(array->flags & FBARRAY_FLAGS_FIXED_LEN) ) {
+		fb_ArrayErase( array );
+	}
 }

@@ -47,7 +47,7 @@ private function hProcArg _
 
 	'' BYVAL?
 	if( lexGetToken( ) = FB_TK_BYVAL ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		amode = FB_PARAMMODE_BYVAL
 	end if
 
@@ -72,7 +72,7 @@ private function hProcArg _
 			'' check for BYVAL if it's the first param, due the optional ()'s
 			if( (argnum = 0) and (amode = INVALID) ) then
 				'' BYVAL?
-				if( hMatch( FB_TK_BYVAL ) ) then
+				if( hMatch( FB_TK_BYVAL, LEXCHECK_POST_SUFFIX ) ) then
 					amode = FB_PARAMMODE_BYVAL
 					expr = cExpression( )
 				end if
@@ -148,7 +148,7 @@ private sub hOvlProcArg _
 	arg->mode = INVALID
 
 	'' BYVAL?
-	if( hMatch( FB_TK_BYVAL ) ) then
+	if( hMatch( FB_TK_BYVAL, LEXCHECK_POST_SUFFIX ) ) then
 		arg->mode = FB_PARAMMODE_BYVAL
 	end if
 
@@ -168,7 +168,7 @@ private sub hOvlProcArg _
 			'' check for BYVAL if it's the first param, due the optional ()'s
 			if( (argnum = 0) and (arg->mode = INVALID) ) then
 				'' BYVAL?
-				if( hMatch( FB_TK_BYVAL ) ) then
+				if( hMatch( FB_TK_BYVAL, LEXCHECK_POST_SUFFIX ) ) then
 					arg->mode = FB_PARAMMODE_BYVAL
 					arg->expr = cExpression( )
 				end if
@@ -218,7 +218,7 @@ private sub hMaybeWarnAboutEqOutsideParens _
 	'' could resolve to a different overload than
 	''    (f( a )) = b
 
-	warn = symbIsRef( proc )
+	warn = symbIsReturnByRef( proc )
 
 	if( warn = FALSE ) then
 		'' Also check other overloads, if any (for this to work,
@@ -230,7 +230,7 @@ private sub hMaybeWarnAboutEqOutsideParens _
 					exit do
 				end if
 
-				warn = symbIsRef( proc )
+				warn = symbIsReturnByRef( proc )
 			loop until( warn )
 		end if
 	end if

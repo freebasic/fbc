@@ -26,6 +26,7 @@ Appends and assigns a string onto another string
 	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]## using the appropriate syntax.
 	
 	Note: This operator exists in C/""C++"" with a different meaning - there it performs a bitwise ##[[KeyPgOpCombineAnd|And=]]##.
+	//Note: Similarly to the operator '=[>]' (assign), the alternative symbol '&=>' can be also used.//
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/concat-assign.bas"}}%%(freebasic)

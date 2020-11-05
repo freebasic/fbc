@@ -8,7 +8,8 @@
 
 #include Once "bass.bi"
 
-Const SOUND_FILE = "test.mod"
+'' this mod file should be available in the fbc package:
+Const SOUND_FILE = "..\..\sound\data\dne_trtn.mod"
 
 If (BASS_GetVersion() < MAKELONG(2,2)) Then
 	Print "BASS version 2.2 or above required!"

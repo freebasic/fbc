@@ -1,4 +1,11 @@
-/* ERASE for static arrays of objects: re-init the elements */
+/* ERASE for static arrays of objects: re-init the elements
+
+   fb_ArrayClearObj() is called only if it was known at
+   compile time that the array is fixed length.
+   Otherwise, if dynamic / static was not known, then
+   the entry point will be through fb_ArrayEraseObj().and
+   a run time check for dynamic / static is made.
+*/
 
 #include "fb.h"
 
@@ -11,12 +18,12 @@ void fb_hArrayCtorObj( FBARRAY *array, FB_DEFCTOR ctor, size_t base_idx )
 	if( array->ptr == NULL )
 		return;
 
-    dim = &array->dimTB[0];
-    elements = dim->elements - base_idx;
-    ++dim;
+	dim = &array->dimTB[0];
+	elements = dim->elements - base_idx;
+	++dim;
 
-    for( i = 1; i < array->dimensions; i++, dim++ )
-	   	elements *= dim->elements;
+	for( i = 1; i < array->dimensions; i++, dim++ )
+		elements *= dim->elements;
 
 	/* call ctors */
 	element_len = array->element_len;
@@ -34,8 +41,7 @@ FBCALL int fb_ArrayClearObj
 	(
 		FBARRAY *array,
 		FB_DEFCTOR ctor,
-		FB_DEFCTOR dtor,
-		int dofill /* legacy */
+		FB_DEFCTOR dtor
 	)
 {
 	/* destruct all objects in the array
@@ -43,15 +49,13 @@ FBCALL int fb_ArrayClearObj
 	if( dtor )
 		fb_ArrayDestructObj( array, dtor );
 
-	if( dofill ) {
-		/* re-initialize (ctor can be NULL if there only is a dtor) */
-		if( ctor )
-			/* if a ctor exists, it should handle the whole initialization */
-			fb_hArrayCtorObj( array, ctor, 0 );
-		else
-			/* otherwise, just clear */
-			fb_ArrayClear( array, 0 );
-	}
+	/* re-initialize (ctor can be NULL if there only is a dtor) */
+	if( ctor )
+		/* if a ctor exists, it should handle the whole initialization */
+		fb_hArrayCtorObj( array, ctor, 0 );
+	else
+		/* otherwise, just clear */
+		fb_ArrayClear( array );
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

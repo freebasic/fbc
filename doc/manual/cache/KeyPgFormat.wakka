@@ -29,31 +29,62 @@ Formats a number in a specified format
 		{{table columns="2" cellpadding="1" cells="Symbol ; Description;d, dd; Display the day as a one-digit/two-digit number (1-31/01-31);ddd; Display the day as an abbreviation (Sun-Sat);dddd; Display the day as a full name (Sunday-Saturday);ddddd;  Display a serial date number as a complete date (including day, month and year);m, mm; Display the month as a one-digit/two-digit number (1-12/01-12).  If immediately following h or hh, the minute rather than the month is displayed;M, MM; Display the month as a one-digit/two-digit number (1-12/01-12), even if immediately following h or hh;mmm; Display the month as an abbreviation (Jan-Dec);mmmm; Display the month as a full name (January-December);y, yy; Display the year as a two-digit number (00-99);yyyy; Display the year as a four-digit number (1900-2040);h, hh; Display the hour as a one-digit/two-digit number (0-23/00-23);m, mm; Display the minute as a one-digit/two-digit number (0-59/00-59).  If not immediately following h or hh, the month rather than the minute is displayed;n, nn; Display the minute as a one-digit/two-digit number (0-59/00-59), even if not immediately following h or hh;s, ss; Display the second as a one-digit/two-digit number (0-59/00-59);ttttt; Display a time serial number as a complete time, including hour, minute and second;AM/PM (Default), am/pm; Use the 12-hour clock displaying AM or am with any hour before noon, PM or pm with any hour between noon and 11:59;A/P, a/p;  Use the 12-hour clock displaying A or a with any hour before noon, P or p with any hour between noon and 11:59 "}}
 
 {{fbdoc item="ex"}}
+Numeric formats
+%%(freebasic)
+#include "string.bi"
+
+dim as double numberVal(...) = {5, -5, .5}
+dim as string formatStr(...) = {"","0","0.00","#,##0","#,##0.00","0%", "0.00%", "0.00E+00", "0.00E-00"}
+
+? "Format string",, str(numberVal(0)), str(numberVal(1)), str(numberVal(2))
+?
+for iFormat as integer = 0 to ubound(formatStr)
+	? formatStr(iFormat),,
+	for iNumber as integer = 0 to ubound(numberVal)
+		? format(numberVal(iNumber), formatStr(iFormat)),
+	next
+	?
+next
+%%Output:
 %%
-Sample numeric formats
-Format (fmt)                  5             -5            .5
-		
-		Null String                   5             -5            0.5
-		0                             5             -5            1
-		0.00                          5.00          -5.00         0.50
-		#,##0                         5             -5            1
-		#,##0.00                      5.00          -5.00         0.50
-		0%                            500%          -500%         50%
-		0.00%                         500.00%       -500.00%      50.00%
-		0.00E+00                      5.00E+00      -5.00E+00     5.00E-01
-		0.00E-00                      5.00E00       -5.00E00      5.00E-01
- Sample Date And Time Formats
-The following are examples of Date And Time formats:
-		 Format  Expression     Display
-		 m/d/yy                 12/7/58
-		 d-mmmm-yy              7-December-58
-		 d-mmmm                 7-December
-		 mmmm-yy                December-58
-		 h:mm AM/PM             8:50 PM
-		 h:mm:ss AM/PM          8:50:35 PM
-		 h:mm                   20:50
-		 h:mm:ss                20:50:35
-		 m/d/yy h:mm            12/7/58 20:50 
+Format string               5             -5            0.5
+
+'                           5             -5            .5            
+0                           5             -5            0             
+0.00                        5.00          -5.00         0.50          
+#,##0                       5             -5            0             
+#,##0.00                    5.00          -5.00         0.50          
+0%                          500%          -500%         50%           
+0.00%                       500.00%       -500.00%      50.00%        
+0.00E+00                    5.00E+00      -5.00E+00     5.00E-01      
+0.00E-00                    5.00E00       -5.00E00      5.00E-01      
+%%
+{{fbdoc item="ex"}}
+Date and time formats
+%%(freebasic)
+#include "vbcompat.bi"
+
+dim as double dateTimeVal = DateValue("12/05/1958") + TimeValue("20:50:35")
+dim as string formatStr(...) = {"yyyy-mm-dd","d-mmmm-yy","d-mmm","mmmm-yyyy","h:mm AM/PM","h:mm:ss AM/PM","h:mm","h:mm:ss","m/d/yy h:mm"}
+
+? "Format",, "Display"
+?
+for iFormat as integer = 0 to ubound(formatStr)
+	? formatStr(iFormat),, format(dateTimeVal, formatStr(iFormat))
+next
+%%Output:
+%%
+Format                      Display
+
+yyyy-mm-dd                  1958-12-05
+d-mmmm-yy                   5-December-58
+d-mmm                       5-Dec
+mmmm-yyyy                   December-1958
+h:mm AM/PM                  8:50 PM
+h:mm:ss AM/PM               8:50:35 PM
+h:mm                        20:50
+h:mm:ss                     20:50:35
+m/d/yy h:mm                 12/5/58 20:50
 %%
 
 {{fbdoc item="lang"}}

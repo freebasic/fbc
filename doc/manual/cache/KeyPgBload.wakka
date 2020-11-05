@@ -20,6 +20,7 @@ Loads arbitrary data from a file created with ##[[KeyPgBsave|Bsave]]##, or a com
 
 {{fbdoc item="desc"}}
 	##**Bload**## can be used to load image data or any other data from a file created with ##[[KeyPgBsave|Bsave]]##, and store that data in an array or paste it to the screen. If ##//dest//## is absent or null (##0##), the image data is pasted to the current graphics screen work page.  Otherwise it is loaded as image data to the address given by ##//dest//##.
+	##**Bload**## must be called only if a graphics mode is initialized, else the program crashes (see ##[[FaqPgbloadworkaround|BLOAD/BSAVE text mode work-around]]## to work in text mode).
 	
 	##**Bload**## can load 3 different types of files:
 		- Old QB-like data files, saved with ##BSAVE## from QB code, containing "raw" data preceded by a 7-byte header, beginning with ##&HFD##, up to 64 ""KiB"" in size

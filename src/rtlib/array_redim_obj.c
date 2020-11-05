@@ -18,7 +18,7 @@ int fb_ArrayRedimObj
 	/* free old */
 	if( dtor )
 		fb_ArrayDestructObj( array, dtor );
-	fb_ArrayErase( array, 0 );
+	fb_ArrayErase( array );
 
 	va_start( ap, dimensions );
 	/* Have to assume doclear=TRUE, because we have no doclear parameter here,

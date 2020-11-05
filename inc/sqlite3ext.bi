@@ -1,4 +1,4 @@
-'' FreeBASIC binding for SQLite 3.8.11.1
+'' FreeBASIC binding for SQLite 3.30.0
 ''
 '' based on the C header files:
 ''   * 2006 June 7
@@ -18,7 +18,7 @@
 ''   * sqlite3.h.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   Copyright © 2019 FreeBASIC development team
 
 #pragma once
 
@@ -26,7 +26,7 @@
 
 extern "C"
 
-#define _SQLITE3EXT_H_
+#define SQLITE3EXT_H
 
 type sqlite3_api_routines
 	aggregate_context as function(byval as sqlite3_context ptr, byval nBytes as long) as any ptr
@@ -122,7 +122,7 @@ type sqlite3_api_routines
 	rollback_hook as function(byval as sqlite3 ptr, byval as sub(byval as any ptr), byval as any ptr) as any ptr
 	set_authorizer as function(byval as sqlite3 ptr, byval as function(byval as any ptr, byval as long, byval as const zstring ptr, byval as const zstring ptr, byval as const zstring ptr, byval as const zstring ptr) as long, byval as any ptr) as long
 	set_auxdata as sub(byval as sqlite3_context ptr, byval as long, byval as any ptr, byval as sub(byval as any ptr))
-	snprintf as function(byval as long, byval as zstring ptr, byval as const zstring ptr, ...) as zstring ptr
+	xsnprintf as function(byval as long, byval as zstring ptr, byval as const zstring ptr, ...) as zstring ptr
 	step as function(byval as sqlite3_stmt ptr) as long
 	table_column_metadata as function(byval as sqlite3 ptr, byval as const zstring ptr, byval as const zstring ptr, byval as const zstring ptr, byval as const zstring ptr ptr, byval as const zstring ptr ptr, byval as long ptr, byval as long ptr, byval as long ptr) as long
 	thread_cleanup as sub()
@@ -219,7 +219,7 @@ type sqlite3_api_routines
 	uri_boolean as function(byval as const zstring ptr, byval as const zstring ptr, byval as long) as long
 	uri_int64 as function(byval as const zstring ptr, byval as const zstring ptr, byval as sqlite3_int64) as sqlite3_int64
 	uri_parameter as function(byval as const zstring ptr, byval as const zstring ptr) as const zstring ptr
-	vsnprintf as function(byval as long, byval as zstring ptr, byval as const zstring ptr, byval as va_list) as zstring ptr
+	xvsnprintf as function(byval as long, byval as zstring ptr, byval as const zstring ptr, byval as va_list) as zstring ptr
 	wal_checkpoint_v2 as function(byval as sqlite3 ptr, byval as const zstring ptr, byval as long, byval as long ptr, byval as long ptr) as long
 	auto_extension as function(byval as sub()) as long
 	bind_blob64 as function(byval as sqlite3_stmt ptr, byval as long, byval as const any ptr, byval as sqlite3_uint64, byval as sub(byval as any ptr)) as long
@@ -237,8 +237,53 @@ type sqlite3_api_routines
 	value_free as sub(byval as sqlite3_value ptr)
 	result_zeroblob64 as function(byval as sqlite3_context ptr, byval as sqlite3_uint64) as long
 	bind_zeroblob64 as function(byval as sqlite3_stmt ptr, byval as long, byval as sqlite3_uint64) as long
+	value_subtype as function(byval as sqlite3_value ptr) as ulong
+	result_subtype as sub(byval as sqlite3_context ptr, byval as ulong)
+	status64 as function(byval as long, byval as sqlite3_int64 ptr, byval as sqlite3_int64 ptr, byval as long) as long
+	strlike as function(byval as const zstring ptr, byval as const zstring ptr, byval as ulong) as long
+	db_cacheflush as function(byval as sqlite3 ptr) as long
+	system_errno as function(byval as sqlite3 ptr) as long
+	trace_v2 as function(byval as sqlite3 ptr, byval as ulong, byval as function(byval as ulong, byval as any ptr, byval as any ptr, byval as any ptr) as long, byval as any ptr) as long
+	expanded_sql as function(byval as sqlite3_stmt ptr) as zstring ptr
+	set_last_insert_rowid as sub(byval as sqlite3 ptr, byval as sqlite3_int64)
+	prepare_v3 as function(byval as sqlite3 ptr, byval as const zstring ptr, byval as long, byval as ulong, byval as sqlite3_stmt ptr ptr, byval as const zstring ptr ptr) as long
+	prepare16_v3 as function(byval as sqlite3 ptr, byval as const any ptr, byval as long, byval as ulong, byval as sqlite3_stmt ptr ptr, byval as const any ptr ptr) as long
+	bind_pointer as function(byval as sqlite3_stmt ptr, byval as long, byval as any ptr, byval as const zstring ptr, byval as sub(byval as any ptr)) as long
+	result_pointer as sub(byval as sqlite3_context ptr, byval as any ptr, byval as const zstring ptr, byval as sub(byval as any ptr))
+	value_pointer as function(byval as sqlite3_value ptr, byval as const zstring ptr) as any ptr
+	vtab_nochange as function(byval as sqlite3_context ptr) as long
+	value_nochange as function(byval as sqlite3_value ptr) as long
+	vtab_collation as function(byval as sqlite3_index_info ptr, byval as long) as const zstring ptr
+	keyword_count as function() as long
+	keyword_name as function(byval as long, byval as const zstring ptr ptr, byval as long ptr) as long
+	keyword_check as function(byval as const zstring ptr, byval as long) as long
+	str_new as function(byval as sqlite3 ptr) as sqlite3_str ptr
+	str_finish as function(byval as sqlite3_str ptr) as zstring ptr
+	str_appendf as sub(byval as sqlite3_str ptr, byval zFormat as const zstring ptr, ...)
+	str_vappendf as sub(byval as sqlite3_str ptr, byval zFormat as const zstring ptr, byval as va_list)
+	str_append as sub(byval as sqlite3_str ptr, byval zIn as const zstring ptr, byval N as long)
+	str_appendall as sub(byval as sqlite3_str ptr, byval zIn as const zstring ptr)
+	str_appendchar as sub(byval as sqlite3_str ptr, byval N as long, byval C as byte)
+	str_reset as sub(byval as sqlite3_str ptr)
+	str_errcode as function(byval as sqlite3_str ptr) as long
+	str_length as function(byval as sqlite3_str ptr) as long
+	str_value as function(byval as sqlite3_str ptr) as zstring ptr
+	create_window_function as function(byval as sqlite3 ptr, byval as const zstring ptr, byval as long, byval as long, byval as any ptr, byval xStep as sub(byval as sqlite3_context ptr, byval as long, byval as sqlite3_value ptr ptr), byval xFinal as sub(byval as sqlite3_context ptr), byval xValue as sub(byval as sqlite3_context ptr), byval xInv as sub(byval as sqlite3_context ptr, byval as long, byval as sqlite3_value ptr ptr), byval xDestroy as sub(byval as any ptr)) as long
+	normalized_sql as function(byval as sqlite3_stmt ptr) as const zstring ptr
+	stmt_isexplain as function(byval as sqlite3_stmt ptr) as long
+	value_frombind as function(byval as sqlite3_value ptr) as long
+	drop_modules as function(byval as sqlite3 ptr, byval as const zstring ptr ptr) as long
+	hard_heap_limit64 as function(byval as sqlite3_int64) as sqlite3_int64
+	uri_key as function(byval as const zstring ptr, byval as long) as const zstring ptr
+	filename_database as function(byval as const zstring ptr) as const zstring ptr
+	filename_journal as function(byval as const zstring ptr) as const zstring ptr
+	filename_wal as function(byval as const zstring ptr) as const zstring ptr
+	create_filename as function(byval as const zstring ptr, byval as const zstring ptr, byval as const zstring ptr, byval as long, byval as const zstring ptr ptr) as zstring ptr
+	free_filename as sub(byval as zstring ptr)
+	database_file_object as function(byval as const zstring ptr) as sqlite3_file ptr
 end type
 
+type sqlite3_loadext_entry as function(byval db as sqlite3 ptr, byval pzErrMsg as zstring ptr ptr, byval pThunk as const sqlite3_api_routines ptr) as long
 #undef sqlite3_aggregate_context
 #define sqlite3_aggregate_context sqlite3_api->aggregate_context
 #undef sqlite3_aggregate_count
@@ -432,7 +477,7 @@ end type
 #undef sqlite3_set_auxdata
 #define sqlite3_set_auxdata sqlite3_api->set_auxdata
 #undef sqlite3_snprintf
-#define sqlite3_snprintf sqlite3_api->snprintf
+#define sqlite3_snprintf sqlite3_api->xsnprintf
 #undef sqlite3_step
 #define sqlite3_step sqlite3_api->step
 #undef sqlite3_table_column_metadata
@@ -475,6 +520,8 @@ end type
 #define sqlite3_value_type sqlite3_api->value_type
 #undef sqlite3_vmprintf
 #define sqlite3_vmprintf sqlite3_api->vmprintf
+#undef sqlite3_vsnprintf
+#define sqlite3_vsnprintf sqlite3_api->xvsnprintf
 #undef sqlite3_overload_function
 #define sqlite3_overload_function sqlite3_api->overload_function
 #undef sqlite3_prepare_v2
@@ -624,7 +671,7 @@ end type
 #undef sqlite3_uri_parameter
 #define sqlite3_uri_parameter sqlite3_api->uri_parameter
 #undef sqlite3_uri_vsnprintf
-#define sqlite3_uri_vsnprintf sqlite3_api->vsnprintf
+#define sqlite3_uri_vsnprintf sqlite3_api->xvsnprintf
 #undef sqlite3_wal_checkpoint_v2
 #define sqlite3_wal_checkpoint_v2 sqlite3_api->wal_checkpoint_v2
 #undef sqlite3_auto_extension
@@ -659,6 +706,86 @@ end type
 #define sqlite3_result_zeroblob64 sqlite3_api->result_zeroblob64
 #undef sqlite3_bind_zeroblob64
 #define sqlite3_bind_zeroblob64 sqlite3_api->bind_zeroblob64
+#undef sqlite3_value_subtype
+#define sqlite3_value_subtype sqlite3_api->value_subtype
+#undef sqlite3_result_subtype
+#define sqlite3_result_subtype sqlite3_api->result_subtype
+#undef sqlite3_status64
+#define sqlite3_status64 sqlite3_api->status64
+#undef sqlite3_strlike
+#define sqlite3_strlike sqlite3_api->strlike
+#undef sqlite3_db_cacheflush
+#define sqlite3_db_cacheflush sqlite3_api->db_cacheflush
+#undef sqlite3_system_errno
+#define sqlite3_system_errno sqlite3_api->system_errno
+#undef sqlite3_trace_v2
+#define sqlite3_trace_v2 sqlite3_api->trace_v2
+#undef sqlite3_expanded_sql
+#define sqlite3_expanded_sql sqlite3_api->expanded_sql
+#undef sqlite3_set_last_insert_rowid
+#define sqlite3_set_last_insert_rowid sqlite3_api->set_last_insert_rowid
+#undef sqlite3_prepare_v3
+#define sqlite3_prepare_v3 sqlite3_api->prepare_v3
+#undef sqlite3_prepare16_v3
+#define sqlite3_prepare16_v3 sqlite3_api->prepare16_v3
+#undef sqlite3_bind_pointer
+#define sqlite3_bind_pointer sqlite3_api->bind_pointer
+#undef sqlite3_result_pointer
+#define sqlite3_result_pointer sqlite3_api->result_pointer
+#undef sqlite3_value_pointer
+#define sqlite3_value_pointer sqlite3_api->value_pointer
+#undef sqlite3_vtab_nochange
+#define sqlite3_vtab_nochange sqlite3_api->vtab_nochange
+#undef sqlite3_value_nochange
+#define sqlite3_value_nochange sqlite3_api->value_nochange
+#undef sqlite3_vtab_collation
+#define sqlite3_vtab_collation sqlite3_api->vtab_collation
+#undef sqlite3_keyword_count
+#define sqlite3_keyword_count sqlite3_api->keyword_count
+#undef sqlite3_keyword_name
+#define sqlite3_keyword_name sqlite3_api->keyword_name
+#undef sqlite3_keyword_check
+#define sqlite3_keyword_check sqlite3_api->keyword_check
+#undef sqlite3_str_new
+#define sqlite3_str_new sqlite3_api->str_new
+#undef sqlite3_str_finish
+#define sqlite3_str_finish sqlite3_api->str_finish
+#undef sqlite3_str_appendf
+#define sqlite3_str_appendf sqlite3_api->str_appendf
+#undef sqlite3_str_vappendf
+#define sqlite3_str_vappendf sqlite3_api->str_vappendf
+#undef sqlite3_str_append
+#define sqlite3_str_append sqlite3_api->str_append
+#undef sqlite3_str_appendall
+#define sqlite3_str_appendall sqlite3_api->str_appendall
+#undef sqlite3_str_appendchar
+#define sqlite3_str_appendchar sqlite3_api->str_appendchar
+#undef sqlite3_str_reset
+#define sqlite3_str_reset sqlite3_api->str_reset
+#undef sqlite3_str_errcode
+#define sqlite3_str_errcode sqlite3_api->str_errcode
+#undef sqlite3_str_length
+#define sqlite3_str_length sqlite3_api->str_length
+#undef sqlite3_str_value
+#define sqlite3_str_value sqlite3_api->str_value
+#undef sqlite3_create_window_function
+#define sqlite3_create_window_function sqlite3_api->create_window_function
+#undef sqlite3_normalized_sql
+#define sqlite3_normalized_sql sqlite3_api->normalized_sql
+#undef sqlite3_stmt_isexplain
+#define sqlite3_stmt_isexplain sqlite3_api->stmt_isexplain
+#undef sqlite3_value_frombind
+#define sqlite3_value_frombind sqlite3_api->value_frombind
+#undef sqlite3_drop_modules
+#define sqlite3_drop_modules sqlite3_api->drop_modules
+#define sqlite3_hard_heap_limit64 sqlite3_api->hard_heap_limit64
+#define sqlite3_uri_key sqlite3_api->uri_key
+#define sqlite3_filename_database sqlite3_api->filename_database
+#define sqlite3_filename_journal sqlite3_api->filename_journal
+#define sqlite3_filename_wal sqlite3_api->filename_wal
+#define sqlite3_create_filename sqlite3_api->create_filename
+#define sqlite3_free_filename sqlite3_api->free_filename
+#define sqlite3_database_file_object sqlite3_api->database_file_object
 #define SQLITE_EXTENSION_INIT1 dim shared as const sqlite3_api_routines ptr sqlite3_api = 0
 #define SQLITE_EXTENSION_INIT2(v) sqlite3_api = v
 #define SQLITE_EXTENSION_INIT3 extern as const sqlite3_api_routines ptr sqlite3_api

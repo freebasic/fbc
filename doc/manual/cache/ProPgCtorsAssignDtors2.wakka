@@ -1,0 +1,432 @@
+{{fbdoc item="title" value="Constructors, '=' Assignment-Operators, and Destructors (advanced, part #2)"}}----
+Proper use of **Constructors**, '=' **Assignment-Operators**, and **Destructors**, which are the special member procedures for constructing/initializing, assigning, and destroying objects (part #2).
+	{{anchor name="ProPgCtorsAssignDtors2Top"}}
+	__Table of Contents__
+		**{{anchor name="ProPgCtorsAssignDtors21|1. Compiler interaction (with default-constructor, copy-constructor, and copy-assignment operator)"}}**
+		**{{anchor name="ProPgCtorsAssignDtors22|2. Rules of good manners (for constructors, copy-constructors, copy-assignment operators, and destructors)"}}**
+		**{{anchor name="ProPgCtorsAssignDtors23|3. Member access rights impact (on declaration of constructors, copy-constructors, copy-assignment operators, and destructors)"}}**
+
+----
+{{anchor name="ProPgCtorsAssignDtors21"}}
+{{fbdoc item="section" value="1. Compiler interaction (with default-constructor, copy-constructor, and copy-assignment operator)"}}
+	During assignments or copy-constructions, the compiler interacts with the different calls of copy-assignment operators, default-constructors and copy-constructors, in order to optimize the copy for resulting objects, making the best use of the member procedures provided by the user (maybe non-exhaustively).
+	
+	- For an assignment (//'object2 = object1'//)
+		Algorithm:
+			%%
+'   If (Type has a copy-assignment operator) Then
+'   |  => the copy-assignment opertator of Type is called
+'   Else
+'   |  If (Type has a Base with default-constructor) AND (Type has a Base with copy-assignment operator) Then
+'   |  |  => the copy-assignment operator of Base is called (for Base fields)
+'   |  |  => a shallow-copy is done on only Type fields
+'   |  Else
+'   |  |  => a full shallow-copy is done on all fields
+'   |  End If
+'   End If
+			%%
+	- For a copy-construction (//'Dim As typename object2 = object1'//)
+		Algorithm:
+			%%
+'   If (Type has a Base with default-constructor) Then
+'   |  => the default-constructor of Base is called
+'   End If
+'   If (Type has a copy-constructor) Then
+'   |  => the copy-constructor of Type is called
+'   Else
+'   |  => the Type object is implicitly default-constructed (even if exists an explicit Type default-constructor)
+'   |  If (Type has a copy-assignment operator) Then
+'   |  |  If (Type has an object field with a default-constructor) OR (Type has a Base with default-constructor) Then
+'   |  |  |  => the copy-assignment operator of Type is called
+'   |  |  Else
+'   |  |  |  => a full shallow-copy is done on all fields
+'   |  |  End If
+'   |  Else
+'   |  |  If (Type has a Base with default-constructor) AND (Type has a Base with copy-assignment operator) Then
+'   |  |  |  => the copy-assignment operator of Base is called (for Base fields)
+'   |  |  |  => a shallow-copy is done on only Type fields
+'   |  |  Else
+'   |  |  |  => a full shallow-copy is done on all fields
+'   |  |  End If
+'   |  End If
+'   End If
+			%%
+	**Notes:**
+		A Type has a default-constructor if one among the following propositions is verified:
+			**""-""** It has an explicit default-constructor
+			**""-""** One at least of its field has an initializer.
+			**""-""** One at least of its members is an object having a default-constructor itself.
+			**""-""** Its Base (if exists) has a default-constructor (the built-in 'Object' has a default-constructor).
+			
+		Under certain conditions, the explicit copy-assignment operator may be called for a copy-construction (if there is not an explicit copy-constructor).
+		But inversely, the explicit copy-constructor will never be called for an assignment (if there is not an explicit copy-assignment operator) regardless of the conditions.
+		
+	- Example to highlight/validate this interaction with default-constructor, copy-constructor, and copy-assignment operator, during assignments or copy-constructions
+		By commenting or not, as you want, independently each of the first 7 code lines (//'#define UDT...'//), you can test all conditions of the above algorithms:
+			{{fbdoc item="filename" value="examples/manual/proguide/udt/ctordtor-udtbasederived.bas"}}%%(freebasic)
+#define UDTbase_copy_assignment_operator
+#define UDTbase_default_constructor
+#define UDTbase_copy_constructor
+
+#define UDTderived_copy_assignment_operator
+#define UDTderived_default_constructor
+#define UDTderived_copy_constructor
+#define UDTderived_object_field_with_constructor
+
+
+Type UDTbase
+	#ifdef UDTbase_copy_assignment_operator
+	Declare Operator Let (Byref u1 As UDTbase)
+	#endif
+	#ifdef UDTbase_copy_constructor
+	Declare Constructor ()
+	Declare Constructor (Byref u1 As UDTbase)
+	#endif
+	#ifdef UDTbase_default_constructor
+	#ifndef UDTbase_copy_constructor
+	Declare Constructor ()
+	#endif
+	#endif
+	Declare Destructor ()
+	Dim As Integer i1
+End Type
+
+#ifdef UDTbase_copy_assignment_operator
+Operator UDTbase.Let (Byref u1 As UDTbase)
+	Print "   => UDTbase.copy-assignment", @This & " from " & @u1
+	This.i1 = u1.i1
+End Operator
+#endif
+#ifdef UDTbase_copy_constructor
+Constructor UDTbase ()
+	Print "   => UDTbase.default-constructor", @This
+End Constructor
+Constructor UDTbase (Byref u1 As UDTbase)
+	Print "   => UDTbase.copy-constructor", @This & " from " & @u1
+	This.i1 = u1.i1
+End Constructor
+#endif
+#ifdef UDTbase_default_constructor
+#ifndef UDTbase_copy_constructor
+Constructor UDTbase ()
+	Print "   => UDTbase.default-constructor", @This
+End Constructor
+#endif
+#endif
+Destructor UDTbase ()
+	Print "   => UDTbase.destructor", , @This
+End Destructor
+
+Type UDTderived Extends UDTbase
+	#ifdef UDTderived_copy_assignment_operator
+	Declare Operator Let (Byref u2 As UDTderived)
+	#endif
+	#ifdef UDTderived_copy_constructor
+	Declare Constructor ()
+	Declare Constructor (Byref u2 As UDTderived)
+	#endif
+	#ifdef UDTderived_default_constructor
+	#ifndef UDTderived_copy_constructor
+	Declare Constructor ()
+	#endif
+	#endif
+	Declare Destructor ()
+	Dim As Integer i2
+	#ifdef UDTderived_object_field_with_constructor
+	Dim As String s2
+	#endif
+End Type
+
+#ifdef UDTderived_copy_assignment_operator
+Operator UDTderived.Let (Byref u2 As UDTderived)
+	Print "   => UDTderived.copy-assignment", @This & " from " & @u2
+	This.i2 = u2.i2
+	This.i1 = u2.i1
+End Operator
+#endif
+#ifdef UDTderived_copy_constructor
+Constructor UDTderived ()
+	Print "   => UDTderived.default-constructor", @This
+End Constructor
+Constructor UDTderived (Byref u2 As UDTderived)
+	Print "   => UDTderived.copy-constructor", @This & " from " & @u2
+	This.i2 = u2.i2
+	This.i1 = u2.i1
+End Constructor
+#endif
+#ifdef UDTderived_default_constructor
+#ifndef UDTderived_copy_constructor
+Constructor UDTderived ()
+	Print "   => UDTderived.default-constructor", @This
+End Constructor
+#endif
+#endif
+Destructor UDTderived ()
+	Print "   => UDTderived.destructor", , @This
+End Destructor
+
+Scope
+	Print "Construction: 'Dim As UDTderived a, b : a.i1 = 1 : a.i2 = 2'"
+	Dim As UDTderived a, b : a.i1 = 1 : a.i2 = 2
+	Print "      " & a.i1
+	Print "      " & a.i2
+	Print
+	Print "Assignment: 'b = a'"
+	b = a
+	Print "      " & b.i1
+	Print "      " & b.i2
+	Print
+	Print "Copy-construction: 'Dim As UDTderived c = a'"
+	Dim As UDTderived c = a
+	Print "      " & c.i1
+	Print "      " & c.i2
+	Print
+	Print "Going out scope: 'End Scope'"
+End Scope
+
+Sleep
+			%%Output example:
+				%%
+Construction: 'Dim As UDTderived a, b : a.i1 = 1 : a.i2 = 2'
+   => UDTbase.default-constructor         1703576
+   => UDTderived.default-constructor      1703576
+   => UDTbase.default-constructor         1703556
+   => UDTderived.default-constructor      1703556
+	  1
+	  2
+
+Assignment: 'b = a'
+   => UDTderived.copy-assignment          1703556 from 1703576
+	  1
+	  2
+
+Copy-construction: 'Dim As UDTderived c = a'
+   => UDTbase.default-constructor         1703488
+   => UDTderived.copy-constructor         1703488 from 1703576
+	  1
+	  2
+
+Going out scope: 'End Scope'
+   => UDTderived.destructor               1703488
+   => UDTbase.destructor                  1703488
+   => UDTderived.destructor               1703556
+   => UDTbase.destructor                  1703556
+   => UDTderived.destructor               1703576
+   => UDTbase.destructor                  1703576
+				%%
+@@{{anchor name="ProPgCtorsAssignDtors2Top|Back to top"}}@@
+----
+{{anchor name="ProPgCtorsAssignDtors22"}}
+{{fbdoc item="section" value="2. Rules of good manners (for constructors, copy-constructors, copy-assignment operators, and destructors)"}}
+	Reminder of behaviors impacting constructors, copy-constructors, copy-assignment operators, and destructors:
+		**""-""** Defining an explicit default-constructor replaces the implicit default-constructor built by the compiler.
+		**""-""** Defining an explicit constructor other than the one default suppresses the implicit default-constructor built by the compiler. In this precise case, there is no default-constructor at all!
+		**""-""** The implicit copy-constructor (or copy-assignment operator, or destructor) built by the compiler can be replaced by an explicit copy-constructor (or copy-assignment operator, or destructor) defined by the user.
+		**""-""** But (as opposed to the default-constructor), there is always a copy-constructor (or a copy-assignment operator or a destructor), either an implicit built by the compiler or an explicit defined by the user.
+		**""-""** When there is object composition, the composed object Type must have an implicit or explicit constructor matching with the declaration of the compound object.
+		**""-""** When there is Type inheritance, the inherited Type must have a default implicit or explicit constructor (unless the inheriting Type has a constant copy-constructor, explicitly defined by user), and all this even if no object is constructed (compiler test on the only inheritance structure). This behavior appears to be specific to FreeBASIC.
+		
+	From all the above, one can deduce 'golden rules' that avoid most of compilation errors and run-time bugs.
+	
+		**Golden rules** for a code safer (at compile-time and run-time):
+			**""-""** If the user explicitly defines any constructor, he is very strongly advised to also define explicitly the default-constructor as well.
+			**""-""** If the user needs to explicitly define (with a non empty body) a copy-constructor or a copy-assignment operator or a destructor, it is better to define the 3 simultaneously (the known 'rule of three'), plus the default-constructor (rule above also applied).
+			
+	From all the above and more specific cases (with inheritance), one can propose one 'maximizing rule' that allows a very safer operating.
+	
+		**Maximizing rule** for a very safer code (at compile-time and run-time), but sometimes maximizing the real constraints:
+			**""-""** If the user needs to explicitly defines any form of constructor procedure (including any form of copy-constructor) or any form of let-operator procedure or a destructor procedure, it is strongly recommended to define together the default-constructor and the standard copy-constructor and the standard let-operator and the destructor.
+			(these 4 explicit procedures are explicitly defined to always overload correctly the corresponding implicit operations from compiler)
+			
+	- Example of applying rules of good manners
+		UDT with a string member, to compare to UDT with a string pointer member where the 4 explicit procedures above must be defined (otherwise program hangs):
+			{{fbdoc item="filename" value="examples/manual/proguide/udt/ctordtor-goldenrules.bas"}}%%(freebasic)
+'=== UDT with a string member =====================
+
+Type UDTstr
+   Dim As String s
+End Type
+
+'--------------------------------------------------
+
+Dim As UDTstr us1
+us1.s = "UDTstr"
+Dim As UDTstr us2
+us2 = us1
+Dim As UDTstr us3 = us2
+Print us1.s,
+us1.s = ""
+Print us2.s,
+us2.s = ""
+Print us3.s
+
+'=== UDT with a string ptr member =================
+
+Type UDTptr2str
+   Dim As String Ptr ps
+   Declare Constructor ()
+   Declare Destructor ()
+   Declare Operator Let (Byref ups As UDTptr2str)
+   Declare Constructor (Byref ups As UDTptr2str)
+End Type
+
+Constructor UDTptr2str ()
+   This.ps = New String
+End Constructor
+
+Destructor UDTptr2str ()
+   Delete This.ps
+End Destructor
+
+Operator UDTptr2str.Let (Byref ups As UDTptr2str)
+   *This.ps = *ups.ps
+End Operator
+
+Constructor UDTptr2str (Byref ups As UDTptr2str)
+   Constructor()  '' calling the default constructor
+   This = ups     '' calling the assignment operator
+End Constructor
+
+'--------------------------------------------------
+
+Dim As UDTptr2str up1
+*up1.ps = "UDTptr2str"
+Dim As UDTptr2str up2
+up2 = up1
+Dim As UDTptr2str up3 = up2
+Print *up1.ps,
+*up1.ps = ""
+Print *up2.ps,
+*up2.ps = ""
+Print *up3.ps
+
+'==================================================
+
+Sleep
+			%%Output example:
+				%%
+UDTstr        UDTstr        UDTstr
+UDTptr2str    UDTptr2str    UDTptr2str
+				%%
+@@{{anchor name="ProPgCtorsAssignDtors2Top|Back to top"}}@@
+----
+{{anchor name="ProPgCtorsAssignDtors23"}}
+{{fbdoc item="section" value="3. Member access rights impact (on declaration of constructors, copy-constructors, copy-assignment operators, and destructors)"}}
+	Access rights can be applied when declaring such member procedures, to prohibit the user from performing certain specific commands (from the outside of Type).
+	
+	The default constructor, copy-constructor, copy-assignment operator, and destructor are the only member procedures which can have an implicit version built by the compiler.
+	So if one want to forbid their accesses by the user from the outside of the Type, it is necessary to overload these by explicit versions with restricted access rights (not Public) when declaring. In addition, such member procedures may have no implementation (no body defining) if they are never actually called in the program.
+
+	- Example - Inheritance structure where any base object construction must be forbidden:
+		**""-""** In order to forbid any construction of base object from the outside of Types, the default-constructor and the copy-constructor of base Type must be explicitly declared (to overload their implicit versions) with restricted access rights.
+		**""-""** The base Type default-constructor cannot be declared as Private, because it must be accessible from the derived Type (to construct a derived object), thus it is declared as Protected. It must have an implementation
+		**""-""** The base Type copy-constructor can be declared as Private because it is never called in this example. So it may have no implementation.
+			{{fbdoc item="filename" value="examples/manual/proguide/udt/ctordtor-parentchild2.bas"}}%%(freebasic)
+Type Parent
+	Public:
+		Dim As Integer I
+	Protected:
+		Declare Constructor ()
+	Private:
+		Declare Constructor (Byref p As Parent)
+End Type
+
+Constructor Parent
+End Constructor
+
+Type Child Extends Parent
+	Public:
+		Dim As Integer J
+End Type
+
+Dim As Child c1
+Dim As Child C2 = c1
+c2 = c1
+
+'Dim As Parent p1                        '' forbidden
+'Dim As Parent p2 = c1                   '' forbidden
+'Dim As Parent Ptr pp1 = New Parent      '' forbidden
+'Dim As Parent Ptr pp2 = New Parent(c1)  '' forbidden
+
+Sleep
+			%%
+	- Example - Singleton structure (at most one object can exist at any time):
+		**""-""** The singleton construction must only be done by calling the static procedure //'Singleton.create()'//.
+		**""-""** So, the default-constructor and the copy-constructor must be explicitly declared (to overload their implicit versions) with restricted access rights as Private, in order to forbid any object user creation by //'Dim'// or //'New'//. Only the copy-constructor may have no implementation because it will never be called (the default-constructor is called from inside the Type by //'New'//).
+		**""-""** The singleton destruction must only be done by calling the static procedure //'Singleton.suppress()'//.
+		**""-""** So, the destructor must be explicitly declared (to overload its implicit version) with restricted access rights as Private, in order to forbid any object user destruction by //'Delete'// (the destructor must have implementation because it is called from inside the Type by //'Delete'//).
+			{{fbdoc item="filename" value="examples/manual/proguide/udt/ctordtor-singleton.bas"}}%%(freebasic)
+Type Singleton
+	Public:
+		Declare Static Function create () As Singleton Ptr
+		Declare Static Sub suppress ()
+		Dim i As Integer
+	Private:
+		Static As Singleton Ptr ref
+		Declare Constructor ()
+		Declare Constructor (Byref rhs As Singleton)
+		Declare Destructor ()
+End Type
+
+Dim As Singleton Ptr Singleton.ref = 0
+
+Static Function Singleton.create () As Singleton Ptr
+	If Singleton.ref = 0 Then
+		Singleton.ref = New Singleton
+		Return Singleton.ref
+	Else
+		Return 0
+	End If
+End Function
+
+Static Sub Singleton.suppress ()
+	If Singleton.ref > 0 Then
+		Delete Singleton.ref
+		Singleton.ref = 0
+	End If
+End Sub
+
+Constructor Singleton ()
+End Constructor
+
+Destructor Singleton ()
+End Destructor
+
+
+Dim As Singleton Ptr ps1 = Singleton.create()
+ps1->i = 1234
+Print ps1, ps1->i
+
+Dim As Singleton Ptr ps2 = Singleton.create()
+Print ps2
+
+Singleton.suppress()
+
+Dim As Singleton Ptr ps3 = Singleton.create()
+Print ps3, ps3->i
+
+Singleton.suppress()
+
+'Delete ps3                                      '' forbidden
+'Dim As Singleton s1                             '' forbidden
+'Dim As Singleton s2 = *ps3                      '' forbidden
+'Dim As Singleton Ptr ps4 = New Singleton        '' forbiden
+'Dim As Singleton Ptr ps5 = New Singleton(*ps3)  '' forbidden
+
+Sleep
+			%%Output example:
+				%%
+5122656        1234
+0
+5122656        0
+				%%
+@@{{anchor name="ProPgCtorsAssignDtors2Top|Back to top"}}@@
+----
+
+{{fbdoc item="section" value="See also"}}
+	- ##[[KeyPgConstructor|Constructor]]##, ##[[KeyPgDestructor|Destructor]]##
+	- ##{{fbdoc item="keyword" value="KeyPgOpAssignment|Operator =[>] (Assignment)"}}##, ##[[KeyPgOpLet|Operator Let (Assignment)]]##
+	- [[ProPgCtorsDtors|Constructors and Destructors (basics)]]
+	- [[ProPgCtorsAssignDtors|Constructors, '=' Assignment-Operators, and Destructors (advanced, part #1)]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

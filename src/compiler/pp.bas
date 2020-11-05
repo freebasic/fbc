@@ -183,14 +183,14 @@ sub ppParse( )
 
 	'' DEFINE ID (!WHITESPC '(' ID (',' ID)* ')')? LITERAL+
 	case FB_TK_PP_DEFINE
-		lexSkipToken( LEXCHECK_NODEFINE )
+		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
 		ppDefine( FALSE )
 
 	'' MACRO ID '(' ID (',' ID)* ')' Comment? EOL
 	''    MacroBody*
 	'' ENDMACRO
 	case FB_TK_PP_MACRO
-		lexSkipToken( LEXCHECK_NODEFINE )
+		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
 		ppDefine( TRUE )
 
 	'' UNDEF ID
@@ -198,7 +198,7 @@ sub ppParse( )
 		dim as FBSYMCHAIN ptr chain_ = any
 		dim as FBSYMBOL ptr base_parent = any
 
-		lexSkipToken( LEXCHECK_NODEFINE )
+		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
 
 		chain_ = cIdentifier( base_parent, FB_IDOPT_NONE )
 		if( chain_ <> NULL ) then
@@ -244,55 +244,56 @@ sub ppParse( )
 
 	'' ASSERT Expression
 	case FB_TK_PP_ASSERT
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		ppAssert( )
 
 	'' DUMP Expression
 	case FB_TK_PP_DUMP
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		ppDumpTree( FALSE )
 
 	'' ODUMP Expression
 	case FB_TK_PP_ODUMP
-		lexSkipToken( LEXCHECK_NODEFINE )
+		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
 		ppDumpTree( TRUE )
 
 	'' PRINT LITERAL*
 	case FB_TK_PP_PRINT
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		print *ppReadLiteral( )
 
 	'' ERROR LITERAL*
 	case FB_TK_PP_ERROR
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		errReportEx( -1, *ppReadLiteral( ) )
+		parser.stmt.cnt += 1
 
 	'' INCLUDE ONCE? LIT_STR
 	case FB_TK_PP_INCLUDE
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX)
 		ppInclude( )
 
 	'' INCLIB LIT_STR
 	case FB_TK_PP_INCLIB
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX)
 		ppIncLib( )
 
 	'' LIBPATH LIT_STR
 	case FB_TK_PP_LIBPATH
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX)
 		ppLibPath( )
 
 	'' PRAGMA ...
 	case FB_TK_PP_PRAGMA
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX)
 		ppPragma( )
 
 	case FB_TK_PP_LINE
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX)
 		ppLine()
 
 	case FB_TK_PP_LANG
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX)
 		ppLang( )
 
 	case else
@@ -323,7 +324,7 @@ private sub ppInclude()
     dim as integer isonce = any
 
 	'' ONCE?
-	isonce = hMatchIdOrKw( "ONCE" )
+	isonce = hMatchIdOrKw( "ONCE", LEXCHECK_POST_SUFFIX )
 
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
 		errReport( FB_ERRMSG_SYNTAXERROR )
@@ -749,7 +750,7 @@ end function
 
 function ppTypeOf( ) as string
 	'' TYPEOF
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' '('
 	if( lexGetToken( ) <> CHAR_LPRNT ) then

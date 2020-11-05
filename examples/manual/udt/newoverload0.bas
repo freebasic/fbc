@@ -48,7 +48,6 @@ Sub UDTdisplayer.deallocation (ByRef D As String, ByVal p As Any Ptr)
 End Sub
 
 
-Randomize
 Dim As UDTdisplayer Ptr pu1 = New UDTdisplayer
 Dim As UDTdisplayer Ptr pu2 = New UDTdisplayer[3]
 Delete pu1

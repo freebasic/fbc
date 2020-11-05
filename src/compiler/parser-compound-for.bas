@@ -10,9 +10,9 @@
 #include once "symb.bi"
 
 enum FOR_FLAGS
-    FOR_ISUDT			= &h0001
-    FOR_HASCTOR			= &h0002
-    FOR_ISLOCAL			= &h0004
+	FOR_ISUDT			= &h0001
+	FOR_HASCTOR			= &h0002
+	FOR_ISLOCAL			= &h0004
 end enum
 
 #define CREATEFAKEID( ) _
@@ -30,7 +30,7 @@ declare function hUdtCallOpOvl _
 declare sub hFlushBOP _
 	( _
 		byval op as integer, _
-	 	byval lhs as FB_CMPSTMT_FORELM ptr, _
+		byval lhs as FB_CMPSTMT_FORELM ptr, _
 		byval rhs as FB_CMPSTMT_FORELM ptr, _
 		byval ex as FBSYMBOL ptr _
 	)
@@ -48,12 +48,12 @@ private function hElmToExpr _
 	 	byval v as FB_CMPSTMT_FORELM ptr _
 	) as ASTNODE ptr
 
-    '' This function creates an AST node using the value
-    '' contained in the FB_CMPSTMT_FORELM. The structure
-    '' either contains a symbol, which is used, or if no
-    '' symbol is found then the embedded value is used to
-    '' create a constant, which is used instead.
-    '' The AST node is returned.
+	'' This function creates an AST node using the value
+	'' contained in the FB_CMPSTMT_FORELM. The structure
+	'' either contains a symbol, which is used, or if no
+	'' symbol is found then the embedded value is used to
+	'' create a constant, which is used instead.
+	'' The AST node is returned.
 
 	'' if there's an embedded symbol, use it
 	if( v->sym <> NULL ) then
@@ -85,7 +85,7 @@ private sub hUdtFor _
 					  	  step_expr )
 
 	if( proc <> NULL ) then
-    	astAdd( proc )
+		astAdd( proc )
 	end if
 
 end sub
@@ -108,9 +108,9 @@ private sub hUdtStep _
 						  hElmToExpr( @stk->for.cnt ), _
 						  step_expr )
 
-    if( proc <> NULL ) then
-    	astAdd( proc )
-    end if
+	if( proc <> NULL ) then
+		astAdd( proc )
+	end if
 
 end sub
 
@@ -133,13 +133,13 @@ private sub hUdtNext _
 						  hElmToExpr( @stk->for.end ), _
 						  step_expr )
 
-    if( proc <> NULL ) then
-    	'' if proc(...) <> 0 then goto init
-    	astAdd( astNewBOP( AST_OP_NE, _
-    				   	   proc, _
-    				   	   astNewCONSTi( 0 ), _
-    				   	   stk->for.inilabel, _
-    				   	   AST_OPOPT_NONE ) )
+	if( proc <> NULL ) then
+		'' if proc(...) <> 0 then goto init
+		astAdd( astNewBOP( AST_OP_NE, _
+						proc, _
+						astNewCONSTi( 0 ), _
+						stk->for.inilabel, _
+						AST_OPOPT_NONE ) )
 	end if
 
 end sub
@@ -161,14 +161,14 @@ private sub hScalarNext _
 		byval stk as FB_CMPSTMTSTK ptr _
 	)
 
-    '' is STEP known? (ie: an constant expression)
-    if( stk->for.ispos.sym = NULL ) then
+	'' is STEP known? (ie: an constant expression)
+	if( stk->for.ispos.sym = NULL ) then
 		'' counter <= or >= end cond?
 		hFlushBOP( iif( stk->for.ispos.value.i, AST_OP_LE, AST_OP_GE ), _
 		           @stk->for.cnt, @stk->for.end, stk->for.inilabel )
 
-    '' STEP unknown, check sign and branch
-    else
+	'' STEP unknown, check sign and branch
+	else
 		dim as FBSYMBOL ptr cl = symbAddLabel( NULL )
 
 		'' if ispositive = FALSE then
@@ -178,8 +178,8 @@ private sub hScalarNext _
 					   	   cl, _
 					   	   AST_OPOPT_NONE ) )
 
-    		'' if counter >= end_condition then
-	    		'' goto top_of_FOR
+			'' if counter >= end_condition then
+				'' goto top_of_FOR
 				hFlushBOP( AST_OP_GE, @stk->for.cnt, @stk->for.end, stk->for.inilabel )
 
 			'' else
@@ -188,16 +188,16 @@ private sub hScalarNext _
 
 			'' end if
 
-    	'' else
-    	astAdd( astNewLABEL( cl, FALSE ) )
+		'' else
+		astAdd( astNewLABEL( cl, FALSE ) )
 
-    		'' if cnt <= end then goto for_ini
+			'' if cnt <= end then goto for_ini
 			hFlushBOP( AST_OP_LE,  @stk->for.cnt, @stk->for.end, stk->for.inilabel )
 
 		'' end if
 
 		'' skip_positive_check:
-    end if
+	end if
 
 end sub
 
@@ -491,14 +491,14 @@ private sub hForTo _
 		byval flags as FOR_FLAGS _
 	)
 
-    '' This function handles the 'TO EndCondition'
-    '' expression of a FOR block.
+	'' This function handles the 'TO EndCondition'
+	'' expression of a FOR block.
 
 	'' TO
 	if( lexGetToken( ) <> FB_TK_TO ) then
 		errReport( FB_ERRMSG_EXPECTEDTO )
 	else
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 	end if
 
 	'' EndCondition
@@ -567,7 +567,7 @@ private sub hForStep _
 	'' STEP
 	stk->for.explicit_step = FALSE
 	if( lexGetToken( ) = FB_TK_STEP ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		stk->for.explicit_step = TRUE
 	end if
 
@@ -667,15 +667,15 @@ private sub hForStep _
 		stk->for.ispos.dtype = FB_DATATYPE_INTEGER
 		stk->for.ispos.value.i = -1  '' TRUE
 
-    '' if STEP's sign is unknown, we have to check for that
-    elseif( iscomplex and ((flags and FOR_ISUDT) = 0) ) then
+	'' if STEP's sign is unknown, we have to check for that
+	elseif( iscomplex and ((flags and FOR_ISUDT) = 0) ) then
 		dim as FB_CMPSTMT_FORELM cmp '' zero-init the FBVALUE field, etc.
 		cmp.dtype = stk->for.stp.dtype
 
 		stk->for.ispos.sym = hAddImplicitVar( FB_DATATYPE_INTEGER )
 		stk->for.ispos.dtype = FB_DATATYPE_INTEGER
 
-        '' rhs = STEP >= 0
+		'' rhs = STEP >= 0
 		dim as ASTNODE ptr rhs = astNewBOP( AST_OP_GE, _
 		                                    hElmToExpr( @stk->for.stp ), _
 		                                    hElmToExpr( @cmp ) )
@@ -690,7 +690,7 @@ private sub hForStep _
 		'' is_positive = rhs
 		astAdd( astNewASSIGN( astNewVAR( stk->for.ispos.sym ), rhs ) )
 
-    '' no need for a sign check
+	'' no need for a sign check
 	else
 		stk->for.ispos.sym = NULL
 	end if
@@ -702,7 +702,7 @@ sub cForStmtBegin( )
 	dim as FBSYMBOL ptr sym = any
 
 	'' FOR
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' ID
 	dim as FBSYMCHAIN ptr chain_ = any
@@ -710,15 +710,15 @@ sub cForStmtBegin( )
 
 	chain_ = cIdentifier( base_parent, FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
 
-    '' open outer scope
-    dim as ASTNODE ptr outerscopenode = astScopeBegin( )
+	'' open outer scope
+	dim as ASTNODE ptr outerscopenode = astScopeBegin( )
 	if( outerscopenode = NULL ) then
 		errReport( FB_ERRMSG_RECLEVELTOODEEP )
 	end if
 
-    dim as ASTNODE ptr idexpr = any, expr = any
+	dim as ASTNODE ptr idexpr = any, expr = any
 
-    '' new variable?
+	'' new variable?
 	if( lexGetLookAhead( 1 ) = FB_TK_AS ) then
 		sym = cVarDecl( FB_SYMBATTRIB_NONE, FALSE, lexGetToken( ), TRUE )
 		if( sym = NULL ) then
@@ -795,7 +795,7 @@ sub cForStmtBegin( )
 		end if
 	end select
 
-    '' push a FOR context
+	'' push a FOR context
 	dim as FB_CMPSTMTSTK ptr stk = cCompStmtPush( FB_TK_FOR )
 
 	'' extract counter variable from the expression
@@ -807,26 +807,26 @@ sub cForStmtBegin( )
 	'' =
 	hForAssign( stk, isconst, dtype, subtype, flags, idexpr )
 
-    '' TO
+	'' TO
 	hForTo( stk, isconst, dtype, subtype, flags )
 
 	'' STEP
 	hForStep( stk, isconst, dtype, subtype, flags )
 
 	'' labels
-    dim as FBSYMBOL ptr il = any, tl = any, el = any, cl = any
+	dim as FBSYMBOL ptr il = any, tl = any, el = any, cl = any
 
-    '' test label: jump to the bottom of the for,
-    '' before any code within the block is executed
-    tl = symbAddLabel( NULL, FB_SYMBOPT_NONE )
+	'' test label: jump to the bottom of the for,
+	'' before any code within the block is executed
+	tl = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
 	'' comp and end label (will be used by any CONTINUE/EXIT FOR)
 	cl = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 	el = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
-    '' we need to "peek" at the end label,
-    '' to allow an overloaded FOR operator to jump to it,
-    '' if the operator returns FALSE
+	'' we need to "peek" at the end label,
+	'' to allow an overloaded FOR operator to jump to it,
+	'' if the operator returns FALSE
 	stk->for.endlabel = el
 
 	'' UDT? must call the FOR operator..
@@ -870,15 +870,15 @@ private function hUdtCallOpOvl _
 		byval third_arg as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr sym = any
+	dim as FBSYMBOL ptr sym = any
 
-    '' check if op was overloaded
-    sym = symbGetCompOpOvlHead( parent, op )
+	'' check if op was overloaded
+	sym = symbGetCompOpOvlHead( parent, op )
 
 	if( sym = NULL ) then
 		errReport( FB_ERRMSG_UDTINFORNEEDSOPERATORS, _
 				   TRUE, _
-                   astGetOpId( op ) )
+				   astGetOpId( op ) )
 		return NULL
 	end if
 
@@ -935,6 +935,12 @@ private function hUdtCallOpOvl _
 			errReport( FB_ERRMSG_UDTINFORNEEDSOPERATORS, TRUE, strptr(op_version) )
 		end if
 		return NULL
+	else
+		'' check visibility / access
+		if( symbCheckAccess( sym ) = FALSE ) then
+			errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS , *symbGetFullProcName( sym ) )
+			return NULL
+		end if
 	end if
 
 	function = astBuildCall( sym, inst_expr, second_arg, third_arg )
@@ -986,7 +992,7 @@ sub cForStmtEnd( )
 	dim as FB_CMPSTMTSTK ptr stk = any
 
 	'' NEXT
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	do
 		'' TOS = top of stack
@@ -1022,7 +1028,7 @@ sub cForStmtEnd( )
 			end if
 
 			if( fbPdCheckIsSet( FB_PDCHECK_NEXTVAR ) ) then
-				errReportWarn( FB_WARNINGMSG_NEXTVARMEANINGLESS, *symbGetName(idexpr->sym) )
+				errReportWarn( FB_WARNINGMSG_NEXTVARMEANINGLESS, symbGetName(idexpr->sym) )
 			end if
 
 			'' delete idexpr, we don't need it, for anything

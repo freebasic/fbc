@@ -10,16 +10,31 @@
 '' (avoid to use operator '@' and especially '*')
 
 
-Dim As ZString Ptr pz = @"FreeBASIC Zstring Ptr"
+Function fp () As ZString Ptr
+	Static As ZString * 256 z
+	Return @z
+End Function
+
+Dim As ZString Ptr pz = fp()
+*pz = "FreeBASIC Zstring Ptr"
 Print *pz
 *pz &= " 1.3.0"
 Print *pz
 
+
 Print
 
-Dim ByRef As ZString rz = "FreeBASIC Zstring Ref"  '' or Var Byref rz = "FreeBASIC Zstring Ref"
+
+Function fr () ByRef As ZString
+	Static As ZString * 256 z
+	Return z
+End Function
+
+Dim ByRef As ZString rz = fr()  '' or Var Byref rz = fr()
+rz = "FreeBASIC Zstring Ref"
 Print rz
 rz &= " 1.4.0"
 Print rz
 
 Sleep
+	

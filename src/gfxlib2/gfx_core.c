@@ -32,6 +32,12 @@ void fb_hPostEvent(EVENT *e)
 
 void fb_hPostEvent_code_end(void) { }
 
+void fb_GFXCTX_Destructor(void* data)
+{
+	FB_GFXCTX *context = (FB_GFXCTX *)data;
+	free( context->line );
+}
+
 /* Caller is expected to hold FB_GRAPHICSLOCK() */
 FB_GFXCTX *fb_hGetContext(void)
 {

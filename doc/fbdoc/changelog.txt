@@ -1,3 +1,7 @@
+fbdoc version 1.0
+- Follow at most one redirection to allow for url rewrite on server side
+- copyright updates for 2020
+
 January 28, 2018
 - set version number at 1.00 - it's been at 0.1 long enough
 - copyright updates for 2018

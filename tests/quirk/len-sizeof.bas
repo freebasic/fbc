@@ -486,4 +486,108 @@ SUITE( fbc_tests.quirk.len_sizeof )
 		END_TEST
 	END_TEST_GROUP
 
+	namespace ns1
+		type T
+			as integer a, b, c, d
+		end type
+		dim shared as integer a
+		const b as integer = 0
+		const s as string = "12345"
+		enum e1
+			e11, e12, e13
+		end enum
+
+		namespace ns2
+			type T
+				as integer a, b, c, d
+			end type
+			dim shared as integer a
+			const b as integer = 0
+			const s as string = "12345"
+			enum e2
+				e21, e22, e23
+			end enum
+		end namespace
+	end namespace
+
+	'' sizeof(type|expression)
+	TEST( sizeofTypeOrExpression )
+		'' This tests len/sizeof's type/expression disambiguation, where
+		'' namespace prefix is given
+
+		'' direct use of namespace
+		
+		CU_ASSERT(   len(ns1.T) = sizeof(ns1.T))
+		CU_ASSERT(sizeof(ns1.T) = sizeof(integer)*4)
+
+		CU_ASSERT(   len(ns1.a) = sizeof(integer))
+		CU_ASSERT(sizeof(ns1.a) = sizeof(integer))
+
+		CU_ASSERT(   len(ns1.b) = sizeof(integer))
+		CU_ASSERT(sizeof(ns1.b) = sizeof(integer))
+
+		CU_ASSERT(   len(ns1.s) =  len("hello"))
+		CU_ASSERT(sizeof(ns1.s) = (len("hello")+1))
+
+		CU_ASSERT(   len(ns1.e1.e11) = sizeof(integer))
+		CU_ASSERT(sizeof(ns1.e1.e11) = sizeof(integer))
+
+		'' direct use of nested namespace
+
+		CU_ASSERT(   len(ns1.ns2.T) = sizeof(ns1.ns2.T))
+		CU_ASSERT(sizeof(ns1.ns2.T) = sizeof(integer)*4)
+
+		CU_ASSERT(   len(ns1.ns2.a) = sizeof(integer))
+		CU_ASSERT(sizeof(ns1.ns2.a) = sizeof(integer))
+
+		CU_ASSERT(   len(ns1.ns2.b) = sizeof(integer))
+		CU_ASSERT(sizeof(ns1.ns2.b) = sizeof(integer))
+
+		CU_ASSERT(   len(ns1.ns2.s) =  len("hello"))
+		CU_ASSERT(sizeof(ns1.ns2.s) = (len("hello")+1))
+
+		CU_ASSERT(   len(ns1.ns2.e2.e21) = sizeof(integer))
+		CU_ASSERT(sizeof(ns1.ns2.e2.e21) = sizeof(integer))
+
+		'' import top-level namespace
+
+		using ns1
+
+		CU_ASSERT(   len(T) = sizeof(T))
+		CU_ASSERT(sizeof(T) = sizeof(integer)*4)
+
+		CU_ASSERT(   len(a) = sizeof(integer))
+		CU_ASSERT(sizeof(a) = sizeof(integer))
+
+		CU_ASSERT(   len(b) = sizeof(integer))
+		CU_ASSERT(sizeof(b) = sizeof(integer))
+
+		CU_ASSERT(   len(s) =  len("hello"))
+		CU_ASSERT(sizeof(s) = (len("hello")+1))
+
+		CU_ASSERT(   len(e1.e11) = sizeof(integer))
+		CU_ASSERT(sizeof(e1.e11) = sizeof(integer))
+
+		CU_ASSERT(   len(e11) = sizeof(integer))
+		CU_ASSERT(sizeof(e11) = sizeof(integer))
+
+		'' nested namespace
+
+		CU_ASSERT(   len(ns2.T) = sizeof(ns2.T))
+		CU_ASSERT(sizeof(ns2.T) = sizeof(integer)*4)
+
+		CU_ASSERT(   len(ns2.a) = sizeof(integer))
+		CU_ASSERT(sizeof(ns2.a) = sizeof(integer))
+
+		CU_ASSERT(   len(ns2.b) = sizeof(integer))
+		CU_ASSERT(sizeof(ns2.b) = sizeof(integer))
+
+		CU_ASSERT(   len(ns2.s) =  len("hello"))
+		CU_ASSERT(sizeof(ns2.s) = (len("hello")+1))
+
+		CU_ASSERT(   len(ns2.e2.e21) = sizeof(integer))
+		CU_ASSERT(sizeof(ns2.e2.e21) = sizeof(integer))
+
+	END_TEST
+
 END_SUITE

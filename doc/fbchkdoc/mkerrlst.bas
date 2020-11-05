@@ -1,5 +1,5 @@
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2008-2019 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2008-2020 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ sub WriteFooterCode( byval h as integer )
 	print #h, !"else"
 	print #h, !"msg = *warningMsgs(i).text"
 	print #h, !"end if"
-	print #h, !"print chr(9) + \"- //\" + ltrim(str(i)) + \" \" + msg + \"//\""
+	print #h, !"print chr(9) + \"- //\" + ltrim(str(i)) + \"(\" + str(warningMsgs(i).level) + \") \" + msg + \"//\""
 	print #h, !"next"
 	print #h, !"print: print: print"
 	print #h, !"for i as integer = 1 to FB_ERRMSGS-1"

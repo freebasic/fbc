@@ -9,7 +9,10 @@ Preprocessor directive to define a macro
 {{fbdoc item="desc"}}
 	##**#define**## allows to declare text-based preprocessor macros. Once the compiler has seen a ##**#define**##, it will start replacing further occurrences of ##//identifier//## with ##//body//##. ##//body//## may be empty. The expansion is done recursively, until there is nothing more to expand and the compiler can continue analyzing the resulting code. ##[[KeyPgPpundef|#undef]]## can be used to make the compiler forget about a ##**#define**##.
 	
-	##//Parameters//## turn a define into a function-like macro, allowing text arguments to be passed to the macro. Any occurrences of the parameter names in the ##//body//## will be replaced by the given argument text during expansion. The ##[[KeyPgOpPpStringize|# stringize]]## operator can be used on macro parameters to turn them into string literals, and the ##[[KeyPgOpPpConcat|## concatenate]]## operator can be used to merge tokens together.
+	##//Parameters//## turn a define into a function-like macro, allowing text arguments to be passed to the macro. Any occurrences of the parameter names in the ##//body//## will be replaced by the given argument text during expansion.
+	If a literal is passed to a macro, the name of the corresponding parameter in the macro body can not be used as a local variable as in a procedure body. To emulate the same functioning as for a procedure, the user must then explicitly declare a local variable (with another name) in the body of the macro and initialize it with the passed parameter name (replaced at preprocessing by the literal passed).
+	
+	The ##[[KeyPgOpPpStringize|# stringize]]## operator can be used on macro parameters to turn them into string literals, and the ##[[KeyPgOpPpConcat|## concatenate]]## operator can be used to merge tokens together.
 	
 	Note: In the function-like macro declaration, the ##//identifier//## should be followed by the opening parentheses (##(##) immediately without any white-space in between, otherwise the compiler will treat it as part of the ##//body//##.
 	

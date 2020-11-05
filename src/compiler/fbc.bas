@@ -1658,6 +1658,8 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 			fbc.backend = FB_BACKEND_GCC
 		case "llvm"
 			fbc.backend = FB_BACKEND_LLVM
+		Case "gas64"
+			fbc.backend = FB_BACKEND_GAS64
 		case else
 			hFatalInvalidOption( arg )
 		end select
@@ -1904,6 +1906,10 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 			fbSetOption( FB_COMPOPT_PEDANTICCHK, _
 						 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_CASTFUNCPTR )
 			value = FB_WARNINGMSGS_LOWEST_LEVEL
+
+		case "suffix"
+			fbSetOption( FB_COMPOPT_PEDANTICCHK, _
+						 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_SUFFIX )
 
 		case "pedantic"
 			fbSetOption( FB_COMPOPT_PEDANTICCHK, FB_PDCHECK_DEFAULT )
@@ -2345,8 +2351,10 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 
 	'' 7. Check whether backend supports the target/arch.
 	'' -gen gas with non-x86 arch isn't possible.
-	if( (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) and _
-	    (fbGetCpuFamily( ) <> FB_CPUFAMILY_X86) ) then
+	if( ((fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) and _
+	    (fbGetCpuFamily( ) <> FB_CPUFAMILY_X86)) _
+	    or ((fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS64) and _
+	    (fbGetCpuFamily( ) <> FB_CPUFAMILY_X86_64)) ) then
 		errReportEx( FB_ERRMSG_GENGASWITHNONX86, fbGetFbcArch( ), -1 )
 		fbcEnd( 1 )
 	end if
@@ -2385,7 +2393,7 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 		end select
 
 		'' -gen gas only supports -asm intel
-		if( (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) and _
+		if( ( (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) or (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS64) ) and _
 		    (fbc.asmsyntax <> FB_ASMSYNTAX_INTEL) ) then
 			errReportEx( FB_ERRMSG_GENGASWITHOUTINTEL, "", -1 )
 		end if
@@ -2522,6 +2530,7 @@ private sub fbcPrintTargetInfo( )
 		end if
 	#endif
 	print "target:", s
+	print "backend:", fbGetBackendName( fbGetOption( FB_COMPOPT_BACKEND ) )
 end sub
 
 private sub fbcDetermineMainName( )
@@ -2566,7 +2575,9 @@ private function hGetAsmName _
 	asmfile = hStripExt( *module->objfile )
 
 	ext = @".asm"
-
+	if( fbGetOption( FB_COMPOPT_BACKEND )= FB_BACKEND_GAS64 ) then
+		ext = @".a64"
+	end if
 	if( stage = 1 ) then
 		select case( fbGetOption( FB_COMPOPT_BACKEND ) )
 		case FB_BACKEND_GCC
@@ -3534,6 +3545,16 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -vec <n>         Automatic vectorization level (default: 0)"
 	print "  [-]-version      Show compiler version"
 	print "  -w all|pedantic|<n>  Set min warning level: all, pedantic or a value"
+	if( verbose ) then
+	print "  -w all           Enable all warnings"
+	print "  -w none          Disable all warnings"
+	print "  -w param         Enable parameter warnings"
+	print "  -w escape        Enable string escape sequence warnings"
+	print "  -w next          Enable next statement warnings"
+	print "  -w signedness    Enable type signedness warnings"
+	print "  -w constness     Enable const type warnings"
+	print "  -w suffix        Enable invalid suffix warnings"
+	end if
 	print "  -Wa <a,b,c>      Pass options to 'as'"
 	print "  -Wc <a,b,c>      Pass options to 'gcc' (-gen gcc) or 'llc' (-gen llvm)"
 	print "  -Wl <a,b,c>      Pass options to 'ld'"
@@ -3666,7 +3687,8 @@ end sub
 		fbcEnd( 0 )
 	end if
 
-	if( fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS ) then
+	if( (fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS)  and _
+		fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS64 ) then
 		''
 		'' Compile intermediate .c modules produced by -gen gcc
 		''

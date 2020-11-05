@@ -2,7 +2,7 @@
 Computes a valid color value for hi/truecolor modes
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine|#define]] **RGB**(//r//,//g//,//b//) (([[KeyPgCuint|cuint]](r) [[KeyPgOpShiftLeft|shl]] 16) [[KeyPgOpOr|or]] ([[KeyPgCuint|cuint]](g) [[KeyPgOpShiftLeft|shl]] 8) [[KeyPgOpOr|or]] [[KeyPgCuint|cuint]](b) [[KeyPgOpOr|or]] &hFF000000)
+	[[KeyPgPpdefine|#define]] **RGB**(//r//,//g//,//b//) (([[KeyPgCulng|culng]](r) [[KeyPgOpShiftLeft|shl]] 16) [[KeyPgOpOr|or]] ([[KeyPgCulng|culng]](g) [[KeyPgOpShiftLeft|shl]] 8) [[KeyPgOpOr|or]] [[KeyPgCulng|culng]](b) [[KeyPgOpOr|or]] &hFF000000)
 ##
 {{fbdoc item="usage"}}##
 	//result// = **RGB**(//red//, //green//, //blue//)
@@ -40,12 +40,12 @@ Sleep 'wait before exiting
 {{fbdoc item="filename" value="examples/manual/gfx/rgb_get.bas"}}%%(freebasic)
 '' setting and retrieving Red, Green, Blue and Alpha values
 
-#define RGBA_R( c ) ( CUInt( c ) Shr 16 And 255 )
-#define RGBA_G( c ) ( CUInt( c ) Shr  8 And 255 )
-#define RGBA_B( c ) ( CUInt( c )        And 255 )
-#define RGBA_A( c ) ( CUInt( c ) Shr 24         )
+#define RGBA_R( c ) ( CULng( c ) Shr 16 And 255 )
+#define RGBA_G( c ) ( CULng( c ) Shr  8 And 255 )
+#define RGBA_B( c ) ( CULng( c )        And 255 )
+#define RGBA_A( c ) ( CULng( c ) Shr 24         )
 
-Dim As UInteger r, g, b, a
+Dim As UByte r, g, b, a
 
 Dim As UInteger col = RGB(128, 192, 64)
 

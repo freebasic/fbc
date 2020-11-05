@@ -51,12 +51,11 @@ typedef void (APIENTRY *GLPIXELTRANSFERI)(GLenum, GLint);
 typedef void (APIENTRY *GLPIXELMAPFV)(GLenum, GLsizei, const GLfloat *);
 
 
-
 typedef struct FB_GL {
 	GLENABLE					Enable;
 	GLDISABLE					Disable;
-	GLENABLECLIENTSTATE				EnableClientState;
-	GLDISABLECLIENTSTATE				DisableClientState;
+	GLENABLECLIENTSTATE			EnableClientState;
+	GLDISABLECLIENTSTATE		DisableClientState;
 	GLGETSTRING					GetString;
 	GLVIEWPORT					Viewport;
 	GLMATRIXMODE				MatrixMode;
@@ -76,9 +75,9 @@ typedef struct FB_GL {
 	GLTEXCOORDPOINTER			TexCoordPointer;
 	GLDRAWARRAYS				DrawArrays;
 	GLPUSHMATRIX				PushMatrix;
-	GLPOPMATRIX				PopMatrix;
+	GLPOPMATRIX					PopMatrix;
 	GLPUSHATTRIB				PushAttrib;
-	GLPOPATTRIB				PopAttrib;
+	GLPOPATTRIB					PopAttrib;
 	GLPUSHCLIENTATTRIB			PushClientAttrib;
 	GLPOPCLIENTATTRIB			PopClientAttrib;
 	GLPIXELSTOREI				PixelStorei;
@@ -102,8 +101,9 @@ typedef struct FB_GL_PARAMS {
 	int accum_blue_bits;
 	int accum_alpha_bits;
 	int num_samples;
-
+	int init_mode_2d;
 	int mode_2d;
+	int init_scale;
 	int scale;
 	void (*callback)(void);
 } FB_GL_PARAMS;

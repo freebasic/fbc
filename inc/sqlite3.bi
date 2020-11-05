@@ -1,7 +1,7 @@
-'' FreeBASIC binding for SQLite 3.8.11.1
+'' FreeBASIC binding for SQLite 3.30.0
 ''
 '' based on the C header files:
-''   * 2001 September 15
+''   * 2001-09-15
 ''   *
 ''   * The author disclaims copyright to this source code.  In place of
 ''   * a legal notice, here is a blessing:
@@ -33,20 +33,21 @@
 ''   * part of the build process.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   Copyright © 2019 FreeBASIC development team
 
 #pragma once
 
 #inclib "sqlite3"
 
+#include once "crt/long.bi"
 #include once "crt/stdarg.bi"
 
 extern "C"
 
-#define _SQLITE3_H_
-#define SQLITE_VERSION "3.8.11.1"
-const SQLITE_VERSION_NUMBER = 3008011
-#define SQLITE_SOURCE_ID "2015-07-29 20:00:57 cf538e2783e468bbc25e7cb2a9ee64d3e0e80b2f"
+#define SQLITE3_H
+#define SQLITE_VERSION "3.33.0"
+const SQLITE_VERSION_NUMBER = 3033000
+#define SQLITE_SOURCE_ID "2020-08-14 13:23:32 fca8dc8b578f215a969cd899336378966156154710873e68b3d9ac5881b0ff3f"
 extern __sqlite3_version alias "sqlite3_version" as const byte
 #define sqlite3_version (*cptr(const zstring ptr, @__sqlite3_version))
 
@@ -98,6 +99,9 @@ const SQLITE_NOTICE = 27
 const SQLITE_WARNING = 28
 const SQLITE_ROW = 100
 const SQLITE_DONE = 101
+const SQLITE_ERROR_MISSING_COLLSEQ = SQLITE_ERROR or (1 shl 8)
+const SQLITE_ERROR_RETRY = SQLITE_ERROR or (2 shl 8)
+const SQLITE_ERROR_SNAPSHOT = SQLITE_ERROR or (3 shl 8)
 const SQLITE_IOERR_READ = SQLITE_IOERR or (1 shl 8)
 const SQLITE_IOERR_SHORT_READ = SQLITE_IOERR or (2 shl 8)
 const SQLITE_IOERR_WRITE = SQLITE_IOERR or (3 shl 8)
@@ -124,18 +128,32 @@ const SQLITE_IOERR_DELETE_NOENT = SQLITE_IOERR or (23 shl 8)
 const SQLITE_IOERR_MMAP = SQLITE_IOERR or (24 shl 8)
 const SQLITE_IOERR_GETTEMPPATH = SQLITE_IOERR or (25 shl 8)
 const SQLITE_IOERR_CONVPATH = SQLITE_IOERR or (26 shl 8)
+const SQLITE_IOERR_VNODE = SQLITE_IOERR or (27 shl 8)
+const SQLITE_IOERR_AUTH = SQLITE_IOERR or (28 shl 8)
+const SQLITE_IOERR_BEGIN_ATOMIC = SQLITE_IOERR or (29 shl 8)
+const SQLITE_IOERR_COMMIT_ATOMIC = SQLITE_IOERR or (30 shl 8)
+const SQLITE_IOERR_ROLLBACK_ATOMIC = SQLITE_IOERR or (31 shl 8)
+const SQLITE_IOERR_DATA = SQLITE_IOERR or (32 shl 8)
 const SQLITE_LOCKED_SHAREDCACHE = SQLITE_LOCKED or (1 shl 8)
+const SQLITE_LOCKED_VTAB = SQLITE_LOCKED or (2 shl 8)
 const SQLITE_BUSY_RECOVERY = SQLITE_BUSY or (1 shl 8)
 const SQLITE_BUSY_SNAPSHOT = SQLITE_BUSY or (2 shl 8)
+const SQLITE_BUSY_TIMEOUT = SQLITE_BUSY or (3 shl 8)
 const SQLITE_CANTOPEN_NOTEMPDIR = SQLITE_CANTOPEN or (1 shl 8)
 const SQLITE_CANTOPEN_ISDIR = SQLITE_CANTOPEN or (2 shl 8)
 const SQLITE_CANTOPEN_FULLPATH = SQLITE_CANTOPEN or (3 shl 8)
 const SQLITE_CANTOPEN_CONVPATH = SQLITE_CANTOPEN or (4 shl 8)
+const SQLITE_CANTOPEN_DIRTYWAL = SQLITE_CANTOPEN or (5 shl 8)
+const SQLITE_CANTOPEN_SYMLINK = SQLITE_CANTOPEN or (6 shl 8)
 const SQLITE_CORRUPT_VTAB = SQLITE_CORRUPT or (1 shl 8)
+const SQLITE_CORRUPT_SEQUENCE = SQLITE_CORRUPT or (2 shl 8)
+const SQLITE_CORRUPT_INDEX = SQLITE_CORRUPT or (3 shl 8)
 const SQLITE_READONLY_RECOVERY = SQLITE_READONLY or (1 shl 8)
 const SQLITE_READONLY_CANTLOCK = SQLITE_READONLY or (2 shl 8)
 const SQLITE_READONLY_ROLLBACK = SQLITE_READONLY or (3 shl 8)
 const SQLITE_READONLY_DBMOVED = SQLITE_READONLY or (4 shl 8)
+const SQLITE_READONLY_CANTINIT = SQLITE_READONLY or (5 shl 8)
+const SQLITE_READONLY_DIRECTORY = SQLITE_READONLY or (6 shl 8)
 const SQLITE_ABORT_ROLLBACK = SQLITE_ABORT or (2 shl 8)
 const SQLITE_CONSTRAINT_CHECK = SQLITE_CONSTRAINT or (1 shl 8)
 const SQLITE_CONSTRAINT_COMMITHOOK = SQLITE_CONSTRAINT or (2 shl 8)
@@ -147,10 +165,13 @@ const SQLITE_CONSTRAINT_TRIGGER = SQLITE_CONSTRAINT or (7 shl 8)
 const SQLITE_CONSTRAINT_UNIQUE = SQLITE_CONSTRAINT or (8 shl 8)
 const SQLITE_CONSTRAINT_VTAB = SQLITE_CONSTRAINT or (9 shl 8)
 const SQLITE_CONSTRAINT_ROWID = SQLITE_CONSTRAINT or (10 shl 8)
+const SQLITE_CONSTRAINT_PINNED = SQLITE_CONSTRAINT or (11 shl 8)
 const SQLITE_NOTICE_RECOVER_WAL = SQLITE_NOTICE or (1 shl 8)
 const SQLITE_NOTICE_RECOVER_ROLLBACK = SQLITE_NOTICE or (2 shl 8)
 const SQLITE_WARNING_AUTOINDEX = SQLITE_WARNING or (1 shl 8)
 const SQLITE_AUTH_USER = SQLITE_AUTH or (1 shl 8)
+const SQLITE_OK_LOAD_PERMANENTLY = SQLITE_OK or (1 shl 8)
+const SQLITE_OK_SYMLINK = SQLITE_OK or (2 shl 8)
 const SQLITE_OPEN_READONLY = &h00000001
 const SQLITE_OPEN_READWRITE = &h00000002
 const SQLITE_OPEN_CREATE = &h00000004
@@ -165,12 +186,14 @@ const SQLITE_OPEN_TRANSIENT_DB = &h00000400
 const SQLITE_OPEN_MAIN_JOURNAL = &h00000800
 const SQLITE_OPEN_TEMP_JOURNAL = &h00001000
 const SQLITE_OPEN_SUBJOURNAL = &h00002000
-const SQLITE_OPEN_MASTER_JOURNAL = &h00004000
+const SQLITE_OPEN_SUPER_JOURNAL = &h00004000
 const SQLITE_OPEN_NOMUTEX = &h00008000
 const SQLITE_OPEN_FULLMUTEX = &h00010000
 const SQLITE_OPEN_SHAREDCACHE = &h00020000
 const SQLITE_OPEN_PRIVATECACHE = &h00040000
 const SQLITE_OPEN_WAL = &h00080000
+const SQLITE_OPEN_NOFOLLOW = &h01000000
+const SQLITE_OPEN_MASTER_JOURNAL = &h00004000
 const SQLITE_IOCAP_ATOMIC = &h00000001
 const SQLITE_IOCAP_ATOMIC512 = &h00000002
 const SQLITE_IOCAP_ATOMIC1K = &h00000004
@@ -185,6 +208,7 @@ const SQLITE_IOCAP_SEQUENTIAL = &h00000400
 const SQLITE_IOCAP_UNDELETABLE_WHEN_OPEN = &h00000800
 const SQLITE_IOCAP_POWERSAFE_OVERWRITE = &h00001000
 const SQLITE_IOCAP_IMMUTABLE = &h00002000
+const SQLITE_IOCAP_BATCH_ATOMIC = &h00004000
 const SQLITE_LOCK_NONE = 0
 const SQLITE_LOCK_SHARED = 1
 const SQLITE_LOCK_RESERVED = 2
@@ -246,6 +270,19 @@ const SQLITE_FCNTL_WIN32_SET_HANDLE = 23
 const SQLITE_FCNTL_WAL_BLOCK = 24
 const SQLITE_FCNTL_ZIPVFS = 25
 const SQLITE_FCNTL_RBU = 26
+const SQLITE_FCNTL_VFS_POINTER = 27
+const SQLITE_FCNTL_JOURNAL_POINTER = 28
+const SQLITE_FCNTL_WIN32_GET_HANDLE = 29
+const SQLITE_FCNTL_PDB = 30
+const SQLITE_FCNTL_BEGIN_ATOMIC_WRITE = 31
+const SQLITE_FCNTL_COMMIT_ATOMIC_WRITE = 32
+const SQLITE_FCNTL_ROLLBACK_ATOMIC_WRITE = 33
+const SQLITE_FCNTL_LOCK_TIMEOUT = 34
+const SQLITE_FCNTL_DATA_VERSION = 35
+const SQLITE_FCNTL_SIZE_LIMIT = 36
+const SQLITE_FCNTL_CKPT_DONE = 37
+const SQLITE_FCNTL_RESERVE_BYTES = 38
+const SQLITE_FCNTL_CKPT_START = 39
 const SQLITE_GET_LOCKPROXYFILE = SQLITE_FCNTL_GET_LOCKPROXYFILE
 const SQLITE_SET_LOCKPROXYFILE = SQLITE_FCNTL_SET_LOCKPROXYFILE
 const SQLITE_LAST_ERRNO = SQLITE_FCNTL_LAST_ERRNO
@@ -327,12 +364,33 @@ const SQLITE_CONFIG_MMAP_SIZE = 22
 const SQLITE_CONFIG_WIN32_HEAPSIZE = 23
 const SQLITE_CONFIG_PCACHE_HDRSZ = 24
 const SQLITE_CONFIG_PMASZ = 25
+const SQLITE_CONFIG_STMTJRNL_SPILL = 26
+const SQLITE_CONFIG_SMALL_MALLOC = 27
+const SQLITE_CONFIG_SORTERREF_SIZE = 28
+const SQLITE_CONFIG_MEMDB_MAXSIZE = 29
+const SQLITE_DBCONFIG_MAINDBNAME = 1000
 const SQLITE_DBCONFIG_LOOKASIDE = 1001
 const SQLITE_DBCONFIG_ENABLE_FKEY = 1002
 const SQLITE_DBCONFIG_ENABLE_TRIGGER = 1003
+const SQLITE_DBCONFIG_ENABLE_FTS3_TOKENIZER = 1004
+const SQLITE_DBCONFIG_ENABLE_LOAD_EXTENSION = 1005
+const SQLITE_DBCONFIG_NO_CKPT_ON_CLOSE = 1006
+const SQLITE_DBCONFIG_ENABLE_QPSG = 1007
+const SQLITE_DBCONFIG_TRIGGER_EQP = 1008
+const SQLITE_DBCONFIG_RESET_DATABASE = 1009
+const SQLITE_DBCONFIG_DEFENSIVE = 1010
+const SQLITE_DBCONFIG_WRITABLE_SCHEMA = 1011
+const SQLITE_DBCONFIG_LEGACY_ALTER_TABLE = 1012
+const SQLITE_DBCONFIG_DQS_DML = 1013
+const SQLITE_DBCONFIG_DQS_DDL = 1014
+const SQLITE_DBCONFIG_ENABLE_VIEW = 1015
+const SQLITE_DBCONFIG_LEGACY_FILE_FORMAT = 1016
+const SQLITE_DBCONFIG_TRUSTED_SCHEMA = 1017
+const SQLITE_DBCONFIG_MAX = 1017
 
 declare function sqlite3_extended_result_codes(byval as sqlite3 ptr, byval onoff as long) as long
 declare function sqlite3_last_insert_rowid(byval as sqlite3 ptr) as sqlite3_int64
+declare sub sqlite3_set_last_insert_rowid(byval as sqlite3 ptr, byval as sqlite3_int64)
 declare function sqlite3_changes(byval as sqlite3 ptr) as long
 declare function sqlite3_total_changes(byval as sqlite3 ptr) as long
 declare sub sqlite3_interrupt(byval as sqlite3 ptr)
@@ -393,9 +451,14 @@ const SQLITE_FUNCTION = 31
 const SQLITE_SAVEPOINT = 32
 const SQLITE_COPY = 0
 const SQLITE_RECURSIVE = 33
-
 declare function sqlite3_trace(byval as sqlite3 ptr, byval xTrace as sub(byval as any ptr, byval as const zstring ptr), byval as any ptr) as any ptr
 declare function sqlite3_profile(byval as sqlite3 ptr, byval xProfile as sub(byval as any ptr, byval as const zstring ptr, byval as sqlite3_uint64), byval as any ptr) as any ptr
+const SQLITE_TRACE_STMT = &h01
+const SQLITE_TRACE_PROFILE = &h02
+const SQLITE_TRACE_ROW = &h04
+const SQLITE_TRACE_CLOSE = &h08
+
+declare function sqlite3_trace_v2(byval as sqlite3 ptr, byval uMask as ulong, byval xCallback as function(byval as ulong, byval as any ptr, byval as any ptr, byval as any ptr) as long, byval pCtx as any ptr) as long
 declare sub sqlite3_progress_handler(byval as sqlite3 ptr, byval as long, byval as function(byval as any ptr) as long, byval as any ptr)
 declare function sqlite3_open(byval filename as const zstring ptr, byval ppDb as sqlite3 ptr ptr) as long
 declare function sqlite3_open16(byval filename as const any ptr, byval ppDb as sqlite3 ptr ptr) as long
@@ -403,6 +466,13 @@ declare function sqlite3_open_v2(byval filename as const zstring ptr, byval ppDb
 declare function sqlite3_uri_parameter(byval zFilename as const zstring ptr, byval zParam as const zstring ptr) as const zstring ptr
 declare function sqlite3_uri_boolean(byval zFile as const zstring ptr, byval zParam as const zstring ptr, byval bDefault as long) as long
 declare function sqlite3_uri_int64(byval as const zstring ptr, byval as const zstring ptr, byval as sqlite3_int64) as sqlite3_int64
+declare function sqlite3_uri_key(byval zFilename as const zstring ptr, byval N as long) as const zstring ptr
+declare function sqlite3_filename_database(byval as const zstring ptr) as const zstring ptr
+declare function sqlite3_filename_journal(byval as const zstring ptr) as const zstring ptr
+declare function sqlite3_filename_wal(byval as const zstring ptr) as const zstring ptr
+declare function sqlite3_database_file_object(byval as const zstring ptr) as sqlite3_file ptr
+declare function sqlite3_create_filename(byval zDatabase as const zstring ptr, byval zJournal as const zstring ptr, byval zWal as const zstring ptr, byval nParam as long, byval azParam as const zstring ptr ptr) as zstring ptr
+declare sub sqlite3_free_filename(byval as zstring ptr)
 declare function sqlite3_errcode(byval db as sqlite3 ptr) as long
 declare function sqlite3_extended_errcode(byval db as sqlite3 ptr) as long
 declare function sqlite3_errmsg(byval as sqlite3 ptr) as const zstring ptr
@@ -422,16 +492,23 @@ const SQLITE_LIMIT_LIKE_PATTERN_LENGTH = 8
 const SQLITE_LIMIT_VARIABLE_NUMBER = 9
 const SQLITE_LIMIT_TRIGGER_DEPTH = 10
 const SQLITE_LIMIT_WORKER_THREADS = 11
+const SQLITE_PREPARE_PERSISTENT = &h01
+const SQLITE_PREPARE_NORMALIZE = &h02
+const SQLITE_PREPARE_NO_VTAB = &h04
 type sqlite3_stmt as sqlite3_stmt_
 
 declare function sqlite3_prepare(byval db as sqlite3 ptr, byval zSql as const zstring ptr, byval nByte as long, byval ppStmt as sqlite3_stmt ptr ptr, byval pzTail as const zstring ptr ptr) as long
 declare function sqlite3_prepare_v2(byval db as sqlite3 ptr, byval zSql as const zstring ptr, byval nByte as long, byval ppStmt as sqlite3_stmt ptr ptr, byval pzTail as const zstring ptr ptr) as long
+declare function sqlite3_prepare_v3(byval db as sqlite3 ptr, byval zSql as const zstring ptr, byval nByte as long, byval prepFlags as ulong, byval ppStmt as sqlite3_stmt ptr ptr, byval pzTail as const zstring ptr ptr) as long
 declare function sqlite3_prepare16(byval db as sqlite3 ptr, byval zSql as const any ptr, byval nByte as long, byval ppStmt as sqlite3_stmt ptr ptr, byval pzTail as const any ptr ptr) as long
 declare function sqlite3_prepare16_v2(byval db as sqlite3 ptr, byval zSql as const any ptr, byval nByte as long, byval ppStmt as sqlite3_stmt ptr ptr, byval pzTail as const any ptr ptr) as long
+declare function sqlite3_prepare16_v3(byval db as sqlite3 ptr, byval zSql as const any ptr, byval nByte as long, byval prepFlags as ulong, byval ppStmt as sqlite3_stmt ptr ptr, byval pzTail as const any ptr ptr) as long
 declare function sqlite3_sql(byval pStmt as sqlite3_stmt ptr) as const zstring ptr
+declare function sqlite3_expanded_sql(byval pStmt as sqlite3_stmt ptr) as zstring ptr
+declare function sqlite3_normalized_sql(byval pStmt as sqlite3_stmt ptr) as const zstring ptr
 declare function sqlite3_stmt_readonly(byval pStmt as sqlite3_stmt ptr) as long
+declare function sqlite3_stmt_isexplain(byval pStmt as sqlite3_stmt ptr) as long
 declare function sqlite3_stmt_busy(byval as sqlite3_stmt ptr) as long
-type sqlite3_value as Mem
 declare function sqlite3_bind_blob(byval as sqlite3_stmt ptr, byval as long, byval as const any ptr, byval n as long, byval as sub(byval as any ptr)) as long
 declare function sqlite3_bind_blob64(byval as sqlite3_stmt ptr, byval as long, byval as const any ptr, byval as sqlite3_uint64, byval as sub(byval as any ptr)) as long
 declare function sqlite3_bind_double(byval as sqlite3_stmt ptr, byval as long, byval as double) as long
@@ -441,7 +518,9 @@ declare function sqlite3_bind_null(byval as sqlite3_stmt ptr, byval as long) as 
 declare function sqlite3_bind_text(byval as sqlite3_stmt ptr, byval as long, byval as const zstring ptr, byval as long, byval as sub(byval as any ptr)) as long
 declare function sqlite3_bind_text16(byval as sqlite3_stmt ptr, byval as long, byval as const any ptr, byval as long, byval as sub(byval as any ptr)) as long
 declare function sqlite3_bind_text64(byval as sqlite3_stmt ptr, byval as long, byval as const zstring ptr, byval as sqlite3_uint64, byval as sub(byval as any ptr), byval encoding as ubyte) as long
+type sqlite3_value as sqlite3_value_
 declare function sqlite3_bind_value(byval as sqlite3_stmt ptr, byval as long, byval as const sqlite3_value ptr) as long
+declare function sqlite3_bind_pointer(byval as sqlite3_stmt ptr, byval as long, byval as any ptr, byval as const zstring ptr, byval as sub(byval as any ptr)) as long
 declare function sqlite3_bind_zeroblob(byval as sqlite3_stmt ptr, byval as long, byval n as long) as long
 declare function sqlite3_bind_zeroblob64(byval as sqlite3_stmt ptr, byval as long, byval as sqlite3_uint64) as long
 declare function sqlite3_bind_parameter_count(byval as sqlite3_stmt ptr) as long
@@ -470,21 +549,22 @@ const SQLITE_TEXT = 3
 const SQLITE3_TEXT = 3
 
 declare function sqlite3_column_blob(byval as sqlite3_stmt ptr, byval iCol as long) as const any ptr
-declare function sqlite3_column_bytes(byval as sqlite3_stmt ptr, byval iCol as long) as long
-declare function sqlite3_column_bytes16(byval as sqlite3_stmt ptr, byval iCol as long) as long
 declare function sqlite3_column_double(byval as sqlite3_stmt ptr, byval iCol as long) as double
 declare function sqlite3_column_int(byval as sqlite3_stmt ptr, byval iCol as long) as long
 declare function sqlite3_column_int64(byval as sqlite3_stmt ptr, byval iCol as long) as sqlite3_int64
 declare function sqlite3_column_text(byval as sqlite3_stmt ptr, byval iCol as long) as const ubyte ptr
 declare function sqlite3_column_text16(byval as sqlite3_stmt ptr, byval iCol as long) as const any ptr
-declare function sqlite3_column_type(byval as sqlite3_stmt ptr, byval iCol as long) as long
 declare function sqlite3_column_value(byval as sqlite3_stmt ptr, byval iCol as long) as sqlite3_value ptr
+declare function sqlite3_column_bytes(byval as sqlite3_stmt ptr, byval iCol as long) as long
+declare function sqlite3_column_bytes16(byval as sqlite3_stmt ptr, byval iCol as long) as long
+declare function sqlite3_column_type(byval as sqlite3_stmt ptr, byval iCol as long) as long
 declare function sqlite3_finalize(byval pStmt as sqlite3_stmt ptr) as long
 declare function sqlite3_reset(byval pStmt as sqlite3_stmt ptr) as long
 type sqlite3_context as sqlite3_context_
 declare function sqlite3_create_function(byval db as sqlite3 ptr, byval zFunctionName as const zstring ptr, byval nArg as long, byval eTextRep as long, byval pApp as any ptr, byval xFunc as sub(byval as sqlite3_context ptr, byval as long, byval as sqlite3_value ptr ptr), byval xStep as sub(byval as sqlite3_context ptr, byval as long, byval as sqlite3_value ptr ptr), byval xFinal as sub(byval as sqlite3_context ptr)) as long
 declare function sqlite3_create_function16(byval db as sqlite3 ptr, byval zFunctionName as const any ptr, byval nArg as long, byval eTextRep as long, byval pApp as any ptr, byval xFunc as sub(byval as sqlite3_context ptr, byval as long, byval as sqlite3_value ptr ptr), byval xStep as sub(byval as sqlite3_context ptr, byval as long, byval as sqlite3_value ptr ptr), byval xFinal as sub(byval as sqlite3_context ptr)) as long
 declare function sqlite3_create_function_v2(byval db as sqlite3 ptr, byval zFunctionName as const zstring ptr, byval nArg as long, byval eTextRep as long, byval pApp as any ptr, byval xFunc as sub(byval as sqlite3_context ptr, byval as long, byval as sqlite3_value ptr ptr), byval xStep as sub(byval as sqlite3_context ptr, byval as long, byval as sqlite3_value ptr ptr), byval xFinal as sub(byval as sqlite3_context ptr), byval xDestroy as sub(byval as any ptr)) as long
+declare function sqlite3_create_window_function(byval db as sqlite3 ptr, byval zFunctionName as const zstring ptr, byval nArg as long, byval eTextRep as long, byval pApp as any ptr, byval xStep as sub(byval as sqlite3_context ptr, byval as long, byval as sqlite3_value ptr ptr), byval xFinal as sub(byval as sqlite3_context ptr), byval xValue as sub(byval as sqlite3_context ptr), byval xInverse as sub(byval as sqlite3_context ptr, byval as long, byval as sqlite3_value ptr ptr), byval xDestroy as sub(byval as any ptr)) as long
 
 const SQLITE_UTF8 = 1
 const SQLITE_UTF16LE = 2
@@ -492,7 +572,10 @@ const SQLITE_UTF16BE = 3
 const SQLITE_UTF16 = 4
 const SQLITE_ANY = 5
 const SQLITE_UTF16_ALIGNED = 8
-const SQLITE_DETERMINISTIC = &h800
+const SQLITE_DETERMINISTIC = &h000000800
+const SQLITE_DIRECTONLY = &h000080000
+const SQLITE_SUBTYPE = &h000100000
+const SQLITE_INNOCUOUS = &h000200000
 
 declare function sqlite3_aggregate_count(byval as sqlite3_context ptr) as long
 declare function sqlite3_expired(byval as sqlite3_stmt ptr) as long
@@ -501,17 +584,21 @@ declare function sqlite3_global_recover() as long
 declare sub sqlite3_thread_cleanup()
 declare function sqlite3_memory_alarm(byval as sub(byval as any ptr, byval as sqlite3_int64, byval as long), byval as any ptr, byval as sqlite3_int64) as long
 declare function sqlite3_value_blob(byval as sqlite3_value ptr) as const any ptr
-declare function sqlite3_value_bytes(byval as sqlite3_value ptr) as long
-declare function sqlite3_value_bytes16(byval as sqlite3_value ptr) as long
 declare function sqlite3_value_double(byval as sqlite3_value ptr) as double
 declare function sqlite3_value_int(byval as sqlite3_value ptr) as long
 declare function sqlite3_value_int64(byval as sqlite3_value ptr) as sqlite3_int64
+declare function sqlite3_value_pointer(byval as sqlite3_value ptr, byval as const zstring ptr) as any ptr
 declare function sqlite3_value_text(byval as sqlite3_value ptr) as const ubyte ptr
 declare function sqlite3_value_text16(byval as sqlite3_value ptr) as const any ptr
 declare function sqlite3_value_text16le(byval as sqlite3_value ptr) as const any ptr
 declare function sqlite3_value_text16be(byval as sqlite3_value ptr) as const any ptr
+declare function sqlite3_value_bytes(byval as sqlite3_value ptr) as long
+declare function sqlite3_value_bytes16(byval as sqlite3_value ptr) as long
 declare function sqlite3_value_type(byval as sqlite3_value ptr) as long
 declare function sqlite3_value_numeric_type(byval as sqlite3_value ptr) as long
+declare function sqlite3_value_nochange(byval as sqlite3_value ptr) as long
+declare function sqlite3_value_frombind(byval as sqlite3_value ptr) as long
+declare function sqlite3_value_subtype(byval as sqlite3_value ptr) as ulong
 declare function sqlite3_value_dup(byval as const sqlite3_value ptr) as sqlite3_value ptr
 declare sub sqlite3_value_free(byval as sqlite3_value ptr)
 declare function sqlite3_aggregate_context(byval as sqlite3_context ptr, byval nBytes as long) as any ptr
@@ -539,8 +626,10 @@ declare sub sqlite3_result_text16(byval as sqlite3_context ptr, byval as const a
 declare sub sqlite3_result_text16le(byval as sqlite3_context ptr, byval as const any ptr, byval as long, byval as sub(byval as any ptr))
 declare sub sqlite3_result_text16be(byval as sqlite3_context ptr, byval as const any ptr, byval as long, byval as sub(byval as any ptr))
 declare sub sqlite3_result_value(byval as sqlite3_context ptr, byval as sqlite3_value ptr)
+declare sub sqlite3_result_pointer(byval as sqlite3_context ptr, byval as any ptr, byval as const zstring ptr, byval as sub(byval as any ptr))
 declare sub sqlite3_result_zeroblob(byval as sqlite3_context ptr, byval n as long)
 declare function sqlite3_result_zeroblob64(byval as sqlite3_context ptr, byval n as sqlite3_uint64) as long
+declare sub sqlite3_result_subtype(byval as sqlite3_context ptr, byval as ulong)
 declare function sqlite3_create_collation(byval as sqlite3 ptr, byval zName as const zstring ptr, byval eTextRep as long, byval pArg as any ptr, byval xCompare as function(byval as any ptr, byval as long, byval as const any ptr, byval as long, byval as const any ptr) as long) as long
 declare function sqlite3_create_collation_v2(byval as sqlite3 ptr, byval zName as const zstring ptr, byval eTextRep as long, byval pArg as any ptr, byval xCompare as function(byval as any ptr, byval as long, byval as const any ptr, byval as long, byval as const any ptr) as long, byval xDestroy as sub(byval as any ptr)) as long
 declare function sqlite3_create_collation16(byval as sqlite3 ptr, byval zName as const any ptr, byval eTextRep as long, byval pArg as any ptr, byval xCompare as function(byval as any ptr, byval as long, byval as const any ptr, byval as long, byval as const any ptr) as long) as long
@@ -549,6 +638,11 @@ declare function sqlite3_collation_needed16(byval as sqlite3 ptr, byval as any p
 declare function sqlite3_sleep(byval as long) as long
 extern sqlite3_temp_directory as zstring ptr
 extern sqlite3_data_directory as zstring ptr
+declare function sqlite3_win32_set_directory(byval type as culong, byval zValue as any ptr) as long
+declare function sqlite3_win32_set_directory8(byval type as culong, byval zValue as const zstring ptr) as long
+declare function sqlite3_win32_set_directory16(byval type as culong, byval zValue as const any ptr) as long
+const SQLITE_WIN32_DATA_DIRECTORY_TYPE = 1
+const SQLITE_WIN32_TEMP_DIRECTORY_TYPE = 2
 declare function sqlite3_get_autocommit(byval as sqlite3 ptr) as long
 declare function sqlite3_db_handle(byval as sqlite3_stmt ptr) as sqlite3 ptr
 declare function sqlite3_db_filename(byval db as sqlite3 ptr, byval zDbName as const zstring ptr) as const zstring ptr
@@ -561,6 +655,7 @@ declare function sqlite3_enable_shared_cache(byval as long) as long
 declare function sqlite3_release_memory(byval as long) as long
 declare function sqlite3_db_release_memory(byval as sqlite3 ptr) as long
 declare function sqlite3_soft_heap_limit64(byval N as sqlite3_int64) as sqlite3_int64
+declare function sqlite3_hard_heap_limit64(byval N as sqlite3_int64) as sqlite3_int64
 declare sub sqlite3_soft_heap_limit(byval N as long)
 declare function sqlite3_table_column_metadata(byval db as sqlite3 ptr, byval zDbName as const zstring ptr, byval zTableName as const zstring ptr, byval zColumnName as const zstring ptr, byval pzDataType as const zstring ptr ptr, byval pzCollSeq as const zstring ptr ptr, byval pNotNull as long ptr, byval pPrimaryKey as long ptr, byval pAutoinc as long ptr) as long
 declare function sqlite3_load_extension(byval db as sqlite3 ptr, byval zFile as const zstring ptr, byval zProc as const zstring ptr, byval pzErrMsg as zstring ptr ptr) as long
@@ -597,6 +692,7 @@ type sqlite3_module
 	xSavepoint as function(byval pVTab as sqlite3_vtab ptr, byval as long) as long
 	xRelease as function(byval pVTab as sqlite3_vtab ptr, byval as long) as long
 	xRollbackTo as function(byval pVTab as sqlite3_vtab ptr, byval as long) as long
+	xShadowName as function(byval as const zstring ptr) as long
 end type
 
 type sqlite3_index_constraint
@@ -628,16 +724,30 @@ type sqlite3_index_info_
 	orderByConsumed as long
 	estimatedCost as double
 	estimatedRows as sqlite3_int64
+	idxFlags as long
+	colUsed as sqlite3_uint64
 end type
 
+const SQLITE_INDEX_SCAN_UNIQUE = 1
 const SQLITE_INDEX_CONSTRAINT_EQ = 2
 const SQLITE_INDEX_CONSTRAINT_GT = 4
 const SQLITE_INDEX_CONSTRAINT_LE = 8
 const SQLITE_INDEX_CONSTRAINT_LT = 16
 const SQLITE_INDEX_CONSTRAINT_GE = 32
 const SQLITE_INDEX_CONSTRAINT_MATCH = 64
+const SQLITE_INDEX_CONSTRAINT_LIKE = 65
+const SQLITE_INDEX_CONSTRAINT_GLOB = 66
+const SQLITE_INDEX_CONSTRAINT_REGEXP = 67
+const SQLITE_INDEX_CONSTRAINT_NE = 68
+const SQLITE_INDEX_CONSTRAINT_ISNOT = 69
+const SQLITE_INDEX_CONSTRAINT_ISNOTNULL = 70
+const SQLITE_INDEX_CONSTRAINT_ISNULL = 71
+const SQLITE_INDEX_CONSTRAINT_IS = 72
+const SQLITE_INDEX_CONSTRAINT_FUNCTION = 150
+
 declare function sqlite3_create_module(byval db as sqlite3 ptr, byval zName as const zstring ptr, byval p as const sqlite3_module ptr, byval pClientData as any ptr) as long
 declare function sqlite3_create_module_v2(byval db as sqlite3 ptr, byval zName as const zstring ptr, byval p as const sqlite3_module ptr, byval pClientData as any ptr, byval xDestroy as sub(byval as any ptr)) as long
+declare function sqlite3_drop_modules(byval db as sqlite3 ptr, byval azKeep as const zstring ptr ptr) as long
 
 type sqlite3_vtab_
 	pModule as const sqlite3_module ptr
@@ -684,7 +794,7 @@ declare function sqlite3_mutex_held(byval as sqlite3_mutex ptr) as long
 declare function sqlite3_mutex_notheld(byval as sqlite3_mutex ptr) as long
 const SQLITE_MUTEX_FAST = 0
 const SQLITE_MUTEX_RECURSIVE = 1
-const SQLITE_MUTEX_STATIC_MASTER = 2
+const SQLITE_MUTEX_STATIC_MAIN = 2
 const SQLITE_MUTEX_STATIC_MEM = 3
 const SQLITE_MUTEX_STATIC_MEM2 = 4
 const SQLITE_MUTEX_STATIC_OPEN = 4
@@ -698,6 +808,7 @@ const SQLITE_MUTEX_STATIC_APP3 = 10
 const SQLITE_MUTEX_STATIC_VFS1 = 11
 const SQLITE_MUTEX_STATIC_VFS2 = 12
 const SQLITE_MUTEX_STATIC_VFS3 = 13
+const SQLITE_MUTEX_STATIC_MASTER = 2
 
 declare function sqlite3_db_mutex(byval as sqlite3 ptr) as sqlite3_mutex ptr
 declare function sqlite3_file_control(byval as sqlite3 ptr, byval zDbName as const zstring ptr, byval op as long, byval as any ptr) as long
@@ -717,17 +828,40 @@ const SQLITE_TESTCTRL_RESERVE = 14
 const SQLITE_TESTCTRL_OPTIMIZATIONS = 15
 const SQLITE_TESTCTRL_ISKEYWORD = 16
 const SQLITE_TESTCTRL_SCRATCHMALLOC = 17
+const SQLITE_TESTCTRL_INTERNAL_FUNCTIONS = 17
 const SQLITE_TESTCTRL_LOCALTIME_FAULT = 18
 const SQLITE_TESTCTRL_EXPLAIN_STMT = 19
+const SQLITE_TESTCTRL_ONCE_RESET_THRESHOLD = 19
 const SQLITE_TESTCTRL_NEVER_CORRUPT = 20
 const SQLITE_TESTCTRL_VDBE_COVERAGE = 21
 const SQLITE_TESTCTRL_BYTEORDER = 22
 const SQLITE_TESTCTRL_ISINIT = 23
 const SQLITE_TESTCTRL_SORTER_MMAP = 24
 const SQLITE_TESTCTRL_IMPOSTER = 25
-const SQLITE_TESTCTRL_LAST = 25
+const SQLITE_TESTCTRL_PARSER_COVERAGE = 26
+const SQLITE_TESTCTRL_RESULT_INTREAL = 27
+const SQLITE_TESTCTRL_PRNG_SEED = 28
+const SQLITE_TESTCTRL_EXTRA_SCHEMA_CHECKS = 29
+const SQLITE_TESTCTRL_LAST = 29
+
+declare function sqlite3_keyword_count() as long
+declare function sqlite3_keyword_name(byval as long, byval as const zstring ptr ptr, byval as long ptr) as long
+declare function sqlite3_keyword_check(byval as const zstring ptr, byval as long) as long
+type sqlite3_str as sqlite3_str_
+declare function sqlite3_str_new(byval as sqlite3 ptr) as sqlite3_str ptr
+declare function sqlite3_str_finish(byval as sqlite3_str ptr) as zstring ptr
+declare sub sqlite3_str_appendf(byval as sqlite3_str ptr, byval zFormat as const zstring ptr, ...)
+declare sub sqlite3_str_vappendf(byval as sqlite3_str ptr, byval zFormat as const zstring ptr, byval as va_list)
+declare sub sqlite3_str_append(byval as sqlite3_str ptr, byval zIn as const zstring ptr, byval N as long)
+declare sub sqlite3_str_appendall(byval as sqlite3_str ptr, byval zIn as const zstring ptr)
+declare sub sqlite3_str_appendchar(byval as sqlite3_str ptr, byval N as long, byval C as byte)
+declare sub sqlite3_str_reset(byval as sqlite3_str ptr)
+declare function sqlite3_str_errcode(byval as sqlite3_str ptr) as long
+declare function sqlite3_str_length(byval as sqlite3_str ptr) as long
+declare function sqlite3_str_value(byval as sqlite3_str ptr) as zstring ptr
 declare function sqlite3_status(byval op as long, byval pCurrent as long ptr, byval pHighwater as long ptr, byval resetFlag as long) as long
 declare function sqlite3_status64(byval op as long, byval pCurrent as sqlite3_int64 ptr, byval pHighwater as sqlite3_int64 ptr, byval resetFlag as long) as long
+
 const SQLITE_STATUS_MEMORY_USED = 0
 const SQLITE_STATUS_PAGECACHE_USED = 1
 const SQLITE_STATUS_PAGECACHE_OVERFLOW = 2
@@ -750,12 +884,17 @@ const SQLITE_DBSTATUS_CACHE_HIT = 7
 const SQLITE_DBSTATUS_CACHE_MISS = 8
 const SQLITE_DBSTATUS_CACHE_WRITE = 9
 const SQLITE_DBSTATUS_DEFERRED_FKS = 10
-const SQLITE_DBSTATUS_MAX = 10
+const SQLITE_DBSTATUS_CACHE_USED_SHARED = 11
+const SQLITE_DBSTATUS_CACHE_SPILL = 12
+const SQLITE_DBSTATUS_MAX = 12
 declare function sqlite3_stmt_status(byval as sqlite3_stmt ptr, byval op as long, byval resetFlg as long) as long
 const SQLITE_STMTSTATUS_FULLSCAN_STEP = 1
 const SQLITE_STMTSTATUS_SORT = 2
 const SQLITE_STMTSTATUS_AUTOINDEX = 3
 const SQLITE_STMTSTATUS_VM_STEP = 4
+const SQLITE_STMTSTATUS_REPREPARE = 5
+const SQLITE_STMTSTATUS_RUN = 6
+const SQLITE_STMTSTATUS_MEMUSED = 99
 
 type sqlite3_pcache_page
 	pBuf as any ptr
@@ -804,6 +943,7 @@ declare function sqlite3_unlock_notify(byval pBlocked as sqlite3 ptr, byval xNot
 declare function sqlite3_stricmp(byval as const zstring ptr, byval as const zstring ptr) as long
 declare function sqlite3_strnicmp(byval as const zstring ptr, byval as const zstring ptr, byval as long) as long
 declare function sqlite3_strglob(byval zGlob as const zstring ptr, byval zStr as const zstring ptr) as long
+declare function sqlite3_strlike(byval zGlob as const zstring ptr, byval zStr as const zstring ptr, byval cEsc as ulong) as long
 declare sub sqlite3_log(byval iErrCode as long, byval zFormat as const zstring ptr, ...)
 declare function sqlite3_wal_hook(byval as sqlite3 ptr, byval as function(byval as any ptr, byval as sqlite3 ptr, byval as const zstring ptr, byval as long) as long, byval as any ptr) as any ptr
 declare function sqlite3_wal_autocheckpoint(byval db as sqlite3 ptr, byval N as long) as long
@@ -816,7 +956,13 @@ const SQLITE_CHECKPOINT_RESTART = 2
 const SQLITE_CHECKPOINT_TRUNCATE = 3
 declare function sqlite3_vtab_config(byval as sqlite3 ptr, byval op as long, ...) as long
 const SQLITE_VTAB_CONSTRAINT_SUPPORT = 1
+const SQLITE_VTAB_INNOCUOUS = 2
+const SQLITE_VTAB_DIRECTONLY = 3
+
 declare function sqlite3_vtab_on_conflict(byval as sqlite3 ptr) as long
+declare function sqlite3_vtab_nochange(byval as sqlite3_context ptr) as long
+declare function sqlite3_vtab_collation(byval as sqlite3_index_info ptr, byval as long) as const zstring ptr
+
 const SQLITE_ROLLBACK = 1
 const SQLITE_FAIL = 3
 const SQLITE_REPLACE = 5
@@ -826,8 +972,28 @@ const SQLITE_SCANSTAT_EST = 2
 const SQLITE_SCANSTAT_NAME = 3
 const SQLITE_SCANSTAT_EXPLAIN = 4
 const SQLITE_SCANSTAT_SELECTID = 5
+
 declare function sqlite3_stmt_scanstatus(byval pStmt as sqlite3_stmt ptr, byval idx as long, byval iScanStatusOp as long, byval pOut as any ptr) as long
 declare sub sqlite3_stmt_scanstatus_reset(byval as sqlite3_stmt ptr)
+declare function sqlite3_db_cacheflush(byval as sqlite3 ptr) as long
+declare function sqlite3_system_errno(byval as sqlite3 ptr) as long
+
+type sqlite3_snapshot
+	hidden(0 to 47) as ubyte
+end type
+
+declare function sqlite3_snapshot_get(byval db as sqlite3 ptr, byval zSchema as const zstring ptr, byval ppSnapshot as sqlite3_snapshot ptr ptr) as long
+declare function sqlite3_snapshot_open(byval db as sqlite3 ptr, byval zSchema as const zstring ptr, byval pSnapshot as sqlite3_snapshot ptr) as long
+declare sub sqlite3_snapshot_free(byval as sqlite3_snapshot ptr)
+declare function sqlite3_snapshot_cmp(byval p1 as sqlite3_snapshot ptr, byval p2 as sqlite3_snapshot ptr) as long
+declare function sqlite3_snapshot_recover(byval db as sqlite3 ptr, byval zDb as const zstring ptr) as long
+declare function sqlite3_serialize(byval db as sqlite3 ptr, byval zSchema as const zstring ptr, byval piSize as sqlite3_int64 ptr, byval mFlags as ulong) as ubyte ptr
+const SQLITE_SERIALIZE_NOCOPY = &h001
+declare function sqlite3_deserialize(byval db as sqlite3 ptr, byval zSchema as const zstring ptr, byval pData as ubyte ptr, byval szDb as sqlite3_int64, byval szBuf as sqlite3_int64, byval mFlags as ulong) as long
+
+const SQLITE_DESERIALIZE_FREEONCLOSE = 1
+const SQLITE_DESERIALIZE_RESIZEABLE = 2
+const SQLITE_DESERIALIZE_READONLY = 4
 #define _SQLITE3RTREE_H_
 type sqlite3_rtree_dbl as double
 type sqlite3_rtree_geometry as sqlite3_rtree_geometry_
@@ -866,5 +1032,59 @@ end type
 const NOT_WITHIN = 0
 const PARTLY_WITHIN = 1
 const FULLY_WITHIN = 2
+#define _FTS5_H
+
+type Fts5ExtensionApi as Fts5ExtensionApi_
+type Fts5Context as Fts5Context_
+type fts5_extension_function as sub(byval pApi as const Fts5ExtensionApi ptr, byval pFts as Fts5Context ptr, byval pCtx as sqlite3_context ptr, byval nVal as long, byval apVal as sqlite3_value ptr ptr)
+
+type Fts5PhraseIter
+	a as const ubyte ptr
+	b as const ubyte ptr
+end type
+
+type Fts5ExtensionApi_
+	iVersion as long
+	xUserData as function(byval as Fts5Context ptr) as any ptr
+	xColumnCount as function(byval as Fts5Context ptr) as long
+	xRowCount as function(byval as Fts5Context ptr, byval pnRow as sqlite3_int64 ptr) as long
+	xColumnTotalSize as function(byval as Fts5Context ptr, byval iCol as long, byval pnToken as sqlite3_int64 ptr) as long
+	xTokenize as function(byval as Fts5Context ptr, byval pText as const zstring ptr, byval nText as long, byval pCtx as any ptr, byval xToken as function(byval as any ptr, byval as long, byval as const zstring ptr, byval as long, byval as long, byval as long) as long) as long
+	xPhraseCount as function(byval as Fts5Context ptr) as long
+	xPhraseSize as function(byval as Fts5Context ptr, byval iPhrase as long) as long
+	xInstCount as function(byval as Fts5Context ptr, byval pnInst as long ptr) as long
+	xInst as function(byval as Fts5Context ptr, byval iIdx as long, byval piPhrase as long ptr, byval piCol as long ptr, byval piOff as long ptr) as long
+	xRowid as function(byval as Fts5Context ptr) as sqlite3_int64
+	xColumnText as function(byval as Fts5Context ptr, byval iCol as long, byval pz as const zstring ptr ptr, byval pn as long ptr) as long
+	xColumnSize as function(byval as Fts5Context ptr, byval iCol as long, byval pnToken as long ptr) as long
+	xQueryPhrase as function(byval as Fts5Context ptr, byval iPhrase as long, byval pUserData as any ptr, byval as function(byval as const Fts5ExtensionApi ptr, byval as Fts5Context ptr, byval as any ptr) as long) as long
+	xSetAuxdata as function(byval as Fts5Context ptr, byval pAux as any ptr, byval xDelete as sub(byval as any ptr)) as long
+	xGetAuxdata as function(byval as Fts5Context ptr, byval bClear as long) as any ptr
+	xPhraseFirst as function(byval as Fts5Context ptr, byval iPhrase as long, byval as Fts5PhraseIter ptr, byval as long ptr, byval as long ptr) as long
+	xPhraseNext as sub(byval as Fts5Context ptr, byval as Fts5PhraseIter ptr, byval piCol as long ptr, byval piOff as long ptr)
+	xPhraseFirstColumn as function(byval as Fts5Context ptr, byval iPhrase as long, byval as Fts5PhraseIter ptr, byval as long ptr) as long
+	xPhraseNextColumn as sub(byval as Fts5Context ptr, byval as Fts5PhraseIter ptr, byval piCol as long ptr)
+end type
+
+type Fts5Tokenizer as Fts5Tokenizer_
+
+type fts5_tokenizer
+	xCreate as function(byval as any ptr, byval azArg as const zstring ptr ptr, byval nArg as long, byval ppOut as Fts5Tokenizer ptr ptr) as long
+	xDelete as sub(byval as Fts5Tokenizer ptr)
+	xTokenize as function(byval as Fts5Tokenizer ptr, byval pCtx as any ptr, byval flags as long, byval pText as const zstring ptr, byval nText as long, byval xToken as function(byval pCtx as any ptr, byval tflags as long, byval pToken as const zstring ptr, byval nToken as long, byval iStart as long, byval iEnd as long) as long) as long
+end type
+
+const FTS5_TOKENIZE_QUERY = &h0001
+const FTS5_TOKENIZE_PREFIX = &h0002
+const FTS5_TOKENIZE_DOCUMENT = &h0004
+const FTS5_TOKENIZE_AUX = &h0008
+const FTS5_TOKEN_COLOCATED = &h0001
+
+type fts5_api
+	iVersion as long
+	xCreateTokenizer as function(byval pApi as fts5_api ptr, byval zName as const zstring ptr, byval pContext as any ptr, byval pTokenizer as fts5_tokenizer ptr, byval xDestroy as sub(byval as any ptr)) as long
+	xFindTokenizer as function(byval pApi as fts5_api ptr, byval zName as const zstring ptr, byval ppContext as any ptr ptr, byval pTokenizer as fts5_tokenizer ptr) as long
+	xCreateFunction as function(byval pApi as fts5_api ptr, byval zName as const zstring ptr, byval pContext as any ptr, byval xFunction as fts5_extension_function, byval xDestroy as sub(byval as any ptr)) as long
+end type
 
 end extern

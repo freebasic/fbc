@@ -1,0 +1,252 @@
+{{fbdoc item="title" value="Variable-length member data"}}----
+Management of **variable-length strings/arrays** as **members** of a Type.
+
+**Preamble:**
+
+	In ""FreeBASIC"", Type data structures must ultimately be fixed-size, such that the compiler knows how much memory to allocate for objects of that Type.
+	Nevertheless, Types may contain variable-length string or array data members.
+	
+	However, the string's/array's data will not be embedded in the Type directly. Instead, the Type will only contain a string/array descriptor structure, which ""FreeBASIC"" uses behind the scenes to manage the variable-length string/array data.
+	For sizing the structure of the array descriptor in the Type, a variable-length array data member must be always declared by using Any(S) in place of the array bounds, in order to fix the amount of dimensions based on the number of Anys specified. A variable-length array data member can also be pre-sized in its declaration by using syntax with ##""ReDim""##.
+	
+	Variable-length array fields are considered as pseudo-objects when they are declared in a Type (variable-length strings are real objects).
+	So the implicit copy constructor and the implicit let operator of the Type themselves support [re]sizing and copying such strings/arrays, or their erasing.
+
+{{fbdoc item="section" value="Implicit string/array sizing and copying by the compiler code"}}
+	When the compiler build a default copy-constructor and a default copy-assignment operator for such a Type (having string/array members), it also includes all code for sizing the destination string/array and copying the data from the source string/array, if needed.
+	
+	Example:
+		{{fbdoc item="filename" value="examples/manual/proguide/udt/varlendata1.bas"}}%%(freebasic)
+Type UDT
+	Dim As String s
+	Dim As Integer array(Any)
+End Type
+
+Dim As UDT u1, u2
+
+u1.s = "FreeBASIC"
+Redim u1.array(1 To 9)
+For I As Integer = Lbound(u1.array) To Ubound(u1.array)
+	u1.array(I) = I
+Next I
+ 
+u2 = u1
+Print u2.s
+For I As Integer = Lbound(u2.array) To Ubound(u2.array)
+	Print u2.array(I);
+Next I
+Print
+Print
+
+Dim As UDT u3 = u1
+Print u3.s
+For I As Integer = Lbound(u3.array) To Ubound(u3.array)
+	Print u3.array(I);
+Next I
+Print
+
+Sleep
+		%%Output:
+			%%
+FreeBASIC
+ 1 2 3 4 5 6 7 8 9
+
+FreeBASIC
+ 1 2 3 4 5 6 7 8 9
+			%%
+{{fbdoc item="section" value="Implicit string/array sizing and copying by the compiler code broken by an explicit copy-constructor and copy-assignment operator"}}
+	If the user want to specify his own copy-constructor and copy-assignment operator (to initialize additional complex field members for example), the above automatic string/array sizing and copying by compiler code is broken.
+	
+	Example:
+		{{fbdoc item="filename" value="examples/manual/proguide/udt/varlendata2.bas"}}%%(freebasic)
+Type UDT
+	Dim As String s
+	Dim As Integer array(Any)
+	Declare Constructor ()
+	Declare Constructor (Byref u As UDT)
+	Declare Operator Let (Byref u As UDT)
+	'user fields
+End Type
+
+Constructor UDT ()
+	'code for user fields in constructor
+End Constructor
+
+Constructor UDT (Byref u As UDT)
+	'code for user fields in copy-constructor
+End Constructor
+
+Operator UDT.Let (Byref u As UDT)
+	'code for user fields in copy-assignement operator
+End Operator
+
+Dim As UDT u1, u2
+
+u1.s = "FreeBASIC"
+Redim u1.array(1 To 9)
+For I As Integer = Lbound(u1.array) To Ubound(u1.array)
+	u1.array(I) = I
+Next I
+ 
+u2 = u1
+Print u2.s
+For I As Integer = Lbound(u2.array) To Ubound(u2.array)
+	Print u2.array(I);
+Next I
+Print
+Print
+
+Dim As UDT u3 = u1
+Print u3.s
+For I As Integer = Lbound(u3.array) To Ubound(u3.array)
+	Print u3.array(I);
+Next I
+Print
+
+Sleep
+		%%Output (blank):
+			%%
+			%%
+{{fbdoc item="section" value="String/Array sizing and copying explicitly set in the user copy-constructor and copy-assignment operator"}}
+	The variable-length array cannot be processed as a true object like a variable-length string, because for example there is no implicit assignment.
+	Referring to the above example, ##This.array() = u.array()## is disallowed, while ##This.s = u.s## is allowed.
+	The user must code explicitly the sizing and the copying of the array member (for the array data copy, a C run-time function ##memcpy()## is used to optimize the execution time).
+	
+	Example:
+		{{fbdoc item="filename" value="examples/manual/proguide/udt/varlendata3.bas"}}%%(freebasic)
+#include "crt/string.bi"  '' C run-time header for 'memcpy()'
+
+Type UDT
+	Dim As String s
+	Dim As Integer array(Any)
+	Declare Constructor ()
+	Declare Constructor (Byref u As UDT)
+	Declare Operator Let (Byref u As UDT)
+	'user fields
+End Type
+
+Constructor UDT ()
+	'code for user fields in constructor
+End Constructor
+
+Constructor UDT (Byref u As UDT)
+	This.s = u.s
+	if Ubound(u.array) >= Lbound(u.array) Then  '' explicit array sizing and copying
+		Redim This.array(Lbound(u.array) To Ubound(u.array))
+		memcpy(@This.array(Lbound(This.array)), @u.array(Lbound(u.array)), (Ubound(u.array) - Lbound(u.array) + 1) * Sizeof(@u.array(Lbound(u.array))))
+	End If
+	'code for user fields in copy-constructor
+End Constructor
+
+Operator UDT.Let (Byref u As UDT)
+	if @This <> @u Then  '' not self-assignment
+		This.s = u.s
+		If Ubound(u.array) >= Lbound(u.array) Then  '' explicit array sizing and copying
+			Redim This.array(Lbound(u.array) To Ubound(u.array))
+			memcpy(@This.array(Lbound(This.array)), @u.array(Lbound(u.array)), (Ubound(u.array) - Lbound(u.array) + 1) * Sizeof(@u.array(Lbound(u.array))))
+		End If
+		'code for user fields in copy-assignement operator
+	End If
+End Operator
+
+Dim As UDT u1, u2
+
+u1.s = "FreeBASIC"
+Redim u1.array(1 To 9)
+For I As Integer = Lbound(u1.array) To Ubound(u1.array)
+	u1.array(I) = I
+Next I
+ 
+u2 = u1
+Print u2.s
+For I As Integer = Lbound(u2.array) To Ubound(u2.array)
+	Print u2.array(I);
+Next I
+Print
+Print
+
+Dim As UDT u3 = u1
+Print u3.s
+For I As Integer = Lbound(u3.array) To Ubound(u3.array)
+	Print u3.array(I);
+Next I
+Print
+
+Sleep
+		%%Output:
+			%%
+FreeBASIC
+ 1 2 3 4 5 6 7 8 9
+
+FreeBASIC
+ 1 2 3 4 5 6 7 8 9
+			%%
+{{fbdoc item="section" value="Using an extra base Type containing the variable-length string and array"}}
+	Another elegant possibility is to keep this sizing/copying, automatically coded by the compiler, but by simply calling it explicitly.
+	For this, an elegant solution for the member array is to no longer put it at the level of the Type itself, but rather in another specific Type which is inherited (seen from the outside, it is exactly the same). This is not necessary for the member string, but including also allows to save one code line each time.
+	
+	Example:
+		{{fbdoc item="filename" value="examples/manual/proguide/udt/varlendata4.bas"}}%%(freebasic)
+Type UDT0
+	Dim As String s
+	Dim As Integer array(Any)
+End Type
+
+Type UDT Extends UDT0
+	Declare Constructor ()
+	Declare Constructor (Byref u As UDT)
+	Declare Operator Let (Byref u As UDT)
+	'user fields
+End Type
+
+Constructor UDT ()
+	'code for user fields in constructor
+End Constructor
+
+Constructor UDT (Byref u As UDT)
+	Base(u)  '' inherited string copying plus array sizing and copying from Base implicit copy-constructor call
+	'code for user fields in copy-constructor
+End Constructor
+
+Operator UDT.Let (Byref u As UDT)
+	Cast(UDT0, This) = u  '' inherited string copying plus array sizing and copying from Base implicit copy-assignement operator call
+	'code for user fields in copy-assignement operator
+End Operator
+
+Dim As UDT u1, u2
+
+u1.s = "FreeBASIC"
+Redim u1.array(1 To 9)
+For I As Integer = Lbound(u1.array) To Ubound(u1.array)
+	u1.array(I) = I
+Next I
+ 
+u2 = u1
+Print u2.s
+For I As Integer = Lbound(u2.array) To Ubound(u2.array)
+	Print u2.array(I);
+Next I
+Print
+Print
+
+Dim As UDT u3 = u1
+Print u3.s
+For I As Integer = Lbound(u3.array) To Ubound(u3.array)
+	Print u3.array(I);
+Next I
+Print
+
+Sleep
+		%%Output:
+			%%
+FreeBASIC
+ 1 2 3 4 5 6 7 8 9
+
+FreeBASIC
+ 1 2 3 4 5 6 7 8 9
+			%%
+{{fbdoc item="see"}}
+	- [[ProPgCtorsAssignDtors|Constructors, '=' Assignment-Operators, and Destructors (advanced, part #1)]]
+	- [[ProPgCtorsAssignDtors2|Constructors, '=' Assignment-Operators, and Destructors (advanced, part #2)]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

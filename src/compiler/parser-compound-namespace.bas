@@ -48,7 +48,7 @@ sub cNamespaceStmtBegin( )
 	end if
 
 	'' skip NAMESPACE
-	lexSkipToken( LEXCHECK_NOPERIOD )
+	lexSkipToken( LEXCHECK_NOPERIOD or LEXCHECK_POST_SUFFIX )
 
 	'' ID?
 	palias = NULL
@@ -119,7 +119,7 @@ sub cNamespaceStmtBegin( )
 
 		'' skip ID
 		if( id[0] <> 0 ) then
-			lexSkipToken( LEXCHECK_NOPERIOD )
+			lexSkipToken( LEXCHECK_NOPERIOD or LEXCHECK_POST_SUFFIX )
 		end if
 
 		'' create a new symbol?
@@ -150,6 +150,7 @@ sub cNamespaceStmtBegin( )
 			exit do
 		end if
 
+		'' '.'
 		lexSkipToken( LEXCHECK_NOPERIOD )
 	loop
 
@@ -173,8 +174,8 @@ sub cNamespaceStmtEnd( )
 	end if
 
 	'' END NAMESPACE
-	lexSkipToken( )
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	levels = stk->nspc.levels
 
@@ -216,7 +217,7 @@ sub cUsingStmt( )
 	end if
 
 	'' USING
-	lexSkipToken( LEXCHECK_NOPERIOD )
+	lexSkipToken( LEXCHECK_NOPERIOD or LEXCHECK_POST_SUFFIX )
 
 	do
 		'' ID

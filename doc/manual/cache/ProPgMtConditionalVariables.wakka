@@ -1,0 +1,306 @@
+{{fbdoc item="title" value="Conditional Variables"}}----
+The built-in procedures that create, wait-for/signal, and destroy **Conditional Variables**.
+
+**Preamble:**
+
+	A condition variable is a mechanism that allows threads to wait (without wasting CPU cycles) for some even to occur.
+	Several threads may wait on a condition variable, until some other thread signals this condition variable (thus sending a notification).
+	At this time, one of the threads waiting on this condition variable wakes up, and can act on the event. It is possible to also wake up all threads waiting on this condition variable by using a broadcast method on this variable.
+	
+	A condition variable does not provide locking. Thus, a mutex must be used along with the condition variable, to provide the necessary locking when accessing this condition variable.
+	
+	Conditional variable capability (and also mutex capability) can be fully used even with a detached thread (only its handler is no longer accessible by its identifier).
+
+{{fbdoc item="section" value="Creating / Destructing a conditional variable"}}
+	##[[KeyPgCondCreate|CondCreate]]## creates a condition variable, returning a handle identifier which is to be referred to when destroying the condition variable.
+	Condition variables created with ##[[KeyPgCondCreate|CondCreate]]## should be destroyed when no longer needed or before the end of the program with ##[[KeyPgCondDestroy|CondDestroy]]## (to avoid leaking resources in the OS).
+	
+	__Create__
+		**""-""** Syntax:
+			##[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] [[KeyPgCondCreate|CondCreate]] ( ) [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]]##
+		**""-""** Usage:
+			##//conditionalid// = [[KeyPgCondCreate|CondCreate]]##
+		**""-""** Return value:
+			The ##[[KeyPgAny|any]] [[KeyPgPtr|ptr]]## handle ##//(conditionalid)//## to the conditional variable created, or the null pointer (##0##) on failure.
+			
+	__Destroy__
+		**""-""** Syntax:
+			##[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] [[KeyPgCondDestroy|CondDestroy]] ( [[KeyPgByval|byval]] //conditionalid// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] )##
+		**""-""** Usage:
+			##[[KeyPgCondDestroy|CondDestroy]] ( //conditionalid// )##
+		**""-""** Parameter:
+			##//conditionalid//##
+				The ##[[KeyPgAny|any]] [[KeyPgPtr|ptr]]## handle of the conditional variable to be destroyed.
+				
+	__Description__
+		##[[KeyPgCondDestroy|CondDestroy]]## destroys a condition variable, freeing the resources it might hold.
+		No threads must be waiting on the condition variable on entrance to ##[[KeyPgCondDestroy|CondDestroy]]##.
+
+{{fbdoc item="section" value="Waiting-for/Signaling a conditional variable"}}
+	The condition variable mechanism allows threads to suspend execution and relinquish the processor until some condition is true.
+	
+	##[[KeyPgCondWait|CondWait]]## stops execution of the current thread until some condition becomes true.
+	##[[KeyPgCondSignal|CondSignal]]## allows to restart one thread waiting on the conditional,  while ##[[KeyPgCondBroadcast|CondBroadCast]]## allows to restart all threads waiting on the conditional.
+	
+	__Wait-for__
+		**""-""** Syntax:
+			##[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] [[KeyPgCondWait|CondWait]] ( [[KeyPgByval|byval]] //conditionalid// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]], [[KeyPgByval|byval]] //mutexid// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] )##
+		**""-""** Usage:
+			##[[KeyPgCondWait|CondWait]] ( //conditionalid//, //mutexid// )##
+		**""-""** Parameters:
+			##//conditionalid//##
+				The handle identifier of a conditional variable.
+			##//mutexid//##
+				The handle identifier of the mutex associated with this conditional variable, which must be locked when testing the condition and calling ##[[KeyPgCondWait|CondWait]]##.
+				
+	__Signal__
+		**""-""** Syntax:
+				##[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] [[KeyPgCondSignal|CondSignal]] ( [[KeyPgByval|byval]] //conditionalid// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] )##
+			or
+				##[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] [[KeyPgCondBroadcast|CondBroadCast]] ( [[KeyPgByval|byval]] //conditionalid// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] )##
+		**""-""** Usage:
+				##[[KeyPgCondSignal|CondSignal]] ( //conditionalid// )##
+			or
+				##[[KeyPgCondBroadcast|CondBroadCast]] ( //conditionalid// )##
+		**""-""** Parameter:
+			##//conditionalid//##
+				The ##[[KeyPgAny|any]] [[KeyPgPtr|ptr]]## handle of the conditional variable to be signaled.
+				
+	__Description__
+		Once the conditional variable is created with ##[[KeyPgCondCreate|CondCreate]]## and the threads are started, one of more of them (including the main thread executing main program) can be set in waiting for the conditional state by ##[[KeyPgCondWait|CondWait]]##.
+		They will be stopped until another thread signals by ##[[KeyPgCondSignal|CondSignal]]## that one among the waiting threads can restart.
+		##[[KeyPgCondBroadcast|CondBroadCast]]## can be used to restart all threads waiting for the conditional.
+		
+		A condition variable must always be associated with a mutex to avoid a race condition created by one thread preparing to wait and another thread which may signal the condition before the first thread actually waits on it resulting in a deadlock. The thread will be perpetually waiting for a signal that is never sent. Any mutex can be used, there is no explicit link between the mutex and the condition variable.
+		
+		When calling ##[[KeyPgCondWait|CondWait]]##, mutex should already be locked (using the same mutex as one used with ##[[KeyPgCondSignal|CondSignal]]## or ##[[KeyPgCondBroadcast|CondBroadCast]]##).
+		The detailed sequence is the following:
+			**""-""** An atomic unlock of the mutex is applied before entering in waiting on the conditional variable in order to release other eventual threads using this mutex (this is why ##[[KeyPgCondWait|CondWait]]## takes as arguments both the mutex and condition variable).
+			**""-""** The thread execution is suspended and does not consume any CPU time until the condition variable is signaled.
+			**""-""** When the condition variable becomes signaled, mutex is atomically re-locked.
+			**""-""** The thread execution can resume after the ##[[KeyPgCondWait|CondWait]]## statement, but is suspended because of the locked mutex owned by the signal-caller.
+			**""-""** So, the signal-caller is then responsible for unlocking mutex in order that the called-thread completes the ##[[KeyPgCondWait|CondWait]]## subroutine and that execution after the ##[[KeyPgCondWait|CondWait]]## call can then really resume.
+			
+		##[[KeyPgCondSignal|CondSignal]]## restarts one thread waiting. It should be called after mutex is locked (using the same mutex as one used with ##[[KeyPgCondWait|CondWait]]##):
+			**""-""** If no threads are waiting on the conditional, nothing happens (the signal is lost forever).
+			**""-""** if several are waiting, only one is restarted:
+				**.** It might be that a condition variable that has several threads waiting on it is signaled many times, and yet one of the threads waiting on it never awakened.
+				**.** This is because it is not known which of the waiting threads is awakened when the variable is signaled.
+				**.** It might be that the awakened thread quickly comes back to waiting on the condition variables, and gets awakened again when the variable is signaled again, and so on (no wake-up priority based on history is assured).
+				**.** It is up to the programmer to make sure this situation does not occur if it implies bad behavior.
+				
+		When using ##[[KeyPgCondBroadcast|CondBroadCast]]##, this does not mean all threads are running together:
+			**""-""** Each of them tries to lock the mutex again before returning from their wait function.
+			**""-""** And thus they will start running one by one, each one locking the mutex, doing their work, and freeing the mutex before the next thread gets its chance to run.
+			
+		**Note:**
+			**""-""** It is a good habit to use ##[[KeyPgCondWait|CondWait]]## in a protected way against eventual spurious wake-ups.
+			**""-""** For that, ##[[KeyPgCondWait|CondWait]]## is put within a loop for checking that a Boolean predicate is indeed true (predicate set true by another thread just before executing ##[[KeyPgCondSignal|CondSignal]]## or ##[[KeyPgCondBroadcast|CondBroadCast]]##) when the thread has finished waiting:
+					**##While predicate <> True
+						Condwait(conditionalid, mutexid)
+					Wend
+					predicate = False##**
+			**""-""** The loop can terminate only when the predicate is true.
+			**""-""** On the other hand, if the predicate is already true before the thread reaches the loop, ##[[KeyPgCondWait|CondWait]]## is downright skipped (allowing to take into account a case of ##[[KeyPgCondSignal|CondSignal]]## or ##[[KeyPgCondBroadcast|CondBroadCast]]## that would have been lost otherwise, because prematurely executed in a second thread before the first thread is really waiting for this).
+			
+		**Pseudo-codes for detailed coding by applying all proper above rules:**
+			- Pseudo-code sub-section for a thread:
+					**""-""** Pseudo-code for the "waiting-for" critical sub-section (with the links to/from critical section items of other thread):
+						%%
+'  Principle of mutual exclusion + waiting-for, for a thread sub-section
+'  (connecting lines join the sender(s) and receiver(s) impacted by each action occurring during the sequence)
+'
+'          Thread                                         Other Thread
+'      MUTEXLOCK(mutexID) <-------------------------- from ( atomic_mutex_unlock(mutexID) ) or MUTEXUNLOCK(mutexID)
+'      .......
+'      While booleanT <> True <---------------------- from booleanT = True
+'          ( atomic_mutex_unlock(mutexID) ) --------> to MUTEXLOCK(mutexID) or ( atomic_mutex_re-lock(mutexID) )
+'          CONDWAIT(conditionalID, mutexID) <-------- from CONDSIGNAL(conditionalID)
+'          ( atomic_mutex_re-lock(mutexID) ) <------- from ( atomic_mutex_unlock(mutexID) ) or MUTEXUNLOCK(mutexID)
+'      Wend
+'      booleanT = False
+'      .......
+'      MUTEXUNLOCK(mutexID) ------------------------> to MUTEXLOCK(mutexID) or ( atomic_mutex_re-lock(mutexID) )
+						%%
+					**""-""** Pseudo-code for the "signaling" critical sub-section (with the links to/from the critical section items of other thread):
+						%%
+'  Principle of mutual exclusion + signaling, for a thread sub-section
+'  (connecting lines join the sender(s) and receiver(s) impacted by each action occurring during the sequence)
+'
+'          Thread                              Other Thread
+'      MUTEXLOCK(mutexID) <--------------- from ( atomic_mutex_unlock(mutexID) ) or MUTEXUNLOCK(mutexID)
+'      .......
+'      booleanOT = True -----------------> to While booleanOT <> True
+'      CONDSIGNAL(conditionalID) --------> to CONDWAIT(conditionalID, mutexID)
+'      .......
+'      MUTEXUNLOCK(mutexID) -------------> to MUTEXLOCK(mutexID) or ( atomic_mutex_re-lock(mutexID) )
+						%%
+			- Pseudo-code section for a thread:
+					**""-""** Pseudo-code for the "signaling, then waiting-for" critical section (with the links to/from the critical section items of other thread):
+						%%
+'  Principle (1) of mutual exclusion + mutual synchronization, for a thread section
+'  (connecting lines join the sender(s) and receiver(s) impacted by each action occurring during the sequence)
+'
+'          Thread                                        Other Thread
+'      MUTEXLOCK(mutexID) <------------------------- from ( atomic_mutex_unlock(mutexID) ) or MUTEXUNLOCK(mutexID)
+'      Do_something_1_with_exclusion
+'      booleanOT = True ---------------------------> to While booleanOT <> True
+'      CONDSIGNAL(conditionalID) ------------------> to CONDWAIT(conditionalID, mutexID)
+'      While booleanT <> True <--------------------- from booleanT = True
+'          ( atomic_mutex_unlock(mutexID) ) -------> to MUTEXLOCK(mutexID) or ( atomic_mutex_re-lock(mutexID) )
+'          CONDWAIT(conditionalID, mutexID) <------- from CONDSIGNAL(conditionalID)
+'          ( atomic_mutex_re-lock(mutexID) ) <------ from ( atomic_mutex_unlock(mutexID) ) or MUTEXUNLOCK(mutexID)
+'      Wend
+'      booleanT = False
+'      Do_something_2_with_exclusion
+'      MUTEXUNLOCK(mutexID) -----------------------> to MUTEXLOCK(mutexID) or ( atomic_mutex_re-lock(mutexID) )
+						%%
+					**""-""** Pseudo-code for the "waiting-for, then signaling" critical section (with the links to/from  critical section items of other thread):
+						%%
+'  Principle (2) of mutual exclusion + mutual synchronization, for a thread section
+'  (connecting lines join the sender(s) and receiver(s) impacted by each action occurring during the sequence)
+'
+'          Thread                                         Other Thread
+'      MUTEXLOCK(mutexID) <-------------------------- from ( atomic_mutex_unlock(mutexID) ) or MUTEXUNLOCK(mutexID)
+'      Do_something_1_with_exclusion
+'      While booleanT <> True <---------------------- from booleanT = True
+'          ( atomic_mutex_unlock(mutexID) ) --------> to MUTEXLOCK(mutexID) or ( atomic_mutex_re-lock(mutexID) )
+'          CONDWAIT(conditionalID, mutexID) <-------- from CONDSIGNAL(conditionalID)
+'          ( atomic_mutex_re-lock(mutexID) ) <------- from ( atomic_mutex_unlock(mutexID) ) or MUTEXUNLOCK(mutexID)
+'      Wend
+'      booleanT = False
+'      Do_something_2_with_exclusion
+'      booleanOT = True ----------------------------> to While booleanOT <> True
+'      CONDSIGNAL(conditionalID) -------------------> to CONDWAIT(conditionalID, mutexID)
+'      MUTEXUNLOCK(mutexID) ------------------------> to MUTEXLOCK(mutexID) or ( atomic_mutex_re-lock(mutexID) )
+						%%
+			- Pseudo-code section example for each of 2 threads:
+					**""-""** Pseudo-code for the "signaling, then waiting-for" critical section of a main thread and for "waiting-for, then signaling" critical section of a child thread (with the links to/from critical section items of both threads):
+						%%
+'  Principle (example) of mutual exclusion + mutual synchronization sections, between 2 threads,
+'  using the principle (1) for the main thread, and the principle (2) for the child thread
+'  (connecting lines join the sender(s) and receiver(s) impacted by each action occurring during the sequence)
+'
+'          Main Thread                                                                          Child Thread
+'      MUTEXLOCK(mutexID) <-----------------------------.     .-------------.-------------> MUTEXLOCK(mutexID
+'      Do_something_1_with_exclusion                    |     |             |               Do_something_1_with_exclusion
+'      boolC = True ----------------------------------- | --- | ----------- | ------------> While boolC <> True
+'      CONDSIGNAL(conditionalID) ---------------------- | --- | ----------- | ---.    .-------- ( atomic_mutex_unlock(mutexID) )
+'      While boolM <> True <--------------------------- | --- | ---------.  |    '--- | ------> CONDWAIT(conditionalID, mutexID)
+'          ( atomic_mutex_unlock(mutexID) ) ------.     |     |          |  '-------- | ------> ( atomic_mutex_re-lock(mutexID) )
+'          CONDWAIT(conditionalID, mutexID) <---- | --- | --- | ------.  |            |     Wend
+'          ( atomic_mutex_re-lock(mutexID) ) <--- | ----'---- | ---.  |  |            |     boolC = False
+'      Wend                                       |           |    |  |  |            |     Do_something_2_with_exclusion
+'      boolM = False                              |           |    |  |  '----------- | --- boolM = True
+'      Do_something_2_with_exclusion              |           |    |  '-------------- | --- CONDSIGNAL(conditionalID)
+'      MUTEXUNLOCK(mutexID) ----------------------'-----------'    '------------------'---- MUTEXUNLOCK(mutexID)
+						%%
+{{fbdoc item="section" value="Example"}}
+	The second example on the previous page (##[[ProPgMtMutualExclusion|Mutual Exclusion]]##) is modified by using a conditional variable to exhibit a synchronization example.
+	So, the two sections of code, previously protected by a mutual exclusion block ##[Mutexlock ... Mutexunlock]##, are now synchronized in order that each thread displays one after the other its character sequence ("[M]" or "(C)").
+	
+	In this example, the two threads critical sections have their sub-sections in an reverse order:
+		**""-""** main thread critical section: at first signaling, then waiting for,
+		**""-""** child thread critical section: at first waiting for, then signaling.
+	Therefore the main thread will always be the first to display its sequence:
+		%%
+'  Principle of mutual exclusion + mutual synchronization between 2 threads with loop
+'  (connecting lines join the sender(s) and receiver(s) impacted by each action occurring during the sequence)
+'
+'          Main Thread                                                                  Child Thread
+'  .....                                                                          .....
+'  Loop                                                                           Loop
+'      MUTEXLOCK(mutID) <-----------------------------.     .-------------.---------> MUTEXLOCK(mutID)
+'      Do_something_with_exclusion              .---- | --- | ----------- | --------> While boolC <> True
+'      boolC = True ----------------------------'     |     |             |     .-------- ( atomic_mutex_unlock(mutID) )
+'      CONDSIGNAL(condID) --------------------------- | --- | ----------- | --- | ------> CONDWAIT(condID, mutID)
+'      While boolM <> True <------------------------- | --- | ---------.  '---- | ------> ( atomic_mutex_re-lock(mutID) )
+'          ( atomic_mutex_unlock(mutID) ) ------.     |     |          |        |     Wend
+'          CONDWAIT(condID, mutID) <----------- | --- | --- | ------.  |        |     boolC = False
+'          ( atomic_mutex_re-lock(mutID) ) <--- | ----'---- | ---.  |  |        |     Do_something_with_exclusion
+'      Wend                                     |           |    |  |  '------- | --- boolM = True
+'      boolM = False                            |           |    |  '---------- | --- CONDSIGNAL(condID)
+'      MUTEXUNLOCK(mutID) ----------------------'-----------'    '--------------'---- MUTEXUNLOCK(mutID)
+'  End Loop                                                                       End Loop
+'  .....                                                                          .....
+		%%
+		{{fbdoc item="filename" value="examples/manual/proguide/multithreading/conditionalvariable.bas"}}%%(freebasic)
+Declare Sub thread (ByVal userdata As Any Ptr)
+
+Dim As Any Ptr threadID             '' declaration of an 'Any Ptr' thread-ID of the child thread
+Dim Shared As Any Ptr mutID         '' declaration of a global 'Any Ptr' mutex-ID
+	mutID = Mutexcreate             '' creation of the mutex
+Dim Shared As Boolean boolM, boolC  '' declaration of 2 global 'Boolean' boolM and boolC as predicates
+Dim Shared As Any Ptr condID        '' declaration of a global 'Any Ptr' conditional-ID
+	condID = Condcreate             '' creation of the conditional
+
+
+Print """[M]"": from 'Main' thread"
+Print """(C)"": from 'Child' thread"
+Print
+
+threadID = Threadcreate(@thread)  '' creation of the child thread from the main thread
+
+For I As Integer = 1 To 10       '' 'For' loop of the main thread
+	Mutexlock(mutID)             '' set mutex locked at the beginning of the exclusive section
+	Print "[";
+	Sleep 50, 1
+	Print "M";
+	Sleep 50, 1
+	Print "]";
+	boolC = True                 '' set to 'True' the predicate for the child thread
+	Condsignal(condID)           '' signal to the child thread
+	While boolM <> True          '' test predicate from the child thread
+		Condwait(condID, mutID)  '' wait for signal from the child thread
+	Wend
+	boolM = False                '' reset the predicate from the child thread
+	Mutexunlock(mutID)           '' set mutex unlocked at the end of the exclusive section
+	Sleep 50, 1
+Next I
+
+Threadwait(threadID)  '' waiting for the child thread termination
+Print
+Print "'Child' thread finished"
+
+Mutexdestroy(mutID)  '' destruction of the mutex
+Conddestroy(condID)  '' destruction of the conditional
+
+Sleep
+
+
+Sub thread (ByVal userdata As Any Ptr)  '' sub executed by the child thread
+	For I As Integer = 1 To 10          '' 'For' loop of the child thread
+		Mutexlock(mutID)                '' set mutex locked at the beginning of the exclusive section
+		While boolC <> true             '' test predicate from the main thread
+			Condwait(condID, mutID)     '' wait for signal from the main thread
+		Wend
+		boolC = False                   '' reset the predicate from the main thread
+		Print "(";
+		Sleep 50, 1
+		Print "C";
+		Sleep 50, 1
+		Print ")";
+		boolM = True                    '' set to 'True' the predicate for the main thread
+		Condsignal(condID)              '' signal to the child thread
+		Mutexunlock(mutID)              '' set mutex unlocked at the end of the exclusive section
+		Sleep 250, 1
+	Next I
+End Sub
+		%%Output:
+			%%
+"[M]": from 'Main' thread
+"(C)": from 'Child' thread
+
+[M](C)[M](C)[M](C)[M](C)[M](C)[M](C)[M](C)[M](C)[M](C)[M](C)
+'Child' thread finished
+			%%
+{{fbdoc item="section" value="See also"}}
+	- ##[[KeyPgCondCreate|CondCreate]]##, ##[[KeyPgCondDestroy|CondDestroy]]##,
+	- ##[[KeyPgCondWait|CondWait]]##, ##[[KeyPgCondSignal|CondSignal]]##, ##[[KeyPgCondBroadcast|CondBroadCast]]##
+	- [[ProPgMultiThreading|Multi-Threading Overview]]
+	- [[ProPgMtThreads|Threads]]
+	- [[ProPgMtMutualExclusion|Mutual Exclusion]]
+	- [[ProPgMtCriticalSections|Critical Sections]]
+	- [[ProPgMtCriticalSectionsFAQ|Critical Sections FAQ]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

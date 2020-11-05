@@ -41,9 +41,9 @@
 		/' sub fb_MemCopyClear _
 			( _
 				byref dst as any, _
-				byval dstlen as const integer, _
+				byval dstlen as const uinteger, _
 				byref src as const any, _
-				byval srclen as const integer _
+				byval srclen as const uinteger _
 			) '/ _
 		( _
 			@FB_RTL_MEMCOPYCLEAR, NULL, _
@@ -52,9 +52,9 @@
 			4, _
 			{ _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
-				( typeSetIsConst( FB_DATATYPE_INTEGER ),FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ),FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
-				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
 		/' function fre( byval mode as const long = 0 ) as uinteger '/ _
@@ -123,6 +123,40 @@
 			{ _
 				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
+		/' function fb_MemMove cdecl _
+			( _
+				byref dst as any, _
+				byref src as const any, _
+				byval bytes as const uinteger_
+			) as any ptr '/ _
+		( _
+			@FB_RTL_MEMMOVE, @"memmove", _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			3, _
+			{ _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
+				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
+		/' function fb_MemCopy cdecl _
+			( _
+				byref dst as any, _
+				byref src as const any, _
+				byval bytes as const uinteger_
+			) as any ptr '/ _
+		( _
+			@FB_RTL_MEMCOPY, @"memcpy", _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			3, _
+			{ _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
+				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
 				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
@@ -285,7 +319,14 @@ function rtlMemNewOp _
 
 	'' If no new overload was declared, just call allocate()
 	if( sym = NULL ) then
+
 		sym = rtlProcLookup( @"allocate", FB_RTL_IDX_ALLOCATE )
+		
+		'' maybe had '#undef allocate'? 
+		if( sym = NULL ) then
+			'' rtlProcLookup() already reported the error
+			return NULL
+		end if
 	end if
 
 	proc = astNewCALL( sym )
@@ -325,6 +366,12 @@ function rtlMemDeleteOp _
 	'' If no delete overload was declared, just call deallocate()
 	if( sym = NULL ) then
 		sym = rtlProcLookup( @"deallocate", FB_RTL_IDX_DEALLOCATE )
+
+		'' maybe had '#undef deallocate'? 
+		if( sym = NULL ) then
+			'' rtlProcLookup() already reported the error
+			return NULL
+		end if
 	end if
 
 	proc = astNewCALL( sym )

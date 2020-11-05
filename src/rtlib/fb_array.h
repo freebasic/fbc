@@ -4,23 +4,22 @@ typedef struct _FBARRAYDIM {
 	ssize_t ubound;
 } FBARRAYDIM;
 
+typedef enum _FBARRAY_FLAGS {
+	FBARRAY_FLAGS_DIMENSIONS = 0x0000000f,
+	FBARRAY_FLAGS_FIXED_DIM  = 0x00000010,
+	FBARRAY_FLAGS_FIXED_LEN  = 0x00000020,
+	FBARRAY_FLAGS_RESERVED   = 0xffffffc0
+} FBARRAY_FLAGS;
+
 typedef struct _FBARRAY {
 	void           *data;        /* ptr + diff, must be at ofs 0! */
 	void           *ptr;
 	size_t          size;
 	size_t          element_len;
 	size_t          dimensions;
+	size_t          flags;       /* FBARRAY_FLAGS */
 	FBARRAYDIM      dimTB[1];    /* dimtb[dimensions] */
 } FBARRAY;
-
-/*!!!REMOVEME!!!*/
-typedef struct _FB_ARRAY_TMPDESC {
-    FB_LISTELEM     elem;
-
-    FBARRAY         array;
-    FBARRAYDIM      dimTB[FB_MAXDIMENSIONS-1];
-} FB_ARRAY_TMPDESC;
-/*!!!REMOVEME!!!*/
 
 typedef void (*FB_DEFCTOR)( void *this_ );
 typedef void (*FB_DTORMULT) ( FBARRAY *array, FB_DEFCTOR dtor, size_t base_idx );
@@ -47,16 +46,14 @@ FBCALL void *fb_ArraySngBoundChk
        void       fb_hArrayDtorStr     ( FBARRAY *array, FB_DEFCTOR dtor, size_t base_idx );
 FBCALL void       fb_ArrayDestructObj  ( FBARRAY *array, FB_DEFCTOR dtor );
 FBCALL void       fb_ArrayDestructStr  ( FBARRAY *array );
-FBCALL int        fb_ArrayClear        ( FBARRAY *array, int isvarlen );
-FBCALL int        fb_ArrayClearObj     ( FBARRAY *array, FB_DEFCTOR ctor, FB_DEFCTOR dtor, int dofill );
-FBCALL int        fb_ArrayErase        ( FBARRAY *array, int isvarlen );
-FBCALL int        fb_ArrayEraseObj     ( FBARRAY *array, FB_DEFCTOR dtor );
+FBCALL int        fb_ArrayClear        ( FBARRAY *array );
+FBCALL int        fb_ArrayClearObj     ( FBARRAY *array, FB_DEFCTOR ctor, FB_DEFCTOR dtor );
+FBCALL int        fb_ArrayErase        ( FBARRAY *array );
+FBCALL int        fb_ArrayEraseObj     ( FBARRAY *array, FB_DEFCTOR ctor, FB_DEFCTOR dtor );
 FBCALL FBARRAY   *fb_ArrayGetDesc      ( FBARRAY *array );
 FBCALL void       fb_ArrayStrErase     ( FBARRAY *array );
-       int        fb_ArrayRedim        ( FBARRAY *array, size_t element_len, int preserve, size_t dimensions, ... );
        int        fb_ArrayRedimEx      ( FBARRAY *array, size_t element_len, int doclear, int isvarlen, size_t dimensions, ... );
        int        fb_ArrayRedimObj     ( FBARRAY *array, size_t element_len, FB_DEFCTOR ctor, FB_DEFCTOR dtor, size_t dimensions, ... );
-       int        fb_ArrayRedimPresv   ( FBARRAY *array, size_t element_len, int preserve, size_t dimensions, ... );
        int        fb_ArrayRedimPresvEx ( FBARRAY *array, size_t element_len, int doclear, int isvarlen, size_t dimensions, ... );
        int        fb_ArrayRedimPresvObj( FBARRAY *array, size_t element_len, FB_DEFCTOR ctor, FB_DEFCTOR dtor, size_t dimensions, ... );
 FBCALL int        fb_ArrayRedimTo      ( FBARRAY *dest, const FBARRAY *source, int isvarlen, FB_DEFCTOR ctor, FB_DEFCTOR dtor );

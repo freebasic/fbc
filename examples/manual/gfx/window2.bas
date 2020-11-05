@@ -8,7 +8,8 @@
 
 '' The program shows how changing the view coordinates mapping for the current viewport changes the size of a figure drawn on the screen.
 '' The effect is one of zooming in and out:
-''   - As the viewport coordinates get smaller, the figure appears larger on the screen, until parts of it are finally clipped because they lie outside the window.
+''   - As the viewport coordinates get smaller, the figure appears larger on the screen, until parts of it are finally clipped,
+''        because they lie outside the window.
 ''   - As the viewport coordinates get larger, the figure appears smaller on the screen.
 
 Declare Sub Zoom (ByVal X As Integer)

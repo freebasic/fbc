@@ -477,6 +477,7 @@ end type
 extern as IR_VTBL irtac_vtbl
 extern as IR_VTBL irhlc_vtbl
 extern as IR_VTBL irllvm_vtbl
+extern as IR_VTBL irgas64_vtbl
 declare sub irInit( )
 declare sub irEnd( )
 #if __FB_DEBUG__

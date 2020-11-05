@@ -1,0 +1,136 @@
+{{fbdoc item="title" value="Strings (string, zstring, and wstring)"}}----
+Of all built-in data-types, **Strings** types are those dedicated to the representation of character chains.
+
+FreeBASIC supplies several strings data types for handling characters chains in various representations.
+The fixed-length strings types (string, zstring and wstring) represent fixed-length chains of characters, while the variable-length string type represents a variable-length chain of characters.
+
+{{fbdoc item="section" value="Fixed-length strings"}}
+	There are 3 types of fixed-length strings:
+		- Fixed-length string type for 8 bit character (QB-style fixed-length string):
+				**""-""** ##[[KeyPgString|STRING]] * //size//##
+						total length of the string: '//size//+1' characters = '//size//+1' bytes ##('//size//' useful characters + '1' final null character)##
+		- Fixed-length zstring type for 8 bit character:
+				**""-""** ##[[KeyPgZstring|ZSTRING]] * //size//##
+						total length of the zstring: '//size//' characters = '//size//' bytes ##('//size-1//' useful characters + '1' final null character)##
+					##or##
+				**""-""** ##[[KeyPgZstring|ZSTRING]] [[KeyPgPtr|PTR]]##
+						total length of the pointed zstring: depends on the character chain referenced by the ##pointer## (up to and including the final null character)
+		- Fixed-length wstring type for  wide character:
+				**""-""** ##[[KeyPgWstring|WSTRING]] * //size//##
+						total length of the wstring: '//size//' characters = '//size//' x k##(*)## bytes ##('//size-1//' useful characters + '1' final null character)##
+					##or##
+				**""-""** ##[[KeyPgWstring|WSTRING]] [[KeyPgPtr|PTR]]##
+						total length of the pointed wstring: depends on the character chain referenced by the ##pointer## (up to and including the final null character)
+						
+				##(*)## The number of bytes 'k' used by a ##WSTRING## character depends on the platform.
+
+{{fbdoc item="section" value="Variable-length string"}}
+	There is only one type of variable-length string:
+		- Variable-length string type for 8 bit character:
+				**""-""** ##[[KeyPgString|STRING]]##
+						total length of the string: dynamic length depending on the assigned data characters
+							(string referenced by an internal descriptor of 1 ##pointer## + 2 ##uinteger## length)
+
+{{fbdoc item="section" value="Example"}}
+	Size (in bytes) of different strings from all types above:
+		{{fbdoc item="filename" value="examples/manual/proguide/strings_types.bas"}}%%(freebasic)
+Dim As String * 20 s20 = "FreeBASIC manual"
+
+Dim As Zstring * 20 z20 = "FreeBASIC manual"
+Dim As Zstring Ptr pz = @"FreeBASIC manual"
+
+Dim As Wstring * 20 w20 = "FreeBASIC manual"
+Dim As Wstring Ptr pw = @Wstr("FreeBASIC manual")
+
+Dim As String s = "FreeBASIC manual"
+
+Print Using "'FIXED-LENGTH STRING * 20': ## bytes in total, ## useful characters available"; Sizeof(s20); Len(s20)
+Print Using "    containing ## user characters of # byte(s) each"; Iif(Instr(s20, Chr(0)) > 0, Instr(s20, Chr(0)) - 1, Len(s20)); Sizeof(s20[0])
+Print
+Print Using "'FIXED-LENGTH ZSTRING * 20': ## bytes in total, ## useful characters available"; Sizeof(z20); Sizeof(z20) \ Sizeof(z20[0]) - 1
+Print Using "    containing ## user characters of # byte(s) each"; Len(z20); Sizeof(Z20[0])
+Print "'ZSTRING PTR': dereferencing pointer -> "; """" & *pz & """"
+Print Using "    containing ## user characters of # byte(s) each"; Len(*pz); Sizeof((*pz)[0])
+Print
+Print Using "'FIXED-LENGTH WSTRING * 20': ## bytes in total, ## useful characters available"; Sizeof(w20); Sizeof(w20) \ Sizeof(w20[0]) - 1
+Print Using "    containing ## user characters of # byte(s) each"; Len(w20); Sizeof(w20[0])
+Print "'WSTRING PTR': dereferencing pointer -> "; """" & *pw & """"
+Print Using "    containing ## user characters of # byte(s) each"; Len(*pw); Sizeof((*pw)[0])
+Print
+Type descriptor : Addr As Zstring Ptr : UC As Uinteger : AC As Uinteger : End Type
+Print Using "'STRING': ## bytes in descriptor, memory allocated for ## characters right now"; Sizeof(s); Cast(descriptor Ptr, @s)->AC
+Print Using "    containing ## user characters of # byte(s) each"; Len(s); Sizeof(s[0])
+
+Sleep
+		%%Note: For the fixed-length string type only (QB-style fixed-length string), the 'Len()' keyword always returns the declared constant number of characters, regardless of the number of characters assigned to it by user.
+		(hence the formula: ##'""user_characters_length = IIf(InStr(s, Chr(0)) > 0, InStr(s, Chr(0)) - 1, Len(s))""'##)
+		
+		Output example for win64 (a wstring character uses 2 bytes):
+			%%
+'FIXED-LENGTH STRING * 20': 21 bytes in total, 20 useful characters available
+	containing 16 user characters of 1 byte(s) each
+
+'FIXED-LENGTH ZSTRING * 20': 20 bytes in total, 19 useful characters available
+	containing 16 user characters of 1 byte(s) each
+'ZSTRING PTR': dereferencing pointer -> "FreeBASIC manual"
+	containing 16 user characters of 1 byte(s) each
+
+'FIXED-LENGTH WSTRING * 20': 40 bytes in total, 19 useful characters available
+	containing 16 user characters of 2 byte(s) each
+'WSTRING PTR': dereferencing pointer -> "FreeBASIC manual"
+	containing 16 user characters of 2 byte(s) each
+
+'STRING': 24 bytes in descriptor, memory allocated for 32 characters right now
+	containing 16 user characters of 1 byte(s) each
+				%%
+{{fbdoc item="section" value="Implicit conversion from Zstring to Ubyte"}}
+	When any operand of a binary operator (as assignment, equal, +, *, ...) consists in dereferencing a '##Zstring Ptr##' pointer ('##pz##'), this can give a '##Zstring##' string or a '##Ubyte##' variable, depending on the other operand:
+		**""-""** If the other operand is numeric, so the dereferenced '##Zstring Ptr##' pointer ('##*pz##') will be treated as a '##Ubyte##' reference to the one character pointed.
+		**""-""** If in this case a '##Zstring##' pointer indexing '##[]##' operator is used as dereferencing syntax ('##pz[n]##'), it is basically a short-cut version of the '##String##' indexing '##[]##' operator ('##(*pz)[n]##').
+		
+	Since '##(*pz)[i]##' and '##pz[i][k]##' are always numeric (each an '##Ubyte##'), such equalities are true:
+		##pz[i] = (*pz)[i]##
+		##(*pz)[i] = pz[i]##
+		and even:
+		##pz[i+k] = pz[i][k]##
+		##pz[i][k] = pz[i+k]##
+		
+	Simple code example with a dereferenced '##Zstring Ptr##' converted to an '##Ubyte##' reference (as operand of an 'assignment' operator and a '+' operator):
+		{{fbdoc item="filename" value="examples/manual/proguide/strings_types2.bas"}}%%(freebasic)
+Dim As Zstring * (14+1) z = "FreeBASIC     "
+Dim As Zstring Ptr pz = @z
+
+Print z
+z[10] = Asc("2")
+*(pz + 11) = Asc("0")                '' *(pz + 11) is converted to an Ubyte reference
+(*pz)[12] = Asc("1")
+pz[13] = Asc("8")                    '' pz[13] is converted to an Ubyte reference
+Print z
+
+For I As Integer = 10 To 13
+	Print Str(z[I] - Asc("0"));
+Next I
+Print
+For I As Integer = 10 To 13
+	Print Str((*pz)[I] - Asc("0"));
+Next I
+Print
+For I As Integer = 10 To 13
+	Print Str(pz[I] - Asc("0"));     '' pz[I] is converted to an Ubyte reference
+Next I
+Print
+
+Sleep
+		%%Output:
+			%%
+FreeBASIC
+FreeBASIC 2018
+2018
+2018
+2018
+			%%
+{{fbdoc item="section" value="See also"}}
+	- ##[[CatPgString|String Functions]]##
+	- ##[[TblVarTypes|Standard Data Type Limits]]##
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

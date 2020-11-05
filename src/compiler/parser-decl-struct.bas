@@ -48,6 +48,7 @@ private sub hTypeProtoDecl _
 	)
 
 	dim as integer is_nested = any, tk = any
+	dim as FB_PROCATTRIB pattrib = FB_PROCATTRIB_NONE
 
 	'' anon?
 	if( symbGetUDTIsAnon( parent ) ) then
@@ -65,31 +66,31 @@ private sub hTypeProtoDecl _
 	hBeginNesting( parent )
 
 	'' DECLARE
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
-	cMethodAttributes( parent, attrib )
+	cMethodAttributes( parent, attrib, pattrib )
 
 	tk = lexGetToken( )
 	select case( tk )
 	case FB_TK_CONSTRUCTOR
-		hDisallowStaticAttrib( attrib )
-		hDisallowVirtualCtor( attrib )
-		hDisallowConstCtorDtor( tk, attrib )
+		hDisallowStaticAttrib( attrib, pattrib )
+		hDisallowVirtualCtor( attrib, pattrib )
+		hDisallowConstCtorDtor( tk, attrib, pattrib )
 	case FB_TK_DESTRUCTOR
-		hDisallowStaticAttrib( attrib )
-		hDisallowAbstractDtor( attrib )
-		hDisallowConstCtorDtor( tk, attrib )
+		hDisallowStaticAttrib( attrib, pattrib )
+		hDisallowAbstractDtor( attrib, pattrib )
+		hDisallowConstCtorDtor( tk, attrib, pattrib )
 	case FB_TK_PROPERTY
-		hDisallowStaticAttrib( attrib )
+		hDisallowStaticAttrib( attrib, pattrib )
 	end select
 
 	select case( tk )
 	case FB_TK_SUB, FB_TK_FUNCTION, _
 	     FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR, _
 	     FB_TK_OPERATOR, FB_TK_PROPERTY
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
-		cProcHeader( attrib, is_nested, _
+		cProcHeader( attrib, pattrib, is_nested, _
 				FB_PROCOPT_ISPROTO or FB_PROCOPT_HASPARENT, tk )
 
 	case else
@@ -218,6 +219,7 @@ private sub hFieldInit _
 		end if
 	end if
 
+	'' '=' | '=>'
 	lexSkipToken( )
 
 	if( sym = NULL ) then
@@ -240,7 +242,7 @@ private sub hFieldInit _
 			symbSetDontInit( sym )
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		exit sub
 	end if
 
@@ -392,7 +394,7 @@ private function hAddAndInitField _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as longint, _
 		byval bits as integer, _
-		byval attrib as integer _
+		byval attrib as FB_SYMBATTRIB _
 	) as integer
 
 	dim as FBSYMBOL ptr sym = any
@@ -472,6 +474,7 @@ private function hFieldId( byval parent as FBSYMBOL ptr ) as zstring ptr
 		end if
 
 		id = *lexGetText( )
+		'' don't report on suffix, was already checked above
 		lexSkipToken( )
 
 	case else
@@ -494,7 +497,7 @@ private sub hTypeMultElementDecl _
 	( _
 		byval token as integer, _
 		byval parent as FBSYMBOL ptr, _
-		byval attrib as integer _
+		byval attrib as FB_SYMBATTRIB _
 	)
 
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
@@ -505,7 +508,7 @@ private sub hTypeMultElementDecl _
 	dim as ASTNODE ptr boundstypeini = any
 
 	'' AS SymbolType
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 	hFieldType( dtype, subtype, lgt )
 
 	do
@@ -534,7 +537,7 @@ private sub hTypeElementDecl _
 	( _
 		byval token as integer, _
 		byval parent as FBSYMBOL ptr, _
-		byval attrib as integer _
+		byval attrib as FB_SYMBATTRIB _
 	)
 
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
@@ -554,7 +557,7 @@ private sub hTypeElementDecl _
 	if( lexGetToken( ) <> FB_TK_AS ) then
 		errReport( FB_ERRMSG_SYNTAXERROR )
 	else
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 	end if
 	hFieldType( dtype, subtype, lgt )
 
@@ -571,7 +574,7 @@ private sub hFieldDeclWithExplicitDim _
 	)
 
 	'' DIM|REDIM
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' multi-decl?
 	if( lexGetToken( ) = FB_TK_AS ) then
@@ -675,14 +678,14 @@ private function hTypeAdd _
 		'' error recovery: skip until next stmt
 		hSkipStmt( )
 	else
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		if( lexGetToken( ) <> iif( isunion, FB_TK_UNION, FB_TK_TYPE ) ) then
 			errReport( FB_ERRMSG_EXPECTEDENDTYPE )
 			'' error recovery: skip until next stmt
 			hSkipStmt( )
 		else
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 		end if
 	end if
 
@@ -696,7 +699,7 @@ private function cFieldAlignmentAttribute( ) as integer
 		return 0
 	end if
 
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' '='
 	if( cAssignToken( ) = FALSE ) then
@@ -762,7 +765,7 @@ private sub hTypeBody( byval s as FBSYMBOL ptr )
 				attrib = FB_SYMBATTRIB_VIS_PROTECTED
 			end select
 
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			'' ':'
 			if( lexGetToken( ) <> FB_TK_STMTSEP ) then
@@ -812,7 +815,7 @@ decl_inner:		'' it's an anonymous inner UDT
 					isunion = not isunion
 				end if
 
-				lexSkipToken( )
+				lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 				'' [FIELD '=' ConstExpression]
 				dim as integer align = cFieldAlignmentAttribute( )
@@ -874,7 +877,7 @@ decl_inner:		'' it's an anonymous inner UDT
 
 		case FB_TK_STATIC
 			'' Static member variable
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			hTypeStaticVarDecl( s, attrib )
 
@@ -930,7 +933,8 @@ end sub
 ''  TYPE|UNION ID (ALIAS LITSTR)? (EXTENDS SymbolType)? (FIELD '=' Expression)?
 ''      TypeLine+
 ''  END (TYPE|UNION) .
-sub cTypeDecl( byval attrib as integer )
+sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
+
 	static as zstring * FB_MAXNAMELEN+1 id
 	dim as integer isunion = any, checkid = any
 	dim as FBSYMBOL ptr sym = any
@@ -939,7 +943,7 @@ sub cTypeDecl( byval attrib as integer )
 	isunion = (lexGetToken( ) = FB_TK_UNION)
 
 	'' TYPE|UNION
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' ID
 	checkid = TRUE
@@ -1011,7 +1015,7 @@ sub cTypeDecl( byval attrib as integer )
 	dim as integer stringType = 0
 
 	if( lexGetToken( ) = FB_TK_EXTENDS ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' SymbolType
 		hSymbolType( baseDType, baseSubtype, 0, FALSE, TRUE )

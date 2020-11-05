@@ -1,10 +1,10 @@
-'' FreeBASIC binding for postgresql-9.4.4
+'' FreeBASIC binding for postgresql-12.0
 ''
 '' based on the C header files:
 ''   PostgreSQL Database Management System
 ''   (formerly known as Postgres, then as Postgres95)
 ''
-''   Portions Copyright (c) 1996-2015, PostgreSQL Global Development Group
+''   Portions Copyright (c) 1996-2019, PostgreSQL Global Development Group
 ''
 ''   Portions Copyright (c) 1994, The Regents of the University of California
 ''
@@ -26,7 +26,7 @@
 ''   PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   Copyright © 2019 FreeBASIC development team
 
 #pragma once
 
@@ -34,8 +34,10 @@
 type Oid as ulong
 const InvalidOid = cast(Oid, 0)
 #define OID_MAX UINT_MAX
+#define atooid(x) cast(Oid, strtoul((x), NULL, 10))
 type pg_int64 as longint
 #define PG_DIAG_SEVERITY asc("S")
+#define PG_DIAG_SEVERITY_NONLOCALIZED asc("V")
 #define PG_DIAG_SQLSTATE asc("C")
 #define PG_DIAG_MESSAGE_PRIMARY asc("M")
 #define PG_DIAG_MESSAGE_DETAIL asc("D")

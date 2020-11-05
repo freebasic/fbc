@@ -8,6 +8,7 @@ Generally, compiling FB-linux requires the following packages:
 	- gcc
 	- make
 	- ncurses development headers & libraries (actually only its libtinfo part)
+	- libtinfo development headers & libraries (if not automatically installed as part of ncurses)
 	- gpm development headers & libraries (general purpose mouse)
 	- X11 development headers & libraries (including X11, Xext, Xpm, Xrandr, Xrender)
 	- ""OpenGL"" development headers & libraries (typically from the Mesa project)
@@ -38,6 +39,7 @@ Debian-based systems (including Ubuntu, Mint etc.):
 	- ##gcc##
 	- ##make##
 	- ##libncurses5-dev##
+	- ##libtinfo5## (if not already installed as dependency of ncurses)
 	- ##libgpm-dev##
 	- ##libx11-dev##
 	- ##libxext-dev##
@@ -51,19 +53,22 @@ Debian-based systems (including Ubuntu, Mint etc.):
 	- ##gcc##
 	- ##make##
 	- ##ncurses-devel##
+	- ##libncurses5##
 	- ##gpm-devel##
 	- ##libX11-devel##
 	- ##libXext-devel##
 	- ##libXpm-devel##
 	- ##libXrandr-devel##
 	- ##libXrender-devel##
+	- ##libtinfo5## (if not already installed as dependency of ncurses)
 	- ##Mesa-libGL-devel##
-	- ##libffi48-devel##
+	- ##libffi-devel##
 
 Fedora:
 	- ##gcc##
 	- ##make##
 	- ##ncurses-devel##
+	- ##ncurses-compat-libs.x86_64## (may be needed for libtinfo.so.5 if it is not already installed as dependency of ncurses) 
 	- ##gpm-devel##
 	- ##libX11-devel##
 	- ##libXext-devel##
@@ -122,7 +127,7 @@ Besides native builds, you can also make non-native builds, such as compiling th
 			- ##libXrandr-devel-32bit##
 			- ##libXrender-devel-32bit##
 			- ##Mesa-libGL-devel-32bit##
-			- ##libffi48-devel-32bit##
+			- ##libffi-devel-32bit##
 	
 	-Add the following ##config.mk## file to the fbc source tree (next to the FB makefile):
 	

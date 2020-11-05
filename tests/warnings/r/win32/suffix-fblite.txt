@@ -1,0 +1,104 @@
+parser-assignment.bas ----
+warning expected
+	Suffix ignored in 'let%'
+parser-comment.bas ----
+warning expected
+	Suffix ignored in 'once%'
+warning expected
+warning expected
+parser-decl-option.bas ----
+3 warnings expected
+	Suffix ignored in 'defbyte%'
+	Suffix ignored in 'A%'
+	Suffix ignored in 'Z%'
+warning expected
+	Suffix ignored in 'defubyte%'
+warning expected
+	Suffix ignored in 'defshort%'
+warning expected
+	Suffix ignored in 'defushort%'
+warning expected
+	Suffix ignored in 'defint%'
+warning expected
+	Suffix ignored in 'defuint%'
+warning expected
+	Suffix ignored in 'deflng%'
+warning expected
+	Suffix ignored in 'defulng%'
+warning expected
+	Suffix ignored in 'deflongint%'
+warning expected
+	Suffix ignored in 'defulongint%'
+warning expected
+	Suffix ignored in 'defsng%'
+warning expected
+	Suffix ignored in 'defdbl%'
+warning expected
+	Suffix ignored in 'defstr%'
+2 warnings expected
+	Suffix ignored in 'option%'
+	Suffix ignored in 'byval%'
+warning expected
+	Suffix ignored in 'dynamic%'
+warning expected
+	Suffix ignored in 'static%'
+warning expected
+	Suffix ignored in 'gosub%'
+warning expected
+	Suffix ignored in 'explicit%'
+warning expected
+	Suffix ignored in 'private%'
+warning expected
+	Suffix ignored in 'escape%'
+warning expected
+	Suffix ignored in 'base%'
+warning expected
+	Suffix ignored in 'nokeyword%'
+warning expected
+	Suffix ignored in 'nogosub%'
+warning expected
+	Suffix ignored in 'gosub%'
+parser-quirk-goto-return.bas ----
+2 warnings expected
+	Suffix ignored in 'goto%'
+	Suffix ignored in 'label%'
+2 warnings expected
+	Suffix ignored in 'gosub%'
+	Suffix ignored in 'label%'
+2 warnings expected
+	Suffix ignored in 'return%'
+	Suffix ignored in 'label%'
+2 warnings expected
+	Suffix ignored in 'resume%'
+	Suffix ignored in 'next%'
+warning expected
+	Suffix ignored in 'label%'
+warning expected
+	Suffix ignored in 'label%'
+parser-quirk-on.bas ----
+	Suffix ignored in 'label1%'
+	Suffix ignored in 'label1%'
+4 warnings expected
+	Suffix ignored in 'on%'
+	Suffix ignored in 'local%'
+	Suffix ignored in 'goto%'
+	Suffix ignored in 'label1%'
+4 warnings expected
+	Suffix ignored in 'on%'
+	Suffix ignored in 'local%'
+	Suffix ignored in 'gosub%'
+	Suffix ignored in 'label1%'
+4 warnings expected
+	Suffix ignored in 'on%'
+	Suffix ignored in 'error%'
+	Suffix ignored in 'goto%'
+	Suffix ignored in 'label1%'
+warning expected
+	Suffix ignored in 'label1%'
+----String Functions ----
+none expected
+4 warnings expected
+	Suffix ignored in 'wchr$'
+	Suffix ignored in 'wstr$'
+	Suffix ignored in 'wstring$'
+	Suffix ignored in 'bin$'

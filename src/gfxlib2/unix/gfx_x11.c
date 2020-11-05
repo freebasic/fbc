@@ -482,7 +482,7 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 
 	if (!fb_x11.window)
 		return -1;
-	XStoreName(fb_x11.display, fb_x11.window, title);
+	fb_hX11SetWindowTitle( title );
 	if (fb_program_icon) {
 		hints.flags = IconPixmapHint | IconMaskHint;
 		xpm_attribs.valuemask = XpmReturnAllocPixels | XpmReturnExtensions;
@@ -758,7 +758,11 @@ void fb_hX11SetMouse(int x, int y, int show, int clip)
 
 void fb_hX11SetWindowTitle(char *title)
 {
-	XStoreName(fb_x11.display, fb_x11.wmwindow, title);
+	if (fb_x11.flags & DRIVER_NO_FRAME) {
+		XStoreName(fb_x11.display, fb_x11.window, title);
+	} else {
+		XStoreName(fb_x11.display, fb_x11.wmwindow, title);
+	}
 }
 
 int fb_hX11SetWindowPos(int x, int y)

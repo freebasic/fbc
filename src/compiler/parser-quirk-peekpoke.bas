@@ -60,7 +60,7 @@ function cPokeStmt( ) as integer
 	function = FALSE
 
 	'' POKE
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' (SymbolType ',')? Expression
 	expr1 = hOptionalTypeAndFirstExpr( poketype, subtype )
@@ -70,23 +70,23 @@ function cPokeStmt( ) as integer
 
 	hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
 
-    select case astGetDataClass( expr1 )
-    case FB_DATACLASS_STRING
-    	errReport( FB_ERRMSG_INVALIDDATATYPES )
-    	'' no error recovery: stmt was already parsed
-    	astDelTree( expr1 )
-        exit function
+	select case astGetDataClass( expr1 )
+	case FB_DATACLASS_STRING
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
+		'' no error recovery: stmt was already parsed
+		astDelTree( expr1 )
+		exit function
 
 	case FB_DATACLASS_FPOINT
-    	expr1 = astNewCONV( FB_DATATYPE_UINT, NULL, expr1 )
+		expr1 = astNewCONV( FB_DATATYPE_UINT, NULL, expr1 )
 
 	case else
 		if( typeGetSize( astGetDataType( expr1 ) ) <> env.pointersize ) then
-        	errReport( FB_ERRMSG_INVALIDDATATYPES )
-        	'' no error recovery: ditto
-        	astDelTree( expr1 )
-        	exit function
-        end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			'' no error recovery: ditto
+			astDelTree( expr1 )
+			exit function
+		end if
 	end select
 
 	'' try to convert address to poketype pointer to check constness
@@ -103,7 +103,7 @@ function cPokeStmt( ) as integer
 		astAdd( expr1 )
 	end if
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -118,7 +118,7 @@ function cPeekFunct( ) as ASTNODE ptr
 	function = NULL
 
 	'' PEEK
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' '('
 	hMatchLPRNT( )
@@ -163,6 +163,7 @@ function cPeekFunct( ) as ASTNODE ptr
 			exit function
 		end select
 
+		'' '.'
 		lexSkipToken( LEXCHECK_NOPERIOD )
 		function = cUdtMember( dtype, subtype, expr, TRUE )
 	else

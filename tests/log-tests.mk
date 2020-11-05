@@ -21,6 +21,7 @@ SED := sed
 ECHO := echo
 CAT := cat
 PRINTF := printf
+TAIL := tail
 
 ifndef FBC
 FBC := fbc$(EXEEXT)
@@ -372,7 +373,7 @@ $(LOG_TESTS_LOG_LST) : $(LOG_TESTS_INC)
 #
 #
 $(LOG_TESTS_RESULTS_LOG): $(LOG_TESTS_LOG_LST) $(LOGLIST_ALL)
-	@$(XARGS) -a $(LOG_TESTS_LOG_LST) $(GREP) -i -E '^.*[[:space:]]*:[[:space:]]*RESULT=FAILED' ; true > $@ 
+	@$(XARGS) -a $(LOG_TESTS_LOG_LST) $(GREP) -i -E '^.*[[:space:]]*:[[:space:]]*RESULT=FAILED' | $(TAIL) -n +1 > $@ 
 
 results : $(LOG_TESTS_RESULTS_LOG)
 

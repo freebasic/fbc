@@ -26,6 +26,8 @@ Performs a bitwise-and (conjunction) and assigns the result to a variable
 	##**And=**## cannot be used in conditional expressions.
 	
 	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]## using the appropriate syntax.
+	
+	//Note: Similarly to the operator '=[>]' (assign), the alternative symbol 'And=>' can be also used.//
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/and-assign.bas"}}%%(freebasic)

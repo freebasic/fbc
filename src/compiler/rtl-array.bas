@@ -144,55 +144,57 @@
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ) _
 			} _
 		), _
-		/' function fb_ArrayClear( array() as any, byval isvarlen as const long ) as long '/ _
+		/' function fb_ArrayClear( array() as any ) as long '/ _
 		( _
 			@FB_RTL_ARRAYCLEAR, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
-			2, _
+			1, _
 			{ _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ) _
 			} _
 		), _
 		/' function fb_ArrayClearObj _
 			( _
 				array() as any, _
 				byval ctor as sub cdecl( ), _
-				byval dtor as sub cdecl( ), _
-				byval dofill as const long _
+				byval dtor as sub cdecl( ) _
 			) as long '/ _
 		( _
 			@FB_RTL_ARRAYCLEAROBJ, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
-			4, _
+			3, _
 			{ _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
-		/' function fb_ArrayErase( array() as any, byval isvarlen as const long ) as long '/ _
+		/' function fb_ArrayErase( array() as any ) as long '/ _
 		( _
 			@FB_RTL_ARRAYERASE, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
-			2, _
+			1, _
 			{ _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ) _
 			} _
 		), _
-		/' function fb_ArrayEraseObj( array() as any, byval dtor as sub cdecl( ) ) as long '/ _
+		/' function fb_ArrayEraseObj _
+			( _
+				array() as any, _
+				byval ctor as sub cdecl( ), _
+				byval dtor as sub cdecl( ) _
+			) as long '/ _
 		( _
 			@FB_RTL_ARRAYERASEOBJ, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
-			2, _
+			3, _
 			{ _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
@@ -347,7 +349,15 @@ private sub hCheckDtor _
 
 end sub
 
-'' fb_ArrayClear* - destruct elements if needed and then re-initialize
+'' fb_ArrayClear* 
+'' destruct elements if needed and then re-initialize
+''
+'' fb_ArrayClear* rtlib functions are called when it is known at
+'' compile time that array is static (fixed length).  It it is unknown
+'' at compile time, then rtlArrayErase() should be used instead and
+'' the runtime library will do a run time check on the array's
+'' descriptor flags to determine if it is static or dynamic.
+''
 function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr proc = any
 	dim as integer dtype = any
@@ -394,12 +404,9 @@ function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
 			exit function
 		end if
 
-		'' byval dofill as integer
-		if( astNewARG( proc, astNewCONSTi( -1 ) ) = NULL ) then
-			exit function
-		end if
 	elseif( dtype = FB_DATATYPE_STRING ) then
-		'' fb_ArrayDestructStr() works as fb_ArrayClearStr() just fine
+		'' fb_ArrayDestructStr() to clear the string array 
+		'' - there is no fb_ArrayClearStr() in rtlib
 		proc = astNewCALL( PROCLOOKUP( ARRAYDESTRUCTSTR ) )
 
 		'' array() as any
@@ -415,17 +422,19 @@ function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
 			exit function
 		end if
 
-		'' byval isvarlen as integer
-		if( astNewARG( proc, astNewCONSTi( 0 ) ) = NULL ) then
-			exit function
-		end if
 	end if
 
 	function = proc
 end function
 
 '' fb_ArrayErase* or fb_ArrayDestruct*
-'' - destruct elements, and free array if it's dynamic
+'' destruct elements, and free array if it's dynamic
+''
+'' if it is unknown at compile time if the array is
+'' dynamic or static, the rtlib will do a run time
+'' check on the array descriptor flags to determine
+'' if the array is to be freed, or cleared only
+''
 function rtlArrayErase _
 	( _
 		byval arrayexpr as ASTNODE ptr, _
@@ -435,19 +444,28 @@ function rtlArrayErase _
 
 	dim as ASTNODE ptr proc = any
 	dim as integer dtype = any
-	dim as FBSYMBOL ptr dtor = any
+	dim as FBSYMBOL ptr ctor = any, dtor = any, subtype = any
 
 	function = NULL
 
 	dtype = astGetDataType( arrayexpr )
 
 	if( dtype = FB_DATATYPE_STRUCT ) then
-		dtor = symbGetCompDtor( astGetSubtype( arrayexpr ) )
+		subtype = astGetSubtype( arrayexpr )
+		ctor = symbGetCompDefCtor( subtype )
+		dtor = symbGetCompDtor( subtype )
+
+		'' No default ctor, but others? Then the rtlib cannot just clear
+		'' that array of objects.
+		if( (ctor = NULL) and (symbGetCompCtorHead( subtype ) <> NULL) ) then
+			errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
+		end if
 	else
+		ctor = NULL
 		dtor = NULL
 	end if
 
-	if( dtor ) then
+	if( (ctor <> NULL) or (dtor <> NULL) ) then
 		hCheckDtor( dtor, check_access, TRUE )
 
 		if( is_dynamic ) then
@@ -461,6 +479,13 @@ function rtlArrayErase _
 		'' array() as any
 		if( astNewARG( proc, arrayexpr, dtype ) = NULL ) then
 			exit function
+		end if
+
+		if( is_dynamic ) then
+			'' byval ctor as sub cdecl( )
+			if( astNewARG( proc, hBuildProcPtr( ctor ) ) = NULL ) then
+				exit function
+			end if
 		end if
 
 		'' byval dtor as sub cdecl( )
@@ -494,10 +519,6 @@ function rtlArrayErase _
 			exit function
 		end if
 
-		 '' byval isvarlen as integer
-		if( astNewARG( proc, astNewCONSTi( 0 ) ) = NULL ) then
-			exit function
-		end if
 	end if
 
 	function = proc
@@ -586,8 +607,8 @@ function rtlArrayRedim _
 			exit function
 		end if
 	else
-		hCheckDefCtor( ctor, FALSE, FALSE )
-		hCheckDtor( dtor, FALSE, FALSE )
+		hCheckDefCtor( ctor, TRUE, FALSE )
+		hCheckDtor( dtor, TRUE, FALSE )
 
 		'' byval ctor as sub cdecl( )
 		if( astNewARG( proc, hBuildProcPtr( ctor ) ) = NULL ) then

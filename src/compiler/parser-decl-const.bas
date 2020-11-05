@@ -10,7 +10,7 @@
 private sub hGetType( byref dtype as integer, byref subtype as FBSYMBOL ptr )
 	'' (AS SymbolType)?
 	if( lexGetToken( ) = FB_TK_AS ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		if( cSymbolType( dtype, subtype ) = FALSE ) then
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
@@ -90,12 +90,11 @@ private sub cConstAssign _
 		exit sub
 	end select
 
-	suffix = lexGetType( )
 	id = *lexGetText( )
 
-	hCheckSuffix( suffix )
-
 	'' ID
+	lexCheckToken( LEXCHECK_POST_LANG_SUFFIX )
+	suffix = lexGetType( )
 	lexSkipToken( )
 
 	'' not multiple?
@@ -216,12 +215,12 @@ private sub cConstAssign _
 end sub
 
 '' ConstDecl  =  CONST (AS SymbolType)? ConstAssign (DECL_SEPARATOR ConstAssign)* .
-sub cConstDecl( byval attrib as integer )
+sub cConstDecl( byval attrib as FB_SYMBATTRIB )
     dim as integer dtype = any
     dim as FBSYMBOL ptr subtype = any
 
     '' CONST
-    lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' (AS SymbolType)?
 	hGetType( dtype, subtype )

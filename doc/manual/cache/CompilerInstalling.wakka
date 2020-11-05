@@ -47,6 +47,7 @@ $ sudo ./install.sh -i%%
 			- libc development files (installing gcc will typically install these too)
 			- gcc
 			- libncurses development files
+			- libtinfo development files (if not already installed by libncurses)
 			- X11 development files (for FB graphics programs)
 			- libffi development files (for the [[KeyPgThreadCall|ThreadCall]] keyword)
 			- gpm (general purpose mouse) daemon and libgpm (only needed for [[KeyPgGetmouse|GetMouse]] support in the Linux console)
@@ -57,6 +58,7 @@ $ sudo ./install.sh -i%%
 			- Debian/Ubuntu:
 				- gcc
 				- libncurses5-dev
+				- libtinfo5 (if not already installed by libncurses5)
 				- libffi-dev
 				- libgl1-mesa-dev
 				- libx11-dev libxext-dev libxrender-dev libxrandr-dev libxpm-dev
@@ -69,7 +71,8 @@ $ sudo ./install.sh -i%%
 			- ""OpenSUSE"":
 				- gcc
 				- ncurses-devel
-				- libffi46-devel
+				- libncurses5
+				- libffi-devel
 				- xorg-x11-devel
 
 				
@@ -87,7 +90,7 @@ $ sudo ./install.sh -i%%
 				- xorg-x11-libXext-devel-32bit
 				- xorg-x11-libXrender-devel-32bit
 				- xorg-x11-libXpm-devel-32bit
-				- libffi46-devel-32bit
+				- libffi-devel-32bit
 
 				
 	1) Unless you already have a text editor or IDE, you should install one too, as ""FreeBASIC"" itself does not include one. An IDE can be used to write and save .bas files and to launch the ""FreeBASIC"" Compiler to compile them. The following IDEs are known to explicitly support ""FreeBASIC"":
@@ -108,16 +111,16 @@ $ sudo ./install.sh -i%%
 
 {{fbdoc item="section" value="Compiling under Ubuntu 10.04 LTS, 64-bit:"}}
 This comment applies to FB 1.01.0, and may apply to other builds also.
-Install all of the Libraries listed above; some of the entries ending in “:i386” may throw “not found” errors.
-To verify that you’re using a 64-bit build, use: “uname -a” or “uname -m” (it’ll show x86_64 for 64-bit, i386 for 32-bit).
-Then, when running FBC, an error may appear: “error while loading shared libraries: libtinfo.so.5: cannot open shared object file: No such file or directory”.
+Install all of the Libraries listed above; some of the entries ending in ":i386" may throw "not found" errors.
+To verify that you're using a 64-bit build, use: "uname -a" or "uname -m" (it'll show x86_64 for 64-bit, i386 for 32-bit).
+Then, when running FBC, an error may appear: "error while loading shared libraries: libtinfo.so.5: cannot open shared object file: No such file or directory".
 
-“libtinfo.so.5” is available as a separate library in Ubuntu 11.10+, but it is built into “ncurses.so.5” in 10.04 LTS. So, we need to re-direct the libtinfo references into the ncurses.so.5 libraries:
+"libtinfo.so.5" is available as a separate library in Ubuntu 11.10+, but it is built into "ncurses.so.5" in 10.04 LTS. So, we need to re-direct the libtinfo references into the ncurses.so.5 libraries:
 	1) Issue: find / -name 'libtinfo.so.5' - just to verify that there are no confusing references to these libraries anywhere. Any references should be checked, and probably deleted?
-	1) Change to the folder containing the FBC executable (perhaps “/usr/local/bin/”).
-	1) Issue: ldd fbc - it will list the various library folder(s) being searched (probably “/lib32” in most cases).
-	1) Issue: sudo ln -s /lib32/libncurses.so.5 /lib32/libtinfo.so.5 (assuming “/lib32” was emitted in the previous step).
-	1) Issue: sudo ln -s /lib32/libtinfo.so.5     /lib32/libtinfo.so (assuming “/lib32”...)
+	1) Change to the folder containing the FBC executable (perhaps "/usr/local/bin/").
+	1) Issue: ldd fbc - it will list the various library folder(s) being searched (probably "/lib32" in most cases).
+	1) Issue: sudo ln -s /lib32/libncurses.so.5 /lib32/libtinfo.so.5 (assuming "/lib32" was emitted in the previous step).
+	1) Issue: sudo ln -s /lib32/libtinfo.so.5     /lib32/libtinfo.so (assuming "/lib32"...)
 	1) Retry!
 	1) [Unrelated point: if "private" Libraries are needed for compiles, they were expected to be in /usr/local/lib/freebasic/. Now, they may have to be in /usr/local/lib/freebasic/linux-x86/].
 	1) [Mike Kennedy, Jan, 2015. (This note was not acceptable as a standard "comment" - I don't know why?)].

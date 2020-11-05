@@ -500,7 +500,7 @@ const FB_TK_ADDROFCHAR			= CHAR_AT		'' @
 
 const FB_TK_INTTYPECHAR			= CHAR_PERC
 const FB_TK_LNGTYPECHAR			= CHAR_AMP
-const FB_TK_SGNTYPECHAR			= CHAR_EXCL
+const FB_TK_SNGTYPECHAR			= CHAR_EXCL
 const FB_TK_DBLTYPECHAR			= CHAR_SHARP
 const FB_TK_STRTYPECHAR			= CHAR_DOLAR
 
@@ -632,6 +632,7 @@ type FBENV
 
 	opt				as FBOPTION					'' context-sensitive options
 
+	inited			as integer					'' set to TRUE if parser ready
 	restarts		as integer					'' number of parser restarts
 	dorestart		as integer					'' request parser restart
 

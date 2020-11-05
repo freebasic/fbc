@@ -1,0 +1,445 @@
+{{fbdoc item="title" value="Critical Sections"}}----
+The proper use of the built-in procedures in **Critical Sections** for handling the concurrency with other threads.
+
+**Preamble:**
+
+	A critical section is a part of a multi-threading program that has to be executed as atomic actions (no concurrence with other threads executing similar actions):
+		**""-""** It is a piece of a program that requires mutual exclusion of access.
+		**""-""** Typically, the critical section accesses a shared resource, such as a data structure, a peripheral device, or a network connection, that does not allow multiple concurrent accesses.
+		
+	When a program starts up, one thread already begins running immediately. This is usually called the "main" thread of the program, because it is the one that is executed when a program begins:
+		**""-""** It is the thread from which user may spawn other "child" threads (which in turn may spawn other "sub-child" threads).
+		**""-""** Often, it must be the last thread to finish execution because it performs various shutdown actions (as a "child" thread must also do so with respect to its eventual "sub-child" threads spawned).
+		**""-""** But other than that, it can also compete (with its own critical sections) with all other threads explicitly spawned by user.
+
+{{fbdoc item="section" value="Basic algorithms"}}
+	Using the built-in procedures provided by FreeBASIC, the method to ensure exclusive use of a critical section may be designed in a algorithm either asynchronous or synchronous, which applies to the threads.
+	
+	- Basic algorithm for an asynchronous method using a mutex:
+			By getting the mutex locking, the thread can take the exclusive control to access the shared resource.
+			When shared resource access is ended, the thread unlocks the mutex.
+			
+			Algorithm:
+				%%
+'   Mutexlock
+'   |
+'   Critical section of code
+'   |
+'   Mutexunlock
+				%%
+	- Basic algorithm for a synchronous method using a condwait then a condsignal/condbroadcast (and mutex):
+			The thread waits for a Boolean predicate is indeed true and also a condition signal (condwait) before executing its critical section.
+			When shared resource access is ended, the thread sets another Boolean predicate then sends a condition signal to other thread(s) (condsignal or condbroadcast).
+			
+			Algorithm:
+				%%
+'   Mutexlock
+'   |
+'   While my_predicate <> True
+'   |   Condwait
+'   Wend
+'   my_predicate = False
+'   |
+'   Critical section of code
+'   |
+'   other_predicate = True
+'   Condsignal or Condbroadcast
+'   |
+'   Mutexunlock
+				%%
+			Similar algorithm with waiting-for, then signaling are put in reverse order:
+				%%
+'   Mutexlock
+'   |
+'   Critical section of code
+'   |
+'   other_predicate = True
+'   Condsignal or Condbroadcast
+'   |
+'   While my_predicate <> True
+'   |   Condwait
+'   Wend
+'   my_predicate = False
+'   |
+'   Mutexunlock
+				%%
+{{fbdoc item="section" value="Examples"}}
+	In the two following examples, the shared resource is the input/output display device:
+		**""-""** Print its counter for each of 6 user threads (and read the flag ##//'quit'//##).
+		**""-""** Catching a key-press (any one) for the main thread (and if yes, set the flag ##//'quit'//## to ##'true'##).
+		
+	The outputting procedure (##//'Sub Counter()'//##) has voluntarily a tempo between cursor positioning and printing, and also a repositioning of text cursor at middle of line before ending, in order to thoroughly check that there is no overlap between the critical sections executions (at opposite, one can see the result by removing some code dedicated to mutual exclusion processing).
+	A different tempo value is set at the end of each thread loop (from smaller to bigger).
+	A structure (UDT) groups all variables necessary to the threads. A pointer to each UDT instance is passed to each thread at its creation phase (with threadcreate).
+	
+	- Asynchronous method example using one mutex for all threads:
+		%%
+' User thread algorithm (same principle for the main thread):
+'
+'   Do
+'   |
+'   |   Mutexlock
+'   |   |
+'   |   Critical section of code
+'   |   |
+'   |   Mutexunlock
+'   |   |
+'   |   Sleep my_tempo, 1
+'   |
+'   Loop Until quit = true
+'
+' There is no any advantage or disadvantage between threads for running their critical sections.
+		%%
+		{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsection1.bas"}}%%(freebasic)
+Type UDT
+	Dim As Integer number
+	Dim As Integer tempo
+	Dim As Any Ptr pThread
+	Dim As Ulongint count
+	Static As Any Ptr pMutex
+	Static As Integer numberMax
+	Static As Integer quit
+End Type
+Dim As Any Ptr UDT.pMutex
+Dim As Integer UDT.numberMax
+Dim As Integer UDT.quit
+
+Sub Counter (Byval pt As UDT Ptr)
+	With *pt
+		Locate .number, .number, 0
+		Sleep 5, 1
+		.count += 1
+		Print .count;
+		Locate .number, 30 + .number, 0
+	End With
+End Sub
+
+Sub Thread (Byval p As Any Ptr)
+	Dim As Integer myquit
+	Dim As UDT Ptr pUDT = p
+	With *pUDT
+		Do
+			Mutexlock(.pMutex)
+			Counter(pUDT)
+			myquit = .quit
+			Mutexunlock(.pMutex)
+			Sleep .tempo, 1
+		Loop Until myquit = 1
+	End With
+End Sub
+
+
+UDT.numberMax = 6
+Dim As UDT u(0 To UDT.numberMax)
+For I As Integer = 0 To UDT.numberMax
+	u(I).number = i
+	u(I).tempo = 100 + 15 * I - 95 * Sgn(I)
+Next I
+UDT.pMutex = Mutexcreate
+
+Dim As Single t = Timer
+For I As Integer = 1 To UDT.numberMax
+	u(I).pThread = Threadcreate(@Thread, @u(I))
+Next I
+
+Dim As String s
+Do
+	Mutexlock(UDT.pMutex)
+	s = Inkey
+	If s <> "" Then
+		UDT.quit = 1
+	End If
+	Mutexunlock(UDT.pMutex)
+	Sleep u(0).tempo, 1
+Loop Until s <> ""
+
+For I As Integer = 1 To UDT.numberMax
+	Threadwait(u(I).pThread)
+Next I
+t = Timer - t
+
+Mutexdestroy(UDT.pMutex)
+Dim As Ulongint c
+For I As Integer = 1 to UDT.numberMax
+	c += u(I).count
+Next I
+Locate UDT.numberMax+2, 1
+Print Culngint(c / t) & " increments per second"
+
+Sleep
+		%%Output example:
+			%%
+'   159
+'    127
+'     105
+'      85
+'       78
+'        71
+'
+'   63 increments per second
+			%%Different result values because asynchronous counting (decreasing count values because increasing tempo values).
+			
+	- Synchronous method example using a condwait then a condbroadcast (and one mutex) for all threads:
+		%%
+' User thread algorithm (same principle for the main thread):
+'
+'   Do
+'   |
+'   |   Mutexlock
+'   |   |
+'   |   While thread_priority_number <> my_number
+'   |   |   Condwait
+'   |   Wend
+'   |   |
+'   |   Critical section of code
+'   |   |
+'   |   thread_priority_number = next thread_priority_number
+'   |   Condbroadcast
+'   |   |
+'   |   Mutexunlock
+'   |   |
+'   |   Sleep my_tempo, 1
+'   |
+'   Loop Until quit = true
+'
+' The critical sections of the threads are run synchronously one after the other, with a predefined order.
+		%%
+		{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsection2.bas"}}%%(freebasic)
+Type UDT
+	Dim As Integer number
+	Dim As Integer tempo
+	Dim As Any Ptr pThread
+	Dim As Ulongint count
+	Static As Integer threadPriorityNumber
+	Static As Any Ptr pMutex
+	Static As Any Ptr pCond
+	Static As Integer numberMax
+	Static As Integer quit
+End Type
+Dim As Integer UDT.threadPriorityNumber
+Dim As Any Ptr UDT.pMutex
+Dim As Any Ptr UDT.pCond
+Dim As Integer UDT.numberMax
+Dim As Integer UDT.quit
+
+Sub Counter (Byval pt As UDT Ptr)
+	With *pt
+		Locate .number, .number, 0
+		Sleep 5, 1
+		.count += 1
+		Print .count;
+		Locate .number, 30 + .number, 0
+	End With
+End Sub
+
+Sub Thread (Byval p As Any Ptr)
+	Dim As Integer myquit
+	Dim As UDT Ptr pUDT = p
+	With *pUDT
+		Do
+			Mutexlock(.pMutex)
+			While .threadPriorityNumber <> .number  '' synchronous condwait for expected condition
+				Condwait(.pCond, .pMutex)
+			Wend
+			Counter(pUDT)
+			myquit = .quit
+			.threadPriorityNumber = (.threadPriorityNumber + 1) Mod (.numberMax + 1)
+			Condbroadcast(.pCond)
+			Mutexunlock(.pMutex)
+			Sleep .tempo, 1
+		Loop Until myquit = 1
+	End With
+End Sub
+
+
+UDT.numberMax = 6
+Dim As UDT u(0 To UDT.numberMax)
+For I As Integer = 0 To UDT.numberMax
+	u(I).number = i
+	u(I).tempo = 100 + 15 * I - 95 * Sgn(I)
+Next I
+UDT.pMutex = Mutexcreate
+UDT.PCond = Condcreate
+
+Dim As Single t = Timer
+For I As Integer = 1 To UDT.numberMax
+	u(I).pThread = Threadcreate(@Thread, @u(I))
+Next I
+
+Dim As String s
+Do
+	Mutexlock(UDT.pMutex)
+	While UDT.threadPriorityNumber <> u(0).number
+		Condwait(UDT.pCond, UDT.pMutex)
+	Wend
+	s = Inkey
+	If s <> "" Then
+		UDT.quit = 1
+	End If
+	UDT.threadPriorityNumber = (UDT.threadPriorityNumber + 1) Mod (UDT.numberMax + 1)
+	Condbroadcast(UDT.pCond)
+	Mutexunlock(UDT.pMutex)
+	Sleep u(0).tempo, 1
+Loop Until s <> ""
+
+For I As Integer = 1 To UDT.numberMax
+	Threadwait(u(I).pThread)
+Next I
+t = Timer - t
+
+Mutexdestroy(UDT.pMutex)
+Conddestroy(UDT.pCond)
+Dim As Ulongint c
+For I As Integer = 1 to UDT.numberMax
+	c += u(I).count
+Next I
+Locate UDT.numberMax+2, 1
+Print Culngint(c / t) & " increments per second"
+
+Sleep
+		%%Output example:
+			%%
+'   116
+'    116
+'     116
+'      116
+'       116
+'        116
+'
+'   49 increments per second
+			%%Same result values because synchronous counting (despite of increasing tempo values).
+			
+	- Weird synchronous algorithm using a mutex for each thread, by self lock and mutual unlock:
+		**""-""** When one thread has run its critical section, it unlocks the mutex of the next thread and attempts to re-obtain its own mutex.
+		**""-""** At initialization all mutexes are locked, and the main thread enters directly in its critical section (code of the main thread slightly different of the other thread, with the self lock pushed at end).
+		%%
+' Main thread (#0) algorithm:
+'
+'   Do
+'   |
+'   |   Critical section of code
+'   |   |
+'   |   Mutexunlock(next thread mutex (#0+1))
+'   |   |
+'   |   Mutexlock(own thread mutex (#0))
+'   |   |
+'   |   Sleep my_tempo, 1
+'   |
+'   Loop Until key <> ""
+		%%
+		%%
+' User thread (#N) algorithm:
+'
+'   Do
+'   |
+'   |   Mutexlock(own thread mutex (#N))
+'   |   |
+'   |   Critical section of code
+'   |   |
+'   |   Mutexunlock(next thread mutex (#N+1))
+'   |   |
+'   |   Sleep tempo, 1
+'   |
+'   Loop Until quit = 1
+		%%
+		{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsection3.bas"}}%%(freebasic)
+Type UDT
+  Dim As Integer number
+  Dim As Integer tempo
+  Dim As Any Ptr pThread
+  Dim As Ulongint count
+  Static As Any Ptr pMutex(Any)
+  Static As Integer numberMax
+  Static As Integer quit
+End Type
+Dim As Any Ptr UDT.pMutex(Any)
+Dim As Integer UDT.numberMax
+Dim As Integer UDT.quit
+
+Sub Counter (Byval pt As UDT Ptr)
+  With *pt
+	Locate .number, .number, 0
+	Sleep 5, 1
+	.count += 1
+	Print .count;
+	Locate .number, 30 + .number, 0
+  End With
+End Sub
+
+Sub Thread (Byval p As Any Ptr)
+  Dim As Integer quit
+  Dim As UDT Ptr pUDT = p
+  With *pUDT
+	Do
+	  Mutexlock(.pMutex(.number))
+	  Counter(pUDT)
+	  quit = .quit
+	  Mutexunlock(.pMutex((.number + 1) Mod (UDT.numberMax + 1)))
+	  Sleep .tempo, 1
+	Loop Until quit = 1
+  End With
+End Sub
+
+
+UDT.numberMax = 6
+Redim UDT.pMutex(UDT.numberMax)
+Dim As UDT u(0 To UDT.numberMax)
+For I As Integer = 0 To UDT.numberMax
+  u(I).number = i
+  u(I).tempo = 100 + 15 * I - 95 * Sgn(I)
+  UDT.pMutex(I) = Mutexcreate
+  Mutexlock(UDT.pMutex(I))
+Next I
+
+Dim As Single t = Timer
+For I As Integer = 1 To UDT.numberMax
+  u(I).pThread = Threadcreate(@Thread, @u(I))
+Next I
+
+Dim As String s
+Do
+	s = Inkey
+	If s <> "" Then
+	  UDT.quit = 1
+	End If
+  Mutexunlock(UDT.pMutex((u(0).number + 1) Mod (UDT.numberMax + 1)))
+  Mutexlock(UDT.pMutex(u(0).number))
+  Sleep u(0).tempo, 1
+Loop Until s <> ""
+
+For I As Integer = 1 To UDT.numberMax
+  Threadwait(u(I).pThread)
+Next I
+t = Timer - t
+
+For I As Integer = 0 To UDT.numberMax
+  Mutexdestroy(UDT.pMutex(I))
+Next I
+Dim As Ulongint c
+For I As Integer = 1 to UDT.numberMax
+  c += u(I).count
+Next I
+Locate UDT.numberMax+2, 1
+Print Culngint(c / t) & " increments per second"
+
+Sleep
+		%%Output example:
+			%%
+'   102
+'    102
+'     102
+'      102
+'       102
+'        102
+'
+'   27 increments per second
+			%%Same result values because synchronous counting (despite of increasing tempo values), but the execution time performance is degraded compared to the synchronous method above (using conditional variable).
+			
+{{fbdoc item="section" value="See also"}}
+	- [[ProPgMultiThreading|Multi-Threading Overview]]
+	- [[ProPgMtThreads|Threads]]
+	- [[ProPgMtMutualExclusion|Mutual Exclusion]]
+	- [[ProPgMtConditionalVariables|Conditional Variables]]
+	- [[ProPgMtCriticalSectionsFAQ|Critical Sections FAQ]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

@@ -20,7 +20,7 @@ sub cScopeStmtBegin( )
 	end if
 
 	'' SCOPE
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	n = astScopeBegin( )
 	if( n = NULL ) then
@@ -48,8 +48,8 @@ sub cScopeStmtEnd( )
 	end if
 
 	'' END SCOPE
-	lexSkipToken( )
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	fbSetIsScope( stk->scp.lastis_scope )
 

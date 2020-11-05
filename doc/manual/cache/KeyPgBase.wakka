@@ -11,8 +11,10 @@ Provides explicit access to base type members in non-static methods of a ##[[Key
 	By using ##**Base**## repeatedly, as in ##base.base.base.member##, it is possible to access any desired base type, in case there are multiple levels of inheritance.
 	
 	##**Base**## is especially useful when a base type's member is shadowed by a local variable or member of a derived type using the same identifier. ##**Base**## then allows unambiguous access to the base type.
-
+	
 	For virtual methods, base.method() always calls the base method and never the overriding method.
+	
+	**Note:** There is no specific syntax with ##**Base**## to access a member operator of a specific base type. The only way is to apply the operator on the instance beforehand up-casted to the right type (but for virtual operators, this workaround does not allow to call the base operator when overridden, because that does not modify the run-time type of the instance but only its compile-time type).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/base.bas"}}%%(freebasic)

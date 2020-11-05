@@ -212,7 +212,7 @@ function symbAddTypedef _
     				   NULL, NULL, _
     				   FB_SYMBCLASS_TYPEDEF, _
     				   id, NULL, _
-    				   dtype, subtype )
+    				   dtype, subtype, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
     if( t = NULL ) then
     	return NULL
     end if
@@ -246,7 +246,7 @@ function symbAddFwdRef _
     				   NULL, NULL, _
     				   FB_SYMBCLASS_FWDREF, _
     				   id, NULL, _
-    				   FB_DATATYPE_INVALID, NULL )
+    				   FB_DATATYPE_INVALID, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
     if( f = NULL ) then
     	return NULL
     end if

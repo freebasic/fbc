@@ -66,7 +66,7 @@ Print "Number of bytes used in array:", arraysize '120 * 4 = 480
 '' determining whether an array is empty
 dim array() as integer
 
-print "lbound: "; lbound( array ), "ubound: "; ubound( array )  '' 1 and 0
+print "lbound: "; lbound( array ), "ubound: "; ubound( array )  ''  0 and -1
 
 if lbound( array ) > ubound( array ) then
 	print "array is empty"

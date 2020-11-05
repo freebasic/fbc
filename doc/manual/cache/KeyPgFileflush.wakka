@@ -1,0 +1,67 @@
+{{fbdoc item="title" value="FILEFLUSH"}}----
+Flush application stream buffers to system, or system buffers to file
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **""FileFlush""** ( [[KeyPgByval|byval]] //filenum// [[KeyPgAs|as]] [[KeyPgLong|long]] = -1, [[KeyPgByval|byval]] //systembuffers// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
+##
+{{fbdoc item="usage"}}##
+	#include "file.bi"
+	//result// = **""FileFlush""**()
+	//result// = **""FileFlush""**( //filenum// )
+	//result// = **""FileFlush""**( //filenum//, //systembuffers// )
+##
+{{fbdoc item="param"}}
+	##//filenum//##
+		File number of bound file or device.  If not given, or -1, then flush all open files.
+	##//systembuffers//##
+		If non-zero, flush system buffers to physical device.  Default is zero (0).
+
+{{fbdoc item="ret"}}
+	Returns zero (0) for success or an error code if file buffers could not be flushed.
+
+{{fbdoc item="desc"}}
+	##**""FileFlush""**## writes application buffered output to the underlying stream, and if ##//systembuffers//## is non-zero, to the underlying physical device as well.
+	
+	In the form ##**""FileFlush(filenum)""**##, the application output buffer for a specific file are written.  And in the form ##**""FileFlush""**##, all application buffers are written to the system.  Typically, when a file is opened, the stream will be block buffered for ##binary## and ##random## files, and line buffered for ##append## and ##output## files.  The ##**""FileFlush""**## function overrides the normal buffering of the application and immediately writes buffered output to the system.  The system may have it's own buffers as well.
+	
+	In the form ##**""FileFlush(filenum,1)""**##, both the application buffer is flushed and the underlying system buffer is flushed to physical device.  In the form ##**""FileFlush(,1)""**##, all application buffers are flushed and all underlying system buffers are flushed to physical device.
+
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/fileio/fileflush.bas"}}%%(freebasic)
+#include "file.bi"
+
+Dim As Long f1, f2
+Dim As String s
+
+Print "File length", "File string"
+
+f1 = Freefile
+Open "fileflushtest.txt" For Output As #f1
+Print #f1, "successful file flush"
+
+f2 = Freefile
+Open "fileflushtest.txt" For Input As #f2
+Line Input #f2, s
+Print Filelen("fileflushtest.txt"), "'" & s & "'"  '' the string is not yet physically written to the file
+
+Fileflush(f1)
+Line Input #f2, s
+Print Filelen("fileflushtest.txt"), "'" & s & "'"  '' the string is now physically written to the file
+
+Close #f2
+Close #f1
+
+Sleep
+	%%Output (Windows):
+		%%
+File length   File string
+ 0            ''
+ 23           'successful file flush'
+		%%
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC"".
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgClose|Close]]##
+
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

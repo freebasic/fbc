@@ -1,3 +1,15 @@
+Version 0.9
+
+[added]
+- fbcu.setBriefSummary( true|false ) method to choose brief summary (true), otherwise full summary (false, default)
+- fbcu.setHideCases( true|false ) method to prevent cases (failed asserts) from printing (true), otherwise show all (false, default)
+- fbcu.getHideCases() as boolean to return current setting for "hide-cases" option
+
+[fixed]
+- added missing fbcunit_qb.bas:fbcu_check_internal_state() stub
+- added missing fbcunit_qb.bas:fbcu_write_report_xml() stub
+
+
 Version 0.8
 
 [changed]

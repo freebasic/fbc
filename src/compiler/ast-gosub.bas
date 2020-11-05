@@ -21,7 +21,7 @@
 '' on the command line (jeffm)
 ''
 #define AsmBackend() _
-	( (env.clopt.backend = FB_BACKEND_GAS) and _
+	( ( (env.clopt.backend = FB_BACKEND_GAS) or (env.clopt.backend = FB_BACKEND_GAS64) )and _
 	  (env.clopt.gosubsetjmp = FALSE) )
 
 sub astGosubAddInit( byval proc as FBSYMBOL ptr )
@@ -80,6 +80,8 @@ sub astGosubAddJmp _
 		astAdd( astBuildVarInc( symbGetProcGosubSym( proc ), 1 ) )
 
 		astAdd( astNewBRANCH( AST_OP_CALL, l ) )
+		''for gas64
+		l->lbl.gosub = true
 	else
 		'' if ( setjmp( fb_GosubPush( @ctx ) ) ) = 0 ) then
 		label = symbAddLabel( NULL )

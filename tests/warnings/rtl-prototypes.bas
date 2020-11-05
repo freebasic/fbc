@@ -53,25 +53,25 @@
 
 	ID( function fb_ArrayClear )
 	scope
-		dim chk as function fbcall ( bydesc as any, byval as const long ) as long
+		dim chk as function fbcall ( bydesc as any ) as long
 		chk = procptr( fb_ArrayClear )
 	end scope
 
 	ID( function fb_ArrayClearObj )
 	scope
-		dim chk as function fbcall ( bydesc as any, byval as any ptr, byval as any ptr, byval as const long ) as long
+		dim chk as function fbcall ( bydesc as any, byval as any ptr, byval as any ptr ) as long
 		chk = procptr( fb_ArrayClearObj )
 	end scope
 
 	ID( function fb_ArrayErase )
 	scope
-		dim chk as function fbcall ( bydesc as any, byval as const long ) as long
+		dim chk as function fbcall ( bydesc as any ) as long
 		chk = procptr( fb_ArrayErase )
 	end scope
 
 	ID( function fb_ArrayEraseObj )
 	scope
-		dim chk as function fbcall ( bydesc as any, byval as any ptr ) as long
+		dim chk as function fbcall ( bydesc as any, byval as any ptr, byval as any ptr ) as long
 		chk = procptr( fb_ArrayEraseObj )
 	end scope
 
@@ -1509,6 +1509,18 @@
 	scope
 		dim chk as function cdecl ( byref as any, byval as const long = 0, byval as const uinteger ) as any ptr
 		chk = procptr( clear )
+	end scope
+
+	ID( function fb_MemMove alias "memmove" )
+	scope
+		dim chk as function cdecl ( byref as any, byref as const any, byval as const uinteger ) as any ptr
+		chk = procptr( fb_MemMove )
+	end scope
+
+	ID( function fb_MemCopy alias "memcpy" )
+	scope
+		dim chk as function cdecl ( byref as any, byref as const any, byval as const uinteger ) as any ptr
+		chk = procptr( fb_MemCopy )
 	end scope
 
 #print "---- rtlPrint"

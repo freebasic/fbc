@@ -24,14 +24,11 @@ FBCALL void *fb_GfxGetGLProcAddress(const char *proc)
 #define GL_UNSIGNED_SHORT_5_6_5           0x8363
 #endif
 
-
 FB_GL __fb_gl;
-FB_GL_PARAMS __fb_gl_params = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, NULL };
+FB_GL_PARAMS __fb_gl_params = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, NULL };
 static GLfloat texcoords[8];
 static GLuint ScreenTex;
-
 static GLfloat map_r[256], map_g[256], map_b[256];
-
 
 static int next_pow2(int n)
 {
@@ -245,7 +242,6 @@ int fb_hGL_Init(FB_DYLIB lib, char *os_extensions)
 }
 
 
-
 void fb_hGL_SetPalette(int index, int r, int g, int b){
 	map_r[index]=(float)r/256.0;
 	map_g[index]=(float)g/256.0;
@@ -255,6 +251,22 @@ void fb_hGL_SetPalette(int index, int r, int g, int b){
 
 void fb_hGL_SetupProjection(void)
 {
+	/*
+	INFO ONLY: Prior to oGLfbgfx changes, this is the projection set-up
+
+	__fb_gl.Viewport(0, 0, __fb_gfx->w, __fb_gfx->h);
+	__fb_gl.MatrixMode(GL_PROJECTION);
+	__fb_gl.LoadIdentity();
+	__fb_gl.Ortho(-0.325, __fb_gfx->w - 0.325, __fb_gfx->h - 0.325, -0.325, -1.0, 1.0);
+	__fb_gl.MatrixMode(GL_MODELVIEW);
+	__fb_gl.LoadIdentity();
+	__fb_gl.ShadeModel(GL_FLAT);
+	__fb_gl.Disable(GL_DEPTH_TEST);
+	__fb_gl.DepthMask(GL_FALSE);
+	__fb_gl.ClearColor(0.0, 0.0, 0.0, 1.0);
+	__fb_gl.Clear(GL_COLOR_BUFFER_BIT);
+	*/
+
 	const GLfloat vert[] = {-1,-1,-1,1,1,1,1,-1};
 
 	__fb_gl.PushClientAttrib(GL_CLIENT_ALL_ATTRIB_BITS);
@@ -313,7 +325,6 @@ void fb_hGL_SetupProjection(void)
 	__fb_gl.PopMatrix();
 	__fb_gl.PopAttrib();
 	__fb_gl.PopClientAttrib();
-
 
 }
 

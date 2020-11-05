@@ -297,7 +297,8 @@ function cAsmBlock as integer
     	exit function
     end if
 
-	lexSkipToken( )
+	'' ASM
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' (Comment SttSeparator)?
 	issingleline = FALSE
@@ -358,10 +359,12 @@ function cAsmBlock as integer
 
 	if( issingleline = FALSE ) then
 		'' END ASM
-		if( hMatch( FB_TK_END ) = FALSE ) then
+		if( hMatch( FB_TK_END, LEXCHECK_POST_SUFFIX ) = FALSE ) then
 			errReport( FB_ERRMSG_EXPECTEDENDASM )
-		elseif( hMatch( FB_TK_ASM ) = FALSE ) then
-			errReport( FB_ERRMSG_EXPECTEDENDASM )
+		else
+			if( hMatch( FB_TK_ASM, LEXCHECK_POST_SUFFIX ) = FALSE ) then
+				errReport( FB_ERRMSG_EXPECTEDENDASM )
+			end if
 		end if
 	end if
 

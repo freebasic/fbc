@@ -2,8 +2,8 @@
 #define __FB_BI__
 
 const FB_VER_MAJOR  = "1"
-const FB_VER_MINOR  = "07"
-const FB_VER_PATCH  = "1"
+const FB_VER_MINOR  = "08"
+const FB_VER_PATCH  = "0"
 const FB_VERSION    = FB_VER_MAJOR + "." + FB_VER_MINOR + "." + FB_VER_PATCH
 const FB_BUILD_DATE = __DATE__
 const FB_BUILD_DATE_ISO = __DATE_ISO__
@@ -128,6 +128,7 @@ enum FB_PDCHECK
 	FB_PDCHECK_SIGNEDNESS   = &h00000020
 	FB_PDCHECK_CASTFUNCPTR  = &h00000040
 	FB_PDCHECK_CONSTNESS    = &h00000080
+	FB_PDCHECK_SUFFIX       = &h00000100
 
 	FB_PDCHECK_ALL          = &hffffffff
 
@@ -232,6 +233,7 @@ enum FB_BACKEND
 	FB_BACKEND_GAS
 	FB_BACKEND_GCC
 	FB_BACKEND_LLVM
+	FB_BACKEND_GAS64
 
 	FB_BACKENDS
 end enum
@@ -474,6 +476,11 @@ declare function fbGetLangOptions _
 declare function fbGetLangName _
 	( _
 		byval lang as FB_LANG _
+	) as string
+
+declare function fbGetBackendName _
+	( _
+		byval backend as FB_BACKEND _
 	) as string
 
 declare function fbGetLangId _

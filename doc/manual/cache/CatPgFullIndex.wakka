@@ -21,6 +21,8 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgDdFBBackend|__FB_BACKEND__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBBigEndian|__FB_BIGENDIAN__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBBuildDate|__FB_BUILD_DATE__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbbuilddateiso|__FB_BUILD_DATE_ISO__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbbuildsha1|__FB_BUILD_SHA1__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbcygwin|__FB_CYGWIN__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdarwin|__FB_DARWIN__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdebug|__FB_DEBUG__"}}
@@ -271,12 +273,17 @@ Alphabetical listing of keywords, macros and procedures.
 
 {{fbdoc item="section" value="F"}}{{anchor name="f"}}
 	- {{fbdoc item="keyword" value="KeyPgFalse|FALSE"}}
+	- {{fbdoc item="keyword" value="KeyPgFBMemcopy|FB_MEMCOPY"}}
+	- {{fbdoc item="keyword" value="KeyPgFBMEMMOVE|FB_MEMMOVE"}}
+	- {{fbdoc item="keyword" value="KeyPgFBArray|FBARRAY (array descriptor structure and access)"}}
 	- {{fbdoc item="keyword" value="KeyPgField|FIELD"}}
 	- {{fbdoc item="keyword" value="KeyPgFileattr|FILEATTR"}}
 	- {{fbdoc item="keyword" value="KeyPgFilecopy|FILECOPY"}}
 	- {{fbdoc item="keyword" value="KeyPgFiledatetime|FILEDATETIME"}}
 	- {{fbdoc item="keyword" value="KeyPgFileexists|FILEEXISTS"}}
+	- {{fbdoc item="keyword" value="KeyPgFileflush|FILEFLUSH"}}
 	- {{fbdoc item="keyword" value="KeyPgFilelen|FILELEN"}}
+	- {{fbdoc item="keyword" value="KeyPgFileseteof|FILESETEOF"}}
 	- {{fbdoc item="keyword" value="KeyPgFix|FIX"}}
 	- {{fbdoc item="keyword" value="KeyPgFlip|FLIP"}}
 	- {{fbdoc item="keyword" value="KeyPgFor|FOR"}}

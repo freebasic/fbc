@@ -16,7 +16,7 @@ private function hPPDefinedExpr( ) as ASTNODE ptr
 	dim as integer is_defined = any
 
 	'' DEFINED
-	lexSkipToken( LEXCHECK_NODEFINE )
+	lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
 
 	'' '('
 	if( lexGetToken( ) <> CHAR_LPRNT ) then
@@ -98,7 +98,7 @@ function cNegNotExpression _
 
 	'' NOT
 	case FB_TK_NOT
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' RelExpression
 		negexpr = cRelExpression(  )
@@ -244,14 +244,14 @@ function cHighestPrecExpr _
 		'' CAST '(' DataType ',' Expression ')'
 		case FB_TK_CAST
 			'' CAST
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			expr = hCast( 0 )
 
 		'' CPTR '(' DataType ',' Expression{int|uint|ptr} ')'
 		case FB_TK_CPTR
 			'' CPTR
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			expr = hCast( AST_CONVOPT_PTRONLY )
 
@@ -572,7 +572,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 
 		'' proc?
 		if( sym <> NULL ) then
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
 			return hProcPtrBody( base_parent, sym )
 		'' anything else..
 		else
@@ -583,7 +583,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 	select case as const lexGetToken( )
 	'' VARPTR '(' Variable ')'
 	case FB_TK_VARPTR
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' '('
 		if( hMatch( CHAR_LPRNT ) = FALSE ) then
@@ -604,7 +604,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 
 	'' PROCPTR '(' Proc ('('')')? ')'
 	case FB_TK_PROCPTR
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' '('
 		if( hMatch( CHAR_LPRNT ) = FALSE ) then
@@ -627,7 +627,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 			hSkipUntil( CHAR_RPRNT, TRUE )
 			return astNewCONSTi( 0 )
 		else
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
 		end if
 
 		expr = hProcPtrBody( base_parent, sym )
@@ -641,7 +641,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 
 	'' SADD|STRPTR '(' Variable{str} ')'
 	case FB_TK_SADD, FB_TK_STRPTR
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' '('
 		if( hMatch( CHAR_LPRNT ) = FALSE ) then

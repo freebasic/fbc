@@ -74,7 +74,7 @@ function cOperator( byval is_overload as integer ) as integer
 			exit function
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		select case as const( tk )
 		case FB_TK_EQ   : op = AST_OP_EQ
@@ -138,7 +138,7 @@ function cOperator( byval is_overload as integer ) as integer
 		exit function
 	end select
 
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	if( is_overload = FALSE ) then
 		return op
@@ -359,7 +359,8 @@ function cAssignmentOrPtrCall _
 			errReportNotAllowed( FB_LANG_OPT_LET )
     	else
     		ismult = TRUE
-    		lexSkipToken( )
+			'' 'LET'
+    		lexSkipToken( LEXCHECK_POST_SUFFIX )
     	end if
     end if
 
@@ -368,7 +369,8 @@ function cAssignmentOrPtrCall _
     	exit function
     end if
 
-	lexSkipToken( )
+	'' LET | '('
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' single?
 	if( ismult = FALSE ) then

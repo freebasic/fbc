@@ -4,14 +4,15 @@ Audio library for use in Windows with a Beta Version for Linux.
 Website: http://www.un4seen.com/bass.html
 Platforms supported: ""Win32"", Linux (beta)
 Headers to include: bass.bi
-Header version: 2.4.8
+Header version: 2.4.14
 Examples: in examples/sound/BASS/
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/bass.bas"}}%%(freebasic)
 #include once "bass.bi"
 
-const SOUND_FILE = "test.mod"
+'' this mod file should be available in the fbc package:
+const SOUND_FILE = "..\..\sound\data\dne_trtn.mod"
 
 if (BASS_GetVersion() < MAKELONG(2,2)) then
 	print "BASS version 2.2 or above required!"

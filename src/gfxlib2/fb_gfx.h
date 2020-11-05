@@ -68,7 +68,6 @@
 #define DRIVER_OGL_2D_MANUAL_SYNC   1
 #define DRIVER_OGL_2D_AUTO_SYNC     2
 
-
 #define LINE_TYPE_LINE		0
 #define LINE_TYPE_B		1
 #define LINE_TYPE_BF		2

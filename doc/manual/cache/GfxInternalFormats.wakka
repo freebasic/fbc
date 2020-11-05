@@ -22,13 +22,13 @@ Information on the internal formats used by ""FreeBASIC"" to represent graphics.
 	In ""FreeBASIC"", images can be used as arrays (as in QB) or as pointers. Either way, the image data is contained in one continuous chunk. The chunk consists of an header followed by the image data. The header can be of two types (old-style and new-style) and determines the format of the following image data.
 	
 		**Old-style** chunk header consists of 4 bytes (32 bits, or 4 bytes). The first 3 bits contain the image color depth in bytes per pixel (8-bit color depth -> 1; 16-bit color depth -> 2; 32-bit color depth -> 4). The next 13 bits contain the image width. The last 16 bits contain the image's height. Please note the intrinsic nature of the header allows only for sizes up to ##8191 * 65535## pixels. The actual pixel data follows the header, and is compacted one row of pixels after another; no data alignment is assumed. The final size of the chunk can then be computed using the formula:
-	
+		
 			##size = 4 + ( width * height * bytes_per_pixel )##
-	
+			
 		**New-style** chunk header consists of 32 bytes. The first dword (32 bits) must be equal to the value 7, allowing ""GfxLib"" to identify the new type of chunk. The second dword contains the image color depth in bytes per pixel. The third and fourth dwords contain the image width and height respectively, effectively removing the image size limit enforced by the old-style image chunks. The fifth dword contains the pixel row pitch in bytes; this tells how many bytes a row of pixels in the image takes up. The pitch in new-style chunks is always padded to a multiple of 16, to allow pixels' row data to be aligned on the paragraph boundary. The remaining 3 dwords (total 12 bytes) of the header are currently unused and reserved for future use. The final size of the image is:
-	
+		
 			##size = 32 + ( ( ( ( width * bytes_per_pixel ) + &hF ) and not &hF ) * height )##
-	
+			
 	The format of images created by ##[[KeyPgImagecreate|ImageCreate]]## and ##[[KeyPgGetgraphics|Get]]## depend on the dialect used. In the //[[CompilerOptlang|-lang fb]]// dialect, images will be created with the new-style header.  In the //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang qb]]// dialects, the old-style image header is created.
 	
 	All graphics primitives can work with both old-style and new-style image chunks.  For easy access to image information, ##[[KeyPgImageInfo|ImageInfo]]## can be used to obtain useful properties of an image buffer - such as its dimensions, color depth, pitch, and a pointer to the pixel data - whichever format is used.

@@ -1,0 +1,704 @@
+{{fbdoc item="title" value="Constructors, '=' Assignment-Operators, and Destructors (advanced, part #1)"}}----
+Proper use of **Constructors**, '=' **Assignment-Operators**, and **Destructors**, which are the special member procedures for constructing/initializing, assigning, and destroying objects (part #1).
+{{anchor name="ProPgCtorsAssignDtorsTop"}}
+**Preamble:**
+
+	Some member procedures, which have a predefined name in the Type, have a specific role that is constructing, assigning, and destroying objects. These are the constructors, the '=' assignment-operators, and the destructor.
+	Of these, some are special because a version will be automatically built by the compiler if they are needed and not explicitly defined by the user. These are the default-constructor, the copy-constructor, the copy-assignment operator, and the destructor.
+	
+	It is therefore often necessary that user defines its own explicit versions in order to execute actions that must take place during all lifetime of an object:
+		**""-""** For example, if the object contains dynamically allocated variables, it is necessary to reserve them memory when the object is created.
+		**""-""** For object assignment, the memory must often be reallocated.
+		**""-""** At the destruction of the object, it is necessary to free the allocated memory.
+		
+	Once the user defines any explicit constructor or explicit destructor, the compiler no longer automatically defines the implicit default constructor or the implicit destructor.
+	In particular, if the user only defines an explicit constructor taking parameters, it will no longer be possible to simply construct an object, without providing the parameters to this constructor, unless, of course, the user defines also an explicit default constructor (the one which does not take parameters).
+	
+	Type inheritance and virtuality must also be taken into account for defining these special member procedures.
+	
+	As any member, these special member procedures may have any accessibility, public, protected or private (but a private access does not have much interest, and even can totally prevent any direct or derived object construction).
+	
+	__Table of Contents__
+		**{{anchor name="ProPgCtorsAssignDtors1|1. Constructors and destructors"}}**
+		**{{anchor name="ProPgCtorsAssignDtors2|2. '=' Assignment-operators"}}**
+		**{{anchor name="ProPgCtorsAssignDtors3|3. Processing variable-length arrays as members of Type"}}**
+
+----
+{{anchor name="ProPgCtorsAssignDtors1"}}
+{{fbdoc item="section" value="1. Constructors and destructors"}}
+	A constructor is called automatically when instantiating the object. The destructor is called automatically when it is destroyed.
+	This destruction occurs when outputting the current scope block for auto storage kind objects.
+	
+	For dynamically allocated objects, the constructor and destructor are automatically called by expressions that use the 'New', 'New[]', and 'Delete', 'Delete[]' operators. That is why it is recommended to use them instead of the '[C|Re]]Allocate' and 'Deallocate' functions to dynamically create objects.
+	Also, do not use 'Delete' or 'Delete[]' on 'Any Ptr' pointers, because the compiler must determine which destructor to call with the type of pointer.
+	
+	__Definition of constructors and destructors__
+		The constructor is called after the memory allocation of the object and the destructor is called before this memory is freed. The management of the dynamic allocation of memory with the Types is thus simplified.
+		In the case of member object fields, the order of construction is that of their declarations, and the order of destruction is the reverse. It is in this order that the constructors and destructors of each member object field are called.
+		
+		The explicit constructors may have parameters. They can be overloaded, but not the explicit destructors. This is because in general one knows the context in which an object is created, but one cannot know the context in which it is destroyed: there can only be one destructor.
+		Constructors that do not take a parameter or with all parameters having a default value, automatically replace the default constructors defined by the compiler if there were no explicitly defined constructors in the Types. This means that these constructors will be called automatically by the default constructors of the derived Types.
+		
+		Example - Constructors and destructor (""'ZstringChain'"" Type):
+			{{fbdoc item="filename" value="examples/manual/proguide/udt/ctordtor-zstringchain1.bas"}}%%(freebasic)
+Type ZstringChain                                '' implement a zstring chain
+	Dim As ZString Ptr pz                        '' define a pointer to the chain
+	Declare Constructor ()                       '' declare the explicit default constructor
+	Declare Constructor (ByVal size As Integer)  '' declare the explicit constructor with as parameter the chain size
+	Declare Destructor ()                        '' declare the explicit destructor
+End Type
+
+Constructor ZstringChain ()
+	This.pz = 0  '' reset the chain pointer
+End Constructor
+
+Constructor ZstringChain (ByVal size As Integer)
+	This.pz = CAllocate(size + 1, SizeOf(ZString))  '' allocate memory for the chain
+End Constructor
+
+Destructor ZstringChain ()
+	If This.pz <> 0 Then
+		Deallocate This.pz  '' free the allocated memory if necessary
+	This.pz = 0         '' reset the chain pointer
+	End If
+End Destructor
+
+
+Dim As ZstringChain zc1  '' instantiate a non initialized chain : useless
+
+Dim As ZstringChain zc2 = ZstringChain(9)  '' instantiate a szstring chain of 9 useful characters
+'                                          '' shortcut: Dim As ZstringChain zc2 = 9
+*zc2.pz = "FreeBASIC"                      '' fill up the chain with 9 characters
+Print "zc2 chain:"
+Print "'" & *zc2.pz & "'"                  '' print the chain
+
+Sleep
+			%%Output:
+				%%
+zc2 chain:
+'FreeBASIC'
+				%%
+		The constructors will sometimes have to perform more complicated tasks than those given in this example. In general, they can do all the feasible operations in a normal member procedure, except using uninitialized data of course.
+		In particular, the data of inherited objects are not initialized as long as the constructors of the base-Types are not called. For this reason, the constructors of the base-Types must always be called before running the constructor of the Type being instantiated.
+		If the constructors of the base-Types are not explicitly called, the compiler will call, by default, the constructors of the base-Types that do not take a parameter or whose parameters have a default value (and, if no such a constructor is explicitly defined in the base-Types, it will call the implicit default constructors of these Types).
+		
+	__Constructors__
+		A constructor is a kind of member procedure that initializes an instance of its Type. A constructor has the same name as the Type and no return value. A constructor can have any number of parameters and a Type may have any number of overloaded constructors.
+		
+		If not any constructor is explicitly defined, the compiler will generate (if needed) a default-constructor that takes no parameters. The user can cancel this behavior by declaring and defining explicitly its own default-constructor.
+		If the user defines his own constructor(s), implicit default-initialization operations are always done prior to the user's constructor(s) code execution.
+		
+		Order of Construction:
+			**""-""** The Type constructor is called.
+			**""-""** The base Types and their member constructors are called in the order of declaration.
+			**""-""** If the Type has virtual member procedures (including these inherited from its Base), the virtual-pointer (vptr) is set to point to the virtual-table (vtbl) of the Type.
+			**""-""** The body of the Type constructor procedure is executed.
+			
+		**Default-constructor:**
+			The default-constructor has no parameters.
+			It follows slightly different rules:
+				**""-""** The default-constructor is one of the special member functions.
+				**""-""** If no constructors are explicitly declared in a Type, the compiler provides a default-constructor.
+				**""-""** If any non default-constructors are declared, the compiler does not provide a default-constructor and the user is forced to declare one if necessary.
+				
+		**Conversion-constructors:**
+			If a Type has a constructor with a single parameter, or if at least all other parameters have a default value, the type of the first argument can be implicitly converted to the type of the Type by the compiler.
+			In such expressions, the term //'variable'// may be considered as a short-cut of //'typename(variable)'//.
+			
+			Such conversions can be useful in some cases, but more often they can lead to poor readability (in these cases, it is better to explicitly call the matching constructor).
+			
+			Example - Implicit conversion:
+				{{fbdoc item="filename" value="examples/manual/proguide/udt/ctordtor-conversion1.bas"}}%%(freebasic)
+Type UDT Extends Object
+	Declare Constructor ()
+	Declare Constructor (ByVal i0 As Integer)
+	Declare Destructor ()
+	Dim As Integer i
+End Type
+
+Constructor UDT ()
+	Print "   => UDT.default-constructor", @This
+End Constructor
+
+Constructor UDT (ByVal i0 As Integer)
+	Print "   => UDT.conversion-constructor", @This
+	This.i = i0
+End Constructor
+
+Function RtnI (ByRef u As UDT) As Integer
+	Return u.i
+End Function
+ 
+Destructor UDT ()
+	Print "   => UDT.destructor", , @This
+End Destructor
+
+Scope
+	Print "Construction: 'Dim As UDT u'"
+	Dim As UDT u
+	Print
+	Print "Assignment: 'u = 123'"
+	Print "      " & RtnI(123)            ''  RtnI(123): implicite conversion using the conversion-constructor,
+	'                                     ''             short_cut of RtnI(UDT(123))
+	Print
+	Print "Going out scope: 'End Scope'"
+End Scope
+
+Sleep
+				%%Output example:
+					%%
+Construction: 'Dim As UDT u'
+   => UDT.default-constructor             1703588
+
+Assignment: 'u = 123'
+   => UDT.conversion-constructor          1703580
+	  123
+   => UDT.destructor                      1703580
+
+Going out scope: 'End Scope'
+   => UDT.destructor                      1703588
+					%%
+			But such conversions can even lead to subtle but serious errors in the code.
+			
+			Example - Subtle/Serious errors in the code:
+				{{fbdoc item="filename" value="examples/manual/proguide/udt/ctordtor-conversion2.bas"}}%%(freebasic)
+Type point2D
+	Declare Constructor (Byval x0 As Integer = 0, Byval y0 As Integer = 0)
+	Declare Operator Cast () As String
+	Dim As Integer x, y
+End Type
+
+Constructor point2D (Byval x0 As Integer = 0, Byval y0 As Integer = 0)
+	This.x = x0
+	This.y = y0
+End constructor
+
+Operator point2D.cast () As String
+	Return "(" & This.x & ", " & This.y & ")"
+End Operator
+
+Operator + (Byref v0 As point2D, Byref v1 As point2D) As point2D
+	Return Type(v0.x + v1.x, v0.y + v1.y)
+End Operator
+
+Operator * (Byref v0 As point2D, Byref v1 As point2D) As Integer
+	Return v0.x * v1.x + v0.y * v1.y
+End Operator
+
+Print "Construction of v1: 'Dim As point2D v1 = point2D(2, 3)'"
+Dim As point2D v1 = point2D(2, 3)
+Print "  => " & v1
+Print
+Print "Addition to v1: 'v1 + 4'"
+Print "  => " & v1 + 4                  ''  4: implicite conversion using the conversion-constructor,
+'                                       ''             short_cut of point2D(4, ) or point2D(4)
+Print
+Print "Multiplication of v1: 'v1 * 5'"
+Print "  => " & v1 * 5                  ''  5: implicite conversion using the conversion-constructor,
+'                                       ''             short_cut of point2D(5, ) or point2D(5)
+Sleep
+				%%Output example:
+					%%
+Construction of v1: 'Dim As point2D v1 = point2D(2, 3)'
+  => (2, 3)
+
+Addition to v1: 'v1 + 4'
+  => (6, 3)
+
+Multiplication of v1: 'v1 * 5'
+  => 10
+					%%In this case, it is dangerous to declare a multi-parameter constructor with optional parameters, because the compiler can interpret one of its forms as a conversion-constructor.
+					
+			A workaround: define a default constructor, and the multi-parameter constructor but without optional parameters (or at least one non-optional parameter without considering the first one).
+			
+		**Copy-constructor:**
+			The copy-constructor is a special member procedure that takes as input a reference to an object of the same type, and constructs a new object by copying it.
+			If the user does not declare a copy-constructor, the compiler generates (if needed) a copy-constructor for him. The declaration of a copy-assignment operator (see above) does not remove the generation by the compiler of a copy-constructor.
+			
+			It will sometimes be necessary to create a copy constructor. The purpose of this kind of constructor is to initialize an object when instantiating it from another object.
+			Any Type has if needed an implicit copy constructor automatically generated by the compiler, whose sole purpose is to copy the fields of the object to be copied one by one into the fields of the object to be instantiated.
+			However, this implicit copy constructor will not always be enough, and the user will sometimes have to provide one explicitly.
+			
+			This will be particularly the case when some data objects have been allocated dynamically (only member pointers in the Type for object aggregation). A shallow copy of the fields of one object in another would only copy the pointers, not the data pointed. Thus, changing this data for one object would result in the modification of the other object's data, which would probably not be the desired effect.
+			
+			If the user implements a copy-constructor, it is recommend to also implement a copy-assignment operator so that the meaning of the code is clear.
+			
+			In addition to the explicit syntax for calling the copy-constructor, this one is also called when an object is passed by value to a procedure, and when a function returns an object by value by using the //'Return'// keyword.
+			
+			For the '""ZstringChain""' Type defined above, the user needs a copy constructor:
+				{{fbdoc item="filename" value="examples/manual/proguide/udt/ctordtor-zstringchain2.bas"}}%%(freebasic)
+Type ZstringChain                                   '' implement a zstring chain
+	Dim As Zstring Ptr pz                           '' define a pointer to the chain
+	Declare Constructor ()                          '' declare the explicit default constructor
+	Declare Constructor (Byval size As Integer)     '' declare the explicit constructor with as parameter the chain size
+	Declare Constructor (Byref zc As ZstringChain)  '' declare the explicit copy constructor
+	Declare Destructor ()                           '' declare the explicit destructor
+End Type
+
+Constructor ZstringChain ()
+	This.pz = 0  '' reset the chain pointer
+End Constructor
+
+Constructor ZstringChain (Byval size As Integer)
+	This.pz = Callocate(size + 1, Sizeof(Zstring))  '' allocate memory for the chain
+End Constructor
+
+Constructor ZstringChain (Byref zc As ZstringChain)
+	This.pz = Callocate(Len(*zc.pz) + 1, Sizeof(Zstring))  '' allocate memory for the new chain
+	*This.pz = *zc.pz                                      '' initialize the new chain
+End Constructor
+
+Destructor ZstringChain ()
+	If This.pz <> 0 Then
+		Deallocate This.pz  '' free the allocated memory if necessary
+		This.pz = 0         '' reset the chain pointer
+	End If
+End Destructor
+
+
+Dim As ZstringChain zc1  '' instantiate a non initialized chain : useless
+
+Dim As ZstringChain zc2 = ZstringChain(9)           '' instantiate a szstring chain of 9 useful characters
+'                                                   '' shortcut: Dim As ZstringChain zc2 = 9
+*zc2.pz = "FreeBASIC"                               '' fill up the chain with 9 characters
+Print "zc2 chain:"
+Print "'" & *zc2.pz & "'"                           '' print the chain
+Print
+Dim As ZstringChain zc3 = zc2                       '' instantiate a new szstring chain by copy construction
+Print "zc3 chain (zc3 copy constructed from zc2):"
+Print "'" & *zc3.pz & "'"                           '' print the chain
+Print
+*zc3.pz = "modified"                                '' modify the new chain
+Print "zc3 chain (modified):"
+Print "'" & *zc3.pz & "'"                           '' print the new chain
+Print
+Print "zc2 chain:"
+Print "'" & *zc2.pz & "'"                           '' print the copied chain (not modified)
+
+Sleep
+				%%Output:
+					%%
+zc2 chain:
+'FreeBASIC'
+
+zc3 chain (zc3 copy constructed from zc2):
+'FreeBASIC'
+
+zc3 chain (modified):
+'modified'
+
+zc2 chain:
+'FreeBASIC'
+					%%
+	__Destructor__
+		The destructor function is the inverse of constructor function. It is called when an objects is destroyed.
+		The destructor is commonly used to "clean up" when an object is no longer necessary. The destructor cannot have parameters.
+		
+		If none destructor is explicitly defined, the compiler will generate (if needed) a destructor. The user can override this behavior by declaring and defining explicitly its own destructor.
+		If the user defines his own destructor, implicit destruction operations are always done posterior to the user's destruction code execution.
+		
+		The destructor is called when one of the following events occurs:
+			**""-""** An object created using the New operator is explicitly destroyed using the Delete operator.
+			**""-""** A local object with block scope goes out of scope.
+			**""-""** A program terminates and global or static objects exist.
+			
+		If a base Type or data member has an accessible destructor, and if the Type does not declare a destructor, the compiler generates one.
+		
+		Order of destruction:
+			**""-""** The Type destructor is called
+			**""-""** If the Type has virtual member procedures (including these inherited from its Base), the virtual-pointer (vptr) is set to point to the virtual-table (vtbl) of the Type.
+			**""-""** The body of the Type destructor procedure is executed.
+			**""-""** Destructors for base Types are called in the reverse order of declaration.
+			
+	__Constructors and destructors when inheritance__
+		How to call constructors and destructors of base Types when instantiating and destroying a derived Type instance?
+		The compiler cannot know which constructor to call among the different overloaded constructors potentially present. To call another constructor of a base Type than the constructor taking no parameter, use the keyword //'Base ()'// specifying the parameters to pass, and this, only authorized on the first code line of the calling constructor.
+		
+		On the other hand, it is useless to specify the destructor to call, since this one is unique. The user must not call the destructors of the base Types themselves, the compiler does it on its own by chaining the destructors.
+		
+		Example - Explicit call of the base Type constructor ('Child' Type extends 'Parent' Type):
+			{{fbdoc item="filename" value="examples/manual/proguide/udt/ctordtor-parentchild1.bas"}}%%(freebasic)
+Type Parent  '' declare the parent type
+	Dim As Integer I
+	Declare Constructor ()
+	Declare Constructor (Byval i0 As Integer)
+	Declare Destructor ()
+End Type
+
+Constructor Parent ()  '' define parent Type constructor
+	Print "Parent.Constructor()"
+End Constructor
+
+Constructor Parent (Byval i0 As Integer)  '' define parent Type constructor
+	This.I = i0
+	Print "Parent.Constructor(Byval As Integer)"
+End Constructor
+
+Destructor Parent ()  '' define parent Type destructor
+	Print "Parent.Destructor()"
+End Destructor
+
+Type Child Extends Parent  '' declare the child Type
+	Declare Constructor ()
+	Declare Destructor ()
+End Type
+
+Constructor Child ()  '' define child Type default constructor
+	Base(123)         '' authorize only on the first code line of the constructor body
+	Print "  Child.Constructor()"
+End Constructor
+
+Destructor Child ()  '' define child Type destructor
+	Print "  Child.Destructor()"
+End Destructor
+
+
+Scope
+	Dim As Child c
+	Print
+End Scope
+
+Sleep
+			%%Output:
+				%%
+Parent.Constructor(Byval As Integer)
+  Child.Constructor()
+
+  Child.Destructor()
+Parent.Destructor()
+				%%If it was not specified that the constructor to be called for the base Type was the constructor taking an Integer parameter, the compiler would have called the default constructor of the base Type (in the above example, one can put in comment the line //'Base(123)'// and execute again to see this different behavior).
+				
+		If the Type derives from several base Types (multiple-level inheritance), each derived Type constructor can explicitly call only one constructor, the one of its direct base Type, thus the all constituting a chaining of the base constructors.
+		
+		When using inheritance polymorphism, the object are manipulated through base Type pointers or references:
+			**""-""** If at least one derived Type has an explicit destructor defined, all its base destructors must be virtual so that the destruction can start at this most derived Type and works its way down to the last base Type.
+			**""-""** To do this, it may be necessary to add virtual destructors with an empty body anywhere an explicit destruction was not yet required, in order to supersede each non-virtual implicit destructor built by the compiler.
+			
+		Note:
+			**""-""** When a derived Type has a base Type where a default constructor or copy constructor or destructor is defined (implicitly or explicitly), the compiler defines a default constructor or copy constructor or destructor for that derived Type.
+			**""-""** The built-in 'Object' Type having a default-constructor and a copy-constructor both defined implicitly, so all Types deriving (directly or indirectly) from 'Object' have at least implicitly a default constructor and copy constructor.
+			
+	__Virtual procedures calls in constructors and destructors__
+		It is usually safe to call any member procedure from within a constructor or destructor because the object is completely set up (virtual tables are initialized and so on) prior to the execution of the first line of user code. However, it is potentially unsafe for a member procedure to call a virtual member procedure for an abstract base Type during construction or destruction.
+		
+		Be careful when calling virtual procedures in constructors or destructor, because the procedures that are called in the base constructors or destructor is the base Type versions, not the derived Type versions. When such a virtual procedure is called, the procedure invoked is the procedure defined for the constructor's or destructor's own Type (or inherited from its Bases).
+
+@@{{anchor name="ProPgCtorsAssignDtorsTop|Back to top"}}@@
+----
+{{anchor name="ProPgCtorsAssignDtors2"}}
+{{fbdoc item="section" value="2. '=' Assignment-operators"}}
+	Among all '=' assignment-operators, there is a specific one that takes as input a reference to an object of the same type, and makes a copy of it (without creating a new object).
+	It is the copy-assignment operator.
+	
+	__Copy-assignment operator__
+		If the user does not declare a copy-assignment operator, the compiler generates (if needed) a copy-assignment operator for him. The declaration of a copy-constructor (see above) does not remove the generation by the compiler of a copy-assignment operator.
+		
+		A copy-assignment operator must be defined if the implicit copy is not sufficient.
+		This happens in cases when the object manages dynamically allocated memory or other resources which need to be specially copied (for example if a member pointer points to dynamically allocated memory, the implicit '=' assignment operator will simply copy the pointer value instead of allocate memory and then perform the copy of data).
+		
+		If the user implements a copy-assignment operator, it is recommend to also implement a copy-constructor so that the meaning of the code is clear.
+		
+		In addition to the explicit syntax for calling the copy-assignment operator, this one is also called when a function returns an object by value by using the //'Function ='// keyword.
+		
+		For the '""ZstringChain""' Type defined above, the user needs also a copy-assignment operator (see the 'rule of three' in 'advanced #2' page):
+			{{fbdoc item="filename" value="examples/manual/proguide/udt/ctordtor-zstringchain3.bas"}}%%(freebasic)
+Type ZstringChain                                    '' implement a zstring chain
+	Dim As Zstring Ptr pz                            '' define a pointer to the chain
+	Declare Constructor ()                           '' declare the explicit default constructor
+	Declare Constructor (Byval size As Integer)      '' declare the explicit constructor with as parameter the chain size
+	Declare Constructor (Byref zc As ZstringChain)   '' declare the explicit copy constructor
+	Declare Operator Let (Byref zc As ZstringChain)  '' declare the explicit copy assignment operator
+	Declare Destructor ()                            '' declare the explicit destructor
+End Type
+
+Constructor ZstringChain ()
+	This.pz = 0  '' reset the chain pointer
+End Constructor
+
+Constructor ZstringChain (Byval size As Integer)
+	This.pz = Callocate(size + 1, Sizeof(Zstring))  '' allocate memory for the chain
+End Constructor
+
+Constructor ZstringChain (Byref zc As ZstringChain)
+	This.pz = Callocate(Len(*zc.pz) + 1, Sizeof(Zstring))  '' allocate memory for the new chain
+	*This.pz = *zc.pz                                      '' initialize the new chain
+End Constructor
+
+Operator ZstringChain.Let (Byref zc As ZstringChain)
+	If @zc <> @This Then                                       '' avoid self assignment destroying the chain
+		If This.pz <> 0 Then
+			Deallocate This.pz                                 '' free the allocated memory if necessary
+		End If
+		This.pz = Callocate(Len(*zc.pz) + 1, Sizeof(Zstring))  '' allocate memory for the new chain
+		*This.pz = *zc.pz                                      '' initialize the new chain
+	End If
+End Operator
+
+Destructor ZstringChain ()
+	If This.pz <> 0 Then
+		Deallocate This.pz  '' free the allocated memory if necessary
+		This.pz = 0         '' reset the chain pointer
+	End If
+End Destructor
+
+
+Dim As ZstringChain zc1  '' instantiate a non initialized chain : useless
+
+Dim As ZstringChain zc2 = ZstringChain(9)           '' instantiate a szstring chain of 9 useful characters
+'                                                   '' shortcut: Dim As ZstringChain zc2 = 9
+*zc2.pz = "FreeBASIC"                               '' fill up the chain with 9 characters
+Print "zc2 chain:"
+Print "'" & *zc2.pz & "'"                           '' print the chain
+Print
+Dim As ZstringChain zc3 = zc2                       '' instantiate a new szstring chain by copy construction
+Print "zc3 chain (zc3 copy constructed from zc2):"
+Print "'" & *zc3.pz & "'"                           '' print the chain
+Print
+*zc3.pz = "modified"                                '' modify the new chain
+Print "zc3 chain (modified):"
+Print "'" & *zc3.pz & "'"                           '' print the new chain
+Print
+Print "zc2 chain:"
+Print "'" & *zc2.pz & "'"                           '' print the copied chain (not modified)
+Print
+zc3 = zc2
+Print "zc3 chain (zc3 copy assigned from zc2):"
+Print "'" & *zc3.pz & "'"                           '' print the new chain
+Print
+*zc3.pz = "changed"                                 '' modify the new chain
+Print "zc3 chain (changed):"
+Print "'" & *zc3.pz & "'"                           '' print the new chain
+Print
+Print "zc2 chain:"
+Print "'" & *zc2.pz & "'"                           '' print the copied chain (not modified)
+
+Sleep
+			%%Output:
+				%%
+zc2 chain:
+'FreeBASIC'
+
+zc3 chain (zc3 copy constructed from zc2):
+'FreeBASIC'
+
+zc3 chain (modified):
+'modified'
+
+zc2 chain:
+'FreeBASIC'
+
+zc3 chain (zc3 copy assigned from zc2):
+'FreeBASIC'
+
+zc3 chain (changed):
+'changed'
+
+zc2 chain:
+'FreeBASIC'
+				%%
+@@{{anchor name="ProPgCtorsAssignDtorsTop|Back to top"}}@@
+----
+{{anchor name="ProPgCtorsAssignDtors3"}}
+{{fbdoc item="section" value="3. Processing variable-length arrays as members of Type"}}
+	A variable-length array is not a pseudo-object like a variable-length string, because there is no default copy-constructor and copy-assignment operators as for a variable-length string.
+	
+	But when a variable-length array is declared in a Type, the compiler build a default copy-constructor and a default copy-assignment operator for the Type. It includes all code for sizing the destination array and copying the data from the source array, if needed:
+		Example for automatic array sizing and copying by the compiler:
+			{{fbdoc item="filename" value="examples/manual/proguide/udt/ctordtor-dynamicarray1.bas"}}%%(freebasic)
+Type UDT
+	Dim As Integer array(Any)
+End Type
+
+Dim As UDT u1, u2
+
+Redim u1.array(1 To 9)
+For I As Integer = Lbound(u1.array) To Ubound(u1.array)
+	u1.array(I) = I
+Next I
+ 
+u2 = u1
+For I As Integer = Lbound(u2.array) To Ubound(u2.array)
+	Print u2.array(I);
+Next I
+Print
+
+Dim As UDT u3 = u1
+For I As Integer = Lbound(u3.array) To Ubound(u3.array)
+	Print u3.array(I);
+Next I
+Print
+
+Sleep
+			%%Output:
+				%%
+ 1 2 3 4 5 6 7 8 9
+ 1 2 3 4 5 6 7 8 9
+				%%
+	If the user want to specify his own copy-constructor and copy-assignment operator (to process additional complex field members for example), the above automatic array sizing and copying by the compiler is broken:
+		Example for automatic array sizing and copying by the compiler broken by an explicit copy-constructor and copy-assignment operator:
+			{{fbdoc item="filename" value="examples/manual/proguide/udt/ctordtor-dynamicarray2.bas"}}%%(freebasic)
+Type UDT
+  Dim As Integer array(Any)
+  'user fields
+  Declare Constructor ()
+  Declare Constructor (Byref u As UDT)
+  Declare Operator Let (Byref u As UDT)
+End Type
+
+Constructor UDT ()
+  'code for user fields in constructor
+End Constructor
+
+Constructor UDT (Byref u As UDT)
+  'code for user fields in copy-constructor
+End Constructor
+
+Operator UDT.Let (Byref u As UDT)
+  'code for user fields in copy-assignement operator
+End Operator
+
+Dim As UDT u1, u2
+
+Redim u1.array(1 To 9)
+For I As Integer = Lbound(u1.array) To Ubound(u1.array)
+  u1.array(I) = I
+Next I
+ 
+u2 = u1
+For I As Integer = Lbound(u2.array) To Ubound(u2.array)
+  Print u2.array(I);
+Next I
+Print
+
+Dim As UDT u3 = u1
+For I As Integer = Lbound(u3.array) To Ubound(u3.array)
+  Print u3.array(I);
+Next I
+Print
+
+Sleep
+			%%Output (none):
+				%%
+				%%
+	The elementary variable-length array member cannot be copied as a pseudo-object like a variable-length string member, because there is not implicit assignment (referring to the above example, 'This.array = u.array' is disallowed).
+	The user must code explicitly the sizing and the copying of the array member:
+		Example for array sizing and copying explicitly set in the user copy-constructor and copy-assignment operator:
+			{{fbdoc item="filename" value="examples/manual/proguide/udt/ctordtor-dynamicarray3.bas"}}%%(freebasic)
+#include "crt/string.bi"
+
+Type UDT
+	Dim As Integer array(Any)
+	'user fields
+	Declare Constructor ()
+	Declare Constructor (Byref u As UDT)
+	Declare Operator Let (Byref u As UDT)
+End Type
+
+Constructor UDT ()
+	'code for user fields in constructor
+End Constructor
+
+Constructor UDT (Byref u As UDT)
+	'code for user fields in copy-constructor
+	If Ubound(u.array) >= Lbound(u.array) Then  '' explicit array sizing and copying
+		Redim This.array(Lbound(u.array) To Ubound(u.array))
+		memcpy(@This.array(Lbound(This.array)), @u.array(Lbound(u.array)), (Ubound(u.array) - Lbound(u.array) + 1) * Sizeof(@u.array(Lbound(u.array))))
+	End If
+End Constructor
+
+Operator UDT.Let (Byref u As UDT)
+	'code for user fields in copy-assignement operator
+	If @This <> @u And Ubound(u.array) >= Lbound(u.array) Then  '' explicit array sizing and copying
+		Redim This.array(Lbound(u.array) To Ubound(u.array))
+		memcpy(@This.array(Lbound(This.array)), @u.array(Lbound(u.array)), (Ubound(u.array) - Lbound(u.array) + 1) * Sizeof(@u.array(Lbound(u.array))))
+	End If
+End Operator
+
+Dim As UDT u1, u2
+
+Redim u1.array(1 To 9)
+For I As Integer = Lbound(u1.array) To Ubound(u1.array)
+	u1.array(I) = I
+Next I
+ 
+u2 = u1
+For I As Integer = Lbound(u2.array) To Ubound(u2.array)
+	Print u2.array(I);
+Next I
+Print
+
+Dim As UDT u3 = u1
+For I As Integer = Lbound(u3.array) To Ubound(u3.array)
+	Print u3.array(I);
+Next I
+Print
+
+Sleep
+			%%Output:
+				%%
+ 1 2 3 4 5 6 7 8 9
+ 1 2 3 4 5 6 7 8 9
+				%%
+	Another elegant possibility is to keep this sizing/copying automatically coded by the compiler, but by simply calling it explicitly. For this, an obvious solution for the member array is to no longer put it at the level of the Type itself, but rather in another specific Type, but inherited (seen from the outside, it is exactly the same):
+		Example for using a base Type including the dynamic array member:
+			{{fbdoc item="filename" value="examples/manual/proguide/udt/ctordtor-dynamicarray4.bas"}}%%(freebasic)
+Type UDT0
+	Dim As Integer array(Any)
+End Type
+
+Type UDT Extends UDT0
+	'user fields
+	Declare Constructor ()
+	Declare Constructor (Byref u As UDT)
+	Declare Operator Let (Byref u As UDT)
+End Type
+
+Constructor UDT ()
+	'code for user fields in constructor
+End Constructor
+
+Constructor UDT (Byref u As UDT)
+	'code for user fields in copy-constructor
+	Base(u)  '' inherited array sizing and copying from Base copy-constructor
+End Constructor
+
+Operator UDT.Let (Byref u As UDT)
+	'code for user fields in copy-assignement operator
+	Cast(UDT0, This) = u  '' inherited array sizing and copying from Base copy-assignement operator
+End Operator
+
+Dim As UDT u1, u2
+
+Redim u1.array(1 To 9)
+For I As Integer = Lbound(u1.array) To Ubound(u1.array)
+	u1.array(I) = I
+Next I
+ 
+u2 = u1
+For I As Integer = Lbound(u2.array) To Ubound(u2.array)
+	Print u2.array(I);
+Next I
+Print
+
+Dim As UDT u3 = u1
+For I As Integer = Lbound(u3.array) To Ubound(u3.array)
+	Print u3.array(I);
+Next I
+Print
+
+Sleep
+			%%Output:
+				%%
+ 1 2 3 4 5 6 7 8 9
+ 1 2 3 4 5 6 7 8 9
+				%%
+@@{{anchor name="ProPgCtorsAssignDtorsTop|Back to top"}}@@
+----
+
+{{fbdoc item="section" value="See also"}}
+	- ##[[KeyPgConstructor|Constructor]]##, ##[[KeyPgDestructor|Destructor]]##
+	- ##{{fbdoc item="keyword" value="KeyPgOpAssignment|Operator =[>] (Assignment)"}}##, ##[[KeyPgOpLet|Operator Let (Assignment)]]##
+	- [[ProPgCtorsDtors|Constructors and Destructors (basics)]]
+	- [[ProPgCtorsAssignDtors2|Constructors, '=' Assignment-Operators, and Destructors (advanced, part #2)]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

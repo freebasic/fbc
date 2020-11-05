@@ -326,14 +326,14 @@ function cUdtMember _
 		select case	as const symbGetClass( fld )
 		'' const? (enum elmts too), exit
 		case FB_SYMBCLASS_CONST
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			astDeltree(	varexpr	)
 			return astBuildConst( fld )
 
 		'' enum?
 		case FB_SYMBCLASS_ENUM
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			astDeltree(	varexpr	)
 			varexpr = NULL
@@ -345,7 +345,7 @@ function cUdtMember _
 
 		'' field?
 		case FB_SYMBCLASS_FIELD
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			'' make sure the field inherits the parent's constant mask
 			dtype =	symbGetFullType( fld ) or mask
@@ -400,11 +400,58 @@ function cUdtMember _
 			return NULL
 		end	select
 
-		lexSkipToken( LEXCHECK_NOPERIOD	)
+		lexSkipToken( LEXCHECK_NOPERIOD	or LEXCHECK_POST_SUFFIX )
 	loop
 
 	function = varexpr
 end function
+
+'':::::
+'' UdtTypeMember       =   ('.' MemberId)*
+''
+sub cUdtTypeMember _
+	( _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as longint, _
+		byref is_fixlenstr as integer _
+	)
+
+	'' UDT type followed by '.'?
+	while( lexGetToken( ) = CHAR_DOT )
+		if( typeGetDtOnly( dtype ) <> FB_DATATYPE_STRUCT ) then
+			exit while
+		end if
+
+		'' '.'
+		lexSkipToken( LEXCHECK_NOPERIOD )
+
+		'' check member field, See also hLenSizeof()
+		dim sym as FBSYMBOL ptr = hMemberId( subtype )
+
+		if( sym ) then
+			'' ID
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
+			dtype = symbGetFullType( sym )
+			subtype = symbGetSubType( sym )
+			lgt = symbGetLen( sym )
+			is_fixlenstr = symbGetIsFixLenStr( sym )
+
+			'' const string? get the size from the constant string value
+			if( symbGetClass( sym ) = FB_SYMBCLASS_CONST ) then
+				select case( typeGetDtAndPtrOnly( dtype ) )
+				case FB_DATATYPE_WCHAR, FB_DATATYPE_CHAR, FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
+					is_fixlenstr = TRUE
+					lgt = symbGetLen( symbGetConstStr( sym ) )
+					exit while
+				end select
+			end if
+		else
+			exit while
+
+		end if
+	wend
+end sub
 
 '':::::
 function cMemberAccess _
@@ -967,7 +1014,7 @@ function cVariableEx overload _
 	end if
 
 	'' ID
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
 
 	is_byref = symbIsParamByRef( sym ) or symbIsImport( sym ) or symbIsRef( sym )
 	is_array = symbIsArray( sym )
@@ -1151,7 +1198,8 @@ function cVariableEx _
 
 	else
 		if( suffix <> FB_DATATYPE_INVALID ) then
-			errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
+			lexCheckToken( LEXCHECK_POST_LANG_SUFFIX )
+			suffix = lexGetType()
 		end if
 
 		sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )

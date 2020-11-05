@@ -12,12 +12,23 @@ typedef struct _FB_DIRCTX {
 	char dirname[MAX_PATH];
 } FB_DIRCTX;
 
+static void close_dir_internal ( FB_DIRCTX *ctx )
+{
+	closedir( ctx->dir );
+	ctx->in_use = FALSE;
+}
+
+void fb_DIRCTX_Destructor ( void* data )
+{
+	FB_DIRCTX *ctx = (FB_DIRCTX *)data;
+	if( ctx->in_use )
+		close_dir_internal( ctx );
+}
+
 static void close_dir ( void )
 {
 	FB_DIRCTX *ctx = FB_TLSGETCTX( DIR );
-
-	closedir( ctx->dir );
-	ctx->in_use = FALSE;
+	close_dir_internal( ctx );
 }
 
 static int get_attrib ( char *name, struct stat *info )
@@ -111,7 +122,8 @@ static char *find_next ( int *attrib )
 			return NULL;
 		}
 		name = entry->d_name;
-		strcpy( buffer, ctx->dirname );
+		strncpy( buffer, ctx->dirname, MAX_PATH );
+		buffer[MAX_PATH-1] = '\0';
 		strncat( buffer, name, MAX_PATH - strlen( buffer ) - 1 );
 		buffer[MAX_PATH-1] = '\0';
 

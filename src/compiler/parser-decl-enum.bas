@@ -44,7 +44,7 @@ end sub
 '':::::
 ''EnumBody      =   (EnumDecl (',' EnumDecl)? Comment? SttSeparator)+ .
 ''
-sub cEnumBody(byval s as FBSYMBOL ptr, byval attrib as integer)
+sub cEnumBody( byval s as FBSYMBOL ptr, byval attrib as FB_SYMBATTRIB )
 	static as zstring * FB_MAXNAMELEN+1 id
 	dim as longint value = any
 
@@ -75,8 +75,8 @@ sub cEnumBody(byval s as FBSYMBOL ptr, byval attrib as integer)
 					if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
 						'' if inside a namespace, symbols can't contain periods (.)'s
 						if( symbIsGlobalNamespc( ) = FALSE ) then
-  							if( lexGetPeriodPos( ) > 0 ) then
-  								errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
+							if( lexGetPeriodPos( ) > 0 ) then
+								errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
 							end if
 						end if
 					end if
@@ -97,7 +97,7 @@ sub cEnumBody(byval s as FBSYMBOL ptr, byval attrib as integer)
 					exit do
 				end select
 
-				lexSkipToken( )
+				lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 				'' ConstDecl
 				hEnumConstDecl( @id, value )
@@ -140,12 +140,12 @@ end sub
 ''  ENUM ID? (ALIAS LITSTR)? EXPLICIT?
 ''      EnumLine+
 ''  END ENUM .
-sub cEnumDecl( byval attrib as integer )
+sub cEnumDecl( byval attrib as FB_SYMBATTRIB )
 	static as zstring * FB_MAXNAMELEN+1 id
 	dim as FBSYMBOL ptr e = any
 
 	'' ENUM
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' Namespace identifier if it matches the current namespace
 	cCurrentParentId()
@@ -157,14 +157,14 @@ sub cEnumDecl( byval attrib as integer )
 		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
 			'' if inside a namespace, symbols can't contain periods (.)'s
 			if( symbIsGlobalNamespc( ) = FALSE ) then
-  				if( lexGetPeriodPos( ) > 0 ) then
-  					errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
+				if( lexGetPeriodPos( ) > 0 ) then
+					errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
 				end if
 			end if
 		end if
 
 		id = *lexGetText( )
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
 
 	case else
 		id = *symbUniqueId( )
@@ -176,7 +176,7 @@ sub cEnumDecl( byval attrib as integer )
 	'' EXPLICIT?
 	dim as integer isexplicit = FALSE
 	if( lexGetToken( ) = FB_TK_EXPLICIT ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		isexplicit = TRUE
 	end if
 
@@ -236,14 +236,14 @@ sub cEnumDecl( byval attrib as integer )
 		'' error recovery: skip until next stmt
 		hSkipStmt( )
 	else
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		if( lexGetToken( ) <> FB_TK_ENUM ) then
 			errReport( FB_ERRMSG_EXPECTEDENDENUM )
 			'' error recovery: skip until next stmt
 			hSkipStmt( )
 		else
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			if( isexplicit = FALSE ) then
 				'' if in BASIC mangling mode, do an implicit 'USING enum'

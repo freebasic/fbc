@@ -18,6 +18,8 @@ Divides a value and assigns the remainder to a variable
 		##//lhs// = //lhs// [[KeyPgOpModulus|Mod]] //rhs//##
 		
 	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]## using the appropriate syntax.
+	
+	//Note: Similarly to the operator '=[>]' (assign), the alternative symbol 'Mod=>' can be also used.//
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/mod-assign.bas"}}%%(freebasic)

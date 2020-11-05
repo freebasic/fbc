@@ -26,7 +26,10 @@ Declares an enumerated type.
 	
 	A non-##Explicit## ##**Enum**## declared inside an ##[[KeyPgExternBlock|Extern ... End Extern]]## block will add its constants to the parent namespace directly, as in C, instead of acting as a namespace on its own. It disallows the ##//typename//.//symbolname//## style of access, and the constants may conflict with other symbols from the parent namespace.
 	
-	An ##**Enum**## can be passed as a user defined type to ##[[KeyPgOverload|overload]]##ed operator functions.
+	##**Enum**## can not contain any member procedure or member data (only symbols), but it can be included (named or unnamed) in a ##[[KeyPgType|Type]]## by having.
+	
+	An ##**Enum**## instance can be passed, as any user defined instance, to a procedure (including for the definition of ##[[KeyPgOverload|Overload]]##ed operators).
+	The size of an ##**Enum**## instance will be always that of an ##[[KeyPgInteger|Integer]]## (no matter how many defined symbols are just declarations for the compiler assignment).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/enum.bas"}}%%(freebasic)

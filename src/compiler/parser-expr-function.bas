@@ -116,8 +116,12 @@ function cFunctionEx _
 	) as ASTNODE ptr
 
 	'' ID
-	lexSkipToken( )
-
+	lexSkipToken( _
+		iif( symbIsSuffixed(sym), _
+			iif( symbGetIsRTL(sym), LEXCHECK_POST_STRING_SUFFIX, LEXCHECK_POST_LANG_SUFFIX ), _
+			LEXCHECK_POST_SUFFIX _
+		) )
+	
 	function = cFunctionCall( base_parent, sym, NULL, NULL, options )
 
 end function
@@ -133,7 +137,7 @@ function cMethodCall _
 	dim as ASTNODE ptr expr = any
 
 	'' ID
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
 
 	'' inside an expression? (can't check sym type, it could be an overloaded proc)
 	if( fbGetIsExpression( ) ) then

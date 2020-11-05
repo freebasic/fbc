@@ -163,6 +163,129 @@ static int GL_init(PIXELFORMATDESCRIPTOR *pfd)
 	return res;
 }
 
+static int *GL_setup_pixel_format(PIXELFORMATDESCRIPTOR *pfd, int *attrib, int **samples_attrib)
+{
+	*attrib++ = WGL_COLOR_BITS_ARB;
+	pfd->cColorBits = *attrib++ = __fb_gl_params.color_bits;
+	*attrib++ = WGL_RED_BITS_ARB;
+	pfd->cRedBits = *attrib++ = __fb_gl_params.color_red_bits;
+	*attrib++ = WGL_GREEN_BITS_ARB;
+	pfd->cGreenBits = *attrib++ = __fb_gl_params.color_green_bits;
+	*attrib++ = WGL_BLUE_BITS_ARB;
+	pfd->cBlueBits = *attrib++ = __fb_gl_params.color_blue_bits;
+	*attrib++ = WGL_ALPHA_BITS_ARB;
+	pfd->cAlphaBits = *attrib++ = __fb_gl_params.color_alpha_bits;
+	*attrib++ = WGL_DEPTH_BITS_ARB;
+	pfd->cDepthBits = *attrib++ = __fb_gl_params.depth_bits;
+	if (__fb_gl_params.accum_bits) {
+		*attrib++ = WGL_ACCUM_BITS_ARB;
+		pfd->cAccumBits = *attrib++ = __fb_gl_params.accum_bits;
+	}
+	if (__fb_gl_params.accum_red_bits) {
+		*attrib++ = WGL_ACCUM_RED_BITS_ARB;
+		pfd->cAccumRedBits = *attrib++ = __fb_gl_params.accum_red_bits;
+	}
+	if (__fb_gl_params.accum_green_bits) {
+		*attrib++ = WGL_ACCUM_RED_BITS_ARB;
+		pfd->cAccumGreenBits = *attrib++ = __fb_gl_params.accum_green_bits;
+	}
+	if (__fb_gl_params.accum_blue_bits) {
+		*attrib++ = WGL_ACCUM_BLUE_BITS_ARB;
+		pfd->cAccumBlueBits = *attrib++ = __fb_gl_params.accum_blue_bits;
+	}
+	if (__fb_gl_params.accum_alpha_bits) {
+		*attrib++ = WGL_ACCUM_ALPHA_BITS_ARB;
+		pfd->cAccumAlphaBits = *attrib++ = __fb_gl_params.accum_alpha_bits;
+	}
+	if (__fb_gl_params.stencil_bits) {
+		*attrib++ = WGL_STENCIL_BITS_ARB;
+		pfd->cStencilBits = *attrib++ = __fb_gl_params.stencil_bits;
+	}
+	if (__fb_gl_params.num_samples) {
+		*attrib++ = WGL_SAMPLE_BUFFERS_ARB;
+		*attrib++ = GL_TRUE;
+		*attrib++ = WGL_SAMPLES_ARB;
+		*samples_attrib = attrib;
+		*attrib++ = __fb_gl_params.num_samples;
+	}
+	*attrib = 0;
+	return attrib;
+}
+
+static int GL_common_init()
+{
+	PIXELFORMATDESCRIPTOR pfd = {
+		sizeof(PIXELFORMATDESCRIPTOR), 1,
+		PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
+		PFD_TYPE_RGBA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0,
+		PFD_MAIN_PLANE, 0, 0, 0, 0
+	};
+	int attribs[64] = {
+		WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
+		WGL_ACCELERATION_ARB,   WGL_FULL_ACCELERATION_ARB,
+		WGL_DOUBLE_BUFFER_ARB,  GL_TRUE,
+		0
+	}, *attrib = &attribs[6], *samples_attrib = NULL;
+	int pf = 0, num_formats, format;
+
+	if (GL_init(&pfd)){
+		return -1;
+	}
+	if (fb_hInitWindow((WS_CLIPSIBLINGS | WS_CLIPCHILDREN) & ~WS_THICKFRAME, 0, 0, 0, fb_win32.w, fb_win32.h)){
+		return -1;
+	}
+	if (opengl_init()){
+		return -1;
+	}
+
+	/* setup pixel format */
+
+	if (__fb_gl_params.mode_2d != DRIVER_OGL_2D_AUTO_SYNC){
+		/* flags?  This logic of not calling fb_hGL_NormalizeParameters()
+		   when mode_2d is DRIVER_OGL_2D_AUTO_SYNC is kept from a
+		   previous version. */
+		fb_hGL_NormalizeParameters( fb_win32.flags);
+	}
+
+	attrib = GL_setup_pixel_format( &pfd, attrib, &samples_attrib );
+	
+	hdc = GetDC(fb_win32.wnd);
+	if (fb_wgl.ChoosePixelFormatARB) {
+		do {
+			if ((fb_wgl.ChoosePixelFormatARB(hdc, attribs, NULL, 1, &format, &num_formats)) && (num_formats > 0)) {
+				pf = format;
+				break;
+			}
+		} while ((samples_attrib) && ((*samples_attrib -= 2) >= 0));
+	}
+	if (!pf) {
+		if (__fb_gl_params.mode_2d != DRIVER_OGL_2D_AUTO_SYNC){
+			/* flags?  This logic of not excluding HAS_MULTISAMPLE
+			   when mode_2d is DRIVER_OGL_2D_AUTO_SYNC is kept from a
+			   previous version. */
+			fb_win32.flags &= ~HAS_MULTISAMPLE;
+		}
+		pf = ChoosePixelFormat(hdc, &pfd);
+	}
+	
+	if ((!pf) || (!SetPixelFormat(hdc, pf, &pfd))){
+		return -1;
+	}
+	hglrc = fb_wgl.CreateContext(hdc);
+	if (!hglrc){
+		return -1;
+	}
+	fb_wgl.MakeCurrent(hdc, hglrc);
+
+	if ((samples_attrib) && (*samples_attrib > 0)){
+		__fb_gl.Enable(GL_MULTISAMPLE_ARB);
+	}
+	if (__fb_gl_params.mode_2d != DRIVER_OGL_2D_NONE){
+		fb_hGL_ScreenCreate();
+	}
+	return 0;
+}
+
 static void opengl_paint(void)
 {
 }
@@ -222,7 +345,6 @@ static int opengl_init(void)
 	rect.right = fb_win32.w;
 	rect.bottom = fb_win32.h;
 	if (!(fb_win32.flags & DRIVER_FULLSCREEN)) {
-		
 		AdjustWindowRect(&rect, style, FALSE);
 		if (monitor_info.szDevice[0]) {
 			x = monitor_info.rcMonitor.left + ((monitor_info.rcMonitor.right - monitor_info.rcMonitor.left - rect.right) >> 1);
@@ -260,117 +382,26 @@ static unsigned int WINAPI opengl_thread( void *param )
 static DWORD WINAPI opengl_thread( LPVOID param )
 #endif
 {
-	PIXELFORMATDESCRIPTOR pfd = {
-        sizeof(PIXELFORMATDESCRIPTOR), 1,
-		PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
-		PFD_TYPE_RGBA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0,
-		PFD_MAIN_PLANE, 0, 0, 0, 0
-    };
-	int attribs[64] = {
-		WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
-		WGL_ACCELERATION_ARB,   WGL_FULL_ACCELERATION_ARB,
-		WGL_DOUBLE_BUFFER_ARB,  GL_TRUE,
-		0
-	}, *attrib = &attribs[6], *samples_attrib = NULL;
+	/* opengl_thread should be only used when mode_2d == DRIVER_OGL_2D_AUTO_SYNC */
 
-	if (GL_init(&pfd)){
-		return -1;
+	if( GL_common_init() ) {
+		return 1;
 	}
-	if (fb_hInitWindow((WS_CLIPSIBLINGS | WS_CLIPCHILDREN) & ~WS_THICKFRAME, 0, 0, 0, fb_win32.w, fb_win32.h)){
-		return -1;
-	}
-	if (opengl_init()){
-		return -1;
-	}
-	/* setup pixel format */
-	//fb_hGL_NormalizeParameters(flags);
-	*attrib++ = WGL_COLOR_BITS_ARB;
-	pfd.cColorBits = *attrib++ = __fb_gl_params.color_bits;
-	*attrib++ = WGL_RED_BITS_ARB;
-	pfd.cRedBits = *attrib++ = __fb_gl_params.color_red_bits;
-	*attrib++ = WGL_GREEN_BITS_ARB;
-	pfd.cGreenBits = *attrib++ = __fb_gl_params.color_green_bits;
-	*attrib++ = WGL_BLUE_BITS_ARB;
-	pfd.cBlueBits = *attrib++ = __fb_gl_params.color_blue_bits;
-	*attrib++ = WGL_ALPHA_BITS_ARB;
-	pfd.cAlphaBits = *attrib++ = __fb_gl_params.color_alpha_bits;
-	*attrib++ = WGL_DEPTH_BITS_ARB;
-	pfd.cDepthBits = *attrib++ = __fb_gl_params.depth_bits;
-	if (__fb_gl_params.accum_bits) {
-		*attrib++ = WGL_ACCUM_BITS_ARB;
-		pfd.cAccumBits = *attrib++ = __fb_gl_params.accum_bits;
-	}
-	if (__fb_gl_params.accum_red_bits) {
-		*attrib++ = WGL_ACCUM_RED_BITS_ARB;
-		pfd.cAccumRedBits = *attrib++ = __fb_gl_params.accum_red_bits;
-	}
-	if (__fb_gl_params.accum_green_bits) {
-		*attrib++ = WGL_ACCUM_RED_BITS_ARB;
-		pfd.cAccumGreenBits = *attrib++ = __fb_gl_params.accum_green_bits;
-	}
-	if (__fb_gl_params.accum_blue_bits) {
-		*attrib++ = WGL_ACCUM_BLUE_BITS_ARB;
-		pfd.cAccumBlueBits = *attrib++ = __fb_gl_params.accum_blue_bits;
-	}
-	if (__fb_gl_params.accum_alpha_bits) {
-		*attrib++ = WGL_ACCUM_ALPHA_BITS_ARB;
-		pfd.cAccumAlphaBits = *attrib++ = __fb_gl_params.accum_alpha_bits;
-	}
-	if (__fb_gl_params.stencil_bits) {
-		*attrib++ = WGL_STENCIL_BITS_ARB;
-		pfd.cStencilBits = *attrib++ = __fb_gl_params.stencil_bits;
-	}
-	if (__fb_gl_params.num_samples) {
-		*attrib++ = WGL_SAMPLE_BUFFERS_ARB;
-		*attrib++ = GL_TRUE;
-		*attrib++ = WGL_SAMPLES_ARB;
-		samples_attrib = attrib;
-		*attrib++ = __fb_gl_params.num_samples;
-	}
-	*attrib = 0;
-	
-	int pf = 0, num_formats, format;
 
-	hdc = GetDC(fb_win32.wnd);
-	if (fb_wgl.ChoosePixelFormatARB) {
-		do {
-			if ((fb_wgl.ChoosePixelFormatARB(hdc, attribs, NULL, 1, &format, &num_formats)) && (num_formats > 0)) {
-				pf = format;
-				break;
-			}
-		} while ((samples_attrib) && ((*samples_attrib -= 2) >= 0));
-	}
-	if (!pf) {
-		//flags &= ~HAS_MULTISAMPLE;
-		pf = ChoosePixelFormat(hdc, &pfd);
-	}
-	
-	if ((!pf) || (!SetPixelFormat(hdc, pf, &pfd)))
-		return -1;
-	hglrc = fb_wgl.CreateContext(hdc);
-	if (!hglrc)
-		return -1;
-	fb_wgl.MakeCurrent(hdc, hglrc);
-
-	if ((samples_attrib) && (*samples_attrib > 0))
-		__fb_gl.Enable(GL_MULTISAMPLE_ARB);
-
-
-	fb_hGL_ScreenCreate();
-
-
-
-
+	/* thread initialization complete, so release the thread creation lock */
+	SetEvent((HANDLE)param);
 
 	while (fb_win32.is_running)
 	{
-//fb_hWin32Lock();
-		FB_GRAPHICS_LOCK( );
+		fb_hWin32Lock();
+		/* FB_GRAPHICS_LOCK( ); */
+		fb_wgl.MakeCurrent(hdc, hglrc);
 		fb_hGL_SetupProjection();
 		SwapBuffers(hdc);
+		fb_wgl.MakeCurrent(NULL, NULL);
 		driver_poll_events();
-		FB_GRAPHICS_UNLOCK( );
-//fb_hWin32Unlock();
+		/* FB_GRAPHICS_UNLOCK( ); */
+		fb_hWin32Unlock();
 		Sleep(10);
 	}
 
@@ -380,20 +411,7 @@ static DWORD WINAPI opengl_thread( LPVOID param )
 static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rate, int flags)
 {
 	const char *wgl_funcs[] = { "wglCreateContext", "wglMakeCurrent", "wglDeleteContext", NULL };
-	PIXELFORMATDESCRIPTOR pfd = {
-        sizeof(PIXELFORMATDESCRIPTOR), 1,
-		PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
-		PFD_TYPE_RGBA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0,
-		PFD_MAIN_PLANE, 0, 0, 0, 0
-    };
-	int attribs[64] = {
-		WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
-		WGL_ACCELERATION_ARB,   WGL_FULL_ACCELERATION_ARB,
-		WGL_DOUBLE_BUFFER_ARB,  GL_TRUE,
-		0
-	}, *attrib = &attribs[6], *samples_attrib = NULL;
-    int depth = MAX(8, depth_arg);
-	int pf = 0, num_formats, format;
+	int depth = MAX(8, depth_arg);
 
 	fb_hMemSet(&fb_win32, 0, sizeof(fb_win32));
 
@@ -411,120 +429,33 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	fb_win32.init = opengl_init;
 	fb_win32.exit = opengl_exit;
 	fb_win32.paint = opengl_paint;
+	fb_win32.thread = NULL;
 
-	if (__fb_gl_params.scale>1){
+	__fb_gl_params.mode_2d = __fb_gl_params.init_mode_2d;
+
+	if (__fb_gl_params.init_scale>1){
+		__fb_gl_params.scale = __fb_gl_params.init_scale;
 		free(__fb_gfx->dirty);
-		__fb_gfx->dirty = (char *)calloc(1, __fb_gfx->h * __fb_gfx->scanline_size* __fb_gl_params.scale);
-		w*= __fb_gl_params.scale;
-		h*= __fb_gl_params.scale;
+		__fb_gfx->dirty = (char *)calloc(1, __fb_gfx->h * __fb_gfx->scanline_size * __fb_gl_params.scale);
+		w *= __fb_gl_params.scale;
+		h *= __fb_gl_params.scale;
 	}
 
-	if (fb_hWin32Init(title, w, h, depth, refresh_rate, flags)){
+	/*  Initialize the graphics window only.  Creation of the window
+	    is handled in next fb_hWin32Init() or GL_common_init()
+	 */
+
+	if( fb_hWin32Init(title, w, h, depth, refresh_rate, flags) ) {
 		return -1;
 	}
+
 	if (__fb_gl_params.mode_2d == DRIVER_OGL_2D_AUTO_SYNC){
+		fb_win32.thread = opengl_thread;
 		fb_wgl.MakeCurrent(NULL, NULL);
-#ifdef HOST_MINGW
-		/* Note: _beginthreadex()'s last parameter cannot be NULL,
-		   or else the function fails on Windows 9x */
-		unsigned int thrdaddr;
-		_beginthreadex( NULL, 0, opengl_thread, NULL, 0, &thrdaddr );
-#else
-		DWORD dwThreadId;
-		CreateThread( NULL, 0, opengl_thread, NULL, 0, &dwThreadId );
-#endif
-		return 0;
+		return fb_hWin32Init(title, w, h, depth, refresh_rate, flags);
 	}
 
-
-
-
-	if (GL_init(&pfd)){
-		return -1;
-	}
-	if (fb_hInitWindow((WS_CLIPSIBLINGS | WS_CLIPCHILDREN) & ~WS_THICKFRAME, 0, 0, 0, w, h)){
-		return -1;
-	}
-	if (opengl_init()){
-		return -1;
-	}
-	/* setup pixel format */
-	fb_hGL_NormalizeParameters(flags);
-	*attrib++ = WGL_COLOR_BITS_ARB;
-	pfd.cColorBits = *attrib++ = __fb_gl_params.color_bits;
-	*attrib++ = WGL_RED_BITS_ARB;
-	pfd.cRedBits = *attrib++ = __fb_gl_params.color_red_bits;
-	*attrib++ = WGL_GREEN_BITS_ARB;
-	pfd.cGreenBits = *attrib++ = __fb_gl_params.color_green_bits;
-	*attrib++ = WGL_BLUE_BITS_ARB;
-	pfd.cBlueBits = *attrib++ = __fb_gl_params.color_blue_bits;
-	*attrib++ = WGL_ALPHA_BITS_ARB;
-	pfd.cAlphaBits = *attrib++ = __fb_gl_params.color_alpha_bits;
-	*attrib++ = WGL_DEPTH_BITS_ARB;
-	pfd.cDepthBits = *attrib++ = __fb_gl_params.depth_bits;
-	if (__fb_gl_params.accum_bits) {
-		*attrib++ = WGL_ACCUM_BITS_ARB;
-		pfd.cAccumBits = *attrib++ = __fb_gl_params.accum_bits;
-	}
-	if (__fb_gl_params.accum_red_bits) {
-		*attrib++ = WGL_ACCUM_RED_BITS_ARB;
-		pfd.cAccumRedBits = *attrib++ = __fb_gl_params.accum_red_bits;
-	}
-	if (__fb_gl_params.accum_green_bits) {
-		*attrib++ = WGL_ACCUM_RED_BITS_ARB;
-		pfd.cAccumGreenBits = *attrib++ = __fb_gl_params.accum_green_bits;
-	}
-	if (__fb_gl_params.accum_blue_bits) {
-		*attrib++ = WGL_ACCUM_BLUE_BITS_ARB;
-		pfd.cAccumBlueBits = *attrib++ = __fb_gl_params.accum_blue_bits;
-	}
-	if (__fb_gl_params.accum_alpha_bits) {
-		*attrib++ = WGL_ACCUM_ALPHA_BITS_ARB;
-		pfd.cAccumAlphaBits = *attrib++ = __fb_gl_params.accum_alpha_bits;
-	}
-	if (__fb_gl_params.stencil_bits) {
-		*attrib++ = WGL_STENCIL_BITS_ARB;
-		pfd.cStencilBits = *attrib++ = __fb_gl_params.stencil_bits;
-	}
-	if (__fb_gl_params.num_samples) {
-		*attrib++ = WGL_SAMPLE_BUFFERS_ARB;
-		*attrib++ = GL_TRUE;
-		*attrib++ = WGL_SAMPLES_ARB;
-		samples_attrib = attrib;
-		*attrib++ = __fb_gl_params.num_samples;
-	}
-	*attrib = 0;
-	
-	hdc = GetDC(fb_win32.wnd);
-	if (fb_wgl.ChoosePixelFormatARB) {
-		do {
-			if ((fb_wgl.ChoosePixelFormatARB(hdc, attribs, NULL, 1, &format, &num_formats)) && (num_formats > 0)) {
-				pf = format;
-				break;
-			}
-		} while ((samples_attrib) && ((*samples_attrib -= 2) >= 0));
-	}
-	if (!pf) {
-		flags &= ~HAS_MULTISAMPLE;
-		pf = ChoosePixelFormat(hdc, &pfd);
-	}
-	
-	if ((!pf) || (!SetPixelFormat(hdc, pf, &pfd))){
-		return -1;
-	}
-	hglrc = fb_wgl.CreateContext(hdc);
-	if (!hglrc){
-		return -1;
-	}
-	fb_wgl.MakeCurrent(hdc, hglrc);
-
-	if ((samples_attrib) && (*samples_attrib > 0)){
-		__fb_gl.Enable(GL_MULTISAMPLE_ARB);
-	}
-	if (__fb_gl_params.mode_2d != DRIVER_OGL_2D_NONE){
-		fb_hGL_ScreenCreate();
-	}
-	return 0;
+	return GL_common_init();
 }
 
 static void driver_exit(void)
@@ -548,10 +479,20 @@ static void driver_exit(void)
 
 static void driver_lock(void)
 {
+	if (__fb_gl_params.mode_2d == DRIVER_OGL_2D_AUTO_SYNC){
+		fb_hWin32Lock();
+		fb_wgl.MakeCurrent(hdc, hglrc);
+		fb_hGL_SetupProjection();
+	}
 }
 
 static void driver_unlock(void)
 {
+	if (__fb_gl_params.mode_2d == DRIVER_OGL_2D_AUTO_SYNC){
+		SwapBuffers(hdc);
+		fb_wgl.MakeCurrent(NULL, NULL);
+		fb_hWin32Unlock();
+	}
 }
 
 static void driver_flip(void)
@@ -607,4 +548,5 @@ static int *driver_fetch_modes(int depth, int *size)
 	return modes;
 }
 
-#endif
+#endif /* DISABLE_OPENGL */
+

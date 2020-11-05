@@ -1,0 +1,23 @@
+{{fbdoc item="title" value="__FB_BUILD_DATE_ISO__"}}----
+Intrinsic define (macro string) set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FB_BUILD_DATE_ISO__""
+##
+{{fbdoc item="desc"}}
+	Substituted with the quoted string containing the date (##YYYY-MM-DD##) the compiler was built on in ISO date format.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/defines/fbbuilddateiso.bas"}}%%(freebasic)
+	Print "This program compiled with a compiler built on this date:" & __FB_BUILD_DATE_ISO__
+%%
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdFBBuildDate|__FB_BUILD_DATE__]]##
+	- ##[[KeyPgDddate|__DATE__]]##
+	- ##[[KeyPgDddateiso|__DATE_ISO__]]##
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

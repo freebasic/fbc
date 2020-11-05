@@ -17,16 +17,16 @@ sub cProcDecl( )
 	end if
 
 	'' DECLARE
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' SUB|FUNCTION|OPERATOR
 	tk = lexGetToken( )
 	select case( tk )
 	case FB_TK_SUB, FB_TK_FUNCTION, FB_TK_OPERATOR
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' ProcHeader
-		cProcHeader( 0, FALSE, FB_PROCOPT_ISPROTO, tk )
+		cProcHeader( 0, 0, FALSE, FB_PROCOPT_ISPROTO, tk )
 
 	case else
 		errReport( FB_ERRMSG_SYNTAXERROR )

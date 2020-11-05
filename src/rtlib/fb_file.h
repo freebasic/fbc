@@ -75,6 +75,7 @@ typedef int (*FnFileUnlock)         ( struct _FB_FILE *handle, fb_off_t position
 typedef int (*FnFileReadLine)       ( struct _FB_FILE *handle, FBSTRING *dst );
 typedef int (*FnFileReadLineWstr)   ( struct _FB_FILE *handle, FB_WCHAR *dst, ssize_t dst_chars );
 typedef int (*FnFileFlush)          ( struct _FB_FILE *handle );
+typedef int (*FnFileSetEof)         ( struct _FB_FILE *handle );
 
 typedef struct _FB_FILE_HOOKS {
     FnFileEof           pfnEof;
@@ -121,6 +122,8 @@ typedef struct {
     FBSTRING 		str;
     int     		index;
 } FB_INPUTCTX;
+
+void	fb_INPUTCTX_Destructor( void* );
 
 
 #define FB_FILE_TO_HANDLE_VALID( index ) \
@@ -246,6 +249,13 @@ FBCALL int          fb_FileGetArrayLargeIOB( int fnum, long long pos, FBARRAY *d
 
 FBCALL int          fb_FileEof          ( int fnum );
        int          fb_FileEofEx        ( FB_FILE *handle );
+FBCALL int          fb_FileSetEof       ( int fnum );
+       int          fb_FileSetEofEx     ( FB_FILE *handle );
+       int          fb_hFileSetEofEx    ( FILE *f );
+FBCALL int          fb_FileFlush        ( int fnum, int systembuffers );
+       int          fb_FileFlushEx      ( FB_FILE *handle, int systembuffers );
+FBCALL void         fb_FileFlushAll     ( int systembuffers );
+       int          fb_hFileFlushEx     ( FILE *f );
 FBCALL long long    fb_FileTell         ( int fnum );
        fb_off_t     fb_FileTellEx       ( FB_FILE *handle );
 FBCALL int          fb_FileSeek         ( int fnum, int newpos );
@@ -357,3 +367,62 @@ extern const UTF_8 __fb_utf8_bmarkTb[7];
 
 FBCALL int          fb_FileCopy         ( const char *source, const char *destination );
 FBCALL int          fb_CrtFileCopy      ( const char *source, const char *destination );
+
+
+
+#define FREAD_CHUNK_SIZE 1048576
+#define FWRITE_CHUNK_SIZE 1048576
+
+static __inline__ size_t FB_FREAD_LARGE( void *ptr, size_t nbytes, FILE *stream )
+{
+   size_t total = 0, nread;
+
+   while (nbytes > FREAD_CHUNK_SIZE) {
+      /* read chunk */
+      nread = fread( ptr, 1, FREAD_CHUNK_SIZE, stream );
+      total += nread;
+
+      /* stop early if too few items read */
+      if (nread < FREAD_CHUNK_SIZE) {
+         return total;
+      }
+
+      ptr += FREAD_CHUNK_SIZE;
+      nbytes -= FREAD_CHUNK_SIZE;
+   }
+
+   if (nbytes > 0) {
+      /* read last chunk */
+      nread = fread( ptr, 1, nbytes, stream );
+      total += nread;
+   }
+
+   return total;
+}
+
+static __inline__ size_t FB_FWRITE_LARGE( const void *ptr, size_t nbytes, FILE *stream )
+{
+   size_t total = 0, nwritten;
+
+   while (nbytes > FWRITE_CHUNK_SIZE) {
+      /* write chunk */
+      nwritten = fwrite( ptr, 1, FWRITE_CHUNK_SIZE, stream );
+      total += nwritten;
+
+      /* stop early if too few items written */
+      if (nwritten < FWRITE_CHUNK_SIZE) {
+         return total;
+      }
+
+      ptr += FWRITE_CHUNK_SIZE;
+      nbytes -= FWRITE_CHUNK_SIZE;
+   }
+
+   if (nbytes > 0) {
+      /* write last chunk */
+      nwritten = fwrite( ptr, 1, nbytes, stream );
+      total += nwritten;
+   }
+
+   return total;
+}

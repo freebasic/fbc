@@ -8,12 +8,12 @@
 
 '' setting and retrieving Red, Green, Blue and Alpha values
 
-#define RGBA_R( c ) ( CUInt( c ) Shr 16 And 255 )
-#define RGBA_G( c ) ( CUInt( c ) Shr  8 And 255 )
-#define RGBA_B( c ) ( CUInt( c )        And 255 )
-#define RGBA_A( c ) ( CUInt( c ) Shr 24         )
+#define RGBA_R( c ) ( CULng( c ) Shr 16 And 255 )
+#define RGBA_G( c ) ( CULng( c ) Shr  8 And 255 )
+#define RGBA_B( c ) ( CULng( c )        And 255 )
+#define RGBA_A( c ) ( CULng( c ) Shr 24         )
 
-Dim As UInteger r, g, b, a
+Dim As UByte r, g, b, a
 
 Dim As UInteger col = RGB(128, 192, 64)
 

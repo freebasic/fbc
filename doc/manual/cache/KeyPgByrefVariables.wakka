@@ -31,7 +31,7 @@ Declares a reference
 	NOTE: The arrays of references and the non-static reference fields for UDT are not supported yet.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/variable/byref1.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/variable/byref1.bas"}}%%(freebasic)
 '' Comparison between:
 ''   - a copy ('ci') of a variable ('i')
 ''   - a reference ('ri') to a variable ('i')
@@ -57,27 +57,41 @@ ri = 78
 Print i, ci, ri
 
 Sleep
-%%
-{{fbdoc item="filename" value="examples/manual/variable/byref2.bas"}}%%(freebasic)
+	%%
+	{{fbdoc item="filename" value="examples/manual/variable/byref2.bas"}}%%(freebasic)
 '' Use reference allows to simplify expressions compared to pointer
 '' (avoid to use operator '@' and especially '*')
 
 
-Dim As Zstring Ptr pz = @"FreeBASIC Zstring Ptr"
+Function fp () As Zstring Ptr
+	Static As Zstring * 256 z
+	Return @z
+End Function
+
+Dim As ZString Ptr pz = fp()
+*pz = "FreeBASIC Zstring Ptr"
 Print *pz
 *pz &= " 1.3.0"
 Print *pz
 
+
 Print
 
-Dim Byref As Zstring rz = "FreeBASIC Zstring Ref"  '' or Var Byref rz = "FreeBASIC Zstring Ref"
+
+Function fr () Byref As Zstring
+	Static As Zstring * 256 z
+	Return z
+End Function
+
+Dim ByRef As ZString rz = fr()  '' or Var Byref rz = fr()
+rz = "FreeBASIC Zstring Ref"
 Print rz
 rz &= " 1.4.0"
 Print rz
 
 Sleep
-%%
-{{fbdoc item="filename" value="examples/manual/variable/byref3.bas"}}%%(freebasic)
+	%%
+	{{fbdoc item="filename" value="examples/manual/variable/byref3.bas"}}%%(freebasic)
 '' It is possible to reassign a reference.
 '' An example with an UDT to control the successive constructions & destructions of objects handled with one only reference.
 
@@ -111,8 +125,8 @@ Print ru.I
 Delete @ru
 
 Sleep
-%%
-{{fbdoc item="filename" value="examples/manual/variable/byref4.bas"}}%%(freebasic)
+	%%
+	{{fbdoc item="filename" value="examples/manual/variable/byref4.bas"}}%%(freebasic)
 '' Polymorphism (by using inheritance and virtuality) can be activated through any of the 3 following kinds of entities:
 ''   - base-type pointers referring to derived-type objects,
 ''   - dereferenced base-type pointers referring to derived-type objects,
@@ -161,8 +175,7 @@ pmd->hello()    '' pmd is a base-type pointer referring to a derived-type object
 rmd.hello()     '' rmd is a base-type reference referring to a derived-type object
 
 Sleep
-%%
-
+	%%
 {{fbdoc item="lang"}}
 	- Only supported in //[[CompilerOptlang|-lang fb]]//, //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang deprecated]]// dialects.
 

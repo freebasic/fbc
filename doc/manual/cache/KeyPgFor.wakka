@@ -8,6 +8,9 @@ Control flow statement, open statement clause, or operator depending on context.
 //or//
 	declare operator **For** ( byref stp as [[DataType|datatype]] )
 ##
+{{fbdoc item="ex"}}
+	See example at ##[[KeyPgFornext|For...Next]]##.
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgFornext|For...Next]]##
 	- ##[[KeyPgOpen|Open]]##

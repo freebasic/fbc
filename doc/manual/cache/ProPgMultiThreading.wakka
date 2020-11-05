@@ -1,0 +1,108 @@
+{{fbdoc item="title" value="Multi-Threading"}}----
+The **Multi-threading** programming by using the built-in support provided by FreeBASIC.
+
+**Preamble:**
+
+	Multi-threading programming allows to spawn concurrent process flow.
+	It is most effective on multi-processor or multi-core systems where the process flow can be scheduled to run on another processor/core thus gaining speed through parallel or distributed processing.
+	
+	While most effective on a multi-processor or multi-core system, gains are also found on single-processor or single-core systems which exploit latency in I/O and other system functions that may halt process execution.
+	One thread may execute while another is waiting for I/O or some other system latency.
+	
+	Threads require less overhead than spawning a new process because the system does not initialize a new system virtual memory space and environment for the process.
+	All threads within a process share the same address space.
+
+{{fbdoc item="section" value="Definitions"}}
+	A multi-threaded process contains two or more parts that can run concurrently.
+	Each part of such a program is called a thread, and each thread defines a separate path of execution.
+	
+	Difference between a process and a thread:
+		- Process:
+				Intuitively, a process is nothing more than the program placed in memory or running with all the run-time environment (or all the resources) associated with it.
+				In other words, when your program is located on the hard disk of your machine it is always a program or a simple application, but once executed (or placed in memory) a set of resources (amount of memory space occupied, used processor registers and its status, the owner of the process, the permitted operations, ...) is assigned to it and it simply changes its name. It becomes a process.
+				
+				So to simplify, process rhymes with program running.
+				
+		- Thread:
+				A thread is a portion or part of the process and the smallest sequential unit of instructions processed independently by the scheduler of the operating system.
+				It is simply an execution or processing unit composed of a set of instructions contained in the process. See it as the smallest task or operation within the process that is manageable by the scheduler.
+				
+				A thread shares information such as a data segment, a code segment, ..., with its peer threads spawned by the same base-thread (see below), while it contains its own registers, stack, ....
+				
+				Obviously, a process can be composed of one or more threads, everything will depend on the programmer.
+				In the case of a single-threaded process we speak of single-threading, in the opposite case of multi-threading.
+				
+	Threads are the popular way to improve program through parallelism.
+
+{{fbdoc item="section" value="Multi-threaded programming"}}
+	Single-threaded program executes one line of code at a time, then move onto the next line in sequential order (except for branches, function calls etc.).
+	This is generally the default behavior when programmer writes code.
+	
+	There are a few main reasons to create threads, for example:
+		**""-""** You need to perform a task which takes a long time to complete but don’t want to make the user wait for it to finish. This is called task parallelisms. The purpose of creating threads is to ensure the application maintains responsiveness in the user interface, rather than to actually make the task run faster. Importantly, the task must be able to run largely independently of the main thread for this design pattern to be useful.
+		**""-""** You have a complex task which can gain a performance advantage by being split up into chunks. Here you create several threads, each dedicated to one piece of the task. When all the pieces have completed, the main thread aggregates the sub-results into a final result. This pattern is called the parallel aggregation pattern. For this to work, portions of the total result of the task or calculation must be able to be calculated independently – the second part of the result cannot rely on the first part etc.
+		
+	Multi-threaded program is executing from two or more locations in the program at the same time (or at least, with the illusion of running at the same time):
+		- Sequencing overview:
+				When a program starts up, one implicit thread already begins running immediately.
+				This is usually called the "main" thread of the program, because it is the one that is executed when a program begins:
+					**""-""** The main thread is the thread from which programmer may spawn other “child” threads (which in turn may spawn other "sub-child" threads).
+					**""-""** Main thread and other threads run concurrently.
+					**""-""** Generally, a "parent" thread needs to wait for the result of a child thread, and so waits for the relevant thread to finish.
+					**""-""** Often, the main thread must be the last thread to finish execution because it performs various shutdown actions (as a "child" thread must also do so with respect to its eventual "sub-child" threads spawned).
+					**""-""** But other than that, the implicit main thread can also compete with all other threads explicitly spawned by programmer.
+					
+		- Threading on multi-processor or multi-core systems:
+				If the system has a multi-processor or multi-core capacity, creating a new thread may cause the new thread to be executed on an unused or least busy processor/core. If your application is multi-threaded, you can be mostly assured that it will automatically take advantage of multiple processors/cores.
+				In contrast, on a single processor/core, the threads will be time-sliced by the operating system in the same way processes are in a multi-tasking environment and all run on the single processor/core, so there is no effective performance gain.
+				
+				Note:
+					**""-""** Creating for example 4 threads will not necessarily lead to a 4-fold performance increase. Depending on the algorithms in use, the amount of co-ordination between threads, overhead from accessing memory shared between threads and other factors, the speedup will be sub-linear.
+					**""-""** Algorithms which are well-designed for sequential (single thread) use are not necessarily optimized for multi-threaded use and may need to be significantly redesigned.
+					
+		- Thread safety:
+				Sometimes running several parts of the program at once can lead to unexpected behavior or even cause memory corruption and crashes if precautions are not taken into account.
+				If the same procedure can be executed in several threads simultaneously and independently without affecting each other, and additionally is designed to cooperate with other threads when accessing or changing their variables etc., the procedure is said to be thread safe.
+				
+				Creating thread safe code is essentially the biggest problem and stumbling block for programmers getting to grips with multi-threaded programming. Even experienced programmers can come up across subtle and dangerous bugs which are very difficult to understand and debug.
+				
+		- Synchronization objects:
+				Synchronization objects allow threads to communicate with each other by signalling events of any kind. For example, indicating that a resource is being accessed and that other threads wanting to use the resource should wait to avoid a problems.
+				The most commonly used synchronization objects are "mutual exclusion" and "conditional variables" used in critical sections of a multi-threaded program, the code blocks that has to be executed as atomic actions (no concurrence with other threads executing similar actions).
+
+				
+	Multi-threading is quite dangerous, the mistakes here are very costly. When a problem is found, it’s either hard or impossible to debug, but it’s not the worst.
+	
+	The worst is when the code has a mistake, but it works correctly.
+	This can happen because once threads are used, the execution flow is not deterministic anymore.
+	How long does it take to create a new thread?
+	How many concurrent threads can there be?
+	How is the CPU time distributed among the threads?
+	
+	It is advised to always set a //'Sleep x, 1'// tempo in each //'For'// loop of each thread (including the main thread), in order to release time-slice allowing the other threads to execute as well.
+	
+	All these factors affect the overall execution. Writing multi-threaded code is about being prepared to anything, and that’s making it both dangerous and exciting.
+
+{{fbdoc item="section" value="Multi-threaded built-in support"}}
+	The thread-safe runtime library is automatically used if the FreeBASIC built-in threading functions are used (so the '-mt' compiler option for the linker, is only needed if programmer wants to use his own threading routines).
+	
+	The following pages of this section ("Multi-Threading") explain:
+		- On the '[[ProPgMtThreads|Threads]]' page:
+				the built-in procedures that create, and detach/wait-for the threads.
+		- On the '[[ProPgMtMutualExclusion|Mutual Exclusion]]' page:
+				the built-in procedures that create, lock/unlock, and destroy the mutexes.
+		- On the '[[ProPgMtConditionalVariables|Conditional Variables]]' page:
+				the built-in procedures that create, wait-for/signal, and destroy conditional variables.
+		- On the '[[ProPgMtCriticalSections|Critical Sections]]' page:
+				the use of these built-in procedures in code blocks for handling the concurrency with other threads.
+		- On the '[[ProPgMtCriticalSectionsFAQ|Critical Sections FAQ]]' page:
+				the "Critical Sections" related questions in multi-threading".
+
+{{fbdoc item="section" value="See also"}}
+	- [[ProPgMtThreads|Threads]]
+	- [[ProPgMtMutualExclusion|Mutual Exclusion]]
+	- [[ProPgMtConditionalVariables|Conditional Variables]]
+	- [[ProPgMtCriticalSections|Critical Sections]]
+	- [[ProPgMtCriticalSectionsFAQ|Critical Sections FAQ]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

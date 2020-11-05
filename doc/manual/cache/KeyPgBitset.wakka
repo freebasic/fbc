@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="BITSET"}}----
-Gets the value of an integer with a specified bit set.
+Gets the value with a specified bit set, from a copied integer.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgPpdefine|#define]] **Bitset**( //value//, //bit_number// ) ((//value//) [[KeyPgOpOr|or]] ([[KeyPgCast|Cast]]([[KeyPgTypeof|TypeOf]](//Value//), 1) [[KeyPgOpShiftLeft|shl]] (//bit_number//)))
@@ -18,17 +18,21 @@ Gets the value of an integer with a specified bit set.
 
 {{fbdoc item="desc"}}
 	This macro expands to a copy of the integer ##//value//## with the specified ##//bit_number//## set (to //on//, or `##1##`). Behaves as `##//value// [[KeyPgOpOr|Or]] (1 [[KeyPgOpShiftLeft|Shl]] //bit_number//)##`.
+	To set a specified bit in a variable, the following assignment can be used: ##//variable// = **Bitset**( //variable//, //bit_number// )##
 	
 	The valid range of values for ##//bit_number//## depends on the size, in bits, of `##[[KeyPgTypeof|Typeof]](//value//)##`, which is `##0##` (from the lowest bit) through `##[[KeyPgSizeof|Sizeof]](//value//) * 8 - 1##` (up to the highest bit). See [[TblVarTypes|Standard Datatype Limits]] for a table of the standard datatypes and their sizes.
+	For the ##//bit_number//## values outside the valid range, the results of this macro are undefined.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/bits/bitset.bas"}}%%(freebasic)
+print bin(bitset(&b10001,2))
 print bitset(4, 0)
 print hex(bitset(1ull, 63))
 %%
 	will produce the output:
 
-%% 5
+%%10101
+ 5
 8000000000000001
 %%
 

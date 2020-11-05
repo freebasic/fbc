@@ -9,6 +9,8 @@
 dim opt_help as boolean = false
 dim opt_verbose as boolean = false
 dim opt_show_summary as boolean = true
+dim opt_brief_summary as boolean = false
+dim opt_hide_cases as boolean = false
 dim opt_xml_report as boolean = false
 dim opt_xml_filename as string = ""
 dim opt_no_error as boolean = false
@@ -40,6 +42,12 @@ while command(i) > ""
 	case "--no-summary"
 		opt_show_summary = false
 
+	case "--brief-summary"
+		opt_brief_summary = true
+
+	case "--hide-cases"
+		opt_hide_cases = true
+
 	case else
 		print "Unrecognized option '" & command(i) & "'"
 		end 1
@@ -59,6 +67,8 @@ if( opt_help ) then
 	print "   --xml filename       write test results to xml format for filename"
 	print "   --no-summary         don't show the summary (default is to show it)"
 	print "   --no-error           don't exit with error code even if tests failed"
+	print "   --brief-summary      only show failures in the summary"
+	print "   --hide-cases         don't show the failed cases"
 	print
 
 	'' exit with an error code
@@ -77,6 +87,9 @@ if( fbcu.check_internal_state() = false ) then
 	end 1
 end if
 
+'' set extra options
+fbcu.setBriefSummary( opt_brief_summary )
+fbcu.setHideCases( opt_hide_cases )
 
 '' run the tests
 passed = fbcu.run_tests( opt_show_summary, opt_verbose )

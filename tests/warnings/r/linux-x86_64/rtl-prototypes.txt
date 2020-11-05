@@ -218,6 +218,8 @@ function callocate alias "calloc"
 function reallocate alias "realloc"
 sub deallocate alias "free"
 function clear alias "memset"
+function fb_MemMove alias "memmove"
+function fb_MemCopy alias "memcpy"
 ---- rtlPrint
 sub fb_PrintVoid
 sub fb_PrintBool

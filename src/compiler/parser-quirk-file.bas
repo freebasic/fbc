@@ -37,7 +37,7 @@ function cPrintStmt  _
 		exit function
 	end select
 
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	if( islprint ) then
 		filexpr = astNewCONSTi( -1 )
@@ -64,7 +64,7 @@ function cPrintStmt  _
 	do
 
 		'' (USING Expression{str} ';')?
-		if( hMatch( FB_TK_USING ) ) then
+		if( hMatch( FB_TK_USING, LEXCHECK_POST_SUFFIX ) ) then
 
 			if( usingexpr <> NULL ) then
 #if 1 '' remove this to allow multiple USINGs on one line
@@ -91,12 +91,12 @@ function cPrintStmt  _
 		'' (Expression?|SPC(Expression)|TAB(Expression)
 		isspc = FALSE
 		istab = FALSE
-		if( hMatch( FB_TK_SPC ) ) then
+		if( hMatch( FB_TK_SPC, LEXCHECK_POST_LANG_SUFFIX ) ) then
 			isspc = TRUE
 			hMatchLPRNT( )
 			hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 			hMatchRPRNT( )
-		elseif( hMatch( FB_TK_TAB ) ) then
+		elseif( hMatch( FB_TK_TAB, LEXCHECK_POST_LANG_SUFFIX ) ) then
 			istab = TRUE
 			hMatchLPRNT( )
 			hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
@@ -201,7 +201,7 @@ function cWriteStmt() as integer
 	function = FALSE
 
 	'' WRITE
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' ('#' Expression)?
 	if( hMatch( CHAR_SHARP ) ) then
@@ -274,8 +274,11 @@ function cLineInputStmt _
 		exit function
 	end if
 
-	lexSkipToken( )
-	lexSkipToken( )
+	'' LINE
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
+
+	'' INPUT
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' ';'?
 	addnewline = (hMatch( CHAR_SEMICOLON ) = FALSE)
@@ -364,7 +367,7 @@ function cInputStmt _
 	function = FALSE
 
 	'' INPUT
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' ';'?
 	addnewline = (hMatch( CHAR_SEMICOLON ) = FALSE)
@@ -448,7 +451,7 @@ private function hFileClose _
 	function = NULL
 
 	'' CLOSE
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	if( isfunc ) then
 		'' '('
@@ -803,39 +806,39 @@ private function hFileOpen _
 	    case "CONS"
 			'' not a symbol?
 			if( lexGetSymChain( ) = NULL ) then
-				lexSkipToken( )
+				lexSkipToken( LEXCHECK_POST_SUFFIX )
 	    		open_kind = FB_FILE_TYPE_CONS
 	    	end if
 
 	    case "ERR"
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 	        open_kind = FB_FILE_TYPE_ERR
 
 	    case "PIPE"
 			'' not a symbol?
 			if( lexGetSymChain( ) = NULL ) then
-				lexSkipToken( )
+				lexSkipToken( LEXCHECK_POST_SUFFIX )
 	        	open_kind = FB_FILE_TYPE_PIPE
 	        end if
 
 	    case "SCRN"
 			'' not a symbol?
 			if( lexGetSymChain( ) = NULL ) then
-				lexSkipToken( )
+				lexSkipToken( LEXCHECK_POST_SUFFIX )
 	        	open_kind = FB_FILE_TYPE_SCRN
 	        end if
 
 	    case "LPT"
 			'' not a symbol?
 			if( lexGetSymChain( ) = NULL ) then
-				lexSkipToken( )
+				lexSkipToken( LEXCHECK_POST_SUFFIX )
 	    		open_kind = FB_FILE_TYPE_LPT
 	    	end if
 
 	    case "COM"
 			'' not a symbol?
 			if( lexGetSymChain( ) = NULL ) then
-				lexSkipToken( )
+				lexSkipToken( LEXCHECK_POST_SUFFIX )
 	    		open_kind = FB_FILE_TYPE_COM
 	    	end if
 	    end select
@@ -943,7 +946,7 @@ private function hFileOpen _
     '' long form..
 
 	'' (FOR (INPUT|OUTPUT|BINARY|RANDOM|APPEND))?
-	if( hMatch( FB_TK_FOR ) ) then
+	if( hMatch( FB_TK_FOR, LEXCHECK_POST_SUFFIX ) ) then
 		select case ucase( *lexGetText( ) )
 		case "INPUT"
 			file_mode = FB_FILE_MODE_INPUT
@@ -959,7 +962,7 @@ private function hFileOpen _
 			exit function
 		end select
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	else
 		file_mode = FB_FILE_MODE_RANDOM
@@ -979,7 +982,7 @@ private function hFileOpen _
 		select case file_mode
 		case FB_FILE_MODE_INPUT, FB_FILE_MODE_OUTPUT, FB_FILE_MODE_APPEND
 			'' (ENCODING Expression)?
-			if( hMatch( FB_TK_ENCODING ) ) then
+			if( hMatch( FB_TK_ENCODING, LEXCHECK_POST_SUFFIX ) ) then
 				hMatchExpressionEx( fencoding, FB_DATATYPE_STRING )
 
 				if( isfunc ) then
@@ -991,10 +994,10 @@ private function hFileOpen _
 	end if
 
 	'' (ACCESS (READ|WRITE|READ WRITE))?
-	if( hMatchIdOrKw( "ACCESS" ) ) then
-		if( hMatchIdOrKw( "WRITE" ) ) then
+	if( hMatchIdOrKw( "ACCESS", LEXCHECK_POST_SUFFIX ) ) then
+		if( hMatchIdOrKw( "WRITE", LEXCHECK_POST_SUFFIX ) ) then
 			access_mode = FB_FILE_ACCESS_WRITE
-		elseif( hMatchIdOrKw( "READ" ) ) then
+		elseif( hMatchIdOrKw( "READ", LEXCHECK_POST_SUFFIX ) ) then
 			if( hMatch( FB_TK_WRITE ) ) then
 				access_mode = FB_FILE_ACCESS_READWRITE
 			else
@@ -1013,14 +1016,14 @@ private function hFileOpen _
 	end if
 
 	'' (SHARED|LOCK (READ|WRITE|READ WRITE))?
-	if( hMatch( FB_TK_SHARED ) ) then
+	if( hMatch( FB_TK_SHARED, LEXCHECK_POST_SUFFIX ) ) then
 		lock_mode = FB_FILE_LOCK_SHARED
 
-	elseif( hMatchIdOrKw( "LOCK" ) ) then
-		if( hMatchIdOrKw( "WRITE" ) ) then
+	elseif( hMatchIdOrKw( "LOCK", LEXCHECK_POST_SUFFIX ) ) then
+		if( hMatchIdOrKw( "WRITE", LEXCHECK_POST_SUFFIX ) ) then
 			lock_mode = FB_FILE_LOCK_WRITE
-		elseif( hMatchIdOrKw( "READ" ) ) then
-			if( hMatch( FB_TK_WRITE ) ) then
+		elseif( hMatchIdOrKw( "READ", LEXCHECK_POST_SUFFIX ) ) then
+			if( hMatch( FB_TK_WRITE, LEXCHECK_POST_SUFFIX ) ) then
 				lock_mode = FB_FILE_LOCK_READWRITE
 			else
 				lock_mode = FB_FILE_LOCK_READ
@@ -1038,7 +1041,7 @@ private function hFileOpen _
 	end if
 
 	'' AS '#'? Expression
-	if( hMatch( FB_TK_AS ) = FALSE ) then
+	if( hMatch( FB_TK_AS, LEXCHECK_POST_SUFFIX ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTINGAS )
 	end if
 
@@ -1052,7 +1055,7 @@ private function hFileOpen _
 	end if
 
 	'' (LEN '=' Expression)?
-	if( hMatchIdOrKw( "LEN" ) ) then
+	if( hMatchIdOrKw( "LEN", LEXCHECK_POST_SUFFIX ) ) then
 		if( cAssignToken( ) = FALSE ) then
 			errReport( FB_ERRMSG_EXPECTEDEQ )
 			flen = astNewCONSTi( 0 )
@@ -1099,7 +1102,7 @@ private function hFileRename _
 		'' ','?
 		hMatchCOMMA( )
 	else
-		if( hMatch( FB_TK_AS ) = FALSE ) then
+		if( hMatch( FB_TK_AS, LEXCHECK_POST_SUFFIX ) = FALSE ) then
 			if( hMatch( CHAR_COMMA ) = FALSE ) then
 				errReport( FB_ERRMSG_EXPECTINGAS )
 			end if
@@ -1136,7 +1139,7 @@ function cFileStmt _
 
 	select case as const tk
 	case FB_TK_OPEN
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		function = (hFileOpen( FALSE ) <> NULL)
 
@@ -1148,7 +1151,7 @@ function cFileStmt _
 
 	'' SEEK '#'? Expression ',' Expression
 	case FB_TK_SEEK
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		hMatch( CHAR_SHARP )
 
 		hMatchExpressionEx( filenum, FB_DATATYPE_INTEGER )
@@ -1165,9 +1168,9 @@ function cFileStmt _
 			exit function
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
-        function = (hFilePut( FALSE ) <> NULL)
+		function = (hFilePut( FALSE ) <> NULL)
 
 	'' GET '#' Expression ',' Expression? ',' Variable{str|int|float|array}
 	case FB_TK_GET
@@ -1175,7 +1178,7 @@ function cFileStmt _
 			exit function
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		function = (hFileGet( FALSE ) <> NULL)
 
@@ -1187,7 +1190,7 @@ function cFileStmt _
 			islock = FALSE
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		hMatch( CHAR_SHARP )
 
@@ -1197,7 +1200,7 @@ function cFileStmt _
 
 		hMatchExpressionEx( expr1, FB_DATATYPE_INTEGER )
 
-		if( hMatch( FB_TK_TO ) ) then
+		if( hMatch( FB_TK_TO, LEXCHECK_POST_SUFFIX ) ) then
 			hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
 		else
 			expr2 = astNewCONSTi( 0 )
@@ -1207,7 +1210,7 @@ function cFileStmt _
 
     '' NAME oldfilespec$ AS newfilespec$
     case FB_TK_NAME
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		function = (hFileRename( FALSE ) <> NULL)
 
@@ -1227,7 +1230,7 @@ function cFileFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	'' SEEK '(' Expression ')'
 	select case as const tk
 	case FB_TK_SEEK
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		hMatchLPRNT( )
 		hMatchExpressionEx( filenum, FB_DATATYPE_INTEGER )
 		hMatchRPRNT( )
@@ -1235,7 +1238,7 @@ function cFileFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 
 	'' INPUT|WINPUT '(' Expr (',' '#'? Expr)? ')'
 	case FB_TK_INPUT, FB_TK_WINPUT
-		lexSkipToken( )
+		lexSkipToken( iif( tk = FB_TK_INPUT, LEXCHECK_POST_STRING_SUFFIX, LEXCHECK_POST_SUFFIX ) )
 		hMatchLPRNT( )
 		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 		if( hMatch( CHAR_COMMA ) ) then
@@ -1249,7 +1252,7 @@ function cFileFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 
 	'' OPEN '(' ... ')'
 	case FB_TK_OPEN
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		function = hFileOpen( TRUE )
 
 	'' CLOSE '(' '#'? Expr? ')'
@@ -1258,21 +1261,21 @@ function cFileFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 
 	'' PUT '(' '#'? Expr, Expr?, Expr ')'
 	case FB_TK_PUT
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		hMatchLPRNT( )
 		function = hFilePut( TRUE )
 		hMatchRPRNT( )
 
 	'' GET '(' '#'? Expr, Expr?, Expr ')'
 	case FB_TK_GET
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		hMatchLPRNT( )
 		function = hFileGet( TRUE )
 		hMatchRPRNT( )
 
 	'' NAME '(' oldfilespec$ ',' newfilespec$ ')'
 	case FB_TK_NAME
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		function = hFileRename( TRUE )
 
 	end select

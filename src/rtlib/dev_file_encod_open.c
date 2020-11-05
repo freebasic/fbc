@@ -14,7 +14,7 @@ static FB_FILE_HOOKS hooks_dev_file = {
     fb_DevFileLock,
     fb_DevFileUnlock,
     fb_DevFileReadLineEncod,
-	fb_DevFileReadLineEncodWstr,
+    fb_DevFileReadLineEncodWstr,
     NULL,
     fb_DevFileFlush
 };

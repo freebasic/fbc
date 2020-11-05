@@ -1,0 +1,957 @@
+----parser-comment.bas ----
+----parser-assignment.bas ----
+warning expected
+	Suffix ignored in 'and%'
+warning expected
+	Suffix ignored in 'not%'
+warning expected
+	Suffix ignored in 'let%'
+----parser-compound-do.bas ----
+2 warnings expected
+	Suffix ignored in 'do%'
+	Suffix ignored in 'while%'
+warning expected
+	Suffix ignored in 'loop%'
+2 warnings expected
+	Suffix ignored in 'loop%'
+	Suffix ignored in 'until%'
+----parser-compound-extern.bas ----
+warning expected
+	Suffix ignored in 'extern%'
+2 warnings expected
+	Suffix ignored in 'end%'
+	Suffix ignored in 'extern%'
+----parser-compound-for.bas ----
+3 warnings expected
+	Suffix ignored in 'for%'
+	Suffix ignored in 'to%'
+	Suffix ignored in 'step%'
+warning expected
+	Suffix ignored in 'next%'
+----parser-compound-if.bas ----
+5 warnings expected
+	Suffix ignored in 'if%'
+	Suffix ignored in 'then%'
+	Suffix ignored in 'else%'
+	Suffix ignored in 'end%'
+	Suffix ignored in 'if%'
+warning expected
+	Suffix ignored in 'endif%'
+2 warnings expected
+	Suffix ignored in 'if%'
+	Suffix ignored in 'then%'
+2 warnings expected
+	Suffix ignored in 'elseif%'
+	Suffix ignored in 'then%'
+warning expected
+	Suffix ignored in 'else%'
+2 warnings expected
+	Suffix ignored in 'end%'
+	Suffix ignored in 'if%'
+warning expected
+	Suffix ignored in 'endif%'
+----parser-compound-namespace.bas ----
+2 warnings expected
+	Suffix ignored in 'namespace%'
+	Suffix ignored in 'parser_compound_namespace%'
+2 warnings expected
+	Suffix ignored in 'n2%'
+	Suffix ignored in 'n3%'
+2 warnings expected
+	Suffix ignored in 'end%'
+	Suffix ignored in 'namespace%'
+warning expected
+	Suffix ignored in 'using%'
+----parser-compound-scope.bas ----
+warning expected
+	Suffix ignored in 'scope%'
+2 warnings expected
+	Suffix ignored in 'end%'
+	Suffix ignored in 'scope%'
+----parser-compound-select-const.bas ----
+4 warnings expected
+	Suffix ignored in 'select%'
+	Suffix ignored in 'case%'
+	Suffix ignored in 'as%'
+	Suffix ignored in 'const%'
+2 warnings expected
+	Suffix ignored in 'case%'
+	Suffix ignored in 'to%'
+2 warnings expected
+	Suffix ignored in 'case%'
+	Suffix ignored in 'else%'
+2 warnings expected
+	Suffix ignored in 'end%'
+	Suffix ignored in 'select%'
+----parser-compound-select.bas ----
+2 warnings expected
+	Suffix ignored in 'select%'
+	Suffix ignored in 'case%'
+2 warnings expected
+	Suffix ignored in 'case%'
+	Suffix ignored in 'to%'
+warning expected
+	Suffix ignored in 'is%'
+warning expected
+	Suffix ignored in 'else%'
+2 warnings expected
+	Suffix ignored in 'end%'
+	Suffix ignored in 'select%'
+----parser-compound-while.bas ----
+warning expected
+	Suffix ignored in 'while%'
+warning expected
+	Suffix ignored in 'wend%'
+----parser-compound-with.bas ----
+2 warnings expected
+	Suffix ignored in 'dim%'
+	Suffix ignored in 'as%'
+warning expected
+	Suffix ignored in 'with%'
+2 warnings expected
+	Suffix ignored in 'end%'
+	Suffix ignored in 'with%'
+----parser-compound.bas ----
+warning expected
+	Suffix ignored in 'end%'
+3 warnings expected
+	Suffix ignored in 'exit%'
+	Suffix ignored in 'for%'
+	Suffix ignored in 'for%'
+3 warnings expected
+	Suffix ignored in 'continue%'
+	Suffix ignored in 'for%'
+	Suffix ignored in 'for%'
+2 warnings expected
+	Suffix ignored in 'do%'
+	Suffix ignored in 'do%'
+3 warnings expected
+	Suffix ignored in 'continue%'
+	Suffix ignored in 'do%'
+	Suffix ignored in 'do%'
+2 warnings expected
+	Suffix ignored in 'while%'
+	Suffix ignored in 'while%'
+3 warnings expected
+	Suffix ignored in 'continue%'
+	Suffix ignored in 'while%'
+	Suffix ignored in 'while%'
+2 warnings expected
+	Suffix ignored in 'select%'
+	Suffix ignored in 'select%'
+warning expected
+	Suffix ignored in 'sub%'
+warning expected
+	Suffix ignored in 'function%'
+----parser-decl-const.bas ----
+2 warnings expected
+	Suffix ignored in 'const%'
+	Suffix ignored in 'as%'
+----parser-decl-enum.bas ----
+3 warnings expected
+	Suffix ignored in 'enum%'
+	Suffix ignored in 'E%'
+	Suffix ignored in 'explicit%'
+warning expected
+	Suffix ignored in 'E_item1%'
+2 warnings expected
+	Suffix ignored in 'E_item2%'
+	Suffix ignored in 'E_item1%'
+2 warnings expected
+	Suffix ignored in 'end%'
+	Suffix ignored in 'enum%'
+----parser-decl-proc-params.bas ----
+4 warnings expected
+	Suffix ignored in 'byval%'
+	Suffix ignored in 'as%'
+	Suffix ignored in 'byref%'
+	Suffix ignored in 'any%'
+----parser-decl-proc.bas ----
+2 warnings expected
+	Suffix ignored in 'declare%'
+	Suffix ignored in 'sub%'
+2 warnings expected
+	Suffix ignored in 'declare%'
+	Suffix ignored in 'function%'
+warning expected
+	Suffix ignored in 'operator%'
+----parser-decl-struct.bas ----
+2 warnings expected
+	Suffix ignored in 'type%'
+	Suffix ignored in 'field%'
+warning expected
+	Suffix ignored in 'static%'
+2 warnings expected
+	Suffix ignored in 'as%'
+	Suffix ignored in 'any%'
+warning expected
+	Suffix ignored in 'as%'
+warning expected
+	Suffix ignored in 'dim%'
+2 warnings expected
+	Suffix ignored in 'declare%'
+	Suffix ignored in 'sub%'
+warning expected
+	Suffix ignored in 'public%'
+warning expected
+	Suffix ignored in 'private%'
+warning expected
+	Suffix ignored in 'protected%'
+2 warnings expected
+	Suffix ignored in 'end%'
+	Suffix ignored in 'type%'
+warning expected
+	Suffix ignored in 'union%'
+warning expected
+	Suffix ignored in 'type%'
+2 warnings expected
+	Suffix ignored in 'union%'
+	Suffix ignored in 'field%'
+2 warnings expected
+	Suffix ignored in 'end%'
+	Suffix ignored in 'union%'
+2 warnings expected
+	Suffix ignored in 'end%'
+	Suffix ignored in 'type%'
+2 warnings expected
+	Suffix ignored in 'end%'
+	Suffix ignored in 'union%'
+warning expected
+	Suffix ignored in 'extends%'
+----parser-decl-symbtype.bas ----
+none expected
+warning expected
+	Suffix ignored in 'alias%'
+warning expected
+	Suffix ignored in 'typeof%'
+warning expected
+	Suffix ignored in 'unsigned%'
+warning expected
+	Suffix ignored in 'boolean%'
+warning expected
+	Suffix ignored in 'byte%'
+warning expected
+	Suffix ignored in 'ubyte%'
+warning expected
+	Suffix ignored in 'short%'
+warning expected
+	Suffix ignored in 'ushort%'
+warning expected
+	Suffix ignored in 'long%'
+warning expected
+	Suffix ignored in 'ulong%'
+warning expected
+	Suffix ignored in 'integer%'
+warning expected
+	Suffix ignored in 'uinteger%'
+warning expected
+	Suffix ignored in 'longint%'
+warning expected
+	Suffix ignored in 'ulongint%'
+warning expected
+	Suffix ignored in 'single%'
+warning expected
+	Suffix ignored in 'double%'
+warning expected
+	Suffix ignored in 'string%'
+warning expected
+	Suffix ignored in 'string$'
+warning expected
+	Suffix ignored in 'zstring%'
+warning expected
+	Suffix ignored in 'wstring%'
+3 warnings expected
+	Suffix ignored in 'const%'
+	Suffix ignored in 'any%'
+	Suffix ignored in 'ptr%'
+3 warnings expected
+	Suffix ignored in 'const%'
+	Suffix ignored in 'const%'
+	Suffix ignored in 'pointer%'
+warning expected
+	Suffix ignored in 'sub%'
+warning expected
+	Suffix ignored in 'function%'
+warning expected
+	Suffix ignored in 'INNER_T%'
+warning expected
+	Suffix ignored in 'INNER_E%'
+warning expected
+	Suffix ignored in 'INNER_DEF%'
+----parser-decl-typedef.bas ----
+warning expected
+	Suffix ignored in 'FWD0%'
+warning expected
+	Suffix ignored in 'FWD2%'
+warning expected
+	Suffix ignored in 'as%'
+4 warnings expected
+	Suffix ignored in 'as%'
+	Suffix ignored in 'const%'
+	Suffix ignored in 'const%'
+	Suffix ignored in 'ptr%'
+2 warnings expected
+	Suffix ignored in 'const%'
+	Suffix ignored in 'ptr%'
+----parser-decl-var.bas ----
+warning expected
+	Suffix ignored in 'common%'
+warning expected
+	Suffix ignored in 'static%'
+warning expected
+	Suffix ignored in 'shared%'
+3 warnings expected
+	Suffix ignored in 'extern%'
+	Suffix ignored in 'import%'
+	Suffix ignored in 'alias%'
+warning expected
+	Suffix ignored in 'shared%'
+warning expected
+	Suffix ignored in 'dim%'
+2 warnings expected
+	Suffix ignored in 'redim%'
+	Suffix ignored in 'preserve%'
+warning expected
+	Suffix ignored in 'var%'
+warning expected
+	Suffix ignored in 'byref%'
+2 warnings expected
+	Suffix ignored in 'byref%'
+	Suffix ignored in 'as%'
+2 warnings expected
+	Suffix ignored in 'byref%'
+	Suffix ignored in 'as%'
+warning expected
+	Suffix ignored in 'byref%'
+warning expected
+	Suffix ignored in 'to%'
+warning expected
+	Suffix ignored in 'any%'
+warning expected
+	Suffix ignored in 'any%'
+warning expected
+	Suffix ignored in 'byref%'
+----parser-decl.bas ----
+warning expected
+	Suffix ignored in 'public%'
+warning expected
+	Suffix ignored in 'private%'
+----parser-expr-atom.bas ----
+warning expected
+	Suffix ignored in 'base%'
+warning expected
+	Suffix ignored in 'n%'
+warning expected
+	Suffix ignored in 'T%'
+warning expected
+	Suffix ignored in 'T2%'
+----parser-expr-binary.bas ----
+3 warnings expected
+	Suffix ignored in 'if%'
+	Suffix ignored in 'andalso%'
+	Suffix ignored in 'orelse%'
+5 warnings expected
+	Suffix ignored in 'and%'
+	Suffix ignored in 'or%'
+	Suffix ignored in 'xor%'
+	Suffix ignored in 'imp%'
+	Suffix ignored in 'eqv%'
+warning expected
+	Suffix ignored in 'mod%'
+warning expected
+	Suffix ignored in 'shl%'
+warning expected
+	Suffix ignored in 'shr%'
+warning expected
+	Suffix ignored in 'is%'
+----parser-expr-function.bas ----
+warning expected
+	Suffix ignored in 'proc%'
+----parser-expr-unary.bas ----
+warning expected
+	Suffix ignored in 'defined%'
+warning expected
+	Suffix ignored in 'not%'
+warning expected
+	Suffix ignored in 'cast%'
+warning expected
+	Suffix ignored in 'cptr%'
+warning expected
+	Suffix ignored in 'varptr%'
+2 warnings expected
+	Suffix ignored in 'procptr%'
+	Suffix ignored in 'code%'
+warning expected
+	Suffix ignored in 'PEU%'
+warning expected
+	Suffix ignored in 'strptr%'
+----parser-expr-variable.bas ----
+warning expected
+	Suffix ignored in 'C%'
+warning expected
+	Suffix ignored in 'S%'
+warning expected
+	Suffix ignored in 'F%'
+2 warnings expected
+	Suffix ignored in 'E%'
+	Suffix ignored in 'I%'
+2 warnings expected
+	Suffix ignored in 'TT%'
+	Suffix ignored in 'n%'
+----parser-inlineasm.bas ----
+warning expected
+	Suffix ignored in 'asm%'
+2 warnings expected
+	Suffix ignored in 'end%'
+	Suffix ignored in 'asm%'
+----parser-proc.bas ----
+5 warnings expected
+	Suffix ignored in 'declare%'
+	Suffix ignored in 'sub%'
+	Suffix ignored in 'overload%'
+	Suffix ignored in 'lib%'
+	Suffix ignored in 'alias%'
+warning expected
+	Suffix ignored in 'export%'
+warning expected
+	Suffix ignored in 'static%'
+warning expected
+	Suffix ignored in 'const%'
+warning expected
+	Suffix ignored in 'abstract%'
+warning expected
+	Suffix ignored in 'virtual%'
+warning expected
+	Suffix ignored in 'constructor%'
+warning expected
+	Suffix ignored in 'destructor%'
+3 warnings expected
+	Suffix ignored in 'function%'
+	Suffix ignored in 'as%'
+	Suffix ignored in 'option%'
+2 warnings expected
+	Suffix ignored in 'virtual%'
+	Suffix ignored in 'override%'
+warning expected
+	Suffix ignored in 'byref%'
+warning expected
+	Suffix ignored in 'cdecl%'
+warning expected
+	Suffix ignored in 'stdcall%'
+warning expected
+	Suffix ignored in 'pascal%'
+warning expected
+	Suffix ignored in 'naked%'
+warning expected
+	Suffix ignored in 'static%'
+warning expected
+	Suffix ignored in 'constructor%'
+2 warnings expected
+	Suffix ignored in 'end%'
+	Suffix ignored in 'constructor%'
+warning expected
+	Suffix ignored in 'constructor%'
+warning expected
+	Suffix ignored in 'destructor%'
+----parser-proccall-args.bas ----
+warning expected
+	Suffix ignored in 'byval%'
+warning expected
+	Suffix ignored in 'byval%'
+warning expected
+	Suffix ignored in 'byval%'
+warning expected
+	Suffix ignored in 'byval%'
+----parser-proccall.bas ----
+warning expected
+	Suffix ignored in 'constructor%'
+warning expected
+	Suffix ignored in 'base%'
+warning expected
+	Suffix ignored in 'constructor%'
+2 warnings expected
+	Suffix ignored in 'base%'
+	Suffix ignored in 'constructor%'
+warning expected
+	Suffix ignored in 'property%'
+warning expected
+	Suffix ignored in 'function%'
+warning expected
+	Suffix ignored in 'operator%'
+----parser-quirk-array.bas ----
+warning expected
+	Suffix ignored in 'swap%'
+warning expected
+	Suffix ignored in 'lbound%'
+warning expected
+	Suffix ignored in 'ubound%'
+warning expected
+	Suffix ignored in 'erase%'
+----parser-quirk-casting.bas ----
+warning expected
+	Suffix ignored in 'cbool%'
+warning expected
+	Suffix ignored in 'cbyte%'
+warning expected
+	Suffix ignored in 'cubyte%'
+warning expected
+	Suffix ignored in 'cshort%'
+warning expected
+	Suffix ignored in 'cushort%'
+warning expected
+	Suffix ignored in 'cint%'
+warning expected
+	Suffix ignored in 'cuint%'
+warning expected
+	Suffix ignored in 'clng%'
+warning expected
+	Suffix ignored in 'culng%'
+warning expected
+	Suffix ignored in 'clngint%'
+warning expected
+	Suffix ignored in 'culngint%'
+warning expected
+	Suffix ignored in 'csng%'
+warning expected
+	Suffix ignored in 'cdbl%'
+warning expected
+	Suffix ignored in 'csign%'
+warning expected
+	Suffix ignored in 'cunsg%'
+warning expected
+	Suffix ignored in 'type%'
+----parser-quirk-console.bas ----
+3 warnings expected
+	Suffix ignored in 'view%'
+	Suffix ignored in 'print%'
+	Suffix ignored in 'to%'
+warning expected
+	Suffix ignored in 'width%'
+warning expected
+	Suffix ignored in 'color%'
+warning expected
+	Suffix ignored in 'screen%'
+----parser-quirk-data.bas ----
+warning expected
+	Suffix ignored in 'data%'
+2 warnings expected
+	Suffix ignored in 'restore%'
+	Suffix ignored in 'startdata%'
+warning expected
+	Suffix ignored in 'read%'
+----parser-quirk-error.bas ----
+warning expected
+	Suffix ignored in 'error%'
+warning expected
+	Suffix ignored in 'err%'
+warning expected
+	Suffix ignored in 'err%'
+----parser-quirk-file.bas ----
+warning expected
+	Suffix ignored in 'close%'
+warning expected
+	Suffix ignored in 'cons%'
+warning expected
+	Suffix ignored in 'err%'
+warning expected
+	Suffix ignored in 'scrn%'
+warning expected
+	Suffix ignored in 'pipe%'
+warning expected
+	Suffix ignored in 'lpt%'
+warning expected
+	Suffix ignored in 'com%'
+warning expected
+	Suffix ignored in 'com%'
+warning expected
+	Suffix ignored in 'encoding%'
+5 warnings expected
+	Suffix ignored in 'open%'
+	Suffix ignored in 'for%'
+	Suffix ignored in 'binary%'
+	Suffix ignored in 'as%'
+	Suffix ignored in 'len%'
+4 warnings expected
+	Suffix ignored in 'open%'
+	Suffix ignored in 'for%'
+	Suffix ignored in 'random%'
+	Suffix ignored in 'as%'
+4 warnings expected
+	Suffix ignored in 'open%'
+	Suffix ignored in 'for%'
+	Suffix ignored in 'binary%'
+	Suffix ignored in 'as%'
+4 warnings expected
+	Suffix ignored in 'open%'
+	Suffix ignored in 'for%'
+	Suffix ignored in 'output%'
+	Suffix ignored in 'as%'
+4 warnings expected
+	Suffix ignored in 'open%'
+	Suffix ignored in 'for%'
+	Suffix ignored in 'append%'
+	Suffix ignored in 'as%'
+3 warnings expected
+	Suffix ignored in 'for%'
+	Suffix ignored in 'access%'
+	Suffix ignored in 'read%'
+3 warnings expected
+	Suffix ignored in 'for%'
+	Suffix ignored in 'access%'
+	Suffix ignored in 'write%'
+3 warnings expected
+	Suffix ignored in 'for%'
+	Suffix ignored in 'access%'
+	Suffix ignored in 'read%'
+2 warnings expected
+	Suffix ignored in 'for%'
+	Suffix ignored in 'shared%'
+3 warnings expected
+	Suffix ignored in 'for%'
+	Suffix ignored in 'lock%'
+	Suffix ignored in 'read%'
+3 warnings expected
+	Suffix ignored in 'for%'
+	Suffix ignored in 'lock%'
+	Suffix ignored in 'write%'
+4 warnings expected
+	Suffix ignored in 'for%'
+	Suffix ignored in 'lock%'
+	Suffix ignored in 'read%'
+	Suffix ignored in 'write%'
+warning expected
+	Suffix ignored in 'using%'
+warning expected
+	Suffix ignored in 'spc%'
+warning expected
+	Suffix ignored in 'tab%'
+warning expected
+	Suffix ignored in 'print%'
+warning expected
+	Suffix ignored in 'write%'
+warning expected
+	Suffix ignored in 'input%'
+2 warnings expected
+	Suffix ignored in 'line%'
+	Suffix ignored in 'input%'
+warning expected
+	Suffix ignored in 'get%'
+warning expected
+	Suffix ignored in 'put%'
+warning expected
+	Suffix ignored in 'seek%'
+2 warnings expected
+	Suffix ignored in 'lock%'
+	Suffix ignored in 'to%'
+2 warnings expected
+	Suffix ignored in 'unlock%'
+	Suffix ignored in 'to%'
+warning expected
+	Suffix ignored in 'seek%'
+warning expected
+	Suffix ignored in 'open%'
+warning expected
+	Suffix ignored in 'close%'
+warning expected
+	Suffix ignored in 'input%'
+warning expected
+	Suffix ignored in 'winput%'
+warning expected
+	Suffix ignored in 'get%'
+warning expected
+	Suffix ignored in 'put%'
+warning expected
+	Suffix ignored in 'name%'
+2 warnings expected
+	Suffix ignored in 'name%'
+	Suffix ignored in 'as%'
+----parser-quirk-gfx
+2 warnings expected
+	Suffix ignored in 'pset%'
+	Suffix ignored in 'step%'
+2 warnings expected
+	Suffix ignored in 'preset%'
+	Suffix ignored in 'step%'
+4 warnings expected
+	Suffix ignored in 'line%'
+	Suffix ignored in 'step%'
+	Suffix ignored in 'step%'
+	Suffix ignored in 'b%'
+4 warnings expected
+	Suffix ignored in 'line%'
+	Suffix ignored in 'step%'
+	Suffix ignored in 'step%'
+	Suffix ignored in 'bf%'
+3 warnings expected
+	Suffix ignored in 'circle%'
+	Suffix ignored in 'step%'
+	Suffix ignored in 'f%'
+2 warnings expected
+	Suffix ignored in 'paint%'
+	Suffix ignored in 'step%'
+warning expected
+	Suffix ignored in 'draw%'
+3 warnings expected
+	Suffix ignored in 'draw%'
+	Suffix ignored in 'string%'
+	Suffix ignored in 'step%'
+2 warnings expected
+	Suffix ignored in 'view%'
+	Suffix ignored in 'screen%'
+2 warnings expected
+	Suffix ignored in 'window%'
+	Suffix ignored in 'screen%'
+warning expected
+	Suffix ignored in 'palette%'
+2 warnings expected
+	Suffix ignored in 'palette%'
+	Suffix ignored in 'get%'
+3 warnings expected
+	Suffix ignored in 'palette%'
+	Suffix ignored in 'get%'
+	Suffix ignored in 'using%'
+3 warnings expected
+	Suffix ignored in 'get%'
+	Suffix ignored in 'step%'
+	Suffix ignored in 'step%'
+3 warnings expected
+	Suffix ignored in 'put%'
+	Suffix ignored in 'step%'
+	Suffix ignored in 'pset%'
+4 warnings expected
+	Suffix ignored in 'put%'
+	Suffix ignored in 'step%'
+	Suffix ignored in 'step%'
+	Suffix ignored in 'pset%'
+2 warnings expected
+	Suffix ignored in 'put%'
+	Suffix ignored in 'preset%'
+2 warnings expected
+	Suffix ignored in 'put%'
+	Suffix ignored in 'xor%'
+2 warnings expected
+	Suffix ignored in 'put%'
+	Suffix ignored in 'or%'
+2 warnings expected
+	Suffix ignored in 'put%'
+	Suffix ignored in 'and%'
+2 warnings expected
+	Suffix ignored in 'put%'
+	Suffix ignored in 'trans%'
+2 warnings expected
+	Suffix ignored in 'put%'
+	Suffix ignored in 'add%'
+2 warnings expected
+	Suffix ignored in 'put%'
+	Suffix ignored in 'alpha%'
+2 warnings expected
+	Suffix ignored in 'put%'
+	Suffix ignored in 'custom%'
+warning expected
+	Suffix ignored in 'screen%'
+warning expected
+	Suffix ignored in 'imagecreate%'
+warning expected
+	Suffix ignored in 'point%'
+----parser-quirk-goto-return.bas ----
+warning expected
+	Suffix ignored in 'return%'
+----parser-quite-iif.bas ----
+warning expected
+	Suffix ignored in 'iif%'
+----parser-quirk-math.bas ----
+warning expected
+	Suffix ignored in 'ABS%'
+warning expected
+	Suffix ignored in 'SGN%'
+warning expected
+	Suffix ignored in 'FIX%'
+warning expected
+	Suffix ignored in 'FRAC%'
+warning expected
+	Suffix ignored in 'INT%'
+warning expected
+	Suffix ignored in 'SIN%'
+warning expected
+	Suffix ignored in 'ASIN%'
+warning expected
+	Suffix ignored in 'COS%'
+warning expected
+	Suffix ignored in 'ACOS%'
+warning expected
+	Suffix ignored in 'TAN%'
+warning expected
+	Suffix ignored in 'ATN%'
+warning expected
+	Suffix ignored in 'SQR%'
+warning expected
+	Suffix ignored in 'LOG%'
+warning expected
+	Suffix ignored in 'EXP%'
+warning expected
+	Suffix ignored in 'ATAN2%'
+warning expected
+	Suffix ignored in 'sizeof%'
+warning expected
+	Suffix ignored in 'len%'
+----parser-quirk-mem.bas ----
+2 warnings expected
+	Suffix ignored in 'new%'
+	Suffix ignored in 'any%'
+warning expected
+	Suffix ignored in 'delete%'
+warning expected
+	Suffix ignored in 'any%'
+----parser-quirk-on.bas ----
+----parser-quirk-peekpoke.bas ----
+warning expected
+	Suffix ignored in 'poke%'
+warning expected
+	Suffix ignored in 'peek%'
+----parser-quirk-string.bas ----
+warning expected
+	Suffix ignored in 'mid%'
+warning expected
+	Suffix ignored in 'left%'
+warning expected
+	Suffix ignored in 'right%'
+2 warnings expected
+	Suffix ignored in 'trim%'
+	Suffix ignored in 'any%'
+2 warnings expected
+	Suffix ignored in 'ltrim%'
+	Suffix ignored in 'any%'
+2 warnings expected
+	Suffix ignored in 'rtrim%'
+	Suffix ignored in 'any%'
+warning expected
+	Suffix ignored in 'lcase%'
+warning expected
+	Suffix ignored in 'ucase%'
+warning expected
+	Suffix ignored in 'tab%'
+warning expected
+	Suffix ignored in 'space%'
+warning expected
+	Suffix ignored in 'string%'
+warning expected
+	Suffix ignored in 'mki%'
+warning expected
+	Suffix ignored in 'mkl%'
+warning expected
+	Suffix ignored in 'mks%'
+warning expected
+	Suffix ignored in 'mkd%'
+warning expected
+	Suffix ignored in 'mid%'
+warning expected
+	Suffix ignored in 'cvd%'
+warning expected
+	Suffix ignored in 'cvs%'
+warning expected
+	Suffix ignored in 'cvi%'
+warning expected
+	Suffix ignored in 'cvl%'
+warning expected
+	Suffix ignored in 'cvshort%'
+warning expected
+	Suffix ignored in 'cvlongint%'
+warning expected
+	Suffix ignored in 'str%'
+warning expected
+	Suffix ignored in 'chr%'
+warning expected
+	Suffix ignored in 'asc%'
+2 warnings expected
+	Suffix ignored in 'instr%'
+	Suffix ignored in 'any%'
+2 warnings expected
+	Suffix ignored in 'instr%'
+	Suffix ignored in 'any%'
+2 warnings expected
+	Suffix ignored in 'instrrev%'
+	Suffix ignored in 'any%'
+warning expected
+	Suffix ignored in 'lset%'
+warning expected
+	Suffix ignored in 'rset%'
+----parser-quirk-thread.bas ----
+none expected
+2 warnings expected
+	Suffix ignored in 'threadcall%'
+	Suffix ignored in 'thread%'
+----parser-quirk-vafirst.bas ----
+warning expected
+	Suffix ignored in 'cva_start%'
+warning expected
+	Suffix ignored in 'cva_copy%'
+warning expected
+	Suffix ignored in 'cva_arg%'
+2 warnings expected
+	Suffix ignored in 'cva_end%'
+	Suffix ignored in 'cva_end%'
+----pp-cond.bas ----
+----pp-pragma.bas ----
+3 warnings expected
+	Suffix ignored in 'pragma%'
+	Suffix ignored in 'push%'
+	Suffix ignored in 'msbitfields%'
+2 warnings expected
+	Suffix ignored in 'pragma%'
+	Suffix ignored in 'msbitfields%'
+3 warnings expected
+	Suffix ignored in 'pragma%'
+	Suffix ignored in 'pop%'
+	Suffix ignored in 'msbitfields%'
+2 warnings expected
+	Suffix ignored in 'pragma%'
+	Suffix ignored in 'once%'
+----pp.bas ----
+warning expected
+	Suffix ignored in 'define%'
+warning expected
+	Suffix ignored in 'undef%'
+warning expected
+	Suffix ignored in 'ifdef%'
+warning expected
+	Suffix ignored in 'ifndef%'
+4 warnings expected
+	Suffix ignored in 'if%'
+	Suffix ignored in 'elseif%'
+	Suffix ignored in 'else%'
+	Suffix ignored in 'endif%'
+warning expected
+	Suffix ignored in 'assert%'
+warning expected
+	Suffix ignored in 'print%'
+1
+2 warnings expected
+	Suffix ignored in 'include%'
+	Suffix ignored in 'once%'
+warning expected
+	Suffix ignored in 'inclib%'
+warning expected
+	Suffix ignored in 'libpath%'
+warning expected
+	Suffix ignored in 'macro%'
+2 warnings expected
+	Suffix ignored in 'print%'
+	Suffix ignored in 'typeof%'
+INTEGER
+warning expected
+	Suffix ignored in 'lang%'
+warning expected
+	Suffix ignored in 'line%'
+----Intrinsics ----
+warning expected
+	Suffix ignored in 'false%'
+warning expected
+	Suffix ignored in 'true%'
+warning expected
+	Suffix ignored in 'false%'
+none expected
+4 warnings expected
+	Suffix ignored in 'wchr$'
+	Suffix ignored in 'wstr$'
+	Suffix ignored in 'wstring$'
+	Suffix ignored in 'bin$'
