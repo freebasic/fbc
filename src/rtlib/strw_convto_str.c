@@ -72,7 +72,7 @@ FBCALL FBSTRING *fb_WstrToStr( const FB_WCHAR *src )
     if( src == NULL )
         return &__fb_ctx.null_desc;
 
-    chars = fb_wstr_Len( src );
+    chars = wcstombs( NULL, src, 0 );
     if( chars == 0 )
         return &__fb_ctx.null_desc;
 
