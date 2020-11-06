@@ -9,19 +9,12 @@
 	#include <fcntl.h>
 #endif
 
-#define RND_AUTO		0
-#define RND_CRT			1
-#define RND_FAST		2
-#define RND_MTWIST		3
-#define RND_QB			4
-#define RND_REAL		5
-
 #define INITIAL_SEED	327680
 
 #define MAX_STATE		624
 #define PERIOD			397
 
-static uint32_t generator = RND_AUTO;
+static uint32_t generator = FB_RND_AUTO;
 
 static double hRnd_Startup( float n );
 static double hRnd_CRT ( float n );
@@ -43,14 +36,14 @@ static void hStartup( void )
 {
 	switch( __fb_ctx.lang ) {
 	case FB_LANG_QB:
-		generator = RND_QB;
+		generator = FB_RND_QB;
 		rnd_func = hRnd_QB;
 		rnd_func32 = hRnd_QB32;
 		iseed = INITIAL_SEED;
 		break;
 	case FB_LANG_FB_FBLITE:
 	case FB_LANG_FB_DEPRECATED:
-		generator = RND_CRT;
+		generator = FB_RND_CRT;
 		rnd_func = hRnd_CRT;
 		rnd_func32 = hRnd_CRT32;
 		break;
@@ -109,7 +102,7 @@ static uint32_t hRnd_MTWIST32 ( void )
 
 	if( !p ) {
 		/* initialize state starting with an initial seed */
-		fb_Randomize( INITIAL_SEED, RND_MTWIST );
+		fb_Randomize( INITIAL_SEED, FB_RND_MTWIST );
 	}
 
 	if( p >= state + MAX_STATE ) {
@@ -199,7 +192,7 @@ static uint32_t hRnd_REAL32( void )
 	if( p == ( state + MAX_STATE ) ) {
 		/* get new random numbers, if not available, redirect to MTwist as per docs */
 		if( hRefillRealRndNumber( ) == 0 ) {
-			fb_Randomize( -1.0, RND_MTWIST );
+			fb_Randomize( -1.0, FB_RND_MTWIST );
 			return fb_Rnd32( );
 		}
 	}
@@ -242,13 +235,13 @@ FBCALL void fb_Randomize ( double seed, int algorithm )
 		uint32_t i[2];
 	} dtoi;
 
-	if( algorithm == RND_AUTO ) {
+	if( algorithm == FB_RND_AUTO ) {
 		switch( __fb_ctx.lang ) {
-		case FB_LANG_QB:			algorithm = RND_QB;		break;
+		case FB_LANG_QB:			algorithm = FB_RND_QB;		break;
 		case FB_LANG_FB_FBLITE:
-		case FB_LANG_FB_DEPRECATED:	algorithm = RND_CRT;	break;
+		case FB_LANG_FB_DEPRECATED:	algorithm = FB_RND_CRT;	break;
 		default:
-		case FB_LANG_FB:			algorithm = RND_MTWIST; break;
+		case FB_LANG_FB:			algorithm = FB_RND_MTWIST; break;
 		}
 	}
 
@@ -267,20 +260,20 @@ FBCALL void fb_Randomize ( double seed, int algorithm )
 	generator = algorithm;
 
 	switch( algorithm ) {
-	case RND_CRT:
+	case FB_RND_CRT:
 		rnd_func = hRnd_CRT;
 		rnd_func32 = hRnd_CRT32;
 		srand( (unsigned int)seed );
 		rand( );
 		break;
 
-	case RND_FAST:
+	case FB_RND_FAST:
 		rnd_func = hRnd_FAST;
 		rnd_func32 = hRnd_FAST32;
 		iseed = (uint32_t)seed;
 		break;
 
-	case RND_QB:
+	case FB_RND_QB:
 		rnd_func = hRnd_QB;
 		rnd_func32 = hRnd_QB32;
 		dtoi.d = seed;
@@ -291,7 +284,7 @@ FBCALL void fb_Randomize ( double seed, int algorithm )
 		break;
 
 #if defined HOST_WIN32 || defined HOST_LINUX
-	case RND_REAL:
+	case FB_RND_REAL:
 		rnd_func = hRnd_REAL;
 		rnd_func32 = hRnd_REAL32;
 		state[0] = (unsigned int)seed;
@@ -302,7 +295,7 @@ FBCALL void fb_Randomize ( double seed, int algorithm )
 #endif
 
 	default:
-	case RND_MTWIST:
+	case FB_RND_MTWIST:
 		rnd_func = hRnd_MTWIST;
 		rnd_func32 = hRnd_MTWIST32;
 		state[0] = (unsigned int)seed;

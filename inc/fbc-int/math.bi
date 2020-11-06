@@ -21,16 +21,9 @@
 #inclib "advapi32"
 #endif
 
-namespace FBC
+#include once "fbmath.bi"
 
-enum FB_RND_ALGORITHMS
-	FB_RND_AUTO
-	FB_RND_CRT
-	FB_RND_FAST
-	FB_RND_MTWIST
-	FB_RND_QB
-	FB_RND_REAL
-end enum
+namespace FBC
 
 type FB_RNDINTERNALS
 	dim algorithm as ulong           '' algorithm number see FB_RND_ALGORITHMS
@@ -48,7 +41,7 @@ end type
 
 extern "rtlib"
 
-	declare sub randomize alias "fb_Randomize" ( byval seed as double = -1.0, byval algorithm as long = FB_RND_AUTO )
+	declare sub randomize alias "fb_Randomize" ( byval seed as double = -1.0, byval algorithm as long = FB.FB_RND_AUTO )
 	declare function rnd alias "fb_Rnd" ( byval n as single = 1.0 ) as double
 	declare function rnd32 alias "fb_Rnd32" ( ) as ulong
 

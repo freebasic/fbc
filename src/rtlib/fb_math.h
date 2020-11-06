@@ -1,3 +1,12 @@
+typedef enum _FB_RND_ALGORITHMS {
+	FB_RND_AUTO = 0,
+	FB_RND_CRT,
+	FB_RND_FAST,
+	FB_RND_MTWIST,
+	FB_RND_QB,
+	FB_RND_REAL
+} FB_RND_ALGORITHMS;
+
 typedef struct _FB_RNDINTERNALS {
 	uint32_t algorithm;
 	uint32_t length;

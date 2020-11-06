@@ -1,4 +1,5 @@
 #include "fbcunit.bi"
+#include "fbmath.bi"
 #include "fbc-int/math.bi"
 
 #ifndef NULL
@@ -11,7 +12,7 @@ SUITE( fbc_tests.fbc_int.math_rnd )
 
 	TEST( direct )
 
-		fbc.randomize 1, FBC.FB_RND_FAST
+		fbc.randomize 1, FB.FB_RND_FAST
 
 		CU_ASSERT_EQUAL( fbc.rnd32(), 1015568748 )
 		CU_ASSERT_EQUAL( fbc.rnd32(), 1586005467 )
@@ -22,7 +23,7 @@ SUITE( fbc_tests.fbc_int.math_rnd )
 		dim info as FBC.FB_RNDINTERNALS
 		fbc.rndGetInternals( @info )
 
-		CU_ASSERT( info.algorithm = FBC.FB_RND_FAST )
+		CU_ASSERT( info.algorithm = FB.FB_RND_FAST )
 		CU_ASSERT( info.rndproc <> NULL )
 		CU_ASSERT( info.rndproc32 <> NULL )
 
@@ -34,7 +35,7 @@ SUITE( fbc_tests.fbc_int.math_rnd )
 		using fbc
 
 		randomize
-		randomize , FB_RND_MTWIST
+		randomize , FB.FB_RND_MTWIST
 
 		var x = rnd
 		var y = rnd32
