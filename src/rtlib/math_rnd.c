@@ -42,47 +42,7 @@ static FB_RNDSTATE ctx = {
 };
 
 /* last number as returned by RND(0.0) is never reset */
-
-static double hRnd_CRT ( float n );
-static double hRnd_QB ( float n );
-
-static uint32_t hRnd_CRT32 ( void );
-static uint32_t hRnd_QB32 ( void );
-
 static double last_num = 0.0;
-
-static void hStartup( void )
-{
-	switch( __fb_ctx.lang ) {
-	case FB_LANG_QB:
-		ctx.algorithm = FB_RND_QB;
-		ctx.rndproc = hRnd_QB;
-		ctx.rndproc32 = hRnd_QB32;
-		ctx.iseed32 = INITIAL_SEED;
-		break;
-	case FB_LANG_FB_FBLITE:
-	case FB_LANG_FB_DEPRECATED:
-		ctx.algorithm = FB_RND_CRT;
-		ctx.rndproc = hRnd_CRT;
-		ctx.rndproc32 = hRnd_CRT32;
-		break;
-	default:
-		fb_Randomize( 0.0, 0 );
-		break;
-	}
-}
-
-static uint32_t hRnd_Startup32 ( void )
-{
-	hStartup();
-	return fb_Rnd32();
-}
-
-static double hRnd_Startup ( float n )
-{
-	hStartup();
-	return fb_Rnd( n );
-}
 
 /* FB_RND_CRT */
 static uint32_t hRnd_CRT32 ( void )
@@ -142,7 +102,7 @@ static uint32_t hRnd_MTWIST32 ( void )
 		ctx.index32 = ctx.state32;
 	}
 
-	v = *ctx.index32++;
+	v = *(ctx.index32++);
 	v ^= ( v >> 11 );
 	v ^= ( ( v << 7 ) & 0x9D2C5680 );
 	v ^= ( ( v << 15 ) & 0xEFC60000 );
@@ -233,6 +193,39 @@ static double hRnd_REAL( float n )
 }
 #endif
 
+static void hStartup( void )
+{
+	switch( __fb_ctx.lang ) {
+	case FB_LANG_QB:
+		ctx.algorithm = FB_RND_QB;
+		ctx.rndproc = hRnd_QB;
+		ctx.rndproc32 = hRnd_QB32;
+		ctx.iseed32 = INITIAL_SEED;
+		break;
+	case FB_LANG_FB_FBLITE:
+	case FB_LANG_FB_DEPRECATED:
+		ctx.algorithm = FB_RND_CRT;
+		ctx.rndproc = hRnd_CRT;
+		ctx.rndproc32 = hRnd_CRT32;
+		break;
+	default:
+		fb_Randomize( 0.0, 0 );
+		break;
+	}
+}
+
+static uint32_t hRnd_Startup32 ( void )
+{
+	hStartup();
+	return fb_Rnd32();
+}
+
+static double hRnd_Startup ( float n )
+{
+	hStartup();
+	return fb_Rnd( n );
+}
+
 FBCALL double fb_Rnd ( float n )
 {
 	FB_MATH_LOCK();
@@ -250,40 +243,32 @@ FBCALL uint32_t fb_Rnd32 ( void )
 	return result;
 }
 
-FBCALL void fb_Randomize ( double seed, int algorithm )
+static int getAlogrithm( int algorithm )
 {
-	int i;
-
-	union {
-		double d;
-		uint32_t i[2];
-	} dtoi;
-
 	if( algorithm == FB_RND_AUTO ) {
 		switch( __fb_ctx.lang ) {
-		case FB_LANG_QB:			algorithm = FB_RND_QB;		break;
+		case FB_LANG_QB:			algorithm = FB_RND_QB; break;
 		case FB_LANG_FB_FBLITE:
-		case FB_LANG_FB_DEPRECATED:	algorithm = FB_RND_CRT;	break;
+		case FB_LANG_FB_DEPRECATED:	algorithm = FB_RND_CRT; break;
 		default:
 		case FB_LANG_FB:			algorithm = FB_RND_MTWIST; break;
 		}
 	}
+	return algorithm;
+}
 
-	FB_MATH_LOCK();
+union {
+	double d;
+	uint32_t i[2];
+} dtoi;
 
-	if( seed == -1.0 )
-	{
-		/* Take value of Timer to ensure a non-constant seed.  The seeding
-		algorithms (with the exception of the QB one) take the integer value
-		of the seed, so make a value that will change more than once a second */
+void fb_RndCtxInit ( uint64_t seed, int algorithm )
+{
+	int i;
 
-		dtoi.d = fb_Timer( );
-		seed = (double)(dtoi.i[0] ^ dtoi.i[1]);
-	}
+	ctx.algorithm = getAlogrithm( algorithm );
 
-	ctx.algorithm = algorithm;
-
-	switch( algorithm ) {
+	switch( ctx.algorithm ) {
 	case FB_RND_CRT:
 		ctx.rndproc = hRnd_CRT;
 		ctx.rndproc32 = hRnd_CRT32;
@@ -328,6 +313,23 @@ FBCALL void fb_Randomize ( double seed, int algorithm )
 		ctx.index32 = ctx.state32 + MAX_STATE;
 		break;
 	}
+}
+
+FBCALL void fb_Randomize ( double seed, int algorithm )
+{
+	FB_MATH_LOCK();
+
+	if( seed == -1.0 )
+	{
+		/* Take value of Timer to ensure a non-constant seed.  The seeding
+		algorithms (with the exception of the QB one) take the integer value
+		of the seed, so make a value that will change more than once a second */
+
+		dtoi.d = fb_Timer( );
+		seed = (double)(dtoi.i[0] ^ dtoi.i[1]);
+	}
+
+	fb_RndCtxInit( (uint64_t)seed, algorithm );
 
 	FB_MATH_UNLOCK();
 
