@@ -16,29 +16,38 @@
    called, the functions are remapped to the actual PRNG
    functions.
 */
+static uint32_t hRnd_Startup32( void );
+static double hRnd_Startup( float n );
 
 #define INITIAL_SEED	327680
 
 /* MAX_STATE is number of 32-bit unsigned integers */
 /* used by FB_RND_MTWIST & FB_RND_REAL */
-#define MAX_STATE		624
-#define PERIOD			397
+#define MAX_STATE     (FB_RND_MAX_STATE)
+#define PERIOD        397
 
-static uint32_t generator = FB_RND_AUTO;
+static FB_RNDSTATE ctx = {
+	FB_RND_AUTO,       /* generator */
+	0,                 /* length of state */
+	hRnd_Startup,      /* fb_Rnd() */
+	hRnd_Startup32,    /* fb_Rnd32() */
+	{0},               /* iseed64 */
+	NULL,              /* index pointer */
 
-static double hRnd_Startup( float n );
+	/* state32[] - state for FB_RND_MTWIST 
+	   and buffer for FB_RND_REAL follows 
+	   immediately follow
+	 */
+	 {0}
+};
+
+/* last number as returned by RND(0.0) is never reset */
+
 static double hRnd_CRT ( float n );
 static double hRnd_QB ( float n );
 
-static uint32_t hRnd_Startup32( void );
 static uint32_t hRnd_CRT32 ( void );
 static uint32_t hRnd_QB32 ( void );
-
-static double ( *rnd_func )( float ) = hRnd_Startup;
-static uint32_t ( *rnd_func32 )( void ) = hRnd_Startup32;
-
-static uint32_t iseed = INITIAL_SEED;
-static uint32_t state[MAX_STATE], *p = NULL;
 
 static double last_num = 0.0;
 
@@ -46,16 +55,16 @@ static void hStartup( void )
 {
 	switch( __fb_ctx.lang ) {
 	case FB_LANG_QB:
-		generator = FB_RND_QB;
-		rnd_func = hRnd_QB;
-		rnd_func32 = hRnd_QB32;
-		iseed = INITIAL_SEED;
+		ctx.algorithm = FB_RND_QB;
+		ctx.rndproc = hRnd_QB;
+		ctx.rndproc32 = hRnd_QB32;
+		ctx.iseed32 = INITIAL_SEED;
 		break;
 	case FB_LANG_FB_FBLITE:
 	case FB_LANG_FB_DEPRECATED:
-		generator = FB_RND_CRT;
-		rnd_func = hRnd_CRT;
-		rnd_func32 = hRnd_CRT32;
+		ctx.algorithm = FB_RND_CRT;
+		ctx.rndproc = hRnd_CRT;
+		ctx.rndproc32 = hRnd_CRT32;
 		break;
 	default:
 		fb_Randomize( 0.0, 0 );
@@ -94,15 +103,15 @@ static double hRnd_CRT ( float n )
 static uint32_t hRnd_FAST32 ( void )
 {
 	/* Constants from 'Numerical recipes in C' chapter 7.1 */
-	iseed = ( ( 1664525 * iseed ) + 1013904223 );
-	return iseed;
+	ctx.iseed32 = ( ( 1664525 * ctx.iseed32 ) + 1013904223 );
+	return ctx.iseed32;
 }
 
 static double hRnd_FAST ( float n )
 {
 	/* return last value if argument is 0.0 */
 	if( n == 0.0 )
-		return (double)iseed / (double)4294967296ULL;
+		return (double)ctx.iseed32 / (double)4294967296ULL;
 
 	/* return between 0 and 1 (but never 1) */
 	return (double)hRnd_FAST32() / (double)4294967296ULL;
@@ -113,27 +122,27 @@ static uint32_t hRnd_MTWIST32 ( void )
 {
 	uint32_t i, v, xor_mask[2] = { 0, 0x9908B0DF };
 
-	if( !p ) {
+	if( !ctx.index32 ) {
 		/* initialize state starting with an initial seed */
 		fb_Randomize( INITIAL_SEED, FB_RND_MTWIST );
 	}
 
-	if( p >= state + MAX_STATE ) {
+	if( ctx.index32 >= ctx.state32 + MAX_STATE ) {
 		/* generate another array of 624 numbers */
 		for( i = 0; i < MAX_STATE - PERIOD; i++ ) {
-			v = ( state[i] & 0x80000000 ) | ( state[i + 1] & 0x7FFFFFFF );
-			state[i] = state[i + PERIOD] ^ ( v >> 1 ) ^ xor_mask[v & 0x1];
+			v = ( ctx.state32[i] & 0x80000000 ) | ( ctx.state32[i + 1] & 0x7FFFFFFF );
+			ctx.state32[i] = ctx.state32[i + PERIOD] ^ ( v >> 1 ) ^ xor_mask[v & 0x1];
 		}
 		for( ; i < MAX_STATE - 1; i++ ) {
-			v = ( state[i] & 0x80000000 ) | ( state[i + 1] & 0x7FFFFFFF );
-			state[i] = state[i + PERIOD - MAX_STATE] ^ ( v >> 1 ) ^ xor_mask[v & 0x1];
+			v = ( ctx.state32[i] & 0x80000000 ) | ( ctx.state32[i + 1] & 0x7FFFFFFF );
+			ctx.state32[i] = ctx.state32[i + PERIOD - MAX_STATE] ^ ( v >> 1 ) ^ xor_mask[v & 0x1];
 		}
-		v = ( state[MAX_STATE - 1] & 0x80000000 ) | ( state[0] & 0x7FFFFFFF );
-		state[MAX_STATE - 1] = state[PERIOD - 1] ^ ( v >> 1 ) ^ xor_mask[v & 0x1];
-		p = state;
+		v = ( ctx.state32[MAX_STATE - 1] & 0x80000000 ) | ( ctx.state32[0] & 0x7FFFFFFF );
+		ctx.state32[MAX_STATE - 1] = ctx.state32[PERIOD - 1] ^ ( v >> 1 ) ^ xor_mask[v & 0x1];
+		ctx.index32 = ctx.state32;
 	}
 
-	v = *p++;
+	v = *ctx.index32++;
 	v ^= ( v >> 11 );
 	v ^= ( ( v << 7 ) & 0x9D2C5680 );
 	v ^= ( ( v << 15 ) & 0xEFC60000 );
@@ -152,8 +161,8 @@ static double hRnd_MTWIST ( float n )
 /* FB_RND_QB */
 static uint32_t hRnd_QB32 ( void )
 {
-	iseed = ( ( iseed * 0xFD43FD ) + 0xC39EC3 ) & 0xFFFFFF;
-	return iseed;
+	ctx.iseed32 = ( ( ctx.iseed32 * 0xFD43FD ) + 0xC39EC3 ) & 0xFFFFFF;
+	return ctx.iseed32;
 }
 
 static double hRnd_QB ( float n )
@@ -164,12 +173,12 @@ static double hRnd_QB ( float n )
 	} ftoi;
 
 	if( n == 0.0 )
-		return (float)iseed / (float)0x1000000;
+		return (float)ctx.iseed32 / (float)0x1000000;
 
 	if( n < 0.0 ) {
 		ftoi.f = n;
 		uint32_t s = ftoi.i;
-		iseed = s + ( s >> 24 );
+		ctx.iseed32 = s + ( s >> 24 );
 	}
 
 	return (float)hRnd_QB32() / (float)0x1000000;
@@ -184,19 +193,19 @@ static int hRefillRealRndNumber( )
 #if defined HOST_WIN32
 	HCRYPTPROV provider = 0;
 	if( CryptAcquireContext( &provider, NULL, 0, PROV_RSA_FULL, 0 ) == TRUE ) {
-		success = CryptGenRandom( provider, sizeof(state), (BYTE*)state );
+		success = CryptGenRandom( provider, sizeof(ctx.state32), (BYTE*)ctx.state32 );
 		CryptReleaseContext( provider, 0 );
 	}
 
 #elif defined HOST_LINUX
 	int urandom = open( "/dev/urandom", O_RDONLY );
 	if( urandom != -1 ) {
-		success = ( read( urandom, state, sizeof(state) ) == sizeof(state) );
+		success = ( read( urandom, ctx.state32, sizeof(ctx.state32) ) == sizeof(ctx.state32) );
 		close( urandom );
 	}
 #endif
 	if( success ) {
-		p = state;
+		ctx.index32 = ctx.state32;
 	}
 	return success; 
 }
@@ -204,14 +213,14 @@ static int hRefillRealRndNumber( )
 static uint32_t hRnd_REAL32( void )
 {
 	uint32_t v;
-	if( p == ( state + MAX_STATE ) ) {
+	if( ctx.index32 == ( ctx.state32 + MAX_STATE ) ) {
 		/* get new random numbers, if not available, redirect to MTwist as per docs */
 		if( hRefillRealRndNumber( ) == 0 ) {
 			fb_Randomize( -1.0, FB_RND_MTWIST );
 			return fb_Rnd32( );
 		}
 	}
-	v = *(p++);
+	v = *(ctx.index32++);
 	return v;
 }
 
@@ -227,7 +236,7 @@ static double hRnd_REAL( float n )
 FBCALL double fb_Rnd ( float n )
 {
 	FB_MATH_LOCK();
-	last_num = rnd_func( n );
+	last_num = ctx.rndproc( n );
 	FB_MATH_UNLOCK();
 	return last_num;
 }
@@ -236,7 +245,7 @@ FBCALL uint32_t fb_Rnd32 ( void )
 {
 	uint32_t result;
 	FB_MATH_LOCK();
-	result = rnd_func32( );
+	result = ctx.rndproc32( );
 	FB_MATH_UNLOCK();
 	return result;
 }
@@ -272,51 +281,51 @@ FBCALL void fb_Randomize ( double seed, int algorithm )
 		seed = (double)(dtoi.i[0] ^ dtoi.i[1]);
 	}
 
-	generator = algorithm;
+	ctx.algorithm = algorithm;
 
 	switch( algorithm ) {
 	case FB_RND_CRT:
-		rnd_func = hRnd_CRT;
-		rnd_func32 = hRnd_CRT32;
+		ctx.rndproc = hRnd_CRT;
+		ctx.rndproc32 = hRnd_CRT32;
 		srand( (unsigned int)seed );
 		rand( );
 		break;
 
 	case FB_RND_FAST:
-		rnd_func = hRnd_FAST;
-		rnd_func32 = hRnd_FAST32;
-		iseed = (uint32_t)seed;
+		ctx.rndproc = hRnd_FAST;
+		ctx.rndproc32 = hRnd_FAST32;
+		ctx.iseed32 = (uint32_t)seed;
 		break;
 
 	case FB_RND_QB:
-		rnd_func = hRnd_QB;
-		rnd_func32 = hRnd_QB32;
+		ctx.rndproc = hRnd_QB;
+		ctx.rndproc32 = hRnd_QB32;
 		dtoi.d = seed;
 		uint32_t s = dtoi.i[1];
 		s ^= ( s >> 16 );
-		s = ( ( s & 0xFFFF ) << 8 ) | ( iseed & 0xFF );
-		iseed = s;
+		s = ( ( s & 0xFFFF ) << 8 ) | ( ctx.iseed32 & 0xFF );
+		ctx.iseed32 = s;
 		break;
 
 #if defined HOST_WIN32 || defined HOST_LINUX
 	case FB_RND_REAL:
-		rnd_func = hRnd_REAL;
-		rnd_func32 = hRnd_REAL32;
-		state[0] = (unsigned int)seed;
+		ctx.rndproc = hRnd_REAL;
+		ctx.rndproc32 = hRnd_REAL32;
+		ctx.state32[0] = (unsigned int)seed;
 		for( i = 1; i < MAX_STATE; i++ )
-			state[i] = ( state[i - 1] * 1664525 ) + 1013904223;
-		p = state + MAX_STATE;
+			ctx.state32[i] = ( ctx.state32[i - 1] * 1664525 ) + 1013904223;
+		ctx.index32 = ctx.state32 + MAX_STATE;
 		break;
 #endif
 
 	default:
 	case FB_RND_MTWIST:
-		rnd_func = hRnd_MTWIST;
-		rnd_func32 = hRnd_MTWIST32;
-		state[0] = (unsigned int)seed;
+		ctx.rndproc = hRnd_MTWIST;
+		ctx.rndproc32 = hRnd_MTWIST32;
+		ctx.state32[0] = (unsigned int)seed;
 		for( i = 1; i < MAX_STATE; i++ )
-			state[i] = ( state[i - 1] * 1664525 ) + 1013904223;
-		p = state + MAX_STATE;
+			ctx.state32[i] = ( ctx.state32[i - 1] * 1664525 ) + 1013904223;
+		ctx.index32 = ctx.state32 + MAX_STATE;
 		break;
 	}
 
@@ -324,20 +333,7 @@ FBCALL void fb_Randomize ( double seed, int algorithm )
 
 }
 
-FBCALL void fb_RndGetState( FB_RNDSTATE *info )
+FBCALL FB_RNDSTATE *fb_RndGetState( void )
 {
-	if( info )
-	{
-		FB_MATH_LOCK();
-
-		info->algorithm = generator;
-		info->length = MAX_STATE;
-		info->stateblock = &(state[0]);
-		info->stateindex = &p;
-		info->iseed = &iseed;
-		info->rndproc = rnd_func;
-		info->rndproc32 = rnd_func32;
-
-		FB_MATH_UNLOCK();
-	}
+	return &ctx;
 }

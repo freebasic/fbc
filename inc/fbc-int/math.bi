@@ -25,18 +25,27 @@
 
 namespace FBC
 
+const FB_RND_MAX_STATE = 624
+
 type FB_RNDSTATE
 	dim algorithm as ulong           '' algorithm number see FB_RND_ALGORITHMS
-	dim length as ulong              '' length of Mersennse Twister states in (number of ulongs)
-	dim stateblock as ulong ptr      '' Mersenne Twister state (pointer array)
-	dim stateindex as ulong ptr ptr  '' Mersenne Twister current index
-	dim iseed as ulong ptr           '' Current state for FB_RND_FAST & FB_RND_QB
+	dim length as ulong              '' length of dynamically allocated state array in bytes
 
 	'' function pointer for internal proc called by fb_Rnd()
 	dim rndproc as function cdecl ( byval n as single = 1.0 ) as double
 
 	'' function pointer for internal proc called by fb_Rnd32()
 	dim rndproc32 as function cdecl ( ) as ulong
+
+	union
+		dim iseed64 as ulongint      '' 64-bit seed / state value (for future use)
+		dim iseed32 as ulong         '' seed & current state for FB_RND_FAST & FB_RND_QB
+	end union
+
+	dim index32 as ulong ptr     '' FB_RND_MTWIST or FB_RND_REAL pointer index
+
+	'' state vector
+	dim state32( FB_RND_MAX_STATE ) as ulong
 end type
 
 extern "rtlib"
@@ -46,7 +55,8 @@ extern "rtlib"
 	declare function rnd alias "fb_Rnd" ( byval n as single = 1.0 ) as double
 	declare function rnd32 alias "fb_Rnd32" ( ) as ulong
 
-	declare sub rndGetState alias "fb_RndGetState" ( byval info as FB_RNDSTATE ptr )
+	'' get a pointer to the internal global state for RND()
+	declare function rndGetState alias "fb_RndGetState" ( ) as FB_RNDSTATE ptr
 
 	#if __FB_MT__
 
