@@ -20,8 +20,8 @@ SUITE( fbc_tests.fbc_int.math_rnd )
 		CU_ASSERT_EQUAL( fbc.rnd32(), 3027450565 )
 		CU_ASSERT_EQUAL( fbc.rnd32(), 217083232 )
 		
-		dim info as FBC.FB_RNDINTERNALS
-		fbc.rndGetInternals( @info )
+		dim info as FBC.FB_RNDSTATE
+		fbc.rndGetState( @info )
 
 		CU_ASSERT( info.algorithm = FB.FB_RND_FAST )
 		CU_ASSERT( info.rndproc <> NULL )
@@ -40,8 +40,8 @@ SUITE( fbc_tests.fbc_int.math_rnd )
 		var x = rnd
 		var y = rnd32
 
-		dim info as FB_RNDINTERNALS
-		rndGetInternals( @info )
+		dim info as FB_RNDSTATE
+		rndGetState( @info )
 
 		CU_PASS()
 		

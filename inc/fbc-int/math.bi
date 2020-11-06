@@ -25,7 +25,7 @@
 
 namespace FBC
 
-type FB_RNDINTERNALS
+type FB_RNDSTATE
 	dim algorithm as ulong           '' algorithm number see FB_RND_ALGORITHMS
 	dim length as ulong              '' length of Mersennse Twister states in (number of ulongs)
 	dim stateblock as ulong ptr      '' Mersenne Twister state (pointer array)
@@ -41,11 +41,12 @@ end type
 
 extern "rtlib"
 
+	'' built-in RANDOMIZE & RND & RND32
 	declare sub randomize alias "fb_Randomize" ( byval seed as double = -1.0, byval algorithm as long = FB.FB_RND_AUTO )
 	declare function rnd alias "fb_Rnd" ( byval n as single = 1.0 ) as double
 	declare function rnd32 alias "fb_Rnd32" ( ) as ulong
 
-	declare sub rndGetInternals alias "fb_RndGetInternals" ( byval info as FB_RNDINTERNALS ptr )
+	declare sub rndGetState alias "fb_RndGetState" ( byval info as FB_RNDSTATE ptr )
 
 	#if __FB_MT__
 

@@ -1,7 +1,8 @@
-/* rnd# function */
+/* rnd# function & randmoize statement for built-in PRNGs */
 
 #include "fb.h"
 
+/* Needed by FB_RND_REAL */
 #if defined HOST_WIN32
 	#include <windows.h>
 	#include <wincrypt.h>
@@ -9,8 +10,17 @@
 	#include <fcntl.h>
 #endif
 
+/* rtlib is initialzied so that RND & RND32 call the
+   startup routines.  This allows calling RND without
+   first call RANDOMIZE.  After the startup routine is
+   called, the functions are remapped to the actual PRNG
+   functions.
+*/
+
 #define INITIAL_SEED	327680
 
+/* MAX_STATE is number of 32-bit unsigned integers */
+/* used by FB_RND_MTWIST & FB_RND_REAL */
 #define MAX_STATE		624
 #define PERIOD			397
 
@@ -65,6 +75,7 @@ static double hRnd_Startup ( float n )
 	return fb_Rnd( n );
 }
 
+/* FB_RND_CRT */
 static uint32_t hRnd_CRT32 ( void )
 {
 	return rand( );
@@ -79,6 +90,7 @@ static double hRnd_CRT ( float n )
 	return (double)hRnd_CRT32( ) * ( 1.0 / ( (double)RAND_MAX + 1.0 ) );
 }
 
+/* FB_RND_FAST */
 static uint32_t hRnd_FAST32 ( void )
 {
 	/* Constants from 'Numerical recipes in C' chapter 7.1 */
@@ -96,6 +108,7 @@ static double hRnd_FAST ( float n )
 	return (double)hRnd_FAST32() / (double)4294967296ULL;
 }
 
+/* rnd# function for FB_RND_MTWIST */
 static uint32_t hRnd_MTWIST32 ( void )
 {
 	uint32_t i, v, xor_mask[2] = { 0, 0x9908B0DF };
@@ -136,7 +149,7 @@ static double hRnd_MTWIST ( float n )
 
 	return (double)hRnd_MTWIST32() / (double)4294967296ULL;
 }
-
+/* FB_RND_QB */
 static uint32_t hRnd_QB32 ( void )
 {
 	iseed = ( ( iseed * 0xFD43FD ) + 0xC39EC3 ) & 0xFFFFFF;
@@ -161,6 +174,8 @@ static double hRnd_QB ( float n )
 
 	return (float)hRnd_QB32() / (float)0x1000000;
 }
+
+/* FB_RND_REAL */
 
 #if defined HOST_WIN32 || defined HOST_LINUX
 static int hRefillRealRndNumber( )
@@ -309,7 +324,7 @@ FBCALL void fb_Randomize ( double seed, int algorithm )
 
 }
 
-FBCALL void fb_RndGetInternals( FB_RNDINTERNALS *info )
+FBCALL void fb_RndGetState( FB_RNDSTATE *info )
 {
 	if( info )
 	{

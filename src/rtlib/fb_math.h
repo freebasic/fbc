@@ -7,7 +7,7 @@ typedef enum _FB_RND_ALGORITHMS {
 	FB_RND_REAL
 } FB_RND_ALGORITHMS;
 
-typedef struct _FB_RNDINTERNALS {
+typedef struct _FB_RNDSTATE {
 	uint32_t algorithm;
 	uint32_t length;
 	uint32_t *stateblock;
@@ -15,11 +15,11 @@ typedef struct _FB_RNDINTERNALS {
 	uint32_t *iseed;
 	double   ( *rndproc )( float n );
 	uint32_t ( *rndproc32 )( void );
-} FB_RNDINTERNALS;
+} FB_RNDSTATE;
 
 FBCALL double       fb_Rnd              ( float n );
 FBCALL uint32_t     fb_Rnd32            ( void );
-FBCALL void         fb_GetRndInternals  ( FB_RNDINTERNALS *info );
+FBCALL void         fb_RndGetState      ( FB_RNDSTATE *info );
 
 FBCALL void         fb_Randomize        ( double seed, int algorithm );
 FBCALL int          fb_SGNSingle        ( float x );
