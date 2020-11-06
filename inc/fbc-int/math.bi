@@ -13,13 +13,11 @@
 '' declarations must follow ./src/rtlib/fb_math.h
 ''                          ./src/rtlib/fb_rnd.c
 
-'' move built-ins out of the global namespace
-#undef rnd
-#undef randomize
-
-#if defined( __FB_CYGWIN__) or defined(__FB_WIN32__)
-#inclib "advapi32"
-#endif
+'' fbmath.bi provides definitions for:
+'' - FB.FB_RND_ALGORTITMS
+'' - fb.RANDOMIZE
+'' - fb.RND
+'' - fb.RND32
 
 #include once "fbmath.bi"
 
