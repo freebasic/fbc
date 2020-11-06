@@ -58,6 +58,20 @@ extern "rtlib"
 	'' get a pointer to the internal global state for RND()
 	declare function rndGetState alias "fb_RndGetState" ( ) as FB_RNDSTATE ptr
 
+	'' generic procedure to initialize a built-in PRNG with user allocated FB_RNDSTATE
+	declare sub rndCtxInit cdecl alias "fb_RndCtxInit" _
+		( _
+			byval seed as ulongint = 0, _
+			byval algorithm as long = FB.FB_RND_AUTO _
+		)
+
+	'' procedures to initialize a user allocated FB_RNDSTATE for a specific generator
+	declare sub rndCtxInitCRT32 cdecl alias "fb_RndCtxInitCRT32" ( byval seed as ulongint = 0 )
+	declare sub rndCtxInitFAST32 cdecl alias "fb_RndCtxInitFAST32" ( byval seed as ulongint = 0 )
+	declare sub rndCtxInitMTWIST32 cdecl alias "fb_RndCtxInitMTWIST32" ( byval seed as ulongint = 0 )
+	declare sub rndCtxInitQB32 cdecl alias "fb_RndCtxInitQB32" ( byval seed as ulongint = 0 )
+	declare sub rndCtxInitREAL32 cdecl alias "fb_RndCtxInitREAL32" ( byval seed as ulongint = 0 )
+
 	#if __FB_MT__
 
 	declare sub mathLock alias "fb_MathLock" ()
