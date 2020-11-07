@@ -23,7 +23,7 @@ typedef struct _FB_RNDSTATE {
 	uint32_t ( *rndproc32 )( void );
 
 	union {
-		uint32_t iseed64;      /* initial seed and state 64-bit */
+		uint64_t iseed64;      /* initial seed and state 64-bit */
 		uint32_t iseed32;      /* initial seed and state 32-bit */
 	};
 	uint32_t *index32;         /* pointer to index in state vector, if length != 0 */
