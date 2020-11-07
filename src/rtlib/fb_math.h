@@ -34,13 +34,6 @@ typedef struct _FB_RNDSTATE {
 
 FBCALL FB_RNDSTATE *fb_RndGetState ( void );
 
-       void         fb_RndCtxInit           ( uint64_t seed, int algorithm );
-       void         fb_RndCtxInitCRT32      ( uint64_t seed );
-       void         fb_RndCtxInitFAST32     ( uint64_t seed );
-       void         fb_RndCtxInitMTWIST32   ( uint64_t seed );
-       void         fb_RndCtxInitQB32       ( uint64_t seed );
-       void         fb_RndCtxInitREAL32     ( uint64_t seed );
-
 /* Constants from 'Numerical recipes in C' chapter 7.1 */
 #define FBRNDFAST32(arg) ( ( (arg) * 1664525 ) + 1013904223 )
 

@@ -12,13 +12,13 @@ SUITE( fbc_tests.fbc_int.math_rnd )
 
 	TEST( direct )
 
-		fb.randomize 1, FB.FB_RND_FAST
+		fbc.randomize 1, FB.FB_RND_FAST
 
-		CU_ASSERT_EQUAL( fb.rnd32(), 1015568748 )
-		CU_ASSERT_EQUAL( fb.rnd32(), 1586005467 )
-		CU_ASSERT_EQUAL( fb.rnd32(), 2165703038 )
-		CU_ASSERT_EQUAL( fb.rnd32(), 3027450565 )
-		CU_ASSERT_EQUAL( fb.rnd32(), 217083232 )
+		CU_ASSERT_EQUAL( fbc.rnd32(), 1015568748 )
+		CU_ASSERT_EQUAL( fbc.rnd32(), 1586005467 )
+		CU_ASSERT_EQUAL( fbc.rnd32(), 2165703038 )
+		CU_ASSERT_EQUAL( fbc.rnd32(), 3027450565 )
+		CU_ASSERT_EQUAL( fbc.rnd32(), 217083232 )
 		
 		dim info as FBC.FB_RNDSTATE ptr
 		info = fbc.rndGetState( )
@@ -33,8 +33,10 @@ SUITE( fbc_tests.fbc_int.math_rnd )
 	
 		using fbc
 
-		fb.randomize
-		fb.randomize , FB.FB_RND_MTWIST
+		randomize
+		randomize , FB.FB_RND_MTWIST
+		var x = rnd
+		var y = rnd32
 
 		dim info as FB_RNDSTATE ptr
 		info = rndGetState( )
@@ -43,21 +45,19 @@ SUITE( fbc_tests.fbc_int.math_rnd )
 		CU_ASSERT( info->length = FB_RND_MAX_STATE )
 		CU_ASSERT( info->rndproc <> NULL )
 		CU_ASSERT( info->rndproc32 <> NULL )
-		
+
 	END_TEST
 
 	TEST( using_fb )
-		'' essentially, a compile test only
 
 		using fb
 
-		randomize
-		randomize , FB.FB_RND_MTWIST
-
-		var x = rnd
-		var y = rnd32
-
-		CU_PASS()
+		CU_ASSERT( FB_RND_AUTO   = 0 )
+		CU_ASSERT( FB_RND_CRT    = 1 )
+		CU_ASSERT( FB_RND_FAST   = 2 )
+		CU_ASSERT( FB_RND_MTWIST = 3 )
+		CU_ASSERT( FB_RND_QB     = 4 )
+		CU_ASSERT( FB_RND_REAL   = 5 )
 
 	END_TEST
 
