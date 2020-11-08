@@ -889,6 +889,51 @@ private sub hOptToShift( byval n as ASTNODE ptr )
 end sub
 
 ''::::
+private function hOptConstCONV _
+	( _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr l = any, n_old = any
+	dim as longint v = any
+
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	'' hOptNullOp() might leave behind some conversion nodes
+	'' after elimintating the NULL operations
+	''
+	'' convert CAST( <int-type2>, <int-type1>0 ) to ( <int-type2>0 )
+	''
+	'' no need to call recursively since hOptNullOp() will do that
+
+	if( n->class = AST_NODECLASS_CONV ) then
+		l = n->l
+		if( l->class = AST_NODECLASS_CONST ) then
+			if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
+				if( typeGetClass( astGetDataType( l ) ) = FB_DATACLASS_INTEGER ) then
+					if( astIsCONST( l ) ) then
+						v = astConstGetInt( l )
+
+						if( v = 0 ) then
+							n_old = n
+
+							n = astNewCONSTi( v, n->dtype, n->subtype )
+
+							astDelNode( l )
+							astDelNode( n_old )
+						end if
+					end if
+				end if
+			end if
+		end if
+	end if
+	function = n
+
+end function
+
+''::::
 private function hOptNullOp _
 	( _
 		byval n as ASTNODE ptr _
@@ -1046,7 +1091,7 @@ private function hOptNullOp _
 		end if
 	end if
 
-	function = n
+	function = hOptConstCONV( n )
 end function
 
 ''::::
