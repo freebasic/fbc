@@ -61,7 +61,13 @@ FBCALL FB_WCHAR *fb_StrToWstr( const char *src )
     if( src == NULL )
         return NULL;
 
+#if defined HOST_DOS
+    /* on DOS, mbstowcs() simply calls memcpy() and won't compute
+       length  see fb_unicode.h */
+    chars = strlen( src );
+#else
     chars = mbstowcs( NULL, src, 0 );
+#endif
     if( chars == 0 )
         return NULL;
 
