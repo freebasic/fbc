@@ -2928,6 +2928,8 @@ private sub hProcModeToStr( byref s as string, byval proc as FBSYMBOL ptr )
 		select case( symbGetProcMode( proc ) )
 		case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
 			s += " stdcall"
+		case FB_FUNCMODE_THISCALL
+			s += " thiscall"
 		case FB_FUNCMODE_PASCAL
 			s += " pascal"
 		end select
@@ -2941,6 +2943,8 @@ private sub hProcModeToStr( byref s as string, byval proc as FBSYMBOL ptr )
 			case else
 				s += " stdcall"
 			end select
+		case FB_FUNCMODE_THISCALL
+			s += " thiscall"
 		case FB_FUNCMODE_PASCAL
 			if( env.target.fbcall <> FB_FUNCMODE_PASCAL ) then
 				s += " pascal"

@@ -108,6 +108,7 @@ dim shared kwdTb( 0 to FB_TOKENS-1 ) as SYMBKWD => _
 	( @"FUNCTION"   , FB_TK_FUNCTION    , FB_TKCLASS_KEYWORD ), _
 	( @"CDECL"      , FB_TK_CDECL       , FB_TKCLASS_KEYWORD ), _
 	( @"STDCALL"    , FB_TK_STDCALL     , FB_TKCLASS_KEYWORD ), _
+	( @"__THISCALL" , FB_TK_THISCALL    , FB_TKCLASS_KEYWORD ), _
 	( @"PASCAL"     , FB_TK_PASCAL      , FB_TKCLASS_KEYWORD ), _
 	( @"ALIAS"      , FB_TK_ALIAS       , FB_TKCLASS_KEYWORD ), _
 	( @"LIB"        , FB_TK_LIB         , FB_TKCLASS_KEYWORD ), _

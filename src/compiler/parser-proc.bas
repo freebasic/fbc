@@ -509,7 +509,7 @@ function cProcCallingConv( byval default as FB_FUNCMODE ) as FB_FUNCMODE
         default = env.target.fbcall
     end if
 
-	'' (CDECL|STDCALL|PASCAL)?
+	'' (CDECL|STDCALL|PASCAL|THISCALL)?
 	select case as const lexGetToken( )
 	case FB_TK_CDECL
 		function = FB_FUNCMODE_CDECL
@@ -524,6 +524,10 @@ function cProcCallingConv( byval default as FB_FUNCMODE ) as FB_FUNCMODE
 	case FB_TK_PASCAL
 		function = FB_FUNCMODE_PASCAL
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
+
+	case FB_TK_THISCALL
+		function = FB_FUNCMODE_THISCALL
+		lexSkipToken( )
 
 	case else
 		select case as const parser.mangling

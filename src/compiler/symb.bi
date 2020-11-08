@@ -217,6 +217,7 @@ enum FB_FUNCMODE
 	FB_FUNCMODE_STDCALL_MS						'' ms/vb-style: don't include the @n suffix
 	FB_FUNCMODE_CDECL
 	FB_FUNCMODE_PASCAL
+	FB_FUNCMODE_THISCALL
 
 	'' Symbolic constant to represent FBCALL, telling cProcCallingConv()
 	'' and the RTL procedure definitions to use env.target.fbcall which

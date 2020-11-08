@@ -555,6 +555,13 @@ private function hEmitProcHeader _
 				'' Linux GCC only accepts this
 				ln += " __attribute__((stdcall))"
 			end select
+		case FB_FUNCMODE_THISCALL
+			select case( env.clopt.target )
+			case FB_COMPTARGET_WIN32, FB_COMPTARGET_XBOX
+				ln += " __thiscall"
+			case else
+				ln += " __attribute__((thiscall))"
+			end select
 		end select
 	end if
 

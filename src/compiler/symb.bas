@@ -2580,6 +2580,7 @@ function symbDumpToStr _
 		case FB_FUNCMODE_STDCALL_MS : s += " stdcallms"
 		case FB_FUNCMODE_PASCAL     : s += " pascal"
 		case FB_FUNCMODE_CDECL      : s += " cdecl"
+		case FB_FUNCMODE_THISCALL   : s += " thiscall"
 		end select
 
 		if( verbose ) then
