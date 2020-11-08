@@ -23,8 +23,9 @@ static void hRndCtxInitCRT32    ( uint32_t seed );
 static void hRndCtxInitFAST32   ( uint32_t seed );
 static void hRndCtxInitMTWIST32 ( uint64_t seed );
 static void hRndCtxInitQB32     ( uint32_t seed );
+#if defined HOST_WIN32 || defined HOST_LINUX
 static void hRndCtxInitREAL32   ( uint64_t seed );
-
+#endif
 
 #define INITIAL_SEED	327680
 
@@ -240,7 +241,6 @@ static double hRnd_REAL( float n )
 
 	return (double)hRnd_REAL32() / (double)4294967296ULL;
 }
-#endif
 
 static void hRndCtxInitREAL32 ( uint64_t seed )
 {
@@ -253,6 +253,7 @@ static void hRndCtxInitREAL32 ( uint64_t seed )
 	/* initialize starting state - used by hRefillRealRndNumber() */
 	hRnd_FillFAST32( ctx.state32, MAX_STATE, (uint32_t)seed );
 }
+#endif
 
 /* RND Startup code */
 
