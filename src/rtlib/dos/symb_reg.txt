@@ -234,6 +234,7 @@ extern_asm(_fb_WriteUShort);
 extern_asm(_fb_FileResetEx);
 extern_asm(_fb_FileOpenVfsEx);
 extern_asm(_fb_SleepQB);
+extern_asm(_fb_Rnd32);
 extern_asm(_fb_FileLockEx);
 extern_asm(_fb_DevScrnWriteWstr);
 extern_asm(_fb_DataReadLongint);
@@ -368,6 +369,7 @@ extern_asm(_fb_hGetExeName);
 extern_asm(_fb_FileFlush);
 extern_asm(_fb_FileUnlock);
 extern_asm(_fb_DataReadULongint);
+extern_asm(_fb_RndGetState);
 extern_asm(_fb_ConsoleScroll_BIOS);
 extern_asm(_fb_DevFileEof);
 extern_asm(_fb_hStr2Longint);
@@ -1072,6 +1074,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_FileResetEx)
     DXE_EXPORT_ASM (_fb_FileOpenVfsEx)
     DXE_EXPORT_ASM (_fb_SleepQB)
+    DXE_EXPORT_ASM (_fb_Rnd32)
     DXE_EXPORT_ASM (_fb_FileLockEx)
     DXE_EXPORT_ASM (_fb_DevScrnWriteWstr)
     DXE_EXPORT_ASM (_fb_DataReadLongint)
@@ -1206,6 +1209,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_FileFlush)
     DXE_EXPORT_ASM (_fb_FileUnlock)
     DXE_EXPORT_ASM (_fb_DataReadULongint)
+    DXE_EXPORT_ASM (_fb_RndGetState)
     DXE_EXPORT_ASM (_fb_ConsoleScroll_BIOS)
     DXE_EXPORT_ASM (_fb_DevFileEof)
     DXE_EXPORT_ASM (_fb_hStr2Longint)
