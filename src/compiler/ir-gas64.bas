@@ -1431,7 +1431,7 @@ private sub reg_spilling(byval regspilled as long)
 	else
 		''find a free room
 		for iroom as integer =0 to ctx.totalroom
-			if ctx.sdvreg(iroom)=-1 then numroom=iroom:exit for
+			if ctx.sdvreg(iroom)=KREGFREE then numroom=iroom:exit for
 		next
 		ctx.freeroom-=1
 	end if
@@ -1602,8 +1602,9 @@ private sub reg_branch(byval label as FBSYMBOL ptr )
 		''restoring registers spilled in the second branch
 		for iroom as integer =0 to ctx.totalroom
 			'asm_info("iroom="+str(iroom)+" "+str(ctx.sdvreg(iroom))+" "+str(vreg))
-			if ctx.sdvreg(iroom)<>-1 and ctx.spilbranch1(iroom)=true then
+			if ctx.sdvreg(iroom)<>KREGFREE and ctx.spilbranch1(iroom)=true then
 				regfree=reg_findfree(ctx.sdvreg(iroom))
+				ctx.sdvreg(iroom)=KREGFREE
 				asm_info("restoring saved vreg="+str(ctx.sdvreg(iroom))+" in register="+*regstrq(regfree))
 				asm_code("mov "+*regstrq(regfree)+", QWORD PTR "+str(ctx.sdoffset(iroom))+"[rbp]")
 			end if
@@ -1642,7 +1643,7 @@ function reg_findreal(byval vreg as long,byval tjmp as Boolean = FALSE) as long
 	asm_code("mov "+*regstrq(realreg)+", QWORD PTR "+str(ctx.sdoffset(numroom))+"[rbp]")
 	''free the room
 	ctx.freeroom+=1
-	ctx.sdvreg(numroom)=-1
+	ctx.sdvreg(numroom)=KREGFREE
 	return realreg
 end function
 ''======================================================
@@ -1651,7 +1652,7 @@ end function
 sub reg_freeall
 	asm_info("registers released")
 	for ireg as long =0 To KREGUPPER
-		reghandle(ireg)=KREGFREE ''free
+		reghandle(ireg)=KREGFREE
 		ctx.reginuse(ireg)=false  ''not used
 		regroom(ireg)=-1 ''not inuse before a test
 	next
@@ -1659,7 +1660,7 @@ sub reg_freeall
 	reghandle(KREG_RSP)=KREGRSVD ''rsp
 	if ctx.totalroom<>-1 then
 	  for iroom as integer = 0 to ctx.totalroom
-		  ctx.sdvreg(iroom)=-1
+		ctx.sdvreg(iroom)=KREGFREE
 	  next
 	end if
 	ctx.freeroom=ctx.totalroom+1
