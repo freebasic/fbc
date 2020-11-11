@@ -255,9 +255,6 @@ type ASM64_CONTEXT
 	prevfilename as zstring ptr
 	''true if is a code
 	code         as byte
-	''for saving virtual reg before a call
-	'savevreg(KREGUPPER) as long
-	reginuse(KREGUPPER)  as long
 	''to save register and virtuel register to be used with jmp reg after a cmp where reg is unmarked
 	jmpreg       as long
 	jmpvreg      as long
@@ -584,14 +581,22 @@ private sub check_optim(byref code as string)
 	prevmov=mov
 	prevwpos=writepos
 end sub
-
 private sub reg_freeable(byref lineasm as string)
 
 	dim as long regfound1,regfound2
 	dim as string instruc
 
 	instruc=left(Trim(lineasm),3)
-	if instr("mov lea cmp add sub imu and xor or call push cvtsi2sd cvtsi2ss cvtss2sd cvtsd2ss",instruc)=0 then exit sub
+
+	if instruc="inc" orelse instruc="dec" orelse instruc="not" orelse instruc="neg" then
+		''inc r11 --> not freeable / inc qword ptr [r11] --> freeable
+		if instr(lineasm,"[")=0 then
+			''******** CHECK marked register for callee **********************************************************
+			exit sub
+		end if
+	else
+		if instr("mov lea cmp add sub imu idiv div shl shr sar and xor or call jmp push test cvt ",instruc)=0 then exit sub
+	end if
 
 	for ireg as long =1 To KREGUPPER
 		if reghandle(ireg)=KREGRSVD then continue for ''excluding rbp and rsp
@@ -608,14 +613,18 @@ private sub reg_freeable(byref lineasm as string)
 		end if
 
 		if regfound1<>KNOTFOUND then
-			if ctx.reginuse(regfound1)=TRUE then
-				if instruc="add" orelse instruc="sub" orelse instruc="imu" then
-					continue for
-				elseif instruc="cmp" then
-					''to handle case as cmp r11, 15/r15 where r11 has been already marked but it appears as lhs
-					regfound2=regfound1
+			if instruc="add" orelse instruc="sub" orelse instruc="imu" then
+				''already inuse and to be used later case 'add r11, xxx'  not 'add qword ptr [r11], xxx'
+				continue for
+			elseif instruc="cmp" then
+					''already inuse but not to be used later, handled in second part
 					regfound1=KNOTFOUND
-				end IF
+			else
+				if instr(lineasm,*regstrq(ireg)+", "+*regstrq(ireg)) then
+					''case mov rzz, rzz in hdocall
+					reghandle(regfound1)=KREGFREE
+					exit sub
+				end if
 			end if
 		end if
 
@@ -630,49 +639,16 @@ private sub reg_freeable(byref lineasm as string)
 				regfound2=ireg
 			end if
 		end if
-		'asm_info("ireg="+str(ireg)+" regfound1="+*regstrq(regfound1)+" found2="+*regstrq(regfound2))
-
-	   ' asm_info("in freeable register="+lineasm+" "+*regstrq(ireg)+" "+Str(regfound1))
-		'if regfound1<>-1 then asm_info("reghandle(regfound1) 1="+str(reghandle(regfound1)))
-		if regfound1<>KNOTFOUND then
-		   ' asm_info("reghandle(regfound1) 2="+str(reghandle(regfound1)))
-			if reghandle(regfound1)<>KREGFREE then
-				asm_info("marked as used register="+*regstrq(ireg))
-				ctx.reginuse(regfound1)=true
-				if instr(lineasm,*regstrq(ireg)+", "+*regstrq(ireg)) then
-					''case mov rzz, rzz in hdocall
-					asm_info("Release done for register 1 ="+*regstrq(ireg)+" case mov rzz, rzz")
-					reghandle(regfound1)=KREGFREE
-					ctx.reginuse(regfound1)=false
-				end if
-			else
-				ctx.reginuse(regfound1)=FALSE ''not sure usefull, except if case below ?
-				if instr(lineasm,*regstrq(ireg)+", "+*regstrq(ireg)) then
-					''case mov rzz, rzz in hdocall
-					asm_info("Release done for register 3 ="+*regstrq(ireg)+" case mov rzz, rzz")
-					reghandle(regfound1)=KREGFREE
-				end if
-			end if
-			continue For
-		end if
 
 		if regfound2<>KNOTFOUND then
-			if reghandle(regfound2)<>KREGFREE and ctx.reginuse(regfound2)=TRUE  then
-				asm_info("Release done for register 2 ="+*regstrq(ireg))
+			if reghandle(regfound2)<>KREGFREE then
 				ctx.jmpreg=regfound2 ''see their defines
 				ctx.jmpvreg=reghandle(regfound2)
 				reghandle(regfound2)=KREGFREE
-				ctx.reginuse(regfound2)=FALSE
-			'elseif instr(lineasm,*regstrq(ireg)+", "+*regstrq(ireg)) then
-			'    ''case mov rx, rx in hdocall
-			'    asm_info("Release done for register mov rx, rx="+*regstrq(ireg))
-			'    reghandle(regfound2)=KREGFREE
-			'    ctx.reginuse(regfound2)=FALSE
 			end if
 		end if
 	next
 end sub
-
 ''============== end of optim ====================================================
 private function pw2(byval num as integer)as integer ''return the first power of 2 greater than a number ex 24 -->32
 	dim as double a=log(num)/log(2)
@@ -1458,9 +1434,7 @@ end sub
 private sub reg_save
 	for ireg as integer =1 to ubound(listreg)
 		if reghandle(listreg(ireg))<>KREGFREE then
-			if ctx.reginuse(listreg(ireg)) then
-				reg_spilling(listreg(ireg))
-			end if
+			reg_spilling(listreg(ireg))
 		end if
 	next
 end sub
@@ -1653,7 +1627,6 @@ sub reg_freeall
 	asm_info("registers released")
 	for ireg as long =0 To KREGUPPER
 		reghandle(ireg)=KREGFREE
-		ctx.reginuse(ireg)=false  ''not used
 		regroom(ireg)=-1 ''not inuse before a test
 	next
 	reghandle(KREG_RBP)=KREGRSVD ''rbp ''reserved, don't use -1 as vreg could be = -1 when not a reg (var, idx, etc)
@@ -3149,7 +3122,6 @@ private sub bop_float( _
 				asm_code("xor "+*regstrq(vrreg)+", "+*regstrq(vrreg))
 				if reghandle(vrreg)=KREGFREE then
 					reghandle(vrreg)=vr->reg
-					ctx.reginuse(vrreg)=true
 					asm_info("Bop float reghandle reset so forced again to="+Str(vr->reg))
 				end if
 				asm_code(lname1+":")
@@ -3169,7 +3141,6 @@ private sub bop_float( _
 			asm_code("movq "+*regstrq(vrreg)+", xmm0")
 			if reghandle(vrreg)=KREGFREE then
 				reghandle(vrreg)=vr->reg
-				ctx.reginuse(vrreg)=true
 				asm_info("Bop float reghandle reset so forced again to="+Str(vr->reg))
 			end if
 		case AST_OP_ATAN2
@@ -3182,7 +3153,6 @@ private sub bop_float( _
 			end if
 			if reghandle(vrreg)=KREGFREE then
 				reghandle(vrreg)=vr->reg
-				ctx.reginuse(vrreg)=true
 				asm_info("Bop float reghandle reset so forced again to="+Str(vr->reg))
 			end if
 		case else
@@ -3440,14 +3410,12 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 			asm_code("and "+op1+", "+op2)
 			if vr<>0 andalso reghandle(vrreg)=KREGFREE then
 				reghandle(vrreg)=vr->reg
-				ctx.reginuse(vrreg)=true
 				asm_info("and reghandle reset so "+*regstrq(vrreg)+" forced again to="+Str(vr->reg))
 			end if
 		case AST_OP_OR
 			asm_code("or "+op1+", "+op2)
 			if vr<>0 andalso reghandle(vrreg)=KREGFREE then
 				reghandle(vrreg)=vr->reg
-				ctx.reginuse(vrreg)=true
 				asm_info("or reghandle reset so "+*regstrq(vrreg)+" forced again to="+Str(vr->reg))
 			end if
 		case AST_OP_IMP
@@ -3514,14 +3482,12 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 			end if
 			if vr<>0 andalso reghandle(vrreg)=KREGFREE then
 				reghandle(vrreg)=vr->reg
-				ctx.reginuse(vrreg)=true
 				asm_info("imp reghandle reset so "+*regstrq(vrreg)+" forced again to="+Str(vr->reg))
 			end if
 		case AST_OP_XOR
 			asm_code("xor "+op1+", "+op2)
 			if vr<>0 andalso reghandle(vrreg)=KREGFREE then
 				reghandle(vrreg)=vr->reg
-				ctx.reginuse(vrreg)=true
 				asm_info("xor reghandle reset so "+*regstrq(vrreg)+" forced again to="+Str(vr->reg))
 			end if
 		case AST_OP_EQV
@@ -3552,7 +3518,6 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 			asm_code("mov "+op1+", "+op2)
 			if vr<>0 andalso reghandle(vrreg)=KREGFREE then
 				reghandle(vrreg)=vr->reg
-				ctx.reginuse(vrreg)=true
 				asm_info("eqv reghandle reset so "+*regstrq(vrreg)+" forced again to="+Str(vr->reg))
 			end if
 		case AST_OP_SUB
@@ -3648,7 +3613,6 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 				asm_info("vrreg="+str(vrreg))
 				if reghandle(vrreg)=KREGFREE then
 					reghandle(vrreg)=vr->reg
-					ctx.reginuse(vrreg)=true
 					asm_info("cmp reghandle reset so "+*regstrq(vrreg)+" forced again to="+Str(vr->reg))
 				end if
 			else
@@ -3663,7 +3627,6 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 						tempo=reghandle(KREG_RCX)
 						reg_findfree(tempo)
 						reghandle(KREG_RCX)=KREGFREE
-						ctx.reginuse(KREG_RCX)=false
 						asm_info("rcx used so transfer to other register")
 						asm_code("mov "+*regstrq(reg_findreal(tempo))+", "+*regstrq(KREG_RCX))
 						if vrreg=KREG_RCX then vrreg=reg_findreal(tempo)
@@ -3690,7 +3653,6 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 					tempo=reghandle(KREG_RDX)
 					reg_findfree(tempo)
 					reghandle(KREG_RDX)=KREGFREE
-					ctx.reginuse(KREG_RDX)=false
 					asm_info("rdx used so transfer to other register="+*regstrq(reg_findreal(tempo)))
 					asm_code("mov "+*regstrq(reg_findreal(tempo))+", "+*regstrq(KREG_RDX))
 					if op2=*regstrq(KREG_RDX) then
@@ -3730,7 +3692,6 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 				asm_code("mov "+*regstrq(vrreg)+", rax")
 				if reghandle(vrreg)=KREGFREE then
 					reghandle(vrreg)=vr->reg
-					ctx.reginuse(vrreg)=true
 					asm_info("IDIV reghandle reset so forced again to="+Str(vr->reg))
 				end if
 			end if
@@ -3742,7 +3703,6 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 					tempo=reghandle(KREG_RDX)
 					reg_findfree(tempo)
 					reghandle(KREG_RDX)=KREGFREE
-					ctx.reginuse(KREG_RDX)=false
 					asm_info("rdx used so transfer to other register="+*regstrq(reg_findreal(tempo)))
 					asm_code("mov "+*regstrq(reg_findreal(tempo))+", "+*regstrq(KREG_RDX))
 					if op2=*regstrq(KREG_RDX) then
@@ -3782,7 +3742,6 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 				asm_code("mov "+*regstrq(vrreg)+", rdx")
 				if reghandle(vrreg)=KREGFREE then
 					reghandle(vrreg)=vr->reg
-					ctx.reginuse(vrreg)=true
 					asm_info("MOD reghandle reset so forced again to="+Str(vr->reg))
 				end if
 			end if
@@ -3995,7 +3954,6 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 		end if
 		if reghandle(vrreg)=KREGFREE then
 			reghandle(vrreg)=vr->reg
-			ctx.reginuse(vrreg)=true
 			asm_info("Bop float reghandle reset so forced again to="+Str(vr->reg))
 		end if
 		return
@@ -4008,7 +3966,6 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 			tempo=reghandle(KREG_RDX)
 			reg_findfree(tempo)
 			reghandle(KREG_RDX)=KREGFREE
-			ctx.reginuse(KREG_RDX)=false
 			asm_info("rdx used so transfer to other register")
 			asm_code("mov "+*regstrq(reg_findreal(tempo))+", "+*regstrq(KREG_RDX))
 			if vrreg=KREG_RDX then vrreg=reg_findreal(tempo)
@@ -4025,7 +3982,6 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 			asm_code("mov "+*regstrq(vrreg)+", rax")
 			if reghandle(vrreg)=KREGFREE then
 				reghandle(vrreg)=vr->reg
-				ctx.reginuse(vrreg)=true
 				asm_info("Bop float reghandle reset so forced again to="+Str(vr->reg))
 			end if
 		end if
@@ -4050,7 +4006,6 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 				tempo=reghandle(KREG_RCX)
 				reg_findfree(tempo)
 				reghandle(KREG_RCX)=KREGFREE
-				ctx.reginuse(KREG_RCX)=false
 				asm_info("rcx used so transfer to other register="+*regstrq(reg_findreal(tempo)))
 				asm_code("mov "+*regstrq(reg_findreal(tempo))+", "+*regstrq(KREG_RCX))
 				op1=*regstrq(reg_findreal(tempo))
@@ -4069,8 +4024,6 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 		else
 			asm_code("mov "+*regstrq(vrreg)+", rax")
 			if reghandle(vrreg)=KREGFREE then
-				reghandle(vrreg)=vr->reg
-				ctx.reginuse(vrreg)=true
 				asm_info("Uop float reghandle reset so forced again to="+Str(vr->reg))
 			end if
 		end if
@@ -4130,7 +4083,6 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 	end if
 	if reghandle(vrreg)=KREGFREE then
 		reghandle(vrreg)=vr->reg
-		ctx.reginuse(vrreg)=true
 		asm_info("Bop float reghandle reset so forced again to="+Str(vr->reg))
 	end if
 end sub
