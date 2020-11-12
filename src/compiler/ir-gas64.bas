@@ -256,8 +256,10 @@ type ASM64_CONTEXT
 	''true if is a code
 	code         as byte
 	''to save register and virtuel register to be used with jmp reg after a cmp where reg is unmarked
+	''happens when -exx is set   check pointer not null --> cmp r11,0 / je LT_0001 / jmp [r11]
 	jmpreg       as long
 	jmpvreg      as long
+	jmppass      as long
 	'ctors        as string  ''kept here if to be added
 	'dtors        as string
 	ctorcount    as integer
@@ -618,8 +620,12 @@ private sub reg_freeable(byref lineasm as string)
 				''already inuse and to be used later case 'add r11, xxx'  not 'add qword ptr [r11], xxx'
 				continue for
 			elseif instruc="cmp" then
-					''already inuse but not to be used later, handled in second part
-					regfound1=KNOTFOUND
+				''already inuse but not to be used later except one case (at least) when null-pointer checking
+				ctx.jmpreg=regfound1 ''see their defines
+				ctx.jmpvreg=reghandle(regfound1)
+				ctx.jmppass=2
+				reghandle(regfound1)=KREGFREE
+				continue for
 			else
 				if instr(lineasm,*regstrq(ireg)+", "+*regstrq(ireg)) then
 					''case mov rzz, rzz in hdocall
@@ -643,8 +649,6 @@ private sub reg_freeable(byref lineasm as string)
 
 		if regfound2<>KNOTFOUND then
 			if reghandle(regfound2)<>KREGFREE then
-				ctx.jmpreg=regfound2 ''see their defines
-				ctx.jmpvreg=reghandle(regfound2)
 				reghandle(regfound2)=KREGFREE
 			end if
 		end if
@@ -678,6 +682,14 @@ private sub hwriteasm64( byref ln2 as string,byval cod as byte=KNOTCODE)
 				ctx.opereg=0
 			end if
 		end if
+
+		if ctx.jmppass then
+			ctx.jmppass-=1
+			if ctx.jmppass=0 then
+				ctx.jmpvreg=KREGFREE
+			end if
+		end if
+
 		ctx.code=1
 		if right(ln,8)<>"#NO_FREE" and right(ln,7)<>"#NO_ALL" then reg_freeable(ln)
 		check_optim(ln)
@@ -1597,7 +1609,7 @@ private sub reg_branch(byval label as FBSYMBOL ptr )
 		asm_code(*symbGetMangledName( label )+":")
 	end if
 end sub
-function reg_findreal(byval vreg as long,byval tjmp as Boolean = FALSE) as long
+function reg_findreal(byval vreg as long) as long
 	dim as long numroom=-1,realreg
 	for ireg as long =0 To KREGUPPER
 		if reghandle(ireg)=vreg then
@@ -1605,9 +1617,6 @@ function reg_findreal(byval vreg as long,byval tjmp as Boolean = FALSE) as long
 			return ireg
 		end if
 	next
-	if tjmp then
-		if vreg=ctx.jmpvreg then ctx.jmpvreg=-1:return ctx.jmpreg
-	end if
 	''searching in spilled register list
 	'asm_info("virtual register not found extend to spilled register list")
 	for iroom as integer =0 to ctx.totalroom
@@ -5958,9 +5967,16 @@ private sub _emitcallptr _
 	hDoCall(proc,op1,op3,vr,level,variadic,true)
 end sub
 private sub _emitjumpptr( byval v1 as IRVREG ptr )
+	dim as integer reg
 	asm_info("jumpptr vrdump="+vregdumpfull(v1))
-	asm_code("jmp ["+*regstrq(reg_findreal(v1->reg,true))+"]")
-	'asm_code("jmp "+*regstrq(reg_findreal(v1->reg,TRUE)))
+	if v1->reg=ctx.jmpvreg then
+		reg=ctx.jmpreg
+		ctx.jmppass=0
+		ctx.jmpvreg=KREGFREE
+	else
+		reg=reg_findreal(v1->reg)
+	end if
+	asm_code("jmp ["+*regstrq(reg)+"]")
 end sub
 private sub _emitbranch( byval op as integer, byval label as FBSYMBOL ptr )
 	asm_info("emit branch = jmp/call (gosub) to "+*symbGetMangledName( label )+" "+Str(op)+" "+*hGetBopCode(op))
@@ -6351,6 +6367,9 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 
 	ctx.labelbranch2=0
 	ctx.labeljump=0
+	ctx.jmpvreg=KREGFREE
+	ctx.jmppass=0
+	ctx.opepass=0
 	ctx.variadic=false
 	ctx.proc_txt=""
 	ctx.section=SECTION_PROLOG
