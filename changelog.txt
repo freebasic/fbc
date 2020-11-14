@@ -56,6 +56,7 @@ Version 1.08.0
 - add THREADSELF in ./inc/fbthread.bi to return the thread id of the current thread (adeyblue)
 - makefile: add arm and aarch64 targets to the bootstrap package
 - release: add arm and aarch64 targets as an option to the contrib/release.build.sh script
+- emscripten port (WIP, v1ctor & angros47)
 
 [fixed]
 - makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture
@@ -243,9 +244,6 @@ Version 1.06.0
 Version 1.05.0
 
 [changed]
-
-[added]
-- emscripten port (WIP)
 
 [fixed]
 - 0.90.0 regression: Self-op optimizations stopped handling some cases and should now work again, for example: optimizing A=A+1 => A+=1 where A is a Long, should give nice ASM code with -gen gas again
