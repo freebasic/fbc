@@ -77,8 +77,9 @@ void fb_js_events_init(void)
 
     // don't let SDL capture the keyboard
     __fb_js_ctx.doNotCaptureKeyboard = emscripten_run_script_int("Module['doNotCaptureKeyboard']? 1: 0;");
-    if(!__fb_js_ctx.doNotCaptureKeyboard)
+    if(!__fb_js_ctx.doNotCaptureKeyboard) {
         emscripten_run_script("Module['doNotCaptureKeyboard']=1;");
+	}
 
 	return;
 }
