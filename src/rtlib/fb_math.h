@@ -39,8 +39,9 @@ FBCALL FB_RNDSTATE *fb_RndGetState ( void );
 
 static __inline__ void hRnd_FillFAST32 ( uint32_t *buffer, uint32_t length32, uint32_t iseed32 )
 {
+	uint32_t i;
 	buffer[0] = iseed32;
-	for( uint32_t i = 1; i < length32; i++ ) {
+	for( i = 1; i < length32; i++ ) {
 		buffer[i] = FBRNDFAST32( buffer[i - 1] );
 	}
 }
