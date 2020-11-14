@@ -133,7 +133,7 @@ end enum
 static shared as zstring * 16 toolnames(0 to FBCTOOL__COUNT-1) = _
 { _
 	"as", "ar", "ld", "gcc", "llc", "dlltool", "GoRC", "windres", "cxbe", "dxe3gen", _
-	"llvm-as", _
+	"emcc", _
 	"emar", _
 	"emcc", _
 	"emcc"  _
@@ -2638,7 +2638,7 @@ private function hGetAsmName _
 	if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
 		ext = @".asm"
 	else
-		ext = @".llvm"
+		ext = @".o"
 	end if
 	if( fbGetOption( FB_COMPOPT_BACKEND )= FB_BACKEND_GAS64 ) then
 		ext = @".a64"
@@ -2981,12 +2981,14 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			ln += "-fPIC "
 		end if
 
-		ln += "-S -nostdlib -nostdinc -Wall -Wno-unused-label " + _
-		      "-Wno-unused-function -Wno-unused-variable " 
-			  
 		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
+			ln += "-S -nostdlib -nostdinc -Wall -Wno-unused-label " + _
+			      "-Wno-unused-function -Wno-unused-variable " 
 			ln += "-Wno-unused-but-set-variable "
 		else
+			'if Emscripten is used, we will skip the assembly generation and compile directly to object code
+			ln += "-c -nostdlib -nostdinc -Wall -Wno-unused-label " + _
+			      "-Wno-unused-function -Wno-unused-variable " 
 			ln += "-Wno-warn-absolute-paths -s ASYNCIFY=1 -s RETAIN_COMPILER_SETTINGS=1 "
 		end if
 
@@ -3158,6 +3160,13 @@ private function hAssembleModule( byval module as FBCIOFILE ptr ) as integer
 			end if
 		endif
 	end if
+
+	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_JS ) then
+		''We will skip assemble stage, since it is already performed by Emscripten
+		function = TRUE
+		exit function
+	end if
+
 	ln += """" + hGetAsmName( module, 2 ) + """ "
 	ln += "-o """ + *module->objfile + """"
 	ln += fbc.extopt.gas
