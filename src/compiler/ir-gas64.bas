@@ -162,6 +162,8 @@ if variadic register save area, only for parameters not defined
 #define KNOTFOUND -1
 #define KSIZEPROCTXT 4000000 ''initial size of proc_txt used for speed up text adding
 #define KLIMITROOM 150 ''upper limit for spilling (number of room = KLIMITROOM+1, zero based)
+#define KROOMFREE -1
+#define KROOMMARKED -2
 
 #macro MPUSH(strg)
 	pushnbstr+=1
@@ -253,8 +255,6 @@ type ASM64_CONTEXT
 	stkcopy      as integer
 	usedreg      as long
 	prevfilename as zstring ptr
-	''true if is a code
-	code         as byte
 	''to save register and virtuel register to be used with jmp reg after a cmp where reg is unmarked
 	''happens when -exx is set   check pointer not null --> cmp r11,0 / je LT_0001 / jmp [r11]
 	jmpreg       as long
@@ -302,7 +302,6 @@ end type
 declare function hemittype(byval dtype as integer,byval subtype as FBSYMBOL Ptr) as string
 declare sub hemitstruct( byval s as FBSYMBOL ptr )
 declare sub _emitdbg(byval op as integer,byval proc as FBSYMBOL ptr,byval lnum as Integer,ByVal filename as zstring Ptr = 0)
-declare sub reg_freeall
 declare sub check_optim(byref code as string)
 declare sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 declare function hgetdatatype_asm64 (byval sym as FBSYMBOL ptr,byval arraydimensions as integer = 0) as string
@@ -648,9 +647,7 @@ private sub reg_freeable(byref lineasm as string)
 		end if
 
 		if regfound2<>KNOTFOUND then
-			if reghandle(regfound2)<>KREGFREE then
-				reghandle(regfound2)=KREGFREE
-			end if
+			reghandle(regfound2)=KREGFREE
 		end if
 	next
 end sub
@@ -690,7 +687,6 @@ private sub hwriteasm64( byref ln2 as string,byval cod as byte=KNOTCODE)
 			end if
 		end if
 
-		ctx.code=1
 		if right(ln,8)<>"#NO_FREE" and right(ln,7)<>"#NO_ALL" then reg_freeable(ln)
 		check_optim(ln)
 	end if
@@ -1241,10 +1237,6 @@ private sub _emitdbg(byval op as integer,byval proc as FBSYMBOL ptr,byval lnum a
 	if( op = AST_OP_DBG_LINEEND ) then
 			''asm_code("AST_OP_DBG_LINEEND for line="+Str(lnum))
 			''asm_info("end of line in stabs would be used for regfree and regsav")
-			if ctx.code then
-				reg_freeall ''frees all registers
-				ctx.code=0
-			end if
 		elseif op=AST_OP_DBG_SCOPEINI then
 		elseif op=AST_OP_DBG_SCOPEEND then
 		else
@@ -1393,10 +1385,8 @@ private sub reg_mark(byval labelptr as FBSYMBOL ptr)
 	asm_info("new branch ? "+*symbGetMangledName( labelptr ))
 	for ireg as integer= 1 to KREGUPPER
 		if reghandle(ireg)<>KREGFREE and reghandle(ireg)<>KREGRSVD then ''excluding also rbp and rsp
-			regroom(ireg)=-2
+			regroom(ireg)=KROOMMARKED
 			flagmark=true
-		'else
-		'    regroom(ireg)=-1
 		end if
 	next
 	if flagmark then ctx.labelbranch2=labelptr
@@ -1438,7 +1428,7 @@ private sub reg_spilling(byval regspilled as long)
 	asm_code("mov QWORD PTR "+str(ctx.sdoffset(numroom))+"[rbp], "+*regstrq(regspilled))
 	reghandle(regspilled)=KREGFREE
 	''need to keep a trace when handling second branch
-	if regroom(regspilled)=-2 then regroom(regspilled)=numroom
+	if regroom(regspilled)=KROOMMARKED then regroom(regspilled)=numroom
 	if ctx.labelbranch2 then
 		''inside branch so need to restore registers later
 		ctx.spilbranch1(numroom)=true
@@ -1579,6 +1569,7 @@ private sub reg_branch(byval label as FBSYMBOL ptr )
 		asm_code(*symbGetMangledName( label )+":")
 		''handling second branch after first one so spilling registers
 		for ireg as integer = 1 to KREGUPPER
+			''Not KROOMMARKED nor KROOMFREE
 			if regroom(ireg)>=0 then
 				''put in memory as in the branch 1
 				asm_info("spilling register to mimic branch1="+*regstrq(ireg)+" already saved vreg="+str(ctx.sdvreg(regroom(ireg)))+" from room="+str(regroom(ireg)))
@@ -1586,8 +1577,9 @@ private sub reg_branch(byval label as FBSYMBOL ptr )
 				reghandle(ireg)=KREGFREE
 				''marked to avoid an eventual restoring
 				ctx.spilbranch1(regroom(ireg))=false
-				regroom(ireg)=-1
 			end if
+			''reset by default even if only one branch as regroom() could be = KROOMMARKED
+			regroom(ireg)=KROOMFREE
 		next
 		if ctx.labeljump=0 then
 			''not a double branch so no need to do spilling below
@@ -1599,9 +1591,10 @@ private sub reg_branch(byval label as FBSYMBOL ptr )
 			'asm_info("iroom="+str(iroom)+" "+str(ctx.sdvreg(iroom))+" "+str(vreg))
 			if ctx.sdvreg(iroom)<>KREGFREE and ctx.spilbranch1(iroom)=true then
 				regfree=reg_findfree(ctx.sdvreg(iroom))
-				ctx.sdvreg(iroom)=KREGFREE
 				asm_info("restoring saved vreg="+str(ctx.sdvreg(iroom))+" in register="+*regstrq(regfree))
+				ctx.sdvreg(iroom)=KREGFREE
 				asm_code("mov "+*regstrq(regfree)+", QWORD PTR "+str(ctx.sdoffset(iroom))+"[rbp]")
+				ctx.freeroom+=1
 			end if
 		next
 		ctx.labeljump=0
@@ -1644,20 +1637,63 @@ end function
 sub reg_freeall
 	asm_info("registers released")
 	for ireg as long =0 To KREGUPPER
-		reghandle(ireg)=KREGFREE
-		regroom(ireg)=-1 ''not inuse before a test
+		''check not freed
+		if reghandle(ireg)<>KREGFREE and reghandle(ireg)<>KREGRSVD then
+			asm_info("reghandle reg="+*regstrq(ireg)+"  not free vreg="+str(reghandle(ireg)))
+			print ("reghandle reg="+*regstrq(ireg)+" not free vreg="+str(reghandle(ireg)))
+			reghandle(ireg)=KREGFREE
+		end if
+		''reghandle(ireg)=KREGFREE
+		if regroom(ireg)<>KROOMFREE then
+			if regroom(ireg)<>0 then
+				asm_info("regroom(ireg)<>KROOMFREE reg="+str(ireg)+" "+str(regroom(ireg)))
+				print "regroom(ireg)<>KROOMFREE reg=";ireg,regroom(ireg)
+			end if
+			regroom(ireg)=KROOMFREE
+		end if
+		'regroom(ireg)=KROOMFREE ''not inuse before a test
 	next
-	reghandle(KREG_RBP)=KREGRSVD ''rbp ''reserved, don't use -1 as vreg could be = -1 when not a reg (var, idx, etc)
-	reghandle(KREG_RSP)=KREGRSVD ''rsp
+
+	'reghandle(KREG_RBP)=KREGRSVD ''rbp ''reserved, don't use -1 as vreg could be = -1 when not a reg (var, idx, etc)
+	'reghandle(KREG_RSP)=KREGRSVD ''rsp
+	''check not changed
+	if reghandle(KREG_RBP)<>KREGRSVD then
+		print ("reghandle RBP not reserved="+str(reghandle(KREG_RBP)))
+		asm_info("reghandle RBP not reserved="+str(reghandle(KREG_RBP)))
+		reghandle(KREG_RBP)=KREGRSVD
+	end if
+	if reghandle(KREG_RSP)<>KREGRSVD then
+		print ("reghandle RSP not reserved="+str(reghandle(KREG_RSP)))
+		asm_info("reghandle RSP not reserved="+str(reghandle(KREG_RSP)))
+		reghandle(KREG_RSP)=KREGRSVD
+	end if
+
 	if ctx.totalroom<>-1 then
 	  for iroom as integer = 0 to ctx.totalroom
-		ctx.sdvreg(iroom)=KREGFREE
+		''check not freed
+		if ctx.sdvreg(iroom)<>KREGFREE then
+			asm_info("ctx.sdvreg() not free vreg="+str(ctx.sdvreg(iroom)))
+			print ("ctx.sdvreg() not free vreg="+str(ctx.sdvreg(iroom)))
+			ctx.sdvreg(iroom)=KREGFREE
+		end if
+		'ctx.sdvreg(iroom)=KREGFREE
 	  next
 	end if
-	ctx.freeroom=ctx.totalroom+1
-	ctx.labelbranch2=0
-	ctx.labeljump=0
-	ctx.jmpvreg=-1
+
+	if ctx.freeroom<>ctx.totalroom+1 then
+		asm_info("ctx.freeroom<>ctx.totalroom+1="+str(ctx.freeroom)+" "+str(ctx.totalroom+1))
+		print "ctx.freeroom<>ctx.totalroom+1=";ctx.freeroom,ctx.totalroom+1
+		ctx.freeroom=ctx.totalroom+1
+	end if
+
+	if ctx.labelbranch2<>0 then
+		print "ctx.labelbranch2<>0"
+		ctx.labelbranch2=0
+	end if
+	if ctx.labeljump<>0 then
+		print "ctx.labeljump<>0"
+		ctx.labeljump=0
+	end if
 end sub
 ''======================================
 ''return a register used temporary
@@ -2222,6 +2258,12 @@ private function _emitbegin( ) as integer
 	ctx.roundfloat=false
 	ctx.target=fbgetoption(FB_COMPOPT_TARGET) ''linux or windows
 	ctx.opereg=0
+
+	ctx.sdvreg(0)=KREGFREE
+	for ireg as integer = 0 to KREGUPPER:reghandle(ireg)=KREGFREE:regroom(ireg)=KROOMFREE:next
+	reghandle(KREG_RBP)=KREGRSVD ''rbp ''reserved, don't use -1 as vreg could be = -1 when not a reg (var, idx, etc)
+	reghandle(KREG_RSP)=KREGRSVD ''rsp
+
 	if ctx.target=FB_COMPTARGET_LINUX then
 		redim listreg(1 to 8)
 		listreg(1)=KREG_RDI:listreg(2)=KREG_RSI:listreg(3)=KREG_RDX:listreg(4)=KREG_RCX:listreg(5)=KREG_R8:listreg(6)=KREG_R9:listreg(7)=KREG_R10:listreg(8)=KREG_R11
@@ -2234,8 +2276,6 @@ private function _emitbegin( ) as integer
 	edbgEmitHeader_asm64( env.inf.name )
 
 	asm_section(".text")
-
-	reg_freeall ''no registers used
 
 	function = TRUE
 end function
@@ -6365,11 +6405,15 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 	ctx.prolog_txt=""
 	ctx.epilog_txt=""
 
+	''useful ?
 	ctx.labelbranch2=0
 	ctx.labeljump=0
 	ctx.jmpvreg=KREGFREE
 	ctx.jmppass=0
 	ctx.opepass=0
+	ctx.totalroom=-1
+	ctx.freeroom=0
+
 	ctx.variadic=false
 	ctx.proc_txt=""
 	ctx.section=SECTION_PROLOG
@@ -6397,8 +6441,7 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 		asm_section(".text")
 	end if
 
-	ctx.totalroom=-1
-	reg_freeall ''in case of constructor/destructor implicit
+	'reg_freeall ''in case of constructor/destructor implicit
 
 	asm_info( hEmitProcHeader( proc)  )
 
