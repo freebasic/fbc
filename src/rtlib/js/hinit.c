@@ -41,16 +41,16 @@ static void fb_fs_init_console(void)
 	__fb_con.color_remap = color_remap;
 
 	// keyboard
-	emscripten_set_keypress_callback( 0, NULL, 1, fb_hKeyEventHandler );
-	emscripten_set_keydown_callback( 0, NULL, 1, fb_hKeyEventHandler );
-	emscripten_set_keyup_callback( 0, NULL, 1, fb_hKeyEventHandler );
+	emscripten_set_keypress_callback( EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, 1, fb_hKeyEventHandler );
+	emscripten_set_keydown_callback( EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, 1, fb_hKeyEventHandler );
+	emscripten_set_keyup_callback( EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, 1, fb_hKeyEventHandler );
 
 	// mouse
-	emscripten_set_mousemove_callback( 0, NULL, 1, fb_hMouseEventHandler );
-	emscripten_set_mousedown_callback( 0, NULL, 1, fb_hMouseEventHandler );
-	emscripten_set_mouseup_callback( 0, NULL, 1, fb_hMouseEventHandler );
-	emscripten_set_dblclick_callback( 0, NULL, 1, fb_hMouseEventHandler );
-	//emscripten_set_wheel_callback( 0, NULL, 1, fb_hMouseWheelEventHandler );
+	emscripten_set_mousemove_callback( EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, 1, fb_hMouseEventHandler );
+	emscripten_set_mousedown_callback( EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, 1, fb_hMouseEventHandler );
+	emscripten_set_mouseup_callback( EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, 1, fb_hMouseEventHandler );
+	emscripten_set_dblclick_callback( EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, 1, fb_hMouseEventHandler );
+	//emscripten_set_wheel_callback( EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, 1, fb_hMouseWheelEventHandler );
 }
 
 void fb_hInit( void )
