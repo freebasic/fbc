@@ -2286,18 +2286,19 @@ private sub hAddGlobalCtorDtor( byval proc as FBSYMBOL ptr )
 	end if
 
 	if( symbGetIsGlobalCtor( proc ) ) then
-		ctx.ctorcount += 1
-		'hEmitCtorDtorArrayElement( proc, ctx.ctors )
-		asm_info("Constructor name/prio="+*symbGetMangledName( proc )+" / "+str( symbGetProcPriority( proc ) ))
-		if ctx.target=FB_COMPTARGET_LINUX andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
-			asm_section(".init_array")
-		else
-			asm_section(".ctors")
+		if symbGetProcIsEmitted(proc) then
+			ctx.ctorcount += 1
+			'hEmitCtorDtorArrayElement( proc, ctx.ctors )
+			asm_info("Constructor name/prio="+*symbGetMangledName( proc )+" / "+str( symbGetProcPriority( proc ) ))
+			if ctx.target=FB_COMPTARGET_LINUX andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
+				asm_section(".init_array")
+			else
+				asm_section(".ctors")
+			end if
+			asm_code(".align 8")
+			asm_code(".quad "+*symbGetMangledName( proc ))
+			asm_section(".text")
 		end if
-		asm_code(".align 8")
-		asm_code(".quad "+*symbGetMangledName( proc ))
-		asm_section(".text")
-
 	elseif( symbGetIsGlobalDtor( proc ) ) then
 		ctx.dtorcount += 1
 		'hEmitCtorDtorArrayElement( proc, ctx.dtors )
