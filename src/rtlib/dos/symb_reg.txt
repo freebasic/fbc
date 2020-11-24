@@ -405,6 +405,7 @@ extern_asm(_fb_LPrintLongint);
 extern_asm(_fb_ConsoleViewEx);
 extern_asm(_fb_hSetFileBufSize);
 extern_asm(_fb_ThreadCall);
+extern_asm(_fb_ThreadSelf);
 extern_asm(___fb_utf8_offsetsTb);
 extern_asm(_fb_StrFill2);
 extern_asm(_fb_WstrOct_l);
@@ -1245,6 +1246,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_ConsoleViewEx)
     DXE_EXPORT_ASM (_fb_hSetFileBufSize)
     DXE_EXPORT_ASM (_fb_ThreadCall)
+    DXE_EXPORT_ASM (_fb_ThreadSelf)
     DXE_EXPORT_ASM (___fb_utf8_offsetsTb)
     DXE_EXPORT_ASM (_fb_StrFill2)
     DXE_EXPORT_ASM (_fb_WstrOct_l)

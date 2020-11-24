@@ -2,8 +2,6 @@
 
 #include "fb.h"
 #include "fb_private_thread.h"
-#include "fb_gfx_private.h"
-#include <assert.h>
 
 #if defined ENABLE_MT && defined HOST_UNIX
 	#define FB_TLSENTRY           pthread_key_t
@@ -55,7 +53,7 @@ FBCALL void *fb_TlsGetCtx( int index, size_t len, FB_TLS_DESTRUCTOR destructorFn
 	else {
 		FB_TLS_CTX_HEADER *ctxHeader = FB_TLS_DATA_TO_HEADER( ctx );
 		/* The && is intentional here so if the assert fires, the message is displayed too */
-		assert( (ctxHeader->destructor == destructorFn) && "fb_TlsGetCtx trying to set different destructor for existing data" );
+		DBG_ASSERT( (ctxHeader->destructor == destructorFn) && "fb_TlsGetCtx trying to set different destructor for existing data" );
 	}
 #endif
 
@@ -102,5 +100,6 @@ void fb_TlsExit( void )
 	for( i = 0; i < FB_TLSKEYS; i++ ) {
 		FB_TLSFREE( __fb_tls_ctxtb[i] );
 	}
+	fb_CloseAtomicFBThreadFlagMutex( );
 }
 #endif
