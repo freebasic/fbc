@@ -81,6 +81,7 @@
 '' hLoadFbctinfFromObj():
 ''    reads the currently loaded object file,
 ''    using either the COFF (Win32, DOS) or ELF32 (Linux, *BSD) format.
+''    ELF32 (linux-arm) or ELF64 (linux-aarch64)
 ''    looks for the .fbctinf section,
 ''    and if found, parses its content, and tells the frontend about the
 ''    found libraries etc. by using the callbacks.
@@ -166,12 +167,14 @@ end type
 dim shared as ubyte elfmagic(0 to 15) = _
 { _
 	&h7f, &h45, &h4c, &h46,    0, &h01, _  '' index 4 is set to 1 (32bit) or 2 (64bit)
-	&h01, &h00, &h00, &h00, &h00, &h00 _
+	&h01, &h00, &h00, &h00, &h00, &h00 _   '' index 12 is set to machine
 }
 
 const ET_REL = 1
 const EM_386 = 3
-const EM_X86_64 = 62
+const EM_X86_64 = &h3e
+const EM_ARM32 = &h28
+const EM_AARCH64 = &hb7
 
 '' ELF section headers
 type ELF32_SH field = 1
@@ -205,7 +208,7 @@ end type
 '' different field offsets and sizes), and there are a few constant values that
 '' are different too.
 
-#macro ELFLOADINGCODE(ELF_H, ELF_SH, ELF_MAGIC_4, ELF_MACHINE)
+#macro ELFLOADINGCODE(ELF_H, ELF_SH, ELF_MAGIC_4)
 
 private function hCheck##ELF_SH _
 	( _
@@ -271,7 +274,7 @@ private function hGetSectionName##ELF_SH _
 	function = @sectionname
 end function
 
-private sub hLoadFbctinfFrom##ELF_H( )
+private sub hLoadFbctinfFrom##ELF_H( byval ELF_MACHINE as integer )
 	dim as ELF_H ptr h = any
 	dim as ELF_SH ptr sh = any, nametb = any
 	dim as zstring ptr sectionname = any
@@ -306,7 +309,7 @@ private sub hLoadFbctinfFrom##ELF_H( )
 		exit sub
 	end if
 
-	'' x86/x86_64?
+	'' x86/x86_64/arm/aarch64?
 	if( h->e_machine <> ELF_MACHINE ) then
 		INFO( "elf: machine mismatch" )
 		exit sub
@@ -364,8 +367,8 @@ end sub
 
 #endmacro
 
-ELFLOADINGCODE( ELF32_H, ELF32_SH, 1, EM_386 )
-ELFLOADINGCODE( ELF64_H, ELF64_SH, 2, EM_X86_64 )
+ELFLOADINGCODE( ELF32_H, ELF32_SH, 1 )
+ELFLOADINGCODE( ELF64_H, ELF64_SH, 2 )
 
 '' COFF main header
 type COFF_H field = 1
@@ -625,10 +628,16 @@ private sub hLoadFbctinfFromObj( )
 		select case( fbGetCpuFamily( ) )
 		case FB_CPUFAMILY_X86_64
 			INFO( "reading x86-64 ELF: " + parser.filename )
-			hLoadFbctinfFromELF64_H( )
+			hLoadFbctinfFromELF64_H( EM_X86_64 )
 		case FB_CPUFAMILY_X86
 			INFO( "reading i386 ELF: " + parser.filename )
-			hLoadFbctinfFromELF32_H( )
+			hLoadFbctinfFromELF32_H( EM_386 )
+		case FB_CPUFAMILY_AARCH64
+			INFO( "reading aarch64 ELF: " + parser.filename )
+			hLoadFbctinfFromELF64_H( EM_AARCH64 )
+		case FB_CPUFAMILY_ARM
+			INFO( "reading arm32 ELF: " + parser.filename )
+			hLoadFbctinfFromELF32_H( EM_ARM32 )
 		end select
 	end if
 

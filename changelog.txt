@@ -85,6 +85,7 @@ Version 1.08.0
 - use the multi-byte & wide character functions wctombs() & mbtowcs() when converting between string and wstring (Skyfish)
 - sf.net #568: asm error assigning 16-bit constant to 32-bit var, invalid use of movsx instruction on immediate (short => long)
 - fbc: internal cThreadCallFunc() was using wrong function to get the procedures return type
+- read objinfo for elf format files on arm32 and arm64 (aarch64) to allow automatic options and linking of libraries
 
 
 Version 1.07.0
