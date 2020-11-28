@@ -23,6 +23,8 @@ TEST_SRCS += tests/fbcu_float.bas
 TEST_SRCS += tests/fbcu_namespace.bas
 TEST_SRCS += tests/fbcu_default.bas
 TEST_SRCS += tests/fbcu_order.bas
+TEST_SRCS += tests/fbcu_cases.bas
+TEST_SRCS += tests/fbcu_console.bas
 
 TEST_OBJS := $(patsubst %.bas,%.o,$(TEST_SRCS))
 
@@ -37,6 +39,8 @@ EXAMPLES += examples/ex06.exe
 EXAMPLES += examples/ex07.exe
 EXAMPLES += examples/ex08.exe
 EXAMPLES += examples/ex09.exe
+EXAMPLES += examples/ex10.exe
+EXAMPLES += examples/ex11.exe
 
 ifneq ($(ARCH),)
 	FBCFLAGS += -arch $(ARCH)

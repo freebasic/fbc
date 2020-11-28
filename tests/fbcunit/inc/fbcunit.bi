@@ -12,8 +12,8 @@
 | fbcunit - FreeBASIC Compiler Unit testing module        |
 ---------------------------------------------------------'/
 
-#define FBCU_VER_MAJOR 0
-#define FBCU_VER_MINOR 9
+#define FBCU_VER_MAJOR 1
+#define FBCU_VER_MINOR 0
 
 #inclib "fbcunit"
 
@@ -172,6 +172,7 @@
 #define CU_ASSERT_SINGLE_EQUAL( a, e, g )  fbcu.CU_ASSERT_( (abs(csng(a)-csng(e)) <= abs(csng(g))), __FILE__, __LINE__, __FUNCTION__, "CU_ASSERT_SINGLE_EQUAL(" #a "," #e "," #g ")" )
 #define CU_ASSERT_SINGLE_APPROX( a, e, u ) fbcu.CU_ASSERT_( fbcu.sngApprox(csng(a), csng(e), clng(u)), __FILE__, __LINE__, __FUNCTION__, "CU_ASSERT_SINGLE_APPROX(" #a "," #e "," #u ")" )
 
+#define CU_PRINT( s ) fbcu.outputConsoleString( s )
 
 /'-----------------------------
 | fbcunit code emitter macros |
@@ -548,7 +549,21 @@
 	declare function fbcu.getHideCases alias "fbcu_getHideCases_qb" _
 		( _
 		) as __boolean
-	
+
+	declare sub fbcu.setShowConsole alias "fbcu_setShowConsole_qb" _
+		( _
+			byval showConsole as __boolean _
+		)
+
+	declare function fbcu.getShowConsole alias "fbcu_getShowConsole_qb" _
+		( _
+		) as __boolean
+
+	declare sub fbcu.outputConsoleString alias "fbcu_outputConsoleString_qb" _
+		( _
+			byref s as const string = "" _
+		)
+
 	declare function fbcu.run_tests alias "fbcu_run_tests_qb" _
 		( _
 			byval show_summary as __boolean = __true, _
@@ -690,6 +705,20 @@ namespace fbcu
 	declare function getHideCases _
 		( _
 		) as boolean
+
+	declare sub setShowConsole _
+		( _
+			byval showConsole as boolean _
+		)
+
+	declare function getShowConsole _
+		( _
+		) as boolean
+
+	declare sub outputConsoleString _
+		( _
+			byref s as const string = "" _
+		)
 
 	declare function run_tests _
 		( _

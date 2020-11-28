@@ -104,6 +104,35 @@ function fbcu_getHideCases alias "fbcu_getHideCases_qb" _
 end function
 
 ''
+sub fbcu_setShowConsole alias "fbcu_setShowConsole_qb" _
+	( _
+		byval showConsole as boolean _
+	)
+
+	fbcu.setShowConsole( showConsole )
+
+end sub
+
+''
+function fbcu_getShowConsole alias "fbcu_getShowConsole_qb" _
+	( _
+	) as boolean
+
+	function = fbcu.getShowConsole()
+
+end function
+
+''
+sub fbcu_outoutConsoleString alias "fbcu_outputConsoleString_qb" _
+	( _
+		byref s as const string = "" _
+	)
+
+	fbcu.outputConsoleString( s )
+
+end sub
+
+''
 function fbcu_run_tests_qb alias "fbcu_run_tests_qb" _
 	( _
 		byval show_summary as boolean = true, _
