@@ -25,6 +25,10 @@
 #   linux-x86_64
 #       native builds on GNU/Linux x86/x64_64 - relying on the host toolchains;
 #       no gcc toolchain is downloaded; no standalone version of FB is built.
+#   linux-arm
+#   linux-aarch64
+#       native builds on GNU/arm/aarch64 - relying on the host toolchains;
+#       no gcc toolchain is downloaded; no standalone version of FB is built.
 #   win32
 #       32bit MinGW-w64 build: must run on Win32. Uses MSYS.
 #   win32-mingworg
@@ -83,7 +87,7 @@
 set -e
 
 usage() {
-	echo "usage: ./build.sh dos|linux-x86|linux-x86_64|win32|win32-mingworg|win64 <fbc commit id> [--offline] [--repo url] [--remote name] [--recipe name]"
+	echo "usage: ./build.sh dos|linux-x86|linux-x86_64|linux-arm|linux-aarch64|win32|win32-mingworg|win64 <fbc commit id> [--offline] [--repo url] [--remote name] [--recipe name]"
 	exit 1
 }
 
@@ -108,7 +112,7 @@ case $arg in
 	recipe_name="$2"
 	shift; shift
 	;;
-dos|linux-x86|linux-x86_64|win32|win64)
+dos|linux-x86|linux-x86_64|win32|win64|linux-arm|linux-aarch64)
 	target="$1"
 	fbtarget=$target
 	shift
@@ -404,7 +408,15 @@ win64)
 	;;
 esac
 
-bootfb_title=FreeBASIC-1.06.0-$fbtarget
+# choose a bootstrap source for the target
+case $fbtarget in
+linux-arm|linux-aarch64)
+	bootfb_title=FreeBASIC-1.07.2-$fbtarget
+	;;
+*)
+	bootfb_title=FreeBASIC-1.06.0-$fbtarget
+	;;
+esac
 
 case $fbtarget in
 linux*)
