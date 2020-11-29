@@ -18,7 +18,7 @@ SUITE( fbc_tests.threads.self )
 			for i = 0 to NUM_THREADS-1
 				htb(i) = threadcreate( @cb, @selfThreadIds(i) )
 				if( htb(i) = 0 ) then
-					print "ThreadSelf test error launching thread:" & i
+					CU_FAIL_FATAL( "ThreadSelf test error launching thread:" & i )
 					end
 				end if
 			next i
@@ -71,7 +71,7 @@ SUITE( fbc_tests.threads.self )
 			for i = 0 to NUM_THREADS-1
 				htb(i) = threadcreate( @cb, @selfThreadIds(i) )
 				if( htb(i) = 0 ) then
-					print "ThreadSelf test error launching thread:" & i
+					CU_FAIL_FATAL( "ThreadSelf test error launching thread:" & i )
 					end
 				end if
 				ThreadDetach(htb(i))
@@ -118,9 +118,9 @@ SUITE( fbc_tests.threads.self )
 
 		TEST(mainThreadWait)
 			Dim tid as Any Ptr = ThreadSelf()
-			Print "ThreadSelf test waiting for main thread, if success message isn't printed below, this test failed"
+			CU_PRINT( "ThreadSelf test waiting for main thread, if success message isn't printed below, this test failed" )
 			ThreadWait(tid)
-			Print "ThreadSelf test success"
+			CU_PRINT( "ThreadSelf test success" )
 			Dim tid2 As Any Ptr = ThreadSelf()
 			CU_ASSERT_EQUAL(tid, tid2)
 		END_TEST
@@ -165,7 +165,7 @@ SUITE( fbc_tests.threads.self )
 			for i = 0 to NUM_THREADS-1
 				htb(i) = threadcreate( @cb )
 				if( htb(i) = 0 ) then
-					print "ThreadSelf test error launching thread:" & i
+					CU_FAIL_FATAL( "ThreadSelf test error launching thread:" & i )
 					While i >= 0
 						ThreadWait(htb(i))
 						i -= 1

@@ -11,7 +11,7 @@ SUITE( fbc_tests.threads.racecondition )
 
 		declare sub cb( byval i as any ptr )
 
-		sub test_proc
+		TEST( test_proc )
 			dim htb(0 to NUM_THREADS-1) as any ptr
 			dim i as integer
 
@@ -20,32 +20,24 @@ SUITE( fbc_tests.threads.racecondition )
 			for i = 0 to NUM_THREADS-1
 				htb(i) = threadcreate( @cb, cast(any ptr, i) )
 				if( htb(i) = 0 ) then
-					print "error:" & i
+					CU_FAIL_FATAL( "error:" & i )
 					end
 				end if
 			next i
 
 			for i = 0 to NUM_THREADS-1
-				print "waiting:" & i
+				CU_PRINT( "waiting:" & i )
 				threadwait( htb(i) )
 			next
 
-			print "Exiting.."
+			CU_PRINT( "Exiting.." )
 			sleep 1000
-		end sub
+		END_TEST
 
 		sub cb( byval i as any ptr )
 			sleep rnd * 100
-			print "ending:" & i
+			CU_PRINT( "ending:" & i )
 		end sub
-
-		'// !!! TODO !!! fbcunit should handle this internally ...
-		'// need to add capability to fbcunit
-		#if ENABLE_CONSOLE_OUTPUT
-		TEST( default )
-			test_proc
-		END_TEST
-		#endif
 
 	END_TEST_GROUP
 
@@ -60,8 +52,7 @@ SUITE( fbc_tests.threads.racecondition )
 			#macro check( N )
 				case N
 					if( (i mod 100) <> N ) then
-						CU_FAIL( )
-						''print "bad, i = " + str( i ) + ", i mod 100 = " + str( i mod 100 )
+						CU_FAIL( "bad, i = " + str( i ) + ", i mod 100 = " + str( i mod 100 ) )
 					end if
 			#endmacro
 

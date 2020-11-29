@@ -24,6 +24,7 @@ Version 1.08.0
 - gfxlib2: X11 driver - set the window title for both the frame window and the client window
 - rtlib: RANDOMIZE RND_REAL for real random number generator now fills a buffer (624 ulongs) and RND iterates the buffer
 - rtlib: refactor math_rnd.c internals for readability
+- fbcunit: update to version 1.0
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling
