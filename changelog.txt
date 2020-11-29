@@ -52,6 +52,8 @@ Version 1.08.0
 - ./inc/fbc-int/math.bi - fbc API for rnd, rnd32, randomize, expose some random number generator internals
 - ./inc/fbmath.bi - add random number generators fb.rndfast32, fb.rndmsws32, fb.rndsquares32, fb.rndpcg32, fb.rndxoroshiro128
 - add THREADSELF in ./inc/fbthread.bi to return the thread id of the current thread (adeyblue)
+- makefile: add arm and aarch64 targets to the bootstrap package
+- release: add arm and aarch64 targets as an option to the contrib/release.build.sh script
 
 [fixed]
 - makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture
