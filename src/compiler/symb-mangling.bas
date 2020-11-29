@@ -509,20 +509,29 @@ sub symbMangleType _
 		if( typeGetDtOnly( dtype ) = FB_DATATYPE_STRUCT ) then
 			if( typeGetMangleDt( dtype ) = FB_DATATYPE_VA_LIST ) then
 
-				'' if the type was passed as byval ptr or byref
-				'' need to mangle in "A1_" to indicate the array type, but
-				'' not on aarch64, __va_list is a plain struct, it doesn't
-				'' need the array type specifier.
+				select case symbGetValistType( dtype, subtype )
+				case FB_CVA_LIST_BUILTIN_C_STD
+					'' if the type was passed as byval ptr or byref
+					'' need to mangle in "A1_" to indicate the array type, but
+					'' not on aarch64, __va_list is a plain struct, it doesn't
+					'' need the array type specifier.
 
-				if( symbIsValistStructArray( dtype, subtype ) ) then
 					if( (options and (FB_MANGLEOPT_HASREF or FB_MANGLEOPT_HASPTR)) <> 0 ) then
 						mangled += "A1_"
 					else
 						mangled += "P"
 					end if
-				end if
+					dtype = typeSetMangleDt( dtype, 0 )
 
-				dtype = typeSetMangleDt( dtype, 0 )
+				case FB_CVA_LIST_BUILTIN_AARCH64, FB_CVA_LIST_BUILTIN_ARM
+					'' on arm and aarch targets, __builtin_va_list actually
+					'' maps to "std::__va_list" where "std::" has the mangling
+					'' identifier of "St"
+
+					mangled += "St"
+					dtype = typeSetMangleDt( dtype, 0 )
+
+				end select
 			end if
 		end if
 	end if
@@ -532,7 +541,7 @@ sub symbMangleType _
 	''
 	assert( dtype = (typeGetDtOnly( dtype ) or (dtype and FB_DT_MANGLEMASK)) )
 
-	select case( dtype )
+	select case( typeGetDtOnly( dtype ) )
 	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 		ns = symbGetNamespace( subtype )
 		if( ns = @symbGetGlobalNamespc( ) ) then
