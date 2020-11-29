@@ -448,10 +448,9 @@ enum FB_UDTOPT
 	FB_UDTOPT_HASANONUNION          = &h2000
 	FB_UDTOPT_HASSTATICVAR          = &h4000
 	FB_UDTOPT_HASBITFIELD           = &h8000
-	FB_UDTOPT_ISVALISTSTRUCT        = &h10000
-	FB_UDTOPT_ISVALISTSTRUCTARRAY   = &h20000
-	FB_UDTOPT_ISWSTRING             = &h40000
-	FB_UDTOPT_ISZSTRING             = &h80000
+	FB_UDTOPT_ISWSTRING             = &h10000
+	FB_UDTOPT_ISZSTRING             = &h20000
+	FB_UDTOPT_VALISTTYPEMASK       = &hf00000
 end enum
 
 type FB_STRUCT_DBG
@@ -2272,11 +2271,8 @@ declare function symbCloneSimpleStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL 
 #define symbSetUdtHasBitfield( s )   (s)->udt.options or= FB_UDTOPT_HASBITFIELD
 #define symbGetUdtHasBitfield( s ) (((s)->udt.options and FB_UDTOPT_HASBITFIELD) <> 0)
 
-#define symbSetUdtIsValistStruct( s )   (s)->udt.options or= FB_UDTOPT_ISVALISTSTRUCT
-#define symbGetUdtIsValistStruct( s ) (((s)->udt.options and FB_UDTOPT_ISVALISTSTRUCT) <> 0)
-
-#define symbSetUdtIsValistStructArray( s )   (s)->udt.options or= FB_UDTOPT_ISVALISTSTRUCTARRAY
-#define symbGetUdtIsValistStructArray( s ) (((s)->udt.options and FB_UDTOPT_ISVALISTSTRUCTARRAY) <> 0)
+#define symbSetUdtValistType( s, t )   (s)->udt.options or= (((t) shl 20) and FB_UDTOPT_VALISTTYPEMASK)
+#define symbGetUdtValistType( s )    (((s)->udt.options and FB_UDTOPT_VALISTTYPEMASK) shr 20)
 
 #define symbSetUdtIsZstring( s )   (s)->udt.options or= FB_UDTOPT_ISZSTRING
 #define symbGetUdtIsZstring( s ) (((s)->udt.options and FB_UDTOPT_ISZSTRING) <> 0 )

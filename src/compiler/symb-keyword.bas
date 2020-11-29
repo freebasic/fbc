@@ -485,8 +485,7 @@ sub symbKeywordTypeInit( )
 		'' subtype mangle modifier
 		'' don't clone struct, back patch the original only, see note in cMangleModifier()
 		'' TODO: s = symbCloneSymbol( s )
-		symbSetUdtIsValistStruct( s )
-		symbSetUdtIsValistStructArray( s )
+		symbSetUdtValistType( s, FB_CVA_LIST_BUILTIN_C_STD )
 
 		'' type cva_list as __va_list_tag alias "__builtin_va_list[]"
 		symbAddTypedef( pid, typeSetMangleDt( symbGetType( s ), FB_DATATYPE_VA_LIST ), s, symbGetLen( s ) )
@@ -524,7 +523,29 @@ sub symbKeywordTypeInit( )
 		'' subtype mangle modifier
 		'' don't clone struct, back patch the original only, see note in cMangleModifier()
 		'' TODO: s = symbCloneSymbol( s )
-		symbSetUdtIsValistStruct( s )
+		symbSetUdtValistType( s, FB_CVA_LIST_BUILTIN_AARCH64 )
+
+		'' type cva_list as __va_list alias "__builtin_va_list"
+		symbAddTypedef( pid, typeSetMangleDt( symbGetType( s ), FB_DATATYPE_VA_LIST ), s, symbGetLen( s ) )
+
+	case FB_CVA_LIST_BUILTIN_ARM
+		'' cva_list is from ARM definition:
+		''	typdef struct __va_list {
+		''		void *ap; 
+		''	} va_list;
+
+		s = symbStructBegin( NULL, NULL, NULL, "__va_list", "__va_list", FALSE, 0, FALSE, 0, 0 )
+
+		'' ap as any ptr
+		symbAddField( s, "ap", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
+
+		'' end type
+		symbStructEnd( s )
+
+		'' subtype mangle modifier
+		'' don't clone struct, back patch the original only, see note in cMangleModifier()
+		'' TODO: s = symbCloneSymbol( s )
+		symbSetUdtValistType( s, FB_CVA_LIST_BUILTIN_ARM )
 
 		'' type cva_list as __va_list alias "__builtin_va_list"
 		symbAddTypedef( pid, typeSetMangleDt( symbGetType( s ), FB_DATATYPE_VA_LIST ), s, symbGetLen( s ) )

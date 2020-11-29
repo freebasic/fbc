@@ -1613,8 +1613,7 @@ function symbGetValistType _
 	'' with a UDT subtype, or we might be looking at the UDT
 	'' itself.  Either way, we must look at the UDT itself to
 	'' determine if it is a struct or struct array type using
-	''   - symbGetUdtIsValistStruct()
-	''   - symbGetUdtIsValistStructArray()
+	''   - symbGetUdtValistType()
 
 	'' Determine the following:
 	''   1) va_list type?  (any target/va_list type)
@@ -1633,13 +1632,7 @@ function symbGetValistType _
 
 		case FB_DATATYPE_STRUCT
 			if( subtype ) then
-				if( symbGetUdtIsValistStruct( subtype ) ) then
-					if( symbGetUdtIsValistStructArray( subtype ) ) then
-						function = FB_CVA_LIST_BUILTIN_C_STD
-					else
-						function = FB_CVA_LIST_BUILTIN_AARCH64
-					end if
-				end if
+				function = symbGetUdtValistType( subtype )
 			end if
 
 		case else
@@ -1661,13 +1654,7 @@ function symbGetValistType _
 			end if
 
 		case FB_DATATYPE_STRUCT
-			if( symbGetUdtIsValistStruct( subtype ) ) then
-				if( symbGetUdtIsValistStructArray( subtype ) ) then
-					function = FB_CVA_LIST_BUILTIN_C_STD
-				else
-					function = FB_CVA_LIST_BUILTIN_AARCH64
-				end if
-			end if
+			function = symbGetUdtValistType( subtype )
 
 		end select
 

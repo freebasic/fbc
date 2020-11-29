@@ -459,7 +459,7 @@ private function cMangleModifier _
 					errReport( FB_ERRMSG_SYNTAXERROR )	
 				end select
 
-			case "__builtin_va_list"
+			case "__builtin_va_list", "__builtin_va_list[]"
 				select case dtype
 				case FB_DATATYPE_VOID
 					dtype = typeSetMangleDt( dtype, FB_DATATYPE_VA_LIST )
@@ -471,19 +471,7 @@ private function cMangleModifier _
 					'' now just back patch the original struct and
 					'' remember to document this on mangle modifier page.
 					'' subtype = symbCloneSymbol( subtype )
-					symbSetUdtIsValistStruct( subtype )
-				case else
-					errReport( FB_ERRMSG_SYNTAXERROR )	
-				end select
-
-			case "__builtin_va_list[]"
-				select case dtype
-				case FB_DATATYPE_STRUCT
-					dtype = typeSetMangleDt( dtype, FB_DATATYPE_VA_LIST )
-					'' TODO: don't clone, see note above.
-					''subtype = symbCloneSymbol( subtype )
-					symbSetUdtIsValistStruct( subtype )
-					symbSetUdtIsValistStructArray( subtype )
+					symbSetUdtValistType( subtype, fbGetBackendValistType() )
 				case else
 					errReport( FB_ERRMSG_SYNTAXERROR )	
 				end select

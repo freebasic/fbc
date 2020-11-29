@@ -652,7 +652,7 @@ private function hGetUdtId( byval sym as FBSYMBOL ptr ) as string
 
 	'' gcc's __builtin_va_list needs an exact name
 	select case symbGetValistType( symbGetFullType( sym ), symbGetSubtype( sym ) )
-	case FB_CVA_LIST_BUILTIN_C_STD, FB_CVA_LIST_BUILTIN_AARCH64
+	case FB_CVA_LIST_BUILTIN_C_STD, FB_CVA_LIST_BUILTIN_AARCH64, FB_CVA_LIST_BUILTIN_ARM
 			function = *sym->id.alias
 			exit function
 	end select

@@ -1519,7 +1519,7 @@ function fbGetBackendValistType _
 			end select
 
 		case FB_CPUFAMILY_ARM
-			typedef = FB_CVA_LIST_BUILTIN_POINTER
+			typedef = FB_CVA_LIST_BUILTIN_ARM
 
 		case FB_CPUFAMILY_AARCH64
 			typedef = FB_CVA_LIST_BUILTIN_AARCH64
