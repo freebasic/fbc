@@ -11,6 +11,8 @@ Version 1.07.2
 [added]
 - gas64 emitter for x86_64 (SARG), added '-gen gas64' command line option to select
 - github #256: gfxlib2: add vga16_blitter for linux-arm targets to pack 2 pixels per byte and write to linear frame buffer
+- makefile: add arm and aarch64 targets to the bootstrap package
+- release: add arm and aarch64 targets as an option to the contrib/release.build.sh script
 
 [fixed]
 - sf.net #921: gfxlib: horizontal line drawing on 8-bit image was using wrong bpp
