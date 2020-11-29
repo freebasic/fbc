@@ -1,9 +1,18 @@
+Version 1.0
+
+[added]
+- fbcu.setShowConsole( true|false ) method to show console logging (true), or not (false, default)
+- fbcu.getShowConsole() as boolean to return current setting for "showConsole" option
+- fbcu.outputConsoleString( byref s as const string = "" ) output to console depending on showConsole setting
+
+
 Version 0.9
 
 [added]
 - fbcu.setBriefSummary( true|false ) method to choose brief summary (true), otherwise full summary (false, default)
 - fbcu.setHideCases( true|false ) method to prevent cases (failed asserts) from printing (true), otherwise show all (false, default)
 - fbcu.getHideCases() as boolean to return current setting for "hide-cases" option
+- tests/tests.bas will accept --brief-summary and --hide-cases command line options
 
 [fixed]
 - added missing fbcunit_qb.bas:fbcu_check_internal_state() stub

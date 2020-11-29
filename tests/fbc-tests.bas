@@ -4,13 +4,14 @@
 	test suite main entry point 
 '/
 
-#include once "fbcunit.bi" 
+#include once "fbcunit.bi"
 
 dim opt_help as boolean = false
 dim opt_verbose as boolean = false
 dim opt_show_summary as boolean = true
 dim opt_brief_summary as boolean = false
 dim opt_hide_cases as boolean = false
+dim opt_show_console as boolean = false
 dim opt_xml_report as boolean = false
 dim opt_xml_filename as string = ""
 dim opt_no_error as boolean = false
@@ -48,6 +49,9 @@ while command(i) > ""
 	case "--hide-cases"
 		opt_hide_cases = true
 
+	case "--show-console"
+		opt_show_console = true
+
 	case else
 		print "Unrecognized option '" & command(i) & "'"
 		end 1
@@ -69,6 +73,7 @@ if( opt_help ) then
 	print "   --no-error           don't exit with error code even if tests failed"
 	print "   --brief-summary      only show failures in the summary"
 	print "   --hide-cases         don't show the failed cases"
+	print "   --show-console       show console output"
 	print
 
 	'' exit with an error code
@@ -90,6 +95,7 @@ end if
 '' set extra options
 fbcu.setBriefSummary( opt_brief_summary )
 fbcu.setHideCases( opt_hide_cases )
+fbcu.setShowConsole( opt_show_console )
 
 '' run the tests
 passed = fbcu.run_tests( opt_show_summary, opt_verbose )
@@ -106,7 +112,7 @@ end if
 
 
 '' only return exit code = 0 if all tests passed and no other errors
-'' or if the '-no-error' option was given, suspress the error code
+'' or if the '--no-error' option was given, suspress the error code
 if( passed or opt_no_error ) then
 	end 0
 end if

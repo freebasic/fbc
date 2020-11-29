@@ -65,6 +65,7 @@ dim shared fbcu_suite_index as integer = INVALID_INDEX
 dim shared fbcu_test_index as integer = INVALID_INDEX
 
 dim shared fbcu_hide_cases as boolean = false
+dim shared fbcu_show_console as boolean = false
 dim shared fbcu_brief_summary as boolean = false
 
 '' --------------------
@@ -552,6 +553,31 @@ namespace fbcu
 		) as boolean
 		function = fbcu_hide_cases
 	end function
+
+	''
+	sub setShowConsole _
+		( _
+			byval showConsole as boolean _
+		)
+		fbcu_show_console = showConsole
+	end sub
+
+	''
+	function getShowConsole _
+		( _
+		) as boolean
+		function = fbcu_show_console
+	end function
+
+	''
+	sub outputConsoleString _
+		( _
+			byref s as const string = "" _
+		)
+		if( fbcu_show_console ) then
+			print_output( s )
+		end if
+	end sub
 
 	''
 	function run_tests _

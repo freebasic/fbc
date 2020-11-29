@@ -2,6 +2,7 @@
 
 #include "fb.h"
 #include <locale.h>
+#include "fb_private_thread.h"
 
 FB_RTLIB_CTX __fb_ctx /* not initialized */;
 static int __fb_is_inicnt = 0;
@@ -23,6 +24,7 @@ void fb_hRtInit( void )
 #ifdef ENABLE_MT
 	fb_TlsInit( );
 #endif
+	fb_AllocateMainFBThread();
 
 	/**
 	 * With the default "C" locale (which is just plain 7-bit ASCII),

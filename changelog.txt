@@ -24,6 +24,7 @@ Version 1.08.0
 - gfxlib2: X11 driver - set the window title for both the frame window and the client window
 - rtlib: RANDOMIZE RND_REAL for real random number generator now fills a buffer (624 ulongs) and RND iterates the buffer
 - rtlib: refactor math_rnd.c internals for readability
+- fbcunit: update to version 1.0
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling
@@ -50,6 +51,7 @@ Version 1.08.0
 - github #256: gfxlib2: add vga16_blitter for linux-arm targets to pack 2 pixels per byte and write to linear frame buffer
 - ./inc/fbc-int/math.bi - fbc API for rnd, rnd32, randomize, expose some random number generator internals
 - ./inc/fbmath.bi - add random number generators fb.rndfast32, fb.rndmsws32, fb.rndsquares32, fb.rndpcg32, fb.rndxoroshiro128
+- add THREADSELF in ./inc/fbthread.bi to return the thread id of the current thread (adeyblue)
 
 [fixed]
 - makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture
