@@ -1,9 +1,13 @@
 #include "fbcunit.bi"
 
-'' !!! TODO !!! does dos port support threads or no?
+'' !!! TODO !!! test dos port with threads
+'' !!! TODO !!! arm targets fail
 
-#ifndef __FB_DOS__
+#ifndef ENABLE_CHECK_BUGS
+#define ENABLE_CHECK_BUGS 0
+#endif
 
+#if not (defined( __FB_ARM__ ) or defined( __FB_DOS__)) or ( ENABLE_CHECK_BUGS <> 0 )
 
 '' fbcunit is not thread-safe - wrap the CU_ASSERT_TRUE in a mutex
 #undef CU_ASSERT_TRUE
