@@ -122,15 +122,12 @@ if variadic register save area, only for parameters not defined
 '' comment to not get basic data
 '#define basicdata
 
-''in hwriteasm64 by default 0 --> not a line of asm code
-#define KNOTCODE 0
-#define KCODE    1
 #define KDOALL	 0
 #define KNOALL	 1
 #define KNOFREE  2
 #define KNOOPTIM 3
 
-#define asm_code(s,opt...) hWriteasm64(s,KCODE,opt)
+#define asm_code(s,opt...) hWriteasm64(s,opt)
 
 #ifdef debugdata
 	#define asm_debug(s) hWriteasm64("# asmdebug "+s)
@@ -139,7 +136,7 @@ if variadic register save area, only for parameters not defined
 #endif
 
 #if __FB_DEBUG__ <> 0
-	#define asm_info(s) hWriteasm64(s)
+	#define asm_info(s) hWriteasm64("# "+s)
 #else
 	#define asm_info(s) rem
 	#define typeDumpToStr(a,b) " "+str(a)
@@ -309,7 +306,7 @@ declare sub _emitdbg(byval op as integer,byval proc as FBSYMBOL ptr,byval lnum a
 declare sub check_optim(byref code as string)
 declare sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 declare function hgetdatatype_asm64 (byval sym as FBSYMBOL ptr,byval arraydimensions as integer = 0) as string
-declare sub hwriteasm64( byref ln as string,byval cod as byte=0 ,byval opt as integer=KDOALL)
+declare sub hwriteasm64( byref ln as string,byval opt as integer=KDOALL)
 declare sub _emitvariniend( byval sym as FBSYMBOL ptr )
 declare sub _emitvarinipad( byval bytes as longint )
 declare sub _emitvariniwstr(byval varlength as longint,byval literal as wstring ptr,byval litlength as longint)
@@ -678,10 +675,13 @@ private sub emitop3_op4(byref op as string)
 		asm_code(op)
 	end if
 end sub
-private sub hwriteasm64( byref ln2 as string,byval cod as byte=KNOTCODE,byval opt as integer=KDOALL)
-	dim as string ln
-
-	if cod then
+private sub hwriteasm64( byref ln2 as string,byval opt as integer=KDOALL)
+dim as string ln
+#if __FB_DEBUG__ <> 0
+	if ln2[0]=asc("#") then
+		ln="           "+ln2
+	else
+#endif
 		ln=ln2
 		if ctx.opereg then
 			if ctx.opepass=1 then
@@ -706,10 +706,9 @@ private sub hwriteasm64( byref ln2 as string,byval cod as byte=KNOTCODE,byval op
 			check_optim(ln)
 		end if
 		ln = string( ctx.indent*3, 32 ) + ln
-	else
-		ln="           # -> "+ln2
+#if __FB_DEBUG__ <> 0
 	end if
-
+#endif
 	''print ln ''used to display every line when compiler crashes....
 	ln += NEWLINE
 
@@ -1607,7 +1606,7 @@ private sub reg_branch(byval label as FBSYMBOL ptr )
 			'asm_info("iroom="+str(iroom)+" "+str(ctx.sdvreg(iroom))+" "+str(vreg))
 			if ctx.sdvreg(iroom)<>KREGFREE and ctx.spilbranch1(iroom)=true then
 				regfree=reg_findfree(ctx.sdvreg(iroom))
-				asm_info("restoring saved vreg="+str(ctx.sdvreg(iroom))+" in register="+*regstrq(regfree))
+				asm_info("SPILBRANCH1 restoring saved vreg="+str(ctx.sdvreg(iroom))+" in register="+*regstrq(regfree))
 				ctx.sdvreg(iroom)=KREGFREE
 				asm_code("mov "+*regstrq(regfree)+", QWORD PTR "+str(ctx.sdoffset(iroom))+"[rbp]")
 				ctx.freeroom+=1
@@ -6048,6 +6047,9 @@ private sub _emitbranch( byval op as integer, byval label as FBSYMBOL ptr )
 	if ctx.labelbranch2 then
 		ctx.labeljump=label
 	end if
+	if op<>AST_OP_JMP then
+		reg_mark(label)
+	end if
 end sub
 private sub _emitreturn( byval bytestopop as integer )
 	asm_info("return for gosub="+str(bytestopop))
@@ -6458,7 +6460,7 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 		asm_section(".text")
 	end if
 
-	reg_freeall ''in case of constructor/destructor implicit
+	''reg_freeall ''not used by kept in case of checking registers not freed and so on
 
 	asm_info( hEmitProcHeader( proc)  )
 
