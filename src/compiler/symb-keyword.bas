@@ -411,34 +411,41 @@ sub symbKeywordTypeInit( )
 
 	'' add the default cva_list type
 	''
-	''	#if (__FB_BACKEND__ = "gcc")
-	''		#if defined( __FB_64BIT__ ) 
-	''			#if defined( __FB_ARM__ )
-	''				type __va_list alias "__va_list"
-	''					as any ptr __stack
-	''					as any ptr __gr_top
-	''					as any ptr __vr_top
-	''					as long __gr_offs
-	''					as long __vr_offs
-	''				end type
-	''				type cva_list as __va_list alias "__builtin_va_list"
-	''			#elseif defined( __FB_WIN32__ )
-	''				type cva_list as any alias "__builtin_va_list" ptr
-	''			#else
-	''				type __va_list_tag alias "__va_list_tag"
-	''					as ulong gp_offset
-	''					as ulong fp_offset
-	''					as any ptr overflow_arg_area
-	''					as any ptr reg_save_area
-	''				end type  
-	''				type cva_list as __va_list_tag alias "__builtin_va_list[]"
-	''			#endif	
-	''		#else
-	''			type cva_list as any alias "__builtin_va_list" ptr
-	''		#endif
-	''	#else
-	''		type cva_list as any alias "char" ptr
-	''	#endif
+	''  #if (__FB_BACKEND__ = "gcc")
+	''      #if defined( __FB_64BIT__ ) 
+	''          #if defined( __FB_ARM__ )
+	''              type __va_list alias "__va_list"
+	''                  as any ptr __stack
+	''                  as any ptr __gr_top
+	''                  as any ptr __vr_top
+	''                  as long __gr_offs
+	''                  as long __vr_offs
+	''              end type
+	''              type cva_list as __va_list alias "__builtin_va_list"
+	''          #elseif defined( __FB_WIN32__ )
+	''              type cva_list as any alias "__builtin_va_list" ptr
+	''          #else
+	''              type __va_list_tag alias "__va_list_tag"
+	''                  as ulong gp_offset
+	''                  as ulong fp_offset
+	''                  as any ptr overflow_arg_area
+	''                  as any ptr reg_save_area
+	''              end type  
+	''              type cva_list as __va_list_tag alias "__builtin_va_list[]"
+	''          #endif  
+	''      #else
+	''          #if defined( __FB_ARM__ )
+	''              type __va_list alias "__va_list"
+	''                  as any ptr __ap
+	''              end type
+	''              type cva_list as __va_list alias "__builtin_va_list"
+	''          #else
+	''              type cva_list as any alias "__builtin_va_list" ptr
+	''          #endif
+	''      #endif
+	''  #else
+	''      type cva_list as any alias "char" ptr
+	''  #endif
 
 	static as FBARRAYDIM dTB(0)
 	
@@ -529,15 +536,15 @@ sub symbKeywordTypeInit( )
 		symbAddTypedef( pid, typeSetMangleDt( symbGetType( s ), FB_DATATYPE_VA_LIST ), s, symbGetLen( s ) )
 
 	case FB_CVA_LIST_BUILTIN_ARM
-		'' cva_list is from ARM definition:
+		'' cva_list is from ARM definition
 		''	typdef struct __va_list {
-		''		void *ap; 
+		''		void *__ap; 
 		''	} va_list;
 
 		s = symbStructBegin( NULL, NULL, NULL, "__va_list", "__va_list", FALSE, 0, FALSE, 0, 0 )
 
 		'' ap as any ptr
-		symbAddField( s, "ap", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
+		symbAddField( s, "__ap", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
 
 		'' end type
 		symbStructEnd( s )
