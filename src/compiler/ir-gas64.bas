@@ -20,7 +20,6 @@ ex : integer, float,integer, float  ->  rcx,xmm1,r8,xmm3
 rbp,rbx,rdi,rsi,r12,r13,r14,r15 belong to calling proc, if used by called need to be saved by called
 rcx,rdx,r8,r9,rax,r10,r11       belong to called  proc, if used by calling need to be saved (before call)
 
-
 Linux ABI
 ---------
 params : rdi,rsi,rdx,rcx,r8,r9 + xmm0 to xmm7
@@ -63,21 +62,14 @@ rbp+24         param 2
 rbp+16         param 1   calling --> rsp + x / called --> rbp + 16, 24,.. to 8+x*8
 			   return addr (after call)
 rbp            old rbp
-rbp-8          rax  14 saved registers (arbitrary even not used) --> rbp -8 to -112
--16            rbx
--24            rcx
--32            rdx
--40            rsi
--48            rdi
--56            r8
--64            r9
--72            r10
--80            r11
--88            r12
--96            r13
--104           r14
--112           r15
-rbp-112-x -->  local vars
+rbp-8          rbx  7 saved registers (space arbitrary reserved even not used) --> rbp -8 to -56
+-16            rdi
+-24            rsi
+-32            r12
+-40            r13
+-48            r14
+-56            r15
+rbp-56-x -->  local vars
 
 			   param x space is reversed using argcountmax, even with variadic
 			   .......
@@ -96,18 +88,23 @@ rbp+24         param 2
 rbp+16         FIRST param 1 on stack (no param in register)  calling --> rsp + x / called --> rbp + 16, 24,.. to 8+x*8
 			   return addr (after call)
 rbp            old rbp
-.....
-rbp+x          saved param passed in register
+rbp-8          rbx  5 saved registers (space arbitrary reserved even not used) --> rbp -8 to -40
+-16            r12
+-24            r13
+-32            r14
+-40            r15
 
 if variadic register save area, only for parameters not defined
--224 rdi 0
--216 rsi 8
+-152 rdi 0
+-112 rsi 8
 ...
--184 r9  40
+-104 r9  40
 -176 xmm0 48
 ...
--120 xmm7 104
+-48 xmm7 104
 
+rbp-x      saved param passed in register
+rbp-y -->  local vars
 '/
 
 #include once "fbint.bi"
@@ -6447,10 +6444,12 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 	ctx.argfloat=0 ''nb arg float
 	if ctx.target=FB_COMPTARGET_LINUX then
 		ctx.ofs=16    ''parameter offset on stack
+		ctx.stk=40    ''see stack organization
 	else
 		ctx.ofs=8      ''parameter offset
+		ctx.stk=56    ''see stack organization
 	end if
-	ctx.stk=112    ''see stack organization
+
 	ctx.argcptmax=0
 	ctx.usedreg=0 ''registers used
 	ctx.stkmax=0
@@ -6524,39 +6523,44 @@ private sub _emitprocend _
 
 		'inside prolog/epilog
 		'--------------------
-		''reg used in called	save and restore calling registers (rbx,rsi,rdi,r12-r15)
-		if ctx.usedreg And (1 Shl KREG_RBX) then asm_code("mov QWORD PTR -16[rbp], rbx") :restreg+="mov  rbx, QWORD PTR -16[rbp]"+NEWLINE2
+		''reg used in called
+		if ctx.usedreg And (1 Shl KREG_RBX) then asm_code("mov QWORD PTR -8[rbp], rbx")  :restreg+="mov  rbx, QWORD PTR -8[rbp]"+NEWLINE2
 		if ctx.target=FB_COMPTARGET_WIN32 then
-			if ctx.usedreg And (1 Shl KREG_RDI) then asm_code("mov QWORD PTR -48[rbp], rdi") :restreg+="mov  rdi, QWORD PTR -48[rbp]"+NEWLINE2
-			if ctx.usedreg And (1 Shl KREG_RSI) then asm_code("mov QWORD PTR -40[rbp], rsi") :restreg+="mov  rsi, QWORD PTR -40[rbp]"+NEWLINE2
-		endif
-		if ctx.usedreg And (1 Shl KREG_R12) then asm_code("mov QWORD PTR -88[rbp], r12") :restreg+="mov  r12, QWORD PTR -88[rbp]"+NEWLINE2
-		if ctx.usedreg And (1 Shl KREG_R13) then asm_code("mov QWORD PTR -96[rbp], r13") :restreg+="mov  r13, QWORD PTR -96[rbp]"+NEWLINE2
-		if ctx.usedreg And (1 Shl KREG_R14) then asm_code("mov QWORD PTR -104[rbp], r14"):restreg+="mov  r14, QWORD PTR -104[rbp]"+NEWLINE2
-		if ctx.usedreg And (1 Shl KREG_R15) then asm_code("mov QWORD PTR -112[rbp], r15"):restreg+="mov  r15, QWORD PTR -112[rbp]"+NEWLINE2
+			if ctx.usedreg And (1 Shl KREG_RDI) then asm_code("mov QWORD PTR -16[rbp], rdi") :restreg+="mov  rdi, QWORD PTR -16[rbp]"+NEWLINE2
+			if ctx.usedreg And (1 Shl KREG_RSI) then asm_code("mov QWORD PTR -24[rbp], rsi") :restreg+="mov  rsi, QWORD PTR -24[rbp]"+NEWLINE2
+			if ctx.usedreg And (1 Shl KREG_R12) then asm_code("mov QWORD PTR -32[rbp], r12") :restreg+="mov  r12, QWORD PTR -32[rbp]"+NEWLINE2
+			if ctx.usedreg And (1 Shl KREG_R13) then asm_code("mov QWORD PTR -40[rbp], r13") :restreg+="mov  r13, QWORD PTR -40[rbp]"+NEWLINE2
+			if ctx.usedreg And (1 Shl KREG_R14) then asm_code("mov QWORD PTR -48[rbp], r14") :restreg+="mov  r14, QWORD PTR -48[rbp]"+NEWLINE2
+			if ctx.usedreg And (1 Shl KREG_R15) then asm_code("mov QWORD PTR -56[rbp], r15") :restreg+="mov  r15, QWORD PTR -56[rbp]"+NEWLINE2
+		else
+			if ctx.usedreg And (1 Shl KREG_R12) then asm_code("mov QWORD PTR -16[rbp], r12") :restreg+="mov  r12, QWORD PTR -16[rbp]"+NEWLINE2
+			if ctx.usedreg And (1 Shl KREG_R13) then asm_code("mov QWORD PTR -24[rbp], r13") :restreg+="mov  r13, QWORD PTR -24[rbp]"+NEWLINE2
+			if ctx.usedreg And (1 Shl KREG_R14) then asm_code("mov QWORD PTR -32[rbp], r14") :restreg+="mov  r14, QWORD PTR -32[rbp]"+NEWLINE2
+			if ctx.usedreg And (1 Shl KREG_R15) then asm_code("mov QWORD PTR -40[rbp], r15") :restreg+="mov  r15, QWORD PTR -40[rbp]"+NEWLINE2
+		end if
 		if restreg<>"" then restreg=rtrim(restreg)
 	end if
 
 	if ctx.target=FB_COMPTARGET_LINUX then
 		if ctx.variadic then
-			if ctx.arginteg <1 then asm_code("mov QWORD PTR -224[rbp], rdi")
-			if ctx.arginteg <2 then asm_code("mov QWORD PTR -216[rbp], rsi")
-			if ctx.arginteg <3 then asm_code("mov QWORD PTR -208[rbp], rdx")
-			if ctx.arginteg <4 then asm_code("mov QWORD PTR -200[rbp], rcx")
-			if ctx.arginteg <5 then asm_code("mov QWORD PTR -192[rbp], r8")
-			if ctx.arginteg <6 then asm_code("mov QWORD PTR -184[rbp], r9")
+			if ctx.arginteg <1 then asm_code("mov QWORD PTR -152[rbp], rdi")
+			if ctx.arginteg <2 then asm_code("mov QWORD PTR -144[rbp], rsi")
+			if ctx.arginteg <3 then asm_code("mov QWORD PTR -136[rbp], rdx")
+			if ctx.arginteg <4 then asm_code("mov QWORD PTR -128[rbp], rcx")
+			if ctx.arginteg <5 then asm_code("mov QWORD PTR -120[rbp], r8")
+			if ctx.arginteg <6 then asm_code("mov QWORD PTR -112[rbp], r9")
 			''if eax is null no float argument so need to save them
 			lname = *symbUniqueLabel( )
 			asm_code("test eax, eax")
 			asm_code("jz "+lname)
-			if ctx.argfloat <1 then asm_code("movq QWORD PTR -176[rbp], xmm0")
-			if ctx.argfloat <2 then asm_code("movq QWORD PTR -168[rbp], xmm1")
-			if ctx.argfloat <3 then asm_code("movq QWORD PTR -160[rbp], xmm2")
-			if ctx.argfloat <4 then asm_code("movq QWORD PTR -152[rbp], xmm3")
-			if ctx.argfloat <5 then asm_code("movq QWORD PTR -144[rbp], xmm4")
-			if ctx.argfloat <6 then asm_code("movq QWORD PTR -136[rbp], xmm5")
-			if ctx.argfloat <7 then asm_code("movq QWORD PTR -128[rbp], xmm6")
-			if ctx.argfloat <8 then asm_code("movq QWORD PTR -120[rbp], xmm7")
+			if ctx.argfloat <1 then asm_code("movq QWORD PTR -104[rbp], xmm0")
+			if ctx.argfloat <2 then asm_code("movq QWORD PTR -96[rbp], xmm1")
+			if ctx.argfloat <3 then asm_code("movq QWORD PTR -88[rbp], xmm2")
+			if ctx.argfloat <4 then asm_code("movq QWORD PTR -80[rbp], xmm3")
+			if ctx.argfloat <5 then asm_code("movq QWORD PTR -72[rbp], xmm4")
+			if ctx.argfloat <6 then asm_code("movq QWORD PTR -64[rbp], xmm5")
+			if ctx.argfloat <7 then asm_code("movq QWORD PTR -56[rbp], xmm6")
+			if ctx.argfloat <8 then asm_code("movq QWORD PTR -48[rbp], xmm7")
 			asm_code(lname+":")
 		end if
 	end if
@@ -6700,7 +6704,7 @@ private sub _emitMacro( byval op as integer,byval v1 as IRVREG ptr, byval v2 as 
 				startarg=(iif(ctx.arginteg<=6,0,ctx.arginteg-6)+iif(ctx.argfloat<=8,0,ctx.argfloat-8))*8+16
 				asm_code("lea rax,"+str(startarg)+"[rbp]")   ''ad stack
 				asm_code("mov QWORD PTR 8["+regvalist+"], rax")
-				asm_code("lea rax, -224[rbp]") ''ad reg   todo could different as 112 is a fixed value by default
+				asm_code("lea rax, -152[rbp]") ''ad reg see stack organization
 				asm_code("mov QWORD PTR 16["+regvalist+"], rax")
 
 			else
