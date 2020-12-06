@@ -14,12 +14,14 @@ SUITE( ex04 )
 
 	SUITE_INIT
 		cmn_data = "COMMON DATA"
-		function = true
+		'' return success
+		return 0
 	END_SUITE_INIT
 
 	SUITE_CLEANUP
 		cmn_data = ""
-		function = true
+		'' return success
+		return 0
 	END_SUITE_CLEANUP
 
 	TEST( t3 )

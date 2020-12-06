@@ -5,6 +5,9 @@ Version 1.0
 - fbcu.getShowConsole() as boolean to return current setting for "showConsole" option
 - fbcu.outputConsoleString( byref s as const string = "" ) output to console depending on showConsole setting
 
+[changed]
+- check for return value in SUITE_INIT and SUITE_EXIT routines
+
 
 Version 0.9
 

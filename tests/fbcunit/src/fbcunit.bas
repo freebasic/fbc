@@ -615,17 +615,12 @@ namespace fbcu
 				.assert_fail_count = 0
 
 				if( .init_proc ) then
-					if( .init_proc() ) then
+					'' init proc should return 0 on success
+					if( .init_proc() = 0 ) then
 						dotests = true
 					else
-#if true
-						'' !!! fbc compiler test suite hack
-						'' current test suite does not set return value for init procs
-						dotests = true
-#else
 						print_output( "      " & .name & " init procedure failed" )
 						failed = true
-#endif
 					end if
 				else
 					dotests = true
@@ -670,13 +665,10 @@ namespace fbcu
 				end if
 
 				if( .term_proc ) then
-					if( .term_proc() = false ) then
-#if false
-						'' !!! fbc compiler test suite hack
-						'' current test suite does not set return value for cleanup procs
+					'' exit proc should return non-zero on failure
+					if( .term_proc() <> 0 ) then
 						print_output( "      " & .name & " cleanup procedure failed" )
 						failed = true
-#endif
 					end if
 				end if
 

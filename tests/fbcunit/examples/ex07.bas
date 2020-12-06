@@ -18,11 +18,13 @@ const false = 0, true = not false
 SUITE( qb_example )
 
 	SUITE_INIT
-		tests.qb_example.init = true
+		'' return success
+		tests.qb_example.init = 0
 	END_SUITE_INIT
 
 	SUITE_CLEANUP
-		tests.qb_example.cleanup = true
+		'' return success
+		tests.qb_example.cleanup = 0
 	END_SUITE_CLEANUP
 
 	TEST( always_true )
