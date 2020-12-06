@@ -48,10 +48,10 @@ declare function hPorts_cb _
 				byval target as any ptr = 0, _
 				byval x as const single, _
 				byval y as const single _
-			) as integer '/ _
+			) as ulong '/ _
 		( _
 			@FB_RTL_GFXPOINT, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
+			FB_DATATYPE_ULONG, FB_FUNCMODE_FBCALL, _
 			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _

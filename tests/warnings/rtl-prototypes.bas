@@ -827,7 +827,7 @@
 
 	ID( function fb_GfxPoint )
 	scope
-		dim chk as function fbcall ( byval as any ptr = 0, byval as const single, byval as const single ) as integer
+		dim chk as function fbcall ( byval as any ptr = 0, byval as const single, byval as const single ) as ulong
 		chk = procptr( fb_GfxPoint )
 	end scope
 

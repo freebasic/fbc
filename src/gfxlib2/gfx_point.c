@@ -2,7 +2,7 @@
 
 #include "fb_gfx.h"
 
-FBCALL ssize_t fb_GfxPoint(void *target, float fx, float fy)
+FBCALL unsigned int fb_GfxPoint(void *target, float fx, float fy)
 {
 	FB_GFXCTX *context;
 	int x, y;

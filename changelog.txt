@@ -26,6 +26,7 @@ Version 1.08.0
 - rtlib: refactor math_rnd.c internals for readability
 - fbcunit: update to version 1.0
 - sf.net #924: fbc: built-in for RGB() and RGBA() return ulong
+- gfxlib2: POINT returns ULONG
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling
