@@ -33,11 +33,13 @@ SUITE( fbc_tests.threads.threadcall_ )
 
 	SUITE_INIT
 		mutex = mutexcreate()
+		'' return success
 		return 0
 	END_SUITE_INIT
 
 	SUITE_CLEANUP
 		mutexdestroy( mutex )
+		'' return success
 		return 0
 	END_SUITE_CLEANUP
     

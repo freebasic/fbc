@@ -27,11 +27,13 @@ SUITE( fbc_tests.pointers.funptr_array1 )
 		end if
 		
 		fp->bar(1) = @bar
+		'' return success
 		return 0
 	END_SUITE_INIT
 
 	SUITE_CLEANUP
 		deallocate(fp)
+		'' return success
 		return 0
 	END_SUITE_CLEANUP
 

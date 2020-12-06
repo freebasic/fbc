@@ -16,6 +16,7 @@ SUITE( fbc_tests.string_.comp_null )
 		pz = 0
 		w = wstr("")
 		pw = 0
+		'' return success
 		return 0
 	END_SUITE_INIT
 

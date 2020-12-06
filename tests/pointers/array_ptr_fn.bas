@@ -26,15 +26,20 @@ SUITE( fbc_tests.pointers.array_ptr_fn )
 	SUITE_INIT
 		fnarray(i) = allocate((j + 1) * sizeof(fn ptr))
 		if (0 = fnarray(i)) then
+			'' return failure
 			return -1
 		end if
 		
 		fnarray(i)[j] = @func
+		'' return success
 		return 0
 	END_SUITE_INIT
 
 	SUITE_CLEANUP
-		deallocate(fnarray(i))
+		if( fnarray(i) ) then
+			deallocate(fnarray(i))
+		end if
+		'' return success
 		return 0
 	END_SUITE_CLEANUP
 

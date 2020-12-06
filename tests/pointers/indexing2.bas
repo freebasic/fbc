@@ -22,18 +22,20 @@ SUITE( fbc_tests.pointers.indexing2 )
   			array(i) = i 
 		next 
 
-		dp = allocate( len(integer pointer pointer) ) 
-		if (0 = dp) then return -1
-		*dp = allocate( len(integer pointer) ) 
-		if (0 = *dp) then return -1
+		dp = callocate( len(integer pointer pointer) ) 
+		if (0 = dp) then
+			return -1
+		end if
 
+		'' return success
 		return 0
 	END_SUITE_INIT
 
 	SUITE_CLEANUP
-	'	!!! TODO !!! why are following lines commented out?
-	'	deallocate (*dp)
-	'	deallocate (dp)
+		if( dp ) then
+			deallocate (dp)
+		end if
+		'' return success
 		return 0
 	END_SUITE_CLEANUP
 

@@ -57,7 +57,8 @@ SUITE( fbc_tests.namespace_.dim_array )
 
 	SUITE_INIT
 		redim ..fbc_tests.ns.dim_.inner.array(0 to 2)
-		function = 0
+		'' return success
+		return 0
 	END_SUITE_INIT
 
 	TEST( outer_named )

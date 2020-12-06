@@ -230,12 +230,14 @@ SUITE( fbc_tests.string_.format_ )
 	SUITE_INIT
 		' Turn off I18N and L10N
 		fb_I18nSet 0
+		'' return success
 		return 0
 	END_SUITE_INIT
 
 	SUITE_CLEANUP
 		' Turn on I18N and L10N
 		fb_I18nSet 1
+		'' return success
 		return 0
 	END_SUITE_CLEANUP
 

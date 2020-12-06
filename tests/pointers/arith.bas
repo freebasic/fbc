@@ -42,16 +42,21 @@ SUITE( fbc_tests.pointers.arith )
 	SUITE_INIT
 		tb = allocate(2 * sizeof(integer))
 		if (0 = tb) then
+			'' return failure
 			return -1
 		end if
 
 		resetPointers()
 
+		'' return success
 		return 0
 	END_SUITE_INIT
 
 	SUITE_CLEANUP
-		deallocate(tb)
+		if( tb ) then
+			deallocate(tb)
+		end if
+		'' return success
 		return 0
 	END_SUITE_CLEANUP
 
