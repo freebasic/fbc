@@ -60,6 +60,7 @@
         Debian/Ubuntu:
           gcc libncurses5-dev libffi-dev libgl1-mesa-dev
           libx11-dev libxext-dev libxrender-dev libxrandr-dev libxpm-dev
+          libtinfo5
         Fedora:
           gcc ncurses-devel ncurses-compat-libs libffi-devel mesa-libGL-devel
           libX11-devel libXext-devel libXrender-devel libXrandr-devel
@@ -69,7 +70,7 @@
       of the libraries installed.
         Debian/Ubuntu:
           gcc-multilib lib32ncurses5-dev libx11-dev:i386 libxext-dev:i386
-          libxrender-dev:i386 libxrandr-dev:i386 libxpm-dev:i386
+          libxrender-dev:i386 libxrandr-dev:i386 libxpm-dev:i386 libtinfo5:i386
 
       Now you can use fbc to compile FB programs (*.bas files) into executables.
       For example:
