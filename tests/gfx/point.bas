@@ -46,7 +46,7 @@ SUITE( fbc_tests.gfx.point_ )
 		CU_ASSERT( culng( point( 0, 0 ) ) = culng( rgb(255,0,0) ) )
 
 		#assert( typeof( point( 0, 0 ) ) = typeof( integer ) )
-		#assert( typeof( rgb(0,0,0)    ) = typeof( uinteger ) )
+		#assert( typeof( rgb(0,0,0)    ) = typeof( ulong ) )
 	END_TEST
 
 END_SUITE

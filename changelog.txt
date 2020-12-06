@@ -25,6 +25,7 @@ Version 1.08.0
 - rtlib: RANDOMIZE RND_REAL for real random number generator now fills a buffer (624 ulongs) and RND iterates the buffer
 - rtlib: refactor math_rnd.c internals for readability
 - fbcunit: update to version 1.0
+- sf.net #924: fbc: built-in for RGB() and RGBA() return ulong
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling

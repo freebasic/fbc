@@ -23,7 +23,7 @@ end type
 
 	dim shared as FB_RTL_MACRODEF macrodata(0 to ...) = _
 	{ _
-		/' #define RGB(r,g,b) ((cuint(r) shl 16) or (cuint(g) shl 8) or cuint(b) or &hFF000000) '/ _
+		/' #define RGB(r,g,b) culng((cubyte(r) shl 16) or (cubyte(g) shl 8) or cubyte(b) or (&hFF000000ul)) '/ _
 		( _
 			@"RGB", FB_RTL_OPT_NONE, _
 	 		3, _
@@ -31,17 +31,17 @@ end type
 	 			@"R", @"G", @"B" _
 	 		}, _
 	 		{ _
-				( FB_DEFTOK_TYPE_TEX, @"((cuint(" ), _
+				( FB_DEFTOK_TYPE_TEX, @"culng((culng(cubyte(" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 0 ) ), _
-	 			( FB_DEFTOK_TYPE_TEX, @") shl 16) or (cuint(" ), _
+	 			( FB_DEFTOK_TYPE_TEX, @")) shl 16) or (culng(cubyte(" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 1 ) ), _
-	 			( FB_DEFTOK_TYPE_TEX, @") shl 8) or cuint(" ), _
+	 			( FB_DEFTOK_TYPE_TEX, @")) shl 8) or culng(cubyte(" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 2 ) ), _
-	 			( FB_DEFTOK_TYPE_TEX, @") or &hFF000000)" ), _
+	 			( FB_DEFTOK_TYPE_TEX, @")) or (&hFF000000ul))" ), _
 	 			( -1 ) _
 	 		} _
 	 	), _
-		/' #define RGBA(r,g,b,a) ((cuint(r) shl 16) or (cuint(g) shl 8) or cuint(b) or (cuint(a) shl 24)) '/ _
+		/' #define RGBA(r,g,b,a) culng((cubyte(r) shl 16) or (cubyte(g) shl 8) or cubyte(b) or (cubyte(a) shl 24)) '/ _
 		( _
 			@"RGBA", FB_RTL_OPT_NONE, _
 	 		4, _
@@ -49,15 +49,15 @@ end type
 	 			@"R", @"G", @"B", @"A" _
 	 		}, _
 	 		{ _
-				( FB_DEFTOK_TYPE_TEX, @"((cuint(" ), _
+				( FB_DEFTOK_TYPE_TEX, @"culng((culng(cubyte(" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 0 ) ), _
-	 			( FB_DEFTOK_TYPE_TEX, @") shl 16) or (cuint(" ), _
+	 			( FB_DEFTOK_TYPE_TEX, @")) shl 16) or (culng(cubyte(" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 1 ) ), _
-	 			( FB_DEFTOK_TYPE_TEX, @") shl 8) or cuint(" ), _
+	 			( FB_DEFTOK_TYPE_TEX, @")) shl 8) or culng(cubyte(" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 2 ) ), _
-	 			( FB_DEFTOK_TYPE_TEX, @") or (cuint(" ), _
+	 			( FB_DEFTOK_TYPE_TEX, @")) or (culng(cubyte(" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 3 ) ), _
-	 			( FB_DEFTOK_TYPE_TEX, @") shl 24))" ), _
+	 			( FB_DEFTOK_TYPE_TEX, @")) shl 24))" ), _
 	 			( -1 ) _
 	 		} _
 	 	), _
@@ -299,7 +299,7 @@ end type
 	'' '__' prefixes where necessary.
 	dim shared as FB_RTL_MACRODEF macrodataQB(0 to ...) = _
 	{ _
-		/' #define RGB(r,g,b) ((cuint(r) shl 16) or (cuint(g) shl 8) or cuint(b) or &hFF000000) '/ _
+		/' #define RGBA(r,g,b,a) culng((cubyte(r) shl 16) or (cubyte(g) shl 8) or cubyte(b) or (&HFF000000ul)) '/ _
 		( _
 			@"__RGB", FB_RTL_OPT_NONE, _
 			3, _
@@ -307,17 +307,17 @@ end type
 				@"R", @"G", @"B" _
 			}, _
 			{ _
-				( FB_DEFTOK_TYPE_TEX, @"((__cuint(" ), _
+				( FB_DEFTOK_TYPE_TEX, @"__culng((__culng(__cubyte(" ), _
 				( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 0 ) ), _
-				( FB_DEFTOK_TYPE_TEX, @") __shl 16) or (__cuint(" ), _
+				( FB_DEFTOK_TYPE_TEX, @")) __shl 16) or (__culng(__cubyte(" ), _
 				( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 1 ) ), _
-				( FB_DEFTOK_TYPE_TEX, @") __shl 8) or __cuint(" ), _
+				( FB_DEFTOK_TYPE_TEX, @")) __shl 8) or __culng(__cubyte(" ), _
 				( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 2 ) ), _
-				( FB_DEFTOK_TYPE_TEX, @") or &hFF000000)" ), _
+				( FB_DEFTOK_TYPE_TEX, @")) or &hFF000000ul)" ), _
 				( -1 ) _
 			} _
 		), _
-		/' #define RGBA(r,g,b,a) ((cuint(r) shl 16) or (cuint(g) shl 8) or cuint(b) or (cuint(a) shl 24)) '/ _
+		/' #define RGBA(r,g,b,a) culng((cubyte(r) shl 16) or (cubyte(g) shl 8) or cubyte(b) or (cubyte(a) shl 24)) '/ _
 		( _
 			@"__RGBA", FB_RTL_OPT_NONE, _
 			4, _
@@ -325,15 +325,15 @@ end type
 				@"R", @"G", @"B", @"A" _
 			}, _
 			{ _
-				( FB_DEFTOK_TYPE_TEX, @"((__cuint(" ), _
+				( FB_DEFTOK_TYPE_TEX, @"__culng((__culng(__cubyte(" ), _
 				( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 0 ) ), _
-				( FB_DEFTOK_TYPE_TEX, @") __shl 16) or (__cuint(" ), _
+				( FB_DEFTOK_TYPE_TEX, @")) __shl 16) or (__culng(__cubyte(" ), _
 				( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 1 ) ), _
-				( FB_DEFTOK_TYPE_TEX, @") __shl 8) or __cuint(" ), _
+				( FB_DEFTOK_TYPE_TEX, @")) __shl 8) or __culng(__cubyte(" ), _
 				( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 2 ) ), _
-				( FB_DEFTOK_TYPE_TEX, @") or (__cuint(" ), _
+				( FB_DEFTOK_TYPE_TEX, @")) or (__culng(__cubyte(" ), _
 				( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 3 ) ), _
-				( FB_DEFTOK_TYPE_TEX, @") __shl 24))" ), _
+				( FB_DEFTOK_TYPE_TEX, @")) __shl 24))" ), _
 				( -1 ) _
 			} _
 		), _
