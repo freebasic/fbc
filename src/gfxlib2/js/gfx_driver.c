@@ -2,6 +2,7 @@
 
 #include "../fb_gfx.h"
 #include "fb_gfx_js.h"
+#include "../fb_gfx_gl.h"
 
 JS_GFXDRIVER_CTX __fb_js_ctx =
 {
@@ -17,6 +18,7 @@ static void driver_exit(void);
 
 static void driver_blit()
 {
+
     if(SDL_LockSurface(__fb_js_ctx.canvas) == 0)
     {
         __fb_js_ctx.blit(__fb_js_ctx.canvas->pixels, __fb_js_ctx.canvas->pitch);
@@ -25,6 +27,7 @@ static void driver_blit()
     }
 
 	SDL_Flip(__fb_js_ctx.canvas);
+
 }
 
 static void driver_update(void *unused)
@@ -56,6 +59,9 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	if( w == 0 || h == 0 || depth_arg == 0 )
 		return 0;
 
+	if (flags & DRIVER_OPENGL)
+		return -1;
+
 	__fb_js_ctx.changingScreen = TRUE;
 
 	if( !__fb_js_ctx.inited )
@@ -86,6 +92,51 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	return 0;
 }
 
+static int WGL_init(char *title, int w, int h, int depth_arg, int refresh_rate, int flags)
+{
+	if( w == 0 || h == 0 || depth_arg == 0 )
+		return 0;
+
+	if (!(flags & DRIVER_OPENGL))
+		return -1;
+
+	__fb_js_ctx.changingScreen = TRUE;
+
+	if( !__fb_js_ctx.inited )
+    {
+        fb_js_events_init();
+        SDL_Init(SDL_INIT_VIDEO);
+    }
+
+	if( __fb_js_ctx.canvas != NULL )
+		SDL_FreeSurface(__fb_js_ctx.canvas);
+
+	fb_hGL_NormalizeParameters(flags);
+
+	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, __fb_gl_params.color_red_bits); 
+	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, __fb_gl_params.color_green_bits);
+	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, __fb_gl_params.color_blue_bits);
+	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, __fb_gl_params.color_alpha_bits);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, __fb_gl_params.depth_bits);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1); 
+	__fb_js_ctx.canvas = SDL_SetVideoMode(w, h, 32, SDL_DOUBLEBUF | SDL_DOUBLEBUF | SDL_OPENGL);
+
+	__fb_js_ctx.changingScreen = FALSE;
+	__fb_js_ctx.blitting = FALSE;
+
+	int was_inited = __fb_js_ctx.inited;
+	__fb_js_ctx.inited = TRUE;
+
+	if( !was_inited )
+	{
+		__fb_js_ctx.updated = 0;
+		//emscripten_async_call(driver_update, NULL, 1000/GFX_JS_FPS);
+	}
+
+	return 0;
+}
+
+
 static void driver_exit(void)
 {
 	if( __fb_js_ctx.inited )
@@ -94,6 +145,24 @@ static void driver_exit(void)
 
 		if( !__fb_js_ctx.updated )
 			driver_blit();
+
+		if( __fb_js_ctx.canvas != NULL )
+		{
+			SDL_FreeSurface(__fb_js_ctx.canvas);
+			__fb_js_ctx.canvas = NULL;
+		}
+
+		fb_js_events_exit();
+
+		SDL_Quit();
+	}
+}
+
+static void WGL_exit(void)
+{
+	if( __fb_js_ctx.inited )
+	{
+		__fb_js_ctx.inited = FALSE;
 
 		if( __fb_js_ctx.canvas != NULL )
 		{
@@ -120,6 +189,12 @@ static void driver_unlock(void)
 static void driver_wait_vsync(void)
 {
 	/* !!!WRITEME!!! */
+	emscripten_sleep(1000/GFX_JS_FPS);
+}
+
+static void WGL_Flip(void)
+{
+	SDL_GL_SwapBuffers();
 }
 
 int fb_js_sdl_buttons_to_fb_buttons(int sdl_buttons)
@@ -202,8 +277,27 @@ static const GFXDRIVER fb_gfxDriverJS =
 	driver_poll_events       /* void (*poll_events)(void); */
 };
 
+static const GFXDRIVER fb_gfxWebGL =
+{
+	"WebGL",                 /* char *name; */
+	WGL_init,             /* int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags); */
+	WGL_exit,             /* void (*exit)(void); */
+	driver_lock,             /* void (*lock)(void); */
+	driver_unlock,           /* void (*unlock)(void); */
+	NULL,                    /* void (*set_palette)(int index, int r, int g, int b); */
+	driver_wait_vsync,       /* void (*wait_vsync)(void); */
+	driver_get_mouse,        /* int (*get_mouse)(int *x, int *y, int *z, int *buttons, int *clip); */
+	driver_set_mouse,        /* void (*set_mouse)(int x, int y, int cursor, int clip); */
+	driver_set_window_title, /* void (*set_window_title)(char *title); */
+	NULL,                    /* int (*set_window_pos)(int x, int y); */
+	driver_fetch_modes,      /* int *(*fetch_modes)(int depth, int *size); */
+	WGL_Flip,                    /* void (*flip)(void); */
+	driver_poll_events       /* void (*poll_events)(void); */
+};
+
 const GFXDRIVER *__fb_gfx_drivers_list[] = {
 	&fb_gfxDriverJS,
+	&fb_gfxWebGL,
 	NULL
 };
 

@@ -7,6 +7,11 @@ FBCALL void fb_ConsoleGetSize( int *cols, int *rows )
         return __fb_rtlib.console.size_get();
     }, NULL);
 
-	*cols = res & 0xFF;
-	*rows = (res >> 8) & 0xFF;
+	if( cols != NULL ) {
+		*cols = res & 0xFF;
+	}
+
+	if( rows != NULL ) {
+		*rows = (res >> 8) & 0xFF;
+	}
 }

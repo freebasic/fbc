@@ -55,18 +55,18 @@ void fb_js_events_check(void)
     }
 }
 
-static void fb_js_sleep(int msecs)
+/*static void fb_js_sleep(int msecs)
 {
     if( !sleep_called )
     {
         sleep_called = 1;
         emscripten_log(EM_LOG_WARN, "Warning: Call to SLEEP() ignored. It should not be used in Javascript");
     }
-}
+}*/
 
 void fb_js_events_init(void)
 {
-	__fb_ctx.hooks.sleepproc = fb_js_sleep;
+	//__fb_ctx.hooks.sleepproc = fb_js_sleep;
 
 	// we can't use SDL's key events because CAPSLOCK isn't handled by emscripten and the printable chars are always lowercase in SDL
 	__fb_ctx.hooks.inkeyproc  = NULL;
@@ -77,9 +77,8 @@ void fb_js_events_init(void)
 
     // don't let SDL capture the keyboard
     __fb_js_ctx.doNotCaptureKeyboard = emscripten_run_script_int("Module['doNotCaptureKeyboard']? 1: 0;");
-    if(!__fb_js_ctx.doNotCaptureKeyboard) {
+    if(!__fb_js_ctx.doNotCaptureKeyboard)
         emscripten_run_script("Module['doNotCaptureKeyboard']=1;");
-	}
 
 	return;
 }

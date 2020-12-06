@@ -122,14 +122,10 @@
       var spinnerElement = document.getElementById('spinner');
 
       var Module = {
-        preRun: [function() {
-           __fb_rtlib.console.open(80, 25);
-        }],
-        postRun: [],
-
-        postRun: [function() {
+		preRun: [function() {
 			__fb_rtlib.console.open(80, 25);
 		}],
+        postRun: [],
         print: (function() {
           return function(text) {
             if (arguments.length > 1) 
