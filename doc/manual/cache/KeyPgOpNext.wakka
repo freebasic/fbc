@@ -14,6 +14,7 @@ Determines if a ##[[KeyPgFornext|For...Next]]## loop should be terminated
 	[[KeyPgFornext|Next]]
 ##
 {{fbdoc item="param"}}
+**##(including arguments)##**
 	##//typename//##
 		name of the ##[[KeyPgType|Type]]##, ##[[KeyPgClass|Class]]##, or ##[[KeyPgUnion|Union]]##
 	##//cond//##, ##//end_value//##
@@ -32,6 +33,12 @@ Determines if a ##[[KeyPgFornext|For...Next]]## loop should be terminated
 	##**Operator Next**## is called every time the iterator object needs to be checked against the end value. This happens immediately after the call to its ##[[KeyPgOpFor|Operator For]]##, and immediately after any calls to its ##[[KeyPgOpStep|Operator Step]]##. ##**Operator Next**## should return zero (0) if the loop should be terminated, or non-zero if the loop should continue iterating. The first time ##**Operator Next**## is called, no statements in the ##[[KeyPgFornext|For...Next]]## body, if any, have been executed yet.
 	
 	The first version of ##**Operator Next**## is used if no step value is given in the ##[[KeyPgFornext|For...Next]]## statement. If a step value is given, the second version is used and is passed the step value because testing for iterating end may depend on it.
+	
+	__Advanced usage__
+		The above description seems to imply that the 3 arguments ##//start_value//##, ##//end_value//##, and ##//step_value//## must be of the same type as the ##//iterator//## (this is the more obvious use), but it is not quite true:
+			**""-""** The ##//start_value//##, ##//end_value//##, and ##//step_value//## arguments can be of any type (of different types among themselves and also of different types from the one of the ##//iterator//##).
+			**""-""** The only constraint is that the ##//iterator//## could be constructed (in case of local ##//iterator//##) or assigned (in case of global ##//iterator//##) from the ##//start_value//## argument (because the ##//iterator//## is implicitly constructed or assigned under the hood).
+			**""-""** Similarly the other parameters ##//end_value//##, and ##//step_value//## must be able to be converted into objects of the same type as the ##//iterator//##.
 
 {{fbdoc item="ex"}}
 	See the [[KeyPgOpStep|Operator Step]] examples.

@@ -9,7 +9,7 @@ Declares a variable whose type is implied from the initializer expression
 	
 	Note: ##[[KeyPgWstring|Wstring]]## is not supported with ##**Var**##, due to the fact that there is no var-len ##[[KeyPgWstring|Wstring]]## type. This isn't likely to change, due to the complexities involved with handling Unicode.
 	
-	Since the type of the variable is inferred from what you assign into it, it's helpful to know how literals work. Any literal number without a decimal point defaults to ##[[KeyPgInteger|Integer]]##. A literal number //with// a decimal point defaults to ##[[KeyPgDouble|Double]]##.  See [[ProPgLiterals]] for further information.
+	Since the type of the variable is inferred from what you assign into it, it's helpful to know how literals work. Any literal number without a decimal point defaults to ##[[KeyPgInteger|Integer]]##. A literal number //with// a decimal point defaults to ##[[KeyPgDouble|Double]]##.  See [[ProPgLiterals|Literals]] for further information.
 	
 	All ##[[KeyPgZstring|Zstring]]## expressions, including string literals and dereferenced ##[[KeyPgZstring|Zstring]]## ##[[KeyPgPtr|Ptr]]##s, will be given the ##[[KeyPgString|String]]## variable type.
 	

@@ -71,6 +71,7 @@
 	{{fbdoc item="keyword" value="ProPgCtorsAssignDtors|Constructors, '=' Assignment-Operators, and Destructors (advanced, part #1)"}}
 	{{fbdoc item="keyword" value="ProPgCtorsAssignDtors2|Constructors, '=' Assignment-Operators, and Destructors (advanced, part #2)"}}
 <<>>{{fbdoc item="section" value="Statements and Expressions"}}
+	{{fbdoc item="keyword" value="ProPgExpressionsStatements|Differences between Expressions and Statements"}}
 	{{fbdoc item="keyword" value="ProPgAssignments|Assignments"}}
 	{{fbdoc item="keyword" value="CatPgOperators|Operator List"}}
 	{{fbdoc item="keyword" value="OpPrecedence|Operator Precedence"}}
@@ -83,6 +84,7 @@
 	{{fbdoc item="keyword" value="ProPgProcedureScopes|Procedure Scopes"}}
 	{{fbdoc item="keyword" value="ProPgCallingConventions|Calling Conventions"}}
 	{{fbdoc item="keyword" value="ProPgRecursion|Recursion"}}
+	{{fbdoc item="keyword" value="ProPgCallback|Callback"}}
 	{{fbdoc item="keyword" value="ProPgProcCtorsDtors|Constructors and Destructors"}}
 	{{fbdoc item="keyword" value="ProPgProcedurePointers|Pointers to Procedures"}}
 	{{fbdoc item="keyword" value="ProPgVariadicArguments|Variadic Arguments"}}
@@ -91,7 +93,7 @@
 	{{fbdoc item="keyword" value="GfxLib|FreeBASIC GfxLib overview"}}
 	{{fbdoc item="keyword" value="ProPgAntiFlickering|Graphics Mode Refresh and Anti-Flickering"}}
 	{{fbdoc item="keyword" value="GfxInternalFormats|Internal Graphics Formats"}}
-	External Graphics File Formats
+	{{fbdoc item="keyword" value="ProPgExternalFormats|External Graphics File Formats"}} ##(page to fill in)##
 
 {{fbdoc item="section" value="Multi-Threading"}}
 	{{fbdoc item="keyword" value="ProPgMultiThreading|Overview"}}
@@ -102,7 +104,7 @@
 	{{fbdoc item="keyword" value="ProPgMtCriticalSectionsFAQ|Critical Sections FAQ"}}
 
 {{fbdoc item="section" value="Making Binaries"}}
-	{{fbdoc item="keyword" value="ProPgExecutables|Executables"}}
+	{{fbdoc item="keyword" value="ProPgExecutables|Executables"}} ##(page to complete)##
 	{{fbdoc item="keyword" value="ProPgStaticLibraries|Static Libraries"}}
 	{{fbdoc item="keyword" value="ProPgSharedLibraries|Shared Libraries (DLLs)"}}
 	{{fbdoc item="keyword" value="ProPgProfiling|Profiling"}}
@@ -115,8 +117,8 @@
 {{fbdoc item="section" value="Technical Articles"}}
 	{{fbdoc item="keyword" value="KeyPgAsm|Inline ASM"}}
 	{{fbdoc item="keyword" value="ProPgCruntime|C Standard Library Functions"}}
-	{{fbdoc item="keyword" value="ProPgFileIO|File I/O in FreeBASIC"}}
-	{{fbdoc item="keyword" value="ProPgDynamicMemory|Dynamic memory management in FreeBASIC"}}
+	{{fbdoc item="keyword" value="ProPgFileIO|File I/O with FreeBASIC"}}
+	{{fbdoc item="keyword" value="ProPgDynamicMemory|Dynamic memory management with FreeBASIC"}}
 	{{fbdoc item="keyword" value="ProPgRecursionIteration|Replace Recursion with Iteration"}}
 	{{fbdoc item="keyword" value="ProPgObjectRtti|OBJECT built-in and RTTI info"}}
 
@@ -126,6 +128,7 @@
 	{{fbdoc item="keyword" value="ProPgDates|Date Serials"}}
 	{{fbdoc item="keyword" value="ProPgRadians|Radians"}}
 	{{fbdoc item="keyword" value="ProPgErrorHandling|Error Handling"}}
+	{{fbdoc item="keyword" value="ProPgEventHandling|Event Handling"}}
 	{{fbdoc item="keyword" value="CatPgDddefines|Intrinsic Defines"}}
 
 NOTE: Existing ""CatPg"" pages should be recreated as ""ProPg"" pages providing a general overview to the grouping of keywords.

@@ -64,7 +64,7 @@
 	""FreeBASIC"" has innumerable advantages over ""QBasic"", ""QuickBASIC"", PDS, and Visual Basic for DOS. 
 		- It supports 32-bit and 64-bit processors, where ""QBasic"" is designed for 16-bit CPU's.
 		- It supports modern OSes. It has ports to Windows, Linux, and 32-bit DOS.
-		- It supports modern APIs such as SDL, ""DirectX"", ""Win32"", and ""OpenGL"".
+		- It supports modern APIs such as SDL, ""Direct2D"" or ""DirectX"", ""Win32"", and ""OpenGL"".
 		- It is distributed under the GPL, meaning it's free and legal to use, unlike most copies of ""QuickBASIC"" / other BASICs.
 		- The library is distributed under the LGPL with additional exception, meaning you may do whatever you want with your compiled programs, including selling them.
 		- ""FreeBASIC"" is many times faster than ""QuickBASIC"" / other BASICs.

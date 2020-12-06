@@ -52,6 +52,7 @@ end main()
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgEndblock|End (Block)]]##
-	- ##[[KeyPgReturn|Return]]##
+	- ##[[KeyPgReturn|Return (from procedure)]]##
+	- ##[[KeyPgReturnGosub|Return (from Gosub)]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

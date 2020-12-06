@@ -50,7 +50,7 @@ Command line compiler options for the fbc compiler:
 	{{fbdoc item="keyword" value="CompilerOptg|-g"}}
 		- Add debug info, enable""##__FB_DEBUG__##"", and enable asserts
 	{{fbdoc item="keyword" value="CompilerOptgen|-gen < backend >"}}
-		- Sets the compiler backend (default is 'gas')
+		- Sets the compiler backend (default is 'gas' for x86 and 'gcc' for x86_64)
 	{{fbdoc item="keyword" value="CompilerOpti|-i < name >"}}
 		- Add a path to search for include files
 	{{fbdoc item="keyword" value="CompilerOptinclude|-include < name >"}}
@@ -120,7 +120,7 @@ Command line compiler options for the fbc compiler:
 	{{fbdoc item="keyword" value="CompilerOptversion|-version"}}
 		- Show compiler version
 	{{fbdoc item="keyword" value="CompilerOptw|-w < value >"}}
-		- Set min warning level: all, pedantic or a value
+		- Set min warning level: all, none, param, escape, pedantic, next, funcptr, constness, suffix or a value
 	{{fbdoc item="keyword" value="CompilerOptWa|-Wa < opt >"}}
 		- Pass options to GAS (separated by commas)
 	{{fbdoc item="keyword" value="CompilerOptWc|-Wc < opt >"}}

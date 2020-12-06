@@ -33,10 +33,10 @@ print a, cvi(b)
 
 {{fbdoc item="lang"}}
 	- In the //[[CompilerOptlang|-lang qb]]// dialect, ##**Mki**## returns a 2-byte-string, since a QB integer is only 16 bits.
-	- The string type suffix "$" is obligatory in the //[[CompilerOptlang|-lang qb]]// dialect.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, ##<//bits//>## parameter is not supported.
+	- The string type suffix "$" is required in the //[[CompilerOptlang|-lang qb]]// dialect.
 	- The string type suffix "$" is optional in the //[[CompilerOptlang|-lang fblite]]// dialect.
-	- The string type suffix "$" is forbidden in the //[[CompilerOptlang|-lang fb]]// dialect.
-	- QB did not support a ##<//bits//>## parameter.
+	- The string type suffix "$" is ignored in the //[[CompilerOptlang|-lang fb]]// dialect, warn only with the //[[CompilerOptw|-w suffix]]// compile option (or //[[CompilerOptw|-w pedantic]]// compile option).
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCvi|Cvi]]##

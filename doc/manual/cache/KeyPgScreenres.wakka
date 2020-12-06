@@ -16,7 +16,7 @@ Initializes a graphics mode by specifying horizontal and vertical resolution
 	##//num_pages//##
 		The number of video pages to create, defaults to ##1##. (see ##[[KeyPgScreengraphics|Screen]]##)
 	##//flags//##
-		Used to set various properties of the screen, including fullscreen mode and graphics driver priority. (see below or the standard header "fbgfx.bi" for available flags)
+		Used to set various properties of the screen, including fullscreen mode and graphics driver priority. (see the standard header "fbgfx.bi" for available flags)
 	##//refresh_rate//##
 		The desired refresh rate of the screen, only has an effect for fullscreen modes, and some systems and drivers only. Defaults to an appropriate value, invalid refresh rates will be ignored.
 

@@ -13,7 +13,7 @@ Statements that direct the flow of execution.
 		Unconditionally transfers execution to another point in code defined by a text label. Execution resumes with the first statement after the label.
 		
 	=={{fbdoc item="keyword" value="KeyPgGosub|GOSUB"}}==
-		Unconditionally and temporarily transfers execution to another point in code, defined by a text label. Execution resumes with the first statement after the label. Execution is then brought back to its original location with the ##[[KeyPgReturn|RETURN]]## keyword. Yes, ##[[KeyPgGosub|GOSUB]]## statements can be nested, that is, multiple ##[[KeyPgGosub|GOSUB]]## statements can be executed before the first corresponding ##[[KeyPgReturn|RETURN]]##, but there must always be a corresponding ##[[KeyPgReturn|RETURN]]## throughout the course of an application.
+		Unconditionally and temporarily transfers execution to another point in code, defined by a text label. Execution resumes with the first statement after the label. Execution is then brought back to its original location with the ##[[KeyPgReturnGosub|RETURN]]## keyword. Yes, ##[[KeyPgGosub|GOSUB]]## statements can be nested, that is, multiple ##[[KeyPgGosub|GOSUB]]## statements can be executed before the first corresponding ##[[KeyPgReturnGosub|RETURN]]##, but there must always be a corresponding ##[[KeyPgReturnGosub|RETURN]]## throughout the course of an application.
 		
 	=={{fbdoc item="keyword" value="KeyPgOngoto|ON GOTO"}}==
 		Transfers execution to one of a number of points in code defined by text labels, based on the value of an expression.

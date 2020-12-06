@@ -26,9 +26,14 @@ Procedures that work with static and dynamic memory.
 	=={{fbdoc item="keyword" value="KeyPgClear|CLEAR"}}==
 		Clears data in an array with a specified value.
 	=={{fbdoc item="keyword" value="KeyPgFBMemcopy|FB_MEMCOPY"}}==
-		Copies a block of memory from a location to another (memory areas must not overlap).
+		Copies a block of memory from a location to another.
+		(memory areas must not overlap)
+	=={{fbdoc item="keyword" value="KeyPgFBMemcopyclear|FB_MEMCOPYCLEAR"}}==
+		Copies the first part of a block of memory from a location to another and clears the rest.
+		(memory areas must not overlap)
 	=={{fbdoc item="keyword" value="KeyPgFBMemmove|FB_MEMMOVE"}}==
-		Copies a block of memory from a location to another (memory areas may overlap).
+		Copies a block of memory from a location to another.
+		(memory areas may overlap)
 	=={{fbdoc item="keyword" value="KeyPgSwap|SWAP"}}==
 		Exchange the contents of two variables.
 	=={{fbdoc item="keyword" value="KeyPgSadd|SADD"}}==

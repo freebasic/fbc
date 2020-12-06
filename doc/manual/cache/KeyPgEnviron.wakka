@@ -5,7 +5,7 @@ Returns the value of a system environment variable
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Environ** ( [[KeyPgByref|byref]] //varname// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Environ**( //varname// )
+	//result// = **Environ**[$]( //varname// )
 ##
 {{fbdoc item="param"}}
 	##//varname//##
@@ -25,7 +25,10 @@ print environ("path")
 %%
 
 {{fbdoc item="diff"}}
-	- The ##**ENVIRON**## statement is now called ##[[KeyPgSetenviron|Setenviron]]##.
+	- The ##**QB ENVIRON**## statement is now called ##[[KeyPgSetenviron|Setenviron]]##.
+	- The string type suffix "$" is required in the //[[CompilerOptlang|-lang qb]]// dialect.
+	- The string type suffix "$" is optional in the //[[CompilerOptlang|-lang fblite]]// dialect.
+	- The string type suffix "$" is ignored in the //[[CompilerOptlang|-lang fb]]// dialect, warn only with the //[[CompilerOptw|-w suffix]]// compile option (or //[[CompilerOptw|-w pedantic]]// compile option).
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgSetenviron|Setenviron]]##

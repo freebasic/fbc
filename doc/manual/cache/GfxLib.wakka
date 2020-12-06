@@ -6,9 +6,10 @@ The library supports various drivers depending on the platform:
 	- All:
 		- **##Null##** Does nothing, allows to use graphics functions on in-memory buffers and such, without anything being displayed in a graphics window.  [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/gfx_driver_null.c|(gfxlib2/gfx_driver_null.c)]]
 		
-	- ""Win32"":
-		- **##DirectX##** The default selection of FB ""GfxLib"". May not be available on old Windows installations. [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/win32/gfx_driver_ddraw.c|(gfxlib2/win32/gfx_driver_ddraw.c)]]
-		- **##GDI##** The "safest" one, available in all ""Win32"" versions. Bug note: broken in FB versions 0.20 to 0.24 (crash), and minor problems 0.18.5, and 0.90.x and 1.xx ("banding effects", try extra SCREENUNLOCK), [[http://www.freebasic.net/forum/viewtopic.php?p=106600#106600|(forum discussion: p=106600)]] [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/win32/gfx_driver_gdi.c|(gfxlib2/win32/gfx_driver_gdi.c)]]
+	- ""Windows"":
+		- **##Direct2D##** the default selection of FB ""GfxLib"". For fbc built on ""WinXP"" + mingw.org (very old tool chain now), the **##Direct2D##** driver is disabled in the gfxlib.
+		- **##DirectX##** is fallback if **##Direct2D##** can't be initialized. May not be available on old Windows installations. [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/win32/gfx_driver_ddraw.c|(gfxlib2/win32/gfx_driver_ddraw.c)]]
+		- **##GDI##** as last resort, the "safest" one, available in all ""Windows"" versions. Bug note: broken in FB versions 0.20 to 0.24 (crash), and minor problems 0.18.5, and 0.90.x and 1.xx ("banding effects", try extra SCREENUNLOCK), [[http://www.freebasic.net/forum/viewtopic.php?p=106600#106600|(forum discussion: p=106600)]] [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/win32/gfx_driver_gdi.c|(gfxlib2/win32/gfx_driver_gdi.c)]]
 		- **##OpenGL##** [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/win32/gfx_driver_opengl.c|(gfxlib2/win32/gfx_driver_opengl.c)]]
 		
 	- ""Linux & others"":

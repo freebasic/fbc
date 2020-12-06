@@ -51,7 +51,7 @@
 	""6"") periods in symbol names 
 		- Use namespaces instead.
 	 
-	""7"") ##[[KeyPgGosub|Gosub]]## or ##[[KeyPgReturn|Return (from Gosub)]]##
+	""7"") ##[[KeyPgGosub|Gosub]]## or ##[[KeyPgReturnGosub|Return (from Gosub)]]##
 		- Nested procedures may be allowed in future.
 	 
 	""8"") ##[[KeyPgOngosub|On Gosub]]##

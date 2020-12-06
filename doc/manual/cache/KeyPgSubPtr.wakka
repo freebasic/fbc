@@ -21,7 +21,10 @@ Data type that stores a pointer to a ##[[KeyPgSub|SUB]]## procedure
 	
 	To call the subroutine assigned, use the ##//variable//## name as if it were a normal declared ##[[KeyPgSub|Sub]]##.
 	
-	One of the primary uses for procedure pointers is to create callback procedures. A callback procedure is a procedure created in the user program that is called by another procedure either from the user own code space or from an external library.
+	One of the primary uses for ##[[KeyPgSub|Sub]]## pointers is to create callback procedures:
+		**""-""** A callback ##[[KeyPgSub|Sub]]## is a ##[[KeyPgSub|Sub]]## that is passed through an argument (a ##[[KeyPgSub|Sub]]## pointer) to another procedure which is expected to call back (execute) the "argument" at a convenient time.
+		**""-""** If the callback ##[[KeyPgSub|Sub]]## is completely executed before the invocation returns to the caller code, then the callback process is said to be "synchronous".
+		**""-""** If the invocation immediately returns to the caller code, and the callback ##[[KeyPgSub|Sub]]## and the caller's next code are running in parallel, then the callback process is said to be "asynchronous".
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/subptr.bas"}}%%(freebasic)
@@ -63,7 +66,7 @@ s1_ptr(3)
 s2_ptr("PI", 3.14)
 %%
 {{fbdoc item="filename" value="examples/manual/datatype/subptr3.bas"}}%%(freebasic)
-' Example of advanced callback Sub mechanism to implement a key pressed event:
+' Example of advanced callback Sub mechanism (asynchronous) to implement a key pressed event:
 ' (the user callback Sub address can be modified while the event thread is running)
 '   - An asynchronous thread tests the keyboard in a loop, and calls a user callback Sub each time a key is pressed.
 '   - An UDT groups the common variables used (callback Sub pointer, character of key pressed, thread end flag),
@@ -91,7 +94,7 @@ s2_ptr("PI", 3.14)
 	  If pt->s <> "" Andalso pt->callback > 0 Then           '' test condition key pressed & callback Sub defined
 		pt->callback(p)
 	  End If
-	  Sleep 50
+	  Sleep 50, 1
 	Loop Until pt->threadEnd                                 '' test condition to finish thread
   End Sub
 

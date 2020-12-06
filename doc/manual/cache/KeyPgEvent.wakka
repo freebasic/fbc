@@ -63,5 +63,6 @@ End Type
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreenevent|ScreenEvent]]##
+	- [[ProPgEventHandling|Event Handling]]
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

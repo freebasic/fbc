@@ -22,7 +22,10 @@ Data type that stores a pointer to a ##[[KeyPgFunction|FUNCTION]]## procedure re
 	
 	To call the subroutine assigned, use the ##//variable//## name as if it were a normal declared ##[[KeyPgFunction|Function]]##.
 	
-	One of the primary uses for procedure pointers is to create callback procedures. A callback procedure is a procedure created in the user program that is called by another procedure either from the user own code space or from an external library.
+	One of the primary uses for ##[[KeyPgFunction|Function]]## pointers is to create callback procedures:
+		**""-""** A callback ##[[KeyPgFunction|Function]]## is a ##[[KeyPgFunction|Function]]## that is passed through an argument (a ##[[KeyPgFunction|Function]]## pointer) to another procedure which is expected to call back (execute) the "argument" at a convenient time.
+		**""-""** If the callback ##[[KeyPgFunction|Function]]## is completely executed before the invocation returns to the caller code, then the callback process is said to be "synchronous".
+		**""-""** If the invocation immediately returns to the caller code, and the callback ##[[KeyPgFunction|Function]]## and the caller's next code are running in parallel, then the callback process is said to be "asynchronous".
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/funcptr.bas"}}%%(freebasic)
@@ -51,7 +54,7 @@ Print operation(4, @x2)
 Print operation(4, @x3)
 %%
 {{fbdoc item="filename" value="examples/manual/datatype/funcptr3.bas"}}%%(freebasic)
-' Example of basic callback Function mechanism to implement a key pressed event:
+' Example of basic callback Function mechanism (asynchronous) to implement a key pressed event:
 ' (the user callback Function address cannot be modified while the event thread is running)
 '   - An asynchronous thread tests the keyboard in a loop, and calls a user callback Function each time a key is pressed.
 '   - The callback Function address is passed to the thread.
@@ -71,7 +74,7 @@ Print operation(4, @x3)
 			Exit Do
 		  End If
 		End If
-		Sleep 50
+		Sleep 50, 1
 	  Loop
 	End If
   End Sub

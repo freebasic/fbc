@@ -6,7 +6,7 @@ How the **OBJECT built-in** implements the capacity of inheritance polymorphism 
 	The ##[[KeyPgObject|Object]]## built-in type provides to all types derived (using the ##[[KeyPgExtends|Extends]]## declaration):
 		**""-""** The ability to redefine a method (using the ##[[KeyPgAbstract|Abstract]]## / ##[[KeyPgVirtual|Virtual]]## keywords) in a derived-type (sub-type) inheriting from a base-type (super-type). It is then possible to call the method of an object without worrying about its intrinsic type: it is the inheritance polymorphism (sub-type polymorphism).
 		**""-""** The capacity of determining the real type of an object at run-time, which can be different of its at compile-time. The operator ##[[KeyPgOpIs|Is (Run-Time Type Information)]]## uses it to check if an object is compatible to a type derived from its compile-time type, because RTTI provides not only the run-time typename of the object but also all names of its different base-types, up to the ##[[KeyPgObject|Object]]## built-in type.
-	
+		
 	__Table of Contents__
 		**{{anchor name="ProPgObjectRtti1|1. Mechanism under the hood for inheritance polymorphism and RTTI info"}}**
 		**{{anchor name="ProPgObjectRtti2|2. Inheritance polymorphism mechanism demonstrated by both true operating and faithful emulation"}}**
@@ -40,7 +40,7 @@ How the **OBJECT built-in** implements the capacity of inheritance polymorphism 
 	For the vptr value setting:
 		**""-""** The compiler generates some extra code in the constructor of each type (from the base-type up to the instantiated type), which it adds before the user code. Even if the user does not define a constructor, the compiler generates a default one, and the initialization of vptr is there (from the vtbl address of the base-type up to the one of the instantiated type). So each time an object of a polymorphic type is created, vptr is correctly initialized and finally points to the vtbl of that instantiated type.
 		**""-""** At the end, when the object is destructed, the destructors are called in the reverse order (from the instantiated type up to the base-type). The compiler also generates some extra code in the destructor of each type, which it adds before the user code. Even if the user does not define a destructor, the compiler generates a default one, and the de-initialization of vptr is there (from the vtbl address of the instantiated type up to the one of the base-type).
-		**""-""**This initialization/de-initialization of the vptr value by step is mandatory so that the user code in each constructor/destructor can call the polymorphic procedures at the correct type level during the successive steps of construction/destruction.
+		**""-""** This initialization/de-initialization of the vptr value by step is mandatory so that the user code in each constructor/destructor can call the polymorphic procedures at the correct type level during the successive steps of construction/destruction.
 		
 	The built-in Object type also provides the RTTI (Run-Time Type Information) capacity for all types derived from it using the Extends declaration:
 		**""-""** The RTTI capacity allows to determine the real type of an object at run-time, which can be different of its at compile-time.

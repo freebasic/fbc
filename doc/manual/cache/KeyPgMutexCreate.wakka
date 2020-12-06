@@ -71,7 +71,7 @@ Static Sub ThreadUDT.Thread (ByVal param As Any Ptr) 'Generic user thread proced
 		Locate 30, 38
 		Print I;
 		MutexUnlock(tp->sync)                        'Mutex (Unlock) for user thread
-		Sleep 5
+		Sleep 5, 1
 	Loop Until tp->quit = tp->true                   'Test for ending user thread
 End Sub
 
@@ -91,7 +91,7 @@ Sub PointOnCircle (ByVal p As Any Ptr)
 	Dim pp As Point2D Ptr = p
 	Dim teta As Single = 2 * pi * Rnd
 	pp->x = x0 + r0 * Cos(teta)
-	Sleep 5                            'To increase possibility of uncorrelated data occurrence
+	Sleep 5, 1                         'To increase possibility of uncorrelated data occurrence
 	pp->y = y0 + r0 * Sin(teta)
 End Sub
 
@@ -115,7 +115,7 @@ Tptr->handle = ThreadCreate(@ThreadUDT.Thread, Tptr)
 
 Do
 	Static As Integer I
-	Sleep 5
+	Sleep 5, 1
 	MutexLock(Tptr->sync)   'Mutex (Lock) for main thread
 	PSet (Pptr->x, Pptr->y) 'Plotting one point
 	I += 1

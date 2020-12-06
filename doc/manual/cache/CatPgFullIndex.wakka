@@ -14,6 +14,9 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgDddate|__DATE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDddateiso|__DATE_ISO__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfb64bit|__FB_64BIT__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbargcount|__FB_ARG_COUNT__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbargleftof|__FB_ARG_LEFTOF__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbargrightof|__FB_ARG_RIGHTOF__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargc|__FB_ARGC__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargv|__FB_ARGV__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbarm|__FB_ARM__"}}
@@ -28,11 +31,13 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgDdfbdebug|__FB_DEBUG__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdos|__FB_DOS__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfberr|__FB_ERR__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbeval|__FB_EVAL__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbfpmode|__FB_FPMODE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbfpu|__FB_FPU__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbfreebsd|__FB_FREEBSD__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbgcc|__FB_GCC__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbgui|__FB_GUI__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbjoin|__FB_JOIN__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfblang|__FB_LANG__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfblinux|__FB_LINUX__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBMain|__FB_MAIN__"}} 
@@ -51,9 +56,14 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgDdfboutlib|__FB_OUT_LIB__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboutobj|__FB_OUT_OBJ__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbpcos|__FB_PCOS__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbquote|__FB_QUOTE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbsignature|__FB_SIGNATURE__"}} 
 	- {{fbdoc item="keyword" value="KeyPgDdfbsse|__FB_SSE__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbuniqueid|__FB_UNIQUEID__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbuniqueidpop|__FB_UNIQUEID_POP__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbuniqueidpush|__FB_UNIQUEID_PUSH__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbunix|__FB_UNIX__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbunquote|__FB_UNQUOTE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbvectorize|__FB_VECTORIZE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBVerMajor|__FB_VER_MAJOR__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBVerMinor|__FB_VER_MINOR__"}}
@@ -274,6 +284,7 @@ Alphabetical listing of keywords, macros and procedures.
 {{fbdoc item="section" value="F"}}{{anchor name="f"}}
 	- {{fbdoc item="keyword" value="KeyPgFalse|FALSE"}}
 	- {{fbdoc item="keyword" value="KeyPgFBMemcopy|FB_MEMCOPY"}}
+	- {{fbdoc item="keyword" value="KeyPgFBMemcopyclear|FB_MEMCOPYCLEAR"}}
 	- {{fbdoc item="keyword" value="KeyPgFBMEMMOVE|FB_MEMMOVE"}}
 	- {{fbdoc item="keyword" value="KeyPgFBArray|FBARRAY (array descriptor structure and access)"}}
 	- {{fbdoc item="keyword" value="KeyPgField|FIELD"}}
@@ -326,7 +337,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgInput|INPUT (Statement)"}}
 	- {{fbdoc item="keyword" value="KeyPgInputfilemode|INPUT (File I/O)"}}
 	- {{fbdoc item="keyword" value="KeyPgInputPp|INPUT #"}}
-	- {{fbdoc item="keyword" value="KeyPgInputnum|INPUT$"}}
+	- {{fbdoc item="keyword" value="KeyPgInputnum|INPUT()"}}
 	- {{fbdoc item="keyword" value="KeyPgInstr|INSTR"}}
 	- {{fbdoc item="keyword" value="KeyPgInstrrev|INSTRREV"}}
 	- {{fbdoc item="keyword" value="KeyPgInt|INT"}}
@@ -474,7 +485,8 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgRestore|RESTORE"}}
 	- {{fbdoc item="keyword" value="KeyPgResume|RESUME"}}
 	- {{fbdoc item="keyword" value="KeyPgResumenext|RESUME NEXT"}}
-	- {{fbdoc item="keyword" value="KeyPgReturn|RETURN"}}
+	- {{fbdoc item="keyword" value="KeyPgReturn|RETURN (from procedure)"}}
+	- {{fbdoc item="keyword" value="KeyPgReturnGosub|RETURN (from Gosub)"}}
 	- {{fbdoc item="keyword" value="KeyPgRgb|RGB"}}
 	- {{fbdoc item="keyword" value="KeyPgRgba|RGBA"}}
 	- {{fbdoc item="keyword" value="KeyPgRight|RIGHT"}}

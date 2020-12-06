@@ -49,6 +49,8 @@ Print Bin(54321, 20)
 %%
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Bin""**##.
+	- The string type suffix "$" is ignored in the //[[CompilerOptlang|-lang fblite]]// dialect, always warn.
+	- The string type suffix "$" is ignored in the //[[CompilerOptlang|-lang fb]]// dialect, always warn.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""

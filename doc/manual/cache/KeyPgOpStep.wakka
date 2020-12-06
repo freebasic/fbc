@@ -14,6 +14,7 @@ Increments the iterator of a ##[[KeyPgFornext|For...Next]]## loop
 	[[KeyPgFornext|Next]]
 ##
 {{fbdoc item="param"}}
+**##(including arguments)##**
 	##//typename//##
 		name of the ##[[KeyPgType|Type]]##, ##[[KeyPgClass|Class]]##, or ##[[KeyPgUnion|Union]]##
 	##//stp//##, ##//step_value//##
@@ -32,6 +33,12 @@ Increments the iterator of a ##[[KeyPgFornext|For...Next]]## loop
 	##**Operator Step**## is called to increment the iterator object immediately after all statements in the ##[[KeyPgFornext|For...Next]]## body are executed, if any.
 	
 	The first version of ##**Operator Step**## is used if no step value is given in the ##[[KeyPgFornext|For...Next]]## statement. If a step value is given, the second version is used and is passed the step value to increment the iterator object.
+	
+	__Advanced usage__
+		The above description seems to imply that the 3 arguments ##//start_value//##, ##//end_value//##, and ##//step_value//## must be of the same type as the ##//iterator//## (this is the more obvious use), but it is not quite true:
+			**""-""** The ##//start_value//##, ##//end_value//##, and ##//step_value//## arguments can be of any type (of different types among themselves and also of different types from the one of the ##//iterator//##).
+			**""-""** The only constraint is that the ##//iterator//## could be constructed (in case of local ##//iterator//##) or assigned (in case of global ##//iterator//##) from the ##//start_value//## argument (because the ##//iterator//## is implicitly constructed or assigned under the hood).
+			**""-""** Similarly the other parameters ##//end_value//##, and ##//step_value//## must be able to be converted into objects of the same type as the ##//iterator//##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/step.bas"}}%%(freebasic)

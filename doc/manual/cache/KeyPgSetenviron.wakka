@@ -65,6 +65,8 @@ Loop Until Len(Inkey)
   '' unlock our page.
 ScreenUnlock
 %%
+{{fbdoc item="target"}}
+	- In Linux, ##//varexpression//##  must be permanent (a literal, a variable declared in the main code or a static variable declared in a procedure), because Linux does not memorize the string but only a pointer to its data characters.
 
 {{fbdoc item="diff"}}
 	- In QB, ##**Setenviron**## was called ##**Environ**##.

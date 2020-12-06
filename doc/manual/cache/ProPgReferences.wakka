@@ -1,6 +1,6 @@
 {{fbdoc item="title" value="Using References"}}----
 The syntax for declaring the **References** and **Using** them instead of pointers.
-
+{{anchor name="ProPgReferencesTop"}}
 **Preamble:**
 
 	The different syntaxes used to declare a reference all use the 'Byref' keyword.
@@ -10,8 +10,17 @@ The syntax for declaring the **References** and **Using** them instead of pointe
 		**""-""** In a procedure signature, to pass an argument by reference (byref parameter).
 		**""-""** In a function signature, to return a variable to the caller by reference (byref return).
 		**""-""** In the body of the code, to define a reference variable (byref variable).
+		
+	__Table of Contents__
+		**{{anchor name="ProPgReferences1|1. Passing parameter by reference to procedure (byref parameter)"}}**
+		**{{anchor name="ProPgReferences2|2. Returning variable by reference from function (byref return)"}}**
+		**{{anchor name="ProPgReferences3|3. Defining reference variable in code (byref variable)"}}**
+		**{{anchor name="ProPgReferences4|4. References versus pointers by comparative examples"}}**
+		**{{anchor name="ProPgReferences5|5. Hacking on usage of references with the additional syntaxes allowed by FreeBASIC"}}**
 
-{{fbdoc item="section" value="Passing parameter by reference to procedure (byref parameter)"}}
+----
+{{anchor name="ProPgReferences1"}}
+{{fbdoc item="section" value="1. Passing parameter by reference to procedure (byref parameter)"}}
 	- Syntax of declaration:
 		##{[[KeyPgSub|Sub]]|[[KeyPgFunction|Function]]} //procedure_name// ([[KeyPgByrefVariables|Byref]] //parameter// [[KeyPgAs|As]] [[[KeyPgConstQualifier|Const]]] [[DataType|datatype]], ...##
 		
@@ -38,8 +47,11 @@ End Sub
  1.23
 			%%
 	**Note:** A pointer can be passed directly (without first dereferencing it) to ##Byref## procedure parameter if in argument term the ##Byval## keyword is specified in front of the pointer name.
-
-{{fbdoc item="section" value="Returning variable by reference from function (byref return)"}}
+	
+@@{{anchor name="ProPgReferencesTop|Back to top"}}@@
+----
+{{anchor name="ProPgReferences2"}}
+{{fbdoc item="section" value="2. Returning variable by reference from function (byref return)"}}
 	- Syntax of declaration:
 		##[[KeyPgFunction|Function]] //function_name// (...) [[KeyPgByrefVariables|Byref]] [[KeyPgAs|As]] [[[KeyPgConstQualifier|Const]]] [[DataType|datatype]]##
 		
@@ -101,8 +113,11 @@ abcdefgh
 abcdefghijkl
 					%%
 	**Note:** A pointer can be returned directly (without first dereferencing it) for a ##Byref## function return if in ##identifier=## or ##Function=## or ##Return## statement the ##Byval## keyword is specified in front of the pointer name.
-
-{{fbdoc item="section" value="Defining reference variable in code (byref variable)"}}
+	
+@@{{anchor name="ProPgReferencesTop|Back to top"}}@@
+----
+{{anchor name="ProPgReferences3"}}
+{{fbdoc item="section" value="3. Defining reference variable in code (byref variable)"}}
 	- Syntax of declaration:
 			##{[[KeyPgDim|Dim]]|[[KeyPgStatic|Static]]} [[[KeyPgShared|Shared]]] [[KeyPgByrefVariables|Byref]] [[KeyPgAs|As]] [[[KeyPgConstQualifier|Const]]] [[DataType|datatype]] //ref// = //variable//##
 		or
@@ -134,7 +149,11 @@ Sleep
  0
  7.89
 %%
-{{fbdoc item="section" value="References versus pointers by comparative examples"}}
+
+@@{{anchor name="ProPgReferencesTop|Back to top"}}@@
+----
+{{anchor name="ProPgReferences4"}}
+{{fbdoc item="section" value="4. References versus pointers by comparative examples"}}
 	- Function returning the greater variable between two integer variables:
 		**""-""** Using pointers (by passing/returning pointer variables):
 			{{fbdoc item="filename" value="examples/manual/proguide/references/with-pointer1.bas"}}%%(freebasic)
@@ -296,7 +315,10 @@ myDerived.clone() Byref As myDerived      9775760
 myDerived.Destroy()                       9775712
 myDerived.Destroy()                       9775760
 %%
-{{fbdoc item="section" value="Hacking on usage of references with the additional syntaxes allowed by FreeBASIC"}}
+@@{{anchor name="ProPgReferencesTop|Back to top"}}@@
+----
+{{anchor name="ProPgReferences5"}}
+{{fbdoc item="section" value="5. Hacking on usage of references with the additional syntaxes allowed by FreeBASIC"}}
 	In FB, a reference is implemented under the hood through an internal pointer which holds the address of the variable.
 	
 	The access to this internal pointer is presently allowed for user, both in read and write (unlike many other languages):
@@ -377,6 +399,9 @@ Zstring memory buffer re-allocation
 Zstring memory buffer de-allocation
   0           ''
 %%
+@@{{anchor name="ProPgVariadicArgumentsTop|Back to top"}}@@
+----
+
 {{fbdoc item="section" value="See also"}}
 	- ##[[KeyPgByref|Byref (parameters)]]##, ##[[KeyPgByrefFunction|Byref (function results)]]##, ##[[KeyPgByrefVariables|Byref (variables)]]##
 	- ##[[KeyPgOpAt|Operator @ (Address of)]]##, ##[[KeyPgOpValueOf|Operator * (Value of)]]##

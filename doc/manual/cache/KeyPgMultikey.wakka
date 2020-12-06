@@ -83,5 +83,7 @@ Loop
 	- ##[[KeyPgGetjoystick|Getjoystick]]##
 	- ##[[KeyPgScreengraphics|Screen (Graphics)]]##
 	- ##[[KeyPgInkey|Inkey]]##
+	- ##[[KeyPgEvent|Event]]##
+	- ##[[KeyPgScreenevent|ScreenEvent]]##
 
 {{fbdoc item="back" value="CatPgGfxInput|User Input Functions"}}

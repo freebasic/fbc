@@ -14,7 +14,7 @@ Preprocessor directive to define a macro
 	
 	The ##[[KeyPgOpPpStringize|# stringize]]## operator can be used on macro parameters to turn them into string literals, and the ##[[KeyPgOpPpConcat|## concatenate]]## operator can be used to merge tokens together.
 	
-	Note: In the function-like macro declaration, the ##//identifier//## should be followed by the opening parentheses (##(##) immediately without any white-space in between, otherwise the compiler will treat it as part of the ##//body//##.
+	Note: In the function-like ##**#define**## declaration, the ##//identifier//## should be followed by the opening parentheses (##(##) immediately without any white-space in between, otherwise the compiler will treat it as part of the ##//body//##.
 	
 	Defines are //scoped//; they are only visible in the scope they were defined in. If defined at module level, the define is visible throughout the module. If the ##//identifier//## is defined inside a compound statement having scope (##[[KeyPgSub|Sub]]##, ##[[KeyPgFornext|For..Next]]##, ##[[KeyPgWhilewend|While..Wend]]##, ##[[KeyPgDoloop|Do..Loop]]##, ##[[KeyPgScope|Scope..End Scope]]##, etc), the ##//identifier//## define is only visible within that scope. Namespaces on the other hand do not have any effect on the visibility of a define.
 	

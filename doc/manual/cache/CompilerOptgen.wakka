@@ -6,7 +6,7 @@ Sets the backend code emitter.
 ##
 {{fbdoc item="param"}}
 	##//backend//##
-		##**gas**## for x86 GAS assembly, ##**gcc**## for GNU C, ##**llvm**## for LLVM IR.
+		##**gas**## for x86 GAS assembly, ##**gcc**## for GNU C, ##**gas64**## for x86_64 GAS assembly, ##**llvm**## for LLVM IR.
 
 {{fbdoc item="desc"}}
 	The ##-gen## compiler option sets the backend code emitter and assembler.
@@ -16,6 +16,9 @@ Sets the backend code emitter.
 		
 	{{fbdoc item="subsect" value="-gen gcc"}}
 		The compiler will emit C code to a ##.c## file which will then be compiled to an .asm file using '##gcc##' as a high level assembler. The C backend is intended to make FB portable to more platforms than just x86. This requires gcc to be installed so that fbc can invoke it to compile the C code, also see [[CompilerInstallingGcc|Installing gcc for -gen gcc]].
+		
+	{{fbdoc item="subsect" value="-gen gas64"}}
+		The compiler will emit GAS assembler code (64-bit) to a ##.asm## file which will then be compiled to an object file using '##as##'.
 		
 	{{fbdoc item="subsect" value="-gen llvm"}}
 		The compiler will emit LLVM IR code to a ##.ll## file which will then be compiled to an .asm file using '##llc##'. The LLVM backend is still a work in progress. It is intended for the same purpose as the C backend, and could theoretically solve some of the C backend's problems, such as debugging meta data support.

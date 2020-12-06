@@ -17,7 +17,8 @@ Queries for and retrieves system events.
 {{fbdoc item="desc"}}
 	This function returns the latest available system event from the internal ""GfxLib"" events queue. By "event" we mean any mouse or keyboard activity, for example.
 	
-	The event data (if available) will be copied into the buffer pointed That should be declared as an  ##[[KeyPgEvent|Event]]##
+	The event data (if available) will be copied into the buffer pointed that should be declared as an ##[[KeyPgEvent|Event]]##.
+	On the ##[[KeyPgEvent|Event]]## page, see the list of event types and how to use their associated fields (see also the example below).
 	
 	__Querying for events__
 		The function returns ##-1## if there are pending events to be retrieved, ##0## otherwise. If the ##//event//## parameter is set to ##0## (the default if omitted) ##[[KeyPgScreenevent|ScreenEvent]]## will not be able to copy the event data and it will not dequeue it from the internal events queue. Calling the function this way can be useful to check if there are pending events without actually fetching them.
@@ -128,5 +129,6 @@ loop
 	- ##[[KeyPgInkey|Inkey]]##
 	- ##[[KeyPgMultikey|Multikey]]##
 	- ##[[KeyPgGetmouse|Getmouse]]##
+	- [[ProPgEventHandling|Event Handling]]
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

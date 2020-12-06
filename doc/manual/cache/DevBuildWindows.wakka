@@ -96,7 +96,7 @@ This should have produced the ##fbc.exe## compiler and the libraries in ##lib\wi
 	-Copy to ##""C:\fbc\lib\win32""## (32bit) or ##""C:\fbc\lib\win64""## (64bit):
 		- ##""C:\MinGW-w64\[target]\lib\{crt2,dllcrt2,gcrt2}.o""##
 		- ##""C:\MinGW-w64\[target]\lib\lib{gmon,mingw32,mingwex,moldname}.a""##
-		- ##""C:\MinGW-w64\[target]\lib\lib{advapi32,gdi32,kernel32,msvcrt,user32,winmm,winspool}.a""## //(rename to ##lib*.dll.a## if wanted)//
+		- ##""C:\MinGW-w64\[target]\lib\lib{advapi32,gdi32,imm32,kernel32,msimg32,msvcrt,user32,version,winmm,winspool}.a""## //(rename to ##lib*.dll.a## if wanted)//
 		- ##""C:\MinGW-w64\lib\gcc\[target]\[version]\{crtbegin,crtend}.o""##
 		- ##""C:\MinGW-w64\lib\gcc\[target]\[version]\libgcc.a""##
 		- libffi.a (from the prebuilt libffi package or your own build)

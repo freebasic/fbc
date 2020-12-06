@@ -92,5 +92,7 @@ loop
 	- ##[[KeyPgSetmouse|Setmouse]]##
 	- ##[[KeyPgGetmouse|Getmouse]]##
 	- ##[[KeyPgMultikey|Multikey]]##
+	- ##[[KeyPgEvent|Event]]##
+	- ##[[KeyPgScreenevent|ScreenEvent]]##
 
 {{fbdoc item="back" value="CatPgGfxInput|User Input Functions"}}

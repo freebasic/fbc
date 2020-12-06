@@ -84,23 +84,19 @@ end sub##>>
 {{fbdoc item="subsect" value="byval parameters"}}
 <<##void foo( int param );
 foo( a );##<<>>##declare sub foo( byval param as long )
-foo( a );##>>
+foo( a )##>>
+
+
+{{fbdoc item="subsect" value="byval pointers to parameters"}}
+<<##void foo( int *param );
+foo( &a );##<<>>##declare sub foo( byval param as long ptr )
+foo( @a )##>>
 
 
 {{fbdoc item="subsect" value="byref parameters"}}
-<<##void foo( int *param );
-foo( &a );
-
-void foo( int& param );
+<<##void foo( int& param );
 foo( a );##<<>>##declare sub foo( byref param as long )
-foo( a )##
-
-
-
->>
-
-
-
+foo( a )##>>
 
 
 {{fbdoc item="subsect" value="statement separator"}}

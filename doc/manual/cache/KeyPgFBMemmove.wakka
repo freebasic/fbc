@@ -50,5 +50,6 @@ memmove can be very very useful.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgFBMemcopy|fb_memcopy]]##
+	- ##[[KeyPgFBMemcopyclear|fb_memcopyclear]]##
 
 {{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

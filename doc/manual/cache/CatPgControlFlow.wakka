@@ -17,8 +17,10 @@ Statements that direct the flow of program execution.
 		Transfers execution to one of a number of points in code defined by text labels, based on the value of an expression.
 	=={{fbdoc item="keyword" value="KeyPgOngosub|ON GOSUB"}}==
 		Temporarily transfers execution to one of a number of points in code defined by text labels, based on the value of an expression.
-	=={{fbdoc item="keyword" value="KeyPgReturn|RETURN"}}==
-		Returns from a call using [[KeyPgGosub|Gosub]] or from a procedure returning a value.
+	=={{fbdoc item="keyword" value="KeyPgReturn|RETURN (from procedure)"}}==
+		Returns from a procedure returning a value.
+	=={{fbdoc item="keyword" value="KeyPgReturnGosub|RETURN (from Gosub)"}}==
+		Returns from a call using [[KeyPgGosub|Gosub]].
 	=={{fbdoc item="keyword" value="KeyPgExit|EXIT SUB"}}, {{fbdoc item="keyword" value="KeyPgExit|EXIT FUNCTION"}}, {{fbdoc item="keyword" value="KeyPgExit|EXIT OPERATOR"}},==
 	=={{fbdoc item="keyword" value="KeyPgExit|EXIT CONSTRUCTOR"}}, {{fbdoc item="keyword" value="KeyPgExit|EXIT DESTRUCTOR"}} and {{fbdoc item="keyword" value="KeyPgExit|EXIT PROPERTY"}}==
 		Prematurely leaves a procedure code block.

@@ -41,6 +41,14 @@ rp->y = 2
 Print "x = " & rp->x & ", y = " & rp->y
 Sleep
 %%
+{{fbdoc item="section" value="UDT Instantiation"}}
+	When creating an object of a UDT:
+		**""-""** only non-static data members induce a specific memory allocation to each object instance,
+		**""-""** static data members are allocated only once for the UDT and are therefore common to all object instances,
+		**""-""** procedure members are also defined only once for the UDT and their code is not duplicated for each object instance (and this, even for the non-static procedure members).
+		
+	That is why a static variable declared inside any procedure member is allocated only once for the UDT.
+	Therefore this static variable is indeed permanent but shared by all UDT instances executing the code (it is not an instance-specific variable).
 
 {{fbdoc item="see"}}
 	- [[ProPgTypeAliases|Type Aliases]]

@@ -5,7 +5,8 @@ External linkage attribute for public data located in DLL's
 	[[KeyPgExtern|Extern]] **Import** //symbolname//[( //subscripts//)] [ [[KeyPgAlias|alias]] "//aliasname//"] [ [[KeyPgAs|as]] [[DataType|DataType]]] [, ...]
 ##
 {{fbdoc item="desc"}}
-	Is used only on Win32 platforms with the ##[[KeyPgExtern|Extern]]## keyword and is needed to access global variables in DLLs.  This is due to the level of indirection on any such access: an implicit pointer dereference.
+	Is used only (with the ##[[KeyPgExtern|Extern]]## keyword) in external modules to access global variables from Win32 DLLs: the variable names will be added to the dynamic library import list so that their addresses can be fixed at run-time.
+	This is due to the level of indirection on any such access: an implicit pointer dereference.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/module/mydll.c"}}%%(c)

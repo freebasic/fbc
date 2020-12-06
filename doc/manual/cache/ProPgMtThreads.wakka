@@ -33,6 +33,10 @@ The built-in procedures that create, and detach/wait-for the **Threads**.
 		**""-""** Return value:
 			The ##[[KeyPgAny|any]] [[KeyPgPtr|ptr]]## handle ##//(threadid)//## to the thread created, or the null pointer (##0##) on failure.
 			
+		**Note:**
+			**""-""** The ##//userdata//## parameter can be unused in the body of the ##myThread## sub, but declaring it as an ##Any Ptr## parameter is always mandatory in the header. In this case, the corresponding ##//param//## parameter can then be omitted when calling ##[[KeyPgThreadCreate|Threadcreate]]##, or else a needless argument can still be passed ('0' is commonly used because this value is directly compatible with any pointer). See the 1st and 2nd example.
+			**""-""** In the case where data must be passed to ##myThread##, the Any Ptr ##//param//## can be used to reference them, usually requiring a type conversion (implicit or explicit) into ##Any Ptr## before passing it to ##[[KeyPgThreadCreate|Threadcreate]]##, and a reverse type conversion from ##Any Ptr## in the body of ##myThread## before using it. See the 3rd example.
+			
 	__Specific method (bugged) - ##[[KeyPgThreadCall|Threadcall]]##__
 		**""-""** Syntax:
 			##[[KeyPgDeclare|Declare]] [[KeyPgFunction|function]] [[KeyPgThreadCall|Threadcall]] //subname// ( [//paramlist//] ) [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]]##
@@ -45,17 +49,18 @@ The built-in procedures that create, and detach/wait-for the **Threads**.
 				A list of parameters to pass to the subroutine, as with a normal sub call.	
 		**""-""** Return value:
 			The ##[[KeyPgAny|any]] [[KeyPgPtr|ptr]]## handle ##//(threadid)//## to the thread created, or the null pointer (##0##) on failure.
-		**""-"" Warning:**
+			
+		**Warning:**
 			Presently when ##[[KeyPgThreadCall|Threadcall]]## involves to pass parameters to the thread, there is no guarantee that the corresponding data are still maintained after the end of the [[KeyPgThreadCall|Threadcall]] statement and this until the thread is really launched. That can cause bad behavior.
 			Therefore it is more advisable for the moment to use ##[[KeyPgThreadCreate|Threadcreate]]## (100% safe) instead.
 			
 	__Description__
 		Several different threads can be created from the same ##[[KeyPgSub|Sub]]##, with different passed arguments allowing to define the behavior of each.
 		
-		There may be a longer or shorter time between the end of the ##[[KeyPgThreadCreate|Threadcreate]]##/##[[KeyPgThreadCall|Threadcall]]## statement execution and the effective launch of the thread.
-		So some statements following the ##[[KeyPgThreadCreate|Threadcreate]]##/##[[KeyPgThreadCall|Threadcall]]## statement can be executed before the actual launch of the thread.
+		There may be a long time between the end of the ##[[KeyPgThreadCreate|Threadcreate]]##/##[[KeyPgThreadCall|Threadcall]]## statement execution and the effective launch of the thread. So some statements following the ##[[KeyPgThreadCreate|Threadcreate]]##/##[[KeyPgThreadCall|Threadcall]]## statement can be executed before the actual launch of the thread.
+		Conversely, the thread body can start executing even before ##[[KeyPgThreadCreate|Threadcreate]]##/##[[KeyPgThreadCall|Threadcall]]## returns.
 		
-		There is no guarantee about the order in which different threads execute, and no assumptions can be made about the order in which multiple create threads actually start executing.
+		There is no guarantee about the order in which different threads execute, and no assumptions can be made about the order in which multiple create threads actually start executing (except in Linux).
 		
 		By default, a thread is always created in the "joinable" state, ie its handle is accessible by its ##//'threadid'//## identifier.
 		If a thread ends in this state (joinable), the resources that were assigned to it will not be released automatically (but only at the main thread termination).

@@ -21,7 +21,9 @@ Returns a random [[KeyPgDouble|double]] precision number in the range ##[0, 1)##
 	
 	##**Rnd**## will return the same sequence of numbers every time a program is run.  This sequence can be changed by reseeding the generator.
 	
-	**Note:** ##**Rnd**## is not thread-safe. Used in the context of a multi-threaded program with race conditions due to asynchronous calls to ##**Rnd**##, many values ​​are temporarily returned in duplicate for a same thread and in addition the execution speed is significantly slowed down compared to a single thread call context.
+	**Note:**
+		**""-""** For fbc version < 1.08, ##**Rnd**## is not thread-safe. Used in the context of a multi-threaded program with race conditions due to asynchronous calls to ##**Rnd**##, many values ​​are temporarily returned in duplicate for a same thread.
+		**""-""** For fbc version >= 1.08, ##**Rnd**## is became thread-safe (by using an internal mutex). Used in the context of a multi-threaded program, only the execution speed is significantly slowed down compared to a single thread call context.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/math/rnd.bas"}}%%(freebasic)
@@ -47,7 +49,6 @@ print int(rnd * 10) + 1
 ''     (because: 69 <= rnd_range(69, 421) < 421)
 print int(rnd_range(69, 421))
 %%
-
 {{fbdoc item="lang"}}
 	The default algorithm used depends on the current dialect in use:
 		- With the //[[CompilerOptlang|-lang fb]]// dialect, a 32 bit Mersenne Twister function with a granularity of 32 bits is used.

@@ -17,8 +17,6 @@ Statement to erase arrays
 	
 	Using ##**Erase**## on a variable-length array (array already sized) frees the memory allocated for the array elements, but the array remains declared at its same scope level (with the same datatype and number of dimensions).
 	In case of objects, there is destruction before freeing memory.
-	
-	**Note:** ##**Erase**## can not be used on fixed-size arrays passed as parameters in a procedure. FreeBASIC can not prevent you from trying this at compile-time, but the results at run-time will be undefined (up to crashing).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/array/erase.bas"}}%%(freebasic)

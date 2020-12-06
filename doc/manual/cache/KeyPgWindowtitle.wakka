@@ -12,7 +12,7 @@ Sets the program window title
 		the string to be assigned as new window title.
 
 {{fbdoc item="desc"}}
-	This statement is useful to change the program window title. The new title set will become active immediately if the program already runs in windowed mode, otherwise will become the new title for any window produced by subsequent calls to the ##[[KeyPgScreengraphics|Screen (Graphics)]]## statement. If this function is not called before setting a new windowed mode via ##[[KeyPgScreengraphics|Screen (Graphics)]]##, the program window will use the executable file name (without the extension) as title by default.
+	This statement is useful to change the program window title. The new title set will become active immediately if the program already runs in windowed mode, otherwise will become the new title for any window produced by subsequent calls to the ##[[KeyPgScreengraphics|Screen (Graphics)]]## or ##[[KeyPgScreenres|ScreenRes]]## statement. If this function is not called before setting a new windowed mode via ##[[KeyPgScreengraphics|Screen (Graphics)]]## or ##[[KeyPgScreenres|ScreenRes]]##, the program window will use the executable file name (without the extension) as title by default.
 	This command has no effect in consoles.
 
 {{fbdoc item="ex"}}
@@ -36,6 +36,8 @@ SLEEP
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgScreencontrol|ScreenControl]] (function SET_WINDOW_TITLE or GET_WINDOW_TITLE)##
 	- ##[[KeyPgScreengraphics|Screen (Graphics)]]##
+	- ##[[KeyPgScreenres|ScreenRes]]##
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

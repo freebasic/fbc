@@ -2,7 +2,7 @@
 Set minimum warning level.
 
 {{fbdoc item="syntax"}}##
-	**-w** //level// | **all** | **none** | **param** | **escape** | **pedantic** | **next** | **funcptr** | **constness**
+	**-w** //level// | **all** | **none** | **param** | **escape** | **pedantic** | **next** | **funcptr** | **constness** | **suffix**
 ##
 {{fbdoc item="param"}}
 	##//level//##
@@ -16,13 +16,15 @@ Set minimum warning level.
 	##**escape**##
 		Warn when string literals contain any number of escape characters (##\##).
 	##**pedantic**##
-		Equivalent to specifying the ##**param**## and ##**escape**## arguments, plus length checking of parameters passed ##[[KeyPgByval|ByVal]]## and of any ##[[KeyPgCptr|Cptr]]## converting to pointer only.
+		Equivalent to specifying the ##**param**## and ##**escape**## arguments, plus length checking of parameters passed ##[[KeyPgByval|ByVal]]## and of any ##[[KeyPgCptr|Cptr]]## converting to pointer only, plus warning on useless suffixes in '-lang fb'.
 	##**next**##
 		Warn when ##[[KeyPgNext|Next]]## is followed by an identifier.
 	##**funcptr**##
 		Warn on mismatched procedure pointers, including conversions in ##[[KeyPgCast|CAST]]## and ##[[KeyPgCptr|CPTR]]## expressions.  Implies '-w all'. Experimental.  Behaviour may change in future versions.
 	##**constness**##
 		Warn when ##[[KeyPgConstQualifier|CONST (Qualifier)]]## is discarded in an assignment. Implies '-w funcptr' and '-w all'.  Behaviour may change in future versions.
+	##**suffix**##
+		Warn on useless suffixes in '-lang fb'.
 
 {{fbdoc item="desc"}}
 	The ##-w## compiler option determines which compiler warnings, if any, are output. Each possible warning is associated with a warning level, starting from negative one (##-1##) and increasing with the potential problems that may occur.
@@ -32,6 +34,8 @@ Set minimum warning level.
 	The default, if the ##**-w**## option is not specified, is as if ##**-w 0**## was used. The ##**-w**## option can be specified multiple times.  Warning messages having a level of ##-1## are not shown by default.
 	
 	##-w none##, or a significantly high ##//level//## value will have the effect of suppressing all warning messages.
+
+	##fbc## does not issue warning or error if the warning name itself is not valid.  For example ##-w flarg##, is not a recognized name for a warning.  The compiler silently ignores this to allow command lines with warnings added in new versions of ##fbc## to also be used with older versions of ##fbc## without complaint.
 	
 	For fbc version >= 1.08: Warning level for all warnings is increased by 1. Default warning level is 1 (previously, default warning level was 0 and some warnings had level of -1).
 	

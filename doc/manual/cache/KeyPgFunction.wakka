@@ -138,7 +138,7 @@ Print x(c())
 {{fbdoc item="see"}}
 	- ##[[KeyPgSub|Sub]]##
 	- ##[[KeyPgExit|Exit]]##
-	- ##[[KeyPgReturn|Return]]##
+	- ##[[KeyPgReturn|Return (from procedure)]]##
 	- ##[[KeyPgDeclare|Declare]]##
 	- ##[[KeyPgPublic|Public]]##
 	- ##[[KeyPgPrivate|Private]]##

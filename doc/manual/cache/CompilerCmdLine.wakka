@@ -42,7 +42,7 @@ Using the **fbc** command-line.
 	=={{fbdoc item="keyword" value="CompilerOpttarget|-target < platform >"}}==
 		Set the target platform for cross compilation
 	=={{fbdoc item="keyword" value="CompilerOptgen|-gen < backend >"}}==
-		Sets the compiler backend (default is 'gas')
+		Sets the compiler backend (default is 'gas' for x86 and 'gcc' for x86_64)
 	=={{fbdoc item="keyword" value="CompilerOptasm|-asm < format >"}}==
 		Sets the assembler format for Asm block
 	=={{fbdoc item="keyword" value="CompilerOptarch|-arch < type >"}}==
@@ -132,7 +132,7 @@ Using the **fbc** command-line.
 	=={{fbdoc item="keyword" value="CompilerOptcupp|-C"}}==
 		Do not delete the object file(s)
 	=={{fbdoc item="keyword" value="CompilerOptw|-w < value >"}}==
-		Set min warning level: ##all##, ##param##, ##escape##, ##pedantic##, ##next##, ##constness## or a value
+		Set min warning level: ##all##, ##none##, ##param##, ##escape##, ##pedantic##, ##next##, ##funcptr##, ##constness##, ##suffix## or a value
 	=={{fbdoc item="keyword" value="CompilerOptmaxerr|-maxerr < val >"}}==
 		Only stop parsing if <val> errors occurred
 	=={{fbdoc item="keyword" value="CompilerOptnoerrline|-noerrline"}}==

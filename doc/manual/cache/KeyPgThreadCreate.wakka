@@ -14,8 +14,8 @@ Starts a user-defined procedure in a separate execution thread
 ##
 {{fbdoc item="param"}}
 	##//procptr//##
-		A pointer to the ##[[KeyPgSub|Sub]]## intended to work as a thread. The sub must have the following signature (same parameters, same calling convention) to be compatible to //procptr//:
-		##[[KeyPgDeclare|Declare]] [[KeyPgSub|Sub]] myThread ( [[KeyPgByval|ByVal]] //userdata// [[KeyPgAs|As]] [[KeyPgAny|Any]] [[KeyPgPtr|Ptr]] )##
+		A pointer to the ##[[KeyPgSub|Sub]]## intended to work as a thread (see ##[[KeyPgOpProcptr|Operator ProcPtr (Procedure pointer)]]## to get a pointer to a sub). The sub must have the following signature (same parameters, same calling convention) to be compatible to //procptr//:
+			##[[KeyPgDeclare|Declare]] [[KeyPgSub|Sub]] myThread ( [[KeyPgByval|ByVal]] //userdata// [[KeyPgAs|As]] [[KeyPgAny|Any]] [[KeyPgPtr|Ptr]] )##
 	##//userdata//##
 		The ##Any Ptr## parameter of the ##[[KeyPgSub|Sub]]## intended to work as a thread. ""FreeBASIC"" expects this parameter to be present, it must not be omitted! 
 	##//param//##
@@ -29,13 +29,21 @@ Starts a user-defined procedure in a separate execution thread
 {{fbdoc item="desc"}}
 	The sub pointed to by //procptr// is started as a thread. It will be passed the content of //param//, or 0 (zero) if not specified, in its //userdata// parameter.
 	
-	The sub that was started as a thread will execute in parallel with the main part of the program. The OS achieves this by assigning it to a different processor if it exists, or by alternating between execution threads on a single processor. There is no guarantee about the order in which different threads execute, and no assumptions can be made about the order in which multiple create threads actually start executing.
+	The sub that was started as a thread will execute in parallel with the main part of the program. The OS achieves this by assigning it to a different processor if it exists, or by alternating between execution threads on a single processor.
+	There is no guarantee about the order in which different threads execute, and no assumptions can be made about the order in which multiple create threads actually start executing.
+	In the fastest launch cases, the thread body may start executing even before **""ThreadCreate""** returns.
 	
 	Before closing, programs should wait for the termination of all launched threads by using ##[[KeyPgThreadWait|ThreadWait]]##. Alternatively, if it's not necessary to safely wait for a thread to finish execution, ##[[KeyPgThreadDetach|ThreadDetach]]## can be used. However, if a program exits while some threads are still active, those threads will be aborted by the system. For every thread created, programs should call either ##[[KeyPgThreadWait|ThreadWait]]## or ##[[KeyPgThreadDetach|ThreadDetach]]## to ensure that the system resources associated with the thread handles are released. Otherwise, there may be memory or system resource leaks.
 	
 	Due to the nature of threads, no assumptions about execution order can be made. In order to exchange data between multiple threads, including a thread and the main part of the program, mutexes must be used. These mutual exclusion locks can be "owned" by a single thread while doing critical work, causing other threads to wait for their turn. See ##[[KeyPgMutexCreate|Mutexcreate]]##, ##[[KeyPgMutexLock|Mutexlock]]##, ##[[KeyPgMutexUnlock|Mutexunlock]]##, ##[[KeyPgMutexDestroy|Mutexdestroy]]##.
 	
 	##//stack_size//## can be used to change the thread's stack size from the system's default. This can be useful when the program requires a big stack, for example due to lots of procedure recursion or when allocating huge strings/arrays on the stack. On some systems (Linux), the stack automatically grows beyond ##//stack_size//## if more space is needed; on others (Win32), this is the fixed maximum allowed. Behavior is undefined when more stack is used than the reserved size on systems where stacks are not able to grow.
+	
+	The intrinsic macro ##[[KeyPgDdfbmt|__FB_MT__]]## is only automatically set from the point of usage of **""ThreadCreate""** onward.
+	
+	**Note:**
+		**""-""** The ##//userdata//## parameter can be unused in the body of the ##myThread## sub, but declaring it as an ##Any Ptr## parameter is always mandatory in the header. In this case, the corresponding ##//param//## parameter can then be omitted when calling **""ThreadCreate""**, or else a needless argument can still be passed ('0' is commonly used because this value is directly compatible with any pointer). See the 2nd and 3rd example.
+		**""-""** In the case where data must be passed to ##myThread##, the Any Ptr ##//param//## can be used to reference them, usually requiring a type conversion (implicit or explicit) into ##Any Ptr## before passing it to **""ThreadCreate""**, and a reverse type conversion from ##Any Ptr## in the body of ##myThread## before using it. See the 1st example.
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/threads/threads1.bas"}}%%(freebasic)
@@ -65,7 +73,7 @@ Sub teletype( ByRef text As String, ByVal x As Integer, ByVal y As Integer )
 	For i As Integer = 0 To (Len(text) - 1)
 		Locate x, y + i
 		Print Chr(text[i])
-		Sleep 25
+		Sleep 25, 1
 	Next
 
 	'' MutexUnlock releases the lock and lets other threads acquire it.
@@ -140,7 +148,7 @@ sub consumer( byval param as any ptr )
 	for i as integer = 0 to 9
 		mutexlock produced
 		print ", consumer gets:", i
-		sleep 500
+		sleep 500, 1
 		mutexunlock consumed
 	next
 end sub
@@ -148,7 +156,7 @@ end sub
 sub producer( byval param as any ptr )
 	for i as integer = 0 to 9
 		print "Producer puts:", i;
-		sleep 500
+		sleep 500, 1
 		mutexunlock produced
 		mutexlock consumed
 	next i
@@ -185,7 +193,7 @@ end sub
 	- Threading is not allowed in the //[[CompilerOptlang|-lang qb]]// dialect.
 
 {{fbdoc item="target"}}
-	- **Threadcreate** is not available with the DOS version / target of ""FreeBASIC"", because multithreading is not supported by DOS kernel nor the used extender.
+	- **""Threadcreate""** is not available with the DOS version / target of ""FreeBASIC"", because multithreading is not supported by DOS kernel nor the used extender.
 	- In Linux the threads are always started in the order they are created, this can't be assumed in ""Win32"". It's an OS, not a ""FreeBASIC"" issue. 
 
 {{fbdoc item="diff"}}
@@ -198,5 +206,6 @@ end sub
 	- ##[[KeyPgMutexLock|Mutexlock]]##
 	- ##[[KeyPgMutexUnlock|Mutexunlock]]##
 	- ##[[KeyPgMutexDestroy|Mutexdestroy]]##
+	- ##[[KeyPgOpProcptr|Operator ProcPtr (Procedure pointer)]]##
 
 {{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}

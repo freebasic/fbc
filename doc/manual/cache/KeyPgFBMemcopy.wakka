@@ -19,7 +19,8 @@ Copies a block of memory from a location to another
 	The starting address of destination memory is returned.
 
 {{fbdoc item="desc"}}
-	##**fb_memcopy**## copies a given number of bytes from the memory location ##//src//## to the memory location ##//dst//##. Each starting address is taken from a reference to a variable or array element.
+	##**fb_memcopy**## copies a given number of bytes from the memory location ##//src//## to the memory location ##//dst//##.
+	Each starting address is taken from a reference to a variable or array element.
 	The memory areas must not overlap (otherwise, the copying is not guaranteed to work properly, especially depending on the platform). Use ##[[KeyPgFBMemmove|fb_memmove]]## preferably when the memory areas do overlap (safer approach).
 	To avoid overflows, the valid memory areas pointed to by both ##//src//## and ##//dst//## must be at least equal in size to the number of bytes to be copied.
 	
@@ -58,6 +59,7 @@ Pierre de Fermat             46
 	- The behavior and usage is new to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgFBMemcopyclear|fb_memcopyclear]]##
 	- ##[[KeyPgFBMemmove|fb_memmove]]##
 
 {{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

@@ -5,49 +5,50 @@ During the program compilation three types of errors can arise:
 	The warnings don't stop the compilation, just alert the user some non-recommended and error-prone operation is attempted in the code. 
 	Sometimes one of these operations is coded deliberately to achieve a result, in this case the warnings can be disabled by setting the //[[CompilerOptw|-w none]]// option at the command line.
 	
-	- //1 Passing scalar as pointer//
-	- //2 Passing pointer to scalar//
-	- //3 Passing different pointer types//
-	- //4 Suspicious pointer assignment//
-	- //5 Implicit conversion//
-	- //6 Cannot export symbol without -export option//
-	- //7 Identifier's name too big, truncated//
-	- //8 Literal number too big, truncated//
-	- //9 Literal string too big, truncated//
-	- //10 UDT with pointer, var-len string, or var-len array fields//
-	- //11 Implicit variable allocation//
-	- //12 Missing closing quote in literal string//
-	- //13 Function result was not explicitly set//
-	- //14 Branch crossing local variable definition//
-	- //15 No explicit BYREF or BYVAL//
-	- //16 Possible escape sequence found in//
-	- //17 The type length is too large, consider passing BYREF//
-	- //18 The length of the parameters list is too large, consider passing UDT's BYREF//
-	- //19 The ANY initializer has no effect on UDT's with default constructors//
-	- //20 Object files or libraries with mixed multithreading (-mt) options//
-	- //21 Object files or libraries with mixed language (-lang) options//
-	- //22 Deleting ANY pointers is undefined//
-	- //23 Array too large for stack, consider making it var-len or SHARED//
-	- //24 Variable too large for stack, consider making it SHARED//
-	- //25 Overflow in constant conversion//
-	- //26 Variable following NEXT is meaningless//
-	- //27 Cast to non-pointer//
-	- //28 Return method mismatch//
-	- //29 Passing Pointer//
-	- //30 Command line option overrides directive//
-	- //31 Directive ignored after first pass//
-	- //32 'IF' statement found directly after multi-line 'ELSE'//
-	- //33 Shift value greater than or equal to number of bits in data type//
-	- //34 '=' parsed as equality operator in function argument, not assignment to BYREF function result//
-	- //35 Mixing signed/unsigned operands//
-	- //36 Mismatching parameter initializer//
-	- //37 Ambiguous LEN or SIZEOF//
-	- //38 Suspicious logic operation, mixed boolean and non-boolean operands//
-	- //39 Redefinition of intrinsic//
-	- //40 CONST qualifier discarded//
-	- //41 Return type mismatch//
-	- //42 Calling convention mismatch//
-	- //43 Argument count mismatch//
+	- //1(2) Passing scalar as pointer//
+	- //2(2) Passing pointer to scalar//
+	- //3(2) Passing different pointer types//
+	- //4(2) Suspicious pointer assignment//
+	- //5(1) Implicit conversion//
+	- //6(2) Cannot export symbol without -export option//
+	- //7(2) Identifier's name too big, truncated//
+	- //8(2) Literal number too big, truncated//
+	- //9(2) Literal string too big, truncated//
+	- //10(1) UDT with pointer, var-len string, or var-len array fields//
+	- //11(1) Implicit variable allocation//
+	- //12(1) Missing closing quote in literal string//
+	- //13(1) Function result was not explicitly set//
+	- //14(2) Branch crossing local variable definition//
+	- //15(1) No explicit BYREF or BYVAL//
+	- //16(1) Possible escape sequence found in//
+	- //17(1) The type length is too large, consider passing BYREF//
+	- //18(2) The length of the parameters list is too large, consider passing UDT's BYREF//
+	- //19(2) The ANY initializer has no effect on UDT's with default constructors//
+	- //20(3) Object files or libraries with mixed multithreading (-mt) options//
+	- //21(3) Object files or libraries with mixed language (-lang) options//
+	- //22(1) Deleting ANY pointers is undefined//
+	- //23(3) Array too large for stack, consider making it var-len or SHARED//
+	- //24(3) Variable too large for stack, consider making it SHARED//
+	- //25(1) Overflow in constant conversion//
+	- //26(1) Variable following NEXT is meaningless//
+	- //27(1) Cast to non-pointer//
+	- //28(1) Return method mismatch//
+	- //29(1) Passing Pointer//
+	- //30(1) Command line option overrides directive//
+	- //31(1) Directive ignored after first pass//
+	- //32(1) 'IF' statement found directly after multi-line 'ELSE'//
+	- //33(1) Shift value greater than or equal to number of bits in data type//
+	- //34(1) '=' parsed as equality operator in function argument, not assignment to BYREF function result//
+	- //35(1) Mixing signed/unsigned operands//
+	- //36(1) Mismatching parameter initializer//
+	- //37(2) Ambiguous LEN or SIZEOF//
+	- //38(1) Suspicious logic operation, mixed boolean and non-boolean operands//
+	- //39(1) Redefinition of intrinsic//
+	- //40(0) CONST qualifier discarded//
+	- //41(0) Return type mismatch//
+	- //42(0) Calling convention mismatch//
+	- //43(0) Argument count mismatch//
+	- //44(1) Suffix ignored//
 
 ==Compiler Error messages:==
 	The error messages stop the compilation after 10 errors (see the -maxerr command-line option to change that default value) or a fatal error occurred, and require a correction by the user before the compilation can be continued. The compiler signals the lines where the errors have been found, so the correction can be done quickly. In a few cases the place pointed at by the error messages is not where the errors can be found, it's the place where the compiler has given up in waiting for something that should be somewhere.
@@ -134,7 +135,7 @@ During the program compilation three types of errors can arise:
 	- //80 Macro text too long//
 	- //81 Invalid command-line option//
 	- //82 Selected non-x86 CPU when compiling for DOS//
-	- //83 Selected -gen gas ASM backend for non-x86 CPU//
+	- //83 Selected -gen gas|gas64 ASM backend is incompatible with CPU//
 	- //84 -asm att used for -gen gas, but -gen gas only supports -asm intel//
 	- //85 -pic used when making executable (only works when making a shared library)//
 	- //86 -pic used, but not supported by target system (only works for non-x86 Unixes)//
@@ -376,6 +377,7 @@ During the program compilation three types of errors can arise:
 	- //322 Array of references - not supported yet//
 	- //323 Invalid CASE range, start value is greater than the end value//
 	- //324 Fixed-length string combined with BYREF (not supported)//
+
 
 ==Third party programs errors==
 	These errors occur after the source has been compiled into assembler, they come from the auxiliary programs FB requires to compile a source into an executable: the linker, the assembler and (for Windows programs) the resource compiler.

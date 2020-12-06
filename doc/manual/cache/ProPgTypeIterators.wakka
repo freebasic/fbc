@@ -3,11 +3,11 @@ The overload Operators **For**, **Next**, and **Step**, allowing to construct Us
 
 {{fbdoc item="section" value="Syntax (declaration)"}}
 	{ [[KeyPgType|Type]] | [[KeyPgClass|Class]] | [[KeyPgUnion|Union]] } //typename//
-		' ##[[KeyPgFornext|For...Next]]## statement with implicit step (1st version of operators)
+		' ##[[KeyPgFornext|For...Next]]##' statement with implicit step (1st version of operators)
 			[[KeyPgDeclare|declare]] **Operator** [[KeyPgOpFor|For]] ( )
 			[[KeyPgDeclare|declare]] **Operator** [[KeyPgOpNext|Next]] ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //cond// [[KeyPgAs|as]] //typename// ) [[KeyPgAs|as]] [[KeyPgInteger|Integer]]
 			[[KeyPgDeclare|declare]] **Operator** [[KeyPgOpStep|Step]] ( )
-		' ##[[KeyPgFornext|For...Next]]## statement with explicit step (2nd version of operators)
+		' ##[[KeyPgFornext|For...Next]]##' statement with explicit step (2nd version of operators)
 			[[KeyPgDeclare|declare]] **Operator** [[KeyPgOpFor|For]] ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //stp// [[KeyPgAs|as]] //typename// )
 			[[KeyPgDeclare|declare]] **Operator** [[KeyPgOpNext|Next]] ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //cond// [[KeyPgAs|as]] //typename//, [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //stp// [[KeyPgAs|as]] //typename// ) [[KeyPgAs|as]] [[KeyPgInteger|Integer]]
 			[[KeyPgDeclare|declare]] **Operator** [[KeyPgOpStep|Step]] ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //stp// [[KeyPgAs|as]] //typename// )
@@ -26,6 +26,7 @@ The overload Operators **For**, **Next**, and **Step**, allowing to construct Us
 	Both versions of the operators can coexist (thanks to member overloading) in the same user-defined type (to be able to both use and not use the explicit increment in ##[[KeyPgFornext|For...Next]]## statements of the user code).
 
 {{fbdoc item="section" value="Parameters"}}
+**##(including arguments)##**
 	##//typename//##
 		name of the ##[[KeyPgType|Type]]##, ##[[KeyPgClass|Class]]##, or ##[[KeyPgUnion|Union]]##
 	##//stp//##, ##//step_value//##
@@ -58,6 +59,12 @@ The overload Operators **For**, **Next**, and **Step**, allowing to construct Us
 		
 	__Operator Step__
 		##[[KeyPgOpStep|Operator Step]]## is called to increment the iterator object immediately after all statements in the ##[[KeyPgFornext|For...Next]]## body are executed.
+		
+	__Advanced usage__
+		The above description seems to imply that the 3 arguments ##//start_value//##, ##//end_value//##, and ##//step_value//## must be of the same type as the ##//iterator//## (this is the more obvious use), but it is not quite true:
+			**""-""** The ##//start_value//##, ##//end_value//##, and ##//step_value//## arguments can be of any type (of different types among themselves and also of different types from the one of the ##//iterator//##).
+			**""-""** The only constraint is that the ##//iterator//## could be constructed (in case of local ##//iterator//##) or assigned (in case of global ##//iterator//##) from the ##//start_value//## argument (because the ##//iterator//## is implicitly constructed or assigned under the hood).
+			**""-""** Similarly the other arguments ##//end_value//##, and ##//step_value//## must be able to be converted into objects of the same type as the ##//iterator//##.
 
 {{fbdoc item="section" value="Algorithm"}}
 	##[[KeyPgFornext|For...Next]]## loop algorithm around the 3 overload operators:

@@ -5,7 +5,7 @@ Returns the current system time as a string
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Time** ( ) [[KeyPgAs|as]] [[KeyPgString|string]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Time**
+	//result// = **Time**[$]
 ##
 {{fbdoc item="ret"}}
 	Returns the current system.
@@ -20,6 +20,9 @@ print "the current time is: "; time
 
 {{fbdoc item="diff"}}
 	- The QB TIME statement (to set the system time) is now called ##[[KeyPgSettime|Settime]]##.
+	- The string type suffix "$" is required in the //[[CompilerOptlang|-lang qb]]// dialect.
+	- The string type suffix "$" is optional in the //[[CompilerOptlang|-lang fblite]]// dialect.
+	- The string type suffix "$" is ignored in the //[[CompilerOptlang|-lang fb]]// dialect, warn only with the //[[CompilerOptw|-w suffix]]// compile option (or //[[CompilerOptw|-w pedantic]]// compile option).
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDate|Date]]##

@@ -24,7 +24,7 @@ Reads a list of values from the keyboard
 	
 	Numeric values are converted using methods similar to the procedures ##[[KeyPgVal|Val]]## and ##[[KeyPgVallng|ValLng]]##, using the most appropriate function for the number format, converting as many numeric characters as possible.
 	
-	##**Input**## has a limited edit capacity: it allows to erase characters using the backspace key.  If a better user interface is needed, a custom input routine should be used.
+	##**Input**## has a limited edit capacity: it allows to use the left and right cursor keys to navigate the text, and to erase or insert characters.  If a better user interface is needed, a custom input routine should be used.
 	
 {{fbdoc item="ex"}}
 

@@ -1,5 +1,5 @@
-{{fbdoc item="title" value="Dynamic memory management in FreeBASIC"}}----
-Managing **Dynamic Memory** (Allocation / Deallocation) in **""FreeBASIC""**
+{{fbdoc item="title" value="Dynamic memory management with FreeBASIC"}}----
+Managing **Dynamic Memory** (Allocation / Deallocation) with **""FreeBASIC""**
 
 **Preamble:**
 
