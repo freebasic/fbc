@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.structs.string_array_erase )
+SUITE( fbc_tests.string_.string_array_erase )
 
 	TEST_GROUP( fixedsize )
 
