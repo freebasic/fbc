@@ -812,7 +812,7 @@ sub edbgemitheader_asm64( byval filename as zstring ptr )
 		hEmitSTABS_asm64( STAB_TYPE_LSYM, stabsTb(i), 0, 0, "0" )
 		ctx_asm64.typecnt += 1
 	next
-	asm_code( "" )
+
 end sub
 sub edbgemitglobalvar_asm64 _
 	( _
