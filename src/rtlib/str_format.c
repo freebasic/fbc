@@ -269,6 +269,8 @@ int fb_hProcessMask
 	else
 		ExpValue = 0;
 
+	/* value == 0.nnnnne+ExpValue */
+
 	if( do_output )
 	{
 		if( pInfo->mask_type==eMT_Number )
@@ -283,12 +285,15 @@ int fb_hProcessMask
 				/* exponent too big? scale (up or down) */
 				if( ExpValue <= 0 )
 				{
+					/* less than 1.0: scale mantissa to fill fix digits */
 					ExpValue -= pInfo->num_digits_fix;
 				}
 				else
 				{
+					/* 1.0 or greater: */
 					if( pInfo->num_digits_frac > 0 )
 					{
+						/* if fraction digits, scale mantissa to fill fix digits as much as possible while keeping exponent nonnegative */
 						if( ExpValue > pInfo->num_digits_fix )
 							ExpValue -= pInfo->num_digits_fix;
 						else
@@ -296,10 +301,12 @@ int fb_hProcessMask
 					}
 					else
 					{
+						/* if no fraction digits, scale mantissa to fill up to 19 digits while keeping exponent nonnegative */
 						if( ExpValue > FB_MAXFIXLEN )
 							ExpValue -= FB_MAXFIXLEN;
 						else
 							ExpValue = 0;
+						/* BUG: an anomaly I can't explain is that when num_digits_fix == 18, ExpValue is incremented by 1. */
 					}
 				}
 
