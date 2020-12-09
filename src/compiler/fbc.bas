@@ -2956,7 +2956,9 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 	asmfile = hGetAsmName( module, 2 )
 	'' Clean up stage 2 output (the final .asm for -gen gcc/llvm) unless
 	'' -RR was given.
-	if( fbc.keepfinalasm = FALSE ) then
+	if( (not fbc.keepfinalasm) and _
+	    ((fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS) or _
+	     (not fbc.keepobj)) ) then
 		fbcAddTemp( asmfile )
 	end if
 
@@ -3162,7 +3164,7 @@ private function hAssembleModule( byval module as FBCIOFILE ptr ) as integer
 	end if
 
 	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_JS ) then
-		''We will skip assemble stage, since it is already performed by Emscripten
+		'' We will skip assemble stage, since it is already performed by Emscripten
 		function = TRUE
 		exit function
 	end if
