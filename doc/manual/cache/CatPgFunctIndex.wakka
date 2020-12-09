@@ -365,6 +365,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgThreadCall|THREADCALL"}}
 	- {{fbdoc item="keyword" value="KeyPgThreadCreate|THREADCREATE"}}
 	- {{fbdoc item="keyword" value="KeyPgThreadDetach|THREADDETACH"}}
+	- {{fbdoc item="keyword" value="KeyPgThreadSelf|THREADSELF"}}
 	- {{fbdoc item="keyword" value="KeyPgThreadWait|THREADWAIT"}}
 
 {{fbdoc item="section" value="OS / shell"}}

@@ -1,0 +1,62 @@
+{{fbdoc item="title" value="__FB_JOIN__"}}----
+Intrinsic define (macro) performed by the compiler.
+
+{{fbdoc item="syntax"}}##
+	""__FB_JOIN__( arg1, arg2 )""
+##
+{{fbdoc item="param"}}
+	##//arg1//##, ##//arg2//##
+		left (1) and right (2) arguments to join
+
+{{fbdoc item="desc"}}
+	Joins two token arguments together as one, similar to token pasting operator (##[[KeyPgOpPpConcat|##]]##) but more powerfull (will resolve arguments before joining).
+
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/defines/fbjoin.bas"}}%%(freebasic)
+#macro m ( arg1, arg2 )
+	#print arg1##arg2
+	#print __FB_JOIN__( arg1, arg2 )
+#endmacro
+
+m(Free, BASIC)
+
+/' Compiler output:
+FreeBASIC
+FreeBASIC
+'/
+	%%
+	{{fbdoc item="filename" value="examples/manual/defines/fbjoin2.bas"}}%%(freebasic)
+#define PREFIX p
+#define SUFFIX _T
+
+'' this won't work - arguments not expanded
+#define   makename1( x )  PREFIX##x##SUFFIX
+
+'' this will work - can do this in older versions of fbc too
+#define join( a, b ) a##b
+#define makename2( x ) join( PREFIX, join( x, SUFFIX ) )
+
+'' built in __FB_JOIN__() -- works pretty much like join() above
+#define   makename3( x )  __FB_JOIN__( PREFIX, __FB_JOIN__( x, SUFFIX ) )
+
+#macro dump( arg )
+	#print #arg
+#endmacro
+
+dump( makename1(text) )
+dump( makename2(text) )
+dump( makename3(text) )
+
+/' Compiler output:
+PREFIXtextSUFFIX
+ptext_T
+ptext_T
+'/
+	%%
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpPpConcat|Operator ## (Preprocessor Concatenate)]]##
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

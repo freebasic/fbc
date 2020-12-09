@@ -1,0 +1,12 @@
+{{fbdoc item="title" value="External Graphics File Formats (page to fill in)"}}----
+The **external graphics file formats** supported by rtlib through Bload and Bsave.
+
+.....
+.....
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgBload|Bload]]##
+	- ##[[KeyPgBsave|Bsave]]##
+	- .....
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

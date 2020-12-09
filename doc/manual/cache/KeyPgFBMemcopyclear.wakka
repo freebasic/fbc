@@ -1,0 +1,67 @@
+{{fbdoc item="title" value="FB_MEMCOPYCLEAR"}}----
+Copies the first part of a block of memory from a location to another and clears the rest
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **fb_memcopyclear** ( [[KeyPgByref|byref]] //dst// [[KeyPgAs|as]] [[KeyPgAny|any]], [[KeyPgByval|byval]] //dstlen// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]], [[KeyPgByref|byref]] //src// [[KeyPgAs|as]] [[KeyPgAny|any]], [[KeyPgByval|byval]] //srclen// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]] )
+##
+{{fbdoc item="usage"}}##
+	**fb_memcopy**( //dst//, //dstlen//, //src//, //srclen// )
+##
+{{fbdoc item="param"}}
+	##//dst//##
+		starting address of destination memory
+	##//dstlen//##
+		number of bytes to write
+	##//src//##
+		starting address of source memory
+	##//srclen//##
+		number of first bytes to copy (other are cleared)
+
+{{fbdoc item="desc"}}
+	##**fb_memcopycopy**## copies a given number of bytes (##//dstlen//##) from the memory location ##//src//## to the memory location ##//dst//##, but only the first ##//srclen//## bytes are really copied and the rest is cleared (##//(dstlen//## - ##//srclen)//## bytes).
+	Each starting address is taken from a reference to a variable or array element.
+	The memory areas must not overlap (otherwise, the copying is not guaranteed to work properly, especially depending on the platform).
+	To avoid overflows, the valid memory areas pointed to by both ##//src//## and ##//dst//## must be at least equal in size to the number of bytes to be copied (including the bytes cleared).
+	
+	The underlying type of the objects pointed to by both the source and destination pointers are irrelevant for this function.
+	The function does not check for any terminating null character in the source area. It always copies exactly the given number of bytes.
+	The result is a binary copy of the data for the first ##//srclen//## bytes and a zeroing for the rest (##//(dstlen//## - ##//srclen)//## bytes).
+	
+	**Note:** In order to copy from/to memory referenced by a ##[[KeyPgPtr|Pointer]]##, it must be dereferenced first (or else specify in argument term the ##[[KeyPgByval|Byval]]## keyword in front of the pointer name). Otherwise, ##**fb_memcopyclear**## will try to copy the bytes from/to the **pointer variable**'s memory location.
+
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/array/memcopyclear.bas"}}%%(freebasic)
+Dim src As Zstring * 10 = "FreeBASIC"
+Dim dst As Zstring * 10 = "012345678"
+
+Print "before:"
+Print "src = " & src
+Print "dst = " & dst
+Print
+
+'' copy first 4 bytes and clear the rest
+fb_memcopyclear(dst, sizeof(dst), src, 4)
+
+Print "after:"
+Print "src = " & src
+Print "dst = " & dst
+
+Sleep
+	%%Output:
+		%%
+before:
+src = FreeBASIC
+dst = 012345678
+
+after:
+src = FreeBASIC
+dst = Free
+		%%
+{{fbdoc item="diff"}}
+	- The behavior and usage is new to ""FreeBASIC"".
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgFBMemcopy|fb_memcopy]]##
+	- ##[[KeyPgFBMemmove|fb_memmove]]##
+
+{{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

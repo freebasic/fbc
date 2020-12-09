@@ -14,7 +14,7 @@ Sub consumer( ByVal param As Any Ptr )
 	For i As Integer = 0 To 9
 		MutexLock produced
 		Print ", consumer gets:", i
-		Sleep 500
+		Sleep 500, 1
 		MutexUnlock consumed
 	Next
 End Sub
@@ -22,7 +22,7 @@ End Sub
 Sub producer( ByVal param As Any Ptr )
 	For i As Integer = 0 To 9
 		Print "Producer puts:", i;
-		Sleep 500
+		Sleep 500, 1
 		MutexUnlock produced
 		MutexLock consumed
 	Next i

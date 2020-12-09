@@ -3,7 +3,7 @@ The built-in procedures that create, and detach/wait-for the **Threads**.
 
 **Preamble:**
 
-	When a program starts executing, it has one implicit thread running (this is already a full-fledged thread, with its own thread ID).
+	When a program starts executing, it has one implicit thread running (this is already a full-fledged thread).
 	This "main" thread executes the main function of the program.
 	This same program can explicitly launch additional threads that will run in a competitive manner (both between them and with the main thread).
 	
@@ -66,8 +66,12 @@ The built-in procedures that create, and detach/wait-for the **Threads**.
 		If a thread ends in this state (joinable), the resources that were assigned to it will not be released automatically (but only at the main thread termination).
 		
 		So a good habit is to always use one and only one of the following two methods for a thread to finish properly (see the paragraph below):
-			**""-""** either  waiting for the thread end.
-			**""-""** otherwise detaching the thread (the thread becomes no longer joinable),
+			**""-""** either  waiting for the thread end,
+			**""-""** otherwise detaching the thread (the thread becomes no longer joinable).
+			
+		Each running thread can be identified by its handle which is unique among all running threads. See ##[[KeyPgThreadSelf|ThreadSelf]]##.
+		When a new thread is created, a handle to the thread is returned by the creation function. When the thread runs code, ##[[KeyPgThreadSelf|ThreadSelf]]## allows to also return the handle of the thread (the implicit main thread also has its own unique handle).
+		##[[KeyPgThreadSelf|ThreadSelf]]## may be used to code some sort of TLS (Thread Local Storage) from the unique handle of each thread (including the implicit main thread). Therefore, a same global variable name may be defined, but with a stored value specific to the thread that accesses it. This allows generic procedures to be coded, but with parameters depending on the thread which executes them.
 
 {{fbdoc item="section" value="Waiting for a thread end, otherwise detaching a thread"}}
 	There are two methods to induce a proper thread termination:
@@ -365,6 +369,7 @@ End of test
 			%%
 {{fbdoc item="section" value="See also"}}
 	- ##[[KeyPgThreadCreate|ThreadCreate]]##, ##[[KeyPgThreadCall|ThreadCall]]##
+	- ##[[KeyPgThreadSelf|ThreadSelf]]##
 	- ##[[KeyPgThreadWait|ThreadWait]]##, ##[[KeyPgThreadDetach|ThreadDetach]]##
 	- [[ProPgMultiThreading|Multi-Threading Overview]]
 	- [[ProPgMtMutualExclusion|Mutual Exclusion]]

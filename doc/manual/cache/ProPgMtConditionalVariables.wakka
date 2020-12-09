@@ -67,7 +67,7 @@ The built-in procedures that create, wait-for/signal, and destroy **Conditional 
 				The ##[[KeyPgAny|any]] [[KeyPgPtr|ptr]]## handle of the conditional variable to be signaled.
 				
 	__Description__
-		Once the conditional variable is created with ##[[KeyPgCondCreate|CondCreate]]## and the threads are started, one of more of them (including the main thread executing main program) can be set in waiting for the conditional state by ##[[KeyPgCondWait|CondWait]]##.
+		Once the conditional variable is created with ##[[KeyPgCondCreate|CondCreate]]## and the threads are started, one of more of them (including the implicit main thread executing main program) can be set in waiting for the conditional state by ##[[KeyPgCondWait|CondWait]]##.
 		They will be stopped until another thread signals by ##[[KeyPgCondSignal|CondSignal]]## that one among the waiting threads can restart.
 		##[[KeyPgCondBroadcast|CondBroadCast]]## can be used to restart all threads waiting for the conditional.
 		

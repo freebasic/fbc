@@ -15,7 +15,7 @@
 
 Dim As UByte r, g, b, a
 
-Dim As UInteger col = RGB(128, 192, 64)
+Dim As ULong col = RGB(128, 192, 64)
 
 Print Using "Color: _&H\      \"; Hex(col, 8)
 

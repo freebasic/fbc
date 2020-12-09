@@ -16,7 +16,7 @@ The built-in procedures that deal with mutexes for **Mutual Exclusion** (create,
 		**""-""** Non-Busy Wait - If a thread attempts to lock a thread that was locked by a second thread, the first thread will be suspended (and will not consume any CPU resources) until the lock is freed by the second thread. At this time, the first thread will wake up and continue execution, having the mutex locked by it.
 		
 	This is a protocol that serializes access to a shared resource.
-	Note that such a protocol must be enforced for resource a mutex is protecting across all threads that may touch the resource being protected (including the main thread).
+	Note that such a protocol must be enforced for resource a mutex is protecting across all threads that may touch the resource being protected (including the implicit main thread).
 	
 	Mutex capability can be fully used even with a detached thread (only its handler is no longer accessible by its identifier).
 

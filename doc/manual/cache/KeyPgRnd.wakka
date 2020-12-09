@@ -23,7 +23,7 @@ Returns a random [[KeyPgDouble|double]] precision number in the range ##[0, 1)##
 	
 	**Note:**
 		**""-""** For fbc version < 1.08, ##**Rnd**## is not thread-safe. Used in the context of a multi-threaded program with race conditions due to asynchronous calls to ##**Rnd**##, many values ​​are temporarily returned in duplicate for a same thread.
-		**""-""** For fbc version >= 1.08, ##**Rnd**## is became thread-safe (by using an internal mutex). Used in the context of a multi-threaded program, only the execution speed is significantly slowed down compared to a single thread call context.
+		**""-""** For fbc version >= 1.08, ##**Rnd**## is became thread-safe (by using an internal mutex), but not thread specific. Used in the context of a multi-threaded program, only the execution speed is significantly slowed down compared to a single thread call context. Structures for other random number generators are also now available in the standard header "fbmath.bi".
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/math/rnd.bas"}}%%(freebasic)

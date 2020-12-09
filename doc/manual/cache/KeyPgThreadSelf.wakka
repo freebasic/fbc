@@ -1,0 +1,196 @@
+{{fbdoc item="title" value="THREADSELF"}}----
+Return the thread handle of the current thread.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare|Declare]] [[KeyPgFunction|Function]] **""ThreadSelf""** ( ) [[KeyPgAs|As]] [[KeyPgAny|Any]] [[KeyPgPtr|Ptr]]
+##
+{{fbdoc item="usage"}}##
+	#include "fbthread.bi"
+	//result// = **""ThreadSelf""**
+##
+{{fbdoc item="ret"}}
+	**""ThreadSelf""** returns an ##Any Ptr## handle of the current thread.
+
+{{fbdoc item="desc"}}
+	**""ThreadSelf""** is used to get the handle of the current thread.
+	
+	This function can uniquely identify the existing threads:
+		**""-""** If there are multiple threads, and one thread is completed, then that handle can be reused.
+		**""-""** So for all the only threads still running, the handles are unique.
+		
+	When a new thread is created, a handle to the thread is returned by the creation function.
+	When the thread runs code, **""ThreadSelf""** allows to return the handle of the thread (the implicit main thread also has its own unique handle).
+	
+	**""ThreadSelf""** may be used to code some sort of TLS (Thread Local Storage) from the unique handle of each thread (including the implicit main thread).
+	Therefore, a same global variable name may be defined, but with a stored value specific to the thread that accesses it.
+	This allows generic procedures to be coded, but with parameters depending on the thread which executes them (see 3rd example below).
+
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/threads/threadsself.bas"}}%%(freebasic)
+#include "fbthread.bi"
+
+Dim As Any Ptr phandle(1 To 10)
+
+Sub myThread (Byval p As Any Ptr)
+	Print "Thread id: " & Threadself()
+End Sub
+
+For I As Integer = 1 To 10
+	phandle(I) = Threadcreate(@myThread)
+Next I
+
+For I As Integer = 1 To 10
+	Threadwait(phandle(I))
+Next I
+
+Sleep
+	%%
+	Checking for equality between the thread handle returned by ""ThreadCreate"" at thread creation and the one returned by ""ThreadSelf"" from thread running:
+	{{fbdoc item="filename" value="examples/manual/threads/threadsself-handles.bas"}}%%(freebasic)
+#include "fbthread.bi"
+
+Dim As Any Ptr phandle(1 To 10)
+Dim Shared As Any Ptr pmutex0
+Dim Shared As Any Ptr pmutex
+
+Sub myThread (Byval p As Any Ptr)
+	Mutexlock(pmutex0)  ' to ensure that ThreadCreate line is completed before accessing the handle value
+	Dim As Any Ptr phandle1 = *Cptr(Any Ptr Ptr, p)
+	Mutexunlock(pmutex0)
+	Dim As Any Ptr phandle2 = Threadself()
+	Mutexlock(pmutex)
+	Print "   ThreadCreate: " & phandle1, "ThreadSelf: " & phandle2
+	Mutexunlock(pmutex)
+	Sleep 100, 1
+End Sub
+
+Print "Handles returned from:"
+pmutex0 = Mutexcreate()
+pmutex = Mutexcreate()
+For I As Integer = 1 To 10
+	Mutexlock(pmutex0)  ' to ensure that ThreadCreate line is completed before thread accesses the handle value
+	phandle(I) = Threadcreate(@myThread, @phandle(I))
+	Mutexunlock(pmutex0)
+Next I
+
+For I As Integer = 1 To 10
+	Threadwait(phandle(I))
+Next I
+Mutexdestroy(pmutex0)
+Mutexdestroy(pmutex)
+
+Sleep
+	%%
+	Example of a sort of TLS (Thread Local Storage):
+	(see the end of the "Description" paragraph)
+	{{fbdoc item="filename" value="examples/manual/threads/threadsself-tls.bas"}}%%(freebasic)
+#include once "fbthread.bi"
+
+Function TLSindex() As Integer  ' returning a unique thread index (incremented with each new thread)
+	Static As Any Ptr TLSind()
+	Dim As Integer index = -1
+	For I As Integer = LBound(TLSind) To UBound(TLSind)
+		If TLSind(I) = Threadself() Then
+			index = I
+			Exit For
+		End If
+	Next I
+	If index = -1 Then
+		index = UBound(TLSind) + 1
+		ReDim Preserve TLSind(index)
+		TLSind(index) = Threadself()
+	End If
+	Return index
+End Function
+
+Function TLSinteger() ByRef As Integer  ' emulation of global integer with value depending on thread using it
+	Static As Integer TLSint()
+	Dim As Integer index = TLSindex()
+	If index > UBound(TLSint) Then
+		ReDim Preserve TLSint(index)
+	End If
+	Return TLSint(index)
+End Function
+
+'------------------------------------------------------------------------------
+
+Type threadData
+	Dim As Any Ptr handle
+	Dim As String prefix
+	Dim As String suffix
+	Dim As Double tempo
+	Static As Any Ptr mutex
+End Type
+Dim As Any Ptr threadData.mutex
+
+Function counter() As Integer  ' definition of a generic counter with counting depending on thread calling it
+	TLSinteger() += 1
+	Return TLSinteger()
+End Function
+
+Sub Thread(ByVal p As Any Ptr)
+	Dim As threadData Ptr ptd = p
+	Dim As UInteger c
+	Do
+		c = counter()
+		MutexLock(threadData.mutex)
+		Print ptd->prefix;
+		Print c;
+		Print ptd->suffix;
+		Print " ";
+		MutexUnlock(threadData.mutex)
+		Sleep ptd->tempo, 1
+	Loop Until c = 12
+End Sub
+
+'------------------------------------------------------------------------------
+
+Print "|x| : counting from thread a"
+Print "(x) : counting from thread b"
+Print "[x] : counting from thread c"
+Print
+
+threadData.mutex = MutexCreate()
+
+Dim As threadData mtlsa
+mtlsa.prefix = "|"
+mtlsa.suffix = "|"
+mtlsa.tempo = 250
+mtlsa.handle = ThreadCreate(@Thread, @mtlsa)
+
+Dim As threadData mtlsb
+mtlsb.prefix = "("
+mtlsb.suffix = ")"
+mtlsb.tempo = 150
+mtlsb.handle = ThreadCreate(@Thread, @mtlsb)
+
+Dim As threadData mtlsc
+mtlsc.prefix = "["
+mtlsc.suffix = "]"
+mtlsc.tempo = 100
+mtlsc.handle = ThreadCreate(@Thread, @mtlsc)
+
+ThreadWait(mtlsa.handle)
+ThreadWait(mtlsb.handle)
+ThreadWait(mtlsc.handle)
+MutexDestroy(threadData.mutex)
+
+Print
+Print
+Print "end of threads"
+
+Sleep
+	%%
+{{fbdoc item="lang"}}
+	- Threading is not allowed in the //[[CompilerOptlang|-lang qb]]// dialect.
+
+{{fbdoc item="target"}}
+	- **""ThreadSelf""** is not available with the DOS version of ""FreeBASIC"", because multithreading is not supported by DOS kernel nor the used extender.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgThreadCreate|ThreadCreate]]##
+
+{{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}

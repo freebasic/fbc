@@ -1,0 +1,70 @@
+{{fbdoc item="title" value="__FB_QUOTE__"}}----
+Intrinsic define (macro) performed by the compiler.
+
+{{fbdoc item="syntax"}}##
+	""__FB_QUOTE__(arg)""
+##
+{{fbdoc item="param"}}
+	##//arg//##
+		argument
+
+{{fbdoc item="desc"}}
+	Converts the argument to a string, similar to stringize operator (#) but can be used anywhere (will expand the argument before conversion).
+	More precisely, ##**""__FB_QUOTE__""**## returns an over-quoted text compared to the one passed through the argument (the argument may already be a string, and so the return will be an over-quoted string in this case).
+
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/defines/fbquote.bas"}}%%(freebasic)
+#macro m( arg )
+	Scope
+		Dim s1 As String = #arg
+		Print s1
+		Dim s2 As String = __FB_QUOTE__( arg )
+		Print s2
+	End Scope
+#endmacro
+
+m(Hello)
+Print
+m("Hello")
+
+Sleep
+
+/' Output:
+Hello
+Hello
+
+"Hello"
+"Hello"
+'/
+	%%
+	{{fbdoc item="filename" value="examples/manual/defines/fbquote2.bas"}}%%(freebasic)
+#macro m( arg1, arg2 )
+	Scope
+		'Dim s0 As String = #arg1##arg2  ' does not work because arg1##arg2 is not developped before applying #
+		Dim s1 As String = #arg1###arg2  ' workaround because #arg => $"arg" and not only "arg"
+										 '    (otherwise the result would be "arg1""arg2" => "arg1"arg2")
+		Print s1
+		Dim s2 As String = __FB_QUOTE__( arg1##arg2 )
+		Print s2
+	End Scope
+#endmacro
+
+m(Free, BASIC)
+
+Sleep
+
+/' Output:
+FreeBASIC
+FreeBASIC
+'/
+	%%
+	See also ##[[KeyPgDdfbunquote|__FB_QUOTE__]]## example.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfbunquote|__FB_UNQUOTE__]]##
+	- ##[[KeyPgDdfbeval|__FB_EVAL__]]##
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

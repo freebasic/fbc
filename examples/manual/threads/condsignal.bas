@@ -34,7 +34,7 @@ Dim Shared As Integer ok = 0
 Sub thread (ByVal p As Any Ptr)
 	Print "thread is complementing the string"
 	MutexLock(mutex)
-	Sleep 400
+	Sleep 400, 1
 	txt &= " complemented by thread"
 	ok = 1
 	CondSignal(cond)

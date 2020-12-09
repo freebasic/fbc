@@ -32,7 +32,7 @@ Sub consumer ( ByVal param As Any Ptr )
 		MutexLock produced
 		Print , ",consumer gets:" ; i
 		MutexUnlock consumed
-		Sleep 5
+		Sleep 5, 1
 	Next i
 End Sub
 
@@ -41,7 +41,7 @@ Sub producer ( ByVal param As Any Ptr )
 		Print "Producer puts:" ; i;
 		MutexUnlock produced
 		MutexLock consumed
-	Sleep 5
+	Sleep 5, 1
 Next i
 End Sub
 

@@ -9,7 +9,7 @@
 ' 'Threadcreate' launches one time the user-defined Sub in a separate execution thread
 '    (which runs simultaneously with the rest of the main code).
 ' If you want obtain a periodically display from the thread,
-'    you must put (into the thread) a [Do...Loop] block with a 'Sleep x' to adjust the display period
+'    you must put (into the thread) a [Do...Loop] block with a 'Sleep x, 1' to adjust the display period
 '    and a flag to exit the loop (and terminate the thread).
 '
 ' Warning:
@@ -39,7 +39,7 @@ Sub ProcedureThread (ByVal param As Any Ptr)  '' param not used in thread body
 				Print Time;
 			ScreenUnlock      '' keyword before Mutexunlock
 		MutexUnlock(sync)     '' end exclusion
-		Sleep 100             '' ajust display period
+		Sleep 100, 1          '' ajust display period
 	Loop Until quit <> 0      '' test for exit thread
 End Sub
 
@@ -72,7 +72,7 @@ Do
 		ScreenUnlock                    '' Keyword before Mutexunlock
 		s = Inkey                       '' keyword outside [Screenlock...Screenunlock] and protected by Mutex
 	MutexUnlock(sync)                   '' end exclusion
-	Sleep 10                            '' ajust display period
+	Sleep 10, 1                         '' ajust display period
 Loop Until s <> ""
  
 quit = Not quit     '' order thread end

@@ -41,7 +41,7 @@ Sub threadCount (ByVal p As Any Ptr)
 		End If
 		Print "threadCount(): thread#" & p & ", count = " & count & ", unlocking mutex"
 		MutexUnlock(countMutex)
-		Sleep 100
+		Sleep 100, 1
 	Loop
 End Sub
 

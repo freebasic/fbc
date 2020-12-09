@@ -6,7 +6,7 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgSubPtr
 '' --------
 
-' Example of advanced callback Sub mechanism to implement a key pressed event:
+' Example of advanced callback Sub mechanism (asynchronous) to implement a key pressed event:
 ' (the user callback Sub address can be modified while the event thread is running)
 '   - An asynchronous thread tests the keyboard in a loop, and calls a user callback Sub each time a key is pressed.
 '   - An UDT groups the common variables used (callback Sub pointer, character of key pressed, thread end flag),
@@ -34,7 +34,7 @@
 	  If pt->s <> "" AndAlso pt->callback > 0 Then           '' test condition key pressed & callback Sub defined
 		pt->callback(p)
 	  End If
-	  Sleep 50
+	  Sleep 50, 1
 	Loop Until pt->threadEnd                                 '' test condition to finish thread
   End Sub
 

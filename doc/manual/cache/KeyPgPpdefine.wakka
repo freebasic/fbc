@@ -24,7 +24,7 @@ Preprocessor directive to define a macro
 	
 	##**#define**##s are often used to declare constants. The ##[[KeyPgConst|Const]]## statement is a type-safe alternative.
 	
-	WARNING: When the macro body contains an expression with one operator at least, it may be mandatory to have to surround some terms (parameters, whole body) by parentheses in order to not undergo an unwanted precedence change of operators.
+	WARNING: When the define body contains an expression with one operator at least, it may be mandatory to have to surround some terms (parameters, whole body) by parentheses in order to not undergo an unwanted precedence change of operators (if passing as argument an expression with also operators, or if using the define in a main expression with also operators).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/prepro/define.bas"}}%%(freebasic)

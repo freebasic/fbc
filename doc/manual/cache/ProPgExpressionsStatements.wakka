@@ -1,0 +1,93 @@
+{{fbdoc item="title" value="Differences between Expressions and Statements"}}----
+To introduce the **expressions and statements** (syntactic entities) in ""FreeBASIC"".
+
+**Preamble:**
+
+	Simply put, an expression represents a value and a statement represents an operation.
+	However, in fact, some special expressions may be composed and represent multiple values, and some statements may be composed of several sub operations/statements.
+	By context, some statements can also be considered expressions.
+	
+	Statements can contain other constructs such as expressions, keywords, operators, and other elements.
+	Expressions are parts of statements that return values. Thus, expressions can be used whenever a value is expected.
+	
+	The following description does not make very precise definitions for expressions and statements. It is difficult to achieve this.
+	Not all types of expressions and statements are covered here, but only simple examples are highlighted.
+
+{{fbdoc item="section" value="Expressions"}}
+	An expression is a collection of one or more terms that can perform a mathematical or logical operation. To be precise, an expression must have at least one operand but may not have any operator.
+	The terms are usually either literals or variables or functions that are combined with operators to evaluate for example to a string or numeric result or boolean or user defined type.
+	A value in itself is a simple expression, just like a variable. Evaluating a variable gives the value to which the variable refers.
+	
+	Expressions can be used to perform calculations, manipulate variables, or concatenate strings.
+	Expressions are evaluated according to precedence order. Use parentheses to override the default precedence order.
+
+{{fbdoc item="section" value="Statements"}}
+	A statement is a basic unit of execution of a program. A statement is a complete instruction in ""FreeBASIC"" programs.
+	It may contain keywords, operators, variables, literal values, constants and expressions.
+	
+	Statements could be categorized as:
+		**""-""** Declaration statements: these are the statements where the user names a variable, constant, or procedure, and can also initialize it.
+		**""-""** Executable statements: these are the statements which initiate actions. These statements can call a procedure, loop or branch through blocks of code or assign values or expression to a variable or constant. In the last case, it is called an expression statement. The most common expression statements are assignments and function calls.
+		
+	Statements normally take up a single line with no terminator. Statements can be stacked by using a colon (:) to separate them.
+	If a statement is very long, it may be continued to the next line using the continuation character, an underscore (_).
+
+{{fbdoc item="section" value="Basic examples of expressions / statements"}}
+	Some basic examples just to illustrate the definitions above.
+	
+	__Basic examples of expressions__
+		**""-""** Arithmetic expression:
+			##10##
+				this is an expression that is evaluated to the numeric value 10.
+			##10 + 13##
+				this is another expression that is evaluated to produce the numeric value 23.
+				
+		**""-""** String expression:
+			##"hello"##
+				evaluates to the string "hello".
+			##"hello" & " " & "world"##
+				evaluates to the string "hello world".
+				
+		**""-""** Combined expression:
+			##Len("hello" & " " & "world")##
+				Len function evaluating the length of the string expression.
+				
+		**""-""** Logical expression:
+			##10 > 9##
+				evaluates to boolean value true (more precisely produces the integer value -1 here).
+			##10 < 20##
+				evaluates to boolean value false (more precisely produces the integer value 0 here).
+			##true##
+				evaluates to boolean value true.
+			##a=20 And b=30##
+				evaluates to true (-1) or false (0) based on the values of a and b.
+				
+	__Basic examples of statements__
+		**""-""** Statement:
+			##Print 10 + 13
+			Print "hello" & " " & "world"##
+				where the arguments of the two Print statements are expressions listed above.
+				
+		**""-""** Assignment statement:
+			##average = 55 + 33##
+				where the right-hand-side is an expression.
+				
+		**""-""** Declaration statement with initializer:
+			##Dim As Integer I = J + 3##
+				where the right-hand-side of the initializer is an expression.
+				
+		**""-""** Conditional statement:
+			##If (expression) Then
+				statement 1
+			Else
+				statement 2
+			End If##
+				if the expression following the If statement evaluates to a truth value, statement 1 is executed else statement 2 is executed.
+
+{{fbdoc item="see"}}
+	- [[ProPgAssignments|Assignments]]
+	- [[CatPgOperators|Operator list]]
+	- [[OpPrecedence|Operator Precedence]]
+	- [[ProPgControlFlow|Control Flow Statements]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

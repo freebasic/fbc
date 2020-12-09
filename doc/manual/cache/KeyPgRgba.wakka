@@ -2,7 +2,10 @@
 Computes a valid color value including alpha (transparency) for hi/truecolor modes
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine|#define]] **RGBA**(//r//,//g//,//b//,//a//) (([[KeyPgCulng|CUlng]](r) [[KeyPgOpShiftLeft|shl]] 16) [[KeyPgOpOr|or]] ([[KeyPgCulng|CUlng]](g) [[KeyPgOpShiftLeft|shl]] 8) [[KeyPgOpOr|or]] [[KeyPgCulng|CUlng]](b) [[KeyPgOpOr|or]] ([[KeyPgCulng|CUlng]](a) [[KeyPgOpShiftLeft|shl]] 24))
+	for fbc version < 1.08:
+		[[KeyPgPpdefine|#define]] **RGBA**(//r//,//g//,//b//,//a//) (([[KeyPgCulng|CUlng]](r) [[KeyPgOpShiftLeft|shl]] 16) [[KeyPgOpOr|or]] ([[KeyPgCulng|CUlng]](g) [[KeyPgOpShiftLeft|shl]] 8) [[KeyPgOpOr|or]] [[KeyPgCulng|CUlng]](b) [[KeyPgOpOr|or]] ([[KeyPgCulng|CUlng]](a) [[KeyPgOpShiftLeft|shl]] 24))
+	for fbc version >= 1.08:
+		[[KeyPgPpdefine|#define]] **RGBA**(//r//,//g//,//b//,//a//) [[KeyPgCulng|CUlng]](([[KeyPgCubyte|CUByte]](r) [[KeyPgOpShiftLeft|shl]] 16) [[KeyPgOpOr|or]] ([[KeyPgCubyte|CUByte]](g) [[KeyPgOpShiftLeft|shl]] 8) [[KeyPgOpOr|or]] [[KeyPgCubyte|CUByte]](b) [[KeyPgOpOr|or]] ([[KeyPgCubyte|CUByte]](a) [[KeyPgOpShiftLeft|shl]] 24))
 ##
 {{fbdoc item="usage"}}##
 	//result// = **RGBA**(//red//, //green//, //blue//, //alpha//)
@@ -23,7 +26,7 @@ Computes a valid color value including alpha (transparency) for hi/truecolor mod
 {{fbdoc item="desc"}}
 	##//red//##, ##//green//##, ##//blue//## and ##//alpha//## are components ranging ##0##-##255##.
 	
-	The ##**RGBA**## function can be used to compute a valid color value including an alpha channel for use while in hi/truecolor modes. It returns an unsigned integer in the format ##&h//AARRGGBB//##, where ##//RR//##, ##//GG//##, ##//BB//##, ##//AA//## equal the values passed to this function, in hexadecimal format.
+	The ##**RGBA**## function can be used to compute a valid color value including an alpha channel for use while in hi/truecolor modes. It returns an unsigned integer for fbc version < 1.08, or an unsigned long for fbc version >= 1.08, in the format ##&h//AARRGGBB//##, where ##//RR//##, ##//GG//##, ##//BB//##, ##//AA//## equal the values passed to this function, in hexadecimal format.
 	It is possible to retrieve the red, green, blue  and alpha values from a color value, by using a combination of ##[[KeyPgOpAnd|And]]## and ##[[KeyPgOpShiftRight|Shr]]##.  The second example below shows how to ##[[KeyPgPpdefine|#Define]]## and use macros to do this.
 
 {{fbdoc item="ex"}}
@@ -82,7 +85,7 @@ Sleep
 
 Dim As UByte r, g, b, a
 
-Dim As UInteger col = RGBA(255, 192, 64, 128)
+Dim As ULong col = RGBA(255, 192, 64, 128)
 
 Print Using "Color: _&H\      \"; Hex(col, 8)
 

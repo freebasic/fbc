@@ -34,4 +34,4 @@ Print concatenation(6, "Free", "BASIC", " ", "version", " ", 0.13)
 Sleep
 
 ' Output: FreeBASIC version 0.13
-				
+		

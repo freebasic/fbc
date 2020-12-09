@@ -62,7 +62,7 @@ Copies an image on to another image or screen
 	**Custom Blend Function**
 		The ##CUSTOM## method uses a user-defined function to calculate the final pixel values to be drawn to the destination buffer. This function will be called once for every pixel of the source image, and will receive the source and destination pixel values, and a data pointer passed by the ##**Put**## function. The pixel value returned will be the value used to draw to the destination buffer. The function has the form:
 		
-		##[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] //identifier// ( [[KeyPgByval|byval]] //source_pixel// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]], [[KeyPgByval|byval]] //destination_pixel// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]], [[KeyPgByval|byval]] //parameter// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]]) [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]]##
+		##[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] //identifier// ( [[KeyPgByval|byval]] //source_pixel// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]], [[KeyPgByval|byval]] //destination_pixel// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]], [[KeyPgByval|byval]] //parameter// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] ) [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]]##
 			##//identifier//## is the name of the function. Can be anything.
 			##//source_pixel//## is the current pixel value of the source image.
 			##//destination_pixel//## is the current pixel value of the destination image.
@@ -166,6 +166,7 @@ end function
 	- In QB, only arrays can be specified as source images
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgCustomgfx|Custom (Graphics Put)]]##
 	- ##[[KeyPgPutfileio|Put (File I/O)]]##
 	- ##[[KeyPgGetgraphics|Get (Graphics)]]##
 	- ##[[KeyPgImagecreate|ImageCreate]]##

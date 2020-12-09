@@ -12,12 +12,14 @@ Of these, integer types represent only integer numbers (positive, negative, and 
 				**""-""** ##[[KeyPgLong|LONG]] 32-bit##
 				**""-""** ##[[KeyPgInteger|INTEGER]] 32-bit or 64-bit (*)##
 				**""-""** ##[[KeyPgLongint|LONGINT]] 64-bit##
+				**""-""** ##[[KeyPgInteger|INTEGER<8|16|32|64>]] 8|16|32|64-bit##
 		- Unsigned integer types:
 				**""-""** ##[[KeyPgUbyte|UBYTE]] 8-bit##
 				**""-""** ##[[KeyPgUshort|USHORT]] 16-bit##
 				**""-""** ##[[KeyPgUlong|ULONG]] 32-bit##
 				**""-""** ##[[KeyPgUinteger|UINTEGER]] 32-bit or 64-bit (*)##
 				**""-""** ##[[KeyPgUlongint|ULONGINT]] 64-bit##
+				**""-""** ##[[KeyPgUinteger|UINTEGER<8|16|32|64>]] 8|16|32|64-bit##
 
 {{fbdoc item="section" value="Floating-point types"}}
 	Floating-point types are those that represent real numbers:

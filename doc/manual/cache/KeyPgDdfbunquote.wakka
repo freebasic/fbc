@@ -1,0 +1,68 @@
+{{fbdoc item="title" value="__FB_UNQUOTE__"}}----
+Intrinsic define (macro) performed by the compiler.
+
+{{fbdoc item="syntax"}}##
+	""__FB_UNQUOTE__(arg)""
+##
+{{fbdoc item="param"}}
+	##//arg//##
+		argument
+
+{{fbdoc item="desc"}}
+	Takes a literal string and converts it back to tokens.
+	More precisely, ##**""__FB_UNQUOTE__""**## returns a sub-quoted text compared to the one passed through the argument (the argument may already be an over-quoted string, and so the return will be a simple string in this case).
+
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/defines/fbunquote.bas"}}%%(freebasic)
+#macro m( arg )
+	Scope
+		Var v1 = arg
+		#print typeof(v1)
+		Print v1
+		Var v2 = __FB_UNQUOTE__( arg )
+		#print typeof(v2)
+		Print v2
+	End Scope
+#endmacro
+
+m("""Hello""")
+m("1")
+
+Sleep
+
+/' Compiler output:
+STRING
+STRING
+STRING
+INTEGER
+'/
+
+/' Output:
+"Hello"
+Hello
+1
+ 1
+'/
+	%%
+	{{fbdoc item="filename" value="examples/manual/defines/fbunquote2.bas"}}%%(freebasic)
+#define X __FB_QUOTE__( print "hello" )
+#macro Y( arg )
+  __FB_UNQUOTE__( arg )
+#endmacro
+
+print X
+Y( X )
+
+/' Output:
+print "hello"
+hello
+'/
+	%%
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfbquote|__FB_QUOTE__]]##
+	- ##[[KeyPgDdfbeval|__FB_EVAL__]]##
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

@@ -12,8 +12,15 @@ Type mytype
 	var3 As ZString Ptr
 End Type
 
-Dim MyVar(0 To 1) As mytype => _
+Dim MyVar(0 To 1) As mytype = _
 	{ _
-		(1.0, 1, @"Hello"), _
-		(2.0, 2, @"GoodBye") _
+		(1.1, 1, @"Hello"), _
+		(2.2, 2, @"GoodBye") _
 	}
+
+For I As Integer = 0 To 1
+	Print MyVar(I).var1, MyVar(I).var2, *MyVar(I).var3
+Next I
+
+Sleep
+		

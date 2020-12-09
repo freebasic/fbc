@@ -17,6 +17,8 @@ Preprocessor directive to define a multiline macro
 	**Note:** Beware of the possibility of triggering so a conflict with expressions containing the name of the macro as one of their terms.
 	
 	Note: Unlike the function-like ##[[KeyPgPpdefine|#define]]## declaration, spaces can be put between the macro name and the opening parenthesis for any declaration syntax of macro.
+	
+	WARNING: In the macro body, it may be mandatory to have to surround by parentheses any used parameter if it is inside an expression with one operator at least, in order to not undergo an unwanted precedence change of operators (if passing as argument an expression with also operators).
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/prepro/macro.bas"}}%%(freebasic)

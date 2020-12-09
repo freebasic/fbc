@@ -8,6 +8,9 @@ A header file is a special kind of source file that typically only contains prep
 	- ##datetime.bi##
 	- ##dir.bi##
 	- ##fbgfx.bi##
+	- ##fbio.bi##
+	- ##fbmath.bi##
+	- ##fbthread.bi##
 	- ##file.bi##
 	- ##string.bi##
 	- ##vbcompat.bi##

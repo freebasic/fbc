@@ -1,0 +1,49 @@
+{{fbdoc item="title" value="RETURN (from Gosub)"}}----
+Control flow statement to return from a procedure or ##[[KeyPgGosub|Gosub]]##.
+
+{{fbdoc item="syntax"}}##
+	**Return** [ //label// ]
+##
+{{fbdoc item="desc"}}
+	##**Return**## is used to return from a gosub ##[[KeyPgGosub|Gosub]]##.
+	
+	Because ##Return## could mean return-from-gosub or return-from-procedure, ##[[KeyPgOptiongosub|Option Gosub]]## and ##[[KeyPgOptionnogosub|Option Nogosub]]## can be used to enable and disable ##[[KeyPgGosub|Gosub]]## support.  When ##[[KeyPgGosub|Gosub]]## support is disabled, ##[[KeyPgReturn|Return]]## is then recognized as return-from-procedure.  When ##[[KeyPgGosub|Gosub]]## support is enabled, ##[[KeyPgReturnGosub|Return]]## is then recognized as return-from-gosub.
+	
+	##**Return**## (from gosub) is used to return control back to the statement immediately following a previous ##[[KeyPgGosub|Gosub]]## call. When used in combination with ##[[KeyPgGosub|Gosub]]##, no return value can be specified.  If the optional ##//label//## is specified, execution continues at the specified label.  If no ##[[KeyPgGosub|Gosub]]## was made, a runtime error is generated, and execution continues immediately after ##**Return**##.
+	
+	A ##[[KeyPgGosub|Gosub]]## should always have a matching ##**Return**## statement.  However, if ##**Return**## (from gosub) is used where no ##[[KeyPgGosub|Gosub]]## was made, a run-time error is generated.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/control/return.bas"}}%%(freebasic)
+'' GOSUB & RETURN example, compile with "-lang qb" or use "$lang" as below
+
+'$lang: "qb"
+
+Print "Let's Gosub!"
+GoSub MyGosub
+Print "Back from Gosub!"
+Sleep
+End
+
+MyGosub:
+Print "In Gosub!"
+Return
+%%
+{{fbdoc item="lang"}}
+	- In the //[[CompilerOptlang|-lang fb]]// dialect ##**Return**## always means return-from-procedure.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, ##**Return**## means return-from-gosub by default unless changed with ##[[KeyPgOptionnogosub|Option Nogosub]]##, in which case the compiler will recognize ##**Return**## as return-from-procedure.
+	- In the //[[CompilerOptlang|-lang fblite]]// dialect, ##**Return**## means return-from-procedure by default unless changed with ##[[KeyPgOptiongosub|Option Gosub]]##, in which case the compiler will recognize ##**Return**## as return-from-gosub.
+
+{{fbdoc item="diff"}}
+	- None when using the //[[CompilerOptlang|-lang qb]]// dialect.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgSub|Sub]]##
+	- ##[[KeyPgFunction|Function]]##
+	- ##[[KeyPgGosub|Gosub]]##
+	- ##[[KeyPgOptiongosub|Option Gosub]]##
+	- ##[[KeyPgOptionnogosub|Option Nogosub]]##
+	- ##[[ProPgLabels|Labels]]##
+	- ##[[KeyPgReturn|Return (from procedure)]]##
+
+{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

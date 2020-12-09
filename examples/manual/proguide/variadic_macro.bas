@@ -21,7 +21,7 @@
 				Dim As Integer k = InStr(1, s, ",")
 				If k = 0 Then
 					result += Val(s)
-					result = result / (n + 1)
+					result /= n + 1
 					Exit Do
 				End If
 				result += Val(Left(s, k - 1))

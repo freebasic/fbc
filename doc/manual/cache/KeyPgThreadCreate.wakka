@@ -33,6 +33,8 @@ Starts a user-defined procedure in a separate execution thread
 	There is no guarantee about the order in which different threads execute, and no assumptions can be made about the order in which multiple create threads actually start executing.
 	In the fastest launch cases, the thread body may start executing even before **""ThreadCreate""** returns.
 	
+	Each running thread can be identified by its handle which is unique among all running threads. See ##[[KeyPgThreadSelf|ThreadSelf]]##.
+	
 	Before closing, programs should wait for the termination of all launched threads by using ##[[KeyPgThreadWait|ThreadWait]]##. Alternatively, if it's not necessary to safely wait for a thread to finish execution, ##[[KeyPgThreadDetach|ThreadDetach]]## can be used. However, if a program exits while some threads are still active, those threads will be aborted by the system. For every thread created, programs should call either ##[[KeyPgThreadWait|ThreadWait]]## or ##[[KeyPgThreadDetach|ThreadDetach]]## to ensure that the system resources associated with the thread handles are released. Otherwise, there may be memory or system resource leaks.
 	
 	Due to the nature of threads, no assumptions about execution order can be made. In order to exchange data between multiple threads, including a thread and the main part of the program, mutexes must be used. These mutual exclusion locks can be "owned" by a single thread while doing critical work, causing other threads to wait for their turn. See ##[[KeyPgMutexCreate|Mutexcreate]]##, ##[[KeyPgMutexLock|Mutexlock]]##, ##[[KeyPgMutexUnlock|Mutexunlock]]##, ##[[KeyPgMutexDestroy|Mutexdestroy]]##.
@@ -200,6 +202,7 @@ end sub
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgThreadSelf|ThreadSelf]]##
 	- ##[[KeyPgThreadWait|ThreadWait]]##
 	- ##[[KeyPgThreadDetach|ThreadDetach]]##
 	- ##[[KeyPgMutexCreate|Mutexcreate]]##

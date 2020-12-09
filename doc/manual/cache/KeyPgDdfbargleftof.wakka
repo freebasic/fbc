@@ -1,0 +1,44 @@
+{{fbdoc item="title" value="__FB_ARG_LEFTOF__"}}----
+Intrinsic define (macro) performed by the compiler.
+
+{{fbdoc item="syntax"}}##
+	""__FB_ARG_LEFTOF__( arg, sep )""
+##
+{{fbdoc item="param"}}
+	##//arg//##
+		argument
+	##//sep//##
+		separator, obviously different from the comma (,)
+
+{{fbdoc item="desc"}}
+	Returns the left token of the argument (##//arg//##), based on the separator (##//sep//##).
+
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/defines/fbargleftof.bas"}}%%(freebasic)
+#macro m( arg )
+	Scope
+		Var v = __FB_ARG_LEFTOF__( arg, versus )
+		Print v
+	End Scope
+#endmacro
+
+m(1 versus 2)
+m("left-side" versus "right-side")
+
+Sleep
+
+/' Output:
+ 1
+left-side
+'/
+	%%
+	See also ##[[KeyPgDdfbargrightof|__FB_ARG_RIGHTOF__]]## example.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfbargrightof|__FB_ARG_RIGHTOF__]]##
+	- ##[[KeyPgDdfbargcount|__FB_ARG_COUNT__]]##
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

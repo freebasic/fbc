@@ -32,7 +32,7 @@ Sub teletype( ByRef text As String, ByVal x As Integer, ByVal y As Integer )
 	For i As Integer = 0 To (Len(text) - 1)
 		Locate x, y + i
 		Print Chr(text[i])
-		Sleep 25
+		Sleep 25, 1
 	Next
 
 	'' MutexUnlock releases the lock and lets other threads acquire it.

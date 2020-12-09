@@ -556,6 +556,7 @@
 		[[KeyPgThreadCall|THREADCALL]]
 		[[KeyPgThreadCreate|THREADCREATE]]
 		[[KeyPgThreadDetach|THREADDETACH]]
+		[[KeyPgThreadSelf|THREADSELF]]
 		[[KeyPgThreadWait|THREADWAIT]]
 		[[KeyPgTime|TIME]]
 		[[KeyPgTimer|TIMER]]

@@ -6,7 +6,7 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgFunctionPtr
 '' --------
 
-' Example of basic callback Function mechanism to implement a key pressed event:
+' Example of basic callback Function mechanism (asynchronous) to implement a key pressed event:
 ' (the user callback Function address cannot be modified while the event thread is running)
 '   - An asynchronous thread tests the keyboard in a loop, and calls a user callback Function each time a key is pressed.
 '   - The callback Function address is passed to the thread.
@@ -26,7 +26,7 @@
 			Exit Do
 		  End If
 		End If
-		Sleep 50
+		Sleep 50, 1
 	  Loop
 	End If
   End Sub
