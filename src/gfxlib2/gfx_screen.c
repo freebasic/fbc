@@ -96,8 +96,10 @@ static void release_gfx_mem(void)
 
 static void exit_proc(void)
 {
+#ifndef HOST_JS
 	if( __fb_gfx )
 		set_mode( 0, 0, 0, 0, 0, 1, 0, 0, 0, SCREEN_EXIT, 0.0, 0, 0 );
+#endif
 }
 
 /* Dummy function to ensure that the CONSOLE "update" hook for a VIEW PRINT
@@ -229,6 +231,7 @@ static int set_mode
         __fb_ctx.hooks.isredirproc = fb_GfxIsRedir;
         __fb_ctx.hooks.pagecopyproc = fb_GfxPageCopy;
         __fb_ctx.hooks.pagesetproc = fb_GfxPageSet;
+        __fb_ctx.hooks.posteventproc = NULL;
         __fb_gfx = (FBGFX *)calloc(1, sizeof(FBGFX));
     }
 

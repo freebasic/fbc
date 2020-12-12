@@ -9,7 +9,7 @@
 	#inclib "gdi32"
 	#inclib "winmm"
 	#inclib "user32"
-#elseif defined(__FB_LINUX__)
+#elseif defined(__FB_LINUX__) and not defined(__FB_JS__)
 	#libpath "/usr/X11R6/lib"
 	#inclib "X11"
 	#inclib "Xext"

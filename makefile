@@ -188,6 +188,12 @@ ifdef TARGET
     else ifneq ($(filter xbox%,$(triplet)),)
       TARGET_OS := xbox
     endif
+    ifneq ($(filter emscripten%,$(triplet)),)
+      TARGET_OS := js
+	  AS = llvm-as
+	  AR = emar
+	  CC = emcc
+    endif
   endif
 
   ifndef TARGET_ARCH
@@ -451,6 +457,10 @@ ifneq ($(filter cygwin win32,$(TARGET_OS)),)
   ALLFBLFLAGS += -t 2048
 endif
 
+ifeq ($(TARGET_OS),js)
+	DISABLE_MT := YesPlease
+endif
+
 # Pass the configuration defines on to the compiler source code
 ifdef ENABLE_STANDALONE
   ALLFBCFLAGS += -d ENABLE_STANDALONE
@@ -535,6 +545,11 @@ endif
 ifeq ($(TARGET_OS),dos)
   RTL_LIBS += $(libdir)/libc.a
 endif
+ifeq ($(TARGET_OS),js)
+  RTL_LIBS += $(libdir)/termlib_min.js
+  RTL_LIBS += $(libdir)/fb_rtlib.js
+  RTL_LIBS += $(libdir)/fb_shell.html
+endif
 
 #
 # Build rules
@@ -603,6 +618,16 @@ $(libdir)/fbrt0pic.o: $(srcdir)/rtlib/static/fbrt0.c $(LIBFB_H) | $(libdir)
 	$(QUIET_CC)$(CC) -fPIC $(ALLCFLAGS) -c $< -o $@
 
 $(libdir)/libfb.a: $(LIBFB_C) $(LIBFB_S) | $(libdir)
+$(libdir)/termlib_min.js: $(rootdir)lib/termlib_min.js
+	cp $< $@
+
+$(libdir)/fb_rtlib.js: $(rootdir)lib/fb_rtlib.js
+	cp $< $@
+	
+$(libdir)/fb_shell.html: $(rootdir)lib/fb_shell.html
+	cp $< $@
+	
+$(libdir)/libfb.a: $(LIBFB_C) $(LIBFB_S)
 ifeq ($(TARGET_OS),dos)
   # Avoid hitting the command line length limit (the libfb.a ar command line
   # is very long...)

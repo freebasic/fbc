@@ -35,6 +35,9 @@
 #elif (defined sun || defined __sun) && defined __SVR4
 	#define HOST_SOLARIS
 	#define HOST_UNIX
+#elif defined __EMSCRIPTEN__
+	#define HOST_JS
+	#define HOST_UNIX
 #else
 	#error "Couldn't identify target system!"
 #endif
