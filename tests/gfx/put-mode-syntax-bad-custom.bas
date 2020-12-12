@@ -4,10 +4,10 @@ dim image as any ptr
 
 function customCallback _
 	( _
-		byval source_pixel as uinteger, _
-		byval destination_pixel as uinteger, _
+		byval source_pixel as ulong, _
+		byval destination_pixel as ulong, _
 		byval parameter as any ptr _
-	) as uinteger
+	) as ulong
 	function = 0
 end function
 

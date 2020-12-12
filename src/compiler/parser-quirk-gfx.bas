@@ -354,11 +354,11 @@ private function hGetMode _
 				errReport( FB_ERRMSG_TYPEMISMATCH )
 				exit function
 			end if
-				if( symbIsProc( s ) = FALSE ) then
+			if( symbIsProc( s ) = FALSE ) then
 				errReport( FB_ERRMSG_TYPEMISMATCH )
 				exit function
 			end if
-			if( ( symbGetType( s ) <> FB_DATATYPE_UINT ) or _
+			if( ( symbGetType( s ) <> FB_DATATYPE_ULONG ) or _
 				( symbGetProcParams( s ) <> 3 ) ) then
 				errReport( FB_ERRMSG_TYPEMISMATCH )
 				exit function
@@ -374,8 +374,8 @@ private function hGetMode _
 				swap arg1, arg3
 			end if
 
-			if( ( symbGetType( arg1 ) <> FB_DATATYPE_UINT ) or _
-				( symbGetType( arg2 ) <> FB_DATATYPE_UINT ) or _
+			if( ( symbGetType( arg1 ) <> FB_DATATYPE_ULONG ) or _
+				( symbGetType( arg2 ) <> FB_DATATYPE_ULONG ) or _
 				( typeIsPtr( symbGetType( arg3 ) ) = FALSE ) or _
 				( arg1->param.mode <> FB_PARAMMODE_BYVAL ) or _
 				( arg2->param.mode <> FB_PARAMMODE_BYVAL ) or _

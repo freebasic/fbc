@@ -27,6 +27,7 @@ Version 1.08.0
 - fbcunit: update to version 1.0
 - sf.net #924: fbc: built-in for RGB() and RGBA() return ulong
 - gfxlib2: POINT returns ULONG
+- sf.net #927: PUT custom method expects function(ulong,ulong,any pr) as ulong callback function
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling

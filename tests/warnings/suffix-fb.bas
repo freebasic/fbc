@@ -950,7 +950,7 @@ startdata:
 
 #print ---- parser-quirk-gfx
 
-	declare function PQG_custom( byval as uinteger, byval as uinteger, byval as any ptr ) as uinteger
+	declare function PQG_custom( byval as ulong, byval as ulong, byval as any ptr ) as ulong
 	scope
 		WARN( 2 )
 		pset% step%(1, 2), 1
