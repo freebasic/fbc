@@ -204,6 +204,8 @@ Flip
 For
 Format
 Frac
+fb_MemCopyClear
+fb_MeMove
 Fre
 FreeFile
 Function
@@ -422,6 +424,7 @@ This
 ThreadCall
 ThreadCreate
 ThreadDetach
+ThreadSelf
 ThreadWait
 Time
 Timer
@@ -482,6 +485,9 @@ ZString
 __DATE__
 __DATE_ISO__
 __FB_64BIT__
+__FB_ARG_COUNT__
+__FB_ARG_LEFTOF__
+__FB_ARG_RIGHTOF__
 __FB_ARGC__
 __FB_ARGV__
 __FB_ARM__
@@ -496,11 +502,13 @@ __FB_DARWIN__
 __FB_DEBUG__
 __FB_DOS__
 __FB_ERR__
+__FB_EVAL__
 __FB_FPMODE__
 __FB_FPU__
 __FB_FREEBSD__
 __FB_GCC__
 __FB_GUI__
+__FB_JOIN__
 __FB_LANG__
 __FB_LINUX__
 __FB_MAIN__
@@ -519,9 +527,14 @@ __FB_OUT_EXE__
 __FB_OUT_LIB__
 __FB_OUT_OBJ__
 __FB_PCOS__
+__FB_QUOTE__
 __FB_SIGNATURE__
 __FB_SSE__
 __FB_UNIX__
+__FB_UNIQUEID__
+__FB_UNIQUEID_POP__
+__FB_UNIQUEID_PUSH__
+__FB_UNQUOTE__
 __FB_VECTORIZE__
 __FB_VERSION__
 __FB_VER_MAJOR__
