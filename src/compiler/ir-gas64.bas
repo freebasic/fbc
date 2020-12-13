@@ -543,6 +543,11 @@ private sub check_optim(byref code as string)
 				if instr(prevpart1,"[")<>0 then
 					asm_info("OPTIMIZATION 3-1")
 					''skip comment
+					if prevmov="movss" then
+						mov="movd"
+					else
+						mov="movq"
+					end if
 				else
 					asm_info("OPTIMIZATION 3-2")
 					mid(ctx.proc_txt,prevwpos)="#O3"
@@ -4179,6 +4184,8 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 		exit sub
 	end if
 
+	if typeisptr(v1dtype) then v1dtype=FB_DATATYPE_LONGINT
+	if typeisptr(v2dtype) then v2dtype=FB_DATATYPE_LONGINT
 
 	if v1->typ=IR_VREGTYPE_REG and v2->typ=IR_VREGTYPE_REG and (typeGetSize( v1dtype )  = typeGetSize( v2dtype )) and _
 	   (typeGetClass( v1dtype )=typeGetClass( v2dtype ) ) then
@@ -4222,7 +4229,6 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	reg_findfree(v1->reg)
 	regresult=reg_findreal(v1->reg)
 
-	if typeisptr(v1dtype) then v1dtype=FB_DATATYPE_INTEGER
 	if v1dtype=FB_DATATYPE_STRING then v1dtype=FB_DATATYPE_INTEGER
 	select case v1dtype
 		case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE,FB_DATATYPE_ENUM,FB_DATATYPE_STRUCT
@@ -4243,7 +4249,6 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 	''SOURCE
 
-	if typeisptr(v2dtype) then v2dtype=FB_DATATYPE_INTEGER
 	select case v2dtype
 		case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE,FB_DATATYPE_ENUM,FB_DATATYPE_STRUCT
 			prefix2="QWORD PTR "
@@ -4656,10 +4661,8 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 			case 1,2 ''ubyte/ushort
 				asm_code("movzx "+op1+", "+prefix2+op2)
 			case 4 ''ulong
-				'asm_code("movsxd "+op1+", "+prefix2+op2)
-				asm_code("mov eax, "+prefix2+op2)
-				asm_code("mov eax, eax",KNOOPTIM)  ''to zero the high 32bits
-				asm_code("mov "+op1+", rax")
+				asm_code("mov "+*regstrd(regresult)+", "+op2)
+				asm_code("mov "+*regstrd(regresult)+", "+*regstrd(regresult),KNOOPTIM)  ''to zero the high 32bits
 			case else
 				Asm_error("in conv something missing 02")
 		end select
