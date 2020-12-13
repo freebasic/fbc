@@ -15,7 +15,7 @@ Const bit_depth = 8
 
 '' function for returning a pixel color, represented as a string
 '' returns a the string in the appropriate format for the current bit depth
-Function paint_pixel( ByVal c As UInteger, ByVal bit_depth_ As Integer ) As String
+Function paint_pixel( ByVal c As ULong, ByVal bit_depth_ As Integer ) As String
 	
 	If bit_depth_ <= 8 Then '' 8-bit:
 		Function =  Chr( CUByte(c) )
@@ -37,7 +37,7 @@ End Function
 ScreenRes 320, 200, bit_depth
 
 '' declare variables for holding colors
-Dim As UInteger c, c1, c2, cb
+Dim As ULong c, c1, c2, cb
 
 '' declare string variable for holding the pattern used in Paint
 Dim As String paint_pattern = ""
