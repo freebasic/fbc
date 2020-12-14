@@ -238,7 +238,7 @@ int fb_hProcessMask
 {
 	char FixPart[128], FracPart[128], ExpPart[128], chSign = 0;
 	ssize_t LenFix, LenFrac, LenExp = 0, IndexFix, IndexFrac, IndexExp = 0;
-	ssize_t ExpValue, ExpAdjust = 0, NumSkipFix = 0, NumSkipExp = 0;
+	ssize_t ExpValue, ExpAdjust = 0, NumSkipFix = 0, NumSkipExp = 0, NonZero = 0;
 	int do_skip = FALSE, do_exp = FALSE, do_string = FALSE;
 	int did_sign = FALSE, did_exp = FALSE, did_hour = FALSE, did_thousandsep = FALSE;
 	int do_num_frac = FALSE, last_was_comma = FALSE, was_k_div = FALSE;
@@ -264,10 +264,13 @@ int fb_hProcessMask
 		LenOut = FB_STRSIZE( dst );
 	}
 
-	if( value != 0.0 )
+	if( value != 0.0 ) {
 		ExpValue = (int)floor( log10( fabs( value ) ) ) + 1;
-	else
+		NonZero = 1;
+	} else {
 		ExpValue = 0;
+		NonZero = 0;
+	}
 
 	/* value == 0.nnnnne+ExpValue */
 
@@ -282,8 +285,9 @@ int fb_hProcessMask
 
 			if( pInfo->has_exponent )
 			{
-				/* scale mantissa to fill fix digits */
-				ExpValue -= pInfo->num_digits_fix;
+				/* if non-zero, scale mantissa to fill fix digits */
+				if ( NonZero )
+					ExpValue -= pInfo->num_digits_fix;
 
 				if( ExpValue != 0 )
 				{
