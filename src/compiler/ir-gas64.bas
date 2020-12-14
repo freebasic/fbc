@@ -4187,6 +4187,21 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	if typeisptr(v1dtype) then v1dtype=FB_DATATYPE_LONGINT
 	if typeisptr(v2dtype) then v2dtype=FB_DATATYPE_LONGINT
 
+	if v1dtype=FB_DATATYPE_INTEGER then
+		v1dtype=FB_DATATYPE_LONGINT
+	elseif v1dtype=FB_DATATYPE_ENUM then
+		v1dtype=FB_DATATYPE_LONGINT
+	elseif v1dtype=FB_DATATYPE_UINT then
+		v1dtype=FB_DATATYPE_ULONGINT
+	end if
+	if v2dtype=FB_DATATYPE_INTEGER then
+		v2dtype=FB_DATATYPE_LONGINT
+	elseif v2dtype=FB_DATATYPE_ENUM then
+		v2dtype=FB_DATATYPE_LONGINT
+	elseif v2dtype=FB_DATATYPE_UINT then
+		v2dtype=FB_DATATYPE_ULONGINT
+	end if
+
 	if v1->typ=IR_VREGTYPE_REG and v2->typ=IR_VREGTYPE_REG and (typeGetSize( v1dtype )  = typeGetSize( v2dtype )) and _
 	   (typeGetClass( v1dtype )=typeGetClass( v2dtype ) ) then
 	   'asm_info("class 1="+str(typeGetClass( v1dtype ))+" "+"class 2="+str(typeGetClass( v2dtype )))
@@ -4195,31 +4210,27 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	   exit sub
 	end if
 
-	if (v1dtype=FB_DATATYPE_INTEGER and v2dtype=FB_DATATYPE_LONGINT) or (v2dtype=FB_DATATYPE_INTEGER and v1dtype=FB_DATATYPE_LONGINT) _
-		or (v1dtype=FB_DATATYPE_INTEGER and v2dtype=FB_DATATYPE_ENUM) or (v2dtype=FB_DATATYPE_INTEGER and v1dtype=FB_DATATYPE_ENUM) _
-		or (v1dtype=FB_DATATYPE_UINT and v2dtype=FB_DATATYPE_ENUM) or (v2dtype=FB_DATATYPE_UINT and v1dtype=FB_DATATYPE_ENUM) _
-		Or (v1dtype=FB_DATATYPE_UINT and v2dtype=FB_DATATYPE_ULONGINT) Or (v2dtype=FB_DATATYPE_UINT and v1dtype=FB_DATATYPE_ULONGINT) then
+	if (v1dtype=FB_DATATYPE_LONGINT and v2dtype=FB_DATATYPE_LONGINT) or (v1dtype=FB_DATATYPE_ULONGINT and v2dtype=FB_DATATYPE_ULONGINT) then
 		asm_info("no convert as exactly same datatype")
 		*v1=*v2
 		exit sub
 	end if
 
-	'' 2019/11/20 prbm with for/next
-	if (v1dtype=FB_DATATYPE_INTEGER and v2dtype=FB_DATATYPE_UINT) Or (v2dtype=FB_DATATYPE_INTEGER and v1dtype=FB_DATATYPE_UINT) _
-		Or (v1dtype=FB_DATATYPE_LONGINT and v2dtype=FB_DATATYPE_UINT) Or (v2dtype=FB_DATATYPE_LONGINT and v1dtype=FB_DATATYPE_UINT) then
+	'' prbm with for/next
+	if (v1dtype=FB_DATATYPE_LONGINT and v2dtype=FB_DATATYPE_ULONGINT) Or (v2dtype=FB_DATATYPE_LONGINT and v1dtype=FB_DATATYPE_ULONGINT) then
 		asm_info("no convert as INTEGER/UINT")
 		v1old=v1->dtype
 		*v1=*v2
 		v1->dtype=v1old
 		exit sub
 	end if
-	'' 2019/11/24
+
 	if (v1dtype=FB_DATATYPE_STRING and v2dtype=FB_DATATYPE_STRUCT) then
 		asm_info("no convert as STRUCT -> STRING")
 		*v1=*v2
 		exit sub
 	end if
-	'' 2019/11/24
+
 	if (v1dtype=FB_DATATYPE_STRUCT and v2dtype=FB_DATATYPE_STRUCT) then
 		asm_info("no convert as STRUCT -> STRUCT")
 		*v1=*v2
@@ -4229,9 +4240,9 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	reg_findfree(v1->reg)
 	regresult=reg_findreal(v1->reg)
 
-	if v1dtype=FB_DATATYPE_STRING then v1dtype=FB_DATATYPE_INTEGER
+	if v1dtype=FB_DATATYPE_STRING then v1dtype=FB_DATATYPE_LONGINT
 	select case v1dtype
-		case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE,FB_DATATYPE_ENUM,FB_DATATYPE_STRUCT
+		case FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE,FB_DATATYPE_STRUCT
 			prefix1="QWORD PTR "
 			op1=*regstrq(regresult)
 		case FB_DATATYPE_LONG,FB_DATATYPE_ULONG,FB_DATATYPE_SINGLE
@@ -4250,7 +4261,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	''SOURCE
 
 	select case v2dtype
-		case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE,FB_DATATYPE_ENUM,FB_DATATYPE_STRUCT
+		case FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE,FB_DATATYPE_STRUCT
 			prefix2="QWORD PTR "
 		case FB_DATATYPE_LONG,FB_DATATYPE_ULONG,FB_DATATYPE_SINGLE
 			prefix2="DWORD PTR "
@@ -4280,9 +4291,9 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 		case IR_VREGTYPE_REG
 			prefix2=""
 			srcreg=reg_findreal(v2->reg)
-			if typeisptr(v2dtype) then v2dtype=FB_DATATYPE_INTEGER
+			if typeisptr(v2dtype) then v2dtype=FB_DATATYPE_LONGINT
 			select case v2dtype
-				case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE,FB_DATATYPE_ENUM
+				case FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE
 					op2=*regstrq(srcreg)
 				case FB_DATATYPE_LONG,FB_DATATYPE_ULONG,FB_DATATYPE_SINGLE
 					op2=*regstrd(srcreg)
@@ -4351,7 +4362,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 			asm_info("int to float")
 			asm_code("pxor xmm0,xmm0")
 			select case v2dtype
-				case FB_DATATYPE_UINT,FB_DATATYPE_ULONGINT
+				case FB_DATATYPE_ULONGINT
 					if v1dtype=FB_DATATYPE_DOUBLE then
 						asm_code("mov rax, "+op2)
 						asm_code("test	rax, rax")
@@ -4397,7 +4408,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 						asm_code(lname2+":")
 						asm_code("movd "+op1+", xmm0")
 					end if
-				case FB_DATATYPE_INTEGER,FB_DATATYPE_LONGINT ''todo regroup ?
+				case FB_DATATYPE_LONGINT''todo regroup ?
 					if v1dtype=FB_DATATYPE_DOUBLE then
 						asm_code("cvtsi2sd xmm0, "+prefix2+op2)
 						asm_code("movq "+op1+", xmm0")
@@ -4445,7 +4456,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 		'' double to int
 		if v2dtype=FB_DATATYPE_DOUBLE then
 
-			if v1dtype=FB_DATATYPE_UINT Or v1dtype=FB_DATATYPE_ULONGINT then
+			if v1dtype=FB_DATATYPE_ULONGINT then
 				asm_code("mov rax, 4890909195324358656")
 				asm_code("movq xmm2, rax")
 				asm_code("mov rax, "+op2)
@@ -4473,7 +4484,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 				asm_code(lname2+":")
 				asm_code("mov "+op1+", rax")
 
-			elseif v1dtype=FB_DATATYPE_INTEGER Or v1dtype=FB_DATATYPE_LONGINT or v1dtype=FB_DATATYPE_ENUM _
+			elseif v1dtype=FB_DATATYPE_LONGINT _
 				Or  v1dtype=FB_DATATYPE_LONG Or v1dtype=FB_DATATYPE_ULONG _
 				Or  v1dtype=FB_DATATYPE_SHORT Or v1dtype=FB_DATATYPE_USHORT _
 				Or  v1dtype=FB_DATATYPE_BYTE Or v1dtype=FB_DATATYPE_UBYTE _
@@ -4487,7 +4498,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 				hEmitRoundFloat(FB_DATATYPE_DOUBLE)
 
-				if v1dtype=FB_DATATYPE_INTEGER Or v1dtype=FB_DATATYPE_LONGINT  or v1dtype=FB_DATATYPE_ENUM then
+				if v1dtype=FB_DATATYPE_LONGINT then
 					asm_code("mov "+op1+", rax")
 				elseif v1dtype=FB_DATATYPE_LONG Or v1dtype=FB_DATATYPE_ULONG then
 					asm_code("mov "+op1+", eax")
@@ -4507,7 +4518,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 			end if
 		else
 			 ''single to int
-			if v1dtype=FB_DATATYPE_UINT Or v1dtype=FB_DATATYPE_ULONGINT then
+			if v1dtype=FB_DATATYPE_ULONGINT then
 				asm_code("mov rax, 1593835520")
 				asm_code("movq xmm2, rax")
 				asm_code("mov eax, "+op2)
@@ -4535,7 +4546,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 				asm_code(lname2+":")
 				asm_code("mov "+op1+", rax")
 
-			elseif v1dtype=FB_DATATYPE_INTEGER Or v1dtype=FB_DATATYPE_LONGINT or v1dtype=FB_DATATYPE_ENUM _
+			elseif v1dtype=FB_DATATYPE_LONGINT _
 				Or  v1dtype=FB_DATATYPE_LONG Or v1dtype=FB_DATATYPE_ULONG _
 				Or  v1dtype=FB_DATATYPE_SHORT Or v1dtype=FB_DATATYPE_USHORT _
 				Or  v1dtype=FB_DATATYPE_BYTE Or v1dtype=FB_DATATYPE_UBYTE _
@@ -4549,7 +4560,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 				hEmitRoundFloat(FB_DATATYPE_SINGLE)
 
-				if v1dtype=FB_DATATYPE_INTEGER Or v1dtype=FB_DATATYPE_LONGINT or v1dtype=FB_DATATYPE_ENUM then
+				if v1dtype=FB_DATATYPE_LONGINT then
 					asm_code("mov "+op1+", rax")
 				elseif v1dtype=FB_DATATYPE_LONG Or v1dtype=FB_DATATYPE_ULONG then
 					asm_code("mov "+op1+", eax")
@@ -4574,7 +4585,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	if v1dtype=FB_DATATYPE_STRUCT or v2dtype=FB_DATATYPE_STRUCT then ''2019/11/21
 		if v2dtype=FB_DATATYPE_STRUCT then
 			asm_code("lea "+op1+", "+op2)
-			if v1dtype=FB_DATATYPE_INTEGER Or v1dtype=FB_DATATYPE_LONGINT then
+			if v1dtype=FB_DATATYPE_LONGINT then
 				asm_code("mov "+op1+", QWORD PTR ["+op1+"]") ''op1 must be a register
 			elseif v1dtype<>FB_DATATYPE_STRUCT then
 				asm_error("Converting struct to datatype not handled 01")
@@ -4621,7 +4632,6 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	if( typeGetSize( v1dtype ) <= typeGetSize( v2dtype ) ) then
 		if v2->typ=IR_VREGTYPE_REG then ''changing register size as source > destination
 			prefix1=""
-			if typeisptr(v1dtype) then v1dtype=FB_DATATYPE_INTEGER
 			select case v1dtype
 				case FB_DATATYPE_LONG,FB_DATATYPE_ULONG,FB_DATATYPE_SINGLE
 					op2=*regstrd(srcreg)
@@ -4631,7 +4641,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 					op2=*regstrb(srcreg)
 				case FB_DATATYPE_BOOLEAN
 					''do nothing as comparison is on the whole value
-				case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE,FB_DATATYPE_ENUM
+				case FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE
 					 ''should not be possible cases
 					op2=*regstrq(srcreg)
 				case else
