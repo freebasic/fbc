@@ -95,7 +95,16 @@ tests_dt:
     data "Jun 1, 2005",       "yy-M-d",           "05-6-1"
     data "Dec 1, 2005",       "yy-M-d",           "05-12-1"
     data "Dec 10, 2005",      "yy-M-d",           "05-12-10"
+
+    data "01:02:03",          "h:m:s",            "1:2:3"
+    data "01:02:03",          "h:n:s",            "1:2:3"
+    data "01:02:03",          "hh:mm:ss",         "01:02:03"
+    data "01:02:03",          "hh:nn:ss",         "01:02:03"
+    data "13:14:15",          "h:m:s",            "13:14:15"
+    data "13:14:15",          "h:n:s",            "13:14:15"
+    data "13:14:15",          "hh:mm:ss",         "13:14:15"
     data "13:14:15",          "hh:nn:ss",         "13:14:15"
+
     data "13:14:15",          "nn:ss",            "14:15"
     data "13:14:15",          "hh:mm:ss",         "13:14:15"
     data "13:14:15",          "hh:mm:ss AM/PM",   "01:14:15 PM"
@@ -104,7 +113,7 @@ tests_dt:
     data "01:14:15",          "hh:mm:ss A/p",     "01:14:15 A"
     data "00:14:15",          "hh:mm:ss A/p",     "12:14:15 A"
     data "12:14:15",          "hh:mm:ss A/p",     "12:14:15 p"
-    data "Aug. 9, 2005",      "ddd dddd ddddd",   "Tue Tuesday 08/09/2005"
+    data "Aug. 9, 2005",      "d dd ddd dddd ddddd",   "9 09 Tue Tuesday 08/09/2005"
     data "."
 
 declare sub fb_I18nSet alias "fb_I18nSet"( byval on_off as long )
