@@ -282,33 +282,8 @@ int fb_hProcessMask
 
 			if( pInfo->has_exponent )
 			{
-				/* exponent too big? scale (up or down) */
-				if( ExpValue <= 0 )
-				{
-					/* less than 1.0: scale mantissa to fill fix digits */
-					ExpValue -= pInfo->num_digits_fix;
-				}
-				else
-				{
-					/* 1.0 or greater: */
-					if( pInfo->num_digits_frac > 0 )
-					{
-						/* if fraction digits, scale mantissa to fill fix digits as much as possible while keeping exponent nonnegative */
-						if( ExpValue > pInfo->num_digits_fix )
-							ExpValue -= pInfo->num_digits_fix;
-						else
-							ExpValue = 0;
-					}
-					else
-					{
-						/* if no fraction digits, scale mantissa to fill up to 19 digits while keeping exponent nonnegative */
-						if( ExpValue > FB_MAXFIXLEN )
-							ExpValue -= FB_MAXFIXLEN;
-						else
-							ExpValue = 0;
-						/* BUG: an anomaly I can't explain is that when num_digits_fix == 18, ExpValue is incremented by 1. */
-					}
-				}
+				/* scale mantissa to fill fix digits */
+				ExpValue -= pInfo->num_digits_fix;
 
 				if( ExpValue != 0 )
 				{
@@ -321,6 +296,11 @@ int fb_hProcessMask
 						value *= pow( 5.0, -ExpValue );
 						value *= pow( 2.0, -ExpValue );
 					}
+				}
+
+				while (value >= 18446744073709551616.0) {
+					value /= 10.0;
+					ExpValue += 1;
 				}
 
 				LenExp = sprintf( ExpPart, "%d", (int)ExpValue );
