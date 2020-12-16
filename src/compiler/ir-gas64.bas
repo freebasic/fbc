@@ -297,8 +297,6 @@ type EDBGCTX
 end type
 
 ''=================== declares ==============================================
-declare function hemittype(byval dtype as integer,byval subtype as FBSYMBOL Ptr) as string
-declare sub hemitstruct( byval s as FBSYMBOL ptr )
 declare sub _emitdbg(byval op as integer,byval proc as FBSYMBOL ptr,byval lnum as Integer,ByVal filename as zstring Ptr = 0)
 declare sub check_optim(byref code as string)
 declare sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
@@ -392,7 +390,7 @@ private sub check_optim(byref code as string)
 	dim as long poschar1,poschar2,writepos
 
 	if len(code)=0 then
-		prevpart1="":prevpart2="":prevmov="":flag=KUSE_MOV ''reinit
+		prevpart1="":prevpart2="":prevmov="":flag=KUSE_MOV ''reinit statics
 		exit sub
 	end if
 
@@ -1263,93 +1261,7 @@ private sub _emitdbg(byval op as integer,byval proc as FBSYMBOL ptr,byval lnum a
 
 end sub
 ''================= end of proc for debugging =====================
-
-private sub hemitudt( byval sym as FBSYMBOL ptr )
-
-	if( sym = NULL ) then
-		return
-	end if
-
-	if( symbGetIsEmitted( sym ) ) then
-		return
-	end if
-
-	var oldsection = ctx.section
-	if( symbIsLocal( sym ) = FALSE ) then
-		ctx.section = SECTION_FOOT
-	end if
-
-	select case as const( symbGetClass( sym ) )
-		case FB_SYMBCLASS_ENUM
-			symbSetIsEmitted( sym )
-			'' no subtype, to avoid infinite recursion
-			asm_info( *symbGetMangledName( sym ) + " = type " + hEmitType( FB_DATATYPE_ENUM, NULL ) )
-
-		case FB_SYMBCLASS_STRUCT
-			hEmitStruct( sym )
-			hGetDataType_asm64(sym) ''write stabs for the UDT
-	end select
-
-	ctx.section = oldsection
-end sub
 #if __FB_DEBUG__ <> 0
-private function hemittype _
-	( _
-	byval dtype as integer, _
-	byval subtype as FBSYMBOL ptr _
-	) as string
-
-	dim as string s
-	dim as integer ptrcount = any
-
-	ptrcount = typeGetPtrCnt( dtype )
-	dtype = typeGetDtOnly( dtype )
-
-	select case as const( dtype )
-		case FB_DATATYPE_VOID
-			'' "void*" isn't allowed in L L V M IR, "i8*" must be used instead,
-			'' that's why FB_DATATYPE_VOID is mapped to "i8" in the above
-			'' table. "void" can only be used for subs.
-			if( ptrcount = 0 ) then
-				s = "[void]"
-			else
-				s = "[void ptr]"
-			end if
-
-		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
-			if( subtype ) then
-				hEmitUDT( subtype )
-				s = *symbGetMangledName( subtype )
-			elseif( dtype = FB_DATATYPE_ENUM ) then
-				s = "[enum=integer]"
-			else
-				s = "[void]"
-			end if
-
-		case FB_DATATYPE_FUNCTION
-			assert( ptrcount > 0 )
-			ptrcount -= 1
-			s="datatype function ptr ="+*symbGetMangledName(subtype)+ "*"
-		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-			'' Emit ubyte instead of char,
-			'' and ubyte/ushort/uinteger instead of wchar_t
-			s = "[ubyte or ushort or uinteger]"
-
-		case FB_DATATYPE_FIXSTR
-			'' Ditto (but typeGetRemapType() returns FB_DATATYPE_FIXSTR,
-			'' so do it manually)
-			s = "[ubyte]"
-
-		case else
-			s = typedumpToStr(dtype,0)
-	end select
-
-	if( ptrcount > 0 ) then
-		s += string( ptrcount, "*" )
-	end if
-
-	function = s
-end function
 private function vregdumpfull( byval v as IRVREG ptr ) as string
 	return vregDumpToStr(v)+iif(v<>0," symbdump="+symbdumpToStr(v->sym),"")
 end function
@@ -1962,9 +1874,8 @@ end sub
 			hidden = proc->proc.ext->res
 			asm_info("hidden")
 			if hidden<>0 then
-				ln += hEmitType( typeAddrOf( symbGetType( hidden ) ), symbGetSubtype( hidden ) )
-				ln+=" / "+typedumpToStr( typeAddrOf( symbGetType( hidden ) ), symbGetSubtype( hidden ))
-				ln += " " + *symbGetMangledName( hidden ) + "$"
+				ln+=" "+typedumpToStr( typeAddrOf( symbGetType( hidden ) ), symbGetSubtype( hidden ))
+				ln += " " + *symbGetMangledName( hidden )
 			end if
 
 			if( symbGetProcParams( proc ) > 0 ) then
@@ -2161,85 +2072,6 @@ private sub hmaybeemitglobalvar( byval sym as FBSYMBOL ptr )
 		hEmitVariable( sym )
 	end if
 	ctx.indent -=1
-end sub
-
-private sub hemitstruct( byval sym as FBSYMBOL ptr )
-	dim as FBSYMBOL ptr fld = any
-
-	if( symbGetIsBeingEmitted( sym ) ) then
-		return
-	end if
-	asm_info("length udt="+Str(sym->lgt)+" natalign="+Str(sym->udt.natalign)+" unpadlgt="+Str(sym->udt.unpadlgt))
-	symbSetIsBeingEmitted( sym )
-
-	'' Check every field for non-emitted subtypes
-	fld = symbUdtGetFirstField( sym )
-	while( fld )
-		hEmitUDT( symbGetSubtype( fld ) )
-		fld = symbUdtGetnextField( fld )
-	wend
-
-	'' Was it emitted in the mean time? (maybe one of the fields did that)
-	if( symbGetIsEmitted( sym ) ) then
-		return
-	end if
-
-	'' We'll emit it now.
-	symbSetIsEmitted( sym )
-
-	select case( symbGetClass( sym ) )
-		case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD  ''ou utiliser symbisarray
-			'' Fixed-size array vars/fields
-			Var nbelements=1
-			dim as integer length=any
-			for i as integer = symbGetArrayDimensions( sym ) - 1 to 0 step -1
-				nbelements *= (symbArrayUbound( sym, i ) - symbArrayLbound( sym, i ) + 1)
-			next
-			length=sym->lgt*nbelements
-			asm_info("stk="+Str(ctx.stk))
-			ctx.stk=(length+ctx.stk+sym->udt.natalign-1) And (Not(sym->udt.natalign-1))
-			asm_info("stk2="+Str(ctx.stk))
-			sym->ofs=-ctx.stk
-			asm_info("structure total size="+Str(length))
-	end select
-
-
-	dim as string ln
-
-	'' UDT name
-	if( symbGetName( sym ) ) then
-		ln += *symbGetMangledName( sym )
-	else
-		ln += "%" + *symbUniqueId( )
-	end if
-
-	var packed = (sym->udt.align = 1)
-
-	ln += " = type "
-	if( packed ) then ln += "<"
-	ln += "{ "
-
-	'' Write out the elements
-	fld = symbUdtGetFirstField( sym )
-	while( fld )
-
-		'' Don't emit fake dynamic array fields
-		if( symbIsDynamic( fld ) = FALSE ) then
-			'ln += hEmitSymType( fld )
-		end if
-
-		fld = symbUdtGetnextField( fld )
-		if( fld ) then
-			ln += ", "
-		end if
-	wend
-
-	'' Close UDT body
-	ln += " }"
-	if( packed ) then ln += ">"
-
-	asm_info( ln )
-	symbResetIsBeingEmitted( sym )
 end sub
 private sub no_roundsd(byval size as zstring ptr)
 	''when the CPU doesn't provide roundsd/roundss (needs see41)
@@ -4204,7 +4036,6 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 	if v1->typ=IR_VREGTYPE_REG and v2->typ=IR_VREGTYPE_REG and (typeGetSize( v1dtype )  = typeGetSize( v2dtype )) and _
 	   (typeGetClass( v1dtype )=typeGetClass( v2dtype ) ) then
-	   'asm_info("class 1="+str(typeGetClass( v1dtype ))+" "+"class 2="+str(typeGetClass( v2dtype )))
 	   asm_info("no move as exactly same size, vreg changed"+Str(v1->reg)+" becomes "+Str(v2->reg))
 	   v1->reg=v2->reg
 	   exit sub
@@ -4679,7 +4510,6 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	end if
 
 end sub
-
 private sub emitStoreStruct(byval v1 as IRVREG ptr, byval v2 as IRVREG ptr,byref op1 as string,byref op3 as string)
 	dim as string dest
 	dim as integer lgtv1=v1->sym->lgt ,ofsv2=v2->ofs
@@ -6449,7 +6279,7 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 	ctx.proccalling=false
 
 	asm_info("=============================================================================")
-	asm_info("===== Proc begin : "+ *symbGetMangledName( proc )+" / "+*symbGetMangledName( proc )+" =====")
+	asm_info("===== Proc begin : "+ *symbGetMangledName( proc )+" =====")
 	asm_info("=============================================================================")
 	ctx.indent+=1
 
@@ -6608,9 +6438,7 @@ private sub _emitvariniofs(byval sym as FBSYMBOL ptr,byval rhs as FBSYMBOL ptr,b
 	var ptrdtype = typeAddrOf( symbGetType( rhs ) )
 
 	asm_info("symdtype="+typedumpToStr(symdtype,0))
-	asm_info("symtype="+hEmitType( symdtype, sym->subtype ))
 	asm_info("ptrdtype="+typedumpToStr(ptrdtype,0))
-	asm_info("ptrtype="+hEmitType( ptrdtype, rhs->subtype ))
 
 	if( ofs <> 0 ) then
 		asm_info("_emitVarIniOfs s="+s+" if ofs <>0 should be added ")
