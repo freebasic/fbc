@@ -93,6 +93,8 @@ Version 1.08.0
 - fbc: internal cThreadCallFunc() was using wrong function to get the procedures return type
 - fbc: read objinfo for elf format files on arm32 and arm64 (aarch64) to allow automatic options and linking of libraries
 - fbc: name mangling for cva_list name mangling with arm32 and arm64 (aarch64) targets
+- rtlib: FORMAT() should always use all the fix digits in exponential form, e.g. format(1234, "###e+#") = "123e+1"
+- github #92: FORMAT() should always have an exponent of 0 for zero.
 
 
 Version 1.07.0
