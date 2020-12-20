@@ -6,7 +6,7 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPutgraphics
 '' --------
 
-Declare Function checkered_blend( ByVal src As UInteger, ByVal dest As UInteger, ByVal param As Any Ptr ) As UInteger
+Declare Function checkered_blend( ByVal src As ULong, ByVal dest As ULong, ByVal param As Any Ptr ) As ULong
 
    Screen 14, 32                                   '' set 320*240*32 gfx mode
    
@@ -55,9 +55,9 @@ Declare Function checkered_blend( ByVal src As UInteger, ByVal dest As UInteger,
    Sleep : End 0
 
 '' custom blender function: chequered put
-Function checkered_blend( ByVal src As UInteger, ByVal dest As UInteger, ByVal param As Any Ptr ) As UInteger
+Function checkered_blend( ByVal src As ULong, ByVal dest As ULong, ByVal param As Any Ptr ) As ULong
    Dim As Integer Ptr counter
-   Dim As UInteger pixel
+   Dim As ULong pixel
    
    counter = Cast(Integer Ptr, param)
    pixel = IIf(((*counter And 4) Shr 2) Xor ((*counter And 128) Shr 7), src, dest)

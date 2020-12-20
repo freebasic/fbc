@@ -6,7 +6,7 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCustomgfx
 '' --------
 
-Function dither ( ByVal source_pixel As UInteger, ByVal destination_pixel As UInteger, ByVal parameter As Any Ptr ) As UInteger
+Function dither ( ByVal source_pixel As ULong, ByVal destination_pixel As ULong, ByVal parameter As Any Ptr ) As ULong
 	
 	''either returns the source pixel or the destination pixel, depending on the outcome of rnd
 	

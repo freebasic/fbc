@@ -6,7 +6,7 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgTransGfx
 '' --------
 
-Function trans32 ( ByVal source_pixel As UInteger, ByVal destination_pixel As UInteger, ByVal parameter As Any Ptr ) As UInteger
+Function trans32 ( ByVal source_pixel As ULong, ByVal destination_pixel As ULong, ByVal parameter As Any Ptr ) As ULong
 	'' returns the source pixel
 	'' unless it is &hff00ff (magenta), then return the destination pixel
 	If (source_pixel And &hffffff) <> &hff00ff Then

@@ -43,7 +43,7 @@ sleep
 {{image class="center" title="Put Trans example output" url="/images/trans.png"}}
 
 {{fbdoc item="filename" value="examples/manual/gfx/put-trans-custom.bas"}}%%(freebasic)
-function trans32 ( byval source_pixel as uinteger, byval destination_pixel as uinteger, byval parameter as any ptr ) as uinteger
+function trans32 ( byval source_pixel as ulong, byval destination_pixel as ulong, byval parameter as any ptr ) as ulong
 	'' returns the source pixel
 	'' unless it is &hff00ff (magenta), then return the destination pixel
 	if (source_pixel and &hffffff) <> &hff00ff then

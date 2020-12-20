@@ -62,7 +62,7 @@ Copies an image on to another image or screen
 	**Custom Blend Function**
 		The ##CUSTOM## method uses a user-defined function to calculate the final pixel values to be drawn to the destination buffer. This function will be called once for every pixel of the source image, and will receive the source and destination pixel values, and a data pointer passed by the ##**Put**## function. The pixel value returned will be the value used to draw to the destination buffer. The function has the form:
 		
-		##[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] //identifier// ( [[KeyPgByval|byval]] //source_pixel// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]], [[KeyPgByval|byval]] //destination_pixel// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]], [[KeyPgByval|byval]] //parameter// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] ) [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]]##
+		##[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] //identifier// ( [[KeyPgByval|byval]] //source_pixel// [[KeyPgAs|as]] [[KeyPgUlong|ulong]], [[KeyPgByval|byval]] //destination_pixel// [[KeyPgAs|as]] [[KeyPgUlong|ulong]], [[KeyPgByval|byval]] //parameter// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] ) [[KeyPgAs|as]] [[KeyPgUlong|ulong]]##
 			##//identifier//## is the name of the function. Can be anything.
 			##//source_pixel//## is the current pixel value of the source image.
 			##//destination_pixel//## is the current pixel value of the destination image.
@@ -96,7 +96,7 @@ sleep
 
 	The following example shows how to allocate memory for an image, draw that image using various methods, including a custom blender, and free the memory for the image:
 	{{fbdoc item="filename" value="examples/manual/gfx/put-all.bas"}}%%(freebasic)
-declare function checkered_blend( byval src as uinteger, byval dest as uinteger, byval param as any ptr ) as uinteger
+declare function checkered_blend( byval src as ulong, byval dest as ulong, byval param as any ptr ) as ulong
 
    screen 14, 32                                   '' set 320*240*32 gfx mode
    
@@ -145,9 +145,9 @@ declare function checkered_blend( byval src as uinteger, byval dest as uinteger,
    sleep : end 0
 
 '' custom blender function: chequered put
-function checkered_blend( byval src as uinteger, byval dest as uinteger, byval param as any ptr ) as uinteger
+function checkered_blend( byval src as ulong, byval dest as ulong, byval param as any ptr ) as ulong
    dim as integer ptr counter
-   dim as uinteger pixel
+   dim as ulong pixel
    
    counter = cast(integer ptr, param)
    pixel = iif(((*counter and 4) shr 2) xor ((*counter and 128) shr 7), src, dest)

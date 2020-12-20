@@ -18,10 +18,10 @@ Parameter to the ##[[KeyPgPutgraphics|Put]]## graphics statement which selects a
 	The ##Custom## method uses a user-defined function to calculate the final pixel values to be drawn to the destination buffer. This function will be called once for every pixel of the source image, and will receive the source and destination pixel values, and a data pointer passed by the ##[[KeyPgPutgraphics|Put]]## function. The pixel value returned will be the value used to draw to the destination buffer. The function has the form:
 	
 	##[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] //identifier// ( _
-		[[KeyPgByval|byval]] //source_pixel// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]], _
-		[[KeyPgByval|byval]] //destination_pixel// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]], _
+		[[KeyPgByval|byval]] //source_pixel// [[KeyPgAs|as]] [[KeyPgUlong|ulong]], _
+		[[KeyPgByval|byval]] //destination_pixel// [[KeyPgAs|as]] [[KeyPgUlong|ulong]], _
 		[[KeyPgByval|byval]] //parameter// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] _
-		) [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]]##
+		) [[KeyPgAs|as]] [[KeyPgUlong|ulong]]##
 		
 	##//identifier//## is the name of the function.
 	##//source_pixel//## is the current pixel value of the source image.
@@ -30,7 +30,7 @@ Parameter to the ##[[KeyPgPutgraphics|Put]]## graphics statement which selects a
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/gfx/custom.bas"}}%%(freebasic)
-function dither ( byval source_pixel as uinteger, byval destination_pixel as uinteger, byval parameter as any ptr ) as uinteger
+function dither ( byval source_pixel as ulong, byval destination_pixel as ulong, byval parameter as any ptr ) as ulong
 	
 	''either returns the source pixel or the destination pixel, depending on the outcome of rnd
 	
