@@ -1,6 +1,6 @@
 
     FreeBASIC - A multi-platform BASIC Compiler
-    Copyright (C) 2004-2019 The FreeBASIC development team.
+    Copyright (C) 2004-2020 The FreeBASIC development team.
 
     Official site:      https://freebasic.net/
     Forum:              https://freebasic.net/forum/
@@ -32,13 +32,22 @@
     such as makefiles. fbc itself is not a graphical code editor or IDE!
 
     Win32 (similar for Win64):
-      Download and run the latest FreeBASIC-x.xx.x-win32.exe installer, or
-      download and extract the latest FreeBASIC-x.xx.x-win32.zip.
+      Download and extract latest FreeBASIC-x.xx.x-win32.zip or
+      download and extract latest FreeBASIC-x.xx.x-win64.zip.
 
       Now you can use fbc.exe from the installation directory to compile FB
       programs (*.bas files) into executables (*.exe files). Open a command
       prompt (cmd.exe) and run fbc.exe from there, for example:
-        1. Click Start -> FreeBASIC -> Open console
+        1. In the opened command prompt, type in the following command and
+           press ENTER:
+             > fbc.exe examples\hello.bas
+        2. This should have created examples\hello.exe in the FreeBASIC
+           installation directory. You can run it by entering:
+             > examples\hello.exe
+
+      A FreeBASIC-x.xx.x-win32.exe installer is also available but should
+      only be installed on win32 platforms.
+        1. Click Start -> FreeBASIC -> Open console (installer only)
         2. In the opened command prompt, type in the following command and
            press ENTER:
              > fbc.exe examples\hello.bas
@@ -48,6 +57,7 @@
 
       Optionally, you can install a text editor or IDE which will invoke fbc.exe
       for you, for example:
+        WinFBE https://github.com/PaulSquires/WinFBE
         FBIDE: https://fbide.freebasic.net/
         FBEdit: http://radasm.cherrytree.at/fbedit/
 
@@ -144,16 +154,21 @@
     Project members:
     - Andre Victor T. Vicentini (av1ctor[at]yahoo.com.br)
         Founder, main compiler developer, author of many parts of the runtime,
-        FB headers (FBSWIG)
+        lead developer 2004 to 2010
+        FB headers (FBSWIG) & emscripten port
+        too many additions and improvements to list
     - Angelo Mottola (a.mottola[at]libero.it)
         Author of the FB graphics library, built-in threads, thread-safe
         runtime, ports I/O, dynamic library loading, Linux port.
     - Bryan Stoeberl (b_stoeberl[at]yahoo.com)
         SSE/SSE2 floating point math, AST vectorization.
     - Daniel C. Klauer (daniel.c.klauer[at]web.de)
-        FB releases since 0.21, C & LLVM backends, 64bit port,
+        lead developer 2010 to 2017
+        automatic header / bindings generation (fbfrog)
+        FB releases 0.21 to 1.05.0, C & LLVM backends, 64bit port,
         dynamic arrays in UDTs, virtual methods, preprocessor-only mode,
-        miscellaneous fixes and improvements.
+        many fixes and improvements.to compiler, rtlib & gfxlib2
+        too many additions and improvements to list
     - Daniel R. Verkamp (i_am_drv[at]yahoo.com)
         DOS, XBox, Darwin, *BSD ports, DLL and static library automation,
         VB-compatible runtime functions, compiler optimizations,
@@ -161,9 +176,11 @@
     - Ebben Feagan (sir_mud[at]users.sourceforge.net)
         FB headers, C emitter
     - Jeff Marshall (coder[at]execulink.com)
-        FB releases since 0.17, FB documentation (wiki maintenance, fbdocs
-        offline-docs generator), Gosub/Return, profiling support, dialect
-        specifics, DOS serial driver, miscellaneous fixes and improvements.
+        FB releases 0.17 to 0.20, and later 1.06.0 and up
+        FB documentation (wiki maintenance, fbdocs offline-docs generator),
+        Gosub/Return, profiling support, dialect specifics, DOS serial driver,
+        miscellaneous fixes and improvements.to compiler, rtlib & gfxlib2
+        lead developer since 2017
     - Mark Junker (mjscod[at]gmx.de)
         Author of huge parts of the runtime (printing support, date/time
         functions, SCR/LPTx/COM/console/keyboard I/O), Cygwin port,
@@ -171,6 +188,9 @@
     - Matthew Fearnley (matthew.w.fearnley[at]gmail.com)
         Print Using & Co, ImageInfo, and others, dialect specifics,
         optimization improvements in the compiler, many fixes and improvements.
+        rtlib & gfxlib2 fixes and improvements
+        documentation and examples
+        forum administrator and moderator since forever
     - Ruben Rodriguez (rubentbstk[at]gmail.com)
         Var keyword, const specifier, placement new, operator overloading and
         other OOP-related work, C BFD wrapper, many fixes and improvements.
@@ -183,8 +203,15 @@
         gfxlib2 patches, e.g. image buffer alignment
     - Abdullah Ali (voodooattack[at]hotmail.com)
         Windows NT DDK headers & examples
+    - adeyblue
+        Direct2D windows driver
+        run time and gfx library improvements and fixes
     - AGS
         gdbm, zlib, Mini-XML, PCRE headers
+    - Angelo Rosina (angros47[at]gmail.com)
+        gfxlib2 extensions for OpenGL 2D rendering
+        integration of threading and dynamic libraries for DOS port (by monochromator)
+        integration of emscripten branch and improvements
     - Claudio Tinivella (tinycla[at]yahoo.it)
         Gtk tutorials
     - Chris Davies (c.g.davies[at]gmail.com)
@@ -205,6 +232,10 @@
         Win32 API sql/obdc headers
     - fsw (fsw.fb[at]comcast.net)
         Win32 API headers, Gtk/Glade/wx-c examples
+    - fxm
+        documentation writer and manager for many years
+        detailed technical articles, bug tracking and investigations
+        documentation forum moderator
     - Garvan O'Keeffe (sisophon2001[at]yahoo.com)
         FB ports of many NeHe OpenGL lessons, PDFlib examples
     - Hans L. Nemeschkal (Hans.Leo.Nemeschkal[at]univie.ac.at)
@@ -215,6 +246,12 @@
         Linux serial devices support
     - Laanan Fisher (laananfisher[at]gmail.com)
         FB test suite using CUnit
+    - Laurent Gras / SARG (debug[at]aliceadsl.fr)
+        gas64 backend emitter
+        improvements and fixes for stabs debugging
+        fbdebugger project https://users.freebasic-portal.de/sarg
+    - Luther Ramsey (luther.ramsey[at]gmail.com)
+        freebasic.net forums moderator
     - Matthew Riley (pestery)
         OpenGL, GLFW, glext, FreeGLUT, cryptlib headers
     - Matthias Faust (matthias_faust[at]web.de)
@@ -229,18 +266,24 @@
         "real" Rnd() algorithm
     - Nek (dave[at]nodtveidt.net)
         Win32 API headers
+    - Paul Squires (support[at]planetsquires.com)
+        WinFBE IDE project and fbc compiler distribution bundle
     - Plasma
         FMOD and BASS headers & examples
+    - Ralph Versteegen
+        fixes / improvements to compiler, rtlib, gfxlib2, tests and headers
     - Randy Keeling (randy[at]keeling.com)
         GSL matrix example
     - Saga Musix (Jojo)
         BASS examples with sounds
     - Sisophon2001
         gfxlib2 fixes, Nehe OpenGL lesson ports
+    - Stefan Wurzinger (swurzinger[at]gmx.at)
+        compiler, runtime library and documentation generator improvements
+        daily development builds, documentation builds and testing
+        header/bindings updates
     - Sterling Christensen (sterling[at]engineer.com)
         Ex-project-member, author of FB's initial QB-like graphics library
-    - TeeEmCee
-        gfxlib2 fixes
     - TJF (Thomas.Freiherr[at]gmx.net)
         ARM port, GTK+, glib, Cairo, Pango headers & examples,
         SQLiteExtensions headers
