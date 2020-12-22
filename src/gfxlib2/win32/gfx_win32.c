@@ -195,7 +195,7 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			DRIVER_LOCK();
 			fb_hMemSet(__fb_gfx->key, FALSE, 128);
 			fb_hMemSet(__fb_gfx->dirty, TRUE, fb_win32.h);
-			DRIVER_LOCK();
+			DRIVER_UNLOCK();
 			mouse_buttons = 0;
 			if ((!fb_win32.is_active) && (has_focus)) {
 				e.type = EVENT_MOUSE_EXIT;
