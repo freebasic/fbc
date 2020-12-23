@@ -242,7 +242,7 @@ dim shared as FBCPUTYPEINFO cputypeinfo(0 to FB_CPUTYPE__COUNT-1) = _
 	( NULL       , @"x86-64"       , FB_CPUFAMILY_X86_64 , 64 ), _ '' FB_CPUTYPE_X86_64
 	( NULL       , @"armv6"        , FB_CPUFAMILY_ARM    , 32 ), _ '' FB_CPUTYPE_ARMV6
 	( NULL       , @"armv7-a"      , FB_CPUFAMILY_ARM    , 32 ), _ '' FB_CPUTYPE_ARMV7A
-	( NULL       , @"aarch64"      , FB_CPUFAMILY_AARCH64, 64 ), _ '' FB_CPUTYPE_AARCH64
+	( @"armv8-a" , @"aarch64"      , FB_CPUFAMILY_AARCH64, 64 ), _ '' FB_CPUTYPE_AARCH64
 	( NULL       , @"asmjs"        , FB_CPUFAMILY_ASMJS	 , 32 )  _ '' FB_CPUTYPE_ASMJS
 }
 
