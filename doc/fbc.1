@@ -1,4 +1,4 @@
-.TH FBC 1 "2020-08-16" "FreeBASIC Compiler 1.08.0" "FreeBASIC Compiler"
+.TH FBC 1 "2020-12-23" "FreeBASIC Compiler 1.08.0" "FreeBASIC Compiler"
 .SH NAME
 fbc \- The FreeBASIC compiler
 .SH DESCRIPTION
@@ -84,7 +84,7 @@ Set target FPU
 \fB\-g\fR
 Add debug info, enable __FB_DEBUG__, and enable asserts
 .TP
-\fB\-gen\fR \fBgas\fR|\fBgcc\fR|\fBllvm\fR
+\fB\-gen\fR \fBgas\fR|\fBgcc\fR|\fBllvm\fR|\fgas64\fR
 Select code generation backend
 .TP
 \fB\-i\fR \fIpath\fR
@@ -97,7 +97,7 @@ Pre-#include a file for each input .bas
 Link in a library
 .TP
 \fB\-lang\fR \fIname\fR
-Select FB dialect: \fBfb\fR (default), \fBdeprecated\fR, \fBqb\fR
+Select FB dialect: \fBfb\fR (default), \fBdeprecated\fR, \fBqb\fR, \fBfblite\fR
 .TP
 \fB\-lib\fR
 Create a static library
@@ -245,9 +245,9 @@ Overrides location of gcc (-gen gcc)
 .SH "SEE ALSO"
 The full language specification and help is available in wiki format at
 .B 
-http://www.freebasic.net/wiki/
+https://www.freebasic.net/wiki/
 .SH COPYRIGHT
-Copyright \(co 2004\-2019 The FreeBASIC Development Team
+Copyright \(co 2004\-2020 The FreeBASIC Development Team
 .br
 This is free software.  You may redistribute copies of it under the terms of
 the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.
