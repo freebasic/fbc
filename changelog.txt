@@ -95,6 +95,7 @@ Version 1.08.0
 - fbc: name mangling for cva_list name mangling with arm32 and arm64 (aarch64) targets
 - rtlib: FORMAT() should always use all the fix digits in exponential form, e.g. format(1234, "###e+#") = "123e+1"
 - github #92: FORMAT() should always have an exponent of 0 for zero.
+- sf.net #928: Wrong sign / type when printing BYTE values on arm/aarch64
 
 
 Version 1.07.0

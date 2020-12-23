@@ -3,7 +3,7 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL void fb_WriteByte ( int fnum, char val, int mask )
+FBCALL void fb_WriteByte ( int fnum, signed char val, int mask )
 {
     FB_WRITENUM( fnum, val, mask, "%d" );
 }

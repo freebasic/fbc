@@ -99,7 +99,7 @@ FBCALL void         fb_PrintVoidWstr    ( int fnum, int mask );
        void         fb_PrintVoidWstrEx  ( FB_FILE *handle, int mask );
 
 FBCALL void         fb_PrintBool        ( int fnum, char val, int mask );
-FBCALL void         fb_PrintByte        ( int fnum, char val, int mask );
+FBCALL void         fb_PrintByte        ( int fnum, signed char val, int mask );
 FBCALL void         fb_PrintUByte       ( int fnum, unsigned char val, int mask );
 FBCALL void         fb_PrintShort       ( int fnum, short val, int mask );
 FBCALL void         fb_PrintUShort      ( int fnum, unsigned short val, int mask );
@@ -120,7 +120,7 @@ FBCALL int          fb_LPos             ( int printer_index );
        int          fb_LPrintInit       ( void );
 FBCALL void         fb_LPrintVoid       ( int fnum, int mask );
 FBCALL void         fb_LPrintBool       ( int fnum, char val, int mask );
-FBCALL void         fb_LPrintByte       ( int fnum, char val, int mask );
+FBCALL void         fb_LPrintByte       ( int fnum, signed char val, int mask );
 FBCALL void         fb_LPrintUByte      ( int fnum, unsigned char val, int mask );
 FBCALL void         fb_LPrintShort      ( int fnum, short val, int mask );
 FBCALL void         fb_LPrintUShort     ( int fnum, unsigned short val, int mask );
@@ -138,7 +138,7 @@ FBCALL void         fb_PrintSPC         ( int fnum, ssize_t n );
 
 FBCALL void         fb_WriteVoid        ( int fnum, int mask );
 FBCALL void         fb_WriteBool        ( int fnum, char val, int mask );
-FBCALL void         fb_WriteByte        ( int fnum, char val, int mask );
+FBCALL void         fb_WriteByte        ( int fnum, signed char val, int mask );
 FBCALL void         fb_WriteUByte       ( int fnum, unsigned char val, int mask );
 FBCALL void         fb_WriteShort       ( int fnum, short val, int mask );
 FBCALL void         fb_WriteUShort      ( int fnum, unsigned short val, int mask );
