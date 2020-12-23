@@ -22,6 +22,7 @@ Version 1.07.2
 - use the multi-byte & wide character functions wctombs() & mbtowcs() when converting between string and wstring (Skyfish)
 - fbc: read objinfo for elf format files on arm32 and arm64 (aarch64) to allow automatic options and linking of libraries
 - fbc: name mangling for cva_list name mangling with arm32 and arm64 (aarch64) targets
+- sf.net #928: Wrong sign / type when printing BYTE values on arm/aarch64
 
 
 Version 1.07.1

@@ -3,7 +3,7 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL void fb_LPrintByte ( int fnum, char val, int mask )
+FBCALL void fb_LPrintByte ( int fnum, signed char val, int mask )
 {
     fb_LPrintInit();
     mask = FB_PRINT_CONVERT_BIN_NEWLINE(mask);
