@@ -21,7 +21,7 @@ Procedures for working with multithreaded applications.
 	=={{fbdoc item="keyword" value="KeyPgThreadDetach|THREADDETACH"}}==
 		Releases a thread handle without waiting for the thread to finish.
 	=={{fbdoc item="keyword" value="KeyPgThreadSelf|THREADSELF"}}==
-		Returns the thread id of the current thread.
+		Returns the thread handle of the current thread.
 
 {{anchor name="MUTEXES"}}{{fbdoc item="section" value="Mutexes"}}
 	=={{fbdoc item="keyword" value="KeyPgMutexCreate|MUTEXCREATE"}}==

@@ -11,7 +11,7 @@
 Dim As Any Ptr phandle(1 To 10)
 
 Sub myThread (ByVal p As Any Ptr)
-	Print "Thread id: " & Threadself()
+	Print "Thread handle: " & ThreadSelf()
 End Sub
 
 For I As Integer = 1 To 10

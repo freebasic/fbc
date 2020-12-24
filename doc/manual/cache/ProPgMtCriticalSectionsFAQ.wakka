@@ -14,6 +14,7 @@ The "**Critical Sections**" related questions in multi-threading.
 	**{{anchor name="ProPgMtCriticalSectionsFAQ9|9. How to use console statements and keyboard inputs with multi-threading?"}}**
 	**{{anchor name="ProPgMtCriticalSectionsFAQ10|10. Is it better to take precautions when using the keyword 'Sleep' in threads?"}}**
 	**{{anchor name="ProPgMtCriticalSectionsFAQ11|11. Can all tools to handle multi-threading be encapsulated in a base Class (that the user extends with a derived Type for his own implementing)?"}}**
+	**{{anchor name="ProPgMtCriticalSectionsFAQ12|12. Can we emulate a kind of TLS (Thread Local Storage) with FreeBASIC?"}}**
 	
 ----
 
@@ -1766,6 +1767,191 @@ For I As Integer = 1 To UDT.numberMax
 Next I
 Locate UDT.numberMax+2, 1
 Print CULngInt(c / t) & " increments per second"
+
+Sleep
+				%%
+@@{{anchor name="ProPgMtCriticalSectionsFAQtop|Back to top"}}@@
+----
+{{anchor name="ProPgMtCriticalSectionsFAQ12"}}
+{{fbdoc item="section" value="12. Can we emulate a kind of TLS (Thread Local Storage) with FreeBASIC?"}}
+		Static variables are normally shared across all the threads. If we modify a static variable, it is visible so modified to all the threads.
+		Unlike normal static variable, if we create a TLS static variable, every thread must have its own copy of the variable (but with the same access name), i.e. any change to the variable is local to the thread (locally stored).
+		This allows to create a thread-safe procedure, because each call to this procedure gets its own copy of the same declared static variables.
+		In normal procedure with static variables, the content of that variables can be updated by multiple threads, but with TLS, we can think of these as static data but local to each thread.
+		
+		TLS data is similar to static data, but the only difference is that TLS data are unique to each thread.
+		
+		The principle of this TLS emulation for ""FreeBASIC"" is to use a static array for each requested TLS variable, where each thread has its own unique index (hidden) to access the array element.
+		This unique index relating to the thread is deduced from the thread handle value:
+			**""-""** With fbc version >= 1.08, the thread handle value is simply returned from the ""'Threadself()'"" function calling (new function) from any thread.
+			**""-""** With fbc version < 1.08, the code is more twisted:
+					""-"" The thread handle value is only accessible from the ""'ThreadCreate()'"" return in the parent (or main) thread when creating it.
+					""-"" There is no way to properly emulate the ""'Threadself()'"" function, but only by a twisted method.
+					""-"" In the example below (for fbc version < 1.08), a ""'Threadself()'"" function (returning by reference) value is initialized before each use by the thread (with its own thread handle), and all of this (initialization + use) protected by a mutex as for its corresponding ""'ThreadCreate()'"".
+					
+		In the below example, the TLS static variable is an integer which is used in a single and generic counting procedure ('counter()') with none passed parameter). This counting procedure is called by each thread (thus each thread counts independently of each other but by calling the same single counting procedure).
+		A single macro allows to define any TLS variable (except array) of any type.
+		
+		- Code with preprocessor conditional directives depending on fbc version:
+				{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq12.bas"}}%%(freebasic)
+#include once "crt/string.bi"
+
+#if __fb_version__ < "1.08"
+	' Emulation of the function Threadself() of FreeBASIC
+	' Before each use, the thread must refresh this function value with its own thread handle,
+	' and all of this (refreshing + use) protected by a mutex.
+	Function Threadself () Byref As Any Ptr
+		Static As Any Ptr handle
+		Return handle
+	End Function
+#else
+	#include once "fbthread.bi"
+#endif
+
+#macro CreateTLSdatatypeVariableFunction (variable_function_name, variable_datatype)
+' Creation of a "variable_function_name" function to emulate a static datatype variable (not an array),
+' with a value depending on the thread using it.
+	Function variable_function_name (Byval cd As Boolean = True) ByRef As variable_datatype
+	' Function emulating (creation/access/destruction) a static datatype variable with value depending on thread using it:
+		' If calling without parameter (or with 'True') parameter, this allows to [create and] access the static datatype variable.
+		' If calling with the 'False' parameter, this allows to destroy the static datatype variable.
+		Dim As Integer bound = 0
+		Static As Any Ptr TLSindex(bound)
+		Static As variable_datatype TLSdata(bound)
+		Dim As Any Ptr Threadhandle = Threadself()
+		Dim As Integer index = 0
+		For I As Integer = 1 To UBound(TLSindex)  ' search existing TLS variable (existing array element) for the running thread
+			If TLSindex(I) = Threadhandle Then
+				index = I
+				Exit For
+			End If
+		Next I
+		If index = 0 And cd = True Then  ' create a new TLS variable (new array element) for a new thread
+			index = UBound(TLSindex) + 1
+			Redim Preserve TLSindex(index)
+			TLSindex(index) = Threadhandle
+			Redim Preserve TLSdata(index)
+		Elseif index > 0 And cd = False Then  ' destroy a TLS variable (array element) and compact the array
+			If index < UBound(TLSindex) Then  ' reorder the array elements
+				memmove(@TLSindex(index), @TLSindex(index + 1), (UBound(TLSindex) - index) * Sizeof(Any Ptr))
+				Dim As variable_datatype Ptr p = Allocate(Sizeof(variable_datatype))  ' for compatibility to object with destructor
+				memmove(p, @TLSdata(index), Sizeof(variable_datatype))                ' for compatibility to object with destructor
+				memmove(@TLSdata(index), @TLSdata(index + 1), (UBound(TLSdata) - index) * Sizeof(variable_datatype))
+				memmove(@TLSdata(UBound(TLSdata)), p, Sizeof(variable_datatype))      ' for compatibility to object with destructor
+				Deallocate(p)                                                         ' for compatibility to object with destructor
+			End If
+			Redim Preserve TLSindex(UBound(TLSindex) - 1)
+			Redim Preserve TLSdata(UBound(TLSdata) - 1)
+			index = 0
+		End If
+		Return TLSdata(index)
+	End Function
+#endmacro
+
+'------------------------------------------------------------------------------
+
+Type threadData
+	Dim As Any Ptr handle
+	Dim As String prefix
+	Dim As String suffix
+	Dim As Double tempo
+	#if __fb_version__ < "1.08"
+		Static As Any Ptr mutex
+	#endif
+End Type
+#if __fb_version__ < "1.08"
+	Dim As Any Ptr threadData.mutex
+#endif
+
+CreateTLSdatatypeVariableFunction (TLScount, Integer)  ' create a TLS static integer function
+
+Function counter() As Integer  ' definition of a generic counter with counting depending on thread calling it
+	TLScount() += 1            ' increment the TLS static integer
+	Return TLScount()          ' return the TLS static integer
+End Function
+
+Sub Thread(ByVal p As Any Ptr)
+	Dim As threadData Ptr ptd = p
+	Dim As UInteger c
+	Do
+		#if __fb_version__ < "1.08"
+			MutexLock(threadData.mutex)
+			Threadself() = ptd->handle
+		#endif
+			c = counter()
+		#if __fb_version__ < "1.08"
+			MutexUnlock(threadData.mutex)
+		#endif
+		Print ptd->prefix & c & ptd->suffix & " ";  ' single print with concatenated string avoids using a mutex
+		Sleep ptd->tempo, 1
+	Loop Until c = 12
+	#if __fb_version__ < "1.08"
+		MutexLock(threadData.mutex)
+		Threadself() = ptd->handle
+	#endif
+	TLScount(False)  ' destroy the TLS static integer
+	#if __fb_version__ < "1.08"
+		MutexUnlock(threadData.mutex)
+	#endif
+End Sub
+
+'------------------------------------------------------------------------------
+
+Print "|x| : counting from thread a"
+Print "(x) : counting from thread b"
+Print "[x] : counting from thread c"
+Print
+
+#if __fb_version__ < "1.08"
+	threadData.mutex = MutexCreate()
+#endif
+
+Dim As threadData mtlsa
+mtlsa.prefix = "|"
+mtlsa.suffix = "|"
+mtlsa.tempo = 100
+#if __fb_version__ < "1.08"
+	MutexLock(threadData.mutex)
+#endif
+mtlsa.handle = ThreadCreate(@Thread, @mtlsa)
+#if __fb_version__ < "1.08"
+	MutexUnlock(threadData.mutex)
+#endif
+
+Dim As threadData mtlsb
+mtlsb.prefix = "("
+mtlsb.suffix = ")"
+mtlsb.tempo = 150
+#if __fb_version__ < "1.08"
+	MutexLock(threadData.mutex)
+#endif
+mtlsb.handle = ThreadCreate(@Thread, @mtlsb)
+#if __fb_version__ < "1.08"
+	MutexUnlock(threadData.mutex)
+#endif
+
+Dim As threadData mtlsc
+mtlsc.prefix = "["
+mtlsc.suffix = "]"
+mtlsc.tempo = 250
+#if __fb_version__ < "1.08"
+	MutexLock(threadData.mutex)
+#endif
+mtlsc.handle = ThreadCreate(@Thread, @mtlsc)
+#if __fb_version__ < "1.08"
+	MutexUnlock(threadData.mutex)
+#endif
+
+ThreadWait(mtlsa.handle)
+ThreadWait(mtlsb.handle)
+ThreadWait(mtlsc.handle)
+#if __fb_version__ < "1.08"
+	MutexDestroy(threadData.mutex)
+#endif
+
+Print
+Print
+Print "end of threads"
 
 Sleep
 				%%

@@ -12,7 +12,7 @@ Function TLSindex() As Integer  ' returning a unique thread index (incremented w
 	Static As Any Ptr TLSind()
 	Dim As Integer index = -1
 	For I As Integer = LBound(TLSind) To UBound(TLSind)
-		If TLSind(I) = Threadself() Then
+		If TLSind(I) = ThreadSelf() Then
 			index = I
 			Exit For
 		End If
@@ -20,7 +20,7 @@ Function TLSindex() As Integer  ' returning a unique thread index (incremented w
 	If index = -1 Then
 		index = UBound(TLSind) + 1
 		ReDim Preserve TLSind(index)
-		TLSind(index) = Threadself()
+		TLSind(index) = ThreadSelf()
 	End If
 	Return index
 End Function
@@ -41,9 +41,7 @@ Type threadData
 	Dim As String prefix
 	Dim As String suffix
 	Dim As Double tempo
-	Static As Any Ptr mutex
 End Type
-Dim As Any Ptr threadData.mutex
 
 Function counter() As Integer  ' definition of a generic counter with counting depending on thread calling it
 	TLSinteger() += 1
@@ -55,12 +53,7 @@ Sub Thread(ByVal p As Any Ptr)
 	Dim As UInteger c
 	Do
 		c = counter()
-		MutexLock(threadData.mutex)
-		Print ptd->prefix;
-		Print c;
-		Print ptd->suffix;
-		Print " ";
-		MutexUnlock(threadData.mutex)
+		Print ptd->prefix & c & ptd->suffix & " ";  ' single print with concatenated string avoids using a mutex
 		Sleep ptd->tempo, 1
 	Loop Until c = 12
 End Sub
@@ -71,8 +64,6 @@ Print "|x| : counting from thread a"
 Print "(x) : counting from thread b"
 Print "[x] : counting from thread c"
 Print
-
-threadData.mutex = MutexCreate()
 
 Dim As threadData mtlsa
 mtlsa.prefix = "|"
@@ -95,11 +86,9 @@ mtlsc.handle = ThreadCreate(@Thread, @mtlsc)
 ThreadWait(mtlsa.handle)
 ThreadWait(mtlsb.handle)
 ThreadWait(mtlsc.handle)
-MutexDestroy(threadData.mutex)
 
 Print
 Print
 Print "end of threads"
 
-Sleep
-	
+Sleep	
