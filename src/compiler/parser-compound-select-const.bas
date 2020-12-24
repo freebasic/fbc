@@ -118,7 +118,7 @@ sub cSelConstStmtBegin()
 	else
 		astAdd( astNewLINK( _
 			astNewDECL( sym, FALSE ), _
-			astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ) ) )
+			astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ), AST_LINK_RETURN_NONE ) )
 	end if
 
 	'' skip the statements

@@ -184,32 +184,32 @@ private function hScopedSwap( ) as integer
 
 	'' Side effects? Then use references to be able to read/write...
 	if( astHasSideFx( l ) ) then
-		t = astNewLINK( t, astMakeRef( l ) )
+		t = astNewLINK( t, astMakeRef( l ), AST_LINK_RETURN_NONE )
 	end if
 
 	if( astHasSideFx( r ) ) then
-		t = astNewLINK( t, astMakeRef( r ) )
+		t = astNewLINK( t, astMakeRef( r ), AST_LINK_RETURN_NONE )
 	end if
 
 	if( use_pushpop ) then
 		'' push clone( l )
-		t = astNewLINK( t, astNewSTACK( AST_OP_PUSH, astCloneTree( l ) ) )
+		t = astNewLINK( t, astNewSTACK( AST_OP_PUSH, astCloneTree( l ) ), AST_LINK_RETURN_NONE )
 
 		'' l = clone( r )
-		t = astNewLINK( t, astNewASSIGN( l, astCloneTree( r ) ) )
+		t = astNewLINK( t, astNewASSIGN( l, astCloneTree( r ) ), AST_LINK_RETURN_NONE )
 
 		'' pop r
-		t = astNewLINK( t, astNewSTACK( AST_OP_POP, r ) )
+		t = astNewLINK( t, astNewSTACK( AST_OP_POP, r ), AST_LINK_RETURN_NONE )
 	else
 		'' var temp = clone( l )
 		var temp = symbAddTempVar( astGetFullType( l ), astGetSubtype( l ) )
-		t = astNewLINK( t, astNewASSIGN( astNewVAR( temp ), astCloneTree( l ) ) )
+		t = astNewLINK( t, astNewASSIGN( astNewVAR( temp ), astCloneTree( l ) ), AST_LINK_RETURN_NONE )
 
 		'' l = clone( r )
-		t = astNewLINK( t, astNewASSIGN( l, astCloneTree( r ) ) )
+		t = astNewLINK( t, astNewASSIGN( l, astCloneTree( r ) ), AST_LINK_RETURN_NONE )
 
 		'' r = temp
-		t = astNewLINK( t, astNewASSIGN( r, astNewVAR( temp ) ) )
+		t = astNewLINK( t, astNewASSIGN( r, astNewVAR( temp ) ), AST_LINK_RETURN_NONE )
 	end if
 
 	astAdd( t )

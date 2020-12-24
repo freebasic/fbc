@@ -360,13 +360,13 @@ function cVALISTFunct _
 		var expr1 = astNewBOP( AST_OP_ADD, astCloneTree( expr ), astNewCONSTi(lgt, FB_DATATYPE_UINT ) )
 
 		'' expr = expr1
-		tree = astNewLink( tree, astNewASSIGN( astCloneTree( expr ), expr1 ), AST_OPOPT_DONTCHKPTR )
+		tree = astNewLink( tree, astNewASSIGN( astCloneTree( expr ), expr1, AST_OPOPT_DONTCHKPTR ), AST_LINK_RETURN_NONE )
 		
 		'' expr2 = cptr( any ptr, expr ) - lgt
 		var expr2 = astNewBOP( AST_OP_SUB, expr, astNewCONSTi(lgt, FB_DATATYPE_UINT ) )
 
 		'' return *cptr(dtype ptr, expr2 )
-		tree = astNewLink( tree, astNewDEREF( expr2, dtype, subtype ), FALSE )
+		tree = astNewLink( tree, astNewDEREF( expr2, dtype, subtype ), AST_LINK_RETURN_RIGHT )
 
 		function = tree
 

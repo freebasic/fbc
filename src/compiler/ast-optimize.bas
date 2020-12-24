@@ -474,11 +474,12 @@ function astIncOffset( byval n as ASTNODE ptr, byval ofs as longint ) as integer
 		function = TRUE
 
 	case AST_NODECLASS_LINK
-		if( n->link.ret_left ) then
+		select case n->link.ret
+		case AST_LINK_RETURN_LEFT
 			function = astIncOffset( n->l, ofs )
-		else
+		case AST_LINK_RETURN_RIGHT
 			function = astIncOffset( n->r, ofs )
-		end if
+		end select
 
 	case AST_NODECLASS_FIELD, AST_NODECLASS_IIF
 		function = astIncOffset( n->l, ofs )
@@ -1357,65 +1358,65 @@ private function hOptStrMultConcat _
 		end if
 	end if
 
-    '' concat?
-    if( n->class = AST_NODECLASS_BOP ) then
-    	if( n->l <> NULL ) then
-    	    '' first concatenation? do an assignment..
-    	    if( lnk = NULL ) then
-    	    	if( is_wstr = FALSE ) then
-    	    		lnk = rtlStrAssign( astCloneTree( dst ), n->l )
-    	    	else
-    	    		lnk = rtlWstrAssign( astCloneTree( dst ), n->l )
-    	    	end if
-    	    else
-    	    	if( is_wstr = FALSE ) then
-    	    		lnk = astNewLINK( lnk, _
-    	    						  rtlStrConcatAssign( astCloneTree( dst ), _
-    	    						  					  n->l ) )
-    	    	else
-    	    		lnk = astNewLINK( lnk, _
-    	    						  rtlWstrConcatAssign( astCloneTree( dst ), _
-    	    						  					   n->l ) )
-    	    	end if
-    	    end if
-    	end if
-
-    	if( n->r <> NULL ) then
-    	    if( is_wstr = FALSE ) then
-    	    	lnk = astNewLINK( lnk, _
-    	    					  rtlStrConcatAssign( astCloneTree( dst ), _
-    	    					  					  n->r ) )
-    	    else
-    	    	lnk = astNewLINK( lnk, _
-    	    					  rtlWstrConcatAssign( astCloneTree( dst ), _
-    	    					  					   n->r ) )
-    	    end if
-    	end if
-
-    	astDelNode( n )
-
-    '' string..
-    else
-		if( lnk = NULL ) then
-    		if( is_wstr = FALSE ) then
-    			lnk = rtlStrAssign( astCloneTree( dst ), n )
-    		else
-    			lnk = rtlWstrAssign( astCloneTree( dst ), n )
-    		end if
-		else
-    		if( is_wstr = FALSE ) then
-    			lnk = astNewLINK( lnk, _
-    							  rtlStrConcatAssign( astCloneTree( dst ), _
-    							  					  n ) )
-    		else
-    			lnk = astNewLINK( lnk, _
-    							  rtlWstrConcatAssign( astCloneTree( dst ), _
-    							  					   n ) )
-    		end if
+	'' concat?
+	if( n->class = AST_NODECLASS_BOP ) then
+		if( n->l <> NULL ) then
+			'' first concatenation? do an assignment..
+			if( lnk = NULL ) then
+				if( is_wstr = FALSE ) then
+					lnk = rtlStrAssign( astCloneTree( dst ), n->l )
+				else
+					lnk = rtlWstrAssign( astCloneTree( dst ), n->l )
+				end if
+			else
+				if( is_wstr = FALSE ) then
+					lnk = astNewLINK( lnk, _
+						rtlStrConcatAssign( astCloneTree( dst ), _
+						n->l ), AST_LINK_RETURN_NONE )
+				else
+					lnk = astNewLINK( lnk, _
+						rtlWstrConcatAssign( astCloneTree( dst ), _
+						n->l ), AST_LINK_RETURN_NONE )
+				end if
+			end if
 		end if
-    end if
 
-    function = lnk
+		if( n->r <> NULL ) then
+			if( is_wstr = FALSE ) then
+				lnk = astNewLINK( lnk, _
+					rtlStrConcatAssign( astCloneTree( dst ), _
+					n->r ), AST_LINK_RETURN_NONE )
+			else
+				lnk = astNewLINK( lnk, _
+					rtlWstrConcatAssign( astCloneTree( dst ), _
+					n->r ), AST_LINK_RETURN_NONE )
+			end if
+		end if
+
+		astDelNode( n )
+
+	'' string..
+	else
+		if( lnk = NULL ) then
+			if( is_wstr = FALSE ) then
+				lnk = rtlStrAssign( astCloneTree( dst ), n )
+			else
+				lnk = rtlWstrAssign( astCloneTree( dst ), n )
+			end if
+		else
+			if( is_wstr = FALSE ) then
+				lnk = astNewLINK( lnk, _
+					rtlStrConcatAssign( astCloneTree( dst ), _
+					n ), AST_LINK_RETURN_NONE )
+			else
+				lnk = astNewLINK( lnk, _
+					rtlWstrConcatAssign( astCloneTree( dst ), _
+					n ), AST_LINK_RETURN_NONE )
+			end if
+		end if
+	end if
+
+	function = lnk
 
 end function
 

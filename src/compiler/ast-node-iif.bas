@@ -336,7 +336,7 @@ function astNewIIF _
 				end if
 			else
 				'' Insert defctor call in front of the conditional branch
-				condexpr = astNewLINK( astBuildCtorCall( subtype, astNewVAR( temp ) ), condexpr )
+				condexpr = astNewLINK( astBuildCtorCall( subtype, astNewVAR( temp ) ), condexpr, AST_LINK_RETURN_NONE )
 			end if
 
 			'' No defctor but it's needed?
@@ -354,7 +354,7 @@ function astNewIIF _
 			astDtorListScopeBegin( truecookie )
 			truexpr  = astNewASSIGN( astNewVAR( temp ), truexpr , AST_OPOPT_ISINI )
 			if( call_true_defctor ) then
-				truexpr = astNewLINK( astBuildCtorCall( subtype, astNewVAR( temp ) ), truexpr )
+				truexpr = astNewLINK( astBuildCtorCall( subtype, astNewVAR( temp ) ), truexpr, AST_LINK_RETURN_NONE )
 			end if
 			astDtorListScopeEnd( )
 		end if
@@ -363,7 +363,7 @@ function astNewIIF _
 			astDtorListScopeBegin( falsecookie )
 			falsexpr = astNewASSIGN( astNewVAR( temp ), falsexpr, AST_OPOPT_ISINI )
 			if( call_false_defctor ) then
-				falsexpr = astNewLINK( astBuildCtorCall( subtype, astNewVAR( temp ) ), falsexpr )
+				falsexpr = astNewLINK( astBuildCtorCall( subtype, astNewVAR( temp ) ), falsexpr, AST_LINK_RETURN_NONE )
 			end if
 			astDtorListScopeEnd( )
 		end if
@@ -389,17 +389,17 @@ function astNewIIF _
 	'' Zero (0) can be given for one or both cookies, in case the
 	'' corresponding expression won't have any temp var to destruct.
 	if( truecookie ) then
-		truexpr  = astNewLINK( truexpr , astDtorListFlush( truecookie  ) )
+		truexpr  = astNewLINK( truexpr , astDtorListFlush( truecookie  ), AST_LINK_RETURN_NONE )
 	end if
 	if( falsecookie ) then
-		falsexpr = astNewLINK( falsexpr, astDtorListFlush( falsecookie ) )
+		falsexpr = astNewLINK( falsexpr, astDtorListFlush( falsecookie ), AST_LINK_RETURN_NONE )
 	end if
 
 	n = astNewNode( AST_NODECLASS_IIF, dtype, subtype )
 
 	n->sym = temp
 	n->l = varexpr
-	n->r = astNewLINK( condexpr, astNewLINK( truexpr, falsexpr ) )
+	n->r = astNewLINK( condexpr, astNewLINK( truexpr, falsexpr, AST_LINK_RETURN_NONE ), AST_LINK_RETURN_NONE )
 	n->iif.falselabel = falselabel
 
 	function = n

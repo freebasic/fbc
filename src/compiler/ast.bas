@@ -295,11 +295,14 @@ end function
 '' either their lhs or rhs.
 function astGetEffectiveNode( byval n as ASTNODE ptr ) as ASTNODE ptr
 	if( n->class = AST_NODECLASS_LINK ) then
-		if( n->link.ret_left ) then
+		select case n->link.ret
+		case AST_LINK_RETURN_LEFT
 			function = astGetEffectiveNode( n->l )
-		else
+		case AST_LINK_RETURN_RIGHT
 			function = astGetEffectiveNode( n->r )
-		end if
+		case else '' AST_LINK_RETURN_NONE
+			function = NULL
+		end select
 	else
 		function = n
 	end if
@@ -350,12 +353,14 @@ function astRebuildWithoutEffectivePart( byval n as ASTNODE ptr ) as ASTNODE ptr
 	if( n->class = AST_NODECLASS_LINK ) then
 		var l = n->l
 		var r = n->r
-		if( n->link.ret_left ) then
+		select case n->link.ret
+		case AST_LINK_RETURN_LEFT
 			l = astRebuildWithoutEffectivePart( l )
-		else
+		case AST_LINK_RETURN_RIGHT
 			r = astRebuildWithoutEffectivePart( r )
-		end if
-		function = astNewLINK( l, r, n->link.ret_left )
+		case else '' AST_LINK_RETURN_NONE
+		end select
+		function = astNewLINK( l, r, n->link.ret )
 		astDelNode( n )
 	else
 		astDelTree( n )
@@ -375,11 +380,14 @@ function astCanTakeAddrOf( byval n as ASTNODE ptr ) as integer
 	case AST_NODECLASS_FIELD
 		function = (not symbFieldIsBitfield( n->sym ))
 	case AST_NODECLASS_LINK
-		if( n->link.ret_left ) then
+		select case n->link.ret
+		case AST_LINK_RETURN_LEFT
 			function = astCanTakeAddrOf( n->l )
-		else
+		case AST_LINK_RETURN_RIGHT
 			function = astCanTakeAddrOf( n->r )
-		end if
+		case else
+			function = FALSE
+		end select
 	case else
 		function = FALSE
 	end select

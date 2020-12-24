@@ -29,7 +29,7 @@ private function hAllocTmpArrayDesc _
 	tree = astNewDECL( desc, FALSE )
 
 	'' flush (see symbAddArrayDesc(), the desc can't never be static)
-	tree = astNewLINK( tree, astTypeIniFlush( desc, initree, FALSE, AST_OPOPT_ISINI ) )
+	tree = astNewLINK( tree, astTypeIniFlush( desc, initree, FALSE, AST_OPOPT_ISINI ), AST_LINK_RETURN_NONE )
 
 	function = desc
 end function
@@ -75,9 +75,9 @@ private function hAllocTmpString _
 		astNewLINK( _
 			astBuildTempVarClear( temp ), _
 			rtlStrAssign( astNewVAR( temp ), n ), _
-			FALSE ), _
+			AST_LINK_RETURN_NONE ), _
 		astNewVAR( temp ), _
-		FALSE )
+		AST_LINK_RETURN_RIGHT )
 end function
 
 private function hAllocTmpWstrPtr _
@@ -431,7 +431,7 @@ private function hCheckByDescParam _
 
 			'' Static array field: Create a temp array descriptor
 			desc = hAllocTmpArrayDesc( s, n->l, desc_tree )
-			n->l = astNewLINK( astNewADDROF( astNewVAR( desc ) ), desc_tree )
+			n->l = astNewLINK( astNewADDROF( astNewVAR( desc ) ), desc_tree, AST_LINK_RETURN_LEFT )
 			return TRUE
 		end if
 	end if
@@ -601,7 +601,7 @@ private sub hUDTPassByval _
 		'' the parameter initializer wouldn't have allowed anything else)
 		n->l = astRemoveNoConvCAST( n->l )
 		assert( astIsTYPEINI( n->l ) )
-		n->l = astNewLINK( astTypeIniFlush( tmp, n->l, TRUE, AST_OPOPT_ISINI ), astNewVAR( tmp ), FALSE )
+		n->l = astNewLINK( astTypeIniFlush( tmp, n->l, TRUE, AST_OPOPT_ISINI ), astNewVAR( tmp ), AST_LINK_RETURN_RIGHT )
 	else
 		'' Otherwise, call a constructor
 		n->l = astBuildImplicitCtorCallEx( param, n->l, n->arg.mode, is_ctorcall )
@@ -613,7 +613,7 @@ private sub hUDTPassByval _
 			n->l = astNewLINK( _
 				astNewASSIGN( astNewVAR( tmp ), n->l, AST_OPOPT_ISINI ), _
 				astNewVAR( tmp ), _
-				FALSE )
+				AST_LINK_RETURN_RIGHT )
 		end if
 	end if
 
@@ -726,7 +726,7 @@ private function hCheckUDTParam _
 				n->l = astNewLINK( _
 					astNewASSIGN( astBuildVarField( tmp ), n->l, AST_OPOPT_DONTCHKOPOVL or AST_OPOPT_ISINI ), _
 					astNewADDROF( astBuildVarField( tmp ) ), _
-					FALSE )
+					AST_LINK_RETURN_RIGHT )
 				n->arg.mode = FB_PARAMMODE_BYVAL
 				return TRUE
 			end if

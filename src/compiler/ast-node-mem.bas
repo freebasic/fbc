@@ -78,10 +78,10 @@ private function hCallCtorList _
 	tree = astBuildWhileCounterBegin( tree, cnt, label, exitlabel, elementsexpr, FALSE /' non-flushing '/ )
 
 	'' ctor( *iter )
-	tree = astNewLINK( tree, astBuildCtorCall( subtype, astBuildVarDeref( iter ) ) )
+	tree = astNewLINK( tree, astBuildCtorCall( subtype, astBuildVarDeref( iter ) ), AST_LINK_RETURN_NONE )
 
 	'' iter += 1
-	tree = astNewLINK( tree, astBuildVarInc( iter, 1 ) )
+	tree = astNewLINK( tree, astBuildVarInc( iter, 1 ), AST_LINK_RETURN_NONE )
 
 	'' wend
 	tree = astBuildWhileCounterEnd( tree, cnt, label, exitlabel, FALSE )
@@ -216,14 +216,15 @@ function astBuildNewOp _
 	end if
 
 	'' tempptr = new( len )
-	tree = astNewLINK( tree, astBuildVarAssign( tmp, newexpr, AST_OPOPT_ISINI ) )
+	tree = astNewLINK( tree, astBuildVarAssign( tmp, newexpr, AST_OPOPT_ISINI ), AST_LINK_RETURN_NONE )
 
 	'' if( tempptr <> NULL ) then
 	exitlabel = symbAddLabel( NULL )
 	
 	'' handle like IIF, we don't want dtors called if tempptr was never allocated
 	tree = astNewLINK( tree, _
-		astBuildBranch( astNewBOP( AST_OP_NE, astNewVAR( tmp ), astNewCONSTi( 0 ) ), exitlabel, FALSE, TRUE ) )
+		astBuildBranch( astNewBOP( AST_OP_NE, astNewVAR( tmp ), astNewCONSTi( 0 ) ), exitlabel, FALSE, TRUE ), _
+			AST_LINK_RETURN_NONE )
 
 	'' save elements count?
 	if( save_elmts ) then
@@ -232,14 +233,14 @@ function astBuildNewOp _
 			astNewASSIGN( _
 				astNewDEREF( astNewVAR( tmp, , typeAddrOf( FB_DATATYPE_UINT ) ) ), _
 				hElements( elementsexpr, elementstreecount ), _
-				AST_OPOPT_ISINI ) )
+				AST_OPOPT_ISINI ), AST_LINK_RETURN_NONE  )
 
 		'' tempptr += len( uinteger )
 		tree = astNewLINK( tree, _
 			astNewSelfBOP( AST_OP_ADD_SELF, _
 				astNewVAR( tmp, , typeAddrOf( FB_DATATYPE_VOID ) ), _
 				astNewCONSTi( typeGetSize( FB_DATATYPE_UINT ) ), _
-				NULL ) )
+				NULL ), AST_LINK_RETURN_NONE )
 	end if
 
 	select case as const( init )
@@ -272,10 +273,10 @@ function astBuildNewOp _
 	end select
 
 	'' *tempptr = initializers
-	tree = astNewLINK( tree, initexpr )
+	tree = astNewLINK( tree, initexpr, AST_LINK_RETURN_NONE )
 
 	'' end if
-	tree = astNewLINK( tree, astNewLABEL( exitlabel, FALSE ) )
+	tree = astNewLINK( tree, astNewLABEL( exitlabel, FALSE ), AST_LINK_RETURN_NONE )
 
 	'' because this is an expression, exitlabel must be cloned with a new label
 	'' instead of just copied.  astNewLOOP() allows this (but naming could be better).
@@ -314,16 +315,16 @@ private function hCallDtorList( byval ptrexpr as ASTNODE ptr ) as ASTNODE ptr
 			iter, _
 			astNewBOP( AST_OP_ADD, ptrexpr, astNewVAR( elmts ), NULL, _
 					AST_OPOPT_DEFAULT or AST_OPOPT_DOPTRARITH ), _
-			AST_OPOPT_ISINI ) )
+			AST_OPOPT_ISINI ), AST_LINK_RETURN_NONE )
 
 	'' while( counter )
 	tree = astBuildWhileCounterBegin( tree, cnt, label, exitlabel, astNewVAR( elmts ) )
 
 	'' iter -= 1
-	tree = astNewLINK( tree, astBuildVarInc( iter, -1 ) )
+	tree = astNewLINK( tree, astBuildVarInc( iter, -1 ), AST_LINK_RETURN_NONE )
 
 	'' dtor( *iter )
-	tree = astNewLINK( tree, astBuildVarDtorCall( astBuildVarDeref( iter ) ) )
+	tree = astNewLINK( tree, astBuildVarDtorCall( astBuildVarDeref( iter ) ), AST_LINK_RETURN_NONE )
 
 	'' wend
 	tree = astBuildWhileCounterEnd( tree, cnt, label, exitlabel )
@@ -358,24 +359,24 @@ function astBuildDeleteOp _
 		astNewBOP( AST_OP_EQ, _
 			astCloneTree( ptrexpr ), _
 			astNewCONSTi( 0 ), _
-			label, AST_OPOPT_NONE ) )
+			label, AST_OPOPT_NONE ), AST_LINK_RETURN_NONE )
 
 	'' call dtors?
 	if( typeNeedsDtorCall( dtype, subtype ) ) then
 		if( op = AST_OP_DEL_VEC ) then
-			tree = astNewLINK( tree, hCallDtorList( astCloneTree( ptrexpr ) ) )
+			tree = astNewLINK( tree, hCallDtorList( astCloneTree( ptrexpr ) ), AST_LINK_RETURN_NONE )
 			'' ptr -= len( integer )
-			ptrexpr = astNewBOP( AST_OP_SUB, ptrexpr, astNewCONSTi( typeGetSize( FB_DATATYPE_INTEGER ) ) )
+			ptrexpr = astNewBOP( AST_OP_SUB, ptrexpr, astNewCONSTi( typeGetSize( FB_DATATYPE_INTEGER ) ), AST_LINK_RETURN_NONE )
 		else
-			tree = astNewLINK( tree, astBuildVarDtorCall( astNewDEREF( astCloneTree( ptrexpr ) ) ) )
+			tree = astNewLINK( tree, astBuildVarDtorCall( astNewDEREF( astCloneTree( ptrexpr ) ) ), AST_LINK_RETURN_NONE )
 		end if
 	end if
 
 	'' delete( ptr )
-	tree = astNewLINK( tree, rtlMemDeleteOp( op, ptrexpr, dtype, subtype ) )
+	tree = astNewLINK( tree, rtlMemDeleteOp( op, ptrexpr, dtype, subtype ), AST_LINK_RETURN_NONE )
 
 	'' end if
-	tree = astNewLINK( tree, astNewLABEL( label ) )
+	tree = astNewLINK( tree, astNewLABEL( label ), AST_LINK_RETURN_NONE )
 
 	function = tree
 end function

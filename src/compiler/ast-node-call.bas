@@ -415,9 +415,10 @@ function astBuildCallResultVar( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	assert( astIsCALL( expr ) )
 	assert( symbProcReturnsOnStack( expr->sym ) )
 
+	'' CALL first, but return the VAR
 	function = astNewLINK( expr, _
 		astNewVAR( expr->call.tmpres, 0, astGetFullType( expr ), astGetSubtype( expr ) ), _
-		FALSE ) '' CALL first, but return the VAR
+		AST_LINK_RETURN_RIGHT )
 end function
 
 '' For storing UDT CALL results into a temp var and accessing it
@@ -441,9 +442,10 @@ function astBuildCallResultUdt( byval expr as ASTNODE ptr ) as ASTNODE ptr
 
 		expr = astNewASSIGN( astBuildVarField( tmp ), expr, AST_OPOPT_DONTCHKOPOVL or AST_OPOPT_ISINI )
 
+		'' ASSIGN first, but return the field access
 		function = astNewLINK( expr, _
 			astBuildVarField( tmp ), _
-			FALSE ) '' ASSIGN first, but return the field access
+			AST_LINK_RETURN_RIGHT )
 	end if
 end function
 

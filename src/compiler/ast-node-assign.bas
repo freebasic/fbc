@@ -434,10 +434,10 @@ private function hShallowCopy _
 			'' delete the side-effect-free reference it produced.
 			t = NULL
 			if( astHasSideFx( l ) ) then
-				t = astNewLINK( t, astRemSideFx( l ) )
+				t = astNewLINK( t, astRemSideFx( l ), AST_LINK_RETURN_NONE )
 			end if
 			if( astHasSideFx( r ) ) then
-				t = astNewLINK( t, astRemSideFx( r ) )
+				t = astNewLINK( t, astRemSideFx( r ), AST_LINK_RETURN_NONE )
 			end if
 			astDelTree( l )
 			astDelTree( r )
@@ -470,9 +470,9 @@ function astNewASSIGN _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any, tr = any
-    dim as FB_DATATYPE ldtype = any, rdtype = any, ldfull = any, rdfull = any
-    dim as FB_DATACLASS ldclass = any, rdclass = any
-    dim as FBSYMBOL ptr lsubtype = any, proc = any
+	dim as FB_DATATYPE ldtype = any, rdtype = any, ldfull = any, rdfull = any
+	dim as FB_DATACLASS ldclass = any, rdclass = any
+	dim as FBSYMBOL ptr lsubtype = any, proc = any
 	dim as FB_ERRMSG err_num = any
 	dim as integer do_move = any
 
@@ -495,10 +495,10 @@ function astNewASSIGN _
 	''      there's no clone function: just do a shallow copy)
 	if( (options and AST_OPOPT_DONTCHKOPOVL) = 0 ) then
 
-   		dim as integer check_letop = TRUE
+		dim as integer check_letop = TRUE
 
-   		select case as const ldtype
-   		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		select case as const ldtype
+		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 			if( ldtype = rdtype ) then
 				if( l->subtype = r->subtype ) then
 
@@ -524,8 +524,8 @@ function astNewASSIGN _
 				'' because operator let could do nothing.
 				if( (options and AST_OPOPT_ISINI) <> 0 ) then
 					if( symbGetCompDefCtor( l->subtype ) <> NULL ) then
-	   					result = astBuildCtorCall( l->subtype, astCloneTree( l ) )
-	   				else
+						result = astBuildCtorCall( l->subtype, astCloneTree( l ) )
+					else
 						result = astNewMEM( AST_OP_MEMCLEAR, _
 						                    astCloneTree( l ), _
 						                    astNewCONSTi( symbGetLen( l->subtype ) ) )
@@ -535,7 +535,7 @@ function astNewASSIGN _
 				end if
 
 				'' build a proc call
-				return astNewLINK( result, astBuildCall( proc, l, r ) )
+				return astNewLINK( result, astBuildCall( proc, l, r ), AST_LINK_RETURN_NONE )
 			end if
 
 			if( err_num <> FB_ERRMSG_OK ) then
