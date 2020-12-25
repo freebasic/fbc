@@ -1966,6 +1966,7 @@ inc/fastcgi/fastcgi.bi
 inc/fastcgi/fcgi_stdio.bi
 inc/fastcgi/fcgiapp.bi
 inc/fbc-int/array.bi
+inc/fbc-int/memory.bi
 inc/fbgfx.bi
 inc/fbio.bi
 inc/fbthread.bi

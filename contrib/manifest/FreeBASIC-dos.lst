@@ -1160,6 +1160,7 @@ inc/dos/sys/segments.bi
 inc/dos/sys/version.bi
 inc/expat.bi
 inc/fbc-int/array.bi
+inc/fbc-int/memory.bi
 inc/fbgfx.bi
 inc/fbio.bi
 inc/fbthread.bi
