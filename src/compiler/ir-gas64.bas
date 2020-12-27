@@ -159,9 +159,11 @@ rbp-y -->  local vars
 #define KREGUPPER 15 ''registers 0 to 15 / 16=rip /17=dummy reg to avoid crash 
 #define KNOTFOUND -1
 #define KSIZEPROCTXT 4000000 ''initial size of proc_txt used for speed up text adding
-#define KLIMITROOM 150 ''upper limit for spilling (number of room = KLIMITROOM+1, zero based)
+
+'' used by ASM64_REGROOM.status (TODO: use a named enum for readability???)
 #define KROOMFREE -1
 #define KROOMMARKED -2
+#define KROOMUSED -3
 
 #macro MPUSH(strg)
 	pushnbstr+=1
@@ -228,6 +230,14 @@ enum
 	SECTION_EPILOG
 end enum
 
+'' type for tracking the spilled registers
+type ASM64_SPILLVREG
+	id as long           '' unique id for debugging messages only
+	sdvreg as long       '' the id of the real register spilled???
+	sdoffset as long     '' offset into the spilled registers for current stackframe
+	spilbranch1 as long  '' depends ctx.labelbranch2 for tracking spilled registers in second branch???
+end type
+
 type ASM64_CONTEXT
 	'' current indentation used by hWriteam64()
 	indent		 as integer
@@ -266,11 +276,8 @@ type ASM64_CONTEXT
 	''preparing arguments (hdocall)
 	proccalling  as Boolean
 	''for spilling registers
-	sdvreg(KLIMITROOM)   as long
-	sdoffset(KLIMITROOM) as long
-	spilbranch1(KLIMITROOM) as boolean
-	totalroom    as long
-	freeroom     as long
+	spillvregs   as TFLIST  '' ASM64_SPILLVREG
+	vreg_count   as long    '' required because TFLIST doesn't count allocated items
 	''to handle iif case
 	labelbranch2 as FBSYMBOL ptr
 	labeljump    as FBSYMBOL ptr
@@ -322,7 +329,13 @@ declare sub struct_analyze(byval fld as FBSYMBOL ptr,byref class1 as integer,byr
 ''===================== globals ===========================================
 dim shared as EDBGCTX       ctx_asm64
 dim shared as long          reghandle(KREGUPPER+2)
-dim shared as long          regroom(KREGUPPER+2)
+
+type ASM64_REGROOM
+	status as long               '' KROOMFREE, KROOMMARKED, KROOMUSED
+	vreg as ASM64_SPILLVREG ptr  '' pointer to the spilled vreg
+end type
+
+dim shared as ASM64_REGROOM regroom(KREGUPPER+2)
 dim shared as ASM64_CONTEXT ctx
 
 '' same order as FB_DATATYPE
@@ -1314,7 +1327,7 @@ private sub reg_mark(byval labelptr as FBSYMBOL ptr)
 	asm_info("new branch ? "+*symbGetMangledName( labelptr ))
 	for ireg as integer= 1 to KREGUPPER
 		if reghandle(ireg)<>KREGFREE and reghandle(ireg)<>KREGRSVD then ''excluding also rbp and rsp
-			regroom(ireg)=KROOMMARKED
+			regroom(ireg).status=KROOMMARKED
 			flagmark=true
 		end if
 	next
@@ -1325,47 +1338,41 @@ end sub
 ''spilling registers on stack
 ''===========================
 private sub reg_spilling(byval regspilled as long)
-	dim as integer numroom
-	'is there already a free room ?
-	if ctx.freeroom=0 then
-		if ctx.totalroom=KLIMITROOM then
-			asm_error("No room for spilling register report dev, current limit "+str(KLIMITROOM))
+
+	ctx.stk+=8
+	asm_info("stk20="+Str(ctx.stk))
+	if ctx.stkspil<>0 then
+		if ctx.stk=ctx.stkspil then
+			''should not happen
+			asm_error("Spilling overflow when proc calling")
 		end if
-		''no so creates room
-		ctx.stk+=8
-		asm_info("stk20="+Str(ctx.stk))
-		if ctx.stkspil<>0 then
-			if ctx.stk=ctx.stkspil then
-				''should not happen
-				asm_error("Spilling overflow when proc calling")
-			end if
-		end if
-		ctx.totalroom+=1
-		numroom=ctx.totalroom
-		ctx.sdoffset(numroom)=-ctx.stk
-	else
-		''find a free room
-		for iroom as integer =0 to ctx.totalroom
-			if ctx.sdvreg(iroom)=KREGFREE then numroom=iroom:exit for
-		next
-		ctx.freeroom-=1
 	end if
-	''store current virtual register
-	ctx.sdvreg(numroom)=reghandle(regspilled)
+
+	'' store current virtual register
+	'' TODO: alloc of VREG should be a procedure
+	dim as ASM64_SPILLVREG ptr v = any
+	v = flistNewItem( @ctx.spillvregs )
+	ctx.vreg_count += 1
+	v->id = ctx.vreg_count
+	v->sdoffset = -ctx.stk
+	v->sdvreg = reghandle(regspilled)
+	v->spilbranch1 = false
+
 	''store register
-	asm_info("spilled register="+*regstrq(regspilled)+" saved vreg="+str(reghandle(regspilled))+" room="+str(numroom))
-	asm_code("mov QWORD PTR "+str(ctx.sdoffset(numroom))+"[rbp], "+*regstrq(regspilled))
+	asm_info("spilled register="+*regstrq(regspilled)+" saved vreg="+str(reghandle(regspilled))+" room="+str(v->id))
+	asm_code("mov QWORD PTR "+str(v->sdoffset)+"[rbp], "+*regstrq(regspilled))
 	reghandle(regspilled)=KREGFREE
+
 	''need to keep a trace when handling second branch
-	if regroom(regspilled)=KROOMMARKED then regroom(regspilled)=numroom
-	if ctx.labelbranch2 then
-		''inside branch so need to restore registers later
-		ctx.spilbranch1(numroom)=true
-		asm_info("spilled register spilbranch1 true")
-	else
-		asm_info("spilled register spilbranch1 false")
-		ctx.spilbranch1(numroom)=false
+	if( regroom(regspilled).status = KROOMMARKED ) then 
+		regroom(regspilled).vreg = v
+		regroom(regspilled).status = KROOMUSED
 	end if
+
+	''track inside branch to restore registers later
+	asm_info("spilled register spilbranch1 " & cbool(v->spilbranch1) )
+	v->spilbranch1 = iif(ctx.labelbranch2,true,false)
+
 end sub
 ''==============================================
 ''save calling registers before function calls
@@ -1498,41 +1505,44 @@ private sub reg_branch(byval label as FBSYMBOL ptr )
 		asm_code(*symbGetMangledName( label )+":")
 		''handling second branch after first one so spilling registers
 		for ireg as integer = 1 to KREGUPPER
-			''Not KROOMMARKED nor KROOMFREE
-			if regroom(ireg)>=0 then
+			if( regroom(ireg).status = KROOMUSED ) then
 				''put in memory as in the branch 1
-				asm_info("spilling register to mimic branch1="+*regstrq(ireg)+" already saved vreg="+str(ctx.sdvreg(regroom(ireg)))+" from room="+str(regroom(ireg)))
-				asm_code("mov QWORD PTR "+str(ctx.sdoffset(regroom(ireg)))+"[rbp], "+*regstrq(ireg))
+				asm_info("spilling register to mimic branch1="+*regstrq(ireg)+" already saved vreg="+str(regroom(ireg).vreg->id)+" from room="+str(regroom(ireg).vreg->id))
+				asm_code("mov QWORD PTR "+str(regroom(ireg).vreg->sdoffset)+"[rbp], "+*regstrq(ireg))
 				reghandle(ireg)=KREGFREE
 				''marked to avoid an eventual restoring
-				ctx.spilbranch1(regroom(ireg))=false
+				regroom(ireg).vreg->spilbranch1 = false
 			end if
 			''reset by default even if only one branch as regroom() could be = KROOMMARKED
-			regroom(ireg)=KROOMFREE
+			regroom(ireg).status=KROOMFREE
+			regroom(ireg).vreg = NULL
 		next
 		if ctx.labeljump=0 then
 			''not a double branch so no need to do spilling below
 			ctx.labelbranch2=0
 		end if
 	elseif label=ctx.labeljump then
-		''restoring registers spilled in the second branch
-		for iroom as integer =0 to ctx.totalroom
-			'asm_info("iroom="+str(iroom)+" "+str(ctx.sdvreg(iroom))+" "+str(vreg))
-			if ctx.sdvreg(iroom)<>KREGFREE and ctx.spilbranch1(iroom)=true then
-				regfree=reg_findfree(ctx.sdvreg(iroom))
-				asm_info("SPILBRANCH1 restoring saved vreg="+str(ctx.sdvreg(iroom))+" in register="+*regstrq(regfree))
-				ctx.sdvreg(iroom)=KREGFREE
-				asm_code("mov "+*regstrq(regfree)+", QWORD PTR "+str(ctx.sdoffset(iroom))+"[rbp]")
-				ctx.freeroom+=1
-			end if
-		next
+		if( ctx.vreg_count > 0 ) then
+			''restoring registers spilled in the second branch
+			dim v as ASM64_SPILLVREG ptr = any 
+			v = flistGetHead( @ctx.spillvregs )
+			while( v <> NULL )
+				if( v->spilbranch1 ) then
+					regfree=reg_findfree(v->sdvreg)
+					asm_info("SPILBRANCH1 restoring saved vreg="+str(v->id)+" in register="+*regstrq(regfree))
+					v->sdvreg = KREGFREE
+					asm_code("mov "+*regstrq(regfree)+", QWORD PTR "+str(v->sdoffset)+"[rbp]")
+				end if			
+				v = flistGetNext( v )
+			wend
+		end if
 		ctx.labeljump=0
 		ctx.labelbranch2=0
 		asm_code(*symbGetMangledName( label )+":")
 	end if
 end sub
 function reg_findreal(byval vreg as long) as long
-	dim as long numroom=-1,realreg
+	dim as long realreg
 	for ireg as long =0 To KREGUPPER
 		if reghandle(ireg)=vreg then
 			asm_info("virtual register ="+Str(vreg)+" real register="+*regstrq(ireg))
@@ -1541,11 +1551,17 @@ function reg_findreal(byval vreg as long) as long
 	next
 	''searching in spilled register list
 	'asm_info("virtual register not found extend to spilled register list")
-	for iroom as integer =0 to ctx.totalroom
-		'asm_info("iroom="+str(iroom)+" "+str(ctx.sdvreg(iroom))+" "+str(vreg))
-		if ctx.sdvreg(iroom)=vreg then numroom=iroom:exit for
-	next
-	if numroom=-1 then
+
+	dim v as ASM64_SPILLVREG ptr = NULL
+	if( ctx.vreg_count > 0 ) then
+		v = flistGetHead( @ctx.spillvregs )
+		while( v <> NULL )
+			'asm_info("iroom="+str(iroom)+" "+str(v->sdvreg)+" "+str(vreg))
+			if v->sdvreg=vreg then exit while
+			v = flistGetNext( v )
+		wend
+	end if
+	if( v = NULL ) then
 		''very annoying not found also in the list
 		asm_error("virtual register="+Str(vreg)+" no real register corresponding, using KREG_XXX")
 		return KREG_XXX
@@ -1553,76 +1569,11 @@ function reg_findreal(byval vreg as long) as long
 	''found so restoring in an available register
 	realreg=reg_findfree(vreg)
 	''restore the register value
-	asm_info("virtual register not found extend to spilled register list="+str(vreg)+" "+str(numroom))
-	asm_code("mov "+*regstrq(realreg)+", QWORD PTR "+str(ctx.sdoffset(numroom))+"[rbp]")
-	''free the room
-	ctx.freeroom+=1
-	ctx.sdvreg(numroom)=KREGFREE
+	asm_info("virtual register not found extend to spilled register list="+str(vreg)+" "+str(v->id))
+	asm_code("mov "+*regstrq(realreg)+", QWORD PTR "+str(v->sdoffset)+"[rbp]")
+	v->sdvreg=KREGFREE
 	return realreg
 end function
-''======================================================
-'' free all the registers and reinit the spilling space
-''======================================================
-sub reg_freeall
-	asm_info("registers released")
-	for ireg as long =0 To KREGUPPER
-		''check not freed
-		if reghandle(ireg)<>KREGFREE and reghandle(ireg)<>KREGRSVD then
-			asm_info("reghandle reg="+*regstrq(ireg)+"  not free vreg="+str(reghandle(ireg)))
-			print ("reghandle reg="+*regstrq(ireg)+" not free vreg="+str(reghandle(ireg)))
-			reghandle(ireg)=KREGFREE
-		end if
-		''reghandle(ireg)=KREGFREE
-		if regroom(ireg)<>KROOMFREE then
-			if regroom(ireg)<>0 then
-				asm_info("regroom(ireg)<>KROOMFREE reg="+str(ireg)+" "+str(regroom(ireg)))
-				print "regroom(ireg)<>KROOMFREE reg=";ireg,regroom(ireg)
-			end if
-			regroom(ireg)=KROOMFREE
-		end if
-		'regroom(ireg)=KROOMFREE ''not inuse before a test
-	next
-
-	'reghandle(KREG_RBP)=KREGRSVD ''rbp ''reserved, don't use -1 as vreg could be = -1 when not a reg (var, idx, etc)
-	'reghandle(KREG_RSP)=KREGRSVD ''rsp
-	''check not changed
-	if reghandle(KREG_RBP)<>KREGRSVD then
-		print ("reghandle RBP not reserved="+str(reghandle(KREG_RBP)))
-		asm_info("reghandle RBP not reserved="+str(reghandle(KREG_RBP)))
-		reghandle(KREG_RBP)=KREGRSVD
-	end if
-	if reghandle(KREG_RSP)<>KREGRSVD then
-		print ("reghandle RSP not reserved="+str(reghandle(KREG_RSP)))
-		asm_info("reghandle RSP not reserved="+str(reghandle(KREG_RSP)))
-		reghandle(KREG_RSP)=KREGRSVD
-	end if
-
-	if ctx.totalroom<>-1 then
-	  for iroom as integer = 0 to ctx.totalroom
-	  	''check not freed
-	  	if ctx.sdvreg(iroom)<>KREGFREE then
-	  		asm_info("ctx.sdvreg() not free vreg="+str(ctx.sdvreg(iroom)))
-	  		print ("ctx.sdvreg() not free vreg="+str(ctx.sdvreg(iroom)))
-	  		ctx.sdvreg(iroom)=KREGFREE
-	  	end if
-		'ctx.sdvreg(iroom)=KREGFREE
-	  next
-	end if
-	if ctx.freeroom<>ctx.totalroom+1 then
-		asm_info("ctx.freeroom<>ctx.totalroom+1="+str(ctx.freeroom)+" "+str(ctx.totalroom+1))
-		print "ctx.freeroom<>ctx.totalroom+1=";ctx.freeroom,ctx.totalroom+1
-		ctx.freeroom=ctx.totalroom+1
-	end if
-
-	if ctx.labelbranch2<>0 then
-		print "ctx.labelbranch2<>0"
-		ctx.labelbranch2=0
-	end if
-	if ctx.labeljump<>0 then
-		print "ctx.labeljump<>0"
-		ctx.labeljump=0
-	end if
-end sub
 ''======================================
 ''return a register used temporary
 ''======================================
@@ -1838,6 +1789,9 @@ private sub memcopy(byval bytestoclear as Integer,byref src as string, byref dst
 end sub
 
 private sub _init( )
+
+	flistInit( @ctx.spillvregs, 2048, sizeof( ASM64_SPILLVREG ) )
+
 	irhlInit( )
 	'' IR_OPT_CPUSELFBOPS disabled, to prevent AST from producing self-ops.
 	irSetOption(IR_OPT_CPUBOPFLAGS or IR_OPT_MISSINGOPS or IR_OPT_CPUSELFBOPS)'  or IR_OPT_ADDRCISC)'
@@ -1850,6 +1804,8 @@ end sub
 private sub _end( )
 	asm_info("_end")
 	irhlEnd( ) ''clear some lists
+
+	flistEnd( @ctx.spillvregs )
 end sub
 
 #if __FB_DEBUG__ <> 0
@@ -2109,8 +2065,12 @@ private function _emitbegin( ) as integer
 	ctx.target=fbgetoption(FB_COMPOPT_TARGET) ''linux or windows
 	ctx.opereg=0
 
-	ctx.sdvreg(0)=KREGFREE
-	for ireg as integer = 0 to KREGUPPER:reghandle(ireg)=KREGFREE:regroom(ireg)=KROOMFREE:next
+	for ireg as integer = 0 to KREGUPPER
+		reghandle(ireg)=KREGFREE
+		regroom(ireg).status=KROOMFREE
+		regroom(ireg).vreg = NULL
+	next
+
 	reghandle(KREG_RBP)=KREGRSVD ''rbp ''reserved, don't use -1 as vreg could be = -1 when not a reg (var, idx, etc)
 	reghandle(KREG_RSP)=KREGRSVD ''rsp
 
@@ -2126,8 +2086,6 @@ private function _emitbegin( ) as integer
 	edbgEmitHeader_asm64( env.inf.name )
 
 	asm_section(".text")
-
-	''reg_freeall ''no registers used
 
 	function = TRUE
 end function
@@ -6270,8 +6228,6 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 	ctx.jmpvreg=KREGFREE
 	ctx.jmppass=0
 	ctx.opepass=0
-	ctx.totalroom=-1
-	ctx.freeroom=0
 
 	ctx.variadic=false
 	ctx.proc_txt=""
@@ -6301,8 +6257,6 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 		asm_code(".ascii "" -export:"+*symbGetMangledName( proc )+"""")
 		asm_section(".text")
 	end if
-
-	''reg_freeall ''not used by kept in case of checking registers not freed and so on
 
 	asm_info( hEmitProcHeader( proc)  )
 
@@ -6420,6 +6374,9 @@ private sub _emitprocend _
 	asm_code("ret")
 	ctx.indent -= 1
 	asm_info("===== End of proc =====")
+
+	flistReset( @ctx.spillvregs )
+	ctx.vreg_count = 0
 
 	irhlEmitProcEnd( ) ''just flistReset( @irhl.vregs )
 
