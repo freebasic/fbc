@@ -969,8 +969,23 @@ private function hAstNodeToStr _
 	case AST_NODECLASS_MACRO
 		return "MACRO: " & astDumpOpToStr( n->op.op ) & " " & NODE_TYPE
 
+	case AST_NODECLASS_LINK	
+		dim s as string = ""
+
+		'' append the return side (left, right, or none)
+		select case n->link.ret
+		case AST_LINK_RETURN_LEFT
+			s = "L"
+		case AST_LINK_RETURN_RIGHT
+			s = "R"
+		'' case AST_LINK_RETURN_NONE
+		''  s = "N"
+		end select
+		return "*" & hAstNodeClassToStr( n->class ) & NODE_TYPE & "-" & s
+
 	case else
 		return hAstNodeClassToStr( n->class ) & NODE_TYPE
+
 	end select
 
 end function
