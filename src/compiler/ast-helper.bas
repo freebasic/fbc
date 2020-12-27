@@ -55,7 +55,7 @@ function astBuildFakeWstringAssign _
 
 	'' side-effect?
 	if( astHasSideFx( expr ) ) then
-		t = astNewLINK( t, astRemSideFx( expr ), FALSE )
+		t = astNewLINK( t, astRemSideFx( expr ), AST_LINK_RETURN_RIGHT )
 	end if
 
 	assert( astGetDataType( expr ) = FB_DATATYPE_WCHAR )
@@ -63,12 +63,12 @@ function astBuildFakeWstringAssign _
 	'' wcharptr = WstrAlloc( WstrLen( expr ) )
 	t = astNewLINK( t, _
 		astBuildVarAssign( sym, rtlWstrAlloc( rtlWstrLen( astCloneTree( expr ) ) ), options ), _
-		FALSE )
+		AST_LINK_RETURN_NONE )
 
 	'' *wcharptr = expr
 	t = astNewLINK( t, _
 		astNewASSIGN( astBuildFakeWstringAccess( sym ), expr, options ), _
-		FALSE )
+		AST_LINK_RETURN_RIGHT )
 
 	function = t
 end function
@@ -303,10 +303,10 @@ function astBuildWhileCounterBegin _
 	) as ASTNODE ptr
 
 	'' counter = initvalue
-	tree = astNewLINK( tree, astBuildVarAssign( cnt, initexpr ) )
+	tree = astNewLINK( tree, astBuildVarAssign( cnt, initexpr ), AST_LINK_RETURN_NONE )
 
 	'' do
-	tree = astNewLINK( tree, astNewLABEL( label, flush_label ) )
+	tree = astNewLINK( tree, astNewLABEL( label, flush_label ), AST_LINK_RETURN_NONE )
 
 	'' if( counter = 0 ) then
 	''     goto exitlabel
@@ -314,7 +314,7 @@ function astBuildWhileCounterBegin _
 	tree = astNewLINK( tree, _
 		astBuildBranch( _
 			astNewBOP( AST_OP_EQ, astNewVAR( cnt ), astNewCONSTi( 0 ) ), _
-			exitlabel, TRUE ) )
+			exitlabel, TRUE ), AST_LINK_RETURN_NONE )
 
 	function = tree
 end function
@@ -329,13 +329,13 @@ function astBuildWhileCounterEnd _
 	) as ASTNODE ptr
 
 	'' counter -= 1
-	tree = astNewLINK( tree, astBuildVarInc( cnt, -1 ) )
+	tree = astNewLINK( tree, astBuildVarInc( cnt, -1 ), AST_LINK_RETURN_NONE )
 
 	'' goto label
-	tree = astNewLINK( tree, astNewBranch( AST_OP_JMP, label ) )
+	tree = astNewLINK( tree, astNewBranch( AST_OP_JMP, label ), AST_LINK_RETURN_NONE )
 
 	'' loop
-	tree = astNewLINK( tree, astNewLABEL( exitlabel, flush_label ) )
+	tree = astNewLINK( tree, astNewLABEL( exitlabel, flush_label ), AST_LINK_RETURN_NONE )
 
 	function = tree
 end function
@@ -358,10 +358,10 @@ function astBuildForBegin _
 	) as ASTNODE ptr
 
 	'' cnt = 0
-	tree = astNewLINK( tree, astBuildVarAssign( cnt, inivalue ) )
+	tree = astNewLINK( tree, astBuildVarAssign( cnt, inivalue ), AST_LINK_RETURN_NONE )
 
 	'' do
-	tree = astNewLINK( tree, astNewLABEL( label, flush_label ) )
+	tree = astNewLINK( tree, astNewLABEL( label, flush_label ), AST_LINK_RETURN_NONE )
 
 	function = tree
 end function
@@ -375,7 +375,7 @@ function astBuildForEnd _
 	) as ASTNODE ptr
 
 	'' counter += stepvalue
-	tree = astNewLINK( tree, astBuildVarInc( cnt, 1 ) )
+	tree = astNewLINK( tree, astBuildVarInc( cnt, 1 ), AST_LINK_RETURN_NONE )
 
 	'' if( counter = endvalue ) then
 	''     goto label
@@ -383,7 +383,7 @@ function astBuildForEnd _
 	tree = astNewLINK( tree, _
 		astBuildBranch( _
 			astNewBOP( AST_OP_EQ, astNewVAR( cnt ), endvalue ), _
-			label, FALSE ) )
+			label, FALSE ), AST_LINK_RETURN_NONE )
 
 	function = tree
 end function

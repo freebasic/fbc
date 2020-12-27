@@ -155,7 +155,7 @@ sub cSelectStmtBegin( )
 			else
 				astAdd( astNewLINK( _
 					astNewDECL( sym, FALSE ), _
-					astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ) ) )
+					astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ), AST_LINK_RETURN_NONE ) )
 			end if
 		else
 			'' The wstring expression must be copied into a
@@ -179,7 +179,7 @@ sub cSelectStmtBegin( )
 				'' Just the assignment, used as initializer
 				astAdd( astNewLINK( _
 					astNewDECL( sym, FALSE ), _
-					astBuildFakeWstringAssign( sym, expr, AST_OPOPT_ISINI ) ) )
+					astBuildFakeWstringAssign( sym, expr, AST_OPOPT_ISINI ), AST_LINK_RETURN_NONE ) )
 			end if
 		end if
 	end if

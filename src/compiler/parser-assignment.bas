@@ -507,7 +507,7 @@ function cAssignmentOrPtrCall _
         			exit function
         		end if
 
-        		tree = astNewLINK( tree, expr )
+        		tree = astNewLINK( tree, expr, AST_LINK_RETURN_NONE )
         	end if
 
 			fld = symbUdtGetNextField( fld )

@@ -2165,7 +2165,7 @@ function rtlStrConcat _
 	if( astNewARG( proc, _
 		astNewLINK( astBuildTempVarClear( tmp ), _
 			astNewVAR( tmp ), _
-			FALSE ) ) = NULL ) then
+			AST_LINK_RETURN_RIGHT ) ) = NULL ) then
 		exit function
 	end if
 

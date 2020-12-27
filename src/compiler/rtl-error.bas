@@ -282,7 +282,7 @@ function rtlErrorCheck( byval expr as ASTNODE ptr ) as ASTNODE ptr
 
 	if( env.clopt.resumeerr ) then
 		reslabel = symbAddLabel( NULL )
-		t = astNewLINK( t, astNewLABEL( reslabel ) )
+		t = astNewLINK( t, astNewLABEL( reslabel ), AST_LINK_RETURN_NONE )
 	else
 		reslabel = NULL
 	end if
@@ -290,15 +290,15 @@ function rtlErrorCheck( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	if( env.clopt.errorcheck ) then
 		'' if expr = 0 then
 		nxtlabel = symbAddLabel( NULL )
-		t = astNewLINK( t, astNewBOP( AST_OP_EQ, expr, astNewCONSTi( 0 ), nxtlabel, AST_OPOPT_NONE ) )
+		t = astNewLINK( t, astNewBOP( AST_OP_EQ, expr, astNewCONSTi( 0 ), nxtlabel, AST_OPOPT_NONE ), AST_LINK_RETURN_NONE )
 
 		'' fb_ErrorThrow()
-		t = astNewLINK( t, astNewBRANCH( AST_OP_JUMPPTR, NULL, hErrorThrow( reslabel, nxtlabel ) ) )
+		t = astNewLINK( t, astNewBRANCH( AST_OP_JUMPPTR, NULL, hErrorThrow( reslabel, nxtlabel ) ), AST_LINK_RETURN_NONE )
 
 		'' end if
-		t = astNewLINK( t, astNewLABEL( nxtlabel ) )
+		t = astNewLINK( t, astNewLABEL( nxtlabel ), AST_LINK_RETURN_NONE )
 	else
-		t = astNewLINK( t, expr )
+		t = astNewLINK( t, expr, AST_LINK_RETURN_NONE )
 	end if
 
 	function = t

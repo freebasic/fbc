@@ -276,7 +276,7 @@ function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
 
         '' get pointer to argument
         ptrexpr = argexpr( i )
-        t = astNewLINK( t, hGetExprRef( ptrexpr ), FALSE )
+        t = astNewLINK( t, hGetExprRef( ptrexpr ), AST_LINK_RETURN_RIGHT )
 
         ''byref
         dim isstring as integer
@@ -284,7 +284,7 @@ function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
         if( mode = FB_PARAMMODE_BYREF and _
             argmode( i ) <> FB_PARAMMODE_BYVAL and _
             isstring = FALSE ) then
-            t = astNewLINK( t, hGetExprRef( ptrexpr ), FALSE )
+            t = astNewLINK( t, hGetExprRef( ptrexpr ), AST_LINK_RETURN_RIGHT )
         end if
         
         if( ptrexpr = NULL ) then
@@ -299,5 +299,5 @@ function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
         param = symbGetProcPrevParam( proc, param )
     next
 
-	function = astNewLINK( t, expr, FALSE )
+	function = astNewLINK( t, expr, AST_LINK_RETURN_RIGHT )
 end function

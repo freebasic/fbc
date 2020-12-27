@@ -260,7 +260,7 @@ private function astUpdate( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 	'' Destroy temporaries if needed
 	if( ast.flushdtorlist ) then
-		n = astNewLINK( n, astDtorListFlush( ) )
+		n = astNewLINK( n, astDtorListFlush( ), AST_LINK_RETURN_NONE )
 	end if
 
 	function = n
@@ -925,14 +925,14 @@ private function hCallCtorList _
 
 	if( is_ctor ) then
 		'' ctor( *iter )
-		tree = astNewLINK( tree, astBuildCtorCall( subtype, astBuildVarDeref( iter ) ) )
+		tree = astNewLINK( tree, astBuildCtorCall( subtype, astBuildVarDeref( iter ) ), AST_LINK_RETURN_NONE )
 	else
 		'' dtor( *iter )
-		tree = astNewLINK( tree, astBuildDtorCall( subtype, astBuildVarDeref( iter ) ) )
+		tree = astNewLINK( tree, astBuildDtorCall( subtype, astBuildVarDeref( iter ) ), AST_LINK_RETURN_NONE )
 	end if
 
 	'' iter += 1
-	tree = astNewLINK( tree, astBuildVarInc( iter, iif( is_ctor, 1, -1 ) ) )
+	tree = astNewLINK( tree, astBuildVarInc( iter, iif( is_ctor, 1, -1 ) ), AST_LINK_RETURN_NONE )
 
 	'' next
 	tree = astBuildForEnd( tree, cnt, label, astNewCONSTi( elements ) )
@@ -1086,22 +1086,22 @@ private function hCallFieldCtors _
 			if( fld <> parent->udt.base ) then
 				'' part of an union?
 				if( symbGetIsUnionField( fld ) ) then
-					tree = astNewLINK( tree, hClearUnionFields( this_, fld, @fld ) )
+					tree = astNewLINK( tree, hClearUnionFields( this_, fld, @fld ), AST_LINK_RETURN_NONE )
 					'' hClearUnionFields() already skipped to the next field behind the union
 					continue while
 				else
 					'' not initialized?
 					if( symbGetTypeIniTree( fld ) = NULL ) then
-						tree = astNewLINK( tree, hCallFieldCtor( this_, fld ) )
+						tree = astNewLINK( tree, hCallFieldCtor( this_, fld ), AST_LINK_RETURN_NONE )
 					elseif( symbIsDynamic( fld ) ) then
-						tree = astNewLINK( tree, hInitDynamicArrayField( this_, fld ) )
+						tree = astNewLINK( tree, hInitDynamicArrayField( this_, fld ), AST_LINK_RETURN_NONE )
 					else
 						'' Note: flushing the field's TYPEINI against the whole "THIS" instance,
 						'' not against "THIS.thefield", because the TYPEINI contains absolute offsets.
 						tree = astNewLINK( tree, _
 							astTypeIniFlush( astBuildVarField( this_ ), _
 								astTypeIniClone( symbGetTypeIniTree( fld ) ), _
-								FALSE, AST_OPOPT_ISINI ) )
+								FALSE, AST_OPOPT_ISINI ), AST_LINK_RETURN_NONE )
 					end if
 				end if
 			end if
@@ -1192,10 +1192,10 @@ private sub hCallCtors( byval n as ASTNODE ptr, byval sym as FBSYMBOL ptr )
 	tree = hCallBaseCtor( parent, sym )
 
 	'' 2. fields (each field will be constructed, or initialized, or cleared unless =ANY was used on it)
-	tree = astNewLINK( tree, hCallFieldCtors( parent, sym ) )
+	tree = astNewLINK( tree, hCallFieldCtors( parent, sym ), AST_LINK_RETURN_NONE )
 
 	'' 3. vtable ptr (to point to this class's vtable instead of the base's)
-	tree = astNewLINK( tree, hInitVptr( parent, sym ) )
+	tree = astNewLINK( tree, hInitVptr( parent, sym ), AST_LINK_RETURN_NONE )
 
 	'' Find the first statement that is executable code,
 	'' and insert the constructor calls above it.

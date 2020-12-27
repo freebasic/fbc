@@ -1625,7 +1625,7 @@ function astNewSelfBOP _
 	t = NULL
 
 	if( astHasSideFx( l ) ) then
-		t = astNewLINK( t, astMakeRef( l ), FALSE )
+		t = astNewLINK( t, astMakeRef( l ), AST_LINK_RETURN_NONE )
 	end if
 
 	'' ... = l normalbop r
@@ -1646,7 +1646,7 @@ function astNewSelfBOP _
 		astDelTree( t )
 		exit function
 	end if
-	t = astNewLINK( t, l, FALSE )
+	t = astNewLINK( t, l, AST_LINK_RETURN_NONE )
 
 	function = t
 end function

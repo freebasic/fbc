@@ -233,7 +233,7 @@ function astIsEqualParamInit _
 
 	select case as const( l->class )
 	case AST_NODECLASS_LINK
-		if( l->link.ret_left <> r->link.ret_left ) then
+		if( l->link.ret <> r->link.ret ) then
 			exit function
 		end if
 
@@ -816,12 +816,17 @@ function astBuildBranch _
 		parentlink = NULL
 		while( n->class = AST_NODECLASS_LINK )
 			parentlink = n
-			if( n->link.ret_left ) then
+			select case n->link.ret
+			case AST_LINK_RETURN_LEFT
 				n = n->l
-			else
+			case AST_LINK_RETURN_RIGHT
 				n = n->r
-			end if
+			case else
+				n = NULL
+			end select
 		wend
+
+		assert( n )
 
 		select case( n->class )
 		case AST_NODECLASS_CONST
@@ -908,11 +913,14 @@ function astBuildBranch _
 		if( n ) then
 			'' Update the parent LINK node, if any
 			if( parentlink ) then
-				if( parentlink->link.ret_left ) then
+				select case parentlink->link.ret
+				case AST_LINK_RETURN_LEFT
 					parentlink->l = n
-				else
+				case AST_LINK_RETURN_RIGHT
 					parentlink->r = n
-				end if
+				case else
+					expr = n
+				end select
 			else
 				'' Otherwise the whole expression was replaced
 				expr = n
@@ -939,7 +947,7 @@ function astBuildBranch _
 		n = astBuildVarAssign( temp, expr, AST_OPOPT_ISINI )
 
 		'' 2. call dtors
-		n = astNewLINK( n, astDtorListFlush( ) )
+		n = astNewLINK( n, astDtorListFlush( ), AST_LINK_RETURN_NONE )
 
 		'' 3. branch if tempvar = zero
 		expr = astNewVAR( temp )
@@ -949,7 +957,7 @@ function astBuildBranch _
 	n = astNewLINK( n, _
 		astNewBOP( iif( is_inverse, AST_OP_NE, AST_OP_EQ ), _
 			expr, astNewCONSTz( dtype, expr->subtype ), _
-			label, AST_OPOPT_NONE ) )
+			label, AST_OPOPT_NONE ), AST_LINK_RETURN_NONE )
 
 	function = n
 end function
@@ -1077,7 +1085,7 @@ function astDtorListFlush( byval cookie as integer ) as ASTNODE ptr
 
 		'' Only call dtors for the given cookie number
 		if( n->cookie = cookie ) then
-			t = astNewLINK( t, astBuildVarDtorCall( n->sym ) )
+			t = astNewLINK( t, astBuildVarDtorCall( n->sym ), AST_LINK_RETURN_NONE )
 			listDelNode( @ast.dtorlist, n )
 		end if
 
@@ -1188,11 +1196,12 @@ sub astSetType _
 
 	select case n->class
 	case AST_NODECLASS_LINK
-		if( n->link.ret_left ) then
+		select case n->link.ret
+		case AST_LINK_RETURN_LEFT
 			astSetType( n->l, dtype, subtype )
-		else
+		case AST_LINK_RETURN_RIGHT
 			astSetType( n->r, dtype, subtype )
-		end if
+		end select
 
 	case AST_NODECLASS_FIELD
 		astSetType( n->l, dtype, subtype )

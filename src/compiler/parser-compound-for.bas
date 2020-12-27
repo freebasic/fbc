@@ -272,7 +272,7 @@ private function hStoreTemp _
 		end select
 	end if
 
-	astAdd( astNewLINK( declnode, expr ) )
+	astAdd( astNewLINK( declnode, expr, AST_LINK_RETURN_NONE ) )
 
 	function = s
 end function

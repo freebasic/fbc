@@ -1714,9 +1714,12 @@ function symbTypeToStr _
 	case FB_DATATYPE_FUNCTION
 		'' Procedure pointer
 
-		'' The sub() or function() already implies one PTR
-		assert( ptrcount > 0 )
-		ptrcount -= 1
+		'' The sub() or function() already implies one PTR, unless
+		'' we are dumping this from AST in which case the SYM could
+		'' refer the the procedure type itself with no pointer.
+		if( ptrcount > 0 ) then
+			ptrcount -= 1
+		end if
 
 		'' If there are any more PTRs, i.e. a PTR to a proc PTR,
 		'' then it must be emitted inside a typeof():

@@ -20,7 +20,6 @@ ex : integer, float,integer, float  ->  rcx,xmm1,r8,xmm3
 rbp,rbx,rdi,rsi,r12,r13,r14,r15 belong to calling proc, if used by called need to be saved by called
 rcx,rdx,r8,r9,rax,r10,r11       belong to called  proc, if used by calling need to be saved (before call)
 
-
 Linux ABI
 ---------
 params : rdi,rsi,rdx,rcx,r8,r9 + xmm0 to xmm7
@@ -63,21 +62,14 @@ rbp+24         param 2
 rbp+16         param 1   calling --> rsp + x / called --> rbp + 16, 24,.. to 8+x*8
 			   return addr (after call)
 rbp            old rbp
-rbp-8          rax  14 saved registers (arbitrary even not used) --> rbp -8 to -12
--16            rbx
--24            rcx
--32            rdx
--40            rsi
--48            rdi
--56            r8
--64            r9
--72            r10
--80            r11
--88            r12
--96            r13
--104           r14
--112           r15
-rbp-112-x -->  local vars
+rbp-8          rbx  7 saved registers (space arbitrary reserved even not used) --> rbp -8 to -56
+-16            rdi
+-24            rsi
+-32            r12
+-40            r13
+-48            r14
+-56            r15
+rbp-56-x -->  local vars
 
 			   param x space is reversed using argcountmax, even with variadic
 			   .......
@@ -96,18 +88,23 @@ rbp+24         param 2
 rbp+16         FIRST param 1 on stack (no param in register)  calling --> rsp + x / called --> rbp + 16, 24,.. to 8+x*8
 			   return addr (after call)
 rbp            old rbp
-.....
-rbp+x          saved param passed in register
+rbp-8          rbx  5 saved registers (space arbitrary reserved even not used) --> rbp -8 to -40
+-16            r12
+-24            r13
+-32            r14
+-40            r15
 
 if variadic register save area, only for parameters not defined
--224 rdi 0
--216 rsi 8
+-152 rdi 0
+-112 rsi 8
 ...
--184 r9  40
+-104 r9  40
 -176 xmm0 48
 ...
--120 xmm7 104
+-48 xmm7 104
 
+rbp-x      saved param passed in register
+rbp-y -->  local vars
 '/
 
 #include once "fbint.bi"
@@ -122,11 +119,12 @@ if variadic register save area, only for parameters not defined
 '' comment to not get basic data
 '#define basicdata
 
-''in hwriteasm64 by default 0 --> not a line of asm code
-#define KNOTCODE 0
-#define KCODE    1
+#define KDOALL	 0
+#define KNOALL	 1
+#define KNOFREE  2
+#define KNOOPTIM 3
 
-#define asm_code(s) hWriteasm64(s,KCODE)
+#define asm_code(s,opt...) hWriteasm64(s,opt)
 
 #ifdef debugdata
 	#define asm_debug(s) hWriteasm64("# asmdebug "+s)
@@ -135,7 +133,7 @@ if variadic register save area, only for parameters not defined
 #endif
 
 #if __FB_DEBUG__ <> 0
-	#define asm_info(s) hWriteasm64("           # -> "+s)
+	#define asm_info(s) hWriteasm64("# "+s)
 #else
 	#define asm_info(s) rem
 	#define typeDumpToStr(a,b) " "+str(a)
@@ -158,10 +156,14 @@ if variadic register save area, only for parameters not defined
 #define KREGFREE  -2 ''register not free
 #define KREGRSVD  -3 ''register reserved
 #define KREGLOCK  -4 ''register locked (used as parameter)
-#define KREGUPPER 15
+#define KREGUPPER 15 ''registers 0 to 15 / 16=rip /17=dummy reg to avoid crash 
 #define KNOTFOUND -1
 #define KSIZEPROCTXT 4000000 ''initial size of proc_txt used for speed up text adding
-#define KLIMITROOM 150 ''upper limit for spilling (number of room = KLIMITROOM+1, zero based)
+
+'' used by ASM64_REGROOM.status (TODO: use a named enum for readability???)
+#define KROOMFREE -1
+#define KROOMMARKED -2
+#define KROOMUSED -3
 
 #macro MPUSH(strg)
 	pushnbstr+=1
@@ -228,6 +230,14 @@ enum
 	SECTION_EPILOG
 end enum
 
+'' type for tracking the spilled registers
+type ASM64_SPILLVREG
+	id as long           '' unique id for debugging messages only
+	sdvreg as long       '' the id of the real register spilled???
+	sdoffset as long     '' offset into the spilled registers for current stackframe
+	spilbranch1 as long  '' depends ctx.labelbranch2 for tracking spilled registers in second branch???
+end type
+
 type ASM64_CONTEXT
 	'' current indentation used by hWriteam64()
 	indent		 as integer
@@ -253,14 +263,11 @@ type ASM64_CONTEXT
 	stkcopy      as integer
 	usedreg      as long
 	prevfilename as zstring ptr
-	''true if is a code
-	code         as byte
-	''for saving virtual reg before a call
-	'savevreg(KREGUPPER) as long
-	reginuse(KREGUPPER)  as long
 	''to save register and virtuel register to be used with jmp reg after a cmp where reg is unmarked
+	''happens when -exx is set   check pointer not null --> cmp r11,0 / je LT_0001 / jmp [r11]
 	jmpreg       as long
 	jmpvreg      as long
+	jmppass      as long
 	'ctors        as string  ''kept here if to be added
 	'dtors        as string
 	ctorcount    as integer
@@ -269,11 +276,8 @@ type ASM64_CONTEXT
 	''preparing arguments (hdocall)
 	proccalling  as Boolean
 	''for spilling registers
-	sdvreg(KLIMITROOM)   as long
-	sdoffset(KLIMITROOM) as long
-	spilbranch1(KLIMITROOM) as boolean
-	totalroom    as long
-	freeroom     as long
+	spillvregs   as TFLIST  '' ASM64_SPILLVREG
+	vreg_count   as long    '' required because TFLIST doesn't count allocated items
 	''to handle iif case
 	labelbranch2 as FBSYMBOL ptr
 	labeljump    as FBSYMBOL ptr
@@ -281,6 +285,9 @@ type ASM64_CONTEXT
 	variadic     as boolean
 	''target linux or win32
 	target       as FB_COMPTARGET
+	''handling of vreg after a call
+	opereg    as integer
+	opepass   as integer
 end type
 
 type EDBGCTX
@@ -297,14 +304,11 @@ type EDBGCTX
 end type
 
 ''=================== declares ==============================================
-declare function hemittype(byval dtype as integer,byval subtype as FBSYMBOL Ptr) as string
-declare sub hemitstruct( byval s as FBSYMBOL ptr )
 declare sub _emitdbg(byval op as integer,byval proc as FBSYMBOL ptr,byval lnum as Integer,ByVal filename as zstring Ptr = 0)
-declare sub reg_freeall
 declare sub check_optim(byref code as string)
 declare sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 declare function hgetdatatype_asm64 (byval sym as FBSYMBOL ptr,byval arraydimensions as integer = 0) as string
-declare sub hwriteasm64( byref ln as string,byval cod as byte=0 )
+declare sub hwriteasm64( byref ln as string,byval opt as integer=KDOALL)
 declare sub _emitvariniend( byval sym as FBSYMBOL ptr )
 declare sub _emitvarinipad( byval bytes as longint )
 declare sub _emitvariniwstr(byval varlength as longint,byval literal as wstring ptr,byval litlength as longint)
@@ -320,12 +324,18 @@ declare sub _emitlabelnf(byval label as FBSYMBOL Ptr)
 declare sub _emitscopebegin( byval s as FBSYMBOL ptr )
 declare sub _emitscopeend( byval s as FBSYMBOL ptr )
 declare sub _emitMacro( byval op as integer,byval v1 as IRVREG ptr, byval v2 as IRVREG ptr, byval vr as IRVREG ptr )
-declare sub save_call_restore(byref func as string)
+declare sub save_call(byref func as string,byval vr as IRVREG ptr,byval vrreg as integer)
 declare sub struct_analyze(byval fld as FBSYMBOL ptr,byref class1 as integer,byref class2 as integer,byref limit as integer)
 ''===================== globals ===========================================
 dim shared as EDBGCTX       ctx_asm64
 dim shared as long          reghandle(KREGUPPER+2)
-dim shared as long          regroom(KREGUPPER+2)
+
+type ASM64_REGROOM
+	status as long               '' KROOMFREE, KROOMMARKED, KROOMUSED
+	vreg as ASM64_SPILLVREG ptr  '' pointer to the spilled vreg
+end type
+
+dim shared as ASM64_REGROOM regroom(KREGUPPER+2)
 dim shared as ASM64_CONTEXT ctx
 
 '' same order as FB_DATATYPE
@@ -392,8 +402,8 @@ private sub check_optim(byref code as string)
 	static as long prevwpos,flag
 	dim as long poschar1,poschar2,writepos
 
-	if right(Trim(code),9)="#NO_OPTIM" or right(Trim(code),7)="#NO_ALL" then
-		prevpart1="":prevpart2="":prevmov="":flag=KUSE_MOV ''reinit
+	if len(code)=0 then
+		prevpart1="":prevpart2="":prevmov="":flag=KUSE_MOV ''reinit statics
 		exit sub
 	end if
 
@@ -473,7 +483,6 @@ private sub check_optim(byref code as string)
 				code="#O4"+code+newline+string( ctx.indent*3, 32 )+newcode+" #Optim 4"
 			end if
 		else
-			'print code;" part1="+part1+" part2="+part2+" prevpart1="+prevpart1+" prevpart2="+prevpart2
 			if part2=prevpart1 and part1[0]=asc("r") then
 				asm_info("OPTIMIZATION 5 (lea)")
 				'asm_info("removed =lea "+prevpart1+", "+prevpart2)
@@ -545,6 +554,11 @@ private sub check_optim(byref code as string)
 				if instr(prevpart1,"[")<>0 then
 					asm_info("OPTIMIZATION 3-1")
 					''skip comment
+					if prevmov="movss" then
+						mov="movd"
+					else
+						mov="movq"
+					end if
 				else
 					asm_info("OPTIMIZATION 3-2")
 					mid(ctx.proc_txt,prevwpos)="#O3"
@@ -584,14 +598,21 @@ private sub check_optim(byref code as string)
 	prevmov=mov
 	prevwpos=writepos
 end sub
-
 private sub reg_freeable(byref lineasm as string)
 
 	dim as long regfound1,regfound2
 	dim as string instruc
 
 	instruc=left(Trim(lineasm),3)
-	if instr("mov lea cmp add sub imu and xor or call push cvtsi2sd cvtsi2ss cvtss2sd cvtsd2ss",instruc)=0 then exit sub
+	if instruc="inc" orelse instruc="dec" orelse instruc="not" orelse instruc="neg" then
+		''inc r11 --> not freeable / inc qword ptr [r11] --> freeable
+		if instr(lineasm,"[")=0 then
+			''******** CHECK marked register for callee **********************************************************
+			exit sub
+		end if
+	else
+		if instr("mov lea cmp add sub imu idiv div shl shr sar and xor or call jmp push test cvt ",instruc)=0 then exit sub
+	end if
 
 	for ireg as long =1 To KREGUPPER
 		if reghandle(ireg)=KREGRSVD then continue for ''excluding rbp and rsp
@@ -608,14 +629,22 @@ private sub reg_freeable(byref lineasm as string)
 		end if
 
 		if regfound1<>KNOTFOUND then
-			if ctx.reginuse(regfound1)=TRUE then
-				if instruc="add" orelse instruc="sub" orelse instruc="imu" then
-					continue for
-				elseif instruc="cmp" then
-					''to handle case as cmp r11, 15/r15 where r11 has been already marked but it appears as lhs
-					regfound2=regfound1
-					regfound1=KNOTFOUND
-				end IF
+			if instruc="add" orelse instruc="sub" orelse instruc="imu" then
+				''already inuse and to be used later case 'add r11, xxx'  not 'add qword ptr [r11], xxx'
+				continue for
+			elseif instruc="cmp" then
+				''already inuse but not to be used later except one case (at least) when null-pointer checking
+				ctx.jmpreg=regfound1 ''see their defines
+				ctx.jmpvreg=reghandle(regfound1)
+				ctx.jmppass=2
+				reghandle(regfound1)=KREGFREE
+				continue for
+			else
+				if instr(lineasm,*regstrq(ireg)+", "+*regstrq(ireg)) then
+					''case mov rzz, rzz in hdocall
+					reghandle(regfound1)=KREGFREE
+					exit sub
+				end if
 			end if
 		end if
 
@@ -630,49 +659,12 @@ private sub reg_freeable(byref lineasm as string)
 				regfound2=ireg
 			end if
 		end if
-		'asm_info("ireg="+str(ireg)+" regfound1="+*regstrq(regfound1)+" found2="+*regstrq(regfound2))
-
-	   ' asm_info("in freeable register="+lineasm+" "+*regstrq(ireg)+" "+Str(regfound1))
-		'if regfound1<>-1 then asm_info("reghandle(regfound1) 1="+str(reghandle(regfound1)))
-		if regfound1<>KNOTFOUND then
-		   ' asm_info("reghandle(regfound1) 2="+str(reghandle(regfound1)))
-			if reghandle(regfound1)<>KREGFREE then
-				asm_info("marked as used register="+*regstrq(ireg))
-				ctx.reginuse(regfound1)=true
-				if instr(lineasm,*regstrq(ireg)+", "+*regstrq(ireg)) then
-					''case mov rzz, rzz in hdocall
-					asm_info("Release done for register 1 ="+*regstrq(ireg)+" case mov rzz, rzz")
-					reghandle(regfound1)=KREGFREE
-					ctx.reginuse(regfound1)=false
-				end if
-			else
-				ctx.reginuse(regfound1)=FALSE ''not sure usefull, except if case below ?
-				if instr(lineasm,*regstrq(ireg)+", "+*regstrq(ireg)) then
-					''case mov rzz, rzz in hdocall
-					asm_info("Release done for register 3 ="+*regstrq(ireg)+" case mov rzz, rzz")
-					reghandle(regfound1)=KREGFREE
-				end if
-			end if
-			continue For
-		end if
 
 		if regfound2<>KNOTFOUND then
-			if reghandle(regfound2)<>KREGFREE and ctx.reginuse(regfound2)=TRUE  then
-				asm_info("Release done for register 2 ="+*regstrq(ireg))
-				ctx.jmpreg=regfound2 ''see their defines
-				ctx.jmpvreg=reghandle(regfound2)
-				reghandle(regfound2)=KREGFREE
-				ctx.reginuse(regfound2)=FALSE
-			'elseif instr(lineasm,*regstrq(ireg)+", "+*regstrq(ireg)) then
-			'    ''case mov rx, rx in hdocall
-			'    asm_info("Release done for register mov rx, rx="+*regstrq(ireg))
-			'    reghandle(regfound2)=KREGFREE
-			'    ctx.reginuse(regfound2)=FALSE
-			end if
+			reghandle(regfound2)=KREGFREE
 		end if
 	next
 end sub
-
 ''============== end of optim ====================================================
 private function pw2(byval num as integer)as integer ''return the first power of 2 greater than a number ex 24 -->32
 	dim as double a=log(num)/log(2)
@@ -689,19 +681,47 @@ private sub asm_section(byref section as string)
 		section_current=section
 	end if
 end sub
-private sub hwriteasm64( byref ln2 as string,byval cod as byte=KNOTCODE)
-	dim as string ln
-	ln=rtrim(ln2)
-
-	if cod then
-		ctx.code=1
-		if right(ln,8)<>"#NO_FREE" and right(ln,7)<>"#NO_ALL" then reg_freeable(ln)
-		check_optim(ln)
+private sub emitop3_op4(byref op as string)
+	if right(op,3)="#NO" then
+		asm_code(op,KNOOPTIM)
+	else
+		asm_code(op)
 	end if
+end sub
+private sub hwriteasm64( byref ln2 as string,byval opt as integer=KDOALL)
+dim as string ln
+#if __FB_DEBUG__ <> 0
+	if ln2[0]=asc("#") then
+		ln="           "+ln2
+	else
+#endif
+		ln=ln2
+		if ctx.opereg then
+			if ctx.opepass=1 then
+				ctx.opepass=2
+			else
+				ctx.opereg=0
+			end if
+		end if
 
-	if ( len( ln ) > 0 ) then
+		if ctx.jmppass then
+			ctx.jmppass-=1
+			if ctx.jmppass=0 then
+				ctx.jmpvreg=KREGFREE
+			end if
+		end if
+
+		if opt<>KNOFREE and opt<>KNOALL then reg_freeable(ln)
+		if opt=KNOOPTIM or opt=KNOALL then
+			''just reinit some variables
+			check_optim("")
+		else
+			check_optim(ln)
+		end if
 		ln = string( ctx.indent*3, 32 ) + ln
+#if __FB_DEBUG__ <> 0
 	end if
+#endif
 	''print ln ''used to display every line when compiler crashes....
 	ln += NEWLINE
 
@@ -808,7 +828,7 @@ sub edbgemitheader_asm64( byval filename as zstring ptr )
 		hEmitSTABS_asm64( STAB_TYPE_LSYM, stabsTb(i), 0, 0, "0" )
 		ctx_asm64.typecnt += 1
 	next
-	asm_code( "" )
+
 end sub
 sub edbgemitglobalvar_asm64 _
 	( _
@@ -1187,7 +1207,7 @@ private function hgetdatatype_asm64 _
 	select case as const dtype
 		'' UDT?
 		case FB_DATATYPE_STRUCT
-			''à creuser à un moment appel hGetDataType_asm64 avec direct subtype et non sym....
+			''to be checked hGetDataType_asm64 with direct subtype and not sym....
 			if subtype then
 				if( subtype->udt.dbg.typenum = INVALID ) then hDeclUDT_asm64( subtype, dimtbelements )
 				desc += str( subtype->udt.dbg.typenum )
@@ -1245,10 +1265,6 @@ private sub _emitdbg(byval op as integer,byval proc as FBSYMBOL ptr,byval lnum a
 	if( op = AST_OP_DBG_LINEEND ) then
 			''asm_code("AST_OP_DBG_LINEEND for line="+Str(lnum))
 			''asm_info("end of line in stabs would be used for regfree and regsav")
-			if ctx.code then
-				reg_freeall ''frees all registers
-				ctx.code=0
-			end if
 		elseif op=AST_OP_DBG_SCOPEINI then
 		elseif op=AST_OP_DBG_SCOPEEND then
 		else
@@ -1258,93 +1274,7 @@ private sub _emitdbg(byval op as integer,byval proc as FBSYMBOL ptr,byval lnum a
 
 end sub
 ''================= end of proc for debugging =====================
-
-private sub hemitudt( byval sym as FBSYMBOL ptr )
-
-	if( sym = NULL ) then
-		return
-	end if
-
-	if( symbGetIsEmitted( sym ) ) then
-		return
-	end if
-
-	var oldsection = ctx.section
-	if( symbIsLocal( sym ) = FALSE ) then
-		ctx.section = SECTION_FOOT
-	end if
-
-	select case as const( symbGetClass( sym ) )
-		case FB_SYMBCLASS_ENUM
-			symbSetIsEmitted( sym )
-			'' no subtype, to avoid infinite recursion
-			asm_info( *symbGetMangledName( sym ) + " = type " + hEmitType( FB_DATATYPE_ENUM, NULL ) )
-
-		case FB_SYMBCLASS_STRUCT
-			hEmitStruct( sym )
-			hGetDataType_asm64(sym) ''write stabs for the UDT
-	end select
-
-	ctx.section = oldsection
-end sub
 #if __FB_DEBUG__ <> 0
-private function hemittype _
-	( _
-	byval dtype as integer, _
-	byval subtype as FBSYMBOL ptr _
-	) as string
-
-	dim as string s
-	dim as integer ptrcount = any
-
-	ptrcount = typeGetPtrCnt( dtype )
-	dtype = typeGetDtOnly( dtype )
-
-	select case as const( dtype )
-		case FB_DATATYPE_VOID
-			'' "void*" isn't allowed in L L V M IR, "i8*" must be used instead,
-			'' that's why FB_DATATYPE_VOID is mapped to "i8" in the above
-			'' table. "void" can only be used for subs.
-			if( ptrcount = 0 ) then
-				s = "[void]"
-			else
-				s = "[void ptr]"
-			end if
-
-		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
-			if( subtype ) then
-				hEmitUDT( subtype )
-				s = *symbGetMangledName( subtype )
-			elseif( dtype = FB_DATATYPE_ENUM ) then
-				s = "[enum=integer]"
-			else
-				s = "[void]"
-			end if
-
-		case FB_DATATYPE_FUNCTION
-			assert( ptrcount > 0 )
-			ptrcount -= 1
-			s="datatype function ptr ="+*symbGetMangledName(subtype)+ "*"
-		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-			'' Emit ubyte instead of char,
-			'' and ubyte/ushort/uinteger instead of wchar_t
-			s = "[ubyte or ushort or uinteger]"
-
-		case FB_DATATYPE_FIXSTR
-			'' Ditto (but typeGetRemapType() returns FB_DATATYPE_FIXSTR,
-			'' so do it manually)
-			s = "[ubyte]"
-
-		case else
-			s = typedumpToStr(dtype,0)
-	end select
-
-	if( ptrcount > 0 ) then
-		s += string( ptrcount, "*" )
-	end if
-
-	function = s
-end function
 private function vregdumpfull( byval v as IRVREG ptr ) as string
 	return vregDumpToStr(v)+iif(v<>0," symbdump="+symbdumpToStr(v->sym),"")
 end function
@@ -1397,10 +1327,8 @@ private sub reg_mark(byval labelptr as FBSYMBOL ptr)
 	asm_info("new branch ? "+*symbGetMangledName( labelptr ))
 	for ireg as integer= 1 to KREGUPPER
 		if reghandle(ireg)<>KREGFREE and reghandle(ireg)<>KREGRSVD then ''excluding also rbp and rsp
-			regroom(ireg)=-2
+			regroom(ireg).status=KROOMMARKED
 			flagmark=true
-		'else
-		'    regroom(ireg)=-1
 		end if
 	next
 	if flagmark then ctx.labelbranch2=labelptr
@@ -1410,47 +1338,41 @@ end sub
 ''spilling registers on stack
 ''===========================
 private sub reg_spilling(byval regspilled as long)
-	dim as integer numroom
-	'is there already a free room ?
-	if ctx.freeroom=0 then
-		if ctx.totalroom=KLIMITROOM then
-			asm_error("No room for spilling register report dev, current limit "+str(KLIMITROOM))
+
+	ctx.stk+=8
+	asm_info("stk20="+Str(ctx.stk))
+	if ctx.stkspil<>0 then
+		if ctx.stk=ctx.stkspil then
+			''should not happen
+			asm_error("Spilling overflow when proc calling")
 		end if
-		''no so creates room
-		ctx.stk+=8
-		asm_info("stk20="+Str(ctx.stk))
-		if ctx.stkspil<>0 then
-			if ctx.stk=ctx.stkspil then
-				''should not happen
-				asm_error("Spilling overflow when proc calling")
-			end if
-		end if
-		ctx.totalroom+=1
-		numroom=ctx.totalroom
-		ctx.sdoffset(numroom)=-ctx.stk
-	else
-		''find a free room
-		for iroom as integer =0 to ctx.totalroom
-			if ctx.sdvreg(iroom)=-1 then numroom=iroom:exit for
-		next
-		ctx.freeroom-=1
 	end if
-	''store current virtual register
-	ctx.sdvreg(numroom)=reghandle(regspilled)
+
+	'' store current virtual register
+	'' TODO: alloc of VREG should be a procedure
+	dim as ASM64_SPILLVREG ptr v = any
+	v = flistNewItem( @ctx.spillvregs )
+	ctx.vreg_count += 1
+	v->id = ctx.vreg_count
+	v->sdoffset = -ctx.stk
+	v->sdvreg = reghandle(regspilled)
+	v->spilbranch1 = false
+
 	''store register
-	asm_info("spilled register="+*regstrq(regspilled)+" saved vreg="+str(reghandle(regspilled))+" room="+str(numroom))
-	asm_code("mov QWORD PTR "+str(ctx.sdoffset(numroom))+"[rbp], "+*regstrq(regspilled))
+	asm_info("spilled register="+*regstrq(regspilled)+" saved vreg="+str(reghandle(regspilled))+" room="+str(v->id))
+	asm_code("mov QWORD PTR "+str(v->sdoffset)+"[rbp], "+*regstrq(regspilled))
 	reghandle(regspilled)=KREGFREE
+
 	''need to keep a trace when handling second branch
-	if regroom(regspilled)=-2 then regroom(regspilled)=numroom
-	if ctx.labelbranch2 then
-		''inside branch so need to restore registers later
-		ctx.spilbranch1(numroom)=true
-		asm_info("spilled register spilbranch1 true")
-	else
-		asm_info("spilled register spilbranch1 false")
-		ctx.spilbranch1(numroom)=false
+	if( regroom(regspilled).status = KROOMMARKED ) then 
+		regroom(regspilled).vreg = v
+		regroom(regspilled).status = KROOMUSED
 	end if
+
+	''track inside branch to restore registers later
+	asm_info("spilled register spilbranch1 " & cbool(v->spilbranch1) )
+	v->spilbranch1 = iif(ctx.labelbranch2,true,false)
+
 end sub
 ''==============================================
 ''save calling registers before function calls
@@ -1458,9 +1380,7 @@ end sub
 private sub reg_save
 	for ireg as integer =1 to ubound(listreg)
 		if reghandle(listreg(ireg))<>KREGFREE then
-			if ctx.reginuse(listreg(ireg)) then
-				reg_spilling(listreg(ireg))
-			end if
+			reg_spilling(listreg(ireg))
 		end if
 	next
 end sub
@@ -1529,9 +1449,10 @@ private function reg_findfree(byval vreg as long,byval regparam as integer=-1) a
 end function
 ''=====================================================================
 '' in case of callptr avoid potential register used as parameter
-'' eg op1=-1520[rdx] --> op1=-1520[r11] and mov r11, rdx
+'' eg op1=-1520[rdx] --> op1=-1520[r11] and 'mov r11, rdx'
 
-''todo find an more efficient way as it swaps all the POTENTIAL registers not only those laterly used
+'' note : it swaps all the POTENTIAL registers not only those laterly used
+'' op1=-1520[r8] --> op1=-1520[r11] and 'mov r11, r8'  even if r8 will be not be used as parameter
 ''=====================================================================
 private sub reg_callptr(byref op1 as string,byref op3 as string)
 	dim as long regfree
@@ -1542,7 +1463,7 @@ private sub reg_callptr(byref op1 as string,byref op3 as string)
 		asm_info("Transfering value for freeing register / case callptr")
 		regfree=reg_findfree(reghandle(listreg(ireg)))
 		''transfering so it can be used for storing the parameter
-		asm_code("mov "+*regstrq(regfree)+", "+*regstrq(listreg(ireg))+" #NO_OPTIM")
+		asm_code("mov "+*regstrq(regfree)+", "+*regstrq(listreg(ireg)),KNOOPTIM)
 		reghandle(listreg(ireg))=KREGLOCK
 		''replace in the string the previous register by the new one
 		if len(*regstrq(regfree))=len(*regstrq(listreg(ireg))) then
@@ -1559,7 +1480,7 @@ private sub reg_callptr(byref op1 as string,byref op3 as string)
 			asm_info("Transfering value for freeing register / case callptr")
 			regfree=reg_findfree(reghandle(listreg(ireg)))
 			''transfering so it can be used for storing the parameter
-			asm_code("mov "+*regstrq(regfree)+", "+*regstrq(listreg(ireg))+" #NO_OPTIM")
+			asm_code("mov "+*regstrq(regfree)+", "+*regstrq(listreg(ireg)),KNOOPTIM)
 			reghandle(listreg(ireg))=KREGLOCK
 			''replace in the string the previous register by the new one
 			if len(*regstrq(regfree))=len(*regstrq(listreg(ireg))) then
@@ -1584,53 +1505,63 @@ private sub reg_branch(byval label as FBSYMBOL ptr )
 		asm_code(*symbGetMangledName( label )+":")
 		''handling second branch after first one so spilling registers
 		for ireg as integer = 1 to KREGUPPER
-			if regroom(ireg)>=0 then
+			if( regroom(ireg).status = KROOMUSED ) then
 				''put in memory as in the branch 1
-				asm_info("spilling register to mimic branch1="+*regstrq(ireg)+" already saved vreg="+str(ctx.sdvreg(regroom(ireg)))+" from room="+str(regroom(ireg)))
-				asm_code("mov QWORD PTR "+str(ctx.sdoffset(regroom(ireg)))+"[rbp], "+*regstrq(ireg))
+				asm_info("spilling register to mimic branch1="+*regstrq(ireg)+" already saved vreg="+str(regroom(ireg).vreg->id)+" from room="+str(regroom(ireg).vreg->id))
+				asm_code("mov QWORD PTR "+str(regroom(ireg).vreg->sdoffset)+"[rbp], "+*regstrq(ireg))
 				reghandle(ireg)=KREGFREE
 				''marked to avoid an eventual restoring
-				ctx.spilbranch1(regroom(ireg))=false
-				regroom(ireg)=-1
+				regroom(ireg).vreg->spilbranch1 = false
 			end if
+			''reset by default even if only one branch as regroom() could be = KROOMMARKED
+			regroom(ireg).status=KROOMFREE
+			regroom(ireg).vreg = NULL
 		next
 		if ctx.labeljump=0 then
 			''not a double branch so no need to do spilling below
 			ctx.labelbranch2=0
 		end if
 	elseif label=ctx.labeljump then
-		''restoring registers spilled in the second branch
-		for iroom as integer =0 to ctx.totalroom
-			'asm_info("iroom="+str(iroom)+" "+str(ctx.sdvreg(iroom))+" "+str(vreg))
-			if ctx.sdvreg(iroom)<>-1 and ctx.spilbranch1(iroom)=true then
-				regfree=reg_findfree(ctx.sdvreg(iroom))
-				asm_info("restoring saved vreg="+str(ctx.sdvreg(iroom))+" in register="+*regstrq(regfree))
-				asm_code("mov "+*regstrq(regfree)+", QWORD PTR "+str(ctx.sdoffset(iroom))+"[rbp]")
-			end if
-		next
+		if( ctx.vreg_count > 0 ) then
+			''restoring registers spilled in the second branch
+			dim v as ASM64_SPILLVREG ptr = any 
+			v = flistGetHead( @ctx.spillvregs )
+			while( v <> NULL )
+				if( v->spilbranch1 ) then
+					regfree=reg_findfree(v->sdvreg)
+					asm_info("SPILBRANCH1 restoring saved vreg="+str(v->id)+" in register="+*regstrq(regfree))
+					v->sdvreg = KREGFREE
+					asm_code("mov "+*regstrq(regfree)+", QWORD PTR "+str(v->sdoffset)+"[rbp]")
+				end if			
+				v = flistGetNext( v )
+			wend
+		end if
 		ctx.labeljump=0
 		ctx.labelbranch2=0
 		asm_code(*symbGetMangledName( label )+":")
 	end if
 end sub
-function reg_findreal(byval vreg as long,byval tjmp as Boolean = FALSE) as long
-	dim as long numroom=-1,realreg
+function reg_findreal(byval vreg as long) as long
+	dim as long realreg
 	for ireg as long =0 To KREGUPPER
 		if reghandle(ireg)=vreg then
 			asm_info("virtual register ="+Str(vreg)+" real register="+*regstrq(ireg))
 			return ireg
 		end if
 	next
-	if tjmp then
-		if vreg=ctx.jmpvreg then ctx.jmpvreg=-1:return ctx.jmpreg
-	end if
 	''searching in spilled register list
 	'asm_info("virtual register not found extend to spilled register list")
-	for iroom as integer =0 to ctx.totalroom
-		'asm_info("iroom="+str(iroom)+" "+str(ctx.sdvreg(iroom))+" "+str(vreg))
-		if ctx.sdvreg(iroom)=vreg then numroom=iroom:exit for
-	next
-	if numroom=-1 then
+
+	dim v as ASM64_SPILLVREG ptr = NULL
+	if( ctx.vreg_count > 0 ) then
+		v = flistGetHead( @ctx.spillvregs )
+		while( v <> NULL )
+			'asm_info("iroom="+str(iroom)+" "+str(v->sdvreg)+" "+str(vreg))
+			if v->sdvreg=vreg then exit while
+			v = flistGetNext( v )
+		wend
+	end if
+	if( v = NULL ) then
 		''very annoying not found also in the list
 		asm_error("virtual register="+Str(vreg)+" no real register corresponding, using KREG_XXX")
 		return KREG_XXX
@@ -1638,35 +1569,11 @@ function reg_findreal(byval vreg as long,byval tjmp as Boolean = FALSE) as long
 	''found so restoring in an available register
 	realreg=reg_findfree(vreg)
 	''restore the register value
-	asm_info("virtual register not found extend to spilled register list="+str(vreg)+" "+str(numroom))
-	asm_code("mov "+*regstrq(realreg)+", QWORD PTR "+str(ctx.sdoffset(numroom))+"[rbp]")
-	''free the room
-	ctx.freeroom+=1
-	ctx.sdvreg(numroom)=-1
+	asm_info("virtual register not found extend to spilled register list="+str(vreg)+" "+str(v->id))
+	asm_code("mov "+*regstrq(realreg)+", QWORD PTR "+str(v->sdoffset)+"[rbp]")
+	v->sdvreg=KREGFREE
 	return realreg
 end function
-''======================================================
-'' free all the registers and reinit the spilling space
-''======================================================
-sub reg_freeall
-	asm_info("registers released")
-	for ireg as long =0 To KREGUPPER
-		reghandle(ireg)=KREGFREE ''free
-		ctx.reginuse(ireg)=false  ''not used
-		regroom(ireg)=-1 ''not inuse before a test
-	next
-	reghandle(KREG_RBP)=KREGRSVD ''rbp ''reserved, don't use -1 as vreg could be = -1 when not a reg (var, idx, etc)
-	reghandle(KREG_RSP)=KREGRSVD ''rsp
-	if ctx.totalroom<>-1 then
-	  for iroom as integer = 0 to ctx.totalroom
-		  ctx.sdvreg(iroom)=-1
-	  next
-	end if
-	ctx.freeroom=ctx.totalroom+1
-	ctx.labelbranch2=0
-	ctx.labeljump=0
-	ctx.jmpvreg=-1
-end sub
 ''======================================
 ''return a register used temporary
 ''======================================
@@ -1682,18 +1589,22 @@ end function
 ''=====================================================================
 private sub reg_transfer(byval regtrans as long,byval regsource as long)
 	dim as long regfree
-
-	''not used so nothing to do
-	if reghandle(regtrans)=KREGFREE then exit sub
+	''not used or already transfered in reg_callptr so nothing to do
+	if reghandle(regtrans)=KREGFREE or reghandle(regtrans)=KREGLOCK then exit sub
 	''used in source of parameter
-	if regtrans=regsource then exit sub
+	if regtrans=regsource then
+		''freeing the register
+		asm_info("in reg_transfer release regtrans="+*regstrq(regtrans))
+		reghandle(regtrans)=KREGFREE
+		exit sub
+	end if
 
 	''find a free register for transfering or just spilling if no free register (returning same register)
 	asm_info("Transfering register in other register otherwise spilling")
 	regfree=reg_findfree(reghandle(regtrans),regtrans)
 	if regfree<>regtrans then
 		''transfering so it can be used for storing the parameter
-		asm_code("mov "+*regstrq(regfree)+", "+*regstrq(regtrans)+" #NO_OPTIM")
+		asm_code("mov "+*regstrq(regfree)+", "+*regstrq(regtrans),KNOOPTIM)
 	else
 		asm_info("register has been spilled")
 	end if
@@ -1704,8 +1615,8 @@ end sub
 ''==============================================
 private sub memclear(byval bytestoclear as Integer,byref dst as string,byval dtyp as long=KUSE_MOV)
 
-	dim as uinteger nbbytes=CUnsg(bytestoclear)
-	dim as string lname,regdst,nooptim
+	dim as uinteger nbbytes=CUnsg(bytestoclear),nooptim
+	dim as string lname,regdst
 	dim as long nb8,rdst
 
 	if instr("rcx rdx rbx rdi rsi r8 r9 r10 r11 r12 r13 r14 r15",dst) then
@@ -1722,7 +1633,9 @@ private sub memclear(byval bytestoclear as Integer,byref dst as string,byval dty
 	end if
 
 	if nbbytes<>1 and nbbytes<>2 and nbbytes<>4 and nbbytes<>8 then
-		nooptim=" #NO_OPTIM"
+		nooptim=KNOOPTIM
+	else
+		nooptim=KDOALL
 	end if
 
 	if nbbytes>7 then  ''clear by 8 bytes step
@@ -1738,7 +1651,7 @@ private sub memclear(byval bytestoclear as Integer,byref dst as string,byval dty
 			nbbytes-=nb8*8
 		else
 			for inb8 as long = 0 To nb8-1
-				asm_code("mov QWORD PTR "+Str(inb8*8)+"["+regdst+"], 0"+nooptim)
+				asm_code("mov QWORD PTR "+Str(inb8*8)+"["+regdst+"], 0",nooptim)
 			next
 			nbbytes-=nb8*8
 			if nbbytes<>0 then
@@ -1748,23 +1661,23 @@ private sub memclear(byval bytestoclear as Integer,byref dst as string,byval dty
 	end if
 	if nbbytes>3 then
 		''clear 7/6/5/4 bytes
-		asm_code("mov dword ptr ["+regdst+"], 0"+nooptim)
+		asm_code("mov dword ptr ["+regdst+"], 0",nooptim)
 		nbbytes-=4
 		if nbbytes>1 then
-			asm_code("mov word ptr 4["+regdst+"], 0"+nooptim)
+			asm_code("mov word ptr 4["+regdst+"], 0",nooptim)
 			nbbytes-=2
 			if nbbytes>0 then
-				asm_code("mov byte ptr 6["+regdst+"], 0"+nooptim)
+				asm_code("mov byte ptr 6["+regdst+"], 0",nooptim)
 			end if
 		elseif nbbytes>0 then
-			asm_code("mov byte ptr 4["+regdst+"], 0"+nooptim)
+			asm_code("mov byte ptr 4["+regdst+"], 0",nooptim)
 		end if
 	elseif nbbytes>1 then
 		''clear 2/3 bytes
-		asm_code("mov word ptr ["+regdst+"], 0"+nooptim)
+		asm_code("mov word ptr ["+regdst+"], 0",nooptim)
 		nbbytes-=2
 		if nbbytes>0 then
-			asm_code("mov byte ptr 2["+regdst+"], 0"+nooptim)
+			asm_code("mov byte ptr 2["+regdst+"], 0",nooptim)
 		end if
 	elseif nbbytes>0 then
 		 ''clear 1 byte
@@ -1876,6 +1789,9 @@ private sub memcopy(byval bytestoclear as Integer,byref src as string, byref dst
 end sub
 
 private sub _init( )
+
+	flistInit( @ctx.spillvregs, 2048, sizeof( ASM64_SPILLVREG ) )
+
 	irhlInit( )
 	'' IR_OPT_CPUSELFBOPS disabled, to prevent AST from producing self-ops.
 	irSetOption(IR_OPT_CPUBOPFLAGS or IR_OPT_MISSINGOPS or IR_OPT_CPUSELFBOPS)'  or IR_OPT_ADDRCISC)'
@@ -1888,6 +1804,8 @@ end sub
 private sub _end( )
 	asm_info("_end")
 	irhlEnd( ) ''clear some lists
+
+	flistEnd( @ctx.spillvregs )
 end sub
 
 #if __FB_DEBUG__ <> 0
@@ -1912,9 +1830,8 @@ end sub
 			hidden = proc->proc.ext->res
 			asm_info("hidden")
 			if hidden<>0 then
-				ln += hEmitType( typeAddrOf( symbGetType( hidden ) ), symbGetSubtype( hidden ) )
-				ln+=" / "+typedumpToStr( typeAddrOf( symbGetType( hidden ) ), symbGetSubtype( hidden ))
-				ln += " " + *symbGetMangledName( hidden ) + "$"
+				ln+=" "+typedumpToStr( typeAddrOf( symbGetType( hidden ) ), symbGetSubtype( hidden ))
+				ln += " " + *symbGetMangledName( hidden )
 			end if
 
 			if( symbGetProcParams( proc ) > 0 ) then
@@ -1946,9 +1863,9 @@ end sub
 		ln+=" "+symbdumpToStr(proc)
 
 		if( symbIsExport( proc ) ) then
-			ln += " / dllexport "
+			ln += " / dllexport"
 		elseif( symbIsPrivate( proc ) ) then
-			ln += " / private "
+			ln += " / private"
 		end if
 
 
@@ -2112,85 +2029,6 @@ private sub hmaybeemitglobalvar( byval sym as FBSYMBOL ptr )
 	end if
 	ctx.indent -=1
 end sub
-
-private sub hemitstruct( byval sym as FBSYMBOL ptr )
-	dim as FBSYMBOL ptr fld = any
-
-	if( symbGetIsBeingEmitted( sym ) ) then
-		return
-	end if
-	asm_info("length udt="+Str(sym->lgt)+" natalign="+Str(sym->udt.natalign)+" unpadlgt="+Str(sym->udt.unpadlgt))
-	symbSetIsBeingEmitted( sym )
-
-	'' Check every field for non-emitted subtypes
-	fld = symbUdtGetFirstField( sym )
-	while( fld )
-		hEmitUDT( symbGetSubtype( fld ) )
-		fld = symbUdtGetnextField( fld )
-	wend
-
-	'' Was it emitted in the mean time? (maybe one of the fields did that)
-	if( symbGetIsEmitted( sym ) ) then
-		return
-	end if
-
-	'' We'll emit it now.
-	symbSetIsEmitted( sym )
-
-	select case( symbGetClass( sym ) )
-		case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD  ''ou utiliser symbisarray
-			'' Fixed-size array vars/fields
-			Var nbelements=1
-			dim as integer length=any
-			for i as integer = symbGetArrayDimensions( sym ) - 1 to 0 step -1
-				nbelements *= (symbArrayUbound( sym, i ) - symbArrayLbound( sym, i ) + 1)
-			next
-			length=sym->lgt*nbelements
-			asm_info("stk="+Str(ctx.stk))
-			ctx.stk=(length+ctx.stk+sym->udt.natalign-1) And (Not(sym->udt.natalign-1))
-			asm_info("stk2="+Str(ctx.stk))
-			sym->ofs=-ctx.stk
-			asm_info("structure total size="+Str(length))
-	end select
-
-
-	dim as string ln
-
-	'' UDT name
-	if( symbGetName( sym ) ) then
-		ln += *symbGetMangledName( sym )
-	else
-		ln += "%" + *symbUniqueId( )
-	end if
-
-	var packed = (sym->udt.align = 1)
-
-	ln += " = type "
-	if( packed ) then ln += "<"
-	ln += "{ "
-
-	'' Write out the elements
-	fld = symbUdtGetFirstField( sym )
-	while( fld )
-
-		'' Don't emit fake dynamic array fields
-		if( symbIsDynamic( fld ) = FALSE ) then
-			'ln += hEmitSymType( fld )
-		end if
-
-		fld = symbUdtGetnextField( fld )
-		if( fld ) then
-			ln += ", "
-		end if
-	wend
-
-	'' Close UDT body
-	ln += " }"
-	if( packed ) then ln += ">"
-
-	asm_info( ln )
-	symbResetIsBeingEmitted( sym )
-end sub
 private sub no_roundsd(byval size as zstring ptr)
 	''when the CPU doesn't provide roundsd/roundss (needs see41)
 	asm_code("stmxcsr $mxcsr[rip]")
@@ -2225,6 +2063,17 @@ private function _emitbegin( ) as integer
 	ctx.dtorcount = 0
 	ctx.roundfloat=false
 	ctx.target=fbgetoption(FB_COMPOPT_TARGET) ''linux or windows
+	ctx.opereg=0
+
+	for ireg as integer = 0 to KREGUPPER
+		reghandle(ireg)=KREGFREE
+		regroom(ireg).status=KROOMFREE
+		regroom(ireg).vreg = NULL
+	next
+
+	reghandle(KREG_RBP)=KREGRSVD ''rbp ''reserved, don't use -1 as vreg could be = -1 when not a reg (var, idx, etc)
+	reghandle(KREG_RSP)=KREGRSVD ''rsp
+
 	if ctx.target=FB_COMPTARGET_LINUX then
 		redim listreg(1 to 8)
 		listreg(1)=KREG_RDI:listreg(2)=KREG_RSI:listreg(3)=KREG_RDX:listreg(4)=KREG_RCX:listreg(5)=KREG_R8:listreg(6)=KREG_R9:listreg(7)=KREG_R10:listreg(8)=KREG_R11
@@ -2238,8 +2087,6 @@ private function _emitbegin( ) as integer
 
 	asm_section(".text")
 
-	reg_freeall ''no registers used
-
 	function = TRUE
 end function
 private sub hAddGlobalCtorDtor( byval proc as FBSYMBOL ptr )
@@ -2249,18 +2096,19 @@ private sub hAddGlobalCtorDtor( byval proc as FBSYMBOL ptr )
 	end if
 
 	if( symbGetIsGlobalCtor( proc ) ) then
-		ctx.ctorcount += 1
-		'hEmitCtorDtorArrayElement( proc, ctx.ctors )
-		asm_info("Constructor name/prio="+*symbGetMangledName( proc )+" / "+str( symbGetProcPriority( proc ) ))
-		if ctx.target=FB_COMPTARGET_LINUX andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
-			asm_section(".init_array")
-		else
-			asm_section(".ctors")
+		if symbGetProcIsEmitted(proc) then
+			ctx.ctorcount += 1
+			'hEmitCtorDtorArrayElement( proc, ctx.ctors )
+			asm_info("Constructor name/prio="+*symbGetMangledName( proc )+" / "+str( symbGetProcPriority( proc ) ))
+			if ctx.target=FB_COMPTARGET_LINUX andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
+				asm_section(".init_array")
+			else
+				asm_section(".ctors")
+			end if
+			asm_code(".align 8")
+			asm_code(".quad "+*symbGetMangledName( proc ))
+			asm_section(".text")
 		end if
-		asm_code(".align 8")
-		asm_code(".quad "+*symbGetMangledName( proc ))
-		asm_section(".text")
-
 	elseif( symbGetIsGlobalDtor( proc ) ) then
 		ctx.dtorcount += 1
 		'hEmitCtorDtorArrayElement( proc, ctx.dtors )
@@ -2356,7 +2204,6 @@ end function
 private function _supportsop(byval op as integer,byval dtype as Integer) as integer
 	''return true if the function is availiable directly in the backend
 	'asm_info("_supportsop="+astdumpopToStr( op )+" "+typedumpToStr(dtype,0))
-	'Print "_supportsop="+astdumpopToStr( op )+" "+typedumpToStr(dtype,0)
 	select case as const( op )
 		'case AST_OP_SGN, AST_OP_FIX, AST_OP_FRAC, _
 		'    AST_OP_ASIN, AST_OP_ACOS, AST_OP_TAN, AST_OP_ATAN, _
@@ -2955,8 +2802,8 @@ private sub prepare_idx(byval v1 as IRVREG ptr, byref op1 as string, byref op3 a
 			''with vidx=<var varname ofs
 			regtempo=*reg_tempo()
 			if symbIsStatic(v1->vidx->sym) Or symbisshared(v1->vidx->sym) then
-				op3="lea "+regtempo+", "+*symbGetMangledName(v1->vidx->sym)+"[rip+"+Str(v1->vidx->ofs)+"]"+"  #NO_OPTIM"
-				op3+=newline2+"mov "+regtempo+", "+"["+regtempo+"]"+"  #NO_OPTIM"
+				op3="lea "+regtempo+", "+*symbGetMangledName(v1->vidx->sym)+"[rip+"+Str(v1->vidx->ofs)+"]"
+				op3+=newline2+"mov "+regtempo+", "+"["+regtempo+"] #NO"
 				op1=Str(v1->ofs)+"["+regtempo+"]"
 				return
 			else
@@ -2970,7 +2817,7 @@ private sub prepare_idx(byval v1 as IRVREG ptr, byref op1 as string, byref op3 a
 		''format  varname ofs1= [dt] vidx=<reg>  /// vidx=<var varname ofs
 		regtempo=*reg_tempo()
 		if symbIsStatic(v1->sym) Or symbisshared(v1->sym) then
-			op3="lea "+regtempo+", "+*symbGetMangledName(v1->sym)+"[rip+"+Str(v1->ofs)+"]"+"  #NO_OPTIM"
+			op3="lea "+regtempo+", "+*symbGetMangledName(v1->sym)+"[rip+"+Str(v1->ofs)+"] #NO"
 		else
 			op3="lea "+regtempo+", "+Str(v1->ofs)+"[rbp]"
 		end if
@@ -3052,6 +2899,14 @@ private function hgetbopcode(byval op as Integer) as zstring ptr
 	end select
 
 end function
+private sub restore_vrreg(byval vr as IRVREG ptr, byval vrreg as integer)
+	ctx.opereg=vrreg
+	ctx.opepass=1
+	if reghandle(vrreg)=KREGFREE then
+		reghandle(vrreg)=vr->reg
+		asm_info("reghandle reset so "+*regstrq(vrreg)+" forced again to vreg="+Str(vr->reg))
+	end if
+end sub
 private sub bop_float( _
 	byval op as integer, _
 	byval v1 as IRVREG ptr, _
@@ -3144,17 +2999,12 @@ private sub bop_float( _
 			if op=AST_OP_EQ then asm_code(lname2+":") ''label when different
 
 			if label=0 then
-				'asm_code("mov "+*regstrq(vrreg)+", 0")
 				asm_code("xor "+*regstrq(vrreg)+", "+*regstrq(vrreg))
-				if reghandle(vrreg)=KREGFREE then
-					reghandle(vrreg)=vr->reg
-					ctx.reginuse(vrreg)=true
-					asm_info("Bop float reghandle reset so forced again to="+Str(vr->reg))
-				end if
+				restore_vrreg(vr,vrreg)
 				asm_code(lname1+":")
 			end if
 
-		case AST_OP_ADD,AST_OP_SUB,AST_OP_MUL,AST_OP_DIV ''todo optimiser xmm1 si memoire faire directement
+		case AST_OP_ADD,AST_OP_SUB,AST_OP_MUL,AST_OP_DIV ''todo optimize xmm1 if memory
 			select case op
 				case AST_OP_ADD
 					asm_code(addreg+"xmm0, xmm1")
@@ -3166,23 +3016,14 @@ private sub bop_float( _
 					asm_code(divreg+"xmm0, xmm1")
 			end select
 			asm_code("movq "+*regstrq(vrreg)+", xmm0")
-			if reghandle(vrreg)=KREGFREE then
-				reghandle(vrreg)=vr->reg
-				ctx.reginuse(vrreg)=true
-				asm_info("Bop float reghandle reset so forced again to="+Str(vr->reg))
-			end if
+			restore_vrreg(vr,vrreg)
 		case AST_OP_ATAN2
 			if v1dtype=FB_DATATYPE_DOUBLE then
-				save_call_restore("atan2")
+				save_call("atan2",vr,vrreg)
 				asm_code("movq "+*regstrq(vrreg)+", xmm0")
 			else
-				save_call_restore("atan2f")
+				save_call("atan2f",vr,vrreg)
 				asm_code("movd "+*regstrq(vrreg)+", xmm0")
-			end if
-			if reghandle(vrreg)=KREGFREE then
-				reghandle(vrreg)=vr->reg
-				ctx.reginuse(vrreg)=true
-				asm_info("Bop float reghandle reset so forced again to="+Str(vr->reg))
 			end if
 		case else
 			asm_error("in bop float needs to be coded : "+ *hGetBopCode(op))
@@ -3193,7 +3034,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 
 	dim as string op1,op2,op3,op4,prefix1,prefix2,suffix,op1prev,regtempo,op1bis
 	dim as FB_DATATYPE tempodtype,tempo2dtype
-	dim as long vrreg,vrreg2,tempo
+	dim as integer vrreg,vrreg2,tempo
 	dim as IRVREG ptr vrtempo
 	''========================= FIRST OPERAND ======================
 	tempodtype=typeGetDtAndPtrOnly( v1->dtype )
@@ -3314,8 +3155,8 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 
 	''================ WRITING CODE =============
 
-	if op3<>"" then asm_code(op3)
-	if op4<>"" then asm_code(op4)
+	if op3<>"" then emitop3_op4(op3)
+	if op4<>"" then emitop3_op4(op4)
 
 	If( typeGetClass( v1->dtype ) = FB_DATACLASS_FPOINT) Or ( typeGetClass( v2->dtype ) = FB_DATACLASS_FPOINT) then
 		asm_info("Bop with float")
@@ -3435,20 +3276,13 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 			else
 				asm_code("add "+op1+", "+op2)
 			end if
+			if vr<>0 then restore_vrreg(vr,vrreg)
 		case AST_OP_AND
 			asm_code("and "+op1+", "+op2)
-			if vr<>0 andalso reghandle(vrreg)=KREGFREE then
-				reghandle(vrreg)=vr->reg
-				ctx.reginuse(vrreg)=true
-				asm_info("and reghandle reset so "+*regstrq(vrreg)+" forced again to="+Str(vr->reg))
-			end if
+			if vr<>0 then restore_vrreg(vr,vrreg)
 		case AST_OP_OR
 			asm_code("or "+op1+", "+op2)
-			if vr<>0 andalso reghandle(vrreg)=KREGFREE then
-				reghandle(vrreg)=vr->reg
-				ctx.reginuse(vrreg)=true
-				asm_info("or reghandle reset so "+*regstrq(vrreg)+" forced again to="+Str(vr->reg))
-			end if
+			if vr<>0 then restore_vrreg(vr,vrreg)
 		case AST_OP_IMP
 			'===
 			if vr<>0 then
@@ -3504,25 +3338,11 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 				''op2 is a register
 				asm_code("or "+op1bis+", "+op2)
 				asm_code("mov "+op1+", "+op1bis)
-			'===
-			'asm_code("mov rax, "+op2)
-			'asm_code("not rax")
-			'asm_code("or "+op1+", rax")
-			'asm_code("not "+op2)
-			'asm_code("or "+op1+", "+op2)
 			end if
-			if vr<>0 andalso reghandle(vrreg)=KREGFREE then
-				reghandle(vrreg)=vr->reg
-				ctx.reginuse(vrreg)=true
-				asm_info("imp reghandle reset so "+*regstrq(vrreg)+" forced again to="+Str(vr->reg))
-			end if
+			if vr<>0 then restore_vrreg(vr,vrreg)
 		case AST_OP_XOR
 			asm_code("xor "+op1+", "+op2)
-			if vr<>0 andalso reghandle(vrreg)=KREGFREE then
-				reghandle(vrreg)=vr->reg
-				ctx.reginuse(vrreg)=true
-				asm_info("xor reghandle reset so "+*regstrq(vrreg)+" forced again to="+Str(vr->reg))
-			end if
+			if vr<>0 then restore_vrreg(vr,vrreg)
 		case AST_OP_EQV
 			'===
 			select case tempodtype
@@ -3549,11 +3369,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 			end if
 
 			asm_code("mov "+op1+", "+op2)
-			if vr<>0 andalso reghandle(vrreg)=KREGFREE then
-				reghandle(vrreg)=vr->reg
-				ctx.reginuse(vrreg)=true
-				asm_info("eqv reghandle reset so "+*regstrq(vrreg)+" forced again to="+Str(vr->reg))
-			end if
+			if vr<>0 then restore_vrreg(vr,vrreg)
 		case AST_OP_SUB
 			if op2="1" then
 				asm_code("dec "+op1)
@@ -3562,6 +3378,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 			else
 				asm_code("sub "+op1+", "+op2)
 			end if
+			if vr<>0 then restore_vrreg(vr,vrreg)
 		case AST_OP_MUL
 			'if v1->typ<>IR_VREGTYPE_REG then
 			'   'asm_code("mov rax, "+op1)
@@ -3607,13 +3424,6 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 			if ctx.target=FB_COMPTARGET_LINUX andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 
 				if v1->sym<>0 andalso (symbIsCommon(v1->sym)) then
-					''todo if two op1 are common etc
-					'temporeg=reg_findfree(999998)
-					'regtempo1=*regstrq(temporeg)
-					'reghandle(temporeg)=KREGFREE
-					'asm_code("mov "+regtempo1+", "+*symbGetMangledName(v1->sym)+"@GOTPCREL[rip]")
-					'op1=regtempo1
-
 					asm_code("mov rax, "+*symbGetMangledName(v1->sym)+"@GOTPCREL[rip]")
 					asm_code("mov rax, [rax]")
 					op1="rax"
@@ -3641,15 +3451,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 				if tempodtype<>FB_DATATYPE_BOOLEAN then
 					asm_code("neg "+*regstrq(vrreg))
 				end if
-
-				'asm_code("movzx rax, al") ''eventually neg rax
-				'' or used movzx eax, al / neg eax / cdqe --> result in rax
-				asm_info("vrreg="+str(vrreg))
-				if reghandle(vrreg)=KREGFREE then
-					reghandle(vrreg)=vr->reg
-					ctx.reginuse(vrreg)=true
-					asm_info("cmp reghandle reset so "+*regstrq(vrreg)+" forced again to="+Str(vr->reg))
-				end if
+				restore_vrreg(vr,vrreg)
 			else
 				asm_code("j"+suffix+" "+*symbGetMangledName( label ))
 				reg_mark(label)
@@ -3662,7 +3464,6 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 						tempo=reghandle(KREG_RCX)
 						reg_findfree(tempo)
 						reghandle(KREG_RCX)=KREGFREE
-						ctx.reginuse(KREG_RCX)=false
 						asm_info("rcx used so transfer to other register")
 						asm_code("mov "+*regstrq(reg_findreal(tempo))+", "+*regstrq(KREG_RCX))
 						if vrreg=KREG_RCX then vrreg=reg_findreal(tempo)
@@ -3689,7 +3490,6 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 					tempo=reghandle(KREG_RDX)
 					reg_findfree(tempo)
 					reghandle(KREG_RDX)=KREGFREE
-					ctx.reginuse(KREG_RDX)=false
 					asm_info("rdx used so transfer to other register="+*regstrq(reg_findreal(tempo)))
 					asm_code("mov "+*regstrq(reg_findreal(tempo))+", "+*regstrq(KREG_RDX))
 					if op2=*regstrq(KREG_RDX) then
@@ -3727,11 +3527,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 				asm_code("mov "+op1+", rax")
 			else
 				asm_code("mov "+*regstrq(vrreg)+", rax")
-				if reghandle(vrreg)=KREGFREE then
-					reghandle(vrreg)=vr->reg
-					ctx.reginuse(vrreg)=true
-					asm_info("IDIV reghandle reset so forced again to="+Str(vr->reg))
-				end if
+				restore_vrreg(vr,vrreg)
 			end if
 
 		case AST_OP_MOD ''mod instruction uses rax and rdx, to be checked carefully
@@ -3741,7 +3537,6 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 					tempo=reghandle(KREG_RDX)
 					reg_findfree(tempo)
 					reghandle(KREG_RDX)=KREGFREE
-					ctx.reginuse(KREG_RDX)=false
 					asm_info("rdx used so transfer to other register="+*regstrq(reg_findreal(tempo)))
 					asm_code("mov "+*regstrq(reg_findreal(tempo))+", "+*regstrq(KREG_RDX))
 					if op2=*regstrq(KREG_RDX) then
@@ -3779,11 +3574,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 				asm_code("mov "+op1+", rdx")
 			else
 				asm_code("mov "+*regstrq(vrreg)+", rdx")
-				if reghandle(vrreg)=KREGFREE then
-					reghandle(vrreg)=vr->reg
-					ctx.reginuse(vrreg)=true
-					asm_info("MOD reghandle reset so forced again to="+Str(vr->reg))
-				end if
+				restore_vrreg(vr,vrreg)
 			end if
 
 		case else
@@ -3904,7 +3695,7 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 			asm_error("in uop typ not handled v1")
 	end select
 
-	if op3<>"" then asm_code(op3)
+	if op3<>"" then emitop3_op4(op3)
 
 	op1=prefix+op1
 
@@ -3949,21 +3740,21 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 
 		select case op
 			case AST_OP_COS
-				save_call_restore("cosf")
+				save_call("cosf",vr,vrreg)
 			case AST_OP_SIN
-				save_call_restore("sinf")
+				save_call("sinf",vr,vrreg)
 			case AST_OP_EXP
-				save_call_restore("expf")
+				save_call("expf",vr,vrreg)
 			case AST_OP_LOG
-				save_call_restore("logf")
+				save_call("logf",vr,vrreg)
 			case AST_OP_ACOS
-				save_call_restore("acosf")
+				save_call("acosf",vr,vrreg)
 			case AST_OP_ASIN
-				save_call_restore("asinf")
+				save_call("asinf",vr,vrreg)
 			case AST_OP_TAN
-				save_call_restore("tanf")
+				save_call("tanf",vr,vrreg)
 			case AST_OP_ATAN
-				save_call_restore("atanf")
+				save_call("atanf",vr,vrreg)
 			case AST_OP_SQRT
 				asm_code("sqrtss	xmm0, xmm0") ''todo could do directly with op1
 			case AST_OP_ABS
@@ -3971,18 +3762,20 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 				asm_code("movd xmm1, eax")
 				asm_code("andps xmm1, xmm0") ''result xmm1
 				asm_code("movd xmm0, xmm1")''just to keep a standard way after
+				restore_vrreg(vr,vrreg)
 			case AST_OP_SGN
-				save_call_restore("fb_SGNSingle")
+				save_call("fb_SGNSingle",vr,vrreg)
 			case AST_OP_FRAC
-				save_call_restore("fb_FRACf")
+				save_call("fb_FRACf",vr,vrreg)
 			case AST_OP_FIX
-				save_call_restore("fb_FIXSingle")
+				save_call("fb_FIXSingle",vr,vrreg)
 			case AST_OP_FLOOR
-				save_call_restore("floorf")
+				save_call("floorf",vr,vrreg)
 			case AST_OP_NEG
 				asm_code("mov eax, "+"0x80000000") ''todo check and exchange if error
 				asm_code("movd xmm1, eax")
 				asm_code("xorps xmm0, xmm1") ''result in xmm0
+				restore_vrreg(vr,vrreg)
 			case else
 				asm_error("in uop not handled for single")
 		end select
@@ -3991,11 +3784,6 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 			asm_code("mov "+*regstrd(vrreg)+", eax")
 		else
 			asm_code("movd "+*regstrd(vrreg)+", xmm0")
-		end if
-		if reghandle(vrreg)=KREGFREE then
-			reghandle(vrreg)=vr->reg
-			ctx.reginuse(vrreg)=true
-			asm_info("Bop float reghandle reset so forced again to="+Str(vr->reg))
 		end if
 		return
 	end if
@@ -4007,7 +3795,6 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 			tempo=reghandle(KREG_RDX)
 			reg_findfree(tempo)
 			reghandle(KREG_RDX)=KREGFREE
-			ctx.reginuse(KREG_RDX)=false
 			asm_info("rdx used so transfer to other register")
 			asm_code("mov "+*regstrq(reg_findreal(tempo))+", "+*regstrq(KREG_RDX))
 			if vrreg=KREG_RDX then vrreg=reg_findreal(tempo)
@@ -4022,11 +3809,7 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 			asm_code("mov "+op1+", rax")
 		else
 			asm_code("mov "+*regstrq(vrreg)+", rax")
-			if reghandle(vrreg)=KREGFREE then
-				reghandle(vrreg)=vr->reg
-				ctx.reginuse(vrreg)=true
-				asm_info("Bop float reghandle reset so forced again to="+Str(vr->reg))
-			end if
+			restore_vrreg(vr,vrreg)
 		end if
 		return
 	end if
@@ -4039,6 +3822,7 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 		end if
 
 		asm_code("neg "+op1)
+		if vr<>0 then restore_vrreg(vr,vrreg)
 		return
 	end if
 
@@ -4049,29 +3833,22 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 				tempo=reghandle(KREG_RCX)
 				reg_findfree(tempo)
 				reghandle(KREG_RCX)=KREGFREE
-				ctx.reginuse(KREG_RCX)=false
 				asm_info("rcx used so transfer to other register="+*regstrq(reg_findreal(tempo)))
 				asm_code("mov "+*regstrq(reg_findreal(tempo))+", "+*regstrq(KREG_RCX))
 				op1=*regstrq(reg_findreal(tempo))
 				if vrreg=KREG_RCX then vrreg=reg_findreal(tempo)
-				'if op1=*regstrq(KREG_RCX) then op1=*regstrq(reg_findreal(tempo))
 			else
 				ctx.usedreg Or=(1 Shl KREG_RCX)
 			end if
 			asm_code("mov rcx, "+op1)
 		end if
 
-		save_call_restore("fb_SGNl") ''letter L
+		save_call("fb_SGNl",vr,vrreg) ''letter L
 		asm_code("movsxd rax, eax")
 		if vr=0 then
 			asm_code("mov "+op1+", rax")
 		else
 			asm_code("mov "+*regstrq(vrreg)+", rax")
-			if reghandle(vrreg)=KREGFREE then
-				reghandle(vrreg)=vr->reg
-				ctx.reginuse(vrreg)=true
-				asm_info("Uop float reghandle reset so forced again to="+Str(vr->reg))
-			end if
 		end if
 		return
 	end if
@@ -4084,40 +3861,43 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 	end if
 	select case op
 		case AST_OP_COS
-			save_call_restore("cos")
+			save_call("cos",vr,vrreg)
 		case AST_OP_SIN
-			save_call_restore("sin")
+			save_call("sin",vr,vrreg)
 		case AST_OP_EXP
-			save_call_restore("exp")
+			save_call("exp",vr,vrreg)
 		case AST_OP_LOG
-			save_call_restore("log")
+			save_call("log",vr,vrreg)
 		case AST_OP_ACOS
-			save_call_restore("acos")
+			save_call("acos",vr,vrreg)
 		case AST_OP_ASIN
-			save_call_restore("asin")
+			save_call("asin",vr,vrreg)
 		case AST_OP_TAN
-			save_call_restore("tan")
+			save_call("tan",vr,vrreg)
 		case AST_OP_ATAN
-			save_call_restore("atan")
+			save_call("atan",vr,vrreg)
 		case AST_OP_ABS
 			asm_code("mov rax, 0x7FFFFFFFFFFFFFFF")
 			asm_code("movq xmm1, rax")
 			asm_code("andpd xmm1, xmm0") ''result xmm1
 			asm_code("movq xmm0, xmm1") ''just to keep a standard way after
+			restore_vrreg(vr,vrreg)
 		case AST_OP_SQRT
 			asm_code("sqrtsd	xmm0, xmm0") ''todo could do directly with op1
+			restore_vrreg(vr,vrreg)
 		case AST_OP_SGN
-			save_call_restore("fb_SGNDouble")
+			save_call("fb_SGNDouble",vr,vrreg)
 		case AST_OP_FRAC
-			save_call_restore("fb_FRACd")
+			save_call("fb_FRACd",vr,vrreg)
 		case AST_OP_FIX
-			save_call_restore("fb_FIXDouble")
+			save_call("fb_FIXDouble",vr,vrreg)
 		case AST_OP_FLOOR
-			save_call_restore("floor")
+			save_call("floor",vr,vrreg)
 		case AST_OP_NEG
 			asm_code("mov rax, "+"0x8000000000000000") ''todo check and exchange if error
 			asm_code("movq xmm1, rax")
 			asm_code("xorpd xmm0, xmm1") ''result in xmm0
+			restore_vrreg(vr,vrreg)
 		case else
 			asm_error("in uop not handled for double")
 	end select
@@ -4126,11 +3906,6 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 		asm_code("movsxd "+*regstrq(vrreg)+", eax")
 	else
 		asm_code("movq "+*regstrq(vrreg)+", xmm0")
-	end if
-	if reghandle(vrreg)=KREGFREE then
-		reghandle(vrreg)=vr->reg
-		ctx.reginuse(vrreg)=true
-		asm_info("Bop float reghandle reset so forced again to="+Str(vr->reg))
 	end if
 end sub
 private sub hEmitRoundFloat(byval dtype1 as FB_DATATYPE,byval dtype2 as FB_DATATYPE = FB_DATATYPE_INVALID)
@@ -4199,39 +3974,52 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 		exit sub
 	end if
 
+	if typeisptr(v1dtype) then v1dtype=FB_DATATYPE_LONGINT
+	if typeisptr(v2dtype) then v2dtype=FB_DATATYPE_LONGINT
+
+	if v1dtype=FB_DATATYPE_INTEGER then
+		v1dtype=FB_DATATYPE_LONGINT
+	elseif v1dtype=FB_DATATYPE_ENUM then
+		v1dtype=FB_DATATYPE_LONGINT
+	elseif v1dtype=FB_DATATYPE_UINT then
+		v1dtype=FB_DATATYPE_ULONGINT
+	end if
+	if v2dtype=FB_DATATYPE_INTEGER then
+		v2dtype=FB_DATATYPE_LONGINT
+	elseif v2dtype=FB_DATATYPE_ENUM then
+		v2dtype=FB_DATATYPE_LONGINT
+	elseif v2dtype=FB_DATATYPE_UINT then
+		v2dtype=FB_DATATYPE_ULONGINT
+	end if
 
 	if v1->typ=IR_VREGTYPE_REG and v2->typ=IR_VREGTYPE_REG and (typeGetSize( v1dtype )  = typeGetSize( v2dtype )) and _
 	   (typeGetClass( v1dtype )=typeGetClass( v2dtype ) ) then
-	   'asm_info("class 1="+str(typeGetClass( v1dtype ))+" "+"class 2="+str(typeGetClass( v2dtype )))
 	   asm_info("no move as exactly same size, vreg changed"+Str(v1->reg)+" becomes "+Str(v2->reg))
 	   v1->reg=v2->reg
 	   exit sub
 	end if
 
-	if (v1dtype=FB_DATATYPE_INTEGER and v2dtype=FB_DATATYPE_LONGINT) or (v2dtype=FB_DATATYPE_INTEGER and v1dtype=FB_DATATYPE_LONGINT) _
-		or (v1dtype=FB_DATATYPE_INTEGER and v2dtype=FB_DATATYPE_ENUM) or (v2dtype=FB_DATATYPE_INTEGER and v1dtype=FB_DATATYPE_ENUM) _
-		Or (v1dtype=FB_DATATYPE_UINT and v2dtype=FB_DATATYPE_ULONGINT) Or (v2dtype=FB_DATATYPE_UINT and v1dtype=FB_DATATYPE_ULONGINT) then
+	if (v1dtype=FB_DATATYPE_LONGINT and v2dtype=FB_DATATYPE_LONGINT) or (v1dtype=FB_DATATYPE_ULONGINT and v2dtype=FB_DATATYPE_ULONGINT) then
 		asm_info("no convert as exactly same datatype")
 		*v1=*v2
 		exit sub
 	end if
 
-	'' 2019/11/20 prbm with for/next
-	if (v1dtype=FB_DATATYPE_INTEGER and v2dtype=FB_DATATYPE_UINT) Or (v2dtype=FB_DATATYPE_INTEGER and v1dtype=FB_DATATYPE_UINT) _
-		Or (v1dtype=FB_DATATYPE_LONGINT and v2dtype=FB_DATATYPE_UINT) Or (v2dtype=FB_DATATYPE_LONGINT and v1dtype=FB_DATATYPE_UINT) then
+	'' prbm with for/next
+	if (v1dtype=FB_DATATYPE_LONGINT and v2dtype=FB_DATATYPE_ULONGINT) Or (v2dtype=FB_DATATYPE_LONGINT and v1dtype=FB_DATATYPE_ULONGINT) then
 		asm_info("no convert as INTEGER/UINT")
 		v1old=v1->dtype
 		*v1=*v2
 		v1->dtype=v1old
 		exit sub
 	end if
-	'' 2019/11/24
+
 	if (v1dtype=FB_DATATYPE_STRING and v2dtype=FB_DATATYPE_STRUCT) then
 		asm_info("no convert as STRUCT -> STRING")
 		*v1=*v2
 		exit sub
 	end if
-	'' 2019/11/24
+
 	if (v1dtype=FB_DATATYPE_STRUCT and v2dtype=FB_DATATYPE_STRUCT) then
 		asm_info("no convert as STRUCT -> STRUCT")
 		*v1=*v2
@@ -4241,10 +4029,9 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	reg_findfree(v1->reg)
 	regresult=reg_findreal(v1->reg)
 
-	if typeisptr(v1dtype) then v1dtype=FB_DATATYPE_INTEGER
-	if v1dtype=FB_DATATYPE_STRING then v1dtype=FB_DATATYPE_INTEGER
+	if v1dtype=FB_DATATYPE_STRING then v1dtype=FB_DATATYPE_LONGINT
 	select case v1dtype
-		case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE,FB_DATATYPE_ENUM,FB_DATATYPE_STRUCT
+		case FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE,FB_DATATYPE_STRUCT
 			prefix1="QWORD PTR "
 			op1=*regstrq(regresult)
 		case FB_DATATYPE_LONG,FB_DATATYPE_ULONG,FB_DATATYPE_SINGLE
@@ -4262,9 +4049,8 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 	''SOURCE
 
-	if typeisptr(v2dtype) then v2dtype=FB_DATATYPE_INTEGER
 	select case v2dtype
-		case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE,FB_DATATYPE_ENUM,FB_DATATYPE_STRUCT
+		case FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE,FB_DATATYPE_STRUCT
 			prefix2="QWORD PTR "
 		case FB_DATATYPE_LONG,FB_DATATYPE_ULONG,FB_DATATYPE_SINGLE
 			prefix2="DWORD PTR "
@@ -4294,9 +4080,9 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 		case IR_VREGTYPE_REG
 			prefix2=""
 			srcreg=reg_findreal(v2->reg)
-			if typeisptr(v2dtype) then v2dtype=FB_DATATYPE_INTEGER
+			if typeisptr(v2dtype) then v2dtype=FB_DATATYPE_LONGINT
 			select case v2dtype
-				case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE,FB_DATATYPE_ENUM
+				case FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE
 					op2=*regstrq(srcreg)
 				case FB_DATATYPE_LONG,FB_DATATYPE_ULONG,FB_DATATYPE_SINGLE
 					op2=*regstrd(srcreg)
@@ -4322,9 +4108,9 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 			op2=*symbGetMangledName(v2->sym)+"[rip+"+str(v2->ofs)+"]"
 			if typeGetDtOnly( v2->dtype )=FB_DATATYPE_FUNCTION andalso ctx.target=FB_COMPTARGET_LINUX andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 				asm_code("mov rax, QWORD PTR "+left(op2,instr(op2,"[")-1)+"@GOTPCREL[rip]")
-				asm_code("mov "+op1+", rax  #NO_OPTIM")
+				asm_code("mov "+op1+", rax",KNOOPTIM)
 			else
-				asm_code("lea "+op1+", "+op2+"  #NO_OPTIM")
+				asm_code("lea "+op1+", "+op2,KNOOPTIM)
 			end if
 			exit sub
 		case IR_VREGTYPE_IMM
@@ -4339,8 +4125,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 			asm_error("store 02 ??")
 	end select
 	''====================  writing code ===============================
-	if op4<>"" then asm_code(op4)
-
+	if op4<>"" then emitop3_op4(op4)
 	If( typeGetClass( v1dtype ) = FB_DATACLASS_FPOINT ) then ''convert to float
 		if( typeGetClass( v2dtype ) = FB_DATACLASS_FPOINT ) then  '' float to float (single <-> double)
 
@@ -4366,7 +4151,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 			asm_info("int to float")
 			asm_code("pxor xmm0,xmm0")
 			select case v2dtype
-				case FB_DATATYPE_UINT,FB_DATATYPE_ULONGINT
+				case FB_DATATYPE_ULONGINT
 					if v1dtype=FB_DATATYPE_DOUBLE then
 						asm_code("mov rax, "+op2)
 						asm_code("test	rax, rax")
@@ -4412,7 +4197,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 						asm_code(lname2+":")
 						asm_code("movd "+op1+", xmm0")
 					end if
-				case FB_DATATYPE_INTEGER,FB_DATATYPE_LONGINT ''todo regroup ?
+				case FB_DATATYPE_LONGINT''todo regroup ?
 					if v1dtype=FB_DATATYPE_DOUBLE then
 						asm_code("cvtsi2sd xmm0, "+prefix2+op2)
 						asm_code("movq "+op1+", xmm0")
@@ -4460,7 +4245,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 		'' double to int
 		if v2dtype=FB_DATATYPE_DOUBLE then
 
-			if v1dtype=FB_DATATYPE_UINT Or v1dtype=FB_DATATYPE_ULONGINT then
+			if v1dtype=FB_DATATYPE_ULONGINT then
 				asm_code("mov rax, 4890909195324358656")
 				asm_code("movq xmm2, rax")
 				asm_code("mov rax, "+op2)
@@ -4488,7 +4273,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 				asm_code(lname2+":")
 				asm_code("mov "+op1+", rax")
 
-			elseif v1dtype=FB_DATATYPE_INTEGER Or v1dtype=FB_DATATYPE_LONGINT or v1dtype=FB_DATATYPE_ENUM _
+			elseif v1dtype=FB_DATATYPE_LONGINT _
 				Or  v1dtype=FB_DATATYPE_LONG Or v1dtype=FB_DATATYPE_ULONG _
 				Or  v1dtype=FB_DATATYPE_SHORT Or v1dtype=FB_DATATYPE_USHORT _
 				Or  v1dtype=FB_DATATYPE_BYTE Or v1dtype=FB_DATATYPE_UBYTE _
@@ -4502,7 +4287,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 				hEmitRoundFloat(FB_DATATYPE_DOUBLE)
 
-				if v1dtype=FB_DATATYPE_INTEGER Or v1dtype=FB_DATATYPE_LONGINT  or v1dtype=FB_DATATYPE_ENUM then
+				if v1dtype=FB_DATATYPE_LONGINT then
 					asm_code("mov "+op1+", rax")
 				elseif v1dtype=FB_DATATYPE_LONG Or v1dtype=FB_DATATYPE_ULONG then
 					asm_code("mov "+op1+", eax")
@@ -4522,7 +4307,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 			end if
 		else
 			 ''single to int
-			if v1dtype=FB_DATATYPE_UINT Or v1dtype=FB_DATATYPE_ULONGINT then
+			if v1dtype=FB_DATATYPE_ULONGINT then
 				asm_code("mov rax, 1593835520")
 				asm_code("movq xmm2, rax")
 				asm_code("mov eax, "+op2)
@@ -4550,7 +4335,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 				asm_code(lname2+":")
 				asm_code("mov "+op1+", rax")
 
-			elseif v1dtype=FB_DATATYPE_INTEGER Or v1dtype=FB_DATATYPE_LONGINT or v1dtype=FB_DATATYPE_ENUM _
+			elseif v1dtype=FB_DATATYPE_LONGINT _
 				Or  v1dtype=FB_DATATYPE_LONG Or v1dtype=FB_DATATYPE_ULONG _
 				Or  v1dtype=FB_DATATYPE_SHORT Or v1dtype=FB_DATATYPE_USHORT _
 				Or  v1dtype=FB_DATATYPE_BYTE Or v1dtype=FB_DATATYPE_UBYTE _
@@ -4564,7 +4349,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 				hEmitRoundFloat(FB_DATATYPE_SINGLE)
 
-				if v1dtype=FB_DATATYPE_INTEGER Or v1dtype=FB_DATATYPE_LONGINT or v1dtype=FB_DATATYPE_ENUM then
+				if v1dtype=FB_DATATYPE_LONGINT then
 					asm_code("mov "+op1+", rax")
 				elseif v1dtype=FB_DATATYPE_LONG Or v1dtype=FB_DATATYPE_ULONG then
 					asm_code("mov "+op1+", eax")
@@ -4589,7 +4374,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	if v1dtype=FB_DATATYPE_STRUCT or v2dtype=FB_DATATYPE_STRUCT then ''2019/11/21
 		if v2dtype=FB_DATATYPE_STRUCT then
 			asm_code("lea "+op1+", "+op2)
-			if v1dtype=FB_DATATYPE_INTEGER Or v1dtype=FB_DATATYPE_LONGINT then
+			if v1dtype=FB_DATATYPE_LONGINT then
 				asm_code("mov "+op1+", QWORD PTR ["+op1+"]") ''op1 must be a register
 			elseif v1dtype<>FB_DATATYPE_STRUCT then
 				asm_error("Converting struct to datatype not handled 01")
@@ -4636,7 +4421,6 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	if( typeGetSize( v1dtype ) <= typeGetSize( v2dtype ) ) then
 		if v2->typ=IR_VREGTYPE_REG then ''changing register size as source > destination
 			prefix1=""
-			if typeisptr(v1dtype) then v1dtype=FB_DATATYPE_INTEGER
 			select case v1dtype
 				case FB_DATATYPE_LONG,FB_DATATYPE_ULONG,FB_DATATYPE_SINGLE
 					op2=*regstrd(srcreg)
@@ -4646,7 +4430,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 					op2=*regstrb(srcreg)
 				case FB_DATATYPE_BOOLEAN
 					''do nothing as comparison is on the whole value
-				case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE,FB_DATATYPE_ENUM
+				case FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE
 					 ''should not be possible cases
 					op2=*regstrq(srcreg)
 				case else
@@ -4676,23 +4460,20 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 			case 1,2 ''ubyte/ushort
 				asm_code("movzx "+op1+", "+prefix2+op2)
 			case 4 ''ulong
-				'asm_code("movsxd "+op1+", "+prefix2+op2)
-				asm_code("mov eax, "+prefix2+op2)
-				asm_code("mov eax, eax #NO_OPTIM")  ''to zero the high 32bits
-				asm_code("mov "+op1+", rax")
+				asm_code("mov "+*regstrd(regresult)+", "+op2)
+				asm_code("mov "+*regstrd(regresult)+", "+*regstrd(regresult),KNOOPTIM)  ''to zero the high 32bits
 			case else
 				Asm_error("in conv something missing 02")
 		end select
 	end if
 
 end sub
-
 private sub emitStoreStruct(byval v1 as IRVREG ptr, byval v2 as IRVREG ptr,byref op1 as string,byref op3 as string)
 	dim as string dest
 	dim as integer lgtv1=v1->sym->lgt ,ofsv2=v2->ofs
 	dim as FB_STRUCT_INREG retin2regs=v2->subtype->udt.retin2regs
 
-	if op3<>"" then asm_code(op3)
+	if op3<>"" then emitop3_op4(op3)
 
 	''the data is already in either rax/rdx or xmm0/xmm1 or the 2 other combinations
 	''moving 8 first bytes
@@ -4973,9 +4754,9 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 		asm_code(code1+prefix+op2)
 		asm_code("mov "+prefix+op1+code2)
 	elseif v1->typ=IR_VREGTYPE_IDX And v2->typ=IR_VREGTYPE_IDX then
-		if op4<>"" then asm_code(op4)
+		if op4<>"" then emitop3_op4(op4)
 		asm_code(code1+prefix+op2)
-		if op3<>"" then asm_code(op3)
+		if op3<>"" then emitop3_op4(op3)
 		Asm_code("mov "+prefix+op1+code2)
 
 	elseif  (v1->typ=IR_VREGTYPE_VAR And v2->typ=IR_VREGTYPE_PTR) _
@@ -4985,17 +4766,17 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 	elseif  (v1->typ=IR_VREGTYPE_VAR And v2->typ=IR_VREGTYPE_IDX) _
 		Or (v1->typ=IR_VREGTYPE_IDX And v2->typ=IR_VREGTYPE_VAR) then
-		if op4<>"" then asm_code(op4)
+		if op4<>"" then emitop3_op4(op4)
 		asm_code(code1+prefix+op2)
-		if op3<>"" then asm_code(op3)
+		if op3<>"" then emitop3_op4(op3)
 		Asm_code("mov "+prefix+op1+code2)
 
 	elseif  (v1->typ=IR_VREGTYPE_PTR And v2->typ=IR_VREGTYPE_IDX) _
 		Or (v1->typ=IR_VREGTYPE_IDX And v2->typ=IR_VREGTYPE_PTR) then
 		asm_info("PTR <--> IDX")
-		if op4<>"" then asm_code(op4)
+		if op4<>"" then emitop3_op4(op4)
 		asm_code(code1+prefix+op2)
-		if op3<>"" then asm_code(op3)
+		if op3<>"" then emitop3_op4(op3)
 		Asm_code("mov "+prefix+op1+code2)
 
 	elseif v1->typ=IR_VREGTYPE_PTR And v2->typ=IR_VREGTYPE_PTR then
@@ -5003,8 +4784,8 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 		Asm_code("mov "+prefix+op1+code2)
 
 	else
-		if op3<>"" then asm_code(op3)
-		if op4<>"" then asm_code(op4)
+		if op3<>"" then emitop3_op4(op3)
+		if op4<>"" then emitop3_op4(op4)
 		if v2->typ=IR_VREGTYPE_IMM then
 			select case v1->typ
 				case IR_VREGTYPE_REG
@@ -5148,7 +4929,7 @@ private sub _emitloadres(byval v1 as IRVREG ptr,byval vr as IRVREG Ptr)
 		end select
 	else
 		if typeget(dtype)=FB_DATATYPE_POINTER then dtype=FB_DATATYPE_INTEGER
-		if op3<>"" then asm_code(op3)
+		if op3<>"" then emitop3_op4(op3)
 		select case dtype
 			case FB_DATATYPE_DOUBLE
 				asm_code("movq xmm0, "+op1)
@@ -5215,7 +4996,7 @@ private sub _emitaddr(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRV
 				case else
 					asm_error("typ in addrof not handled")
 			end select
-			if op3<>"" then asm_code(op3)
+			if op3<>"" then emitop3_op4(op3)
 			'if v1->typ=IR_VREGTYPE_PTR and instr(vregPretty( v1 ),"FBARRAY1<12PARTICLETAIL>")then' and *symbGetMangledName(v1->sym)=then
 				'asm_info("CANCEL addrof ptr=")
 				'asm_code("mov "+*regstrq(reg_findreal(vr->reg))+", "+*regstrq(reg_findreal(v1->vidx->reg)))
@@ -5226,7 +5007,7 @@ private sub _emitaddr(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRV
 			select case v1->typ ''source
 				case IR_VREGTYPE_IDX
 					prepare_idx(v1,op1,op3)
-					if op3<>"" then asm_code(op3)
+					if op3<>"" then emitop3_op4(op3)
 
 				case IR_VREGTYPE_VAR ''format varname ofs1   local/static  ofs1 could be zero
 					if symbIsStatic(v1->sym) Or symbisshared(v1->sym) then
@@ -5261,8 +5042,10 @@ private sub _emitaddr(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRV
 	end select
 
 end sub
-sub save_call_restore(byref func as string)
+sub save_call(byref func as string,byval vr as IRVREG ptr,byval vrreg as integer)
 
+	''vrreg not yet really used so don't need to be spilled and will be forced after by restore_vrreg
+	if vr<>0 then reghandle(vrreg)=KREGFREE
 	''saving registers if needed
 	reg_save
 
@@ -5272,6 +5055,7 @@ sub save_call_restore(byref func as string)
 		asm_code("call "+func)
 	end if
 
+	if vr<>0 then reghandle(vrreg)=vr->reg
 end sub
 private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref firstmov as string="",byval vr as IRVREG ptr,byval level as integer _
 	, byval variadic as boolean=false, byval callptr as boolean)
@@ -5293,11 +5077,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 
 	asm_info("variadic="+str(variadic)+" level="+Str(level))
 
-	if reghandle(KREG_RAX)<>KREGFREE And vr<>0 then
-		asm_error("Warning rax used before a function call, should not happen "+Str(reghandle(KREG_RAX)))
-	end if
 	ctx.proccalling=true
-
 	if callptr then reg_callptr(pname,firstmov)
 
 	''reserving space for saving 13 registers
@@ -5329,7 +5109,8 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 				if v2->sym=0 then
 					if v2->vidx->sym=0 then
 						if v2->vidx->reg<>-1 then
-							op1=Str(v2->ofs)+"["+*regstrq(reg_findreal(v2->vidx->reg))+"]"
+							reg2=reg_findreal(v2->vidx->reg)
+							op1=Str(v2->ofs)+"["+*regstrq(reg2)+"]"
 						else
 							''2 levels
 							reg2=reg_findreal(v2->vidx->vidx->reg)
@@ -5339,8 +5120,8 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 					else
 						regtempo=*reg_tempo()
 						if symbIsStatic(v2->vidx->sym) Or symbisshared(v2->vidx->sym) then
-							op3="lea "+regtempo+", "+*symbGetMangledName(v2->vidx->sym)+"[rip+"+Str(v2->ofs)+"]"+"  #NO_OPTIM"
-							op3+=newline2+"mov "+regtempo+", "+"["+regtempo+"]"+"  #NO_OPTIM"
+							op3="lea "+regtempo+", "+*symbGetMangledName(v2->vidx->sym)+"[rip+"+Str(v2->ofs)+"]"
+							op3+=newline2+"mov "+regtempo+", "+"["+regtempo+"]"+" #NO"
 							op1="["+regtempo+"]"
 						else
 							op3="mov "+regtempo+", "+Str(v2->vidx->ofs)+"[rbp]"
@@ -5357,7 +5138,8 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 					end if
 
 					if v2->vidx->typ=IR_VREGTYPE_REG then
-						op1="["+regtempo+"+"+*regstrq(reg_findreal(v2->vidx->reg))+"]"
+						reg2=reg_findreal(v2->vidx->reg)
+						op1="["+regtempo+"+"+*regstrq(reg2)+"]"
 					elseif v2->vidx->typ=IR_VREGTYPE_VAR then
 						if symbIsStatic(v2->vidx->sym) Or symbisshared(v2->vidx->sym) then
 							op3+=newline2+"add "+regtempo+", "+*symbGetMangledName(v2->vidx->sym)+"[rip+"+Str(v2->vidx->ofs)+"]"
@@ -5395,7 +5177,8 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 				end if
 
 			case IR_VREGTYPE_PTR ''format ofs1 <vidx=reg>
-				op1=Str(v2->ofs)+"["+*regstrq(reg_findreal(v2->vidx->reg))+"]"
+				reg2=reg_findreal(v2->vidx->reg)
+				op1=Str(v2->ofs)+"["+*regstrq(reg2)+"]"
 
 			case IR_VREGTYPE_OFS ''format varname ofs1   static  ofs1 could be zero
 				op1=*symbGetMangledName(v2->sym)+"[rip+"+str(v2->ofs)+"]"
@@ -5508,8 +5291,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 				'' WDS
 				''======
 
-				if op3<>"" then asm_code(op3)
-
+				if op3<>"" then emitop3_op4(op3)
 				if paramtype=KPARAMSK1 then
 
 					if dtype=FB_DATATYPE_STRUCT then
@@ -5566,7 +5348,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 					asm_code("lea "+*regstrq(listreg(cptint))+", "+str(-ctx.stkcopy)+"[rbp]")
 
 					if variadic=true and ctx.target=FB_COMPTARGET_WIN32 then
-						asm_code("mov QWORD PTR "+Str((cptarg-1)*8)+"[rsp], "+*regstrq(listreg(cptint))+" #NO_OPTIM")
+						asm_code("mov QWORD PTR "+Str((cptarg-1)*8)+"[rsp], "+*regstrq(listreg(cptint)),KNOOPTIM)
 					end if
 				else
 					''KPARAMSK3
@@ -5647,7 +5429,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 			''writing TO REGISTER
 			''===================
 
-			if op3<>"" then asm_code(op3)
+			if op3<>"" then emitop3_op4(op3)
 
 			if v2->typ=IR_VREGTYPE_IMM then
 				''Immediat
@@ -5667,7 +5449,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 					asm_code("movq xmm"+Str(cptfloat-1)+", rax")
 					if variadic=true and ctx.target=FB_COMPTARGET_WIN32 then
 						''move also directly on stack only for win32
-						asm_code("mov QWORD PTR "+Str((cptarg-1)*8)+"[rsp], rax"+" #NO_OPTIM")
+						asm_code("mov QWORD PTR "+Str((cptarg-1)*8)+"[rsp], rax",KNOOPTIM)
 					end if
 				else
 					''whole number
@@ -5685,7 +5467,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 						end select
 					end if
 					if variadic=true and ctx.target=FB_COMPTARGET_WIN32 then
-						asm_code("mov QWORD PTR "+Str((cptarg-1)*8)+"[rsp], "+*regstrq(listreg(cptint))+" #NO_OPTIM")
+						asm_code("mov QWORD PTR "+Str((cptarg-1)*8)+"[rsp], "+*regstrq(listreg(cptint)),KNOOPTIM)
 					end if
 				end if
 			''=======================================
@@ -5763,7 +5545,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 						asm_code("lea "+*regstrq(listreg(cptint))+", "+op1)
 					end if
 					if variadic=true and ctx.target=FB_COMPTARGET_WIN32 then
-						asm_code("mov QWORD PTR "+Str((cptarg-1)*8)+"[rsp], "+*regstrq(listreg(cptint))+" #NO_OPTIM")
+						asm_code("mov QWORD PTR "+Str((cptarg-1)*8)+"[rsp], "+*regstrq(listreg(cptint)),KNOOPTIM)
 					end if
 				else
 					''====   not byval nor OFS
@@ -5782,7 +5564,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 							end if
 						end if
 						if variadic=true and ctx.target=FB_COMPTARGET_WIN32 then
-							asm_code("movsd QWORD PTR "+Str((cptarg-1)*8)+"[rsp], xmm"+Str(cptfloat-1)+" #NO_OPTIM")
+							asm_code("movsd QWORD PTR "+Str((cptarg-1)*8)+"[rsp], xmm"+Str(cptfloat-1),KNOOPTIM)
 							asm_code("movq "+*regstrq(listreg(cptint))+", xmm"+Str(cptfloat-1))
 						end if
 					else
@@ -5815,7 +5597,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 								asm_error("in hdocall datatype not handled 03 ="+typedumpToStr(dtype,0))
 						end select
 						if variadic=true and ctx.target=FB_COMPTARGET_WIN32 then
-							asm_code("mov QWORD PTR "+Str((cptarg-1)*8)+"[rsp], "+*regstrq(listreg(cptint))+" #NO_OPTIM")
+							asm_code("mov QWORD PTR "+Str((cptarg-1)*8)+"[rsp], "+*regstrq(listreg(cptint)),KNOOPTIM)
 						end if
 					end if
 				end if
@@ -5844,10 +5626,15 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 			asm_code("sub rsp, 8")
 		end if
 		for istr as integer =pushnbstr to 1 step -1
-			asm_code(pushstr(istr))
+			if right(pushstr(istr),3)="#NO" then
+				asm_code(pushstr(istr),KNOOPTIM)
+			else
+				asm_code(pushstr(istr))
+			end if
 		next
 	end if
-
+	''unlock registers to avoid save just below
+	if callptr then reg_allowed(true)
 	''preparing the save of registers in use by the calling and that can be used by the called
 	reg_save
 
@@ -5859,9 +5646,9 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 	end if
 
 	if ctx.target=FB_COMPTARGET_LINUX andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
-		asm_code("call " +pname+"@PLT"+" #NO_ALL")
+		asm_code("call " +pname+"@PLT",KNOALL)
 	else
-		asm_code("call " +pname+" #NO_ALL")
+		asm_code("call " +pname,KNOALL)
 	end if
 
 	''for linux restoring the previous value of rsp in case of parameter put on the stack
@@ -5946,7 +5733,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 					asm_error("in hdocall typ not handled ="+Str(vr->typ))
 			end select
 
-			if op3<>"" then asm_code(op3)
+			if op3<>"" then emitop3_op4(op3)
 			select case dtype
 				case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE,FB_DATATYPE_ENUM
 					asm_code("mov "+op1+", "+*regstrq(KREG_RAX))
@@ -6035,15 +5822,31 @@ private sub _emitcallptr _
 	hDoCall(proc,op1,op3,vr,level,variadic,true)
 end sub
 private sub _emitjumpptr( byval v1 as IRVREG ptr )
+	dim as integer reg
 	asm_info("jumpptr vrdump="+vregdumpfull(v1))
-	asm_code("jmp ["+*regstrq(reg_findreal(v1->reg,true))+"]")
-	'asm_code("jmp "+*regstrq(reg_findreal(v1->reg,TRUE)))
+	if v1->reg=ctx.jmpvreg then
+		reg=ctx.jmpreg
+		ctx.jmppass=0
+		ctx.jmpvreg=KREGFREE
+	else
+		reg=reg_findreal(v1->reg)
+	end if
+	asm_code("jmp ["+*regstrq(reg)+"]")
 end sub
 private sub _emitbranch( byval op as integer, byval label as FBSYMBOL ptr )
 	asm_info("emit branch = jmp/call (gosub) to "+*symbGetMangledName( label )+" "+Str(op)+" "+*hGetBopCode(op))
 	asm_code(*hGetBopCode(op)+" "+*symbGetMangledName( label ))
+	if ctx.opereg then
+		''useless ? if op<>AST_OP_JUMP and op<>AST_OP_CALL then
+		asm_info("emitbranch opereg="+*regstrq(ctx.opereg))
+		reghandle(ctx.opereg)=KREGFREE
+		ctx.opereg=0
+	end if
 	if ctx.labelbranch2 then
 		ctx.labeljump=label
+	end if
+	if op<>AST_OP_JMP then
+		reg_mark(label)
 	end if
 end sub
 private sub _emitreturn( byval bytestopop as integer )
@@ -6140,7 +5943,7 @@ private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVR
 
 			if v2->typ=IR_VREGTYPE_REG then ''todo to be replace by repsto
 				op2=*regstrq(reg_findreal(v2->reg))
-				asm_code("test "+op2+","+op2)
+				asm_code("test "+op2+", "+op2)
 				lname2=*symbUniqueLabel( )
 				''zero byte to clear so skip
 				asm_code("jz "+lname2)
@@ -6257,8 +6060,7 @@ private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVR
 					asm_error("Memcopy v2 not a reg nor a var nor ofs nor ptr")
 			end select
 
-			if op3<>"" then asm_code(op3)
-
+			if op3<>"" then emitop3_op4(op3)
 			select case bytes
 				case is>8,3,5,6,7
 					memcopy(bytes,op2,op1,srctyp,desttyp)
@@ -6314,7 +6116,6 @@ end sub
 private sub _emitcomment( byval text as zstring ptr )
 	#ifdef basicdata
 		if text=0 Or LTrim(*text)="" Or left(ltrim(*text, Any Chr(32)+Chr(9)),1)="'" then exit sub
-		'print left(Trim(*text),20)
 
 		hWriteasm64 ( "# -----------------------------------------")
 		hWriteasm64 ( "# basic --> " + Trim(*text, Any " "+Chr(9)) )
@@ -6421,15 +6222,20 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 	ctx.prolog_txt=""
 	ctx.epilog_txt=""
 
+	''useful ?
 	ctx.labelbranch2=0
 	ctx.labeljump=0
+	ctx.jmpvreg=KREGFREE
+	ctx.jmppass=0
+	ctx.opepass=0
+
 	ctx.variadic=false
 	ctx.proc_txt=""
 	ctx.section=SECTION_PROLOG
 	ctx.proccalling=false
 
 	asm_info("=============================================================================")
-	asm_info("===== Proc begin : "+ *symbGetMangledName( proc )+" / "+*symbGetMangledName( proc )+" =====")
+	asm_info("===== Proc begin : "+ *symbGetMangledName( proc )+" =====")
 	asm_info("=============================================================================")
 	ctx.indent+=1
 
@@ -6437,10 +6243,12 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 	ctx.argfloat=0 ''nb arg float
 	if ctx.target=FB_COMPTARGET_LINUX then
 		ctx.ofs=16    ''parameter offset on stack
+		ctx.stk=40    ''see stack organization
 	else
 		ctx.ofs=8      ''parameter offset
+		ctx.stk=56    ''see stack organization
 	end if
-	ctx.stk=112    ''see stack organization
+
 	ctx.argcptmax=0
 	ctx.usedreg=0 ''registers used
 	ctx.stkmax=0
@@ -6450,14 +6258,11 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 		asm_section(".text")
 	end if
 
-	ctx.totalroom=-1
-	reg_freeall ''in case of constructor/destructor implicit
-
 	asm_info( hEmitProcHeader( proc)  )
 
 	''variadic ?
-	var param = symbGetProcLastParam( proc )
-	while( param )
+	var param = symbGetProcTailParam( proc )
+	if param then
 		if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
 			ctx.variadic=true
 			if ctx.target=FB_COMPTARGET_LINUX then
@@ -6465,8 +6270,7 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 				ctx.stk+=14*8
 			end if
 		end if
-		param = symbGetProcPrevParam( proc, param )
-	wend
+	end if
 
 	asm_code(".text")
 	if symbisprivate(proc)=FALSE then
@@ -6516,38 +6320,44 @@ private sub _emitprocend _
 
 		'inside prolog/epilog
 		'--------------------
-		''reg used in called	save and restore calling registers (rbx,rsi,rdi,r12-r15)
-		if ctx.usedreg And (1 Shl KREG_RBX) then asm_code("mov QWORD PTR -16[rbp], rbx") :restreg+="mov  rbx, QWORD PTR -16[rbp]"+NEWLINE2
+		''reg used in called
+		if ctx.usedreg And (1 Shl KREG_RBX) then asm_code("mov QWORD PTR -8[rbp], rbx")  :restreg+="mov  rbx, QWORD PTR -8[rbp]"+NEWLINE2
 		if ctx.target=FB_COMPTARGET_WIN32 then
-			if ctx.usedreg And (1 Shl KREG_RDI) then asm_code("mov QWORD PTR -48[rbp], rdi") :restreg+="mov  rdi, QWORD PTR -48[rbp]"+NEWLINE2
-			if ctx.usedreg And (1 Shl KREG_RSI) then asm_code("mov QWORD PTR -40[rbp], rsi") :restreg+="mov  rsi, QWORD PTR -40[rbp]"+NEWLINE2
-		endif
-		if ctx.usedreg And (1 Shl KREG_R12) then asm_code("mov QWORD PTR -88[rbp], r12") :restreg+="mov  r12, QWORD PTR -88[rbp]"+NEWLINE2
-		if ctx.usedreg And (1 Shl KREG_R13) then asm_code("mov QWORD PTR -96[rbp], r13") :restreg+="mov  r13, QWORD PTR -96[rbp]"+NEWLINE2
-		if ctx.usedreg And (1 Shl KREG_R14) then asm_code("mov QWORD PTR -104[rbp], r14"):restreg+="mov  r14, QWORD PTR -104[rbp]"+NEWLINE2
-		if ctx.usedreg And (1 Shl KREG_R15) then asm_code("mov QWORD PTR -112[rbp], r15"):restreg+="mov  r15, QWORD PTR -112[rbp]"+NEWLINE2
+			if ctx.usedreg And (1 Shl KREG_RDI) then asm_code("mov QWORD PTR -16[rbp], rdi") :restreg+="mov  rdi, QWORD PTR -16[rbp]"+NEWLINE2
+			if ctx.usedreg And (1 Shl KREG_RSI) then asm_code("mov QWORD PTR -24[rbp], rsi") :restreg+="mov  rsi, QWORD PTR -24[rbp]"+NEWLINE2
+			if ctx.usedreg And (1 Shl KREG_R12) then asm_code("mov QWORD PTR -32[rbp], r12") :restreg+="mov  r12, QWORD PTR -32[rbp]"+NEWLINE2
+			if ctx.usedreg And (1 Shl KREG_R13) then asm_code("mov QWORD PTR -40[rbp], r13") :restreg+="mov  r13, QWORD PTR -40[rbp]"+NEWLINE2
+			if ctx.usedreg And (1 Shl KREG_R14) then asm_code("mov QWORD PTR -48[rbp], r14") :restreg+="mov  r14, QWORD PTR -48[rbp]"+NEWLINE2
+			if ctx.usedreg And (1 Shl KREG_R15) then asm_code("mov QWORD PTR -56[rbp], r15") :restreg+="mov  r15, QWORD PTR -56[rbp]"+NEWLINE2
+		else
+			if ctx.usedreg And (1 Shl KREG_R12) then asm_code("mov QWORD PTR -16[rbp], r12") :restreg+="mov  r12, QWORD PTR -16[rbp]"+NEWLINE2
+			if ctx.usedreg And (1 Shl KREG_R13) then asm_code("mov QWORD PTR -24[rbp], r13") :restreg+="mov  r13, QWORD PTR -24[rbp]"+NEWLINE2
+			if ctx.usedreg And (1 Shl KREG_R14) then asm_code("mov QWORD PTR -32[rbp], r14") :restreg+="mov  r14, QWORD PTR -32[rbp]"+NEWLINE2
+			if ctx.usedreg And (1 Shl KREG_R15) then asm_code("mov QWORD PTR -40[rbp], r15") :restreg+="mov  r15, QWORD PTR -40[rbp]"+NEWLINE2
+		end if
+		if restreg<>"" then restreg=rtrim(restreg)
 	end if
 
 	if ctx.target=FB_COMPTARGET_LINUX then
 		if ctx.variadic then
-			if ctx.arginteg <1 then asm_code("mov QWORD PTR -224[rbp], rdi")
-			if ctx.arginteg <2 then asm_code("mov QWORD PTR -216[rbp], rsi")
-			if ctx.arginteg <3 then asm_code("mov QWORD PTR -208[rbp], rdx")
-			if ctx.arginteg <4 then asm_code("mov QWORD PTR -200[rbp], rcx")
-			if ctx.arginteg <5 then asm_code("mov QWORD PTR -192[rbp], r8")
-			if ctx.arginteg <6 then asm_code("mov QWORD PTR -184[rbp], r9")
+			if ctx.arginteg <1 then asm_code("mov QWORD PTR -152[rbp], rdi")
+			if ctx.arginteg <2 then asm_code("mov QWORD PTR -144[rbp], rsi")
+			if ctx.arginteg <3 then asm_code("mov QWORD PTR -136[rbp], rdx")
+			if ctx.arginteg <4 then asm_code("mov QWORD PTR -128[rbp], rcx")
+			if ctx.arginteg <5 then asm_code("mov QWORD PTR -120[rbp], r8")
+			if ctx.arginteg <6 then asm_code("mov QWORD PTR -112[rbp], r9")
 			''if eax is null no float argument so need to save them
 			lname = *symbUniqueLabel( )
 			asm_code("test eax, eax")
 			asm_code("jz "+lname)
-			if ctx.argfloat <1 then asm_code("movq QWORD PTR -176[rbp], xmm0")
-			if ctx.argfloat <2 then asm_code("movq QWORD PTR -168[rbp], xmm1")
-			if ctx.argfloat <3 then asm_code("movq QWORD PTR -160[rbp], xmm2")
-			if ctx.argfloat <4 then asm_code("movq QWORD PTR -152[rbp], xmm3")
-			if ctx.argfloat <5 then asm_code("movq QWORD PTR -144[rbp], xmm4")
-			if ctx.argfloat <6 then asm_code("movq QWORD PTR -136[rbp], xmm5")
-			if ctx.argfloat <7 then asm_code("movq QWORD PTR -128[rbp], xmm6")
-			if ctx.argfloat <8 then asm_code("movq QWORD PTR -120[rbp], xmm7")
+			if ctx.argfloat <1 then asm_code("movq QWORD PTR -104[rbp], xmm0")
+			if ctx.argfloat <2 then asm_code("movq QWORD PTR -96[rbp], xmm1")
+			if ctx.argfloat <3 then asm_code("movq QWORD PTR -88[rbp], xmm2")
+			if ctx.argfloat <4 then asm_code("movq QWORD PTR -80[rbp], xmm3")
+			if ctx.argfloat <5 then asm_code("movq QWORD PTR -72[rbp], xmm4")
+			if ctx.argfloat <6 then asm_code("movq QWORD PTR -64[rbp], xmm5")
+			if ctx.argfloat <7 then asm_code("movq QWORD PTR -56[rbp], xmm6")
+			if ctx.argfloat <8 then asm_code("movq QWORD PTR -48[rbp], xmm7")
 			asm_code(lname+":")
 		end if
 	end if
@@ -6565,6 +6375,9 @@ private sub _emitprocend _
 	ctx.indent -= 1
 	asm_info("===== End of proc =====")
 
+	flistReset( @ctx.spillvregs )
+	ctx.vreg_count = 0
+
 	irhlEmitProcEnd( ) ''just flistReset( @irhl.vregs )
 
 	ctx.body_txt+=ctx.prolog_txt+ctx.proc_txt+ctx.epilog_txt ''assembling all the parts
@@ -6573,7 +6386,6 @@ private sub _emitprocend _
 end sub
 private sub _emitvariniofs(byval sym as FBSYMBOL ptr,byval rhs as FBSYMBOL ptr,byval ofs as longint)
 
-	asm_info("")
 	asm_info("in _emitVarIniOfs  sym="+*symbGetMangledName(sym))
 	asm_info("rhs="+*symbGetMangledName(rhs)+" / "+*symbGetMangledName( rhs ))
 	asm_info("ofs="+Str(ofs))
@@ -6583,9 +6395,7 @@ private sub _emitvariniofs(byval sym as FBSYMBOL ptr,byval rhs as FBSYMBOL ptr,b
 	var ptrdtype = typeAddrOf( symbGetType( rhs ) )
 
 	asm_info("symdtype="+typedumpToStr(symdtype,0))
-	asm_info("symtype="+hEmitType( symdtype, sym->subtype ))
 	asm_info("ptrdtype="+typedumpToStr(ptrdtype,0))
-	asm_info("ptrtype="+hEmitType( ptrdtype, rhs->subtype ))
 
 	if( ofs <> 0 ) then
 		asm_info("_emitVarIniOfs s="+s+" if ofs <>0 should be added ")
@@ -6660,7 +6470,7 @@ end sub
 
 private sub _emitMacro( byval op as integer,byval v1 as IRVREG ptr, byval v2 as IRVREG ptr, byval vr as IRVREG ptr )
 	dim as IRVREG ptr tempo1,tempo2
-	dim as long savereg,startarg
+	dim as long savereg,startarg,vreg
 	dim as string regvalist,lname1,lname2
 	asm_info( "Macro op=" + astdumpopToStr( op ))
 	asm_info("v1="+vregdumpfull(v1))
@@ -6687,17 +6497,29 @@ private sub _emitMacro( byval op as integer,byval v1 as IRVREG ptr, byval v2 as 
 			if ctx.target=FB_COMPTARGET_LINUX then
 				_emitaddr(AST_OP_ADDROF,v1,tempo1)
 				regvalist=*regstrq(reg_findreal(tempo1->reg))
-				asm_code("mov DWORD PTR ["+regvalist+"], "+str(ctx.arginteg*8)+" #NO_ALL")  ''offset reg size 4
+				asm_code("mov DWORD PTR ["+regvalist+"], "+str(ctx.arginteg*8),KNOALL)  ''offset reg size 4
 				asm_code("mov DWORD PTR 4["+regvalist+"], "+str(ctx.argfloat*8+48)) ''offset float 4
 				startarg=(iif(ctx.arginteg<=6,0,ctx.arginteg-6)+iif(ctx.argfloat<=8,0,ctx.argfloat-8))*8+16
 				asm_code("lea rax,"+str(startarg)+"[rbp]")   ''ad stack
 				asm_code("mov QWORD PTR 8["+regvalist+"], rax")
-				asm_code("lea rax, -224[rbp]") ''ad reg   todo could different as 112 is a fixed value by default
+				asm_code("lea rax, -152[rbp]") ''ad reg see stack organization
 				asm_code("mov QWORD PTR 16["+regvalist+"], rax")
 
 			else
 				asm_code("lea "+*regstrq(reg_findreal(tempo1->reg))+", "+str(ctx.arginteg*8+16)+"[rbp]")
 				_emitstore(v1,tempo1)
+			end if
+
+			if v2->typ=IR_VREGTYPE_PTR then
+				''removal of useless register as v2 not used / PTR -> ofs1 <vidx=reg>
+				vreg=v2->vidx->reg
+				for ireg as integer =1 to KREGUPPER
+					if reghandle(ireg)=vreg then
+						asm_info("VA_START release for PTR reg not used="+str(vreg))
+						reghandle(ireg)=KREGFREE
+						exit for
+					end if
+				next
 			end if
 
 		case AST_OP_VA_ARG
@@ -6780,6 +6602,17 @@ private sub _emitMacro( byval op as integer,byval v1 as IRVREG ptr, byval v2 as 
 
 		case AST_OP_VA_END
 			asm_info("Call emit macro END  nothing to do ?")
+			if v1->typ=IR_VREGTYPE_PTR then
+				''removal of useless register as v1 not used / PTR -> ofs1 <vidx=reg>
+				vreg=v1->vidx->reg
+				for ireg as integer =1 to KREGUPPER
+					if reghandle(ireg)=vreg then
+						asm_info("VA_END release for PTR reg not used="+str(vreg))
+						reghandle(ireg)=KREGFREE
+						exit for
+					end if
+				next
+			end if
 		case AST_OP_VA_COPY
 			if ctx.target=FB_COMPTARGET_LINUX then
 				''linux

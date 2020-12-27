@@ -206,7 +206,7 @@ function cOperatorNew( ) as ASTNODE ptr
 	end if
 
 	'' return the pointer
-	function = astNewLINK( expr, astNewVAR( tmp ), FALSE )
+	function = astNewLINK( expr, astNewVAR( tmp ), AST_LINK_RETURN_RIGHT )
 end function
 
 '' DELETE ['[]'] expr

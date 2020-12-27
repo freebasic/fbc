@@ -127,7 +127,7 @@ private function astNewJMPTB _
 	n->jmptb.bias = bias
 	n->jmptb.span = span
 
-	function = astNewLINK( tree, n )
+	function = astNewLINK( tree, n, AST_LINK_RETURN_NONE )
 end function
 
 function astLoadJMPTB( byval n as ASTNODE ptr ) as IRVREG ptr
@@ -226,7 +226,7 @@ function astBuildJMPTB _
 					astNewVAR( tempvar ), _
 					astNewCONSTi( bias, dtype ) ), _
 				astNewCONSTi( span, dtype ), _
-				deflabel, AST_OPOPT_NONE ) )
+				deflabel, AST_OPOPT_NONE ), AST_LINK_RETURN_NONE )
 
 		'' Do
 		''    goto table[expr - bias]
@@ -241,14 +241,14 @@ function astBuildJMPTB _
 					astNewVAR( tbsym, hPrecalcBiasOffset( bias, dtype ) ), _
 					astNewBOP( AST_OP_MUL, _
 						astNewVAR( tempvar ), _
-						astNewCONSTi( env.pointersize, dtype ) ) ) ) )
+						astNewCONSTi( env.pointersize, dtype ) ) ) ), AST_LINK_RETURN_NONE )
 	else
 		tbsym = NULL
 	end if
 
 	tree = astNewLINK( tree, _
 		astNewJMPTB( astNewVAR( tempvar ), tbsym, _
-			values1, labels1, labelcount, deflabel, bias, span ) )
+			values1, labels1, labelcount, deflabel, bias, span ), AST_LINK_RETURN_NONE )
 
 	function = tree
 end function

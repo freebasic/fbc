@@ -183,7 +183,7 @@ private function hFieldAccess _
 
 			tree = NULL
 			if( astHasSideFx( varexpr ) ) then
-				tree = astNewLINK( tree, astRemSideFx( varexpr ), FALSE )
+				tree = astNewLINK( tree, astRemSideFx( varexpr ), AST_LINK_RETURN_RIGHT )
 			end if
 
 			indexexpr = cDynamicArrayIndex( fld, astNewDEREF( astCloneTree( varexpr ) ) )
@@ -195,7 +195,7 @@ private function hFieldAccess _
 			varexpr = astNewBOP( AST_OP_ADD, varexpr, indexexpr )
 			varexpr = astNewDEREF( varexpr )
 
-			varexpr = astNewLINK( tree, varexpr, FALSE )
+			varexpr = astNewLINK( tree, varexpr, AST_LINK_RETURN_RIGHT )
 		else
 			'' index + diff
 			indexexpr = cFixedSizeArrayIndex( fld )

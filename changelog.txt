@@ -28,6 +28,7 @@ Version 1.08.0
 - sf.net #924: fbc: built-in for RGB() and RGBA() return ulong
 - gfxlib2: POINT returns ULONG
 - sf.net #927: PUT custom method expects function(ulong,ulong,any pr) as ulong callback function
+- fbc: double the minimum and default stacksize on 64-bit to 64Kb and 2048Kb respectively.
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling

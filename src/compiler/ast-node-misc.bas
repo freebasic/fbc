@@ -159,10 +159,7 @@ function astNewDBG _
 	dim as ASTNODE ptr n = any
 
 	if( env.clopt.debuginfo = FALSE ) then
-		''for gas64 AST_OP_DBG_LINEEND used to indicate the end of line so mandatory
-		if ( (fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS64 ) or ( op <> AST_OP_DBG_LINEEND ) ) then
-			return null
-		end if
+		return null
 	end if
 
 	n = astNewNode( AST_NODECLASS_DBG, FB_DATATYPE_INVALID )
@@ -226,26 +223,49 @@ function astNewLINK _
 	( _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr, _
-		byval ret_left as integer _
+		byval ret as AST_LINK_RETURN _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
 
+	if( ret <> AST_LINK_RETURN_LEFT )then
+		if( l <> NULL ) then
+			if( astIsCALL( l ) ) then
+				astSetType( l, FB_DATATYPE_VOID, NULL )
+			end if
+		end if
+	end if
+
+	if( ret <> AST_LINK_RETURN_RIGHT )then
+		if( r <> NULL ) then
+			if( astIsCALL( r ) ) then
+				astSetType( r, FB_DATATYPE_VOID, NULL )
+			end if
+		end if
+	end if
+
+	'' if left node is null then don't add a LINK node and
+	'' return the right hand side only
 	if( l = NULL ) then
 		return r
 	end if
 
+	'' if right node is null then don't add a LINK node and
+	'' return the left hand side only
 	if( r = NULL ) then
 		return l
 	end if
 
-	if( ret_left ) then
+	select case ret
+	case AST_LINK_RETURN_NONE
+		n = astNewNode( AST_NODECLASS_LINK, FB_DATATYPE_VOID, NULL )
+	case AST_LINK_RETURN_LEFT
 		n = astNewNode( AST_NODECLASS_LINK, astGetFullType( l ), l->subtype )
-	else
+	case AST_LINK_RETURN_RIGHT
 		n = astNewNode( AST_NODECLASS_LINK, astGetFullType( r ), r->subtype )
-	end if
+	end select
 
-	n->link.ret_left = ret_left
+	n->link.ret = ret
 	n->l = l
 	n->r = r
 
@@ -261,11 +281,14 @@ function astLoadLINK( byval n as ASTNODE ptr ) as IRVREG ptr
 	vrr = astLoad( n->r )
 	astDelNode( n->r )
 
-	if( n->link.ret_left ) then
+	select case n->link.ret
+	case AST_LINK_RETURN_LEFT
 		function = vrl
-	else
+	case AST_LINK_RETURN_RIGHT
 		function = vrr
-	end if
+	case else
+		function = NULL
+	end select
 end function
 
 '' Explicit loads (l = expression to load to a register; r = NULL)

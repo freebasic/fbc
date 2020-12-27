@@ -637,10 +637,13 @@ sub symbInsertInnerUDT _
 	end if
 
 end sub
+
 ''================================================
 '' for Linux structure parameters size<=16
 ''================================================
-sub struct_analyze(byval fld as FBSYMBOL ptr,byref part1 as integer,byref part2 as integer,byref limit as integer)
+
+sub struct_analyze( byval fld as FBSYMBOL ptr, byref part1 as integer, byref part2 as integer, byref limit as integer )
+	
 	dim as integer lgt=fld->lgt
 	fld = symbUdtGetFirstField(fld)
 	while fld
@@ -672,23 +675,26 @@ sub struct_analyze(byval fld as FBSYMBOL ptr,byref part1 as integer,byref part2 
 
 end sub
 
+private function hGetMagicStructNumber( byval sym as FBSYMBOL ptr ) as integer
+	'' by default floating point for first register
+	dim as integer part1 = 2
+	dim as integer part2 = 0
+	dim as integer limit = 7
+
+	struct_analyze( sym, part1, part2, limit )
+
+	return part1 + part2
+end function
+
 private function hGetReturnTypeGas64Linux( byval sym as FBSYMBOL ptr ) as integer
 
 	assert( env.clopt.backend = FB_BACKEND_GAS64 )
 	assert( env.clopt.target = FB_COMPTARGET_LINUX )
 
-	''Linux gas64 could use 2 registers	
+	'' Linux gas64 could use 2 registers	
 
 	if( sym->lgt <= typeGetSize( FB_DATATYPE_LONGINT ) * 2 ) then
-
-		''by default floating point for first register
-		dim as integer part1 = 2
-		dim as integer part2 = 0
-		dim as integer limit = 7
-
-		struct_analyze( sym, part1, part2, limit )
-
-		select case as const part1+part2
+		select case as const hGetMagicStructNumber( sym )
 			case 1 ''only integers in RAX
 				'' don't set retin2regs, it's handled by datatype only 
 				'' sym->udt.retin2regs = FB_STRUCT_R

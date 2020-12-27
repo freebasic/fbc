@@ -1096,20 +1096,20 @@ private function hWrapInStaticFlag( byval code as ASTNODE ptr ) as ASTNODE ptr
 	t = astNewLINK( t, _
 		astBuildBranch( _
 			astNewBOP( AST_OP_EQ, astNewVAR( flag ), astNewCONSTi( 0 ) ), _
-			label, FALSE, TRUE ) )
+			label, FALSE, TRUE ), AST_LINK_RETURN_NONE )
 
 	'' flag = 1
-	t = astNewLINK( t, astBuildVarAssign( flag, 1 ) )
+	t = astNewLINK( t, astBuildVarAssign( flag, 1 ), AST_LINK_RETURN_NONE )
 
 	'' <code>
-	t = astNewLINK( t, code )
+	t = astNewLINK( t, code, AST_LINK_RETURN_NONE )
 
 	'' Destroy currently registered temp vars (should be only those from the
 	'' <code>) on this code path only
-	t = astNewLINK( t, astDtorListFlush( ) )
+	t = astNewLINK( t, astDtorListFlush( ), AST_LINK_RETURN_NONE )
 
 	'' end if
-	function = astNewLINK( t, astNewLABEL( label ) )
+	function = astNewLINK( t, astNewLABEL( label ), AST_LINK_RETURN_NONE )
 end function
 
 private function hCallStaticCtor _
@@ -1138,14 +1138,14 @@ private function hCallStaticCtor _
 		'' at program exit.
 		'' atexit( @static_proc )
 		proc = astProcAddStaticInstance( sym )
-		initcode = astNewLINK( initcode, rtlAtExit( astBuildProcAddrof( proc ) ) )
+		initcode = astNewLINK( initcode, rtlAtExit( astBuildProcAddrof( proc ) ), AST_LINK_RETURN_NONE )
 	end if
 
 	'' Any initialization code for a static var must be wrapped with a
 	'' static flag, to ensure it'll be only executed once, not everytime the
 	'' parent procedure is called.
 	if( initcode ) then
-		t = astNewLINK( t, hWrapInStaticFlag( initcode ) )
+		t = astNewLINK( t, hWrapInStaticFlag( initcode ), AST_LINK_RETURN_NONE )
 	end if
 
 	function = t
@@ -1223,7 +1223,7 @@ private function hFlushInitializer _
 
 		var_decl = hFlushDecl( var_decl )
 
-		return astNewLINK( var_decl, astTypeIniFlush( sym, initree, FALSE, AST_OPOPT_ISINI ) )
+		return astNewLINK( var_decl, astTypeIniFlush( sym, initree, FALSE, AST_OPOPT_ISINI ), AST_LINK_RETURN_NONE )
 	end if
 
 	'' not an object?
@@ -1818,7 +1818,7 @@ function cVarDecl _
 					if( desc <> NULL ) then
 						'' Note: descriptor may not have an initree here, in case it's COMMON
 						'' FIXME: should probably not add DECL nodes for COMMONs/SHAREDs in the first place (not done for EXTERNs either)
-						t = astNewLINK( t, astNewDECL( desc, (symbGetTypeIniTree( desc ) = NULL) ) )
+						t = astNewLINK( t, astNewDECL( desc, (symbGetTypeIniTree( desc ) = NULL) ), AST_LINK_RETURN_NONE )
 					end if
 
 					'' handle arrays (must be done after adding the decl node)
@@ -1839,7 +1839,7 @@ function cVarDecl _
 								''   even if unscoped, more so than to the array's own initializer.
 								'' * This must be LINK'ed to avoid astAdd() which would destroy temp vars from the
 								''   array initializer too early.
-								t = astNewLINK( t, astTypeIniFlush( desc, symbGetTypeIniTree( desc ), FALSE, AST_OPOPT_ISINI ) )
+								t = astNewLINK( t, astTypeIniFlush( desc, symbGetTypeIniTree( desc ), FALSE, AST_OPOPT_ISINI ), AST_LINK_RETURN_NONE )
 								symbSetTypeIniTree( desc, NULL )
 							end if
 						end if
@@ -1861,11 +1861,11 @@ function cVarDecl _
 						if( assign_initree ) then
 							'' clear it before it's initialized?
 							if( symbGetVarHasDtor( sym ) ) then
-								t = astNewLINK( t, astBuildVarDtorCall( sym, TRUE ) )
+								t = astNewLINK( t, astBuildVarDtorCall( sym, TRUE ), AST_LINK_RETURN_NONE )
 							end if
 
 							'' use the initializer as an assignment
-							t = astNewLINK( t, astTypeIniFlush( sym, assign_initree, FALSE, AST_OPOPT_ISINI ) )
+							t = astNewLINK( t, astTypeIniFlush( sym, assign_initree, FALSE, AST_OPOPT_ISINI ), AST_LINK_RETURN_NONE )
 						end if
 					end if
 				end if
@@ -1887,7 +1887,7 @@ function cVarDecl _
 						redimcall = hWrapInStaticFlag( redimcall )
 					end if
 
-					t = astNewLINK( t, redimcall )
+					t = astNewLINK( t, redimcall, AST_LINK_RETURN_NONE )
 				end if
 
 				astAdd( t )

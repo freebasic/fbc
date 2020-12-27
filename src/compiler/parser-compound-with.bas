@@ -29,7 +29,7 @@ private function hExtendTempLifeTime( byval scp as FBSYMBOL ptr ) as ASTNODE ptr
 
 			sym->attrib and= not FB_SYMBATTRIB_TEMP
 
-			t = astNewLINK( t, astNewDECL( sym, FALSE ), FALSE )
+			t = astNewLINK( t, astNewDECL( sym, FALSE ), AST_LINK_RETURN_RIGHT )
 		end if
 
 		sym = sym->next
@@ -114,7 +114,7 @@ sub cWithStmtBegin( )
 		'' corresponding variable from inside the WITH.
 		sym = astGetSymbol( effectiveexpr )
 		is_ptr = FALSE
-		t = astNewLINK( t, astRebuildWithoutEffectivePart( expr ), FALSE )
+		t = astNewLINK( t, astRebuildWithoutEffectivePart( expr ), AST_LINK_RETURN_RIGHT )
 	else
 		'' Otherwise, take a reference (a pointer that will be deref'ed
 		'' for accesses from inside the WITH block)
@@ -131,10 +131,10 @@ sub cWithStmtBegin( )
 
 		if( options and FB_SYMBOPT_UNSCOPE ) then
 			astAddUnscoped( astNewDECL( sym, TRUE ) )
-			t = astNewLINK( t, astNewASSIGN( astNewVAR( sym ), expr ), FALSE )
+			t = astNewLINK( t, astNewASSIGN( astNewVAR( sym ), expr ), AST_LINK_RETURN_RIGHT )
 		else
-			t = astNewLINK( t, astNewDECL( sym, FALSE ), FALSE )
-			t = astNewLINK( t, astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ), FALSE )
+			t = astNewLINK( t, astNewDECL( sym, FALSE ), AST_LINK_RETURN_RIGHT )
+			t = astNewLINK( t, astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ), AST_LINK_RETURN_RIGHT )
 		end if
 
 		is_ptr = TRUE

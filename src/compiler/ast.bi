@@ -193,8 +193,8 @@ type AST_NODE_TYPEINI
 		bytes		as longint
 		elements	as longint
 	end union
-    scp				as FBSYMBOL ptr
-    lastscp			as FBSYMBOL ptr
+	scp				as FBSYMBOL ptr
+	lastscp			as FBSYMBOL ptr
 end type
 
 type AST_NODE_TYPEINISCOPE
@@ -241,8 +241,14 @@ type AST_NODE_DATASTMT
 	end union
 end type
 
+enum AST_LINK_RETURN
+	AST_LINK_RETURN_NONE = 0
+	AST_LINK_RETURN_LEFT
+	AST_LINK_RETURN_RIGHT
+end enum
+
 type AST_NODE_LINK
-	ret_left		as integer
+	ret			as integer
 end type
 
 type AST_NODE_CAST
@@ -762,7 +768,7 @@ declare function astNewLINK _
 	( _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr, _
-		byval ret_left as integer = TRUE _
+		byval ret as AST_LINK_RETURN _
 	) as ASTNODE ptr
 
 declare function astNewSTACK _
