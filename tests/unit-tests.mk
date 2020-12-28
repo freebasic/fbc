@@ -78,7 +78,7 @@ ifeq ($(TARGET_OS),win32)
     FBCU_LIBS += -l user32
 endif
 
-FBC_CFLAGS := -c -w 3 -i $(FBCU_INC) -m $(MAINBAS)
+FBC_CFLAGS := -c -w 3 -Wc -Wno-tautological-compare -i $(FBCU_INC) -m $(MAINBAS)
 ifneq ($(HOST),dos)
 	FBC_CFLAGS += -mt
 endif

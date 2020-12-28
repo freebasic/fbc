@@ -159,7 +159,7 @@ $(OBJLIST_COMPILE_AND_RUN_FAIL) \
 # set ABORT_CMD := false to abort on failed tests, true to continue anyway
 ABORT_CMD := true
 
-FBC_CFLAGS := -w 3 
+FBC_CFLAGS := -w 3 -Wc -Wno-tautological-compare
 ifdef DEBUG
 	FBC_CFLAGS += -g
 endif
