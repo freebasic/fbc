@@ -1753,17 +1753,16 @@ private sub memcopy(byval bytestoclear as Integer,byref src as string, byref dst
 		end if
 	end if
 
-	rnbb=reg_findfree(999996)
-	regnbb=*regstrq(rnbb)
-
 	if regsrc<>src then reghandle(rsrc)=KREGFREE :asm_info("hidden freeing register="+*regstrq(rsrc))''free registers
 	if regdst<>dst then reghandle(rdst)=KREGFREE :asm_info("hidden freeing register="+*regstrq(rdst))
-	reghandle(rnbb)=KREGFREE:asm_info("hidden freeing register="+*regstrq(rnbb))
 
 	nb8=nbbytes\8
 
 	''copy by 8 bytes step
 	if nb8>7 then ''greater than 7 times * 8 bytes
+		rnbb=reg_findfree(999996)
+		regnbb=*regstrq(rnbb)
+		reghandle(rnbb)=KREGFREE:asm_info("hidden freeing register="+*regstrq(rnbb))
 		asm_code("mov "+regnbb+", "+Str(nb8))
 
 		lname=*symbUniqueLabel( )
