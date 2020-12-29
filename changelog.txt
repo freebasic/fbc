@@ -30,6 +30,7 @@ Version 1.08.0
 - sf.net #927: PUT custom method expects function(ulong,ulong,any pr) as ulong callback function
 - fbc: double the minimum and default stacksize on 64-bit to 64Kb and 2048Kb respectively.
 - fbc: internal changes to optimize away unused call results
+- github #203: allow casts of addresses on static initializers 
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling

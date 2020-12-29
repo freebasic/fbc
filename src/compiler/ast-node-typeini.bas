@@ -544,22 +544,40 @@ private sub hFlushExprStatic( byval n as ASTNODE ptr, byval basesym as FBSYMBOL 
 
 	'' not a literal string?
 	if( litsym = NULL ) then
-    	'' offset?
+		'' offset?
 		if( astIsOFFSET( expr ) ) then
 			irEmitVARINIOFS( sym, astGetSymbol( expr ), expr->ofs.ofs )
+
 		'' anything else
 		else
-			'' different types?
-			if( edtype <> sdtype ) then
-				expr = astNewCONV( sfulldtype, symbGetSubtype( sym ), expr, AST_CONVOPT_DONTCHKPTR )
-				assert( expr <> NULL )
-			end if
+			'' Explicit cast of an address?  We can discard the cast if it's an offset.
+			scope
+					var lexpr = expr->l
+				while( lexpr )
+					if( astIsOFFSET( lexpr ) ) then
+						irEmitVARINIOFS( sym, astGetSymbol( lexpr ), lexpr->ofs.ofs )
+						expr = NULL
+						exit while
+					end if
+					lexpr = lexpr->l
+				wend
+			end scope
 
-			assert( astIsCONST( expr ) )
-			if( typeGetClass( sdtype ) = FB_DATACLASS_FPOINT ) then
-				irEmitVARINIf( sym, astConstGetFloat( expr ) )
-			else
-				irEmitVARINIi( sym, astConstGetInt( expr ) )
+			if( expr ) then
+				'' must be a constant
+				assert( astIsCONST( expr ) )
+
+				'' different types? and there was no explicit cast?
+				if( edtype <> sdtype ) then
+					expr = astNewCONV( sfulldtype, symbGetSubtype( sym ), expr, AST_CONVOPT_DONTCHKPTR )
+					assert( expr <> NULL )
+				end if
+
+				if( typeGetClass( sdtype ) = FB_DATACLASS_FPOINT ) then
+					irEmitVARINIf( sym, astConstGetFloat( expr ) )
+				else
+					irEmitVARINIi( sym, astConstGetInt( expr ) )
+				end if
 			end if
 		end if
 	'' literal string..
@@ -646,18 +664,38 @@ private function hExprIsConst( byval n as ASTNODE ptr ) as integer
 		end if
 	end if
 
-	var rexpr = n->l
+	var expr = n->l
 
-	'' Expression must be constant or address-of global to be usable in global initializer
-	select case( rexpr->class )
+	'' Expression must be:
+	'' - constant, or 
+	'' - address-of global, or
+	'' - conversion of address of global
+	'' to be usable in global initializer.
+	'' we should not need to worry about conversions / castings of contants
+	'' because they should have been constant folded by now.
+
+	select case( expr->class )
 	case AST_NODECLASS_OFFSET, AST_NODECLASS_CONST
 		return TRUE
+	case AST_NODECLASS_CONV
+		'' allow conversion of OFFSET's
+		while( expr )
+			select case( expr->class )
+			case AST_NODECLASS_CONV
+			case AST_NODECLASS_OFFSET
+				return TRUE
+			case else
+				exit while
+			end select
+			expr = expr->l
+		wend
+		return FALSE
 	end select
 
 	'' Or a string literal, for a global string.
-	select case( astGetDataType( rexpr ) )
+	select case( astGetDataType( expr ) )
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-		if( astGetStrLitSymbol( rexpr ) ) then
+		if( astGetStrLitSymbol( expr ) ) then
 			return TRUE
 		end if
 	end select
