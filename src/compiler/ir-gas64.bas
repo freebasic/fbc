@@ -231,9 +231,9 @@ enum
 end enum
 
 '' type for tracking the spilled registers
-type ASM64_SPILLVREG
+type ASM64_SAVEDREG
 	id as long           '' unique id for debugging messages only
-	sdvreg as long       '' the id of the real register spilled???
+	sdvreg as long       '' the id of the real register spilled??? KREGFREE = FREE
 	sdoffset as long     '' offset into the spilled registers for current stackframe
 	spilbranch1 as long  '' depends ctx.labelbranch2 for tracking spilled registers in second branch???
 end type
@@ -332,7 +332,7 @@ dim shared as long          reghandle(KREGUPPER+2)
 
 type ASM64_REGROOM
 	status as long               '' KROOMFREE, KROOMMARKED, KROOMUSED
-	vreg as ASM64_SPILLVREG ptr  '' pointer to the spilled vreg
+	vreg as ASM64_SAVEDREG ptr   '' pointer to the spilled vreg
 end type
 
 dim shared as ASM64_REGROOM regroom(KREGUPPER+2)
@@ -1337,8 +1337,26 @@ end sub
 ''===========================
 ''spilling registers on stack
 ''===========================
-private sub reg_spilling(byval regspilled as long)
+private function asm64_spillREG( byval regspilled as long ) as ASM64_SAVEDREG ptr
 
+	dim as ASM64_SAVEDREG ptr v = any
+
+	'' re-use an existing location?
+	if( ctx.vreg_count > 0 ) then
+		v = flistGetHead( @ctx.spillvregs )
+		while( v <> NULL )
+			if( v->sdvreg = KREGFREE ) then
+				'' keep previous id
+				'' keep previous sdoffset
+				v->sdvreg = reghandle(regspilled)
+				v->spilbranch1 = false
+				return v
+			end if
+			v = flistGetNext( v )
+		wend
+	end if
+
+	'' store the spilled register to a new location
 	ctx.stk+=8
 	asm_info("stk20="+Str(ctx.stk))
 	if ctx.stkspil<>0 then
@@ -1348,15 +1366,27 @@ private sub reg_spilling(byval regspilled as long)
 		end if
 	end if
 
-	'' store current virtual register
-	'' TODO: alloc of VREG should be a procedure
-	dim as ASM64_SPILLVREG ptr v = any
+	'' allocate a new item on the spilled vregs list
 	v = flistNewItem( @ctx.spillvregs )
+
+	'' unique id is per procedure and is reset at the end of each proc
 	ctx.vreg_count += 1
 	v->id = ctx.vreg_count
+
+	'' store location and vreg spilled,
 	v->sdoffset = -ctx.stk
 	v->sdvreg = reghandle(regspilled)
 	v->spilbranch1 = false
+
+	return v
+
+end function
+
+
+private sub reg_spilling(byval regspilled as long)
+
+	dim as ASM64_SAVEDREG ptr v = asm64_spillREG( regspilled )
+	assert( v )
 
 	''store register
 	asm_info("spilled register="+*regstrq(regspilled)+" saved vreg="+str(reghandle(regspilled))+" room="+str(v->id))
@@ -1524,7 +1554,7 @@ private sub reg_branch(byval label as FBSYMBOL ptr )
 	elseif label=ctx.labeljump then
 		if( ctx.vreg_count > 0 ) then
 			''restoring registers spilled in the second branch
-			dim v as ASM64_SPILLVREG ptr = any 
+			dim v as ASM64_SAVEDREG ptr = any 
 			v = flistGetHead( @ctx.spillvregs )
 			while( v <> NULL )
 				if( v->spilbranch1 ) then
@@ -1552,12 +1582,14 @@ function reg_findreal(byval vreg as long) as long
 	''searching in spilled register list
 	'asm_info("virtual register not found extend to spilled register list")
 
-	dim v as ASM64_SPILLVREG ptr = NULL
+	dim v as ASM64_SAVEDREG ptr = NULL
 	if( ctx.vreg_count > 0 ) then
 		v = flistGetHead( @ctx.spillvregs )
 		while( v <> NULL )
-			'asm_info("iroom="+str(iroom)+" "+str(v->sdvreg)+" "+str(vreg))
-			if v->sdvreg=vreg then exit while
+			'asm_info("iroom="+str(v->id)+" "+str(v->sdvreg)+" "+str(vreg))
+			if( v->sdvreg=vreg ) then
+				exit while
+			end if
 			v = flistGetNext( v )
 		wend
 	end if
@@ -1790,7 +1822,13 @@ end sub
 
 private sub _init( )
 
-	flistInit( @ctx.spillvregs, 2048, sizeof( ASM64_SPILLVREG ) )
+	'' allocate space for 256 spilled registers - the size
+	'' will automatically grow if needed.  If there are many spilled
+	'' registers, then either the procedure is extremely complex, or
+	'' more likely there is an opportunity to optimize the AST so
+	'' that results are not saved unecessarily.
+
+	flistInit( @ctx.spillvregs, 256, sizeof( ASM64_SAVEDREG ) )
 
 	irhlInit( )
 	'' IR_OPT_CPUSELFBOPS disabled, to prevent AST from producing self-ops.
