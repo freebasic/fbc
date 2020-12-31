@@ -325,7 +325,7 @@ declare sub _emitscopebegin( byval s as FBSYMBOL ptr )
 declare sub _emitscopeend( byval s as FBSYMBOL ptr )
 declare sub _emitMacro( byval op as integer,byval v1 as IRVREG ptr, byval v2 as IRVREG ptr, byval vr as IRVREG ptr )
 declare sub save_call(byref func as string,byval vr as IRVREG ptr,byval vrreg as integer)
-declare sub struct_analyze(byval fld as FBSYMBOL ptr,byref class1 as integer,byref class2 as integer,byref limit as integer)
+declare function hGetMagicStructNumber( byval sym as FBSYMBOL ptr ) as integer
 ''===================== globals ===========================================
 dim shared as EDBGCTX       ctx_asm64
 dim shared as long          reghandle(KREGUPPER+2)
@@ -1753,17 +1753,13 @@ private sub memcopy(byval bytestoclear as Integer,byref src as string, byref dst
 		end if
 	end if
 
-	rnbb=reg_findfree(999996)
-	regnbb=*regstrq(rnbb)
-
-	if regsrc<>src then reghandle(rsrc)=KREGFREE :asm_info("hidden freeing register="+*regstrq(rsrc))''free registers
-	if regdst<>dst then reghandle(rdst)=KREGFREE :asm_info("hidden freeing register="+*regstrq(rdst))
-	reghandle(rnbb)=KREGFREE:asm_info("hidden freeing register="+*regstrq(rnbb))
-
 	nb8=nbbytes\8
 
 	''copy by 8 bytes step
 	if nb8>7 then ''greater than 7 times * 8 bytes
+		rnbb=reg_findfree(999996)
+		regnbb=*regstrq(rnbb)
+		reghandle(rnbb)=KREGFREE:asm_info("hidden freeing register="+*regstrq(rnbb))
 		asm_code("mov "+regnbb+", "+Str(nb8))
 
 		lname=*symbUniqueLabel( )
@@ -1818,6 +1814,10 @@ private sub memcopy(byval bytestoclear as Integer,byref src as string, byref dst
 		asm_code("mov al, byte ptr ["+regsrc+"]")
 		asm_code("mov byte ptr ["+regdst+"], al")
 	end if
+
+	if regsrc<>src then reghandle(rsrc)=KREGFREE :asm_info("hidden freeing register="+*regstrq(rsrc))''free registers
+	if regdst<>dst then reghandle(rdst)=KREGFREE :asm_info("hidden freeing register="+*regstrq(rdst))
+
 end sub
 
 private sub _init( )
@@ -2267,7 +2267,7 @@ private function param_analyze(byval dtype as FB_DATATYPE,byval struc as FBSYMBO
 	,byref cptarg as integer=0,byref cptint as integer=0,byref cptfloat as integer=0) as integer
 	''used in hdocall and also in procallocarg but here do not update cptarg/cptint/cptfloat.....
 	dim as FBSYMBOL ptr fld = any
-	dim as integer lgt,intcpt,floatcpt,class1,class2,limit
+	dim as integer lgt,intcpt,floatcpt
 
 	if ctx.target=FB_COMPTARGET_LINUX then
 		'' LNX =================================================================================
@@ -2294,41 +2294,35 @@ private function param_analyze(byval dtype as FB_DATATYPE,byval struc as FBSYMBO
 			lgt=struc->lgt
 			asm_info("subtype/lgt="+*symbGetMangledName(struc)+" "+str(lgt))
 			if lgt<=typeGetSize( FB_DATATYPE_LONGINT )*2 then
-				''by default floating point for first register
-				class1=2
-				class2=0
-				limit=7
-				struct_analyze(struc,class1,class2,limit)
-				asm_info("typeregister="+str(class1+class2))
-				select case as const class1+class2
-					case 1
+				select case as const hGetMagicStructNumber( struc )
+					case KSTRUCT_R
 						if cptint <6 then
 							cptint+=1
 							return KPARAMR1
 						end if
-					case 2
+					case KSTRUCT_X
 						if cptfloat <8 then
 							cptfloat+=1
 							return KPARAMX1
 						end if
-					case 5
+					case KSTRUCT_RR
 						if cptint <5 then
 							cptint+=2
 							return KPARAMRR
 						end if
-					case 9
+					case KSTRUCT_RX
 						if cptint <6 and cptfloat <8 then
 							cptint+=1
 							cptfloat+=1
 							return KPARAMRX
 						end if
-					case 6
+					case KSTRUCT_XR
 						if cptint <6 and cptfloat <8 then
 							cptfloat+=1
 							cptint+=1
 							return KPARAMXR
 						end if
-					case 10
+					case KSTRUCT_XX
 						if cptfloat <7 then
 							cptfloat+=2
 							return KPARAMXX
