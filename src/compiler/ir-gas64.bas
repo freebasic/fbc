@@ -1753,9 +1753,6 @@ private sub memcopy(byval bytestoclear as Integer,byref src as string, byref dst
 		end if
 	end if
 
-	if regsrc<>src then reghandle(rsrc)=KREGFREE :asm_info("hidden freeing register="+*regstrq(rsrc))''free registers
-	if regdst<>dst then reghandle(rdst)=KREGFREE :asm_info("hidden freeing register="+*regstrq(rdst))
-
 	nb8=nbbytes\8
 
 	''copy by 8 bytes step
@@ -1817,6 +1814,10 @@ private sub memcopy(byval bytestoclear as Integer,byref src as string, byref dst
 		asm_code("mov al, byte ptr ["+regsrc+"]")
 		asm_code("mov byte ptr ["+regdst+"], al")
 	end if
+
+	if regsrc<>src then reghandle(rsrc)=KREGFREE :asm_info("hidden freeing register="+*regstrq(rsrc))''free registers
+	if regdst<>dst then reghandle(rdst)=KREGFREE :asm_info("hidden freeing register="+*regstrq(rdst))
+
 end sub
 
 private sub _init( )
