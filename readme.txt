@@ -7,6 +7,7 @@
     Online manual:      https://freebasic.net/wiki/DocToc
     fbc project page:   https://sourceforge.net/projects/fbc/
     GitHub mirror:      https://github.com/freebasic/fbc
+    Discord:            https://discord.gg/286rSdK
     IRC channel:        ##freebasic at chat.freenode.net
     Features:           https://freebasic.net/wiki/CompilerFeatures
     Requirements:       https://freebasic.net/wiki/CompilerRequirements
