@@ -101,7 +101,7 @@ end namespace
 		
 			##FBARRAY_FLAGS_DIMENSIONS## : a 4 bit field to indicate the number of elements allocated in ##dimTb()##.  If fbc can determine at compile time that less than ##FB_MAXDIMENSIONS## are needed to represent the array, then only the number of dimensions needed are allocated in ##dimTb()##.
 			
-			##FBARRAY_FLAGS_FIXED_DIM## : if this bit is set, indicates that the number of dimensions are are set and are given in ##dimTb()## and must not be changed.
+			##FBARRAY_FLAGS_FIXED_DIM## : if this bit is set, indicates that the number of dimensions are set and are given in ##dimTb()## and must not be changed.
 			
 			##FBARRAY_FLAGS_FIXED_LEN## : if this bit is set, indicates that the array data is fixed length and must not be resized or reallocated
 			

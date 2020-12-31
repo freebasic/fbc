@@ -186,7 +186,7 @@
 		- defining the array with an empty subscript list (using ##[[KeyPgDim|Dim]]##), or
 		- defining the array with variable subscripts instead of numeric literals, [[KeyPgConst|constants]] or [[KeyPgEnum|enums]] (using ##[[KeyPgDim|Dim]]##), or
 		- defining the array with ##[[KeyPgRedim|Redim]]##
-	- reserve more memory for the program stack by using the ##-t## [[CompilerCmdLine|command-line option]] when compiling. The default is ##-t 1024## (kilobytes). Note: it's a bad idea to use very large values here.
+	- reserve more memory for the program stack by using the ##-t## [[CompilerCmdLine|command-line option]] when compiling. The default is ##-t 1024## (kilobytes) or ##-t 2048## (kilobytes). Note: it's a bad idea to use very large values here.
 	- create a //static// array by defining the array with ##[[KeyPgStatic|Static]]## rather than ##[[KeyPgDim|Dim]]## (only locally visible, but globally preserved)
 	- define the array with ##[[KeyPgShared|Shared]]## access using ##[[KeyPgDim|Dim]]## (this makes the array fully global)
 	- use [[ProPgPointers|Pointers]] and [[CatPgMemory|Memory Functions]] like ##[[KeyPgAllocate|Allocate]]## and ##[[KeyPgDeallocate|Deallocate]]## to manage memory yourself - this is the preferred way for storing big buffers, but not for beginners.

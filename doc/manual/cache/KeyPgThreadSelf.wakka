@@ -50,34 +50,30 @@ Sleep
 #include "fbthread.bi"
 
 Dim As Any Ptr phandle(1 To 10)
-Dim Shared As Any Ptr pmutex0
 Dim Shared As Any Ptr pmutex
 
-Sub myThread (Byval p As Any Ptr)
-	Mutexlock(pmutex0)  ' to ensure that ThreadCreate line is completed before accessing the handle value
-	Dim As Any Ptr phandle1 = *Cptr(Any Ptr Ptr, p)
-	Mutexunlock(pmutex0)
+Sub myThread (ByVal p As Any Ptr)
+	MutexLock(pmutex)  ' to ensure that ThreadCreate line is completed before accessing the handle value
+	Dim As Any Ptr phandle1 = *CPtr(Any Ptr Ptr, p)
+	MutexUnlock(pmutex)
 	Dim As Any Ptr phandle2 = Threadself()
-	Mutexlock(pmutex)
-	Print "   ThreadCreate: " & phandle1, "ThreadSelf: " & phandle2
-	Mutexunlock(pmutex)
+	Print Left("   ThreadCreate: " & phandle1 & Space(18), 36) _
+		  & "   ThreadSelf: " & phandle2  ' single print with concatenated string avoids using a mutex
 	Sleep 100, 1
 End Sub
 
 Print "Handles returned from:"
-pmutex0 = Mutexcreate()
-pmutex = Mutexcreate()
+pmutex = MutexCreate()
 For I As Integer = 1 To 10
-	Mutexlock(pmutex0)  ' to ensure that ThreadCreate line is completed before thread accesses the handle value
-	phandle(I) = Threadcreate(@myThread, @phandle(I))
-	Mutexunlock(pmutex0)
+	MutexLock(pmutex)  ' to ensure that ThreadCreate line is completed before thread accesses the handle value
+	phandle(I) = ThreadCreate(@myThread, @phandle(I))
+	MutexUnlock(pmutex)
 Next I
 
 For I As Integer = 1 To 10
-	Threadwait(phandle(I))
+	ThreadWait(phandle(I))
 Next I
-Mutexdestroy(pmutex0)
-Mutexdestroy(pmutex)
+MutexDestroy(pmutex)
 
 Sleep
 	%%

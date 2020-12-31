@@ -31,8 +31,8 @@ Hello, and welcome to the ""FreeBASIC"" wiki. ""FreeBASIC"" is free, open source
 
 ==How to get involved in FB development==
 
-	Getting involved in ""FreeBASIC""'s development isn't hard. You can provide feedback, help improving this wiki or help developing ""FreeBASIC""-related projects. Of course you can also contribute to the ""FreeBASIC"" compiler, by reporting bugs or submitting patches. A good way to get started is to write small patches and submitting them via the patch tracker on ""SourceForge"", or posting them on the forum. Besides the compiler (written in ""FreeBASIC"" itself), there is the runtime library as well as the graphics library (both written in C). Feel free to contact other developers via the forum, the ""##freebasic"" IRC channel on freenode, or the trackers on ""SourceForge"".
-	
+	Getting involved in ""FreeBASIC""'s development isn't hard. You can provide feedback, help improving this wiki or help developing ""FreeBASIC""-related projects. Of course you can also contribute to the ""FreeBASIC"" compiler, by reporting bugs or submitting patches. A good way to get started is to write small patches and submitting them via the patch tracker on ""SourceForge"", or posting them on the forum. Besides the compiler (written in ""FreeBASIC"" itself), there is the runtime library as well as the graphics library (both written in C). Feel free to contact other developers via the forum, the ""##freebasic"" IRC channel on freenode, or the trackers on ""SourceForge"".  [[https://discord.gg/286rSdK|Join the discussion on Discord]]
+
 	[[CompilerContacting|How to contact the developers]]
 	[[CompilerReportingBugs|How to report a bug]]
 	[[DevToc|FreeBASIC Internals Documentation]]

@@ -832,6 +832,7 @@
 		[[ProPgCtorsDtors|Constructors and Destructors (basics)]]
 		[[ProPgMemberProcedures|Member Procedures]]
 		[[ProPgProperties|Properties]]
+		[[ProPgVariableLengthData|Variable-length member data]]
 		[[ProPgMemberAccessRights|Member Access Rights and Encapsulation]]
 		[[ProPgOperatorOverloading|Operator Overloading]]
 		[[ProPgTypeIterators|Iterators]]
@@ -875,6 +876,7 @@
 		[[ProPgMtCriticalSectionsFAQ|Critical Sections FAQ]]
 
 	{{fbdoc item="subsect" value="Making Binaries"}}
+		[[ProPgExecutables|Executables]]
 		[[ProPgStaticLibraries|Static Libraries]]
 		[[ProPgSharedLibraries|Shared Libraries (DLLs)]]
 		[[ProPgProfiling|Profiling]]

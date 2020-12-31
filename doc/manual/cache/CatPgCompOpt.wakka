@@ -110,7 +110,7 @@ Command line compiler options for the fbc compiler:
 	{{fbdoc item="keyword" value="CompilerOptstrip|-strip"}}
 		- Omit all symbol information from the output file
 	{{fbdoc item="keyword" value="CompilerOptt|-t < value >"}}
-		- Set stack size in kbytes (default: 1M)
+		- Set stack size in kbytes (default: 1 MB or 2 MB)
 	{{fbdoc item="keyword" value="CompilerOpttarget|-target < platform >"}}
 		- Set the target platform for cross compilation
 	{{fbdoc item="keyword" value="CompilerOptv|-v"}}

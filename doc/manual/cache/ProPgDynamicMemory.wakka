@@ -17,7 +17,7 @@ Managing **Dynamic Memory** (Allocation / Deallocation) with **""FreeBASIC""**
 	If the size of everything must be declared at compile time, the best is try to estimate the maximum size of the variables needed and hope this will be enough.
 	This is a bad solution for at least third reasons:
 		**""-""** First, it leads to wasting memory if it is not fully used.
-		**""-""** Second, most normal variables are allocated in a part of the memory called the stack. The amount of stack memory for a program is usually quite low (1 MB by default). If exceeding this number, the stack overflow will occur, and the program will abort.
+		**""-""** Second, most normal variables are allocated in a part of the memory called the stack. The amount of stack memory for a program is usually quite low (1 MB or 2 MB by default). If exceeding this number, the stack overflow will occur, and the program will abort.
 		**""-""** Third, and most importantly, this can lead to artificial limitations and / or overflows. What happens if the required memory becomes greater than the reserved memory (stopping the program, emitting message to user, ...).
 		
 	Fortunately, these problems are easily solved through the dynamic allocation of memory. Dynamic memory allocation is a way of running programs to request memory from the operating system when needed. This memory does not come from the program's limited stack memory, but it is rather allocated from a much larger memory pool managed by the operating system called heap. On modern machines, the heap can have a size of several gigabytes.
