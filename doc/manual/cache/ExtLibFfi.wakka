@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="libffi"}}----
 ""LibFFI"" is a foreign function interface library allowing programs to arbitrarily call native function without pointers and to bind function pointers to generic functions which take variable arguments via closures. It is used to bind native code in modern scripting languages.
 
-Website: http://sourceware.org/libffi/
+Website: https://sourceware.org/libffi/
 Platforms supported: Windows, Linux, DOS
 Headers to include: ffi.bi
 Header version: 3.1

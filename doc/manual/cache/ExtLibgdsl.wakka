@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="GDSL, The Generic Data Structures Library"}}----
 The Generic Data Structures Library is a collection of routines for generic data structures.
 
-Website: http://home.gna.org/gdsl/
+Website: [[https://web.archive.org/web/20170502005430/http://home.gna.org:80/gdsl/ http://home.gna.org/gdsl/]] (archived copy)
 Platforms supported: ""Win32"", Linux, DOS
 Headers to include: gdsl/gdsl.bi
 Header version: from 2005

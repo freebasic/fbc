@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="SpiderMonkey"}}----
 Embeddable javascript engine.
 
-Website: http://www.mozilla.org/js/spidermonkey/
+Website: https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey
 Platforms supported: ""Win32"", Linux
 Headers to include: spidermonkey/jsapi.bi
 Header version: from 2006

@@ -1,7 +1,8 @@
 {{fbdoc item="title" value="TRE (regex matching library)"}}----
 Lightweight, robust, and efficient POSIX compliant regexp matching library
 
-Website: http://laurikari.net/tre/
+Website: https://laurikari.net/tre/
+Github: https://github.com/laurikari/tre/
 Platforms supported: ""Win32"", Linux
 Headers to include: tre/tre.bi, tre/regex.bi
 Header version: 0.8.0

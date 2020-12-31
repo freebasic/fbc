@@ -15,7 +15,9 @@ Returns a free file number
 	
 	Make sure to always close files when no longer needed, otherwise you will get a file number leak, and won't be able to open any files anymore after 255 filenumbers are exhausted while your program is running.
 	
-	##**Freefile**## will always return the smallest free file number.  The file number returned by ##**Freefile**## will not change until that file number is ##[[KeyPgOpen|Open]]##ed, or until a smaller file number is ##[[KeyPgClose|Close]]##d.  For this reason, it is wise to use ##**Freefile**## immediately before its corresponding ##[[KeyPgOpen|Open]]##, to ensure that the file number is not returned and opened elsewhere first.
+	##**Freefile**## will always return the smallest free file number. The file number returned by ##**Freefile**## will not change until that file number is ##[[KeyPgOpen|Open]]##ed, or until a smaller file number is ##[[KeyPgClose|Close]]##d:
+		**""-""** For this reason, it is wise to use ##**Freefile**## immediately before its corresponding ##[[KeyPgOpen|Open]]##, to ensure that the same file number is not returned and opened elsewhere first.
+		**""-""** In case of potential conflict with other threads, this non-breaking '##**Freefile**...[[KeyPgOpen|Open]]##' sequence must additionally be considered as a critical section of code and therefore must be protected by mutual exclusion (using a mutex locking).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/freefile.bas"}}%%(freebasic)

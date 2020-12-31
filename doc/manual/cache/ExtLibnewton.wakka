@@ -2,6 +2,7 @@
 The Newton Physics Engine is an integrated solution for real time simulation of physics environments. 
 
 Website: http://newtondynamics.com/
+Github: https://github.com/MADEAPPS/newton-dynamics/
 Platforms supported: ""Win32"", Linux
 Headers to include: Newton.bi
 Header version: from 2005

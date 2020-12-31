@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="FMOD"}}----
 Audio library supporting just about any format.
 
-Website: http://www.fmod.org/index.php/products#FMOD3ProgrammersAPI
+Website: https://www.fmod.com/core
 Platforms supported: ""Win32"", Linux
 Headers to include: fmod.bi
 Header version: 3.75
