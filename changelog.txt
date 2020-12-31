@@ -1,3 +1,9 @@
+Version 1.07.3
+
+[added]
+- gfxlib2: interface for directx7
+
+
 Version 1.07.2
 
 [changed]
