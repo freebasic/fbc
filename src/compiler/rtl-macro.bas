@@ -584,6 +584,9 @@ private sub hAddMacro( byval macdef as FB_RTL_MACRODEF ptr )
 	'' for each parameter..
 	dim as FB_DEFPARAM ptr paramhead, lastparam
 	for i as integer = 0 to macdef->params-1
+		'' if there are parameters, then must have parens
+		'' TODO: if other optional flags are needed, then in macrodata()
+		flags or= FB_DEFINE_FLAGS_NEEDPARENS
 		lastparam = symbAddDefineParam( lastparam, macdef->paramTb(i) )
 		if( paramhead = NULL ) then
 			paramhead = lastparam

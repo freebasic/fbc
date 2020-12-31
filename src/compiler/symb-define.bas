@@ -789,6 +789,8 @@ sub symbDefineInit _
 			lastparam = symbAddDefineParam( lastparam, macroTb(i).params(j) )
 		next	
 			
+		'' TODO: if any macros are added that don't need params, then 
+		'' flags should be stored in macroTb
 		var sym = symbAddDefineMacro( macroTb(i).name, NULL, macroTb(i).nparams, firstparam, macroTb(i).flags or FB_DEFINE_FLAGS_NEEDPARENS )
 		sym->def.mprocz = macroTb(i).procz
 		sym->def.mprocw = macroTb(i).procw

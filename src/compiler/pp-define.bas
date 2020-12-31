@@ -386,7 +386,7 @@ private function hLoadDefine _
 					hasParens = true
 				else
 					'' not an error, macro can be passed as param to other macros
-					if( pp.invoking > 0 ) then
+					if( (pp.invoking > 0) or ((symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_NEEDPARENS) <> 0 ) ) then
 						exit function
 					end if
 				end if
@@ -781,7 +781,7 @@ private function hLoadDefineW _
 					hasParens = true
 				else
 					'' not an error, macro can be passed as param to other macros
-					if( pp.invoking > 0 ) then
+					if( (pp.invoking > 0) or ((symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_NEEDPARENS) <> 0 ) ) then
 						exit function
 					end if
 				end if
@@ -1090,7 +1090,8 @@ private sub hReadDefineText _
 		byval sym as FBSYMBOL ptr, _
 		byval defname as zstring ptr, _
 		byval isargless as integer, _
-		byval ismultiline as integer _
+		byval ismultiline as integer, _
+		byval flags as integer _
 	)
 
 	dim as zstring ptr text = any
@@ -1109,7 +1110,7 @@ private sub hReadDefineText _
 				errReportEx( FB_ERRMSG_DUPDEFINITION, defname )
     		end if
     	else
-    		symbAddDefine( defname, text, len( *text ), isargless )
+			symbAddDefine( defname, text, len( *text ), isargless, , flags )
     	end if
 
     '' unicode..
@@ -1126,7 +1127,7 @@ private sub hReadDefineText _
 				errReportEx( FB_ERRMSG_DUPDEFINITION, defname )
     		end if
     	else
-    		symbAddDefineW( defname, textw, len( *textw ), isargless )
+			symbAddDefineW( defname, textw, len( *textw ), isargless, , flags )
     	end if
 
     end if
@@ -1298,7 +1299,7 @@ sub ppDefine( byval ismultiline as integer )
 
 	'' not a macro?
 	if( params = 0 ) then
-		hReadDefineText( sym, @defname, isargless, ismultiline )
+		hReadDefineText( sym, @defname, isargless, ismultiline, define_flags )
 		exit sub
 	end if
 
