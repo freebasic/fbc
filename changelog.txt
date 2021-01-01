@@ -9,6 +9,7 @@ Version 1.08.0
 - updated curl headers for binding to curl 7.66.0
 - updated SDL1.2 bindings to SDL_gfx 2.0.26
 - updated SDL2 bindings to SDL2 2.0.14, SDL2_image 2.0.5, SDL2_mixer 2.0.4, SDL2_ttf 2.0.15
+- updated LLVM and Clang bindings to 5.0.0
 - warning level for all warnings is increased by 1.  Default warning level is 1.  Previously, default warning level was 0 and some warnings had level of -1.
 - reverted changes due sf.net #893: invalid suffixes due to '-lang fb'
 - reverted changes due sf.net #832: Fix bug allowing QB style suffixes on all keywords, regardless of -lang

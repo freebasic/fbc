@@ -1,10 +1,10 @@
-'' FreeBASIC binding for cfe-3.6.2.src
+'' FreeBASIC binding for cfe-5.0.0.src
 ''
 '' based on the C header files:
 ''   University of Illinois/NCSA
 ''   Open Source License
 ''
-''   Copyright (c) 2007-2014 University of Illinois at Urbana-Champaign.
+''   Copyright (c) 2007-2016 University of Illinois at Urbana-Champaign.
 ''   All rights reserved.
 ''
 ''   Developed by:
@@ -43,7 +43,7 @@
 ''   SOFTWARE.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   Copyright © 2017 FreeBASIC development team
 
 #pragma once
 
@@ -52,7 +52,7 @@
 
 extern "C"
 
-#define LLVM_CLANG_C_INDEX_H
+#define LLVM_CLANG_C_BUILDSYSTEM_H
 #define LLVM_CLANG_C_PLATFORM_H
 #define LLVM_CLANG_C_CXERRORCODE_H
 
@@ -72,15 +72,21 @@ type CXString
 	private_flags as ulong
 end type
 
+type CXStringSet
+	Strings as CXString ptr
+	Count as ulong
+end type
+
 declare function clang_getCString(byval string as CXString) as const zstring ptr
 declare sub clang_disposeString(byval string as CXString)
-#define LLVM_CLANG_C_BUILDSYSTEM_H
+declare sub clang_disposeStringSet(byval set as CXStringSet ptr)
 declare function clang_getBuildSessionTimestamp() as ulongint
 type CXVirtualFileOverlay as CXVirtualFileOverlayImpl ptr
 declare function clang_VirtualFileOverlay_create(byval options as ulong) as CXVirtualFileOverlay
 declare function clang_VirtualFileOverlay_addFileMapping(byval as CXVirtualFileOverlay, byval virtualPath as const zstring ptr, byval realPath as const zstring ptr) as CXErrorCode
 declare function clang_VirtualFileOverlay_setCaseSensitivity(byval as CXVirtualFileOverlay, byval caseSensitive as long) as CXErrorCode
 declare function clang_VirtualFileOverlay_writeToBuffer(byval as CXVirtualFileOverlay, byval options as ulong, byval out_buffer_ptr as zstring ptr ptr, byval out_buffer_size as ulong ptr) as CXErrorCode
+declare sub clang_free(byval buffer as any ptr)
 declare sub clang_VirtualFileOverlay_dispose(byval as CXVirtualFileOverlay)
 type CXModuleMapDescriptor as CXModuleMapDescriptorImpl ptr
 declare function clang_ModuleMapDescriptor_create(byval options as ulong) as CXModuleMapDescriptor
@@ -88,9 +94,37 @@ declare function clang_ModuleMapDescriptor_setFrameworkModuleName(byval as CXMod
 declare function clang_ModuleMapDescriptor_setUmbrellaHeader(byval as CXModuleMapDescriptor, byval name as const zstring ptr) as CXErrorCode
 declare function clang_ModuleMapDescriptor_writeToBuffer(byval as CXModuleMapDescriptor, byval options as ulong, byval out_buffer_ptr as zstring ptr ptr, byval out_buffer_size as ulong ptr) as CXErrorCode
 declare sub clang_ModuleMapDescriptor_dispose(byval as CXModuleMapDescriptor)
+#define LLVM_CLANG_C_CXCOMPILATIONDATABASE_H
 
+type CXCompilationDatabase as any ptr
+type CXCompileCommands as any ptr
+type CXCompileCommand as any ptr
+
+type CXCompilationDatabase_Error as long
+enum
+	CXCompilationDatabase_NoError = 0
+	CXCompilationDatabase_CanNotLoadDatabase = 1
+end enum
+
+declare function clang_CompilationDatabase_fromDirectory(byval BuildDir as const zstring ptr, byval ErrorCode as CXCompilationDatabase_Error ptr) as CXCompilationDatabase
+declare sub clang_CompilationDatabase_dispose(byval as CXCompilationDatabase)
+declare function clang_CompilationDatabase_getCompileCommands(byval as CXCompilationDatabase, byval CompleteFileName as const zstring ptr) as CXCompileCommands
+declare function clang_CompilationDatabase_getAllCompileCommands(byval as CXCompilationDatabase) as CXCompileCommands
+declare sub clang_CompileCommands_dispose(byval as CXCompileCommands)
+declare function clang_CompileCommands_getSize(byval as CXCompileCommands) as ulong
+declare function clang_CompileCommands_getCommand(byval as CXCompileCommands, byval I as ulong) as CXCompileCommand
+declare function clang_CompileCommand_getDirectory(byval as CXCompileCommand) as CXString
+declare function clang_CompileCommand_getFilename(byval as CXCompileCommand) as CXString
+declare function clang_CompileCommand_getNumArgs(byval as CXCompileCommand) as ulong
+declare function clang_CompileCommand_getArg(byval as CXCompileCommand, byval I as ulong) as CXString
+declare function clang_CompileCommand_getNumMappedSources(byval as CXCompileCommand) as ulong
+declare function clang_CompileCommand_getMappedSourcePath(byval as CXCompileCommand, byval I as ulong) as CXString
+declare function clang_CompileCommand_getMappedSourceContent(byval as CXCompileCommand, byval I as ulong) as CXString
+
+#define LLVM_CLANG_C_DOCUMENTATION_H
+#define LLVM_CLANG_C_INDEX_H
 const CINDEX_VERSION_MAJOR = 0
-const CINDEX_VERSION_MINOR = 29
+const CINDEX_VERSION_MINOR = 43
 #define CINDEX_VERSION_ENCODE(major, minor) (((major) * 10000) + ((minor) * 1))
 #define CINDEX_VERSION CINDEX_VERSION_ENCODE(CINDEX_VERSION_MAJOR, CINDEX_VERSION_MINOR)
 #define CINDEX_VERSION_STRINGIZE_(major, minor) #major "." #minor
@@ -98,6 +132,7 @@ const CINDEX_VERSION_MINOR = 29
 #define CINDEX_VERSION_STRING CINDEX_VERSION_STRINGIZE(CINDEX_VERSION_MAJOR, CINDEX_VERSION_MINOR)
 
 type CXIndex as any ptr
+type CXTargetInfo as CXTargetInfoImpl ptr
 type CXTranslationUnit as CXTranslationUnitImpl ptr
 type CXClientData as any ptr
 
@@ -120,6 +155,19 @@ type CXVersion
 	Minor as long
 	Subminor as long
 end type
+
+type CXCursor_ExceptionSpecificationKind as long
+enum
+	CXCursor_ExceptionSpecificationKind_None
+	CXCursor_ExceptionSpecificationKind_DynamicNone
+	CXCursor_ExceptionSpecificationKind_Dynamic
+	CXCursor_ExceptionSpecificationKind_MSAny
+	CXCursor_ExceptionSpecificationKind_BasicNoexcept
+	CXCursor_ExceptionSpecificationKind_ComputedNoexcept
+	CXCursor_ExceptionSpecificationKind_Unevaluated
+	CXCursor_ExceptionSpecificationKind_Uninstantiated
+	CXCursor_ExceptionSpecificationKind_Unparsed
+end enum
 
 declare function clang_createIndex(byval excludeDeclarationsFromPCH as long, byval displayDiagnostics as long) as CXIndex
 declare sub clang_disposeIndex(byval index as CXIndex)
@@ -182,6 +230,7 @@ type CXSourceRangeList
 end type
 
 declare function clang_getSkippedRanges(byval tu as CXTranslationUnit, byval file as CXFile) as CXSourceRangeList ptr
+declare function clang_getAllSkippedRanges(byval tu as CXTranslationUnit) as CXSourceRangeList ptr
 declare sub clang_disposeSourceRangeList(byval ranges as CXSourceRangeList ptr)
 
 type CXDiagnosticSeverity as long
@@ -253,11 +302,15 @@ enum
 	CXTranslationUnit_CXXChainedPCH = &h20
 	CXTranslationUnit_SkipFunctionBodies = &h40
 	CXTranslationUnit_IncludeBriefCommentsInCodeCompletion = &h80
+	CXTranslationUnit_CreatePreambleOnFirstParse = &h100
+	CXTranslationUnit_KeepGoing = &h200
+	CXTranslationUnit_SingleFileParse = &h400
 end enum
 
 declare function clang_defaultEditingTranslationUnitOptions() as ulong
 declare function clang_parseTranslationUnit(byval CIdx as CXIndex, byval source_filename as const zstring ptr, byval command_line_args as const zstring const ptr ptr, byval num_command_line_args as long, byval unsaved_files as CXUnsavedFile ptr, byval num_unsaved_files as ulong, byval options as ulong) as CXTranslationUnit
 declare function clang_parseTranslationUnit2(byval CIdx as CXIndex, byval source_filename as const zstring ptr, byval command_line_args as const zstring const ptr ptr, byval num_command_line_args as long, byval unsaved_files as CXUnsavedFile ptr, byval num_unsaved_files as ulong, byval options as ulong, byval out_TU as CXTranslationUnit ptr) as CXErrorCode
+declare function clang_parseTranslationUnit2FullArgv(byval CIdx as CXIndex, byval source_filename as const zstring ptr, byval command_line_args as const zstring const ptr ptr, byval num_command_line_args as long, byval unsaved_files as CXUnsavedFile ptr, byval num_unsaved_files as ulong, byval options as ulong, byval out_TU as CXTranslationUnit ptr) as CXErrorCode
 
 type CXSaveTranslationUnit_Flags as long
 enum
@@ -275,6 +328,7 @@ enum
 end enum
 
 declare function clang_saveTranslationUnit(byval TU as CXTranslationUnit, byval FileName as const zstring ptr, byval options as ulong) as long
+declare function clang_suspendTranslationUnit(byval as CXTranslationUnit) as ulong
 declare sub clang_disposeTranslationUnit(byval as CXTranslationUnit)
 
 type CXReparse_Flags as long
@@ -322,6 +376,10 @@ end type
 
 declare function clang_getCXTUResourceUsage(byval TU as CXTranslationUnit) as CXTUResourceUsage
 declare sub clang_disposeCXTUResourceUsage(byval usage as CXTUResourceUsage)
+declare function clang_getTranslationUnitTargetInfo(byval CTUnit as CXTranslationUnit) as CXTargetInfo
+declare sub clang_TargetInfo_dispose(byval Info as CXTargetInfo)
+declare function clang_TargetInfo_getTriple(byval Info as CXTargetInfo) as CXString
+declare function clang_TargetInfo_getPointerWidth(byval Info as CXTargetInfo) as long
 
 type CXCursorKind as long
 enum
@@ -433,7 +491,9 @@ enum
 	CXCursor_LambdaExpr = 144
 	CXCursor_ObjCBoolLiteralExpr = 145
 	CXCursor_ObjCSelfExpr = 146
-	CXCursor_LastExpr = CXCursor_ObjCSelfExpr
+	CXCursor_OMPArraySectionExpr = 147
+	CXCursor_ObjCAvailabilityCheckExpr = 148
+	CXCursor_LastExpr = CXCursor_ObjCAvailabilityCheckExpr
 	CXCursor_FirstStmt = 200
 	CXCursor_UnexposedStmt = 200
 	CXCursor_LabelStmt = 201
@@ -490,7 +550,33 @@ enum
 	CXCursor_OMPParallelForSimdDirective = 251
 	CXCursor_OMPTargetDirective = 252
 	CXCursor_OMPTeamsDirective = 253
-	CXCursor_LastStmt = CXCursor_OMPTeamsDirective
+	CXCursor_OMPTaskgroupDirective = 254
+	CXCursor_OMPCancellationPointDirective = 255
+	CXCursor_OMPCancelDirective = 256
+	CXCursor_OMPTargetDataDirective = 257
+	CXCursor_OMPTaskLoopDirective = 258
+	CXCursor_OMPTaskLoopSimdDirective = 259
+	CXCursor_OMPDistributeDirective = 260
+	CXCursor_OMPTargetEnterDataDirective = 261
+	CXCursor_OMPTargetExitDataDirective = 262
+	CXCursor_OMPTargetParallelDirective = 263
+	CXCursor_OMPTargetParallelForDirective = 264
+	CXCursor_OMPTargetUpdateDirective = 265
+	CXCursor_OMPDistributeParallelForDirective = 266
+	CXCursor_OMPDistributeParallelForSimdDirective = 267
+	CXCursor_OMPDistributeSimdDirective = 268
+	CXCursor_OMPTargetParallelForSimdDirective = 269
+	CXCursor_OMPTargetSimdDirective = 270
+	CXCursor_OMPTeamsDistributeDirective = 271
+	CXCursor_OMPTeamsDistributeSimdDirective = 272
+	CXCursor_OMPTeamsDistributeParallelForSimdDirective = 273
+	CXCursor_OMPTeamsDistributeParallelForDirective = 274
+	CXCursor_OMPTargetTeamsDirective = 275
+	CXCursor_OMPTargetTeamsDistributeDirective = 276
+	CXCursor_OMPTargetTeamsDistributeParallelForDirective = 277
+	CXCursor_OMPTargetTeamsDistributeParallelForSimdDirective = 278
+	CXCursor_OMPTargetTeamsDistributeSimdDirective = 279
+	CXCursor_LastStmt = CXCursor_OMPTargetTeamsDistributeSimdDirective
 	CXCursor_TranslationUnit = 300
 	CXCursor_FirstAttr = 400
 	CXCursor_UnexposedAttr = 400
@@ -510,7 +596,10 @@ enum
 	CXCursor_CUDAGlobalAttr = 414
 	CXCursor_CUDAHostAttr = 415
 	CXCursor_CUDASharedAttr = 416
-	CXCursor_LastAttr = CXCursor_CUDASharedAttr
+	CXCursor_VisibilityAttr = 417
+	CXCursor_DLLExport = 418
+	CXCursor_DLLImport = 419
+	CXCursor_LastAttr = CXCursor_DLLImport
 	CXCursor_PreprocessingDirective = 500
 	CXCursor_MacroDefinition = 501
 	CXCursor_MacroExpansion = 502
@@ -519,8 +608,12 @@ enum
 	CXCursor_FirstPreprocessing = CXCursor_PreprocessingDirective
 	CXCursor_LastPreprocessing = CXCursor_InclusionDirective
 	CXCursor_ModuleImportDecl = 600
+	CXCursor_TypeAliasTemplateDecl = 601
+	CXCursor_StaticAssert = 602
+	CXCursor_FriendDecl = 603
 	CXCursor_FirstExtraDecl = CXCursor_ModuleImportDecl
-	CXCursor_LastExtraDecl = CXCursor_ModuleImportDecl
+	CXCursor_LastExtraDecl = CXCursor_FriendDecl
+	CXCursor_OverloadCandidate = 700
 end enum
 
 type CXCursor
@@ -540,6 +633,7 @@ declare function clang_isReference(byval as CXCursorKind) as ulong
 declare function clang_isExpression(byval as CXCursorKind) as ulong
 declare function clang_isStatement(byval as CXCursorKind) as ulong
 declare function clang_isAttribute(byval as CXCursorKind) as ulong
+declare function clang_Cursor_hasAttrs(byval C as CXCursor) as ulong
 declare function clang_isInvalid(byval as CXCursorKind) as ulong
 declare function clang_isTranslationUnit(byval as CXCursorKind) as ulong
 declare function clang_isPreprocessing(byval as CXCursorKind) as ulong
@@ -555,6 +649,16 @@ enum
 end enum
 
 declare function clang_getCursorLinkage(byval cursor as CXCursor) as CXLinkageKind
+
+type CXVisibilityKind as long
+enum
+	CXVisibility_Invalid
+	CXVisibility_Hidden
+	CXVisibility_Protected
+	CXVisibility_Default
+end enum
+
+declare function clang_getCursorVisibility(byval cursor as CXCursor) as CXVisibilityKind
 declare function clang_getCursorAvailability(byval cursor as CXCursor) as CXAvailabilityKind
 
 type CXPlatformAvailability
@@ -625,8 +729,10 @@ enum
 	CXType_ObjCId = 27
 	CXType_ObjCClass = 28
 	CXType_ObjCSel = 29
+	CXType_Float128 = 30
+	CXType_Half = 31
 	CXType_FirstBuiltin = CXType_Void
-	CXType_LastBuiltin = CXType_ObjCSel
+	CXType_LastBuiltin = CXType_Half
 	CXType_Complex = 100
 	CXType_Pointer = 101
 	CXType_BlockPointer = 102
@@ -645,6 +751,49 @@ enum
 	CXType_VariableArray = 115
 	CXType_DependentSizedArray = 116
 	CXType_MemberPointer = 117
+	CXType_Auto = 118
+	CXType_Elaborated = 119
+	CXType_Pipe = 120
+	CXType_OCLImage1dRO = 121
+	CXType_OCLImage1dArrayRO = 122
+	CXType_OCLImage1dBufferRO = 123
+	CXType_OCLImage2dRO = 124
+	CXType_OCLImage2dArrayRO = 125
+	CXType_OCLImage2dDepthRO = 126
+	CXType_OCLImage2dArrayDepthRO = 127
+	CXType_OCLImage2dMSAARO = 128
+	CXType_OCLImage2dArrayMSAARO = 129
+	CXType_OCLImage2dMSAADepthRO = 130
+	CXType_OCLImage2dArrayMSAADepthRO = 131
+	CXType_OCLImage3dRO = 132
+	CXType_OCLImage1dWO = 133
+	CXType_OCLImage1dArrayWO = 134
+	CXType_OCLImage1dBufferWO = 135
+	CXType_OCLImage2dWO = 136
+	CXType_OCLImage2dArrayWO = 137
+	CXType_OCLImage2dDepthWO = 138
+	CXType_OCLImage2dArrayDepthWO = 139
+	CXType_OCLImage2dMSAAWO = 140
+	CXType_OCLImage2dArrayMSAAWO = 141
+	CXType_OCLImage2dMSAADepthWO = 142
+	CXType_OCLImage2dArrayMSAADepthWO = 143
+	CXType_OCLImage3dWO = 144
+	CXType_OCLImage1dRW = 145
+	CXType_OCLImage1dArrayRW = 146
+	CXType_OCLImage1dBufferRW = 147
+	CXType_OCLImage2dRW = 148
+	CXType_OCLImage2dArrayRW = 149
+	CXType_OCLImage2dDepthRW = 150
+	CXType_OCLImage2dArrayDepthRW = 151
+	CXType_OCLImage2dMSAARW = 152
+	CXType_OCLImage2dArrayMSAARW = 153
+	CXType_OCLImage2dMSAADepthRW = 154
+	CXType_OCLImage2dArrayMSAADepthRW = 155
+	CXType_OCLImage3dRW = 156
+	CXType_OCLSampler = 157
+	CXType_OCLEvent = 158
+	CXType_OCLQueue = 159
+	CXType_OCLReserveID = 160
 end enum
 
 type CXCallingConv as long
@@ -657,11 +806,15 @@ enum
 	CXCallingConv_X86Pascal = 5
 	CXCallingConv_AAPCS = 6
 	CXCallingConv_AAPCS_VFP = 7
-	CXCallingConv_PnaclCall = 8
+	CXCallingConv_X86RegCall = 8
 	CXCallingConv_IntelOclBicc = 9
-	CXCallingConv_X86_64Win64 = 10
+	CXCallingConv_Win64 = 10
+	CXCallingConv_X86_64Win64 = CXCallingConv_Win64
 	CXCallingConv_X86_64SysV = 11
 	CXCallingConv_X86VectorCall = 12
+	CXCallingConv_Swift = 13
+	CXCallingConv_PreserveMost = 14
+	CXCallingConv_PreserveAll = 15
 	CXCallingConv_Invalid = 100
 	CXCallingConv_Unexposed = 200
 end enum
@@ -703,23 +856,33 @@ declare function clang_Cursor_getTemplateArgumentUnsignedValue(byval C as CXCurs
 declare function clang_equalTypes(byval A as CXType, byval B as CXType) as ulong
 declare function clang_getCanonicalType(byval T as CXType) as CXType
 declare function clang_isConstQualifiedType(byval T as CXType) as ulong
+declare function clang_Cursor_isMacroFunctionLike(byval C as CXCursor) as ulong
+declare function clang_Cursor_isMacroBuiltin(byval C as CXCursor) as ulong
+declare function clang_Cursor_isFunctionInlined(byval C as CXCursor) as ulong
 declare function clang_isVolatileQualifiedType(byval T as CXType) as ulong
 declare function clang_isRestrictQualifiedType(byval T as CXType) as ulong
+declare function clang_getAddressSpace(byval T as CXType) as ulong
+declare function clang_getTypedefName(byval CT as CXType) as CXString
 declare function clang_getPointeeType(byval T as CXType) as CXType
 declare function clang_getTypeDeclaration(byval T as CXType) as CXCursor
 declare function clang_getDeclObjCTypeEncoding(byval C as CXCursor) as CXString
+declare function clang_Type_getObjCEncoding(byval type as CXType) as CXString
 declare function clang_getTypeKindSpelling(byval K as CXTypeKind) as CXString
 declare function clang_getFunctionTypeCallingConv(byval T as CXType) as CXCallingConv
 declare function clang_getResultType(byval T as CXType) as CXType
+declare function clang_getExceptionSpecificationType(byval T as CXType) as long
 declare function clang_getNumArgTypes(byval T as CXType) as long
 declare function clang_getArgType(byval T as CXType, byval i as ulong) as CXType
 declare function clang_isFunctionTypeVariadic(byval T as CXType) as ulong
 declare function clang_getCursorResultType(byval C as CXCursor) as CXType
+declare function clang_getCursorExceptionSpecificationType(byval C as CXCursor) as long
 declare function clang_isPODType(byval T as CXType) as ulong
 declare function clang_getElementType(byval T as CXType) as CXType
 declare function clang_getNumElements(byval T as CXType) as longint
 declare function clang_getArrayElementType(byval T as CXType) as CXType
 declare function clang_getArraySize(byval T as CXType) as longint
+declare function clang_Type_getNamedType(byval T as CXType) as CXType
+declare function clang_Type_isTransparentTagTypedef(byval T as CXType) as ulong
 
 type CXTypeLayoutError as long
 enum
@@ -734,6 +897,8 @@ declare function clang_Type_getAlignOf(byval T as CXType) as longint
 declare function clang_Type_getClassType(byval T as CXType) as CXType
 declare function clang_Type_getSizeOf(byval T as CXType) as longint
 declare function clang_Type_getOffsetOf(byval T as CXType, byval S as const zstring ptr) as longint
+declare function clang_Cursor_getOffsetOfField(byval C as CXCursor) as longint
+declare function clang_Cursor_isAnonymous(byval C as CXCursor) as ulong
 
 type CXRefQualifierKind as long
 enum
@@ -817,6 +982,7 @@ enum
 	CXObjCPropertyAttr_weak = &h200
 	CXObjCPropertyAttr_strong = &h400
 	CXObjCPropertyAttr_unsafe_unretained = &h800
+	CXObjCPropertyAttr_class = &h1000
 end enum
 
 declare function clang_Cursor_getObjCPropertyAttributes(byval C as CXCursor, byval reserved as ulong) as ulong
@@ -835,10 +1001,12 @@ end enum
 declare function clang_Cursor_getObjCDeclQualifiers(byval C as CXCursor) as ulong
 declare function clang_Cursor_isObjCOptional(byval C as CXCursor) as ulong
 declare function clang_Cursor_isVariadic(byval C as CXCursor) as ulong
+declare function clang_Cursor_isExternalSymbol(byval C as CXCursor, byval language as CXString ptr, byval definedIn as CXString ptr, byval isGenerated as ulong ptr) as ulong
 declare function clang_Cursor_getCommentRange(byval C as CXCursor) as CXSourceRange
 declare function clang_Cursor_getRawCommentText(byval C as CXCursor) as CXString
 declare function clang_Cursor_getBriefCommentText(byval C as CXCursor) as CXString
 declare function clang_Cursor_getMangling(byval as CXCursor) as CXString
+declare function clang_Cursor_getCXXManglings(byval as CXCursor) as CXStringSet ptr
 type CXModule as any ptr
 declare function clang_Cursor_getModule(byval C as CXCursor) as CXModule
 declare function clang_getModuleForFile(byval as CXTranslationUnit, byval as CXFile) as CXModule
@@ -849,9 +1017,16 @@ declare function clang_Module_getFullName(byval Module as CXModule) as CXString
 declare function clang_Module_isSystem(byval Module as CXModule) as long
 declare function clang_Module_getNumTopLevelHeaders(byval as CXTranslationUnit, byval Module as CXModule) as ulong
 declare function clang_Module_getTopLevelHeader(byval as CXTranslationUnit, byval Module as CXModule, byval Index as ulong) as CXFile
+declare function clang_CXXConstructor_isConvertingConstructor(byval C as CXCursor) as ulong
+declare function clang_CXXConstructor_isCopyConstructor(byval C as CXCursor) as ulong
+declare function clang_CXXConstructor_isDefaultConstructor(byval C as CXCursor) as ulong
+declare function clang_CXXConstructor_isMoveConstructor(byval C as CXCursor) as ulong
+declare function clang_CXXField_isMutable(byval C as CXCursor) as ulong
+declare function clang_CXXMethod_isDefaulted(byval C as CXCursor) as ulong
 declare function clang_CXXMethod_isPureVirtual(byval C as CXCursor) as ulong
 declare function clang_CXXMethod_isStatic(byval C as CXCursor) as ulong
 declare function clang_CXXMethod_isVirtual(byval C as CXCursor) as ulong
+declare function clang_EnumDecl_isScoped(byval C as CXCursor) as ulong
 declare function clang_CXXMethod_isConst(byval C as CXCursor) as ulong
 declare function clang_getTemplateCursorKind(byval C as CXCursor) as CXCursorKind
 declare function clang_getSpecializedCursorTemplate(byval C as CXCursor) as CXCursor
@@ -987,6 +1162,28 @@ declare function clang_getClangVersion() as CXString
 declare sub clang_toggleCrashRecovery(byval isEnabled as ulong)
 type CXInclusionVisitor as sub(byval included_file as CXFile, byval inclusion_stack as CXSourceLocation ptr, byval include_len as ulong, byval client_data as CXClientData)
 declare sub clang_getInclusions(byval tu as CXTranslationUnit, byval visitor as CXInclusionVisitor, byval client_data as CXClientData)
+
+type CXEvalResultKind as long
+enum
+	CXEval_Int = 1
+	CXEval_Float = 2
+	CXEval_ObjCStrLiteral = 3
+	CXEval_StrLiteral = 4
+	CXEval_CFStr = 5
+	CXEval_Other = 6
+	CXEval_UnExposed = 0
+end enum
+
+type CXEvalResult as any ptr
+declare function clang_Cursor_Evaluate(byval C as CXCursor) as CXEvalResult
+declare function clang_EvalResult_getKind(byval E as CXEvalResult) as CXEvalResultKind
+declare function clang_EvalResult_getAsInt(byval E as CXEvalResult) as long
+declare function clang_EvalResult_getAsLongLong(byval E as CXEvalResult) as longint
+declare function clang_EvalResult_isUnsignedInt(byval E as CXEvalResult) as ulong
+declare function clang_EvalResult_getAsUnsigned(byval E as CXEvalResult) as ulongint
+declare function clang_EvalResult_getAsDouble(byval E as CXEvalResult) as double
+declare function clang_EvalResult_getAsStr(byval E as CXEvalResult) as const zstring ptr
+declare sub clang_EvalResult_dispose(byval E as CXEvalResult)
 type CXRemapping as any ptr
 declare function clang_getRemappings(byval path as const zstring ptr) as CXRemapping
 declare function clang_getRemappingsFromFileList(byval filePaths as const zstring ptr ptr, byval numFiles as ulong) as CXRemapping
@@ -1077,6 +1274,7 @@ enum
 	CXIdxEntityLang_C = 1
 	CXIdxEntityLang_ObjC = 2
 	CXIdxEntityLang_CXX = 3
+	CXIdxEntityLang_Swift = 4
 end enum
 
 type CXIdxEntityCXXTemplateKind as long
@@ -1252,10 +1450,12 @@ enum
 end enum
 
 declare function clang_indexSourceFile(byval as CXIndexAction, byval client_data as CXClientData, byval index_callbacks as IndexerCallbacks ptr, byval index_callbacks_size as ulong, byval index_options as ulong, byval source_filename as const zstring ptr, byval command_line_args as const zstring const ptr ptr, byval num_command_line_args as long, byval unsaved_files as CXUnsavedFile ptr, byval num_unsaved_files as ulong, byval out_TU as CXTranslationUnit ptr, byval TU_options as ulong) as long
+declare function clang_indexSourceFileFullArgv(byval as CXIndexAction, byval client_data as CXClientData, byval index_callbacks as IndexerCallbacks ptr, byval index_callbacks_size as ulong, byval index_options as ulong, byval source_filename as const zstring ptr, byval command_line_args as const zstring const ptr ptr, byval num_command_line_args as long, byval unsaved_files as CXUnsavedFile ptr, byval num_unsaved_files as ulong, byval out_TU as CXTranslationUnit ptr, byval TU_options as ulong) as long
 declare function clang_indexTranslationUnit(byval as CXIndexAction, byval client_data as CXClientData, byval index_callbacks as IndexerCallbacks ptr, byval index_callbacks_size as ulong, byval index_options as ulong, byval as CXTranslationUnit) as long
 declare sub clang_indexLoc_getFileLocation(byval loc as CXIdxLoc, byval indexFile as CXIdxClientFile ptr, byval file as CXFile ptr, byval line as ulong ptr, byval column as ulong ptr, byval offset as ulong ptr)
 declare function clang_indexLoc_getCXSourceLocation(byval loc as CXIdxLoc) as CXSourceLocation
-#define LLVM_CLANG_C_DOCUMENTATION_H
+type CXFieldVisitor as function(byval C as CXCursor, byval client_data as CXClientData) as CXVisitorResult
+declare function clang_Type_visitFields(byval T as CXType, byval visitor as CXFieldVisitor, byval client_data as CXClientData) as ulong
 
 type CXComment
 	ASTNode as const any ptr
@@ -1329,30 +1529,5 @@ declare function clang_VerbatimLineComment_getText(byval Comment as CXComment) a
 declare function clang_HTMLTagComment_getAsString(byval Comment as CXComment) as CXString
 declare function clang_FullComment_getAsHTML(byval Comment as CXComment) as CXString
 declare function clang_FullComment_getAsXML(byval Comment as CXComment) as CXString
-#define LLVM_CLANG_C_CXCOMPILATIONDATABASE_H
-
-type CXCompilationDatabase as any ptr
-type CXCompileCommands as any ptr
-type CXCompileCommand as any ptr
-
-type CXCompilationDatabase_Error as long
-enum
-	CXCompilationDatabase_NoError = 0
-	CXCompilationDatabase_CanNotLoadDatabase = 1
-end enum
-
-declare function clang_CompilationDatabase_fromDirectory(byval BuildDir as const zstring ptr, byval ErrorCode as CXCompilationDatabase_Error ptr) as CXCompilationDatabase
-declare sub clang_CompilationDatabase_dispose(byval as CXCompilationDatabase)
-declare function clang_CompilationDatabase_getCompileCommands(byval as CXCompilationDatabase, byval CompleteFileName as const zstring ptr) as CXCompileCommands
-declare function clang_CompilationDatabase_getAllCompileCommands(byval as CXCompilationDatabase) as CXCompileCommands
-declare sub clang_CompileCommands_dispose(byval as CXCompileCommands)
-declare function clang_CompileCommands_getSize(byval as CXCompileCommands) as ulong
-declare function clang_CompileCommands_getCommand(byval as CXCompileCommands, byval I as ulong) as CXCompileCommand
-declare function clang_CompileCommand_getDirectory(byval as CXCompileCommand) as CXString
-declare function clang_CompileCommand_getNumArgs(byval as CXCompileCommand) as ulong
-declare function clang_CompileCommand_getArg(byval as CXCompileCommand, byval I as ulong) as CXString
-declare function clang_CompileCommand_getNumMappedSources(byval as CXCompileCommand) as ulong
-declare function clang_CompileCommand_getMappedSourcePath(byval as CXCompileCommand, byval I as ulong) as CXString
-declare function clang_CompileCommand_getMappedSourceContent(byval as CXCompileCommand, byval I as ulong) as CXString
 
 end extern
