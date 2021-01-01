@@ -105,6 +105,7 @@ Version 1.08.0
 - rtlib: FORMAT() should always use all the fix digits in exponential form, e.g. format(1234, "###e+#") = "123e+1"
 - github #92: FORMAT() should always have an exponent of 0 for zero.
 - sf.net #928: Wrong sign / type when printing BYTE values on arm/aarch64
+- various HANDLE_WM_*, FORWARD_WM_* macros in win/windowsx.bi were broken
 
 
 Version 1.07.0
