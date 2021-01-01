@@ -22,7 +22,7 @@
 ''   slouken@libsdl.org
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   Copyright © 2020 FreeBASIC development team
 
 #pragma once
 
@@ -120,7 +120,11 @@ end enum
 #define SDL_toupper(X) toupper(X)
 #define SDL_tolower(X) tolower(X)
 #define SDL_memset memset
-#define SDL_memset4(dst, val, len) SDL_memset((dst), (val), (len) * 4)
+private sub SDL_memset4(byval dst as any ptr, byval value as ulong, byval length as uinteger)
+	for i as integer = 0 to length - 1
+		cast(ulong ptr, dst)[i] = value
+	next
+end sub
 #define SDL_memcpy(dst, src, len) memcpy((dst), (src), (len))
 #define SDL_memcpy4(dst, src, len) SDL_memcpy((dst), (src), (len) * 4)
 
@@ -1134,44 +1138,44 @@ enum
 	SDL_USEREVENT = 24
 	SDL_NUMEVENTS = 32
 #else
-    SDL_NOEVENT        = 0
-    SDL_FIRSTEVENT     = 0
-    SDL_QUIT_          = &h100
-    SDL_WINDOWEVENT    = &h200
-    SDL_SYSWMEVENT
-    SDL_KEYDOWN        = &h300
-    SDL_KEYUP
-    SDL_TEXTEDITING
-    SDL_TEXTINPUT
-    SDL_MOUSEMOTION    = &h400
-    SDL_MOUSEBUTTONDOWN
-    SDL_MOUSEBUTTONUP
-    SDL_MOUSEWHEEL
-    SDL_INPUTMOTION    = &h500
-    SDL_INPUTBUTTONDOWN
-    SDL_INPUTBUTTONUP
-    SDL_INPUTWHEEL
-    SDL_INPUTPROXIMITYIN
-    SDL_INPUTPROXIMITYOUT
-    SDL_JOYAXISMOTION  = &h600
-    SDL_JOYBALLMOTION
-    SDL_JOYHATMOTION
-    SDL_JOYBUTTONDOWN
-    SDL_JOYBUTTONUP
-    SDL_FINGERDOWN      = &h700
-    SDL_FINGERUP
-    SDL_FINGERMOTION
-    SDL_TOUCHBUTTONDOWN
-    SDL_TOUCHBUTTONUP   
-    SDL_DOLLARGESTURE   = &h800
-    SDL_DOLLARRECORD
-    SDL_MULTIGESTURE
-    SDL_CLIPBOARDUPDATE = &h900
-    SDL_EVENT_COMPAT1 = &h7000
-    SDL_EVENT_COMPAT2
-    SDL_EVENT_COMPAT3
-    SDL_USEREVENT    = &h8000
-    SDL_LASTEVENT    = &hFFFF
+	SDL_NOEVENT        = 0
+	SDL_FIRSTEVENT     = 0
+	SDL_QUIT_          = &h100
+	SDL_WINDOWEVENT    = &h200
+	SDL_SYSWMEVENT
+	SDL_KEYDOWN        = &h300
+	SDL_KEYUP
+	SDL_TEXTEDITING
+	SDL_TEXTINPUT
+	SDL_MOUSEMOTION    = &h400
+	SDL_MOUSEBUTTONDOWN
+	SDL_MOUSEBUTTONUP
+	SDL_MOUSEWHEEL
+	SDL_INPUTMOTION    = &h500
+	SDL_INPUTBUTTONDOWN
+	SDL_INPUTBUTTONUP
+	SDL_INPUTWHEEL
+	SDL_INPUTPROXIMITYIN
+	SDL_INPUTPROXIMITYOUT
+	SDL_JOYAXISMOTION  = &h600
+	SDL_JOYBALLMOTION
+	SDL_JOYHATMOTION
+	SDL_JOYBUTTONDOWN
+	SDL_JOYBUTTONUP
+	SDL_FINGERDOWN      = &h700
+	SDL_FINGERUP
+	SDL_FINGERMOTION
+	SDL_TOUCHBUTTONDOWN
+	SDL_TOUCHBUTTONUP
+	SDL_DOLLARGESTURE   = &h800
+	SDL_DOLLARRECORD
+	SDL_MULTIGESTURE
+	SDL_CLIPBOARDUPDATE = &h900
+	SDL_EVENT_COMPAT1 = &h7000
+	SDL_EVENT_COMPAT2
+	SDL_EVENT_COMPAT3
+	SDL_USEREVENT    = &h8000
+	SDL_LASTEVENT    = &hFFFF
 #endif
 end enum
 
@@ -1230,7 +1234,7 @@ type SDL_KeyboardEvent
 end type
 
 type SDL_MouseMotionEvent
-#ifndef __FB_JS__	
+#ifndef __FB_JS__
 	as Uint8 type
 	which as Uint8
 	state as Uint8
@@ -1244,13 +1248,13 @@ type SDL_MouseMotionEvent
 	state as Uint32
 	x as Sint16
 	y as Sint16
-#endif	
+#endif
 	xrel as Sint16
 	yrel as Sint16
 end type
 
 type SDL_MouseButtonEvent
-#ifndef __FB_JS__	
+#ifndef __FB_JS__
 	as Uint8 type
 	which as Uint8
 	button as Uint8
@@ -1272,14 +1276,14 @@ type SDL_MouseButtonEvent
 end type
 
 type SDL_JoyAxisEvent
-#ifndef __FB_JS__	
+#ifndef __FB_JS__
 	as Uint8 type
 #else
 	as Uint32 type
 #endif
 	which as Uint8
 	axis as Uint8
-#ifndef __FB_JS__	
+#ifndef __FB_JS__
 	value as Sint16
 #else
 	padding1 as Uint8
@@ -1289,14 +1293,14 @@ type SDL_JoyAxisEvent
 end type
 
 type SDL_JoyBallEvent
-#ifndef __FB_JS__	
+#ifndef __FB_JS__
 	as Uint8 type
 #else
 	as Uint32 type
 #endif
 	which as Uint8
 	ball as Uint8
-#ifndef __FB_JS__	
+#ifndef __FB_JS__
 	xrel as Sint16
 	yrel as Sint16
 #else
@@ -1308,7 +1312,7 @@ type SDL_JoyBallEvent
 end type
 
 type SDL_JoyHatEvent
-#ifndef __FB_JS__	
+#ifndef __FB_JS__
 	as Uint8 type
 #else
 	as Uint32 type
@@ -1316,13 +1320,13 @@ type SDL_JoyHatEvent
 	which as Uint8
 	hat as Uint8
 	value as Uint8
-#ifdef __FB_JS__	
+#ifdef __FB_JS__
 	as Uint8 padding1
 #endif
 end type
 
 type SDL_JoyButtonEvent
-#ifndef __FB_JS__	
+#ifndef __FB_JS__
 	as Uint8 type
 #else
 	as Uint32 type
@@ -1330,13 +1334,13 @@ type SDL_JoyButtonEvent
 	which as Uint8
 	button as Uint8
 	state as Uint8
-#ifdef __FB_JS__	
+#ifdef __FB_JS__
 	as Uint8 padding1
 #endif
 end type
 
 type SDL_ResizeEvent
-#ifndef __FB_JS__	
+#ifndef __FB_JS__
 	as Uint8 type
 #else
 	as Uint32 type
@@ -1350,7 +1354,7 @@ type SDL_ExposeEvent
 end type
 
 type SDL_QuitEvent
-#ifndef __FB_JS__	
+#ifndef __FB_JS__
 	as Uint8 type
 #else
 	as Uint32 type
@@ -1358,7 +1362,7 @@ type SDL_QuitEvent
 end type
 
 type SDL_UserEvent
-#ifndef __FB_JS__	
+#ifndef __FB_JS__
 	as Uint8 type
 #else
 	as Uint32 type
@@ -1372,7 +1376,7 @@ end type
 type SDL_SysWMmsg as SDL_SysWMmsg_
 
 type SDL_SysWMEvent
-#ifndef __FB_JS__	
+#ifndef __FB_JS__
 	as Uint8 type
 #else
 	as Uint32 type

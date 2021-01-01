@@ -1,7 +1,7 @@
-'' FreeBASIC binding for SDL2_gfx-1.0.1
+'' FreeBASIC binding for SDL2_gfx-1.0.4
 ''
 '' based on the C header files:
-''   Copyright (C) 2012  Andreas Schiffler
+''   Copyright (C) 2012-2014  Andreas Schiffler
 ''
 ''   This software is provided 'as-is', without any express or implied
 ''   warranty. In no event will the authors be held liable for any damages
@@ -25,7 +25,7 @@
 ''   Andreas Schiffler -- aschiffler at ferzkopp dot net
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   Copyright © 2020 FreeBASIC development team
 
 #pragma once
 

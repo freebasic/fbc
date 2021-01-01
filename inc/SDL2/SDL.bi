@@ -1,8 +1,8 @@
-'' FreeBASIC binding for SDL2-2.0.6
+'' FreeBASIC binding for SDL2-2.0.14
 ''
 '' based on the C header files:
 ''   Simple DirectMedia Layer
-''   Copyright (C) 1997-2017 Sam Lantinga <slouken@libsdl.org>
+''   Copyright (C) 1997-2020 Sam Lantinga <slouken@libsdl.org>
 ''
 ''   This software is provided 'as-is', without any express or implied
 ''   warranty.  In no event will the authors be held liable for any damages
@@ -21,7 +21,7 @@
 ''   3. This notice may not be removed or altered from any source distribution.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   Copyright © 2020 FreeBASIC development team
 
 #pragma once
 
@@ -43,10 +43,13 @@
 '' The following symbols have been renamed:
 ''     #define SDL_PRIX64 => SDL_PRIX64_
 ''     constant SDL_UNSUPPORTED => SDL_UNSUPPORTED_
-''     #ifdef __FB_WIN32__
+''     #if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
 ''         procedure SDL_CreateThread => SDL_CreateThread_
+''         procedure SDL_CreateThreadWithStackSize => SDL_CreateThreadWithStackSize_
 ''     #endif
+''     enum SDL_PixelType => SDL_PixelType_
 ''     constant SDL_QUIT => SDL_QUIT_
+''     constant SDL_SENSORUPDATE => SDL_SENSORUPDATEEVENT
 ''     procedure SDL_Log => SDL_Log_
 ''     #define SDL_VERSION => SDL_VERSION_
 
@@ -55,7 +58,6 @@ extern "C"
 #define SDL_h_
 #define SDL_main_h_
 #define SDL_stdinc_h_
-#define SDL_config_h_
 #define SDL_platform_h_
 
 #if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
@@ -72,21 +74,6 @@ extern "C"
 #endif
 
 declare function SDL_GetPlatform() as const zstring ptr
-
-#ifdef __FB_WIN32__
-	#define SDL_config_windows_h_
-	#define SDL_config_h_
-	const HAVE_DDRAW_H = 1
-	const HAVE_DINPUT_H = 1
-	const HAVE_DSOUND_H = 1
-	const HAVE_DXGI_H = 1
-	const HAVE_XINPUT_H = 1
-	const SDL_AUDIO_DRIVER_WASAPI = 1
-	const SDL_JOYSTICK_XINPUT = 1
-	const SDL_HAPTIC_XINPUT = 1
-	const SDL_VIDEO_VULKAN = 1
-#endif
-
 #define SDL_STRINGIFY_ARG(arg) #arg
 #define SDL_FOURCC(A, B, C, D) ((((cast(Uint32, cast(Uint8, (A))) shl 0) or (cast(Uint32, cast(Uint8, (B))) shl 8)) or (cast(Uint32, cast(Uint8, (C))) shl 16)) or (cast(Uint32, cast(Uint8, (D))) shl 24))
 
@@ -96,13 +83,29 @@ enum
 	SDL_TRUE = 1
 end enum
 
+#define SDL_MAX_SINT8 cast(Sint8, &h7F)
+#define SDL_MIN_SINT8 cast(Sint8, not &h7F)
 type Sint8 as byte
+#define SDL_MAX_UINT8 cast(Uint8, &hFF)
+#define SDL_MIN_UINT8 cast(Uint8, &h00)
 type Uint8 as ubyte
+#define SDL_MAX_SINT16 cast(Sint16, &h7FFF)
+#define SDL_MIN_SINT16 cast(Sint16, not &h7FFF)
 type Sint16 as short
+#define SDL_MAX_UINT16 cast(Uint16, &hFFFF)
+#define SDL_MIN_UINT16 cast(Uint16, &h0000)
 type Uint16 as ushort
+#define SDL_MAX_SINT32 cast(Sint32, &h7FFFFFFF)
+#define SDL_MIN_SINT32 cast(Sint32, not &h7FFFFFFF)
 type Sint32 as long
+#define SDL_MAX_UINT32 cast(Uint32, &hFFFFFFFFu)
+#define SDL_MIN_UINT32 cast(Uint32, &h00000000)
 type Uint32 as ulong
+#define SDL_MAX_SINT64 cast(Sint64, &h7FFFFFFFFFFFFFFFll)
+#define SDL_MIN_SINT64 cast(Sint64, not &h7FFFFFFFFFFFFFFFll)
 type Sint64 as longint
+#define SDL_MAX_UINT64 cast(Uint64, &hFFFFFFFFFFFFFFFFull)
+#define SDL_MIN_UINT64 cast(Uint64, &h0000000000000000ull)
 type Uint64 as ulongint
 
 #if ((not defined(__FB_64BIT__)) and (defined(__FB_DARWIN__) or defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))) or (defined(__FB_64BIT__) and (defined(__FB_DARWIN__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__)))
@@ -148,6 +151,15 @@ declare function SDL_malloc(byval size as uinteger) as any ptr
 declare function SDL_calloc(byval nmemb as uinteger, byval size as uinteger) as any ptr
 declare function SDL_realloc(byval mem as any ptr, byval size as uinteger) as any ptr
 declare sub SDL_free(byval mem as any ptr)
+
+type SDL_malloc_func as function(byval size as uinteger) as any ptr
+type SDL_calloc_func as function(byval nmemb as uinteger, byval size as uinteger) as any ptr
+type SDL_realloc_func as function(byval mem as any ptr, byval size as uinteger) as any ptr
+type SDL_free_func as sub(byval mem as any ptr)
+
+declare sub SDL_GetMemoryFunctions(byval malloc_func as SDL_malloc_func ptr, byval calloc_func as SDL_calloc_func ptr, byval realloc_func as SDL_realloc_func ptr, byval free_func as SDL_free_func ptr)
+declare function SDL_SetMemoryFunctions(byval malloc_func as SDL_malloc_func, byval calloc_func as SDL_calloc_func, byval realloc_func as SDL_realloc_func, byval free_func as SDL_free_func) as long
+declare function SDL_GetNumAllocations() as long
 declare function SDL_getenv(byval name as const zstring ptr) as zstring ptr
 declare function SDL_setenv(byval name as const zstring ptr, byval value as const zstring ptr, byval overwrite as long) as long
 declare sub SDL_qsort(byval base as any ptr, byval nmemb as uinteger, byval size as uinteger, byval compare as function(byval as const any ptr, byval as const any ptr) as long)
@@ -156,13 +168,21 @@ declare function SDL_abs(byval x as long) as long
 #define SDL_max(x, y) iif((x) > (y), (x), (y))
 declare function SDL_isdigit(byval x as long) as long
 declare function SDL_isspace(byval x as long) as long
+declare function SDL_isupper(byval x as long) as long
+declare function SDL_islower(byval x as long) as long
 declare function SDL_toupper(byval x as long) as long
 declare function SDL_tolower(byval x as long) as long
+declare function SDL_crc32(byval crc as Uint32, byval data as const any ptr, byval len as uinteger) as Uint32
 declare function SDL_memset(byval dst as any ptr, byval c as long, byval len as uinteger) as any ptr
 
 #define SDL_zero(x) SDL_memset(@(x), 0, sizeof(x))
 #define SDL_zerop(x) SDL_memset((x), 0, sizeof(*(x)))
-#define SDL_memset4(dst, val, dwords) SDL_memset((dst), (val), (dwords) * 4)
+#define SDL_zeroa(x) SDL_memset((x), 0, sizeof(x))
+private sub SDL_memset4(byval dst as any ptr, byval value as ulong, byval length as uinteger)
+	for i as integer = 0 to length - 1
+		cast(ulong ptr, dst)[i] = value
+	next
+end sub
 
 declare function SDL_memcpy(byval dst as any ptr, byval src as const any ptr, byval len as uinteger) as any ptr
 declare function SDL_memmove(byval dst as any ptr, byval src as const any ptr, byval len as uinteger) as any ptr
@@ -170,7 +190,12 @@ declare function SDL_memcmp(byval s1 as const any ptr, byval s2 as const any ptr
 declare function SDL_wcslen(byval wstr as const wstring ptr) as uinteger
 declare function SDL_wcslcpy(byval dst as wstring ptr, byval src as const wstring ptr, byval maxlen as uinteger) as uinteger
 declare function SDL_wcslcat(byval dst as wstring ptr, byval src as const wstring ptr, byval maxlen as uinteger) as uinteger
+declare function SDL_wcsdup(byval wstr as const wstring ptr) as wstring ptr
+declare function SDL_wcsstr(byval haystack as const wstring ptr, byval needle as const wstring ptr) as wstring ptr
 declare function SDL_wcscmp(byval str1 as const wstring ptr, byval str2 as const wstring ptr) as long
+declare function SDL_wcsncmp(byval str1 as const wstring ptr, byval str2 as const wstring ptr, byval maxlen as uinteger) as long
+declare function SDL_wcscasecmp(byval str1 as const wstring ptr, byval str2 as const wstring ptr) as long
+declare function SDL_wcsncasecmp(byval str1 as const wstring ptr, byval str2 as const wstring ptr, byval len as uinteger) as long
 declare function SDL_strlen(byval str as const zstring ptr) as uinteger
 declare function SDL_strlcpy(byval dst as zstring ptr, byval src as const zstring ptr, byval maxlen as uinteger) as uinteger
 declare function SDL_utf8strlcpy(byval dst as zstring ptr, byval src as const zstring ptr, byval dst_bytes as uinteger) as uinteger
@@ -182,6 +207,7 @@ declare function SDL_strlwr(byval str as zstring ptr) as zstring ptr
 declare function SDL_strchr(byval str as const zstring ptr, byval c as long) as zstring ptr
 declare function SDL_strrchr(byval str as const zstring ptr, byval c as long) as zstring ptr
 declare function SDL_strstr(byval haystack as const zstring ptr, byval needle as const zstring ptr) as zstring ptr
+declare function SDL_strtokr(byval s1 as zstring ptr, byval s2 as const zstring ptr, byval saveptr as zstring ptr ptr) as zstring ptr
 declare function SDL_utf8strlen(byval str as const zstring ptr) as uinteger
 declare function SDL_itoa(byval value as long, byval str as zstring ptr, byval radix as long) as zstring ptr
 declare function SDL_uitoa(byval value as ulong, byval str as zstring ptr, byval radix as long) as zstring ptr
@@ -205,18 +231,37 @@ declare function SDL_vsscanf(byval text as const zstring ptr, byval fmt as const
 declare function SDL_snprintf(byval text as zstring ptr, byval maxlen as uinteger, byval fmt as const zstring ptr, ...) as long
 declare function SDL_vsnprintf(byval text as zstring ptr, byval maxlen as uinteger, byval fmt as const zstring ptr, byval ap as va_list) as long
 declare function SDL_acos(byval x as double) as double
+declare function SDL_acosf(byval x as single) as single
 declare function SDL_asin(byval x as double) as double
+declare function SDL_asinf(byval x as single) as single
 declare function SDL_atan(byval x as double) as double
+declare function SDL_atanf(byval x as single) as single
 declare function SDL_atan2(byval x as double, byval y as double) as double
+declare function SDL_atan2f(byval x as single, byval y as single) as single
 declare function SDL_ceil(byval x as double) as double
+declare function SDL_ceilf(byval x as single) as single
 declare function SDL_copysign(byval x as double, byval y as double) as double
+declare function SDL_copysignf(byval x as single, byval y as single) as single
 declare function SDL_cos(byval x as double) as double
 declare function SDL_cosf(byval x as single) as single
+declare function SDL_exp(byval x as double) as double
+declare function SDL_expf(byval x as single) as single
 declare function SDL_fabs(byval x as double) as double
+declare function SDL_fabsf(byval x as single) as single
 declare function SDL_floor(byval x as double) as double
+declare function SDL_floorf(byval x as single) as single
+declare function SDL_trunc(byval x as double) as double
+declare function SDL_truncf(byval x as single) as single
+declare function SDL_fmod(byval x as double, byval y as double) as double
+declare function SDL_fmodf(byval x as single, byval y as single) as single
 declare function SDL_log(byval x as double) as double
+declare function SDL_logf(byval x as single) as single
+declare function SDL_log10(byval x as double) as double
+declare function SDL_log10f(byval x as single) as single
 declare function SDL_pow(byval x as double, byval y as double) as double
+declare function SDL_powf(byval x as single, byval y as single) as single
 declare function SDL_scalbn(byval x as double, byval n as long) as double
+declare function SDL_scalbnf(byval x as single, byval n as long) as single
 declare function SDL_sin(byval x as double) as double
 declare function SDL_sinf(byval x as single) as single
 declare function SDL_sqrt(byval x as double) as double
@@ -239,6 +284,7 @@ declare function SDL_iconv_string(byval tocode as const zstring ptr, byval fromc
 #define SDL_iconv_utf8_ucs2(S) cptr(Uint16 ptr, SDL_iconv_string("UCS-2-INTERNAL", "UTF-8", S, SDL_strlen(S) + 1))
 #define SDL_iconv_utf8_ucs4(S) cptr(Uint32 ptr, SDL_iconv_string("UCS-4-INTERNAL", "UTF-8", S, SDL_strlen(S) + 1))
 #define SDL_memcpy4(dst, src, dwords) SDL_memcpy((dst), (src), (dwords) * 4)
+type SDL_main_func as function(byval argc as long, byval argv as zstring ptr ptr) as long
 declare function SDL_main(byval argc as long, byval argv as zstring ptr ptr) as long
 declare sub SDL_SetMainReady()
 
@@ -338,6 +384,7 @@ declare function SDL_AtomicGetPtr(byval a as any ptr ptr) as any ptr
 #define SDL_error_h_
 declare function SDL_SetError(byval fmt as const zstring ptr, ...) as long
 declare function SDL_GetError() as const zstring ptr
+declare function SDL_GetErrorMsg(byval errstr as zstring ptr, byval maxlen as long) as zstring ptr
 declare sub SDL_ClearError()
 
 #define SDL_OutOfMemory() SDL_Error(SDL_ENOMEM)
@@ -434,29 +481,48 @@ enum
 	SDL_THREAD_PRIORITY_LOW
 	SDL_THREAD_PRIORITY_NORMAL
 	SDL_THREAD_PRIORITY_HIGH
+	SDL_THREAD_PRIORITY_TIME_CRITICAL
 end enum
 
 type SDL_ThreadFunction as function(byval data as any ptr) as long
 
-#ifdef __FB_WIN32__
+#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
 	#define SDL_PASSED_BEGINTHREAD_ENDTHREAD
+#endif
 
+#if (defined(__FB_CYGWIN__) and defined(__FB_64BIT__)) or ((not defined(__FB_64BIT__)) and (defined(__FB_WIN32__) or defined(__FB_CYGWIN__)))
+	type pfnSDL_CurrentBeginThread as function(byval as any ptr, byval as ulong, byval func as function stdcall(byval as any ptr) as ulong, byval as any ptr, byval as ulong, byval as ulong ptr) as uinteger
+#elseif defined(__FB_WIN32__) and defined(__FB_64BIT__)
+	type pfnSDL_CurrentBeginThread as function(byval as any ptr, byval as ulong, byval func as function(byval as any ptr) as ulong, byval as any ptr, byval as ulong, byval as ulong ptr) as uinteger
+#endif
+
+#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
+	type pfnSDL_CurrentEndThread as sub(byval code as ulong)
+#endif
+
+#ifdef __FB_WIN32__
 	#ifdef __FB_64BIT__
-		type pfnSDL_CurrentBeginThread as function(byval as any ptr, byval as ulong, byval func as function(byval as any ptr) as ulong, byval arg as any ptr, byval as ulong, byval threadID as ulong ptr) as uinteger
+		declare function SDL_beginthread alias "_beginthreadex"(byval _Security as any ptr, byval _StackSize as ulong, byval _StartAddress as function(byval as any ptr) as ulong, byval _ArgList as any ptr, byval _InitFlag as ulong, byval _ThrdAddr as ulong ptr) as uinteger
 	#else
-		type pfnSDL_CurrentBeginThread as function(byval as any ptr, byval as ulong, byval func as function stdcall(byval as any ptr) as ulong, byval arg as any ptr, byval as ulong, byval threadID as ulong ptr) as uinteger
+		declare function SDL_beginthread alias "_beginthreadex"(byval _Security as any ptr, byval _StackSize as ulong, byval _StartAddress as function stdcall(byval as any ptr) as ulong, byval _ArgList as any ptr, byval _InitFlag as ulong, byval _ThrdAddr as ulong ptr) as uinteger
 	#endif
 
-	type pfnSDL_CurrentEndThread as sub(byval code as ulong)
+	declare sub SDL_endthread alias "_endthreadex"(byval _Retval as ulong)
+#elseif defined(__FB_CYGWIN__)
+	#define SDL_beginthread _beginthreadex
+	#define SDL_endthread _endthreadex
 #endif
 
 type SDL_Thread as SDL_Thread_
 
-#ifdef __FB_UNIX__
-	declare function SDL_CreateThread(byval fn as SDL_ThreadFunction, byval name as const zstring ptr, byval data as any ptr) as SDL_Thread ptr
-#else
+#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
 	declare function SDL_CreateThread_ alias "SDL_CreateThread"(byval fn as SDL_ThreadFunction, byval name as const zstring ptr, byval data as any ptr, byval pfnBeginThread as pfnSDL_CurrentBeginThread, byval pfnEndThread as pfnSDL_CurrentEndThread) as SDL_Thread ptr
-	#define SDL_CreateThread(fn, name, data) SDL_CreateThread_(fn, name, data, cast(pfnSDL_CurrentBeginThread, _beginthreadex), cast(pfnSDL_CurrentEndThread, _endthreadex))
+	declare function SDL_CreateThreadWithStackSize_ alias "SDL_CreateThreadWithStackSize"(byval fn as function(byval as any ptr) as long, byval name as const zstring ptr, byval stacksize as const uinteger, byval data as any ptr, byval pfnBeginThread as pfnSDL_CurrentBeginThread, byval pfnEndThread as pfnSDL_CurrentEndThread) as SDL_Thread ptr
+	#define SDL_CreateThread(fn, name, data) SDL_CreateThread_(fn, name, data, cast(pfnSDL_CurrentBeginThread, SDL_beginthread), cast(pfnSDL_CurrentEndThread, SDL_endthread))
+	#define SDL_CreateThreadWithStackSize(fn, name, stacksize, data) SDL_CreateThreadWithStackSize_(fn, name, data, cast(pfnSDL_CurrentBeginThread, _beginthreadex), cast(pfnSDL_CurrentEndThread, SDL_endthread))
+#else
+	declare function SDL_CreateThread(byval fn as SDL_ThreadFunction, byval name as const zstring ptr, byval data as any ptr) as SDL_Thread ptr
+	declare function SDL_CreateThreadWithStackSize(byval fn as SDL_ThreadFunction, byval name as const zstring ptr, byval stacksize as const uinteger, byval data as any ptr) as SDL_Thread ptr
 #endif
 
 declare function SDL_GetThreadName(byval thread as SDL_Thread ptr) as const zstring ptr
@@ -555,15 +621,15 @@ declare sub SDL_FreeRW(byval area as SDL_RWops ptr)
 const RW_SEEK_SET = 0
 const RW_SEEK_CUR = 1
 const RW_SEEK_END = 2
-#define SDL_RWsize(ctx) (ctx)->size(ctx)
-#define SDL_RWseek(ctx, offset, whence) (ctx)->seek(ctx, offset, whence)
-#define SDL_RWtell(ctx) (ctx)->seek(ctx, 0, RW_SEEK_CUR)
-#define SDL_RWread(ctx, ptr, size, n) (ctx)->read(ctx, ptr, size, n)
-#define SDL_RWwrite(ctx, ptr, size, n) (ctx)->write(ctx, ptr, size, n)
-#define SDL_RWclose(ctx) (ctx)->close(ctx)
-declare function SDL_LoadFile_RW(byval src as SDL_RWops ptr, byval datasize as uinteger ptr, byval freesrc as long) as any ptr
-#define SDL_LoadFile(file, datasize) SDL_LoadFile_RW(SDL_RWFromFile(file, "rb"), datasize, 1)
 
+declare function SDL_RWsize(byval context as SDL_RWops ptr) as Sint64
+declare function SDL_RWseek(byval context as SDL_RWops ptr, byval offset as Sint64, byval whence as long) as Sint64
+declare function SDL_RWtell(byval context as SDL_RWops ptr) as Sint64
+declare function SDL_RWread(byval context as SDL_RWops ptr, byval ptr as any ptr, byval size as uinteger, byval maxnum as uinteger) as uinteger
+declare function SDL_RWwrite(byval context as SDL_RWops ptr, byval ptr as const any ptr, byval size as uinteger, byval num as uinteger) as uinteger
+declare function SDL_RWclose(byval context as SDL_RWops ptr) as long
+declare function SDL_LoadFile_RW(byval src as SDL_RWops ptr, byval datasize as uinteger ptr, byval freesrc as long) as any ptr
+declare function SDL_LoadFile(byval file as const zstring ptr, byval datasize as uinteger ptr) as any ptr
 declare function SDL_ReadU8(byval src as SDL_RWops ptr) as Uint8
 declare function SDL_ReadLE16(byval src as SDL_RWops ptr) as Uint16
 declare function SDL_ReadBE16(byval src as SDL_RWops ptr) as Uint16
@@ -612,7 +678,8 @@ const AUDIO_F32SYS = AUDIO_F32LSB
 const SDL_AUDIO_ALLOW_FREQUENCY_CHANGE = &h00000001
 const SDL_AUDIO_ALLOW_FORMAT_CHANGE = &h00000002
 const SDL_AUDIO_ALLOW_CHANNELS_CHANGE = &h00000004
-const SDL_AUDIO_ALLOW_ANY_CHANGE = (SDL_AUDIO_ALLOW_FREQUENCY_CHANGE or SDL_AUDIO_ALLOW_FORMAT_CHANGE) or SDL_AUDIO_ALLOW_CHANNELS_CHANGE
+const SDL_AUDIO_ALLOW_SAMPLES_CHANGE = &h00000008
+const SDL_AUDIO_ALLOW_ANY_CHANGE = ((SDL_AUDIO_ALLOW_FREQUENCY_CHANGE or SDL_AUDIO_ALLOW_FORMAT_CHANGE) or SDL_AUDIO_ALLOW_CHANNELS_CHANGE) or SDL_AUDIO_ALLOW_SAMPLES_CHANGE
 type SDL_AudioCallback as sub(byval userdata as any ptr, byval stream as Uint8 ptr, byval len as long)
 
 type SDL_AudioSpec
@@ -672,6 +739,14 @@ declare function SDL_LoadWAV_RW(byval src as SDL_RWops ptr, byval freesrc as lon
 declare sub SDL_FreeWAV(byval audio_buf as Uint8 ptr)
 declare function SDL_BuildAudioCVT(byval cvt as SDL_AudioCVT ptr, byval src_format as SDL_AudioFormat, byval src_channels as Uint8, byval src_rate as long, byval dst_format as SDL_AudioFormat, byval dst_channels as Uint8, byval dst_rate as long) as long
 declare function SDL_ConvertAudio(byval cvt as SDL_AudioCVT ptr) as long
+type SDL_AudioStream as _SDL_AudioStream
+declare function SDL_NewAudioStream(byval src_format as const SDL_AudioFormat, byval src_channels as const Uint8, byval src_rate as const long, byval dst_format as const SDL_AudioFormat, byval dst_channels as const Uint8, byval dst_rate as const long) as SDL_AudioStream ptr
+declare function SDL_AudioStreamPut(byval stream as SDL_AudioStream ptr, byval buf as const any ptr, byval len as long) as long
+declare function SDL_AudioStreamGet(byval stream as SDL_AudioStream ptr, byval buf as any ptr, byval len as long) as long
+declare function SDL_AudioStreamAvailable(byval stream as SDL_AudioStream ptr) as long
+declare function SDL_AudioStreamFlush(byval stream as SDL_AudioStream ptr) as long
+declare sub SDL_AudioStreamClear(byval stream as SDL_AudioStream ptr)
+declare sub SDL_FreeAudioStream(byval stream as SDL_AudioStream ptr)
 const SDL_MIX_MAXVOLUME = 128
 declare sub SDL_MixAudio(byval dst as Uint8 ptr, byval src as const Uint8 ptr, byval len as Uint32, byval volume as long)
 declare sub SDL_MixAudioFormat(byval dst as Uint8 ptr, byval src as const Uint8 ptr, byval format as SDL_AudioFormat, byval len as Uint32, byval volume as long)
@@ -704,8 +779,14 @@ declare function SDL_HasSSE41() as SDL_bool
 declare function SDL_HasSSE42() as SDL_bool
 declare function SDL_HasAVX() as SDL_bool
 declare function SDL_HasAVX2() as SDL_bool
+declare function SDL_HasAVX512F() as SDL_bool
+declare function SDL_HasARMSIMD() as SDL_bool
 declare function SDL_HasNEON() as SDL_bool
 declare function SDL_GetSystemRAM() as long
+declare function SDL_SIMDGetAlignment() as uinteger
+declare function SDL_SIMDAlloc(byval len as const uinteger) as any ptr
+declare function SDL_SIMDRealloc(byval mem as any ptr, byval len as const uinteger) as any ptr
+declare sub SDL_SIMDFree(byval ptr as any ptr)
 
 #define SDL_events_h_
 #define SDL_video_h_
@@ -713,6 +794,7 @@ declare function SDL_GetSystemRAM() as long
 const SDL_ALPHA_OPAQUE = 255
 const SDL_ALPHA_TRANSPARENT = 0
 
+type SDL_PixelType_ as long
 enum
 	SDL_PIXELTYPE_UNKNOWN
 	SDL_PIXELTYPE_INDEX1
@@ -728,12 +810,14 @@ enum
 	SDL_PIXELTYPE_ARRAYF32
 end enum
 
+type SDL_BitmapOrder as long
 enum
 	SDL_BITMAPORDER_NONE
 	SDL_BITMAPORDER_4321
 	SDL_BITMAPORDER_1234
 end enum
 
+type SDL_PackedOrder as long
 enum
 	SDL_PACKEDORDER_NONE
 	SDL_PACKEDORDER_XRGB
@@ -746,6 +830,7 @@ enum
 	SDL_PACKEDORDER_BGRA
 end enum
 
+type SDL_ArrayOrder as long
 enum
 	SDL_ARRAYORDER_NONE
 	SDL_ARRAYORDER_RGB
@@ -756,6 +841,7 @@ enum
 	SDL_ARRAYORDER_ABGR
 end enum
 
+type SDL_PackedLayout as long
 enum
 	SDL_PACKEDLAYOUT_NONE
 	SDL_PACKEDLAYOUT_332
@@ -782,6 +868,7 @@ end enum
 #define SDL_ISPIXELFORMAT_ALPHA(format) ((SDL_ISPIXELFORMAT_PACKED(format) andalso ((((SDL_PIXELORDER(format) = SDL_PACKEDORDER_ARGB) orelse (SDL_PIXELORDER(format) = SDL_PACKEDORDER_RGBA)) orelse (SDL_PIXELORDER(format) = SDL_PACKEDORDER_ABGR)) orelse (SDL_PIXELORDER(format) = SDL_PACKEDORDER_BGRA))) orelse (SDL_ISPIXELFORMAT_ARRAY(format) andalso ((((SDL_PIXELORDER(format) = SDL_ARRAYORDER_ARGB) orelse (SDL_PIXELORDER(format) = SDL_ARRAYORDER_RGBA)) orelse (SDL_PIXELORDER(format) = SDL_ARRAYORDER_ABGR)) orelse (SDL_PIXELORDER(format) = SDL_ARRAYORDER_BGRA))))
 #define SDL_ISPIXELFORMAT_FOURCC(format) ((format) andalso (SDL_PIXELFLAG(format) <> 1))
 
+type SDL_PixelFormatEnum as long
 enum
 	SDL_PIXELFORMAT_UNKNOWN
 	SDL_PIXELFORMAT_INDEX1LSB = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_INDEX1, SDL_BITMAPORDER_4321, 0, 1, 0)
@@ -790,9 +877,14 @@ enum
 	SDL_PIXELFORMAT_INDEX4MSB = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_INDEX4, SDL_BITMAPORDER_1234, 0, 4, 0)
 	SDL_PIXELFORMAT_INDEX8 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_INDEX8, 0, 0, 8, 1)
 	SDL_PIXELFORMAT_RGB332 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED8, SDL_PACKEDORDER_XRGB, SDL_PACKEDLAYOUT_332, 8, 1)
-	SDL_PIXELFORMAT_RGB444 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_XRGB, SDL_PACKEDLAYOUT_4444, 12, 2)
-	SDL_PIXELFORMAT_RGB555 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_XRGB, SDL_PACKEDLAYOUT_1555, 15, 2)
-	SDL_PIXELFORMAT_BGR555 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_XBGR, SDL_PACKEDLAYOUT_1555, 15, 2)
+	SDL_PIXELFORMAT_XRGB4444 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_XRGB, SDL_PACKEDLAYOUT_4444, 12, 2)
+	SDL_PIXELFORMAT_RGB444 = SDL_PIXELFORMAT_XRGB4444
+	SDL_PIXELFORMAT_XBGR4444 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_XBGR, SDL_PACKEDLAYOUT_4444, 12, 2)
+	SDL_PIXELFORMAT_BGR444 = SDL_PIXELFORMAT_XBGR4444
+	SDL_PIXELFORMAT_XRGB1555 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_XRGB, SDL_PACKEDLAYOUT_1555, 15, 2)
+	SDL_PIXELFORMAT_RGB555 = SDL_PIXELFORMAT_XRGB1555
+	SDL_PIXELFORMAT_XBGR1555 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_XBGR, SDL_PACKEDLAYOUT_1555, 15, 2)
+	SDL_PIXELFORMAT_BGR555 = SDL_PIXELFORMAT_XBGR1555
 	SDL_PIXELFORMAT_ARGB4444 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_ARGB, SDL_PACKEDLAYOUT_4444, 16, 2)
 	SDL_PIXELFORMAT_RGBA4444 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_RGBA, SDL_PACKEDLAYOUT_4444, 16, 2)
 	SDL_PIXELFORMAT_ABGR4444 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_ABGR, SDL_PACKEDLAYOUT_4444, 16, 2)
@@ -805,9 +897,11 @@ enum
 	SDL_PIXELFORMAT_BGR565 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_XBGR, SDL_PACKEDLAYOUT_565, 16, 2)
 	SDL_PIXELFORMAT_RGB24 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_ARRAYU8, SDL_ARRAYORDER_RGB, 0, 24, 3)
 	SDL_PIXELFORMAT_BGR24 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_ARRAYU8, SDL_ARRAYORDER_BGR, 0, 24, 3)
-	SDL_PIXELFORMAT_RGB888 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED32, SDL_PACKEDORDER_XRGB, SDL_PACKEDLAYOUT_8888, 24, 4)
+	SDL_PIXELFORMAT_XRGB8888 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED32, SDL_PACKEDORDER_XRGB, SDL_PACKEDLAYOUT_8888, 24, 4)
+	SDL_PIXELFORMAT_RGB888 = SDL_PIXELFORMAT_XRGB8888
 	SDL_PIXELFORMAT_RGBX8888 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED32, SDL_PACKEDORDER_RGBX, SDL_PACKEDLAYOUT_8888, 24, 4)
-	SDL_PIXELFORMAT_BGR888 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED32, SDL_PACKEDORDER_XBGR, SDL_PACKEDLAYOUT_8888, 24, 4)
+	SDL_PIXELFORMAT_XBGR8888 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED32, SDL_PACKEDORDER_XBGR, SDL_PACKEDLAYOUT_8888, 24, 4)
+	SDL_PIXELFORMAT_BGR888 = SDL_PIXELFORMAT_XBGR8888
 	SDL_PIXELFORMAT_BGRX8888 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED32, SDL_PACKEDORDER_BGRX, SDL_PACKEDLAYOUT_8888, 24, 4)
 	SDL_PIXELFORMAT_ARGB8888 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED32, SDL_PACKEDORDER_ARGB, SDL_PACKEDLAYOUT_8888, 32, 4)
 	SDL_PIXELFORMAT_RGBA8888 = SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED32, SDL_PACKEDORDER_RGBA, SDL_PACKEDLAYOUT_8888, 32, 4)
@@ -825,6 +919,7 @@ enum
 	SDL_PIXELFORMAT_YVYU = SDL_DEFINE_PIXELFOURCC(asc("Y"), asc("V"), asc("Y"), asc("U"))
 	SDL_PIXELFORMAT_NV12 = SDL_DEFINE_PIXELFOURCC(asc("N"), asc("V"), asc("1"), asc("2"))
 	SDL_PIXELFORMAT_NV21 = SDL_DEFINE_PIXELFOURCC(asc("N"), asc("V"), asc("2"), asc("1"))
+	SDL_PIXELFORMAT_EXTERNAL_OES = SDL_DEFINE_PIXELFOURCC(asc("O"), asc("E"), asc("S"), asc(" "))
 end enum
 
 type SDL_Color
@@ -886,11 +981,23 @@ type SDL_Point
 	y as long
 end type
 
+type SDL_FPoint
+	x as single
+	y as single
+end type
+
 type SDL_Rect
 	x as long
 	y as long
 	w as long
 	h as long
+end type
+
+type SDL_FRect
+	x as single
+	y as single
+	w as single
+	h as single
 end type
 
 private function SDL_PointInRect(byval p as const SDL_Point ptr, byval r as const SDL_Rect ptr) as SDL_bool
@@ -919,6 +1026,7 @@ enum
 	SDL_BLENDMODE_BLEND = &h00000001
 	SDL_BLENDMODE_ADD = &h00000002
 	SDL_BLENDMODE_MOD = &h00000004
+	SDL_BLENDMODE_MUL = &h00000008
 	SDL_BLENDMODE_INVALID = &h7FFFFFFF
 end enum
 
@@ -950,6 +1058,7 @@ const SDL_SWSURFACE = 0
 const SDL_PREALLOC = &h00000001
 const SDL_RLEACCEL = &h00000002
 const SDL_DONTFREE = &h00000004
+const SDL_SIMD_ALIGNED = &h00000008
 #define SDL_MUSTLOCK(S) (((S)->flags and SDL_RLEACCEL) <> 0)
 type SDL_BlitMap as SDL_BlitMap_
 
@@ -962,13 +1071,22 @@ type SDL_Surface
 	pixels as any ptr
 	userdata as any ptr
 	locked as long
-	lock_data as any ptr
+	list_blitmap as any ptr
 	clip_rect as SDL_Rect
 	map as SDL_BlitMap ptr
 	refcount as long
 end type
 
 type SDL_blit as function(byval src as SDL_Surface ptr, byval srcrect as SDL_Rect ptr, byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr) as long
+
+type SDL_YUV_CONVERSION_MODE as long
+enum
+	SDL_YUV_CONVERSION_JPEG
+	SDL_YUV_CONVERSION_BT601
+	SDL_YUV_CONVERSION_BT709
+	SDL_YUV_CONVERSION_AUTOMATIC
+end enum
+
 declare function SDL_CreateRGBSurface(byval flags as Uint32, byval width as long, byval height as long, byval depth as long, byval Rmask as Uint32, byval Gmask as Uint32, byval Bmask as Uint32, byval Amask as Uint32) as SDL_Surface ptr
 declare function SDL_CreateRGBSurfaceWithFormat(byval flags as Uint32, byval width as long, byval height as long, byval depth as long, byval format as Uint32) as SDL_Surface ptr
 declare function SDL_CreateRGBSurfaceFrom(byval pixels as any ptr, byval width as long, byval height as long, byval depth as long, byval pitch as long, byval Rmask as Uint32, byval Gmask as Uint32, byval Bmask as Uint32, byval Amask as Uint32) as SDL_Surface ptr
@@ -982,7 +1100,9 @@ declare function SDL_LoadBMP_RW(byval src as SDL_RWops ptr, byval freesrc as lon
 declare function SDL_SaveBMP_RW(byval surface as SDL_Surface ptr, byval dst as SDL_RWops ptr, byval freedst as long) as long
 #define SDL_SaveBMP(surface, file) SDL_SaveBMP_RW(surface, SDL_RWFromFile(file, "wb"), 1)
 declare function SDL_SetSurfaceRLE(byval surface as SDL_Surface ptr, byval flag as long) as long
+declare function SDL_HasSurfaceRLE(byval surface as SDL_Surface ptr) as SDL_bool
 declare function SDL_SetColorKey(byval surface as SDL_Surface ptr, byval flag as long, byval key as Uint32) as long
+declare function SDL_HasColorKey(byval surface as SDL_Surface ptr) as SDL_bool
 declare function SDL_GetColorKey(byval surface as SDL_Surface ptr, byval key as Uint32 ptr) as long
 declare function SDL_SetSurfaceColorMod(byval surface as SDL_Surface ptr, byval r as Uint8, byval g as Uint8, byval b as Uint8) as long
 declare function SDL_GetSurfaceColorMod(byval surface as SDL_Surface ptr, byval r as Uint8 ptr, byval g as Uint8 ptr, byval b as Uint8 ptr) as long
@@ -1005,6 +1125,9 @@ declare function SDL_SoftStretch(byval src as SDL_Surface ptr, byval srcrect as 
 declare function SDL_UpperBlitScaled(byval src as SDL_Surface ptr, byval srcrect as const SDL_Rect ptr, byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr) as long
 declare function SDL_BlitScaled alias "SDL_UpperBlitScaled"(byval src as SDL_Surface ptr, byval srcrect as const SDL_Rect ptr, byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr) as long
 declare function SDL_LowerBlitScaled(byval src as SDL_Surface ptr, byval srcrect as SDL_Rect ptr, byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr) as long
+declare sub SDL_SetYUVConversionMode(byval mode as SDL_YUV_CONVERSION_MODE)
+declare function SDL_GetYUVConversionMode() as SDL_YUV_CONVERSION_MODE
+declare function SDL_GetYUVConversionModeForResolution(byval width as long, byval height as long) as SDL_YUV_CONVERSION_MODE
 
 type SDL_DisplayMode
 	format as Uint32
@@ -1037,6 +1160,7 @@ enum
 	SDL_WINDOW_TOOLTIP = &h00040000
 	SDL_WINDOW_POPUP_MENU = &h00080000
 	SDL_WINDOW_VULKAN = &h10000000
+	SDL_WINDOW_METAL = &h20000000
 end enum
 
 const SDL_WINDOWPOS_UNDEFINED_MASK = &h1FFF0000u
@@ -1067,6 +1191,23 @@ enum
 	SDL_WINDOWEVENT_CLOSE
 	SDL_WINDOWEVENT_TAKE_FOCUS
 	SDL_WINDOWEVENT_HIT_TEST
+end enum
+
+type SDL_DisplayEventID as long
+enum
+	SDL_DISPLAYEVENT_NONE
+	SDL_DISPLAYEVENT_ORIENTATION
+	SDL_DISPLAYEVENT_CONNECTED
+	SDL_DISPLAYEVENT_DISCONNECTED
+end enum
+
+type SDL_DisplayOrientation as long
+enum
+	SDL_ORIENTATION_UNKNOWN
+	SDL_ORIENTATION_LANDSCAPE
+	SDL_ORIENTATION_LANDSCAPE_FLIPPED
+	SDL_ORIENTATION_PORTRAIT
+	SDL_ORIENTATION_PORTRAIT_FLIPPED
 end enum
 
 type SDL_GLContext as any ptr
@@ -1137,8 +1278,9 @@ declare function SDL_GetCurrentVideoDriver() as const zstring ptr
 declare function SDL_GetNumVideoDisplays() as long
 declare function SDL_GetDisplayName(byval displayIndex as long) as const zstring ptr
 declare function SDL_GetDisplayBounds(byval displayIndex as long, byval rect as SDL_Rect ptr) as long
-declare function SDL_GetDisplayDPI(byval displayIndex as long, byval ddpi as single ptr, byval hdpi as single ptr, byval vdpi as single ptr) as long
 declare function SDL_GetDisplayUsableBounds(byval displayIndex as long, byval rect as SDL_Rect ptr) as long
+declare function SDL_GetDisplayDPI(byval displayIndex as long, byval ddpi as single ptr, byval hdpi as single ptr, byval vdpi as single ptr) as long
+declare function SDL_GetDisplayOrientation(byval displayIndex as long) as SDL_DisplayOrientation
 declare function SDL_GetNumDisplayModes(byval displayIndex as long) as long
 declare function SDL_GetDisplayMode(byval displayIndex as long, byval modeIndex as long, byval mode as SDL_DisplayMode ptr) as long
 declare function SDL_GetDesktopDisplayMode(byval displayIndex as long, byval mode as SDL_DisplayMode ptr) as long
@@ -1485,6 +1627,7 @@ type SDL_Keycode as Sint32
 const SDLK_SCANCODE_MASK = 1 shl 30
 #define SDL_SCANCODE_TO_KEYCODE(X) (X or SDLK_SCANCODE_MASK)
 
+type SDL_KeyCode as long
 enum
 	SDLK_UNKNOWN = 0
 	SDLK_RETURN = asc(!"\r")
@@ -1743,12 +1886,11 @@ enum
 	KMOD_CAPS = &h2000
 	KMOD_MODE = &h4000
 	KMOD_RESERVED = &h8000
+	KMOD_CTRL = KMOD_LCTRL or KMOD_RCTRL
+	KMOD_SHIFT = KMOD_LSHIFT or KMOD_RSHIFT
+	KMOD_ALT = KMOD_LALT or KMOD_RALT
+	KMOD_GUI = KMOD_LGUI or KMOD_RGUI
 end enum
-
-const KMOD_CTRL = KMOD_LCTRL or KMOD_RCTRL
-const KMOD_SHIFT = KMOD_LSHIFT or KMOD_RSHIFT
-const KMOD_ALT = KMOD_LALT or KMOD_RALT
-const KMOD_GUI = KMOD_LGUI or KMOD_RGUI
 
 type SDL_Keysym
 	scancode as SDL_Scancode
@@ -1862,8 +2004,12 @@ enum
 	SDL_JOYSTICK_POWER_MAX
 end enum
 
+const SDL_IPHONE_MAX_GFORCE = 5.0
+declare sub SDL_LockJoysticks()
+declare sub SDL_UnlockJoysticks()
 declare function SDL_NumJoysticks() as long
 declare function SDL_JoystickNameForIndex(byval device_index as long) as const zstring ptr
+declare function SDL_JoystickGetDevicePlayerIndex(byval device_index as long) as long
 declare function SDL_JoystickGetDeviceGUID(byval device_index as long) as SDL_JoystickGUID
 declare function SDL_JoystickGetDeviceVendor(byval device_index as long) as Uint16
 declare function SDL_JoystickGetDeviceProduct(byval device_index as long) as Uint16
@@ -1871,12 +2017,22 @@ declare function SDL_JoystickGetDeviceProductVersion(byval device_index as long)
 declare function SDL_JoystickGetDeviceType(byval device_index as long) as SDL_JoystickType
 declare function SDL_JoystickGetDeviceInstanceID(byval device_index as long) as SDL_JoystickID
 declare function SDL_JoystickOpen(byval device_index as long) as SDL_Joystick ptr
-declare function SDL_JoystickFromInstanceID(byval joyid as SDL_JoystickID) as SDL_Joystick ptr
+declare function SDL_JoystickFromInstanceID(byval instance_id as SDL_JoystickID) as SDL_Joystick ptr
+declare function SDL_JoystickFromPlayerIndex(byval player_index as long) as SDL_Joystick ptr
+declare function SDL_JoystickAttachVirtual(byval type as SDL_JoystickType, byval naxes as long, byval nbuttons as long, byval nhats as long) as long
+declare function SDL_JoystickDetachVirtual(byval device_index as long) as long
+declare function SDL_JoystickIsVirtual(byval device_index as long) as SDL_bool
+declare function SDL_JoystickSetVirtualAxis(byval joystick as SDL_Joystick ptr, byval axis as long, byval value as Sint16) as long
+declare function SDL_JoystickSetVirtualButton(byval joystick as SDL_Joystick ptr, byval button as long, byval value as Uint8) as long
+declare function SDL_JoystickSetVirtualHat(byval joystick as SDL_Joystick ptr, byval hat as long, byval value as Uint8) as long
 declare function SDL_JoystickName(byval joystick as SDL_Joystick ptr) as const zstring ptr
+declare function SDL_JoystickGetPlayerIndex(byval joystick as SDL_Joystick ptr) as long
+declare sub SDL_JoystickSetPlayerIndex(byval joystick as SDL_Joystick ptr, byval player_index as long)
 declare function SDL_JoystickGetGUID(byval joystick as SDL_Joystick ptr) as SDL_JoystickGUID
 declare function SDL_JoystickGetVendor(byval joystick as SDL_Joystick ptr) as Uint16
 declare function SDL_JoystickGetProduct(byval joystick as SDL_Joystick ptr) as Uint16
 declare function SDL_JoystickGetProductVersion(byval joystick as SDL_Joystick ptr) as Uint16
+declare function SDL_JoystickGetSerial(byval joystick as SDL_Joystick ptr) as const zstring ptr
 declare function SDL_JoystickGetType(byval joystick as SDL_Joystick ptr) as SDL_JoystickType
 declare sub SDL_JoystickGetGUIDString(byval guid as SDL_JoystickGUID, byval pszGUID as zstring ptr, byval cbGUID as long)
 declare function SDL_JoystickGetGUIDFromString(byval pchGUID as const zstring ptr) as SDL_JoystickGUID
@@ -1906,10 +2062,55 @@ const SDL_HAT_LEFTDOWN = SDL_HAT_LEFT or SDL_HAT_DOWN
 declare function SDL_JoystickGetHat(byval joystick as SDL_Joystick ptr, byval hat as long) as Uint8
 declare function SDL_JoystickGetBall(byval joystick as SDL_Joystick ptr, byval ball as long, byval dx as long ptr, byval dy as long ptr) as long
 declare function SDL_JoystickGetButton(byval joystick as SDL_Joystick ptr, byval button as long) as Uint8
+declare function SDL_JoystickRumble(byval joystick as SDL_Joystick ptr, byval low_frequency_rumble as Uint16, byval high_frequency_rumble as Uint16, byval duration_ms as Uint32) as long
+declare function SDL_JoystickRumbleTriggers(byval joystick as SDL_Joystick ptr, byval left_rumble as Uint16, byval right_rumble as Uint16, byval duration_ms as Uint32) as long
+declare function SDL_JoystickHasLED(byval joystick as SDL_Joystick ptr) as SDL_bool
+declare function SDL_JoystickSetLED(byval joystick as SDL_Joystick ptr, byval red as Uint8, byval green as Uint8, byval blue as Uint8) as long
 declare sub SDL_JoystickClose(byval joystick as SDL_Joystick ptr)
 declare function SDL_JoystickCurrentPowerLevel(byval joystick as SDL_Joystick ptr) as SDL_JoystickPowerLevel
 #define SDL_gamecontroller_h_
+#define SDL_sensor_h_
+type SDL_Sensor as _SDL_Sensor
+type SDL_SensorID as Sint32
+
+type SDL_SensorType as long
+enum
+	SDL_SENSOR_INVALID = -1
+	SDL_SENSOR_UNKNOWN
+	SDL_SENSOR_ACCEL
+	SDL_SENSOR_GYRO
+end enum
+
+const SDL_STANDARD_GRAVITY = 9.80665f
+declare sub SDL_LockSensors()
+declare sub SDL_UnlockSensors()
+declare function SDL_NumSensors() as long
+declare function SDL_SensorGetDeviceName(byval device_index as long) as const zstring ptr
+declare function SDL_SensorGetDeviceType(byval device_index as long) as SDL_SensorType
+declare function SDL_SensorGetDeviceNonPortableType(byval device_index as long) as long
+declare function SDL_SensorGetDeviceInstanceID(byval device_index as long) as SDL_SensorID
+declare function SDL_SensorOpen(byval device_index as long) as SDL_Sensor ptr
+declare function SDL_SensorFromInstanceID(byval instance_id as SDL_SensorID) as SDL_Sensor ptr
+declare function SDL_SensorGetName(byval sensor as SDL_Sensor ptr) as const zstring ptr
+declare function SDL_SensorGetType(byval sensor as SDL_Sensor ptr) as SDL_SensorType
+declare function SDL_SensorGetNonPortableType(byval sensor as SDL_Sensor ptr) as long
+declare function SDL_SensorGetInstanceID(byval sensor as SDL_Sensor ptr) as SDL_SensorID
+declare function SDL_SensorGetData(byval sensor as SDL_Sensor ptr, byval data as single ptr, byval num_values as long) as long
+declare sub SDL_SensorClose(byval sensor as SDL_Sensor ptr)
+declare sub SDL_SensorUpdate()
 type SDL_GameController as _SDL_GameController
+
+type SDL_GameControllerType as long
+enum
+	SDL_CONTROLLER_TYPE_UNKNOWN = 0
+	SDL_CONTROLLER_TYPE_XBOX360
+	SDL_CONTROLLER_TYPE_XBOXONE
+	SDL_CONTROLLER_TYPE_PS3
+	SDL_CONTROLLER_TYPE_PS4
+	SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO
+	SDL_CONTROLLER_TYPE_VIRTUAL
+	SDL_CONTROLLER_TYPE_PS5
+end enum
 
 type SDL_GameControllerBindType as long
 enum
@@ -1944,12 +2145,19 @@ declare function SDL_GameControllerMappingForGUID(byval guid as SDL_JoystickGUID
 declare function SDL_GameControllerMapping(byval gamecontroller as SDL_GameController ptr) as zstring ptr
 declare function SDL_IsGameController(byval joystick_index as long) as SDL_bool
 declare function SDL_GameControllerNameForIndex(byval joystick_index as long) as const zstring ptr
+declare function SDL_GameControllerTypeForIndex(byval joystick_index as long) as SDL_GameControllerType
+declare function SDL_GameControllerMappingForDeviceIndex(byval joystick_index as long) as zstring ptr
 declare function SDL_GameControllerOpen(byval joystick_index as long) as SDL_GameController ptr
 declare function SDL_GameControllerFromInstanceID(byval joyid as SDL_JoystickID) as SDL_GameController ptr
+declare function SDL_GameControllerFromPlayerIndex(byval player_index as long) as SDL_GameController ptr
 declare function SDL_GameControllerName(byval gamecontroller as SDL_GameController ptr) as const zstring ptr
+declare function SDL_GameControllerGetType(byval gamecontroller as SDL_GameController ptr) as SDL_GameControllerType
+declare function SDL_GameControllerGetPlayerIndex(byval gamecontroller as SDL_GameController ptr) as long
+declare sub SDL_GameControllerSetPlayerIndex(byval gamecontroller as SDL_GameController ptr, byval player_index as long)
 declare function SDL_GameControllerGetVendor(byval gamecontroller as SDL_GameController ptr) as Uint16
 declare function SDL_GameControllerGetProduct(byval gamecontroller as SDL_GameController ptr) as Uint16
 declare function SDL_GameControllerGetProductVersion(byval gamecontroller as SDL_GameController ptr) as Uint16
+declare function SDL_GameControllerGetSerial(byval gamecontroller as SDL_GameController ptr) as const zstring ptr
 declare function SDL_GameControllerGetAttached(byval gamecontroller as SDL_GameController ptr) as SDL_bool
 declare function SDL_GameControllerGetJoystick(byval gamecontroller as SDL_GameController ptr) as SDL_Joystick ptr
 declare function SDL_GameControllerEventState(byval state as long) as long
@@ -1970,6 +2178,7 @@ end enum
 declare function SDL_GameControllerGetAxisFromString(byval pchString as const zstring ptr) as SDL_GameControllerAxis
 declare function SDL_GameControllerGetStringForAxis(byval axis as SDL_GameControllerAxis) as const zstring ptr
 declare function SDL_GameControllerGetBindForAxis(byval gamecontroller as SDL_GameController ptr, byval axis as SDL_GameControllerAxis) as SDL_GameControllerButtonBind
+declare function SDL_GameControllerHasAxis(byval gamecontroller as SDL_GameController ptr, byval axis as SDL_GameControllerAxis) as SDL_bool
 declare function SDL_GameControllerGetAxis(byval gamecontroller as SDL_GameController ptr, byval axis as SDL_GameControllerAxis) as Sint16
 
 type SDL_GameControllerButton as long
@@ -1990,13 +2199,31 @@ enum
 	SDL_CONTROLLER_BUTTON_DPAD_DOWN
 	SDL_CONTROLLER_BUTTON_DPAD_LEFT
 	SDL_CONTROLLER_BUTTON_DPAD_RIGHT
+	SDL_CONTROLLER_BUTTON_MISC1
+	SDL_CONTROLLER_BUTTON_PADDLE1
+	SDL_CONTROLLER_BUTTON_PADDLE2
+	SDL_CONTROLLER_BUTTON_PADDLE3
+	SDL_CONTROLLER_BUTTON_PADDLE4
+	SDL_CONTROLLER_BUTTON_TOUCHPAD
 	SDL_CONTROLLER_BUTTON_MAX
 end enum
 
 declare function SDL_GameControllerGetButtonFromString(byval pchString as const zstring ptr) as SDL_GameControllerButton
 declare function SDL_GameControllerGetStringForButton(byval button as SDL_GameControllerButton) as const zstring ptr
 declare function SDL_GameControllerGetBindForButton(byval gamecontroller as SDL_GameController ptr, byval button as SDL_GameControllerButton) as SDL_GameControllerButtonBind
+declare function SDL_GameControllerHasButton(byval gamecontroller as SDL_GameController ptr, byval button as SDL_GameControllerButton) as SDL_bool
 declare function SDL_GameControllerGetButton(byval gamecontroller as SDL_GameController ptr, byval button as SDL_GameControllerButton) as Uint8
+declare function SDL_GameControllerGetNumTouchpads(byval gamecontroller as SDL_GameController ptr) as long
+declare function SDL_GameControllerGetNumTouchpadFingers(byval gamecontroller as SDL_GameController ptr, byval touchpad as long) as long
+declare function SDL_GameControllerGetTouchpadFinger(byval gamecontroller as SDL_GameController ptr, byval touchpad as long, byval finger as long, byval state as Uint8 ptr, byval x as single ptr, byval y as single ptr, byval pressure as single ptr) as long
+declare function SDL_GameControllerHasSensor(byval gamecontroller as SDL_GameController ptr, byval type as SDL_SensorType) as SDL_bool
+declare function SDL_GameControllerSetSensorEnabled(byval gamecontroller as SDL_GameController ptr, byval type as SDL_SensorType, byval enabled as SDL_bool) as long
+declare function SDL_GameControllerIsSensorEnabled(byval gamecontroller as SDL_GameController ptr, byval type as SDL_SensorType) as SDL_bool
+declare function SDL_GameControllerGetSensorData(byval gamecontroller as SDL_GameController ptr, byval type as SDL_SensorType, byval data as single ptr, byval num_values as long) as long
+declare function SDL_GameControllerRumble(byval gamecontroller as SDL_GameController ptr, byval low_frequency_rumble as Uint16, byval high_frequency_rumble as Uint16, byval duration_ms as Uint32) as long
+declare function SDL_GameControllerRumbleTriggers(byval gamecontroller as SDL_GameController ptr, byval left_rumble as Uint16, byval right_rumble as Uint16, byval duration_ms as Uint32) as long
+declare function SDL_GameControllerHasLED(byval gamecontroller as SDL_GameController ptr) as SDL_bool
+declare function SDL_GameControllerSetLED(byval gamecontroller as SDL_GameController ptr, byval red as Uint8, byval green as Uint8, byval blue as Uint8) as long
 declare sub SDL_GameControllerClose(byval gamecontroller as SDL_GameController ptr)
 
 #define SDL_quit_h_
@@ -2004,6 +2231,14 @@ declare sub SDL_GameControllerClose(byval gamecontroller as SDL_GameController p
 #define SDL_touch_h_
 type SDL_TouchID as Sint64
 type SDL_FingerID as Sint64
+
+type SDL_TouchDeviceType as long
+enum
+	SDL_TOUCH_DEVICE_INVALID = -1
+	SDL_TOUCH_DEVICE_DIRECT
+	SDL_TOUCH_DEVICE_INDIRECT_ABSOLUTE
+	SDL_TOUCH_DEVICE_INDIRECT_RELATIVE
+end enum
 
 type SDL_Finger
 	id as SDL_FingerID
@@ -2013,8 +2248,10 @@ type SDL_Finger
 end type
 
 const SDL_TOUCH_MOUSEID = cast(Uint32, -1)
+const SDL_MOUSE_TOUCHID = cast(Sint64, -1)
 declare function SDL_GetNumTouchDevices() as long
 declare function SDL_GetTouchDevice(byval index as long) as SDL_TouchID
+declare function SDL_GetTouchDeviceType(byval touchID as SDL_TouchID) as SDL_TouchDeviceType
 declare function SDL_GetNumTouchFingers(byval touchID as SDL_TouchID) as long
 declare function SDL_GetTouchFinger(byval touchID as SDL_TouchID, byval index as long) as SDL_Finger ptr
 type SDL_GestureID as Sint64
@@ -2035,6 +2272,8 @@ enum
 	SDL_APP_DIDENTERBACKGROUND
 	SDL_APP_WILLENTERFOREGROUND
 	SDL_APP_DIDENTERFOREGROUND
+	SDL_LOCALECHANGED
+	SDL_DISPLAYEVENT = &h150
 	SDL_WINDOWEVENT = &h200
 	SDL_SYSWMEVENT
 	SDL_KEYDOWN = &h300
@@ -2059,6 +2298,10 @@ enum
 	SDL_CONTROLLERDEVICEADDED
 	SDL_CONTROLLERDEVICEREMOVED
 	SDL_CONTROLLERDEVICEREMAPPED
+	SDL_CONTROLLERTOUCHPADDOWN
+	SDL_CONTROLLERTOUCHPADMOTION
+	SDL_CONTROLLERTOUCHPADUP
+	SDL_CONTROLLERSENSORUPDATE
 	SDL_FINGERDOWN = &h700
 	SDL_FINGERUP
 	SDL_FINGERMOTION
@@ -2072,6 +2315,7 @@ enum
 	SDL_DROPCOMPLETE
 	SDL_AUDIODEVICEADDED = &h1100
 	SDL_AUDIODEVICEREMOVED
+	SDL_SENSORUPDATEEVENT = &h1200
 	SDL_RENDER_TARGETS_RESET = &h2000
 	SDL_RENDER_DEVICE_RESET
 	SDL_USEREVENT = &h8000
@@ -2081,6 +2325,17 @@ end enum
 type SDL_CommonEvent
 	as Uint32 type
 	timestamp as Uint32
+end type
+
+type SDL_DisplayEvent
+	as Uint32 type
+	timestamp as Uint32
+	display as Uint32
+	event as Uint8
+	padding1 as Uint8
+	padding2 as Uint8
+	padding3 as Uint8
+	data1 as Sint32
 end type
 
 type SDL_WindowEvent
@@ -2239,6 +2494,25 @@ type SDL_ControllerDeviceEvent
 	which as Sint32
 end type
 
+type SDL_ControllerTouchpadEvent
+	as Uint32 type
+	timestamp as Uint32
+	which as SDL_JoystickID
+	touchpad as Sint32
+	finger as Sint32
+	x as single
+	y as single
+	pressure as single
+end type
+
+type SDL_ControllerSensorEvent
+	as Uint32 type
+	timestamp as Uint32
+	which as SDL_JoystickID
+	sensor as Sint32
+	data(0 to 2) as single
+end type
+
 type SDL_AudioDeviceEvent
 	as Uint32 type
 	timestamp as Uint32
@@ -2259,6 +2533,7 @@ type SDL_TouchFingerEvent
 	dx as single
 	dy as single
 	pressure as single
+	windowID as Uint32
 end type
 
 type SDL_MultiGestureEvent
@@ -2291,6 +2566,13 @@ type SDL_DropEvent
 	windowID as Uint32
 end type
 
+type SDL_SensorEvent
+	as Uint32 type
+	timestamp as Uint32
+	which as Sint32
+	data(0 to 5) as single
+end type
+
 type SDL_QuitEvent
 	as Uint32 type
 	timestamp as Uint32
@@ -2321,6 +2603,7 @@ end type
 union SDL_Event
 	as Uint32 type
 	common as SDL_CommonEvent
+	display as SDL_DisplayEvent
 	window as SDL_WindowEvent
 	key as SDL_KeyboardEvent
 	edit as SDL_TextEditingEvent
@@ -2336,7 +2619,10 @@ union SDL_Event
 	caxis as SDL_ControllerAxisEvent
 	cbutton as SDL_ControllerButtonEvent
 	cdevice as SDL_ControllerDeviceEvent
+	ctouchpad as SDL_ControllerTouchpadEvent
+	csensor as SDL_ControllerSensorEvent
 	adevice as SDL_AudioDeviceEvent
+	sensor as SDL_SensorEvent
 	quit as SDL_QuitEvent
 	user as SDL_UserEvent
 	syswm as SDL_SysWMEvent
@@ -2407,6 +2693,7 @@ const SDL_HAPTIC_PAUSE = culng(1u shl 15)
 const SDL_HAPTIC_POLAR = 0
 const SDL_HAPTIC_CARTESIAN = 1
 const SDL_HAPTIC_SPHERICAL = 2
+const SDL_HAPTIC_STEERING_AXIS = 3
 const SDL_HAPTIC_INFINITY = 4294967295u
 
 type SDL_HapticDirection
@@ -2550,37 +2837,65 @@ declare function SDL_HapticRumbleStop(byval haptic as SDL_Haptic ptr) as long
 #define SDL_HINT_RENDER_SCALE_QUALITY "SDL_RENDER_SCALE_QUALITY"
 #define SDL_HINT_RENDER_VSYNC "SDL_RENDER_VSYNC"
 #define SDL_HINT_VIDEO_ALLOW_SCREENSAVER "SDL_VIDEO_ALLOW_SCREENSAVER"
+#define SDL_HINT_VIDEO_EXTERNAL_CONTEXT "SDL_VIDEO_EXTERNAL_CONTEXT"
 #define SDL_HINT_VIDEO_X11_XVIDMODE "SDL_VIDEO_X11_XVIDMODE"
 #define SDL_HINT_VIDEO_X11_XINERAMA "SDL_VIDEO_X11_XINERAMA"
 #define SDL_HINT_VIDEO_X11_XRANDR "SDL_VIDEO_X11_XRANDR"
+#define SDL_HINT_VIDEO_X11_WINDOW_VISUALID "SDL_VIDEO_X11_WINDOW_VISUALID"
 #define SDL_HINT_VIDEO_X11_NET_WM_PING "SDL_VIDEO_X11_NET_WM_PING"
+#define SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR "SDL_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR"
+#define SDL_HINT_VIDEO_X11_FORCE_EGL "SDL_VIDEO_X11_FORCE_EGL"
 #define SDL_HINT_WINDOW_FRAME_USABLE_WHILE_CURSOR_HIDDEN "SDL_WINDOW_FRAME_USABLE_WHILE_CURSOR_HIDDEN"
 #define SDL_HINT_WINDOWS_INTRESOURCE_ICON "SDL_WINDOWS_INTRESOURCE_ICON"
 #define SDL_HINT_WINDOWS_INTRESOURCE_ICON_SMALL "SDL_WINDOWS_INTRESOURCE_ICON_SMALL"
 #define SDL_HINT_WINDOWS_ENABLE_MESSAGELOOP "SDL_WINDOWS_ENABLE_MESSAGELOOP"
 #define SDL_HINT_GRAB_KEYBOARD "SDL_GRAB_KEYBOARD"
+#define SDL_HINT_MOUSE_DOUBLE_CLICK_TIME "SDL_MOUSE_DOUBLE_CLICK_TIME"
+#define SDL_HINT_MOUSE_DOUBLE_CLICK_RADIUS "SDL_MOUSE_DOUBLE_CLICK_RADIUS"
 #define SDL_HINT_MOUSE_NORMAL_SPEED_SCALE "SDL_MOUSE_NORMAL_SPEED_SCALE"
 #define SDL_HINT_MOUSE_RELATIVE_SPEED_SCALE "SDL_MOUSE_RELATIVE_SPEED_SCALE"
+#define SDL_HINT_MOUSE_RELATIVE_SCALING "SDL_MOUSE_RELATIVE_SCALING"
 #define SDL_HINT_MOUSE_RELATIVE_MODE_WARP "SDL_MOUSE_RELATIVE_MODE_WARP"
 #define SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH "SDL_MOUSE_FOCUS_CLICKTHROUGH"
 #define SDL_HINT_TOUCH_MOUSE_EVENTS "SDL_TOUCH_MOUSE_EVENTS"
+#define SDL_HINT_MOUSE_TOUCH_EVENTS "SDL_MOUSE_TOUCH_EVENTS"
 #define SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS "SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS"
 #define SDL_HINT_IDLE_TIMER_DISABLED "SDL_IOS_IDLE_TIMER_DISABLED"
 #define SDL_HINT_ORIENTATIONS "SDL_IOS_ORIENTATIONS"
 #define SDL_HINT_APPLE_TV_CONTROLLER_UI_EVENTS "SDL_APPLE_TV_CONTROLLER_UI_EVENTS"
 #define SDL_HINT_APPLE_TV_REMOTE_ALLOW_ROTATION "SDL_APPLE_TV_REMOTE_ALLOW_ROTATION"
+#define SDL_HINT_IOS_HIDE_HOME_INDICATOR "SDL_IOS_HIDE_HOME_INDICATOR"
 #define SDL_HINT_ACCELEROMETER_AS_JOYSTICK "SDL_ACCELEROMETER_AS_JOYSTICK"
+#define SDL_HINT_TV_REMOTE_AS_JOYSTICK "SDL_TV_REMOTE_AS_JOYSTICK"
 #define SDL_HINT_XINPUT_ENABLED "SDL_XINPUT_ENABLED"
 #define SDL_HINT_XINPUT_USE_OLD_JOYSTICK_MAPPING "SDL_XINPUT_USE_OLD_JOYSTICK_MAPPING"
+#define SDL_HINT_GAMECONTROLLERTYPE "SDL_GAMECONTROLLERTYPE"
 #define SDL_HINT_GAMECONTROLLERCONFIG "SDL_GAMECONTROLLERCONFIG"
+#define SDL_HINT_GAMECONTROLLERCONFIG_FILE "SDL_GAMECONTROLLERCONFIG_FILE"
 #define SDL_HINT_GAMECONTROLLER_IGNORE_DEVICES "SDL_GAMECONTROLLER_IGNORE_DEVICES"
 #define SDL_HINT_GAMECONTROLLER_IGNORE_DEVICES_EXCEPT "SDL_GAMECONTROLLER_IGNORE_DEVICES_EXCEPT"
+#define SDL_HINT_GAMECONTROLLER_USE_BUTTON_LABELS "SDL_GAMECONTROLLER_USE_BUTTON_LABELS"
 #define SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS "SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS"
+#define SDL_HINT_JOYSTICK_HIDAPI "SDL_JOYSTICK_HIDAPI"
+#define SDL_HINT_JOYSTICK_HIDAPI_PS4 "SDL_JOYSTICK_HIDAPI_PS4"
+#define SDL_HINT_JOYSTICK_HIDAPI_PS5 "SDL_JOYSTICK_HIDAPI_PS5"
+#define SDL_HINT_JOYSTICK_HIDAPI_PS4_RUMBLE "SDL_JOYSTICK_HIDAPI_PS4_RUMBLE"
+#define SDL_HINT_JOYSTICK_HIDAPI_STEAM "SDL_JOYSTICK_HIDAPI_STEAM"
+#define SDL_HINT_JOYSTICK_HIDAPI_SWITCH "SDL_JOYSTICK_HIDAPI_SWITCH"
+#define SDL_HINT_JOYSTICK_HIDAPI_XBOX "SDL_JOYSTICK_HIDAPI_XBOX"
+#define SDL_HINT_JOYSTICK_HIDAPI_CORRELATE_XINPUT "SDL_JOYSTICK_HIDAPI_CORRELATE_XINPUT"
+#define SDL_HINT_JOYSTICK_HIDAPI_GAMECUBE "SDL_JOYSTICK_HIDAPI_GAMECUBE"
+#define SDL_HINT_ENABLE_STEAM_CONTROLLERS "SDL_ENABLE_STEAM_CONTROLLERS"
+#define SDL_HINT_JOYSTICK_RAWINPUT "SDL_JOYSTICK_RAWINPUT"
+#define SDL_HINT_JOYSTICK_THREAD "SDL_JOYSTICK_THREAD"
+#define SDL_HINT_LINUX_JOYSTICK_DEADZONES "SDL_LINUX_JOYSTICK_DEADZONES"
 #define SDL_HINT_ALLOW_TOPMOST "SDL_ALLOW_TOPMOST"
 #define SDL_HINT_TIMER_RESOLUTION "SDL_TIMER_RESOLUTION"
 #define SDL_HINT_QTWAYLAND_CONTENT_ORIENTATION "SDL_QTWAYLAND_CONTENT_ORIENTATION"
 #define SDL_HINT_QTWAYLAND_WINDOW_FLAGS "SDL_QTWAYLAND_WINDOW_FLAGS"
 #define SDL_HINT_THREAD_STACK_SIZE "SDL_THREAD_STACK_SIZE"
+#define SDL_HINT_THREAD_PRIORITY_POLICY "SDL_THREAD_PRIORITY_POLICY"
+#define SDL_HINT_THREAD_FORCE_REALTIME_TIME_CRITICAL "SDL_THREAD_FORCE_REALTIME_TIME_CRITICAL"
 #define SDL_HINT_VIDEO_HIGHDPI_DISABLED "SDL_VIDEO_HIGHDPI_DISABLED"
 #define SDL_HINT_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK "SDL_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK"
 #define SDL_HINT_VIDEO_WIN_D3DCOMPILER "SDL_VIDEO_WIN_D3DCOMPILER"
@@ -2593,16 +2908,32 @@ declare function SDL_HapticRumbleStop(byval haptic as SDL_Haptic ptr) as long
 #define SDL_HINT_ANDROID_APK_EXPANSION_MAIN_FILE_VERSION "SDL_ANDROID_APK_EXPANSION_MAIN_FILE_VERSION"
 #define SDL_HINT_ANDROID_APK_EXPANSION_PATCH_FILE_VERSION "SDL_ANDROID_APK_EXPANSION_PATCH_FILE_VERSION"
 #define SDL_HINT_IME_INTERNAL_EDITING "SDL_IME_INTERNAL_EDITING"
-#define SDL_HINT_ANDROID_SEPARATE_MOUSE_AND_TOUCH "SDL_ANDROID_SEPARATE_MOUSE_AND_TOUCH"
+#define SDL_HINT_ANDROID_TRAP_BACK_BUTTON "SDL_ANDROID_TRAP_BACK_BUTTON"
+#define SDL_HINT_ANDROID_BLOCK_ON_PAUSE "SDL_ANDROID_BLOCK_ON_PAUSE"
+#define SDL_HINT_ANDROID_BLOCK_ON_PAUSE_PAUSEAUDIO "SDL_ANDROID_BLOCK_ON_PAUSE_PAUSEAUDIO"
+#define SDL_HINT_RETURN_KEY_HIDES_IME "SDL_RETURN_KEY_HIDES_IME"
 #define SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT "SDL_EMSCRIPTEN_KEYBOARD_ELEMENT"
+#define SDL_HINT_EMSCRIPTEN_ASYNCIFY "SDL_EMSCRIPTEN_ASYNCIFY"
 #define SDL_HINT_NO_SIGNAL_HANDLERS "SDL_NO_SIGNAL_HANDLERS"
 #define SDL_HINT_WINDOWS_NO_CLOSE_ON_ALT_F4 "SDL_WINDOWS_NO_CLOSE_ON_ALT_F4"
 #define SDL_HINT_BMP_SAVE_LEGACY_FORMAT "SDL_BMP_SAVE_LEGACY_FORMAT"
 #define SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING "SDL_WINDOWS_DISABLE_THREAD_NAMING"
 #define SDL_HINT_RPI_VIDEO_LAYER "SDL_RPI_VIDEO_LAYER"
+#define SDL_HINT_VIDEO_DOUBLE_BUFFER "SDL_VIDEO_DOUBLE_BUFFER"
 #define SDL_HINT_OPENGL_ES_DRIVER "SDL_OPENGL_ES_DRIVER"
 #define SDL_HINT_AUDIO_RESAMPLING_MODE "SDL_AUDIO_RESAMPLING_MODE"
 #define SDL_HINT_AUDIO_CATEGORY "SDL_AUDIO_CATEGORY"
+#define SDL_HINT_RENDER_BATCHING "SDL_RENDER_BATCHING"
+#define SDL_HINT_AUTO_UPDATE_JOYSTICKS "SDL_AUTO_UPDATE_JOYSTICKS"
+#define SDL_HINT_AUTO_UPDATE_SENSORS "SDL_AUTO_UPDATE_SENSORS"
+#define SDL_HINT_EVENT_LOGGING "SDL_EVENT_LOGGING"
+#define SDL_HINT_WAVE_RIFF_CHUNK_SIZE "SDL_WAVE_RIFF_CHUNK_SIZE"
+#define SDL_HINT_WAVE_TRUNCATION "SDL_WAVE_TRUNCATION"
+#define SDL_HINT_WAVE_FACT_CHUNK "SDL_WAVE_FACT_CHUNK"
+#define SDL_HINT_DISPLAY_USABLE_BOUNDS "SDL_DISPLAY_USABLE_BOUNDS"
+#define SDL_HINT_AUDIO_DEVICE_APP_NAME "SDL_AUDIO_DEVICE_APP_NAME"
+#define SDL_HINT_AUDIO_DEVICE_STREAM_NAME "SDL_AUDIO_DEVICE_STREAM_NAME"
+#define SDL_HINT_PREFERRED_LOCALES "SDL_PREFERRED_LOCALES"
 
 type SDL_HintPriority as long
 enum
@@ -2626,6 +2957,7 @@ declare sub SDL_UnloadObject(byval handle as any ptr)
 #define SDL_log_h_
 const SDL_MAX_LOG_MESSAGE = 4096
 
+type SDL_LogCategory as long
 enum
 	SDL_LOG_CATEGORY_APPLICATION
 	SDL_LOG_CATEGORY_ERROR
@@ -2683,6 +3015,8 @@ enum
 	SDL_MESSAGEBOX_ERROR = &h00000010
 	SDL_MESSAGEBOX_WARNING = &h00000020
 	SDL_MESSAGEBOX_INFORMATION = &h00000040
+	SDL_MESSAGEBOX_BUTTONS_LEFT_TO_RIGHT = &h00000080
+	SDL_MESSAGEBOX_BUTTONS_RIGHT_TO_LEFT = &h00000100
 end enum
 
 type SDL_MessageBoxButtonFlags as long
@@ -2729,6 +3063,12 @@ end type
 
 declare function SDL_ShowMessageBox(byval messageboxdata as const SDL_MessageBoxData ptr, byval buttonid as long ptr) as long
 declare function SDL_ShowSimpleMessageBox(byval flags as Uint32, byval title as const zstring ptr, byval message as const zstring ptr, byval window as SDL_Window ptr) as long
+#define SDL_metal_h_
+type SDL_MetalView as any ptr
+declare function SDL_Metal_CreateView(byval window as SDL_Window ptr) as SDL_MetalView
+declare sub SDL_Metal_DestroyView(byval view as SDL_MetalView)
+declare function SDL_Metal_GetLayer(byval view as SDL_MetalView) as any ptr
+declare sub SDL_Metal_GetDrawableSize(byval window as SDL_Window ptr, byval w as long ptr, byval h as long ptr)
 #define SDL_power_h_
 
 type SDL_PowerState as long
@@ -2759,6 +3099,13 @@ type SDL_RendererInfo
 	max_texture_width as long
 	max_texture_height as long
 end type
+
+type SDL_ScaleMode as long
+enum
+	SDL_ScaleModeNearest
+	SDL_ScaleModeLinear
+	SDL_ScaleModeBest
+end enum
 
 type SDL_TextureAccess as long
 enum
@@ -2800,9 +3147,12 @@ declare function SDL_SetTextureAlphaMod(byval texture as SDL_Texture ptr, byval 
 declare function SDL_GetTextureAlphaMod(byval texture as SDL_Texture ptr, byval alpha as Uint8 ptr) as long
 declare function SDL_SetTextureBlendMode(byval texture as SDL_Texture ptr, byval blendMode as SDL_BlendMode) as long
 declare function SDL_GetTextureBlendMode(byval texture as SDL_Texture ptr, byval blendMode as SDL_BlendMode ptr) as long
+declare function SDL_SetTextureScaleMode(byval texture as SDL_Texture ptr, byval scaleMode as SDL_ScaleMode) as long
+declare function SDL_GetTextureScaleMode(byval texture as SDL_Texture ptr, byval scaleMode as SDL_ScaleMode ptr) as long
 declare function SDL_UpdateTexture(byval texture as SDL_Texture ptr, byval rect as const SDL_Rect ptr, byval pixels as const any ptr, byval pitch as long) as long
 declare function SDL_UpdateYUVTexture(byval texture as SDL_Texture ptr, byval rect as const SDL_Rect ptr, byval Yplane as const Uint8 ptr, byval Ypitch as long, byval Uplane as const Uint8 ptr, byval Upitch as long, byval Vplane as const Uint8 ptr, byval Vpitch as long) as long
 declare function SDL_LockTexture(byval texture as SDL_Texture ptr, byval rect as const SDL_Rect ptr, byval pixels as any ptr ptr, byval pitch as long ptr) as long
+declare function SDL_LockTextureToSurface(byval texture as SDL_Texture ptr, byval rect as const SDL_Rect ptr, byval surface as SDL_Surface ptr ptr) as long
 declare sub SDL_UnlockTexture(byval texture as SDL_Texture ptr)
 declare function SDL_RenderTargetSupported(byval renderer as SDL_Renderer ptr) as SDL_bool
 declare function SDL_SetRenderTarget(byval renderer as SDL_Renderer ptr, byval texture as SDL_Texture ptr) as long
@@ -2833,12 +3183,25 @@ declare function SDL_RenderFillRect(byval renderer as SDL_Renderer ptr, byval re
 declare function SDL_RenderFillRects(byval renderer as SDL_Renderer ptr, byval rects as const SDL_Rect ptr, byval count as long) as long
 declare function SDL_RenderCopy(byval renderer as SDL_Renderer ptr, byval texture as SDL_Texture ptr, byval srcrect as const SDL_Rect ptr, byval dstrect as const SDL_Rect ptr) as long
 declare function SDL_RenderCopyEx(byval renderer as SDL_Renderer ptr, byval texture as SDL_Texture ptr, byval srcrect as const SDL_Rect ptr, byval dstrect as const SDL_Rect ptr, byval angle as const double, byval center as const SDL_Point ptr, byval flip as const SDL_RendererFlip) as long
+declare function SDL_RenderDrawPointF(byval renderer as SDL_Renderer ptr, byval x as single, byval y as single) as long
+declare function SDL_RenderDrawPointsF(byval renderer as SDL_Renderer ptr, byval points as const SDL_FPoint ptr, byval count as long) as long
+declare function SDL_RenderDrawLineF(byval renderer as SDL_Renderer ptr, byval x1 as single, byval y1 as single, byval x2 as single, byval y2 as single) as long
+declare function SDL_RenderDrawLinesF(byval renderer as SDL_Renderer ptr, byval points as const SDL_FPoint ptr, byval count as long) as long
+declare function SDL_RenderDrawRectF(byval renderer as SDL_Renderer ptr, byval rect as const SDL_FRect ptr) as long
+declare function SDL_RenderDrawRectsF(byval renderer as SDL_Renderer ptr, byval rects as const SDL_FRect ptr, byval count as long) as long
+declare function SDL_RenderFillRectF(byval renderer as SDL_Renderer ptr, byval rect as const SDL_FRect ptr) as long
+declare function SDL_RenderFillRectsF(byval renderer as SDL_Renderer ptr, byval rects as const SDL_FRect ptr, byval count as long) as long
+declare function SDL_RenderCopyF(byval renderer as SDL_Renderer ptr, byval texture as SDL_Texture ptr, byval srcrect as const SDL_Rect ptr, byval dstrect as const SDL_FRect ptr) as long
+declare function SDL_RenderCopyExF(byval renderer as SDL_Renderer ptr, byval texture as SDL_Texture ptr, byval srcrect as const SDL_Rect ptr, byval dstrect as const SDL_FRect ptr, byval angle as const double, byval center as const SDL_FPoint ptr, byval flip as const SDL_RendererFlip) as long
 declare function SDL_RenderReadPixels(byval renderer as SDL_Renderer ptr, byval rect as const SDL_Rect ptr, byval format as Uint32, byval pixels as any ptr, byval pitch as long) as long
 declare sub SDL_RenderPresent(byval renderer as SDL_Renderer ptr)
 declare sub SDL_DestroyTexture(byval texture as SDL_Texture ptr)
 declare sub SDL_DestroyRenderer(byval renderer as SDL_Renderer ptr)
+declare function SDL_RenderFlush(byval renderer as SDL_Renderer ptr) as long
 declare function SDL_GL_BindTexture(byval texture as SDL_Texture ptr, byval texw as single ptr, byval texh as single ptr) as long
 declare function SDL_GL_UnbindTexture(byval texture as SDL_Texture ptr) as long
+declare function SDL_RenderGetMetalLayer(byval renderer as SDL_Renderer ptr) as any ptr
+declare function SDL_RenderGetMetalCommandEncoder(byval renderer as SDL_Renderer ptr) as any ptr
 
 #define SDL_shape_h_
 const SDL_NONSHAPEABLE_WINDOW = -1
@@ -2871,7 +3234,9 @@ declare function SDL_SetWindowShape(byval window as SDL_Window ptr, byval shape 
 declare function SDL_GetShapedWindowMode(byval window as SDL_Window ptr, byval shape_mode as SDL_WindowShapeMode ptr) as long
 #define SDL_system_h_
 
-#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
+#ifdef __FB_LINUX__
+	declare function SDL_LinuxSetThreadPriority(byval threadID as Sint64, byval priority as long) as long
+#elseif defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
 	type SDL_WindowsMessageHook as sub(byval userdata as any ptr, byval hWnd as any ptr, byval message as ulong, byval wParam as Uint64, byval lParam as Sint64)
 	declare sub SDL_SetWindowsMessageHook(byval callback as SDL_WindowsMessageHook, byval userdata as any ptr)
 	declare function SDL_Direct3D9GetAdapterIndex(byval displayIndex as long) as long
@@ -2879,6 +3244,13 @@ declare function SDL_GetShapedWindowMode(byval window as SDL_Window ptr, byval s
 	declare function SDL_DXGIGetOutputInfo(byval displayIndex as long, byval adapterIndex as long ptr, byval outputIndex as long ptr) as SDL_bool
 #endif
 
+declare function SDL_IsTablet() as SDL_bool
+declare sub SDL_OnApplicationWillTerminate()
+declare sub SDL_OnApplicationDidReceiveMemoryWarning()
+declare sub SDL_OnApplicationWillResignActive()
+declare sub SDL_OnApplicationDidEnterBackground()
+declare sub SDL_OnApplicationWillEnterForeground()
+declare sub SDL_OnApplicationDidBecomeActive()
 #define SDL_timer_h_
 declare function SDL_GetTicks() as Uint32
 #define SDL_TICKS_PASSED(A, B) (cast(Sint32, (B) - (A)) <= 0)
@@ -2899,7 +3271,7 @@ end type
 
 const SDL_MAJOR_VERSION = 2
 const SDL_MINOR_VERSION = 0
-const SDL_PATCHLEVEL = 6
+const SDL_PATCHLEVEL = 14
 #macro SDL_VERSION_(x)
 	scope
 		(x)->major = SDL_MAJOR_VERSION
@@ -2914,7 +3286,16 @@ const SDL_PATCHLEVEL = 6
 declare sub SDL_GetVersion(byval ver as SDL_version ptr)
 declare function SDL_GetRevision() as const zstring ptr
 declare function SDL_GetRevisionNumber() as long
+#define _SDL_locale_h
 
+type SDL_Locale
+	language as const zstring ptr
+	country as const zstring ptr
+end type
+
+declare function SDL_GetPreferredLocales() as SDL_Locale ptr
+#define SDL_misc_h_
+declare function SDL_OpenURL(byval url as const zstring ptr) as long
 const SDL_INIT_TIMER = &h00000001u
 const SDL_INIT_AUDIO = &h00000010u
 const SDL_INIT_VIDEO = &h00000020u
@@ -2922,8 +3303,9 @@ const SDL_INIT_JOYSTICK = &h00000200u
 const SDL_INIT_HAPTIC = &h00001000u
 const SDL_INIT_GAMECONTROLLER = &h00002000u
 const SDL_INIT_EVENTS = &h00004000u
+const SDL_INIT_SENSOR = &h00008000u
 const SDL_INIT_NOPARACHUTE = &h00100000u
-const SDL_INIT_EVERYTHING = culng(culng(culng(culng(culng(culng(SDL_INIT_TIMER or SDL_INIT_AUDIO) or SDL_INIT_VIDEO) or SDL_INIT_EVENTS) or SDL_INIT_JOYSTICK) or SDL_INIT_HAPTIC) or SDL_INIT_GAMECONTROLLER)
+const SDL_INIT_EVERYTHING = culng(culng(culng(culng(culng(culng(culng(SDL_INIT_TIMER or SDL_INIT_AUDIO) or SDL_INIT_VIDEO) or SDL_INIT_EVENTS) or SDL_INIT_JOYSTICK) or SDL_INIT_HAPTIC) or SDL_INIT_GAMECONTROLLER) or SDL_INIT_SENSOR)
 
 declare function SDL_Init(byval flags as Uint32) as long
 declare function SDL_InitSubSystem(byval flags as Uint32) as long

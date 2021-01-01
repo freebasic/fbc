@@ -1,8 +1,8 @@
-'' FreeBASIC binding for SDL2_ttf-2.0.14
+'' FreeBASIC binding for SDL2_ttf-2.0.15
 ''
 '' based on the C header files:
 ''   SDL_ttf:  A companion library to SDL for working with TrueType (tm) fonts
-''   Copyright (C) 2001-2016 Sam Lantinga <slouken@libsdl.org>
+''   Copyright (C) 2001-2019 Sam Lantinga <slouken@libsdl.org>
 ''
 ''   This software is provided 'as-is', without any express or implied
 ''   warranty.  In no event will the authors be held liable for any damages
@@ -21,7 +21,7 @@
 ''   3. This notice may not be removed or altered from any source distribution.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   Copyright © 2020 FreeBASIC development team
 
 #pragma once
 
@@ -32,10 +32,10 @@
 
 extern "C"
 
-#define _SDL_TTF_H
+#define SDL_TTF_H_
 const SDL_TTF_MAJOR_VERSION = 2
 const SDL_TTF_MINOR_VERSION = 0
-const SDL_TTF_PATCHLEVEL = 14
+const SDL_TTF_PATCHLEVEL = 15
 #macro SDL_TTF_VERSION(X)
 	scope
 		(X)->major = SDL_TTF_MAJOR_VERSION
@@ -47,6 +47,8 @@ const TTF_MAJOR_VERSION = SDL_TTF_MAJOR_VERSION
 const TTF_MINOR_VERSION = SDL_TTF_MINOR_VERSION
 const TTF_PATCHLEVEL = SDL_TTF_PATCHLEVEL
 #define TTF_VERSION(X) SDL_TTF_VERSION(X)
+#define SDL_TTF_COMPILEDVERSION SDL_VERSIONNUM(SDL_TTF_MAJOR_VERSION, SDL_TTF_MINOR_VERSION, SDL_TTF_PATCHLEVEL)
+#define SDL_TTF_VERSION_ATLEAST(X, Y, Z) (SDL_TTF_COMPILEDVERSION >= SDL_VERSIONNUM(X, Y, Z))
 declare function TTF_Linked_Version() as const SDL_version ptr
 const UNICODE_BOM_NATIVE = &hFEFF
 const UNICODE_BOM_SWAPPED = &hFFFE
