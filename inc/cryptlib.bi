@@ -1,4 +1,4 @@
-'' FreeBASIC binding for cl343_beta
+'' FreeBASIC binding for cl345
 ''
 '' based on the C header files:
 ''   cryptlib is distributed under a dual license that allows free, open-source use
@@ -7,7 +7,7 @@
 ''   is given below.  Further details on this license are available from the
 ''   cryptlib home page.
 ''
-''     Copyright 1992-2013 Peter Gutmann. All rights reserved.
+''     Copyright 1992-2018 Peter Gutmann. All rights reserved.
 ''
 ''     Redistribution and use in source and binary forms, with or without
 ''     modification, are permitted provided that the following conditions are met:
@@ -27,9 +27,7 @@
 ''        conditions.  For an executable file, complete source code means the source
 ''        code for all modules it contains or uses.  It does not include source code
 ''        for modules or files that typically accompany the major components of the
-''        operating system on which the executable file runs.  Note that decoupling
-''        the software from the user, for example by running in a SaaS configuration,
-''        does not exempt you from these requirements.
+''        operating system on which the executable file runs.
 ''
 ''     THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
 ''     INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
@@ -41,6 +39,9 @@
 ''     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
 ''     IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
 ''     OF SUCH DAMAGE.
+''
+''   Note that decoupling the software from the user, for example by running in a
+''   SaaS configuration, does not exempt you from these requirements.
 ''
 ''   If you're unable to comply with the above license then the following,
 ''   alternate usage conditions apply:
@@ -56,7 +57,7 @@
 ''     public), contact the author for details if you think you qualify.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   Copyright © 2020 FreeBASIC development team
 
 #pragma once
 
@@ -71,7 +72,7 @@
 #endif
 
 #define _CRYPTLIB_DEFINED
-const CRYPTLIB_VERSION = 3430
+const CRYPTLIB_VERSION = 345
 
 type CRYPT_ALGO_TYPE as long
 enum
@@ -82,27 +83,27 @@ enum
 	CRYPT_ALGO_CAST
 	CRYPT_ALGO_RC2
 	CRYPT_ALGO_RC4
-	CRYPT_ALGO_RC5
+	CRYPT_ALGO_RESERVED1
 	CRYPT_ALGO_AES
-	CRYPT_ALGO_BLOWFISH
+	CRYPT_ALGO_RESERVED2
 	CRYPT_ALGO_DH = 100
 	CRYPT_ALGO_RSA
 	CRYPT_ALGO_DSA
 	CRYPT_ALGO_ELGAMAL
-	CRYPT_ALGO_RESERVED1
+	CRYPT_ALGO_RESERVED3
 	CRYPT_ALGO_ECDSA
 	CRYPT_ALGO_ECDH
-	CRYPT_ALGO_RESERVED2 = 200
-	CRYPT_ALGO_RESERVED3
+	CRYPT_ALGO_RESERVED4 = 200
+	CRYPT_ALGO_RESERVED5
 	CRYPT_ALGO_MD5
 	CRYPT_ALGO_SHA1
-	CRYPT_ALGO_RIPEMD160
+	CRYPT_ALGO_RESERVED6
 	CRYPT_ALGO_SHA2
 	CRYPT_ALGO_SHA256 = CRYPT_ALGO_SHA2
 	CRYPT_ALGO_SHAng
-	CRYPT_ALGO_HMAC_MD5 = 300
+	CRYPT_ALGO_RESREVED_7 = 300
 	CRYPT_ALGO_HMAC_SHA1
-	CRYPT_ALGO_HMAC_RIPEMD160
+	CRYPT_ALGO_RESERVED8
 	CRYPT_ALGO_HMAC_SHA2
 	CRYPT_ALGO_HMAC_SHAng
 	CRYPT_ALGO_LAST
@@ -122,7 +123,6 @@ enum
 	CRYPT_MODE_ECB
 	CRYPT_MODE_CBC
 	CRYPT_MODE_CFB
-	CRYPT_MODE_OFB
 	CRYPT_MODE_GCM
 	CRYPT_MODE_LAST
 end enum
@@ -187,7 +187,9 @@ enum
 	CRYPT_SESSION_SSH
 	CRYPT_SESSION_SSH_SERVER
 	CRYPT_SESSION_SSL
+	CRYPT_SESSION_TLS = CRYPT_SESSION_SSL
 	CRYPT_SESSION_SSL_SERVER
+	CRYPT_SESSION_TLS_SERVER = CRYPT_SESSION_SSL_SERVER
 	CRYPT_SESSION_RTCS
 	CRYPT_SESSION_RTCS_SERVER
 	CRYPT_SESSION_OCSP
@@ -242,8 +244,8 @@ enum
 	CRYPT_OPTION_ENCR_MAC
 	CRYPT_OPTION_PKC_ALGO
 	CRYPT_OPTION_PKC_KEYSIZE
-	CRYPT_OPTION_SIG_ALGO
-	CRYPT_OPTION_SIG_KEYSIZE
+	CRYPT_OPTION_DUMMY1
+	CRYPT_OPTION_DUMMY2
 	CRYPT_OPTION_KEYING_ALGO
 	CRYPT_OPTION_KEYING_ITERATIONS
 	CRYPT_OPTION_CERT_SIGNUNRECOGNISEDATTRIBUTES
@@ -301,7 +303,6 @@ enum
 	CRYPT_CERTINFO_IMMUTABLE
 	CRYPT_CERTINFO_XYZZY
 	CRYPT_CERTINFO_CERTTYPE
-	CRYPT_CERTINFO_FINGERPRINT_MD5
 	CRYPT_CERTINFO_FINGERPRINT_SHA1
 	CRYPT_CERTINFO_FINGERPRINT_SHA2
 	CRYPT_CERTINFO_FINGERPRINT_SHAng
@@ -483,6 +484,7 @@ enum
 	CRYPT_CERTINFO_EXTKEY_ANYKEYUSAGE
 	CRYPT_CERTINFO_EXTKEY_NS_SERVERGATEDCRYPTO
 	CRYPT_CERTINFO_EXTKEY_VS_SERVERGATEDCRYPTO_CA
+	CRYPT_CERTINFO_EXTKEYUSAGE_LAST = CRYPT_CERTINFO_EXTKEY_VS_SERVERGATEDCRYPTO_CA
 	CRYPT_CERTINFO_CRLSTREAMIDENTIFIER
 	CRYPT_CERTINFO_FRESHESTCRL
 	CRYPT_CERTINFO_FRESHESTCRL_FULLNAME
@@ -551,11 +553,6 @@ enum
 	CRYPT_CERTINFO_CMS_SMIMECAP_3DES
 	CRYPT_CERTINFO_CMS_SMIMECAP_AES
 	CRYPT_CERTINFO_CMS_SMIMECAP_CAST128
-	CRYPT_CERTINFO_CMS_SMIMECAP_IDEA
-	CRYPT_CERTINFO_CMS_SMIMECAP_RC2
-	CRYPT_CERTINFO_CMS_SMIMECAP_RC5
-	CRYPT_CERTINFO_CMS_SMIMECAP_SKIPJACK
-	CRYPT_CERTINFO_CMS_SMIMECAP_DES
 	CRYPT_CERTINFO_CMS_SMIMECAP_SHAng
 	CRYPT_CERTINFO_CMS_SMIMECAP_SHA2
 	CRYPT_CERTINFO_CMS_SMIMECAP_SHA1
@@ -699,6 +696,10 @@ enum
 	CRYPT_SESSINFO_SSH_CHANNEL_ARG2
 	CRYPT_SESSINFO_SSH_CHANNEL_ACTIVE
 	CRYPT_SESSINFO_SSL_OPTIONS
+	CRYPT_SESSINFO_SSL_SUBPROTOCOL
+	CRYPT_SESSINFO_SSL_WSPROTOCOL
+	CRYPT_SESSINFO_SSL_EAPCHALLENGE
+	CRYPT_SESSINFO_SSL_EAPKEY
 	CRYPT_SESSINFO_TSP_MSGIMPRINT
 	CRYPT_SESSINFO_LAST
 	CRYPT_USERINFO_FIRST = 7000
@@ -756,6 +757,7 @@ enum
 	CRYPT_HOLDINSTRUCTION_LAST
 end enum
 
+type CRYPT_COMPLIANCELEVEL_TYPE as long
 enum
 	CRYPT_COMPLIANCELEVEL_OBLIVIOUS
 	CRYPT_COMPLIANCELEVEL_REDUCED
@@ -817,11 +819,14 @@ enum
 	CRYPT_CLASSIFICATION_LAST = 255
 end enum
 
+type CRYPT_CERTSTATUS_TYPE as long
 enum
+	CRYPT_CERTSTATUS_NONE
 	CRYPT_CERTSTATUS_VALID
 	CRYPT_CERTSTATUS_NOTVALID
 	CRYPT_CERTSTATUS_NONAUTHORITATIVE
 	CRYPT_CERTSTATUS_UNKNOWN
+	CRYPT_CERTSTATUS_LAST
 end enum
 
 enum
@@ -926,15 +931,25 @@ enum
 	CRYPT_CERTACTION_LAST
 end enum
 
-const CRYPT_SSLOPTION_NONE = &h00
-const CRYPT_SSLOPTION_MINVER_SSLV3 = &h00
-const CRYPT_SSLOPTION_MINVER_TLS10 = &h01
-const CRYPT_SSLOPTION_MINVER_TLS11 = &h02
-const CRYPT_SSLOPTION_MINVER_TLS12 = &h03
-const CRYPT_SSLOPTION_SUITEB_128 = &h04
-const CRYPT_SSLOPTION_SUITEB_256 = &h08
-const CRYPT_SSLOPTION_DISABLE_NAMEVERIFY = &h10
-const CRYPT_SSLOPTION_DISABLE_CERTVERIFY = &h20
+type CRYPT_SUBPROTOCOL_TYPE as long
+enum
+	CRYPT_SUBPROTOCOL_NONE
+	CRYPT_SUBPROTOCOL_WEBSOCKETS
+	CRYPT_SUBPROTOCOL_EAPTTLS
+	CRYPT_SUBPROTOCOL_LAST
+end enum
+
+const CRYPT_SSLOPTION_NONE = &h000
+const CRYPT_SSLOPTION_MINVER_SSLV3 = &h000
+const CRYPT_SSLOPTION_MINVER_TLS10 = &h001
+const CRYPT_SSLOPTION_MINVER_TLS11 = &h002
+const CRYPT_SSLOPTION_MINVER_TLS12 = &h003
+const CRYPT_SSLOPTION_MINVER_TLS13 = &h004
+const CRYPT_SSLOPTION_MANUAL_CERTCHECK = &h008
+const CRYPT_SSLOPTION_DISABLE_NAMEVERIFY = &h010
+const CRYPT_SSLOPTION_DISABLE_CERTVERIFY = &h020
+const CRYPT_SSLOPTION_SUITEB_128 = &h100
+const CRYPT_SSLOPTION_SUITEB_256 = &h200
 const CRYPT_MAX_KEYSIZE = 256
 const CRYPT_MAX_IVSIZE = 32
 const CRYPT_MAX_PKCSIZE = 512
@@ -984,6 +999,7 @@ type CRYPT_OBJECT_INFO
 	hashAlgo as CRYPT_ALGO_TYPE
 	salt(0 to 63) as ubyte
 	saltSize as long
+	iterations as long
 end type
 
 type CRYPT_PKCINFO_RSA
@@ -1023,8 +1039,6 @@ end type
 type CRYPT_ECCCURVE_TYPE as long
 enum
 	CRYPT_ECCCURVE_NONE
-	CRYPT_ECCCURVE_P192
-	CRYPT_ECCCURVE_P224
 	CRYPT_ECCCURVE_P256
 	CRYPT_ECCCURVE_P384
 	CRYPT_ECCCURVE_P521
@@ -1166,10 +1180,5 @@ declare function cryptDeviceQueryCapability(byval device as const CRYPT_DEVICE, 
 declare function cryptDeviceCreateContext(byval device as const CRYPT_DEVICE, byval cryptContext as CRYPT_CONTEXT ptr, byval cryptAlgo as const CRYPT_ALGO_TYPE) as long
 declare function cryptLogin(byval user as CRYPT_USER ptr, byval name as const zstring ptr, byval password as const zstring ptr) as long
 declare function cryptLogout(byval user as const CRYPT_USER) as long
-
-#ifdef __FB_WIN32__
-	declare function cryptUIGenerateKey(byval cryptDevice as const CRYPT_DEVICE, byval cryptContext as CRYPT_CONTEXT ptr, byval cryptCert as const CRYPT_CERTIFICATE, byval password as zstring ptr, byval hWnd as const HWND) as long
-	declare function cryptUIDisplayCert(byval cryptCert as const CRYPT_CERTIFICATE, byval hWnd as const HWND) as long
-#endif
 
 end extern

@@ -1,8 +1,8 @@
-'' FreeBASIC binding for DevIL-1.7.8
+'' FreeBASIC binding for DevIL-1.8.0
 ''
 '' based on the C header files:
 ''    ImageLib Sources
-''    Copyright (C) 2000-2009 by Denton Woods
+''    Copyright (C) 2000-2017 by Denton Woods
 ''    Last modified: 03/07/2009
 ''
 ''    Filename: IL/il.h
@@ -12,7 +12,7 @@
 ''   This library is free software; you can redistribute it and/or
 ''   modify it under the terms of the GNU Lesser General Public
 ''   License as published by the Free Software Foundation; either
-''   version 2 of the License, or (at your option) any later version.
+''   version 2.1 of the License, or (at your option) any later version.
 ''
 ''   This library is distributed in the hope that it will be useful,
 ''   but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,10 +21,11 @@
 ''
 ''   You should have received a copy of the GNU Lesser General Public
 ''   License along with this library; if not, write to the Free Software
-''   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
+''   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+''   USA
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   Copyright © 2020 FreeBASIC development team
 
 #pragma once
 
@@ -104,8 +105,8 @@ const IL_HALF = &h140B
 const IL_VENDOR = &h1F00
 const IL_LOAD_EXT = &h1F01
 const IL_SAVE_EXT = &h1F02
-const IL_VERSION_1_7_8 = 1
-const IL_VERSION = 178
+const IL_VERSION_1_8_0 = 1
+const IL_VERSION = 180
 const IL_ORIGIN_BIT = &h00000001
 const IL_FILE_BIT = &h00000002
 const IL_PAL_BIT = &h00000004
@@ -175,6 +176,7 @@ const IL_TEXTURE = &h044F
 const IL_DPX = &h0450
 const IL_UTX = &h0451
 const IL_MP3 = &h0452
+const IL_KTX = &h0453
 const IL_JASC_PAL = &h0475
 const IL_NO_ERROR = &h0000
 const IL_INVALID_ENUM = &h0501

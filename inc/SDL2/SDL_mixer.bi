@@ -1,8 +1,8 @@
-'' FreeBASIC binding for SDL2_mixer-2.0.1
+'' FreeBASIC binding for SDL2_mixer-2.0.4
 ''
 '' based on the C header files:
 ''   SDL_mixer:  An audio mixer library based on the SDL library
-''   Copyright (C) 1997-2016 Sam Lantinga <slouken@libsdl.org>
+''   Copyright (C) 1997-2018 Sam Lantinga <slouken@libsdl.org>
 ''
 ''   This software is provided 'as-is', without any express or implied
 ''   warranty.  In no event will the authors be held liable for any damages
@@ -21,7 +21,7 @@
 ''   3. This notice may not be removed or altered from any source distribution.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   Copyright © 2020 FreeBASIC development team
 
 #pragma once
 
@@ -31,10 +31,10 @@
 
 extern "C"
 
-#define _SDL_MIXER_H
+#define SDL_MIXER_H_
 const SDL_MIXER_MAJOR_VERSION = 2
 const SDL_MIXER_MINOR_VERSION = 0
-const SDL_MIXER_PATCHLEVEL = 1
+const SDL_MIXER_PATCHLEVEL = 4
 #macro SDL_MIXER_VERSION(X)
 	scope
 		(X)->major = SDL_MIXER_MAJOR_VERSION
@@ -46,16 +46,18 @@ const MIX_MAJOR_VERSION = SDL_MIXER_MAJOR_VERSION
 const MIX_MINOR_VERSION = SDL_MIXER_MINOR_VERSION
 const MIX_PATCHLEVEL = SDL_MIXER_PATCHLEVEL
 #define MIX_VERSION(X) SDL_MIXER_VERSION(X)
+#define SDL_MIXER_COMPILEDVERSION SDL_VERSIONNUM(SDL_MIXER_MAJOR_VERSION, SDL_MIXER_MINOR_VERSION, SDL_MIXER_PATCHLEVEL)
+#define SDL_MIXER_VERSION_ATLEAST(X, Y, Z) (SDL_MIXER_COMPILEDVERSION >= SDL_VERSIONNUM(X, Y, Z))
 declare function Mix_Linked_Version() as const SDL_version ptr
 
 type MIX_InitFlags as long
 enum
 	MIX_INIT_FLAC = &h00000001
 	MIX_INIT_MOD = &h00000002
-	MIX_INIT_MODPLUG = &h00000004
 	MIX_INIT_MP3 = &h00000008
 	MIX_INIT_OGG = &h00000010
-	MIX_INIT_FLUIDSYNTH = &h00000020
+	MIX_INIT_MID = &h00000020
+	MIX_INIT_OPUS = &h00000040
 end enum
 
 declare function Mix_Init(byval flags as long) as long
@@ -64,7 +66,7 @@ const MIX_CHANNELS = 8
 const MIX_DEFAULT_FREQUENCY = 22050
 const MIX_DEFAULT_FORMAT = AUDIO_S16LSB
 const MIX_DEFAULT_CHANNELS = 2
-const MIX_MAX_VOLUME = 128
+const MIX_MAX_VOLUME = SDL_MIX_MAXVOLUME
 
 type Mix_Chunk
 	allocated as long
@@ -89,13 +91,15 @@ enum
 	MUS_MID
 	MUS_OGG
 	MUS_MP3
-	MUS_MP3_MAD
+	MUS_MP3_MAD_UNUSED
 	MUS_FLAC
-	MUS_MODPLUG
+	MUS_MODPLUG_UNUSED
+	MUS_OPUS
 end enum
 
 type Mix_Music as _Mix_Music
 declare function Mix_OpenAudio(byval frequency as long, byval format as Uint16, byval channels as long, byval chunksize as long) as long
+declare function Mix_OpenAudioDevice(byval frequency as long, byval format as Uint16, byval channels as long, byval chunksize as long, byval device as const zstring ptr, byval allowed_changes as long) as long
 declare function Mix_AllocateChannels(byval numchans as long) as long
 declare function Mix_QuerySpec(byval frequency as long ptr, byval format as Uint16 ptr, byval channels as long ptr) as long
 declare function Mix_LoadWAV_RW(byval src as SDL_RWops ptr, byval freesrc as long) as Mix_Chunk ptr
@@ -109,8 +113,10 @@ declare sub Mix_FreeChunk(byval chunk as Mix_Chunk ptr)
 declare sub Mix_FreeMusic(byval music as Mix_Music ptr)
 declare function Mix_GetNumChunkDecoders() as long
 declare function Mix_GetChunkDecoder(byval index as long) as const zstring ptr
+declare function Mix_HasChunkDecoder(byval name as const zstring ptr) as SDL_bool
 declare function Mix_GetNumMusicDecoders() as long
 declare function Mix_GetMusicDecoder(byval index as long) as const zstring ptr
+declare function Mix_HasMusicDecoder(byval name as const zstring ptr) as SDL_bool
 declare function Mix_GetMusicType(byval music as const Mix_Music ptr) as Mix_MusicType
 declare sub Mix_SetPostMix(byval mix_func as sub(byval udata as any ptr, byval stream as Uint8 ptr, byval len as long), byval arg as any ptr)
 declare sub Mix_HookMusic(byval mix_func as sub(byval udata as any ptr, byval stream as Uint8 ptr, byval len as long), byval arg as any ptr)
@@ -174,5 +180,6 @@ declare function Mix_GetChunk(byval channel as long) as Mix_Chunk ptr
 declare sub Mix_CloseAudio()
 declare function Mix_SetError alias "SDL_SetError"(byval fmt as const zstring ptr, ...) as long
 declare function Mix_GetError alias "SDL_GetError"() as const zstring ptr
+declare sub Mix_ClearError alias "SDL_ClearError"()
 
 end extern

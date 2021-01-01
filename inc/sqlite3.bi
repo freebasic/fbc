@@ -1,4 +1,4 @@
-'' FreeBASIC binding for SQLite 3.30.0
+'' FreeBASIC binding for SQLite 3.34.0
 ''
 '' based on the C header files:
 ''   * 2001-09-15
@@ -33,7 +33,7 @@
 ''   * part of the build process.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2019 FreeBASIC development team
+''   Copyright © 2020 FreeBASIC development team
 
 #pragma once
 
@@ -45,9 +45,9 @@
 extern "C"
 
 #define SQLITE3_H
-#define SQLITE_VERSION "3.33.0"
-const SQLITE_VERSION_NUMBER = 3033000
-#define SQLITE_SOURCE_ID "2020-08-14 13:23:32 fca8dc8b578f215a969cd899336378966156154710873e68b3d9ac5881b0ff3f"
+#define SQLITE_VERSION "3.34.0"
+const SQLITE_VERSION_NUMBER = 3034000
+#define SQLITE_SOURCE_ID "2020-12-01 16:14:00 a26b6597e3ae272231b96f9982c3bcc17ddec2f2b6eb4df06a224b91089fed5b"
 extern __sqlite3_version alias "sqlite3_version" as const byte
 #define sqlite3_version (*cptr(const zstring ptr, @__sqlite3_version))
 
@@ -134,6 +134,7 @@ const SQLITE_IOERR_BEGIN_ATOMIC = SQLITE_IOERR or (29 shl 8)
 const SQLITE_IOERR_COMMIT_ATOMIC = SQLITE_IOERR or (30 shl 8)
 const SQLITE_IOERR_ROLLBACK_ATOMIC = SQLITE_IOERR or (31 shl 8)
 const SQLITE_IOERR_DATA = SQLITE_IOERR or (32 shl 8)
+const SQLITE_IOERR_CORRUPTFS = SQLITE_IOERR or (33 shl 8)
 const SQLITE_LOCKED_SHAREDCACHE = SQLITE_LOCKED or (1 shl 8)
 const SQLITE_LOCKED_VTAB = SQLITE_LOCKED or (2 shl 8)
 const SQLITE_BUSY_RECOVERY = SQLITE_BUSY or (1 shl 8)
@@ -647,6 +648,12 @@ declare function sqlite3_get_autocommit(byval as sqlite3 ptr) as long
 declare function sqlite3_db_handle(byval as sqlite3_stmt ptr) as sqlite3 ptr
 declare function sqlite3_db_filename(byval db as sqlite3 ptr, byval zDbName as const zstring ptr) as const zstring ptr
 declare function sqlite3_db_readonly(byval db as sqlite3 ptr, byval zDbName as const zstring ptr) as long
+declare function sqlite3_txn_state(byval as sqlite3 ptr, byval zSchema as const zstring ptr) as long
+
+const SQLITE_TXN_NONE = 0
+const SQLITE_TXN_READ = 1
+const SQLITE_TXN_WRITE = 2
+
 declare function sqlite3_next_stmt(byval pDb as sqlite3 ptr, byval pStmt as sqlite3_stmt ptr) as sqlite3_stmt ptr
 declare function sqlite3_commit_hook(byval as sqlite3 ptr, byval as function(byval as any ptr) as long, byval as any ptr) as any ptr
 declare function sqlite3_rollback_hook(byval as sqlite3 ptr, byval as sub(byval as any ptr), byval as any ptr) as any ptr
@@ -842,7 +849,8 @@ const SQLITE_TESTCTRL_PARSER_COVERAGE = 26
 const SQLITE_TESTCTRL_RESULT_INTREAL = 27
 const SQLITE_TESTCTRL_PRNG_SEED = 28
 const SQLITE_TESTCTRL_EXTRA_SCHEMA_CHECKS = 29
-const SQLITE_TESTCTRL_LAST = 29
+const SQLITE_TESTCTRL_SEEK_COUNT = 30
+const SQLITE_TESTCTRL_LAST = 30
 
 declare function sqlite3_keyword_count() as long
 declare function sqlite3_keyword_name(byval as long, byval as const zstring ptr ptr, byval as long ptr) as long

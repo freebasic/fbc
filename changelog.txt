@@ -3,10 +3,16 @@ Version 1.08.0
 [changed]
 - array descriptor contains new 'flags' field.  Careful, breaks binary compatibility plus chicken-egg problem to build fbc.
 - fbc '-version' reports build date in yyyy-mm-dd format (aka build date iso)
-- updated SQLite headers for binding to SQLite 3.33.0
+- updated SQLite headers for binding to SQLite 3.34.0
 - updated BASS headers for binding to BASS 2.4.15
 - updated PostgreSQL headers for binding to PostgreSQL 12.0
-- updated curl headers for binding to curl 7.66.0
+- updated curl headers for binding to curl 7.73.0
+- updated SDL1.2 bindings to SDL_gfx 2.0.26
+- updated SDL2 bindings to SDL2 2.0.14, SDL2_image 2.0.5, SDL2_mixer 2.0.4, SDL2_ttf 2.0.15
+- updated LLVM and Clang bindings to 5.0.0
+- updated Chipmunk2D binding to 7.0.3
+- updated cryptlib binding to 3.4.5
+- updated DevIL binding to 1.8.0
 - warning level for all warnings is increased by 1.  Default warning level is 1.  Previously, default warning level was 0 and some warnings had level of -1.
 - reverted changes due sf.net #893: invalid suffixes due to '-lang fb'
 - reverted changes due sf.net #832: Fix bug allowing QB style suffixes on all keywords, regardless of -lang
@@ -61,6 +67,7 @@ Version 1.08.0
 - makefile: add arm and aarch64 targets to the bootstrap package
 - release: add arm and aarch64 targets as an option to the contrib/release.build.sh script
 - emscripten port (WIP, v1ctor & angros47)
+- bindings to SoLoud audio library (soloud_c.bi: C API only)
 
 [fixed]
 - makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture
@@ -99,6 +106,7 @@ Version 1.08.0
 - rtlib: FORMAT() should always use all the fix digits in exponential form, e.g. format(1234, "###e+#") = "123e+1"
 - github #92: FORMAT() should always have an exponent of 0 for zero.
 - sf.net #928: Wrong sign / type when printing BYTE values on arm/aarch64
+- various HANDLE_WM_*, FORWARD_WM_* macros in win/windowsx.bi were broken
 
 
 Version 1.07.0

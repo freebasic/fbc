@@ -17,7 +17,7 @@
 ''   * @(#) $Id: sqlite.h.in,v 1.60.2.1 2004/10/06 15:52:36 drh Exp $
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   Copyright © 2020 FreeBASIC development team
 
 #pragma once
 
