@@ -1,8 +1,8 @@
-'' FreeBASIC binding for DevIL-1.7.8
+'' FreeBASIC binding for DevIL-1.8.0
 ''
 '' based on the C header files:
 ''    ImageLib Utility Toolkit Sources
-''    Copyright (C) 2000-2009 by Denton Woods
+''    Copyright (C) 2000-2017 by Denton Woods
 ''    Last modified: 03/07/2009
 ''
 ''    Filename: IL/ilut.h
@@ -12,7 +12,7 @@
 ''   This library is free software; you can redistribute it and/or
 ''   modify it under the terms of the GNU Lesser General Public
 ''   License as published by the Free Software Foundation; either
-''   version 2 of the License, or (at your option) any later version.
+''   version 2.1 of the License, or (at your option) any later version.
 ''
 ''   This library is distributed in the hope that it will be useful,
 ''   but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,10 +21,11 @@
 ''
 ''   You should have received a copy of the GNU Lesser General Public
 ''   License along with this library; if not, write to the Free Software
-''   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
+''   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+''   USA
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   Copyright © 2020 FreeBASIC development team
 
 #pragma once
 
@@ -45,8 +46,8 @@
 
 #define __ilut_h_
 #define __ILUT_H__
-const ILUT_VERSION_1_7_8 = 1
-const ILUT_VERSION = 178
+const ILUT_VERSION_1_8_0 = 1
+const ILUT_VERSION = 180
 const ILUT_OPENGL_BIT = &h00000001
 const ILUT_D3D_BIT = &h00000002
 const ILUT_ALL_ATTRIB_BITS = &h000FFFFF
@@ -89,7 +90,6 @@ const ILUT_DIRECT3D10 = 6
 
 #ifdef __FB_WIN32__
 	#define __ILUT_CONFIG_H__
-	#define IL_USE_PRAGMA_LIBS
 	#undef ILUT_USE_ALLEGRO
 	#undef ILUT_USE_DIRECTX8
 	#define ILUT_USE_OPENGL

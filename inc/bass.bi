@@ -25,7 +25,7 @@
 ''   package are the property of their respective owners.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2019 FreeBASIC development team
+''   Copyright © 2020 FreeBASIC development team
 
 #pragma once
 
@@ -847,7 +847,6 @@ end type
 
 const BASS_IOSNOTIFY_INTERRUPT = 1
 const BASS_IOSNOTIFY_INTERRUPT_END = 2
-
 declare function BASS_SetConfig(byval option as DWORD, byval value as DWORD) as BOOL
 declare function BASS_GetConfig(byval option as DWORD) as DWORD
 declare function BASS_SetConfigPtr(byval option as DWORD, byval value as const any ptr) as BOOL

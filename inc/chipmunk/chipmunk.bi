@@ -1,4 +1,4 @@
-'' FreeBASIC binding for Chipmunk-7.0.1
+'' FreeBASIC binding for Chipmunk-7.0.3
 ''
 '' based on the C header files:
 ''   Copyright (c) 2007-2015 Scott Lembcke and Howling Moon Software
@@ -22,7 +22,7 @@
 ''   SOFTWARE.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   Copyright © 2020 FreeBASIC development team
 
 #pragma once
 
@@ -276,24 +276,34 @@ end type
 #define cpBBMergedArea(a, b) cast(cpFloat, (cpfmax((a).r, (b).r) - cpfmin((a).l, (b).l)) * (cpfmax((a).t, (b).t) - cpfmin((a).(b), (b).(b))))
 
 private function cpBBSegmentQuery(byval bb as cpBB, byval a as cpVect, byval b as cpVect) as cpFloat
-	dim idx as cpFloat = 1.0f / (b.x - a.x)
-	dim tx1 as cpFloat = iif(bb.l = a.x, -INFINITY, (bb.l - a.x) * idx)
-	dim tx2 as cpFloat = iif(bb.r = a.x, INFINITY, (bb.r - a.x) * idx)
-	dim txmin as cpFloat = cpfmin(tx1, tx2)
-	dim txmax as cpFloat = cpfmax(tx1, tx2)
-	dim idy as cpFloat = 1.0f / (b.y - a.y)
-	dim ty1 as cpFloat = iif(bb.b = a.y, -INFINITY, (bb.b - a.y) * idy)
-	dim ty2 as cpFloat = iif(bb.t = a.y, INFINITY, (bb.t - a.y) * idy)
-	dim tymin as cpFloat = cpfmin(ty1, ty2)
-	dim tymax as cpFloat = cpfmax(ty1, ty2)
-	if (tymin <= txmax) andalso (txmin <= tymax) then
-		dim min as cpFloat = cpfmax(txmin, tymin)
-		dim max as cpFloat = cpfmin(txmax, tymax)
-		if (0.0 <= max) andalso (min <= 1.0) then
-			return cpfmax(min, 0.0)
+	dim delta as cpVect = cpvsub(b, a)
+	dim tmin as cpFloat = -INFINITY
+	dim tmax as cpFloat = INFINITY
+	if delta.x = 0.0f then
+		if (a.x < bb.l) orelse (bb.r < a.x) then
+			return INFINITY
 		end if
+	else
+		dim t1 as cpFloat = (bb.l - a.x) / delta.x
+		dim t2 as cpFloat = (bb.r - a.x) / delta.x
+		tmin = cpfmax(tmin, cpfmin(t1, t2))
+		tmax = cpfmin(tmax, cpfmax(t1, t2))
 	end if
-	return INFINITY
+	if delta.y = 0.0f then
+		if (a.y < bb.b) orelse (bb.t < a.y) then
+			return INFINITY
+		end if
+	else
+		dim t1 as cpFloat = (bb.b - a.y) / delta.y
+		dim t2 as cpFloat = (bb.t - a.y) / delta.y
+		tmin = cpfmax(tmin, cpfmin(t1, t2))
+		tmax = cpfmin(tmax, cpfmax(t1, t2))
+	end if
+	if ((tmin <= tmax) andalso (0.0f <= tmax)) andalso (tmin <= 1.0f) then
+		return cpfmax(tmin, 0.0f)
+	else
+		return INFINITY
+	end if
 end function
 
 #define cpBBIntersectsSegment(bb, a, b) cast(cpBool, -(cpBBSegmentQuery((bb), (a), (b)) <> INFINITY))
@@ -949,7 +959,7 @@ end type
 declare sub cpSpaceDebugDraw(byval space as cpSpace ptr, byval options as cpSpaceDebugDrawOptions ptr)
 const CP_VERSION_MAJOR = 7
 const CP_VERSION_MINOR = 0
-const CP_VERSION_RELEASE = 1
+const CP_VERSION_RELEASE = 3
 extern cpVersionString as const zstring ptr
 
 declare function cpMomentForCircle(byval m as cpFloat, byval r1 as cpFloat, byval r2 as cpFloat, byval offset as cpVect) as cpFloat

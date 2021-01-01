@@ -1,4 +1,4 @@
-'' FreeBASIC binding for Chipmunk-7.0.1
+'' FreeBASIC binding for Chipmunk-7.0.3
 ''
 '' based on the C header files:
 ''   Copyright (c) 2007-2015 Scott Lembcke and Howling Moon Software
@@ -22,7 +22,7 @@
 ''   SOFTWARE.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   Copyright © 2020 FreeBASIC development team
 
 #pragma once
 

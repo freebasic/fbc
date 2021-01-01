@@ -1,4 +1,4 @@
-'' FreeBASIC binding for Chipmunk-7.0.1
+'' FreeBASIC binding for Chipmunk-7.0.3
 ''
 '' based on the C header files:
 ''   Copyright (c) 2007-2015 Scott Lembcke and Howling Moon Software
@@ -22,12 +22,13 @@
 ''   SOFTWARE.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   Copyright © 2020 FreeBASIC development team
 
 #pragma once
 
 extern "C"
 
-declare function cpCheckSignedArea(byval a as const cpVect, byval b as const cpVect, byval c as const cpVect) as cpBool
+declare function cpCheckPointGreater(byval a as const cpVect, byval b as const cpVect, byval c as const cpVect) as cpBool
+declare function cpCheckAxis(byval v0 as cpVect, byval v1 as cpVect, byval p as cpVect, byval n as cpVect) as cpBool
 
 end extern

@@ -1,8 +1,8 @@
-'' FreeBASIC binding for DevIL-1.7.8
+'' FreeBASIC binding for DevIL-1.8.0
 ''
 '' based on the C header files:
 ''    ImageLib Utility Sources
-''    Copyright (C) 2000-2009 by Denton Woods
+''    Copyright (C) 2000-2017 by Denton Woods
 ''    Last modified: 03/07/2009
 ''
 ''    Filename: IL/ilu.h
@@ -12,7 +12,7 @@
 ''   This library is free software; you can redistribute it and/or
 ''   modify it under the terms of the GNU Lesser General Public
 ''   License as published by the Free Software Foundation; either
-''   version 2 of the License, or (at your option) any later version.
+''   version 2.1 of the License, or (at your option) any later version.
 ''
 ''   This library is distributed in the hope that it will be useful,
 ''   but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,10 +21,11 @@
 ''
 ''   You should have received a copy of the GNU Lesser General Public
 ''   License along with this library; if not, write to the Free Software
-''   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
+''   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+''   USA
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   Copyright © 2020 FreeBASIC development team
 
 #pragma once
 
@@ -40,8 +41,8 @@
 
 #define __ilu_h_
 #define __ILU_H__
-const ILU_VERSION_1_7_8 = 1
-const ILU_VERSION = 178
+const ILU_VERSION_1_8_0 = 1
+const ILU_VERSION = 180
 const ILU_FILTER = &h2600
 const ILU_NEAREST = &h2601
 const ILU_LINEAR = &h2602
@@ -74,6 +75,7 @@ const ILU_JAPANESE = &h0803
 const ILU_SPANISH = &h0804
 const ILU_GERMAN = &h0805
 const ILU_FRENCH = &h0806
+const ILU_ITALIAN = &h0807
 
 type ILinfo
 	Id as ILuint
@@ -121,6 +123,7 @@ declare function iluEmboss() as ILboolean
 declare function iluEnlargeCanvas(byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint) as ILboolean
 declare function iluEnlargeImage(byval XDim as ILfloat, byval YDim as ILfloat, byval ZDim as ILfloat) as ILboolean
 declare function iluEqualize() as ILboolean
+declare function iluEqualize2() as ILboolean
 declare function iluErrorString(byval Error as ILenum) as const zstring ptr
 declare function iluConvolution(byval matrix as ILint ptr, byval scale as ILint, byval bias as ILint) as ILboolean
 declare function iluFlipImage() as ILboolean
@@ -148,6 +151,7 @@ declare function iluSaturate4f(byval r as ILfloat, byval g as ILfloat, byval b a
 declare function iluScale(byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint) as ILboolean
 declare function iluScaleAlpha(byval scale as ILfloat) as ILboolean
 declare function iluScaleColours(byval r as ILfloat, byval g as ILfloat, byval b as ILfloat) as ILboolean
+declare function iluSepia() as ILboolean
 declare function iluSetLanguage(byval Language as ILenum) as ILboolean
 declare function iluSharpen(byval Factor as ILfloat, byval Iter as ILuint) as ILboolean
 declare function iluSwapColours() as ILboolean
