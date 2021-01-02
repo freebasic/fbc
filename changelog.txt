@@ -107,6 +107,7 @@ Version 1.08.0
 - github #92: FORMAT() should always have an exponent of 0 for zero.
 - sf.net #928: Wrong sign / type when printing BYTE values on arm/aarch64
 - various HANDLE_WM_*, FORWARD_WM_* macros in win/windowsx.bi were broken
+- gcc backend was trying to pass single types to double typed built-ins
 
 
 Version 1.07.0
