@@ -359,9 +359,9 @@ dim shared remapTB(0 to FB_DATATYPES-1) as integer = _
 5, _                                   '' short
 6, _                                   '' ushort
 6, _                                   '' wchar
-1, _                                   '' int
-8, _                                   '' uint
-1, _                                   '' enum
+9, _                                   '' int
+10, _                                  '' uint
+9, _                                   '' enum
 1, _                                   '' long
 8, _                                   '' ulong
 9, _                                   '' longint
@@ -826,7 +826,11 @@ private sub dbg_addstab(byref txt as string="",byval cod as ubyte,byval desc as 
 	dbgstab(ctxdbg.stabnb).value=value
 end sub
 private sub dbg_emitstr()
-	asm_section(".dbgstr,""dr""")
+	if ctx.target=FB_COMPTARGET_LINUX then
+		asm_section(".dbgstr,""a""")
+	else
+		asm_section(".dbgstr,""dr""")
+	end if
 	asm_code(".byte 0")
 	for istr as integer = 0 to ctxdbg.strnb
 		asm_code(".ascii """+hReplace( dbgstr(istr).txt, "\", $"\\" )+$"\0""")
@@ -834,7 +838,11 @@ private sub dbg_emitstr()
 end sub
 private sub dbg_emitstab()
 	dim as ustab stab
-	asm_section(".dbgdat,""dr""")
+	if ctx.target=FB_COMPTARGET_LINUX then
+		asm_section(".dbgdat,""a""")
+	else
+		asm_section(".dbgdat,""dr""")
+	end if
 	for istab as integer = 0 to ctxdbg.stabnb
 		stab.full=dbgstab(istab).stab
 		asm_code(".quad 0x"+hex(dbgstab(istab).stab)+" # "+str(stab.cod)+" "+str(stab.desc)+" "+str(stab.offst))
@@ -857,6 +865,12 @@ sub edbgemitheader_asm64( byval filename as zstring ptr )
 	'' emit source file name
 	asm_code( ".file " + QUOTE + *hEscape( filename ) + QUOTE)
 	lname = *symbUniqueLabel( )
+
+	''Must always be the first stabs as skipped when loading debug data
+	dbg_addstab ("DUMMY",0)
+
+	''placeholder for information like compiler version, etc
+	dbg_addstab (__FB_SIGNATURE__,255)
 
 	'' directory
 	if( pathIsAbsolute( filename ) = FALSE ) then
