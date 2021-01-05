@@ -2209,6 +2209,7 @@ private sub _emitend( )
 	if( env.clopt.debuginfo = true ) then
 		dim as string lname = *symbUniqueLabel( )
 		dbg_addstab(,STAB_TYPE_SO,,lname)
+		asm_code(".text")
 		asm_code(lname+":")
 		dbg_emitstab()
 		dbg_emitstr()
