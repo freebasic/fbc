@@ -2782,8 +2782,7 @@ end sub
 
 '' Whether a target needs shared libraries to be built with PIC.
 '' (Note: Android 5.0+ also need executables to be built with PIC (gcc -pie argument),
-'' but Android 4.0- don't support PIE executables. So it's up to the user to decide
-'' and pass that argument to gcc.)
+'' but Android <4.1 didn't support PIE executables. We assume 4.1+.)
 private function hTargetNeedsPIC( ) as integer
 	function = FALSE
 	if( fbGetCpuFamily( ) <> FB_CPUFAMILY_X86 ) then
@@ -2797,7 +2796,7 @@ private function hTargetNeedsPIC( ) as integer
 	else
 		'' On android-x86, PIC is necessary even to access globals in dynamic
 		'' libraries, because the runtime linker doesn't support usual relocation types.
-		'' GCC default to -fPIC anyway, but we need to be aware of whether PIC is used.
+		'' GCC defaults to -fPIC anyway, but we need to be aware of whether PIC is used.
 		if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_ANDROID ) then
 			function = TRUE
 		end if
@@ -2874,7 +2873,8 @@ private sub hCheckArgs()
 		fbcEnd( 1 )
 	end if
 
-	'' 4.5. Enable -pic automatically when building a shared library on Unixes
+	'' 4.5. Enable -pic automatically when building a Unix shared library
+	''      or Android executable (required on Android 5+)
 	if( (fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB) or _
 	    (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_ANDROID) ) then
 		if( hTargetNeedsPIC( ) ) then
@@ -2906,8 +2906,10 @@ private sub hCheckArgs()
 	else
 		fbSetOption( FB_COMPOPT_BACKEND, FB_BACKEND_GCC )
 	end if
-	'' gas doesn't currently support -pic
-	if( fbGetOption( FB_COMPOPT_PIC ) ) then
+	'' gas/gas64 doesn't currently support PIC
+	if( ((fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) or _
+	     (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS64)) and _
+	    fbGetOption( FB_COMPOPT_PIC ) ) then
 		fbSetOption( FB_COMPOPT_BACKEND, FB_BACKEND_GCC )
 	end if
 
