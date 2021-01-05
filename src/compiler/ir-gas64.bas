@@ -996,7 +996,7 @@ sub edbgemitprocheader_asm64 _
 
 	''
 	procname = *symbGetMangledName( proc )
-
+	ctxdbg.proc=proc
 	if( symbIsPublic( proc ) ) then
 		desc += ":F"
 	else
@@ -1251,7 +1251,6 @@ private sub _emitdbg(byval op as integer,byval proc as FBSYMBOL ptr,byval lnum a
 			ctxdbg.prevfilename = filename
 		end if
 		ctxdbg.lnum=lnum
-		ctxdbg.proc=proc
 	else
 	if( op = AST_OP_DBG_LINEEND ) then
 			''asm_info("AST_OP_DBG_LINEEND for line="+Str(lnum))
