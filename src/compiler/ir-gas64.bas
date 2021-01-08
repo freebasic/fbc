@@ -282,7 +282,8 @@ end type
 type DBGCTX
 	typecnt   as uinteger
 	lnum      as integer
-	prevfilename as zstring ptr
+	prevfilename as string
+	linefilename as string
 	proc      as FBSYMBOL ptr
 	strnb     as integer
 	strmax    as integer
@@ -300,7 +301,7 @@ union ustab
 	end type
 end union
 
-''for strings used in debuggig data to avoid duplicate
+''for strings used in debugging data to avoid duplicate
 type tdbgstr
 	offst as integer
 	txt   as string
@@ -697,6 +698,12 @@ private sub emitop3_op4(byref op as string)
 		asm_code(op)
 	end if
 end sub
+sub dbg_filename(byref filename as string)
+	if filename <> ctxdbg.prevfilename then
+		dbg_addstab(filename,STAB_TYPE_SOL )
+		ctxdbg.prevfilename = filename
+	end if
+end sub
 private sub hwriteasm64( byref ln2 as string,byval opt as integer=KDOALL)
 dim as string ln,lname
 #if __FB_DEBUG__ <> 0
@@ -722,6 +729,7 @@ dim as string ln,lname
 
 		if( env.clopt.debuginfo = true ) then
 			if ctxdbg.lnum<>-1 then
+				dbg_filename(ctxdbg.linefilename)
 				lname = *symbUniqueLabel( )
 				dbg_addstab(,STAB_TYPE_SLINE ,ctxdbg.lnum,lname+"-"+*symbGetMangledName( ctxdbg.proc ))
 				ctxdbg.lnum=-1
@@ -977,6 +985,13 @@ sub edbgemitprocheader_asm64 _
 	) static
 
 	dim as string desc, procname
+	static as string filename
+	filename=env.inf.name
+
+	#if defined( __FB_WIN32__ )
+		filename=ucase(filename)
+	#endif
+	dbg_filename(filename)
 
 	'' main?
 	if( symbGetIsMainProc( proc ) ) then
@@ -1239,17 +1254,10 @@ private function hgetdatatype_asm64 _
 	function = desc
 
 end function
-
 private sub _emitdbg(byval op as integer,byval proc as FBSYMBOL ptr,byval lnum as Integer,byval filename as zstring Ptr)
-	dim as string lname
 
 	if( op = AST_OP_DBG_LINEINI ) then
-		lname = *symbUniqueLabel( )
-		'asm_info( "AST_OP_DBG_LINEINI line=" & lnum & " file=" & *filename & " prev=" & *ctxdbg.prevfilename & " env=" & env.inf.name)
-		If( filename<>0 ) And ( filename <> ctxdbg.prevfilename ) then
-			dbg_addstab(*filename,STAB_TYPE_SOL )
-			ctxdbg.prevfilename = filename
-		end if
+		ctxdbg.linefilename=*filename
 		ctxdbg.lnum=lnum
 	else
 	if( op = AST_OP_DBG_LINEEND ) then
