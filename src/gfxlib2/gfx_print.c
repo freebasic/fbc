@@ -172,7 +172,7 @@ static int fb_hHookConWrite
 		size_t length
 	)
 {
-    const char *pachText = (const char *) buffer;
+    const unsigned char *pachText = (const unsigned char *) buffer;
     fb_PrintInfo *pInfo = (fb_PrintInfo*) handle->Opaque;
     int target_x = handle->Coord.X * __fb_gfx->font->w;
     int target_y = handle->Coord.Y * __fb_gfx->font->h;
