@@ -108,8 +108,29 @@ end sub
 sub cProgram()
 	dim as integer startlevel = pp.level
 
+    #macro maybeExitParser()
+        if( fbShouldContinue() = FALSE ) then
+            exit sub
+        end if
+    #endmacro
+
 	'' For each line...
 	do
+
+	    if( lexGetToken() = FB_TK_EOL ) then
+            lexCurrLineReset( )
+            lexSkipToken( )
+            continue do
+        end if
+
+        if( cComment() ) then
+            maybeExitParser()
+            lexCurrLineReset( )
+            continue do
+        end if
+
+        maybeExitParser()
+
 		'' line begin
 		astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ), env.inf.incfile ) )
 
@@ -122,9 +143,7 @@ sub cProgram()
 		'' Comment?
 		cComment( )
 
-		if (fbShouldContinue() = FALSE) then
-			exit sub
-		end if
+		maybeExitParser()
 
 		'' Emit the current line in text form, for debugging purposes
 		if( env.clopt.debuginfo ) then
@@ -145,9 +164,7 @@ sub cProgram()
 			hSkipUntil( FB_TK_EOL, TRUE )
 		end select
 
-		if (fbShouldContinue() = FALSE) then
-			exit sub
-		end if
+		maybeExitParser()
 
 		'' line end
 		astAdd( astNewDBG( AST_OP_DBG_LINEEND ) )
