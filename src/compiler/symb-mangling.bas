@@ -1194,6 +1194,7 @@ end function
 private sub hMangleProc( byval sym as FBSYMBOL ptr )
 	dim as string mangled
 	dim as integer length = any, docpp = any, add_stdcall_suffix = any
+	dim as integer quote_mangled_name = false
 	dim as zstring ptr id = any
 
 	docpp = hDoCppMangling( sym )
@@ -1212,11 +1213,33 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 	if( env.clopt.backend = FB_BACKEND_LLVM ) then
 		mangled += "@"
 
+		'' TODO: should be able to clean up this logic where we have a windows
+		'' target and remove the check on 'add_stdcall_suffix' here.
+		'' on win we are also quoting and escaping and should not need to quote
+		'' only or have @N suffix only on any other target.
+
 		'' Going to add @N stdcall suffix below?
+		'' In LLVM, @ is a special char, identifiers using it must be quoted
 		if( add_stdcall_suffix ) then
-			'' In LLVM, @ is a special char, identifiers using it must be quoted
 			mangled += """"
+			quote_mangled_name = true
 		end if
+
+		'' Windows target also? we provide the mangling so the name
+		'' must be both quoted and escaped so that our mangled name does not
+		'' get mangled again by llvm.  we need to do this on all names
+		'' not just the ones with @N suffix due the leading underscore handling
+		select case( env.clopt.target )
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
+			if(	quote_mangled_name = false ) then
+				mangled += """"
+				quote_mangled_name = true
+			end if
+
+			'' chr(1) will escape the name so it's passed through to assembler as-is
+			mangled += chr(1)
+		end select
+		
 	end if
 
 	'' Win32 underscore prefix
@@ -1301,11 +1324,11 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 	'' @N win32 stdcall suffix
 	if( add_stdcall_suffix ) then
 		mangled += "@" + str( symbProcCalcStdcallSuffixN( sym ) )
+	end if
 
-		if( env.clopt.backend = FB_BACKEND_LLVM ) then
-			'' In LLVM, @ is a special char, identifiers using it must be quoted
-			mangled += """"
-		end if
+	'' close the quoted name if needed
+	if( quote_mangled_name ) then
+		mangled += """"
 	end if
 
 	symbSetMangledId( sym, mangled )

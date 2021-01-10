@@ -110,6 +110,7 @@ Version 1.08.0
 - various HANDLE_WM_*, FORWARD_WM_* macros in win/windowsx.bi were broken
 - gcc backend was trying to pass single types to double typed built-ins
 - gfxlib2: character data was incorrectly stored for values >= 128 causing incorrect values returned from SCREEN() function
+- LLVM backend: escape procedure names on win32 targets to avoid having llvm mangle the names also
 
 
 Version 1.07.0
