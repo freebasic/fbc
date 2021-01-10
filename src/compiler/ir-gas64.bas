@@ -113,9 +113,6 @@ rbp-y -->  local vars
 #include once "ir-private.bi"
 #include once "stabs.bi"
 
-'' comment to not get debug data
-'#define debugdata
-
 '' comment to not get basic data
 '#define basicdata
 
@@ -125,12 +122,6 @@ rbp-y -->  local vars
 #define KNOOPTIM 3
 
 #define asm_code(s,opt...) hWriteasm64(s,opt)
-
-#ifdef debugdata
-	#define asm_debug(s) hWriteasm64("# asmdebug "+s)
-#else
-	#define asm_debug(s) rem
-#endif
 
 #if __FB_DEBUG__ <> 0
 	#define asm_info(s) hWriteasm64("# "+s)
@@ -241,7 +232,6 @@ end type
 type ASM64_CONTEXT
 	'' current indentation used by hWriteam64()
 	indent		 as integer
-	lnum         as integer
 	'' current section to write to
 	section	     as integer
 	head_txt     as string
@@ -262,7 +252,6 @@ type ASM64_CONTEXT
 	stkspil       as integer
 	stkcopy      as integer
 	usedreg      as long
-	prevfilename as zstring ptr
 	''to save register and virtuel register to be used with jmp reg after a cmp where reg is unmarked
 	''happens when -exx is set   check pointer not null --> cmp r11,0 / je LT_0001 / jmp [r11]
 	jmpreg       as long
@@ -290,19 +279,37 @@ type ASM64_CONTEXT
 	opepass   as integer
 end type
 
-type EDBGCTX
+type DBGCTX
 	typecnt   as uinteger
-	label     as FBSYMBOL ptr
 	lnum      as integer
-	Pos       as integer
-	isnewline as integer
-	'' first non-decl line
-	firstline as integer
-	lastline  as integer
-	filename  as zstring * FB_MAXPATHLEN+1
-	incfile   as zstring Ptr
+	prevfilename as string
+	linefilename as string
+	proc      as FBSYMBOL ptr
+	strnb     as integer
+	strmax    as integer
+	stabnb    as integer
+	stabmax   as integer
+	offst     as integer
 end type
 
+union ustab
+	full as longint
+	type
+		offst as long
+		cod as short
+		desc as short
+	end type
+end union
+
+''for strings used in debugging data to avoid duplicate
+type tdbgstr
+	offst as integer
+	txt   as string
+end type
+type tdbgstab
+	stab  as integer
+	value as string
+end type
 ''=================== declares ==============================================
 declare sub _emitdbg(byval op as integer,byval proc as FBSYMBOL ptr,byval lnum as Integer,ByVal filename as zstring Ptr = 0)
 declare sub check_optim(byref code as string)
@@ -326,8 +333,9 @@ declare sub _emitscopeend( byval s as FBSYMBOL ptr )
 declare sub _emitMacro( byval op as integer,byval v1 as IRVREG ptr, byval v2 as IRVREG ptr, byval vr as IRVREG ptr )
 declare sub save_call(byref func as string,byval vr as IRVREG ptr,byval vrreg as integer)
 declare function hGetMagicStructNumber( byval sym as FBSYMBOL ptr ) as integer
+declare sub dbg_addstab(byref txt as string="",byval cod as ubyte,byval desc as short=0,byref value as string="0")
 ''===================== globals ===========================================
-dim shared as EDBGCTX       ctx_asm64
+dim shared as DBGCTX        ctxdbg
 dim shared as long          reghandle(KREGUPPER+2)
 
 type ASM64_REGROOM
@@ -337,6 +345,8 @@ end type
 
 dim shared as ASM64_REGROOM regroom(KREGUPPER+2)
 dim shared as ASM64_CONTEXT ctx
+redim shared as tdbgstr  dbgstr()
+redim shared as tdbgstab dbgstab()
 
 '' same order as FB_DATATYPE
 '' Mapping dtype => stabs type tag (t*) as declared in the strings in the stabsTb()
@@ -350,9 +360,9 @@ dim shared remapTB(0 to FB_DATATYPES-1) as integer = _
 5, _                                   '' short
 6, _                                   '' ushort
 6, _                                   '' wchar
-1, _                                   '' int
-8, _                                   '' uint
-1, _                                   '' enum
+9, _                                   '' int
+10, _                                  '' uint
+9, _                                   '' enum
 1, _                                   '' long
 8, _                                   '' ulong
 9, _                                   '' longint
@@ -688,8 +698,14 @@ private sub emitop3_op4(byref op as string)
 		asm_code(op)
 	end if
 end sub
+sub dbg_filename(byref filename as string)
+	if filename <> ctxdbg.prevfilename then
+		dbg_addstab(filename,STAB_TYPE_SOL )
+		ctxdbg.prevfilename = filename
+	end if
+end sub
 private sub hwriteasm64( byref ln2 as string,byval opt as integer=KDOALL)
-dim as string ln
+dim as string ln,lname
 #if __FB_DEBUG__ <> 0
 	if ln2[0]=asc("#") then
 		ln="           "+ln2
@@ -708,6 +724,16 @@ dim as string ln
 			ctx.jmppass-=1
 			if ctx.jmppass=0 then
 				ctx.jmpvreg=KREGFREE
+			end if
+		end if
+
+		if( env.clopt.debuginfo = true ) then
+			if ctxdbg.lnum<>-1 then
+				dbg_filename(ctxdbg.linefilename)
+				lname = *symbUniqueLabel( )
+				dbg_addstab(,STAB_TYPE_SLINE ,ctxdbg.lnum,lname+"-"+*symbGetMangledName( ctxdbg.proc ))
+				ctxdbg.lnum=-1
+				asm_code(lname+":")
 			end if
 		end if
 
@@ -767,66 +793,107 @@ private function hfloattohex_asm64(byval value as double,byval dtype as Integer,
 	end if
 end function
 ''======================= for writing debug data ==========================================
-private sub hemitstabs_asm64 _
-	( _
-	byval _type as integer, _
-	byval _string as const zstring ptr, _
-	byval _other as integer = 0, _
-	byval _desc as integer = 0, _
-	byval _value as const zstring ptr = @"0" _
-	) static
+private function dbg_addstr(byref strg as string,byval nosearch as integer =1) as integer
 
-	dim as string ostr
-
-	ostr = ".stabs " + QUOTE
-	ostr += *hEscape( _string )
-	ostr += QUOTE + ","
-	ostr += str( _type )
-	ostr += ","
-	ostr += str( _other )
-	ostr += ","
-	ostr += str( _desc )
-	ostr += ","
-	ostr += *_value
-
-	''emitWriteStr( ostr, TRUE ) ''if true add a tab
-	asm_debug(ostr)
+	if nosearch=0 then
+		for istr as integer = 0 to ctxdbg.strnb
+			if strg=dbgstr(istr).txt then
+				return dbgstr(istr).offst
+			end if
+		next
+	end if
+	ctxdbg.strnb+=1
+	if ctxdbg.strnb>ctxdbg.strmax then
+		ctxdbg.strmax*=1.3
+		redim preserve dbgstr(ctxdbg.strmax)
+	end if
+	dbgstr(ctxdbg.strnb).txt=strg
+	dbgstr(ctxdbg.strnb).offst=ctxdbg.offst
+	function=ctxdbg.offst
+	ctxdbg.offst+=len(strg)+1
+end function
+private sub dbg_addstab(byref txt as string="",byval cod as ubyte,byval desc as short=0,byref value as string="0")
+	dim as integer offst
+	dim as ustab stab
+	if txt <>"" then
+		if cod=STAB_TYPE_SO or cod=STAB_TYPE_SOL then ''could be duplicated
+			offst=dbg_addstr(txt,0)
+		else
+			offst=dbg_addstr(txt)
+		end if
+	end if
+	ctxdbg.stabnb+=1
+	if ctxdbg.stabnb>ctxdbg.stabmax then
+		ctxdbg.stabmax*=1.5
+		redim preserve dbgstab(ctxdbg.stabmax)
+	end if
+	stab.offst=offst
+	stab.cod=cod
+	stab.desc=desc
+	dbgstab(ctxdbg.stabnb).stab=stab.full
+	dbgstab(ctxdbg.stabnb).value=value
+end sub
+private sub dbg_emitstr()
+	if ctx.target=FB_COMPTARGET_LINUX then
+		asm_section(".dbgstr,""a""")
+	else
+		asm_section(".dbgstr,""dr""")
+	end if
+	asm_code(".byte 0")
+	for istr as integer = 0 to ctxdbg.strnb
+		asm_code(".ascii """+hReplace( dbgstr(istr).txt, "\", $"\\" )+$"\0""")
+	next
+end sub
+private sub dbg_emitstab()
+	dim as ustab stab
+	if ctx.target=FB_COMPTARGET_LINUX then
+		asm_section(".dbgdat,""a""")
+	else
+		asm_section(".dbgdat,""dr""")
+	end if
+	for istab as integer = 0 to ctxdbg.stabnb
+		stab.full=dbgstab(istab).stab
+		asm_code(".quad 0x"+hex(dbgstab(istab).stab)+" # "+str(stab.cod)+" "+str(stab.desc)+" "+str(stab.offst))
+		asm_code(".quad "+dbgstab(istab).value)
+	next
 end sub
 sub edbgemitheader_asm64( byval filename as zstring ptr )
 	dim as string lname
 
-	if( env.clopt.debuginfo = FALSE ) then
-		exit sub
-	end if
-
-	ctx_asm64.typecnt 	= 1
-	ctx_asm64.label 	= NULL
-	ctx_asm64.incfile 	= NULL
-	#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
-		ctx_asm64.filename	= UCase(*filename)
-	#else
-		ctx_asm64.filename	= *filename
-	#endif
+	ctxdbg.typecnt 	= 1
+	ctxdbg.strnb=-1
+	ctxdbg.strmax=1000
+	redim dbgstr(ctxdbg.strmax)
+	ctxdbg.stabnb=-1
+	ctxdbg.stabmax=1000
+	redim dbgstab(ctxdbg.stabmax)
+	ctxdbg.offst=1
+	ctxdbg.lnum=-1
 
 	'' emit source file name
 	asm_code( ".file " + QUOTE + *hEscape( filename ) + QUOTE)
+	lname = *symbUniqueLabel( )
+
+	''Must always be the first stabs as skipped when loading debug data
+	dbg_addstab ("DUMMY",0)
+
+	''placeholder for information like compiler version, etc
+	dbg_addstab (__FB_SIGNATURE__,255)
 
 	'' directory
 	if( pathIsAbsolute( filename ) = FALSE ) then
-		hEmitSTABS_asm64( STAB_TYPE_SO, hCurDir( ) + FB_HOST_PATHDIV, 0, 0, lname )
+		dbg_addstab (hCurDir( )+ FB_HOST_PATHDIV,STAB_TYPE_SO,,lname)
 	end if
 
 	'' file name
-	hEmitSTABS_asm64( STAB_TYPE_SO, filename, 0, 0, lname )
-
-	asm_section(".text")''emitSECTION( IR_SECTION_CODE, 0 )
-	'lname = *symbUniqueLabel( )
-	'asm_code(lname+": # not usefull ???")
+	dbg_addstab(*filename,STAB_TYPE_SO,,lname)
+	asm_code(lname+":")
 
 	'' (known) type definitions
 	for i as integer = lbound( stabsTb ) to ubound( stabsTb )
-		hEmitSTABS_asm64( STAB_TYPE_LSYM, stabsTb(i), 0, 0, "0" )
-		ctx_asm64.typecnt += 1
+		dim as string strg=*stabsTb(i) ''to be removed as useless ?
+		dbg_addstab(strg,STAB_TYPE_LSYM)
+		ctxdbg.typecnt += 1
 	next
 
 end sub
@@ -838,30 +905,11 @@ sub edbgemitglobalvar_asm64 _
 	dim as integer t = any, attrib = any
 	dim as string desc
 
-	if( env.clopt.debuginfo = FALSE ) then
-		exit sub
-	end if
-
 	'' Ignore static locals here (they are handled like other locals during
 	'' edbgEmitProcFooter() -> hDeclLocalVars())
 	if( symbIsLocal( sym ) ) then
 		exit sub
 	end if
-
-	'' This function should only be called for "allocatable" globals
-	assert( symbIsShared( sym ) or symbIsCommon( sym ) )
-	'' PUBLIC (allocated EXTERNs) on a variable implies SHARED
-	assert( iif( symbIsPublic( sym ), symbIsShared( sym ), TRUE ) )
-
-	'' (unallocated EXTERNs aren't emitted in the current module)
-	assert( symbIsExtern( sym ) = FALSE )
-
-	'' (no fake dynamic array symbols - the descriptor is emitted instead)
-	assert( symbIsDynamic( sym ) = FALSE )
-
-	'' (no debug info should be emitted for temporaries - but
-	'' FB_SYMBATTRIB_TEMP isn't used with globals anyways, only locals)
-	assert( symbIsTemp( sym ) = FALSE )
 
 	'' depends on section
 	select case section
@@ -887,8 +935,7 @@ sub edbgemitglobalvar_asm64 _
 
 	'' data type
 	desc += hGetDataType_asm64( sym )
-
-	hEmitSTABS_asm64( t, desc, 0, 0, *symbGetMangledName( sym ) )
+	dbg_addstab(desc,t,,*symbGetMangledName( sym ))
 
 end sub
 
@@ -900,10 +947,6 @@ sub edbgemitlocalvar_asm64 _
 
 	dim as integer t = any
 	dim as string desc, value
-
-	if( env.clopt.debuginfo = FALSE ) then
-		exit sub
-	end if
 
 	desc = *symbGetName( sym )
 
@@ -933,8 +976,8 @@ sub edbgemitlocalvar_asm64 _
 
 	'' data type
 	desc += hGetDataType_asm64( sym )
+	dbg_addstab(desc,t,,value)
 
-	hEmitSTABS_asm64( t, desc, 0, 0, value )
 end sub
 sub edbgemitprocheader_asm64 _
 	( _
@@ -942,26 +985,18 @@ sub edbgemitprocheader_asm64 _
 	) static
 
 	dim as string desc, procname
+	static as string filename
+	filename=env.inf.name
 
-	if( env.clopt.debuginfo = FALSE ) then
-		exit sub
-	end if
-
-	'' for procs defined in include files we must emit corresponding
-	'' include file blocks, so they appear as being declared in the include
-	'' file rather than the toplevel .bas file name.
-
-	''not usefull  ?? edbgInclude( symbGetProcIncFile( proc ) )
+	#if defined( __FB_WIN32__ )
+		filename=ucase(filename)
+	#endif
+	dbg_filename(filename)
 
 	'' main?
 	if( symbGetIsMainProc( proc ) ) then
 		'' main proc (the entry point)
-		hEmitSTABS_asm64( STAB_TYPE_MAIN, _
-		fbGetEntryPoint( ), _
-		0, _
-		1, _
-		*symbGetMangledName( proc ) )
-
+		dbg_addstab(fbGetEntryPoint( ),STAB_TYPE_MAIN,1,*symbGetMangledName( proc ))
 		'' set the entry line
 		''not usefull  ??  hEmitSTABD( STAB_TYPE_SLINE, 0, 1 )
 
@@ -976,7 +1011,7 @@ sub edbgemitprocheader_asm64 _
 
 	''
 	procname = *symbGetMangledName( proc )
-
+	ctxdbg.proc=proc
 	if( symbIsPublic( proc ) ) then
 		desc += ":F"
 	else
@@ -984,39 +1019,24 @@ sub edbgemitprocheader_asm64 _
 	end if
 
 	desc += hGetDataType_asm64( proc )
-
-	hEmitSTABS_asm64( STAB_TYPE_FUN, desc, 0, proc->proc.ext->dbg.iniline, procname )
-
-	''not usefull as done elsewhere ??  hDeclArgs( proc )
-
-	''
-	'ctx.isnewline = TRUE
-	'ctx.lnum	     = 0
-	'ctx.pos	  	  = 0
-	'ctx.label	  = NULL
-
+	dbg_addstab(desc,STAB_TYPE_FUN,proc->proc.ext->dbg.iniline,procname)
+	dbg_addstab(,STAB_TYPE_SLINE,1)
 end sub
 sub edbgemitprocarg_asm64( byval sym as FBSYMBOL ptr )
 	dim as string desc
-
-	if( env.clopt.debuginfo = FALSE ) then
-		exit sub
-	end if
 
 	desc = *symbGetName( sym ) + ":"
 
 	if( symbIsParamByVal( sym ) ) then
 		desc += "p"
 	else
-		'' It's a reference or descriptor ptr
-		assert( symbIsParamBydescOrByref( sym ) )
 		desc += "v"
 	end if
 
 	'' data type
 	desc += hGetDataType_asm64( sym )
+	dbg_addstab(desc,STAB_TYPE_PSYM,,str( symbGetOfs( sym )))
 
-	hEmitSTABS_asm64( STAB_TYPE_PSYM, desc, 0, 0, str( symbGetOfs( sym ) ) )
 end sub
 private function hdeclpointer_asm64 _
 	( _
@@ -1028,8 +1048,8 @@ private function hdeclpointer_asm64 _
 	desc = ""
 	do while( typeIsPtr( dtype ) )
 		dtype = typeDeref( dtype )
-		desc += str( ctx_asm64.typecnt ) + "=*"
-		ctx_asm64.typecnt += 1
+		desc += str( ctxdbg.typecnt ) + "=*"
+		ctxdbg.typecnt += 1
 	loop
 
 	function = desc
@@ -1046,8 +1066,8 @@ private sub hdecludt_asm64 _
 
 	assert( symbIsStruct( sym ) )
 
-	sym->udt.dbg.typenum = ctx_asm64.typecnt
-	ctx_asm64.typecnt += 1
+	sym->udt.dbg.typenum = ctxdbg.typecnt
+	ctxdbg.typecnt += 1
 
 	desc = *symbGetDBGName( sym )
 
@@ -1058,12 +1078,6 @@ private sub hdecludt_asm64 _
 
 		'' Skip fake dynamic array fields, only the descriptor is emitted
 		if( symbIsDynamic( fld ) = FALSE ) then
-			'' Pass dimtbelements on to hGetDataType() so that the
-			'' dimTB of array descriptors will be emitted smaller than
-			'' it actually is. (the dimTB is the only array field in
-			'' a descriptor type, and dimtbelements will only be set
-			'' if declaring a descriptor type, so we can just pass it
-			'' always, to keep it simple)
 			desc += *symbGetName( fld ) + ":" + hGetDataType_asm64( fld, dimtbelements )
 			desc += "," + str( symbGetFieldBitOffset( fld ) )
 			desc += "," + str( symbGetFieldBitLength( fld ) )
@@ -1074,8 +1088,7 @@ private sub hdecludt_asm64 _
 	Wend
 
 	desc += ";"
-
-	hEmitSTABS_asm64( STAB_TYPE_LSYM, desc, 0, 0, "0" )
+	dbg_addstab(desc,STAB_TYPE_LSYM)
 
 end sub
 
@@ -1087,8 +1100,8 @@ private sub hdeclenum_asm64 _
 	dim as FBSYMBOL ptr e
 	dim as string desc
 
-	sym->enum_.dbg.typenum = ctx_asm64.typecnt
-	ctx_asm64.typecnt += 1
+	sym->enum_.dbg.typenum = ctxdbg.typecnt
+	ctxdbg.typecnt += 1
 
 	desc = *symbGetDBGName( sym )
 
@@ -1102,8 +1115,7 @@ private sub hdeclenum_asm64 _
 	loop
 
 	desc += ";"
-
-	hEmitSTABS_asm64( STAB_TYPE_LSYM, desc, 0, 0, "0" )
+	dbg_addstab(desc,STAB_TYPE_LSYM)
 
 end sub
 private function hgetdatatype_asm64 _
@@ -1165,8 +1177,8 @@ private function hgetdatatype_asm64 _
 
 			'' Fixed-size array?
 			if( symbGetArrayDimensions( sym ) > 0 ) then
-				desc += str( ctx_asm64.typecnt ) + "="
-				ctx_asm64.typecnt += 1
+				desc += str( ctxdbg.typecnt ) + "="
+				ctxdbg.typecnt += 1
 
 				'' Normally we want to emit all fixed-size arrays with
 				'' their proper dimensions & bounds - the only exception
@@ -1225,8 +1237,8 @@ private function hgetdatatype_asm64 _
 
 			'' function pointer?
 		case FB_DATATYPE_FUNCTION
-			desc += str( ctx_asm64.typecnt ) + "=f"
-			ctx_asm64.typecnt += 1
+			desc += str( ctxdbg.typecnt ) + "=f"
+			ctxdbg.typecnt += 1
 			desc += hGetDataType_asm64( subtype )
 
 			'' forward reference?
@@ -1242,33 +1254,18 @@ private function hgetdatatype_asm64 _
 	function = desc
 
 end function
-
 private sub _emitdbg(byval op as integer,byval proc as FBSYMBOL ptr,byval lnum as Integer,byval filename as zstring Ptr)
-	dim as string lname
 
 	if( op = AST_OP_DBG_LINEINI ) then
-		If( filename<>0 ) And ( filename <> ctx.prevfilename ) then
-			'asm_info( ";#line " & lnum & " """ & hReplace( filename, "\", $"\\" ) & """" )
-			asm_debug( ".stabs "+*filename+",132,0,0,.Lt_xxxxx")
-			ctx.prevfilename=filename
-		else
-			'asm_info( ";#line " & lnum & " """ & hReplace( env.inf.name, "\", $"\\" ) & """" )
-			asm_debug( ".stabs "+env.inf.name+",132,0,0,.Lt_xxxxx")
-		end if
-		ctx.lnum = lnum
-		lname = *symbUniqueLabel( )
-
-		asm_debug(".stabn 68,0,"+Str(lnum)+","+lname+"-"+*symbGetMangledName( proc ))
-		asm_debug(lname+":")
-		''asm_info("begin of line in stabs")
+		ctxdbg.linefilename=*filename
+		ctxdbg.lnum=lnum
 	else
 	if( op = AST_OP_DBG_LINEEND ) then
-			''asm_code("AST_OP_DBG_LINEEND for line="+Str(lnum))
-			''asm_info("end of line in stabs would be used for regfree and regsav")
+			''asm_info("AST_OP_DBG_LINEEND for line="+Str(lnum))
 		elseif op=AST_OP_DBG_SCOPEINI then
 		elseif op=AST_OP_DBG_SCOPEEND then
 		else
-			asm_debug("Other emitdbg not handled="+Str(op)+"for ref AST_OP_DBG_LINEEND="+ Str(AST_OP_DBG_LINEEND) )
+			asm_error("Other emitdbg not handled="+Str(op)+"for ref AST_OP_DBG_LINEEND="+ Str(AST_OP_DBG_LINEEND) )
 		end if
 	end if
 
@@ -1984,7 +1981,7 @@ private sub hemitvariable( byval sym as FBSYMBOL ptr )
 				exit sub
 			end if
 		else
-			edbgEmitGlobalVar_asm64(sym,IR_SECTION_BSS)
+			if( env.clopt.debuginfo = true ) then edbgemitglobalvar_asm64(sym,IR_SECTION_BSS)
 		end if
 
 	else
@@ -2016,7 +2013,7 @@ private sub hemitvariable( byval sym as FBSYMBOL ptr )
 				asm_info("stk1="+Str(ctx.stk))
 				sym->ofs=-ctx.stk
 		end select
-		edbgEmitLocalVar_asm64( sym, symbIsStatic( sym ) )
+		if( env.clopt.debuginfo = true ) then edbgemitlocalvar_asm64( sym, symbIsStatic( sym ) )
 	end if
 
 	if( is_global ) then
@@ -2093,7 +2090,6 @@ private function _emitbegin( ) as integer
 	ctx.head_txt = ""
 	ctx.body_txt = ""
 	ctx.foot_txt = ""
-	ctx.lnum = 0
 	ctx.section = SECTION_HEAD
 	'ctx.ctors = "" ''kept if to be added
 	'ctx.dtors = ""
@@ -2119,10 +2115,11 @@ private function _emitbegin( ) as integer
 		redim listreg(1 to 6)
 		listreg(1)=KREG_RCX:listreg(2)=KREG_RDX:listreg(3)=KREG_R8:listreg(4)=KREG_R9:listreg(5)=KREG_R10:listreg(6)=KREG_R11
 	end if
-	asm_code( ".intel_syntax noprefix")
-	asm_info("env.clopt.debuginfo ="+str(env.clopt.debuginfo))
-	edbgEmitHeader_asm64( env.inf.name )
+	ctx.indent+=1
 
+	if( env.clopt.debuginfo = true ) then edbgemitheader_asm64( env.inf.name )
+
+	asm_code( ".intel_syntax noprefix")
 	asm_section(".text")
 
 	function = TRUE
@@ -2215,6 +2212,16 @@ private sub _emitend( )
 		asm_code("pop rbx")
 		asm_code("ret")
 	end if
+	''write dbg data
+	if( env.clopt.debuginfo = true ) then
+		dim as string lname = *symbUniqueLabel( )
+		dbg_addstab(,STAB_TYPE_SO,,lname)
+		asm_code(".text")
+		asm_code(lname+":")
+		dbg_emitstab()
+		dbg_emitstr()
+	end if
+
 	' flush all sections to file
 	if( put( #env.outf.num, , ctx.head_txt ) <> 0 ) then
 	end if
@@ -2755,7 +2762,9 @@ private sub _procallocarg( byval proc as FBSYMBOL ptr, byval sym as FBSYMBOL ptr
 			end if
 		end if
 	end if
-	edbgEmitProcArg_asm64(sym)
+
+	if( env.clopt.debuginfo = true ) then edbgemitprocarg_asm64(sym)
+
 end sub
 
 private sub _procalloclocal( byval proc as FBSYMBOL ptr, byval sym as FBSYMBOL ptr )
@@ -6206,7 +6215,7 @@ private sub _emitvarinibegin( byval sym as FBSYMBOL ptr )
 	asm_code(*symbGetMangledName( sym )+":")
 	if( symbIsExtern( sym ) or symbIsDynamic( sym ) ) then
 	else
-		edbgEmitGlobalVar_asm64( sym, IR_SECTION_DATA )
+		if( env.clopt.debuginfo = true ) then edbgemitglobalvar_asm64(sym,IR_SECTION_DATA)
 	end if
 end sub
 private sub _emitvarinii( byval sym as FBSYMBOL ptr, byval value as longint )
@@ -6265,7 +6274,7 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 	ctx.proc_txt=""
 	ctx.section=SECTION_PROLOG
 	ctx.proccalling=false
-
+	ctxdbg.lnum=-1
 	asm_info("=============================================================================")
 	asm_info("===== Proc begin : "+ *symbGetMangledName( proc )+" =====")
 	asm_info("=============================================================================")
@@ -6314,7 +6323,7 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 
 	asm_info("stk4="+Str(ctx.stk)+" reserved space for saving registers when proc calls (eventually 112 more for variadic linux only)")
 
-	edbgEmitProcHeader_asm64(proc)
+	if( env.clopt.debuginfo = true ) then edbgEmitProcHeader_asm64(proc)
 
 	ctx.section=SECTION_PROC
 
@@ -6397,6 +6406,12 @@ private sub _emitprocend _
 	''--> EPILOG code
 	ctx.section=SECTION_EPILOG
 
+	if( env.clopt.debuginfo = true ) then
+		lname = *symbUniqueLabel( )
+		dbg_addstab(,STAB_TYPE_RBRAC,,lname+"-"+*symbGetMangledName( ctxdbg.proc ))
+		asm_code(lname+":")
+	end if
+
 	if symbIsNaked(proc)=false then
 		if restreg<>"" then asm_code(restreg)
 		''not usefull Asm_code("add rsp,XXXXX") as moving rbp to rsp restore the value just after the call and the push rbp
@@ -6404,6 +6419,13 @@ private sub _emitprocend _
 		asm_code("pop rbp")
 	end if
 	asm_code("ret")
+
+	if( env.clopt.debuginfo = true ) then
+		dim as string lname = *symbUniqueLabel( )
+		dbg_addstab(,STAB_TYPE_FUN,,lname+"-"+*symbGetMangledName( ctxdbg.proc ))
+		asm_code(lname+":")
+	end if
+
 	ctx.indent -= 1
 	asm_info("===== End of proc =====")
 
