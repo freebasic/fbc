@@ -64,7 +64,7 @@ enum AST_OP
 	AST_OP_PLUS
 	AST_OP_NEG
 
-	AST_OP_HADD							'' horizontal add
+	AST_OP_HADD                 '' gas backend: horizontal add (gas x86+sse only)
 
 	AST_OP_ABS
 	AST_OP_SGN
@@ -76,25 +76,25 @@ enum AST_OP
 	AST_OP_ATAN
 	AST_OP_ATAN2
 	AST_OP_SQRT
-	AST_OP_RSQRT								'' reciprocal square root
-	AST_OP_RCP									'' reciprocal
+	AST_OP_RSQRT                '' reciprocal square root
+	AST_OP_RCP                  '' reciprocal
 	AST_OP_LOG
 	AST_OP_EXP
 	AST_OP_FLOOR
 	AST_OP_FIX
 	AST_OP_FRAC
 	AST_OP_LEN
-	AST_OP_CONVFD2FS						'' used internally by ASM backend
+	AST_OP_CONVFD2FS            '' gas backend: used internally
 
-	AST_OP_SWZ_REPEAT						'' swizzle; repeat value
+	AST_OP_SWZ_REPEAT           '' gas backend: swizzle; repeat value
 
 	AST_OP_DEREF
 	AST_OP_FLDDEREF
 
-	AST_OP_NEW									'' global
-	AST_OP_NEW_VEC								'' /
-	AST_OP_DEL                                  '' /
-	AST_OP_DEL_VEC                              '' /
+	AST_OP_NEW                  '' global
+	AST_OP_NEW_VEC              '' /
+	AST_OP_DEL                  '' /
+	AST_OP_DEL_VEC              '' /
 
 	AST_OP_TOINT
 	AST_OP_TOFLT

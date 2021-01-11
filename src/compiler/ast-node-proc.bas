@@ -756,7 +756,10 @@ function astProcEnd( byval callrtexit as integer ) as integer
 	symbNestEnd( FALSE )
 
 	if( env.clopt.vectorize >= FB_VECTORIZE_NORMAL ) then
-		astProcVectorize( n->l )
+		'' only gas + SSE will expect AST_OP_HADD or AST_OP_SWZREP
+		if( env.clopt.backend = FB_BACKEND_GAS ) then
+			astProcVectorize( n->l )
+		end if
 	end if
 
 	''
