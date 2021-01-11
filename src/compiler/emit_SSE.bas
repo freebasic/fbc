@@ -1094,6 +1094,7 @@ private sub _emitADDF_SSE _
 	else
 		'' This should never happen due to IR_OPT_FPUCONV
 		outp " implement 'add integer to float'"
+		assert( 0 )
 	end if
 end sub
 
@@ -1174,6 +1175,7 @@ private sub _emitSUBF_SSE _
 	else
 		'' This should never happen due to IR_OPT_FPUCONV
 		outp " implement 'subtract integer from float'"
+		assert( 0 )
 	end if
 end sub
 
@@ -1253,6 +1255,7 @@ private sub _emitMULF_SSE _
 	else
 		'' This should never happen due to IR_OPT_FPUCONV
 		outp " implement 'multiply float by integer'"
+		assert( 0 )
 	end if
 
 end sub
@@ -1333,6 +1336,7 @@ private sub _emitDIVF_SSE _
 	else
 		'' This should never happen due to IR_OPT_FPUCONV
 		outp " implement 'divide float by integer'"
+		assert( 0 )
 	end if
 
 end sub
@@ -1764,6 +1768,8 @@ private sub _emitHADDF_SSE _
 			outp "addps " + dst + COMMA + "xmm7"
 			outp "pshufd xmm7" + COMMA + dst + COMMA + "0x01"
 			outp "addss " + dst + COMMA + "xmm7"
+		else
+			assert( 0 )
 		end if
 	end if
 

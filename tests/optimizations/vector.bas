@@ -157,6 +157,262 @@ SUITE( fbc_tests.optimizations.vector )
 
 	END_TEST
 
+	TEST( fvec3_intra )
+
+		dim as FVec3 a3, b3, c3
+	
+		#macro check( result, expr )
+			c3.x = expr
+
+			CU_ASSERT_EQUAL( c3.x,  result )
+			CU_ASSERT_EQUAL( c3.y,  0f  )
+			CU_ASSERT_EQUAL( c3.z,  0f  )
+		#endmacro
+
+		a3 = type(1f,  2f,  4f)
+		b3 = type(8f, 16f, 32f)
+
+		c3.y = 0.0f
+		c3.z = 0.0f
+
+		check(  1f, a3.x )
+		check(  2f, a3.y )
+		check(  3f, a3.x + a3.y )
+		check(  3f, a3.y + a3.x )
+		check(  4f, a3.z )
+		check(  5f, a3.x + a3.z )
+		check(  5f, a3.z + a3.x )
+		check(  6f, a3.y + a3.z )
+		check(  6f, a3.z + a3.y )
+		check(  7f, a3.x + a3.y + a3.z )
+		check(  7f, a3.y + a3.x + a3.z )
+		check(  7f, a3.x + a3.z + a3.y )
+		check(  7f, a3.z + a3.x + a3.y )
+		check(  7f, a3.y + a3.z + a3.x )
+		check(  7f, a3.z + a3.y + a3.x )
+
+		'' mix in another source
+
+		check( 17f, b3.y + a3.x )
+		check( 18f, a3.y + b3.y )
+		check( 19f, b3.y + a3.x + a3.y )
+		check( 19f, a3.x + b3.y + a3.y )
+		check( 19f, a3.x + a3.y + b3.y )
+		check( 19f, b3.y + a3.y + a3.x )
+		check( 19f, a3.y + b3.y + a3.x )
+		check( 19f, a3.y + a3.x + b3.y )
+		check( 20f, b3.y + a3.z )
+		check( 20f, a3.z + b3.y )
+		check( 21f, b3.y + a3.x + a3.z )
+		check( 21f, a3.x + b3.y + a3.z )
+		check( 21f, a3.x + a3.z + b3.y )
+		check( 21f, b3.y + a3.z + a3.x )
+		check( 21f, a3.z + b3.y + a3.x )
+		check( 21f, a3.z + a3.x + b3.y )
+		check( 22f, b3.y + a3.y + a3.z )
+		check( 22f, a3.y + b3.y + a3.z )
+		check( 22f, a3.y + a3.z + b3.y )
+		check( 22f, b3.y + a3.z + a3.y )
+		check( 22f, a3.z + b3.y + a3.y )
+		check( 22f, a3.z + a3.y + b3.y )
+		check( 23f, b3.y + a3.x + a3.y + a3.z )
+		check( 23f, a3.x + b3.y + a3.y + a3.z )
+		check( 23f, a3.x + a3.y + b3.y + a3.z )
+		check( 23f, a3.x + a3.y + a3.z + b3.y )
+		check( 23f, b3.y + a3.y + a3.x + a3.z )
+		check( 23f, a3.y + b3.y + a3.x + a3.z )
+		check( 23f, a3.y + a3.x + b3.y + a3.z )
+		check( 23f, a3.y + a3.x + a3.z + b3.y )
+		check( 23f, b3.y + a3.x + a3.z + a3.y )
+		check( 23f, a3.x + b3.y + a3.z + a3.y )
+		check( 23f, a3.x + a3.z + b3.y + a3.y )
+		check( 23f, a3.x + a3.z + a3.y + b3.y )
+		check( 23f, b3.y + a3.z + a3.x + a3.y )
+		check( 23f, a3.z + b3.y + a3.x + a3.y )
+		check( 23f, a3.z + a3.x + b3.y + a3.y )
+		check( 23f, a3.z + a3.x + a3.y + b3.y )
+		check( 23f, b3.y + a3.y + a3.z + a3.x )
+		check( 23f, a3.y + b3.y + a3.z + a3.x )
+		check( 23f, a3.y + a3.z + b3.y + a3.x )
+		check( 23f, a3.y + a3.z + a3.x + b3.y )
+		check( 23f, b3.y + a3.z + a3.y + a3.x )
+		check( 23f, a3.z + b3.y + a3.y + a3.x )
+		check( 23f, a3.z + a3.y + b3.y + a3.x )
+		check( 23f, a3.z + a3.y + a3.x + b3.y )
+
+	END_TEST
+
+	TEST( fvec4_intra )
+
+		dim as FVec4 a4, b4, c4
+	
+		#macro check( result, expr )
+			c4.x = expr
+
+			CU_ASSERT_EQUAL( c4.x,  result )
+			CU_ASSERT_EQUAL( c4.y,  0f  )
+			CU_ASSERT_EQUAL( c4.z,  0f  )
+			CU_ASSERT_EQUAL( c4.w,  0f  )
+		#endmacro
+
+		#macro check3( r, a, b, c )
+			check( r, a + b + c )
+			check( r, b + a + c )
+			check( r, a + c + b )
+			check( r, c + a + b )
+			check( r, b + c + a )
+			check( r, c + b + a )
+		#endmacro
+
+		#macro check4( r, p, a, b, c )
+			check( r, p + a + b + c )
+			check( r, p + b + a + c )
+			check( r, p + a + c + b )
+			check( r, p + c + a + b )
+			check( r, p + b + c + a )
+			check( r, p + c + b + a )
+		#endmacro
+
+		a4 = type( 1f,  2f,  4f,   8f)
+		b4 = type(16f, 32f, 64f, 128f)
+
+		c4.y = 0.0f
+		c4.z = 0.0f
+		c4.w = 0.0f
+
+		check (  1f, a4.x )
+		check (  2f, a4.y )
+		check (  3f, a4.x + a4.y )
+		check (  3f, a4.y + a4.x )
+		check (  4f, a4.z )
+		check (  5f, a4.x + a4.z )
+		check (  5f, a4.z + a4.x )
+		check (  6f, a4.y + a4.z )
+		check (  6f, a4.z + a4.y )
+		check3(  7f, a4.x, a4.y, a4.z )
+		check (  8f, a4.w )
+		check (  9f, a4.x + a4.w )
+		check (  9f, a4.w + a4.x )
+		check ( 10f, a4.w + a4.y )
+		check ( 10f, a4.y + a4.w )
+		check3( 11f, a4.x, a4.y, a4.w )
+		check ( 12f, a4.z + a4.w )
+		check ( 12f, a4.w + a4.z )
+		check3( 13f, a4.x, a4.z, a4.w )
+		check3( 14f, a4.y, a4.z, a4.w )
+		check4( 15f, a4.x, a4.y, a4.z, a4.w )
+		check4( 15f, a4.y, a4.x, a4.z, a4.w )
+		check4( 15f, a4.z, a4.x, a4.y, a4.w )
+		check4( 15f, a4.w, a4.x, a4.y, a4.z )
+
+		'' mix in another source
+
+		check ( 33f, b4.y + a4.x )
+		check ( 33f, a4.x + b4.y )
+
+		check ( 34f, b4.y + a4.y )
+		check ( 34f, a4.y + b4.y )
+
+		check ( 35f, b4.y + a4.x + a4.y )
+		check ( 35f, a4.x + b4.y + a4.y )
+		check ( 35f, a4.x + a4.y + b4.y )
+
+		check ( 35f, b4.y + a4.y + a4.x )
+		check ( 35f, a4.y + b4.y + a4.x )
+		check ( 35f, a4.y + a4.x + b4.y )
+
+		check ( 36f, b4.y + a4.z )
+		check ( 36f, a4.z + b4.y )
+
+		check ( 37f, b4.y + a4.x + a4.z )
+		check ( 37f, a4.x + b4.y + a4.z )
+		check ( 37f, a4.x + a4.z + b4.y )
+
+		check ( 37f, b4.y + a4.z + a4.x )
+		check ( 37f, a4.z + b4.y + a4.x )
+		check ( 37f, a4.z + a4.x + b4.y )
+
+		check ( 38f, b4.y + a4.y + a4.z )
+		check ( 38f, a4.y + b4.y + a4.z )
+		check ( 38f, a4.y + a4.z + b4.y )
+
+		check ( 38f, b4.y + a4.z + a4.y )
+		check ( 38f, a4.z + b4.y + a4.y )
+		check ( 38f, a4.z + a4.y + b4.y )
+
+		check3( 39f, b4.y + a4.x, a4.y, a4.z )
+		check3( 39f, a4.x, b4.y + a4.y, a4.z )
+		check3( 39f, a4.x, a4.y, b4.y + a4.z )
+		check3( 39f, a4.x, a4.y, a4.z + b4.y )
+
+		check ( 40f, b4.y + a4.w )
+		check ( 40f, a4.w + b4.y )
+
+		check ( 41f, b4.y + a4.x + a4.w )
+		check ( 41f, a4.x + b4.y + a4.w )
+		check ( 41f, a4.x + a4.w + b4.y )
+
+		check ( 41f, b4.y + a4.w + a4.x )
+		check ( 41f, a4.w + b4.y + a4.x )
+		check ( 41f, a4.w + a4.x + b4.y )
+
+		check ( 42f, b4.y + a4.w + a4.y )
+		check ( 42f, a4.w + b4.y + a4.y )
+		check ( 42f, a4.w + a4.y + b4.y )
+
+		check ( 42f, b4.y + a4.y + a4.w )
+		check ( 42f, a4.y + b4.y + a4.w )
+		check ( 42f, a4.y + a4.w + b4.y )
+
+		check3( 43f, b4.y + a4.x, a4.y, a4.w )
+		check3( 43f, a4.x, b4.y + a4.y, a4.w )
+		check3( 43f, a4.x, a4.y, b4.y + a4.w )
+		check3( 43f, a4.x, a4.y, a4.w + b4.y )
+
+		check ( 44f, b4.y + a4.z + a4.w )
+		check ( 44f, a4.z + b4.y + a4.w )
+		check ( 44f, a4.z + a4.w + b4.y )
+
+		check ( 44f, b4.y + a4.w + a4.z )
+		check ( 44f, a4.w + b4.y + a4.z )
+		check ( 44f, a4.w + a4.z + b4.y )
+
+		check3( 45f, b4.y + a4.x, a4.z, a4.w )
+		check3( 45f, a4.x, b4.y + a4.z, a4.w )
+		check3( 45f, a4.x, a4.z, b4.y + a4.w )
+		check3( 45f, a4.x, a4.z, a4.w + b4.y )
+
+		check3( 46f, b4.y + a4.y, a4.z, a4.w )
+		check3( 46f, a4.y, b4.y + a4.z, a4.w )
+		check3( 46f, a4.y, a4.z, b4.y + a4.w )
+		check3( 46f, a4.y, a4.z, a4.w + b4.y )
+
+		check4( 47f, b4.y + a4.x, a4.y, a4.z, a4.w )
+		check4( 47f, a4.x, b4.y + a4.y, a4.z, a4.w )
+		check4( 47f, a4.x, a4.y, b4.y + a4.z, a4.w )
+		check4( 47f, a4.x, a4.y, a4.z, b4.y + a4.w )
+		check4( 47f, a4.x, a4.y, a4.z, a4.w + b4.y )
+
+		check4( 47f, b4.y + a4.y, a4.x, a4.z, a4.w )
+		check4( 47f, a4.y, b4.y + a4.x, a4.z, a4.w )
+		check4( 47f, a4.y, a4.x, b4.y + a4.z, a4.w )
+		check4( 47f, a4.y, a4.x, a4.z, b4.y + a4.w )
+		check4( 47f, a4.y, a4.x, a4.z, a4.w + b4.y )
+
+		check4( 47f, b4.y + a4.z, a4.x, a4.y, a4.w )
+		check4( 47f, a4.z, b4.y + a4.x, a4.y, a4.w )
+		check4( 47f, a4.z, a4.x, b4.y + a4.y, a4.w )
+		check4( 47f, a4.z, a4.x, a4.y, b4.y + a4.w )
+		check4( 47f, a4.z, a4.x, a4.y, a4.w + b4.y )
+
+		check4( 47f, b4.y + a4.w, a4.x, a4.y, a4.z )
+		check4( 47f, a4.w, b4.y + a4.x, a4.y, a4.z )
+		check4( 47f, a4.w, a4.x, b4.y + a4.y, a4.z )
+		check4( 47f, a4.w, a4.x, a4.y, b4.y + a4.z )
+		check4( 47f, a4.w, a4.x, a4.y, a4.z + b4.y )
+
+	END_TEST
+
 	''
 	'' simple arithmetic (double precision)
 	''

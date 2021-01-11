@@ -112,6 +112,7 @@ Version 1.08.0
 - gfxlib2: character data was incorrectly stored for values >= 128 causing incorrect values returned from SCREEN() function
 - LLVM backend: escape procedure names on win32 targets to avoid having llvm mangle the names also
 - sf.net #572: don't call vectorize operations for anything but gas+x86+sse backend / options
+- sf.net #572: gas+x86+SSE faulty optimisations with '-vec 2' for intra-expression vectorisation of horizontal add optimisation was generating bad AST resulting in bad assembly
 
 
 Version 1.07.0

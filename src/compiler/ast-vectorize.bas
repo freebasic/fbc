@@ -574,30 +574,56 @@ private function astIntraTreeVectorize _
 	if( n->class = AST_NODECLASS_BOP ) then
 		if( n->op.op = AST_OP_ADD ) then
 
+			'' test if nodes can be merged / vectorized
+			'' careful, maxVectorWidth & vectorWidth are shared
 			maxVectorWidth = 4
 			vectorWidth = 0
+
 			if( hMergeNode( n->l, n->r, FALSE ) ) then
+
+				'' go ahead and do the merge / vectorize
+				'' 
 				maxVectorWidth = 4
 				vectorWidth = 0
 				hMergeNode( n->l, n->r, TRUE )
 
-				'' check for multiple HADDs
+				'' n    = AST_OP_ADD, can be removed
+				'' n->l = vectorized node or an existing AST_OP_HADD
+				'' n->r = can be discarded
+
+				assert( n->l )
+
 				l = n->l
+
+				'' check for multiple AST_OP_HADD's
 				if( l->class = AST_NODECLASS_UOP ) then
 					if( l->op.op = AST_OP_HADD ) then
+
+						'' replace the callers node
 						*n = *l
+
+						assert( n->l )
+						assert( n->l->vector <> 0 )
+
+						'' copy the new value of the vector to AST_OP_HADD node
+						n->vector = n->l->vector
+
 						'' remove this node
 						astDelNode( l )
-						n->vector = 0
 						return TRUE
 					end if
 				end if
+
+				'' n    = AST_OP_ADD, can be replaced
+				'' n->l = vectorized node
+				'' n->r = can be discarded
+				assert( n->l )
 
 				astDelTree( n->r )
 				n->r = NULL
 				n->class = AST_NODECLASS_UOP
 				n->op.op = AST_OP_HADD
-				n->vector = 0
+				n->vector = n->l->vector
 
 				return TRUE
 			end if
