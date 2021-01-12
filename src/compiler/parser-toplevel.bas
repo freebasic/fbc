@@ -108,28 +108,28 @@ end sub
 sub cProgram()
 	dim as integer startlevel = pp.level
 
-    #macro maybeExitParser()
-        if( fbShouldContinue() = FALSE ) then
-            exit sub
-        end if
-    #endmacro
+	#macro maybeExitParser()
+		if( fbShouldContinue() = FALSE ) then
+			exit sub
+		end if
+	#endmacro
 
 	'' For each line...
 	do
 
-	    if( lexGetToken() = FB_TK_EOL ) then
-            lexCurrLineReset( )
-            lexSkipToken( )
-            continue do
-        end if
+		if( lexGetToken() = FB_TK_EOL ) then
+			lexCurrLineReset( )
+			lexSkipToken( )
+			continue do
+		end if
 
-        if( cComment() ) then
-            maybeExitParser()
-            lexCurrLineReset( )
-            continue do
-        end if
+		if( cComment() ) then
+			maybeExitParser()
+			lexCurrLineReset( )
+			continue do
+		end if
 
-        maybeExitParser()
+		maybeExitParser()
 
 		'' line begin
 		astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ), env.inf.incfile ) )
@@ -312,7 +312,7 @@ sub hSkipCompound _
 
 					if( cnt > 0 ) then
 						cnt -= 1
-                    end if
+					end if
 
 					if( cnt = 0 ) then
 						exit do
