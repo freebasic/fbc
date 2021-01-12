@@ -117,6 +117,9 @@ sub cProgram()
 	'' For each line...
 	do
 
+		'' skip empty lines and comments, and don't write to the ASM output
+		'' note: lexGetToken() or cComment( ) can be called in either order
+		'' as the default lexflags for both is LEXCHECK_EVERYTHING
 		if( lexGetToken() = FB_TK_EOL ) then
 			lexCurrLineReset( )
 			lexSkipToken( )

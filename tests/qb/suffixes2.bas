@@ -47,7 +47,11 @@ sub test3
 	dim rem&
 	rem& = 564356
 	assert( rem& = 564356 )
-	
+
+	dim rem$
+	rem$ = "qwerty"
+	assert( rem$ = "qwerty" )	
+
 end sub
 
 sub test4
@@ -56,6 +60,9 @@ sub test4
 	
 	rem& = 564356
 	assert( rem& = 564356 )
+
+	rem$ = "qwerty"
+	assert( rem$ = "qwerty" )	
 	
 end sub
 
