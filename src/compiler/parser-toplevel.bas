@@ -129,11 +129,15 @@ sub cProgram()
 		'' line in the file.
 
 		if( lexGetToken( ) = FB_TK_EOL ) then
+			'' must reset the output here because lexSkipToken() will load
+			'' the next token in to the buffer, and we don't want to lose
+			'' it if it is a statement
+			lexCurrLineReset( )
 			lexSkipToken( )
 			'' need to check for exit here because directives may have been
 			'' invoked or errors occur in ppCheck() calls in lexSkipToken()
 			maybeExitParser()
-			lexCurrLineReset( )
+
 			'' must increment statement count after EOL's
 			parser.stmt.cnt += 1
 			continue do
@@ -144,7 +148,6 @@ sub cProgram()
 		'' invoked, then should be handled by new include scope
 		if( cComment() ) then
 			maybeExitParser()
-			lexCurrLineReset( )
 			continue do
 		end if
 
