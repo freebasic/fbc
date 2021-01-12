@@ -117,15 +117,31 @@ sub cProgram()
 	'' For each line...
 	do
 
-		'' skip empty lines and comments, and don't write to the ASM output
-		'' note: lexGetToken() or cComment( ) can be called in either order
-		'' as the default lexflags for both is LEXCHECK_EVERYTHING
-		if( lexGetToken() = FB_TK_EOL ) then
-			lexCurrLineReset( )
+		'' parse the empty lines and comments and process directives, but
+		'' don't write to the ASM output.  Clear the output buffer for
+		'' the current line instead of calling hEmitCurrentLineText( )
+		'' parser.stmt.cnt still needs to increment on FB_TK_EOL or else
+		'' the scope indexes and error reporting gets messed.
+		'' note: lexGetToken() = FB_TK_EOL must be called first because if
+		'' cComment() is true and we reset the loop, we should be looking
+		'' for the FB_TK_EOL immediately after.  If next token is FB_TK_EOF
+		'' then we should fall through to emit a debug node for the last
+		'' line in the file.
+
+		if( lexGetToken( ) = FB_TK_EOL ) then
 			lexSkipToken( )
+			'' need to check for exit here because directives may have been
+			'' invoked or errors occur in ppCheck() calls in lexSkipToken()
+			maybeExitParser()
+			lexCurrLineReset( )
+			'' must increment statement count after EOL's
+			parser.stmt.cnt += 1
 			continue do
 		end if
 
+		'' assuming that cComment() won't generate any executable
+		'' statements in the current file scope.  if #include is
+		'' invoked, then should be handled by new include scope
 		if( cComment() ) then
 			maybeExitParser()
 			lexCurrLineReset( )
@@ -133,6 +149,9 @@ sub cProgram()
 		end if
 
 		maybeExitParser()
+
+		'' if it wasn't an empty line, comment, or directive then
+		'' we should expect a statement next requiring debug nodes
 
 		'' line begin
 		astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ), env.inf.incfile ) )
