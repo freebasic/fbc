@@ -346,11 +346,12 @@ end function
 
 private function hDefArgLeft_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
 
-	'' __FB_ARG_LEFTTOF__( ARG, SEP )
+	'' __FB_ARG_LEFTTOF__( ARG, SEP [, RET = ""] )
 
 	var res = ""
 	var arg = hMacro_getArgZ( argtb, 0 )
 	var sep = hMacro_getArgZ( argtb, 1 )
+	var ret = hMacro_getArgZ( argtb, 2 )
 
 	if( (arg <> NULL) and (sep <> NULL) ) then
 		dim tokens() as string
@@ -372,7 +373,7 @@ private function hDefArgLeft_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as
 			next
 
 			if( len(res) = 0 ) then
-				*errnum = FB_ERRMSG_SYNTAXERROR
+				res = *ret
 			end if
 		else
 			*errnum = FB_ERRMSG_SYNTAXERROR
@@ -381,6 +382,7 @@ private function hDefArgLeft_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as
 		*errnum = FB_ERRMSG_ARGCNTMISMATCH
 	end if
 
+	ZstrFree(ret)
 	ZstrFree(sep)
 	ZstrFree(arg)
 	
@@ -390,11 +392,12 @@ end function
 
 private function hDefArgRight_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
 
-	'' __FB_ARG_RIGHTOF__( ARG, SEP )
+	'' __FB_ARG_RIGHTOF__( ARG, SEP [, RET = ""] )
 
 	var res = ""
 	var arg = hMacro_getArgZ( argtb, 0 )
 	var sep = hMacro_getArgZ( argtb, 1 )
+	var ret = hMacro_getArgZ( argtb, 2 )
 
 	if( (arg <> NULL) and (sep <> NULL) ) then
 		dim tokens() as string
@@ -415,7 +418,7 @@ private function hDefArgRight_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 				end if
 			next
 			if( len(res) = 0 ) then
-				*errnum = FB_ERRMSG_SYNTAXERROR
+				res = *ret
 			end if
 		else
 			*errnum = FB_ERRMSG_SYNTAXERROR
@@ -424,6 +427,7 @@ private function hDefArgRight_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 		*errnum = FB_ERRMSG_ARGCNTMISMATCH
 	end if
 
+	ZstrFree(ret)
 	ZstrFree(sep)
 	ZstrFree(arg)
 	
@@ -702,8 +706,8 @@ dim shared macroTb(0 to ...) as SYMBMACRO => _
 	(@"__FB_UNIQUEID__"       , 0                       , @hDefUniqueId_cb    , NULL                 , 1, { (@"ID") } ), _
 	(@"__FB_UNIQUEID_POP__"   , 0                       , @hDefUniqueIdPop_cb , NULL                 , 1, { (@"ID") } ), _
 	(@"__FB_ARG_COUNT__"      , FB_DEFINE_FLAGS_VARIADIC, @hDefArgCount_cb    , NULL                 , 1, { (@"ARGS") } ), _
-	(@"__FB_ARG_LEFTOF__"     , 0                       , @hDefArgLeft_cb     , NULL                 , 2, { (@"ARG"), (@"SEP") } ), _
-	(@"__FB_ARG_RIGHTOF__"    , 0                       , @hDefArgRight_cb    , NULL                 , 2, { (@"ARG"), (@"SEP") } ), _
+	(@"__FB_ARG_LEFTOF__"     , FB_DEFINE_FLAGS_VARIADIC, @hDefArgLeft_cb     , NULL                 , 3, { (@"ARG"), (@"SEP"), (@"RET") } ), _
+	(@"__FB_ARG_RIGHTOF__"    , FB_DEFINE_FLAGS_VARIADIC, @hDefArgRight_cb    , NULL                 , 3, { (@"ARG"), (@"SEP"), (@"RET") } ), _
 	(@"__FB_JOIN__"           , 0                       , @hDefJoinZ_cb       , @hDefJoinW_cb        , 2, { (@"L"), (@"R") } ), _
 	(@"__FB_QUOTE__"          , 0                       , @hDefQuoteZ_cb      , @hDefQuoteW_cb       , 1, { (@"ARG") } ), _
 	(@"__FB_UNQUOTE__"        , 0                       , @hDefUnquoteZ_cb    , @hDefUnquoteW_cb     , 1, { (@"ARG") } ), _
