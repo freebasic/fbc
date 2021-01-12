@@ -37,6 +37,7 @@ Version 1.08.0
 - fbc: double the minimum and default stacksize on 64-bit to 64Kb and 2048Kb respectively.
 - fbc: internal changes to optimize away unused call results
 - github #203: allow casts of addresses on static initializers 
+- only write debug line information for statements and don't write comments / empty lines / directives for top level source code in assembly debug ouput
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling

@@ -22,6 +22,22 @@ function cComment _
 
 	select case lexGetToken( lexflags )
 	case FB_TK_COMMENT, FB_TK_REM
+
+		'' lang qb quirks
+		if( lexGetToken( lexflags ) = FB_TK_REM ) then
+			if( fbLangIsSet( FB_LANG_QB ) ) then
+				'' suffix? 
+				'' in QB only '$' was allowed, fbc allows REM[$ % ! & #] 
+				'' for a variable in qb mode.  To restrict to '$' only
+				'' as in QB, then would need to check FB_TK_STRTYPECHAR
+				'' below, plus update the parser code that deals with
+				'' suffixes on variables.
+				if( lexGetSuffixChar() <> CHAR_NULL ) then
+					return FALSE
+				end if
+			end if
+		end if
+
 		'' Prevent the PP from trying to parse (pointless in a comment
 		'' anyways), and -pp from emitting the tokens (specifically due
 		'' to the lexSkipToken() calls for '$' and from cDirective(),

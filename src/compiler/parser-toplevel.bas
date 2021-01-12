@@ -108,8 +108,54 @@ end sub
 sub cProgram()
 	dim as integer startlevel = pp.level
 
+	#macro maybeExitParser()
+		if( fbShouldContinue() = FALSE ) then
+			exit sub
+		end if
+	#endmacro
+
 	'' For each line...
 	do
+
+		'' parse the empty lines and comments and process directives, but
+		'' don't write to the ASM output.  Clear the output buffer for
+		'' the current line instead of calling hEmitCurrentLineText( )
+		'' parser.stmt.cnt still needs to increment on FB_TK_EOL or else
+		'' the scope indexes and error reporting gets messed.
+		'' note: lexGetToken() = FB_TK_EOL must be called first because if
+		'' cComment() is true and we reset the loop, we should be looking
+		'' for the FB_TK_EOL immediately after.  If next token is FB_TK_EOF
+		'' then we should fall through to emit a debug node for the last
+		'' line in the file.
+
+		if( lexGetToken( ) = FB_TK_EOL ) then
+			'' must reset the output here because lexSkipToken() will load
+			'' the next token in to the buffer, and we don't want to lose
+			'' it if it is a statement
+			lexCurrLineReset( )
+			lexSkipToken( )
+			'' need to check for exit here because directives may have been
+			'' invoked or errors occur in ppCheck() calls in lexSkipToken()
+			maybeExitParser()
+
+			'' must increment statement count after EOL's
+			parser.stmt.cnt += 1
+			continue do
+		end if
+
+		'' assuming that cComment() won't generate any executable
+		'' statements in the current file scope.  if #include is
+		'' invoked, then should be handled by new include scope
+		if( cComment() ) then
+			maybeExitParser()
+			continue do
+		end if
+
+		maybeExitParser()
+
+		'' if it wasn't an empty line, comment, or directive then
+		'' we should expect a statement next requiring debug nodes
+
 		'' line begin
 		astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ), env.inf.incfile ) )
 
@@ -122,9 +168,7 @@ sub cProgram()
 		'' Comment?
 		cComment( )
 
-		if (fbShouldContinue() = FALSE) then
-			exit sub
-		end if
+		maybeExitParser()
 
 		'' Emit the current line in text form, for debugging purposes
 		if( env.clopt.debuginfo ) then
@@ -145,9 +189,7 @@ sub cProgram()
 			hSkipUntil( FB_TK_EOL, TRUE )
 		end select
 
-		if (fbShouldContinue() = FALSE) then
-			exit sub
-		end if
+		maybeExitParser()
 
 		'' line end
 		astAdd( astNewDBG( AST_OP_DBG_LINEEND ) )
@@ -295,7 +337,7 @@ sub hSkipCompound _
 
 					if( cnt > 0 ) then
 						cnt -= 1
-                    end if
+					end if
 
 					if( cnt = 0 ) then
 						exit do
