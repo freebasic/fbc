@@ -19,11 +19,15 @@ _fb_CpuDetect:
 fb_CpuDetect:
 #endif
 
+	/* todo: PIC asm needs to use the global offset table to access globals,
+	   as a workaround just disable caching. Not called repeatedly anyway. */
+#ifndef ENABLE_PIC
 	mov eax, [detected_cpu]
 	or eax, eax
 	jz detect
 
 	ret /* already detected (return detected_cpu) */
+#endif
 
 detect:
 	push ebp
@@ -78,7 +82,9 @@ cpuid_ok:
 
 cpudetect_exit:
 
+#ifndef ENABLE_PIC
 	mov [detected_cpu], eax
+#endif
 
 	pop	esi
 	pop	edi

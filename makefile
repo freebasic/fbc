@@ -658,9 +658,11 @@ LIBFB_H := $(sort $(foreach i,$(RTLIB_DIRS),$(wildcard $(i)/*.h)))
 LIBFB_C := $(sort $(foreach i,$(RTLIB_DIRS),$(patsubst $(i)/%.c,$(libfbobjdir)/%.o,$(wildcard $(i)/*.c))))
 LIBFB_S := $(sort $(foreach i,$(RTLIB_DIRS),$(patsubst $(i)/%.s,$(libfbobjdir)/%.o,$(wildcard $(i)/*.s))))
 LIBFBPIC_C   := $(patsubst $(libfbobjdir)/%,$(libfbpicobjdir)/%,$(LIBFB_C))
+LIBFBPIC_S   := $(patsubst $(libfbobjdir)/%,$(libfbpicobjdir)/%,$(LIBFB_S))
 LIBFBMT_C    := $(patsubst $(libfbobjdir)/%,$(libfbmtobjdir)/%,$(LIBFB_C))
 LIBFBMT_S    := $(patsubst $(libfbobjdir)/%,$(libfbmtobjdir)/%,$(LIBFB_S))
 LIBFBMTPIC_C := $(patsubst $(libfbobjdir)/%,$(libfbmtpicobjdir)/%,$(LIBFB_C))
+LIBFBMTPIC_S := $(patsubst $(libfbobjdir)/%,$(libfbmtpicobjdir)/%,$(LIBFB_S))
 
 # LIBFBRT_BI     - src/fbrt/*.bi - include files
 # LIBFBRT_BAS    - src/fbrt/obj/<target>/*.o files sourced from *.bas
@@ -824,10 +826,12 @@ $(LIBFB_C): $(libfbobjdir)/%.o: %.c $(LIBFB_H) | $(libfbobjdir)
 $(LIBFB_S): $(libfbobjdir)/%.o: %.s $(LIBFB_H) | $(libfbobjdir)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
-$(libdir)/libfbpic.a: $(LIBFBPIC_C) | $(libdir)
+$(libdir)/libfbpic.a: $(LIBFBPIC_C) $(LIBFBPIC_S) | $(libdir)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
 $(LIBFBPIC_C): $(libfbpicobjdir)/%.o: %.c $(LIBFB_H) | $(libfbpicobjdir)
 	$(QUIET_CC)$(CC) -fPIC $(ALLCFLAGS) -c $< -o $@
+$(LIBFBPIC_S): $(libfbpicobjdir)/%.o: %.s $(LIBFB_H) | $(libfbpicobjdir)
+	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp -DENABLE_PIC $(ALLCFLAGS) -c $< -o $@
 
 $(libdir)/libfbmt.a: $(LIBFBMT_C) $(LIBFBMT_S) | $(libdir)
 ifeq ($(TARGET_OS),dos)
@@ -846,10 +850,12 @@ $(LIBFBMT_C): $(libfbmtobjdir)/%.o: %.c $(LIBFB_H) | $(libfbmtobjdir)
 $(LIBFBMT_S): $(libfbmtobjdir)/%.o: %.s $(LIBFB_H) | $(libfbmtobjdir)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
-$(libdir)/libfbmtpic.a: $(LIBFBMTPIC_C) | $(libdir)
+$(libdir)/libfbmtpic.a: $(LIBFBMTPIC_C) $(LIBFBMTPIC_S) | $(libdir)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
 $(LIBFBMTPIC_C): $(libfbmtpicobjdir)/%.o: %.c $(LIBFB_H) | $(libfbmtpicobjdir)
 	$(QUIET_CC)$(CC) -DENABLE_MT -fPIC $(ALLCFLAGS) -c $< -o $@
+$(LIBFBMTPIC_S): $(libfbmtpicobjdir)/%.o: %.s $(LIBFB_H) | $(libfbmtpicobjdir)
+	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp -DENABLE_MT -DENABLE_PIC $(ALLCFLAGS) -c $< -o $@
 
 ifeq ($(TARGET_OS),dos)
 djgpplibc := $(shell $(CC) -print-file-name=libc.a)
