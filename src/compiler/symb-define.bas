@@ -344,6 +344,52 @@ private function hDefArgCount_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 	function = str(0)
 end function
 
+private function hDefArgExtract_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
+
+	'' __FB_ARG_EXTRACT__(NUMARG, ARGS...)
+	'' Retuns empty string on invalid index, rather than compile error
+
+	var res = ""
+	var numStr = hMacro_getArgZ( argtb, 0 )
+
+	if( numStr <> NULL ) then
+		'' Is NUMARG a number
+		'' Val returns 0 on failure which we can't detect from a valid 0
+		'' so check and construct the number manually
+
+		dim numArgLen as Long = Len(*numStr), i as Long, index as ULong = 0
+		dim zeroVal As ULong = Asc("0")
+		For i = 0 To numArgLen - 1
+			if( Not hIsCharNumeric(numStr[i]) ) then
+				Exit For
+			End If
+			index *= 10
+			index += (numStr[i] - zeroVal)
+		Next
+		If i = numArgLen Then
+			dim numVarArgs As ULong = argtb->count - 1
+			if(index < numVarArgs) then
+				var argString = hMacro_getArgZ( argtb, 1 )
+				dim varArgs() as string
+
+				hSplitStr(*argString, ",", varArgs())
+				res = varArgs(index)
+				ZStrFree(argString)
+			end if
+
+		else '' NUMARG isn't a number
+			*errnum = FB_ERRMSG_SYNTAXERROR
+		end if
+
+		ZStrFree(numStr)
+
+	else '' No args
+		*errnum = FB_ERRMSG_ARGCNTMISMATCH
+	end if
+	return res
+
+end function
+
 private function hDefArgLeft_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
 
 	'' __FB_ARG_LEFTTOF__( ARG, SEP [, RET = ""] )
@@ -706,6 +752,7 @@ dim shared macroTb(0 to ...) as SYMBMACRO => _
 	(@"__FB_UNIQUEID__"       , 0                       , @hDefUniqueId_cb    , NULL                 , 1, { (@"ID") } ), _
 	(@"__FB_UNIQUEID_POP__"   , 0                       , @hDefUniqueIdPop_cb , NULL                 , 1, { (@"ID") } ), _
 	(@"__FB_ARG_COUNT__"      , FB_DEFINE_FLAGS_VARIADIC, @hDefArgCount_cb    , NULL                 , 1, { (@"ARGS") } ), _
+	(@"__FB_ARG_EXTRACT__"    , FB_DEFINE_FLAGS_VARIADIC, @hDefArgExtract_cb  , NULL                 , 2, { (@"ARGNUM"), (@"ARGS") } ), _
 	(@"__FB_ARG_LEFTOF__"     , FB_DEFINE_FLAGS_VARIADIC, @hDefArgLeft_cb     , NULL                 , 3, { (@"ARG"), (@"SEP"), (@"RET") } ), _
 	(@"__FB_ARG_RIGHTOF__"    , FB_DEFINE_FLAGS_VARIADIC, @hDefArgRight_cb    , NULL                 , 3, { (@"ARG"), (@"SEP"), (@"RET") } ), _
 	(@"__FB_JOIN__"           , 0                       , @hDefJoinZ_cb       , @hDefJoinW_cb        , 2, { (@"L"), (@"R") } ), _
