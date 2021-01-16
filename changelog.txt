@@ -70,6 +70,7 @@ Version 1.08.0
 - emscripten port (WIP, v1ctor & angros47)
 - bindings to SoLoud audio library (soloud_c.bi: C API only)
 - gas64: add debugging information for -g -gen gas64 for user code for FBdebugger only (SARG)
+- __FB_ARG_EXTRACT__( index, args... ) builtin macro (adeyblue)
 
 [fixed]
 - makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture
