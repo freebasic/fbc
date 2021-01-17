@@ -72,7 +72,7 @@ else
   endif
 endif
 
-FBHELPPACKAGE := fbhelp-v$(FBHELPVERSION)
+FBHELPPACKAGE := fbhelp-$(FBHELPVERSION)
 
 packsrc := $(FBHELPPACKAGE)-src
 packbin := $(FBHELPPACKAGE)-$(TARGET)
