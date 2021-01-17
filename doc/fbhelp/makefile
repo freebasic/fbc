@@ -161,7 +161,7 @@ $(APP): $(OBJS) $(HDRS)
 
 .PHONY : clean
 clean:
-	-rm -f $(OBJS) $(APP)
+	-rm -f $(objpath)/*.o $(APP)
 
 .PHONY : srcdist
 srcdist:
