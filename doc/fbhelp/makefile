@@ -19,6 +19,7 @@
 #    FBC              path/name of fbc compiler to use
 #    FBCFLAGS         extra options to pass to FBC
 #    FBHELPPACKAGE    name of the package to build, not including the suffixes
+#    WITHMANUAL=1     include the manual with the binary distribution
 #
 ##########################
 
@@ -73,6 +74,12 @@ else
 endif
 
 FBHELPPACKAGE := fbhelp-$(FBHELPVERSION)
+
+ifneq ($(WITHMANUAL),1)
+  fbhelpmanual := 
+else
+  fbhelpmanual := fbhelp.daz
+endif
 
 packsrc := $(FBHELPPACKAGE)-src
 packbin := $(FBHELPPACKAGE)-$(TARGET)
@@ -176,7 +183,7 @@ srcdist:
 .PHONY : bindist
 bindist: all
 	mkdir -p $(packbin)
-	cp $(APP) fbhelp.txt $(packbin)
+	cp $(APP) fbhelp.txt $(fbhelpmanual) $(packbin)
 ifeq ($(TARGET),linux)
 	dos2unix $(packbin)/fbhelp.txt
 	rm -f "$(packbin).tar.gz"
