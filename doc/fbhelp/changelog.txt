@@ -1,7 +1,8 @@
 Version 1.00:
 
 [changed]
-- copyright updates for 2018
+- copyright updates for 2021
+- add sleep delay when no key input to reduce CPU load (Sockla https://sourceforge.net/p/fbc/patches/35/)
 
 [fixed]
 - internal, control updates are moved in to Forms_Draw()

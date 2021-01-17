@@ -154,6 +154,10 @@ public function MsgBox_show cdecl _
 		end if
 
 		k = inkey
+		if( len(k) = 0 ) then
+			sleep 25
+			k = inkey
+		end if
 
 		'' TODO: make a keyboard focus handler
 

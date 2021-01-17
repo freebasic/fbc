@@ -115,6 +115,10 @@ public sub HelpScreen_Show( byval pexepath as zstring ptr )
 		end if
 
 		k = inkey
+		if( len(k) = 0 ) then
+			sleep 25
+			k = inkey
+		end if
 
 		'' TODO: make a keyboard focus handler
 
