@@ -1,8 +1,33 @@
+#!/usr/bin/make -f
+#
+# commands:
+#    <none>|all TARGET=win32|dos|linux 
+#                     build fbhelp application for the TARGET
+#
+#    srcdist          build source packages .zip & .tar.gz
+#    bindist          build binary package for TARGET
+#
+#    clean            delete built files
+#    clean-dist       delete packages
+#
+# makfile configuration:
+#
+#    TARGET=win32|dos|linux 
+#                     choose target to build for (required)
+#    GFX=1            build the fbgfx version instead of the console version
+#                       and fbhelp will run in a graphics window
+#    FBC              path/name of fbc compiler to use
+#    FBCFLAGS         extra options to pass to FBC
+#    FBHELPPACKAGE    name of the package to build, not including the suffixes
+#
 ##########################
 
 ifeq (,$(findstring $(TARGET),dos linux win32))
 $(error need TARGET=dos | linux | win32)
 endif
+
+# get FBHELPVERSION from the file
+include version.mk
 
 MAIN := fbhelp
 
@@ -46,6 +71,11 @@ else
     endif
   endif
 endif
+
+FBHELPPACKAGE := fbhelp-v$(FBHELPVERSION)
+
+packsrc := $(FBHELPPACKAGE)-src
+packbin := $(FBHELPPACKAGE)-$(TARGET)
 
 ifndef objpath
 objpath=obj/$(TARGET)
@@ -132,3 +162,35 @@ $(APP): $(OBJS) $(HDRS)
 .PHONY : clean
 clean:
 	-rm -f $(OBJS) $(APP)
+
+.PHONY : srcdist
+srcdist:
+	mkdir -p $(packsrc)
+	cp *.bas *.bi fbhelp.txt changelog.txt gpl.txt makefile version.mk $(packsrc)
+	dos2unix $(packsrc)/*
+	tar -czf "$(packsrc).tar.gz" "$(packsrc)"
+	unix2dos $(packsrc)/*
+	zip -q -r "$(packsrc).zip" "$(packsrc)"
+	rm -rf "$(packsrc)"
+
+.PHONY : bindist
+bindist: all
+	mkdir -p $(packbin)
+	cp $(APP) fbhelp.txt $(packbin)
+ifeq ($(TARGET),linux)
+	dos2unix $(packbin)/fbhelp.txt
+	rm -f "$(packbin).tar.gz"
+	tar -czf "$(packbin).tar.gz" "$(packbin)"
+else
+	unix2dos $(packbin)/fbhelp.txt
+	rm -f "$(packbin).zip"
+	zip -q -r "$(packbin).zip" "$(packbin)"
+endif
+	rm -rf "$(packbin)"
+
+.PHONY : dist-clean
+dist-clean:
+	rm -f "$(packsrc).zip"
+	rm -f "$(packsrc).tar.gz"
+	rm -f "$(packbin).zip"
+	rm -f "$(packbin).tar.gz"
