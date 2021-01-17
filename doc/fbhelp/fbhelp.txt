@@ -21,6 +21,16 @@ License:
 
 Installing:
 
+  fbhelp is a program for viewing an offline text version of the freebasic
+  manual found at https://www.freebasic.net/wiki/DocToc using a custom format
+
+  The help file to use is 'fbhelp.daz'
+
+  fbhelp.daz can be found at:
+      https://sourceforge.net/projects/fbc/files/Documentation/
+      in the file "FB-manual-X.XX.X-fbhelp.zip" for the latest release
+      of the fbc compiler.
+
   Put the following files in the same directory:
 
   o DOS version:
@@ -52,7 +62,7 @@ Installing:
     - rename fbhelp.dat.gz fbhelp.daz
 
 
-Running:
+Running & Usage:
 
   Run the executable fbhelp.exe, fbhelpw.exe, or ./fbhelp.
 
@@ -145,7 +155,7 @@ Compiling:
       - fbhelp sources ( https://github.com/freebasic/fbc/tree/master/doc/fbhelp )
       - if fbhelp sources are not available from the website, please contact
         Jeff Marshall ( coder[at]execulink[dot]com )
-      - FreeBASIC version 0.17b or later ( https://www.freebasic.net/ )
+      - FreeBASIC version 1.0.0 or later ( https://www.freebasic.net/ )
       - zlib libraries ( http://www.zlib.net/ )
 
   o Making:
@@ -155,6 +165,14 @@ Compiling:
       - where {target} is dos, linux, or win32
       - use GFX=1 to make the graphical version (640x480x8 only)
       - omit GFX=1 to make the console version
+
+      Building for win 64-bit
+      - make TARGET=win32 FBC="fbc-win64.exe -target win64"
+
+      Building for DOS (under winXP)
+      - due to the long file names build the DOS version using mingw32 to cross
+        compile for DOS
+      - make TARGET=dos FBC="fbc-win32.exe -target dos"
 
       Use fbdoc (the FreeBASIC document generator) to create fbhelp.dat
 
