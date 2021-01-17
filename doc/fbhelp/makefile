@@ -116,12 +116,15 @@ endif
 
 VPATH = .
 
-$(objpath)/%.o : %.bas $(HDRS)
+$(objpath)/%.o : %.bas $(HDRS) | $(objpath)
 	$(FBC) $(FBCFLAGS) -m $(MAIN) -c $< -o $@
 
 ##########################
 
 all: $(APP)
+
+$(objpath):
+	mkdir -p $@
 
 $(APP): $(OBJS) $(HDRS)
 	$(FBC) $(FBCFLAGS) $(OBJS) $(LIBS) $(RCS) -x $(APP)
