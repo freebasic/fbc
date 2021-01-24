@@ -1199,6 +1199,7 @@ private sub hWriteX86F2I _
 			hWriteLine( """fistp" + rtype_suffix + " %0;""", TRUE )
 			hWriteLine( ":""=m"" (result)", TRUE )
 			hWriteLine( ":""m"" (value)"  , TRUE )
+			hWriteLine( ":""st"""  , TRUE )
 		sectionUnindent( )
 		hWriteLine( ");", TRUE )
 		hWriteLine( "return result;", TRUE )
