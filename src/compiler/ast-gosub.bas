@@ -83,7 +83,15 @@ sub astGosubAddJmp _
 		''for gas64
 		l->lbl.gosub = true
 	else
+
+		'' build the call to setjmp()
+		'' on mingw-w64, setjmp() takes 2 parameters
+		'' no need to check target here, rtlSetJmp() will take care of the call.
+		'' see rtl-gosub.bas:rtlSetJmp()
+		''
 		'' if ( setjmp( fb_GosubPush( @ctx ) ) ) = 0 ) then
+		'' if ( setjmp( fb_GosubPush( @ctx ), 0 ) = 0 ) then
+
 		label = symbAddLabel( NULL )
 
 		astAdd( astBuildBranch( _
@@ -129,6 +137,7 @@ sub astGosubAddJumpPtr _
 		astGosubAddInit( proc )
 
 		'' if ( setjmp( fb_GosubPush( @ctx ) ) ) = 0 ) then
+		'' if ( setjmp( fb_GosubPush( @ctx ), 0 ) ) = 0 ) then
 		label = symbAddLabel( NULL )
 
 		astAdd( astBuildBranch( _

@@ -116,6 +116,7 @@ Version 1.08.0
 - sf.net #572: don't call vectorize operations for anything but gas+x86+sse backend / options
 - sf.net #572: gas+x86+SSE faulty optimisations with '-vec 2' for intra-expression vectorisation of horizontal add optimisation was generating bad AST resulting in bad assembly
 - gcc backend: inline asm for float to integer calculations was generating bad code with gcc optimizations due to x87 stack clobbered but not reported to gcc
+- gcc backend: fix GOSUB causing crash/exception on win64 - setjmp/longjmp failed on mingw-w64 64-bit and needed to be passed 2 parameters instead of 1
 
 
 Version 1.07.0
