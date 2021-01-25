@@ -1346,7 +1346,6 @@ private function asm64_spillREG( byval regspilled as long ) as ASM64_SAVEDREG pt
 				'' keep previous id
 				'' keep previous sdoffset
 				v->sdvreg = reghandle(regspilled)
-				v->spilbranch1 = false
 				return v
 			end if
 			v = flistGetNext( v )
@@ -1373,7 +1372,6 @@ private function asm64_spillREG( byval regspilled as long ) as ASM64_SAVEDREG pt
 	'' store location and vreg spilled,
 	v->sdoffset = -ctx.stk
 	v->sdvreg = reghandle(regspilled)
-	v->spilbranch1 = false
 
 	return v
 
@@ -5161,9 +5159,9 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 					else
 						regtempo=*reg_tempo()
 						if symbIsStatic(v2->vidx->sym) Or symbisshared(v2->vidx->sym) then
-							op3="lea "+regtempo+", "+*symbGetMangledName(v2->vidx->sym)+"[rip+"+Str(v2->ofs)+"]"
+							op3="lea "+regtempo+", "+*symbGetMangledName(v2->vidx->sym)+"[rip+"+Str(v2->vidx->ofs)+"]"
 							op3+=newline2+"mov "+regtempo+", "+"["+regtempo+"]"+" #NO"
-							op1="["+regtempo+"]"
+							op1=Str(v2->ofs)+"["+regtempo+"]"
 						else
 							op3="mov "+regtempo+", "+Str(v2->vidx->ofs)+"[rbp]"
 							op1=Str(v2->ofs)+"["+regtempo+"]"
