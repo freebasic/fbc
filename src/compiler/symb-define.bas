@@ -671,30 +671,43 @@ private function hDefEval_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as in
 		lex.ctx->deflen += len( LFCHAR )
 
 		dim expr as ASTNODE ptr = cExpression( )
+		var errmsg = FB_ERRMSG_OK
 
 		if( expr <> NULL ) then
 			expr = astOptimizeTree( expr )
 
 			if( astIsCONST( expr ) ) then
 				res = astConstFlushToStr( expr )
+
+				'' any tokens still in the buffer? cExpression() should have used them all
+				if( lexGetToken( ) <> FB_TK_EOL ) then
+					errmsg = FB_ERRMSG_SYNTAXERROR
+				end if
 			elseif( astIsConstant( expr ) ) then
 				res = """" + hReplace( expr->sym->var_.littext, QUOTE, QUOTE + QUOTE ) + """"
+
+				'' any tokens still in the buffer? cExpression() should have used them all
+				if( lexGetToken( ) <> FB_TK_EOL ) then
+					errmsg = FB_ERRMSG_SYNTAXERROR
+				end if
 			else
 				astDelTree( expr )
-				errReport( FB_ERRMSG_EXPECTEDCONST )
-				'' error recovery: skip until next line
-				hSkipUntil( FB_TK_EOL, TRUE )
+				errmsg = FB_ERRMSG_EXPECTEDCONST
 				res = str(0)
 			end if
 		else
-			errReport( FB_ERRMSG_SYNTAXERROR )
-			'' error recovery: skip until next line
-			hSkipUntil( FB_TK_EOL, TRUE )
+			errmsg = FB_ERRMSG_SYNTAXERROR
 		end if
 
 		lex.ctx->reclevel -= 1
 
 		lexPopCtx()
+
+		if( errmsg <> FB_ERRMSG_OK ) then
+			errReportEx( errmsg, *arg )
+			'' error recovery: skip until next line (in the buffer)
+			hSkipUntil( FB_TK_EOL, TRUE )
+		end if
 
 	end if
 

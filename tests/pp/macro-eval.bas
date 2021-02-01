@@ -26,7 +26,7 @@ SUITE( fbc_tests.pp.macro_eval )
 	END_TEST
 
 	TEST( pp_ )
-	    #macro assign( sym, expr )
+		#macro assign( sym, expr )
 		#define tmp __FB_EVAL__( expr )
 		__FB_UNQUOTE__( __FB_EVAL__( "#undef " + sym ) )
 		__FB_UNQUOTE__( __FB_EVAL__( "#define " + sym + " " + __FB_QUOTE__( tmp ) ) )
