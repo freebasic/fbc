@@ -660,6 +660,16 @@ private function hDefEval_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as in
 		lex.ctx->defptr = lex.ctx->deftext.data
 		lex.ctx->deflen += len( *arg )
 
+		'' Add an end of expression marker so that the parser
+		'' doesn't read past the end of the expression text
+		'' by appending an LFCHAR to the end of the expression
+		'' It would be better to use the explicit EOF character, 
+		'' but we can't appened an extta NULL character to a zstring
+
+		DZstrConcatAssign( lex.ctx->deftext, LFCHAR )
+		lex.ctx->defptr = lex.ctx->deftext.data
+		lex.ctx->deflen += len( LFCHAR )
+
 		dim expr as ASTNODE ptr = cExpression( )
 
 		if( expr <> NULL ) then
