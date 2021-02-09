@@ -174,6 +174,8 @@ ifdef TARGET
     else ifneq ($(filter msdos%,$(triplet)),)
       TARGET_OS := dos
     else ifneq ($(filter freebsd%,$(triplet)),)
+      TARGET_OS := dragonfly
+    else ifneq ($(filter dragonfly%,$(triplet)),)
       TARGET_OS := freebsd
     else ifneq ($(filter linux%,$(triplet)),)
       TARGET_OS := linux
@@ -212,6 +214,8 @@ else
       TARGET_OS := darwin
     else ifeq ($(uname),FreeBSD)
       TARGET_OS := freebsd
+    else ifeq ($(uname),DragonFly)
+      TARGET_OS := dragonfly
     else ifeq ($(uname),Linux)
       TARGET_OS := linux
     else ifneq ($(findstring MINGW,$(uname)),)
@@ -311,7 +315,7 @@ endif
 
 # ENABLE_PIC for non-x86 Linux etc. (for every system where we need separate
 # -fPIC versions of FB libs besides the normal ones)
-ifneq ($(filter freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+ifneq ($(filter freebsd dragonfly linux netbsd openbsd solaris,$(TARGET_OS)),)
   ifneq ($(TARGET_ARCH),x86)
     ENABLE_PIC := YesPlease
   endif
@@ -507,7 +511,7 @@ RTLIB_DIRS := $(srcdir)/rtlib $(srcdir)/rtlib/$(TARGET_OS) $(srcdir)/rtlib/$(TAR
 ifeq ($(TARGET_OS),cygwin)
   RTLIB_DIRS += $(srcdir)/rtlib/win32
 endif
-ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+ifneq ($(filter darwin freebsd dragonfly linux netbsd openbsd solaris,$(TARGET_OS)),)
   RTLIB_DIRS += $(srcdir)/rtlib/unix
 endif
 GFXLIB2_DIRS := $(patsubst $(srcdir)/rtlib%,$(srcdir)/gfxlib2%,$(RTLIB_DIRS))
@@ -823,7 +827,7 @@ gitdist:
 # Windows/DOS normal     = fbc-x.xx.x-target (MinGW/DJGPP-style packages)
 #
 ifndef FBPACKAGE
-  ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+  ifneq ($(filter darwin freebsd dragonfly linux netbsd openbsd solaris,$(TARGET_OS)),)
     ifdef ENABLE_STANDALONE
       FBPACKAGE := FreeBASIC-$(FBVERSION)-$(FBTARGET)-standalone
     else
@@ -1010,7 +1014,7 @@ bindist:
 
 	# install.sh for normal Linux/BSD setups
   ifndef ENABLE_STANDALONE
-    ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+    ifneq ($(filter darwin freebsd dragonfly linux netbsd openbsd solaris,$(TARGET_OS)),)
 	cp $(rootdir)contrib/unix-installer/install.sh $(FBPACKAGE)
     endif
   endif
@@ -1118,6 +1122,7 @@ bootstrap-dist:
 	mkdir -p bootstrap/dos
 	mkdir -p bootstrap/freebsd-x86
 	mkdir -p bootstrap/freebsd-x86_64
+	mkdir -p bootstrap/dragonfly-x86_64
 	mkdir -p bootstrap/linux-x86
 	mkdir -p bootstrap/linux-x86_64
 	mkdir -p bootstrap/win32
@@ -1127,6 +1132,7 @@ bootstrap-dist:
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target dos            && mv src/compiler/*.asm bootstrap/dos
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-x86    && mv src/compiler/*.asm bootstrap/freebsd-x86
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-x86_64 && mv src/compiler/*.c   bootstrap/freebsd-x86_64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target dragonfly-x86_64 && mv src/compiler/*.c   bootstrap/dragonfly-x86_64
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-x86      && mv src/compiler/*.asm bootstrap/linux-x86
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-x86_64   && mv src/compiler/*.c   bootstrap/linux-x86_64
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target win32          && mv src/compiler/*.asm bootstrap/win32
@@ -1139,6 +1145,7 @@ bootstrap-dist:
 	dos2unix bootstrap/dos/*
 	dos2unix bootstrap/freebsd-x86/*
 	dos2unix bootstrap/freebsd-x86_64/*
+	dos2unix bootstrap/dragonfly-x86_64/*
 	dos2unix bootstrap/linux-x86/*
 	dos2unix bootstrap/linux-x86_64/*
 	dos2unix bootstrap/win32/*
@@ -1184,7 +1191,7 @@ endif
 
 # Use gcc to link fbc from the bootstrap .o's
 # (assuming the rtlib was built already)
-ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+ifneq ($(filter darwin freebsd dragonfly linux netbsd openbsd solaris,$(TARGET_OS)),)
   BOOTSTRAP_LIBS := -lncurses -lm -pthread
 endif
 $(BOOTSTRAP_FBC): rtlib $(BOOTSTRAP_OBJ)
