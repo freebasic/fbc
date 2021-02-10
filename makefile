@@ -174,9 +174,9 @@ ifdef TARGET
     else ifneq ($(filter msdos%,$(triplet)),)
       TARGET_OS := dos
     else ifneq ($(filter freebsd%,$(triplet)),)
-      TARGET_OS := dragonfly
-    else ifneq ($(filter dragonfly%,$(triplet)),)
       TARGET_OS := freebsd
+    else ifneq ($(filter dragonfly%,$(triplet)),)
+      TARGET_OS := dragonfly
     else ifneq ($(filter linux%,$(triplet)),)
       TARGET_OS := linux
     else ifneq ($(filter mingw%,$(triplet)),)
