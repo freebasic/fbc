@@ -765,16 +765,16 @@ private function hLinkFiles( ) as integer
 		''  - only if objinfo is enabled
 		''  - only with ld.bfd, not ld.gold, because gold doesn't support this kind
 		''    of linker script (results in broken binaries).
+		
+		'' Solaris uses it own linker
+		''  - don't know if it support this kind of linker script or not
+		''  - so just disable it for the solaris target, too?
+		''  - the solaris linker will cause major problems
+		''  - because of imcompatibilities with the GNU linker
+		''  - we can only know if when really testing on the platform
+		''  - and adapt the code over time
 		if( fbGetOption( FB_COMPOPT_OBJINFO ) and _
 		    (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) and _
-		    '' Solaris uses it own linker
-		    ''  - don't know if it support this kind of linker script or not
-		    ''  - so just disable it for the solaris target, too?
-		    ''  - the solaris linker will cause major problems
-		    ''  - because of imcompatibilities with the GNU linker
-		    ''  - we can only know if when really testing on the platform
-		    ''  - and adapt the code over time
-		    ''(fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_SOLARIS) and _
 			( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) and _
 		    (not fbcIsUsingGoldLinker( )) ) then
 			ldcline += " """ + fbc.libpath + (FB_HOST_PATHDIV + "fbextra.x""")
@@ -1363,10 +1363,9 @@ end type
 dim shared as FBOSARCHINFO fbosarchmap(0 to ...) => _
 { _
 	_ '' win32/win64 refer to specific OS/arch combinations
+	_ '' solaris is 64 bit only
 	(@"win32"  , FB_COMPTARGET_WIN32  , FB_DEFAULT_CPUTYPE_X86   ), _
 	(@"win64"  , FB_COMPTARGET_WIN32  , FB_DEFAULT_CPUTYPE_X86_64), _
-	
-	_ '' solaris is 64 bit only
 	(@"solaris", FB_COMPTARGET_SOLARIS, FB_DEFAULT_CPUTYPE_X86_64), _
 	_
 	_ '' OS given without arch, using the default arch, except for dos/xbox
