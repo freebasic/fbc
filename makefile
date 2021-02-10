@@ -233,6 +233,13 @@ else
     # For DJGPP, always use x86 (DJGPP's uname -m returns just "pc")
     ifeq ($(TARGET_OS),dos)
       TARGET_ARCH := x86
+    
+    # For Solaris, always use x86_64
+    else ifeq ($(TARGET_OS),solaris)
+      TARGET_ARCH := x86_64
+    # For DragonFly, always use x86_64
+    else ifeq ($(TARGET_OS),dragonfly)
+      TARGET_ARCH := x86_64
 
     # For MSYS2, use default compilers (uname -m returns MSYS2's shell
     #  architecture).  For example, from win 7:
@@ -1118,6 +1125,7 @@ bootstrap-dist:
 	mkdir -p bootstrap/dos
 	mkdir -p bootstrap/freebsd-x86
 	mkdir -p bootstrap/freebsd-x86_64
+	mkdir -p bootstrap/solaris-x86_64
 	mkdir -p bootstrap/linux-x86
 	mkdir -p bootstrap/linux-x86_64
 	mkdir -p bootstrap/win32
@@ -1127,6 +1135,7 @@ bootstrap-dist:
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target dos            && mv src/compiler/*.asm bootstrap/dos
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-x86    && mv src/compiler/*.asm bootstrap/freebsd-x86
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-x86_64 && mv src/compiler/*.c   bootstrap/freebsd-x86_64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target solaris-x86_64 && mv src/compiler/*.c   bootstrap/solaris-x86_64
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-x86      && mv src/compiler/*.asm bootstrap/linux-x86
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-x86_64   && mv src/compiler/*.c   bootstrap/linux-x86_64
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target win32          && mv src/compiler/*.asm bootstrap/win32
@@ -1139,6 +1148,7 @@ bootstrap-dist:
 	dos2unix bootstrap/dos/*
 	dos2unix bootstrap/freebsd-x86/*
 	dos2unix bootstrap/freebsd-x86_64/*
+	dos2unix bootstrap/solaris-x86_64/*
 	dos2unix bootstrap/linux-x86/*
 	dos2unix bootstrap/linux-x86_64/*
 	dos2unix bootstrap/win32/*
