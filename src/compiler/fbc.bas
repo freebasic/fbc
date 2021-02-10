@@ -215,7 +215,7 @@ private sub hSetOutName( )
 			fbc.outname += ".dll"
 		case FB_COMPTARGET_LINUX, FB_COMPTARGET_DARWIN, _
 		     FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, _
-		     FB_COMPTARGET_NETBSD, FB_COMPTARGET_DRAGONFLY
+		     FB_COMPTARGET_NETBSD, FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS
 			fbc.outname = hStripFilename( fbc.outname ) + _
 				"lib" + hStripPath( fbc.outname ) + ".so"
 		case FB_COMPTARGET_DOS
@@ -686,7 +686,7 @@ private function hLinkFiles( ) as integer
 
 	case FB_COMPTARGET_LINUX, FB_COMPTARGET_DARWIN, _
 	     FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, _
-	     FB_COMPTARGET_NETBSD, FB_COMPTARGET_DRAGONFLY
+	     FB_COMPTARGET_NETBSD, FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS
 
 		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 			dllname = hStripPath( hStripExt( fbc.outname ) )
@@ -702,6 +702,8 @@ private function hLinkFiles( ) as integer
 				ldcline += " -dynamic-linker /libexec/ld-elf.so.1"
 			case FB_COMPTARGET_DRAGONFLY
 				ldcline += " -dynamic-linker /libexec/ld-elf.so.2"
+			case FB_COMPTARGET_SOLARIS
+				ldcline += " -dynamic-linker /lib/64/ld.so.1"
 			case FB_COMPTARGET_LINUX
 				select case( fbGetCpuFamily( ) )
 				case FB_CPUFAMILY_X86
@@ -765,6 +767,14 @@ private function hLinkFiles( ) as integer
 		''  - only if objinfo is enabled
 		''  - only with ld.bfd, not ld.gold, because gold doesn't support this kind
 		''    of linker script (results in broken binaries).
+
+		'' Solaris uses it own linker
+		''  - don't know if it support this kind of linker script or not
+		''  - so just disable it for the solaris target, too?
+		''  - the solaris linker will cause major problems
+		''  - because of imcompatibilities with the GNU linker
+		''  - we can only know if when really testing on the platform
+		''  - and adapt the code over time
 		if( fbGetOption( FB_COMPOPT_OBJINFO ) and _
 		    (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) and _
 			( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) and _
@@ -868,7 +878,7 @@ private function hLinkFiles( ) as integer
 
 	case FB_COMPTARGET_LINUX, FB_COMPTARGET_DARWIN, _
 	     FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, _
-	     FB_COMPTARGET_NETBSD, FB_COMPTARGET_DRAGONFLY
+	     FB_COMPTARGET_NETBSD, FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS
 
 		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE) then
 			if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
@@ -975,7 +985,7 @@ private function hLinkFiles( ) as integer
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
 	     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD, _
-	     FB_COMPTARGET_DRAGONFLY
+	     FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS
 		if( fbGetOption( FB_COMPOPT_PIC ) ) then
 			ldcline += hFindLib( "crtendS.o" )
 		else
@@ -1288,6 +1298,7 @@ dim shared as FBGNUOSINFO gnuosmap(0 to ...) => _
 	(@"darwin" , FB_COMPTARGET_DARWIN ), _
 	(@"freebsd", FB_COMPTARGET_FREEBSD), _
 	(@"dragonfly", FB_COMPTARGET_DRAGONFLY), _
+	(@"solaris", FB_COMPTARGET_SOLARIS), _
 	(@"netbsd" , FB_COMPTARGET_NETBSD ), _
 	(@"openbsd", FB_COMPTARGET_OPENBSD), _
 	(@"xbox"   , FB_COMPTARGET_XBOX   )  _
@@ -1355,10 +1366,12 @@ end type
 dim shared as FBOSARCHINFO fbosarchmap(0 to ...) => _
 { _
 	_ '' win32/win64 refer to specific OS/arch combinations
-	_ '' dragonfly is 64 bit only
 	(@"win32"  , FB_COMPTARGET_WIN32  , FB_DEFAULT_CPUTYPE_X86   ), _
 	(@"win64"  , FB_COMPTARGET_WIN32  , FB_DEFAULT_CPUTYPE_X86_64), _	
+	_ '' dragonfly is 64 bit only
 	(@"dragonfly", FB_COMPTARGET_DRAGONFLY, FB_DEFAULT_CPUTYPE_X86_64), _
+	_ '' solaris is 64 bit only
+	(@"solaris", FB_COMPTARGET_SOLARIS, FB_DEFAULT_CPUTYPE_X86_64), _
 	_
 	_ '' OS given without arch, using the default arch, except for dos/xbox
 	_ ''  which only work with x86, so we can always default to x86 for them.
@@ -2342,7 +2355,7 @@ private function hTargetNeedsPIC( ) as integer
 		select case as const( fbGetOption( FB_COMPOPT_TARGET ) )
 		case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
 		     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD, _
-		     FB_COMPTARGET_DRAGONFLY
+		     FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS
 			function = TRUE
 		end select
 	end if
@@ -2443,7 +2456,7 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 	select case as const (fbGetOption(FB_COMPOPT_TARGET))
 	case FB_COMPTARGET_LINUX, FB_COMPTARGET_DARWIN, _
 	     FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, _
-	     FB_COMPTARGET_NETBSD, FB_COMPTARGET_DRAGONFLY
+	     FB_COMPTARGET_NETBSD, FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS
 
 	case else
 		if (len(fbc.xpm.srcfile) > 0) then
@@ -3076,7 +3089,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			'' -march=name
 			'' Specify the name of the target architecture and, 
 			'' optionally, one or more feature modifiers. This option 
-			'' has the form ‘-march=arch{+[no]feature}*’.
+			'' has the form ï¿½-march=arch{+[no]feature}*ï¿½.
 			'' 
 			'' The permissible values for arch are 
 			'' 'armv8-a'
@@ -3420,11 +3433,12 @@ private sub hAddDefaultLibs( )
 
 		case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
 		     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD, _
-		     FB_COMPTARGET_DARWIN, FB_COMPTARGET_DRAGONFLY
+		     FB_COMPTARGET_DARWIN, FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS
 
 			#if defined(__FB_LINUX__) or _
 			    defined(__FB_FREEBSD__) or _
 			    defined(__FB_DRAGONFLY__) or _
+			    defined(__FB_SOLARIS__) or _
 			    defined(__FB_OPENBSD__) or _
 			    defined(__FB_NETBSD__)
 				fbcAddDefLibPath( "/usr/X11R6/lib" )
@@ -3478,8 +3492,8 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "c" )
 		fbcAddDefLib( "m" )
 		fbcAddDefLib( "ncurses" )
-	
-	case FB_COMPTARGET_DRAGONFLY
+
+	case FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS
 		fbcAddDefLib( "gcc" )
 		fbcAddDefLib( "pthread" )
 		fbcAddDefLib( "c" )
@@ -3520,7 +3534,11 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "c" )
 
 	case FB_COMPTARGET_NETBSD
-		'' TODO
+		fbcAddDefLib( "gcc" )
+		fbcAddDefLib( "pthread" )
+		fbcAddDefLib( "c" )
+		fbcAddDefLib( "m" )
+		fbcAddDefLib( "ncurses" )
 
 	case FB_COMPTARGET_OPENBSD
 		fbcAddDefLib( "gcc" )
