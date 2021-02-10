@@ -3089,7 +3089,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			'' -march=name
 			'' Specify the name of the target architecture and, 
 			'' optionally, one or more feature modifiers. This option 
-			'' has the form �-march=arch{+[no]feature}*�.
+			'' has the form ‘-march=arch{+[no]feature}*’.
 			'' 
 			'' The permissible values for arch are 
 			'' 'armv8-a'
