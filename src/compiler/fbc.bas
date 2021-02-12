@@ -703,7 +703,7 @@ private function hLinkFiles( ) as integer
 			case FB_COMPTARGET_DRAGONFLY
 				ldcline += " -dynamic-linker /libexec/ld-elf.so.2"
 			case FB_COMPTARGET_SOLARIS
-				ldcline += " -dynamic-linker /lib/64/ld.so.1"
+				ldcline += " --dynamic-linker /lib/64/ld.so.1"
 			case FB_COMPTARGET_LINUX
 				select case( fbGetCpuFamily( ) )
 				case FB_CPUFAMILY_X86
@@ -770,13 +770,14 @@ private function hLinkFiles( ) as integer
 
 		'' Solaris uses it own linker
 		''  - don't know if it support this kind of linker script or not
-		''  - so just disable it for the solaris target, too?
+		''  - so just disable it for the solaris target, too
 		''  - the solaris linker will cause major problems
 		''  - because of imcompatibilities with the GNU linker
 		''  - we can only know if when really testing on the platform
 		''  - and adapt the code over time
 		if( fbGetOption( FB_COMPOPT_OBJINFO ) and _
 		    (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) and _
+		    (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_SOLARIS) and _
 			( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) and _
 		    (not fbcIsUsingGoldLinker( )) ) then
 			ldcline += " """ + fbc.libpath + (FB_HOST_PATHDIV + "fbextra.x""")
