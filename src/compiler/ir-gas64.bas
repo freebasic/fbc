@@ -5905,7 +5905,7 @@ private sub _emitjmptb _
 	byval span as ulongint _
 	)
 	dim as string lname,op1=Str(v1->ofs)+"[rbp]",op2
-	dim as long idx
+	dim as long idx,regtempo
 	asm_info("jmptb " + vregPretty( v1 ) )
 	asm_info("v1="+vregdumpfull(v1))
 	asm_info("labelcount="+Str(labelcount)+" bias="+Str(bias)+" span="+Str(span))
@@ -5931,7 +5931,11 @@ private sub _emitjmptb _
 
 		asm_code("cmp rax, "+Str(span))''check limits inf/sup
 		asm_code("ja "+*symbGetMangledName(deflabel))
-		asm_code("jmp QWORD PTR ["+lname+"+rax*8]")
+		'asm_code("jmp QWORD PTR ["+lname+"+rax*8]")  ''issue with ld 2.36 so replaced by the 3 lines below
+		regtempo=reg_findfree(999997)
+		reghandle(regtempo)=KREGFREE ''can be reset here as limited use
+		asm_code("lea "+*regstrq(regtempo)+", "+lname+"[rip]")
+		asm_code("jmp QWORD PTR [rax*8+"+*regstrq(regtempo)+"]")
 		asm_section(".data")
 		asm_code(".align 8")
 		asm_code(lname+":")
