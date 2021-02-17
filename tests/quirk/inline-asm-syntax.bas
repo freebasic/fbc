@@ -12,7 +12,7 @@ SUITE( fbc_tests.quirk.inline_asm_syntax )
 		''    expanded to ebp-N (ASM backend) or the mangled name used by the C backend.
 		'' 2. Testing that the inc keyword isn't treated as reference to the inc variable,
 		''    no matter what backend. (this would produce invalid ASM code)
-		#ifdef __FB_ARM__
+		#ifndef __FB_X86__
 			'' !!! TODO !!! add test for __FB_ARM__
 		#else
 			'' x86 and x86_64 (The asm code below should work for both, that

@@ -375,6 +375,11 @@ const FB_DEFAULT_TARGET     = FB_COMPTARGET_NETBSD
 #error Unsupported host
 #endif
 
+'' __FB_X86__ is new, so we need to support compiling with older fbc that didn't have it
+#if (not defined(__FB_X86__)) and (not defined(__FB_ARM__)) and defined(__FB_ASM__)
+	#define __FB_X86__
+#endif
+
 const FB_DEFAULT_CPUTYPE_X86     = FB_CPUTYPE_486
 const FB_DEFAULT_CPUTYPE_X86_64  = FB_CPUTYPE_X86_64
 const FB_DEFAULT_CPUTYPE_ARM     = FB_CPUTYPE_ARMV7A
@@ -384,12 +389,14 @@ const FB_DEFAULT_CPUTYPE_ASMJS 	 = FB_CPUTYPE_ASMJS
 #ifdef __FB_ARM__
 	const FB_DEFAULT_CPUTYPE32 = FB_DEFAULT_CPUTYPE_ARM
 	const FB_DEFAULT_CPUTYPE64 = FB_DEFAULT_CPUTYPE_AARCH64
-#else
+#elseif defined(__FB_X86__)
 	const FB_DEFAULT_CPUTYPE32 = FB_DEFAULT_CPUTYPE_X86
 	const FB_DEFAULT_CPUTYPE64 = FB_DEFAULT_CPUTYPE_X86_64
+#else
+	#error Unsupported CPU arch
 #endif
 
-#if defined( __FB_64BIT__ ) or defined( __FB_ARM__ )
+#if defined( __FB_64BIT__ ) or (not defined( __FB_X86__ ))
 	const FB_DEFAULT_BACKEND = FB_BACKEND_GCC
 #else
 	const FB_DEFAULT_BACKEND = FB_BACKEND_GAS
