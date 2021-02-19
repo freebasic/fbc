@@ -470,10 +470,20 @@ private sub check_optim(byref code as string)
 	end if
 
 	if mov="jmp" then
-		prevpart1=part1
-		flag=KUSE_JMP
-		prevwpos=writepos
-		exit sub
+		if part1=prevpart1 then
+			''mov r11, rax  --> #10mov r11, rax
+			''jmp r11       --> #10jmp r11
+			''              --> jmp rax
+			mid(ctx.proc_txt,prevwpos)="#10"
+			code="#10"+code+newline+string( ctx.indent*3, 32 )+"jmp "+prevpart2+" #Optim 10"
+			prevpart1="":prevpart2="":prevmov="":flag=KUSE_MOV
+			exit sub
+		else
+			prevpart1=part1
+			flag=KUSE_JMP
+			prevwpos=writepos
+			exit sub
+		end if
 	end if
 
 	if flag=KUSE_LEA then
@@ -2119,7 +2129,7 @@ private function _emitbegin( ) as integer
 
 	asm_code( ".intel_syntax noprefix")
 	asm_section(".text")
-
+	ctx.indent-=1
 	function = TRUE
 end function
 private sub hAddGlobalCtorDtor( byval proc as FBSYMBOL ptr )
@@ -5870,7 +5880,8 @@ private sub _emitjumpptr( byval v1 as IRVREG ptr )
 	else
 		reg=reg_findreal(v1->reg)
 	end if
-	asm_code("jmp ["+*regstrq(reg)+"]")
+	'asm_code("jmp ["+*regstrq(reg)+"]")
+	asm_code("jmp "+*regstrq(reg))
 end sub
 private sub _emitbranch( byval op as integer, byval label as FBSYMBOL ptr )
 	asm_info("emit branch = jmp/call (gosub) to "+*symbGetMangledName( label )+" "+Str(op)+" "+*hGetBopCode(op))
@@ -6323,7 +6334,7 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 	asm_code(*symbGetMangledName( proc )+":")
 	ctx.indent+=1
 
-	asm_info("stk4="+Str(ctx.stk)+" reserved space for saving registers when proc calls (eventually 112 more for variadic linux only)")
+	asm_info("stk4="+Str(ctx.stk)+" reserved space for saving registers when proc calls")
 
 	if( env.clopt.debuginfo = true ) then edbgEmitProcHeader_asm64(proc)
 
