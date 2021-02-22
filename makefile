@@ -453,6 +453,10 @@ ifeq ($(TARGET_OS),netbsd)
     -I/usr/pkg/include
 endif
 
+ifeq ($(TARGET_OS),solaris)
+  ALLCFLAGS += -I/usr/lib/amd64/libffi-3.2.1/include
+endif
+
 ifeq ($(TARGET_OS),darwin)
   ALLCFLAGS += -I/opt/X11/include -I/usr/include/ffi
   
