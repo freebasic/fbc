@@ -3698,7 +3698,7 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 		end if
 	end if
 
-	tempodtype=v1->dtype
+	tempodtype=typeGetDtAndPtrOnly( v1->dtype )
 	if typeisptr(tempodtype) then tempodtype=FB_DATATYPE_INTEGER
 	select case tempodtype
 		case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE,FB_DATATYPE_ENUM
@@ -3710,7 +3710,7 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 		case FB_DATATYPE_BYTE,FB_DATATYPE_UBYTE,FB_DATATYPE_BOOLEAN,FB_DATATYPE_CHAR
 			prefix="BYTE PTR "
 		case else
-			asm_error("BOP datatype not handled 01 ="+typedumpToStr(v1->dtype,0))
+			asm_error("UOP datatype not handled 01 ="+typedumpToStr(v1->dtype,0))
 	end select
 
 	select case v1->typ
@@ -3765,7 +3765,7 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 					asm_code("mov "+*regstrb(vrreg)+", "+op1)
 					op1=*regstrb(vrreg)
 				case else
-					asm_error("BOP datatype not handled 011 ="+typedumpToStr(v1->dtype,0))
+					asm_error("UOP datatype not handled 011 ="+typedumpToStr(v1->dtype,0))
 			end select
 			'===
 		end if
