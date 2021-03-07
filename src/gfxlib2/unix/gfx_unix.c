@@ -5,7 +5,7 @@
 #include "../linux/fb_gfx_linux.h"
 #endif
 
-#if defined HOST_FREEBSD || defined HOST_OPENBSD || defined HOST_LINUX || defined HOST_DARWIN
+#if defined HOST_FREEBSD || defined HOST_OPENBSD || defined HOST_LINUX || defined HOST_DARWIN || defined HOST_SOLARIS || defined HOST_DRAGONFLY || defined HOST_NETBSD
 
 const GFXDRIVER *__fb_gfx_drivers_list[] = {
 

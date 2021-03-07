@@ -29,6 +29,9 @@
 #elif defined __OpenBSD__
 	#define HOST_OPENBSD
 	#define HOST_UNIX
+#elif defined __DragonFly__
+	#define HOST_DRAGONFLY
+	#define HOST_UNIX
 #elif defined __APPLE__
 	#define HOST_DARWIN
 	#define HOST_UNIX
