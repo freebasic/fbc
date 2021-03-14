@@ -8,6 +8,8 @@ Defines or resizes a variable-length array
 	
 	Resizing a Dynamic Array:
 		##**Redim** [ [[KeyPgPreserve|Preserve]] ] //symbolname//([//subscript// [, ...]]) [, ...]##
+	or:
+		##**Redim** [ [[KeyPgPreserve|Preserve]] ] [ ( ] //expression// [ ) ] ([//subscript// [, ...]]) [, ...]##
 
 {{fbdoc item="param"}}
 	##[[KeyPgShared|Shared]]##
@@ -15,7 +17,9 @@ Defines or resizes a variable-length array
 	##[[KeyPgPreserve|Preserve]]##
 		When used with an existing array, the contents of the array will be preserved during the resize. Note that in some cases ##[[KeyPgPreserve|Preserve]]## will not preserve data at its original index, see below.
 	##//symbolname//##
-		A new or existing array id.
+		A new or existing array identifier.
+	##//expression//## or ##//(expression)//##
+		An expression referring to an existing array. This can be used to resize arrays which are members of user-defined types. In some cases, it is necessary to specify parentheses around the expression (especially if the array expression itself contains parentheses) - see the examples below.
 	##//subscript//##: [ ##//lowerbound// To## ] ##//upperbound//##
 		The lower and upper bound range for a dimension of the array. Lower bound defaults to zero (##0##), or the default ##[[KeyPgOptionbase|Base]]##, if not specified.
 	##[[DataType|datatype]]##
@@ -39,8 +43,6 @@ Defines or resizes a variable-length array
 		- ##**Redim**## cannot be used inside a member procedure if the array contains as element the instance itself of the object, because that could cause horrible crashes:
 			- If the array data are moved into memory by ##**Redim**##, the passed ##[[KeyPgThis|This]]## reference becomes inconsistent, in the same way as a dangling pointer.
 			- In that case, all subsequent accesses to any non-static member data from this member procedure will be erroneous, except if the passed ##[[KeyPgThis|This]]## reference would be readjusted (by means of ##@This = @array(...)##) immediately after executing ##**Redim**## in the body of this member procedure.
-		- ##**Redim**## can be used with a complex array expression (especially if the array expression itself contains parentheses):
-			- But then the array expression must be enclosed in parentheses in order to solve the parsing ambiguity.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/array/redim.bas"}}%%(freebasic)

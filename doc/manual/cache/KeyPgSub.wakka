@@ -21,7 +21,7 @@ Defines a procedure
 		##//external_identifier//##: externally visible (to the linker) name enclosed in quotes
 		##//parameter_list//##: parameter[, parameter[, ...]]
 		##//parameter//##: ##[[[KeyPgByref|ByRef]]|[[KeyPgByval|ByVal]]] //identifier// [[[KeyPgAs|As]] //type//] [= //default_value//]##
-			##//identifier//##: the name of the variable referenced in the subroutine
+			##//identifier//##: the name of the variable referenced in the subroutine. If the argument is an array then the identifier must be followed by an empty parenthesis.
 			##//type//##: the type of variable
 			##//default_value//##: the value of the argument if none is specified in the call
 		##//statements//##: one or more statements that make up the subroutine body
@@ -32,6 +32,7 @@ Defines a procedure
 	The ##**Sub**## keyword marks the beginning of a subroutine, and its end is marked by ##**End Sub**##. The "name" parameter is the name by which this subroutine is called. For instance, if the declaration is "##**Sub**...**End Sub**##", the user can execute the code in between "##**Sub** foo##" and "##**End Sub**##" by using "##foo##" as a statement. This code is executed separate from the code which calls the subroutine, so any variable names, unless they are shared, are not available to the subroutine. Values can, however, be passed using parameters.
 	
 	Parameters are the arguments passed to any statement. For instance, if a user executes a statement as "##[[KeyPgPrint|Print]] 4##", the value "4" is passed to the function "##[[KeyPgPrint|Print]]##". Parameters that need to be passed to a subroutine are supplied by one or more parameter arguments in the "##**Sub**##" keyword. Creating a subroutine with "##**Sub** mysub(foo, bar)...**End Sub**##", allows the code in between "##**Sub**##" and "##**End Sub**##" to refer to the first passed argument as "foo" and the second passed argument as "bar". If a parameter is given a default value, that parameter is optional.
+	Array parameters are specified by following an identifier with an empty parenthesis. Note that array parameters are always ##[[KeyPgByref|ByRef]]## and the ##[[KeyPgByref|ByRef]]## keyword is neither required nor allowed for array parameters. When calling a subroutine with an array argument the parenthesis must be supplied there too.
 	
 	In the default dialect //[[CompilerOptlang|-lang fb]]//, parameters must also have a supplied type, in the form "##//parameter// as //type//##". Type suffixes are not allowed.
 	

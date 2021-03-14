@@ -17,11 +17,11 @@ Using FB
 
 
 '' function to show info on an image
-Sub show_image_info( ByVal image As Any Ptr )
-	Dim As PUT_HEADER Ptr header
+Sub show_image_info( ByVal img As Any Ptr )
+	Dim As PUT_HEADER Ptr header ' IMAGE can also be use instead of PUT_HEADER
 	Dim As Integer w, h, bpp, pitch
 
-	header = image
+	header = img
 	If( header->Type = PUT_HEADER_NEW ) Then
 
 		Print "New style header"

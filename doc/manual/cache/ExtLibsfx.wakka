@@ -1,0 +1,110 @@
+{{fbdoc item="title" value="sfx"}}----
+Freebasic sfx library is cross-platform and comes for Windows, Linux, Dos
+Author: angros47
+Download link: https://sourceforge.net/projects/freebasic-sfx-library/files/
+Forum link: https://freebasic.net/forum/viewtopic.php?f=17&t=26256
+
+Compile Library: all the necessary scripts are in the archive, you just need to substitute the correct path to the compiler in them
+
+A brief description of the main (not all) functions:
+
+1) ""SoundmidiSet"" - setting mode midi (needed for function PLAY)
+2) ""SoundSet"" - setting mode PCM sound (needed for functions SOUND , ""PlayWave"")
+1) PLAY - command is for playing musical notes, octave *.
+2) SOUND - command produces sound of a specific frequency for a specific duration
+3) ""LoadMidi"" - load midi from file, returns a pointer ""MidiSequence"" ptr
+4) ""PlayMidi"" - play midi, in parameters you need to pass pointer ""MidiSequence"" ptr
+5) ""CreateMidi"" - creates ""MidiSequence"" ptr, then you can use the pointer using PLAY to write data , and then save in the file
+6) ""SaveMidi"" - save data ""MidiSequence"" ptr in file, in format .mid
+7) ""LoadWave"" - loads a file into memory WAV (supported only WAVE_FORMAT_PCM), returns a pointer ""WaveHeaderType"" ptr
+8) ""PlayWave"" - play wav , in parameters you need to pass pointer ""WaveHeaderType"" ptr
+
+* The command PLAY can play more than one note at time: it supports chords, by grouping notes inside curly brackets, and it allows to play up to 16 channels at the same time. For more information see also command QBASICs play.
+
+Description of all functions is in the file readme.txt (in archive)
+
+{{fbdoc item="ex"}}
+
+Example Play%%(freebasic)
+#include "sfx.bi"
+#inclib "fbsfx"
+
+SoundmidiSet ()
+PLAY "a4e4g4a4g4e4c2f4f4f2d4d4d2"
+%%
+Example Play wih thread%%(freebasic)
+#include "sfx.bi"
+#inclib "fbsfx"
+
+dim shared as any ptr mutex
+mutex = MutexCreate
+
+dim shared as Long iMusicExit
+dim as Double dTimer
+
+sub procThread(p as any ptr)
+   SoundmidiSet ()
+   PLAY "a4e4g4a4g4e4c2f4f4f2d4d4d2"
+   MutexLock(mutex)
+   iMusicExit = 1
+   MutexUnLock(mutex)
+End Sub
+
+dTimer = timer
+threadcreate(@procThread)
+
+do
+   ? timer - dTimer
+   MutexLock(mutex)
+   if iMusicExit then
+	  exit do
+   EndIf
+   MutexUnLock(mutex)
+Loop
+%%
+Example ""CreateMidi"", ""SaveMidi""
+%%(freebasic)
+#include "sfx.bi"
+#inclib "fbsfx"
+
+SoundmidiSet ()
+dim as any ptr Midi=CreateMidi()
+PLAY Midi,"a4e4g4a4g4e4c2f4f4f2d4d4d2"
+SaveMidi "music.mid", Midi
+%%
+Example ""LoadMidi"", ""PlayMidi""
+%%(freebasic)
+#include "sfx.bi"
+#inclib "fbsfx"
+
+SoundmidiSet ()
+dim as any ptr Midi=LoadMidi("music.mid")
+PlayMidi(Midi, 1)
+sleep
+%%
+Example Sound
+%%(freebasic)
+#include "sfx.bi"
+#inclib "fbsfx"
+
+SoundSet (44100,1,16)
+sound SineWave(2000), 1 ' sine 2 kHz
+sound NoiseWave(), 1 ' noise
+sleep
+%%
+Example ""LoadWave"", ""PlayWave""
+%%(freebasic)
+#include "sfx.bi"
+#inclib "fbsfx"
+
+dim as WaveHeaderType ptr pWave
+SoundSet (44100,2,16)
+pWave = LoadWave("1.wav")
+if pWave = 0 then
+   print "pWave = 0" : end
+end if
+PlayWave(pWave)
+sleep
+%%
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

@@ -2,7 +2,7 @@
 Intrinsic define (macro) performed by the compiler.
 
 {{fbdoc item="syntax"}}##
-	""__FB_EVAL__(arg)""
+	""__FB_EVAL__( arg )""
 ##
 {{fbdoc item="param"}}
 	##//arg//##
@@ -11,7 +11,7 @@ Intrinsic define (macro) performed by the compiler.
 {{fbdoc item="desc"}}
 	Evaluates the argument (constant-expression) at compile time.
 	
-	##**""__fb_eval__""**## macro is useful where there is any of the following:
+	##**""__FB_EVAL__""**## macro is useful where there is any of the following:
 		**""-""** non functional expression (i.e. side-effects),
 		**""-""** needs to be evaluated (i.e. simplified, respecting the operator precedence) before passing it on,
 		**""-""** used in a place where fbc would not allow an expression.
@@ -67,6 +67,8 @@ hello
 hellohello
 '/
 	%%
+	See also ##[[KeyPgDdfbargextract|__FB_ARG_EXTRACT__]]## example.
+
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 

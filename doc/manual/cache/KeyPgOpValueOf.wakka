@@ -6,7 +6,9 @@ Dereferences a pointer
 ##
 
 {{fbdoc item="usage"}}##
-	//result// = * //rhs//
+		//result// = * //rhs//
+	or
+		* //rhs// = //value//
 ##
 {{fbdoc item="param"}}
 	##//rhs//##

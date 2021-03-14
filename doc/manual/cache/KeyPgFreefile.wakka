@@ -17,7 +17,7 @@ Returns a free file number
 	
 	##**Freefile**## will always return the smallest free file number. The file number returned by ##**Freefile**## will not change until that file number is ##[[KeyPgOpen|Open]]##ed, or until a smaller file number is ##[[KeyPgClose|Close]]##d:
 		**""-""** For this reason, it is wise to use ##**Freefile**## immediately before its corresponding ##[[KeyPgOpen|Open]]##, to ensure that the same file number is not returned and opened elsewhere first.
-		**""-""** In case of potential conflict with other threads, this non-breaking '##**Freefile**...[[KeyPgOpen|Open]]##' sequence must additionally be considered as a critical section of code and therefore must be protected by mutual exclusion (using a mutex locking).
+		**""-""** In case of potential conflict with other threads, this non-breaking '##**Freefile**...[[KeyPgOpen|Open]]##' sequence must additionally be considered as a critical section of code and therefore must be protected, for example by mutual exclusion (using a mutex locking).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/freefile.bas"}}%%(freebasic)

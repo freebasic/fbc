@@ -6,7 +6,7 @@ The indexing operators return references to some memory based on the value of th
 <<=={{fbdoc item="keyword" value="KeyPgOpArrayIndex|Operator () (Array index)"}}==
 	Returns a reference to an element in an array.
 =={{fbdoc item="keyword" value="KeyPgOpStringIndex|Operator [] (String index)"}}==
-	Returns a reference to a character in a string.
+	Returns a reference to the numeric value of a character in a string.
 <<>>=={{fbdoc item="keyword" value="KeyPgOpPtrIndex|Operator [] (Pointer index)"}}==
 	Returns a reference to memory offset from a base address.
 >>::c::

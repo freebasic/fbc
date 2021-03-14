@@ -14,11 +14,11 @@ using FB
 
 
 '' function to show info on an image
-sub show_image_info( byval image as any ptr )
-	dim as PUT_HEADER ptr header
+sub show_image_info( byval img as any ptr )
+	dim as PUT_HEADER ptr header ' IMAGE can also be use instead of PUT_HEADER
 	dim as integer w, h, bpp, pitch
 
-	header = image
+	header = img
 	if( header->type = PUT_HEADER_NEW ) then
 
 		print "New style header"

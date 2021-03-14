@@ -321,17 +321,17 @@ myDerived.Destroy()                       9775760
 {{fbdoc item="section" value="5. Hacking on usage of references with the additional syntaxes allowed by FreeBASIC"}}
 	In FB, a reference is implemented under the hood through an internal pointer which holds the address of the variable.
 	
-	The access to this internal pointer is presently allowed for user, both in read and write (unlike many other languages):
+	The access to this internal pointer is presently allowed for user, in read, and also in write for a reference variable (unlike many other languages):
 		**""-""** Therefore, the address of the referred variable (the value of the internal pointer) can be get by using the '@' operator applied on the reference variable symbol name:
 			##//variable_address// = [[KeyPgOpAt|@]]//ref//##
-		**""-""** And even, a reference can be reassigned (by modifying the value of the internal pointer) to refer to another variable (of compatible type) by doing:
+		**""-""** And even, a reference variable can be reassigned (by modifying the value of the internal pointer) to refer to another variable (of compatible type) by doing:
 			##[[KeyPgOpAt|@]]//ref// = [[KeyPgOpAt|@]]//other_variable//##
-		**""-""** The address of the internal pointer can even be obtained:
+		**""-""** The address of the internal pointer of a reference variable can even be obtained:
 			##internal_pointer_address = [[KeyPgOpAt|@]][[KeyPgOpAt|@]]ref##
 		**Note:**
-			**""-""** A reference can also be re-initialized to a "null" reference:
+			**""-""** A reference variable can also be re-initialized to a "null" reference:
 				##[[KeyPgOpAt|@]]//ref// = 0##
-			**""-""** A reference can even be directly declared as a "null" reference:
+			**""-""** A reference variable can even be directly declared as a "null" reference:
 				##[[KeyPgDim|Dim]] [[KeyPgByrefVariables|Byref]] [[KeyPgAs|As]] [[DataType|datatype]] //ref// = [[KeyPgOpValueOf|*]][[KeyPgCptr|Cptr]]([[DataType|datatype]] [[KeyPgPtr|Ptr]], 0)##
 				
 	Thus, by always using the same reference symbol name, one can mix the pure syntax on the reference with the syntax on its internal pointer.

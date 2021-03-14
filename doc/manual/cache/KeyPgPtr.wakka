@@ -2,10 +2,11 @@
 A variable declaration type modifier
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDim|dim]] //symbolname// [[KeyPgAs|as]] [[DataType|DataType]] {**Pointer** | **Ptr**}
+	... [[KeyPgAs|as]] [[DataType|DataType]] {**Pointer** | **Ptr**}
 ##
 {{fbdoc item="desc"}}
 	Declares a pointer variable.
+	The variable type can be a predefined type or a user-defined type.
 	
 	##[[KeyPgOpAt|Operator @ (Address of)]]## operator or ##[[KeyPgOpVarptr|Varptr]]## are used to take the address of a variable. The ##[[KeyPgOpValueOf|Operator * (Value of)]]## operator is used to dereference the pointer, that is, access the actual value stored in the memory location the pointer is pointing at.
 
@@ -40,7 +41,21 @@ print *p
 '' Hello World!
 '' World!
 %%
+{{fbdoc item="filename" value="examples/manual/datatype/ptr-2.bas"}}%%(freebasic)
+Type mytype
+	a As Integer = 12345
+End Type
 
+Dim As mytype mt
+
+Dim As mytype Ptr pmt
+pmt = @mt
+
+Print (*pmt).a  '' or Print pmt->a
+
+'' Output:
+'' 12345
+%%
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Pointer""**## or ##**""__Ptr""**##.
 

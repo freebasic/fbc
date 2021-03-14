@@ -37,7 +37,7 @@ end if
 	- Exit code is limited to 8 bits in DOS.
 
 {{fbdoc item="diff"}}
-	- None
+	- ##[[KeyPgCommon|Common]]## does not allow to keep the values of certain variables when chaining programs with ##**Chain**##.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgExec|Exec]]## transfer temporarily, with arguments  

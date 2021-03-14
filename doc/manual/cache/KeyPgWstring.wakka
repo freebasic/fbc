@@ -43,7 +43,7 @@ print len(*str2)      'returns 12, the length of the string it points to
 {{fbdoc item="target"}}
 	Support for wstrings relies in the C runtime library available in the platform and the internal format may vary.
 		- Unicode is not supported in the DOS port of ""FreeBASIC"". In this port a character takes up always 1 byte and ##[[KeyPgWstring|Wstrings]]## will behave as standard ASCII ##[[KeyPgZstring|Zstrings]]##
-		- On ""Win32"" wstrings are encoded in UCS-2 and a character takes up always 2 bytes. This is actually not UTF-16 LE, as ""FreeBASIC"" doesn't bother with surrogates introduced in Win XP. This further means that what ""FreeBASIC"" understands with a character may not represent a full codepoint.
+		- On ""Win32"", ""FreeBASIC"" wstrings are encoded in UCS-2 which uses two bytes (16 bits) for each character and, as such, can only encode the first 65,536 code points of Unicode, that is, the Basic Multilingual Plane (BMP). ""FreeBASIC"" does not support ""Win32"" UTF-16 4-byte surrogate encoding beyond the BMP.
 		- On Linux wstrings are encoded in UCS-4 and a character takes up 4 bytes.
 
 {{fbdoc item="lang"}}

@@ -49,6 +49,7 @@ running ##common1## produces the output:
 {{fbdoc item="diff"}}
 	- The arrays will be always variable-length.
 	- ##//blockname//## is not needed and must be removed because the order of declaration no longer matters, only the symbol names.
+	- ##**Common**## does not allow to keep the values of certain variables when chaining programs with ##[[KeyPgChain|Chain]]##.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDim|Dim]]##

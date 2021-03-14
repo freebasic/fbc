@@ -306,29 +306,14 @@ Sleep
 '       116
 '        116
 '
-'   49 increments per second
+'   51 increments per second
 			%%Same result values because synchronous counting (despite of increasing tempo values).
 			
 	- Weird synchronous algorithm using a mutex for each thread, by self lock and mutual unlock:
 		**""-""** When one thread has run its critical section, it unlocks the mutex of the next thread and attempts to re-obtain its own mutex.
-		**""-""** At initialization all mutexes are locked, and the main thread enters directly in its critical section (code of the main thread slightly different of the other thread, with the self lock pushed at end).
+		**""-""** At initialization all mutexes are locked, except the mutex of the main thread.
 		%%
-' Main thread (#0) algorithm:
-'
-'   Do
-'   |
-'   |   Critical section of code
-'   |   |
-'   |   Mutexunlock(next thread mutex (#0+1))
-'   |   |
-'   |   Mutexlock(own thread mutex (#0))
-'   |   |
-'   |   Sleep my_tempo, 1
-'   |
-'   Loop Until key <> ""
-		%%
-		%%
-' User thread (#N) algorithm:
+' User thread (#N) algorithm (same principle for the main thread):
 '
 '   Do
 '   |
@@ -344,83 +329,84 @@ Sleep
 		%%
 		{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsection3.bas"}}%%(freebasic)
 Type UDT
-  Dim As Integer number
-  Dim As Integer tempo
-  Dim As Any Ptr pThread
-  Dim As Ulongint count
-  Static As Any Ptr pMutex(Any)
-  Static As Integer numberMax
-  Static As Integer quit
+	Dim As Integer number
+	Dim As Integer tempo
+	Dim As Any Ptr pThread
+	Dim As ULongInt count
+	Static As Any Ptr pMutex(Any)
+	Static As Integer numberMax
+	Static As Integer quit
 End Type
 Dim As Any Ptr UDT.pMutex(Any)
 Dim As Integer UDT.numberMax
 Dim As Integer UDT.quit
 
-Sub Counter (Byval pt As UDT Ptr)
-  With *pt
-	Locate .number, .number, 0
-	Sleep 5, 1
-	.count += 1
-	Print .count;
-	Locate .number, 30 + .number, 0
-  End With
+Sub Counter (ByVal pt As UDT Ptr)
+	With *pt
+		Locate .number, .number, 0
+		Sleep 5, 1
+		.count += 1
+		Print .count;
+		Locate .number, 30 + .number, 0
+	End With
 End Sub
 
-Sub Thread (Byval p As Any Ptr)
-  Dim As Integer quit
-  Dim As UDT Ptr pUDT = p
-  With *pUDT
-	Do
-	  Mutexlock(.pMutex(.number))
-	  Counter(pUDT)
-	  quit = .quit
-	  Mutexunlock(.pMutex((.number + 1) Mod (UDT.numberMax + 1)))
-	  Sleep .tempo, 1
-	Loop Until quit = 1
-  End With
+Sub Thread (ByVal p As Any Ptr)
+	Dim As Integer quit
+	Dim As UDT Ptr pUDT = p
+	With *pUDT
+		Do
+			MutexLock(.pMutex(.number))
+			Counter(pUDT)
+			quit = .quit
+			MutexUnlock(.pMutex((.number + 1) Mod (UDT.numberMax + 1)))
+			Sleep .tempo, 1
+		Loop Until quit = 1
+	End With
 End Sub
 
 
 UDT.numberMax = 6
-Redim UDT.pMutex(UDT.numberMax)
+ReDim UDT.pMutex(UDT.numberMax)
 Dim As UDT u(0 To UDT.numberMax)
 For I As Integer = 0 To UDT.numberMax
-  u(I).number = i
-  u(I).tempo = 100 + 15 * I - 95 * Sgn(I)
-  UDT.pMutex(I) = Mutexcreate
-  Mutexlock(UDT.pMutex(I))
+	u(I).number = i
+	u(I).tempo = 100 + 15 * I - 95 * Sgn(I)
+	UDT.pMutex(I) = MutexCreate
+	MutexLock(UDT.pMutex(I))
 Next I
+MutexUnlock(UDT.pMutex(u(0).number))
 
 Dim As Single t = Timer
 For I As Integer = 1 To UDT.numberMax
-  u(I).pThread = Threadcreate(@Thread, @u(I))
+	u(I).pThread = ThreadCreate(@Thread, @u(I))
 Next I
 
 Dim As String s
 Do
-	s = Inkey
-	If s <> "" Then
-	  UDT.quit = 1
-	End If
-  Mutexunlock(UDT.pMutex((u(0).number + 1) Mod (UDT.numberMax + 1)))
-  Mutexlock(UDT.pMutex(u(0).number))
-  Sleep u(0).tempo, 1
+	MutexLock(UDT.pMutex(u(0).number))
+		s = Inkey
+		If s <> "" Then
+			UDT.quit = 1
+		End If
+	MutexUnlock(UDT.pMutex((u(0).number + 1) Mod (UDT.numberMax + 1)))
+	Sleep u(0).tempo, 1
 Loop Until s <> ""
 
 For I As Integer = 1 To UDT.numberMax
-  Threadwait(u(I).pThread)
+	ThreadWait(u(I).pThread)
 Next I
 t = Timer - t
 
 For I As Integer = 0 To UDT.numberMax
-  Mutexdestroy(UDT.pMutex(I))
+	MutexDestroy(UDT.pMutex(I))
 Next I
-Dim As Ulongint c
-For I As Integer = 1 to UDT.numberMax
-  c += u(I).count
+Dim As ULongInt c
+For I As Integer = 1 To UDT.numberMax
+	c += u(I).count
 Next I
 Locate UDT.numberMax+2, 1
-Print Culngint(c / t) & " increments per second"
+Print CULngInt(c / t) & " increments per second"
 
 Sleep
 		%%Output example:
@@ -432,8 +418,8 @@ Sleep
 '       102
 '        102
 '
-'   27 increments per second
-			%%Same result values because synchronous counting (despite of increasing tempo values), but the execution time performance is degraded compared to the synchronous method above (using conditional variable).
+'   51 increments per second
+			%%Same result values because synchronous counting (despite of increasing tempo values).
 			
 {{fbdoc item="section" value="See also"}}
 	- [[ProPgMultiThreading|Multi-Threading Overview]]

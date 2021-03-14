@@ -42,52 +42,43 @@ Operator to dynamically allocate memory and construct data of a specified type.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/new.bas"}}%%(freebasic)
-type Rational
-	as integer	numerator, denominator
-end type
+Type Rational
+	As Integer numerator, denominator
+End Type
 
-scope
+' Create and initialize a "rational" and store its address.
+Dim p As Rational Ptr = New Rational(3, 4)
 
-	' Create and initialize a "rational" and store its address.
-	dim p as Rational ptr = new Rational(3, 4)
-  
-	' test if null return pointer
-	if (p = 0) then
-		print "Error: unable to allocate memory, quitting."
-		end -1
-	end if
+' Test if null return pointer
+If (p = 0) Then
+	Print "Error: unable to allocate memory"
+Else
+	Print p->numerator & "/" & p->denominator
+	' Destroy the rational and give its memory back to the system.
+	Delete p
+End if
 
-	print p->numerator & "/" & p->denominator
-
-	' Destroy the rational and give its memory back to the system. 
-	delete p
-
-end scope
-
-scope
-
-	' Allocate memory for 100 integers and store the address of the first one.
-	dim p as integer ptr = new integer[100]
-
-	' test if null return pointer
-	if (p = 0) then
-		print "Error: unable to allocate memory, quitting."
-		end -1
-	end if
-
-	' Assign some values to the integers in the array.
-	for i as integer = 0 to 99
-		p[i] = i
-	next
-
-	' Free the entire integer array.
-	delete[] p
-
-end scope
-
-sleep
+Sleep
 %%
+{{fbdoc item="filename" value="examples/manual/operator/new2.bas"}}%%(freebasic)
+' Allocate memory for 100 integers and store the address of the first one.
+Dim p As Integer Ptr = New Integer[100]
 
+' Test if null return pointer
+If (p = 0) Then
+	Print "Error: unable to allocate memory"
+Else
+	' Assign some values to the integers in the array.
+	For i As Integer = 0 To 99
+		p[i] = i
+	Next
+	' Free the entire integer array.
+	Delete[] p
+End if
+
+Print "Done."
+Sleep
+%%
 {{fbdoc item="filename" value="examples/manual/operator/nested_new.bas"}}%%(freebasic)
 '' Example of nested New [] to get a 2-dimentional object array (4*3)
 

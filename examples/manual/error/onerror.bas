@@ -15,5 +15,6 @@ Error 24 '' simulate an error
 Print "this message will not be seen"
 
 errorhandler:
-Print "Error #"; Err; "!"
+n = Err
+Print "Error #"; n; "!"
 End

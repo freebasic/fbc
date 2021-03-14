@@ -31,6 +31,8 @@ Retrieves information about an image
 	
 	It can also provide the size of the image in memory, which is useful for allocating memory to copy the existing image, or to write the image to a file.
 	
+	##**""ImageInfo""**## is an alternative way to access the main characteristics of an image, rather than directly accessing the internal FB.IMAGE structure (defined in ##fbgfx.bi##) through a typed pointer to member data.
+	
 	The error code returned by ##**""ImageInfo""**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**""ImageInfo""**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
 
 {{fbdoc item="ex"}}

@@ -15,12 +15,12 @@ Gets the value of an arbitrary type at an address in memory
 		The type of value to get. If omitted, ##[[KeyPgUbyte|ubyte]]## is assumed.
 
 {{fbdoc item="desc"}}
-	This procedure returns a reference to the value in memory given by a memory address, and is equivalent to
-
+	This procedure returns a reference to the value in memory given by a memory address, and is equivalent to:
 		##*cast(ubyte ptr, //address//)##
 			or
 		##*cast(//datatype// ptr, //address//)##
-		
+	thus this keyword can also be used to assign a value to a memory location, similarly to ##[[KeyPgPoke|Poke]]##.
+	
 	**Note:** When using ##**Peek**##, the //[[CompilerOptexx|-exx]]// compiler option does not add code for null-pointer checking (no nullity test on the value of ##//address//##).
 
 {{fbdoc item="ex"}}

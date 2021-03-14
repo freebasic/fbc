@@ -12,6 +12,7 @@
 		[[KeyPgDddateiso|__DATE_ISO__]]
 		[[KeyPgDdfb64bit|__FB_64BIT__]]
 		[[KeyPgDdfbargcount|__FB_ARG_COUNT__]]
+		[[KeyPgDdfbargextract|__FB_ARG_EXTRACT__]]
 		[[KeyPgDdfbargleftof|__FB_ARG_LEFTOF__]]
 		[[KeyPgDdfbargrightof|__FB_ARG_RIGHTOF__]]
 		[[KeyPgDdfbargc|__FB_ARGC__]]

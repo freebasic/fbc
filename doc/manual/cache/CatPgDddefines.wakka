@@ -141,6 +141,8 @@ Preprocessor symbols defined by the compiler.
 {{anchor name="BASICMACROS"}}{{fbdoc item="section" value="Basic-macros"}}
 	=={{fbdoc item="keyword" value="KeyPgDdfbargcount|__FB_ARG_COUNT__"}}==
 		Counts the number of arguments in an argument list.
+	=={{fbdoc item="keyword" value="KeyPgDdfbargextract|__FB_ARG_EXTRACT__"}}==
+		Returns nth argument from an argument list.
 	=={{fbdoc item="keyword" value="KeyPgDdfbargleftof|__FB_ARG_LEFTOF__"}}==
 		Returns left token based on separator.
 	=={{fbdoc item="keyword" value="KeyPgDdfbargrightof|__FB_ARG_RIGHTOF__"}}==

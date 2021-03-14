@@ -46,8 +46,10 @@
 	
 	An ##Enum## instance (or ##Enum## symbol) can be implicitly converted to an integer.
 	**Note:**
-		**""-""** In many languages, an integer is never implicitly convertible to a scoped enumeration type instance, this one being strongly typed (declaration equivalent to the ##Enum## qualified as ##Explicit## with FreeBASIC), and an explicit cast is required for such a conversion,
-		**""-""** but FreeBASIC accepts it (even if the numeric value does not match any ##Enum## symbol defined). This is just one of the many lacks of FreeBASIC on the normal ##Enum## features.
+		**""-""** In many languages, no integer variable is implicitly convertible into a scoped enumeration type instance (and vice versa), the latter being strongly typed (declaration equivalent to the ##Enum## qualified as ##Explicit## with ""FreeBASIC""), and an explicit cast is required for such a conversion.
+		**""-""** But ""FreeBASIC"" accepts it (even if the numeric value does not match any ##Enum## symbol defined). This is just one of ""FreeBASIC's"" many shortcomings over normal ##Enum## functionality.
+		**""-""** Therefore, there is not much interest in declaring a real ##ENUM## instance (which is sized as an INTEGER), but otherwise any pre-built integer variable can be declared instead.
+		**""-""** If the ##Explicit## qualifier is not used (namespace prefix not imposed), there is not much point in using an ##ENUM## structure compared to a simple discrete list of constants, except for the auto-increment of values.
 
 {{fbdoc item="section" value="Example"}}
 	Simple example of use:

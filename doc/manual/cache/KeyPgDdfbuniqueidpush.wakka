@@ -2,7 +2,7 @@
 Intrinsic define (macro) performed by the compiler.
 
 {{fbdoc item="syntax"}}##
-	""__FB_UNIQUEID_PUSH__(stack-id)""
+	""__FB_UNIQUEID_PUSH__( stack-id )""
 ##
 {{fbdoc item="param"}}
 	##//stack-id//##

@@ -8,18 +8,20 @@
 
 #macro m( arg )
 	Scope
-		Var v = __FB_ARG_LEFTOF__( arg, versus )
+		Var v = __FB_ARG_LEFTOF__( arg, versus, "Not found 'versus'" )
 		Print v
 	End Scope
 #endmacro
 
 m(1 versus 2)
 m("left-side" versus "right-side")
+m(3.14 verso pi)
 
 Sleep
 
 /' Output:
  1
 left-side
+Not found 'versus'
 '/
 	

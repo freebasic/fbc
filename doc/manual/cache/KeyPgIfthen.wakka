@@ -2,20 +2,19 @@
 Control flow statement for conditional branching
 
 {{fbdoc item="syntax"}}##
-	**If** //expression// **Then** [//statement(s)//] [**Else** [//statement(s)//]] [**End If**]
-//or//
-	**If** //expression// **Then** : [//statement(s)//] [**Else** [//statement(s)//]] : **End If**
-//or//
-	**If** //expression// **Then**
-		[//statement(s)//]
-	[ **Elseif** //expression// **Then** ]
-		[//statement(s)//]
-	[ **Else** ]
-		[//statement(s)//]
-	**End If**
-##
-	
-	Remark: ##**""EndIf""**## (without blank) is also supported like in QB for backward compatibility.
+		**If** //expression// **Then** [//statement(s)//] [**Else** [//statement(s)//]] [**End If**]
+	//or//
+		**If** //expression// **Then** : [//statement(s)//] [**Else** [//statement(s)//]] : **End If**
+	//or//
+		**If** //expression// **Then**
+			[//statement(s)//]
+		[ **Elseif** //expression// **Then** ]
+			[//statement(s)//]
+		[ **Else** ]
+			[//statement(s)//]
+		**End If**
+		##
+		Remark: ##**""EndIf""**## (without blank) is also supported like in QB for backward compatibility.
 
 {{fbdoc item="desc"}}
 	##**If...Then**## is a way to make decisions.
@@ -46,8 +45,22 @@ Control flow statement for conditional branching
 	**Note:** The single-line syntax ##**If...Goto**##, as shortcut for ##**If...Then Goto**##, is deprecated and it only exists for compatibility with QB.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/control/if-then.bas"}}%%(freebasic)
-'' Here is a simple "guess the number" game using if...then for a decision.
+	{{fbdoc item="filename" value="examples/manual/control/if-then0.bas"}}%%(freebasic)
+'' Here is a simple "compute the square root" code using a single-line if...then for the decision,
+'' but with multiple statements extended with colons (:)
+
+Dim As Double d , r
+r = -1
+d = 2
+'d = -3
+
+If d > 0 Then r = Sqr(d) : Print "square root computed:" Else r = 0 : Print "square root not computed:"
+Print r
+
+Sleep
+	%%
+	{{fbdoc item="filename" value="examples/manual/control/if-then.bas"}}%%(freebasic)
+'' Here is a simple "guess the number" game using a multi-line if...then for a decision.
 
 Dim As Integer num, guess
 
@@ -74,8 +87,7 @@ Do 'Start a loop
 Loop 'Go back to the start of the loop
 
 Sleep
-%%
-
+	%%
 {{fbdoc item="lang"}}
 	- In the //[[CompilerOptlang|-lang qb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, variables declared inside an ##**If**##..##**Then**## block have a procedure-wide [[ProPgVariableScope|scope]]  as in QB 
 	- In the //[[CompilerOptlang|-lang fb]]// and //[[CompilerOptlang|-lang deprecated]]// dialects, variables declared inside an ##**If**##..##**Then**## block are visible only inside the block, and cannot be accessed outside it.

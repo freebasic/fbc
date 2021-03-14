@@ -44,6 +44,7 @@ This is the list of external library bindings currently included in ""FreeBASIC"
 	{{fbdoc item="keyword" value="ExtLibogg|Ogg"}} - Ogg multimedia container format creation/decoder library
 	{{fbdoc item="keyword" value="ExtLibal|OpenAL"}} - Cross-platform 3D audio API.
 	{{fbdoc item="keyword" value="ExtLibPortAudio|PortAudio"}} - Cross-platform audio I/O library
+	{{fbdoc item="keyword" value="ExtLibsfx|sfx"}} - Freebasic sfx library is cross-platform and comes for Windows, Linux, Dos
 	{{fbdoc item="keyword" value="ExtLibsndfile|sndfile"}} - Library to read/write/convert audio files in various formats
 	{{fbdoc item="keyword" value="ExtLibVLC|VLC"}} - Audio/video playback
 	{{fbdoc item="keyword" value="ExtLibvorbis|Vorbis"}} - Ogg Vorbis audio compression library

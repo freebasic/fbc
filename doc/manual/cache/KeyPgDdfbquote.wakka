@@ -2,7 +2,7 @@
 Intrinsic define (macro) performed by the compiler.
 
 {{fbdoc item="syntax"}}##
-	""__FB_QUOTE__(arg)""
+	""__FB_QUOTE__( arg )""
 ##
 {{fbdoc item="param"}}
 	##//arg//##

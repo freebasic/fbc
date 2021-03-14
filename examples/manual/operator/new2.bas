@@ -1,4 +1,4 @@
-'' examples/manual/operator/new.bas
+'' examples/manual/operator/new2.bas
 ''
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
@@ -6,20 +6,20 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOpNew
 '' --------
 
-Type Rational
-	As Integer numerator, denominator
-End Type
-
-' Create and initialize a "rational" and store its address.
-Dim p As Rational Ptr = New Rational(3, 4)
+' Allocate memory for 100 integers and store the address of the first one.
+Dim p As Integer Ptr = New Integer[100]
 
 ' Test if null return pointer
 If (p = 0) Then
 	Print "Error: unable to allocate memory"
 Else
-	Print p->numerator & "/" & p->denominator
-	' Destroy the rational and give its memory back to the system.
-	Delete p
+	' Assign some values to the integers in the array.
+	For i As Integer = 0 To 99
+		p[i] = i
+	Next
+	' Free the entire integer array.
+	Delete[] p
 End If
 
+Print "Done."
 Sleep

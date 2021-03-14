@@ -6,7 +6,9 @@ Returns a reference to memory offset from an address
 ##
 
 {{fbdoc item="usage"}}##
-	//result// = //lhs// **[** //rhs// **]**
+		//result// = //lhs// **[** //rhs// **]**
+	or
+		//lhs// **[** //rhs// **]** = //value//
 ##
 {{fbdoc item="param"}}
 	##//lhs//##

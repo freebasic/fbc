@@ -2,34 +2,41 @@
 Intrinsic define (macro) performed by the compiler.
 
 {{fbdoc item="syntax"}}##
-	""__FB_ARG_LEFTOF__( arg, sep )""
+	""__FB_ARG_LEFTOF__( arg, sep [, ret] )""
 ##
 {{fbdoc item="param"}}
 	##//arg//##
 		argument
 	##//sep//##
 		separator, obviously different from the comma (,)
+	##//ret//##
+		default return if separator not found
 
 {{fbdoc item="desc"}}
 	Returns the left token of the argument (##//arg//##), based on the separator (##//sep//##).
+	
+	By default, if the default return (##//ret//##) is not given, the macro returns nothing (empty token) if the separator (##//sep//##) is not found.
+	Otherwise, if the default return (##//ret//##) is given, the macro returns the default return (##//ret//##) if the separator (##//sep//##) is not found.
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/defines/fbargleftof.bas"}}%%(freebasic)
 #macro m( arg )
 	Scope
-		Var v = __FB_ARG_LEFTOF__( arg, versus )
+		Var v = __FB_ARG_LEFTOF__( arg, versus, "Not found 'versus'" )
 		Print v
 	End Scope
 #endmacro
 
 m(1 versus 2)
 m("left-side" versus "right-side")
+m(3.14 verso pi)
 
 Sleep
 
 /' Output:
  1
 left-side
+Not found 'versus'
 '/
 	%%
 	See also ##[[KeyPgDdfbargrightof|__FB_ARG_RIGHTOF__]]## example.
@@ -40,5 +47,6 @@ left-side
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfbargrightof|__FB_ARG_RIGHTOF__]]##
 	- ##[[KeyPgDdfbargcount|__FB_ARG_COUNT__]]##
+	- ##[[KeyPgDdfbargextract|__FB_ARG_EXTRACT__]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

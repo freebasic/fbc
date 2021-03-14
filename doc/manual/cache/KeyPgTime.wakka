@@ -8,7 +8,7 @@ Returns the current system time as a string
 	//result// = **Time**[$]
 ##
 {{fbdoc item="ret"}}
-	Returns the current system.
+	Returns the current system time.
 
 {{fbdoc item="desc"}}
 	Returns the current system time in the format ##hh:mm:ss##.

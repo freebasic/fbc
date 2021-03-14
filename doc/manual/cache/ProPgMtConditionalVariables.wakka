@@ -182,7 +182,7 @@ The built-in procedures that create, wait-for/signal, and destroy **Conditional 
 '  (connecting lines join the sender(s) and receiver(s) impacted by each action occurring during the sequence)
 '
 '          Main Thread                                                                          Child Thread
-'      MUTEXLOCK(mutexID) <-----------------------------.     .-------------.-------------> MUTEXLOCK(mutexID
+'      MUTEXLOCK(mutexID) <-----------------------------.     .-------------.-------------> MUTEXLOCK(mutexID)
 '      Do_something_1_with_exclusion                    |     |             |               Do_something_1_with_exclusion
 '      boolC = True ----------------------------------- | --- | ----------- | ------------> While boolC <> True
 '      CONDSIGNAL(conditionalID) ---------------------- | --- | ----------- | ---.    .-------- ( atomic_mutex_unlock(mutexID) )

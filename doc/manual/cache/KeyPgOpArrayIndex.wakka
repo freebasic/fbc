@@ -5,7 +5,9 @@ Returns a reference to an element in an array
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **()** ( //lhs//() [[KeyPgAs|as]] //T//, [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]], ... ) [[KeyPgByrefFunction|byref]] [[KeyPgAs|as]] //T//
 ##
 {{fbdoc item="usage"}}##
-	//result// = //lhs// **(** //rhs// [, ...] **)**
+		//result// = //lhs// **(** //rhs// [, ...] **)**
+	or
+		//lhs// **(** //rhs// [, ...] **)** = //value//
 ##
 {{fbdoc item="param"}}
 	##//lhs//##
