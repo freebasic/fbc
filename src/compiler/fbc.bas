@@ -578,10 +578,16 @@ private function hFindLib( byval file as zstring ptr ) as string
 end function
 
 private function fbcLinkerIsGold( ) as integer
-	dim ldcmd as string
-	fbcFindBin( FBCTOOL_LD, ldcmd )
-	ldcmd += " --version"
-	return (instr( hGet1stOutputLineFromCommand( ldcmd ), "GNU gold" ) > 0)
+	'' This is needed otherwise it will wrongly pass --version into the linker on Solaris
+	'' caused the linker version to be printed everytime we compile with fbc
+	if(fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_SOLARIS) then
+		return FALSE
+	else
+		dim ldcmd as string
+		fbcFindBin( FBCTOOL_LD, ldcmd )
+		ldcmd += " --version"
+		return (instr( hGet1stOutputLineFromCommand( ldcmd ), "GNU gold" ) > 0)
+	end if
 end function
 
 '' Check whether we're using the gold linker.
@@ -723,8 +729,13 @@ private function hLinkFiles( ) as integer
 		end if
 
 		'' Add all symbols to the dynamic symbol table
+		'' The Solaris linker doesn't support --export-dynamic
+		'' I don't know the equivalent option for it so I just disable this for Solaris
+		'' Don't know the side effects, though
+		'' But able to have shared library generated successfully afterward
 		if( (fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB) or _
-		    fbGetOption( FB_COMPOPT_EXPORT ) ) then
+		    fbGetOption( FB_COMPOPT_EXPORT ) ) and _
+		    (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_SOLARIS) then
 			ldcline += " --export-dynamic"
 		end if
 
