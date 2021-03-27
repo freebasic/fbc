@@ -470,10 +470,20 @@ private sub check_optim(byref code as string)
 	end if
 
 	if mov="jmp" then
-		prevpart1=part1
-		flag=KUSE_JMP
-		prevwpos=writepos
-		exit sub
+		if part1=prevpart1 then
+			''mov r11, rax  --> #10mov r11, rax
+			''jmp r11       --> #10jmp r11
+			''              --> jmp rax
+			mid(ctx.proc_txt,prevwpos)="#10"
+			code="#10"+code+newline+string( ctx.indent*3, 32 )+"jmp "+prevpart2+" #Optim 10"
+			prevpart1="":prevpart2="":prevmov="":flag=KUSE_MOV
+			exit sub
+		else
+			prevpart1=part1
+			flag=KUSE_JMP
+			prevwpos=writepos
+			exit sub
+		end if
 	end if
 
 	if flag=KUSE_LEA then
@@ -2119,7 +2129,7 @@ private function _emitbegin( ) as integer
 
 	asm_code( ".intel_syntax noprefix")
 	asm_section(".text")
-
+	ctx.indent-=1
 	function = TRUE
 end function
 private sub hAddGlobalCtorDtor( byval proc as FBSYMBOL ptr )
@@ -3688,7 +3698,7 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 		end if
 	end if
 
-	tempodtype=v1->dtype
+	tempodtype=typeGetDtAndPtrOnly( v1->dtype )
 	if typeisptr(tempodtype) then tempodtype=FB_DATATYPE_INTEGER
 	select case tempodtype
 		case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE,FB_DATATYPE_ENUM
@@ -3700,7 +3710,7 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 		case FB_DATATYPE_BYTE,FB_DATATYPE_UBYTE,FB_DATATYPE_BOOLEAN,FB_DATATYPE_CHAR
 			prefix="BYTE PTR "
 		case else
-			asm_error("BOP datatype not handled 01 ="+typedumpToStr(v1->dtype,0))
+			asm_error("UOP datatype not handled 01 ="+typedumpToStr(v1->dtype,0))
 	end select
 
 	select case v1->typ
@@ -3755,7 +3765,7 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 					asm_code("mov "+*regstrb(vrreg)+", "+op1)
 					op1=*regstrb(vrreg)
 				case else
-					asm_error("BOP datatype not handled 011 ="+typedumpToStr(v1->dtype,0))
+					asm_error("UOP datatype not handled 011 ="+typedumpToStr(v1->dtype,0))
 			end select
 			'===
 		end if
@@ -5870,7 +5880,8 @@ private sub _emitjumpptr( byval v1 as IRVREG ptr )
 	else
 		reg=reg_findreal(v1->reg)
 	end if
-	asm_code("jmp ["+*regstrq(reg)+"]")
+	'asm_code("jmp ["+*regstrq(reg)+"]")
+	asm_code("jmp "+*regstrq(reg))
 end sub
 private sub _emitbranch( byval op as integer, byval label as FBSYMBOL ptr )
 	asm_info("emit branch = jmp/call (gosub) to "+*symbGetMangledName( label )+" "+Str(op)+" "+*hGetBopCode(op))
@@ -5905,7 +5916,7 @@ private sub _emitjmptb _
 	byval span as ulongint _
 	)
 	dim as string lname,op1=Str(v1->ofs)+"[rbp]",op2
-	dim as long idx
+	dim as long idx,regtempo
 	asm_info("jmptb " + vregPretty( v1 ) )
 	asm_info("v1="+vregdumpfull(v1))
 	asm_info("labelcount="+Str(labelcount)+" bias="+Str(bias)+" span="+Str(span))
@@ -5931,7 +5942,11 @@ private sub _emitjmptb _
 
 		asm_code("cmp rax, "+Str(span))''check limits inf/sup
 		asm_code("ja "+*symbGetMangledName(deflabel))
-		asm_code("jmp QWORD PTR ["+lname+"+rax*8]")
+		'asm_code("jmp QWORD PTR ["+lname+"+rax*8]")  ''issue with ld 2.36 so replaced by the 3 lines below
+		regtempo=reg_findfree(999997)
+		reghandle(regtempo)=KREGFREE ''can be reset here as limited use
+		asm_code("lea "+*regstrq(regtempo)+", "+lname+"[rip]")
+		asm_code("jmp QWORD PTR [rax*8+"+*regstrq(regtempo)+"]")
 		asm_section(".data")
 		asm_code(".align 8")
 		asm_code(lname+":")
@@ -6319,7 +6334,7 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 	asm_code(*symbGetMangledName( proc )+":")
 	ctx.indent+=1
 
-	asm_info("stk4="+Str(ctx.stk)+" reserved space for saving registers when proc calls (eventually 112 more for variadic linux only)")
+	asm_info("stk4="+Str(ctx.stk)+" reserved space for saving registers when proc calls")
 
 	if( env.clopt.debuginfo = true ) then edbgEmitProcHeader_asm64(proc)
 
