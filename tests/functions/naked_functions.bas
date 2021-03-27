@@ -1,6 +1,6 @@
 # include "fbcunit.bi"
 
-#if (not defined(__FB_64BIT__)) and (not defined(__FB_ARM__))
+#if (defined(__FB_X86__)) and (not defined(__FB_64BIT__))
 #if (__FB_BACKEND__ = "gas") or (__FB_BACKEND__ = "gcc")
 
 SUITE( fbc_tests.functions.naked_functions )

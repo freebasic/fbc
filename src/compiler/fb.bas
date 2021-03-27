@@ -928,7 +928,7 @@ function fbIdentifyFbcArch( byref fbcarch as string ) as integer
 		'' default, which is always safe for the host.
 		function = FB_DEFAULT_CPUTYPE
 
-		#if (not defined( __FB_64BIT__ )) and (not defined( __FB_ARM__ ))
+		#if (not defined( __FB_64BIT__ )) and defined( __FB_X86__ )
 			select case( fb_CpuDetect( ) shr 28 )
 			case 3 : function = FB_CPUTYPE_386
 			case 4 : function = FB_CPUTYPE_486
