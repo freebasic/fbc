@@ -267,3 +267,23 @@ FBCALL void fb_GfxControl_i( int what, ssize_t *param1, ssize_t *param2, ssize_t
 		*param4 = res4;
 	}
 }
+
+FBCALL void fb_GfxControl_i32( int what, int *param1, int *param2, int *param3, int *param4 )
+{
+	ssize_t p1, p2, p3, p4;
+	fb_GfxControl_i( what, &p1, &p2, &p3, &p4 );
+	*param1 = (int)p1;
+	*param2 = (int)p2;
+	*param3 = (int)p3;
+	*param4 = (int)p4;
+}
+
+FBCALL void fb_GfxControl_i64( int what, long long *param1, long long *param2, long long *param3, long long *param4 )
+{
+	ssize_t p1, p2, p3, p4;
+	fb_GfxControl_i( what, &p1, &p2, &p3, &p4 );
+	*param1 = (long long)p1;
+	*param2 = (long long)p2;
+	*param3 = (long long)p3;
+	*param4 = (long long)p4;
+}

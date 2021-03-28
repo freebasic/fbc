@@ -38,3 +38,45 @@ FBCALL void fb_GfxScreenInfo
 
 	FB_GRAPHICS_UNLOCK( );
 }
+
+FBCALL void fb_GfxScreenInfo32
+	(
+		int *width,
+		int *height,
+		int *depth,
+		int *bpp,
+		int *pitch,
+		int *refresh,
+		FBSTRING *driver
+	)
+{
+	ssize_t w, h, d, b, p, r;
+	fb_GfxScreenInfo( &w, &h, &d, &b, &p, &r, driver );
+	*width = (int)w;
+	*height = (int)h;
+	*depth = (int)d;
+	*bpp = (int)b;
+	*pitch = (int)p;
+	*refresh = (int)r;
+}
+
+FBCALL void fb_GfxScreenInfo64
+	(
+		long long *width,
+		long long *height,
+		long long *depth,
+		long long *bpp,
+		long long *pitch,
+		long long *refresh,
+		FBSTRING *driver
+	)
+{
+	ssize_t w, h, d, b, p, r;
+	fb_GfxScreenInfo( &w, &h, &d, &b, &p, &r, driver );
+	*width = (long long)w;
+	*height = (long long)h;
+	*depth = (long long)d;
+	*bpp = (long long)b;
+	*pitch = (long long)p;
+	*refresh = (long long)r;
+}

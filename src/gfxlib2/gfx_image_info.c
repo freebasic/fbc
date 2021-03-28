@@ -48,3 +48,45 @@ FBCALL int fb_GfxImageInfo
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
+
+FBCALL int fb_GfxImageInfo32
+	(
+		void *img,
+		int *width,
+		int *height,
+		int *bpp,
+		int *pitch,
+		void **imgdata,
+		int *size
+	)
+{
+	ssize_t w, h, b, p, s;
+	int ret = fb_GfxImageInfo( img, &w, &h, &b, &p, imgdata, &s );
+	*width = (int)w;
+	*height = (int)h;
+	*bpp = (int)b;
+	*pitch = (int)p;
+	*size = (int)s;
+	return ret;
+}
+
+FBCALL int fb_GfxImageInfo64
+	(
+		void *img,
+		long long *width,
+		long long *height,
+		long long *bpp,
+		long long *pitch,
+		void **imgdata,
+		long long *size
+	)
+{
+	ssize_t w, h, b, p, s;
+	int ret = fb_GfxImageInfo( img, &w, &h, &b, &p, imgdata, &s );
+	*width = (long long)w;
+	*height = (long long)h;
+	*bpp = (long long)b;
+	*pitch = (long long)p;
+	*size = (long long)s;
+	return ret;
+}
