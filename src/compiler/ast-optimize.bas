@@ -1464,9 +1464,10 @@ private function hOptStrAssignment _
 		byval r as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	dim as integer optimize = any, is_wstr = any
+	dim as integer optimize = any, is_byref = any, is_wstr = any
 
 	optimize = FALSE
+	is_byref = FALSE
 
 	'' is right side a bin operation?
 	if( r->class = AST_NODECLASS_BOP ) then
@@ -1486,6 +1487,22 @@ private function hOptStrAssignment _
 				end if
 			end if
 
+		case AST_NODECLASS_DEREF
+			'' check if we can optimize to fb_StrConcatByref()
+			'' looking specifically for a = a + b
+			'' where both a & b are STRINGS but we possibly
+			'' don't know until run time if a and b could 
+			'' be the same descriptor.
+			if( astIsTreeEqual( l, r->l ) ) then
+				sym = astGetSymbol( l->l )
+				if( sym <> NULL ) then
+					if( astGetDataType( l ) = FB_DATATYPE_STRING ) then
+						optimize = TRUE
+						is_byref = TRUE
+					end if
+				end if
+			end if
+
 		case AST_NODECLASS_FIELD, AST_NODECLASS_IIF
 			select case as const l->l->class
 			case AST_NODECLASS_VAR, AST_NODECLASS_IDX
@@ -1493,7 +1510,12 @@ private function hOptStrAssignment _
 				if( astIsTreeEqual( l, r->l ) ) then
 					sym = astGetSymbol( l )
 					if( sym <> NULL ) then
-						optimize = astIsSymbolOnTree( sym, r->r ) = FALSE
+						if( astGetDataType( l ) = FB_DATATYPE_STRING ) then
+							optimize = TRUE
+							is_byref = TRUE
+						else
+							optimize = astIsSymbolOnTree( sym, r->r ) = FALSE
+						end if
 					end if
 				end if
 
@@ -1513,13 +1535,13 @@ private function hOptStrAssignment _
 		if( hIsMultStrConcat( l, r ) ) then
 			function = hOptStrMultConcat( l, l, r, is_wstr )
 		else
-			''	=            f() -- concatassign
+			''	=            f() -- concatassign | concatbyref
 			'' / \           / \
 			''a   +    =>   a   expr
 			''   / \
 			''  a   expr
 			if( is_wstr = FALSE ) then
-				function = rtlStrConcatAssign( l, astUpdStrConcat( r ) )
+				function = rtlStrConcatAssign( l, astUpdStrConcat( r ), is_byref )
 			else
 				function = rtlWstrConcatAssign( l, astUpdStrConcat( r ) )
 			end if

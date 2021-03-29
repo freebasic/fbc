@@ -123,6 +123,7 @@ FBCALL void        *fb_StrAssignEx      ( void *dst, ssize_t dst_size, void *src
 FBCALL void         fb_StrDelete        ( FBSTRING *str );
 FBCALL FBSTRING    *fb_StrConcat        ( FBSTRING *dst, void *str1, ssize_t str1_size, void *str2, ssize_t str2_size );
 FBCALL void        *fb_StrConcatAssign  ( void *dst, ssize_t dst_size, void *src, ssize_t src_size, int fillrem );
+FBCALL void        *fb_StrConcatByref   ( void *dst, ssize_t dst_size, void *src, ssize_t src_size, int fillrem );
 FBCALL int          fb_StrCompare       ( void *str1, ssize_t str1_size, void *str2, ssize_t str2_size );
 FBCALL FBSTRING    *fb_StrAllocTempResult ( FBSTRING *src );
 FBCALL FBSTRING    *fb_StrAllocTempDescF( char *str, ssize_t str_size );
@@ -244,6 +245,7 @@ FBCALL FBSTRING    *fb_MKI              ( ssize_t num );
 FBCALL FBSTRING    *fb_MKL              ( int num );
 FBCALL FBSTRING    *fb_MKLONGINT        ( long long num );
 FBCALL FBSTRING    *fb_LEFT             ( FBSTRING *str, ssize_t chars );
+FBCALL void         fb_LEFTSELF         ( FBSTRING *str, ssize_t chars );
 FBCALL FBSTRING    *fb_RIGHT            ( FBSTRING *str, ssize_t chars );
 FBCALL FBSTRING    *fb_SPACE            ( ssize_t chars );
 FBCALL FBSTRING    *fb_LTRIM            ( FBSTRING *str );

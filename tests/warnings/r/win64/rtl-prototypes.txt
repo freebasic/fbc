@@ -295,6 +295,7 @@ function fb_WstrConcatAW
 function fb_StrCompare
 function fb_WstrCompare
 function fb_StrConcatAssign
+function fb_StrConcatByref
 function fb_WstrConcatAssign
 function fb_StrAllocTempResult
 function fb_StrAllocTempDescF
@@ -442,6 +443,7 @@ function fb_MKI
 function fb_MKL
 function fb_MKLONGINT
 function left alias "fb_LEFT"
+function fb_leftself alias "fb_LEFTSELF"
 function left alias "fb_WstrLeft"
 function right alias "fb_RIGHT"
 function right alias "fb_WstrRight"

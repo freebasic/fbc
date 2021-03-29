@@ -143,6 +143,23 @@
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
  		), _
+		/' function fb_StrConcatByref(
+				byref str1 as const any, byval str1_size as const integer, _
+				byref str2 as const any, byval str2_size as const integer, _
+				byval fillrem as const long = 1 ) as string '/ _
+		( _
+			@FB_RTL_STRCONCATBYREF, NULL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			5, _
+			{ _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 1 ) _
+			} _
+ 		), _
 		/' function fb_WstrConcat( byval str1 as const wstring ptr, byval str2 as const wstring ptr ) as wstring '/ _
 		( _
 			@FB_RTL_WSTRCONCAT, NULL, _
@@ -1840,7 +1857,7 @@
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
 		/' function fb_MKLONGINT( byval number as const longint ) as string '/ _
 		( _
 			@FB_RTL_MKLONGINT, NULL, _
@@ -1850,7 +1867,7 @@
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
 		/' function left overload( byref str as const string, byval chars as const integer ) as string '/ _
 		( _
 			@"left", @"fb_LEFT", _
@@ -1861,7 +1878,7 @@
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
 		/' function left overload( byref str as const wstring, byval chars as const integer ) as wstring '/ _
 		( _
 			@"left", @"fb_WstrLeft", _
@@ -1870,6 +1887,17 @@
 			2, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+ 		), _
+		/' sub fb_leftself overload( byref str as string, byval chars as const integer )'/ _
+		( _
+			@"fb_LeftSelf", @"fb_LEFTSELF", _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			2, _
+			{ _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
  		), _
@@ -1914,7 +1942,7 @@
 			{ _
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
 		/' function fb_StrLcase2( byref src as const string, byval mode as const long = 0 ) as string '/ _
 		( _
 			@FB_RTL_STRLCASE2, NULL, _
@@ -1925,7 +1953,7 @@
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
 			} _
- 		), _
+		), _
 		/' function fb_WstrLcase2( byref str as const wstring, byval mode as const long = 0 ) as wstring '/ _
 		( _
 			@FB_RTL_WSTRLCASE2, NULL, _
@@ -1936,7 +1964,7 @@
 				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
 			} _
- 		), _
+		), _
 		/' function fb_StrUcase2( byref src as const string, byval mode as const long = 0 ) as string '/ _
 		( _
 			@FB_RTL_STRUCASE2, NULL, _
@@ -2316,7 +2344,8 @@ end function
 function rtlStrConcatAssign _
 	( _
 		byval dst as ASTNODE ptr, _
-		byval src as ASTNODE ptr _
+		byval src as ASTNODE ptr, _
+		byval isConcatByref as integer = FALSE _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
@@ -2325,7 +2354,11 @@ function rtlStrConcatAssign _
 
 	function = NULL
 
-	proc = astNewCALL( PROCLOOKUP( STRCONCATASSIGN ) )
+	if( isConcatByref ) then
+		proc = astNewCALL( PROCLOOKUP( STRCONCATBYREF ) )
+	else
+		proc = astNewCALL( PROCLOOKUP( STRCONCATASSIGN ) )
+	end if
 
    	ddtype = astGetDataType( dst )
 
