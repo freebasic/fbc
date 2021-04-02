@@ -267,6 +267,8 @@
         "real" Rnd() algorithm
     - Nek (dave[at]nodtveidt.net)
         Win32 API headers
+    - Hung Nguyen Gia (gh_origin[at]zohomail.com)
+        Solaris and DragonFly porting and testing
     - Paul Squires (support[at]planetsquires.com)
         WinFBE IDE project and fbc compiler distribution bundle
     - Plasma
