@@ -218,7 +218,7 @@ static char *GetDefaultPrinterName(void)
             LPCTSTR pszPrinterId = TEXT("GetDefaultPrinterA");
 #endif
             FnGetDefaultPrinter pfnGetDefaultPrinter =
-                (FnGetDefaultPrinter) GetProcAddress(hMod, pszPrinterId);
+                (FnGetDefaultPrinter)(void*)GetProcAddress(hMod, pszPrinterId);
             if (pfnGetDefaultPrinter!=NULL) {
                 TCHAR *buffer = NULL;
                 DWORD dwSize = 0;

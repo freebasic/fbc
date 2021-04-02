@@ -72,7 +72,7 @@ static inline void fb_CondInit( void )
 	   win98: pSignalObjectAndWait() returns ERROR_INVALID_FUNCTION
 	   winnt: pSignalObjectAndWait() returns WAIT_FAILED */
 
-	pSignalObjectAndWait = (SIGNALOBJECTANDWAIT)GetProcAddress( GetModuleHandle( "KERNEL32" ), "SignalObjectAndWait" );
+	pSignalObjectAndWait = (SIGNALOBJECTANDWAIT)(void*)GetProcAddress( GetModuleHandle( "KERNEL32" ), "SignalObjectAndWait" );
 	if( (pSignalObjectAndWait != NULL)
 	    && (pSignalObjectAndWait(NULL, NULL, 0, 0) == WAIT_FAILED) ) {
 		__condops.create    = fb_CondCreate_nt;
