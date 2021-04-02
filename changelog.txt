@@ -119,6 +119,7 @@ Version 1.08.0
 - gcc backend: inline asm for float to integer calculations was generating bad code with gcc optimizations due to x87 stack clobbered but not reported to gcc
 - gcc backend: fix GOSUB causing crash/exception on win64 - setjmp/longjmp failed on mingw-w64 64-bit and needed to be passed 2 parameters instead of 1
 - fix __FB_EVAL__() incorrectly reading past the end of the expression, and report errors in expressions
+- C backend: switch to .text section after writing the exports to the C file in the explicit asm block.  gcc can move sections around with optimizations and there is a change between 7.x and 8.x that causes issue with where the directive section is located
 
 
 Version 1.07.0

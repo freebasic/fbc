@@ -1371,11 +1371,19 @@ private sub _emitEnd( )
 
 	sectionReturn( section )
 
+	'' even though we are putting this asm section at the end of the emitted C file
+	'' gcc might move it around when compiling the C lising and the ASM block ends up
+	'' (typically?) at the beginning of the C source.  Appears to be a change in if
+	'' gcc locates this before or after the first '.text. directive when it writes out
+	'' the ASM listing from the C listing: somewhere between gcc 7.1 and gcc 7.4.
+	'' Explicity close the .drectve section by switching to .text section and presume
+	'' that it comensates for the gcc'a choice of section location.
 	'' DLL export table
 	if( env.clopt.export and (env.target.options and FB_TARGETOPT_EXPORT) ) then
 		symbForEachGlobal( FB_SYMBCLASS_PROC, @hMaybeEmitProcExport )
 		if( len( ctx.exports ) > 0 ) then
 			hWriteLine( !"\n__asm__( \n\t\".section .drectve\\n\"\n" + ctx.exports + ");", TRUE )
+			hWriteLine( "__asm__( "".text"" );" )
 		end if
 		ctx.exports = ""
 	end if
