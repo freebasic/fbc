@@ -3,6 +3,10 @@ Version 1.07.3
 [added]
 - sf.net #898: fbc win gfxlib DirectX driver failed to initialize on 64-bit, due to incorrect construction of DIDATAFORMAT for keyboard device (macko17)
 
+[fixed]
+- C backend: switch to .text section after writing the exports to the C file in the explicit asm block.  gcc can move sections around with optimizations and there is a change between 7.x and 8.x that causes issue with where the directive section is located
+
+
 Version 1.07.2
 
 [changed]
