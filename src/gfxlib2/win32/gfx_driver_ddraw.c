@@ -201,9 +201,9 @@ static int directx_init(void)
 	if (!di_library)
 		return -1;
 
-	DirectDrawCreate = (DIRECTDRAWCREATE)GetProcAddress(dd_library, "DirectDrawCreate");
-	DirectDrawEnumerateEx = (DIRECTDRAWENUMERATEEX)GetProcAddress(dd_library, "DirectDrawEnumerateExA");
-	DirectInputCreate = (DIRECTINPUTCREATE)GetProcAddress(di_library, "DirectInputCreateA");
+	DirectDrawCreate = (DIRECTDRAWCREATE)(void*)GetProcAddress(dd_library, "DirectDrawCreate");
+	DirectDrawEnumerateEx = (DIRECTDRAWENUMERATEEX)(void*)GetProcAddress(dd_library, "DirectDrawEnumerateExA");
+	DirectInputCreate = (DIRECTINPUTCREATE)(void*)GetProcAddress(di_library, "DirectInputCreateA");
 	
 	dev_enum_data.success = FALSE;
 	
@@ -538,7 +538,7 @@ static int *driver_fetch_modes(int depth, int *size)
 		library = (HMODULE)LoadLibrary("ddraw.dll");
 		if (!library)
 			return NULL;
-		DirectDrawCreate = (DIRECTDRAWCREATE)GetProcAddress(library, "DirectDrawCreate");
+		DirectDrawCreate = (DIRECTDRAWCREATE)(void*)GetProcAddress(library, "DirectDrawCreate");
 		if ((!DirectDrawCreate) || (DirectDrawCreate(NULL, &dd1, NULL) != DD_OK)) {
 			FreeLibrary(library);
 			return NULL;
