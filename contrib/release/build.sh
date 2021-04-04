@@ -66,6 +66,7 @@
 #       -gcc-7.3.0          (mingw-w64 project)
 #       -gcc-8.1.0          (mingw-w64 project)
 #       -winlibs-gcc-8.4.0  (winlibs)
+#       -equation-gcc-8.3.0 (Equation)
 #
 # Requirements:
 #   - MSYS environment on Windows with: bash, wget/curl, zip, unzip, patch, make, findutils
@@ -250,6 +251,41 @@ download_mingw() {
 	download "MinGW.org/$1" "http://downloads.sourceforge.net/mingw/${1}?download"
 }
 
+repack_equation_exe() {
+	packname="$1"
+	instname="$packname-installer"
+
+	echo "Removing previous repack directories"
+	rm -rf repack
+	mkdir repack
+
+	cd repack
+	mkdir $packname
+	mkdir $instname
+	
+	echo "Extracting installer files from $packname.exe"
+	cd $instname
+	7z x -y ../../$packname.exe > /dev/null
+	
+	echo "Copying directory structure"
+	cd source
+	find . -type d | xargs -L 1 -I % mkdir -p ../../$packname/%
+	
+	echo "Decompressing individual files"
+	# careful here with the quoting; this uses stdout redirection
+	find . -type f -exec sh -c "bzip2 -d -c '{}' > '../../$packname/{}'" \;
+
+	cd ../..
+	
+	echo "Creating normal 7z archive $packname.7z in cache"
+	7z a ../$packname.7z $packname > /dev/null
+	
+	cd ..
+
+	# clean-up
+	rm -rf ./repack
+}
+
 get_mingww64_toolchain() {
 	bits="$1"
 	arch="$2"
@@ -261,6 +297,12 @@ get_mingww64_toolchain() {
 		mingwbuildsrev=
 		mingwruntime=7.0.0-r1
 		toolchain=winlibs
+		;;
+	-equation-gcc-8.3.0)
+		gccversion=8.3.0
+		mingwbuildsrev=
+		mingwruntime=
+		toolchain=equation
 		;;
 	-gcc-8.1.0)
 		gccversion=8.1.0
@@ -298,6 +340,29 @@ get_mingww64_toolchain() {
 	esac
 
 	case "$toolchain" in
+	equation)
+		dir=http://www.equation.com/ftpdir/gcc/
+
+		file=gcc-$gccversion-$bits
+		binUrl=$dir$file.exe
+
+		srcfile=gcc-$gccversion.tar.xz
+		srcUrl=$dir$srcfile
+
+		mkdir -p ../input/equation
+		download "equation/$file.exe" $binUrl
+		download "equation/$srcfile"  $srcUrl
+		if [ -f "../input/equation/$file.7z" ]; then
+			echo "found $file.7z already repacked"
+		else
+			lastdir="$PWD"
+			cd ../input/equation
+			repack_equation_exe $file
+			cd "$lastdir"
+		fi 
+		7z x "../input/equation/$file.7z" > /dev/null
+		mv ./$file ./mingw$bits
+		;;
 	winlibs)
 		dir=brechtsanders/winlibs_mingw/releases/download/$gccversion-$mingwruntime/
 
@@ -306,8 +371,12 @@ get_mingww64_toolchain() {
 
 		srcfile=src-$gccversion-$mingwruntime.tar.gz
 		srcUrl=https://github.com/brechtsanders/winlibs_mingw/archive/refs/tags/$gccversion-$mingwruntime.tar.gz
-		;;
 
+		mkdir -p ../input/winlibs
+		download "winlibs/$file"    $binUrl
+		download "winlibs/$srcfile" $srcUrl
+		7z x "../input/winlibs/$file" > /dev/null
+		;;
 	*)
 		# mingw-w64 project - personal builds
 		dir=Toolchains%20targetting%20Win$bits/Personal%20Builds/mingw-builds/$gccversion/threads-win32/sjlj/
@@ -317,13 +386,13 @@ get_mingww64_toolchain() {
 
 		srcfile=src-$gccversion-release-rt_$mingwruntime-$mingwbuildsrev.tar.7z
 		srcUrl=http://sourceforge.net/projects/mingw-w64/files/Toolchain%20sources/Personal%20Builds/mingw-builds/$gccversion/$srcfile/download
+
+		mkdir -p ../input/MinGW-w64
+		download "MinGW-w64/$file"    $binUrl
+		download "MinGW-w64/$srcfile" $srcUrl
+		7z x "../input/MinGW-w64/$file" > /dev/null
 		;;
 	esac
-
-	mkdir -p ../input/MinGW-w64
-	download "MinGW-w64/$file"    $binUrl
-	download "MinGW-w64/$srcfile" $srcUrl
-	7z x "../input/MinGW-w64/$file" > /dev/null
 }
 
 case "$target" in
@@ -484,7 +553,12 @@ case $fbtarget in
 win32|win64)
 	# libffi sources
 	# TODO : new libffi package? at https://github.com/libffi/libffi/releases/download/v3.3-rc0/libffi-3.3-rc0.tar.gz
-	libffi_title=libffi-3.2.1
+	# always use libffi-3.3 for equation
+	if [ "$recipe" = "-equation-gcc-8.3.0" ]; then
+		libffi_title=libffi-3.3
+	else
+		libffi_title=libffi-3.2.1
+	fi
 	libffi_package="${libffi_title}.tar.gz"
 	download "$libffi_package" "ftp://sourceware.org/pub/libffi/$libffi_package"
 	echo "extracting $libffi_package"
@@ -634,10 +708,20 @@ windowsbuild() {
 
 	libffibuild
 	# copy our stored files to the build
-	case "$target" in
-	win32)          cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./i686-w64-mingw32/include;;
-	win32-mingworg) cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./include;;
-	win64)          cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./x86_64-w64-mingw32/include;;
+	case "$toolchain" in
+	equation)
+		case "$target" in
+		win32)          cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./i686-pc-mingw32/include;;
+		win64)          cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./x86_64-w64-mingw32/include;;
+		esac
+		;;
+	*)
+		case "$target" in
+		win32)          cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./i686-w64-mingw32/include;;
+		win32-mingworg) cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./include;;
+		win64)          cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./x86_64-w64-mingw32/include;;
+		esac
+		;;
 	esac
 
 	cd fbc
@@ -678,9 +762,27 @@ windowsbuild() {
 	cp bin/gprof.exe	fbc/bin/$fbtarget
 	cp bin/ld.exe		fbc/bin/$fbtarget
 
-	echo $toolchain
-
 	case "$recipe" in
+	-equation-gcc-8.3.0)
+		cp bin/gcc.exe fbc/bin/$target
+		cp bin/gdb.exe fbc/bin/$target
+
+		case "$target" in
+		win32)
+			# copy all the dll's from libexec; they are needed for cc1.exe
+			cp --parents libexec/gcc/i686-pc-mingw32/$gccversion/cc1.exe fbc/bin
+			;;
+		win64)
+			# copy all the dll's from libexec; they are needed for cc1.exe
+			cp --parents libexec/gcc/x86_64-w64-mingw32/$gccversion/cc1.exe fbc/bin
+			;;
+		*)
+			echo "invalid target $target"
+			exit 1
+			;;
+		esac
+
+		;;
 	-winlibs-gcc-8.4.0)
 		# -winlibs-gcc-X.X is being built from winlibs and the binutils have a few dependencies
 		# copy these to the bin directory - they go with the executables and should
@@ -715,6 +817,7 @@ windowsbuild() {
 		case "$target" in
 		win32)
 			# !!! TODO !!! re-evaluate the gdb used with later gcc versions
+			# !!! TODO !!! maybe package the 32-bit gcc too even for mingw-w64
 			# Take MinGW.org's gdb, because the gdb from the MinGW-w64 toolchain has much more
 			# dependencies (e.g. Python for scripting purposes) which we probably don't want/need.
 			# (this should probably be reconsidered someday)
