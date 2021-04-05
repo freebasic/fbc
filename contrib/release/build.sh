@@ -59,12 +59,14 @@
 #
 # --recipe name
 #   specify which build recipe to use.  Not all recipes are supported on all targets.
-#       -gcc-5.2.0
-#       -gcc-7.1.0
-#       -gcc-7.1.0r0
-#       -gcc-7.1.0r2
-#       -gcc-7.3.0
-#       -gcc-8.1.0
+#       -gcc-5.2.0          (mingw-w64 project)
+#       -gcc-7.1.0          (mingw-w64 project)
+#       -gcc-7.1.0r0        (mingw-w64 project)
+#       -gcc-7.1.0r2        (mingw-w64 project)
+#       -gcc-7.3.0          (mingw-w64 project)
+#       -gcc-8.1.0          (mingw-w64 project)
+#       -winlibs-gcc-8.4.0  (winlibs)
+#       -equation-gcc-8.3.0 (Equation)
 #
 # Requirements:
 #   - MSYS environment on Windows with: bash, wget/curl, zip, unzip, patch, make, findutils
@@ -192,7 +194,7 @@ if [ ! -z "$repo_url" ]; then
 fi
 
 # grab the FBSHA1 now, instead of forcing fbc/makefile to do it
-# and we don't want to rely on host having git it the path
+# and we don't want to rely on host having git in the path
 FBSHA1="$(git rev-parse HEAD)"
 
 cd ../..
@@ -249,11 +251,59 @@ download_mingw() {
 	download "MinGW.org/$1" "http://downloads.sourceforge.net/mingw/${1}?download"
 }
 
+repack_equation_exe() {
+	packname="$1"
+	instname="$packname-installer"
+
+	echo "Removing previous repack directories"
+	rm -rf repack
+	mkdir repack
+
+	cd repack
+	mkdir $packname
+	mkdir $instname
+	
+	echo "Extracting installer files from $packname.exe"
+	cd $instname
+	7z x -y ../../$packname.exe > /dev/null
+	
+	echo "Copying directory structure"
+	cd source
+	find . -type d | xargs -L 1 -I % mkdir -p ../../$packname/%
+	
+	echo "Decompressing individual files"
+	# careful here with the quoting; this uses stdout redirection
+	find . -type f -exec sh -c "bzip2 -d -c '{}' > '../../$packname/{}'" \;
+
+	cd ../..
+	
+	echo "Creating normal 7z archive $packname.7z in cache"
+	7z a ../$packname.7z $packname > /dev/null
+	
+	cd ..
+
+	# clean-up
+	rm -rf ./repack
+}
+
 get_mingww64_toolchain() {
 	bits="$1"
 	arch="$2"
+	toolchain=mingw-w64
 
 	case "$recipe" in
+	-winlibs-gcc-8.4.0)
+		gccversion=8.4.0
+		mingwbuildsrev=
+		mingwruntime=7.0.0-r1
+		toolchain=winlibs
+		;;
+	-equation-gcc-8.3.0)
+		gccversion=8.3.0
+		mingwbuildsrev=
+		mingwruntime=
+		toolchain=equation
+		;;
 	-gcc-8.1.0)
 		gccversion=8.1.0
 		mingwbuildsrev=rev0
@@ -279,24 +329,72 @@ get_mingww64_toolchain() {
 		mingwbuildsrev=rev0
 		mingwruntime=v4
 		;;
-	*)
-		gccversion=5.2.0
+	"")
+		# default build recipe
+		gccversion=8.1.0
 		mingwbuildsrev=rev0
-		mingwruntime=v4
+		mingwruntime=v6
 		;;
+	*)
+		echo "unknown recipe $recipe"
+		exit 1
 	esac
 
-	dir=Toolchains%20targetting%20Win$bits/Personal%20Builds/mingw-builds/$gccversion/threads-win32/sjlj/
-	file=$arch-$gccversion-release-win32-sjlj-rt_$mingwruntime-$mingwbuildsrev.7z
+	case "$toolchain" in
+	equation)
+		dir=http://www.equation.com/ftpdir/gcc/
 
-	mkdir -p ../input/MinGW-w64
-	download "MinGW-w64/$file" "http://sourceforge.net/projects/mingw-w64/files/$dir$file/download"
+		file=gcc-$gccversion-$bits
+		binUrl=$dir$file.exe
 
-	srcfile=src-$gccversion-release-rt_$mingwruntime-$mingwbuildsrev.tar.7z
-	download "MinGW-w64/$srcfile" "http://sourceforge.net/projects/mingw-w64/files/Toolchain%20sources/Personal%20Builds/mingw-builds/$gccversion/$srcfile/download"
+		srcfile=gcc-$gccversion.tar.xz
+		srcUrl=$dir$srcfile
 
-	7z x "../input/MinGW-w64/$file" > /dev/null
-}
+		mkdir -p ../input/equation
+		download "equation/$file.exe" $binUrl
+		download "equation/$srcfile"  $srcUrl
+		if [ -f "../input/equation/$file.7z" ]; then
+			echo "found $file.7z already repacked"
+		else
+			lastdir="$PWD"
+			cd ../input/equation
+			repack_equation_exe $file
+			cd "$lastdir"
+		fi 
+		7z x "../input/equation/$file.7z" > /dev/null
+		mv ./$file ./mingw$bits
+		;;
+	winlibs)
+		dir=brechtsanders/winlibs_mingw/releases/download/$gccversion-$mingwruntime/
+
+		file=mingw-w64-$arch-$gccversion-$mingwruntime.7z
+		binUrl=https://github.com/$dir$file
+
+		srcfile=src-$gccversion-$mingwruntime.tar.gz
+		srcUrl=https://github.com/brechtsanders/winlibs_mingw/archive/refs/tags/$gccversion-$mingwruntime.tar.gz
+
+		mkdir -p ../input/winlibs
+		download "winlibs/$file"    $binUrl
+		download "winlibs/$srcfile" $srcUrl
+		7z x "../input/winlibs/$file" > /dev/null
+		;;
+	*)
+		# mingw-w64 project - personal builds
+		dir=Toolchains%20targetting%20Win$bits/Personal%20Builds/mingw-builds/$gccversion/threads-win32/sjlj/
+
+		file=$arch-$gccversion-release-win32-sjlj-rt_$mingwruntime-$mingwbuildsrev.7z
+		binUrl=http://sourceforge.net/projects/mingw-w64/files/$dir$file/download
+
+		srcfile=src-$gccversion-release-rt_$mingwruntime-$mingwbuildsrev.tar.7z
+		srcUrl=http://sourceforge.net/projects/mingw-w64/files/Toolchain%20sources/Personal%20Builds/mingw-builds/$gccversion/$srcfile/download
+
+		mkdir -p ../input/MinGW-w64
+		download "MinGW-w64/$file"    $binUrl
+		download "MinGW-w64/$srcfile" $srcUrl
+		7z x "../input/MinGW-w64/$file" > /dev/null
+		;;
+	esac
+	}
 
 case "$target" in
 dos)
@@ -454,9 +552,8 @@ esac
 
 case $fbtarget in
 win32|win64)
-	# libffi sources
-	# TODO : new libffi package? at https://github.com/libffi/libffi/releases/download/v3.3-rc0/libffi-3.3-rc0.tar.gz
-	libffi_title=libffi-3.2.1
+	# libffi sources https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.3.tar.gz. 
+	libffi_title=libffi-3.3
 	libffi_package="${libffi_title}.tar.gz"
 	download "$libffi_package" "ftp://sourceware.org/pub/libffi/$libffi_package"
 	echo "extracting $libffi_package"
@@ -549,32 +646,34 @@ linuxbuild() {
 
 libffibuild() {
 
+	# on fbc 1.08.0 we changed the libffi version so
+	# don't use any cached files when building the packages
+	# commented out for future reference
 	# do we already have the files we need?
-	if [ -f "../input/$libffi_title/$target$recipe/ffi.h" ]; then
-	if [ -f "../input/$libffi_title/$target$recipe/ffitarget.h" ]; then
-	if [ -f "../input/$libffi_title/$target$recipe/libffi.a" ]; then
-		echo
-		echo "using cached libffi: $libffi_title/$target$recipe"
-		echo
-		return
-	fi
-	fi
-	fi
+#	if [ -f "../input/$libffi_title/$target$recipe/ffi.h" ]; then
+#	if [ -f "../input/$libffi_title/$target$recipe/ffitarget.h" ]; then
+#	if [ -f "../input/$libffi_title/$target$recipe/libffi.a" ]; then
+#		echo
+#		echo "using cached libffi: $libffi_title/$target$recipe"
+#		echo
+#		return
+#	fi
+#	fi
+#	fi
 
-	# just grab the files we need from the package?
-	# TODO : maybe once libffi 3.3 is released, we can go back
-	# to building libffi ourselves.
-
-	# copy files from opt/lib/libffi-3.2.1
-	case "$recipe" in
-	-gcc-7.1.0|-gcc-7.1.0r0|-gcc-7.1.0r2|-gcc-7.3.0|-gcc-8.1.0)
-		mkdir -p ../input/$libffi_title/$target$recipe
-		cp opt/lib/libffi-3.2.1/include/ffi.h       ../input/$libffi_title/$target$recipe
-		cp opt/lib/libffi-3.2.1/include/ffitarget.h ../input/$libffi_title/$target$recipe
-		cp opt/lib/libffi.a                         ../input/$libffi_title/$target$recipe
-		return
-		;;
-	esac
+	# or just grab the files we need from the package?
+	# we might copy in the files directly if we unable to build libffi ourselves
+	# as was the case for libffi-3.2.1 and some gcc tool chains
+	# so just leave this section commented out for reference
+#	case "$recipe" in
+#	-gcc-7.1.0|-gcc-7.1.0r0|-gcc-7.1.0r2|-gcc-7.3.0|-gcc-8.1.0)
+#		mkdir -p ../input/$libffi_title/$target$recipe
+#		cp opt/lib/libffi-3.3/include/ffi.h       ../input/$libffi_title/$target$recipe
+#		cp opt/lib/libffi-3.3/include/ffitarget.h ../input/$libffi_title/$target$recipe
+#		cp opt/lib/libffi.a                       ../input/$libffi_title/$target$recipe
+#		return
+#		;;
+#	esac
 
 	echo
 	echo "building libffi"
@@ -606,10 +705,20 @@ windowsbuild() {
 
 	libffibuild
 	# copy our stored files to the build
-	case "$target" in
-	win32)          cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./i686-w64-mingw32/include;;
-	win32-mingworg) cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./include;;
-	win64)          cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./x86_64-w64-mingw32/include;;
+	case "$toolchain" in
+	equation)
+		case "$target" in
+		win32)          cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./i686-pc-mingw32/include;;
+		win64)          cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./x86_64-w64-mingw32/include;;
+		esac
+		;;
+	*)
+		case "$target" in
+		win32)          cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./i686-w64-mingw32/include;;
+		win32-mingworg) cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./include;;
+		win64)          cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./x86_64-w64-mingw32/include;;
+		esac
+		;;
 	esac
 
 	cd fbc
@@ -650,31 +759,87 @@ windowsbuild() {
 	cp bin/gprof.exe	fbc/bin/$fbtarget
 	cp bin/ld.exe		fbc/bin/$fbtarget
 
+	case "$recipe" in
+	-equation-gcc-8.3.0)
+		cp bin/gcc.exe fbc/bin/$target
+		cp bin/gdb.exe fbc/bin/$target
+
+		case "$target" in
+		win32)
+			# copy all the dll's from libexec; they are needed for cc1.exe
+			cp --parents libexec/gcc/i686-pc-mingw32/$gccversion/cc1.exe fbc/bin
+			;;
+		win64)
+			# copy all the dll's from libexec; they are needed for cc1.exe
+			cp --parents libexec/gcc/x86_64-w64-mingw32/$gccversion/cc1.exe fbc/bin
+			;;
+		*)
+			echo "invalid target $target"
+			exit 1
+			;;
+		esac
+
+		;;
+	-winlibs-gcc-8.4.0)
+		# -winlibs-gcc-X.X is being built from winlibs and the binutils have a few dependencies
+		# copy these to the bin directory - they go with the executables and should
+		# not be used as general libraries
+		cp bin/libdl.dll            fbc/bin/$fbtarget
+		cp bin/libiconv-2.dll       fbc/bin/$fbtarget
+		cp bin/libintl-8.dll        fbc/bin/$fbtarget
+		cp bin/libwinpthread-1.dll  fbc/bin/$fbtarget
+		cp bin/zlib1.dll            fbc/bin/$fbtarget
+		cp bin/gcc.exe fbc/bin/$target
+
+		case "$target" in
+		win32)
+			cp bin/libgcc_s_dw2-1.dll	fbc/bin/$fbtarget
+			# copy all the dll's from libexec; they are needed for cc1.exe
+			cp --parents libexec/gcc/i686-w64-mingw32/$gccversion/cc1.exe fbc/bin
+			cp --parents libexec/gcc/i686-w64-mingw32/$gccversion/*.dll   fbc/bin
+			;;
+		win64)
+			cp bin/libgcc_s_seh-1.dll	fbc/bin/$fbtarget
+			# copy all the dll's from libexec; they are needed for cc1.exe
+			cp --parents libexec/gcc/x86_64-w64-mingw32/$gccversion/cc1.exe fbc/bin
+			cp --parents libexec/gcc/x86_64-w64-mingw32/$gccversion/*.dll   fbc/bin
+			;;
+		*)
+			echo "invalid target $target"
+			exit 1
+			;;
+		esac
+		;;
+	*)
+		case "$target" in
+		win32)
+			# !!! TODO !!! re-evaluate the gdb used with later gcc versions
+			# !!! TODO !!! maybe package the 32-bit gcc too even for mingw-w64
+			# Take MinGW.org's gdb, because the gdb from the MinGW-w64 toolchain has much more
+			# dependencies (e.g. Python for scripting purposes) which we probably don't want/need.
+			# (this should probably be reconsidered someday)
+			cp mingworg-gdb/bin/gdb.exe		fbc/bin/win32
+			cp mingworg-gdb/bin/libgcc_s_dw2-1.dll	fbc/bin/win32
+			cp mingworg-gdb/bin/zlib1.dll		fbc/bin/win32
+			;;
+		win32-mingworg)
+			cp bin/gdb.exe			fbc/bin/win32
+			cp bin/libgcc_s_dw2-1.dll	fbc/bin/win32
+			cp bin/zlib1.dll		fbc/bin/win32
+			;;
+		win64)
+			cp bin/gcc.exe fbc/bin/win64
+			cp --parents libexec/gcc/x86_64-w64-mingw32/$gccversion/cc1.exe fbc/bin
+			;;
+		esac
+		;;
+	esac
+
 	cd fbc && make mingw-libs ENABLE_STANDALONE=1 && cd ..
 
 	if [ $fbtarget = "win32" ]; then
 		cd fbc/lib/win32 && make && cd ../../..
 	fi
-
-	case "$target" in
-	win32)
-		# Take MinGW.org's gdb, because the gdb from the MinGW-w64 toolchain has much more
-		# dependencies (e.g. Python for scripting purposes) which we probably don't want/need.
-		# (this should probably be reconsidered someday)
-		cp mingworg-gdb/bin/gdb.exe		fbc/bin/win32
-		cp mingworg-gdb/bin/libgcc_s_dw2-1.dll	fbc/bin/win32
-		cp mingworg-gdb/bin/zlib1.dll		fbc/bin/win32
-		;;
-	win32-mingworg)
-		cp bin/gdb.exe			fbc/bin/win32
-		cp bin/libgcc_s_dw2-1.dll	fbc/bin/win32
-		cp bin/zlib1.dll		fbc/bin/win32
-		;;
-	win64)
-		cp bin/gcc.exe fbc/bin/win64
-		cp --parents libexec/gcc/x86_64-w64-mingw32/$gccversion/cc1.exe fbc/bin
-		;;
-	esac
 
 	cp ../input/$libffi_title/$target$recipe/libffi.a fbc/lib/$fbtarget
 
