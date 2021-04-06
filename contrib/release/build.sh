@@ -714,6 +714,12 @@ windowsbuild() {
 		win32)          cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./i686-pc-mingw32/include;;
 		win64)          cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./x86_64-w64-mingw32/include;;
 		esac
+
+		# patch in crt_glob.bas to enable command line wildard expansion
+		# equation-crt-glob.bas
+		#     extern as integer _dowildcard alias "_dowildcard"
+		#     dim shared _dowildcard as integer = -1
+		cp ../input/fbc/contrib/release/equation-crt-glob.bas fbc/src/compiler/equation-crt-glob.bas
 		;;
 	*)
 		case "$target" in
@@ -781,7 +787,6 @@ windowsbuild() {
 			exit 1
 			;;
 		esac
-
 		;;
 	-winlibs-gcc-8.4.0)
 		# -winlibs-gcc-X.X is being built from winlibs and the binutils have a few dependencies
