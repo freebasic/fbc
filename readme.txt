@@ -71,7 +71,7 @@
         Debian/Ubuntu:
           gcc libncurses5-dev libffi-dev libgl1-mesa-dev
           libx11-dev libxext-dev libxrender-dev libxrandr-dev libxpm-dev
-          libtinfo5
+          libtinfo5 libgpm-dev
         Fedora:
           gcc ncurses-devel ncurses-compat-libs libffi-devel mesa-libGL-devel
           libX11-devel libXext-devel libXrender-devel libXrandr-devel
