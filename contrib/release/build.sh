@@ -406,7 +406,7 @@ dos)
 		download "DJGPP/${package}.zip" "${DJGPP_MIRROR}${dir}${package}.zip"
 	}
 
-   	djver=205
+	djver=205
 	gccver=710
 	djgppgccversiondir=7
 	bnuver=229
@@ -488,7 +488,7 @@ win32-mingworg)
 
 	# Add ddraw.h and dinput.h for FB's gfxlib2
 
-    # if ddraw.h & dinput.h were added manually:
+	# if ddraw.h & dinput.h were added manually:
 	# copyfile "../input/MinGW.org/ddraw.h" "include/ddraw.h"
 	# copyfile "../input/MinGW.org/dinput.h" "include/dinput.h"
 
@@ -740,10 +740,12 @@ windowsbuild() {
 
 	case "$toolchain" in
 	equation)
+		# hack:
 		# patch in crt_glob.bas to enable command line wildard expansion
-		# equation-crt-glob.bas
+		# equation-crt-glob.bas:
 		#     extern as integer _dowildcard alias "_dowildcard"
 		#     dim shared _dowildcard as integer = -1
+		# careful, this adds the module to the bootstrap and source packages
 		cp ../../input/fbc/contrib/release/equation-crt-glob.bas src/compiler/equation-crt-glob.bas
 		;;
 	esac
