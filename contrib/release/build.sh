@@ -394,7 +394,7 @@ get_mingww64_toolchain() {
 		7z x "../input/MinGW-w64/$file" > /dev/null
 		;;
 	esac
-	}
+}
 
 case "$target" in
 dos)
@@ -407,7 +407,7 @@ dos)
 		download "DJGPP/${package}.zip" "${DJGPP_MIRROR}${dir}${package}.zip"
 	}
 
-   	djver=205
+	djver=205
 	gccver=710
 	djgppgccversiondir=7
 	bnuver=229
@@ -489,7 +489,7 @@ win32-mingworg)
 
 	# Add ddraw.h and dinput.h for FB's gfxlib2
 
-    # if ddraw.h & dinput.h were added manually:
+	# if ddraw.h & dinput.h were added manually:
 	# copyfile "../input/MinGW.org/ddraw.h" "include/ddraw.h"
 	# copyfile "../input/MinGW.org/dinput.h" "include/dinput.h"
 
@@ -734,6 +734,19 @@ windowsbuild() {
 	echo "rebuilding normal fbc"
 	echo
 	make clean-compiler
+
+	case "$toolchain" in
+	equation)
+		# hack:
+		# patch in crt_glob.bas to enable command line wildard expansion
+		# equation-crt-glob.bas:
+		#     extern as integer _dowildcard alias "_dowildcard"
+		#     dim shared _dowildcard as integer = -1
+		# careful, this adds the module to the bootstrap and source packages
+		cp ../../input/fbc/contrib/release/equation-crt-glob.bas src/compiler/equation-crt-glob.bas
+		;;
+	esac
+
 	case "$target" in
 	win32-mingworg) make FBSHA1=$FBSHA1 CFLAGS=-DDISABLE_D3D10;;
 	*)              make FBSHA1=$FBSHA1;;
@@ -778,7 +791,6 @@ windowsbuild() {
 			exit 1
 			;;
 		esac
-
 		;;
 	-winlibs-gcc-8.4.0)
 		# -winlibs-gcc-X.X is being built from winlibs and the binutils have a few dependencies
