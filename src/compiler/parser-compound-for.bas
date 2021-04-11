@@ -834,6 +834,46 @@ sub cForStmtBegin( )
 		hUdtFor( stk )
 	end if
 
+	if( stk->for.end.sym = NULL and stk->for.ispos.sym = NULL ) then
+		dim as integer toobig = 0
+		if ( stk->for.ispos.value.i ) then
+			select case as const typeGetSizeType( stk->for.cnt.dtype )
+			case FB_SIZETYPE_INT8
+				toobig = (stk->for.end.value.i >= 127)
+			case FB_SIZETYPE_UINT8
+				toobig = (stk->for.end.value.i >= 255)
+			case FB_SIZETYPE_INT16
+				toobig = (stk->for.end.value.i >= 32767)
+			case FB_SIZETYPE_UINT16
+				toobig = (stk->for.end.value.i >= 65535)
+			case FB_SIZETYPE_INT32
+				toobig = (stk->for.end.value.i >= 2147483647)
+			case FB_SIZETYPE_UINT32
+				toobig = (stk->for.end.value.i >= 4294967295)
+			case FB_SIZETYPE_INT64
+				toobig = (culngint(stk->for.end.value.i) >= 9223372036854775807)
+			case FB_SIZETYPE_UINT64
+				toobig = (culngint(stk->for.end.value.i) >= 18446744073709551615)
+			end select
+		else
+			select case as const typeGetSizeType( stk->for.cnt.dtype )
+			case FB_SIZETYPE_UINT8, FB_SIZETYPE_UINT16, FB_SIZETYPE_UINT32, FB_SIZETYPE_UINT64
+				toobig = (stk->for.end.value.i <= 0)
+			case FB_SIZETYPE_INT8
+				toobig = (stk->for.end.value.i <= -128)
+			case FB_SIZETYPE_INT16
+				toobig = (stk->for.end.value.i >= -32768)
+			case FB_SIZETYPE_INT32
+				toobig = (stk->for.end.value.i >= -2147483648)
+			case FB_SIZETYPE_INT64
+				toobig = (stk->for.end.value.i >= -9223372036854775808)
+			end select
+		end if
+		if( toobig ) then
+			errReportWarn( FB_WARNINGMSG_FORENDTOOBIG )
+		end if
+	end if
+
 	'' if inic, endc and stepc are all constants,
 	'' check if this branch is needed
 	if( isconst = 3 ) then
