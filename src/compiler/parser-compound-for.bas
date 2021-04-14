@@ -835,7 +835,7 @@ sub cForStmtBegin( )
 	end if
 
 	if( stk->for.end.sym = NULL and stk->for.ispos.sym = NULL ) then
-		dim as integer toobig = 0
+		dim as integer toobig = FALSE
 		if ( stk->for.ispos.value.i ) then
 			select case as const typeGetSizeType( stk->for.cnt.dtype )
 			case FB_SIZETYPE_INT8
@@ -862,11 +862,13 @@ sub cForStmtBegin( )
 			case FB_SIZETYPE_INT8
 				toobig = (stk->for.end.value.i <= -128)
 			case FB_SIZETYPE_INT16
-				toobig = (stk->for.end.value.i >= -32768)
+				toobig = (stk->for.end.value.i <= -32768)
 			case FB_SIZETYPE_INT32
-				toobig = (stk->for.end.value.i >= -2147483648)
+				toobig = (stk->for.end.value.i <= -2147483648)
 			case FB_SIZETYPE_INT64
-				toobig = (stk->for.end.value.i >= -9223372036854775808)
+				'' can't test with '<=' comparison here otherwise
+				'' condition is always true on 64-bit integer counters
+				toobig = (stk->for.end.value.i = -9223372036854775808)
 			end select
 		end if
 		if( toobig ) then
