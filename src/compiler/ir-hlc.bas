@@ -3772,7 +3772,14 @@ private sub _emitVarIniScopeEnd( )
 	'' Trim separator at the end, to make the output look a bit more clean
 	'' (this isn't needed though, since the extra comma is allowed in C)
 	if( right( ctx.varini, 2 ) = ", " ) then
-		ctx.varini = left( ctx.varini, len( ctx.varini ) - 2 )
+		'' fbc doesn't optimize this very well and on long strings it becomes expensive
+		'' it's built in to the run-time, so revert to normal expression
+		'' if we don't have fb_leftself defined yet.
+		#ifndef fb_leftself
+			ctx.varini = left( ctx.varini, len( ctx.varini ) - 2 )
+		#else
+			fb_leftself( ctx.varini, len( ctx.varini ) - 2 ) 
+		#endif		''     
 	end if
 
 	ctx.varini += " }"

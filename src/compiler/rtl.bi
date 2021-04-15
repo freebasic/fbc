@@ -9,6 +9,7 @@
 #define FB_RTL_HSTRDELTEMP				"fb_hStrDelTemp"
 #define FB_RTL_STRASSIGN				"fb_StrAssign"
 #define FB_RTL_STRCONCAT 				"fb_StrConcat"
+#define FB_RTL_STRCONCATBYREF			"fb_StrConcatByref"
 #define FB_RTL_STRCOMPARE				"fb_StrCompare"
 #define FB_RTL_STRCONCATASSIGN			"fb_StrConcatAssign"
 #define FB_RTL_STRALLOCTMPRES			"fb_StrAllocTempResult"
@@ -419,6 +420,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_HSTRDELTEMP
 	FB_RTL_IDX_STRASSIGN
 	FB_RTL_IDX_STRCONCAT
+	FB_RTL_IDX_STRCONCATBYREF
 	FB_RTL_IDX_STRCOMPARE
 	FB_RTL_IDX_STRCONCATASSIGN
 	FB_RTL_IDX_STRALLOCTMPRES
@@ -960,7 +962,8 @@ declare function rtlWstrAssign _
 declare function rtlStrConcatAssign _
 	( _
 		byval dst as ASTNODE ptr, _
-		byval src as ASTNODE ptr _
+		byval src as ASTNODE ptr, _
+		byval isConcatByref as integer = FALSE _
 	) as ASTNODE ptr
 
 declare function rtlWstrConcatAssign _

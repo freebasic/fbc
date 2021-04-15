@@ -1977,6 +1977,12 @@
 		chk = procptr( fb_StrConcatAssign )
 	end scope
 
+	ID( function fb_StrConcatByref )
+	scope
+		dim chk as function fbcall ( byref as any, byval as const integer, byref as const any, byval as const integer, byval as const long = 1 ) as string
+		chk = procptr( fb_StrConcatByref )
+	end scope
+
 	ID( function fb_WstrConcatAssign )
 	scope
 		dim chk as function fbcall ( byval as wchar ptr, byval as const integer, byval as const wchar ptr ) as wchar ptr
@@ -2905,6 +2911,12 @@
 	scope
 		dim chk as function fbcall ( byref as const string, byval as const integer ) as string
 		chk = procptr( left )
+	end scope
+
+	ID( function fb_leftself alias "fb_LEFTSELF" )
+	scope
+		dim chk as sub fbcall ( byref as const string, byval as const integer )
+		chk = procptr( fb_leftself )
 	end scope
 
 	ID( function left alias "fb_WstrLeft" )
