@@ -39,7 +39,8 @@ namespace FB
 					 GFX_SHAPED_WINDOW			= &h10		, _
 					 GFX_ALWAYS_ON_TOP			= &h20		, _
 					 GFX_ALPHA_PRIMITIVES		= &h40		, _
-					 GFX_HIGH_PRIORITY			= &h80
+					 GFX_HIGH_PRIORITY			= &h80		,_
+					 GFX_SCREEN_EXIT			= &h80000000l
 	'' OpenGL options
 	const as integer GFX_STENCIL_BUFFER			= &h10000	, _
 					 GFX_ACCUMULATION_BUFFER	= &h20000	, _

@@ -75,6 +75,7 @@ Version 1.08.0
 - __FB_X86__ intrinsic define on x86 and x86_64
 - added warning 'FOR counter variable is unable to exceed limit value' on constant end value for loops to help avoid infinite loops, e.g. for i as ubyte = 0 to 255
 - internal rtlib function fb_LEFTSELF( string, n ) to reduce the size of a string without reallocating the buffer
+- added GFX_SCREEN_EXIT = &h80000000l constant to fbgfx.bi - used with Screen 0 (closing any graphics window and preserving the console window content)
 
 [fixed]
 - makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture
