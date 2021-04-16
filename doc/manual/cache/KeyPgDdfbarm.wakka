@@ -20,6 +20,7 @@ Intrinsic define set by the compiler
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgDdfbx86|__FB_X86__]]##
 	- ##[[KeyPgDdfblinux|__FB_LINUX__]]##
 	- ##[[KeyPgDdfbfreebsd|__FB_FREEBSD__]]##
 	- ##[[KeyPgDdfbopenbsd|__FB_OPENBSD__]]##

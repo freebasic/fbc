@@ -3006,20 +3006,20 @@ End Destructor
 
 Type ThreadDispatching
 	Public:
-		Declare Constructor(Byval nbSecondaryThread As Integer = 1)
+		Declare Constructor(Byval nbMaxSecondaryThread As Integer = 1)
 		Declare Sub DispatchingSubmit(Byval pThread As Function(Byval As Any Ptr) As String, Byval p As Any Ptr = 0)
 		declare Sub DispatchingWait()
 		Declare Sub DispatchingWait(values() As String)
 		Declare Property DispatchingThread() As Integer
 		Declare destructor()
 	Private:
-		Dim As Integer _nbst
-		Dim AS Integer _dtnb
+		Dim As Integer _nbmst
+		Dim AS Integer _dstnb
 		Dim As ThreadPooling Ptr _tp(Any)
 End Type
 
-Constructor ThreadDispatching(Byval nbSecondaryThread As Integer = 1)
-	This._nbst = nbSecondaryThread
+Constructor ThreadDispatching(Byval nbMaxSecondaryThread As Integer = 1)
+	This._nbmst = nbMaxSecondaryThread
 End Constructor
 
 Sub ThreadDispatching.DispatchingSubmit(Byval pThread As Function(Byval As Any Ptr) As String, Byval p As Any Ptr = 0)
@@ -3029,13 +3029,13 @@ Sub ThreadDispatching.DispatchingSubmit(Byval pThread As Function(Byval As Any P
 			Exit Sub
 		End If
 	Next I
-	If Ubound(This._tp) < This._nbst - 1 Then
+	If Ubound(This._tp) < This._nbmst - 1 Then
 		Redim Preserve This._tp(Ubound(This._tp) + 1)
 		This._tp(Ubound(This._tp)) = New ThreadPooling
 		This._tp(Ubound(This._tp))->PoolingSubmit(pThread, p)
 	Elseif Ubound(This._tp) >= 0 Then
-		This._tp(This._dtnb)->PoolingSubmit(pThread, p)
-		This._dtnb = (This._dtnb + 1) Mod This._nbst
+		This._tp(This._dstnb)->PoolingSubmit(pThread, p)
+		This._dstnb = (This._dstnb + 1) Mod This._nbmst
 	End If
 End Sub
 

@@ -71,6 +71,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgDdFBVerPatch|__FB_VER_PATCH__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbversion|__FB_VERSION__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbwin32|__FB_WIN32__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbx86|__FB_X86__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbxbox|__FB_XBOX__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfile|__FILE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfilenq|__FILE_NQ__"}}
@@ -286,7 +287,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgFalse|FALSE"}}
 	- {{fbdoc item="keyword" value="KeyPgFBMemcopy|FB_MEMCOPY"}}
 	- {{fbdoc item="keyword" value="KeyPgFBMemcopyclear|FB_MEMCOPYCLEAR"}}
-	- {{fbdoc item="keyword" value="KeyPgFBMEMMOVE|FB_MEMMOVE"}}
+	- {{fbdoc item="keyword" value="KeyPgFBMemmove|FB_MEMMOVE"}}
 	- {{fbdoc item="keyword" value="KeyPgFBArray|FBARRAY (array descriptor structure and access)"}}
 	- {{fbdoc item="keyword" value="KeyPgField|FIELD"}}
 	- {{fbdoc item="keyword" value="KeyPgFileattr|FILEATTR"}}

@@ -62,7 +62,7 @@ __Other details__
 	
 __Note on using ##Screen 0##__
 	##Screen 0## closes any graphics window, but also clears the console window if it exists.
-	##Screen 0, , , SCREEN_EXIT## (with ##SCREEN_EXIT=&h80000000##) also closes any graphics window, but does not clear the console window if it exists (previous text is preserved).
+	##Screen 0, , , GFX_SCREEN_EXIT## (with ##GFX_SCREEN_EXIT=&h80000000##) also closes any graphics window, but does not clear the console window if it exists (previous text is preserved).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/screen.bas"}}%%(freebasic)

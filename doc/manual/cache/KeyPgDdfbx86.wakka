@@ -1,0 +1,26 @@
+{{fbdoc item="title" value="__FB_X86__"}}----
+Intrinsic define set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FB_X86__""
+##
+{{fbdoc item="desc"}}
+	Define created at compile time if the compilation target uses the X86 or X86_64 CPU architecture, otherwise undefined.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/defines/fbx64.bas"}}%%(freebasic)
+#IFDEF __FB_X86__
+  '...instructions for X86 OSes...
+#ELSE
+  '...instructions for other OSes
+#ENDIF 
+%%
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfbarm|__FB_ARM__]]##
+	- [[CompilerOpttarget|Compiler Option: -target]]
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}
