@@ -44,7 +44,11 @@ SUITE( fbc_tests.structs.obj_property_idx2 )
 		f3->bar("foo")->bar("bar")->bar = "hi"
 		
 		CU_ASSERT_EQUAL( f3->bar("foo")->bar("bar")->bar, "hi" )
-		
+
+		'' clean-up otherwise considered a memory leak
+		delete f3
+		delete f2
+		delete f
 	END_TEST
 	
 END_SUITE

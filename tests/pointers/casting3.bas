@@ -21,6 +21,9 @@ SUITE( fbc_tests.pointers.casting3 )
 
 		CU_ASSERT_EQUAL( bar->l, (TEST_VAL and not 255) )
 
+		'' free bar otherwise is considered memory leak
+		deallocate bar
+
 	END_TEST
 
 END_SUITE

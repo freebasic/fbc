@@ -49,6 +49,9 @@ SUITE( fbc_tests.pointers.casting1 )
 			dim as ulong ul = culng( pclass )
 		#endif
 		dim as uinteger ui = cuint( pclass )
+
+		'' free t.fparray otherwise is considered a memory leak
+		deallocate t.fparray
 	END_TEST
 
 END_SUITE

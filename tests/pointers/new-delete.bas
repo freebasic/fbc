@@ -888,6 +888,8 @@ SUITE( fbc_tests.pointers.new_delete )
 
 		function f( byval p as ClassUDT ptr ) as UDT
 			function = type( p->i )
+			'' free p otherwise it is a memory leak
+			delete p
 		end function
 
 		TEST( default )

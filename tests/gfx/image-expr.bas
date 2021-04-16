@@ -715,6 +715,9 @@ SUITE( fbc_tests.gfx.image_expr )
 		'' px->p
 		line px->p, (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(0,0,255), bf
 		CU_ASSERT( hImageIsFilledWithColor( x.p, rgb(0,0,255) ) )
+
+		'' free x.p otherwise considered a memory leak
+		imagedestroy( x.p )
 	end sub
 
 	private sub hTestConstSource( )

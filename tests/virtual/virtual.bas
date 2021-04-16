@@ -283,11 +283,13 @@ SUITE( fbc_tests.virtual_.virtual_ )
 			CU_ASSERT( pa->f(              ) = &hA1 )
 			CU_ASSERT( pa->f(          1   ) = &hA2 )
 			CU_ASSERT( pa->f( clngint( 1 ) ) = &hA3 )
+			delete pa
 
 			pa = new B
 			CU_ASSERT( pa->f(              ) = &hB1 )
 			CU_ASSERT( pa->f(          1   ) = &hB2 )
 			CU_ASSERT( pa->f( clngint( 1 ) ) = &hB3 )
+			delete pa
 		END_TEST
 	END_TEST_GROUP
 
@@ -324,6 +326,7 @@ SUITE( fbc_tests.virtual_.virtual_ )
 			CU_ASSERT( Asets = 1 )
 			CU_ASSERT( Bgets = 0 )
 			CU_ASSERT( Bsets = 0 )
+			delete pa
 
 			Agets = 0
 			Asets = 0
@@ -336,6 +339,7 @@ SUITE( fbc_tests.virtual_.virtual_ )
 			CU_ASSERT( Asets = 0 )
 			CU_ASSERT( Bgets = 1 )
 			CU_ASSERT( Bsets = 1 )
+			delete pa
 		END_TEST
 	END_TEST_GROUP
 

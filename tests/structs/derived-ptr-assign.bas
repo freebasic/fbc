@@ -34,6 +34,9 @@ SUITE( fbc_tests.structs.derived_ptr_assign )
 
 		b = d '' ok
 		CU_ASSERT( b.value = 5678 )
+
+		'' delete pd otherwise considered a memory leak
+		delete pd
 	END_TEST
 
 	'' -------------------------------------------------------------------------
@@ -69,6 +72,9 @@ SUITE( fbc_tests.structs.derived_ptr_assign )
 
 		b = d '' ok
 		CU_ASSERT( b.value = 5678 )
+
+		'' delete pd otherwise considered a memory leak
+		delete pd
 	END_TEST
 
 END_SUITE
