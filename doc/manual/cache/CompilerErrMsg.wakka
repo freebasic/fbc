@@ -49,6 +49,7 @@ During the program compilation three types of errors can arise:
 	- //42(0) Calling convention mismatch//
 	- //43(0) Argument count mismatch//
 	- //44(1) Suffix ignored//
+	- //45(1) FOR counter variable is unable to exceed limit value//
 
 ==Compiler Error messages:==
 	The error messages stop the compilation after 10 errors (see the -maxerr command-line option to change that default value) or a fatal error occurred, and require a correction by the user before the compilation can be continued. The compiler signals the lines where the errors have been found, so the correction can be done quickly. In a few cases the place pointed at by the error messages is not where the errors can be found, it's the place where the compiler has given up in waiting for something that should be somewhere.
