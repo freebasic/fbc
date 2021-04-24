@@ -65,8 +65,12 @@
 #       -gcc-7.1.0r2        (mingw-w64 project)
 #       -gcc-7.3.0          (mingw-w64 project)
 #       -gcc-8.1.0          (mingw-w64 project)
-#       -winlibs-gcc-8.4.0  (winlibs)
-#       -equation-gcc-8.3.0 (Equation)
+#       -winlibs-gcc-8.4.0  (winlibs mingwrt 7.0.0r1)
+#       -winlibs-gcc-9.3.0  (winlibs mingwrt 7.0.0r3 - sjlj)
+#       -winlibs-gcc-9.3.0  (winlibs mingwrt 7.0.0r4)
+#       -winlibs-gcc-10.2.0 (winlibs mingwrt 8.0.0r8)
+#       -winlibs-gcc-10.3.0 (winlibs mingwrt 8.0.0r1)
+#       -equation-gcc-8.3.0 (Equation - experimental)
 #
 # Requirements:
 #   - MSYS environment on Windows with: bash, wget/curl, zip, unzip, patch, make, findutils
@@ -286,24 +290,128 @@ repack_equation_exe() {
 	rm -rf ./repack
 }
 
+get_equation_toolchain() {
+	bits="$1"
+	arch="$2"
+	toolchain=equation
+
+	case "$recipe" in
+	-equation-gcc-8.3.0)
+		gccversion=8.3.0
+		mingwbuildsrev=
+		mingwruntime=
+		;;
+	*)
+		echo "invalid recipe $receipe"
+		;;
+	esac
+
+	dir=http://www.equation.com/ftpdir/gcc/
+
+	file=gcc-$gccversion-$bits
+	binUrl=$dir$file.exe
+
+	srcfile=gcc-$gccversion.tar.xz
+	srcUrl=$dir$srcfile
+
+	mkdir -p ../input/equation
+	download "equation/$file.exe" $binUrl
+	download "equation/$srcfile"  $srcUrl
+	if [ -f "../input/equation/$file.7z" ]; then
+		echo "found $file.7z already repacked"
+	else
+		lastdir="$PWD"
+		cd ../input/equation
+		repack_equation_exe $file
+		cd "$lastdir"
+	fi 
+	7z x "../input/equation/$file.7z" > /dev/null
+	mv ./$file ./mingw$bits
+}
+
+get_winlibs_toolchain() {
+	bits="$1"
+	arch="$2"
+	toolchain=winlibs
+
+	if [ "$bits" = "32" ]; then
+		default_eh=dwarf
+	else
+		default_eh=seh
+	fi
+
+	case "$recipe" in
+	-winlibs-gcc-10.3.0)
+		gccversion=10.3.0
+		llvmversion=11.1.0
+		mingwruntime=8.0.0
+		mingwbuildsrev=r1
+		winlibsdir=$gccversion-$llvmversion-$mingwruntime-$mingwbuildsrev
+		file=winlibs-$arch-posix-$default_eh-gcc-$gccversion-mingw-w64-$mingwruntime-$mingwbuildsrev.7z
+		;;
+	-winlibs-gcc-10.2.0)
+		gccversion=10.2.0
+		llvmversion=10.0.1
+		mingwruntime=7.0.0
+		mingwbuildsrev=r4
+		winlibsdir=$gccversion-$mingwruntime-$mingwbuildsrev
+		file=winlibs-$arch-posix-$default_eh-gcc-$gccversion-mingw-w64-$mingwruntime-$mingwbuildsrev.7z
+		;;
+#	-winlibs-gcc-9.3.0)
+#		gccversion=9.3.0
+#		llvmversion=10.0.0
+#		mingwruntime=7.0.0
+#		mingwbuildsrev=r3
+#		toolchain=winlibs
+#		winlibsdir=$gccversion-$llvmversion-$mingwruntime-$mingwbuildsrev
+#		file=winlibs-$arch-posix-$default_eh-gcc-$gccversion-llvm-$llvmversion-mingw-w64-$mingwruntime-$mingwbuildsrev.7z
+#		;;
+	-winlibs-gcc-9.3.0)
+		gccversion=9.3.0
+		llvmversion=
+		mingwruntime=7.0.0
+		mingwbuildsrev=r3
+		winlibsdir=$gccversion-$mingwruntime-sjlj-$mingwbuildsrev
+		file=winlibs-mingw-w64-$arch-$gccversion-$mingwruntime-$mingwbuildsrev-sjlj.7z
+		;;
+	-winlibs-gcc-9.3.0)
+		gccversion=9.3.0
+		llvmversion=
+		mingwruntime=7.0.0
+		mingwbuildsrev=r3
+		winlibsdir=$gccversion-$mingwruntime-sjlj-$mingwbuildsrev
+		file=winlibs-mingw-w64-$arch-$gccversion-$mingwruntime-$mingwbuildsrev-sjlj.7z
+		;;
+	-winlibs-gcc-8.4.0)
+		gccversion=8.4.0
+		llvmversion=
+		mingwbuildsrev=r1
+		mingwruntime=7.0.0
+		winlibsdir=$gccversion-$mingwruntime-$mingwbuildsrev
+		file=mingw-w64-$arch-$gccversion-$mingwruntime.7z
+		;;
+	*)
+		echo "invalid recipe $receipe"
+		;;
+	esac
+
+	dir=brechtsanders/winlibs_mingw/releases/download/$winlibsdir/
+	binUrl=https://github.com/$dir$file
+	srcfile=src-$winlibsdir.tar.gz
+	srcUrl=https://github.com/brechtsanders/winlibs_mingw/archive/refs/tags/$winlibsdir.tar.gz
+
+	mkdir -p ../input/winlibs
+	download "winlibs/$file"    $binUrl
+	download "winlibs/$srcfile" $srcUrl
+	7z x "../input/winlibs/$file" > /dev/null
+}
+
 get_mingww64_toolchain() {
 	bits="$1"
 	arch="$2"
 	toolchain=mingw-w64
 
 	case "$recipe" in
-	-winlibs-gcc-8.4.0)
-		gccversion=8.4.0
-		mingwbuildsrev=
-		mingwruntime=7.0.0-r1
-		toolchain=winlibs
-		;;
-	-equation-gcc-8.3.0)
-		gccversion=8.3.0
-		mingwbuildsrev=
-		mingwruntime=
-		toolchain=equation
-		;;
 	-gcc-8.1.0)
 		gccversion=8.1.0
 		mingwbuildsrev=rev0
@@ -340,58 +448,34 @@ get_mingww64_toolchain() {
 		exit 1
 	esac
 
-	case "$toolchain" in
-	equation)
-		dir=http://www.equation.com/ftpdir/gcc/
+	# mingw-w64 project - personal builds
+	dir=Toolchains%20targetting%20Win$bits/Personal%20Builds/mingw-builds/$gccversion/threads-win32/sjlj/
 
-		file=gcc-$gccversion-$bits
-		binUrl=$dir$file.exe
+	file=$arch-$gccversion-release-win32-sjlj-rt_$mingwruntime-$mingwbuildsrev.7z
+	binUrl=http://sourceforge.net/projects/mingw-w64/files/$dir$file/download
 
-		srcfile=gcc-$gccversion.tar.xz
-		srcUrl=$dir$srcfile
+	srcfile=src-$gccversion-release-rt_$mingwruntime-$mingwbuildsrev.tar.7z
+	srcUrl=http://sourceforge.net/projects/mingw-w64/files/Toolchain%20sources/Personal%20Builds/mingw-builds/$gccversion/$srcfile/download
 
-		mkdir -p ../input/equation
-		download "equation/$file.exe" $binUrl
-		download "equation/$srcfile"  $srcUrl
-		if [ -f "../input/equation/$file.7z" ]; then
-			echo "found $file.7z already repacked"
-		else
-			lastdir="$PWD"
-			cd ../input/equation
-			repack_equation_exe $file
-			cd "$lastdir"
-		fi 
-		7z x "../input/equation/$file.7z" > /dev/null
-		mv ./$file ./mingw$bits
+	mkdir -p ../input/MinGW-w64
+	download "MinGW-w64/$file"    $binUrl
+	download "MinGW-w64/$srcfile" $srcUrl
+	7z x "../input/MinGW-w64/$file" > /dev/null
+}
+
+get_windows_toolchain() {
+	bits="$1"
+	arch="$2"
+
+	case "$recipe" in
+	-winlibs-*)
+		get_winlibs_toolchain $bits $arch
 		;;
-	winlibs)
-		dir=brechtsanders/winlibs_mingw/releases/download/$gccversion-$mingwruntime/
-
-		file=mingw-w64-$arch-$gccversion-$mingwruntime.7z
-		binUrl=https://github.com/$dir$file
-
-		srcfile=src-$gccversion-$mingwruntime.tar.gz
-		srcUrl=https://github.com/brechtsanders/winlibs_mingw/archive/refs/tags/$gccversion-$mingwruntime.tar.gz
-
-		mkdir -p ../input/winlibs
-		download "winlibs/$file"    $binUrl
-		download "winlibs/$srcfile" $srcUrl
-		7z x "../input/winlibs/$file" > /dev/null
+	-equation-*)
+		get_equation_toolchain $bits $arch
 		;;
 	*)
-		# mingw-w64 project - personal builds
-		dir=Toolchains%20targetting%20Win$bits/Personal%20Builds/mingw-builds/$gccversion/threads-win32/sjlj/
-
-		file=$arch-$gccversion-release-win32-sjlj-rt_$mingwruntime-$mingwbuildsrev.7z
-		binUrl=http://sourceforge.net/projects/mingw-w64/files/$dir$file/download
-
-		srcfile=src-$gccversion-release-rt_$mingwruntime-$mingwbuildsrev.tar.7z
-		srcUrl=http://sourceforge.net/projects/mingw-w64/files/Toolchain%20sources/Personal%20Builds/mingw-builds/$gccversion/$srcfile/download
-
-		mkdir -p ../input/MinGW-w64
-		download "MinGW-w64/$file"    $binUrl
-		download "MinGW-w64/$srcfile" $srcUrl
-		7z x "../input/MinGW-w64/$file" > /dev/null
+		get_mingww64_toolchain $bits $arch
 		;;
 	esac
 }
@@ -453,7 +537,7 @@ dos)
 	patch -p0 < ../djgpp-fix-pthread.patch
 	;;
 win32)
-	get_mingww64_toolchain 32 i686
+	get_windows_toolchain 32 i686
 	mv mingw32/* . && rmdir mingw32
 
 	mkdir -p ../input/MinGW.org
@@ -501,7 +585,7 @@ win32-mingworg)
 	patch -p0 < ../mingworg-fix-wcharh.patch
 	;;
 win64)
-	get_mingww64_toolchain 64 x86_64
+	get_windows_toolchain 64 x86_64
 	mv mingw64/* . && rmdir mingw64
 	;;
 esac
@@ -703,6 +787,8 @@ windowsbuild() {
 	origPATH="$PATH"
 	export PATH="$PWD/bin:$PATH"
 
+	echo "Current Path: $PATH"
+
 	libffibuild
 	# copy our stored files to the build
 	case "$toolchain" in
@@ -792,7 +878,7 @@ windowsbuild() {
 			;;
 		esac
 		;;
-	-winlibs-gcc-8.4.0)
+	-winlibs-gcc-8.4.0|-winlibs-gcc-9.3.0|-winlibs-gcc-10.2.0|-winlibs-gcc-10.3.0)
 		# -winlibs-gcc-X.X is being built from winlibs and the binutils have a few dependencies
 		# copy these to the bin directory - they go with the executables and should
 		# not be used as general libraries
@@ -803,18 +889,28 @@ windowsbuild() {
 		cp bin/zlib1.dll            fbc/bin/$fbtarget
 		cp bin/gcc.exe fbc/bin/$target
 
+		# copy the exception handling DLL
+		# libgcc_s_sjlj-1.dll  - SJLJ win32 or win53
+		# libgcc_s_dw2.dll     - dwarf2 win32
+		# libgcc_s_seh.dll     - SEH win64
+		cp bin/libgcc_s_*-1.dll	fbc/bin/$fbtarget
+
 		case "$target" in
 		win32)
-			cp bin/libgcc_s_dw2-1.dll	fbc/bin/$fbtarget
 			# copy all the dll's from libexec; they are needed for cc1.exe
 			cp --parents libexec/gcc/i686-w64-mingw32/$gccversion/cc1.exe fbc/bin
 			cp --parents libexec/gcc/i686-w64-mingw32/$gccversion/*.dll   fbc/bin
+			#also copy as.exe and ld.exe to satify 'gcc --help -v'
+			cp bin/as.exe fbc/bin/libexec/gcc/i686-w64-mingw32/$gccversion/as.exe  
+			cp bin/ld.exe fbc/bin/libexec/gcc/i686-w64-mingw32/$gccversion/ld.exe  
 			;;
 		win64)
-			cp bin/libgcc_s_seh-1.dll	fbc/bin/$fbtarget
 			# copy all the dll's from libexec; they are needed for cc1.exe
 			cp --parents libexec/gcc/x86_64-w64-mingw32/$gccversion/cc1.exe fbc/bin
 			cp --parents libexec/gcc/x86_64-w64-mingw32/$gccversion/*.dll   fbc/bin
+			#also copy as.exe and ld.exe to satify 'gcc --help -v'
+			cp bin/as.exe fbc/bin/libexec/gcc/x86_64-w64-mingw32/$gccversion/as.exe  
+			cp bin/ld.exe fbc/bin/libexec/gcc/x86_64-w64-mingw32/$gccversion/ld.exe  
 			;;
 		*)
 			echo "invalid target $target"
