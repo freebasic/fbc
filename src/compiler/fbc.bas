@@ -2710,7 +2710,7 @@ private sub hCompileBas _
 	'' was given (because for -gen gas, the FB backend's .asm output is also
 	'' the final .asm which -RR is supposed to preserve).
 	if( (not fbc.keepasm) and _
-	    ((fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS) or _
+	    (((fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS) and (fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS64) ) or _
 	     (not fbc.keepfinalasm)) ) then
 		fbcAddTemp( asmfile )
 	end if
