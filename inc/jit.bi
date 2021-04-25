@@ -1,4 +1,4 @@
-'' FreeBASIC binding for libjit-a8293e141b79c28734a3633a81a43f92f29fc2d7
+'' FreeBASIC binding for libjit-0.1.4
 ''
 '' based on the C header files:
 ''   Copyright (C) 2004  Southern Storm Software, Pty Ltd.
@@ -18,12 +18,13 @@
 ''   <http://www.gnu.org/licenses/>.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   Copyright © 2021 FreeBASIC development team
 
 #pragma once
 
 #inclib "jit"
 
+#include once "crt/stdio.bi"
 #include once "crt/longdouble.bi"
 
 '' The following symbols have been renamed:
@@ -52,18 +53,21 @@ type jit_short as short
 type jit_ushort as ushort
 type jit_int as long
 type jit_uint as ulong
-type jit_nint as long
-type jit_nuint as ulong
+type jit_nint as integer
+type jit_nuint as uinteger
 type jit_long as longint
 type jit_ulong as ulongint
 type jit_float32 as single
 type jit_float64 as double
-type jit_nfloat as clongdouble
+#ifdef __FB_WIN32__
+	type jit_nfloat as double
+#else
+	type jit_nfloat as clongdouble
+#endif
 type jit_ptr as any ptr
 
-const JIT_NATIVE_INT32 = 1
 #define JIT_NOTHROW
-#define jit_min_int (cast(jit_int, 1) shl ((sizeof(jit_int) * 8) - 1))
+#define jit_min_int clng(cast(jit_int, 1) shl ((sizeof(jit_int) * 8) - 1))
 #define jit_max_int cast(jit_int, not jit_min_int)
 const jit_max_uint = cast(jit_uint, not cast(jit_uint, 0))
 #define jit_min_long (cast(jit_long, 1) shl ((sizeof(jit_long) * 8) - 1))
@@ -79,7 +83,7 @@ type jit_value_t as _jit_value ptr
 type jit_type_t as _jit_type ptr
 type jit_stack_trace_t as jit_stack_trace ptr
 type jit_label_t as jit_nuint
-const jit_label_undefined = cast(jit_label_t, not cast(jit_uint, 0))
+const jit_label_undefined = cast(jit_label_t, culng(not cast(jit_uint, 0)))
 const JIT_NO_OFFSET = culng(not culng(0))
 type jit_meta_free_func as sub(byval data as any ptr)
 type jit_on_demand_func as function(byval func as jit_function_t) as long
@@ -226,6 +230,7 @@ enum
 	jit_abi_fastcall
 end enum
 
+const JIT_INVALID_NAME = culng(not culng(0))
 declare function jit_type_copy(byval type as jit_type_t) as jit_type_t
 declare sub jit_type_free(byval type as jit_type_t)
 declare function jit_type_create_struct(byval fields as jit_type_t ptr, byval num_fields as ulong, byval incref as long) as jit_type_t
@@ -239,11 +244,11 @@ declare sub jit_type_set_offset(byval type as jit_type_t, byval field_index as u
 declare function jit_type_get_kind(byval type as jit_type_t) as long
 declare function jit_type_get_size(byval type as jit_type_t) as jit_nuint
 declare function jit_type_get_alignment(byval type as jit_type_t) as jit_nuint
+declare function jit_type_best_alignment() as jit_nuint
 declare function jit_type_num_fields(byval type as jit_type_t) as ulong
 declare function jit_type_get_field(byval type as jit_type_t, byval field_index as ulong) as jit_type_t
 declare function jit_type_get_offset(byval type as jit_type_t, byval field_index as ulong) as jit_nuint
 declare function jit_type_get_name(byval type as jit_type_t, byval index as ulong) as const zstring ptr
-const JIT_INVALID_NAME = culng(not culng(0))
 declare function jit_type_find_name(byval type as jit_type_t, byval name as const zstring ptr) as ulong
 declare function jit_type_num_params(byval type as jit_type_t) as ulong
 declare function jit_type_get_return(byval type as jit_type_t) as jit_type_t
@@ -261,9 +266,8 @@ declare function jit_type_is_union(byval type as jit_type_t) as long
 declare function jit_type_is_signature(byval type as jit_type_t) as long
 declare function jit_type_is_pointer(byval type as jit_type_t) as long
 declare function jit_type_is_tagged(byval type as jit_type_t) as long
-declare function jit_type_best_alignment() as jit_nuint
-declare function jit_type_normalize(byval type as jit_type_t) as jit_type_t
 declare function jit_type_remove_tags(byval type as jit_type_t) as jit_type_t
+declare function jit_type_normalize(byval type as jit_type_t) as jit_type_t
 declare function jit_type_promote_int(byval type as jit_type_t) as jit_type_t
 declare function jit_type_return_via_pointer(byval type as jit_type_t) as long
 declare function jit_type_has_tag(byval type as jit_type_t, byval kind as long) as long
@@ -503,10 +507,10 @@ declare function jit_insn_get_name(byval insn as jit_insn_t) as const zstring pt
 declare function jit_insn_get_signature(byval insn as jit_insn_t) as jit_type_t
 declare function jit_insn_dest_is_value(byval insn as jit_insn_t) as long
 declare function jit_insn_label(byval func as jit_function_t, byval label as jit_label_t ptr) as long
+declare function jit_insn_label_tight(byval func as jit_function_t, byval label as jit_label_t ptr) as long
 declare function jit_insn_new_block(byval func as jit_function_t) as long
 declare function jit_insn_load(byval func as jit_function_t, byval value as jit_value_t) as jit_value_t
 declare function jit_insn_dup(byval func as jit_function_t, byval value as jit_value_t) as jit_value_t
-declare function jit_insn_load_small(byval func as jit_function_t, byval value as jit_value_t) as jit_value_t
 declare function jit_insn_store(byval func as jit_function_t, byval dest as jit_value_t, byval value as jit_value_t) as long
 declare function jit_insn_load_relative(byval func as jit_function_t, byval value as jit_value_t, byval offset as jit_nint, byval type as jit_type_t) as jit_value_t
 declare function jit_insn_store_relative(byval func as jit_function_t, byval dest as jit_value_t, byval offset as jit_nint, byval value as jit_value_t) as long
@@ -515,6 +519,7 @@ declare function jit_insn_load_elem(byval func as jit_function_t, byval base_add
 declare function jit_insn_load_elem_address(byval func as jit_function_t, byval base_addr as jit_value_t, byval index as jit_value_t, byval elem_type as jit_type_t) as jit_value_t
 declare function jit_insn_store_elem(byval func as jit_function_t, byval base_addr as jit_value_t, byval index as jit_value_t, byval value as jit_value_t) as long
 declare function jit_insn_check_null(byval func as jit_function_t, byval value as jit_value_t) as long
+declare function jit_insn_nop(byval func as jit_function_t) as long
 declare function jit_insn_add(byval func as jit_function_t, byval value1 as jit_value_t, byval value2 as jit_value_t) as jit_value_t
 declare function jit_insn_add_ovf(byval func as jit_function_t, byval value1 as jit_value_t, byval value2 as jit_value_t) as jit_value_t
 declare function jit_insn_sub(byval func as jit_function_t, byval value1 as jit_value_t, byval value2 as jit_value_t) as jit_value_t
@@ -1508,9 +1513,17 @@ const JIT_OPCODE_OPER_SHR = &h01200000
 const JIT_OPCODE_OPER_SHR_UN = &h01300000
 const JIT_OPCODE_OPER_COPY = &h01400000
 const JIT_OPCODE_OPER_ADDRESS_OF = &h01500000
-const JIT_OPCODE_DEST_PTR = JIT_OPCODE_DEST_INT
-const JIT_OPCODE_SRC1_PTR = JIT_OPCODE_SRC1_INT
-const JIT_OPCODE_SRC2_PTR = JIT_OPCODE_SRC2_INT
+
+#if defined(__FB_64BIT__) and (defined(__FB_WIN32__) or defined(__FB_UNIX__))
+	const JIT_OPCODE_DEST_PTR = JIT_OPCODE_DEST_LONG
+	const JIT_OPCODE_SRC1_PTR = JIT_OPCODE_SRC1_LONG
+	const JIT_OPCODE_SRC2_PTR = JIT_OPCODE_SRC2_LONG
+#else
+	const JIT_OPCODE_DEST_PTR = JIT_OPCODE_DEST_INT
+	const JIT_OPCODE_SRC1_PTR = JIT_OPCODE_SRC1_INT
+	const JIT_OPCODE_SRC2_PTR = JIT_OPCODE_SRC2_INT
+#endif
+
 extern jit_opcodes(0 to 438) as const jit_opcode_info_t
 #define _JIT_OPCODE_COMPAT_H
 const JIT_OP_FEQ_INV = JIT_OP_FEQ
@@ -1698,5 +1711,29 @@ end type
 
 #define jit_declare_crawl_mark(name) dim as jit_crawl_mark_t name = {0}
 declare function jit_frame_contains_crawl_mark(byval frame as any ptr, byval mark as jit_crawl_mark_t ptr) as long
+#define _JIT_DUMP_H
+declare sub jit_dump_type(byval stream as FILE ptr, byval type as jit_type_t)
+declare sub jit_dump_value(byval stream as FILE ptr, byval func as jit_function_t, byval value as jit_value_t, byval prefix as const zstring ptr)
+declare sub jit_dump_insn(byval stream as FILE ptr, byval func as jit_function_t, byval insn as jit_insn_t)
+declare sub jit_dump_function(byval stream as FILE ptr, byval func as jit_function_t, byval name as const zstring ptr)
+#define _JIT_DYNAMIC_H
+type jit_dynlib_handle_t as any ptr
+declare function jit_dynlib_open(byval name as const zstring ptr) as jit_dynlib_handle_t
+declare sub jit_dynlib_close(byval handle as jit_dynlib_handle_t)
+declare function jit_dynlib_get_symbol(byval handle as jit_dynlib_handle_t, byval symbol as const zstring ptr) as any ptr
+declare function jit_dynlib_get_suffix() as const zstring ptr
+declare sub jit_dynlib_set_debug(byval flag as long)
+const JIT_MANGLE_PUBLIC = &h0001
+const JIT_MANGLE_PROTECTED = &h0002
+const JIT_MANGLE_PRIVATE = &h0003
+const JIT_MANGLE_STATIC = &h0008
+const JIT_MANGLE_VIRTUAL = &h0010
+const JIT_MANGLE_CONST = &h0020
+const JIT_MANGLE_EXPLICIT_THIS = &h0040
+const JIT_MANGLE_IS_CTOR = &h0080
+const JIT_MANGLE_IS_DTOR = &h0100
+const JIT_MANGLE_BASE = &h0200
+declare function jit_mangle_global_function(byval name as const zstring ptr, byval signature as jit_type_t, byval form as long) as zstring ptr
+declare function jit_mangle_member_function(byval class_name as const zstring ptr, byval name as const zstring ptr, byval signature as jit_type_t, byval form as long, byval flags as long) as zstring ptr
 
 end extern

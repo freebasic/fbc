@@ -9,10 +9,16 @@ Version 1.08.0
 - updated curl headers for binding to curl 7.73.0
 - updated SDL1.2 bindings to SDL_gfx 2.0.26
 - updated SDL2 bindings to SDL2 2.0.14, SDL2_image 2.0.5, SDL2_mixer 2.0.4, SDL2_ttf 2.0.15
-- updated LLVM and Clang bindings to 5.0.0
+- updated LLVM and Clang bindings to 5.0.0git-fb0acea
 - updated Chipmunk2D binding to 7.0.3
 - updated cryptlib binding to 3.4.5
 - updated DevIL binding to 1.8.0
+- updated fastcgi to fcgi-2.4.1-SNAP-0910052249 binding (no changes from fcgi-2.4.1-SNAP-031111212
+- updated libffi binding to 3.3 (used by threadcall)
+- updated libjit binding to 0.1.4
+- updated bzip2 binding to 1.0.8 (no change from 1.0.6)
+- refreshed ncurses-5.9 binding
+- refreshed mediainfo_0.7.77 binding
 - warning level for all warnings is increased by 1.  Default warning level is 1.  Previously, default warning level was 0 and some warnings had level of -1.
 - reverted changes due sf.net #893: invalid suffixes due to '-lang fb'
 - reverted changes due sf.net #832: Fix bug allowing QB style suffixes on all keywords, regardless of -lang
@@ -70,6 +76,7 @@ Version 1.08.0
 - release: add arm and aarch64 targets as an option to the contrib/release.build.sh script
 - emscripten port (WIP, v1ctor & angros47)
 - bindings to SoLoud audio library (soloud_c.bi: C API only)
+- bindings to raylib-3.0.0 library (raylib.bi and raymath.bi)
 - gas64: add debugging information for -g -gen gas64 for user code for FBdebugger only (SARG)
 - __FB_ARG_EXTRACT__( index, args... ) builtin macro (adeyblue)
 - __FB_X86__ intrinsic define on x86 and x86_64

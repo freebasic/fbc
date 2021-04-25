@@ -1,4 +1,4 @@
-'' FreeBASIC binding for fcgi-2.4.1-SNAP-0311112127
+'' FreeBASIC binding for fcgi-2.4.1-SNAP-0910052249
 ''
 '' based on the C header files:
 ''   Copyright (c) 1995-1996 Open Market, Inc.
@@ -33,7 +33,7 @@
 ''   OTHERWISE ARISING OUT OF THIS SOFTWARE OR THE DOCUMENTATION.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   Copyright © 2021 FreeBASIC development team
 
 #pragma once
 

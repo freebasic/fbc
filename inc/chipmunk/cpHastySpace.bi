@@ -22,7 +22,7 @@
 ''   SOFTWARE.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2020 FreeBASIC development team
+''   Copyright © 2021 FreeBASIC development team
 
 #pragma once
 

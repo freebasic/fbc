@@ -24,9 +24,20 @@
 ''      distribution.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2020 FreeBASIC development team
+''   Copyright © 2021 FreeBASIC development team
 
 #pragma once
+
+#ifdef SOLOUD_STATIC
+	#inclib "soloud_static"
+	#inclib "supc++"
+#elseif (not defined(SOLOUD_STATIC)) and (defined(__FB_DOS__) or defined(__FB_UNIX__))
+	#inclib "soloud"
+#elseif defined(__FB_WIN32__) and (not defined(__FB_64BIT__)) and (not defined(SOLOUD_STATIC))
+	#inclib "soloud_x86"
+#else
+	#inclib "soloud_x64"
+#endif
 
 '' The following symbols have been renamed:
 ''     typedef File => SLFile
