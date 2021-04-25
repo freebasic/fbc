@@ -1921,7 +1921,7 @@ end sub
 #endif
 
 private sub hemitvariable( byval sym as FBSYMBOL ptr )
-	dim as integer is_global = any, length = any,lgt=any
+	dim as integer is_global = any, length = any,lgt=any,align=any
 	dim as string strg,newstrg
 	dim as long pnew,pold,lenstrg
 	asm_info(*symbgetname(sym)+ " "+*symbGetMangledName(sym))
@@ -2013,8 +2013,13 @@ private sub hemitvariable( byval sym as FBSYMBOL ptr )
 				asm_info("var total size="+Str(length))
 				asm_info("stk="+Str(ctx.stk))
 				if  symbGetType( sym )=FB_DATATYPE_STRUCT then
-					asm_info("length udt="+Str(sym->lgt)+" natalign="+Str(sym->subtype->udt.natalign)+" unpadlgt="+Str(sym->subtype->udt.unpadlgt))
-					ctx.stk=(length+ctx.stk+sym->subtype->udt.natalign-1) And (Not(sym->subtype->udt.natalign-1))
+					align=sym->subtype->udt.natalign
+					asm_info("length udt="+Str(sym->lgt)+" natalign="+Str(align)+" unpadlgt="+Str(sym->subtype->udt.unpadlgt))
+					if align<4 then
+						asm_info("Natalign= changed for 4")
+						align=4 ''alignment at least 4"
+					end if
+					ctx.stk=(length+ctx.stk+align-1) And (Not(align-1))
 				else
 					ctx.stk=(length+ctx.stk+lgt-1) And (Not(lgt-1))
 				end if
