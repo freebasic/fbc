@@ -3572,15 +3572,20 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 			ln += " : " + inputconstraints
 
 			'' We don't know what registers etc. will be trashed,
-			'' so assume everything...
+			'' so assume everything... except for rsp/esp - gcc requires a valid
+			'' stack to preserve registers and if the asm code clobbers esp/rsp
+			'' then there is no way to get it back after esp/rsp changes to
+			'' something else.  User is always responsible for handling the stack
+			'' registers.
+			'' 
 			ln += " : ""cc"", ""memory"""
 
 			select case( fbGetCpuFamily( ) )
 			case FB_CPUFAMILY_X86, FB_CPUFAMILY_X86_64
 				if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
-					ln += ", ""eax"", ""ebx"", ""ecx"", ""edx"", ""esp"", ""edi"", ""esi"""
+					ln += ", ""eax"", ""ebx"", ""ecx"", ""edx"", ""edi"", ""esi"""
 				else
-					ln += ", ""rax"", ""rbx"", ""rcx"", ""rdx"", ""rsp"", ""rdi"", ""rsi"""
+					ln += ", ""rax"", ""rbx"", ""rcx"", ""rdx"", ""rdi"", ""rsi"""
 					ln += ", ""r8"", ""r9"", ""r10"", ""r11"", ""r12"", ""r13"", ""r14"", ""r15"""
 				end if
 

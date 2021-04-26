@@ -134,6 +134,7 @@ Version 1.08.0
 - C backend: switch to .text section after writing the exports to the C file in the explicit asm block.  gcc can move sections around with optimizations and there is a change between 7.x and 8.x that causes issue with where the directive section is located
 - sf.net #917: optimize 'm += s' string concatenations to fix the long compile times in the gcc backend (which makes heavy use of string building).
 - github #217: C backend, fix gcc array out of bounds warning when compiled with -O2 or higher optimizations and accessing non-zero lower bound fixed length string arrays
+- C backend: inline asm - don't add rsp/esp to the clobber list, it's deprecated in newer gcc versions and silently ignored in older versions 
 
 
 Version 1.07.0
