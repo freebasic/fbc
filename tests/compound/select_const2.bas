@@ -12,17 +12,16 @@
 
 '' split the test so we can modify test generation here separately   
 
-SUITE( fbc_tests.compound.select_const )
+SUITE( fbc_tests.compound.select_const2 )
 
 	const FALSE = 0
 	const TRUE = not FALSE
 
-	TEST( RangeEdges )
-
-		dim as integer ok, nok
-		
-		#macro TEST_RANGE( T, a, b, c_, d_, p, f )
-			scope
+	#macro TEST_RANGE( T, a, b, c_, d_, p, f )
+		#if DEFINITION = TRUE
+			__fb_uniqueid_push__( callstack )
+			sub __fb_uniqueid__( callstack )
+				dim as integer ok, nok
 				ok = 0
 				nok = 0
 				dim v as T
@@ -50,10 +49,15 @@ SUITE( fbc_tests.compound.select_const )
 				loop
 				CU_ASSERT_EQUAL( p, ok )
 				CU_ASSERT_EQUAL( f, nok )
-			end scope
-		#endmacro
+			end sub
+		#else
+			'' call the test - the order doesn't matter 
+			__fb_uniqueid__( callstack )()
+			__fb_uniqueid_pop__( callstack )
+		#endif
+	#endmacro
 
-		#macro TEST_RANGE_EDGES( T, a, b ) 
+	#macro TEST_RANGE_EDGES( T, a, b ) 
 			TEST_RANGE( T, a+0, a+10, a+0, a+0, 1, 10 )
 			TEST_RANGE( T, a+0, a+10, a+0, a+1, 2,  9 )
 			TEST_RANGE( T, a+0, a+10, a+1, a+1, 1, 10 )
@@ -85,9 +89,9 @@ SUITE( fbc_tests.compound.select_const )
 			TEST_RANGE( T, b-10, b-1, b-1, b-1, 1,  9 )
 			TEST_RANGE( T, b-10, b-1, b-2, b-1, 2,  8 )
 			TEST_RANGE( T, b-10, b-1, b-2, b-2, 1,  9 )
-		#endmacro
+	#endmacro
 
-		#macro TEST_RANGES()
+	#macro TEST_RANGES()
 			'' byte range edges and near zero
 			TEST_RANGE_EDGES( byte, -128, 127 )
 			TEST_RANGE_EDGES( byte, -2, 2 )
@@ -139,17 +143,35 @@ SUITE( fbc_tests.compound.select_const )
 			TEST_RANGE_EDGES( longint, -9223372036854775807ll-1ll, 9223372036854775807ll  )
 			TEST_RANGE_EDGES( longint, -2ll, 2ll )
 			TEST_RANGE_EDGES( ulongint, 0, 18446744073709551615ull )
-		#endmacro
+	#endmacro
 
-		'' Test Ranges using literal values
-		#define LITERAL TRUE
+	'' generate tests for Test Ranges using literal values
+	#define LITERAL TRUE
+	#undef DEFINITION
+	#define DEFINITION TRUE
+	TEST_RANGES()
+
+	'' call the tests - the order doesn't matter, only that we use & call
+	'' the correct number of calls from the callstack
+	#undef DEFINITION
+	#define DEFINITION FALSE
+	TEST( RangeEdges_literal )
 		TEST_RANGES()
+	END_TEST
 
-		'' Test Ranges using a CONST symbol
-		#undef LITERAL
-		#define LITERAL FALSE
+	'' generate tests for Test Ranges using a CONST symbol
+	#undef LITERAL
+	#define LITERAL FALSE
+	#undef DEFINITION
+	#define DEFINITION TRUE
+	TEST_RANGES()
+	
+	'' call the tests - the order doesn't matter, only that we use & call
+	'' the correct number of calls from the callstack
+	#undef DEFINITION
+	#define DEFINITION FALSE
+	TEST( RangeEdges_const )
 		TEST_RANGES()
-
 	END_TEST
 
 END_SUITE
