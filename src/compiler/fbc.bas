@@ -25,9 +25,9 @@ enum
 end enum
 
 type FBC_EXTOPT
-	gas			as zstring * 128
-	ld			as zstring * 128
-	gcc			as zstring * 128
+	gas			as string
+	ld			as string
+	gcc			as string
 end type
 
 type FBCIOFILE
