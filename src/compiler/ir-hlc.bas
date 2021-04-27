@@ -2678,8 +2678,23 @@ private function exprNewVREG _
 			l = exprNewUOP( AST_OP_ADDROF, l )
 		end if
 		if( have_offset ) then
-			'' Cast to ubyte ptr to work around C's pointer arithmetic
-			l = exprNewCAST( typeAddrOf( FB_DATATYPE_UBYTE ), NULL, l )
+			if( is_c_array ) then
+				'' Cast to intptr_t to work around gcc out side of array bounds
+				'' warnings if we are casting from FBSTRING array to pointer
+				'' fbc uses a kind of virtual pointer for the an array's (0,..)
+				'' index; technically this is undefinded behaviour in C and is
+				'' impossible to cast away even when using pointer only casts
+				'' in the same expression.  Some gcc optimizations cause a 
+				'' a warning when setting a pointer for the array's virtual
+				'' index location.  To fix this for compliant C code, would
+				'' need to rewrite the array descriptor to contain only the
+				'' offset value from actual memory pointer and compute the
+				'' array access fully on each array element access.   
+				l = exprNewCAST( FB_DATATYPE_INTEGER, NULL, l )
+			else
+				'' Cast to ubyte ptr to work around C's pointer arithmetic
+				l = exprNewCAST( typeAddrOf( FB_DATATYPE_UBYTE ), NULL, l )
+			end if
 			if( vreg->vidx <> NULL ) then
 				l = exprNewBOP( AST_OP_ADD, l, exprNewVREG( vreg->vidx ) )
 			end if
@@ -3557,15 +3572,20 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 			ln += " : " + inputconstraints
 
 			'' We don't know what registers etc. will be trashed,
-			'' so assume everything...
+			'' so assume everything... except for rsp/esp - gcc requires a valid
+			'' stack to preserve registers and if the asm code clobbers esp/rsp
+			'' then there is no way to get it back after esp/rsp changes to
+			'' something else.  User is always responsible for handling the stack
+			'' registers.
+			'' 
 			ln += " : ""cc"", ""memory"""
 
 			select case( fbGetCpuFamily( ) )
 			case FB_CPUFAMILY_X86, FB_CPUFAMILY_X86_64
 				if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
-					ln += ", ""eax"", ""ebx"", ""ecx"", ""edx"", ""esp"", ""edi"", ""esi"""
+					ln += ", ""eax"", ""ebx"", ""ecx"", ""edx"", ""edi"", ""esi"""
 				else
-					ln += ", ""rax"", ""rbx"", ""rcx"", ""rdx"", ""rsp"", ""rdi"", ""rsi"""
+					ln += ", ""rax"", ""rbx"", ""rcx"", ""rdx"", ""rdi"", ""rsi"""
 					ln += ", ""r8"", ""r9"", ""r10"", ""r11"", ""r12"", ""r13"", ""r14"", ""r15"""
 				end if
 
