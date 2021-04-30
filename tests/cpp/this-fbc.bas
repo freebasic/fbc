@@ -13,8 +13,6 @@
 	#endif
 #endif
 
-#ifdef DOTEST
-
 extern "c++"
 	'' getters to retrieve call information
 	'' from the c++ side
@@ -109,6 +107,8 @@ end extern
 	assert( r2 = getPtr2() )
 	assert( r3 = getPtr3() )
 #endmacro
+
+#ifdef DOTEST
 
 '' !!! TODO !!! combine duplicate code to #macro
 '' currently separate to track assert locatons

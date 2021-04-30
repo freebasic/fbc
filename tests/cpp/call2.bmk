@@ -1,0 +1,10 @@
+# TEST_MODE : MULTI_MODULE_OK
+
+MAIN := call2-fbc.bas
+SRCS := 
+
+EXTRA_OBJS := call2-cpp.o
+
+$(SRCDIR)call2-cpp.o : $(SRCDIR)call2-cpp.cpp
+	# Pass $(CFLAGS) to get -m32 or -m64 as required
+	$(CXX) -c $(CFLAGS) -Wall -Wno-attributes -o $@ $^
