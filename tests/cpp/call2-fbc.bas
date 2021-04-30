@@ -37,10 +37,10 @@ extern "c++"
 
 type UDT
 	value as long
-	declare constructor()
-	declare constructor( byval rhs as long )
-	declare constructor( byref rhs as const UDT )
-	declare destructor()
+	declare constructor thiscall ()
+	declare constructor thiscall ( byval rhs as long )
+	declare constructor thiscall ( byref rhs as const UDT )
+	declare destructor thiscall ()
 end type
 
 end extern
