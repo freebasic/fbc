@@ -1466,6 +1466,21 @@ function cProcHeader _
 			cOverrideAttribute( proc )
 		end if
 
+		'' destructor? maybe implicitly declare the deleting destructor too
+		if( tk = FB_TK_DESTRUCTOR ) then
+			'' fbc won't generate any code that calls the deleting destructor
+			'' so don't create the deleting destructor unless we're binding to c++
+			if( symbGetMangling( parent ) = FB_MANGLING_CPP ) then
+				'' - inherit all the attribs from the declared destructor
+				''   except for the destructor type
+				dim dtor0 as FBSYMBOL ptr = symbPreAddProc( NULL )
+				symbAddProcInstanceParam( parent, dtor0 )
+				pattrib and= not FB_PROCATTRIB_DESTRUCTOR1
+				pattrib or= FB_PROCATTRIB_DESTRUCTOR0
+				dtor0 = symbAddCtor( dtor0, NULL, attrib, pattrib, mode )
+			end if
+		end if
+
 		if( tk = FB_TK_PROPERTY ) then
 			hSetUdtPropertyFlags( parent, is_indexed, is_get )
 		end if

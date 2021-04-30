@@ -191,7 +191,7 @@ enum FB_PROCATTRIB
 	FB_PROCATTRIB_OVERLOADED       = &h00000001  '' PROCs / METHODs only
 	FB_PROCATTRIB_METHOD           = &h00000002  '' Non-STATIC UDT member procs, i.e. procs with implicit THIS ptr
 	FB_PROCATTRIB_CONSTRUCTOR      = &h00000004  '' methods only
-	FB_PROCATTRIB_DESTRUCTOR1      = &h00000008  '' methods only
+	FB_PROCATTRIB_DESTRUCTOR1      = &h00000008  '' methods only - complete destructor
 	FB_PROCATTRIB_OPERATOR         = &h00000010  '' methods only
 	FB_PROCATTRIB_PROPERTY         = &h00000020  '' methods only
 	FB_PROCATTRIB_STATICLOCALS     = &h00000040  '' PROCs only

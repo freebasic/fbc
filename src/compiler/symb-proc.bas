@@ -741,7 +741,6 @@ private function hSetupProc _
 			                      FB_SYMBCLASS_PROC, NULL, id_alias, _
 			                      FB_DATATYPE_VOID, NULL, attrib, pattrib )
 
-
 			'' ctor?
 			if( (pattrib and FB_PROCATTRIB_CONSTRUCTOR) <> 0 ) then
 				symbSetCompCtorHead( parent, proc )
@@ -753,9 +752,7 @@ private function hSetupProc _
 			'' deleting dtor
 			else
 				symbSetCompDtor0( parent, proc )
-
 			end if
-
 		'' otherwise, try to overload
 		else
 			'' dtor?
@@ -1612,7 +1609,7 @@ function symbFindCtorProc _
 	) as FBSYMBOL ptr
 
 	'' dtor? can't overload..
-	if( symbIsDestructor1( ovl_head_proc ) ) then
+	if( symbIsDestructor1( ovl_head_proc ) or symbIsDestructor0( ovl_head_proc ) ) then
 		return ovl_head_proc
 	else
 		return symbFindOverloadProc( ovl_head_proc, proc )

@@ -621,16 +621,27 @@ sub symbUdtDeclareDefaultMembers _
 		'' no default dtor explicitly defined?
 		if( udt->udt.ext->dtor1 = NULL ) then
 
+			'' if we didn't have the complete dtor then we shouln't have the deleting dtor either
+			'' because there is no way to explicitly define the deleting dtor
 			assert( udt->udt.ext->dtor0 = NULL )
 
 			'' Complete dtor
 			default.dtor1 = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_DESTRUCTOR1 )
 
-			'' Deleting dtor
-			default.dtor0 = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_DESTRUCTOR0 )
+			if( symbGetMangling( udt ) = FB_MANGLING_CPP ) then
+				'' Deleting dtor
+				default.dtor0 = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_DESTRUCTOR0 )
+			end if
 
 			'' Don't allow the implicit dtor to override a FINAL dtor from the base
 			symbProcCheckOverridden( default.dtor1, TRUE )
+		end if
+	end if
+
+	if( symbGetMangling( udt ) = FB_MANGLING_CPP ) then
+		if( default.dtor0 = NULL ) then
+			'' deleting dtor will be implicitly declared if the complete dtor was explicitly declared
+			default.dtor0 = symbGetCompDtor0( udt )
 		end if
 	end if
 
