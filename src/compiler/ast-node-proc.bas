@@ -33,6 +33,7 @@ declare function hInitVptr _
 	) as ASTNODE ptr
 declare sub hCallCtors( byval n as ASTNODE ptr, byval sym as FBSYMBOL ptr )
 declare sub hCallDtors( byval proc as FBSYMBOL ptr )
+declare sub hCallDeleteDtor( byval proc as FBSYMBOL ptr )
 declare sub hGenStaticInstancesDtors( byval proc as FBSYMBOL ptr )
 declare sub hGenGlobalInstancesCtor( )
 
@@ -500,7 +501,7 @@ sub astProcBegin( byval sym as FBSYMBOL ptr, byval ismain as integer )
 			astNewVAR( symbGetParamVar( argv ) ) )
 
 	'' Destructor?
-	elseif( symbIsDestructor( sym ) and enable_implicit_code ) then
+	elseif( (symbIsDestructor0( sym ) or symbIsDestructor1( sym )) and enable_implicit_code ) then
 		''
 		'' If the UDT has a vptr, reset it at the top of destructors,
 		'' such that the vptr always matches the type of object that
@@ -672,11 +673,16 @@ function astProcEnd( byval callrtexit as integer ) as integer
 	res = (symbCheckLabels(symbGetProcSymbTbHead(parser.currproc)) = 0)
 
 	if( res ) then
-		'' Destructor?
-		if( symbIsDestructor( sym ) and enable_implicit_code ) then
+		'' Complete Destructor?
+		if( symbIsDestructor1( sym ) and enable_implicit_code ) then
 			'' Call destructors, behind the exit label, so they'll
 			'' always be called, even with early returns.
 			hCallDtors( sym )
+		end if
+
+		'' Deleting Destructor?
+		if( symbIsDestructor0( sym ) and enable_implicit_code ) then
+			hCallDeleteDtor( sym )
 		end if
 
 		'' update proc's breaks list, adding calls to destructors when needed
@@ -1272,6 +1278,26 @@ private sub hCallFieldDtors _
 
 end sub
 
+private sub hCallDeleteDtor _
+	( _
+		byval proc as FBSYMBOL ptr _
+	)
+
+	dim as FBSYMBOL ptr parent = any, dtor1 = any, this_ = any
+	dim as ASTNODE ptr thisptr = any, tree = any
+
+	parent = symbGetNamespace( proc )
+	dtor1 = symbGetCompDtor1( parent )
+	if( dtor1 = NULL ) then
+		exit sub
+	end if
+	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
+	thisptr = astNewADDROF( astBuildVarField( this_ ) )
+	tree = astBuildDeleteOp( AST_OP_DEL, thisptr )
+	astAdd( tree )
+
+end sub
+
 private sub hCallBaseDtor _
 	( _
 		byval parent as FBSYMBOL ptr, _
@@ -1296,7 +1322,7 @@ private sub hCallBaseDtor _
 	'' Just like derived classes are not responsible for initializing their
 	'' base class, they shouldn't be made responsible for cleaning it up.
 
-	dtor = symbGetCompDtor( symbGetSubtype( base_ ) )
+	dtor = symbGetCompDtor1( symbGetSubtype( base_ ) )
 	if( dtor = NULL ) then
 		exit sub
 	end if

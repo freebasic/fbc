@@ -509,7 +509,7 @@ function cProcCallingConv( byval default as FB_FUNCMODE ) as FB_FUNCMODE
         default = env.target.fbcall
     end if
 
-	'' (CDECL|STDCALL|PASCAL)?
+	'' (CDECL|STDCALL|PASCAL|THISCALL)?
 	select case as const lexGetToken( )
 	case FB_TK_CDECL
 		function = FB_FUNCMODE_CDECL
@@ -524,6 +524,13 @@ function cProcCallingConv( byval default as FB_FUNCMODE ) as FB_FUNCMODE
 	case FB_TK_PASCAL
 		function = FB_FUNCMODE_PASCAL
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
+
+	case FB_TK_THISCALL
+		'' ignore thiscall if '-z no-thiscall' was given
+		if( env.clopt.nothiscall = FALSE ) then
+			function = FB_FUNCMODE_THISCALL
+		end if
+		lexSkipToken( )
 
 	case else
 		select case as const parser.mangling
@@ -1056,7 +1063,9 @@ function cProcHeader _
 		if( tk = FB_TK_CONSTRUCTOR ) then
 			pattrib or= FB_PROCATTRIB_CONSTRUCTOR or FB_PROCATTRIB_OVERLOADED
 		else
-			pattrib or= FB_PROCATTRIB_DESTRUCTOR
+			'' destructor defined by user source is always the complete dtor
+			'' the deleting dtor is implicitly defined later
+			pattrib or= FB_PROCATTRIB_DESTRUCTOR1
 		end if
 
 	case FB_TK_OPERATOR
@@ -1464,6 +1473,21 @@ function cProcHeader _
 			cOverrideAttribute( proc )
 		end if
 
+		'' destructor? maybe implicitly declare the deleting destructor too
+		if( tk = FB_TK_DESTRUCTOR ) then
+			'' fbc won't generate any code that calls the deleting destructor
+			'' so don't create the deleting destructor unless we're binding to c++
+			if( symbGetMangling( parent ) = FB_MANGLING_CPP ) then
+				'' - inherit all the attribs from the declared destructor
+				''   except for the destructor type
+				dim dtor0 as FBSYMBOL ptr = symbPreAddProc( NULL )
+				symbAddProcInstanceParam( parent, dtor0 )
+				pattrib and= not FB_PROCATTRIB_DESTRUCTOR1
+				pattrib or= FB_PROCATTRIB_DESTRUCTOR0
+				dtor0 = symbAddCtor( dtor0, NULL, attrib, pattrib, mode )
+			end if
+		end if
+
 		if( tk = FB_TK_PROPERTY ) then
 			hSetUdtPropertyFlags( parent, is_indexed, is_get )
 		end if
@@ -1554,7 +1578,7 @@ function cProcHeader _
 	case FB_TK_CONSTRUCTOR
 		head_proc = symbGetCompCtorHead( parent )
 	case FB_TK_DESTRUCTOR
-		head_proc = symbGetCompDtor( parent )
+		head_proc = symbGetCompDtor1( parent )
 	case FB_TK_OPERATOR
 		head_proc = symbGetCompOpOvlHead( parent, op )
 	end select
@@ -1762,7 +1786,9 @@ sub cProcStmtBegin( byval attrib as FB_SYMBATTRIB, byval pattrib as FB_PROCATTRI
 		if( fbLangOptIsSet( FB_LANG_OPT_CLASS ) = FALSE ) then
 			errReportNotAllowed( FB_LANG_OPT_CLASS )
 		else
-			pattrib or= FB_PROCATTRIB_DESTRUCTOR
+			'' destructor defined by user source is always the complete dtor
+			'' the deleting dtor is implicitly defined later
+			pattrib or= FB_PROCATTRIB_DESTRUCTOR1
 		end if
 
 		hDisallowStaticAttrib( attrib, pattrib )

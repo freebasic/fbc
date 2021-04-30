@@ -160,7 +160,7 @@ end function
 '' Calculate the number of bytes the procedure needs to pop from stack when returning
 function symbProcCalcBytesToPop( byval proc as FBSYMBOL ptr ) as longint
 	dim as longint bytestopop = 0
-	var notcdecl = (symbGetProcMode( proc ) <> FB_FUNCMODE_CDECL)
+	var notcdecl = (symbGetProcMode( proc ) <> FB_FUNCMODE_CDECL) and (symbGetProcMode( proc ) <> FB_FUNCMODE_THISCALL)
 
 	'' Need to pop parameters in case of stdcall/pascal, but not for cdecl
 	if( notcdecl ) then
@@ -716,7 +716,7 @@ private function hSetupProc _
 
 	'' ctor/dtor?
 	if( (pattrib and (FB_PROCATTRIB_CONSTRUCTOR or _
-					 FB_PROCATTRIB_DESTRUCTOR)) <> 0 ) then
+					 FB_PROCATTRIB_DESTRUCTOR1 or FB_PROCATTRIB_DESTRUCTOR0)) <> 0 ) then
 
 		assert( pattrib and FB_PROCATTRIB_METHOD )
 
@@ -729,8 +729,10 @@ private function hSetupProc _
 		'' ctor?
 		if( (pattrib and FB_PROCATTRIB_CONSTRUCTOR) <> 0 ) then
 			head_proc = symbGetCompCtorHead( parent )
+		elseif( (pattrib and FB_PROCATTRIB_DESTRUCTOR1) <> 0 ) then
+			head_proc = symbGetCompDtor1( parent )
 		else
-			head_proc = symbGetCompDtor( parent )
+			head_proc = symbGetCompDtor0( parent )
 		end if
 
 		'' not overloaded yet? just add it
@@ -742,13 +744,19 @@ private function hSetupProc _
 			'' ctor?
 			if( (pattrib and FB_PROCATTRIB_CONSTRUCTOR) <> 0 ) then
 				symbSetCompCtorHead( parent, proc )
+
+			'' complete dtor?
+			elseif( (pattrib and FB_PROCATTRIB_DESTRUCTOR1) <> 0 ) then
+				symbSetCompDtor1( parent, proc )
+
+			'' deleting dtor
 			else
-				symbSetCompDtor( parent, proc )
+				symbSetCompDtor0( parent, proc )
 			end if
 		'' otherwise, try to overload
 		else
 			'' dtor?
-			if( (pattrib and FB_PROCATTRIB_DESTRUCTOR) <> 0 ) then
+			if( (pattrib and (FB_PROCATTRIB_DESTRUCTOR1 or FB_PROCATTRIB_DESTRUCTOR0)) <> 0 ) then
 				'' can't overload
 				return NULL
 			end if
@@ -920,10 +928,10 @@ add_proc:
 		overridden = NULL
 		if( parent->udt.base ) then
 			'' Destructor?
-			if( symbIsDestructor( proc ) ) then
-				'' There can always only be one, so there is no
+			if( symbIsDestructor1( proc ) ) then
+				'' There can always only be one complete dtor, so there is no
 				'' need to do a lookup and/or overload checks.
-				overridden = symbGetCompDtor( parent->udt.base->subtype )
+				overridden = symbGetCompDtor1( parent->udt.base->subtype )
 			elseif( symbIsOperator( proc ) ) then
 				'' Get the corresponding operator from the base
 				'' (actually a chain of overloads for that particular operator)
@@ -1601,7 +1609,7 @@ function symbFindCtorProc _
 	) as FBSYMBOL ptr
 
 	'' dtor? can't overload..
-	if( symbIsDestructor( ovl_head_proc ) ) then
+	if( symbIsDestructor1( ovl_head_proc ) or symbIsDestructor0( ovl_head_proc ) ) then
 		return ovl_head_proc
 	else
 		return symbFindOverloadProc( ovl_head_proc, proc )
@@ -2845,7 +2853,7 @@ sub symbProcCheckOverridden _
 				'' implicit dtors and LET overloads. Since they
 				'' are not visible in the original code,
 				'' the error message must have more info.
-				if( symbIsDestructor( proc ) ) then
+				if( symbIsDestructor1( proc ) ) then
 					errmsg = FB_ERRMSG_IMPLICITDTOROVERRIDECALLCONVDIFFERS
 				else
 					errmsg = FB_ERRMSG_IMPLICITLETOVERRIDECALLCONVDIFFERS
@@ -2916,10 +2924,12 @@ end sub
 '' Append calling convention, if it differs from the default
 private sub hProcModeToStr( byref s as string, byval proc as FBSYMBOL ptr )
 	'' Ctors/Dtors currently always default to CDECL, see cProcHeader()
-	if( symbIsConstructor( proc ) or symbIsDestructor( proc ) ) then
+	if( symbIsConstructor( proc ) or symbIsDestructor1( proc ) or symbIsDestructor0( proc ) ) then
 		select case( symbGetProcMode( proc ) )
 		case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
 			s += " stdcall"
+		case FB_FUNCMODE_THISCALL
+			s += " thiscall"
 		case FB_FUNCMODE_PASCAL
 			s += " pascal"
 		end select
@@ -2933,6 +2943,8 @@ private sub hProcModeToStr( byref s as string, byval proc as FBSYMBOL ptr )
 			case else
 				s += " stdcall"
 			end select
+		case FB_FUNCMODE_THISCALL
+			s += " thiscall"
 		case FB_FUNCMODE_PASCAL
 			if( env.target.fbcall <> FB_FUNCMODE_PASCAL ) then
 				s += " pascal"
@@ -3045,7 +3057,9 @@ function symbGetFullProcName( byval proc as FBSYMBOL ptr ) as zstring ptr
 
 	if( symbIsConstructor( proc ) ) then
 	 	res += "constructor"
-	elseif( symbIsDestructor( proc ) ) then
+	elseif( symbIsDestructor1( proc ) ) then
+		res += "destructor"
+	elseif( symbIsDestructor0( proc ) ) then
 		res += "destructor"
 	elseif( symbIsOperator( proc ) ) then
 		res += "operator."

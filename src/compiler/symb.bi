@@ -191,7 +191,7 @@ enum FB_PROCATTRIB
 	FB_PROCATTRIB_OVERLOADED       = &h00000001  '' PROCs / METHODs only
 	FB_PROCATTRIB_METHOD           = &h00000002  '' Non-STATIC UDT member procs, i.e. procs with implicit THIS ptr
 	FB_PROCATTRIB_CONSTRUCTOR      = &h00000004  '' methods only
-	FB_PROCATTRIB_DESTRUCTOR       = &h00000008  '' methods only
+	FB_PROCATTRIB_DESTRUCTOR1      = &h00000008  '' methods only - complete destructor
 	FB_PROCATTRIB_OPERATOR         = &h00000010  '' methods only
 	FB_PROCATTRIB_PROPERTY         = &h00000020  '' methods only
 	FB_PROCATTRIB_STATICLOCALS     = &h00000040  '' PROCs only
@@ -200,6 +200,7 @@ enum FB_PROCATTRIB
 	FB_PROCATTRIB_ABSTRACT         = &h00000200  '' methods only: pure virtuals (only)
 	FB_PROCATTRIB_NOTHISCONSTNESS  = &h00000400  '' PROCs only
 	FB_PROCATTRIB_RETURNBYREF      = &h00000800  '' PROCs (functions/function pointers returning BYREF)
+	FB_PROCATTRIB_DESTRUCTOR0      = &h00001000  '' methods only - deleting destructor
 end enum
 
 '' parameter modes
@@ -216,6 +217,7 @@ enum FB_FUNCMODE
 	FB_FUNCMODE_STDCALL_MS						'' ms/vb-style: don't include the @n suffix
 	FB_FUNCMODE_CDECL
 	FB_FUNCMODE_PASCAL
+	FB_FUNCMODE_THISCALL
 
 	'' Symbolic constant to represent FBCALL, telling cProcCallingConv()
 	'' and the RTL procedure definitions to use env.target.fbcall which
@@ -485,18 +487,19 @@ type FB_STRUCT_DBG
 end type
 
 type FB_STRUCTEXT
-	ctorhead		as FBSYMBOL_ ptr			'' ctor head (first overload proc) or NULL
-	defctor			as FBSYMBOL_ ptr			'' default ctor or NULL
-	copyctor		as FBSYMBOL_ ptr			'' copy ctor or NULL
-	copyctorconst		as FBSYMBOL_ ptr			'' copy ctor with CONST param or NULL
-	dtor			as FBSYMBOL_ ptr			'' destructor or NULL
-	copyletop		as FBSYMBOL_ ptr			'' copy LET overload proc or NULL
-	copyletopconst		as FBSYMBOL_ ptr			'' copy LET overload proc with CONST param or NULL
+	ctorhead        as FBSYMBOL_ ptr            '' ctor head (first overload proc) or NULL
+	defctor         as FBSYMBOL_ ptr            '' default ctor or NULL
+	copyctor        as FBSYMBOL_ ptr            '' copy ctor or NULL
+	copyctorconst   as FBSYMBOL_ ptr            '' copy ctor with CONST param or NULL
+	dtor1           as FBSYMBOL_ ptr            '' complete object destructor or NULL
+	dtor0           as FBSYMBOL_ ptr            '' deleting destructor or NULL
+	copyletop       as FBSYMBOL_ ptr            '' copy LET overload proc or NULL
+	copyletopconst  as FBSYMBOL_ ptr            '' copy LET overload proc with CONST param or NULL
 	opovlTb(0 to AST_OP_SELFOPS-1) as FBSYMBOL_ ptr
-	vtableelements		as integer				'' vtable elements counter
-	vtable			as FBSYMBOL_ ptr			'' virtual-functions table struct
-	rtti			as FBSYMBOL_ ptr			'' Run-Time Type Info struct
-	abstractcount		as integer				'' ABSTRACT method counter (to determine abstract classes, which aren't allowed to be instantiated)
+	vtableelements  as integer                  '' vtable elements counter
+	vtable          as FBSYMBOL_ ptr            '' virtual-functions table struct
+	rtti            as FBSYMBOL_ ptr            '' Run-Time Type Info struct
+	abstractcount   as integer                  '' ABSTRACT method counter (to determine abstract classes, which aren't allowed to be instantiated)
 end type
 
 type FBS_STRUCT
@@ -916,11 +919,12 @@ end type
 
 '' Data passed from symbUdtDeclareDefaultMembers() to symbUdtImplementDefaultMembers()
 type SYMBDEFAULTMEMBERS
-	defctor		as FBSYMBOL ptr
-	dtor		as FBSYMBOL ptr
-	copyctor	as FBSYMBOL ptr
-	copyctorconst	as FBSYMBOL ptr
-	copyletopconst	as FBSYMBOL ptr
+	defctor         as FBSYMBOL ptr
+	dtor1           as FBSYMBOL ptr
+	dtor0           as FBSYMBOL ptr
+	copyctor        as FBSYMBOL ptr
+	copyctorconst   as FBSYMBOL ptr
+	copyletopconst  as FBSYMBOL ptr
 end type
 
 #include once "ast.bi"
@@ -1884,10 +1888,12 @@ declare sub symbUdtImplementDefaultMembers _
 declare function symbCompIsTrivial( byval sym as FBSYMBOL ptr ) as integer
 declare sub symbSetCompCtorHead( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
 declare sub symbCheckCompCtor( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
-declare sub symbSetCompDtor( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
+declare sub symbSetCompDtor1( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
+declare sub symbSetCompDtor0( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
 declare function symbGetCompCtorHead( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 declare function symbGetCompDefCtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
-declare function symbGetCompDtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare function symbGetCompDtor1( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare function symbGetCompDtor0( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 declare sub symbCheckCompLetOp( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
 declare function symbCompHasCopyLetOps( byval udt as FBSYMBOL ptr ) as integer
 
@@ -2498,7 +2504,9 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 
 #define symbIsConstructor(s) ((s->pattrib and FB_PROCATTRIB_CONSTRUCTOR) <> 0)
 
-#define symbIsDestructor(s) ((s->pattrib and FB_PROCATTRIB_DESTRUCTOR) <> 0)
+#define symbIsDestructor0(s) ((s->pattrib and FB_PROCATTRIB_DESTRUCTOR0) <> 0)
+
+#define symbIsDestructor1(s) ((s->pattrib and FB_PROCATTRIB_DESTRUCTOR1) <> 0)
 
 #define symbIsOperator(s) ((s->pattrib and FB_PROCATTRIB_OPERATOR) <> 0)
 

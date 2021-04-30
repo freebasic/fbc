@@ -153,7 +153,7 @@ function astBuildVarDtorCall overload _
 			'' UDT var with dtor?
 			if( symbHasDtor( s ) ) then
 				if( check_access ) then
-					if( symbCheckAccess( symbGetCompDtor( symbGetSubtype( s ) ) ) = FALSE ) then
+					if( symbCheckAccess( symbGetCompDtor1( symbGetSubtype( s ) ) ) = FALSE ) then
 						errReport( FB_ERRMSG_NOACCESSTODTOR )
 					end if
 				end if
@@ -543,7 +543,7 @@ function astBuildDtorCall _
 	dim as ASTNODE ptr callexpr = any
 
 	'' Can be virtual
-	dtor = symbGetCompDtor( sym )
+	dtor = symbGetCompDtor1( sym )
 	if( ignore_virtual ) then
 		callexpr = astNewCALL( dtor )
 	else

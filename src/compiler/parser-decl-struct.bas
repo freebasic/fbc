@@ -183,7 +183,7 @@ private sub hFieldInit _
 				end if
 
 				'' Does it have a destructor?
-				defctor = symbGetCompDtor( subtype )
+				defctor = symbGetCompDtor1( subtype )
 				if( defctor ) then
 					'' Check whether we have access
 					if( symbCheckAccess( defctor ) = FALSE ) then

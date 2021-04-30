@@ -204,6 +204,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 
 		'' cdecl: pushed arguments must be popped by caller
 		'' pascal/stdcall: callee does it instead
+		'' thiscall: could be either depending on target !!! TODO !!!
 		argbytes = symbCalcArgLen( l->dtype, l->subtype, arg->arg.mode )
 		if( symbGetProcMode( proc ) = FB_FUNCMODE_CDECL ) then
 			bytestopop += argbytes
@@ -230,7 +231,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	if( symbProcReturnsOnStack( proc ) ) then
 		'' Pop hidden ptr if cdecl and target doesn't want the callee
 		'' to do it, despite it being cdecl.
-		if( (symbGetProcMode( proc ) = FB_FUNCMODE_CDECL) and _
+		if( ((symbGetProcMode( proc ) = FB_FUNCMODE_CDECL) or (symbGetProcMode( proc ) = FB_FUNCMODE_THISCALL)) and _
 		    ((env.target.options and FB_TARGETOPT_CALLEEPOPSHIDDENPTR) = 0) ) then
 			bytestopop += env.pointersize
 		end if

@@ -1,0 +1,10 @@
+# TEST_MODE : MULTI_MODULE_OK
+
+MAIN := class-fbc.bas
+SRCS := 
+
+EXTRA_OBJS := class-cpp.o
+
+$(SRCDIR)class-cpp.o : $(SRCDIR)class-cpp.cpp
+	# Pass $(CFLAGS) to get -m32 or -m64 as required
+	$(CXX) -c $(CFLAGS) -Wall -Wno-attributes -o $@ $^

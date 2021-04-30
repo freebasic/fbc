@@ -322,7 +322,7 @@ function typeHasDtor _
 
 	select case( typeGet( dtype ) )
 	case FB_DATATYPE_STRUCT '', FB_DATATYPE_CLASS
-		function = (symbGetCompDtor( subtype ) <> NULL)
+		function = (symbGetCompDtor1( subtype ) <> NULL)
 	end select
 
 end function

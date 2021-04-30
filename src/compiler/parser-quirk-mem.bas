@@ -260,7 +260,7 @@ sub cOperatorDelete( )
 
 	'' check visibility
 	if( typeHasDtor( typeDeref( dtype ), subtype ) ) then
-		if( symbCheckAccess( symbGetCompDtor( subtype ) ) = FALSE ) then
+		if( symbCheckAccess( symbGetCompDtor1( subtype ) ) = FALSE ) then
 			errReport( FB_ERRMSG_NOACCESSTODTOR )
 		end if
 	end if

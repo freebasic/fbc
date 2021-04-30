@@ -331,7 +331,7 @@ private sub hCheckDtor _
 
 	if( dtor = NULL ) then exit sub
 
-	assert( symbIsDestructor( dtor ) )
+	assert( symbIsDestructor1( dtor ) )
 
 	if( check_access ) then
 		if( symbCheckAccess( dtor ) = FALSE ) then
@@ -370,7 +370,7 @@ function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
 	if( dtype = FB_DATATYPE_STRUCT ) then
 		subtype = astGetSubtype( arrayexpr )
 		ctor = symbGetCompDefCtor( subtype )
-		dtor = symbGetCompDtor( subtype )
+		dtor = symbGetCompDtor1( subtype )
 
 		'' No default ctor, but others? Then the rtlib cannot just clear
 		'' that array of objects.
@@ -453,7 +453,7 @@ function rtlArrayErase _
 	if( dtype = FB_DATATYPE_STRUCT ) then
 		subtype = astGetSubtype( arrayexpr )
 		ctor = symbGetCompDefCtor( subtype )
-		dtor = symbGetCompDtor( subtype )
+		dtor = symbGetCompDtor1( subtype )
 
 		'' No default ctor, but others? Then the rtlib cannot just clear
 		'' that array of objects.
@@ -534,7 +534,7 @@ private sub hGetCtorDtorForRedim _
 
 	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_STRUCT ) then
 		ctor = symbGetCompDefCtor( subtype )
-		dtor = symbGetCompDtor( subtype )
+		dtor = symbGetCompDtor1( subtype )
 
 		'' Assuming there aren't any other ctors if there is no default one,
 		'' because if it were possible to declare such a dynamic array,

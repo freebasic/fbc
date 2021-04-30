@@ -1278,7 +1278,9 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 		end if
 	elseif( symbIsConstructor( sym ) ) then
 		mangled += "C1"
-	elseif( symbIsDestructor( sym ) ) then
+	elseif( symbIsDestructor0( sym ) ) then
+		mangled += "D0"
+	elseif( symbIsDestructor1( sym ) ) then
 		mangled += "D1"
 	else
 		if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then

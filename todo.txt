@@ -68,6 +68,16 @@ o ABI
     instead of __cdecl as on Linux, even though GCC doesn't use MSVC's name
     mangling [yet].
     - FB can probably support __thiscall with C/LLVM backends pretty easily
+    [ ] use __thiscall calling by default for mingw gcc 32-bit, currently
+        currently, users must manage this explicitly, recommend using a 
+        #define thiscall __thiscall depending on target platform
+    [ ] silently ignore on 64-bit, but warn if declare & procedure is different
+    [ ] implement in -gen gas 32-bit. Hard to do, AST/IR/EMIT currently doesn't
+        have enough information or implementation for passing arguments in registers.
+    [ ] more tests and documentation for mangling/calling conventions, not every
+    [x] add the __thiscall keyword
+    [x] add '-z no-thiscall' to ignore "thiscall" and revert to default calling
+        convention
 
 o static member vars
   - allow STATIC IMPORT, like EXTERN IMPORT (extract common code from cVariableDecl())

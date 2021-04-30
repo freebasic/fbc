@@ -246,7 +246,7 @@ private function hMemberId( byval parent as FBSYMBOL ptr ) as FBSYMBOL ptr
 	case FB_TK_CONSTRUCTOR
 		res = symbGetCompCtorHead( parent )
 	case FB_TK_DESTRUCTOR
-		res = symbGetCompDtor( parent )
+		res = symbGetCompDtor1( parent )
 	end select
 
 	if( res ) then

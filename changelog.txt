@@ -46,6 +46,7 @@ Version 1.08.0
 - only write debug line information for statements and don't write comments / empty lines / directives for top level source code in assembly debug ouput
 - optimize byref 'm += s' string concatenations to fb_StrConcatByref() which will check for same string descriptor at run-time which can't be determined at compile time for byref parameters.
 - github #298: allow command line options passed to as, gcc, ld  to be longer than 128 characters by using string types internally
+- sf.net #923: implicitly emit the deleting destrutor for extern "c++" mangling for better g++ ABI compatibility
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling
@@ -66,6 +67,7 @@ Version 1.08.0
 - '-w suffix' or '-w pedantic' command line option enabled 'Suffix ignored' warning for built-in in string functions
 - __FB_UNIQUEID_PUSH__(), __FB_UNIQUEID__(), __FB_UNIQUEID_POP__(), __FB_ARG_LEFTOF__(), __FB_ARG_RIGHTOF__(), __FB_JOIN__() builtin macros
 - __FB_ARG_COUNT__() builtin macro
+- __thiscall keyword to specify the 'thiscall' calling convention (-gen gcc only)
 - __FB_QUOTE__(), __FB_UNQUOTE__(), __FB_EVAL__() builtin macros
 - rtlib: REDIM [PRESERVE] will generate run time error if attempting to resize static (fixed length) arrays.
 - gas64 emitter for x86_64 (SARG), added '-gen gas64' command line option to select

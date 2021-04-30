@@ -2035,6 +2035,8 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 			fbSetOption( FB_COMPOPT_GOSUBSETJMP, TRUE )
 		case "valist-as-ptr"
 			fbSetOption( FB_COMPOPT_VALISTASPTR, TRUE )
+		case "no-thiscall"
+			fbSetOption( FB_COMPOPT_NOTHISCALL, TRUE )
 		case else
 			hFatalInvalidOption( arg )
 		end select

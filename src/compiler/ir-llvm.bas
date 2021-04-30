@@ -367,6 +367,8 @@ private function hEmitProcCallConv( byval proc as FBSYMBOL ptr ) as string
 	select case as const( symbGetProcMode( proc ) )
 	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
 		function = "x86_stdcallcc "
+	case FB_FUNCMODE_THISCALL
+		function = "x86_thiscall "
 	end select
 end function
 
