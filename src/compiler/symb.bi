@@ -486,18 +486,18 @@ type FB_STRUCT_DBG
 end type
 
 type FB_STRUCTEXT
-	ctorhead		as FBSYMBOL_ ptr			'' ctor head (first overload proc) or NULL
-	defctor			as FBSYMBOL_ ptr			'' default ctor or NULL
-	copyctor		as FBSYMBOL_ ptr			'' copy ctor or NULL
-	copyctorconst		as FBSYMBOL_ ptr			'' copy ctor with CONST param or NULL
-	dtor			as FBSYMBOL_ ptr			'' destructor or NULL
-	copyletop		as FBSYMBOL_ ptr			'' copy LET overload proc or NULL
-	copyletopconst		as FBSYMBOL_ ptr			'' copy LET overload proc with CONST param or NULL
+	ctorhead        as FBSYMBOL_ ptr            '' ctor head (first overload proc) or NULL
+	defctor         as FBSYMBOL_ ptr            '' default ctor or NULL
+	copyctor        as FBSYMBOL_ ptr            '' copy ctor or NULL
+	copyctorconst   as FBSYMBOL_ ptr            '' copy ctor with CONST param or NULL
+	dtor            as FBSYMBOL_ ptr            '' destructor or NULL
+	copyletop       as FBSYMBOL_ ptr            '' copy LET overload proc or NULL
+	copyletopconst  as FBSYMBOL_ ptr            '' copy LET overload proc with CONST param or NULL
 	opovlTb(0 to AST_OP_SELFOPS-1) as FBSYMBOL_ ptr
-	vtableelements		as integer				'' vtable elements counter
-	vtable			as FBSYMBOL_ ptr			'' virtual-functions table struct
-	rtti			as FBSYMBOL_ ptr			'' Run-Time Type Info struct
-	abstractcount		as integer				'' ABSTRACT method counter (to determine abstract classes, which aren't allowed to be instantiated)
+	vtableelements  as integer                  '' vtable elements counter
+	vtable          as FBSYMBOL_ ptr            '' virtual-functions table struct
+	rtti            as FBSYMBOL_ ptr            '' Run-Time Type Info struct
+	abstractcount   as integer                  '' ABSTRACT method counter (to determine abstract classes, which aren't allowed to be instantiated)
 end type
 
 type FBS_STRUCT
@@ -917,11 +917,11 @@ end type
 
 '' Data passed from symbUdtDeclareDefaultMembers() to symbUdtImplementDefaultMembers()
 type SYMBDEFAULTMEMBERS
-	defctor		as FBSYMBOL ptr
-	dtor		as FBSYMBOL ptr
-	copyctor	as FBSYMBOL ptr
-	copyctorconst	as FBSYMBOL ptr
-	copyletopconst	as FBSYMBOL ptr
+	defctor         as FBSYMBOL ptr
+	dtor            as FBSYMBOL ptr
+	copyctor        as FBSYMBOL ptr
+	copyctorconst   as FBSYMBOL ptr
+	copyletopconst  as FBSYMBOL ptr
 end type
 
 #include once "ast.bi"
