@@ -331,7 +331,7 @@ private sub hCheckDtor _
 
 	if( dtor = NULL ) then exit sub
 
-	assert( symbIsDestructor( dtor ) )
+	assert( symbIsDestructor1( dtor ) )
 
 	if( check_access ) then
 		if( symbCheckAccess( dtor ) = FALSE ) then

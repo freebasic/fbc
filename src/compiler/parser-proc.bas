@@ -1056,7 +1056,9 @@ function cProcHeader _
 		if( tk = FB_TK_CONSTRUCTOR ) then
 			pattrib or= FB_PROCATTRIB_CONSTRUCTOR or FB_PROCATTRIB_OVERLOADED
 		else
-			pattrib or= FB_PROCATTRIB_DESTRUCTOR
+			'' destructor defined by user source is always the complete dtor
+			'' the deleting dtor is implicitly defined later
+			pattrib or= FB_PROCATTRIB_DESTRUCTOR1
 		end if
 
 	case FB_TK_OPERATOR
@@ -1762,7 +1764,9 @@ sub cProcStmtBegin( byval attrib as FB_SYMBATTRIB, byval pattrib as FB_PROCATTRI
 		if( fbLangOptIsSet( FB_LANG_OPT_CLASS ) = FALSE ) then
 			errReportNotAllowed( FB_LANG_OPT_CLASS )
 		else
-			pattrib or= FB_PROCATTRIB_DESTRUCTOR
+			'' destructor defined by user source is always the complete dtor
+			'' the deleting dtor is implicitly defined later
+			pattrib or= FB_PROCATTRIB_DESTRUCTOR1
 		end if
 
 		hDisallowStaticAttrib( attrib, pattrib )

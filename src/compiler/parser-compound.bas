@@ -317,7 +317,7 @@ sub cExitStatement( )
 			if( symbGetType( parser.currproc ) = FB_DATATYPE_VOID ) then
 				if( (parser.currproc->pattrib and _
 					 (FB_PROCATTRIB_PROPERTY or FB_PROCATTRIB_OPERATOR or _
-					  FB_PROCATTRIB_CONSTRUCTOR or FB_PROCATTRIB_DESTRUCTOR)) <> 0 ) then
+					  FB_PROCATTRIB_CONSTRUCTOR or FB_PROCATTRIB_DESTRUCTOR1 or FB_PROCATTRIB_DESTRUCTOR0)) <> 0 ) then
 					errnum = FB_ERRMSG_ILLEGALOUTSIDEASUB
 				end if
 			else
@@ -328,7 +328,7 @@ sub cExitStatement( )
 			if( symbGetType( parser.currproc ) <> FB_DATATYPE_VOID ) then
 				if( (parser.currproc->pattrib and _
 					 (FB_PROCATTRIB_PROPERTY or FB_PROCATTRIB_OPERATOR or _
-					  FB_PROCATTRIB_CONSTRUCTOR or FB_PROCATTRIB_DESTRUCTOR)) <> 0 ) then
+					  FB_PROCATTRIB_CONSTRUCTOR or FB_PROCATTRIB_DESTRUCTOR1 or FB_PROCATTRIB_DESTRUCTOR0)) <> 0 ) then
 					errnum = FB_ERRMSG_ILLEGALOUTSIDEAFUNCTION
 				else
 					errnum = hCheckForCtorResult( )
@@ -357,7 +357,7 @@ sub cExitStatement( )
 			end if
 
 		case FB_TK_DESTRUCTOR
-			if( symbIsDestructor( parser.currproc ) = FALSE ) then
+			if( symbIsDestructor1( parser.currproc ) = FALSE ) then
 				errnum = FB_ERRMSG_ILLEGALOUTSIDEADTOR
 			end if
 

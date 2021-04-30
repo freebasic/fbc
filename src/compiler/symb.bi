@@ -191,7 +191,7 @@ enum FB_PROCATTRIB
 	FB_PROCATTRIB_OVERLOADED       = &h00000001  '' PROCs / METHODs only
 	FB_PROCATTRIB_METHOD           = &h00000002  '' Non-STATIC UDT member procs, i.e. procs with implicit THIS ptr
 	FB_PROCATTRIB_CONSTRUCTOR      = &h00000004  '' methods only
-	FB_PROCATTRIB_DESTRUCTOR       = &h00000008  '' methods only
+	FB_PROCATTRIB_DESTRUCTOR1      = &h00000008  '' methods only
 	FB_PROCATTRIB_OPERATOR         = &h00000010  '' methods only
 	FB_PROCATTRIB_PROPERTY         = &h00000020  '' methods only
 	FB_PROCATTRIB_STATICLOCALS     = &h00000040  '' PROCs only
@@ -200,6 +200,7 @@ enum FB_PROCATTRIB
 	FB_PROCATTRIB_ABSTRACT         = &h00000200  '' methods only: pure virtuals (only)
 	FB_PROCATTRIB_NOTHISCONSTNESS  = &h00000400  '' PROCs only
 	FB_PROCATTRIB_RETURNBYREF      = &h00000800  '' PROCs (functions/function pointers returning BYREF)
+	FB_PROCATTRIB_DESTRUCTOR0      = &h00001000  '' methods only - deleting destructor
 end enum
 
 '' parameter modes
@@ -2498,7 +2499,9 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 
 #define symbIsConstructor(s) ((s->pattrib and FB_PROCATTRIB_CONSTRUCTOR) <> 0)
 
-#define symbIsDestructor(s) ((s->pattrib and FB_PROCATTRIB_DESTRUCTOR) <> 0)
+#define symbIsDestructor0(s) ((s->pattrib and FB_PROCATTRIB_DESTRUCTOR0) <> 0)
+
+#define symbIsDestructor1(s) ((s->pattrib and FB_PROCATTRIB_DESTRUCTOR1) <> 0)
 
 #define symbIsOperator(s) ((s->pattrib and FB_PROCATTRIB_OPERATOR) <> 0)
 

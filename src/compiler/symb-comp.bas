@@ -619,8 +619,8 @@ sub symbUdtDeclareDefaultMembers _
 
 		'' no default dtor explicitly defined?
 		if( udt->udt.ext->dtor = NULL ) then
-			'' Dtor
-			default.dtor = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_DESTRUCTOR )
+			'' Complete Dtor
+			default.dtor = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_DESTRUCTOR1 )
 
 			'' Don't allow the implicit dtor to override a FINAL dtor from the base
 			symbProcCheckOverridden( default.dtor, TRUE )
@@ -785,7 +785,7 @@ end sub
 
 sub symbSetCompDtor( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
 	if( symbIsStruct( sym ) ) then
-		assert( symbIsDestructor( proc ) )
+		assert( symbIsDestructor1( proc ) )
 		symbUdtAllocExt( sym )
 		if( sym->udt.ext->dtor = NULL ) then
 			'' Add dtor

@@ -500,7 +500,7 @@ sub astProcBegin( byval sym as FBSYMBOL ptr, byval ismain as integer )
 			astNewVAR( symbGetParamVar( argv ) ) )
 
 	'' Destructor?
-	elseif( symbIsDestructor( sym ) and enable_implicit_code ) then
+	elseif( symbIsDestructor1( sym ) and enable_implicit_code ) then
 		''
 		'' If the UDT has a vptr, reset it at the top of destructors,
 		'' such that the vptr always matches the type of object that
@@ -673,7 +673,7 @@ function astProcEnd( byval callrtexit as integer ) as integer
 
 	if( res ) then
 		'' Destructor?
-		if( symbIsDestructor( sym ) and enable_implicit_code ) then
+		if( symbIsDestructor1( sym ) and enable_implicit_code ) then
 			'' Call destructors, behind the exit label, so they'll
 			'' always be called, even with early returns.
 			hCallDtors( sym )
