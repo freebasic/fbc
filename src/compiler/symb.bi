@@ -490,7 +490,8 @@ type FB_STRUCTEXT
 	defctor         as FBSYMBOL_ ptr            '' default ctor or NULL
 	copyctor        as FBSYMBOL_ ptr            '' copy ctor or NULL
 	copyctorconst   as FBSYMBOL_ ptr            '' copy ctor with CONST param or NULL
-	dtor            as FBSYMBOL_ ptr            '' destructor or NULL
+	dtor1           as FBSYMBOL_ ptr            '' complete object destructor or NULL
+	dtor0           as FBSYMBOL_ ptr            '' deleting destructor or NULL
 	copyletop       as FBSYMBOL_ ptr            '' copy LET overload proc or NULL
 	copyletopconst  as FBSYMBOL_ ptr            '' copy LET overload proc with CONST param or NULL
 	opovlTb(0 to AST_OP_SELFOPS-1) as FBSYMBOL_ ptr
@@ -918,7 +919,8 @@ end type
 '' Data passed from symbUdtDeclareDefaultMembers() to symbUdtImplementDefaultMembers()
 type SYMBDEFAULTMEMBERS
 	defctor         as FBSYMBOL ptr
-	dtor            as FBSYMBOL ptr
+	dtor1           as FBSYMBOL ptr
+	dtor0           as FBSYMBOL ptr
 	copyctor        as FBSYMBOL ptr
 	copyctorconst   as FBSYMBOL ptr
 	copyletopconst  as FBSYMBOL ptr
@@ -1885,10 +1887,12 @@ declare sub symbUdtImplementDefaultMembers _
 declare function symbCompIsTrivial( byval sym as FBSYMBOL ptr ) as integer
 declare sub symbSetCompCtorHead( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
 declare sub symbCheckCompCtor( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
-declare sub symbSetCompDtor( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
+declare sub symbSetCompDtor1( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
+declare sub symbSetCompDtor0( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
 declare function symbGetCompCtorHead( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 declare function symbGetCompDefCtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
-declare function symbGetCompDtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare function symbGetCompDtor1( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare function symbGetCompDtor0( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 declare sub symbCheckCompLetOp( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
 declare function symbCompHasCopyLetOps( byval udt as FBSYMBOL ptr ) as integer
 

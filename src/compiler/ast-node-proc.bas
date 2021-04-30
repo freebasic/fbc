@@ -500,7 +500,7 @@ sub astProcBegin( byval sym as FBSYMBOL ptr, byval ismain as integer )
 			astNewVAR( symbGetParamVar( argv ) ) )
 
 	'' Destructor?
-	elseif( symbIsDestructor1( sym ) and enable_implicit_code ) then
+	elseif( (symbIsDestructor0( sym ) or symbIsDestructor1( sym )) and enable_implicit_code ) then
 		''
 		'' If the UDT has a vptr, reset it at the top of destructors,
 		'' such that the vptr always matches the type of object that
@@ -1296,7 +1296,7 @@ private sub hCallBaseDtor _
 	'' Just like derived classes are not responsible for initializing their
 	'' base class, they shouldn't be made responsible for cleaning it up.
 
-	dtor = symbGetCompDtor( symbGetSubtype( base_ ) )
+	dtor = symbGetCompDtor1( symbGetSubtype( base_ ) )
 	if( dtor = NULL ) then
 		exit sub
 	end if

@@ -1556,7 +1556,7 @@ function cProcHeader _
 	case FB_TK_CONSTRUCTOR
 		head_proc = symbGetCompCtorHead( parent )
 	case FB_TK_DESTRUCTOR
-		head_proc = symbGetCompDtor( parent )
+		head_proc = symbGetCompDtor1( parent )
 	case FB_TK_OPERATOR
 		head_proc = symbGetCompOpOvlHead( parent, op )
 	end select

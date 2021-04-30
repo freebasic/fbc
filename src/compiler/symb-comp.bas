@@ -559,7 +559,8 @@ sub symbUdtDeclareDefaultMembers _
 	default.copyctor = NULL
 	default.copyctorconst = NULL
 	default.copyletopconst = NULL
-	default.dtor = NULL
+	default.dtor1 = NULL
+	default.dtor0 = NULL
 
 	'' Ctor/inited fields and no ctor yet?
 	if( (symbGetUDTHasCtorField( udt ) or symbGetUDTHasInitedField( udt )) and _
@@ -618,12 +619,18 @@ sub symbUdtDeclareDefaultMembers _
 		symbUdtAllocExt( udt )
 
 		'' no default dtor explicitly defined?
-		if( udt->udt.ext->dtor = NULL ) then
-			'' Complete Dtor
-			default.dtor = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_DESTRUCTOR1 )
+		if( udt->udt.ext->dtor1 = NULL ) then
+
+			assert( udt->udt.ext->dtor0 = NULL )
+
+			'' Complete dtor
+			default.dtor1 = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_DESTRUCTOR1 )
+
+			'' Deleting dtor
+			default.dtor0 = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_DESTRUCTOR0 )
 
 			'' Don't allow the implicit dtor to override a FINAL dtor from the base
-			symbProcCheckOverridden( default.dtor, TRUE )
+			symbProcCheckOverridden( default.dtor1, TRUE )
 		end if
 	end if
 
@@ -685,8 +692,12 @@ sub symbUdtImplementDefaultMembers _
 		hAddCtorBody( udt, default.copyctor, TRUE )
 	end if
 
-	if( default.dtor ) then
-		hAddCtorBody( udt, default.dtor, FALSE )
+	if( default.dtor1 ) then
+		hAddCtorBody( udt, default.dtor1, FALSE )
+	end if
+
+	if( default.dtor0 ) then
+		hAddCtorBody( udt, default.dtor0, FALSE )
 	end if
 
 end sub
@@ -733,7 +744,7 @@ end function
 function symbCompIsTrivial( byval sym as FBSYMBOL ptr ) as integer
 	assert( symbIsStruct( sym ) )
 	function = ((symbGetCompCopyCtor( sym ) = NULL) and _
-	            (symbGetCompDtor( sym ) = NULL) and _
+	            (symbGetCompDtor1( sym ) = NULL) and _
 	            (not symbGetHasRTTI( sym )))
 end function
 
@@ -783,13 +794,24 @@ sub symbCheckCompCtor( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
 	end if
 end sub
 
-sub symbSetCompDtor( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
+sub symbSetCompDtor1( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
 	if( symbIsStruct( sym ) ) then
 		assert( symbIsDestructor1( proc ) )
 		symbUdtAllocExt( sym )
-		if( sym->udt.ext->dtor = NULL ) then
+		if( sym->udt.ext->dtor1 = NULL ) then
 			'' Add dtor
-			sym->udt.ext->dtor = proc
+			sym->udt.ext->dtor1 = proc
+		end if
+	end if
+end sub
+
+sub symbSetCompDtor0( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
+	if( symbIsStruct( sym ) ) then
+		assert( symbIsDestructor0( proc ) )
+		symbUdtAllocExt( sym )
+		if( sym->udt.ext->dtor0 = NULL ) then
+			'' Add dtor
+			sym->udt.ext->dtor0 = proc
 		end if
 	end if
 end sub
@@ -821,11 +843,21 @@ private function symbGetCompCopyCtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL pt
 	end if
 end function
 
-function symbGetCompDtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+function symbGetCompDtor1( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 	if( sym ) then
 		if( symbIsStruct( sym ) ) then
 			if( sym->udt.ext ) then
-				function = sym->udt.ext->dtor
+				function = sym->udt.ext->dtor1
+			end if
+		end if
+	end if
+end function
+
+function symbGetCompDtor0( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+	if( sym ) then
+		if( symbIsStruct( sym ) ) then
+			if( sym->udt.ext ) then
+				function = sym->udt.ext->dtor0
 			end if
 		end if
 	end if

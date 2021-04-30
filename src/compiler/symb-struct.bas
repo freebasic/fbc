@@ -502,7 +502,7 @@ function symbAddField _
 				end if
 			end if
 
-			if( symbGetCompDtor( subtype ) ) then
+			if( symbGetCompDtor1( subtype ) ) then
 				'' not allowed inside unions or anonymous nested structs/unions
 				if( symbGetUDTIsUnionOrAnon( parent ) ) then
 					errReport( FB_ERRMSG_DTORINUNION )

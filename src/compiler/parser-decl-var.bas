@@ -1189,7 +1189,7 @@ private function hFlushInitializer _
 	'' object?
 	if( has_dtor and (not symbIsRef( sym )) ) then
 		'' check visibility
-		if( symbCheckAccess( symbGetCompDtor( symbGetSubtype( sym ) ) ) = FALSE ) then
+		if( symbCheckAccess( symbGetCompDtor1( symbGetSubtype( sym ) ) ) = FALSE ) then
 			errReport( FB_ERRMSG_NOACCESSTODTOR )
 		end if
 	end if

@@ -729,8 +729,10 @@ private function hSetupProc _
 		'' ctor?
 		if( (pattrib and FB_PROCATTRIB_CONSTRUCTOR) <> 0 ) then
 			head_proc = symbGetCompCtorHead( parent )
+		elseif( (pattrib and FB_PROCATTRIB_DESTRUCTOR1) <> 0 ) then
+			head_proc = symbGetCompDtor1( parent )
 		else
-			head_proc = symbGetCompDtor( parent )
+			head_proc = symbGetCompDtor0( parent )
 		end if
 
 		'' not overloaded yet? just add it
@@ -739,12 +741,21 @@ private function hSetupProc _
 			                      FB_SYMBCLASS_PROC, NULL, id_alias, _
 			                      FB_DATATYPE_VOID, NULL, attrib, pattrib )
 
+
 			'' ctor?
 			if( (pattrib and FB_PROCATTRIB_CONSTRUCTOR) <> 0 ) then
 				symbSetCompCtorHead( parent, proc )
+
+			'' complete dtor?
+			elseif( (pattrib and FB_PROCATTRIB_DESTRUCTOR1) <> 0 ) then
+				symbSetCompDtor1( parent, proc )
+
+			'' deleting dtor
 			else
-				symbSetCompDtor( parent, proc )
+				symbSetCompDtor0( parent, proc )
+
 			end if
+
 		'' otherwise, try to overload
 		else
 			'' dtor?
@@ -923,7 +934,7 @@ add_proc:
 			if( symbIsDestructor1( proc ) ) then
 				'' There can always only be one complete dtor, so there is no
 				'' need to do a lookup and/or overload checks.
-				overridden = symbGetCompDtor( parent->udt.base->subtype )
+				overridden = symbGetCompDtor1( parent->udt.base->subtype )
 			elseif( symbIsOperator( proc ) ) then
 				'' Get the corresponding operator from the base
 				'' (actually a chain of overloads for that particular operator)
