@@ -411,7 +411,7 @@ private sub check_optim(byref code as string)
 	static as string prevpart1,prevpart2,prevmov
 	static as long prevwpos,flag
 	dim as long poschar1,poschar2,writepos
-
+print code
 	if len(code)=0 then
 		prevpart1="":prevpart2="":prevmov="":flag=KUSE_MOV ''reinit statics
 		exit sub
@@ -539,7 +539,7 @@ private sub check_optim(byref code as string)
 			code="#O1 "+code
 		else
 			if prevpart2="" then ''todo remove me after fixed
-				asm_error("prevpart empty ????????")
+				asm_error("prev/part empty "+"part1="+part1+" part2="+part2+" prevpart1="+prevpart1+" prevpart2="+prevpart2)
 				asm_info("code="+code)
 				asm_info("part1="+part1+" part2="+part2+" prevpart1="+prevpart1+" prevpart2="+prevpart2)
 				exit sub
@@ -6189,7 +6189,11 @@ private sub _emitasmline( byval asmtokenhead as ASTASMTOK ptr )
 
 		select case( n->type )
 			case AST_ASMTOK_TEXT
-				asmline += *n->text
+				if *n->text="," then ''add a space to avoid issue during optimization
+					asmline += ", "
+				else
+					asmline += *n->text
+				end if
 				asm_info("asm text="+*n->text)
 			case AST_ASMTOK_SYMB
 
