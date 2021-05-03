@@ -411,7 +411,6 @@ private sub check_optim(byref code as string)
 	static as string prevpart1,prevpart2,prevmov
 	static as long prevwpos,flag
 	dim as long poschar1,poschar2,writepos
-print code
 	if len(code)=0 then
 		prevpart1="":prevpart2="":prevmov="":flag=KUSE_MOV ''reinit statics
 		exit sub
