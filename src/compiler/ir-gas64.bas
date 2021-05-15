@@ -887,7 +887,7 @@ sub edbgemitheader_asm64( byval filename as zstring ptr )
 	dbg_addstab ("DUMMY",0)
 
 	''placeholder for information like compiler version, etc
-	dbg_addstab (__FB_SIGNATURE__,255)
+	dbg_addstab (FB_SIGN,255)
 
 	'' directory
 	if( pathIsAbsolute( filename ) = FALSE ) then
