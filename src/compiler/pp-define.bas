@@ -957,7 +957,7 @@ private function hReadMacroText _
 			'' '##'?
 			case CHAR_SHARP
 				lexSkipToken( LEX_FLAGS )
-				lexSkipToken( LEX_FLAGS )
+				lexSkipToken( LEX_FLAGS or LEXCHECK_NOLINECONT)
 				continue do
 
 			'' '#' macro?

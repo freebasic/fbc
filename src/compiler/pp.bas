@@ -546,6 +546,14 @@ function ppReadLiteral _
     	case CHAR_SHARP
     		select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
     								 		(not LEXCHECK_NOWHITESPC) )
+    		'' '##'?
+    		case CHAR_SHARP
+    			lexSkipToken( LEX_FLAGS )
+    			lexSkipToken( LEX_FLAGS or LEXCHECK_NOLINECONT)
+    			if *lexGetText( ) <> "_" then     '' Is only '##_'?
+    				DZstrConcatAssign( text, "##" )
+    			end if
+
     		'' '#' macro?
     		case FB_TK_PP_MACRO
     			if( ismultiline ) then
@@ -689,6 +697,14 @@ function ppReadLiteralW _
     	case CHAR_SHARP
     		select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
     								 		(not LEXCHECK_NOWHITESPC) )
+    		'' '##'?
+    		case CHAR_SHARP
+    			lexSkipToken( LEX_FLAGS )
+    			lexSkipToken( LEX_FLAGS or LEXCHECK_NOLINECONT)
+    			if *lexGetText( ) <> "_" then     '' Is only '##_'?
+    				DWstrConcatAssignA( text, "##" )
+    			end if
+
     		'' '#' macro?
     		case FB_TK_PP_MACRO
     			if( ismultiline ) then
