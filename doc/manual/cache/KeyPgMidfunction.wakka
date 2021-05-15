@@ -19,7 +19,7 @@ Returns a substring of a string
 		The substring length, in characters.
 
 {{fbdoc item="desc"}}
-	Returns a substring starting from ##//start//## in ##//str//##. If ##//str//## is empty then the null string (##"####"##) is returned. If ##//start// <= 0## then the null string (##"####"##) is returned.
+	Returns a substring starting from ##//start//## in ##//str//##. If ##//str//## is empty then the null string (##"####"##) is returned. If ##//start// <= 0## or ##//start// > len(//str//)## then the null string (##"####"##) is returned.
 	
 	In the first form of ##**Mid**##, all of the remaining characters are returned. In the second form, if ##//n// < 0## or ##//n// >= len(//str//)## then all of the remaining characters are returned.
 

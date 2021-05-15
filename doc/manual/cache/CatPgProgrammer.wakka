@@ -104,7 +104,7 @@
 	{{fbdoc item="keyword" value="ProPgMtCriticalSectionsFAQ|Critical Sections FAQ"}}
 
 {{fbdoc item="section" value="Making Binaries"}}
-	{{fbdoc item="keyword" value="ProPgExecutables|Executables"}} ##(page to complete)##
+	{{fbdoc item="keyword" value="ProPgExecutables|Executables"}}
 	{{fbdoc item="keyword" value="ProPgStaticLibraries|Static Libraries"}}
 	{{fbdoc item="keyword" value="ProPgSharedLibraries|Shared Libraries (DLLs)"}}
 	{{fbdoc item="keyword" value="ProPgProfiling|Profiling"}}

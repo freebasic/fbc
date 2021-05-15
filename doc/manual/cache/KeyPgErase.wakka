@@ -15,17 +15,59 @@ Statement to erase arrays
 	Using ##**Erase**## on a fixed-length array resets all elements without freeing the allocated memory.
 	In case of objects, there is destruction then re-construction.
 	
-	Using ##**Erase**## on a variable-length array (array already sized) frees the memory allocated for the array elements, but the array remains declared at its same scope level (with the same datatype and number of dimensions).
+	Using ##**Erase**## on a variable-length array (array already sized) frees the memory allocated for the array elements, but the array remains declared at its same scope level (with the same datatype and number of dimensions), only the high/low bounds values of each dimension are reset (-1/0).
 	In case of objects, there is destruction before freeing memory.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/array/erase.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/array/erase.bas"}}%%(freebasic)
 dim MyArray1(1 to 10) as integer
 redim MyArray2(1 to 10) as integer 
 
 erase MyArray1, MyArray2
-%%
+	%%
+	Example showing the before and after results of single-dimension arrays:
+		{{fbdoc item="filename" value="examples/manual/array/erase2.bas"}}%%(freebasic)
+Dim MyArray1(1 To 10) As Integer
+ReDim MyArray2(1 To 10) As Integer
 
+print "MyArray1", lbound( MyArray1 ), ubound( MyArray1 ) ' prints: MyArray1       1             10
+print "MyArray2", lbound( MyArray2 ), ubound( MyArray2 ) ' prints: MyArray2       1             10
+
+Erase MyArray1, MyArray2
+
+print "MyArray1", lbound( MyArray1 ), ubound( MyArray1 ) ' prints: MyArray1       1             10
+print "MyArray2", lbound( MyArray2 ), ubound( MyArray2 ) ' prints: MyArray2       0            -1
+		%%
+	Example showing the before and after results of multi-dimension arrays:
+		{{fbdoc item="filename" value="examples/manual/array/erase3.bas"}}%%(freebasic)
+Dim MyArray1(1 to 3, 4 to 9) as integer
+ReDim MyArray2(1 to 3, 4 to 9) as integer
+
+print , "LOWER", "UPPER"
+print "MyArray1", _
+	  lbound( MyArray1, 1 ); ", "; lbound( MyArray1, 2 ), _
+	  ubound( MyArray1, 1 ); ", "; ubound( MyArray1, 2 )
+print "MyArray2", _
+	  lbound( MyArray2, 1 ); ", "; lbound( MyArray2, 2 ), _
+	  ubound( MyArray2, 1 ); ", "; ubound( MyArray2, 2 )
+
+Erase MyArray1, MyArray2
+
+print
+print "MyArray1", _
+	  lbound( MyArray1, 1 ); ", "; lbound( MyArray1, 2 ), _
+	  ubound( MyArray1, 1 ); ", "; ubound( MyArray1, 2 )
+print "MyArray2", _
+	  lbound( MyArray2, 1 ); ", "; lbound( MyArray2, 2 ), _
+	  ubound( MyArray2, 1 ); ", "; ubound( MyArray2, 2 )
+		%%The above example will output:
+			##%%              LOWER         UPPER
+MyArray1       1,  4         3,  9
+MyArray2       1,  4         3,  9
+
+MyArray1       1,  4         3,  9
+MyArray2       0,  0        -1, -1
+			%%##
 {{fbdoc item="diff"}}
 	- None
 

@@ -6,7 +6,7 @@ Standard data type: 8 bit character string
 	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] **Zstring** [[KeyPgPtr|ptr]]
 ##
 {{fbdoc item="desc"}}
-	A ##**Zstring**## is a C-style fixed-size array of chars.  It has no descriptor so its length is calculated faster to pass it as an argument to functions. When the variable has a fixed ##//size//##, ""FreeBASIC"" avoids any overflow that could occur on assignment, by truncating the contents to a length of ##//size// - 1##.
+	A ##**Zstring**## is a C-style fixed-size array of chars.  It has no descriptor so its length is calculated faster to pass it as an argument to functions. When the variable has a fixed ##//size//## (numeric constant, or expression that can be evaluated at compile time), ""FreeBASIC"" avoids any overflow that could occur on assignment, by truncating the contents to a length of ##//size// - 1##.
 	
 	A ##**Zstring** [[KeyPgPtr|ptr]]## can point to a standard ##**Zstring**##, also can be used to implement an "user-managed" ##**Zstring**##, in this case ##[[KeyPgAllocate|Allocate]]##/##[[KeyPgReallocate|Reallocate]]##/##[[KeyPgDeallocate|Deallocate]]## must be used to size-resize-dispose it and is up  to the user to avoid overflows . 
 	

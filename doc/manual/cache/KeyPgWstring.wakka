@@ -6,7 +6,7 @@ Standard data type: wide character string
 	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] **Wstring** [[KeyPgPtr|ptr]]
 ##
 {{fbdoc item="desc"}}
-	A ##**Wstring**## is a fixed-size array of wide-chars that never overflows if the size is known at compile-time. It has no descriptor, and does never resize unless it's a pointer and ##[[KeyPgAllocate|Allocate]]##/##[[KeyPgReallocate|Reallocate]]##/##[[KeyPgDeallocate|Deallocate]]## are used directly. When the variable has a fixed ##//size//##, ""FreeBASIC"" avoids any overflow that could occur on assignment, by truncating the contents to a length of ##//size// - 1##.
+	A ##**Wstring**## is a fixed-size array of wide-chars that never overflows if the size is known at compile-time. It has no descriptor, and does never resize unless it's a pointer and ##[[KeyPgAllocate|Allocate]]##/##[[KeyPgReallocate|Reallocate]]##/##[[KeyPgDeallocate|Deallocate]]## are used directly. When the variable has a fixed ##//size//## (numeric constant, or expression that can be evaluated at compile time), ""FreeBASIC"" avoids any overflow that could occur on assignment, by truncating the contents to a length of ##//size// - 1##.
 	
 	The end of the string is marked by the character 0 automatically added by the ""FreeBASIC"" string handling functions, so that character must never be part of a ##**Wstring**## or the content will be truncated. The character 0 will be appended when the string is created, and the length will be calculated by scanning the string for the first null character.
 	

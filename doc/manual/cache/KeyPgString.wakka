@@ -17,7 +17,7 @@ Standard data type: 8 bit character string
 	
 	Despite the use of the descriptor, an implicit ##NULL## character (##[[KeyPgChr|chr]](0)##) is added to the end of the string, to allow passing them to functions in external libraries without making slow copies.  ""FreeBASIC""'s internal functions will ignore this character, and not treat it as part of the string.
 	
-	A ##**String**## declared with a ##//fixed size//## is a QB-style fixed length string, with the exception that unused characters are set to 0, regardless of what "-lang" compiler option is used. It has no descriptor and it is not resized to fit its contents. As in QB, if data overflows the size of the string, it is truncated on the right side.
+	A ##**String**## declared with a ##//fixed size//## (numeric constant, or expression that can be evaluated at compile time) is a QB-style fixed length string, with the exception that unused characters are set to 0, regardless of what "-lang" compiler option is used. It has no descriptor and it is not resized to fit its contents. As in QB, if data overflows the size of the string, it is truncated on the right side.
 	Fixed length strings are also terminated with a ##NULL## character, and so they use ##//size// + 1## bytes of space.  This ##NULL## terminator may be removed in future, to prevent the redundant character complicating data layout in user-defined ##[[KeyPgType|Type]]##s.
 	
 	String variable names need not end in a dollar sign ##$## as in other dialects of BASIC.  In //[[CompilerDialects|lang fb]]// variable suffixes, including the dollar sign, are disallowed entirely.
