@@ -434,11 +434,15 @@ extern FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags, in
 extern FBCALL int fb_GfxScreenQB(int mode, int visible, int active);
 extern FBCALL int fb_GfxScreenRes(int width, int height, int depth, int num_pages, int flags, int refresh_rate);
 extern FBCALL void fb_GfxScreenInfo(ssize_t *width, ssize_t *height, ssize_t *depth, ssize_t *bpp, ssize_t *pitch, ssize_t *refresh_rate, FBSTRING *driver);
+extern FBCALL void fb_GfxScreenInfo32(int *width, int *height, int *depth, int *bpp, int *pitch, int *refresh_rate, FBSTRING *driver);
+extern FBCALL void fb_GfxScreenInfo64(long long *width, long long  *height, long long  *depth, long long  *bpp, long long  *pitch, long long  *refresh_rate, FBSTRING *driver);
 extern FBCALL int fb_GfxScreenList(int depth);
 extern FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color, int depth, int flags);
 extern FBCALL void *fb_GfxImageCreateQB(int width, int height, unsigned int color, int depth, int flags);
 extern FBCALL void fb_GfxImageDestroy(void *image);
 extern FBCALL int fb_GfxImageInfo(void *img, ssize_t *width, ssize_t *height, ssize_t *bpp, ssize_t *pitch, void **imgdata, ssize_t *size);
+extern FBCALL int fb_GfxImageInfo32(void *img, int *width, int *height, int *bpp, int *pitch, void **imgdata, int *size);
+extern FBCALL int fb_GfxImageInfo64(void *img, long long *width, long long *height, long long *bpp, long long *pitch, void **imgdata, long long *size);
 extern FBCALL void fb_GfxPalette(int index, int r, int g, int b);
 extern FBCALL void fb_GfxPaletteUsing(int *data);
 extern FBCALL void fb_GfxPaletteUsing64(long long *data);
@@ -470,6 +474,8 @@ extern FBCALL int fb_GfxGetJoystick(int id, ssize_t *buttons, float *a1, float *
 extern FBCALL int fb_GfxEvent(EVENT *event);
 extern FBCALL void fb_GfxControl_s(int what, FBSTRING *param);
 extern FBCALL void fb_GfxControl_i(int what, ssize_t *param1, ssize_t *param2, ssize_t *param3, ssize_t *param4);
+extern FBCALL void fb_GfxControl_i32(int what, int *param1, int *param2, int *param3, int *param4);
+extern FBCALL void fb_GfxControl_i64(int what, long long *param1, long long *param2, long long *param3, long long *param4);
 extern FBCALL int fb_GfxBload(FBSTRING *filename, void *dest, void *pal);
 extern FBCALL int fb_GfxBloadQB(FBSTRING *filename, void *dest, void *pal);
 extern FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size, void *pal);

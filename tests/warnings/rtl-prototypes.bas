@@ -1103,9 +1103,15 @@
 	end scope
 #endif
 
-	ID( sub screeninfo alias "fb_GfxScreenInfo" )
+	ID( sub screeninfo alias "fb_GfxScreenInfo32" )
 	scope
-		dim chk as sub fbcall ( byref as integer = 0, byref as integer = 0, byref as integer = 0, byref as integer = 0, byref as integer = 0, byref as integer = 0, byref as string = "" )
+		dim chk as sub fbcall ( byref as long = 0, byref as long = 0, byref as long = 0, byref as long = 0, byref as long = 0, byref as long = 0, byref as string = "" )
+		chk = procptr( screeninfo )
+	end scope
+
+	ID( sub screeninfo alias "fb_GfxScreenInfo64" )
+	scope
+		dim chk as sub fbcall ( byref as longint, byref as longint, byref as longint = 0, byref as longint = 0, byref as longint = 0, byref as longint = 0, byref as string = "" )
 		chk = procptr( screeninfo )
 	end scope
 
@@ -1133,9 +1139,15 @@
 		chk = procptr( imagedestroy )
 	end scope
 
-	ID( function imageinfo alias "fb_GfxImageInfo" )
+	ID( function imageinfo alias "fb_GfxImageInfo32" )
 	scope
-		dim chk as function fbcall ( byval as const any ptr, byref as integer = 0, byref as integer = 0, byref as integer = 0, byref as integer = 0, byref as any ptr = 0, byref as integer = 0 ) as long
+		dim chk as function fbcall ( byval as const any ptr, byref as long = 0, byref as long = 0, byref as long = 0, byref as long = 0, byref as any ptr = 0, byref as longint = 0 ) as long
+		chk = procptr( imageinfo )
+	end scope
+
+	ID( function imageinfo alias "fb_GfxImageInfo64" )
+	scope
+		dim chk as function fbcall ( byval as const any ptr, byref as longint, byref as longint, byref as longint = 0, byref as longint = 0, byref as any ptr = 0, byref as longint = 0 ) as long
 		chk = procptr( imageinfo )
 	end scope
 
@@ -1157,9 +1169,15 @@
 		chk = procptr( screencontrol )
 	end scope
 
-	ID( sub screencontrol alias "fb_GfxControl_i" )
+	ID( sub screencontrol alias "fb_GfxControl_i32" )
 	scope
-		dim chk as sub fbcall ( byval as const long, byref as integer = -2147483648, byref as integer = -2147483648, byref as integer = -2147483648, byref as integer = -2147483648 )
+		dim chk as sub fbcall ( byval as const long, byref as long = -2147483648, byref as long = -2147483648, byref as long = -2147483648, byref as long = -2147483648 )
+		chk = procptr( screencontrol )
+	end scope
+
+	ID( sub screencontrol alias "fb_GfxControl_i64" )
+	scope
+		dim chk as sub fbcall ( byval as const long, byref as longint, byref as longint = -2147483648, byref as longint = -2147483648, byref as longint = -2147483648 )
 		chk = procptr( screencontrol )
 	end scope
 

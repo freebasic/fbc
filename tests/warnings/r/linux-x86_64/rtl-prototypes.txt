@@ -178,16 +178,20 @@ function getmouse alias "fb_GetMouse"
 function getmouse alias "fb_GetMouse64"
 function setmouse alias "fb_SetMouse"
 function getjoystick alias "fb_GfxGetJoystick"
-sub screeninfo alias "fb_GfxScreenInfo"
+sub screeninfo alias "fb_GfxScreenInfo32"
+sub screeninfo alias "fb_GfxScreenInfo64"
 function screenlist alias "fb_GfxScreenList"
 function fb_GfxImageCreate
 function fb_GfxImageCreateQB
 sub imagedestroy alias "fb_GfxImageDestroy"
-function imageinfo alias "fb_GfxImageInfo"
+function imageinfo alias "fb_GfxImageInfo32"
+	Suspicious pointer assignment
+function imageinfo alias "fb_GfxImageInfo64"
 sub imageconvertrow alias "fb_GfxImageConvertRow"
 function screenevent alias "fb_GfxEvent"
 sub screencontrol alias "fb_GfxControl_s"
-sub screencontrol alias "fb_GfxControl_i"
+sub screencontrol alias "fb_GfxControl_i32"
+sub screencontrol alias "fb_GfxControl_i64"
 function screenglproc alias "fb_GfxGetGLProcAddress"
 sub fb_hPutTrans
 sub fb_hPutPSet
