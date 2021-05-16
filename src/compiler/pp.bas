@@ -550,7 +550,11 @@ function ppReadLiteral _
 			case CHAR_SHARP
 				lexSkipToken( LEX_FLAGS )
 				lexSkipToken( LEX_FLAGS or LEXCHECK_NOLINECONT)
-				if *lexGetText( ) <> "_" then     '' Is only '##_'?
+
+				'' we can't check lexGetToken( ) here because a single '_' will
+				'' return as FB_TK_ID, so we need to do a lexGetText( ) check
+				'' Is only '##_'?
+				if *lexGetText( ) <> "_" then
 					DZstrConcatAssign( text, "##" )
 				end if
 
@@ -701,7 +705,11 @@ function ppReadLiteralW _
 			case CHAR_SHARP
 				lexSkipToken( LEX_FLAGS )
 				lexSkipToken( LEX_FLAGS or LEXCHECK_NOLINECONT)
-				if *lexGetText( ) <> "_" then     '' Is only '##_'?
+
+				'' we can't check lexGetToken( ) here because a single '_' will
+				'' return as FB_TK_ID, so we need to do a lexGetText( ) check
+				'' Is only '##_'?
+				if *lexGetText( ) <> "_" then
 					DWstrConcatAssignA( text, "##" )
 				end if
 

@@ -98,7 +98,8 @@ sub lexInit _
 	next
 
 	lex.ctx->currchar = UINVALID
-	lex.ctx->lahdchar = UINVALID
+	lex.ctx->lahdchar1 = UINVALID
+	lex.ctx->lahdchar2 = UINVALID
 
 	if( is_fb_eval ) then
 		lex.ctx->linenum = (lex.ctx-1)->linenum
@@ -279,15 +280,21 @@ private function hReadChar _
 end function
 
 sub lexEatChar( )
-	if( lex.ctx->lahdchar = UINVALID ) then
+	if( lex.ctx->lahdchar1 = UINVALID ) then
 		'' No look-ahead char, read next char and force the next
 		'' lexCurrentChar() to update the current char.
 		hSkipChar( )
 		lex.ctx->currchar = UINVALID
+	elseif( lex.ctx->lahdchar2 = UINVALID ) then
+		'' Look ahead char is the next current char
+		lex.ctx->currchar = lex.ctx->lahdchar1
+		lex.ctx->lahdchar1 = UINVALID
 	else
 		'' Look ahead char is the next current char
-		lex.ctx->currchar = lex.ctx->lahdchar
-		lex.ctx->lahdchar = UINVALID
+		'' and second look ahead char becomes look ahead char
+		lex.ctx->currchar = lex.ctx->lahdchar1
+		lex.ctx->lahdchar1 = lex.ctx->lahdchar2
+		lex.ctx->lahdchar2 = UINVALID
 	end if
 end sub
 
@@ -351,20 +358,38 @@ function lexGetLookAheadChar _
 		byval skipwhitespc as integer = FALSE _
 	) as uinteger
 
-	if( lex.ctx->lahdchar = UINVALID ) then
+	if( lex.ctx->lahdchar1 = UINVALID ) then
 		hSkipChar( )
-		lex.ctx->lahdchar = hReadChar( )
+		lex.ctx->lahdchar1 = hReadChar( )
 	end if
 
 	if( skipwhitespc ) then
-		do while( (lex.ctx->lahdchar = CHAR_TAB) or (lex.ctx->lahdchar = CHAR_SPACE) )
+		do while( (lex.ctx->lahdchar1 = CHAR_TAB) or (lex.ctx->lahdchar1 = CHAR_SPACE) )
 			lex.ctx->after_space = TRUE
 			hSkipChar( )
-			lex.ctx->lahdchar = hReadChar( )
+			lex.ctx->lahdchar1 = hReadChar( )
 		loop
 	end if
 
-	function = lex.ctx->lahdchar
+	function = lex.ctx->lahdchar1
+
+end function
+
+'':::::
+function lexGetLookAheadChar2 _
+	( _
+	) as uinteger
+
+	'' internally, should never use this function unless there
+	'' is already a character in the look aead
+	assert( lex.ctx->lahdchar1 <> UINVALID ) 
+
+	if( lex.ctx->lahdchar2 = UINVALID ) then
+		hSkipChar( )
+		lex.ctx->lahdchar2 = hReadChar( )
+	end if
+
+	function = lex.ctx->lahdchar2
 
 end function
 
@@ -489,7 +514,7 @@ private sub hReadIdentifier _
 			lexEatChar( )
 
 		'' '#'?
-		case FB_TK_DBLTYPECHAR
+		case FB_TK_DBLTYPECHAR '' alias for CHAR_SHARP
 			'' isn't it a '##'?
 			if( lexGetLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
 				dtype = FB_DATATYPE_DOUBLE
@@ -897,7 +922,7 @@ private sub hReadFloatNumber _
 		end if
 		
 	'' '#'?
-	case FB_TK_DBLTYPECHAR
+	case FB_TK_DBLTYPECHAR '' alias for CHAR_SHARP
 		t.dtype = FB_DATATYPE_DOUBLE
 
 		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
@@ -1201,7 +1226,7 @@ private sub hReadNumber( byref t as FBTOKEN, byval flags as LEXCHECK )
 				end if
 
 			'' '#'
-			case FB_TK_DBLTYPECHAR
+			case FB_TK_DBLTYPECHAR '' alias for CHAR_SHARP
 				if( have_u_suffix = FALSE ) then
 					'' isn't it a '##'?
 					if( lexGetLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
@@ -1632,12 +1657,18 @@ re_read:
 					 CHAR_0 to CHAR_9, CHAR_UNDER
 					exit do
 
-				'' otherwise, skip until new-line is found
-				case else
-					lexEatChar( )
-					islinecont = TRUE
-					continue do
+				'' could it be '_##'?
+				case CHAR_SHARP
+					if( lexGetLookAheadChar2( ) = CHAR_SHARP ) then
+						exit do
+					end if
+
 				end select
+
+				'' otherwise, skip until new-line is found
+				lexEatChar( )
+				islinecont = TRUE
+				continue do
 
 			'' else, take it as-is
 			else
