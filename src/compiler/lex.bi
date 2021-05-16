@@ -84,7 +84,8 @@ type LEX_TKCTX
 	tail			as FBTOKEN ptr
 
 	currchar		as uinteger					'' current char
-	lahdchar		as uinteger					'' look ahead char
+	lahdchar1		as uinteger					'' look ahead first char
+	lahdchar2		as uinteger					'' look ahead second char
 
 	linenum 		as integer
 	lasttk_id 		as integer
@@ -232,6 +233,10 @@ declare function lexCurrentChar _
 declare function lexGetLookAheadChar _
 	( _
 		byval skipwhitespc as integer = FALSE _
+	) as uinteger
+
+declare function lexGetLookAheadChar2 _
+	( _
 	) as uinteger
 
 declare sub lexEatChar( )

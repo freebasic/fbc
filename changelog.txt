@@ -86,6 +86,7 @@ Version 1.08.0
 - added warning 'FOR counter variable is unable to exceed limit value' on constant end value for loops to help avoid infinite loops, e.g. for i as ubyte = 0 to 255
 - internal rtlib function fb_LEFTSELF( string, n ) to reduce the size of a string without reallocating the buffer
 - added GFX_SCREEN_EXIT = &h80000000l constant to fbgfx.bi - used with Screen 0 (closing any graphics window and preserving the console window content)
+- github #309: In macro/define's use '##_' to escape line continuation character '_' to allow multiple lines of macro expanded code to be combined into a single statement.(Skyfish)
 
 [fixed]
 - makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture
@@ -137,6 +138,7 @@ Version 1.08.0
 - sf.net #917: optimize 'm += s' string concatenations to fix the long compile times in the gcc backend (which makes heavy use of string building).
 - github #217: C backend, fix gcc array out of bounds warning when compiled with -O2 or higher optimizations and accessing non-zero lower bound fixed length string arrays
 - C backend: inline asm - don't add rsp/esp to the clobber list, it's deprecated in newer gcc versions and silently ignored in older versions 
+- github #309: token pasting operator '##' allows pasting of single '_' characters
 
 
 Version 1.07.0
