@@ -43,10 +43,10 @@ Version 1.08.0
 - fbc: double the minimum and default stacksize on 64-bit to 64Kb and 2048Kb respectively.
 - fbc: internal changes to optimize away unused call results
 - github #203: allow casts of addresses on static initializers 
-- only write debug line information for statements and don't write comments / empty lines / directives for top level source code in assembly debug ouput
+- only write debug line information for statements and don't write comments / empty lines / directives for top level source code in assembly debug output
 - optimize byref 'm += s' string concatenations to fb_StrConcatByref() which will check for same string descriptor at run-time which can't be determined at compile time for byref parameters.
 - github #298: allow command line options passed to as, gcc, ld  to be longer than 128 characters by using string types internally
-- sf.net #923: implicitly emit the deleting destrutor for extern "c++" mangling for better g++ ABI compatibility
+- sf.net #923: implicitly emit the deleting destructor for extern "c++" mangling for better g++ ABI compatibility
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling
@@ -113,8 +113,8 @@ Version 1.08.0
 - github #246: rtlib leaks thread local data, fixed by adding TLS destructors (adeyblue)
 - sf.net #918: pcopy (console) bug when copying large console buffers, windows only (adeyblue)
 - github #216: function getMouse() seems broken on Win10 when using the Console Mode (screen 0), fixed by turn off the QuickEdit console mode during GetMouse (adeyblue)
-- github #258: on windows directx and gdi drivers, only show window after intialization is complete (adeyblue)
-- sf.net #925: CSIGN/CUNSG preserve size when converting pointers on 64-bit and implict conversion of STEP value in FOR...NEXT statement
+- github #258: on windows directx and gdi drivers, only show window after indianization is complete (adeyblue)
+- sf.net #925: CSIGN/CUNSG preserve size when converting pointers on 64-bit and implicit conversion of STEP value in FOR...NEXT statement
 - github #122: gfxlib2: linux GFX_NO_FRAME + GFX_OPENGL freezing at exit due to a dead lock between exit routines
 - sf.net #914: threadsafe RND() and RANDOMIZE() by adding a mutex
 - use the multi-byte & wide character functions wctombs() & mbtowcs() when converting between string and wstring (Skyfish)
