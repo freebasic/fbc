@@ -72,8 +72,8 @@ sub lexInit _
 		byval is_fb_eval as integer _
 	)
 
-    dim as integer i
-    dim as FBTOKEN ptr n
+	dim as integer i
+	dim as FBTOKEN ptr n
 
 	if( (env.includerec = 0) and (is_fb_eval = FALSE) ) then
 		lex.ctx = @lex.ctxTB(0)
@@ -232,7 +232,7 @@ private function hReadChar _
 					lexReadUTF8( )
 
 				case FBFILE_FORMAT_UTF16LE
-				    lexReadUTF16LE( )
+					lexReadUTF16LE( )
 
 				case FBFILE_FORMAT_UTF16BE
 					lexReadUTF16BE( )
@@ -329,19 +329,19 @@ function lexCurrentChar _
 		byval skipwhitespc as integer = FALSE _
 	) as uinteger
 
-    if( lex.ctx->currchar = UINVALID ) then
-    	lex.ctx->currchar = hReadChar( )
-    end if
+	if( lex.ctx->currchar = UINVALID ) then
+		lex.ctx->currchar = hReadChar( )
+	end if
 
-    if( skipwhitespc ) then
-    	do while( (lex.ctx->currchar = CHAR_TAB) or (lex.ctx->currchar = CHAR_SPACE) )
+	if( skipwhitespc ) then
+		do while( (lex.ctx->currchar = CHAR_TAB) or (lex.ctx->currchar = CHAR_SPACE) )
 			lex.ctx->after_space = TRUE
-    		lexEatChar( )
-    		lex.ctx->currchar = hReadChar( )
-    	loop
-    end if
+			lexEatChar( )
+			lex.ctx->currchar = hReadChar( )
+		loop
+	end if
 
-    function = lex.ctx->currchar
+	function = lex.ctx->currchar
 
 end function
 
@@ -356,13 +356,13 @@ function lexGetLookAheadChar _
 		lex.ctx->lahdchar = hReadChar( )
 	end if
 
-    if( skipwhitespc ) then
-    	do while( (lex.ctx->lahdchar = CHAR_TAB) or (lex.ctx->lahdchar = CHAR_SPACE) )
+	if( skipwhitespc ) then
+		do while( (lex.ctx->lahdchar = CHAR_TAB) or (lex.ctx->lahdchar = CHAR_SPACE) )
 			lex.ctx->after_space = TRUE
-    		hSkipChar( )
-    		lex.ctx->lahdchar = hReadChar( )
-    	loop
-    end if
+			hSkipChar( )
+			lex.ctx->lahdchar = hReadChar( )
+		loop
+	end if
 
 	function = lex.ctx->lahdchar
 
@@ -503,7 +503,7 @@ private sub hReadIdentifier _
 			suffixchar = FB_TK_STRTYPECHAR
 			lexEatChar( )
 		end select
-    end if
+	end if
 
 end sub
 
@@ -542,8 +542,8 @@ private function hReadNonDecNumber _
 		tlen += 2
 		lexEatChar( )
 
-	    '' skip trailing zeroes if not inside a comment or parsing an $include
-	    if( (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) = 0 ) then
+		'' skip trailing zeroes if not inside a comment or parsing an $include
+		if( (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) = 0 ) then
 			while( lexCurrentChar( ) = CHAR_0 )
 				*pnum = CHAR_0
 				pnum += 1
@@ -558,38 +558,38 @@ private function hReadNonDecNumber _
 			case CHAR_ALOW to CHAR_FLOW, CHAR_AUPP to CHAR_FUPP, CHAR_0 to CHAR_9
 				lexEatChar( )
 				if( skipchar = FALSE ) then
-                	*pnum = c
-                	pnum += 1
-                	tlen += 1
+					*pnum = c
+					pnum += 1
+					tlen += 1
 
-                	c -= CHAR_0
-                	if( c > 9 ) then
+					c -= CHAR_0
+					if( c > 9 ) then
 						c -= (CHAR_AUPP - CHAR_9 - 1)
-                	end if
-                	if( c > 16 ) then
-                  		c -= (CHAR_ALOW - CHAR_AUPP)
-                	end if
+					end if
+					if( c > 16 ) then
+						c -= (CHAR_ALOW - CHAR_AUPP)
+					end if
 
 					lgt += 1
 					if( lgt > 8 ) then
 						if( lgt = 9 ) then
 							dtype = FB_DATATYPE_LONGINT
-				    		value64 = (culngint( value ) * 16) + c
-				    	elseif( lgt = 17 ) then
-				    		if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-				    			errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
-				    		end if
+							value64 = (culngint( value ) * 16) + c
+						elseif( lgt = 17 ) then
+							if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+								errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
+							end if
 							skipchar = TRUE
 						else
-				    		value64 = (value64 * 16) + c
-				    	end if
+							value64 = (value64 * 16) + c
+						end if
 					else
 						if( lgt = 5 ) then
 							dtype = FB_DATATYPE_LONG
 						end if
-                		value = (value * 16) + c
-                	end if
-                end if
+						value = (value * 16) + c
+					end if
+				end if
 
 			case else
 				exit do
@@ -622,11 +622,11 @@ private function hReadNonDecNumber _
 				lexEatChar( )
 
 				if( skipchar = FALSE ) then
-                	*pnum = c
-                	pnum += 1
-                	tlen += 1
+					*pnum = c
+					pnum += 1
+					tlen += 1
 
-                	c -= CHAR_0
+					c -= CHAR_0
 
 					lgt += 1
 					if( lgt > 10 ) then
@@ -707,27 +707,27 @@ private function hReadNonDecNumber _
 			case CHAR_0, CHAR_1
 				lexEatChar( )
 				if( skipchar = FALSE ) then
-                	*pnum = c
-                	pnum += 1
-                	tlen += 1
+					*pnum = c
+					pnum += 1
+					tlen += 1
 
-                	c -= CHAR_0
+					c -= CHAR_0
 
 					lgt += 1
 					if( lgt > 32 ) then
 						if( lgt = 33 ) then
 							dtype = FB_DATATYPE_LONGINT
-				    		value64 = (culngint( value ) * 2) + c
+							value64 = (culngint( value ) * 2) + c
 
-				    	elseif( lgt = 65 ) then
-				    		if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-				    			errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
-				    		end if
-				    		skipchar = TRUE
+						elseif( lgt = 65 ) then
+							if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+								errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
+							end if
+							skipchar = TRUE
 
-				    	else
-				    		value64 = (value64 * 2) + c
-				    	end if
+						else
+							value64 = (value64 * 2) + c
+						end if
 
 					else
 						if( lgt = 17 ) then
@@ -903,7 +903,7 @@ private sub hReadFloatNumber _
 		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
 			lexEatChar( )
 		end if
-        
+
 	end select
 
 	if( flags = LEXCHECK_EVERYTHING ) then
@@ -1479,36 +1479,36 @@ private sub hCheckPeriods _
 
 		'' is the next char a period?
 		if( lexCurrentChar( ) = CHAR_DOT ) then
-    		'' not a qualified name (namespace or UDT var)?
-    		if( symbGetClass( chain_->sym ) <> FB_SYMBCLASS_NAMESPACE ) then
-    			readfullid = TRUE
+			'' not a qualified name (namespace or UDT var)?
+			if( symbGetClass( chain_->sym ) <> FB_SYMBCLASS_NAMESPACE ) then
+				readfullid = TRUE
 
-    			'' search UDT variables
-    			do while( chain_ <> NULL )
-       				dim as FBSYMBOL ptr sym = chain_->sym
-       				do
-       					if( symbIsVar( sym ) ) then
-	    					if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
-       							exit sub
-       						end if
+				'' search UDT variables
+				do while( chain_ <> NULL )
+					dim as FBSYMBOL ptr sym = chain_->sym
+					do
+						if( symbIsVar( sym ) ) then
+							if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
+								exit sub
+							end if
 						end if
 
 						sym = sym->hash.next
 					loop while( sym <> NULL )
 
-       				chain_ = symbChainGetNext( chain_ )
-       			loop
-       		end if
-       	end if
+					chain_ = symbChainGetNext( chain_ )
+				loop
+			end if
+		end if
 
 	'' no symbol..
-    else
-    	'' only read if next char is a '.'
-    	readfullid = (lexCurrentChar( ) = CHAR_DOT)
-    end if
+	else
+		'' only read if next char is a '.'
+		readfullid = (lexCurrentChar( ) = CHAR_DOT)
+	end if
 
-    '' read the remaining? (including the '.'s)
-    if( readfullid ) then
+	'' read the remaining? (including the '.'s)
+	if( readfullid ) then
 		t->prdpos = t->len
 		hReadIdentifier( @t->text[t->len], _
 					 	 t->len, _
@@ -1517,7 +1517,7 @@ private sub hCheckPeriods _
 					 	 flags or LEXCHECK_EATPERIOD )
 
 		t->sym_chain = symbLookup( @t->text, t->id, t->class )
-    end if
+	end if
 
 end sub
 
@@ -1720,7 +1720,7 @@ re_read:
 			t->id = CHAR_AMP
 			t->dtype = t->id
 			t->len = 1
-			t->text[0] = CHAR_AMP                   	'' t.text = chr( char )
+			t->text[0] = CHAR_AMP                   '' t.text = chr( char )
 			t->text[1] = 0                          '' /
 			lexEatChar( )
 		end select
@@ -1749,10 +1749,10 @@ re_read:
 
 	'' '!' | '$'?
 	case CHAR_EXCL, CHAR_DOLAR
-        '' '"' following?
-        if( lexGetLookAheadChar( ) <> CHAR_QUOTE ) then
-        	goto read_char
-        end if
+		'' '"' following?
+		if( lexGetLookAheadChar( ) <> CHAR_QUOTE ) then
+			goto read_char
+		end if
 
 		lexEatChar( )
 
@@ -2000,12 +2000,12 @@ function lexGetToken _
 		byval flags as LEXCHECK _
 	) as integer static
 
-    if( lex.ctx->head->id = INVALID ) then
-    	lexNextToken( lex.ctx->head, flags )
-    	ppCheck( )
-    end if
+	if( lex.ctx->head->id = INVALID ) then
+		lexNextToken( lex.ctx->head, flags )
+		ppCheck( )
+	end if
 
-    function = lex.ctx->head->id
+	function = lex.ctx->head->id
 
 end function
 
@@ -2015,12 +2015,12 @@ function lexGetClass _
 		byval flags as LEXCHECK _
 	) as integer static
 
-    if( lex.ctx->head->id = INVALID ) then
-    	lexNextToken( lex.ctx->head, flags )
-    	ppCheck( )
-    end if
+	if( lex.ctx->head->id = INVALID ) then
+		lexNextToken( lex.ctx->head, flags )
+		ppCheck( )
+	end if
 
-    function = lex.ctx->head->class
+	function = lex.ctx->head->class
 
 end function
 
@@ -2031,17 +2031,17 @@ function lexGetLookAhead _
 		byval flags as LEXCHECK _
 	) as integer static
 
-    if( k > FB_LEX_MAXK ) then
-    	exit function
-    end if
+	if( k > FB_LEX_MAXK ) then
+		exit function
+	end if
 
 	if( k > lex.ctx->k ) then
 		lex.ctx->k = k
 		lex.ctx->tail = lex.ctx->tail->next
 	end if
 
-    if( lex.ctx->tail->id = INVALID ) then
-	    lexNextToken( lex.ctx->tail, flags )
+	if( lex.ctx->tail->id = INVALID ) then
+		lexNextToken( lex.ctx->tail, flags )
 	end if
 
 	function = lex.ctx->tail->id
@@ -2055,30 +2055,30 @@ function lexGetLookAheadClass _
 		byval flags as LEXCHECK _
 	) as integer static
 
-    if( k > FB_LEX_MAXK ) then
-    	exit function
-    end if
+	if( k > FB_LEX_MAXK ) then
+		exit function
+	end if
 
 	if( k > lex.ctx->k ) then
 		lex.ctx->k = k
 		lex.ctx->tail = lex.ctx->tail->next
 	end if
 
-    if( lex.ctx->tail->id = INVALID ) then
-    	lexNextToken( lex.ctx->tail, flags )
-    end if
+	if( lex.ctx->tail->id = INVALID ) then
+		lexNextToken( lex.ctx->tail, flags )
+	end if
 
-    function = lex.ctx->tail->class
+	function = lex.ctx->tail->class
 
 end function
 
 '':::::
 private sub hMoveKDown( ) static
 
-    lex.ctx->head->id = INVALID
+	lex.ctx->head->id = INVALID
 
-    lex.ctx->k -= 1
-    lex.ctx->head = lex.ctx->head->next
+	lex.ctx->k -= 1
+	lex.ctx->head = lex.ctx->head->next
 
 end sub
 
@@ -2197,23 +2197,23 @@ sub lexSkipToken( byval flags as LEXCHECK )
 		end if
 	end if
 
-    '' update stats
-    select case lex.ctx->head->id
-    case FB_TK_EOL
-    	UPDATE_LINENUM( )
+	'' update stats
+	select case lex.ctx->head->id
+	case FB_TK_EOL
+		UPDATE_LINENUM( )
 
-    end select
+	end select
 
-    lex.ctx->lasttk_id = lex.ctx->head->id
+	lex.ctx->lasttk_id = lex.ctx->head->id
 
-    ''
-    if( lex.ctx->k = 0 ) then
-    	lexNextToken( lex.ctx->head, flags )
-    else
-    	hMoveKDown( )
-    end if
+	''
+	if( lex.ctx->k = 0 ) then
+		lexNextToken( lex.ctx->head, flags )
+	else
+		hMoveKDown( )
+	end if
 
-    ppCheck( )
+	ppCheck( )
 end sub
 
 '':::::
@@ -2223,14 +2223,14 @@ sub lexEatToken _
 		byval flags as LEXCHECK _
 	) static
 
-    ''
-  	if( lex.ctx->head->dtype <> FB_DATATYPE_WCHAR ) then
-    	*token = lex.ctx->head->text
-    else
-    	*token = str( lex.ctx->head->textw )
-    end if
+	''
+	if( lex.ctx->head->dtype <> FB_DATATYPE_WCHAR ) then
+		*token = lex.ctx->head->text
+	else
+		*token = str( lex.ctx->head->textw )
+	end if
 
-    lexSkipToken( flags )
+	lexSkipToken( flags )
 
 end sub
 
@@ -2239,14 +2239,14 @@ function lexGetText _
 	( _
 	) as zstring ptr static
 
-    static as zstring * FB_MAXLITLEN+1 tmpstr
+	static as zstring * FB_MAXLITLEN+1 tmpstr
 
-  	if( lex.ctx->head->dtype <> FB_DATATYPE_WCHAR ) then
-    	function = @lex.ctx->head->text
-    else
-    	tmpstr = str( lex.ctx->head->textw )
-    	function = @tmpstr
-    end if
+	if( lex.ctx->head->dtype <> FB_DATATYPE_WCHAR ) then
+		function = @lex.ctx->head->text
+	else
+		tmpstr = str( lex.ctx->head->textw )
+		function = @tmpstr
+	end if
 
 end function
 
@@ -2258,37 +2258,37 @@ sub lexReadLine _
 		byval skipline as integer = FALSE _
 	) static
 
-    dim as uinteger char
+	dim as uinteger char
 
 	if( skipline = FALSE ) then
 		*dst = ""
 	end if
 
-    '' check look ahead tokens if any
-    do while( lex.ctx->k > 0 )
-    	select case lex.ctx->head->id
-    	case FB_TK_EOF, FB_TK_EOL, endchar
-    		exit sub
-    	case else
-    		if( skipline = FALSE ) then
-   				*dst += lex.ctx->head->text
-    		end if
-    	end select
+	'' check look ahead tokens if any
+	do while( lex.ctx->k > 0 )
+		select case lex.ctx->head->id
+		case FB_TK_EOF, FB_TK_EOL, endchar
+			exit sub
+		case else
+			if( skipline = FALSE ) then
+				*dst += lex.ctx->head->text
+			end if
+		end select
 
-    	hMoveKDown( )
-    loop
+		hMoveKDown( )
+	loop
 
-   	'' check current token
-    select case lex.ctx->head->id
-    case FB_TK_EOF, FB_TK_EOL, endchar
-   		exit sub
-   	case else
-   		if( skipline = FALSE ) then
-    		*dst += lex.ctx->head->text
-   		end if
-   	end select
+	'' check current token
+	select case lex.ctx->head->id
+	case FB_TK_EOF, FB_TK_EOL, endchar
+		exit sub
+	case else
+		if( skipline = FALSE ) then
+			*dst += lex.ctx->head->text
+		end if
+	end select
 
-    ''
+	''
 	do
 		char = lexCurrentChar( )
 
