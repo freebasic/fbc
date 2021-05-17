@@ -236,6 +236,84 @@ private function hMacro_getArgW( byval argtb as LEXPP_ARGTB ptr, byval num as in
 	
 end function
 
+private function hMacro_Eval( byval arg as zstring ptr) as string
+
+	'' the expression should have already been handled in hLoadMacro|hLoadMacroW
+	'' so, if we do get here, just pass the argument back as-is
+	var res = ""
+
+	if( arg ) then
+
+		'' create a lightweight context push for the lexer
+		'' like an include file, but no include file
+		'' text to expand is to be loaded in LEX.CTX->DEFTEXT[W]
+		'' use the parser to build an AST for the literal result
+
+		lexPushCtx()
+		lexInit( FALSE, TRUE )
+
+		'' prevent cExpression from writing to .pp.bas file
+		lex.ctx->reclevel += 1
+
+		DZstrAssign( lex.ctx->deftext, *arg )
+		lex.ctx->defptr = lex.ctx->deftext.data
+		lex.ctx->deflen += len( *arg )
+
+		'' Add an end of expression marker so that the parser
+		'' doesn't read past the end of the expression text
+		'' by appending an LFCHAR to the end of the expression
+		'' It would be better to use the explicit EOF character, 
+		'' but we can't appened an extta NULL character to a zstring
+
+		DZstrConcatAssign( lex.ctx->deftext, LFCHAR )
+		lex.ctx->defptr = lex.ctx->deftext.data
+		lex.ctx->deflen += len( LFCHAR )
+
+		dim expr as ASTNODE ptr = cExpression( )
+		var errmsg = FB_ERRMSG_OK
+
+		if( expr <> NULL ) then
+			expr = astOptimizeTree( expr )
+
+			if( astIsCONST( expr ) ) then
+				res = astConstFlushToStr( expr )
+
+				'' any tokens still in the buffer? cExpression() should have used them all
+				if( lexGetToken( ) <> FB_TK_EOL ) then
+					errmsg = FB_ERRMSG_SYNTAXERROR
+				end if
+			elseif( astIsConstant( expr ) ) then
+				res = """" + hReplace( expr->sym->var_.littext, QUOTE, QUOTE + QUOTE ) + """"
+
+				'' any tokens still in the buffer? cExpression() should have used them all
+				if( lexGetToken( ) <> FB_TK_EOL ) then
+					errmsg = FB_ERRMSG_SYNTAXERROR
+				end if
+			else
+				astDelTree( expr )
+				errmsg = FB_ERRMSG_EXPECTEDCONST
+				res = str(0)
+			end if
+		else
+			errmsg = FB_ERRMSG_SYNTAXERROR
+		end if
+
+		lex.ctx->reclevel -= 1
+
+		lexPopCtx()
+
+		if( errmsg <> FB_ERRMSG_OK ) then
+			errReportEx( errmsg, *arg )
+			'' error recovery: skip until next line (in the buffer)
+			hSkipUntil( FB_TK_EOL, TRUE )
+		end if
+
+	end if
+
+	function = res
+
+end function
+
 private function hDefUniqueIdPush_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
 
 	'' __FB_UNIQUEID_PUSH__( STACKID )
@@ -357,14 +435,17 @@ private function hDefArgExtract_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum
 		'' Val returns 0 on failure which we can't detect from a valid 0
 		'' so check and construct the number manually
 
-		dim numArgLen as Long = Len(*numStr), i as Long, index as ULong = 0
+		dim as string varstr = hMacro_Eval(numStr)
+		var pnumStr = strptr(varstr)
+
+		dim numArgLen as Long = Len(*pnumStr), i as Long, index as ULong = 0
 		dim zeroVal As ULong = Asc("0")
 		For i = 0 To numArgLen - 1
-			if( Not hIsCharNumeric(numStr[i]) ) then
+			if( Not hIsCharNumeric(pnumStr[i]) ) then
 				Exit For
 			End If
 			index *= 10
-			index += (numStr[i] - zeroVal)
+			index += (pnumStr[i] - zeroVal)
 		Next
 		If i = numArgLen Then
 			dim numVarArgs As ULong = argtb->count - 1
@@ -641,75 +722,7 @@ private function hDefEval_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as in
 	'' so, if we do get here, just pass the argument back as-is
 
 	var arg = hMacro_getArgZ( argtb, 0 )
-	var res = ""
-
-	if( arg ) then
-
-		'' create a lightweight context push for the lexer
-		'' like an include file, but no include file
-		'' text to expand is to be loaded in LEX.CTX->DEFTEXT[W]
-		'' use the parser to build an AST for the literal result
-
-		lexPushCtx()
-		lexInit( FALSE, TRUE )
-
-		'' prevent cExpression from writing to .pp.bas file
-		lex.ctx->reclevel += 1
-
-		DZstrAssign( lex.ctx->deftext, *arg )
-		lex.ctx->defptr = lex.ctx->deftext.data
-		lex.ctx->deflen += len( *arg )
-
-		'' Add an end of expression marker so that the parser
-		'' doesn't read past the end of the expression text
-		'' by appending an LFCHAR to the end of the expression
-		'' It would be better to use the explicit EOF character, 
-		'' but we can't appened an extta NULL character to a zstring
-
-		DZstrConcatAssign( lex.ctx->deftext, LFCHAR )
-		lex.ctx->defptr = lex.ctx->deftext.data
-		lex.ctx->deflen += len( LFCHAR )
-
-		dim expr as ASTNODE ptr = cExpression( )
-		var errmsg = FB_ERRMSG_OK
-
-		if( expr <> NULL ) then
-			expr = astOptimizeTree( expr )
-
-			if( astIsCONST( expr ) ) then
-				res = astConstFlushToStr( expr )
-
-				'' any tokens still in the buffer? cExpression() should have used them all
-				if( lexGetToken( ) <> FB_TK_EOL ) then
-					errmsg = FB_ERRMSG_SYNTAXERROR
-				end if
-			elseif( astIsConstant( expr ) ) then
-				res = """" + hReplace( expr->sym->var_.littext, QUOTE, QUOTE + QUOTE ) + """"
-
-				'' any tokens still in the buffer? cExpression() should have used them all
-				if( lexGetToken( ) <> FB_TK_EOL ) then
-					errmsg = FB_ERRMSG_SYNTAXERROR
-				end if
-			else
-				astDelTree( expr )
-				errmsg = FB_ERRMSG_EXPECTEDCONST
-				res = str(0)
-			end if
-		else
-			errmsg = FB_ERRMSG_SYNTAXERROR
-		end if
-
-		lex.ctx->reclevel -= 1
-
-		lexPopCtx()
-
-		if( errmsg <> FB_ERRMSG_OK ) then
-			errReportEx( errmsg, *arg )
-			'' error recovery: skip until next line (in the buffer)
-			hSkipUntil( FB_TK_EOL, TRUE )
-		end if
-
-	end if
+	var res = hMacro_Eval(arg)
 
 	ZstrFree(arg)
 
