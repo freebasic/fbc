@@ -56,6 +56,7 @@ Version 1.08.0
 - Add new gfxlib2 API's fb_GfxControl_i32() and fb_GfxControl_i64()
 - Change overload for SCREENCONTROL( byval as const long, byref as long = -2147483648, byref as long = -2147483648, byref as long = -2147483648, byref as long = -2147483648 )
 - Add overload for SCREENCONTROL( byval as const long, byref as longint, byref as longint = -2147483648, byref as longint = -2147483648, byref as longint = -2147483648 )
+- github #311: index argument in __FB_ARG_EXTRACT__( index, args... ) is evaluated as constant (Skyfish)
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling
@@ -122,7 +123,7 @@ Version 1.08.0
 - github #246: rtlib leaks thread local data, fixed by adding TLS destructors (adeyblue)
 - sf.net #918: pcopy (console) bug when copying large console buffers, windows only (adeyblue)
 - github #216: function getMouse() seems broken on Win10 when using the Console Mode (screen 0), fixed by turn off the QuickEdit console mode during GetMouse (adeyblue)
-- github #258: on windows directx and gdi drivers, only show window after indianization is complete (adeyblue)
+- github #258: on windows directx and gdi drivers, only show window after initialisation is complete (adeyblue)
 - sf.net #925: CSIGN/CUNSG preserve size when converting pointers on 64-bit and implicit conversion of STEP value in FOR...NEXT statement
 - github #122: gfxlib2: linux GFX_NO_FRAME + GFX_OPENGL freezing at exit due to a dead lock between exit routines
 - sf.net #914: threadsafe RND() and RANDOMIZE() by adding a mutex
