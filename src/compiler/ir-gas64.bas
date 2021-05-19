@@ -439,14 +439,14 @@ private sub check_optim(byref code as string)
 	poschar1=instr(code," ")
 	mov=left(code,poschar1-1)
 	poschar2=instr(code,",")
-	part1=mid(code,poschar1+1,poschar2-poschar1-1)
+	part1=trim(mid(code,poschar1+1,poschar2-poschar1-1))
 	poschar1=instr(code,"#")
 	if poschar1=0 then
-		poschar1=len(code)+1 ''Add 1 as after removing 2
+		poschar1=len(code) ''Add 1 as after removing 2
 	else
-		poschar1-=1
+		poschar1-=2
 	end if
-	part2=rtrim(Mid(code,poschar2+2,poschar1-poschar2-2))
+	part2=trim(Mid(code,poschar2+1,poschar1-poschar2))
 
 	''cancel mov regx, regx
 	if mov="mov" then
@@ -6188,11 +6188,7 @@ private sub _emitasmline( byval asmtokenhead as ASTASMTOK ptr )
 
 		select case( n->type )
 			case AST_ASMTOK_TEXT
-				if *n->text="," then ''add a space to avoid issue during optimization
-					asmline += ", "
-				else
-					asmline += *n->text
-				end if
+				asmline += *n->text
 				asm_info("asm text="+*n->text)
 			case AST_ASMTOK_SYMB
 
@@ -6210,7 +6206,7 @@ private sub _emitasmline( byval asmtokenhead as ASTASMTOK ptr )
 
 		n = n->next
 	wend
-
+	ctxdbg.lnum=-1 ''to avoid generation of label when debug on
 	asm_code(asmline)
 end sub
 private sub _emitvarinibegin( byval sym as FBSYMBOL ptr )
