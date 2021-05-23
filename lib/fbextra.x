@@ -10,3 +10,4 @@ SECTIONS
     *(.fbctinf)
   }
 }
+INSERT AFTER .data;

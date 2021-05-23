@@ -791,7 +791,7 @@ private function hLinkFiles( ) as integer
 		    (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_SOLARIS) and _
 			( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) and _
 		    (not fbcIsUsingGoldLinker( )) ) then
-			ldcline += " """ + fbc.libpath + (FB_HOST_PATHDIV + "fbextra.x""")
+			ldcline += " -T """ + fbc.libpath + (FB_HOST_PATHDIV + "fbextra.x""")
 		end if
 	end if
 
