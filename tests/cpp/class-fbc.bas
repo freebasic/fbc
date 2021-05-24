@@ -7,10 +7,17 @@
 
 #if ENABLE_CHECK_BUGS
 	#define DOTEST
+	#define DOFUNCS
 #else
 	'' thiscall is not supported in -gen gas
 	#if __FB_BACKEND__ <> "gas"
 		#define DOTEST
+	#endif
+
+	'' structures returned by value from c++
+	'' needs some work on arm targets (bugs!)
+	#if not defined( __FB_ARM__ )
+		#define DOFUNCS
 	#endif
 #endif
 
@@ -154,6 +161,7 @@ scope
 end scope
 '/
 
+#ifdef DOFUNCS
 DLOG( operator +( byref lhs as const UDT, byref rhs as const UDT ) as UDT )
 scope
 	dim as UDT a = 3
@@ -193,5 +201,6 @@ scope
 	c = a - b
 	checkResults( @a, @b, 17, 5, 12, "UDT operator-( int const& lhs, UDT const& rhs )" )
 end scope
+#endif
 
 #endif '' DOTEST
