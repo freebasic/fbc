@@ -379,6 +379,7 @@ include/freebasic/cd/wd_old.bi
 include/freebasic/cgi-util.bi
 include/freebasic/cgui.bi
 include/freebasic/chipmunk/chipmunk.bi
+include/freebasic/chipmunk/chipmunk_structs.bi
 include/freebasic/chipmunk/chipmunk_unsafe.bi
 include/freebasic/chipmunk/cpHastySpace.bi
 include/freebasic/chipmunk/cpMarch.bi
@@ -489,8 +490,12 @@ include/freebasic/fastcgi/fastcgi.bi
 include/freebasic/fastcgi/fcgi_stdio.bi
 include/freebasic/fastcgi/fcgiapp.bi
 include/freebasic/fbc-int/array.bi
+include/freebasic/fbc-int/fbcall.bi
+include/freebasic/fbc-int/math.bi
+include/freebasic/fbc-int/memory.bi
 include/freebasic/fbgfx.bi
 include/freebasic/fbio.bi
+include/freebasic/fbmath.bi
 include/freebasic/fbthread.bi
 include/freebasic/ffi.bi
 include/freebasic/file.bi
@@ -966,8 +971,11 @@ include/freebasic/portaudio.bi
 include/freebasic/postgresql/libpq-fe.bi
 include/freebasic/postgresql/postgres_ext.bi
 include/freebasic/pspell.bi
+include/freebasic/raylib.bi
+include/freebasic/raymath.bi
 include/freebasic/regex.bi
 include/freebasic/sndfile.bi
+include/freebasic/soloud_c.bi
 include/freebasic/sqlite2.bi
 include/freebasic/sqlite3.bi
 include/freebasic/sqlite3ext.bi

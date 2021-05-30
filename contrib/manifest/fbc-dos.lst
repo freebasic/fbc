@@ -98,8 +98,12 @@ include/freebas/dos/sys/segments.bi
 include/freebas/dos/sys/version.bi
 include/freebas/expat.bi
 include/freebas/fbc-int/array.bi
+include/freebas/fbc-int/fbcall.bi
+include/freebas/fbc-int/math.bi
+include/freebas/fbc-int/memory.bi
 include/freebas/fbgfx.bi
 include/freebas/fbio.bi
+include/freebas/fbmath.bi
 include/freebas/fbthread.bi
 include/freebas/file.bi
 include/freebas/gd.bi
@@ -461,6 +465,7 @@ include/freebas/png16.bi
 include/freebas/pspell.bi
 include/freebas/quicklz.bi
 include/freebas/regex.bi
+include/freebas/soloud_c.bi
 include/freebas/sqlite2.bi
 include/freebas/sqlite3.bi
 include/freebas/sqlite3ext.bi
