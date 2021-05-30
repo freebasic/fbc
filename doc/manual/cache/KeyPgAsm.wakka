@@ -35,6 +35,7 @@ inc  dword ptr [n]   ' OK: "ptr" is needed by GAS here%%
 			
 		==Register Preservation==
 			When an ##**Asm**## block is opened, the registers ##ebx##, ##esi##, and ##edi## are pushed to the stack, when the block is closed, these registers are popped back from the stack.  This is because these registers are required to be preserved by most or all OS's using the x86 CPU.  You can therefore use these registers without explicitly preserving them yourself. You should not change ##esp## and ##ebp##, since they are usually used to address local variables. 
+			**Note:** Inside a ##[[KeyPgNaked|Naked]]## procedure, there is no such register preservation.
 			
 		==Register Names==
 		~The names of the registers for the x86 architecture are written as follows in an ##**Asm**## block:

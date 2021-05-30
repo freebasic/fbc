@@ -6,7 +6,7 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgNaked
 '' --------
 
-'' Naked cdecl function
+'' Naked cdecl function (for fbc 32-bit)
 '' plus ecx register preserved in asm block by creating user stack
 Function subtract_cp Naked cdecl _      '' parameters pushed onto call stack in reverse order of declaration
 	( _

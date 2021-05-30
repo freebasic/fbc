@@ -6,7 +6,7 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgNaked
 '' --------
 
-'' Naked cdecl function
+'' Naked cdecl function (for fbc 32-bit)
 Function subtract_c Naked cdecl _   '' parameters pushed onto call stack in reverse order of declaration
 	( _
 		ByVal a As Long, _
@@ -25,7 +25,7 @@ Print subtract_c( 5, 1 ) '' 5 - 1
 
 ''---------------------------------------------------------------------------------------------------------------------
 
-'' Naked stdcall function
+'' Naked stdcall function (for fbc 32-bit)
 Function subtract_s Naked stdcall _ '' parameters pushed onto call stack in reverse order of declaration
 						 _          '' called procedure responsible for removing parameters from stack
 						 _          ''   (appending constant to RET instruction specifying number of bytes to release)
@@ -46,7 +46,7 @@ Print subtract_s( 5, 1 ) '' 5 - 1
 
 ''---------------------------------------------------------------------------------------------------------------------
 
-'' Naked pascal function
+'' Naked pascal function (for fbc 32-bit)
 Function subtract_p Naked pascal _  '' parameters pushed onto call stack in same order as declaration
 						 _          '' called procedure responsible for removing parameters from stack
 						 _          ''   (appending constant to RET instruction specifying number of bytes to release)

@@ -2,27 +2,42 @@
 Sets or gets internal graphics library settings
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param1 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param2 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param3 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param4 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0 )
-	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param [[KeyPgAs|as]] [[KeyPgString|string]] = ##"####"## )
+	for fbc version < 1.08:
+		[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param1 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param2 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param3 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param4 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0 )
+		[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param [[KeyPgAs|as]] [[KeyPgString|string]] = ##"####"## )
+	for fbc version >= 1.08:
+		[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param1 [[KeyPgAs|as]] [[KeyPgLong|long]] = &h80000000, [[KeyPgByref|byref]] param2 [[KeyPgAs|as]] [[KeyPgLong|long]] = &h80000000, [[KeyPgByref|byref]] param3 [[KeyPgAs|as]] [[KeyPgLong|long]] = &h80000000, [[KeyPgByref|byref]] param4 [[KeyPgAs|as]] [[KeyPgLong|long]] = &h80000000 )
+		[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param1 [[KeyPgAs|as]] [[KeyPgLongint|longint]], [[KeyPgByref|byref]] param2 [[KeyPgAs|as]] [[KeyPgLongint|longint]] = &h80000000, [[KeyPgByref|byref]] param3 [[KeyPgAs|as]] [[KeyPgLongint|longint]] = &h80000000, [[KeyPgByref|byref]] param4 [[KeyPgAs|as]] [[KeyPgLongint|longint]] = &h80000000 )
+		[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param [[KeyPgAs|as]] [[KeyPgString|string]])
 ##
 {{fbdoc item="usage"}}##
-	**""ScreenControl""**( //what// [, [ //param1// ][, [ //param2// ][, [ //param3// ][, [ //param4// ]]]]] )
-		##or,##
-	**""ScreenControl""**( //what// [, //param// ] )
+	for fbc version < 1.08:
+		**""ScreenControl""**( //what// [, [ //param1// ][, [ //param2// ][, [ //param3// ][, [ //param4// ]]]]] )
+			or,
+		**""ScreenControl""**( //what// [, //param// ] )
+	for fbc version >= 1.08:
+		in the LONG (or INTEGER<32>) version of the sub:
+			**""ScreenControl""**( //what// [, //param1// [, //param2// [, //param3// [, //param4// ]]]] )
+				or,
+			**""ScreenControl""**( //what// , //param// )
+		in the LONGINT (or INTEGER<64>) version of the sub:
+			**""ScreenControl""**( //what// , //param1// [, //param2// [, //param3// [, //param4// ]]] )
+				or,
+			**""ScreenControl""**( //what// , //param// )
 ##
 {{fbdoc item="param"}}
 	##//what//##
 		specifies the function to perform
 	##//param1//##
-		optional first integer parameter, contains value to be set on entry or value got on exit
+		first integer parameter, contains value to be set on entry or value got on exit
 	##//param2//##
-		optional second integer parameter, contains value to be set on entry or value got on exit
+		second integer parameter, contains value to be set on entry or value got on exit
 	##//param3//##
-		optional third integer parameter, contains value to be set on entry or value got on exit
+		third integer parameter, contains value to be set on entry or value got on exit
 	##//param4//##
-		optional fourth integer parameter, contains value to be set on entry or value got on exit
+		fourth integer parameter, contains value to be set on entry or value got on exit
 	##//param//##
-		optional string parameter, contains text to be set on entry or text got on exit
+		string parameter, contains text to be set on entry or text got on exit
 
 {{fbdoc item="desc"}}
 	This function can be used to set or get internal ""GfxLib"" states. The ##//what//## parameter specifies which operation to perform. On operations that set states, the ##//param*//## parameters must contain the values to be set. On operations that get states, ##//param*//## will hold the values returned by ""GfxLib"" when the function returns.

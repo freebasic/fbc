@@ -13,7 +13,7 @@ Releases a thread handle without waiting for the thread to finish
 		##[[KeyPgAny|Any]] [[KeyPgPtr|Ptr]]## handle of a thread created by ##[[KeyPgThreadCreate|ThreadCreate]]## or ##[[KeyPgThreadCall|ThreadCall]]##
 
 {{fbdoc item="desc"}}
-	**""ThreadDetach""** releases resources associated with a thread handle returned by ##[[KeyPgThreadCreate|ThreadCreate]]## or ##[[KeyPgThreadCall|ThreadCall]]##. The thread handle will be destroyed by **""ThreadDetach""** and cannot be used anymore.
+	**""ThreadDetach""** releases resources associated with the thread handle returned by ##[[KeyPgThreadCreate|ThreadCreate]]## or ##[[KeyPgThreadCall|ThreadCall]]##. The thread handle will be destroyed by **""ThreadDetach""** and cannot be used anymore.
 	Unlike ##[[KeyPgThreadWait|ThreadWait]]##, **""ThreadDetach""** does not wait for the thread to finish and thread execution continues independently. Any allocated resources will be freed once the thread exits.
 	
 	In order to avoid memory leaks, the safe way to end a thread is to always signal to it that it must end, and then call ##[[KeyPgThreadWait|ThreadWait]]## on that thread except if **""ThreadDetach""** has previously been called.

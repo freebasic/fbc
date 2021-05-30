@@ -10,3 +10,4 @@ Dim MyArray1(1 To 10) As Integer
 ReDim MyArray2(1 To 10) As Integer 
 
 Erase MyArray1, MyArray2
+	

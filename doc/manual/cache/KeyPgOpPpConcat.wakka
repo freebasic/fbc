@@ -6,6 +6,9 @@ Preprocessor operator to concatenate strings
 ##
 {{fbdoc item="desc"}}
 	This operator creates a new token by concatenating the texts at both sides of it.  This text can be recognized by other macros and further expanded.  One use, is to create a macro that expands to different macro names, variable names, and function names depending on the arguments received.
+	
+	**Note** for fbc version >= 1.08**:**
+		In macro/define's use ""'##_'"" to escape line continuation character '_' to allow multiple lines of macro expanded code to be combined into a single statement.
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/prepro/concat.bas"}}%%(freebasic)
