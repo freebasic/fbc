@@ -464,6 +464,8 @@ include/freebas/png15.bi
 include/freebas/png16.bi
 include/freebas/pspell.bi
 include/freebas/quicklz.bi
+include/freebas/raylib.bi
+include/freebas/raymath.bi
 include/freebas/regex.bi
 include/freebas/soloud_c.bi
 include/freebas/sqlite2.bi

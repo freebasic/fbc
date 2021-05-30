@@ -91,6 +91,8 @@ examples/loops.bas
 examples/manual/array/clear.bas
 examples/manual/array/ellipsis.bas
 examples/manual/array/erase.bas
+examples/manual/array/erase2.bas
+examples/manual/array/erase3.bas
 examples/manual/array/lbound.bas
 examples/manual/array/memcopy.bas
 examples/manual/array/memcopyclear.bas
@@ -1698,6 +1700,8 @@ inc/png15.bi
 inc/png16.bi
 inc/pspell.bi
 inc/quicklz.bi
+inc/raylib.bi
+inc/raymath.bi
 inc/regex.bi
 inc/soloud_c.bi
 inc/sqlite2.bi
