@@ -167,6 +167,7 @@ extern_asm(_fb_WriteString);
 extern_asm(_fb_hRtExit);
 extern_asm(_fb_DoubleToStrQB);
 extern_asm(_fb_DevFileWriteWstr);
+extern_asm(_fb_StrConcatByref);
 extern_asm(_fb_WstrTrimAny);
 extern_asm(_fb_WstrInstrRev);
 extern_asm(_fb_PrintUsingULongint);
@@ -581,6 +582,7 @@ extern_asm(_fb_ThreadWait);
 extern_asm(_fb_ArrayEraseObj);
 extern_asm(_fb_DrvIntlGetDateFormat);
 extern_asm(_fb_DevFileReadLineEncod);
+extern_asm(_fb_LEFTSELF);
 extern_asm(_fb_LongintToWstr);
 extern_asm(_fb_FileCloseAll);
 extern_asm(_fb_CondWait);
@@ -1009,6 +1011,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_hRtExit)
     DXE_EXPORT_ASM (_fb_DoubleToStrQB)
     DXE_EXPORT_ASM (_fb_DevFileWriteWstr)
+    DXE_EXPORT_ASM (_fb_StrConcatByref)
     DXE_EXPORT_ASM (_fb_WstrTrimAny)
     DXE_EXPORT_ASM (_fb_WstrInstrRev)
     DXE_EXPORT_ASM (_fb_PrintUsingULongint)
@@ -1423,6 +1426,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_ArrayEraseObj)
     DXE_EXPORT_ASM (_fb_DrvIntlGetDateFormat)
     DXE_EXPORT_ASM (_fb_DevFileReadLineEncod)
+    DXE_EXPORT_ASM (_fb_LEFTSELF)
     DXE_EXPORT_ASM (_fb_LongintToWstr)
     DXE_EXPORT_ASM (_fb_FileCloseAll)
     DXE_EXPORT_ASM (_fb_CondWait)
