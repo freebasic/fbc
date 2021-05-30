@@ -102,6 +102,10 @@
 #error __TIME__ not defined
 #endif
 
+#ifndef __FB_GUI__
+#error __FB_GUI__ not defined
+#endif
+
 
 '' Always defined for this test
 
