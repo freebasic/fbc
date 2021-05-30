@@ -93,7 +93,25 @@
 set -e
 
 usage() {
-	echo "usage: ./build.sh dos|linux-x86|linux-x86_64|linux-arm|linux-aarch64|win32|win32-mingworg|win64 <fbc commit id> [--offline] [--repo url] [--remote name] [--recipe name]"
+	echo "usage: ./build.sh target <fbc commit id> [options]"
+	echo ""
+	echo "target:"
+	echo "   linux-x86|linux-x86_64"
+	echo "   linux-arm|linux-aarch64"
+	echo "   dos|win32|win32-mingworg|win64"
+	echo ""
+	echo "<fbc commit id>:"
+	echo "   commit-id      hash value of the commit"
+	echo "   name-id        name of the branch or tag"
+	echo ""
+	echo "options:"
+	echo "   --offline      only use cached files, don't download from net"
+	echo "   --repo url     specify alternate name for repo to fetch from"
+	echo "                  in addition to origin repo"
+	echo "   --remote name  specify the name to use for the alternate remote"
+	echo "   --recipe name  specify a build recipe to use"
+	echo "   --use-libffi-cache"
+	echo "                  don't build libffi, just use the chaced files"
 	exit 1
 }
 
@@ -117,6 +135,10 @@ case $arg in
 --recipe)
 	recipe_name="$2"
 	shift; shift
+	;;
+--use-libffi-cache)
+	uselibfficache=Y
+	shift
 	;;
 dos|linux-x86|linux-x86_64|win32|win64|linux-arm|linux-aarch64)
 	target="$1"
@@ -154,9 +176,12 @@ fi
 # check recipe name
 # TODO: error on invalid combination of target and recipe
 if [ ! -z "$recipe_name" ]; then
-	recipe=$recipe_name
+	user_recipe=$recipe_name
+	named_recipe=$recipe_name
 else
-	recipe=""
+	# if no recipe given, set the default recipe for the main package
+	user_recipe=
+	named_recipe=-winlibs-gcc-9.3.0
 fi
 
 echo "building FB-$target (uname = `uname`, uname -m = `uname -m`)"
@@ -205,8 +230,9 @@ cd ../..
 
 cd build
 
-buildinfo=../output/buildinfo-$target$recipe.txt
+buildinfo=../output/buildinfo-$target$user_recipe.txt
 echo "fbc $fbccommit $target, build based on:" > $buildinfo
+echo "named recipe: $named_recipe" >> $buildinfo 
 echo >> $buildinfo
 
 copyfile() {
@@ -295,14 +321,15 @@ get_equation_toolchain() {
 	arch="$2"
 	toolchain=equation
 
-	case "$recipe" in
+	case "$named_recipe" in
 	-equation-gcc-8.3.0)
 		gccversion=8.3.0
 		mingwbuildsrev=
 		mingwruntime=
 		;;
 	*)
-		echo "invalid recipe $receipe"
+		echo "get_equation_toolchain(): invalid recipe $named_recipe"
+		exit 1
 		;;
 	esac
 
@@ -340,7 +367,7 @@ get_winlibs_toolchain() {
 		default_eh=seh
 	fi
 
-	case "$recipe" in
+	case "$named_recipe" in
 	-winlibs-gcc-10.3.0)
 		gccversion=10.3.0
 		llvmversion=11.1.0
@@ -374,14 +401,6 @@ get_winlibs_toolchain() {
 		winlibsdir=$gccversion-$mingwruntime-sjlj-$mingwbuildsrev
 		file=winlibs-mingw-w64-$arch-$gccversion-$mingwruntime-$mingwbuildsrev-sjlj.7z
 		;;
-	-winlibs-gcc-9.3.0)
-		gccversion=9.3.0
-		llvmversion=
-		mingwruntime=7.0.0
-		mingwbuildsrev=r3
-		winlibsdir=$gccversion-$mingwruntime-sjlj-$mingwbuildsrev
-		file=winlibs-mingw-w64-$arch-$gccversion-$mingwruntime-$mingwbuildsrev-sjlj.7z
-		;;
 	-winlibs-gcc-8.4.0)
 		gccversion=8.4.0
 		llvmversion=
@@ -391,7 +410,8 @@ get_winlibs_toolchain() {
 		file=mingw-w64-$arch-$gccversion-$mingwruntime.7z
 		;;
 	*)
-		echo "invalid recipe $receipe"
+		echo "get_winlibs_toolchain(): invalid recipe $named_recipe"
+		exit 1
 		;;
 	esac
 
@@ -410,8 +430,8 @@ get_mingww64_toolchain() {
 	bits="$1"
 	arch="$2"
 	toolchain=mingw-w64
-
-	case "$recipe" in
+	
+	case "$named_recipe" in
 	-gcc-8.1.0)
 		gccversion=8.1.0
 		mingwbuildsrev=rev0
@@ -437,14 +457,8 @@ get_mingww64_toolchain() {
 		mingwbuildsrev=rev0
 		mingwruntime=v4
 		;;
-	"")
-		# default build recipe
-		gccversion=8.1.0
-		mingwbuildsrev=rev0
-		mingwruntime=v6
-		;;
 	*)
-		echo "unknown recipe $recipe"
+		echo "unknown recipe $named_recipe"
 		exit 1
 	esac
 
@@ -467,15 +481,19 @@ get_windows_toolchain() {
 	bits="$1"
 	arch="$2"
 
-	case "$recipe" in
+	case "$named_recipe" in
 	-winlibs-*)
 		get_winlibs_toolchain $bits $arch
 		;;
 	-equation-*)
 		get_equation_toolchain $bits $arch
 		;;
-	*)
+	-gcc-*)
 		get_mingww64_toolchain $bits $arch
+		;;
+	*)
+		echo "get_windows_toolchain(): invalid recipe $named_recipe"
+		exit 1
 		;;
 	esac
 }
@@ -734,27 +752,29 @@ libffibuild() {
 	# don't use any cached files when building the packages
 	# commented out for future reference
 	# do we already have the files we need?
-#	if [ -f "../input/$libffi_title/$target$recipe/ffi.h" ]; then
-#	if [ -f "../input/$libffi_title/$target$recipe/ffitarget.h" ]; then
-#	if [ -f "../input/$libffi_title/$target$recipe/libffi.a" ]; then
-#		echo
-#		echo "using cached libffi: $libffi_title/$target$recipe"
-#		echo
-#		return
-#	fi
-#	fi
-#	fi
+	if [ "$uselibfficache" = "Y" ]; then
+	if [ -f "../input/$libffi_title/$target$named_recipe/ffi.h" ]; then
+	if [ -f "../input/$libffi_title/$target$named_recipe/ffitarget.h" ]; then
+	if [ -f "../input/$libffi_title/$target$named_recipe/libffi.a" ]; then
+		echo
+		echo "using cached libffi: $libffi_title/$target$named_recipe"
+		echo
+		return
+	fi
+	fi
+	fi
+	fi
 
 	# or just grab the files we need from the package?
 	# we might copy in the files directly if we unable to build libffi ourselves
 	# as was the case for libffi-3.2.1 and some gcc tool chains
 	# so just leave this section commented out for reference
-#	case "$recipe" in
+#	case "$named_recipe" in
 #	-gcc-7.1.0|-gcc-7.1.0r0|-gcc-7.1.0r2|-gcc-7.3.0|-gcc-8.1.0)
-#		mkdir -p ../input/$libffi_title/$target$recipe
-#		cp opt/lib/libffi-3.3/include/ffi.h       ../input/$libffi_title/$target$recipe
-#		cp opt/lib/libffi-3.3/include/ffitarget.h ../input/$libffi_title/$target$recipe
-#		cp opt/lib/libffi.a                       ../input/$libffi_title/$target$recipe
+#		mkdir -p ../input/$libffi_title/$target$named_recipe
+#		cp opt/lib/libffi-3.3/include/ffi.h       ../input/$libffi_title/$target$named_recipe
+#		cp opt/lib/libffi-3.3/include/ffitarget.h ../input/$libffi_title/$target$named_recipe
+#		cp opt/lib/libffi.a                       ../input/$libffi_title/$target$named_recipe
 #		return
 #		;;
 #	esac
@@ -775,9 +795,9 @@ libffibuild() {
 	fi
 	make
 	# stash some files in the input folder to make rebuilding faster
-	mkdir -p ../../input/$libffi_title/$target$recipe
-	cp include/ffi.h include/ffitarget.h ../../input/$libffi_title/$target$recipe
-	cp .libs/libffi.a ../../input/$libffi_title/$target$recipe
+	mkdir -p ../../input/$libffi_title/$target$named_recipe
+	cp include/ffi.h include/ffitarget.h ../../input/$libffi_title/$target$named_recipe
+	cp .libs/libffi.a ../../input/$libffi_title/$target$named_recipe
 	cd ..
 }
 
@@ -786,23 +806,25 @@ windowsbuild() {
 	# its gcc and not one from the host
 	origPATH="$PATH"
 	export PATH="$PWD/bin:$PATH"
-
 	echo "Current Path: $PATH"
+	echo "gcc version: `gcc -dumpversion`"
+	echo >> $buildinfo
+	echo "gcc version: `gcc -dumpversion`" >> $buildinfo
 
 	libffibuild
 	# copy our stored files to the build
 	case "$toolchain" in
 	equation)
 		case "$target" in
-		win32)          cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./i686-pc-mingw32/include;;
-		win64)          cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./x86_64-w64-mingw32/include;;
+		win32)          cp ../input/$libffi_title/$target$named_recipe/ffi.h ../input/$libffi_title/$target$named_recipe/ffitarget.h ./i686-pc-mingw32/include;;
+		win64)          cp ../input/$libffi_title/$target$named_recipe/ffi.h ../input/$libffi_title/$target$named_recipe/ffitarget.h ./x86_64-w64-mingw32/include;;
 		esac
 		;;
 	*)
 		case "$target" in
-		win32)          cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./i686-w64-mingw32/include;;
-		win32-mingworg) cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./include;;
-		win64)          cp ../input/$libffi_title/$target$recipe/ffi.h ../input/$libffi_title/$target$recipe/ffitarget.h ./x86_64-w64-mingw32/include;;
+		win32)          cp ../input/$libffi_title/$target$named_recipe/ffi.h ../input/$libffi_title/$target$named_recipe/ffitarget.h ./i686-w64-mingw32/include;;
+		win32-mingworg) cp ../input/$libffi_title/$target$named_recipe/ffi.h ../input/$libffi_title/$target$named_recipe/ffitarget.h ./include;;
+		win64)          cp ../input/$libffi_title/$target$named_recipe/ffi.h ../input/$libffi_title/$target$named_recipe/ffitarget.h ./x86_64-w64-mingw32/include;;
 		esac
 		;;
 	esac
@@ -858,7 +880,7 @@ windowsbuild() {
 	cp bin/gprof.exe	fbc/bin/$fbtarget
 	cp bin/ld.exe		fbc/bin/$fbtarget
 
-	case "$recipe" in
+	case "$named_recipe" in
 	-equation-gcc-8.3.0)
 		cp bin/gcc.exe fbc/bin/$target
 		cp bin/gdb.exe fbc/bin/$target
@@ -873,7 +895,7 @@ windowsbuild() {
 			cp --parents libexec/gcc/x86_64-w64-mingw32/$gccversion/cc1.exe fbc/bin
 			;;
 		*)
-			echo "invalid target $target"
+			echo "windowsbuild(): invalid target $target"
 			exit 1
 			;;
 		esac
@@ -913,7 +935,7 @@ windowsbuild() {
 			cp bin/ld.exe fbc/bin/libexec/gcc/x86_64-w64-mingw32/$gccversion/ld.exe  
 			;;
 		*)
-			echo "invalid target $target"
+			echo "windowsbuild(): invalid target $target"
 			exit 1
 			;;
 		esac
@@ -922,18 +944,21 @@ windowsbuild() {
 		case "$target" in
 		win32)
 			# !!! TODO !!! re-evaluate the gdb used with later gcc versions
-			# !!! TODO !!! maybe package the 32-bit gcc too even for mingw-w64
 			# Take MinGW.org's gdb, because the gdb from the MinGW-w64 toolchain has much more
 			# dependencies (e.g. Python for scripting purposes) which we probably don't want/need.
 			# (this should probably be reconsidered someday)
-			cp mingworg-gdb/bin/gdb.exe		fbc/bin/win32
-			cp mingworg-gdb/bin/libgcc_s_dw2-1.dll	fbc/bin/win32
-			cp mingworg-gdb/bin/zlib1.dll		fbc/bin/win32
+			cp mingworg-gdb/bin/gdb.exe             fbc/bin/win32
+			cp mingworg-gdb/bin/libgcc_s_dw2-1.dll  fbc/bin/win32
+			cp mingworg-gdb/bin/zlib1.dll           fbc/bin/win32
+
+			cp bin/gcc.exe fbc/bin/win32
+			cp --parents libexec/gcc/i686-w64-mingw32/$gccversion/cc1.exe fbc/bin
+
 			;;
 		win32-mingworg)
-			cp bin/gdb.exe			fbc/bin/win32
-			cp bin/libgcc_s_dw2-1.dll	fbc/bin/win32
-			cp bin/zlib1.dll		fbc/bin/win32
+			cp bin/gdb.exe              fbc/bin/win32
+			cp bin/libgcc_s_dw2-1.dll   fbc/bin/win32
+			cp bin/zlib1.dll            fbc/bin/win32
 			;;
 		win64)
 			cp bin/gcc.exe fbc/bin/win64
@@ -949,7 +974,7 @@ windowsbuild() {
 		cd fbc/lib/win32 && make && cd ../../..
 	fi
 
-	cp ../input/$libffi_title/$target$recipe/libffi.a fbc/lib/$fbtarget
+	cp ../input/$libffi_title/$target$named_recipe/libffi.a fbc/lib/$fbtarget
 
 	# Reduce .exe sizes by dropping debug info
 	# (this was at least needed for MinGW.org's gdb, and probably nothing else,
@@ -963,8 +988,8 @@ windowsbuild() {
 	cd fbc
 	case "$target" in
 	win32|win64)
-		make bindist DISABLE_DOCS=1 FBPACKSUFFIX=$recipe FBSHA1=$FBSHA1
-		make bindist ENABLE_STANDALONE=1 FBPACKSUFFIX=$recipe FBSHA1=$FBSHA1
+		make bindist DISABLE_DOCS=1 FBPACKSUFFIX=$user_recipe FBSHA1=$FBSHA1
+		make bindist ENABLE_STANDALONE=1 FBPACKSUFFIX=$user_recipe FBSHA1=$FBSHA1
 		;;
 	win32-mingworg)
 		make bindist DISABLE_DOCS=1 FBPACKSUFFIX=-mingworg FBSHA1=$FBSHA1
@@ -975,7 +1000,7 @@ windowsbuild() {
 
 	# Only build the installer, if we are also
 	# building the default package
-	if [ -z "$recipe" ]; then
+	if [ -z "$user_recipe" ]; then
 	if [ "$target" = win32 ]; then
 		cd fbc/contrib/nsis-installer
 		cp ../../FreeBASIC-*-win32.zip .
@@ -986,8 +1011,8 @@ windowsbuild() {
 	fi
 
 	cp fbc/*.zip fbc/*.7z ../output
-	cp fbc/contrib/manifest/fbc-$target$recipe.lst       ../output
-	cp fbc/contrib/manifest/FreeBASIC-$target$recipe.lst ../output
+	cp fbc/contrib/manifest/fbc-$target$user_recipe.lst       ../output
+	cp fbc/contrib/manifest/FreeBASIC-$target$user_recipe.lst ../output
 
 	export PATH="$origPATH"
 	cd ..
