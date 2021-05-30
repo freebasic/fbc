@@ -71,6 +71,8 @@
 #       -winlibs-gcc-10.2.0 (winlibs mingwrt 8.0.0r8)
 #       -winlibs-gcc-10.3.0 (winlibs mingwrt 8.0.0r1)
 #       -equation-gcc-8.3.0 (Equation - experimental)
+# --use-libffi-cache"
+#   don't build libffi, just use the cached files, from the last build
 #
 # Requirements:
 #   - MSYS environment on Windows with: bash, wget/curl, zip, unzip, patch, make, findutils
@@ -85,10 +87,12 @@
 #   - Starting from scratch everytime => clean builds
 #   - Specifying the exact DJGPP/MinGW packages to use => reproducible builds
 #   - Only work locally, e.g. don't touch existing DJGPP/MinGW setups on the host
+#   - automatically pull in binaries that need to be distributed with the standalone packages
 # 
 # TODO:
 #   - win32: fbdoc CHM
 #   - package libffi
+#   - automate combining packages
 #
 set -e
 
@@ -111,7 +115,8 @@ usage() {
 	echo "   --remote name  specify the name to use for the alternate remote"
 	echo "   --recipe name  specify a build recipe to use"
 	echo "   --use-libffi-cache"
-	echo "                  don't build libffi, just use the chaced files"
+	echo "                  don't build libffi, just use the cached files"
+	echo "                  from the last build"
 	exit 1
 }
 

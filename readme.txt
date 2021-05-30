@@ -26,15 +26,23 @@
     FreeBASIC gives you the FreeBASIC compiler program (fbc or fbc.exe),
     plus the tools and libraries used by it. fbc is a command line program
     that takes FreeBASIC source code files (*.bas) and compiles them into
-    executables.
+    executables.  In the combined standalone packages for windows, the main
+    executable is named fbc32.exe (for 32-bit) and fbc64.exe (for 64-bit)
 
     fbc is typically invoked by Integrated Development Environments (IDEs) or
     text editors, from a terminal or command prompt, or through build-systems
     such as makefiles. fbc itself is not a graphical code editor or IDE!
 
     Win32 (similar for Win64):
-      Download and extract latest FreeBASIC-x.xx.x-win32.zip or
-      download and extract latest FreeBASIC-x.xx.x-win64.zip.
+      Separate 32-bit and 64-bit standalone packages:
+        Download and extract latest:
+           - FreeBASIC-x.xx.x-win32.zip or FreeBASIC-x.xx.x-win32.7z for 32-bit
+           - FreeBASIC-x.xx.x-win64.zip or FreeBASIC-x.xx.x-win64.7z for 64-bit
+      Combined 32-bit and 64-bit standalone packages:
+        Download and extract latest:
+           - FreeBASIC-x.xx.x-gcc-winlibs-9.3.0.7z or
+           - FreeBASIC-x.xx.x-gcc-5.2.0.7z
+           - fbc32.exe and fbc64.exe are used instead of fbc.exe
 
       Now you can use fbc.exe from the installation directory to compile FB
       programs (*.bas files) into executables (*.exe files). Open a command
