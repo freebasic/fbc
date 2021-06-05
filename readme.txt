@@ -40,7 +40,7 @@
            - FreeBASIC-x.xx.x-win64.zip or FreeBASIC-x.xx.x-win64.7z for 64-bit
       Combined 32-bit and 64-bit standalone packages:
         Download and extract latest:
-           - FreeBASIC-x.xx.x-gcc-winlibs-9.3.0.7z or
+           - FreeBASIC-x.xx.x-winlibs-gcc-9.3.0.7z or
            - FreeBASIC-x.xx.x-gcc-5.2.0.7z
            - fbc32.exe and fbc64.exe are used instead of fbc.exe
 

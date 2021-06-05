@@ -71,8 +71,6 @@
 #       -winlibs-gcc-10.2.0 (winlibs mingwrt 8.0.0r8)
 #       -winlibs-gcc-10.3.0 (winlibs mingwrt 8.0.0r1)
 #       -equation-gcc-8.3.0 (Equation - experimental)
-# --use-libffi-cache"
-#   don't build libffi, just use the cached files, from the last build
 #
 # Requirements:
 #   - MSYS environment on Windows with: bash, wget/curl, zip, unzip, patch, make, findutils
@@ -87,12 +85,10 @@
 #   - Starting from scratch everytime => clean builds
 #   - Specifying the exact DJGPP/MinGW packages to use => reproducible builds
 #   - Only work locally, e.g. don't touch existing DJGPP/MinGW setups on the host
-#   - automatically pull in binaries that need to be distributed with the standalone packages
 # 
 # TODO:
 #   - win32: fbdoc CHM
 #   - package libffi
-#   - automate combining packages
 #
 set -e
 
@@ -115,8 +111,7 @@ usage() {
 	echo "   --remote name  specify the name to use for the alternate remote"
 	echo "   --recipe name  specify a build recipe to use"
 	echo "   --use-libffi-cache"
-	echo "                  don't build libffi, just use the cached files"
-	echo "                  from the last build"
+	echo "                  don't build libffi, just use the chaced files"
 	exit 1
 }
 
@@ -186,7 +181,14 @@ if [ ! -z "$recipe_name" ]; then
 else
 	# if no recipe given, set the default recipe for the main package
 	user_recipe=
-	named_recipe=-winlibs-gcc-9.3.0
+	case "$target" in
+	win32|win64)
+		named_recipe=-winlibs-gcc-9.3.0
+		;;
+	*)
+		named_recipe=
+		;;
+	esac
 fi
 
 echo "building FB-$target (uname = `uname`, uname -m = `uname -m`)"
