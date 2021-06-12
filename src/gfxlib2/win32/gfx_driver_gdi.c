@@ -306,9 +306,9 @@ static DWORD WINAPI gdi_thread( LPVOID param )
             }
         }
 
-		fb_hHandleMessages();
-
 		fb_hWin32Unlock();
+
+		fb_hHandleMessages();
 
 		Sleep(10);
 	}

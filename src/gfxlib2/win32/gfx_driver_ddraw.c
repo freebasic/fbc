@@ -473,9 +473,9 @@ static DWORD WINAPI directx_thread( LPVOID param )
             }
         }
 
-		fb_hHandleMessages();
-
 		fb_hWin32Unlock();
+
+		fb_hHandleMessages();
 	}
 
 	return 1;

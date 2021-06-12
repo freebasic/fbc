@@ -16,6 +16,7 @@
 #define BYTES_PER_PIXEL(d)		(((d) + 7) / 8)
 #define BPP_MASK(b)				((int)((1LL << ((b) << 3)) - 1))
 
+/* Note this macro also locks FB_GRAPHICS_LOCK too, not just the driver */
 #define DRIVER_LOCK()		do { fb_GfxLock(); } while (0)
 #define DRIVER_UNLOCK()		do { fb_GfxUnlock(1, 0); } while (0) /* start_line > end_line so dirty is not modified */
 #define SET_DIRTY(c,y,h)	{ if (__fb_gfx->framebuffer == (c)->line[0]) fb_hMemSet(__fb_gfx->dirty + (y), TRUE, (h)); }

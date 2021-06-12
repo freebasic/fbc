@@ -26,6 +26,9 @@
 #define MONITOR_DEFAULTTONEAREST 0x00000002
 #endif
 
+/* A timer ID that probably won't be in use = 'FBSM' */
+#define SIZEMOVE_TIMER_ID 0x6662736d
+
 WIN32DRIVER fb_win32;
 
 const GFXDRIVER *__fb_gfx_drivers_list[] = {
@@ -92,6 +95,23 @@ static void fb_hSetMouseClip( void )
 	ClipCursor(&rc);
 }
 
+static void NO_REALLY_JUST_DRIVER_LOCK()
+{
+	if (__fb_gfx->lock_count == 0)
+		__fb_gfx->driver->lock();
+
+	++__fb_gfx->lock_count;
+}
+
+static void NO_REALLY_JUST_DRIVER_UNLOCK()
+{
+	if (__fb_gfx->lock_count != 0) {
+		--__fb_gfx->lock_count;
+		if (__fb_gfx->lock_count == 0)
+			__fb_gfx->driver->unlock();
+	}
+}
+
 static void ToggleFullScreen( EVENT *e )
 {
 	if (has_focus) {
@@ -115,7 +135,9 @@ static void ToggleFullScreen( EVENT *e )
 		fb_win32.init();
 	}
 	fb_hRestorePalette();
+	NO_REALLY_JUST_DRIVER_LOCK();
 	fb_hMemSet(__fb_gfx->dirty, TRUE, fb_win32.h);
+	NO_REALLY_JUST_DRIVER_UNLOCK();
 	fb_win32.is_active = TRUE;
 	has_focus = FALSE;
 }
@@ -187,10 +209,11 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 						SetThreadPriority(handle, THREAD_PRIORITY_NORMAL );
 				}
 			}
-
+			NO_REALLY_JUST_DRIVER_LOCK();
 			fb_hMemSet(__fb_gfx->key, FALSE, 128);
-			mouse_buttons = 0;
 			fb_hMemSet(__fb_gfx->dirty, TRUE, fb_win32.h);
+			NO_REALLY_JUST_DRIVER_UNLOCK();
+			mouse_buttons = 0;
 			if ((!fb_win32.is_active) && (has_focus)) {
 				e.type = EVENT_MOUSE_EXIT;
 				fb_hPostEvent(&e);
@@ -455,12 +478,14 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 				// window update rect as dirty
 				 */
 				LONG dirtyStartLine, numLines;
-				int scanlineShift = __fb_gfx->scanline_size - 1;
+				int scanlineShift;
 
 				BeginPaint(fb_win32.wnd, &ps);
 				dirtyStartLine = ps.rcPaint.top;
 				numLines = ps.rcPaint.bottom - dirtyStartLine;
 
+				NO_REALLY_JUST_DRIVER_LOCK();
+				scanlineShift = __fb_gfx->scanline_size - 1;
 				DBG_ASSERT(scanlineShift == 0 || scanlineShift == 1);
 				dirtyStartLine >>= scanlineShift;
 				numLines = max(numLines >> scanlineShift, 1);
@@ -468,13 +493,16 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 				fb_hMemSet(__fb_gfx->dirty + dirtyStartLine, TRUE, numLines);
 
 				fb_win32.paint();
+				NO_REALLY_JUST_DRIVER_UNLOCK();
 				EndPaint(fb_win32.wnd, &ps);
 			}
 			break;
 		
 		case WM_DISPLAYCHANGE:
+			NO_REALLY_JUST_DRIVER_LOCK();
 			fb_win32.paint();
 			fb_hMemSet(__fb_gfx->dirty, TRUE, __fb_gfx->h);
+			NO_REALLY_JUST_DRIVER_UNLOCK();
 			break;
 		
 		case WM_MOVING:
@@ -492,6 +520,21 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			mmi->ptMaxTrackSize.x = fb_win32.fullw;
 			mmi->ptMaxTrackSize.y = fb_win32.fullh;
 			return 0;
+
+		case WM_ENTERSIZEMOVE:
+			SetTimer(hWnd, SIZEMOVE_TIMER_ID, 10, NULL);
+			break;
+
+		case WM_EXITSIZEMOVE:
+			KillTimer(hWnd, SIZEMOVE_TIMER_ID);
+			break;
+
+		case WM_TIMER:
+			if(wParam == SIZEMOVE_TIMER_ID) {
+				/* Cause a WM_PAINT */
+				RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT);
+			}
+			break;
 	}
 
 	if ((message == WM_MOUSEMOVE) || (message == WM_MOUSEENTER)) {

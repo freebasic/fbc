@@ -71,6 +71,7 @@ static void driver_unlock(void);
 static void driver_flip(void);
 static int *driver_fetch_modes(int depth, int *size);
 static void driver_poll_events(void);
+static void opengl_handle_keyboard(void);
 static int opengl_init(void);
 static void opengl_exit(void);
 
@@ -399,9 +400,10 @@ static DWORD WINAPI opengl_thread( LPVOID param )
 		fb_hGL_SetupProjection();
 		SwapBuffers(hdc);
 		fb_wgl.MakeCurrent(NULL, NULL);
-		driver_poll_events();
+		opengl_handle_keyboard();
 		/* FB_GRAPHICS_UNLOCK( ); */
 		fb_hWin32Unlock();
+		fb_hHandleMessages();
 		Sleep(10);
 	}
 
@@ -503,21 +505,25 @@ static void driver_flip(void)
 	SwapBuffers(hdc);
 }
 
+static void opengl_handle_keyboard(void)
+{
+	if( fb_win32.is_active ) {
+		int i;
+		unsigned char keystate[256];
+		GetKeyboardState(keystate);
+		for (i = 0; __fb_keytable[i][0]; i++) {
+            		if (__fb_keytable[i][2])
+                		__fb_gfx->key[__fb_keytable[i][0]] = ((keystate[__fb_keytable[i][1]] & 0x80) |
+                                                   (keystate[__fb_keytable[i][2]] & 0x80)) ? TRUE : FALSE;
+            		else
+                		__fb_gfx->key[__fb_keytable[i][0]] = (keystate[__fb_keytable[i][1]] & 0x80) ? TRUE : FALSE;
+        	}
+    	}
+}
+
 static void driver_poll_events(void)
 {
-    if( fb_win32.is_active ) {
-        int i;
-        unsigned char keystate[256];
-        GetKeyboardState(keystate);
-        for (i = 0; __fb_keytable[i][0]; i++) {
-            if (__fb_keytable[i][2])
-                __fb_gfx->key[__fb_keytable[i][0]] = ((keystate[__fb_keytable[i][1]] & 0x80) |
-                                                   (keystate[__fb_keytable[i][2]] & 0x80)) ? TRUE : FALSE;
-            else
-                __fb_gfx->key[__fb_keytable[i][0]] = (keystate[__fb_keytable[i][1]] & 0x80) ? TRUE : FALSE;
-        }
-    }
-
+	opengl_handle_keyboard();
 	fb_hHandleMessages();
 }
 
