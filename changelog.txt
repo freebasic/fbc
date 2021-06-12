@@ -6,6 +6,7 @@ Version 1.09.0
 [added]
 
 [fixed]
+- github #315: set parameters when calling SCREENCONTROL (was broken in fbc 1.08.0 due to new LONG/LONGINT SCREENCONTROL API's)
 
 
 Version 1.08.0
