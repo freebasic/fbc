@@ -1304,18 +1304,18 @@ end sub
 '':::::
 function hStr2Tok(byval txt as const zstring ptr, res() as string) as integer
 
-	var t = 0
-	var lc = 32UL
-	var s = cast(const ubyte ptr, txt)	
-	do while( *s <> 0 )
-		var c = cast(uinteger, *s)
+	dim as integer t = 0
+	dim as uinteger lc = CHAR_SPACE
+	dim as const ubyte ptr s = cast(const ubyte ptr, txt)	
+	do while( *s <> CHAR_NULL )
+		dim as uinteger c = cast(uinteger, *s)
 		
-		if( c = 7 ) then
-			c = 32
+		if( c = CHAR_BELL ) then
+			c = CHAR_SPACE
 		end if
 		
-		if( c = 32 ) then
-			if( lc <> 32 ) then
+		if( c = CHAR_SPACE ) then
+			if( lc <> CHAR_SPACE ) then
 				t += 1
 			end if
 		end if
@@ -1324,7 +1324,7 @@ function hStr2Tok(byval txt as const zstring ptr, res() as string) as integer
 		s += 1
 	loop
 
-	if( lc <> 32 ) then
+	if( lc <> CHAR_SPACE ) then
 		t += 1
 	end if
 	
@@ -1335,17 +1335,17 @@ function hStr2Tok(byval txt as const zstring ptr, res() as string) as integer
 	redim res(0 to t-1)
 	
 	t = 0
-	lc = 32
+	lc = CHAR_SPACE
 	s = cast(const ubyte ptr, txt)	
-	do while( *s <> 0 )
+	do while( *s <> CHAR_NULL )
 		var c = cast(uinteger, *s)
 		
-		if( c = 7 ) then
-			c = 32
+		if( c = CHAR_BELL ) then
+			c = CHAR_SPACE
 		end if
 		
-		if( c = 32 ) then
-			if( lc <> 32 ) then
+		if( c = CHAR_SPACE ) then
+			if( lc <> CHAR_SPACE ) then
 				t += 1
 			end if
 		else
@@ -1356,6 +1356,167 @@ function hStr2Tok(byval txt as const zstring ptr, res() as string) as integer
 		s += 1
 	loop
 	
-	function = iif(lc <> 32, t + 1, t)
+	function = iif(lc <> CHAR_SPACE, t + 1, t)
 	
+end function
+
+'':::::
+function hStr2args( byval txt as const zstring ptr, res() as string ) as integer
+
+	'' !!! TODO !! add the wstring version
+
+	dim as integer t = 0
+	dim as const ubyte ptr s = cast(const ubyte ptr, txt)
+	dim as integer prntcnt = 0
+	dim as uinteger c = CHAR_NULL
+	dim as integer max_t = 10
+
+	#define PeekChar()   cast( uinteger, s[0] )
+	#define SkipChar()   s += 1
+	#define ReadChar(c)  res(t-1) += chr(c) : s += 1
+		
+	redim res( 0 to max_t-1 ) as string
+
+	do
+		c = PeekChar()
+		if (c = CHAR_TAB) or (c = CHAR_SPACE) then
+			SkipChar()
+		else
+			exit do
+		end if
+	loop
+
+	'' no arguments?
+	if( c = CHAR_NULL ) then
+		return 0
+	end if
+
+	'' ok, there's at least one argument
+	t += 1
+
+	'' scan for arguments
+	do
+		c = PeekChar()
+		select case c
+		case CHAR_NULL
+			exit do
+
+		case CHAR_LPRNT
+			prntcnt += 1
+
+		case CHAR_RPRNT
+			if( prntcnt > 0 ) then
+				prntcnt -= 1
+			end if
+
+		case CHAR_COMMA
+			if( prntcnt = 0 ) then
+				t += 1
+				if( t > max_t ) then
+					max_t += 10
+					redim preserve res( 0 to max_t - 1 )
+				end if
+				SkipChar()
+				continue do
+			end if
+		
+		case CHAR_QUOTE, CHAR_EXCL, CHAR_DOLAR
+			dim as integer escaped = env.opt.escapestr
+			if( c <> CHAR_QUOTE ) then
+				escaped = ( c = CHAR_EXCL ) 
+
+				'' '!' | '$'
+				ReadChar(c)
+				c = PeekChar()
+				if( c <> CHAR_QUOTE ) then
+					continue do
+				end if
+
+			end if
+
+			'' '"'
+			ReadChar(c)
+
+			do
+				c = PeekChar()
+				if( c = CHAR_NULL ) then
+					exit do
+				end if
+
+				'' '"' | '\\' | any other string char
+				ReadChar(c)
+				if( c = CHAR_QUOTE ) then
+
+					c = PeekChar()
+					if( c <> CHAR_QUOTE ) then
+						exit do
+					end if
+
+					'' '"'
+					ReadChar(c)
+
+				elseif( c = CHAR_RSLASH ) then
+
+					c = PeekChar()
+					select case c
+					case CHAR_QUOTE, CHAR_RSLASH
+						'' '"' | '\\'
+						ReadChar(c)
+					end select
+
+				end if
+			loop
+			continue do
+
+		case CHAR_SLASH
+
+			'' '/'
+			ReadChar(c)
+
+			c = PeekChar()
+			if( c <> CHAR_APOST ) then
+				continue do
+			end if
+
+			'' '''
+			ReadChar(c)
+
+			do
+				c = PeekChar()
+				if( c = CHAR_NULL ) then
+					exit do
+				end if
+
+				'' ''' | any other comment char
+				ReadChar(c)
+
+				if( c = CHAR_APOST ) then
+					c = PeekChar()
+					if( c = CHAR_SLASH ) then
+						'' '/'
+						ReadChar(c)
+						exit do
+					end if
+				end if
+
+			loop
+			continue do
+
+		case CHAR_APOST
+			while( c <> CHAR_NULL )
+				'' ''' or any comment char to end of line
+				ReadChar(c)
+				c = PeekChar()
+			wend
+			exit do
+
+		end select
+	
+		'' any other char not handled above
+		ReadChar(c)
+
+	loop
+
+	function = t
+
 end function

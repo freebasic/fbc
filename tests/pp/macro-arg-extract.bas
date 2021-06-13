@@ -71,5 +71,101 @@ SUITE( fbc_tests.pp.macro_arg_extract )
 		CU_ASSERT_EQUAL( FLOAT_VAL, __FB_ARG_EXTRACT__(2, WHOLE_LIST) )
 	END_TEST
 
+	#macro nested1( n, arg0, arg1, arg3 )
+		__FB_UNQUOTE__( "#define n1 " ) __FB_QUOTE__( arg1 )
+	#endmacro
+
+	#macro nestedX( n, args... )
+		__FB_UNQUOTE__( "#define nx " ) __FB_QUOTE__( __FB_ARG_EXTRACT__( n, args ) )
+	#endmacro
+
+	#macro nestedreset
+		__FB_UNQUOTE__( "#undef n1" )
+		__FB_UNQUOTE__( "#undef nx" ) 
+	#endmacro
+
+	TEST( nested_comma_direct )
+
+		scope
+			dim a(0,0) as integer
+			nested1( 1, 1, a(0,0), 3 )
+			nestedX( 1, 1, a(0,0), 3 )
+			CU_ASSERT_EQUAL( n1, nx )
+			nestedreset
+		end scope
+
+		nested1( 1, 1, /'2,3'/, 3 )
+		nestedX( 1, 1, /'2,3'/, 3 )
+		CU_ASSERT_EQUAL( n1, __FB_QUOTE__(  ) )
+		CU_ASSERT_EQUAL( n1, __FB_QUOTE__(  ) )
+		nestedreset
+
+		nested1( 1, 1, "2,3", 3 )
+		nestedX( 1, 1, "2,3", 3 )
+		CU_ASSERT_EQUAL( n1, __FB_QUOTE__( "2,3" ) )
+		CU_ASSERT_EQUAL( nx, __FB_QUOTE__( "2,3" ) )
+		nestedreset
+
+		nested1( 1, 1, "2,(3", 3 )
+		nestedX( 1, 1, "2,(3", 3 )
+		CU_ASSERT_EQUAL( n1, __FB_QUOTE__( "2,(3" ) )
+		CU_ASSERT_EQUAL( nx, __FB_QUOTE__( "2,(3" ) )
+		nestedreset
+
+		nested1( 1, 1, "2,""3", 3 )
+		nestedX( 1, 1, "2,""3", 3 )
+		CU_ASSERT_EQUAL( n1, __FB_QUOTE__( "2,""3" ) )
+		CU_ASSERT_EQUAL( nx, __FB_QUOTE__( "2,""3" ) )
+		nestedreset
+
+		nested1( 1, 1, $"2,3", 3 )
+		nestedX( 1, 1, $"2,3", 3 )
+		CU_ASSERT_EQUAL( n1, __FB_QUOTE__( $"2,3" ) )
+		CU_ASSERT_EQUAL( nx, __FB_QUOTE__( $"2,3" ) )
+		nestedreset
+
+		nested1( 1, 1, !"2,3", 3 )
+		nestedX( 1, 1, !"2,3", 3 )
+		CU_ASSERT_EQUAL( n1, __FB_QUOTE__( !"2,3" ) )
+		CU_ASSERT_EQUAL( nx, __FB_QUOTE__( !"2,3" ) )
+		nestedreset
+
+		nested1( 1, 1, !"\\\"""2,3", 3 )
+		nestedX( 1, 1, !"\\\"""2,3", 3 )
+		CU_ASSERT_EQUAL( n1, __FB_QUOTE__( !"\\\"""2,3" ) )
+		CU_ASSERT_EQUAL( nx, __FB_QUOTE__( !"\\\"""2,3" ) )
+		nestedreset
+
+	END_TEST
+
+	#macro nested_test( arg )
+		nested1( 1, 1, arg, 3 )
+		nestedX( 1, 1, arg, 3 )
+		CU_ASSERT_EQUAL( n1, __FB_QUOTE__( arg ) )
+		CU_ASSERT_EQUAL( nx, __FB_QUOTE__( arg ) )
+		nestedreset
+
+	#endmacro
+
+	TEST( nested_comma_indirect )
+
+		nested_test( /' comment '/ )
+		nested_test( () )
+		nested_test( a(1,2) )
+		nested_test( "2,3" )
+		nested_test( "2,(3" )
+		nested_test( "2,""3" )
+		nested_test( "/' string '/" )
+		nested_test( $"2,3" )
+		nested_test( !"2,3" )
+		nested_test( $"\\""""2,3" )
+		nested_test( !"\\\"""2,3" )
+
+	END_TEST
+
+	TEST( string_args )
+
+	END_TEST
+
 END_SUITE
  

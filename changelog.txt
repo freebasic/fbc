@@ -2,14 +2,15 @@ Version 1.08.1
 
 [changed]
 - github #314: fbc: pass '-T scriptfile' option to linker LD and add 'INSERT AFTER .data;' to fbextra.x linker script to quiet warning on LD version 2.36 and higher
-- gas64 : .a64 replaced by .asm to be coherent with documentation
+- gas64: .a64 replaced by .asm to be coherent with documentation
 
 [added]
 
 [fixed]
 - github #315: set parameters when calling SCREENCONTROL (was broken in fbc 1.08.0 due to new LONG/LONGINT SCREENCONTROL API's)
 - github #318: duplicate definition for deleting destructor; the deleting destructor was being emitted even though the class was declarations only on the fbc side
-- guthub #320: oGLfbGFX: scaling set by SCREENCONTROL not used when initializing opengl unix driver
+- github #320: oGLfbGFX: scaling set by SCREENCONTROL not used when initializing opengl unix driver
+- github #321: __FB_ARG_EXTRACT__ incorrectly recognizes commas nested in other forms with variadic macros - internally use new hlp-str.bas:hStr2Args() procedure
 
 
 Version 1.08.0
