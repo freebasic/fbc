@@ -1482,9 +1482,7 @@ function cProcHeader _
 				''   except for the destructor type
 				dim dtor0 as FBSYMBOL ptr = symbPreAddProc( NULL )
 				symbAddProcInstanceParam( parent, dtor0 )
-				pattrib and= not FB_PROCATTRIB_DESTRUCTOR1
-				pattrib or= FB_PROCATTRIB_DESTRUCTOR0
-				dtor0 = symbAddCtor( dtor0, NULL, attrib, pattrib, mode )
+				dtor0 = symbAddCtor( dtor0, NULL, attrib, ((pattrib and not FB_PROCATTRIB_DESTRUCTOR1) or FB_PROCATTRIB_DESTRUCTOR0), mode )
 			end if
 		end if
 
@@ -1848,7 +1846,7 @@ sub cProcStmtBegin( byval attrib as FB_SYMBATTRIB, byval pattrib as FB_PROCATTRI
 	stk->proc.endlabel = astGetProcExitlabel( ast.proc.curr )
 end sub
 
-'' ProcStmtEnd  =  END (SUB | FUNCTION) .
+'' ProcStmtEnd  =  END (SUB | FUNCTION | OPERATOR | CONSTRUCTOR | DESTRUCTOR | PROPERTY) .
 sub cProcStmtEnd( )
 	dim as FB_CMPSTMTSTK ptr stk = any
 	dim as FBSYMBOL ptr proc_res = any
@@ -1894,7 +1892,7 @@ sub cProcStmtEnd( )
 		end if
 	end if
 
-    '' always finish
+	'' always finish
 	astProcEnd( FALSE )
 
 	'' Close namespace again if cProcHeader() opened it

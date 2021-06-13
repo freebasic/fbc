@@ -628,6 +628,7 @@ sub symbUdtDeclareDefaultMembers _
 			'' Complete dtor
 			default.dtor1 = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_DESTRUCTOR1 )
 
+			'' c++? we may need other dtors too...
 			if( symbGetMangling( udt ) = FB_MANGLING_CPP ) then
 				'' Deleting dtor
 				default.dtor0 = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_DESTRUCTOR0 )
@@ -635,14 +636,9 @@ sub symbUdtDeclareDefaultMembers _
 
 			'' Don't allow the implicit dtor to override a FINAL dtor from the base
 			symbProcCheckOverridden( default.dtor1, TRUE )
-		end if
-	end if
 
-	if( symbGetMangling( udt ) = FB_MANGLING_CPP ) then
-		if( default.dtor0 = NULL ) then
-			'' deleting dtor will be implicitly declared if the complete dtor was explicitly declared
-			default.dtor0 = symbGetCompDtor0( udt )
 		end if
+
 	end if
 
 end sub
@@ -810,7 +806,7 @@ sub symbSetCompDtor1( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
 		assert( symbIsDestructor1( proc ) )
 		symbUdtAllocExt( sym )
 		if( sym->udt.ext->dtor1 = NULL ) then
-			'' Add dtor
+			'' Add deleting dtor (D1)
 			sym->udt.ext->dtor1 = proc
 		end if
 	end if
@@ -821,7 +817,7 @@ sub symbSetCompDtor0( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
 		assert( symbIsDestructor0( proc ) )
 		symbUdtAllocExt( sym )
 		if( sym->udt.ext->dtor0 = NULL ) then
-			'' Add dtor
+			'' Add complete dtor (D0)
 			sym->udt.ext->dtor0 = proc
 		end if
 	end if
@@ -1076,11 +1072,11 @@ private sub hInsertImported _
 		if( ns <> NULL ) then
 			symbGetCompExt( ns )->cnt += 1
 			if( symbGetCompExt( ns )->cnt = 1 ) then
-	  			'' add to import hash tb list
-	  			symbHashListInsertNamespace( ns, _
-	  										 symbGetCompSymbTb( ns ).head )
-	  		end if
-	  	end if
+				'' add to import hash tb list
+				symbHashListInsertNamespace( ns, _
+											 symbGetCompSymbTb( ns ).head )
+			end if
+		end if
 
 		imp_ = symbGetImportNext( imp_ )
 	loop

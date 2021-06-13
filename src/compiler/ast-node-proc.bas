@@ -673,14 +673,14 @@ function astProcEnd( byval callrtexit as integer ) as integer
 	res = (symbCheckLabels(symbGetProcSymbTbHead(parser.currproc)) = 0)
 
 	if( res ) then
-		'' Complete Destructor?
+		'' Complete Destructor? (D1) 
 		if( symbIsDestructor1( sym ) and enable_implicit_code ) then
 			'' Call destructors, behind the exit label, so they'll
 			'' always be called, even with early returns.
 			hCallDtors( sym )
 		end if
 
-		'' Deleting Destructor?
+		'' Deleting Destructor? (D0)
 		if( symbIsDestructor0( sym ) and enable_implicit_code ) then
 			hCallDeleteDtor( sym )
 		end if

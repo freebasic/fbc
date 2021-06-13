@@ -932,6 +932,10 @@ add_proc:
 				'' There can always only be one complete dtor, so there is no
 				'' need to do a lookup and/or overload checks.
 				overridden = symbGetCompDtor1( parent->udt.base->subtype )
+			elseif( symbIsDestructor0( proc ) ) then
+				'' There can always only be deleting dtor, so there is no
+				'' need to do a lookup and/or overload checks.
+				overridden = symbGetCompDtor0( parent->udt.base->subtype )
 			elseif( symbIsOperator( proc ) ) then
 				'' Get the corresponding operator from the base
 				'' (actually a chain of overloads for that particular operator)

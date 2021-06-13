@@ -56,9 +56,11 @@ extern "c++"
 		declare constructor thiscall ( byref rhs as const UDT )
 		declare constructor thiscall ( byref rhs as const long )
 		declare destructor thiscall ()
+		declare sub method thiscall ( byref rhs as const long )
 		declare operator let thiscall ( byref rhs as const UDT )
-		/' declare operator thiscall +( byref rhs as const long ) as UDT '/
-		/' declare operator thiscall -( byref rhs as const long ) as UDT '/
+		'' !!! TODO !!! member operators
+		'' !!! TODO !!! declare operator + thiscall ( byref rhs as const long ) as UDT
+		'' !!! TODO !!! declare operator - thiscall ( byref rhs as const long ) as UDT
 
 	end type
 
@@ -123,6 +125,17 @@ scope
 	assert( b.value = 2 )
 end scope
 
+DLOG( sub UDT.method( byref rhs as const long ) )
+scope
+	dim a1 as long = 1, a2 as long = 2
+	resetChecks()
+	dim b as UDT = a1
+	checkResults( @b, @a1, -1, 1, 1, "UDT::UDT( int const& rhs )" )
+	b.method( a2 )
+	checkResults( @b, @a2,  1, 2, 2, "void UDT::method( int const& rhs )" )
+	assert( b.value = a2 )
+end scope
+
 DLOG( operator UDT.let( byref rhs as const UDT ) )
 scope
 	dim a as UDT = 2
@@ -137,8 +150,8 @@ end scope
 '' disable results for ctor/dtor/copy-ctor/let
 setInitial( 0 )
 
-/' 
-'' !!! TODO !!!
+/'
+!!! TODO !!!
 DLOG( operator UDT.+( byref rhs as const long ) )
 scope
 	dim as UDT a = 3
@@ -149,7 +162,6 @@ scope
 	checkResults( @a, @b, 3, 11, 14, "UDT::operator+( int rhs )" )
 end scope
 
-'' !!! TODO !!!
 DLOG( operator UDT.-( byref rhs as const long ) as UDT )
 scope
 	dim as UDT a = 17
