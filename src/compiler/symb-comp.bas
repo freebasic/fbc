@@ -976,19 +976,19 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 /'private sub hDumpHashTb
-    dim as FBHASHTB ptr hashtb = symb.hashlist.tail
-    do
-        dim as zstring ptr id = symbGetName( hashtb->owner )
-        hashtb = hashtb->prev
+	dim as FBHASHTB ptr hashtb = symb.hashlist.tail
+	do
+		dim as zstring ptr id = symbGetName( hashtb->owner )
+		hashtb = hashtb->prev
 
-        print *iif( id, id, @"main" );
-        if( hashtb = NULL ) then
-        	exit do
-        end if
-    	print ,
-    loop
+		print *iif( id, id, @"main" );
+		if( hashtb = NULL ) then
+			exit do
+		end if
+		print ,
+	loop
 
-    print
+	print
 end sub'/
 
 '':::::
@@ -1097,13 +1097,13 @@ private sub hRemoveImported _
 	do while( imp_ <> NULL )
 		dim as FBSYMBOL ptr ns = symbGetImportNamespc( imp_ )
 
-        if( ns <> NULL ) then
-        	symbGetCompExt( ns )->cnt -= 1
+		if( ns <> NULL ) then
+			symbGetCompExt( ns )->cnt -= 1
 			if( symbGetCompExt( ns )->cnt = 0 ) then
-	    		'' remove from import hash tb list
-	    		symbHashListRemoveNamespace( ns )
-	    	end if
-	    end if
+				'' remove from import hash tb list
+				symbHashListRemoveNamespace( ns )
+			end if
+		end if
 
 		imp_ = symbGetImportNext( imp_ )
 	loop
@@ -1131,8 +1131,8 @@ sub symbNestBegin _
 		symbtb = @symbGetProcSymbTb( sym )
 		hashtb = NULL
 	else
-        symbtb = @symbGetCompSymbTb( sym )
-        hashtb = @symbGetCompHashTb( sym )
+		symbtb = @symbGetCompSymbTb( sym )
+		hashtb = @symbGetCompHashTb( sym )
 	end if
 
 	symbSetCurrentSymTb( symbtb )
@@ -1183,7 +1183,7 @@ sub symbNestEnd _
 	if( symbGetClass( sym ) = FB_SYMBCLASS_PROC ) then
 		hashtb = NULL
 	else
-        hashtb = @symbGetCompHashTb( sym )
+		hashtb = @symbGetCompHashTb( sym )
 	end if
 
 	symbSetCurrentSymTb( n->symtb )
@@ -1212,7 +1212,7 @@ sub symbNestEnd _
 		symbSetCurrentNamespc( n->ns )
 	end if
 
-    stackPop( @symb.neststk )
+	stackPop( @symb.neststk )
 
 end sub
 
@@ -1330,15 +1330,15 @@ sub symbCompDelImportList _
 	dim as FBSYMBOL ptr exp_ = symbGetCompExportHead( sym )
 	do while( exp_ <> NULL )
 
-	    symbCompDelFromImportList( exp_ )
+		symbCompDelFromImportList( exp_ )
 
-	    dim as FBSYMBOL ptr nxt = symbGetExportNext( exp_ )
-	    symbCompDelFromExportList( exp_ )
+		dim as FBSYMBOL ptr nxt = symbGetExportNext( exp_ )
+		symbCompDelFromExportList( exp_ )
 
-	    '' not a type, that's to tell NamespaceRemove() to not remove the same ns again
-	    symbGetImportNamespc( exp_ ) = NULL
+		'' not a type, that's to tell NamespaceRemove() to not remove the same ns again
+		symbGetImportNamespc( exp_ ) = NULL
 
-	    exp_ = nxt
+		exp_ = nxt
 	loop
 
 end sub

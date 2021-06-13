@@ -128,8 +128,8 @@ private sub hCheckPrototype _
 		byval mode as integer _
 	)
 
-    dim as FBSYMBOL ptr param = any, proto_param = any
-    dim as integer params = any, proto_params = any, i = any
+	dim as FBSYMBOL ptr param = any, proto_param = any
+	dim as integer params = any, proto_params = any, i = any
 
 	'' Check ALIAS id
 	if( (palias <> NULL) and ((proto->stats and FB_SYMBSTATS_HASALIAS) <> 0) ) then
@@ -179,21 +179,21 @@ private sub hCheckPrototype _
 	'' the common parameters, for better error recovery.
 	i = 1
 	while( (i <= proto_params) and (i <= params) )
-        dim as integer dtype = symbGetFullType( proto_param )
+		dim as integer dtype = symbGetFullType( proto_param )
 
-    	'' convert any AS ANY arg to the final one
-    	if( typeGet( dtype ) = FB_DATATYPE_VOID ) then
-    		proto_param->typ = param->typ
-    		proto_param->subtype = param->subtype
+		'' convert any AS ANY arg to the final one
+		if( typeGet( dtype ) = FB_DATATYPE_VOID ) then
+			proto_param->typ = param->typ
+			proto_param->subtype = param->subtype
 
-    	'' check if types don't conflit
-    	else
-    		if( param->typ <> dtype ) then
-                hParamError( proc, i )
-            elseif( param->subtype <> symbGetSubtype( proto_param ) ) then
-                hParamError( proc, i )
-    		end if
-    	end if
+		'' check if types don't conflit
+		else
+			if( param->typ <> dtype ) then
+				hParamError( proc, i )
+			elseif( param->subtype <> symbGetSubtype( proto_param ) ) then
+				hParamError( proc, i )
+			end if
+		end if
 
 		'' and mode
 		if( param->param.mode <> proto_param->param.mode ) then
@@ -208,19 +208,19 @@ private sub hCheckPrototype _
 			end if
 		end if
 
-    	'' check names and change to the new one if needed
-    	if( param->param.mode <> FB_PARAMMODE_VARARG ) then
-    		symbSetName( proto_param, symbGetName( param ) )
+		'' check names and change to the new one if needed
+		if( param->param.mode <> FB_PARAMMODE_VARARG ) then
+			symbSetName( proto_param, symbGetName( param ) )
 
-    		'' as both have the same type, re-set the suffix, because for example
-    		'' "a as integer" on the prototype and "a%" or just "a" on the proc
-    		'' declaration when in a defint context is allowed in QB
-    		if( symbIsSuffixed( param ) ) then
-    			symbGetAttrib( proto_param ) or= FB_SYMBATTRIB_SUFFIXED
-    		else
-    		    symbGetAttrib( proto_param ) and = not FB_SYMBATTRIB_SUFFIXED
-    		end if
-    	end if
+			'' as both have the same type, re-set the suffix, because for example
+			'' "a as integer" on the prototype and "a%" or just "a" on the proc
+			'' declaration when in a defint context is allowed in QB
+			if( symbIsSuffixed( param ) ) then
+				symbGetAttrib( proto_param ) or= FB_SYMBATTRIB_SUFFIXED
+			else
+				symbGetAttrib( proto_param ) and = not FB_SYMBATTRIB_SUFFIXED
+			end if
+		end if
 
 		'' Warn about mismatching param initializers?
 		'' If both params are optional, compare the two initializers
@@ -230,8 +230,8 @@ private sub hCheckPrototype _
 			end if
 		end if
 
-    	proto_param = proto_param->next
-    	param = param->next
+		proto_param = proto_param->next
+		param = param->next
 		i += 1
 	wend
 
@@ -504,10 +504,10 @@ function cProcReturnMethod( byval dtype as FB_DATATYPE ) as FB_PROC_RETURN_METHO
 end function
 
 function cProcCallingConv( byval default as FB_FUNCMODE ) as FB_FUNCMODE
-    '' Use the default FBCALL?
-    if( default = FB_FUNCMODE_FBCALL ) then
-        default = env.target.fbcall
-    end if
+	'' Use the default FBCALL?
+	if( default = FB_FUNCMODE_FBCALL ) then
+		default = env.target.fbcall
+	end if
 
 	'' (CDECL|STDCALL|PASCAL|THISCALL)?
 	select case as const lexGetToken( )
@@ -610,7 +610,7 @@ private function hCheckOpOvlParams _
 	) as integer
 
 	dim as integer found_mismatch = any
-    dim as integer is_method = symbIsMethod( proc )
+	dim as integer is_method = symbIsMethod( proc )
 
 #macro hCheckParam( proc, param, num )
 	'' vararg?
@@ -1751,8 +1751,8 @@ end sub
 ''                   (SUB|FUNCTION|CONSTRUCTOR|DESTRUCTOR|OPERATOR) ProcHeader .
 sub cProcStmtBegin( byval attrib as FB_SYMBATTRIB, byval pattrib as FB_PROCATTRIB )
 	dim as integer tkn = any, is_nested = any
-    dim as FBSYMBOL ptr proc = any
-    dim as FB_CMPSTMTSTK ptr stk = any
+	dim as FBSYMBOL ptr proc = any
+	dim as FB_CMPSTMTSTK ptr stk = any
 
 	if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_PRIVATE)) = 0 ) then
 		if( env.opt.procpublic ) then
