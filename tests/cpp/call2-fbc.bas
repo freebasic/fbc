@@ -128,11 +128,8 @@ end extern
 	scope
 	#if count = 1
 		dim a as UDT, r as UDT
-print "A"
 		r = n( a )
-print "B"
 		assert( @a = getPtr1() )
-print "C"
 	#elseif count = 2
 		dim a as UDT, b as UDT, r as UDT
 		r = n( a, b )

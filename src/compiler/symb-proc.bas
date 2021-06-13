@@ -932,6 +932,10 @@ add_proc:
 				'' There can always only be one complete dtor, so there is no
 				'' need to do a lookup and/or overload checks.
 				overridden = symbGetCompDtor1( parent->udt.base->subtype )
+			elseif( symbIsDestructor0( proc ) ) then
+				'' There can always only be deleting dtor, so there is no
+				'' need to do a lookup and/or overload checks.
+				overridden = symbGetCompDtor0( parent->udt.base->subtype )
 			elseif( symbIsOperator( proc ) ) then
 				'' Get the corresponding operator from the base
 				'' (actually a chain of overloads for that particular operator)
@@ -1213,7 +1217,7 @@ function symbAddProcPtrFromFunction _
 
 	'' params
 	var param = symbGetProcHeadParam( base_proc )
-    do while( param <> NULL )
+	do while( param <> NULL )
 		var p = symbAddProcParam( proc, NULL, param->typ, param->subtype, _
 				param->param.bydescdimensions, param->param.mode, param->attrib, param->pattrib )
 
@@ -1224,7 +1228,7 @@ function symbAddProcPtrFromFunction _
 		symbMakeParamOptional( proc, p, param->param.optexpr )
 
 		param = param->next
-    loop
+	loop
 
 	'' attribs to copy from the proc to the procptr
 	'' (anything needed for procptr call checking)
@@ -1242,7 +1246,7 @@ function symbAddProcPtrFromFunction _
 end function
 
 function symbPreAddProc( byval symbol as zstring ptr ) as FBSYMBOL ptr
-    dim as FBSYMBOL ptr proc = any
+	dim as FBSYMBOL ptr proc = any
 
 	proc = listNewNode( @symb.symlist )
 
@@ -1273,9 +1277,9 @@ function symbPreAddProc( byval symbol as zstring ptr ) as FBSYMBOL ptr
 	proc->proc.ovl.next = NULL
 	proc->proc.ext = NULL
 
-    '' to allow getNamespace() and GetParent() to work
-    proc->symtb = @symbGetCompSymbTb( symbGetCurrentNamespc( ) )
-    proc->hash.tb = @symbGetCompHashTb( symbGetCurrentNamespc( ) )
+	'' to allow getNamespace() and GetParent() to work
+	proc->symtb = @symbGetCompSymbTb( symbGetCurrentNamespc( ) )
+	proc->hash.tb = @symbGetCompHashTb( symbGetCurrentNamespc( ) )
 	proc->hash.item = NULL
 	proc->hash.index = 0
 	proc->hash.prev = NULL
@@ -1331,8 +1335,8 @@ sub symbGetRealParamDtype overload _
 end sub
 
 function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
-    dim as FBARRAYDIM dTB(0) = any
-    dim as FBSYMBOL ptr s = any
+	dim as FBARRAYDIM dTB(0) = any
+	dim as FBSYMBOL ptr s = any
 	dim as integer attrib = any, dtype = any, dimensions = any
 
 	function = NULL
@@ -1372,12 +1376,12 @@ function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
 	assert( s->var_.array.desctype = NULL )
 	s->var_.array.desctype = param->param.bydescrealsubtype
 
-    '' declare it or arrays passed by descriptor will be initialized when REDIM'd
-    symbSetIsDeclared( s )
+	'' declare it or arrays passed by descriptor will be initialized when REDIM'd
+	symbSetIsDeclared( s )
 
-    if( symbGetDontInit( param ) ) then
-    	symbSetDontInit( s )
-    end if
+	if( symbGetDontInit( param ) ) then
+		symbSetDontInit( s )
+	end if
 
 	if( param->stats and FB_SYMBSTATS_ARGV ) then
 		s->stats or= FB_SYMBSTATS_ARGV
@@ -1387,8 +1391,8 @@ function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
 end function
 
 function symbAddVarForProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
-    dim as FBARRAYDIM dTB(0) = any
-    dim as FBSYMBOL ptr s = any
+	dim as FBARRAYDIM dTB(0) = any
+	dim as FBSYMBOL ptr s = any
 
 	if( symbProcReturnsOnStack( proc ) = FALSE ) then
 		return NULL
@@ -1682,7 +1686,7 @@ private function hCalcTypesDiff _
 
 	function = FB_OVLPROC_NO_MATCH
 
-    '' don't take the const qualifier into account
+	'' don't take the const qualifier into account
 
 	param_dtype = typeGetDtAndPtrOnly( param_dtype_in )
 	arg_dtype = typeGetDtAndPtrOnly( arg_dtype_in )
@@ -1893,7 +1897,7 @@ private function hCheckOvlParam _
 		else
 			return FB_OVLPROC_NO_MATCH
 		end if
-    end if
+	end if
 
 	param_dtype = symbGetFullType( param )
 	param_subtype = symbGetSubType( param )
@@ -2014,25 +2018,25 @@ private function hCheckOvlParam _
 	select case param_dtype
 	'' UDT? try to find a ctor
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-        hCheckCtorOvl( ctor_rec_cnt, param_subtype, arg_expr, arg_mode )
+		hCheckCtorOvl( ctor_rec_cnt, param_subtype, arg_expr, arg_mode )
 
-        '' and at last, try implicit casting..
-        hCheckCastOvlEx( cast_rec_cnt, param_dtype, param_subtype, arg_expr )
+		'' and at last, try implicit casting..
+		hCheckCastOvlEx( cast_rec_cnt, param_dtype, param_subtype, arg_expr )
 		return FB_OVLPROC_NO_MATCH
 
 	'' enum param? refuse any other argument type, even integers,
 	'' or operator overloading wouldn't work (as in C++)
-    case FB_DATATYPE_ENUM
-       	return FB_OVLPROC_NO_MATCH
+	case FB_DATATYPE_ENUM
+		return FB_OVLPROC_NO_MATCH
 
-    case else
+	case else
 		select case arg_dtype
 		'' UDT arg? try implicit casting..
 		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 			hCheckCastOvlEx( cast_rec_cnt, symbGetFullType( param ), param_subtype, arg_expr )
 			return FB_OVLPROC_NO_MATCH
 		end select
-    end select
+	end select
 
 	'' last resource, calc the differences
 	function = hCalcTypesDiff( symbGetFullType( param ), _
@@ -2612,11 +2616,11 @@ sub symbDelPrototype( byval s as FBSYMBOL ptr )
 
 	symbProcFreeExt( s )
 
-    symbFreeSymbol( s )
+	symbFreeSymbol( s )
 
-    '' note: can't delete the next overloaded procs in the list here
-    '' because global operators can be declared inside namespaces,
-    '' but they will be linked together
+	'' note: can't delete the next overloaded procs in the list here
+	'' because global operators can be declared inside namespaces,
+	'' but they will be linked together
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -2630,24 +2634,24 @@ private function hAddToGlobCtorList _
 		byval proc as FBSYMBOL ptr _
 	) as FB_GLOBCTORLIST_ITEM ptr
 
-    dim as FB_GLOBCTORLIST_ITEM ptr n = any
+	dim as FB_GLOBCTORLIST_ITEM ptr n = any
 
-    n = listNewNode( @list->list )
+	n = listNewNode( @list->list )
 
-    '' add to list
-    if( list->tail <> NULL ) then
-    	list->tail->next = n
-    else
-    	list->head = n
-    end if
+	'' add to list
+	if( list->tail <> NULL ) then
+		list->tail->next = n
+	else
+		list->head = n
+	end if
 
-    n->next = NULL
-    list->tail = n
+	n->next = NULL
+	list->tail = n
 
-    ''
-    n->sym = proc
+	''
+	n->sym = proc
 
-    function = n
+	function = n
 
 end function
 
@@ -3096,14 +3100,14 @@ function symbGetDefaultParamMode _
 	) as integer
 
 	select case as const( typeGetDtAndPtrOnly( dtype ) )
-    case FB_DATATYPE_FWDREF, _
-         FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, _
+	case FB_DATATYPE_FWDREF, _
+	     FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, _
 	     FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, _
-         FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-         return FB_PARAMMODE_BYREF
-    case else
-         return FB_PARAMMODE_BYVAL
-    end select
+	     FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		return FB_PARAMMODE_BYREF
+	case else
+		return FB_PARAMMODE_BYVAL
+	end select
 
 end function
 

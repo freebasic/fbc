@@ -2504,9 +2504,9 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 
 #define symbIsConstructor(s) ((s->pattrib and FB_PROCATTRIB_CONSTRUCTOR) <> 0)
 
-#define symbIsDestructor0(s) ((s->pattrib and FB_PROCATTRIB_DESTRUCTOR0) <> 0)
-
 #define symbIsDestructor1(s) ((s->pattrib and FB_PROCATTRIB_DESTRUCTOR1) <> 0)
+
+#define symbIsDestructor0(s) ((s->pattrib and FB_PROCATTRIB_DESTRUCTOR0) <> 0)
 
 #define symbIsOperator(s) ((s->pattrib and FB_PROCATTRIB_OPERATOR) <> 0)
 

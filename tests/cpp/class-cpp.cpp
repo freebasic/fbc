@@ -69,7 +69,8 @@ class UDT
 	UDT();
 	UDT( UDT const& rhs );
 	UDT( int const& rhs );
-	~UDT();	
+	~UDT();
+	void method( int const& rhs );	
 
 	// assignment
 	UDT& operator=( UDT const& rhs );
@@ -138,6 +139,20 @@ UDT::~UDT()
 		val2 = -1;
 		val3 = -1;
 	}
+}
+
+// sub UDT.method( byref rhs as const long )
+void UDT::method( int const& rhs )
+{
+	if( initial ) {
+		ptr1 = this;
+		ptr2 = &rhs;
+		setMsg( "void UDT::method( int const& rhs )" );
+		val1 = value;
+		val2 = rhs;
+		val3 = rhs;
+	}
+	value = rhs;
 }
 
 // operator UDT.let( byref rhs as const UDT )
