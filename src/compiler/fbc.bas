@@ -2678,9 +2678,6 @@ private function hGetAsmName _
 	else
 		ext = @".o"
 	end if
-	if( fbGetOption( FB_COMPOPT_BACKEND )= FB_BACKEND_GAS64 ) then
-		ext = @".a64"
-	end if
 	if( stage = 1 ) then
 		select case( fbGetOption( FB_COMPOPT_BACKEND ) )
 		case FB_BACKEND_GCC
