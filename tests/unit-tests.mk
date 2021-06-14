@@ -142,7 +142,7 @@ all : make_fbcunit $(UNIT_TESTS_OBJ_LST) build_tests run_tests
 make_fbcunit : $(FBCU_BIN)
 
 $(FBCU_BIN) :
-	cd $(FBCU_DIR) && make FPU=$(FPU) ARCH=$(ARCH) TARGET=$(TARGET)
+	cd $(FBCU_DIR) && $(MAKE) FPU=$(FPU) ARCH=$(ARCH) TARGET=$(TARGET)
 
 # ------------------------------------------------------------------------
 # Auto-generate the file UNIT_TESTS_INC - needed by this makefile
@@ -199,7 +199,7 @@ clean_tests :
 
 .PHONY: clean_fbcu
 clean_fbcu :
-	cd $(FBCU_DIR) && make clean
+	cd $(FBCU_DIR) && $(MAKE) clean
 
 .PHONY: clean_include
 clean_include :
