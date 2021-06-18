@@ -8,6 +8,7 @@ Version 1.08.1
 [fixed]
 - github #315: set parameters when calling SCREENCONTROL (was broken in fbc 1.08.0 due to new LONG/LONGINT SCREENCONTROL API's)
 - github #318: duplicate definition for deleting destructor; the deleting destructor was being emitted even though the class was declarations only on the fbc side
+- guthub #320: oGLfbGFX: scaling set by SCREENCONTROL not used when initializing opengl unix driver
 
 
 Version 1.08.0
