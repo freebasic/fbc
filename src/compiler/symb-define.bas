@@ -453,8 +453,10 @@ private function hDefArgExtract_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum
 				var argString = hMacro_getArgZ( argtb, 1 )
 				dim varArgs() as string
 
-				hSplitStr(*argString, ",", varArgs())
-				res = varArgs(index)
+				if( hStr2Args( argString, varArgs() ) > 0 ) then
+					res = varArgs(index)
+				end if
+
 				ZStrFree(argString)
 			end if
 
