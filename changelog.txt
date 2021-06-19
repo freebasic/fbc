@@ -2,6 +2,7 @@ Version 1.08.1
 
 [changed]
 - github #314: fbc: pass '-T scriptfile' option to linker LD and add 'INSERT AFTER .data;' to fbextra.x linker script to quiet warning on LD version 2.36 and higher
+- gas64 : .a64 replaced by .asm to be coherent with documentation
 
 [added]
 
