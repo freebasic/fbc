@@ -617,7 +617,7 @@ static void D2DCommonPaintInternal(D2DGlobalState* pGlobalState)
 	pLastDirtyRow = pDirtyEnd + ((bitPos >> 3) & (ptrSize - 1));
 fillInDirtyRect:
 	dirtyRect.left = 0;
-	dirtyRect.right = winWidth - 1;
+	dirtyRect.right = winWidth;
 	dirtyRect.top = (pFirstDirtyRow - pDirtyStart) * scanlineSize;
 	dirtyRect.bottom = ((pLastDirtyRow - pDirtyStart) + 1) * scanlineSize;
 	drawRect.left = dirtyRect.left;
