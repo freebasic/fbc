@@ -4635,7 +4635,7 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 					op1=*regstrq(reg_findreal(v1->reg))
 				end if
 			else
-				dtype=v1->dtype
+				dtype=typeGetDtAndPtrOnly(v1->dtype)''typeGetDtAndPtrOnly adding for const case
 				if typeisptr(dtype) then dtype=FB_DATATYPE_INTEGER
 				select case dtype
 					case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE,FB_DATATYPE_ENUM
@@ -4694,7 +4694,7 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 			prepare_idx(v2,op2,op4)
 
 		case IR_VREGTYPE_REG
-			dtype=v2->dtype
+			dtype=typeGetDtAndPtrOnly(v2->dtype)''typeGetDtAndPtrOnly adding for const case
 			if typeisptr(dtype) then dtype=FB_DATATYPE_INTEGER
 			select case dtype
 				case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE,FB_DATATYPE_ENUM
