@@ -1363,7 +1363,7 @@ function hStr2Tok(byval txt as const zstring ptr, res() as string) as integer
 end function
 
 '':::::
-function hStr2args( byval txt as const zstring ptr, res() as string ) as integer
+function hStr2Args( byval txt as const zstring ptr, res() as string ) as integer
 
 	'' !!! TODO !! add the wstring version
 
@@ -1445,7 +1445,7 @@ function hStr2args( byval txt as const zstring ptr, res() as string ) as integer
 					exit do
 				end if
 
-				'' '"' | '\\' | any other string char
+				'' '"' | '\' | any other string char
 				ReadChar(c)
 				if( c = CHAR_QUOTE ) then
 
@@ -1462,7 +1462,7 @@ function hStr2args( byval txt as const zstring ptr, res() as string ) as integer
 					c = PeekChar()
 					select case c
 					case CHAR_QUOTE, CHAR_RSLASH
-						'' '"' | '\\'
+						'' '"' | '\'
 						ReadChar(c)
 					end select
 
