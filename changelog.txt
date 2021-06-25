@@ -11,6 +11,7 @@ Version 1.08.1
 - github #318: duplicate definition for deleting destructor; the deleting destructor was being emitted even though the class was declarations only on the fbc side
 - github #320: oGLfbGFX: scaling set by SCREENCONTROL not used when initializing opengl unix driver
 - github #321: __FB_ARG_EXTRACT__ incorrectly recognizes commas nested in other forms with variadic macros - internally use new hlp-str.bas:hStr2Args() procedure
+- github #322: Fix D2D not rendering the rightmost column of pixels (adeyblue)
 
 
 Version 1.08.0
