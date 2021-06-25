@@ -4,6 +4,7 @@ Version 1.09.0
 - github #314: fbc: pass '-T scriptfile' option to linker LD and add 'INSERT AFTER .data;' to fbextra.x linker script to quiet warning on LD version 2.36 and higher
 - gas64: .a64 replaced by .asm to be coherent with documentation
 - fbc-tests: add gcc compiler options -Wno-tautological-compare to quiet the constant comparison warnings in the test-suite
+- crt headers: guard some definitions in crt/sys/win32/stat.bi to avoid collisions of 'stat' and 'chmod' with some other crt headers
 
 [added]
 
