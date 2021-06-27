@@ -14,6 +14,7 @@ Version 1.09.0
 - github #321: __FB_ARG_EXTRACT__ incorrectly recognizes commas nested in other forms with variadic macros - internally use new hlp-str.bas:hStr2Args() procedure
 - github #322: Fix D2D not rendering the rightmost column of pixels (adeyblue)
 - github #323: gas64: When the target variable is const variable, code cannot be generated for variable assignment of different length. (Skyfish)
+- github #324: fbc: When converting a wide character escape sequence to an internal format, the escaped value is incorrect. (Skyfish)
 
 
 Version 1.08.0
