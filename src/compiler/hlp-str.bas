@@ -726,8 +726,10 @@ function hReEscapeW _
 				'' save the oct len, or concatenation would fail
 				'' if other numeric characters follow
 				lgt = 1
-				do while( value > 7 )
-					value shr= 3
+				dim as uinteger uivalue = any
+				uivalue = value
+				do while( uivalue > 7 )
+					uivalue shr= 3
 					lgt += 1
 				loop
 
