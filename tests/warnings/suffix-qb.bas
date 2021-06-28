@@ -54,3 +54,11 @@ print environ$("")
 print input$(0)
 print command$(0)
 
+#print ---- Procedure ----
+
+WARN(0)
+declare function foo$
+s$ = foo$
+function foo$
+	foo$ = "bar"
+end function

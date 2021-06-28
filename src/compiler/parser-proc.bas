@@ -1232,6 +1232,12 @@ function cProcHeader _
 		head_proc = hGetId( parent, @id, @dtype, _
 				(tk = FB_TK_SUB) or (tk = FB_TK_PROPERTY) )
 
+		if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
+			if( dtype <> FB_DATATYPE_INVALID ) then
+				attrib or= FB_SYMBATTRIB_SUFFIXED 
+			end if
+		end if
+
 		proc = symbPreAddProc( @id )
 	end select
 
