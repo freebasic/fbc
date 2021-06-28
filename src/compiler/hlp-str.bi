@@ -83,14 +83,26 @@ declare function hEscapeW _
 		byval text as wstring ptr _
 	) as zstring ptr
 
-declare function hUnescape _
+declare function hUnescape overload _
 	( _
 		byval text as zstring ptr _
 	) as zstring ptr
 
-declare function hUnescapeW _
+declare function hUnescape overload _
+	( _
+		byval text as zstring ptr, _
+		byref textlen as integer _
+	) as zstring ptr
+	
+declare function hUnescapeW overload _
 	( _
 		byval text as wstring ptr _
+	) as wstring ptr
+
+declare function hUnescapeW overload _
+	( _
+		byval text as wstring ptr, _
+		byref textlen as integer _
 	) as wstring ptr
 
 declare function hHasEscape _

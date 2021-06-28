@@ -1112,11 +1112,23 @@ function hEscapeW _
 end function
 
 '':::::
-function hUnescape _
+function hUnescape overload _
 	( _
 		byval text as zstring ptr _
 	) as zstring ptr static
+	dim textlen as integer = any
 
+	function = hUnescape(text, textlen)
+
+end function
+
+'':::::
+function hUnescape overload _
+	( _
+		byval text as zstring ptr, _
+		byref textlen as integer _
+	) as zstring ptr
+	
     static as DZSTRING res
     dim as integer char, lgt, i
     dim as zstring ptr src, dst, src_end
@@ -1169,14 +1181,26 @@ function hUnescape _
 	'' null-term
 	*dst = 0
 
+	textlen = cast(integer, dst) - cast(integer, res.data)
 	function = res.data
+End Function
 
-end function
+'':::::
+function hUnescapeW overload _
+	( _
+		byval text as wstring ptr _
+	) as wstring ptr
+
+	dim textlen as integer = any
+
+	function = hUnescapeW(text, textlen)
+End Function
 
 '':::::
 function hUnescapeW _
 	( _
-		byval text as wstring ptr _
+		byval text as wstring ptr, _
+		byref textlen as integer _
 	) as wstring ptr static
 
     static as DWSTRING res
@@ -1239,6 +1263,7 @@ function hUnescapeW _
     '' null-term
     *dst = 0
 
+    textlen = (cast(integer, dst) - cast(integer, res.data))/sizeof(wstring)
     function = res.data
 
 end function

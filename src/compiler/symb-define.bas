@@ -236,69 +236,96 @@ private function hMacro_getArgW( byval argtb as LEXPP_ARGTB ptr, byval num as in
 	
 end function
 
-private function hMacro_Eval( byval arg as zstring ptr) as string
+#Macro hMacro_Eval( arg, isUnescape)
 
 	'' the expression should have already been handled in hLoadMacro|hLoadMacroW
 	'' so, if we do get here, just pass the argument back as-is
-	var res = ""
-
-	if( arg ) then
+	static as defDZWSTRING res :_
+	defDStrAssign( res, NULL ) :_
+	if( arg ) then :_
 
 		'' create a lightweight context push for the lexer
 		'' like an include file, but no include file
 		'' text to expand is to be loaded in LEX.CTX->DEFTEXT[W]
 		'' use the parser to build an AST for the literal result
 
-		lexPushCtx()
-		lexInit( FALSE, TRUE )
+		lexPushCtx() :_
+		lexInit( FALSE, TRUE ) :_
 
-		'' prevent cExpression from writing to .pp.bas file
-		lex.ctx->reclevel += 1
+		var errmsg = FB_ERRMSG_OK :_
+		with lex.ctx[0]
+			'' prevent cExpression from writing to .pp.bas file
+			.reclevel += 1
+			defDStrAssign( dotdeftext, *arg )
+			dotdefptr = dotdeftext.data
+			.deflen = len( *arg )
 
-		DZstrAssign( lex.ctx->deftext, *arg )
-		lex.ctx->defptr = lex.ctx->deftext.data
-		lex.ctx->deflen += len( *arg )
+			'' Add an end of expression marker so that the parser
+			'' doesn't read past the end of the expression text
+			'' by appending an LFCHAR to the end of the expression
+			'' It would be better to use the explicit EOF character,
+			'' but we can't appened an extta NULL character to a zstring
 
-		'' Add an end of expression marker so that the parser
-		'' doesn't read past the end of the expression text
-		'' by appending an LFCHAR to the end of the expression
-		'' It would be better to use the explicit EOF character, 
-		'' but we can't appened an extta NULL character to a zstring
+			defDStrConcatAssign( dotdeftext, defZWSTR(LFCHAR) )
+			dotdefptr = dotdeftext.data
+			.deflen += len( defZWSTR(LFCHAR) )
 
-		DZstrConcatAssign( lex.ctx->deftext, LFCHAR )
-		lex.ctx->defptr = lex.ctx->deftext.data
-		lex.ctx->deflen += len( LFCHAR )
+			dim expr as ASTNODE ptr = cExpression( )
 
-		dim expr as ASTNODE ptr = cExpression( )
-		var errmsg = FB_ERRMSG_OK
+			if( expr <> NULL ) then
+				expr = astOptimizeTree( expr )
 
-		if( expr <> NULL ) then
-			expr = astOptimizeTree( expr )
+				if( astIsCONST( expr ) ) then
+					defDStrAssign( res, defastConstFlushToStr( expr ) )
 
-			if( astIsCONST( expr ) ) then
-				res = astConstFlushToStr( expr )
-
-				'' any tokens still in the buffer? cExpression() should have used them all
-				if( lexGetToken( ) <> FB_TK_EOL ) then
-					errmsg = FB_ERRMSG_SYNTAXERROR
-				end if
-			elseif( astIsConstant( expr ) ) then
-				res = """" + hReplace( expr->sym->var_.littext, QUOTE, QUOTE + QUOTE ) + """"
-
-				'' any tokens still in the buffer? cExpression() should have used them all
-				if( lexGetToken( ) <> FB_TK_EOL ) then
-					errmsg = FB_ERRMSG_SYNTAXERROR
+					'' any tokens still in the buffer? cExpression() should have used them all
+					if( lexGetToken( ) <> FB_TK_EOL ) then
+						errmsg = FB_ERRMSG_SYNTAXERROR
+					end if
+				elseif( astIsConstant( expr ) ) then
+					if( symbGetType( expr->sym ) <> FB_DATATYPE_WCHAR ) then
+						defDStrAssignA( res, symbGetVarLitText( expr->sym ))
+					else
+						defDStrAssign( res, symbGetVarLitTextW( expr->sym ))
+					end if
+					defDStrAssign( res, """" + defhReplace( res.data, QUOTE, QUOTE + QUOTE ) + """" )
+					if isUnescape then 'Do you want to convert internal format to ordinary string sequence?
+						dim as Integer internallength = any, reallength = any
+						dim as ZWString ptr pSres = defhUnescape(res.data, reallength)
+						internallength = len( *pSres )
+						if( internallength <> reallength ) then
+							' In the string, it may contain one or more null termination characters and 
+							' convert them to escape sequences.
+							defDStrAssign( res, "!" )
+							reallength = cast(Integer, pSres + reallength)
+							do
+								defDStrConcatAssign( res, pSres )
+								pSres += internallength + 1
+								if cast(Integer, pSres) >= reallength then
+									exit do
+								EndIf
+								defDStrConcatAssign( res, defEscapeZero )
+								internallength = len( *pSres )
+							loop
+						else
+							defDStrAssign( res, pSres )
+						end if
+					end if
+					'' any tokens still in the buffer? cExpression() should have used them all
+					if( lexGetToken( ) <> FB_TK_EOL ) then
+						errmsg = FB_ERRMSG_SYNTAXERROR
+					end if
+				else
+					astDelTree( expr )
+					errmsg = FB_ERRMSG_EXPECTEDCONST
+					defDStrAssign( res, defZWSTR(0) )
 				end if
 			else
-				astDelTree( expr )
-				errmsg = FB_ERRMSG_EXPECTEDCONST
-				res = str(0)
+				errmsg = FB_ERRMSG_SYNTAXERROR
 			end if
-		else
-			errmsg = FB_ERRMSG_SYNTAXERROR
-		end if
 
-		lex.ctx->reclevel -= 1
+			.reclevel -= 1
+		End With
 
 		lexPopCtx()
 
@@ -310,7 +337,45 @@ private function hMacro_Eval( byval arg as zstring ptr) as string
 
 	end if
 
-	function = res
+#EndMacro
+
+private function hMacro_EvalZ( byval arg as zstring ptr, byval isUnescape as Integer = FALSE) as string
+
+	#define defZWSTR
+	#define ZWString                ZString
+	#define defDZWSTRING            DZSTRING
+	#define dotdefptr               .defptr
+	#define dotdeftext              .deftext
+	#define defhReplace             hReplace
+	#define defhUnescape            hUnescape
+	#define defDStrAssign           DZstrAssign
+	#define defDStrAssignA          DZstrAssign
+	#define defDStrConcatAssign     DZstrConcatAssign
+	#define defastConstFlushToStr   astConstFlushToStr
+	#define defEscapeZero           "\000"
+	
+	hMacro_Eval( arg, isUnescape)
+	function = *res.data
+	
+end function
+
+private function hMacro_EvalW( byval arg as wstring ptr, byval isUnescape as Integer = FALSE) as wstring ptr
+
+	#define defZWSTR                WSTR
+	#define ZWString                WString
+	#define defDZWSTRING            DWSTRING
+	#define dotdefptr               .defptrw
+	#define dotdeftext              .deftextw
+	#define defhReplace             *hReplaceW
+	#define defhUnescape            hUnescapeW
+	#define defDStrAssign           DWstrAssign
+	#define defDStrAssignA          DWstrAssignA
+	#define defDStrConcatAssign     DWstrConcatAssign
+	#define defastConstFlushToStr   astConstFlushToWstr
+	#define defEscapeZero           "\00000"
+	
+	hMacro_Eval(arg, isUnescape)	
+	function = res.data
 
 end function
 
@@ -435,7 +500,7 @@ private function hDefArgExtract_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum
 		'' Val returns 0 on failure which we can't detect from a valid 0
 		'' so check and construct the number manually
 
-		dim as string varstr = hMacro_Eval(numStr)
+		dim as string varstr = hMacro_EvalZ(numStr, FALSE)
 		var pnumStr = strptr(varstr)
 
 		dim numArgLen as Long = Len(*pnumStr), i as Long, index as ULong = 0
@@ -716,7 +781,7 @@ private function hDefUnquoteW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 
 end function
 
-private function hDefEval_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
+private function hDefEvalZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
 
 	'' __FB_EVAL__( arg )
 
@@ -724,7 +789,7 @@ private function hDefEval_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as in
 	'' so, if we do get here, just pass the argument back as-is
 
 	var arg = hMacro_getArgZ( argtb, 0 )
-	var res = hMacro_Eval(arg)
+	var res = hMacro_EvalZ(arg, TRUE)
 
 	ZstrFree(arg)
 
@@ -732,6 +797,20 @@ private function hDefEval_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as in
 
 end function
 
+private function hDefEvalW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as wstring ptr
+
+	'' __FB_EVAL__( arg )
+
+	'' the expression should have already been handled in hLoadMacro|hLoadMacroW
+	'' so, if we do get here, just pass the argument back as-is
+
+	var arg = hMacro_getArgW( argtb, 0 )
+	static as DWSTRING res
+	DWstrAssign( res, hMacro_EvalW(arg, TRUE) )
+	
+	function = res.data
+
+end function
 
 '' Intrinsic #defines which are always defined
 dim shared defTb(0 to ...) as SYMBDEF => _
@@ -797,7 +876,7 @@ dim shared macroTb(0 to ...) as SYMBMACRO => _
 	(@"__FB_JOIN__"           , 0                       , @hDefJoinZ_cb       , @hDefJoinW_cb        , 2, { (@"L"), (@"R") } ), _
 	(@"__FB_QUOTE__"          , 0                       , @hDefQuoteZ_cb      , @hDefQuoteW_cb       , 1, { (@"ARG") } ), _
 	(@"__FB_UNQUOTE__"        , 0                       , @hDefUnquoteZ_cb    , @hDefUnquoteW_cb     , 1, { (@"ARG") } ), _
-	(@"__FB_EVAL__"           , 0                       , @hDefEval_cb        , NULL                 , 1, { (@"ARG") } ) _
+	(@"__FB_EVAL__"           , 0                       , @hDefEvalZ_cb       , @hDefEvalW_cb        , 1, { (@"ARG") } ) _
 }
 
 sub symbDefineInit _
