@@ -3,6 +3,7 @@ Version 1.08.2
 
 [added]
 - bootstrap: add cygwin-x86_64 to the bootstrap package- bootstrap: add cygwin-x86_64 to the bootstrap package
+- fbc: add '-z fbrt' command line option to link against libfbrt*.a instead of libfb*.a
 
 [fixed]
 - gfxlib2: fix d2d scaling issues for high dpi (adeyblue)
