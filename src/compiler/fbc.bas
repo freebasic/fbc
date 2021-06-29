@@ -2037,6 +2037,8 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 			fbSetOption( FB_COMPOPT_VALISTASPTR, TRUE )
 		case "no-thiscall"
 			fbSetOption( FB_COMPOPT_NOTHISCALL, TRUE )
+		case "fbrt"
+			fbSetOption( FB_COMPOPT_FBRT, TRUE )
 		case else
 			hFatalInvalidOption( arg )
 		end select
@@ -3431,7 +3433,11 @@ end function
 
 private sub hAddDefaultLibs( )
 	'' select the right FB rtlib
-	fbcAddDefLib( "fb" + hGetFbLibNameSuffix( ) )
+	if( fbGetOption( FB_COMPOPT_FBRT ) ) then 
+		fbcAddDefLib( "fbrt" + hGetFbLibNameSuffix( ) )
+	else
+		fbcAddDefLib( "fb" + hGetFbLibNameSuffix( ) )
+	end if
 
 	'' and the gfxlib, if gfx functions were used
 	if( fbGetOption( FB_COMPOPT_GFX ) ) then
@@ -3711,6 +3717,8 @@ private sub hPrintOptions( byval verbose as integer )
 	if( verbose ) then
 	print "  -z gosub-setjmp  Use setjmp/longjmp to implement GOSUB"
 	print "  -z valist-as-ptr Use pointer expressions to implement CVA_*() macros"
+	print "  -z no-thiscall   Don't use '__thiscall' calling convention"
+	print "  -z fbrt          Link with 'fbrt' instead of 'fb' runtime library"
 	end if
 
 end sub

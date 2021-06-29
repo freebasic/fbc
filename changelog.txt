@@ -8,6 +8,7 @@ Version 1.09.0
 - crt headers: add const qualifiers in crt/stdlib.bi
 
 [added]
+- fbc: add '-z fbrt' command line option to link against libfbrt*.a instead of libfb*.a
 
 [fixed]
 - github #315: set parameters when calling SCREENCONTROL (was broken in fbc 1.08.0 due to new LONG/LONGINT SCREENCONTROL API's)
