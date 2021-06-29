@@ -381,7 +381,7 @@ libsubdir := $(FBTARGET)
 ifdef ENABLE_STANDALONE
   # Traditional standalone layout: fbc.exe at toplevel, libs in lib/<fbtarget>/,
   # includes in inc/
-  FBC_EXE     := fbc-$(EXEEXT)
+  FBC_EXE     := fbc$(EXEEXT)
   FBCNEW_EXE  := fbc-new$(EXEEXT)
   libdir         := lib/$(libsubdir)
   PREFIX_FBC_EXE := $(prefix)/fbc$(EXEEXT)
@@ -615,7 +615,7 @@ ifndef DISABLE_MT
   GFX_LIBS += $(libdir)/libfbgfxmt.a
   ifdef ENABLE_PIC
     RTL_LIBS += $(libdir)/libfbmtpic.a
-	FBRTL_LIBS += $(libdir)/libfbrtmtpic.a
+    FBRTL_LIBS += $(libdir)/libfbrtmtpic.a
     GFX_LIBS += $(libdir)/libfbgfxmtpic.a
   endif
 endif
@@ -650,7 +650,7 @@ endif
 ################################################################################
 
 .PHONY: all
-all: compiler rtlib fbrt gfxlib2
+all: compiler rtlib gfxlib2
 
 $(fbcobjdir) \
 $(libfbobjdir) \
@@ -848,8 +848,8 @@ $(LIBFBGFXMTPIC_C): $(libfbgfxmtpicobjdir)/%.o: %.c $(LIBFBGFX_H) | $(libfbgfxmt
 
 ################################################################################
 
-.PHONY: install install-compiler install-includes install-rtlib install-fbrt install-gfxlib2
-install:        install-compiler install-includes install-rtlib install-fbrt install-gfxlib2
+.PHONY: install install-compiler install-includes install-rtlib install-gfxlib2
+install:        install-compiler install-includes install-rtlib install-gfxlib2
 
 install-compiler: compiler
 	mkdir -p $(DESTDIR)$(prefixbindir)
