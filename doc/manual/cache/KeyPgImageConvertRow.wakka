@@ -68,7 +68,7 @@ Sleep
 
 '' copy the image data into a 32-bit image
 Dim As Byte Ptr p8, p32
-Dim As Integer pitch8, pitch32
+Dim As Long pitch8, pitch32
 
 #ifndef ImageInfo '' older versions of FB don't have the ImageInfo feature
 #define GETPITCH(img_) iif(img_->type=PUT_HEADER_NEW,img_->pitch,img_->old.width*img_->old.bpp)

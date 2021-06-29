@@ -2,14 +2,14 @@
 Loads to a Dynamic Link Library (DLL) into memory at runtime
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Dylibload** ( [[KeyPgByref|byref]] //filename// [[KeyPgAs|as]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|Pointer]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Dylibload** ( [[KeyPgByref|byref]] //libname// [[KeyPgAs|as]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|Pointer]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Dylibload** ( //filename// )
+	//result// = **Dylibload** ( //libname// )
 ##
 {{fbdoc item="param"}}
-	##//filename//##
-		A ##[[KeyPgString|string]]## containing the filename of the library to load.
+	##//libname//##
+		A ##[[KeyPgString|string]]## containing the name of the library to load.
 
 {{fbdoc item="ret"}}
 	The ##[[KeyPgPtr|pointer]]## handle of the library loaded. Zero on error
@@ -17,7 +17,7 @@ Loads to a Dynamic Link Library (DLL) into memory at runtime
 {{fbdoc item="desc"}}
 	##[[KeyPgDylibload|Dylibload]]## is used to link at runtime libraries to your program. This function does the link and returns a handle that must be used with ##[[KeyPgDylibsymbol|Dylibsymbol]]## when calling a function in the library and with ##[[KeyPgDylibfree|Dylibfree]]## when releasing the library.
 	
-	Note: If the ##//filename//## string (without extension) already includes a character dot (##.##), it may be mandatory to explicitly specify the filename extension to avoid any parser ambiguity.
+	Note: If the ##//libname//## string (without extension) already includes a character dot (##.##), it may be mandatory to explicitly specify the filename extension to avoid any parser ambiguity.
 
 {{fbdoc item="ex"}}
 	See the dynamic loading example on the [[ProPgSharedLibraries|Shared Libraries]] page.

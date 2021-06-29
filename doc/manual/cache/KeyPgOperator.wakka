@@ -28,7 +28,7 @@ Declares or defines an overloaded operator.
 	**Operator** //typename//.[[KeyPgOpCast|cast]] () [ [[KeyPgByrefFunction|byref]] ] [[KeyPgAs|as]] [[DataType|datatype]] [ [[KeyPgExport|Export]] ]
 	**Operator** //typename//.[[KeyPgOpAt|@]] () [ [[KeyPgByrefFunction|byref]] ] [[KeyPgAs|as]] [[DataType|datatype]] [[KeyPgPtr|ptr]] [ [[KeyPgExport|Export]] ]
 	**Operator** //typename//.//assignment_op// ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //rhs// [[KeyPgAs|as]] [[DataType|datatype]] ) [ [[KeyPgExport|Export]] ]
-	**Operator** {{fbdoc item="keyword" value="KeyPgOpPtrIndex|[]"}} ( //index// [[KeyPgAs|as]] [[DataType|datatype]] ) [ [[KeyPgByrefFunction|byref]] ] [[KeyPgAs|as]] [[DataType|datatype]] [ [[KeyPgExport|Export]] ]
+	**Operator** //typename//.{{fbdoc item="keyword" value="KeyPgOpPtrIndex|[]"}} ( //index// [[KeyPgAs|as]] [[DataType|datatype]] ) [ [[KeyPgByrefFunction|byref]] ] [[KeyPgAs|as]] [[DataType|datatype]] [ [[KeyPgExport|Export]] ]
 	**Operator** //unary_op// ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //rhs// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[DataType|datatype]] [ [[KeyPgExport|Export]] ]
 	**Operator** //binary_op// ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //lhs// [[KeyPgAs|as]] [[DataType|datatype]], [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //rhs// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[DataType|datatype]] [ [[KeyPgExport|Export]] ]
 	**Operator** //typename//.[[KeyPgOpNewOverload|new]] ( //size// as uinteger ) [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] [ [[KeyPgExport|Export]] ]

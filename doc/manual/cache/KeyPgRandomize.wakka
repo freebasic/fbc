@@ -2,14 +2,14 @@
 Seeds the random number generator
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Randomize** ( [[KeyPgByval|byval]] //seed// [[KeyPgAs|as]] [[KeyPgDouble|double]] = -1.0,  [[KeyPgByval|byval]] //algorithm// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0 )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Randomize** ( [[KeyPgByval|byval]] //seed// [[KeyPgAs|as]] [[KeyPgDouble|double]] = -1.0, [[KeyPgByval|byval]] //algorithm// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0 )
 ##
 {{fbdoc item="usage"}}##
 	**Randomize** [ //seed// ][, //algorithm// ]
 ##
 {{fbdoc item="param"}}
 	##//seed//##
-		A ##[[KeyPgDouble|double]]## seed value for the random number generator.  If omitted, a value based on ##[[KeyPgTimer|Timer]]## will be used instead.
+		A ##[[KeyPgDouble|double]]## seed value for the random number generator, but the fractional part is clipped for all algorithms except algorithm #4 (see below). If omitted, a value based on ##[[KeyPgTimer|Timer]]## will be used instead.
 	##//algorithm//##
 		An integer value to select the algorithm (see below, or from fbc version >= 1.08 the standard header "fbmath.bi" for available algorithms). If omitted, the default algorithm for the current [[CompilerDialects|language dialect]] is used.
 
@@ -24,16 +24,17 @@ Seeds the random number generator
 		##FB_RND_QB (4)## - Uses a function that is designed to give the same random number sequences as QBASIC. This should be stable across all platforms, and provides 24-bit precision, with a low degree of randomness.
 		##FB_RND_REAL (5)## - Available on ""Win32"" and Linux, using system features (""Win32"" Crypto API, Linux /dev/urandom) to provide cryptographically random numbers. If those system APIs are unavailable, algorithm ##FB_RND_MTWIST (3)## will be used instead.
 		
-		For any given seed, each algorithm will produce a specific, deterministic sequence of numbers for that seed.  If you want each call to ##**Randomize**## to produce a different sequence of numbers, a seed that is not quite predictable should be used - for example, the value returned from ##[[KeyPgTimer|Timer]]##.  Omitting the ##//seed//## parameter will use a value based on this.
-		Note: using the ##[[KeyPgTimer|Timer]]## value directly as a parameter will produce the same seed if used more than once in the same second.  However, it is generally not worth calling ##**Randomize**## twice with unpredictable seeds anyway, because the second sequence will be no more random than the first.  In most cases, the Mersenne twister should provide a sufficiently random sequence of numbers, without requiring reseeding between ##[[KeyPgRnd|Rnd]]## calls.
+		For any given seed, each algorithm will produce a specific, deterministic sequence of numbers for that seed. If you want each call to ##**Randomize**## to produce a different sequence of numbers, a seed that is not quite predictable should be used - for example, the value returned from ##[[KeyPgTimer|Timer]]##. Omitting the ##//seed//## parameter will use a value based on this.
 		
-		When you call ##**Randomize**## with the QB compatible algorithm, part of the old seed is retained.  This means that if you call ##**Randomize**## several times with the same seed, you will **not** get the same sequence each time.  To get a specific sequence in QB compatible mode, set the seed by calling ##[[KeyPgRnd|Rnd]]## with a negative parameter.
+		Note: for all algorithms except algorithm #4, because the fractional part of the seed is clipped, the using the ##[[KeyPgTimer|Timer]]## value directly as a parameter will produce the same seed if used more than once in the same second. However, it is generally not worth calling ##**Randomize**## twice with unpredictable seeds anyway, because the second sequence will be no more random than the first, or even possibly worse by inducing sequence overlapping. In most cases, the Mersenne twister should provide a sufficiently random sequence of numbers, without requiring reseeding between ##[[KeyPgRnd|Rnd]]## calls.
+		
+		When you call ##**Randomize**## with the QB compatible algorithm, part of the old seed is retained. This means that if you call ##**Randomize**## several times with the same seed, you will **not** get the same sequence each time. To get a specific sequence in QB compatible mode, set the seed by calling ##[[KeyPgRnd|Rnd]]## with a negative parameter.
 		
 		**Note:**
 			**""-""** For fbc version >= 1.08, ##**Randomize**## is became thread-safe (by using an internal mutex), but not thread specific. Structures for other random number generators are also now available in the standard header "fbmath.bi".
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/math/randomize.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/math/randomize.bas"}}%%(freebasic)
 '' Seed the RNG to the method using C's rand()
 randomize , 1
 
@@ -41,8 +42,7 @@ randomize , 1
 for i as integer = 1 to 10
 	print rnd
 next
-%%
-
+	%%
 {{fbdoc item="lang"}}
 	The default algorithm used depends on the current dialect in use:
 		- With the //[[CompilerOptlang|-lang fb]]// dialect, a 32 bit Mersenne Twister function with a granularity of 32 bits is used.

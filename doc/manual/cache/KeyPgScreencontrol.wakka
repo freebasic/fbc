@@ -12,16 +12,16 @@ Sets or gets internal graphics library settings
 ##
 {{fbdoc item="usage"}}##
 	for fbc version < 1.08:
-		**""ScreenControl""**( //what// [, [ //param1// ][, [ //param2// ][, [ //param3// ][, [ //param4// ]]]]] )
+		**""ScreenControl""**( //what// [, [ //param1// ] [, [ //param2// ] [, [ //param3// ] [, [ //param4// ]]]]] )
 			or,
 		**""ScreenControl""**( //what// [, //param// ] )
 	for fbc version >= 1.08:
 		in the LONG (or INTEGER<32>) version of the sub:
-			**""ScreenControl""**( //what// [, //param1// [, //param2// [, //param3// [, //param4// ]]]] )
+			**""ScreenControl""**( //what// [, [ //param1// ] [, [ //param2// ] [, [ //param3// ] [, //param4// ]]]] )
 				or,
 			**""ScreenControl""**( //what// , //param// )
 		in the LONGINT (or INTEGER<64>) version of the sub:
-			**""ScreenControl""**( //what// , //param1// [, //param2// [, //param3// [, //param4// ]]] )
+			**""ScreenControl""**( //what// , //param1// [, [ //param2// ] [, [ //param3// ] [, //param4// ]]] )
 				or,
 			**""ScreenControl""**( //what// , //param// )
 ##

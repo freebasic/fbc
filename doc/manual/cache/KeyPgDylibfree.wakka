@@ -2,13 +2,13 @@
 Unloads a dynamic link library from memory
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Dylibfree** ( [[KeyPgByval|byval]] //library// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|pointer]] )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Dylibfree** ( [[KeyPgByval|byval]] //libhandle// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|pointer]] )
 ##
 {{fbdoc item="usage"}}##
-	**Dylibfree**( //library// )
+	**Dylibfree**( //libhandle// )
 ##
 {{fbdoc item="param"}}
-	##//library//##
+	##//libhandle//##
 		The handle of a library to unload.
 
 {{fbdoc item="desc"}}
