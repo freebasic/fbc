@@ -22,7 +22,7 @@ Allocates memory for a certain number of elements from the free store and clears
 	Similarly, ##**Callocate**## can also be used directly with ##[[KeyPgZstring|Zstring]]## or ##[[KeyPgWstring|Wstring]]## because string data is created with null characters.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/memory/callocate.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/memory/callocate.bas"}}%%(freebasic)
 ' Allocate and initialize space for 10 integer elements.
 dim p as integer ptr = callocate(10, sizeof(integer))
 
@@ -38,13 +38,10 @@ next
 
 ' Free the memory.
 deallocate(p)
-%%
-Outputs:
-%% 10 20 30 40 50 60 70 80 90 100%%
-
-{{fbdoc item="target"}}
-	- This procedure is not guaranteed to be thread-safe.
-
+	%%Outputs:
+	%%
+ 10 20 30 40 50 60 70 80 90 100
+	%%
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Callocate""**##.
 

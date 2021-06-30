@@ -10,7 +10,7 @@
 ScreenRes 320, 200, 32
 Dim image As Any Ptr = ImageCreate( 64, 64 )
 
-Dim pitch As Integer
+Dim pitch As Long
 Dim pixels As Any Ptr
 
 '' Get enough information to iterate through the pixel data.

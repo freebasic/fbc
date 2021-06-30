@@ -534,6 +534,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgMemberSub|SUB (Member)"}}
 	- {{fbdoc item="keyword" value="KeyPgStdcall|STDCALL"}}
 	- {{fbdoc item="keyword" value="KeyPgThis|THIS"}}
+	- {{fbdoc item="keyword" value="KeyPgThiscall|THISCALL"}}
 	- {{fbdoc item="keyword" value="KeyPgVirtual|VIRTUAL (member)"}}
 
 {{fbdoc item="section" value="Variadic Procedures"}}

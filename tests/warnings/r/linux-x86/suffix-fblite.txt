@@ -102,3 +102,5 @@ none expected
 	Suffix ignored in 'wstr$'
 	Suffix ignored in 'wstring$'
 	Suffix ignored in 'bin$'
+----Procedure ----
+none expected

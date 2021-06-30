@@ -10,12 +10,12 @@ Retrieves information about an image
 ##
 {{fbdoc item="usage"}}##
 	for fbc version < 1.08::
-		//result// = **Imageinfo**( //image// [, [//width//] [, [//height//] [, [//bypp//] [, [//pitch//] [, [//pixdata//] [, //size//]]]]]] )
+		//result// = **Imageinfo**( //image// [, [ //width// ] [, [ //height// ] [, [ //bypp// ] [, [ //pitch// ] [, [ //pixdata// ] [, //size// ]]]]]] )
 	for fbc version >= 1.08:
 		in the LONG (or INTEGER<32>) version of the function:
-			//result// = **Imageinfo**( //image// [, //width// [, //height// [, //bypp// [, //pitch// [ , //pixdata// [, //size// ]]]]]] )
+			//result// = **Imageinfo**( //image// [, [ //width// ] [, [ //height// ] [, [ //bypp// ] [, [ //pitch// ] [ , [ //pixdata// ] [, //size// ]]]]]] )
 		in the LONGINT (or INTEGER<64>) version of the function:
-			//result// = **Imageinfo**( //image// , //width// , //height// [, //bypp// [, //pitch// [ , //pixdata// [, //size// ]]]] )
+			//result// = **Imageinfo**( //image// , //width// , //height// [, [ //bypp// ] [, [ //pitch// ] [ , [ //pixdata// ] [, //size// ]]]] )
 ##
 {{fbdoc item="param"}}
 	##//image//##
@@ -116,7 +116,7 @@ sleep
 screenres 320, 200, 32
 dim image as any ptr = imagecreate( 64, 64 )
 
-dim pitch as integer
+dim pitch as long
 dim pixels as any ptr
 
 '' Get enough information to iterate through the pixel data.

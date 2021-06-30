@@ -14,3 +14,4 @@ Function DoOperation (a As Integer, b As Integer, operation As Function (As Inte
 End Function
 
 Print "3 + 4 = " & DoOperation(3, 4, @Add)
+		

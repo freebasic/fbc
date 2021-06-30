@@ -137,8 +137,8 @@ end function
 '' Note we specify just "mydll" as library file name; this is to ensure
 '' compatibility between Windows and Linux, where a dynamic library
 '' has different file name and extension.
-dim as any ptr library = dylibload( "mydll" )
-if( library = 0 ) then
+dim as any ptr libhandle = dylibload( "mydll" )
+if( libhandle = 0 ) then
 	print "Failed to load the mydll dynamic library, aborting program..."
 	end 1
 end if
@@ -147,7 +147,7 @@ end if
 '' the address has been found. Note: It must have the same calling
 '' convention and parameters.
 dim AddNumbers as function( byval as integer, byval as integer ) as integer
-AddNumbers = dylibsymbol( library, "AddNumbers" )
+AddNumbers = dylibsymbol( libhandle, "AddNumbers" )
 if( AddNumbers = 0 ) then
 	print "Could not retrieve the AddNumbers() function's address from the mydll library, aborting program..."
 	end 1
@@ -166,7 +166,7 @@ print x; " +"; y; " ="; AddNumbers( x, y )
 '' Remember that once you unload a previously loaded library, all the symbols
 '' you got from it via dylibsymbol will become invalid, and accessing them
 '' will cause the application to crash.
-dylibfree( library )
+dylibfree( libhandle )
 	%%
 {{fbdoc item="see"}}
 	- [[ProPgStaticLibraries|Static Libraries]]

@@ -13,9 +13,9 @@ Retrieves information about current video mode or the desktop.
 		**Screeninfo** [ //w// ] [, [ //h// ] [, [ //depth// ] [ , [ //bpp// ] [ , [ //pitch// ] [ , [ //rate// ] [, //driver// ]]]]]]
 	for fbc version >= 1.08:
 		in the LONG (or INTEGER<32>) version of the sub:
-			**Screeninfo** [ //w// [, //h// [, //depth// [, //bpp// [, //pitch// [, //rate// [, //driver// ]]]]]]]
+			**Screeninfo** [ //w// ] [, [ //h// ] [, [ //depth// ] [, [ //bpp// ] [, [ //pitch// ] [, [ //rate// ] [, //driver// ]]]]]]
 		in the LONGINT (or INTEGER<64>) version of the sub:
-			**Screeninfo** //w// , //h// [, //depth// [, //bpp// [, //pitch// [, //rate// [, //driver// ]]]]]
+			**Screeninfo** //w// , //h// [, [ //depth// ] [, [ //bpp// ] [, [ //pitch// ] [, [ //rate// ] [, //driver// ]]]]]
 ##
 {{fbdoc item="param"}}
 	##//w//##

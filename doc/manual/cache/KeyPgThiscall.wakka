@@ -1,0 +1,47 @@
+{{fbdoc item="title" value="__THISCALL"}}----
+Specifies the //Thiscall// calling convention in a member procedure declaration
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgType|Type]] //typename//
+		declare [[KeyPgSub|Sub]] //name// **""__Thiscall""** [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //"""alias"""//] ( //parameters// )
+		declare [[KeyPgFunction|Function]] //name// **""__Thiscall""** [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //"""alias"""//] ( //parameters// ) [ [[KeyPgByrefFunction|Byref]] ] [[KeyPgAs|as]] //return_type//
+	End Type
+##
+{{fbdoc item="desc"}}
+	In member procedure declarations, ##**""__Thiscall""**## specifies that a procedure will use the ##**Thiscall**## calling convention. In the //Thiscall// calling convention, the implicit and hidden [[KeyPgThis|This]] parameter is passed in the ##ECX## register.
+	
+	The ##//Thiscall//## calling convention is for 32-bit x86 targets only and is only partially implemented.  It should work when using //-gen gcc// backend, but as of fbc-1.08.0, it is not implemented for the //-gen gas// backed.
+	
+	It is not needed for normal fbc usage, and would typically only be needed for linking to and using ""g++/c++"" libraries.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/procs/thiscall.bas"}}%%(freebasic)
+'' __thiscall only makes sense on windows 32-bit
+#if defined(__FB_WIN32__) and not defined(__FB_64BIT__)
+	#define thiscall __thiscall
+#else
+	#define thiscall
+#endif
+
+extern "c++"
+type UDT
+	value as long
+	'' fbc doesn't automatically add the __thiscall calling convention
+	'' therefore, currently needs to be explicitly given where needed
+	declare constructor thiscall ()
+	declare destructor thiscall ()
+	declare sub someproc thiscall ()
+	'' etc
+end type
+end extern
+%%
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCdecl|Cdecl]]##, ##[[KeyPgStdcall|Stdcall]]##
+	- ##[[KeyPgDeclare|Declare]]##
+	- ##[[KeyPgSub|Sub]]##, ##[[KeyPgFunction|Function]]##
+
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}

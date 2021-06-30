@@ -33,7 +33,7 @@ ScreenLock()
 	Dim As UByte Ptr pixel = buffer + (y * pitch) + (x * bypp)
 	
 	
-	'' Set the pixel color to 10 (light green).
+	'' Set the center pixel color to 10 (light green).
 	*pixel = 10
 
 '' Unlock the screen.

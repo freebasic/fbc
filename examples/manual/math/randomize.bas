@@ -13,3 +13,4 @@ Randomize , 1
 For i As Integer = 1 To 10
 	Print Rnd
 Next
+	
