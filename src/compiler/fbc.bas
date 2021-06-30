@@ -113,12 +113,13 @@ type FBCCTX
 	objinf				as FBC_OBJINF
 end type
 
-enum
+enum FBCTOOL
 	FBCTOOL_AS = 0
 	FBCTOOL_AR
 	FBCTOOL_LD
 	FBCTOOL_GCC
 	FBCTOOL_LLC
+	FBCTOOL_CLANG
 	FBCTOOL_DLLTOOL
 	FBCTOOL_GORC
 	FBCTOOL_WINDRES
@@ -131,13 +132,37 @@ enum
 	FBCTOOL__COUNT
 end enum
 
-static shared as zstring * 16 toolnames(0 to FBCTOOL__COUNT-1) = _
+enum FBCTOOLFLAG
+	FBCTOOLFLAG_INVALID            = 0  '' tool is disabled
+	FBCTOOLFLAG_ASSUME_EXISTS      = 1  '' assume the tool exists
+	FBCTOOLFLAG_CAN_USE_ENVIRON    = 2  '' allow path to tool to specified by environment variable
+
+	FBCTOOLFLAG_DEFAULT = FBCTOOLFLAG_ASSUME_EXISTS or FBCTOOLFLAG_CAN_USE_ENVIRON
+end enum
+
+type FBCTOOLINFO
+	name as zstring * 16
+	flags as FBCTOOLFLAG
+end type
+
+'' must be same order as enum FBCTOOL
+static shared as FBCTOOLINFO fbctoolTB(0 to FBCTOOL__COUNT-1) = _
 { _
-	"as", "ar", "ld", "gcc", "llc", "dlltool", "GoRC", "windres", "cxbe", "dxe3gen", _
-	"emcc", _
-	"emar", _
-	"emcc", _
-	"emcc"  _
+	/' FBCTOOL_AS      '/ ( "as"     , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_AR      '/ ( "ar"     , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_LD      '/ ( "ld"     , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_GCC     '/ ( "gcc"    , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_LLC     '/ ( "llc"    , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_CLANG   '/ ( "clang"  , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_DLLTOOL '/ ( "dlltool", FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_GORC    '/ ( "GoRC"   , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_WINDRES '/ ( "windres", FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_CXBE    '/ ( "cxbe"   , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_DXEGEN  '/ ( "dxe3gen", FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_EMAS    '/ ( "emcc"   , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_EMAR    '/ ( "emar"   , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_EMLD    '/ ( "emcc"   , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_EMCC    '/ ( "emcc"   , FBCTOOLFLAG_DEFAULT  )  _
 }
 
 declare sub fbcFindBin _
@@ -399,10 +424,12 @@ private sub fbcFindBin _
 	relying_on_system = FALSE
 
 	'' a) Use the path from the corresponding environment variable if it's set
-	path = environ( ucase( toolnames(tool) ) )
+	if( (fbctoolTB(tool).flags and FBCTOOLFLAG_CAN_USE_ENVIRON) <> 0 ) then
+		path = environ( ucase( fbctoolTB(tool).name ) )
+	end if
 	if( len( path ) = 0 ) then
 		'' b) Try bin/ directory
-		path = fbc.binpath + toolnames(tool) + FB_HOST_EXEEXT
+		path = fbc.binpath + fbctoolTB(tool).name + FB_HOST_EXEEXT
 
 		#ifndef ENABLE_STANDALONE
 			if( (hFileExists( path ) = FALSE) and _
@@ -419,9 +446,9 @@ private sub fbcFindBin _
 			if( hFileExists( path ) = FALSE ) then
 				'' d) Rely on PATH
 				if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
-					path = fbc.targetprefix + toolnames(tool) + FB_HOST_EXEEXT
+					path = fbc.targetprefix + fbctoolTB(tool).name + FB_HOST_EXEEXT
 				else
-					path = toolnames(tool)
+					path = fbctoolTB(tool).name
 				end if
 				relying_on_system = TRUE
 			end if
@@ -839,7 +866,7 @@ private function hLinkFiles( ) as integer
 		if( fbGetOption( FB_COMPOPT_OBJINFO ) and _
 		    (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) and _
 		    (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_SOLARIS) and _
-			( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) and _
+		    ( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) and _
 		    (not fbcIsUsingGoldLinker( )) ) then
 			ldcline += " -T """ + fbc.libpath + (FB_HOST_PATHDIV + "fbextra.x""")
 		end if
