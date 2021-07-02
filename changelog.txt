@@ -19,6 +19,7 @@ Version 1.09.0
 - github #322: Fix D2D not rendering the rightmost column of pixels (adeyblue)
 - github #323: gas64: When the target variable is const variable, code cannot be generated for variable assignment of different length. (Skyfish)
 - github #324: fbc: When converting a wide character escape sequence to an internal format, the escaped value is incorrect. (Skyfish)
+- fbc: remove warning on function suffix in '-lang qb'
 
 
 Version 1.08.0
