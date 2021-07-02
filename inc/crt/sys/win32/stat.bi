@@ -66,19 +66,19 @@ extern "C"
 declare function _fstat (byval as long, byval as _stat ptr) as long
 
 #ifndef _chmod
-declare function _chmod (byval as zstring ptr, byval as long) as long
+declare function _chmod (byval as const zstring ptr, byval as long) as long
 #endif
 
-declare function _stat (byval as zstring ptr, byval as _stat ptr) as long
+declare function _stat (byval as const zstring ptr, byval as _stat ptr) as long
 declare function _fstati64 (byval as long, byval as _stati64 ptr) as long
-declare function _stati64 (byval as zstring ptr, byval as _stati64 ptr) as long
+declare function _stati64 (byval as const zstring ptr, byval as _stati64 ptr) as long
 
 #ifndef _wstat
-declare function _wstat (byval as wchar_t ptr, byval as _stat ptr) as long
+declare function _wstat (byval as const wchar_t ptr, byval as _stat ptr) as long
 #endif
 
 #ifndef _wstati64
-declare function _wstati64 (byval as wchar_t ptr, byval as _stati64 ptr) as long
+declare function _wstati64 (byval as const wchar_t ptr, byval as _stati64 ptr) as long
 #endif
 
 end extern

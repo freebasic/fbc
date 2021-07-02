@@ -7,6 +7,7 @@ Version 1.09.0
 - crt headers: guard some definitions in crt/sys/win32/stat.bi to avoid collisions of 'stat' and 'chmod' with some other crt headers
 - crt headers: add const qualifiers in crt/stdlib.bi
 - crt headers: add const qualifiers in crt/stdio.bi, crt/sys/stat.bi, crt/wchar.bi
+- crt headers: add const qualifiers in crt/sys/win32/stat.bi, crt/win32/stdio.bi
 
 [added]
 - fbc: add '-z fbrt' command line option to link against libfbrt*.a instead of libfb*.a
