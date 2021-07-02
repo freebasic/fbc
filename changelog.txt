@@ -6,6 +6,7 @@ Version 1.09.0
 - fbc-tests: add gcc compiler options -Wno-tautological-compare to quiet the constant comparison warnings in the test-suite
 - crt headers: guard some definitions in crt/sys/win32/stat.bi to avoid collisions of 'stat' and 'chmod' with some other crt headers
 - crt headers: add const qualifiers in crt/stdlib.bi
+- crt headers: add const qualifiers in crt/stdio.bi, crt/sys/stat.bi, crt/wchar.bi
 
 [added]
 - fbc: add '-z fbrt' command line option to link against libfbrt*.a instead of libfb*.a
