@@ -22,12 +22,12 @@ SUITE( fbc_tests.file_.file_seteof )
 
 				'' FileSetEof can be used to increase file size
 				for i as integer = 0 to 10000 step 1000
-					chkSetEof( 1 )
+					chkSetEof( i )
 				next
 
 				'' or decrease file size
 				for i as integer = 10000 to 0 step -1000
-					chkSetEof( 1 )
+					chkSetEof( i )
 				next
 
 				close #1
