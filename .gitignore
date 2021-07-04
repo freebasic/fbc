@@ -12,6 +12,7 @@
 /lib/freebasic/*
 /lib64/freebasic/*
 /config.mk
+/config-post.mk
 
 /doc/fbdoc/fbdoc
 /doc/makefbhelp/makefbhelp
