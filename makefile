@@ -808,7 +808,7 @@ else
 	$(QUIET_AR)rm -f $@; cp $(LIBFBRTMT_C) $(libfbrtmtobjdir); $(AR) rcs $@ $^
 endif
 $(LIBFBRTMT_BAS): $(libfbrtmtobjdir)/%.o: %.bas $(LIBFBRT_BI) | $(libfbrtmtobjdir)
-	$(QUIET_FBC)$(FBC) -mt $(ALLFBRTCFLAGS) -c $< -o $@
+	$(QUIET_FBC)$(FBC) -mt -d ENABLE_MT $(ALLFBRTCFLAGS) -c $< -o $@
 $(LIBFBRTMT_S): $(libfbrtmtobjdir)/%.o: %.s $(LIBFBRT_BI) | $(libfbrtmtobjdir)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
