@@ -865,7 +865,7 @@ install-rtlib: rtlib
 
 install-fbrt: fbrt
 	mkdir -p $(DESTDIR)$(prefixlibdir)
-	$(INSTALL_FILE) $(RTL_LIBS) $(DESTDIR)$(prefixlibdir)
+	$(INSTALL_FILE) $(FBRTL_LIBS) $(DESTDIR)$(prefixlibdir)
 
 install-gfxlib2: gfxlib2
 	mkdir -p $(DESTDIR)$(prefixlibdir)
@@ -887,7 +887,7 @@ uninstall-rtlib:
 	rm -f $(patsubst $(libdir)/%,$(DESTDIR)$(prefixlibdir)/%,$(RTL_LIBS))
 
 uninstall-fbrt:
-	rm -f $(patsubst $(libdir)/%,$(DESTDIR)$(prefixlibdir)/%,$(RTL_LIBS))
+	rm -f $(patsubst $(libdir)/%,$(DESTDIR)$(prefixlibdir)/%,$(FBRTL_LIBS))
 
 uninstall-gfxlib2:
 	rm -f $(patsubst $(libdir)/%,$(DESTDIR)$(prefixlibdir)/%,$(GFX_LIBS))
@@ -910,7 +910,7 @@ clean-rtlib:
   endif
 
 clean-fbrt:
-	rm -rf $(RTL_LIBS) $(libfbrtobjdir)
+	rm -rf $(FBRTL_LIBS) $(libfbrtobjdir)
 
 clean-gfxlib2:
 	rm -rf $(GFX_LIBS) $(libfbgfxobjdir)
