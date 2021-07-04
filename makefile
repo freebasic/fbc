@@ -108,7 +108,11 @@
 #   -DDISABLE_D3D10  build without DirectX 10 driver(disable D2D driver in windows)
 #
 # makefile variables may either be set on the make command line,
-# or (in a more permanent way) inside a 'config.mk' file.
+# or (in a more permanent way) inside a 'config.mk' file before
+# the makefile variable set-up is evaluated.  makefile variables
+# already defined in this makefile can also be augmented / modified
+# inside a 'config-post.mk' file which is included after all the
+# variable set-up, but before the build rules.
 #
 # The makefile searches the sources based on its location, but builds into
 # the current directory. It's possible to build in a separate directory by
@@ -565,6 +569,9 @@ ifeq ($(TARGET_OS),js)
   RTL_LIBS += $(libdir)/fb_rtlib.js
   RTL_LIBS += $(libdir)/fb_shell.html
 endif
+
+# allow optionally including config-post
+-include config-post.mk
 
 #
 # Build rules
