@@ -978,7 +978,7 @@ end function
 ''::::
 private function hU16ToWchar _
 	( _
-		byval src as wstring ptr _
+		byval src as const wstring ptr _
 	) as uinteger static
 
 	dim as uinteger char, c
@@ -1009,13 +1009,13 @@ end function
 '':::::
 function hEscapeW _
 	( _
-		byval text as wstring ptr _
+		byval text as const wstring ptr _
 	) as zstring ptr static
 
 	static as DZSTRING res
 	dim as uinteger char, c
 	dim as integer lgt, i, wcharlen
-	dim as wstring ptr src, src_end
+	dim as const wstring ptr src, src_end
 	dim as zstring ptr dst
 
 	'' convert the internal escape sequences to GAS format
