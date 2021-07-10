@@ -24,13 +24,13 @@
 			exit sub                                            :_
 		end if                                                  :_
 	end if                                                      :_
-                                                                :_
+	                                                            :_
 	if( *dst = NULL ) then                                      :_
 		dst_len = 0                                             :_
 	else                                                        :_
 		dst_len = len( **dst )									:_
 	end if														:_
-                                                                :_
+	                                                            :_
 	if( dst_len <> src_len ) then                               :_
 		*dst = xallocate( (src_len+1) * len( _type ) )    		:_
 	end if
@@ -47,7 +47,7 @@
 	if( src_len = 0 ) then                                      :_
 		exit sub                                                :_
 	end if                                                      :_
-                                                                :_
+	                                                            :_
 	if( *dst = NULL ) then                                      :_
 		dst_len = 0                                             :_
 		*dst = xallocate( (src_len+1) * len( _type ) )			:_
@@ -215,8 +215,8 @@ function hReplace _
 		byval newtext as zstring ptr _
 	) as string static
 
-    dim as integer oldlen, newlen, p
-    static as string text, remtext
+	dim as integer oldlen, newlen, p
+	static as string text, remtext
 
 	oldlen = len( *oldtext )
 	newlen = len( *newtext )
@@ -225,9 +225,9 @@ function hReplace _
 	p = 0
 	do
 		p = instr( p+1, text, *oldtext )
-	    if( p = 0 ) then
-	    	exit do
-	    end if
+		if( p = 0 ) then
+			exit do
+		end if
 
 		remtext = mid( text, p + oldlen )
 		text = left( text, p-1 )
@@ -248,8 +248,8 @@ function hReplaceW _
 		byval newtext as wstring ptr _
 	) as wstring ptr static
 
-    dim as integer oldlen, newlen, p
-    static as DWSTRING text, remtext
+	dim as integer oldlen, newlen, p
+	static as DWSTRING text, remtext
 
 	oldlen = len( *oldtext )
 	newlen = len( *newtext )
@@ -259,9 +259,9 @@ function hReplaceW _
 	p = 0
 	do
 		p = instr( p+1, *text.data, *oldtext )
-	    if( p = 0 ) then
-	    	exit do
-	    end if
+		if( p = 0 ) then
+			exit do
+		end if
 
 		DWstrAssign( remtext, mid( *text.data, p + oldlen ) )
 		DWstrAssign( text, left( *text.data, p-1 ) )
@@ -282,11 +282,11 @@ function hReplaceChar _
 		byval newchar as integer _
 	) as zstring ptr
 
-    for i as integer = 0 to len( *orgtext ) - 1
-    	if( orgtext[i] = oldchar ) then
-    		orgtext[i] = newchar
-    	end if
-    next
+	for i as integer = 0 to len( *orgtext ) - 1
+		if( orgtext[i] = oldchar ) then
+			orgtext[i] = newchar
+		end if
+	next
 
 	function = orgtext
 
@@ -300,11 +300,11 @@ function hReEscape _
 		byref isunicode as integer _
 	) as zstring ptr static
 
-    static as DZSTRING res
-    dim as integer char, lgt, i, value, isnumber
-    dim as zstring ptr src, dst, src_end
+	static as DZSTRING res
+	dim as integer char, lgt, i, value, isnumber
+	dim as zstring ptr src, dst, src_end
 
-    '' convert escape sequences to internal format
+	'' convert escape sequences to internal format
 
 	isunicode = FALSE
 	textlen = 0
@@ -320,7 +320,7 @@ function hReEscape _
 	dst = res.data
 
 	src_end = src + lgt
-    do while( src < src_end )
+	do while( src < src_end )
 		char = *src
 		src += 1
 
@@ -384,20 +384,20 @@ function hReEscape _
 							 CHAR_AUPP to CHAR_FUPP, _
 							 CHAR_0 to CHAR_9
 							char -= CHAR_0
-                			if( char > 9 ) then
+							if( char > 9 ) then
 								char -= (CHAR_AUPP - CHAR_9 - 1)
-                			end if
-                			if( char > 16 ) then
-                  				char -= (CHAR_ALOW - CHAR_AUPP)
-                			end if
+							end if
+							if( char > 16 ) then
+								char -= (CHAR_ALOW - CHAR_AUPP)
+							end if
 
-                			value = (value * 16) + char
+							value = (value * 16) + char
 
-                		case else
-                			exit for
-                		end select
+						case else
+							exit for
+						end select
 						src += 1
-                	next
+					next
 
 				'' oct?
 				case CHAR_OUPP, CHAR_OLOW
@@ -413,7 +413,7 @@ function hReEscape _
 						end if
 						value = (value * 8) + (char - CHAR_0)
 						src += 1
-                	next
+					next
 
 				'' bin?
 				case CHAR_BUPP, CHAR_BLOW
@@ -429,7 +429,7 @@ function hReEscape _
 						end if
 						value = (value * 2) + (char - CHAR_0)
 						src += 1
-                	next
+					next
 
 				end select
 
@@ -440,7 +440,7 @@ function hReEscape _
 
 			'' 16-bit unicode?
 			case CHAR_ULOW
-            	isunicode = TRUE
+				isunicode = TRUE
 
 				'' 'u'
 				*dst = char
@@ -458,7 +458,7 @@ function hReEscape _
 
 			'' 32-bit unicode?
 			case CHAR_UUPP
-            	isunicode = TRUE
+				isunicode = TRUE
 
 				'' break in two 16-bit..
 
@@ -489,7 +489,7 @@ function hReEscape _
 
 			end select
 
-    		if( isnumber ) then
+			if( isnumber ) then
 				if( cuint( value ) > 255 ) then
 					errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 					value = 255
@@ -537,10 +537,10 @@ function hReEscapeW _
 		byref textlen as integer _
 	) as wstring ptr static
 
-    static as DWSTRING res
-    dim as integer char, lgt, i, isnumber
-    dim as uinteger value
-    dim as wstring ptr src, dst, src_end
+	static as DWSTRING res
+	dim as integer char, lgt, i, isnumber
+	dim as uinteger value
+	dim as wstring ptr src, dst, src_end
 
 	'' convert escape sequences to internal format
 
@@ -557,7 +557,7 @@ function hReEscapeW _
 	dst = res.data
 
 	src_end = src + lgt
-    do while( src < src_end )
+	do while( src < src_end )
 		char = *src
 		src += 1
 
@@ -621,20 +621,20 @@ function hReEscapeW _
 							 CHAR_AUPP to CHAR_FUPP, _
 							 CHAR_0 to CHAR_9
 							char -= CHAR_0
-                			if( char > 9 ) then
+							if( char > 9 ) then
 								char -= (CHAR_AUPP - CHAR_9 - 1)
-                			end if
-                			if( char > 16 ) then
-                  				char -= (CHAR_ALOW - CHAR_AUPP)
-                			end if
+							end if
+							if( char > 16 ) then
+								char -= (CHAR_ALOW - CHAR_AUPP)
+							end if
 
-                			value = (value * 16) + char
+							value = (value * 16) + char
 
-                		case else
-                			exit for
-                		end select
+						case else
+							exit for
+						end select
 						src += 1
-                	next
+					next
 
 				'' oct?
 				case CHAR_OUPP, CHAR_OLOW
@@ -650,7 +650,7 @@ function hReEscapeW _
 						end if
 						value = (value * 8) + (char - CHAR_0)
 						src += 1
-                	next
+					next
 
 				'' bin?
 				case CHAR_BUPP, CHAR_BLOW
@@ -666,7 +666,7 @@ function hReEscapeW _
 						end if
 						value = (value * 2) + (char - CHAR_0)
 						src += 1
-                	next
+					next
 
 				end select
 
@@ -717,7 +717,7 @@ function hReEscapeW _
 
 			end select
 
-    		if( isnumber ) then
+			if( isnumber ) then
 				if( cuint( value ) > 65535 ) then
 					errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 					value = 65535
@@ -764,12 +764,12 @@ function hEscape _
 		byval text as const zstring ptr _
 	) as const zstring ptr static
 
-    static as DZSTRING res
-    dim as integer c, octlen, lgt
-    dim as const zstring ptr src, /'dst,'/ src_end
-    dim as zstring ptr dst
+	static as DZSTRING res
+	dim as integer c, octlen, lgt
+	dim as const zstring ptr src, /'dst,'/ src_end
+	dim as zstring ptr dst
 
-    '' convert the internal escape sequences to GAS format
+	'' convert the internal escape sequences to GAS format
 
 	octlen = 0
 
@@ -895,11 +895,11 @@ function hHasEscape _
 		byval text as zstring ptr _
 	) as integer static
 
-    dim as uinteger char
-    dim as integer lgt
+	dim as uinteger char
+	dim as integer lgt
 
 	lgt = len( *text )
-    do while( lgt > 0 )
+	do while( lgt > 0 )
 		'' '\'?
 		if( *text = CHAR_RSLASH ) then
 			text += 1
@@ -938,11 +938,11 @@ function hHasEscapeW _
 		byval text as wstring ptr _
 	) as integer static
 
-    dim as uinteger char
-    dim as integer lgt
+	dim as uinteger char
+	dim as integer lgt
 
 	lgt = len( *text )
-    do while( lgt > 0 )
+	do while( lgt > 0 )
 		'' '\'?
 		if( *text = CHAR_RSLASH ) then
 			text += 1
@@ -993,10 +993,10 @@ private function hU16ToWchar _
 
 		if( c > 9 ) then
 			c -= (CHAR_AUPP - CHAR_9 - 1)
-        end if
-        if( c > 16 ) then
-        	c -= (CHAR_ALOW - CHAR_AUPP)
-        end if
+		end if
+		if( c > 16 ) then
+			c -= (CHAR_ALOW - CHAR_AUPP)
+		end if
 
 		char = (char * 16) or c
 	next
@@ -1012,11 +1012,11 @@ function hEscapeW _
 		byval text as wstring ptr _
 	) as zstring ptr static
 
-    static as DZSTRING res
-    dim as uinteger char, c
+	static as DZSTRING res
+	dim as uinteger char, c
 	dim as integer lgt, i, wcharlen
-    dim as wstring ptr src, src_end
-    dim as zstring ptr dst
+	dim as wstring ptr src, src_end
+	dim as zstring ptr dst
 
 	'' convert the internal escape sequences to GAS format
 
@@ -1061,16 +1061,16 @@ function hEscapeW _
 				loop
 
 			else
-			    '' unicode 16-bit?
-			    if( char = asc( "u" ) ) then
-			    	if( src + 4 > src_end ) then exit do
-			    	char = hU16ToWchar( src )
-			    	src += 4
+				'' unicode 16-bit?
+				if( char = asc( "u" ) ) then
+					if( src + 4 > src_end ) then exit do
+					char = hU16ToWchar( src )
+					src += 4
 
-                '' remap char as they will become a octagonal seq
-                else
-			    	char = hRemapChar( char )
-                end if
+				'' remap char as they will become a octagonal seq
+				else
+					char = hRemapChar( char )
+				end if
 			end if
 
 		end if
@@ -1099,7 +1099,7 @@ function hEscapeW _
 				dst += 3
 			end if
 
-        	char shr= 8
+			char shr= 8
 		next
 
 	loop
@@ -1117,9 +1117,9 @@ function hUnescape _
 		byval text as zstring ptr _
 	) as zstring ptr static
 
-    static as DZSTRING res
-    dim as integer char, lgt, i
-    dim as zstring ptr src, dst, src_end
+	static as DZSTRING res
+	dim as integer char, lgt, i
+	dim as zstring ptr src, dst, src_end
 
 	lgt = len( *text )
 	if( lgt = 0 ) then
@@ -1153,10 +1153,10 @@ function hUnescape _
 				loop
 
 			else
-			    '' remap char
-			    char = hRemapChar( char )
+				'' remap char
+				char = hRemapChar( char )
 
-			    '' note: zstring's won't contain \u seqs
+				'' note: zstring's won't contain \u seqs
 			end if
 
 		end if
@@ -1179,9 +1179,9 @@ function hUnescapeW _
 		byval text as wstring ptr _
 	) as wstring ptr static
 
-    static as DWSTRING res
-    dim as integer char, lgt, i
-    dim as wstring ptr src, dst, src_end
+	static as DWSTRING res
+	dim as integer char, lgt, i
+	dim as wstring ptr src, dst, src_end
 
 	lgt = len( *text )
 	if( lgt = 0 ) then
@@ -1194,11 +1194,11 @@ function hUnescapeW _
 	dst = res.data
 
 	src_end = src + lgt
-    do while( src < src_end )
-    	char = *src
-    	src += 1
+	do while( src < src_end )
+		char = *src
+		src += 1
 
-    	if( char = FB_INTSCAPECHAR ) then
+		if( char = FB_INTSCAPECHAR ) then
 
 			if( src >= src_end ) then exit do
 			char = *src
@@ -1217,16 +1217,16 @@ function hUnescapeW _
 				loop
 
 			else
-			    '' unicode 16-bit?
-			    if( char = asc( "u" ) ) then
-			    	if( src + 4 > src_end ) then exit do
-			    	char = hU16ToWchar( src )
-			    	src += 4
+				'' unicode 16-bit?
+				if( char = asc( "u" ) ) then
+					if( src + 4 > src_end ) then exit do
+					char = hU16ToWchar( src )
+					src += 4
 
-                '' remap char as they will become a octagonal seq
-                else
-			    	char = hRemapChar( char )
-                end if
+				'' remap char as they will become a octagonal seq
+				else
+					char = hRemapChar( char )
+				end if
 			end if
 
 		end if
@@ -1234,12 +1234,12 @@ function hUnescapeW _
 		*dst = char
 		dst += 1
 
-    loop
+	loop
 
-    '' null-term
-    *dst = 0
+	'' null-term
+	*dst = 0
 
-    function = res.data
+	function = res.data
 
 end function
 
