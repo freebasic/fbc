@@ -530,9 +530,6 @@ ifeq ($(TARGET_OS),dos)
   RTL_LIBS += $(libdir)/libc.a
 endif
 
-# allow optionally including config-post
--include config-post.mk
-
 #
 # Build rules
 #
@@ -551,6 +548,9 @@ ifndef V
   QUIET_AR    = @echo "AR $@";
   QUIET       = @
 endif
+
+# allow optionally including config-post
+-include config-post.mk
 
 ################################################################################
 
