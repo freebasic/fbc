@@ -284,11 +284,37 @@ private function hMacro_EvalZ( byval arg as zstring ptr ) as string
 					errmsg = FB_ERRMSG_SYNTAXERROR
 				end if
 			elseif( astIsConstant( expr ) ) then
-				''!!!FIXME!!! literal text might be internally escaped
-				DZStrConcatAssign( res, QUOTE )
-				DZStrConcatAssign( res, hReplace( expr->sym->var_.littext, QUOTE, QUOTE + QUOTE ) )
-				DZStrConcatAssign( res, QUOTE )
-
+				'' !!!TODO!!! refactor in to procedures
+				if( symbGetType( expr->sym ) <> FB_DATATYPE_WCHAR ) then
+					dim textlen as integer
+					dim text as zstring ptr = hUnescape( symbGetVarLitText( expr->sym ), textlen )
+					if( len(*text) <> textlen ) then
+						dim tmp as string
+						for i as integer = 1 to textlen
+							tmp &= $"\x" & hex( asc( *text, i ), 2 )
+						next
+						DZStrConcatAssign( res, "!" + QUOTE )
+						DZStrConcatAssign( res, strptr(tmp) )
+						DZStrConcatAssign( res, QUOTE )
+					else
+						DZStrConcatAssign( res, "$" + QUOTE )
+						DZStrConcatAssign( res, text )
+						DZStrConcatAssign( res, QUOTE )
+					end if
+				else
+					'' WSTRING to ASCII? always escape.
+					dim textlen as integer
+					dim text as wstring ptr = hUnescapeW( symbGetVarLitTextW( expr->sym ), textlen )
+					dim tmp as string
+					for i as integer = 0 to textlen - 1
+						tmp &= $"\u" & hex( cast( ulong, text[i] ), 4 )
+					next
+					'' Careful - wstring literal pasted into an ascii lexer stream
+					DZStrConcatAssign( res, "!" + QUOTE )
+					DZStrConcatAssign( res, strptr(tmp) )
+					DZStrConcatAssign( res, QUOTE )
+				end if
+	
 				'' any tokens still in the buffer? cExpression() should have used them all
 				if( lexGetToken( ) <> FB_TK_EOL ) then
 					errmsg = FB_ERRMSG_SYNTAXERROR
@@ -668,12 +694,15 @@ private function hDefUnquoteZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 	if( arg <> NULL ) then
 		var length = len(*arg)
 
+		'' !!!TODO!!! add support for !"escaped-strings"
+
 		'' $"[text]"?
 		if( (length >= 3) andalso ((arg[0] = asc( "$" )) and (arg[1] = asc(QUOTE)) and (arg[length-1] = asc(QUOTE))) ) then
 			res = hReplace( mid( *arg, 3, length-3 ), QUOTE + QUOTE, QUOTE )
 
 		'' "[text]"?
 		elseif( (length >= 2) andalso ((arg[0] = asc(QUOTE)) and (arg[length-1] = asc(QUOTE))) ) then
+			'' !!!FIXME!!! check env.opt.escapestr
 			res = hReplace( mid( *arg, 2, length-2 ), QUOTE + QUOTE, QUOTE )
 
 		'' anything else, return as-is
@@ -701,12 +730,15 @@ private function hDefUnquoteW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 	if( arg <> NULL ) then
 		var length = len(*arg)
 
+		'' !!!TODO!!! add support for !"escaped-strings"
+
 		'' $"[text]"?
 		if( (length >= 3) andalso ((arg[0] = asc( "$" )) and (arg[1] = asc(QUOTE)) and (arg[length-1] = asc(QUOTE))) ) then
 			DWstrAssign( res, hReplaceW( mid( *arg, 3, length-3 ), QUOTE + QUOTE, QUOTE ) )
 
 		'' "[text]"?
 		elseif( (length >= 2) andalso ((arg[0] = asc(QUOTE)) and (arg[length-1] = asc(QUOTE))) ) then
+			'' !!!FIXME!!! check env.opt.escapestr
 			DWstrAssign( res, hReplaceW( mid( *arg, 2, length-2 ), QUOTE + QUOTE, QUOTE ) )
 
 		'' anything else, return as-is
