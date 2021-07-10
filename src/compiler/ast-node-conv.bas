@@ -387,7 +387,7 @@ function astNewCONV _
 	end if
 
 	'' UDT? check if it is z|wstring? 
-	'' !!! TODO !!! make this block in to a function
+	'' !!!TODO!!! make this block in to a function
 	''              re-use in astNewOvlCONV()
 	''              rewrite hDoGlobOpOverload() as astTry* function
 	if( typeGet( ldtype ) = FB_DATATYPE_STRUCT ) then

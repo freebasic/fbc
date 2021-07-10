@@ -1365,7 +1365,7 @@ end function
 '':::::
 function hStr2Args( byval txt as const zstring ptr, res() as string ) as integer
 
-	'' !!! TODO !! add the wstring version
+	'' !!!TODO!!! add the wstring version
 
 	dim as integer t = 0
 	dim as const ubyte ptr s = cast(const ubyte ptr, txt)

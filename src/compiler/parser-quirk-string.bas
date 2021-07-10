@@ -170,7 +170,7 @@ function cLRSetStmt(byval tk as FB_TOKEN) as integer
 		function = rtlMemCopyClear( dstexpr, symbGetLen( dst->subtype ), _
 		                            srcexpr, symbGetLen( src->subtype ) )
 	else
-		'' !!! TODO !!! - if udt extends z|wstring, check if operator len()
+		'' !!!TODO!!! - if udt extends z|wstring, check if operator len()
 		'' was overloaded and pass the length parameters to a separate
 		'' rtlib function
 		function = rtlStrLRSet( dstexpr, srcexpr, is_rset )
