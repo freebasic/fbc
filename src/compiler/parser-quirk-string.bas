@@ -309,16 +309,43 @@ private function cStrASC() as ASTNODE ptr
 		end if
 
 		if( p >= 0 ) then
+
+			'' !!!TODO!!! we would probably prefer that fbc just call ASC() in the runtime lib
+			'' - maybe add new ASC() entry points to rtlib?:
+			'' - a new rtlib function allowing the actual length to specified would move this function
+			''   from here back in to the rtlib
+			''     ASC( const zstring ptr, pos as integer, textlen as integer ) as ulong
+			''     ASC( const wstring ptr, pos as integer, textlen as integer ) as ulong
+			'' Because previsouly in either the zstring or wstring case:
+			''    function = astNewCONSTi( asc( *zs, p ), FB_DATATYPE_UINT )
+			''    function = astNewCONSTi( asc( *ws, p ), FB_DATATYPE_UINT )
+			'' The zstring|wstring ptr loses the actual length when passed to ASC() in the rtlib
+			'' if the constant string contains an embedded NUL CHAR then ASC will fail for any
+			'' position after the first embedded NUL char.
+
+			dim textlen as integer
 			'' zstring?
 			if( astGetDataType( expr1 ) <> FB_DATATYPE_WCHAR ) then
 				'' remove internal escape format
-				dim as zstring ptr zs = hUnescape( symbGetVarLitText( litsym ) )
-				function = astNewCONSTi( asc( *zs, p ), FB_DATATYPE_UINT )
+				dim as zstring ptr zs = hUnescape( symbGetVarLitText( litsym ), textlen )
+
+				'' use the textlen returned from hUnescape() to check the range on position
+				if( (zs = NULL) orelse (textlen = 0) orelse  (p <= 0) orelse (p > textlen) ) then
+					function = astNewCONSTi( clngint( 0 ), FB_DATATYPE_UINT )
+				else
+					function = astNewCONSTi( clngint( (*zs)[p-1] ), FB_DATATYPE_UINT )
+				end if
 			'' wstring..
 			else
-				'' ditto
-				dim as wstring ptr ws = hUnescapeW( symbGetVarLitTextW( litsym ) )
-				function = astNewCONSTi( asc( *ws, p ), FB_DATATYPE_UINT )
+				'' remove internal escape format
+				dim as wstring ptr ws = hUnescapeW( symbGetVarLitTextW( litsym ), textlen )
+				
+				'' use the textlen returned from hUnescapeW() to check the range on position
+				if( (ws = NULL) orelse (textlen = 0) orelse  (p <= 0) orelse (p > textlen) ) then
+					function = astNewCONSTi( clngint( 0 ), FB_DATATYPE_UINT )
+				else
+					function = astNewCONSTi( clngint( (*ws)[p-1] ), FB_DATATYPE_UINT )
+				end if
 			end if
 			astDelNode( expr1 )
 			expr1 = NULL
