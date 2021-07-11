@@ -9,6 +9,7 @@
 #include once "hash.bi"
 #include once "list.bi"
 #include once "ir.bi"
+#include once "dstr.bi"
 
 '':::::
 function symbAddConst _
@@ -309,4 +310,85 @@ function symbCloneConst( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 	'' it will be a non-local var
 	function = symbAddConst( NULL, symbGetType( sym ), symbGetSubtype( sym ), _
 	                         symbGetConstVal( sym ), symbGetAttrib( sym ) )
+end function
+
+function symbGetConstStrAsStr( byval s as FBSYMBOL ptr ) as zstring ptr
+
+	assert( (symbGetType( s ) = FB_DATATYPE_CHAR) _
+	        or (symbGetType( s ) = FB_DATATYPE_WCHAR) )
+
+	static as DZSTRING res
+
+	DZStrAssign( res, NULL )
+
+	'' ASCII to ASCII
+	if( symbGetType( s ) <> FB_DATATYPE_WCHAR ) then
+		dim textlen as integer
+		dim text as zstring ptr = hUnescape( symbGetVarLitText( s ), textlen )
+		if( len(*text) <> textlen ) then
+			DZStrConcatAssign( res, "!" + QUOTE )
+			for i as integer = 0 to textlen - 1
+				DZStrConcatAssign( res, $"\x" & hex( cast( ulong, (*text)[i] ), 2 ) )
+			next
+		else
+			DZStrConcatAssign( res, "$" + QUOTE )
+			DZStrConcatAssign( res, text )
+		end if
+		DZStrConcatAssign( res, QUOTE )
+
+	'' WSTRING to ASCII - always escape
+	else
+		dim textlen as integer
+		dim text as wstring ptr = hUnescapeW( symbGetVarLitTextW( s ), textlen )
+		DZStrConcatAssign( res, "!" + QUOTE )
+		for i as integer = 0 to textlen - 1
+			'' !!!FIXME!!! \u escaping assumptions
+			DZStrConcatAssign( res, $"\u" & hex( cast( ulong, (*text)[i] ), 4 ) )
+		next
+		DZStrConcatAssign( res, QUOTE )
+	end if
+
+	return res.data
+	
+end function
+
+function symbGetConstStrAsWstr( byval s as FBSYMBOL ptr ) as wstring ptr
+
+	assert( (symbGetType( s ) = FB_DATATYPE_CHAR) _
+	        or (symbGetType( s ) = FB_DATATYPE_WCHAR) )
+
+	static as DWSTRING res
+
+	DWStrAssign( res, NULL )
+
+	'' WSTRING to WSTRING
+	if( symbGetType( s ) = FB_DATATYPE_WCHAR ) then
+		dim textlen as integer
+		dim text as wstring ptr = hUnescapeW( symbGetVarLitTextW( s ), textlen )
+		if( len(*text) <> textlen ) then
+			DWStrConcatAssign( res, "!" + QUOTE )
+			for i as integer = 0 to textlen - 1
+				'' !!!FIXME!!! \u escaping assumptions
+				DWStrConcatAssign( res, $"\u" & hex( cast( ulong, (*text)[i] ), 4 ) )
+			next
+		else
+			DWStrConcatAssign( res, "$" + QUOTE )
+			DWStrConcatAssign( res, text )
+		end if
+		DWStrConcatAssign( res, QUOTE )
+
+	'' ASCII to WSTRING? escape everything, it's easier.	
+	else
+		dim textlen as integer
+		dim text as zstring ptr = hUnescape( symbGetVarLitText( s ), textlen )
+		DWStrConcatAssign( res, "!" + QUOTE )
+		for i as integer = 0 to textlen - 1
+			'' !!!FIXME!!! \u escaping assumptions
+			DWStrConcatAssign( res, $"\u" & hex( cast( ulong, (*text)[i] ), 4 ) )
+		next
+		DWStrConcatAssign( res, QUOTE )
+	end if
+
+	return res.data
+
 end function

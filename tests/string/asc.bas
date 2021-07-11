@@ -66,4 +66,40 @@ SUITE( fbc_tests.string_.asc_ )
 
 	END_TEST
 
+	TEST( const_wstr_ )
+		scope
+			const S = wstr("")
+			CU_ASSERT_EQUAL( asc(s, 0 ), 0 )
+			CU_ASSERT_EQUAL( asc(s, 1 ), 0 )
+			CU_ASSERT_EQUAL( asc(s, 2 ), 0 )
+		end scope 
+
+		scope
+			const S = wstr("AB")
+			CU_ASSERT_EQUAL( asc(s, 0 ), 0 )
+			CU_ASSERT_EQUAL( asc(s, 1 ), 65 )
+			CU_ASSERT_EQUAL( asc(s, 2 ), 66 )
+			CU_ASSERT_EQUAL( asc(s, 3 ), 0 )
+		end scope 
+
+		scope
+			const S = wstr(!"A\000B")
+			CU_ASSERT_EQUAL( asc(s, 0 ), 0 )
+			CU_ASSERT_EQUAL( asc(s, 1 ), 65 )
+			CU_ASSERT_EQUAL( asc(s, 2 ), 0 )
+			CU_ASSERT_EQUAL( asc(s, 3 ), 66 )
+			CU_ASSERT_EQUAL( asc(s, 4 ), 0 )
+		end scope 
+
+		scope
+			const S = wstr(!"\u1111\u0000\u2222")
+			CU_ASSERT_EQUAL( asc(s, 0 ), 0 )
+			CU_ASSERT_EQUAL( asc(s, 1 ), &h1111 )
+			CU_ASSERT_EQUAL( asc(s, 2 ), 0 )
+			CU_ASSERT_EQUAL( asc(s, 3 ), &h2222 )
+			CU_ASSERT_EQUAL( asc(s, 4 ), 0 )
+		end scope 
+
+	END_TEST
+
 END_SUITE

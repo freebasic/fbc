@@ -10,6 +10,13 @@ SUITE( fbc_tests.pp.macro_eval_str )
 		CU_ASSERT_EQUAL( "A" + !"\0" + "B", __FB_EVAL__( "A" + !"\0" + "B" ) )
 		CU_ASSERT_EQUAL( !"\\" + "\" + !"\\", __FB_EVAL__( !"\\" + "\" + !"\\" ) )
 
+		CU_ASSERT_EQUAL( wstr(""), __FB_EVAL__( wstr("") ) )
+		CU_ASSERT_EQUAL( wstr("A"), __FB_EVAL__( wstr("A") ) )
+		CU_ASSERT_EQUAL( wstr("A") + wstr("B"), __FB_EVAL__( wstr("A") + wstr("B") ) )
+		CU_ASSERT_EQUAL( wstr("A") + wstr(!"\0"), __FB_EVAL__( wstr("A") + wstr(!"\0") ) )
+		CU_ASSERT_EQUAL( wstr("A") + wstr(!"\0") + wstr("B"), __FB_EVAL__( wstr("A") + wstr(!"\0") + wstr("B") ) )
+		CU_ASSERT_EQUAL( wstr(!"\\") + wstr("\") + wstr(!"\\"), __FB_EVAL__( wstr(!"\\") + wstr("\") + wstr(!"\\") ) )
+
 	END_TEST
 	
 	TEST( nulchar )
