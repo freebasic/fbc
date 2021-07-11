@@ -389,7 +389,7 @@ end function
 '':::::
 '' note: this function must be called *before* astNewARG(e) because the
 ''		 expression 'e' can be changed inside the former (address-of string's etc)
-'' !!! TODO !!! - in places where rtlCalcStrLen() is called, if it is a UDT
+'' !!!TODO!!! - in places where rtlCalcStrLen() is called, if it is a UDT
 '' that overloads operator len(), then the value returned by operator len() should
 '' be prefered to calculating length in the run-time based on the null terminated
 '' length.  Many fb_Wstr* functions will need alternate versions that accept a length 

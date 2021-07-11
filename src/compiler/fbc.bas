@@ -3689,7 +3689,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -strip           Omit all symbol information from the output file"
 	print "  -t <value>       Set .exe stack size in kbytes, default: 1024 (win32/dos)"
 	if( verbose ) then
-	'' !!! TODO !!! provide more examples of available targets
+	'' !!!TODO!!! provide more examples of available targets
 	print "  -target <name>   Set cross-compilation target"
 	else
 	print "  -target <name>   Set cross-compilation target"

@@ -1252,6 +1252,8 @@ declare function symbReuseOrAddConst _
 	) as FBSYMBOL ptr
 
 declare function symbGetConstValueAsStr( byval s as FBSYMBOL ptr ) as string
+declare function symbGetConstStrAsStr( byval s as FBSYMBOL ptr ) as zstring ptr
+declare function symbGetConstStrAsWstr( byval s as FBSYMBOL ptr ) as wstring ptr
 
 declare function symbStructBegin _
 	( _

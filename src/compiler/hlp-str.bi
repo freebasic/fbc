@@ -80,17 +80,19 @@ declare function hEscape _
 
 declare function hEscapeW _
 	( _
-		byval text as wstring ptr _
+		byval text as const wstring ptr _
 	) as zstring ptr
 
 declare function hUnescape _
 	( _
-		byval text as zstring ptr _
+		byval text as zstring ptr, _
+		byref textlen as integer = 0 _
 	) as zstring ptr
 
 declare function hUnescapeW _
 	( _
-		byval text as wstring ptr _
+		byval text as wstring ptr, _
+		byref textlen as integer = 0 _
 	) as wstring ptr
 
 declare function hHasEscape _

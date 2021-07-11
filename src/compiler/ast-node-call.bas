@@ -204,7 +204,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 
 		'' cdecl: pushed arguments must be popped by caller
 		'' pascal/stdcall: callee does it instead
-		'' thiscall: could be either depending on target !!! TODO !!!
+		'' thiscall: could be either depending on target !!!TODO!!!
 		argbytes = symbCalcArgLen( l->dtype, l->subtype, arg->arg.mode )
 		if( symbGetProcMode( proc ) = FB_FUNCMODE_CDECL ) then
 			bytestopop += argbytes

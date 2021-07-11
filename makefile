@@ -632,9 +632,6 @@ ifeq ($(TARGET_OS),js)
   RTL_LIBS += $(libdir)/fb_shell.html
 endif
 
-# allow optionally including config-post
--include config-post.mk
-
 #
 # Build rules
 #
@@ -653,6 +650,9 @@ ifndef V
   QUIET_AR    = @echo "AR $@";
   QUIET       = @
 endif
+
+# allow optionally including config-post
+-include config-post.mk
 
 ################################################################################
 

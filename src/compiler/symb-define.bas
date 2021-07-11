@@ -236,18 +236,20 @@ private function hMacro_getArgW( byval argtb as LEXPP_ARGTB ptr, byval num as in
 	
 end function
 
-private function hMacro_Eval( byval arg as zstring ptr) as string
+private function hMacro_EvalZ( byval arg as zstring ptr ) as string
 
 	'' the expression should have already been handled in hLoadMacro|hLoadMacroW
 	'' so, if we do get here, just pass the argument back as-is
-	var res = ""
+	'' !!!TODO!!! - DZSTRING can be replaced by STRING
+	dim as DZSTRING res
+	DZStrAssign( res, NULL )
 
 	if( arg ) then
 
 		'' create a lightweight context push for the lexer
-		'' like an include file, but no include file
-		'' text to expand is to be loaded in LEX.CTX->DEFTEXT[W]
-		'' use the parser to build an AST for the literal result
+		'' like an include file, but no named include file
+		'' - text to expand is to be loaded in LEX.CTX->DEFTEXT[W]
+		'' - use the parser to build an AST for the literal result
 
 		lexPushCtx()
 		lexInit( FALSE, TRUE )
@@ -263,7 +265,7 @@ private function hMacro_Eval( byval arg as zstring ptr) as string
 		'' doesn't read past the end of the expression text
 		'' by appending an LFCHAR to the end of the expression
 		'' It would be better to use the explicit EOF character, 
-		'' but we can't appened an extta NULL character to a zstring
+		'' but we can't appened an extra NUL character to a zstring
 
 		DZstrConcatAssign( lex.ctx->deftext, LFCHAR )
 		lex.ctx->defptr = lex.ctx->deftext.data
@@ -276,23 +278,23 @@ private function hMacro_Eval( byval arg as zstring ptr) as string
 			expr = astOptimizeTree( expr )
 
 			if( astIsCONST( expr ) ) then
-				res = astConstFlushToStr( expr )
+				DZStrAssign( res, astConstFlushToStr( expr ) )
 
 				'' any tokens still in the buffer? cExpression() should have used them all
 				if( lexGetToken( ) <> FB_TK_EOL ) then
 					errmsg = FB_ERRMSG_SYNTAXERROR
 				end if
 			elseif( astIsConstant( expr ) ) then
-				res = """" + hReplace( expr->sym->var_.littext, QUOTE, QUOTE + QUOTE ) + """"
-
+				DZStrAssign( res, symbGetConstStrAsStr( expr->sym ) )
 				'' any tokens still in the buffer? cExpression() should have used them all
 				if( lexGetToken( ) <> FB_TK_EOL ) then
 					errmsg = FB_ERRMSG_SYNTAXERROR
 				end if
+				astDelTree( expr )
 			else
 				astDelTree( expr )
 				errmsg = FB_ERRMSG_EXPECTEDCONST
-				res = str(0)
+				DZStrAssign( res, !"\000" )
 			end if
 		else
 			errmsg = FB_ERRMSG_SYNTAXERROR
@@ -310,7 +312,89 @@ private function hMacro_Eval( byval arg as zstring ptr) as string
 
 	end if
 
-	function = res
+	function = *res.data
+
+end function
+
+private function hMacro_EvalW( byval arg as wstring ptr ) as wstring ptr
+
+	'' the expression should have already been handled in hLoadMacro|hLoadMacroW
+	'' so, if we do get here, just pass the argument back as-is
+	'' !!!TODO!!! - We must use DWSTRING since we don't have a built-in var-len wstring
+	'' but, if we did have a var-len wstring, we should use it instead
+
+	static as DWSTRING res
+	DWStrAssign( res, NULL )
+
+	if( arg ) then
+
+		'' create a lightweight context push for the lexer
+		'' like an include file, but no named include file
+		'' - text to expand is to be loaded in LEX.CTX->DEFTEXT[W]
+		'' - use the parser to build an AST for the literal result
+
+		lexPushCtx()
+		lexInit( FALSE, TRUE )
+
+		'' prevent cExpression from writing to .pp.bas file
+		lex.ctx->reclevel += 1
+
+		DWstrAssign( lex.ctx->deftextw, *arg )
+		lex.ctx->defptrw = lex.ctx->deftextw.data
+		lex.ctx->deflen += len( *arg )
+
+		'' Add an end of expression marker so that the parser
+		'' doesn't read past the end of the expression text
+		'' by appending an LFCHAR to the end of the expression
+		'' It would be better to use the explicit EOF character, 
+		'' but we can't appened an extra NUL character to a zstring
+
+		DWstrConcatAssign( lex.ctx->deftextw, LFCHAR )
+		lex.ctx->defptrw = lex.ctx->deftextw.data
+		lex.ctx->deflen += len( LFCHAR )
+
+		dim expr as ASTNODE ptr = cExpression( )
+		var errmsg = FB_ERRMSG_OK
+
+		if( expr <> NULL ) then
+			expr = astOptimizeTree( expr )
+
+			if( astIsCONST( expr ) ) then
+				DWStrAssign( res, astConstFlushToWstr( expr ) )
+
+				'' any tokens still in the buffer? cExpression() should have used them all
+				if( lexGetToken( ) <> FB_TK_EOL ) then
+					errmsg = FB_ERRMSG_SYNTAXERROR
+				end if
+			elseif( astIsConstant( expr ) ) then
+				DWStrAssign( res, symbGetConstStrAsWstr( expr->sym ) )
+				'' any tokens still in the buffer? cExpression() should have used them all
+				if( lexGetToken( ) <> FB_TK_EOL ) then
+					errmsg = FB_ERRMSG_SYNTAXERROR
+				end if
+				astDelTree( expr )
+			else
+				astDelTree( expr )
+				errmsg = FB_ERRMSG_EXPECTEDCONST
+				DWStrAssign( res, !"\u0000" )
+			end if
+		else
+			errmsg = FB_ERRMSG_SYNTAXERROR
+		end if
+
+		lex.ctx->reclevel -= 1
+
+		lexPopCtx()
+
+		if( errmsg <> FB_ERRMSG_OK ) then
+			errReportEx( errmsg, *arg )
+			'' error recovery: skip until next line (in the buffer)
+			hSkipUntil( FB_TK_EOL, TRUE )
+		end if
+
+	end if
+
+	function = res.data
 
 end function
 
@@ -435,7 +519,7 @@ private function hDefArgExtract_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum
 		'' Val returns 0 on failure which we can't detect from a valid 0
 		'' so check and construct the number manually
 
-		dim as string varstr = hMacro_Eval(numStr)
+		dim as string varstr = hMacro_EvalZ(numStr)
 		var pnumStr = strptr(varstr)
 
 		dim numArgLen as Long = Len(*pnumStr), i as Long, index as ULong = 0
@@ -664,12 +748,15 @@ private function hDefUnquoteZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 	if( arg <> NULL ) then
 		var length = len(*arg)
 
+		'' !!!TODO!!! add support for !"escaped-strings"
+
 		'' $"[text]"?
 		if( (length >= 3) andalso ((arg[0] = asc( "$" )) and (arg[1] = asc(QUOTE)) and (arg[length-1] = asc(QUOTE))) ) then
 			res = hReplace( mid( *arg, 3, length-3 ), QUOTE + QUOTE, QUOTE )
 
 		'' "[text]"?
 		elseif( (length >= 2) andalso ((arg[0] = asc(QUOTE)) and (arg[length-1] = asc(QUOTE))) ) then
+			'' !!!FIXME!!! check env.opt.escapestr
 			res = hReplace( mid( *arg, 2, length-2 ), QUOTE + QUOTE, QUOTE )
 
 		'' anything else, return as-is
@@ -697,12 +784,15 @@ private function hDefUnquoteW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 	if( arg <> NULL ) then
 		var length = len(*arg)
 
+		'' !!!TODO!!! add support for !"escaped-strings"
+
 		'' $"[text]"?
 		if( (length >= 3) andalso ((arg[0] = asc( "$" )) and (arg[1] = asc(QUOTE)) and (arg[length-1] = asc(QUOTE))) ) then
 			DWstrAssign( res, hReplaceW( mid( *arg, 3, length-3 ), QUOTE + QUOTE, QUOTE ) )
 
 		'' "[text]"?
 		elseif( (length >= 2) andalso ((arg[0] = asc(QUOTE)) and (arg[length-1] = asc(QUOTE))) ) then
+			'' !!!FIXME!!! check env.opt.escapestr
 			DWstrAssign( res, hReplaceW( mid( *arg, 2, length-2 ), QUOTE + QUOTE, QUOTE ) )
 
 		'' anything else, return as-is
@@ -716,7 +806,7 @@ private function hDefUnquoteW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 
 end function
 
-private function hDefEval_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
+private function hDefEvalZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
 
 	'' __FB_EVAL__( arg )
 
@@ -724,11 +814,26 @@ private function hDefEval_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as in
 	'' so, if we do get here, just pass the argument back as-is
 
 	var arg = hMacro_getArgZ( argtb, 0 )
-	var res = hMacro_Eval(arg)
+	var res = hMacro_EvalZ( arg )
 
 	ZstrFree(arg)
 
 	function = res
+
+end function
+
+private function hDefEvalW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as wstring ptr
+
+	'' __FB_EVAL__( arg )
+
+	'' the expression should have already been handled in hLoadMacro|hLoadMacroW
+	'' so, if we do get here, just pass the argument back as-is
+
+	var arg = hMacro_getArgW( argtb, 0 )
+	static as DWSTRING res
+	DWstrAssign( res, hMacro_EvalW( arg ) )
+
+	function = res.data
 
 end function
 
@@ -797,7 +902,7 @@ dim shared macroTb(0 to ...) as SYMBMACRO => _
 	(@"__FB_JOIN__"           , 0                       , @hDefJoinZ_cb       , @hDefJoinW_cb        , 2, { (@"L"), (@"R") } ), _
 	(@"__FB_QUOTE__"          , 0                       , @hDefQuoteZ_cb      , @hDefQuoteW_cb       , 1, { (@"ARG") } ), _
 	(@"__FB_UNQUOTE__"        , 0                       , @hDefUnquoteZ_cb    , @hDefUnquoteW_cb     , 1, { (@"ARG") } ), _
-	(@"__FB_EVAL__"           , 0                       , @hDefEval_cb        , NULL                 , 1, { (@"ARG") } ) _
+	(@"__FB_EVAL__"           , 0                       , @hDefEvalZ_cb       , @hDefEvalW_cb        , 1, { (@"ARG") } ) _
 }
 
 sub symbDefineInit _
