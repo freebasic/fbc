@@ -7,3 +7,5 @@ warning expected
 	Suffix ignored in 'let%'
 ----String Functions ----
 none expected
+----Procedure ----
+none expected

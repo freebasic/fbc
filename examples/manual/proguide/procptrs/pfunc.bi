@@ -13,3 +13,4 @@ Function Add (a As Integer, b As Integer) As Integer
 End Function
 
 Dim pFunc As Function (As Integer, As Integer) As Integer = @Add
+		

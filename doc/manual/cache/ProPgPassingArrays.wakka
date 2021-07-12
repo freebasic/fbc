@@ -53,7 +53,7 @@ Declaring/defining array parameters and passing array arguments to procedures
 			**""-""** "global" size in bytes: (ubound1 - lbound1 + 1) * (ubound2 - lbound2 + 1) * ... * (size of 1 element in bytes)
 			**""-""** size of one element in bytes
 			**""-""** number of dimensions
-			**""-""** flags**##(*)##**: array points to fixed-length memory (1-bit) / array has fixed nb of dimensions (1-bit) / nb of dimensions allocated in descriptor (4-bit)
+			**""-""** flags**##(*)##**: array points to fixed-length memory (1-bit) / array has nb of dimensions defined at first declaration / nb of dimensions allocated in descriptor (4-bit)
 			then for each dimension:
 			**""-""** number of elements: (ubound - lbound + 1)
 			**""-""** lbound

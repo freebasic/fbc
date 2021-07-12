@@ -31,13 +31,13 @@ declare sub DZstrReset _
 declare sub DZstrAssign _
 	( _
 		byref dst as DZSTRING, _
-		byval src as zstring ptr _
+		byval src as const zstring ptr _
 	)
 
 declare sub DZstrAssignW _
 	( _
 		byref dst as DZSTRING, _
-		byval src as wstring ptr _
+		byval src as const wstring ptr _
 	)
 
 declare sub DZstrAssignC _
@@ -49,13 +49,13 @@ declare sub DZstrAssignC _
 declare sub DZstrConcatAssign _
 	( _
 		byref dst as DZSTRING, _
-		byval src as zstring ptr _
+		byval src as const zstring ptr _
 	)
 
 declare sub DZstrConcatAssignW _
 	( _
 		byref dst as DZSTRING, _
-		byval src as wstring ptr _
+		byval src as const wstring ptr _
 	)
 
 declare sub DZstrConcatAssignC _
@@ -83,13 +83,13 @@ declare sub DWstrReset _
 declare sub DWstrAssign _
 	( _
 		byref dst as DWSTRING, _
-		byval src as wstring ptr _
+		byval src as const wstring ptr _
 	)
 
 declare sub DWstrAssignA _
 	( _
 		byref dst as DWSTRING, _
-		byval src as zstring ptr _
+		byval src as const zstring ptr _
 	)
 
 declare sub DWstrAssignC _
@@ -101,13 +101,13 @@ declare sub DWstrAssignC _
 declare sub DWstrConcatAssign _
 	( _
 		byref dst as DWSTRING, _
-		byval src as wstring ptr _
+		byval src as const wstring ptr _
 	)
 
 declare sub DWstrConcatAssignA _
 	( _
 		byref dst as DWSTRING, _
-		byval src as zstring ptr _
+		byval src as const zstring ptr _
 	)
 
 declare sub DWstrConcatAssignC _

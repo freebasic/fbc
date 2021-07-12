@@ -29,12 +29,10 @@ Reallocates storage for an existing reserved block of memory
 	
 	When manually allocating memory for ##[[KeyPgString|String]]## descriptors (or ##[[KeyPgType|UDT]]##s that contain one), if ##//count//## is larger than the original size of the memory block, the new extra memory range must be explicitly cleared to zeroes before the first string use (for example, using ##[[KeyPgClear|Clear]]##).  Otherwise accessing the string will cause undefined results (trying to write or read at a random place in memory, or trying to deallocate a random pointer).
 	
-	This function is not part of the ""FreeBASIC"" runtime library, it is an alias for the C runtime library's ##//realloc//##, so it's not guaranteed to be thread safe in all platforms.
-	
 	**NOTE**: Reallocating a pointer inside an object function, when that pointer contains the parent object of the function, is undefined, and will likely result in horrible crashes.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/memory/reallocate.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/memory/reallocate.bas"}}%%(freebasic)
 Dim a as Integer Ptr, b as Integer Ptr, i As Integer
 
 a = Allocate( 5 * SizeOf(Integer) )   ' Allocate memory for 5 integers
@@ -72,8 +70,7 @@ else '' Reallocate failed, memory unchanged
 end if
 
 Deallocate a   ' Clean up
-%%
-
+	%%
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Reallocate""**##.
 

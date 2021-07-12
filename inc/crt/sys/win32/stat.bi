@@ -29,6 +29,7 @@
 #define	_S_ISBLK(m) (((m) and _S_IFMT) = _S_IFBLK)
 #define	_S_ISREG(m) (((m) and _S_IFMT) = _S_IFREG)
 
+#ifndef stat
 type _stat
 	st_dev as _dev_t
 	st_ino as _ino_t
@@ -43,9 +44,7 @@ type _stat
 	st_ctime as time_t
 end type
 
-#ifndef stat
 type stat as _stat
-#endif
 
 type _stati64
 	st_dev as _dev_t
@@ -60,16 +59,27 @@ type _stati64
 	st_mtime as time_t
 	st_ctime as time_t
 end type
+#endif
 
 extern "C"
 
 declare function _fstat (byval as long, byval as _stat ptr) as long
-declare function _chmod (byval as zstring ptr, byval as long) as long
-declare function _stat (byval as zstring ptr, byval as _stat ptr) as long
+
+#ifndef _chmod
+declare function _chmod (byval as const zstring ptr, byval as long) as long
+#endif
+
+declare function _stat (byval as const zstring ptr, byval as _stat ptr) as long
 declare function _fstati64 (byval as long, byval as _stati64 ptr) as long
-declare function _stati64 (byval as zstring ptr, byval as _stati64 ptr) as long
-declare function _wstat (byval as wchar_t ptr, byval as _stat ptr) as long
-declare function _wstati64 (byval as wchar_t ptr, byval as _stati64 ptr) as long
+declare function _stati64 (byval as const zstring ptr, byval as _stati64 ptr) as long
+
+#ifndef _wstat
+declare function _wstat (byval as const wchar_t ptr, byval as _stat ptr) as long
+#endif
+
+#ifndef _wstati64
+declare function _wstati64 (byval as const wchar_t ptr, byval as _stati64 ptr) as long
+#endif
 
 end extern
 

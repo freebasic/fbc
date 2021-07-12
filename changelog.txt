@@ -4,8 +4,16 @@ Version 1.09.0
 - github #314: fbc: pass '-T scriptfile' option to linker LD and add 'INSERT AFTER .data;' to fbextra.x linker script to quiet warning on LD version 2.36 and higher
 - gas64: .a64 replaced by .asm to be coherent with documentation
 - fbc-tests: add gcc compiler options -Wno-tautological-compare to quiet the constant comparison warnings in the test-suite
+- crt headers: guard some definitions in crt/sys/win32/stat.bi to avoid collisions of 'stat' and 'chmod' with some other crt headers
+- crt headers: add const qualifiers in crt/stdlib.bi
+- crt headers: add const qualifiers in crt/stdio.bi, crt/sys/stat.bi, crt/wchar.bi
+- crt headers: add const qualifiers in crt/sys/win32/stat.bi, crt/win32/stdio.bi
+- github #325, #326: fbc: internal changes for string processing functions
 
 [added]
+- fbc: add '-z fbrt' command line option to link against libfbrt*.a instead of libfb*.a
+- makefile: add target for fbrt, fb runtime library written in fbc. Bulid libfbrt*.a and merge any missing object modules from libfb*.a
+- github #325, #326: fbc: add support for wstrings used with __FB_EVAL__()
 
 [fixed]
 - github #315: set parameters when calling SCREENCONTROL (was broken in fbc 1.08.0 due to new LONG/LONGINT SCREENCONTROL API's)
@@ -14,6 +22,9 @@ Version 1.09.0
 - github #321: __FB_ARG_EXTRACT__ incorrectly recognizes commas nested in other forms with variadic macros - internally use new hlp-str.bas:hStr2Args() procedure
 - github #322: Fix D2D not rendering the rightmost column of pixels (adeyblue)
 - github #323: gas64: When the target variable is const variable, code cannot be generated for variable assignment of different length. (Skyfish)
+- github #324: fbc: When converting a wide character escape sequence to an internal format, the escaped value is incorrect. (Skyfish)
+- fbc: remove warning on function suffix in '-lang qb'
+- github #325, #326: fbc: constant folding ASC() on constant strings with embedded NUL characters - previously ASC returned 0 for anything past the first embedded NUL char, for example ASC(!"A\000B",3) incorrectly returned 0 and should return 66
 
 
 Version 1.08.0

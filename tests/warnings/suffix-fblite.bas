@@ -159,7 +159,17 @@ label%:
 	print command$(0)
 
 	WARN( 4 )
-   	print wchr$(0)
+	print wchr$(0)
 	print wstr$(0)
 	print wstring$(0,0)
-   	print bin$(0)
+	print bin$(0)
+
+#print ---- Procedure ----
+
+	WARN(0)
+	declare function foo$
+	dim s$
+	s$ = foo$
+	function foo$
+		foo$ = "bar"
+	end function

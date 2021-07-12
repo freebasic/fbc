@@ -78,6 +78,9 @@ private function hStrLiteralCompare _
     static as DZSTRING ltext, rtext
     dim as integer res = any
 
+	'' !!!FIXME!!! - embedded NUL CHARs incorrectly end the string
+	'' !!!TODO!!! - use textlen returned from hUnescape() to get proper comparison length
+
    	DZstrAssign( ltext, hUnescape( symbGetVarLitText( astGetSymbol( l ) ) ) )
    	DZstrAssign( rtext, hUnescape( symbGetVarLitText( astGetSymbol( r ) ) ) )
 
@@ -118,6 +121,9 @@ private function hWStrLiteralCompare _
 
 	ls = astGetSymbol( l )
 	rs = astGetSymbol( r )
+
+	'' !!!FIXME!!! - embedded NUL CHARs incorrectly end the string
+	'' !!!TODO!!! - use textlen returned from hUnescape[W]() to get proper comparison length
 
 	'' left operand not a wstring?
 	if( symbGetType( ls ) <> FB_DATATYPE_WCHAR ) then

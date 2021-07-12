@@ -20,7 +20,7 @@ static FB_WCHAR hReadChar( FB_INPUTCTX *ctx )
     /* console.. */
     else
     {
-		if( ctx->index >= FB_STRSIZE( &ctx->str.len ) )
+		if( ctx->index >= FB_STRSIZE( &ctx->str ) )
 			return FB_WEOF;
 		else
 			return (unsigned char)ctx->str.data[ctx->index++];

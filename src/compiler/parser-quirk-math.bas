@@ -78,7 +78,7 @@ private function hLen _
 		'' String literal, evaluate at compile-time
 		'' symbGetStrLen( litsym ) will return the number of codepoints
 		'' that are used to store the escaped WSTRING literal, when what
-		'' we really want is the number od codepoints unescaped.
+		'' we really want is the number of codepoints unescaped.
 		lgt = len( *hUnescapeW( symbGetVarLitTextW( litsym ) ) )
 
 	case FB_DATATYPE_FIXSTR

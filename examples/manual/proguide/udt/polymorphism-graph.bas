@@ -46,14 +46,14 @@ End Property
 
 Static Function GraphicPoint.xValid (ByVal x0 As Integer) As Integer
 	If ScreenPtr = 0 Then Return 0  '' no open graphic window
-	Dim As Integer w
+	Dim As Long w
 	ScreenInfo(w)
 	If x0 >= 0 And x0 <= w - 1 Then Return -1 Else Return 0
 End Function
 
 Static Function GraphicPoint.yValid (ByVal y0 As Integer) As Integer
 	If ScreenPtr = 0 Then Return 0  '' no open graphic window
-	Dim As Integer h
+	Dim As Long h
 	ScreenInfo( , h)
 	If y0 >= 0 And y0 <= h - 1 Then Return -1 Else Return 0
 End Function

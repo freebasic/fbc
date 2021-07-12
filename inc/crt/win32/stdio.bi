@@ -58,32 +58,32 @@ extern "c"
 
 type fpos_t as longint
 
-declare function snprintf (byval as zstring ptr, byval as size_t, byval as zstring ptr, ...) as long
-declare function vsnprintf (byval as zstring ptr, byval as size_t, byval as zstring ptr, byval as va_list) as long
-declare function popen (byval as zstring ptr, byval as zstring ptr) as FILE ptr
+declare function snprintf (byval as zstring ptr, byval as size_t, byval as const zstring ptr, ...) as long
+declare function vsnprintf (byval as zstring ptr, byval as size_t, byval as const zstring ptr, byval as va_list) as long
+declare function popen (byval as const zstring ptr, byval as const zstring ptr) as FILE ptr
 declare function pclose (byval as FILE ptr) as long
 declare function _flushall () as long
 declare function _fgetchar () as long
 declare function _fputchar (byval as long) as long
-declare function _fdopen (byval as long, byval as zstring ptr) as FILE ptr
+declare function _fdopen (byval as long, byval as const zstring ptr) as FILE ptr
 declare function _fileno (byval as FILE ptr) as long
 declare function _fcloseall () as long
 declare function _getmaxstdio () as long
 declare function _setmaxstdio (byval as long) as long
-declare function _snwprintf (byval as wchar_t ptr, byval as size_t, byval as wchar_t ptr, ...) as long
-declare function _vsnwprintf (byval as wchar_t ptr, byval as size_t, byval as wchar_t ptr, byval as va_list) as long
+declare function _snwprintf (byval as wchar_t ptr, byval as size_t, byval as const wchar_t ptr, ...) as long
+declare function _vsnwprintf (byval as wchar_t ptr, byval as size_t, byval as const wchar_t ptr, byval as va_list) as long
 declare function _getws (byval as wchar_t ptr) as wchar_t ptr
-declare function _putws (byval as wchar_t ptr) as long
-declare function _wfdopen (byval as long, byval as wchar_t ptr) as FILE ptr
-declare function _wfopen (byval as wchar_t ptr, byval as wchar_t ptr) as FILE ptr
-declare function _wfreopen (byval as wchar_t ptr, byval as wchar_t ptr, byval as FILE ptr) as FILE ptr
-declare function _wfsopen (byval as wchar_t ptr, byval as wchar_t ptr, byval as long) as FILE ptr
+declare function _putws (byval as const wchar_t ptr) as long
+declare function _wfdopen (byval as long, byval as const wchar_t ptr) as FILE ptr
+declare function _wfopen (byval as const wchar_t ptr, byval as const wchar_t ptr) as FILE ptr
+declare function _wfreopen (byval as const wchar_t ptr, byval as const wchar_t ptr, byval as FILE ptr) as FILE ptr
+declare function _wfsopen (byval as const wchar_t ptr, byval as const wchar_t ptr, byval as long) as FILE ptr
 declare function _wtmpnam (byval as wchar_t ptr) as wchar_t ptr
 declare function _wtempnam (byval as wchar_t ptr, byval as wchar_t ptr) as wchar_t ptr
-declare function _wrename (byval as wchar_t ptr, byval as wchar_t ptr) as long
-declare function _wremove (byval as wchar_t ptr) as long
-declare sub _wperror (byval as wchar_t ptr)
-declare function _wpopen (byval as wchar_t ptr, byval as wchar_t ptr) as FILE ptr
+declare function _wrename (byval as const wchar_t ptr, byval as const wchar_t ptr) as long
+declare function _wremove (byval as const wchar_t ptr) as long
+declare sub _wperror (byval as const wchar_t ptr)
+declare function _wpopen (byval as const wchar_t ptr, byval as const wchar_t ptr) as FILE ptr
 declare function _fgetwchar () as wint_t
 declare function _fputwchar (byval as wint_t) as wint_t
 declare function _tempnam (byval as zstring ptr, byval as zstring ptr) as zstring ptr

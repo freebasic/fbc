@@ -5,14 +5,13 @@ Pointers that point to procedures
 
 {{fbdoc item="section" value="Declaration"}}
 	To declare a pointer to procedure, use the ##[[KeyPgSub|Sub]]## or ##[[KeyPgFunction|Function]]## keywords, followed by any parameters and return value type:
-
-{{fbdoc item="filename" value="examples/manual/proguide/procptrs/dimptr.bas"}}%%(freebasic)
+		{{fbdoc item="filename" value="examples/manual/proguide/procptrs/dimptr.bas"}}%%(freebasic)
 ' declares a pointer to sub procedure that takes no arguments
 dim pointerToProcedure as sub
-%%
-	Procedure pointers store procedure addresses, which are retrieved using ##[[KeyPgOpAt|Operator @]]## (Address of) or the ##[[KeyPgOpProcptr|ProcPtr operator]]##:
+		%%
 
-{{fbdoc item="filename" value="examples/manual/proguide/procptrs/pfunc.bi"}}%%(freebasic)
+	Procedure pointers store procedure addresses, which are retrieved using ##[[KeyPgOpAt|Operator @]]## (Address of) or the ##[[KeyPgOpProcptr|ProcPtr operator]]##:
+		{{fbdoc item="filename" value="examples/manual/proguide/procptrs/pfunc.bi"}}%%(freebasic)
 '' pfunc.bi
 
 function Add (a as integer, b as integer) as integer
@@ -20,25 +19,23 @@ function Add (a as integer, b as integer) as integer
 end function
 
 dim pFunc as function (as integer, as integer) as integer = @Add
-%%
-
+		%%
 {{fbdoc item="section" value="Calling a procedure pointer"}}
 	The interesting thing about procedure pointers is that they can be called just like a procedure:
-
-{{fbdoc item="filename" value="examples/manual/proguide/procptrs/calling.bas"}}%%(freebasic)
+		{{fbdoc item="filename" value="examples/manual/proguide/procptrs/calling.bas"}}%%(freebasic)
 '' .. Add and pFunc as before ..
 #include once "pfunc.bi"
 
 print "3 + 4 = " & pFunc(3, 4)
-%%
+		%%
+
 	For a calling example of subroutine pointer, see the ##[[KeyPgOpAt|Operator @ (Address of)]]## page.
 	
 	**Note:** When calling a procedure through a procedure pointer, parentheses surrounding the argument list (even empty) are mandatory to resolve ambiguity with a simple access to the pointer value.
 
 {{fbdoc item="section" value="Passing procedure pointers to procedures"}}
 	Passing procedure pointers to other procedures is similar as well:
-
-{{fbdoc item="filename" value="examples/manual/proguide/procptrs/passing.bas"}}%%(freebasic)
+		{{fbdoc item="filename" value="examples/manual/proguide/procptrs/passing.bas"}}%%(freebasic)
 '' .. Add and pFunc as before ..
 #include once "pfunc.bi"
 
@@ -47,10 +44,10 @@ function DoOperation (a as integer, b as integer, operation as function (as inte
 end function
 
 print "3 + 4 = " & DoOperation(3, 4, @Add)
-%%
-	Because procedure pointer declarations can be lengthy, it often helps to create a type alias for the procedure pointer, in an effort to make clearer code:
+		%%
 
-{{fbdoc item="filename" value="examples/manual/proguide/procptrs/alias.bas"}}%%(freebasic)
+	Because procedure pointer declarations can be lengthy, it often helps to create a type alias for the procedure pointer, in an effort to make clearer code:
+		{{fbdoc item="filename" value="examples/manual/proguide/procptrs/alias.bas"}}%%(freebasic)
 '' .. Add and pFunc as before ..
 #include once "pfunc.bi"
 
@@ -61,12 +58,10 @@ function DoOperation (a as integer, b as integer, op as operation) as integer
 end function
 
 print "3 + 4 = " & DoOperation(3, 4, @Add)
-%%
-
+		%%
 {{fbdoc item="section" value="Pointers to procedure pointers"}}
 	Because the syntax of a procedure pointer does not allow declaration of a pointer to procedure pointer when the procedure is a function (because ptr applies on return type and not on procedure), a type alias is used. Notice how it is necessary to surround a dereferenced pointer to procedure pointer by parenthesis when calling the procedure. This is because the function-call operator '()' has higher precedence than ##[[KeyPgOpValueOf|Operator *]]## (Value of):
-
-{{fbdoc item="filename" value="examples/manual/proguide/procptrs/procptrs.bas"}}%%(freebasic)
+		{{fbdoc item="filename" value="examples/manual/proguide/procptrs/procptrs.bas"}}%%(freebasic)
 Function Halve (ByVal i As Integer) As Integer
 	Return i / 2
 End Function
@@ -94,12 +89,10 @@ While (*op <> 0)
 Wend
 
 Print "Value of 'i' after all operations performed: " & i
-%%
-
+		%%
 {{fbdoc item="section" value="Pointers to member procedures"}}
 	Method pointers are not implemented yet, but it is possible to work-around that by using a static wrapper:
-
-{{fbdoc item="filename" value="examples/manual/proguide/procptrs/method-ptr.bas"}}%%(freebasic)
+		{{fbdoc item="filename" value="examples/manual/proguide/procptrs/method-ptr.bas"}}%%(freebasic)
 /''
  ' This example shows how you can simulate getting a class method pointer, 
  ' until support is properly implemented in the compiler.
@@ -128,38 +121,123 @@ p = @T.test
 dim as T obj
 
 print p(obj, 69) '' prints 489
-%%
-
+	%%
 {{fbdoc item="section" value="Typing rule for procedure pointer declaration"}}
 	The procedure pointer declaration allows to assign to the pointer:
 		- not only a procedure with the same parameters types, and if any, the same result type,
-		- but also a procedure with contravariant byref (or by pointer) parameters or/and a covariant byref (or by pointer) result.
+		- but also a procedure with contravariant parameters (by reference or by pointer) or/and a covariant result (by reference or by pointer).
+		
 
-{{fbdoc item="filename" value="examples/manual/proguide/procptrs/typing-rule.bas"}}%%(freebasic)
-'Example of assigning to a function pointer a function with a contravariant parameter and a covariant result.
+	Assigning to a function pointer a fonction with a contravariant parameter and a covariant result, both by pointer:		
+		{{fbdoc item="filename" value="examples/manual/proguide/procptrs/typing-rule1.bas"}}%%(freebasic)
+'Example of assigning to a function pointer a function with:
+'   - a contravariant parameter by pointer,
+'   - and a covariant result by pointer.
 
 Type A
 	Dim As Integer I
-End type
+	Declare Constructor ()
+	Declare Destructor ()
+End Type
+Constructor A ()
+	Print "    A instance constructed", @This
+End Constructor
+Destructor A ()
+	Print "    A instance destroyed", @This
+End Destructor
 
 Type B Extends A
 	Dim As Integer J
+	Declare Constructor ()
+	Declare Constructor (Byref a0 As A)
+	Declare Destructor ()
 End Type
+Constructor B ()
+	Print "    B instance constructed", @This
+End Constructor
+Constructor B (Byref a0 As A)
+	Cast(A, This) = a0
+	Print "    B instance constructed", @This
+End Constructor
+Destructor B ()
+	Print "    B instance destroyed", @This
+End Destructor
 
-Function f (Byref a0 As A) As B Ptr
-	Print "instance of B created"
-	Return New B(a0)
+Function f (ByVal pa0 As A Ptr) As B Ptr
+	Return New B(*pa0)
 End Function
 
-Dim As Function (Byref As B) As A Ptr pf = @f
-
-Dim As B b0
-Dim As A Ptr pab = pf(b0)
+Scope
+	Dim As Function (ByVal As B Ptr) As A Ptr pf = @f
+	Print "'Scope : Dim As B b0':"
+	Dim As B b0
+	Print
+	Print "'Dim As A Ptr pab = pf(@b0)':"
+	Dim As A Ptr pab = pf(@b0)
+	Print
+	Print "'Delete CPtr(B Ptr, pab)':"
+	Delete CPtr(B Ptr, pab)
+	Print
+	Print "'End Scope':"
+End Scope
 
 Sleep
-Delete Cptr(B Ptr, pab)
-%%
+		%%
+	Assigning to a function pointer a function with a contravariant parameter and a covariant result, both by reference:
+		{{fbdoc item="filename" value="examples/manual/proguide/procptrs/typing-rule2.bas"}}%%(freebasic)
+'Example of assigning to a function pointer a function with:
+'   - a contravariant parameter by reference,
+'   - and a covariant result by reference.
 
+Type A Extends Object
+	Dim As Integer I
+	Declare Constructor ()
+	Declare Virtual Destructor ()
+End Type
+Constructor A ()
+	Print "    A instance constructed", @This
+End Constructor
+Destructor A ()
+	Print "    A instance destroyed", @This
+End Destructor
+
+Type B Extends A
+	Dim As Integer J
+	Declare Constructor ()
+	Declare Constructor (Byref a0 As A)
+	Declare Virtual Destructor ()
+End Type
+Constructor B ()
+	Print "    B instance constructed", @This
+End Constructor
+Constructor B (Byref a0 As A)
+	Cast(A, This) = a0
+	Print "    B instance constructed", @This
+End Constructor
+Destructor B ()
+	Print "    B instance destroyed", @This
+End Destructor
+
+Function f (ByRef a0 As A) Byref As B
+	Return *New B(a0)
+End Function
+
+Scope
+	Dim As Function (ByRef As B) Byref As A pf = @f
+	Print "'Scope : Dim As B b0':"
+	Dim As B b0
+	Print
+	Print "'Dim Byref As A rab = pf(b0)':"
+	Dim Byref As A rab = pf(b0)
+	Print
+	Print "'Delete @rab':"
+	Delete @rab
+	Print
+	Print "'End Scope':"
+End Scope
+
+Sleep
+		%%
 {{fbdoc item="see"}}
 	- ##[[KeyPgSub|Sub]]##
 	- ##[[KeyPgFunction|Function]]##
@@ -168,6 +246,3 @@ Delete Cptr(B Ptr, pab)
 	- ##[[KeyPgOpProcptr|ProcPtr operator]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
-   
-
-   

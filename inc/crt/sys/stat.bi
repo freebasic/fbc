@@ -21,8 +21,8 @@
 extern "C"
 
 declare function fstat (byval as long, byval as _stat ptr) as long
-declare function chmod (byval as zstring ptr, byval as long) as long
-declare function stat (byval as zstring ptr, byval as _stat ptr) as long
+declare function chmod (byval as const zstring ptr, byval as long) as long
+declare function stat (byval as const zstring ptr, byval as _stat ptr) as long
 
 end extern
 

@@ -21,7 +21,7 @@ sub astDataStmtInit( )
 end sub
 
 function astDataStmtBegin( ) as ASTNODE ptr
-    dim as ASTNODE ptr n = any
+	dim as ASTNODE ptr n = any
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_DATASTMT, FB_DATATYPE_INVALID )
@@ -37,7 +37,7 @@ function astDataStmtStore _
 		byval expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
+	dim as ASTNODE ptr n = any
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_DATASTMT, FB_DATATYPE_INVALID )
@@ -69,21 +69,21 @@ function astDataStmtStore _
 
 		'' string?
 		if( litsym <> NULL ) then
-       		'' not a wstring?
-       		if( astGetDataType( expr ) <> FB_DATATYPE_WCHAR ) then
-       			n->data.id = FB_DATASTMT_ID_ZSTR
+			'' not a wstring?
+			if( astGetDataType( expr ) <> FB_DATATYPE_WCHAR ) then
+				n->data.id = FB_DATASTMT_ID_ZSTR
 			'' wstring..
-     		else
-        		n->data.id = FB_DATASTMT_ID_WSTR
-    		end if
+			else
+				n->data.id = FB_DATASTMT_ID_WSTR
+			end if
 
 		'' scalar..
 		else
 			'' address of?
 			if( astIsOFFSET( expr ) ) then
-          		n->data.id = FB_DATASTMT_ID_OFFSET
+				n->data.id = FB_DATASTMT_ID_OFFSET
 			else
-            	n->data.id = FB_DATASTMT_ID_CONST
+				n->data.id = FB_DATASTMT_ID_CONST
 			end if
 		end if
 	end if
@@ -96,13 +96,13 @@ end function
 
 sub astDataStmtEnd( byval tree as ASTNODE ptr )
 
-    dim as FBSYMBOL ptr array = any, elm = any
-    dim as integer i = any, id = any
-    dim as ASTNODE ptr n = any, expr = any, initree = any
-    dim as string littext
+	dim as FBSYMBOL ptr array = any, elm = any
+	dim as integer i = any, id = any
+	dim as ASTNODE ptr n = any, expr = any, initree = any
+	dim as string littext
 
-    '' add the last node: the link
-    astDataStmtStore( tree, NULL )
+	'' add the last node: the link
+	astDataStmtStore( tree, NULL )
 
 	'' create/lookup the datadesc array symbol for the last symbol
 
@@ -147,42 +147,42 @@ sub astDataStmtEnd( byval tree as ASTNODE ptr )
 							 astNewCONSTi( id, FB_DATATYPE_SHORT ), _
 							 elm )
 
-    	elm = symbGetNext( elm )
+		elm = symbGetNext( elm )
 
-        '' .node = expr
+		'' .node = expr
 		astTypeIniAddAssign( initree, expr, elm )
 
 		astTypeIniScopeEnd( initree, array )
 
-    	'' next
+		'' next
 		dim as ASTNODE ptr nxt = n->r
 		astDelNode( n )
 		n = nxt
 	next
 
-    ''
+	''
 	astTypeIniScopeEnd( initree, array )
 
-    astTypeIniEnd( initree, TRUE )
+	astTypeIniEnd( initree, TRUE )
 
-    symbSetTypeIniTree( array, initree )
+	symbSetTypeIniTree( array, initree )
 
 	'' Link the previous DATA stmt to this new one
 	if( ast.data.lastsym <> NULL ) then
-    	'' lastarray(ubound(lastarray)).next = @array(0)
-    	initree = symbGetTypeIniTree( astGetLastDataStmtSymbol( ) )
+		'' lastarray(ubound(lastarray)).next = @array(0)
+		initree = symbGetTypeIniTree( astGetLastDataStmtSymbol( ) )
 
-    	n = initree->l
-    	var tn = n
-    	do while( n->r <> NULL )
-    		if( n->class = AST_NODECLASS_TYPEINI_ASSIGN ) then
-    			tn = n
-    		end if
-    		n = n->r
-    	loop
+		n = initree->l
+		var tn = n
+		do while( n->r <> NULL )
+			if( n->class = AST_NODECLASS_TYPEINI_ASSIGN ) then
+				tn = n
+			end if
+			n = n->r
+		loop
 
-    	'' del the NULL expr
-    	astDelNode( tn->l )
+		'' del the NULL expr
+		astDelNode( tn->l )
 
 		'' replace the node
 		tn->l = astNewADDROF( astNewVAR( array ) )
@@ -234,8 +234,8 @@ function astDataStmtAdd _
 		'' Called for RESTORE <label>
 		'' static datadesc array id specifically for that label
 		'' (if <label> is a forward reference, then this datadesc array
-		''  may be looked up by astDataStmtEnd() later,
-		''  when the corresponding DATA is found)
+		'' may be looked up by astDataStmtEnd() later,
+		'' when the corresponding DATA is found)
 		id = FB_DATASTMT_PREFIX + *symbGetName( label )
 		dTB(0).upper = 0
 	end if
