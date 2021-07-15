@@ -51,6 +51,25 @@ declare sub hRealloc _
 '':::::
 #define CALC_LEN( p ) iif( p <> NULL, len( *src ), 0 )
 
+'':::::
+function CALC_LENW _
+	( _
+		byval src as const wstring ptr _
+	) as integer
+
+	dim as integer src_len = CALC_LEN( src )
+	do while src[0] <> 0
+		if *cast(ushort ptr, src) > &HFF then
+			'' When a wstring contains double byte characters(such as Chinese characters),
+			'' the byte size of the required character buffer is calculated incorrectly.
+			src_len += 1
+		end if
+		src += 1
+	loop
+	return src_len
+
+end function
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' dynamic zstrings
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -116,7 +135,7 @@ sub DZstrAssignW _
 		byval src as const wstring ptr _
 	)
 
-	dim as integer src_len = CALC_LEN( src )
+	dim as integer src_len = CALC_LENW( src )
 
 	ALLOC_SETUP( dst, src_len, zstring )
 
@@ -169,7 +188,7 @@ sub DZstrConcatAssignW _
 		byval src as const wstring ptr _
 	)
 
-	dim as integer src_len = CALC_LEN( src )
+	dim as integer src_len = CALC_LENW( src )
 	dim as integer dst_len = dst.len
 
 	REALLOC_SETUP( dst, src_len, zstring )
