@@ -61,9 +61,9 @@ sub DZstrZero _
 		byref dst as DZSTRING _
 	)
 
-    dst.data = NULL
-    dst.len = 0
-    dst.size = 0
+	dst.data = NULL
+	dst.len = 0
+	dst.size = 0
 
 end sub
 
@@ -209,9 +209,9 @@ sub DWstrZero _
 		byref dst as DWSTRING _
 	)
 
-    dst.data = NULL
-    dst.len = 0
-    dst.size = 0
+	dst.data = NULL
+	dst.len = 0
+	dst.size = 0
 
 end sub
 
