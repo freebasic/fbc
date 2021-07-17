@@ -18,6 +18,7 @@ Version 1.09.0
 - crt headers: minimal crt headers to compile fbc and build test-suite on freebsd-13.0-i386
 - darwin: Implemented objinfo for Darwin/OSX Mach-O .o files, so #inclib etc. work (TeeEmCee)
 - darwin: put objinfo in 'fbctinf, __DATA' section instead of '.fbctinf' (TeeEmCee)
+- fbc: add '-entry name' command line option to set program entry point (TeeEmCee)
 
 [fixed]
 - github #315: set parameters when calling SCREENCONTROL (was broken in fbc 1.08.0 due to new LONG/LONGINT SCREENCONTROL API's)
