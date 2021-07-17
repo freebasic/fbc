@@ -9,6 +9,7 @@ Version 1.09.0
 - crt headers: add const qualifiers in crt/stdio.bi, crt/sys/stat.bi, crt/wchar.bi
 - crt headers: add const qualifiers in crt/sys/win32/stat.bi, crt/win32/stdio.bi
 - github #325, #326: fbc: internal changes for string processing functions
+- fbc-tests: xargs on freebsd does not support the '-a filename' option, use 'cat filename | xargs' instead
 
 [added]
 - fbc: add '-z fbrt' command line option to link against libfbrt*.a instead of libfb*.a
