@@ -23,6 +23,7 @@ type ptrdiff_t as integer
 	#endif
 #endif
 
+#ifndef wchar_t
 #ifdef __FB_DOS__
 	type wchar_t as ubyte
 #elseif defined( __FB_WIN32__ ) or defined( __FB_CYGWIN__ )
@@ -30,8 +31,11 @@ type ptrdiff_t as integer
 #else
 	type wchar_t as long
 #endif
+#endif
 
-type wint_t as wchar_t
+#ifndef wint_t
+	type wint_t as wchar_t
+#endif
 
 #ifndef NULL
 #define NULL 0

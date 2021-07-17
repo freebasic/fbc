@@ -20,6 +20,8 @@
 #include once "crt/win32/wchar.bi"
 #elseif defined(__FB_LINUX__)
 #include once "crt/linux/wchar.bi"
+#elseif defined(__FB_FREEBSD__)
+#include once "crt/freebsd/wchar.bi"
 #elseif defined(__FB_DOS__)
 #include once "crt/dos/wchar.bi"
 #endif
@@ -38,6 +40,7 @@ declare function wmemset (byval s as wchar_t ptr, byval c as wchar_t, byval n as
 declare function wmemchr (byval s as const wchar_t ptr, byval c as wchar_t, byval n as size_t) as wchar_t ptr
 declare function wmemcmp (byval s1 as const wchar_t ptr, byval s2 as const wchar_t ptr, byval n as size_t) as integer
 declare function wmemmove (byval s1 as wchar_t ptr, byval s2 as const wchar_t ptr, byval n as size_t) as wchar_t ptr
+declare function wmemcpy(byval as wchar_t ptr, byval as const wchar_t ptr, byval as uinteger) as wstring ptr
 end extern
 
 #endif

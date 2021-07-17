@@ -14,6 +14,7 @@ Version 1.09.0
 - fbc: add '-z fbrt' command line option to link against libfbrt*.a instead of libfb*.a
 - makefile: add target for fbrt, fb runtime library written in fbc. Bulid libfbrt*.a and merge any missing object modules from libfb*.a
 - github #325, #326: fbc: add support for wstrings used with __FB_EVAL__()
+- crt headers: minimal crt headers to compile fbc and build test-suite on freebsd-13.0-i386
 
 [fixed]
 - github #315: set parameters when calling SCREENCONTROL (was broken in fbc 1.08.0 due to new LONG/LONGINT SCREENCONTROL API's)
