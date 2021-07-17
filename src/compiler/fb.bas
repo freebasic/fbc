@@ -976,6 +976,9 @@ function fbTargetSupportsCOFF( ) as integer
 	return ((env.target.options and FB_TARGETOPT_COFF) <> 0)
 end function
 
+function fbTargetSupportsMachO( ) as integer
+	return ((env.target.options and FB_TARGETOPT_MACHO) <> 0)
+end function
 
 '':::::
 function fbGetEntryPoint( ) as string static

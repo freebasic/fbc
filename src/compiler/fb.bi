@@ -466,6 +466,7 @@ declare function fbGetCpuFamily( ) as integer
 declare function fbIdentifyFbcArch( byref fbcarch as string ) as integer
 declare function fbTargetSupportsELF( ) as integer
 declare function fbTargetSupportsCOFF( ) as integer
+declare function fbTargetSupportsMachO( ) as integer
 
 declare function fbGetEntryPoint _
 	( _
