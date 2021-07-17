@@ -171,8 +171,18 @@ end type
 
 dim shared as ubyte elfmagic(0 to 15) = _
 { _
-	&h7f, &h45, &h4c, &h46,    0, &h01, _  '' index 4 is set to 1 (32bit) or 2 (64bit)
-	&h01, &h00, &h00, &h00, &h00, &h00 _   '' index 12 is set to machine
+	&h7f, _     '' '.'
+	&h45, _     '' 'E'
+	&h4c, _     '' 'L'
+	&h46, _     '' 'F'
+	&h00, _     '' 1 (32bit) or 2 (64bit)
+	&h01, _     '' 1 (little endian) or 2 (big endian)
+	&h01, _     '' 1 - the one and only version of ELF
+	&h00, _     '' target ABI
+	&h00, _     '' ABI version
+	&h00, _     '' unused 0 
+	&h00, _     '' object file type
+	&h00  _     '' target machine
 }
 
 const ET_REL = 1
@@ -214,6 +224,10 @@ end type
 '' are different too.
 
 #macro ELFLOADINGCODE(ELF_H, ELF_SH, ELF_MAGIC_4)
+
+'' ELF_H        - elf main header (ELF32_H or ELF64_H)
+'' ELF_SH       - typename of the section header type (ELF32_SH or ELF64_SH)
+'' ELF_MAGIC_4  - 1 for 32 bit, 2 for 64-bit
 
 private function hCheck##ELF_SH _
 	( _
@@ -294,7 +308,17 @@ private sub hLoadFbctinfFrom##ELF_H( byval ELF_MACHINE as integer )
 
 	h = cptr( any ptr, objdata.p )
 
+	'' set 32 or 64 bits
 	elfmagic(4) = ELF_MAGIC_4
+
+	'' set the target system expected
+	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_FREEBSD ) then
+		elfmagic(7) = &h09  '' FreeBSD
+	else
+		elfmagic(7) = 0     '' System V
+	end if
+
+	'' check that magic given is the magic needed
 	for i as integer = 0 to 15
 		if( h->e_ident(i) <> elfmagic(i) ) then
 			INFO( "elf: magic mismatch" )
