@@ -21,7 +21,6 @@ Version 1.09.0
 - github #325, #326: fbc: add support for wstrings used with __FB_EVAL__()
 - crt headers: minimal crt headers to compile fbc and build test-suite on freebsd-13.0-i386
 - darwin: Implemented objinfo for Darwin/OSX Mach-O .o files, so #inclib etc. work (TeeEmCee)
-- darwin: put objinfo in 'fbctinf, __DATA' section instead of '.fbctinf' (TeeEmCee)
 - fbc: add '-entry name' command line option to set program entry point (TeeEmCee)
 - added objinfo support for ELF files on freebsd
 
