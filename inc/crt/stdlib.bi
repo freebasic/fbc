@@ -14,8 +14,8 @@
 
 #if defined(__FB_WIN32__)
 #include once "crt/win32/stdlib.bi"
-#elseif defined(__FB_LINUX__)
-#include once "crt/linux/stdlib.bi"
+#elseif defined(__FB_UNIX__)
+#include once "crt/unix/stdlib.bi"
 #endif
 
 type div_t

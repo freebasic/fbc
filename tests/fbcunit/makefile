@@ -7,8 +7,9 @@ SRCS    := src/fbcunit.bas
 SRCS    += src/fbcunit_qb.bas
 SRCS    += src/fbcunit_console.bas
 SRCS    += src/fbcunit_report.bas
+
 HDRS    := inc/fbcunit.bi
-HDRS    := src/fbcunit_types.bi
+HDRS    += src/fbcunit_types.bi
 HDRS    += src/fbcunit_console.bi
 HDRS    += src/fbcunit_report.bi
 

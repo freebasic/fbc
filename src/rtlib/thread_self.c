@@ -60,10 +60,16 @@ void fb_CloseAtomicFBThreadFlagMutex( void )
 	fb_MutexDestroy( g_threadFlagMutex );
 #endif
 }
+#endif
 
+/* 
+** even if this is not the multithreaded version of the rtlib
+** define fbAtomicSetThreadFlags() anyway as it will be called
+** from thread_core.c:threadproc()
+*/
 FBTHREADFLAGS fb_AtomicSetThreadFlags( volatile FBTHREADFLAGS *threadFlags, FBTHREADFLAGS newFlag )
 {
-
+#ifdef ENABLE_MT
 #ifdef NEEDS_MUTEX
 
 	FBTHREADFLAGS before;
@@ -83,6 +89,11 @@ FBTHREADFLAGS fb_AtomicSetThreadFlags( volatile FBTHREADFLAGS *threadFlags, FBTH
 
 #endif /* NEEDS_MUTEX */
 
-}
+#else /* !define(ENABLE_MT) */
+	FBTHREADFLAGS before;
+	before = *threadFlags;
+	*threadFlags |= newFlag;
+	return before;
 
 #endif /* ENABLE_MT */
+}

@@ -5,7 +5,7 @@
 
 #include "../../rtlib/fb_config.h"
 
-#if defined(HOST_WIN32) || defined(HOST_DOS) || defined(HOST_XBOX)
+#if defined(HOST_WIN32) || defined(HOST_DOS) || defined(HOST_XBOX) || defined(HOST_DARWIN)
 #define GLOBL(name)		_##name
 #else
 #define GLOBL(name)		name

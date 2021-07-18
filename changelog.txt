@@ -9,11 +9,20 @@ Version 1.09.0
 - crt headers: add const qualifiers in crt/stdio.bi, crt/sys/stat.bi, crt/wchar.bi
 - crt headers: add const qualifiers in crt/sys/win32/stat.bi, crt/win32/stdio.bi
 - github #325, #326: fbc: internal changes for string processing functions
+- fbc-tests: xargs on freebsd does not support the '-a filename' option, use 'cat filename | xargs' instead
+- fbc: gen gcc: allow compiling with GCC 4.5 and older, by avoiding -Wno-unused-but-set-variable (TeeEmCee)
+- fbc: internal function fbcQueryGcc() to ask gcc for the correct as & ld to use (TeeEmCee)
+- rtlib: freebsd: minimum thread stacksize 8192 KiB
 
 [added]
 - fbc: add '-z fbrt' command line option to link against libfbrt*.a instead of libfb*.a
 - makefile: add target for fbrt, fb runtime library written in fbc. Bulid libfbrt*.a and merge any missing object modules from libfb*.a
 - github #325, #326: fbc: add support for wstrings used with __FB_EVAL__()
+- crt headers: minimal crt headers to compile fbc and build test-suite on freebsd-13.0-i386
+- darwin: Implemented objinfo for Darwin/OSX Mach-O .o files, so #inclib etc. work (TeeEmCee)
+- darwin: put objinfo in 'fbctinf, __DATA' section instead of '.fbctinf' (TeeEmCee)
+- fbc: add '-entry name' command line option to set program entry point (TeeEmCee)
+- added objinfo support for ELF files on freebsd
 
 [fixed]
 - github #315: set parameters when calling SCREENCONTROL (was broken in fbc 1.08.0 due to new LONG/LONGINT SCREENCONTROL API's)
@@ -25,6 +34,8 @@ Version 1.09.0
 - github #324: fbc: When converting a wide character escape sequence to an internal format, the escaped value is incorrect. (Skyfish)
 - fbc: remove warning on function suffix in '-lang qb'
 - github #325, #326: fbc: constant folding ASC() on constant strings with embedded NUL characters - previously ASC returned 0 for anything past the first embedded NUL char, for example ASC(!"A\000B",3) incorrectly returned 0 and should return 66
+- rtlib: define fb_AtomicSetThreadFlags() even in the non-multithreaded version of run time library - it is needed by thread_core.c:threadproc() - unusual but not impossible to link the non-multithreaded rtlib and call thread functions
+- darwin: a variety of improvements to allow compiling and linking (TeeEmCee)
 
 
 Version 1.08.0

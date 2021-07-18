@@ -629,6 +629,7 @@ type FBENV
 	inconcehash		as THASH					'' A subset of filenamehash
 	includerec		as integer					'' >0 if parsing an include file
 
+	entry			as zstring * FB_MAXNAMELEN	'' name of main function if overridden
 	main			as FBMAIN
 
 	lang			as FB_LANG_CTX				'' language supported features

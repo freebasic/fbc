@@ -7189,7 +7189,9 @@ private function _getSectionString _
 
 	ostr = NEWLINE
 
-	'' Omit the .section directive on Darwin
+	'' Omit the .section directive on Darwin.
+	'' as accepts .text, .const, and many others as shorthands, while .section has a different syntax:
+	'' .section segment , section [[[ , type ] , attribute] , sizeof_stub]
 	if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) then
 		ostr += ".section "
 	end if
@@ -7221,27 +7223,42 @@ private function _getSectionString _
 		ostr += "text"
 
 	case IR_SECTION_DIRECTIVE
+		'' TODO: there is no .drectve on Darwin
 		ostr += "drectve"
 
 	case IR_SECTION_INFO
-		ostr += FB_INFOSEC_NAME
+		if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN) then
+			ostr += "section __DATA," + FB_INFOSEC_NAME
+		else
+			ostr += FB_INFOSEC_NAME
+		end if
 
 	case IR_SECTION_CONSTRUCTOR
-		ostr += "ctors"
-		if( priority > 0 ) then
-			ostr += "." + right( "00000" + str( 65535 - priority ), 5 )
-		end if
-		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-			ostr += ", " + QUOTE + "aw" + QUOTE + ", @progbits"
+		if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN) then
+			'' Darwin assembler does not support ctor priorities
+			ostr += "constructor"
+		else
+			ostr += "ctors"
+			if( priority > 0 ) then
+				ostr += "." + right( "00000" + str( 65535 - priority ), 5 )
+			end if
+			if( env.clopt.target = FB_COMPTARGET_LINUX ) then
+				ostr += ", " + QUOTE + "aw" + QUOTE + ", @progbits"
+			end if
 		end if
 
 	case IR_SECTION_DESTRUCTOR
-		ostr += "dtors"
-		if( priority > 0 ) then
-			ostr += "." + right( "00000" + str( 65535 - priority ), 5 )
-		end if
-		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-			ostr += ", " + QUOTE +  "aw" + QUOTE + ", @progbits"
+		if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN) then
+			'' Darwin assembler does not support dtor priorities
+			ostr += "destructor"
+		else
+			ostr += "dtors"
+			if( priority > 0 ) then
+				ostr += "." + right( "00000" + str( 65535 - priority ), 5 )
+			end if
+			if( env.clopt.target = FB_COMPTARGET_LINUX ) then
+				ostr += ", " + QUOTE +  "aw" + QUOTE + ", @progbits"
+			end if
 		end if
 
 	end select

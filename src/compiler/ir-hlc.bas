@@ -3824,7 +3824,12 @@ private sub _emitFbctinfBegin( )
 	'' section attribute - This global must be put into a custom .fbctinf
 	''                     section, as done by the ASM backend.
 	ctx.fbctinf = "static const char "
-	ctx.fbctinf += "__attribute__((used, section(""." + FB_INFOSEC_NAME + """))) "
+	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN) then
+		'' Must specify a segment name (can use any name)
+		ctx.fbctinf += "__attribute__((used, section(""__DATA," + FB_INFOSEC_NAME + """))) "
+	else
+		ctx.fbctinf += "__attribute__((used, section(""." + FB_INFOSEC_NAME + """))) "
+	end if
 	ctx.fbctinf += "__fbctinf[] = """
 end sub
 

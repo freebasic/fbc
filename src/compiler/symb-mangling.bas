@@ -82,7 +82,11 @@ function symbUniqueLabel( ) as zstring ptr
 		ctx.tempstr += str( ctx.uniquelabelcount )
 		ctx.uniquelabelcount += 1
 	else
-		ctx.tempstr = ".Lt_"
+		if( env.clopt.target = FB_COMPTARGET_DARWIN ) then
+			ctx.tempstr = "L_"
+		else
+			ctx.tempstr = ".L_"
+		end if
 		ctx.tempstr += *hHexUInt( ctx.uniqueidcount )
 		ctx.uniqueidcount += 1
 	end if

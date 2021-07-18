@@ -397,7 +397,7 @@ SUITE( fbc_tests.functions.va_cva_api )
 		complex_tests( 1234, 4, 1000, 200, 30, 4 )
 	END_TEST
 
-#if defined(__FB_LINUX__) and defined(__FB_64BIT__)
+#if defined(__FB_UNIX__) and defined(__FB_64BIT__)
 	'' Returning an array not allowed in gcc and some 
 	'' tests will fail to compile in gcc on linux x86_64.
 	'' To handle returning a byval cva_list, would need to 

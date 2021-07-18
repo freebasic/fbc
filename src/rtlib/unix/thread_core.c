@@ -57,10 +57,8 @@ FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, ssize_t stack
 		return NULL;
 	}
 
-	/* Solaris pthread.h does not define PTHREAD_STACK_MIN */
-#ifdef PTHREAD_STACK_MIN
-	stack_size = stack_size >= PTHREAD_STACK_MIN ? stack_size : PTHREAD_STACK_MIN;
-#endif
+	/* see fb_private_thread.h for defintion of FBTHREAD_STACK_MIN */
+	stack_size = stack_size >= FBTHREAD_STACK_MIN ? stack_size : FBTHREAD_STACK_MIN;
 
 	pthread_attr_setstacksize( &tattr, stack_size );
 

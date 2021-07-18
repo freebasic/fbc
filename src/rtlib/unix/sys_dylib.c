@@ -9,11 +9,18 @@ FBCALL void *fb_DylibLoad( FBSTRING *library )
 	void *res = NULL;
 	int i;
 	char libname[MAX_PATH];
+	// Sometimes you will see .so files on Darwin too
 	char *libnameformat[] = { "%s",
 							  "lib%s",
+#ifdef HOST_DARWIN
+							  "lib%s.dylib",
+#endif
 							  "lib%s.so",
 							  "./%s",
 							  "./lib%s",
+#ifdef HOST_DARWIN
+							  "./lib%s.dylib",
+#endif
 							  "./lib%s.so",
 							  NULL };
 

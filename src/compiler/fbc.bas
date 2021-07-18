@@ -90,6 +90,7 @@ type FBCCTX
 
 	outname 			as zstring * FB_MAXPATHLEN+1
 	mainname			as zstring * FB_MAXPATHLEN+1
+	entry				as zstring * FB_MAXNAMELEN+1
 	mainset				as integer
 	mapfile				as zstring * FB_MAXPATHLEN+1
 	subsystem			as zstring * FB_MAXNAMELEN+1
@@ -261,6 +262,34 @@ private function hGet1stOutputLineFromCommand( byref cmd as string ) as string
 	return ln
 end function
 
+'' Pass some arguments to gcc and read the results. Returns an empty string on
+'' an error.
+function fbcQueryGcc( byref options as string ) as string
+	dim as string path
+	fbcFindBin( FBCTOOL_GCC, path )
+
+	select case( fbGetCpuFamily( ) )
+	case FB_CPUFAMILY_X86
+		path += " -m32"
+	case FB_CPUFAMILY_X86_64
+		path += " -m64"
+	end select
+
+	path += options
+
+	dim as integer ff = freefile( )
+	if( open pipe( path, for input, as ff ) <> 0 ) then
+		exit function
+	end if
+
+	dim ret as string
+	input #ff, ret
+
+	close ff
+
+	return ret
+end function
+
 ''
 '' Build the path to a certain file in our lib/ directory (or, in case of
 '' non-standalone, somewhere in a system directory such as /usr/lib).
@@ -376,8 +405,19 @@ private sub fbcFindBin _
 		path = fbc.binpath + toolnames(tool) + FB_HOST_EXEEXT
 
 		#ifndef ENABLE_STANDALONE
+			if( (hFileExists( path ) = FALSE) and _
+			    (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GCC)) then
+				'' c) Ask GCC where it is, if applicable (GCC might have its
+				'' own copy which we must use instead of the system one)
+				if( tool = FBCTOOL_AS ) then
+					path = fbcQueryGcc( " -print-prog-name=as" )
+				elseif( tool = FBCTOOL_LD ) then
+					path = fbcQueryGcc( " -print-prog-name=ld" )
+				end if
+			end if
+
 			if( hFileExists( path ) = FALSE ) then
-				'' c) Rely on PATH
+				'' d) Rely on PATH
 				if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
 					path = fbc.targetprefix + toolnames(tool) + FB_HOST_EXEEXT
 				else
@@ -622,6 +662,16 @@ private function hLinkFiles( ) as integer
 			ldcline += "-m elf_x86_64 "
 		case FB_CPUFAMILY_ARM
 			ldcline += "-m armelf_linux_eabi "
+		end select
+	case FB_COMPTARGET_DARWIN
+		select case( fbGetCpuFamily( ) )
+		case FB_CPUFAMILY_X86
+			ldcline += "-arch i386 "
+		case FB_CPUFAMILY_X86_64
+			ldcline += "-arch x86_64 "
+		case FB_CPUFAMILY_ARM
+			'' fixme: this is clearly too specific
+			ldcline += "-arch armv6 "
 		end select
 	end select
 
@@ -1013,7 +1063,7 @@ private function hLinkFiles( ) as integer
 	end select
 
 	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN ) then
-		ldcline += " -macosx_version_min 10.6"
+		ldcline += " -macosx_version_min 10.4"
 	end if
 
 	'' extra options
@@ -1500,6 +1550,7 @@ enum
 	OPT_EDEBUGINFO
 	OPT_ELOCATION
 	OPT_ENULLPTR
+	OPT_ENTRY
 	OPT_EX
 	OPT_EXX
 	OPT_EXPORT
@@ -1571,6 +1622,7 @@ dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 	FALSE, _ '' OPT_EDEBUGINFO
 	FALSE, _ '' OPT_ELOCATION
 	FALSE, _ '' OPT_ENULLPTR
+	TRUE,  _ '' OPT_ENTRY
 	FALSE, _ '' OPT_EX
 	FALSE, _ '' OPT_EXX
 	FALSE, _ '' OPT_EXPORT
@@ -1683,6 +1735,9 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 
 	case OPT_ENULLPTR
 		fbSetOption( FB_COMPOPT_NULLPTRCHECK, TRUE )
+
+	case OPT_ENTRY
+		fbc.entry = arg
 
 	case OPT_EX
 		fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
@@ -2088,6 +2143,7 @@ private function parseOption(byval opt as zstring ptr) as integer
 		CHECK("edebuginfo", OPT_EDEBUGINFO)
 		CHECK("elocation", OPT_ELOCATION)
 		CHECK("enullptr", OPT_ENULLPTR)
+		CHECK("entry", OPT_ENTRY)
 		CHECK("exx", OPT_EXX)
 		CHECK("export", OPT_EXPORT)
 
@@ -2435,7 +2491,11 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 	'' or cross-compiling. Even on a 64bit x86_64 host where
 	'' FB_DEFAULT_BACKEND is -gen gcc, we still prefer using -gen gas when
 	'' cross-compiling to 32bit x86.
-	if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
+	'' (Apple gas assembler has such broken support for intel syntax
+	'' (see https://discussions.apple.com/message/10163960#10163960)
+	'' that it can't work for non-trivial programs, so default to -gen gcc.)
+	if( (fbGetCpuFamily( ) = FB_CPUFAMILY_X86) and _
+	    (fbGetOption(FB_COMPOPT_TARGET) <> FB_COMPTARGET_DARWIN) ) then
 		fbSetOption( FB_COMPOPT_BACKEND, FB_BACKEND_GAS )
 	else
 		fbSetOption( FB_COMPOPT_BACKEND, FB_BACKEND_GCC )
@@ -2480,6 +2540,14 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 			fbcEnd(1)
 		end if
 	end select
+
+	'' On darwin need to change the default asm syntax when using gen gcc because
+	'' most C compilers on OSX seem to be configured without intel syntax support;
+	'' probably because Apple as and llvm-mc have horribly broken intel support.
+	if( (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN) and _
+	    (fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS) ) then
+		fbSetOption( FB_COMPOPT_ASMSYNTAX, FB_ASMSYNTAX_ATT )
+	end if
 
 	if( fbc.asmsyntax >= 0 ) then
 		'' -asm only applies to x86 and x86_64
@@ -2754,7 +2822,7 @@ private sub hCompileBas _
 
 	do
 		'' init the parser
-		fbInit( is_main, restarts )
+		fbInit( is_main, restarts, fbc.entry )
 
 		if( is_fbctinf ) then
 			'' Let the compiler know about all libs collected so far,
@@ -3021,9 +3089,14 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		end if
 
 		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
-			ln += "-S -nostdlib -nostdinc -Wall -Wno-unused-label " + _
-			      "-Wno-unused-function -Wno-unused-variable " 
-			ln += "-Wno-unused-but-set-variable "
+			ln += "-S -nostdlib -nostdinc -Wall "
+
+			'' -Wno-unused-but-set-variable and the warning it suppresses were introduced
+			'' in GCC 4.6. Don't pass that flag to avoid an error on earlier GCC. As a
+			'' result, to disable the warning on 4.6+ need to disable all unused warnings...
+			' ln += "-Wno-unused-label -Wno-unused-function -Wno-unused-variable "
+			' ln += "-Wno-unused-but-set-variable "
+			ln += "-Wno-unused "
 		else
 			'if Emscripten is used, we will skip the assembly generation and compile directly to object code
 			ln += "-c -nostdlib -nostdinc -Wall -Wno-unused-label " + _
@@ -3102,7 +3175,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			'' -march=name
 			'' Specify the name of the target architecture and, 
 			'' optionally, one or more feature modifiers. This option 
-			'' has the form â€˜-march=arch{+[no]feature}*â€™.
+			'' has the form ‘-march=arch{+[no]feature}*’.
 			'' 
 			'' The permissible values for arch are 
 			'' 'armv8-a'
@@ -3636,6 +3709,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -enullptr        Enable null-pointer checking"
 	end if
 
+	print "  -entry           Change the entry point of the program from main()"
 	print "  -ex              -e plus RESUME support"
 	print "  -exx             -ex plus array bounds/null-pointer checking"
 	print "  -export          Export symbols for dynamic linkage"

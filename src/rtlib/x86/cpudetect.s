@@ -11,7 +11,7 @@ detected_cpu: .long 0  /* bits  0-27: low 24 bits of feature flags (CPUID eax = 
 .text
 
 /* unsigned int fb_CpuDetect(void); */
-#if defined HOST_DOS || defined HOST_WIN32 || defined HOST_XBOX
+#if defined HOST_DOS || defined HOST_WIN32 || defined HOST_XBOX || defined HOST_DARWIN
 .globl _fb_CpuDetect
 _fb_CpuDetect:
 #else
