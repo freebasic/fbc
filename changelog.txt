@@ -4,6 +4,7 @@ Version 1.08.2
 [added]
 
 [fixed]
+- gfxlib2: fix d2d scaling issues for high dpi (adeyblue)
 
 
 Version 1.08.1
