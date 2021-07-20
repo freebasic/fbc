@@ -13,7 +13,6 @@
 #include <d2d1.h>
 #include <dxgi.h>
 #include <stdlib.h>
-#include "VersionHelpers.h"
 
 /* Defining DEBUG or D2D_DEBUG will turn on debugging for Direct2D & Direct3D
 // (if it's used). To see any output from them you'll need to install 
@@ -194,7 +193,6 @@ typedef struct D2DGlobalState
 			ID2D1HwndRenderTarget* pHwndTarget; /* The guy that lets us render to a window */
 		} NonLayered;
 	} RenderParams;
-	BOOL isWin10;
 } D2DGlobalState;
 
 /* We could statically allocate the state as a global, but that would
@@ -236,7 +234,6 @@ static D2DGlobalState* CreateGlobalState(HWND hwnd, HMODULE hD2D, ID2D1Factory* 
 			}
 			++i;
 		}
-		pState->isWin10 = IsWindows10OrGreater();
 		if(!SetProp(hwnd, MAKEINTRESOURCE(D2D_PROP_ID), (HANDLE)pState)) {
 			free(pState);
 			pState = NULL;
@@ -625,20 +622,8 @@ fillInDirtyRect:
 	dirtyRect.bottom = ((pLastDirtyRow - pDirtyStart) + 1) * scanlineSize;
 	drawRect.left = dirtyRect.left;
 	drawRect.right = dirtyRect.right;
-
-	if( pGlobalState->isWin10 ) {
-		drawRect.top = dirtyRect.top;
-		drawRect.bottom = dirtyRect.bottom;
-	}
-	else {
-		/* on win7 the update / scaling doesn't work correctly.
-		// Only thing that seems to work at this point is if
-		// we update the entire window. (jeffm)
-		*/
-		drawRect.top = 0;
-		drawRect.bottom = winHeight;
-	}
-
+	drawRect.top = dirtyRect.top;
+	drawRect.bottom = dirtyRect.bottom;
 
 	DBG_TEXT("%s - dirty rect L-%lu, T-%lu, R-%lu, B-%lu", dirtyRect.left, dirtyRect.top, dirtyRect.right, dirtyRect.bottom);
 
@@ -655,14 +640,6 @@ fillInDirtyRect:
 
 	ID2D1Bitmap_CopyFromMemory(pBackBuffer, &dirtyRect, pBitmapDataSrc, stride);
 
-	if( !pGlobalState->isWin10 )
-	{
-		/* win7 seems to handle ID2D1RenderTarget_DrawBitmap() differently
-		// than on win10.  Force the DPI for the render target otherwise
-		// we get weird scaling when system is in a high-dpi mode (jeffm).
-		*/
-		ID2D1RenderTarget_SetDpi( pRT, 96, 96 );
-	}
 	ID2D1RenderTarget_BeginDraw(pRT);
 	ID2D1RenderTarget_DrawBitmap(pRT, pBackBuffer, &drawRect, 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &drawRect);
 	if(pGlobalState->Paint)

@@ -13,7 +13,6 @@ Version 1.09.0
 - fbc: gen gcc: allow compiling with GCC 4.5 and older, by avoiding -Wno-unused-but-set-variable (TeeEmCee)
 - fbc: internal function fbcQueryGcc() to ask gcc for the correct as & ld to use (TeeEmCee)
 - rtlib: freebsd: minimum thread stacksize 8192 KiB
-- gfxlib2: force 96 dpi scaling on windows 7 to fix an issue with high dpi modes - no change for windows 10
 
 [added]
 - fbc: add '-z fbrt' command line option to link against libfbrt*.a instead of libfb*.a
