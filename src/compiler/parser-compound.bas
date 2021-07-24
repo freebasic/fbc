@@ -731,7 +731,11 @@ function cCompStmtIsAllowed( byval allowmask as FB_CMPSTMT_MASK ) as integer
 
 	'' error..
 	if( fbIsModLevel( ) = FALSE ) then
-		errmsg = FB_ERRMSG_ILLEGALINSIDEASUB
+		if( stk->id = FB_TK_SELECT ) then
+			errmsg = FB_ERRMSG_ILLEGALINSIDESELECT
+		else
+			errmsg = FB_ERRMSG_ILLEGALINSIDEASUB
+		end if
 	else
 		if( symbIsGlobalNamespc( ) ) then
 			if( stk->id = FB_TK_SELECT ) then
