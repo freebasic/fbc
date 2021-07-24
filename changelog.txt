@@ -1,3 +1,11 @@
+Version 1.08.2
+[changed]
+
+[added]
+
+[fixed]
+
+
 Version 1.08.1
 
 [changed]
