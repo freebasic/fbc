@@ -22,6 +22,7 @@ PRINTF := printf
 ifndef FBC
 FBC := fbc$(EXEEXT)
 endif
+export FBC
 
 ENABLE_CHECK_BUGS :=
 export ENABLE_CHECK_BUGS

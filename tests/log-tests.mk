@@ -289,7 +289,7 @@ $(FAILED_LOG_TESTS_INC) :
 	@$(ECHO) "#" >> $(FAILED_LOG_TESTS_INC)
 
 	@$(PRINTF) "."
-	@$(FIND) $(DIRLIST) -type f -name -mindepth 1 '*.log' -mindepth 1 \
+	@$(FIND) $(DIRLIST) -mindepth 1 -type f -name '*.log' \
 | $(XARGS) $(GREP) -l -i -E '^.*[[:space:]]*:[[:space:]]*RESULT=FAILED' \
 | $(SED) -e 's/\(^.*\)[[:space:]]\:[[:space:]]TESTMODE=\(.*\)/SRCLIST_\2 \+\= \1/g' \
 >> $(FAILED_LOG_TESTS_INC)
@@ -307,42 +307,42 @@ $(LOG_TESTS_INC) :
 	@$(ECHO) "#" >> $(LOG_TESTS_INC)
 
 	@$(PRINTF) "."
-	@$(FIND) $(DIRLIST) -type f -name '*.bas' -or -name '*.bmk' -mindepth 1 \
+	@$(FIND) $(DIRLIST) -mindepth 1 -type f -name '*.bas' -or -name '*.bmk' \
 | $(XARGS) $(GREP) -l -i -E '[[:space:]]*.[[:space:]]*TEST_MODE[[:space:]]*\:[[:space:]]*COMPILE_ONLY_OK' \
 | $(SED) -e 's/\(^.*\)/\SRCLIST_COMPILE_ONLY_OK \+\= \.\/\1/g' \
 >> $(LOG_TESTS_INC)
 	@$(ECHO) "#" >> $(LOG_TESTS_INC)
 
 	@$(PRINTF) "."
-	@$(FIND) $(DIRLIST) -type f -name '*.bas' -or -name '*.bmk' -mindepth 1 \
+	@$(FIND) $(DIRLIST) -mindepth 1 -type f -name '*.bas' -or -name '*.bmk' \
 | $(XARGS) $(GREP) -l -i -E '[[:space:]]*.[[:space:]]*TEST_MODE[[:space:]]*\:[[:space:]]*COMPILE_ONLY_FAIL' \
 | $(SED) -e 's/\(^.*\)/\SRCLIST_COMPILE_ONLY_FAIL \+\= \.\/\1/g' \
 >> $(LOG_TESTS_INC)
 	@$(ECHO) "#" >> $(LOG_TESTS_INC)
 
 	@$(PRINTF) "."
-	@$(FIND) $(DIRLIST) -type f -name '*.bas' -or -name '*.bmk' -mindepth 1 \
+	@$(FIND) $(DIRLIST) -mindepth 1 -type f -name '*.bas' -or -name '*.bmk' \
 | $(XARGS) $(GREP) -l -i -E '[[:space:]]*.[[:space:]]*TEST_MODE[[:space:]]*\:[[:space:]]*COMPILE_AND_RUN_OK' \
 | $(SED) -e 's/\(^.*\)/\SRCLIST_COMPILE_AND_RUN_OK \+\= \.\/\1/g' \
 >> $(LOG_TESTS_INC)
 	@$(ECHO) "#" >> $(LOG_TESTS_INC)
 
 	@$(PRINTF) "."
-	@$(FIND) $(DIRLIST) -type f -name '*.bas' -or -name '*.bmk' -mindepth 1 \
+	@$(FIND) $(DIRLIST) -mindepth 1 -type f -name '*.bas' -or -name '*.bmk' \
 | $(XARGS) $(GREP) -l -i -E '[[:space:]]*.[[:space:]]*TEST_MODE[[:space:]]*\:[[:space:]]*COMPILE_AND_RUN_FAIL' \
 | $(SED) -e 's/\(^.*\)/\SRCLIST_COMPILE_AND_RUN_FAIL \+\= \.\/\1/g' \
 >> $(LOG_TESTS_INC)
 	@$(ECHO) "#" >> $(LOG_TESTS_INC)
 
 	@$(PRINTF) "."
-	@$(FIND) $(DIRLIST) -type f -name '*.bmk' -mindepth 1 \
+	@$(FIND) $(DIRLIST) -mindepth 1 -type f -name '*.bmk' \
 | $(XARGS) $(GREP) -l -i -E '[[:space:]]*.[[:space:]]*TEST_MODE[[:space:]]*\:[[:space:]]*MULTI_MODULE_OK' \
 | $(SED) -e 's/\(^.*\)/\SRCLIST_MULTI_MODULE_OK \+\= \.\/\1/g' \
 >> $(LOG_TESTS_INC)
 	@$(ECHO) "#" >> $(LOG_TESTS_INC)
 
 	@$(PRINTF) "."
-	@$(FIND) $(DIRLIST) -type f -name '*.bmk' -mindepth 1 \
+	@$(FIND) $(DIRLIST) -mindepth 1 -type f -name '*.bmk' \
 | $(XARGS) $(GREP) -l -i -E '[[:space:]]*.[[:space:]]*TEST_MODE[[:space:]]*\:[[:space:]]*MULTI_MODULE_FAIL' \
 | $(SED) -e 's/\(^.*\)/\SRCLIST_MULTI_MODULE_FAIL \+\= \.\/\1/g' \
 >> $(LOG_TESTS_INC)
