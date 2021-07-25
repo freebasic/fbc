@@ -748,7 +748,7 @@ function cCompStmtIsAllowed( byval allowmask as FB_CMPSTMT_MASK ) as integer
 		end if
 	end if
 
-	errReport( errmsg )
+	errReportEx( errmsg, "" )
 
 	function = FALSE
 end function

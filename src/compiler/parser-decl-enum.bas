@@ -1,6 +1,7 @@
 '' enumerator (ENUM) declarations
 ''
 '' chng: sep/2004 written [v1ctor]
+'' chng: jul/2021 don't allow ENUM between SELECT and CASE [jeffm]
 
 
 #include once "fb.bi"
@@ -143,6 +144,13 @@ end sub
 sub cEnumDecl( byval attrib as FB_SYMBATTRIB )
 	static as zstring * FB_MAXNAMELEN+1 id
 	dim as FBSYMBOL ptr e = any
+
+	'' ENUM doesn't generate any code, but should not be allowed between SELECT and CASE
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		'' error recovery: skip the whole compound stmt
+		hSkipCompound( FB_TK_ENUM )
+		exit sub
+	end if
 
 	'' ENUM
 	lexSkipToken( LEXCHECK_POST_SUFFIX )
