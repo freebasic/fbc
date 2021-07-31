@@ -429,7 +429,8 @@ end function
 private function hProcPtrBody _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
-		byval proc as FBSYMBOL ptr _
+		byval proc as FBSYMBOL ptr, _
+		byval check_exact as boolean = FALSE _
 	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr sym = any
@@ -444,12 +445,15 @@ private function hProcPtrBody _
 	end if
 
 	'' resolve overloaded procs
-	if( symbIsOverloaded( proc ) ) then
+	if( symbIsOverloaded( proc ) or check_exact ) then
         if( parser.ctxsym <> NULL ) then
         	if( symbIsProc( parser.ctxsym ) ) then
         		sym = symbFindOverloadProc( proc, parser.ctxsym )
         		if( sym <> NULL ) then
         			proc = sym
+				elseif( check_exact ) then
+					errReport( FB_ERRMSG_NOMATCHINGPROC, TRUE )
+					return astNewCONSTi( 0 )
         		end if
         	end if
         end if
@@ -630,7 +634,35 @@ function cAddrOfExpression( ) as ASTNODE ptr
 			lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
 		end if
 
-		expr = hProcPtrBody( base_parent, sym )
+		'' ',' ?
+		if( hMatch( CHAR_COMMA ) ) then
+			dim dtype as integer
+			dim subtype as FBSYMBOL ptr
+			if( cSymbolType( dtype, subtype ) = FALSE ) then
+				errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
+				'' error recovery: skip until ')' and fake a node
+				hSkipUntil( CHAR_RPRNT, TRUE )
+				return astNewCONSTi( 0 )
+			else
+				if( typeGetDtAndPtrOnly( dtype ) = typeAddrOf( FB_DATATYPE_FUNCTION ) ) then
+					dim oldsym as FBSYMBOL ptr = parser.ctxsym
+					dim old_dtype as integer = parser.ctx_dtype
+					parser.ctxsym = subtype
+					parser.ctx_dtype = dtype
+					expr = hProcPtrBody( base_parent, sym, TRUE )
+					parser.ctxsym = oldsym
+					parser.ctx_dtype = old_dtype
+				else
+					errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
+					'' error recovery: skip until ')' and fake a node
+					hSkipUntil( CHAR_RPRNT, TRUE )
+					return astNewCONSTi( 0 )
+				end if
+			end if
+
+		else
+			expr = hProcPtrBody( base_parent, sym )
+		end if
 
 		'' ')'
 		if( hMatch( CHAR_RPRNT ) = FALSE ) then

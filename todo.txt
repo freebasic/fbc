@@ -269,6 +269,16 @@ o -exx should catch...
         prototypes don't require a name and because overloading
       - := must be a new token because the "foo bar : baz" ambiguity
 
+[ ] method pointers / delegates
+    - extend PROCPTR( id, type ) to allow pointers to methods
+    - fbc handles method pointers fairly well but the syntax is not symmetrical with
+      invoking a method on a TYPE (class)
+    - var x = procptr( T.method ) could return a method pointer but must currently be
+      invoked with x( instance, [params]... ).  This is a different syntax from other
+      languages that support method pointers.
+    - delegates would need to aggregate the instance and method pointer which will
+      likely requre a new built-in type to handle by the compiler
+
 *** *** *** *** ***
 [ ] All functions returning STRING should actually return the FBSTRING object
     - it must be coded in plain C to avoid C++ dependencies
