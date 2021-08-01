@@ -199,9 +199,9 @@ function symbAddProcParam _
 		byval pattrib as FB_PROCATTRIB _
 	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr param = any
+	dim as FBSYMBOL ptr param = any
 
-    function = NULL
+	function = NULL
 
 	assert( (dimensions <> 0) = (mode = FB_PARAMMODE_BYDESC) )
 
@@ -209,9 +209,9 @@ function symbAddProcParam _
 	                       @proc->proc.paramtb, NULL, _
 	                       FB_SYMBCLASS_PARAM, _
 	                       id, NULL, dtype, subtype, attrib, FB_PROCATTRIB_NONE )
-    if( param = NULL ) then
-    	exit function
-    end if
+	if( param = NULL ) then
+		exit function
+	end if
 
 	proc->proc.params += 1
 
@@ -579,7 +579,7 @@ private function hAddOvlProc _
 		ovl = symbGetProcOvlNext( ovl )
 	loop while( ovl <> NULL )
 
-    '' add the new proc symbol, w/o adding it to the hash table
+	'' add the new proc symbol, w/o adding it to the hash table
 	proc = symbNewSymbol( iif( preservecase, FB_SYMBOPT_PRESERVECASE, FB_SYMBOPT_NONE ), _
 	                      proc, symtb, hashtb, FB_SYMBCLASS_PROC, id, id_alias, dtype, subtype, attrib, pattrib )
 	if( proc = NULL ) then
@@ -593,8 +593,8 @@ private function hAddOvlProc _
 		proc->hash.index = ovl_head_proc->hash.index
 		proc->hash.item = ovl_head_proc->hash.item
 
-    	nxt = ovl_head_proc->hash.next
-    	ovl_head_proc->hash.next = proc
+		nxt = ovl_head_proc->hash.next
+		ovl_head_proc->hash.next = proc
 
 		proc->hash.prev = ovl_head_proc
 		proc->hash.next = nxt
@@ -649,7 +649,7 @@ private function hAddOpOvlProc _
 		ovl = symbGetProcOvlNext( ovl )
 	loop
 
-    '' add it
+	'' add it
 	proc = symbNewSymbol( FB_SYMBOPT_NONE, proc, symtb, hashtb, _
 	                      FB_SYMBCLASS_PROC, NULL, id_alias, dtype, subtype, attrib, pattrib )
 
@@ -678,7 +678,7 @@ private function hSetupProc _
 	dim as integer stats = any, preserve_case = any, lookupoptions = any
 	dim as FBSYMBOL ptr proc = any, head_proc = any, overridden = any
 
-    function = NULL
+	function = NULL
 
 #if __FB_DEBUG__
 	'' Member procs generally must have either STATIC or METHOD attributes,
@@ -701,16 +701,16 @@ private function hSetupProc _
 		subtype = NULL
 	end if
 
-    '' no explict alias?
-    if( id_alias = NULL ) then
-    	'' only preserve a case-sensitive version if in BASIC mangling
-    	if( parser.mangling <> FB_MANGLING_BASIC ) then
-    		id_alias = id
-    	end if
-    	stats = 0
-    else
-    	stats = FB_SYMBSTATS_HASALIAS
-    end if
+	'' no explict alias?
+	if( id_alias = NULL ) then
+		'' only preserve a case-sensitive version if in BASIC mangling
+		if( parser.mangling <> FB_MANGLING_BASIC ) then
+			id_alias = id
+		end if
+		stats = 0
+	else
+		stats = FB_SYMBSTATS_HASALIAS
+	end if
 
 	head_proc = NULL
 
@@ -781,22 +781,22 @@ private function hSetupProc _
 			goto add_proc
 		end if
 
-        dim as AST_OP op
+		dim as AST_OP op
 
-        op = symbGetProcOpOvl( sym )
+		op = symbGetProcOpOvl( sym )
 
-        head_proc = symbGetCompOpOvlHead( parent, op )
+		head_proc = symbGetCompOpOvlHead( parent, op )
 
-        '' not overloaded yet? just add it
-        if( head_proc = NULL ) then
+		'' not overloaded yet? just add it
+		if( head_proc = NULL ) then
 			proc = symbNewSymbol( FB_SYMBOPT_NONE, sym, symtb, hashtb, _
 			                      FB_SYMBCLASS_PROC, NULL, id_alias, _
 			                      dtype, subtype, attrib, pattrib )
 
-        	symbSetCompOpOvlHead( parent, proc )
+			symbSetCompOpOvlHead( parent, proc )
 
-        '' otherwise, try to overload
-        else
+		'' otherwise, try to overload
+		else
 			proc = hAddOpOvlProc( sym, head_proc, symtb, hashtb, op, id_alias, _
 			                      dtype, subtype, attrib, pattrib )
 			if( proc = NULL ) then
@@ -807,7 +807,7 @@ private function hSetupProc _
 			if( op = AST_OP_ASSIGN ) then
 				symbCheckCompLetOp( parent, proc )
 			end if
-        end if
+		end if
 
 	'' ordinary proc..
 	else
