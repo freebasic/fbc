@@ -134,7 +134,7 @@ sub symbDataInit( )
 		'' populate symb_dtypeMatchTB() with ranking numbers
 		for i = 0 to NUMTYPES - 1
 			dtype2 = rank(i)
-			symb_dtypeMatchTB( dtype1, dtype2 ) = i
+			symb_dtypeMatchTB( dtype1, dtype2 ) = i * FB_OVLPROC_CONVSCALE
 		next
 
 	next
@@ -533,6 +533,8 @@ end function
 '' FB_OVLPROC_LOWEST_MATCH           => compatible, lowest scoring parameter
 '' FB_OVLPROC_NO_MATCH               => incompatible
 
+'' FB_OVLPROC_CONVSCALE              => granularity of the matching score
+
 ''
 function typeCalcMatch _
 	( _
@@ -558,7 +560,7 @@ function typeCalcMatch _
 	end if
 
 	if( (typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( rdtype )) and (lsubtype = rsubtype) ) then
-		return FB_OVLPROC_TYPEMATCH + const_matches
+		return FB_OVLPROC_TYPEMATCH + const_matches * FB_OVLPROC_CONVSCALE
 	end if
 
 	'' We know that they're different (in terms of dtype or subtype or both),

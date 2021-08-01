@@ -29,6 +29,10 @@ SUITE( fbc_tests.udt_zstring_.left_ )
 		next
 	#endmacro
 
+#if ENABLE_CHECK_BUGS
+
+'' left and right functions are not overloaded to accept a BYREF as ZSTRING
+
 	TEST( default )
 
 		check( "" )
@@ -36,5 +40,7 @@ SUITE( fbc_tests.udt_zstring_.left_ )
 		check( "abcde" )
 		check( "1234567890" )
 	END_TEST
+
+#endif
 
 END_SUITE

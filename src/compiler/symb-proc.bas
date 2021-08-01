@@ -1639,7 +1639,7 @@ end function
 		rec_cnt -= 1
 
 		if( proc <> NULL ) then
-			return FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT
+			return FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT * FB_OVLPROC_CONVSCALE
 		end if
 	end if
 #endmacro
@@ -1664,7 +1664,16 @@ end function
 		rec_cnt -= 1
 
 		if( proc <> NULL ) then
-			return FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT
+			'' calculate a new match score based on the CAST() return type rank
+			var match = typeCalcMatch( param_dtype, param_subtype, symbGetParamMode( param ), symbGetFullType( proc ), symbGetSubType( proc ) )
+
+			if( match >= FB_OVLPROC_TYPEMATCH ) then
+				return FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT * FB_OVLPROC_CONVSCALE + 2
+			elseif( match >= FB_OVLPROC_HALFMATCH ) then
+				return FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT * FB_OVLPROC_CONVSCALE + 1
+			end if
+
+			return FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT * FB_OVLPROC_CONVSCALE
 		end if
 	end if
 #endmacro
@@ -1821,9 +1830,13 @@ private function hCalcTypesDiff _
 		'' corresponding to hStrArgToStrPtrParam())
 		case FB_DATACLASS_STRING
 			select case param_dtype
-			case FB_DATATYPE_CHAR, typeAddrOf( FB_DATATYPE_CHAR )
+			case FB_DATATYPE_CHAR
 				return FB_OVLPROC_FULLMATCH
-			case FB_DATATYPE_WCHAR, typeAddrOf( FB_DATATYPE_WCHAR )
+			case typeAddrOf( FB_DATATYPE_CHAR )
+				return FB_OVLPROC_FULLMATCH
+			case FB_DATATYPE_WCHAR
+				return FB_OVLPROC_HALFMATCH
+			case typeAddrOf( FB_DATATYPE_WCHAR )
 				return FB_OVLPROC_HALFMATCH
 			end select
 
