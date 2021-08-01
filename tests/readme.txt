@@ -30,6 +30,7 @@ $ make unit-tests
 
 $ make log-tests
    generates failed-test-fb.log
+   generates failed-test-fblite.log
    generates failed-test-qb.log
    generates failed-test-deprecated.log
    if all tests passed, the log file reports "None found"
@@ -55,7 +56,7 @@ rescan directories for new or dropped test files.
 Use 'make mostlyclean' to clean-up nearly all the files when it is
 known that no tests have been added or dropped between test sessions.
 
-Use 'make log-tests FB_LANG=fb | qb | deprecated' to make a specific
+Use 'make log-tests FB_LANG=fb | fblite | qb | deprecated' to make a specific
 set of -lang tests.
 
 
@@ -67,7 +68,7 @@ OS=DOS
 FBC=/path/fbc
    Specify the location of the fbc compiler
 
-FB_LANG=fb | qb | deprecated
+FB_LANG=fb | fblite | qb | deprecated
    Specify the compiler dialect
 
 DEBUG=1

@@ -54,6 +54,10 @@ ifeq ($(FB_LANG),qb)
 DIRLIST := $(DIRLIST_QB)
 endif
 
+ifeq ($(FB_LANG),fblite)
+DIRLIST := $(DIRLIST_FBLITE)
+endif
+
 ifeq ($(FB_LANG),deprecated)
 DIRLIST := $(DIRLIST_DEPRECATED)
 endif
