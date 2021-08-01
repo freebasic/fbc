@@ -13,6 +13,7 @@ Version 1.09.0
 - fbc: gen gcc: allow compiling with GCC 4.5 and older, by avoiding -Wno-unused-but-set-variable (TeeEmCee)
 - fbc: internal function fbcQueryGcc() to ask gcc for the correct as & ld to use (TeeEmCee)
 - rtlib: freebsd: minimum thread stacksize 8192 KiB
+- sf.net #666: allow overload 'as string' with 'as zstring ptr' parameters
 
 [added]
 - fbc: add '-z fbrt' command line option to link against libfbrt*.a instead of libfb*.a
@@ -23,6 +24,7 @@ Version 1.09.0
 - fbc: add '-entry name' command line option to set program entry point (TeeEmCee)
 - added objinfo support for ELF files on freebsd
 - PROCPTR( identifier, type ) syntax to allow getting procedure pointer for based on sub/function type
+- sf.net #666: overload matching for UDT's with CAST() operators as [w|z]string type and implicit conversions
 
 [fixed]
 - github #315: set parameters when calling SCREENCONTROL (was broken in fbc 1.08.0 due to new LONG/LONGINT SCREENCONTROL API's)
@@ -38,6 +40,7 @@ Version 1.09.0
 - darwin: a variety of improvements to allow compiling and linking (TeeEmCee)
 - gfxlib2: fix d2d scaling issues for high dpi (adeyblue)
 - fbc: improve error message on statement between SELECT and first CASE inside a subroutine and don't allow CONST/ENUM between any SELECT & first CASE.
+- sf.net #843: Implicit casting of argument to string works for Instr() and Mid() but not for Left() and Right() 
 
 
 Version 1.08.0

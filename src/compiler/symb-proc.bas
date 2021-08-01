@@ -199,9 +199,9 @@ function symbAddProcParam _
 		byval pattrib as FB_PROCATTRIB _
 	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr param = any
+	dim as FBSYMBOL ptr param = any
 
-    function = NULL
+	function = NULL
 
 	assert( (dimensions <> 0) = (mode = FB_PARAMMODE_BYDESC) )
 
@@ -209,9 +209,9 @@ function symbAddProcParam _
 	                       @proc->proc.paramtb, NULL, _
 	                       FB_SYMBCLASS_PARAM, _
 	                       id, NULL, dtype, subtype, attrib, FB_PROCATTRIB_NONE )
-    if( param = NULL ) then
-    	exit function
-    end if
+	if( param = NULL ) then
+		exit function
+	end if
 
 	proc->proc.params += 1
 
@@ -542,22 +542,7 @@ private function hAddOvlProc _
 
 				'' not the same type? check next proc..
 				if( pdtype <> odtype ) then
-
-					'' handle special cases: zstring ptr and string args
-					select case pdtype
-					case typeAddrOf( FB_DATATYPE_CHAR )
-						if( odtype <> FB_DATATYPE_STRING ) then
-							exit do
-						end if
-
-					case FB_DATATYPE_STRING
-						if( odtype <> typeAddrOf( FB_DATATYPE_CHAR ) ) then
-							exit do
-						end if
-
-					case else
-						exit do
-					end select
+					exit do
 				end if
 
 				if( param->subtype <> ovl_param->subtype ) then
@@ -579,7 +564,7 @@ private function hAddOvlProc _
 		ovl = symbGetProcOvlNext( ovl )
 	loop while( ovl <> NULL )
 
-    '' add the new proc symbol, w/o adding it to the hash table
+	'' add the new proc symbol, w/o adding it to the hash table
 	proc = symbNewSymbol( iif( preservecase, FB_SYMBOPT_PRESERVECASE, FB_SYMBOPT_NONE ), _
 	                      proc, symtb, hashtb, FB_SYMBCLASS_PROC, id, id_alias, dtype, subtype, attrib, pattrib )
 	if( proc = NULL ) then
@@ -593,8 +578,8 @@ private function hAddOvlProc _
 		proc->hash.index = ovl_head_proc->hash.index
 		proc->hash.item = ovl_head_proc->hash.item
 
-    	nxt = ovl_head_proc->hash.next
-    	ovl_head_proc->hash.next = proc
+		nxt = ovl_head_proc->hash.next
+		ovl_head_proc->hash.next = proc
 
 		proc->hash.prev = ovl_head_proc
 		proc->hash.next = nxt
@@ -649,7 +634,7 @@ private function hAddOpOvlProc _
 		ovl = symbGetProcOvlNext( ovl )
 	loop
 
-    '' add it
+	'' add it
 	proc = symbNewSymbol( FB_SYMBOPT_NONE, proc, symtb, hashtb, _
 	                      FB_SYMBCLASS_PROC, NULL, id_alias, dtype, subtype, attrib, pattrib )
 
@@ -678,7 +663,7 @@ private function hSetupProc _
 	dim as integer stats = any, preserve_case = any, lookupoptions = any
 	dim as FBSYMBOL ptr proc = any, head_proc = any, overridden = any
 
-    function = NULL
+	function = NULL
 
 #if __FB_DEBUG__
 	'' Member procs generally must have either STATIC or METHOD attributes,
@@ -701,16 +686,16 @@ private function hSetupProc _
 		subtype = NULL
 	end if
 
-    '' no explict alias?
-    if( id_alias = NULL ) then
-    	'' only preserve a case-sensitive version if in BASIC mangling
-    	if( parser.mangling <> FB_MANGLING_BASIC ) then
-    		id_alias = id
-    	end if
-    	stats = 0
-    else
-    	stats = FB_SYMBSTATS_HASALIAS
-    end if
+	'' no explict alias?
+	if( id_alias = NULL ) then
+		'' only preserve a case-sensitive version if in BASIC mangling
+		if( parser.mangling <> FB_MANGLING_BASIC ) then
+			id_alias = id
+		end if
+		stats = 0
+	else
+		stats = FB_SYMBSTATS_HASALIAS
+	end if
 
 	head_proc = NULL
 
@@ -781,22 +766,22 @@ private function hSetupProc _
 			goto add_proc
 		end if
 
-        dim as AST_OP op
+		dim as AST_OP op
 
-        op = symbGetProcOpOvl( sym )
+		op = symbGetProcOpOvl( sym )
 
-        head_proc = symbGetCompOpOvlHead( parent, op )
+		head_proc = symbGetCompOpOvlHead( parent, op )
 
-        '' not overloaded yet? just add it
-        if( head_proc = NULL ) then
+		'' not overloaded yet? just add it
+		if( head_proc = NULL ) then
 			proc = symbNewSymbol( FB_SYMBOPT_NONE, sym, symtb, hashtb, _
 			                      FB_SYMBCLASS_PROC, NULL, id_alias, _
 			                      dtype, subtype, attrib, pattrib )
 
-        	symbSetCompOpOvlHead( parent, proc )
+			symbSetCompOpOvlHead( parent, proc )
 
-        '' otherwise, try to overload
-        else
+		'' otherwise, try to overload
+		else
 			proc = hAddOpOvlProc( sym, head_proc, symtb, hashtb, op, id_alias, _
 			                      dtype, subtype, attrib, pattrib )
 			if( proc = NULL ) then
@@ -807,7 +792,7 @@ private function hSetupProc _
 			if( op = AST_OP_ASSIGN ) then
 				symbCheckCompLetOp( parent, proc )
 			end if
-        end if
+		end if
 
 	'' ordinary proc..
 	else
@@ -1639,7 +1624,7 @@ end function
 		rec_cnt -= 1
 
 		if( proc <> NULL ) then
-			return FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT
+			return FB_OVLPROC_HALFMATCH - OvlMatchScore( FB_DATATYPE_STRUCT, 0 )
 		end if
 	end if
 #endmacro
@@ -1647,6 +1632,7 @@ end function
 #macro hCheckCastOvlEx _
 	( _
 		rec_cnt, _
+		param_mode, _
 		param_dtype, _
 		param_subtype, _
 		arg_expr _
@@ -1658,13 +1644,36 @@ end function
 
 		rec_cnt += 1
 		proc = symbFindCastOvlProc( param_dtype, _
-									param_subtype, _
-									arg_expr, _
-									@err_num )
-		rec_cnt -= 1
+		                            param_subtype, _
+		                            arg_expr, _
+		                            @err_num )
+		                            rec_cnt -= 1
 
 		if( proc <> NULL ) then
-			return FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT
+			'' calculate a new match score based on the CAST() return type rank
+			'' we can't keep the FB_OVLPROC_TYPEMATCH and FB_OVLPROC_HALFMATCH
+			'' level of match scores because we don't wnat the score to interfere
+			'' with non-cast and non-conversion scores.  Instead, reduce the scores:
+			'' FB_OVLPROC_TYPEMATCH => FB_OVLPROC_CASTMATCH
+			'' FB_OVLPROC_HALFMATCH => FB_OVLPROC_CONVMATCH
+
+			var match = hCalcTypesDiff( param_dtype, _
+			                            param_subtype, _
+			                            symbGetPtrCnt( proc ), _
+			                            symbGetFullType( proc ), _
+			                            symbGetSubType( proc ), _
+			                            NULL, _
+			                            param_mode )
+
+			if( match >= FB_OVLPROC_TYPEMATCH ) then
+				match = match - FB_OVLPROC_TYPEMATCH + FB_OVLPROC_CASTMATCH
+			elseif( match >= FB_OVLPROC_HALFMATCH ) then
+				match = match - FB_OVLPROC_TYPEMATCH + FB_OVLPROC_CONVMATCH
+			else
+				match = FB_OVLPROC_CONVMATCH - OvlMatchScore( FB_DATATYPE_STRUCT, 0 )
+			end if
+
+			return match
 		end if
 	end if
 #endmacro
@@ -1693,6 +1702,17 @@ private function hCalcTypesDiff _
 
 	arg_dclass = typeGetClass( arg_dtype )
 
+	'' STRING MATCHING
+	'' (F=FB_OVLPROC_FULLMATCH, H=FB_OVLPROC_HALFMATCH)
+	''
+	'' from / to -> string      zstring     zstring ptr wstring     wstring ptr  
+	'' ------------ ----------- ----------- ----------- ----------- -----------  	          
+	'' string       F-0         F-1         F-2         H-3         H-4
+	'' zstring      F-2         F-0         F-1         H-3         H-4
+	'' zstring ptr  F-2         F-1         F-0         H-3         H-4
+	'' wstring      H-2         H-3         H-4         F-0         F-1
+	'' wstring ptr  H-2         H-3         H-4         F-1         F-0
+
 	'' check classes
 	select case as const typeGetClass( param_dtype )
 	'' integer?
@@ -1711,17 +1731,21 @@ private function hCalcTypesDiff _
 			case FB_DATATYPE_CHAR
 				select case( arg_dtype )
 				case FB_DATATYPE_CHAR
-					return FB_OVLPROC_FULLMATCH
+					'' zstring => zstring
+					return FB_OVLPROC_FULLMATCH - OvlMatchScore( 0, 0 )
 				case FB_DATATYPE_WCHAR
-					return FB_OVLPROC_HALFMATCH
+					'' wstring => zstring
+					return FB_OVLPROC_HALFMATCH - OvlMatchScore( 0, 3 )
 				end select
 				return FB_OVLPROC_NO_MATCH
 			case FB_DATATYPE_WCHAR
 				select case( arg_dtype )
 				case FB_DATATYPE_CHAR
-					return FB_OVLPROC_HALFMATCH
+					'' zstring => wstring
+					return FB_OVLPROC_HALFMATCH - OvlMatchScore( 0, 3 )
 				case FB_DATATYPE_WCHAR
-					return FB_OVLPROC_FULLMATCH
+					'' wstring => wstring
+					return FB_OVLPROC_FULLMATCH - OvlMatchScore( 0, 0 )
 				end select
 				return FB_OVLPROC_NO_MATCH
 
@@ -1732,16 +1756,20 @@ private function hCalcTypesDiff _
 			case typeAddrOf( FB_DATATYPE_CHAR )
 				select case( arg_dtype )
 				case FB_DATATYPE_CHAR
-					return FB_OVLPROC_FULLMATCH
+					'' zstring => zstring ptr
+					return FB_OVLPROC_FULLMATCH - OvlMatchScore( 0, 1 )
 				case FB_DATATYPE_WCHAR
-					return FB_OVLPROC_HALFMATCH
+					'' wstring => zstring ptr 
+					return FB_OVLPROC_HALFMATCH - OvlMatchScore( 0, 4 )
 				end select
 			case typeAddrOf( FB_DATATYPE_WCHAR )
 				select case( arg_dtype )
 				case FB_DATATYPE_CHAR
-					return FB_OVLPROC_HALFMATCH
+					'' zstring => wstring ptr
+					return FB_OVLPROC_HALFMATCH - OvlMatchScore( 0, 4 )
 				case FB_DATATYPE_WCHAR
-					return FB_OVLPROC_FULLMATCH
+					'' wstring => wstring ptr
+					return FB_OVLPROC_FULLMATCH - OvlMatchScore( 0, 1 )
 				end select
 
 			'' Any other non-z/wstring param from FB_DATACLASS_INTEGER:
@@ -1821,10 +1849,18 @@ private function hCalcTypesDiff _
 		'' corresponding to hStrArgToStrPtrParam())
 		case FB_DATACLASS_STRING
 			select case param_dtype
-			case FB_DATATYPE_CHAR, typeAddrOf( FB_DATATYPE_CHAR )
-				return FB_OVLPROC_FULLMATCH
-			case FB_DATATYPE_WCHAR, typeAddrOf( FB_DATATYPE_WCHAR )
-				return FB_OVLPROC_HALFMATCH
+			case FB_DATATYPE_CHAR
+				'' string => zstring
+				return FB_OVLPROC_FULLMATCH - OvlMatchScore( 0, 1 )
+			case typeAddrOf( FB_DATATYPE_CHAR )
+				'' string => zstring ptr
+				return FB_OVLPROC_FULLMATCH - OvlMatchScore( 0, 2 )
+			case FB_DATATYPE_WCHAR
+				'' string => wstring
+				return FB_OVLPROC_HALFMATCH - OvlMatchScore( 0, 3 )
+			case typeAddrOf( FB_DATATYPE_WCHAR )
+				'' string => wstring ptr
+				return FB_OVLPROC_HALFMATCH - OvlMatchScore( 0, 4 )
 			end select
 
 		end select
@@ -1865,9 +1901,11 @@ private function hCalcTypesDiff _
 		case FB_DATACLASS_INTEGER
 			select case arg_dtype
 			case FB_DATATYPE_CHAR
-				function = FB_OVLPROC_FULLMATCH
+				'' zstring => string
+				function = FB_OVLPROC_FULLMATCH - OvlMatchScore( 0, 2 )
 			case FB_DATATYPE_WCHAR
-				function = FB_OVLPROC_HALFMATCH
+				'' wstring => string
+				function = FB_OVLPROC_HALFMATCH - OvlMatchScore( 0, 2 )
 			end select
 
 		end select
@@ -1980,7 +2018,7 @@ private function hCheckOvlParam _
 			case FB_DATATYPE_STRUCT
 				var baselevel = symbGetUDTBaseLevel( arg_subtype, param_subtype )
 				if( baselevel > 0 ) then
-					match = FB_OVLPROC_FULLMATCH - baselevel
+					match = FB_OVLPROC_FULLMATCH - OvlMatchScore( baselevel, 0 )
 				end if
 			case FB_DATATYPE_FUNCTION
 				match = symbCalcProcMatch( param_subtype, arg_subtype, 0 )
@@ -2002,9 +2040,9 @@ private function hCheckOvlParam _
 				'' They're compatible despite having different CONSTs -- e.g. "non-const Foo" passed to "Byref As Const Foo".
 				'' Treat it as lower score match than an exact match.
 				if( match > FB_OVLPROC_TYPEMATCH ) then
-					match -= FB_DATATYPES
+					match -= OvlMatchScore( FB_DATATYPES, 0 )
 				end if
-				match += const_matches
+				match += OvlMatchScore( const_matches, 0 )
 				return match
 			end if
 
@@ -2021,7 +2059,7 @@ private function hCheckOvlParam _
 		hCheckCtorOvl( ctor_rec_cnt, param_subtype, arg_expr, arg_mode )
 
 		'' and at last, try implicit casting..
-		hCheckCastOvlEx( cast_rec_cnt, param_dtype, param_subtype, arg_expr )
+		hCheckCastOvlEx( cast_rec_cnt, symbGetParamMode( param ), param_dtype, param_subtype, arg_expr )
 		return FB_OVLPROC_NO_MATCH
 
 	'' enum param? refuse any other argument type, even integers,
@@ -2033,19 +2071,19 @@ private function hCheckOvlParam _
 		select case arg_dtype
 		'' UDT arg? try implicit casting..
 		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			hCheckCastOvlEx( cast_rec_cnt, symbGetFullType( param ), param_subtype, arg_expr )
+			hCheckCastOvlEx( cast_rec_cnt, symbGetParamMode( param ), symbGetFullType( param ), param_subtype, arg_expr )
 			return FB_OVLPROC_NO_MATCH
 		end select
 	end select
 
 	'' last resource, calc the differences
 	function = hCalcTypesDiff( symbGetFullType( param ), _
-						  	   param_subtype, _
-						  	   param_ptrcnt, _
-						  	   astGetFullType( arg_expr ), _
-						  	   arg_subtype, _
-						  	   arg_expr, _
-						  	   symbGetParamMode( param ) )
+	                           param_subtype, _
+	                           param_ptrcnt, _
+	                           astGetFullType( arg_expr ), _
+	                           arg_subtype, _
+	                           arg_expr, _
+	                           symbGetParamMode( param ) )
 
 end function
 
@@ -2448,11 +2486,11 @@ private function hCheckCastOvl _
 
 	'' last resource, calc the differences
 	function = hCalcTypesDiff( proc_dtype, _
-						   	   proc_subtype, _
-						   	   symbGetPtrCnt( proc ), _
-						   	   to_dtype, _
-						   	   to_subtype, _
-						   	   NULL )
+	                           proc_subtype, _
+	                           symbGetPtrCnt( proc ), _
+	                           to_dtype, _
+	                           to_subtype, _
+	                           NULL )
 
 end function
 

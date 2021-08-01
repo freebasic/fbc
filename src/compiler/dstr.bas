@@ -49,7 +49,7 @@ declare sub hRealloc _
 #endmacro
 
 '':::::
-#define CALC_LEN( p ) iif( p <> NULL, len( *src ), 0 )
+#define CALC_LEN( p ) iif( p <> NULL, len( *p ), 0 )
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' dynamic zstrings
@@ -61,9 +61,9 @@ sub DZstrZero _
 		byref dst as DZSTRING _
 	)
 
-    dst.data = NULL
-    dst.len = 0
-    dst.size = 0
+	dst.data = NULL
+	dst.len = 0
+	dst.size = 0
 
 end sub
 
@@ -209,9 +209,9 @@ sub DWstrZero _
 		byref dst as DWSTRING _
 	)
 
-    dst.data = NULL
-    dst.len = 0
-    dst.size = 0
+	dst.data = NULL
+	dst.len = 0
+	dst.size = 0
 
 end sub
 
