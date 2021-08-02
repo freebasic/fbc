@@ -41,6 +41,9 @@ virtual \
 visibility \
 wstring
 
+DIRLIST_FBLITE := \
+fblite
+
 DIRLIST_QB := \
 qb
 

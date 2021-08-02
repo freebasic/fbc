@@ -279,9 +279,12 @@ function cTypeOrExpression _
 	'' If a simple identifier is given to sizeof/len, then collect
 	'' information about the symbols which it could refer to. If it could
 	'' refer to both a type and a non-type symbol, we may want to show a
-	'' warning later.
+	'' warning later. Allow FB_LANG_OPT_PERIODS to control lexing the first
+	'' token but not the look ahead.  Only in the qb dialect could variables
+	'' possibly have periods in the name.  In all other cases (like for types)
+	'' we need to return each identifier between periods.
 	dim ambigioussizeof as AmbigiousSizeofInfo
-	if( (lexGetToken( ) = FB_TK_ID) and (lexGetLookAhead( 1 ) = CHAR_RPRNT) ) then
+	if( (lexGetToken( ) = FB_TK_ID) and (lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) = CHAR_RPRNT) ) then
 		var chain_ = lexGetSymChain( )
 		'' Known symbol(s)?
 		if( chain_ ) then
