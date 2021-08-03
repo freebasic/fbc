@@ -136,6 +136,8 @@ enum FBCTOOLFLAG
 	FBCTOOLFLAG_INVALID            = 0  '' tool is disabled
 	FBCTOOLFLAG_ASSUME_EXISTS      = 1  '' assume the tool exists
 	FBCTOOLFLAG_CAN_USE_ENVIRON    = 2  '' allow path to tool to specified by environment variable
+	FBCTOOLFLAG_FOUND              = 4  '' tool was checked for
+	FBCTOOLFLAG_RELYING_ON_SYSTEM  = 8  '' tool is expected to be on system PATH
 
 	FBCTOOLFLAG_DEFAULT = FBCTOOLFLAG_ASSUME_EXISTS or FBCTOOLFLAG_CAN_USE_ENVIRON
 end enum
@@ -143,6 +145,7 @@ end enum
 type FBCTOOLINFO
 	name as zstring * 16
 	flags as FBCTOOLFLAG
+	path as zstring * (FB_MAXPATHLEN + 1)
 end type
 
 '' must be same order as enum FBCTOOL
@@ -411,13 +414,10 @@ private sub fbcFindBin _
 		byref relying_on_system as integer _
 	)
 
-	static as integer lasttool = -1, last_relying_on_system
-	static as string lastpath
-
 	'' Re-use path from last time if possible
-	if( lasttool = tool ) then
-		path = lastpath
-		relying_on_system = last_relying_on_system
+	if( ( fbctoolTB( tool ).flags and FBCTOOLFLAG_FOUND ) <> 0 ) then
+		path = fbctoolTB( tool ).path
+		relying_on_system = ((fbctoolTB( tool ).flags and FBCTOOLFLAG_RELYING_ON_SYSTEM) <> 0 )
 		exit sub
 	end if
 
@@ -455,9 +455,12 @@ private sub fbcFindBin _
 		#endif
 	end if
 
-	lasttool = tool
-	lastpath = path
-	last_relying_on_system = relying_on_system
+	
+	fbctoolTB( tool ).path = path
+	fbctoolTB( tool ).flags or= FBCTOOLFLAG_FOUND
+	fbctoolTB( tool ).flags = iif( relying_on_system, _ 
+	                               fbctoolTB( tool ).flags or FBCTOOLFLAG_RELYING_ON_SYSTEM, _
+	                               fbctoolTB( tool ).flags and not FBCTOOLFLAG_RELYING_ON_SYSTEM )
 end sub
 
 private function fbcRunBin _
