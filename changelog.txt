@@ -14,7 +14,7 @@ Version 1.09.0
 - fbc: internal function fbcQueryGcc() to ask gcc for the correct as & ld to use (TeeEmCee)
 - rtlib: freebsd: minimum thread stacksize 8192 KiB
 - sf.net #666: allow overload 'as string' with 'as zstring ptr' parameters
-- fbc: internal changes to restructure fbctools table, cache search results in fbctoolTB()
+- fbc: internal changes to restructure fbctools table, cache search results in fbctoolTB(), solve out fbcFindBin() parameters
 
 [added]
 - fbc: add '-z fbrt' command line option to link against libfbrt*.a instead of libfb*.a

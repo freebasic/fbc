@@ -148,6 +148,10 @@ type FBCTOOLINFO
 	path as zstring * (FB_MAXPATHLEN + 1)
 end type
 
+#define fbctoolGetFlags( tool, f )   ((fbctoolTB( tool ).flags and (f)) <> 0)
+#define fbctoolSetFlags( tool, f )   fbctoolTB( tool ).flags or= f
+#define fbctoolUnsetFlags( tool, f ) fbctoolTB( tool ).flags and= not f
+
 '' must be same order as enum FBCTOOL
 static shared as FBCTOOLINFO fbctoolTB(0 to FBCTOOL__COUNT-1) = _
 { _
@@ -171,8 +175,7 @@ static shared as FBCTOOLINFO fbctoolTB(0 to FBCTOOL__COUNT-1) = _
 declare sub fbcFindBin _
 	( _
 		byval tool as integer, _
-		byref path as string, _
-		byref relying_on_system as integer = FALSE _
+		byref path as string _
 	)
 
 #macro safeKill(f)
@@ -410,18 +413,16 @@ end sub
 private sub fbcFindBin _
 	( _
 		byval tool as integer, _
-		byref path as string, _
-		byref relying_on_system as integer _
+		byref path as string _
 	)
 
 	'' Re-use path from last time if possible
-	if( ( fbctoolTB( tool ).flags and FBCTOOLFLAG_FOUND ) <> 0 ) then
+	if( fbctoolGetFlags( tool, FBCTOOLFLAG_FOUND ) ) then
 		path = fbctoolTB( tool ).path
-		relying_on_system = ((fbctoolTB( tool ).flags and FBCTOOLFLAG_RELYING_ON_SYSTEM) <> 0 )
 		exit sub
 	end if
 
-	relying_on_system = FALSE
+	fbctoolUnsetFlags( tool, FBCTOOLFLAG_RELYING_ON_SYSTEM )
 
 	'' a) Use the path from the corresponding environment variable if it's set
 	if( (fbctoolTB(tool).flags and FBCTOOLFLAG_CAN_USE_ENVIRON) <> 0 ) then
@@ -450,17 +451,13 @@ private sub fbcFindBin _
 				else
 					path = fbctoolTB(tool).name
 				end if
-				relying_on_system = TRUE
+				fbctoolSetFlags( tool, FBCTOOLFLAG_RELYING_ON_SYSTEM )
 			end if
 		#endif
 	end if
 
-	
 	fbctoolTB( tool ).path = path
-	fbctoolTB( tool ).flags or= FBCTOOLFLAG_FOUND
-	fbctoolTB( tool ).flags = iif( relying_on_system, _ 
-	                               fbctoolTB( tool ).flags or FBCTOOLFLAG_RELYING_ON_SYSTEM, _
-	                               fbctoolTB( tool ).flags and not FBCTOOLFLAG_RELYING_ON_SYSTEM )
+	fbctoolSetFlags( tool, FBCTOOLFLAG_FOUND )
 end sub
 
 private function fbcRunBin _
@@ -470,10 +467,10 @@ private function fbcRunBin _
 		byref ln as string _
 	) as integer
 
-	dim as integer result = any, relying_on_system = any
+	dim as integer result = any
 	dim as string path
 
-	fbcFindBin( tool, path, relying_on_system )
+	fbcFindBin( tool, path )
 
 	if( fbc.verbose ) then
 		print *action + ": ", path + " " + ln
@@ -486,7 +483,7 @@ private function fbcRunBin _
 		result = exec( path, ln )
 	#else
 		'' Found at bin/?
-		if( relying_on_system = FALSE ) then
+		if( fbctoolGetFlags( tool, FBCTOOLFLAG_RELYING_ON_SYSTEM ) = FALSE ) then
 			result = exec( path, ln )
 		else
 			result = shell( path + " " + ln )
