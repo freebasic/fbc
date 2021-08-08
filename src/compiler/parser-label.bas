@@ -13,14 +13,14 @@
 ''                |   ID ':' .
 ''
 function cLabel as integer
-    dim as FBSYMBOL ptr l = NULL
-    dim as FBSYMCHAIN ptr chain_ = any
+	dim as FBSYMBOL ptr l = NULL
+	dim as FBSYMCHAIN ptr chain_ = any
 
-    function = FALSE
+	function = FALSE
 
-    '' NUM_LIT
-    select case as const lexGetClass( )
-    case FB_TKCLASS_NUMLITERAL
+	'' NUM_LIT
+	select case as const lexGetClass( )
+	case FB_TKCLASS_NUMLITERAL
 
 		'' between SELECT CASE and first CASE? ... that's not allowed
 		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
@@ -28,7 +28,7 @@ function cLabel as integer
 			exit function
 		end if
 
-    	if( fbLangOptIsSet( FB_LANG_OPT_NUMLABEL ) = FALSE ) then
+		if( fbLangOptIsSet( FB_LANG_OPT_NUMLABEL ) = FALSE ) then
 			errReportNotAllowed( FB_LANG_OPT_NUMLABEL )
 			'' error recovery: skip stmt
 			hSkipStmt( )
@@ -76,14 +76,14 @@ function cLabel as integer
 			'' skip ':'
 			lexSkipToken( )
 		end if
-    end select
+	end select
 
-    if( l <> NULL ) then
-    	astAdd( astNewLABEL( l ) )
+	if( l <> NULL ) then
+		astAdd( astNewLABEL( l ) )
 
-    	symbSetLastLabel( l )
+		symbSetLastLabel( l )
 
-    	function = TRUE
-    end if
+		function = TRUE
+	end if
 
 end function
