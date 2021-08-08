@@ -41,6 +41,7 @@ Version 1.09.0
 - darwin: a variety of improvements to allow compiling and linking (TeeEmCee)
 - gfxlib2: fix d2d scaling issues for high dpi (adeyblue)
 - fbc: improve error message on statement between SELECT and first CASE inside a subroutine and don't allow CONST/ENUM between any SELECT & first CASE.
+- fbc: don't allow labels or EXIT statements between SELECT and first CASE statement
 - sf.net #843: Implicit casting of argument to string works for Instr() and Mid() but not for Left() and Right() 
 - sf.net #483 fblite: Can't call LEN with nested WITH block string member 
 
