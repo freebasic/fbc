@@ -22,6 +22,12 @@ function cLabel as integer
     select case as const lexGetClass( )
     case FB_TKCLASS_NUMLITERAL
 
+		'' between SELECT CASE and first CASE? ... that's not allowed
+		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+			hSkipStmt( )
+			exit function
+		end if
+
     	if( fbLangOptIsSet( FB_LANG_OPT_NUMLABEL ) = FALSE ) then
 			errReportNotAllowed( FB_LANG_OPT_NUMLABEL )
 			'' error recovery: skip stmt
@@ -45,6 +51,13 @@ function cLabel as integer
 	case FB_TKCLASS_IDENTIFIER
 		'' ':'
 		if( lexGetLookAhead( 1 ) = FB_TK_STMTSEP ) then
+
+			'' between SELECT CASE and first CASE? ... that's not allowed
+			if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+				hSkipStmt( )
+				exit function
+			end if
+
 			'' ambiguity: it could be a proc call followed by a ':' stmt separator..
 			'' no need to call Identifier(), ':' wouldn't follow 'ns.symbol' ids
 			chain_ = lexGetSymChain( )
