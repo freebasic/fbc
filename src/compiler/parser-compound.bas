@@ -187,6 +187,11 @@ sub cExitStatement( )
 	'' EXIT
 	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
+	'' between SELECT CASE and first CASE? ... that's not allowed
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		hSkipStmt( )
+	end if
+
 	'' (FOR | DO | WHILE | SELECT | SUB | FUNCTION) (',')*
 	var tk = lexGetToken( )
 	select case as const( tk )
