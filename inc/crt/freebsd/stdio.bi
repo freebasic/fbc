@@ -27,6 +27,10 @@ declare function pclose (byval as FILE ptr) as long
 declare function getw (byval as FILE ptr) as long
 declare function putw (byval as long, byval as FILE ptr) as long
 
+#define getwc(fp) fgetwc(fp)
+#define getwchar() fgetwc(stdin)
+#define putwc(wc, fp) fputwc(wc, fp)
+#define putwchar(wc) fputwc(wc, stdout)
 end extern
 
 #endif

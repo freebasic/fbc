@@ -366,6 +366,10 @@ private function fbcBuildPathToLibFile( byval file as zstring ptr ) as string
 		path += " -m32"
 	case FB_CPUFAMILY_X86_64
 		path += " -m64"
+	case FB_CPUFAMILY_PPC
+		path += " -m32"
+	case FB_CPUFAMILY_PPC64
+		path += " -m64"
 	end select
 
 	path += " -print-file-name=" + *file
@@ -1406,7 +1410,9 @@ dim shared as FBGNUARCHINFO gnuarchmap(0 to ...) => _
 	(@"armv6"  , FB_CPUTYPE_ARMV6          ), _
 	(@"armv7a" , FB_CPUTYPE_ARMV7A         ), _
 	(@"arm"    , FB_DEFAULT_CPUTYPE_ARM    ), _
-	(@"aarch64", FB_DEFAULT_CPUTYPE_AARCH64)  _
+	(@"aarch64", FB_DEFAULT_CPUTYPE_AARCH64), _
+	(@"powerpc", FB_DEFAULT_CPUTYPE_PPC    ), _
+	(@"powerpc64", FB_DEFAULT_CPUTYPE_PPC64)  _
 }
 
 '' Identify OS (FB_COMPTARGET_*) and architecture (FB_CPUTYPE_*) in a GNU
@@ -3101,6 +3107,10 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			ln += "-m32 "
 		case FB_CPUFAMILY_X86_64
 			ln += "-m64 "
+		case FB_CPUFAMILY_PPC
+			ln += "-m32 "
+		case FB_CPUFAMILY_PPC64
+			ln += "-m64 "
 		end select
 
 		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
@@ -3231,6 +3241,10 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			'' processors implementing the target architecture.
 
 			ln += "-march=armv8-a "
+		case FB_CPUFAMILY_PPC
+			ln += "-mcpu=powerpc "
+		case FB_CPUFAMILY_PPC64
+			ln += "-mcpu=powerpc64 "
 		end select
 
 		if( fbGetOption( FB_COMPOPT_PIC ) ) then

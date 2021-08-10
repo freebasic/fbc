@@ -14,6 +14,8 @@
 
 #if defined(__FB_LINUX__)
 #include once "crt/sys/linux/socket.bi"
+#elseif defined(__FB_FREEBSD__)
+#include once "crt/sys/freebsd/socket.bi"
 #else
 #error Platform unsupported
 #endif
