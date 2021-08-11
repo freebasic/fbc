@@ -22,7 +22,6 @@ const FBARRAY_FLAGS_FIXED_DIM  = &h00000010    '' array has fixed number of dime
 const FBARRAY_FLAGS_FIXED_LEN  = &h00000020    '' array points to fixed-length memory
 const FBARRAY_FLAGS_RESERVED   = &hffffffc0    '' reserved, do not use
 
-#ifndef __FB_FREEBSD__
 type FBARRAY
 	dim as any ptr index_ptr     '' @array(0, 0, 0, ... )
 	dim as any ptr base_ptr      '' start of memory at array lowest bounds
@@ -39,7 +38,6 @@ type FBARRAY
 
 	dim as FBARRAYDIM dimTb(0 to FB_MAXDIMENSIONS-1)
 end type
-#endif
 
 extern "rtlib"
 	declare function ArrayDescriptorPtr alias "fb_ArrayGetDesc" _
