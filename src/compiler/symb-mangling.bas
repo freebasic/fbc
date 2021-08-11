@@ -640,9 +640,23 @@ private function hDoCppMangling( byval sym as FBSYMBOL ptr ) as integer
 	end if
 
 	'' RTL or exclude parent?
-	if( ( (symbGetStats( sym ) and (FB_SYMBSTATS_RTL or FB_SYMBSTATS_EXCLPARENT)) <> 0 ) _
-		or ( symbGetMangling( sym ) = FB_MANGLING_RTLIB ) ) then
+	if( (symbGetStats( sym ) and (FB_SYMBSTATS_RTL or FB_SYMBSTATS_EXCLPARENT)) <> 0 ) then
 		return FALSE
+	end if
+
+	'' extern "rtlib"? disable cpp mangling
+	if( symbGetMangling( sym ) = FB_MANGLING_RTLIB ) then
+		'' disable cpp mangling only if it's not internally generated:
+		'' Internally generated symbols:
+		''   - vtable
+		''   - rtti
+		''   - default constructor / copy constructor
+		''   - default assignment operator
+		''   - default complete destructor / deleting constructor
+
+		if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_INTERNAL)) = 0 ) then
+			return FALSE
+		end if
 	end if
 
 	'' inside a namespace or class?

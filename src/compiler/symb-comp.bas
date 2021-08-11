@@ -109,7 +109,7 @@ private sub hBuildRtti( byval udt as FBSYMBOL ptr )
 	'' (real identifier given later during mangling)
 	symbNestBegin( udt, TRUE )
 	rtti = symbAddVar( NULL, NULL, FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, 0, 0, dTB(), _
-	                   FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED, _
+	                   FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_INTERNAL, _
 	                   FB_SYMBOPT_PRESERVECASE )
 	rtti->stats or= FB_SYMBSTATS_RTTITABLE
 	symbNestEnd( TRUE )
@@ -161,7 +161,7 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 	symbNestBegin( udt, TRUE )
 	dTB(0).upper = udt->udt.ext->vtableelements - 1
 	vtable = symbAddVar( NULL, NULL, typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 1, dTB(), _
-	                     FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED, _
+	                     FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_INTERNAL, _
 	                     FB_SYMBOPT_PRESERVECASE )
 	vtable->stats or= FB_SYMBSTATS_VTABLE
 	symbNestEnd( TRUE )
@@ -573,7 +573,7 @@ sub symbUdtDeclareDefaultMembers _
 			errReport( FB_ERRMSG_NEEDEXPLICITDEFCTOR )
 		else
 			'' Add default ctor
-			default.defctor = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_OVERLOADED or FB_PROCATTRIB_CONSTRUCTOR )
+			default.defctor = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_INTERNAL, FB_PROCATTRIB_OVERLOADED or FB_PROCATTRIB_CONSTRUCTOR )
 		end if
 	end if
 
@@ -585,7 +585,7 @@ sub symbUdtDeclareDefaultMembers _
 
 		if( udt->udt.ext->copyletopconst = NULL ) then
 			'' declare operator let( byref rhs as const UDT )
-			default.copyletopconst = hDeclareProc( udt, AST_OP_ASSIGN, typeSetIsConst( FB_DATATYPE_STRUCT ), FB_SYMBATTRIB_NONE, FB_PROCATTRIB_OVERLOADED or FB_PROCATTRIB_OPERATOR )
+			default.copyletopconst = hDeclareProc( udt, AST_OP_ASSIGN, typeSetIsConst( FB_DATATYPE_STRUCT ), FB_SYMBATTRIB_INTERNAL, FB_PROCATTRIB_OVERLOADED or FB_PROCATTRIB_OPERATOR )
 			symbProcCheckOverridden( default.copyletopconst, TRUE )
 		end if
 
@@ -596,7 +596,7 @@ sub symbUdtDeclareDefaultMembers _
 				'' same as with default ctor above.
 				errReport( FB_ERRMSG_NEEDEXPLICITCOPYCTORCONST )
 			else
-				default.copyctorconst = hDeclareProc( udt, INVALID, typeSetIsConst( FB_DATATYPE_STRUCT ), FB_SYMBATTRIB_NONE, FB_PROCATTRIB_OVERLOADED or FB_PROCATTRIB_CONSTRUCTOR )
+				default.copyctorconst = hDeclareProc( udt, INVALID, typeSetIsConst( FB_DATATYPE_STRUCT ), FB_SYMBATTRIB_INTERNAL, FB_PROCATTRIB_OVERLOADED or FB_PROCATTRIB_CONSTRUCTOR )
 			end if
 		end if
 
@@ -609,7 +609,7 @@ sub symbUdtDeclareDefaultMembers _
 				'' same as with default ctor above.
 				errReport( FB_ERRMSG_NEEDEXPLICITCOPYCTOR )
 			else
-				default.copyctor = hDeclareProc( udt, INVALID, FB_DATATYPE_STRUCT, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_OVERLOADED or FB_PROCATTRIB_CONSTRUCTOR )
+				default.copyctor = hDeclareProc( udt, INVALID, FB_DATATYPE_STRUCT, FB_SYMBATTRIB_INTERNAL, FB_PROCATTRIB_OVERLOADED or FB_PROCATTRIB_CONSTRUCTOR )
 			end if
 		end if
 	end if
@@ -626,12 +626,12 @@ sub symbUdtDeclareDefaultMembers _
 			assert( udt->udt.ext->dtor0 = NULL )
 
 			'' Complete dtor
-			default.dtor1 = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_DESTRUCTOR1 )
+			default.dtor1 = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_INTERNAL, FB_PROCATTRIB_DESTRUCTOR1 )
 
 			'' c++? we may need other dtors too...
 			if( symbGetMangling( udt ) = FB_MANGLING_CPP ) then
 				'' Deleting dtor
-				default.dtor0 = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_DESTRUCTOR0 )
+				default.dtor0 = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_INTERNAL, FB_PROCATTRIB_DESTRUCTOR0 )
 			end if
 
 			'' Don't allow the implicit dtor to override a FINAL dtor from the base

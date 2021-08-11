@@ -15,6 +15,7 @@ Version 1.09.0
 - rtlib: freebsd: minimum thread stacksize 8192 KiB
 - sf.net #666: allow overload 'as string' with 'as zstring ptr' parameters
 - fbc: internal changes to restructure fbctools table, cache search results in fbctoolTB(), solve out fbcFindBin() parameters
+- fbc: EXTERN "rtlib" will still mangle internally generated symbols: vtable, rtti, default constructors and destructors
 
 [added]
 - fbc: add '-z fbrt' command line option to link against libfbrt*.a instead of libfb*.a
