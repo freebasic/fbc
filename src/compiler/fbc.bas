@@ -3114,6 +3114,8 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		end select
 
 		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
+            '' GCC doesn't recognize the -march option and PowerPC combination and recommendeds
+            '' the -mcpu option be used for PowerPC.
 			if( fbGetCpuFamily( ) = FB_CPUFAMILY_PPC or FB_CPUFAMILY_PPC64 ) then
 				if( fbc.cputype_is_native ) then
 					ln += "-mcpu=native "
