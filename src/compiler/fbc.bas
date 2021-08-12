@@ -3116,7 +3116,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
             '' GCC doesn't recognize the -march option and PowerPC combination and recommendeds
             '' the -mcpu option be used for PowerPC.
-			if( fbGetCpuFamily( ) = FB_CPUFAMILY_PPC or FB_CPUFAMILY_PPC64 ) then
+			if( (fbGetCpuFamily( ) = FB_CPUFAMILY_PPC) orelse (fbGetCpuFamily( ) = FB_CPUFAMILY_PPC64) ) then
 				if( fbc.cputype_is_native ) then
 					ln += "-mcpu=native "
 				else
@@ -3222,7 +3222,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			'' -march=name
 			'' Specify the name of the target architecture and, 
 			'' optionally, one or more feature modifiers. This option 
-			'' has the form ‘-march=arch{+[no]feature}*’.
+			'' has the form Â‘-march=arch{+[no]feature}*Â’.
 			'' 
 			'' The permissible values for arch are 
 			'' 'armv8-a'
