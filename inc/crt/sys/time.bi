@@ -15,8 +15,6 @@
 #include once "crt/sys/win32/time.bi"
 #elseif defined(__FB_LINUX__)
 #include once "crt/sys/linux/time.bi"
-#elseif defined(__FB_FREEBSD__)
-#include once "crt/sys/freebsd/time.bi"
 #elseif defined(__FB_DOS__)
 #include once "crt/dos/time.bi"
 #else

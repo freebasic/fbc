@@ -40,7 +40,7 @@ declare function wmemset (byval s as wchar_t ptr, byval c as wchar_t, byval n as
 declare function wmemchr (byval s as const wchar_t ptr, byval c as wchar_t, byval n as size_t) as wchar_t ptr
 declare function wmemcmp (byval s1 as const wchar_t ptr, byval s2 as const wchar_t ptr, byval n as size_t) as integer
 declare function wmemmove (byval s1 as wchar_t ptr, byval s2 as const wchar_t ptr, byval n as size_t) as wchar_t ptr
-'declare function wmemcpy(byval as wchar_t ptr, byval as const wchar_t ptr, byval as uinteger) as wstring ptr
+declare function wmemcpy(byval as wchar_t ptr, byval as const wchar_t ptr, byval as uinteger) as wstring ptr
 end extern
 
 #endif

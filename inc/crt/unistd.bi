@@ -15,8 +15,6 @@
 #include once "crt/dos/unistd.bi"
 #elseif defined(__FB_LINUX__)
 #include once "crt/linux/unistd.bi"
-#elseif defined(__FB_FREEBSD__)
-#include once "crt/freebsd/unistd.bi"
 #else
 #error unsupported platform
 #endif

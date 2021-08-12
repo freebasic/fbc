@@ -1,7 +1,6 @@
 #pragma once
 
-#if not defined( __FB_LINUX__ ) and not defined( __FB_FREEBSD__ )
-        ' On FreeBSD, this header is for libgnuregex, and corresponds to gnu/regex.h, NOT regex.h
+#ifndef __FB_LINUX__
 	#error "Target platform not supported; this is the header for the glibc regex implementation on GNU/Linux."
 #endif
 
