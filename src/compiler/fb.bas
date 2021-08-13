@@ -7,15 +7,6 @@
 #include once "fbint.bi"
 #include once "parser.bi"
 #include once "lex.bi"
-''
-'' chng: sep/2004 written [v1ctor]
-
-
-#include once "fb.bi"
-#include once "fbint.bi"
-#include once "parser.bi"
-#include once "lex.bi"
-#include once "rtl.bi"
 #include once "rtl.bi"
 #include once "ast.bi"
 #include once "ir.bi"
