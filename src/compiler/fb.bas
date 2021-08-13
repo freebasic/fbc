@@ -1588,10 +1588,10 @@ function fbGetBackendValistType _
 			typedef = FB_CVA_LIST_BUILTIN_AARCH64
 
 		case FB_CPUFAMILY_PPC
-			typedef = FB_CVA_LIST_BUILTIN_C_STD
+			typedef = FB_CVA_LIST_BUILTIN_POINTER
 
 		case FB_CPUFAMILY_PPC64
-			typedef = FB_CVA_LIST_BUILTIN_C_STD
+			typedef = FB_CVA_LIST_BUILTIN_POINTER
 
 		case else
 			typedef = FB_CVA_LIST_BUILTIN_POINTER

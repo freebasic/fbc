@@ -304,6 +304,10 @@ function fbcQueryGcc( byref options as string ) as string
 		path += " -m32"
 	case FB_CPUFAMILY_X86_64
 		path += " -m64"
+	case FB_CPUFAMILY_PPC
+		path += " -m32"
+	case FB_CPUFAMILY_PPC64
+		path += " -m64"
 	end select
 
 	path += options
