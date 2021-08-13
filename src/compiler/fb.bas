@@ -7,6 +7,15 @@
 #include once "fbint.bi"
 #include once "parser.bi"
 #include once "lex.bi"
+''
+'' chng: sep/2004 written [v1ctor]
+
+
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "parser.bi"
+#include once "lex.bi"
+#include once "rtl.bi"
 #include once "rtl.bi"
 #include once "ast.bi"
 #include once "ir.bi"
@@ -1588,10 +1597,10 @@ function fbGetBackendValistType _
 			typedef = FB_CVA_LIST_BUILTIN_AARCH64
 
 		case FB_CPUFAMILY_PPC
-			typedef = FB_CVA_LIST_BUILTIN_C_STD
+			typedef = FB_CVA_LIST_BUILTIN_POINTER
 
 		case FB_CPUFAMILY_PPC64
-			typedef = FB_CVA_LIST_BUILTIN_C_STD
+			typedef = FB_CVA_LIST_BUILTIN_POINTER
 
 		case else
 			typedef = FB_CVA_LIST_BUILTIN_POINTER
