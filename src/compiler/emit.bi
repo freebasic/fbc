@@ -92,9 +92,9 @@ enum EMIT_NODEOP
 	'' branch
 	EMIT_OP_CALL
 	EMIT_OP_CALLPTR
-    EMIT_OP_BRANCH
-    EMIT_OP_JUMP
-    EMIT_OP_JUMPPTR
+	EMIT_OP_BRANCH
+	EMIT_OP_JUMP
+	EMIT_OP_JUMPPTR
 	EMIT_OP_RET
 
 	'' misc
@@ -255,15 +255,21 @@ type EMIT_JTBCB as sub _
 		byval span as ulongint _
 	)
 
-type EMIT_MEMCB as sub( byval dvreg as IRVREG ptr, _
-						byval svreg as IRVREG ptr, _
-						byval bytes as integer, _
-						byval extra as integer )
+type EMIT_MEMCB as sub _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr, _
+		byval bytes as integer, _
+		byval extra as integer _
+	)
 
-type EMIT_DBGCB as sub( byval sym as FBSYMBOL ptr, _
-						byval lnum as integer, _
-                  byval pos as Integer, _
-                  ByVal filename As ZString Ptr =0 )
+type EMIT_DBGCB as sub _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval lnum as integer, _
+		byval pos as Integer, _
+		ByVal filename As ZString Ptr = 0 _
+	)
 
 '' if changed, update the _vtbl symbols at emit_*.bas::*_ctor
 type EMIT_VTBL
@@ -377,26 +383,26 @@ type EMIT_VTBL
 end type
 
 type EMITCTX
-	inited								as integer
+	inited                              as integer
 
-	pos									as integer			'' to help debugging
+	pos                                 as integer          '' to help debugging
 
-	regTB(0 to EMIT_REGCLASSES-1) 		as REGCLASS ptr		'' reg classes
+	regTB(0 to EMIT_REGCLASSES-1)       as REGCLASS ptr     '' reg classes
 
 	'' node tb
-	nodeTB								as TFLIST
-	vregTB								as TFLIST
-	curnode								as EMIT_NODE ptr
+	nodeTB                              as TFLIST
+	vregTB                              as TFLIST
+	curnode                             as EMIT_NODE ptr
 
-	regUsedTB(EMIT_REGCLASSES-1) 		as REG_FREETB       '' keep track of register usage
+	regUsedTB(EMIT_REGCLASSES-1)        as REG_FREETB       '' keep track of register usage
 
 	'' platform-dependent
-	lastsection							as integer
+	lastsection                         as integer
 	lastpriority                        as integer
 
 	''
-	vtbl								as EMIT_VTBL
-	opFnTb								as any ptr ptr
+	vtbl                                as EMIT_VTBL
+	opFnTb                              as any ptr ptr
 end type
 
 ''
@@ -792,8 +798,8 @@ declare function emitSTKCLEAR _
 declare function emitDBGLineBegin _
 	( _
 		byval proc as FBSYMBOL ptr, _
-      byval ex as Integer, _
-      ByVal filename As ZString Ptr _
+		byval ex as integer, _
+		byval filename as zstring ptr _
 	) as EMIT_NODE ptr
 
 declare function emitDBGLineEnd _
