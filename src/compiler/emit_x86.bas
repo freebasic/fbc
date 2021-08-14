@@ -28,6 +28,7 @@ declare function _getSectionString _
 		byval priority as integer _
 	) as const zstring ptr
 
+'' emitSetSection() called privately as _setSection
 declare sub _setSection _
 	( _
 		byval section as integer, _
@@ -7282,27 +7283,27 @@ function emitGasX86_ctor _
 
 	static as EMIT_VTBL _vtbl = _
 	( _
-		@_init, _
-		@_end, _
-		@_getOptionValue, _
-		@_open, _
-		@_close, _
-		@_isRegPreserved, _
-		@_getFreePreservedReg, _
-		@_getResultReg, _
-		@_procGetFrameRegName, _
-		@_procBegin, _
-		@_procEnd, _
-		@_procHeader, _
-		@_procFooter, _
-		@_procAllocArg, _
-		@_procAllocLocal, _
-		@_procAllocStaticVars, _
-		@_scopeBegin, _
-		@_scopeEnd, _
-		@_setSection, _
-		@_getTypeString, _
-		@_getSectionString _
+		@_init, _                '' called by emitInit()
+		@_end, _                 '' called by emitEnd()
+		@_getOptionValue, _      '' emitGetOptionValue()
+		@_open, _                '' emitOpen()
+		@_close, _               '' emitClose()
+		@_isRegPreserved, _      '' emitIsRegPreserved()
+		@_getFreePreservedReg, _ '' emitGetFreePreservedReg()
+		@_getResultReg, _        '' emitGetResultReg()
+		@_procGetFrameRegName, _ '' emitProcGetFrameRegName()
+		@_procBegin, _           '' emitProcBegin()
+		@_procEnd, _             '' emitProcEnd()
+		@_procHeader, _          '' emitProcHeader()
+		@_procFooter, _          '' emitProcFooter()
+		@_procAllocArg, _        '' emitProcAllocArg()
+		@_procAllocLocal, _      '' emitProcAllocLocal()
+		@_procAllocStaticVars, _ '' emitProcAllocStaticVars(), also called privately
+		@_scopeBegin, _          '' emitScopeBegin()
+		@_scopeEnd, _            '' emitScopeEnd()
+		@_setSection, _          '' emitSetSection(),
+		@_getTypeString, _       '' only called privately
+		@_getSectionString _     '' only called privately
 	)
 
 	emit.vtbl = _vtbl
@@ -7315,5 +7316,3 @@ function emitGasX86_ctor _
 	function = TRUE
 
 end function
-
-
