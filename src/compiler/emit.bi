@@ -10,7 +10,7 @@ const EMIT_INITNODES	= 2048
 const EMIT_INITVREGNODES= EMIT_INITNODES*3
 
 '' x86 specific: FB_DATACLASS_INTEGER and FB_DATACLASS_FPOINT
-const EMIT_REGCLASSES	= 2						'' assuming FB_DATACLASS_ will start at 0!
+const EMIT_REGCLASSES = 2                       '' assuming FB_DATACLASS_ will start at 0!
 
 '' if changed, update the _opFnTB() arrays at emit_*.bas
 enum EMIT_NODEOP
@@ -298,7 +298,7 @@ type EMIT_VTBL
 		byval reg as integer _
 	) as integer
 
-	getFreePreservedReg as function  _
+	getFreePreservedReg as function _
 	( _
 		byval dclass as integer, _
 		byval dtype as integer _

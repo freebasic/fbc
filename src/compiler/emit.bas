@@ -60,7 +60,7 @@ sub emitWriteStr _
 		byval addtab as integer _
 	)
 
-    static as string ostr
+	static as string ostr
 
 	if( addtab ) then
 		ostr = TABCHAR
@@ -124,7 +124,7 @@ end function
 
 '':::::
 private sub hPeepHoleOpt( )
-    dim as EMIT_NODE ptr n = any, p = any
+	dim as EMIT_NODE ptr n = any, p = any
 
 	p = NULL
 	n = flistGetHead( @emit.nodeTB )
@@ -154,9 +154,9 @@ end sub
 
 '':::::
 sub emitFlush( )
-    dim as EMIT_NODE ptr n = any
+	dim as EMIT_NODE ptr n = any
 
-    hPeepHoleOpt( )
+	hPeepHoleOpt( )
 
 	n = flistGetHead( @emit.nodeTB )
 	do while( n <> NULL )
@@ -167,26 +167,30 @@ sub emitFlush( )
 		case EMIT_NODECLASS_NOP
 
 		case EMIT_NODECLASS_BOP
-			cast( EMIT_BOPCB, emit.opFnTb[n->bop.op] )( n->bop.dvreg, _
-												   		n->bop.svreg )
+			cast( EMIT_BOPCB, emit.opFnTb[n->bop.op] )( _
+				n->bop.dvreg, _
+				n->bop.svreg )
 
 		case EMIT_NODECLASS_UOP
 			cast( EMIT_UOPCB, emit.opFnTb[n->uop.op ] )( n->uop.dvreg )
 
 		case EMIT_NODECLASS_REL
-			cast( EMIT_RELCB, emit.opFnTb[n->rel.op] )( n->rel.rvreg, _
-												   		n->rel.label, _
-												   		n->rel.dvreg, _
-												   		n->rel.svreg )
+			cast( EMIT_RELCB, emit.opFnTb[n->rel.op] )( _
+				n->rel.rvreg, _
+				n->rel.label, _
+				n->rel.dvreg, _
+				n->rel.svreg )
 
 		case EMIT_NODECLASS_STK
-			cast( EMIT_STKCB, emit.opFnTb[n->stk.op] )( n->stk.vreg, _
-												   n->stk.extra )
+			cast( EMIT_STKCB, emit.opFnTb[n->stk.op] )( _
+				n->stk.vreg, _
+				n->stk.extra )
 
 		case EMIT_NODECLASS_BRC
-			cast( EMIT_BRCCB, emit.opFnTb[n->brc.op] )( n->brc.vreg, _
-												   		n->brc.sym, _
-												   		n->brc.extra )
+			cast( EMIT_BRCCB, emit.opFnTb[n->brc.op] )( _
+				n->brc.vreg, _
+				n->brc.sym, _
+				n->brc.extra )
 
 		case EMIT_NODECLASS_SOP
 			cast( EMIT_SOPCB, emit.opFnTb[n->sop.op] )( n->sop.sym )
@@ -206,16 +210,18 @@ sub emitFlush( )
 			deallocate( n->jtb.labels )
 
 		case EMIT_NODECLASS_MEM
-			cast( EMIT_MEMCB, emit.opFnTb[n->mem.op] )( n->mem.dvreg, _
-												   		n->mem.svreg, _
-												   		n->mem.bytes, _
-												   		n->mem.extra )
+			cast( EMIT_MEMCB, emit.opFnTb[n->mem.op] )( _
+				n->mem.dvreg, _
+				n->mem.svreg, _
+				n->mem.bytes, _
+				n->mem.extra )
 
 		case EMIT_NODECLASS_DBG
-			cast( EMIT_DBGCB, emit.opFnTb[n->dbg.op] )( n->dbg.sym, _
-												   		n->dbg.lnum, _
-												   		n->dbg.pos, _
-												   		n->dbg.filename )
+			cast( EMIT_DBGCB, emit.opFnTb[n->dbg.op] )( _
+				n->dbg.sym, _
+				n->dbg.lnum, _
+				n->dbg.pos, _
+				n->dbg.filename )
 
 		end select
 
@@ -244,8 +250,8 @@ private function hNewVR _
 		byval v as IRVREG ptr _
 	) as IRVREG ptr
 
-    dim as IRVREG ptr n = any
-    dim as integer dclass = any
+	dim as IRVREG ptr n = any
+	dim as integer dclass = any
 
 	if( v = NULL ) then
 		return NULL
@@ -468,7 +474,7 @@ private function hNewDBG _
 		byval sym as FBSYMBOL ptr, _
 		byval lnum as integer = 0, _
 		byval pos_ as integer = 0, _
-		byval filename As zstring ptr = 0  _
+		byval filename As zstring ptr = 0 _
 	) as EMIT_NODE ptr static
 
 	dim as EMIT_NODE ptr n

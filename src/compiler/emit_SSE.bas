@@ -220,8 +220,8 @@ private sub _emitSTORL2F_SSE _
 		byval svreg as IRVREG ptr _
 	) static
 
-    dim as string dst, src, aux
-    dim as string ostr
+	dim as string dst, src, aux
+	dim as string ostr
 
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
@@ -283,9 +283,9 @@ private sub _emitSTORI2F_SSE _
 		byval svreg as IRVREG ptr _
 	) static
 
-    dim as string dst, src, aux
-    dim as integer ddsize, sdsize, reg, isfree
-    dim as string ostr
+	dim as string dst, src, aux
+	dim as integer ddsize, sdsize, reg, isfree
+	dim as string ostr
 
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
@@ -669,8 +669,8 @@ private sub _emitLOADL2F_SSE _
 		byval svreg as IRVREG ptr _
 	) static
 
-    dim as string dst, src, aux
-    dim as string ostr
+	dim as string dst, src, aux
+	dim as string ostr
 	dim as integer ddsize
 
 	hPrepOperand( dvreg, dst )
@@ -975,7 +975,7 @@ end sub
 
 
 '':::::
-'' emit code to convert operands, if necessary.  return TRUE if conversion occured
+'' emit code to convert operands, if necessary. return TRUE if conversion occured
 private function hEmitConvertOperands_SSE _
 	( _
 		byval dvreg as IRVREG ptr, _
@@ -1551,7 +1551,7 @@ private sub hCMPF_SSE _
 	'' no result to be set? just branch
 	if( rvreg = NULL ) then
 		ostr = "j" + *mnemonic
-    		hBRANCH( ostr, lname )
+			hBRANCH( ostr, lname )
 		exit sub
 	end if
 
@@ -1592,11 +1592,11 @@ private sub hCMPF_SSE _
 		outp ostr
 	else
 		'' old (and slow) boolean set
-    		ostr = "mov " + rname + ", -1"
-    		outp ostr
+			ostr = "mov " + rname + ", -1"
+			outp ostr
 
-    		ostr = "j" + *mnemonic
-    		hBRANCH( ostr, lname )
+			ostr = "j" + *mnemonic
+			hBRANCH( ostr, lname )
 
 		ostr = "xor " + rname + COMMA + rname
 		outp ostr
@@ -2497,11 +2497,11 @@ private sub _emitLOG_SSE _
 	end if
 
 
-    outp "fldln2"
-    outp "fxch"
-    outp "fyl2x"
+	outp "fldln2"
+	outp "fxch"
+	outp "fyl2x"
 
-   	if( dvreg->regFamily = IR_REG_FPU_STACK ) then
+	if( dvreg->regFamily = IR_REG_FPU_STACK ) then
 		outp "sub esp" + COMMA + str( ddsize )
 	end if
 
@@ -2554,7 +2554,7 @@ private sub _emitEXP_SSE _
 	outp "fstp st(1)"
 
 
-   	if( dvreg->regFamily = IR_REG_FPU_STACK ) then
+	if( dvreg->regFamily = IR_REG_FPU_STACK ) then
 		outp "sub esp" + COMMA + str( ddsize )
 	end if
 
@@ -2816,8 +2816,8 @@ private sub _emitPUSHF_SSE _
 		byval unused as integer _
 	) static
 
-    dim src as string, sdsize as integer
-    dim ostr as string
+	dim src as string, sdsize as integer
+	dim ostr as string
 
 	hPrepOperand( svreg, src )
 
@@ -2832,7 +2832,7 @@ private sub _emitPUSHF_SSE _
 			ostr = "push " + src
 			outp ostr
 
-    			hPrepOperand( svreg, src, FB_DATATYPE_INTEGER, 0 )
+				hPrepOperand( svreg, src, FB_DATATYPE_INTEGER, 0 )
 			ostr = "push " + src
 			outp ostr
 		end if
@@ -2866,8 +2866,8 @@ private sub _emitPOPF_SSE _
 		byval unused as integer _
 	) static
 
-    dim as string dst, ostr
-    dim as integer dsize
+	dim as string dst, ostr
+	dim as integer dsize
 
 	hPrepOperand( dvreg, dst )
 
