@@ -634,15 +634,15 @@ private sub hPUBLIC _
 
 ' PENDING: shared lib compatibility between win32/linux
 '          rtlib/gfxlib needs -fvisibility=hidden, only available in gcc 4
-'	if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-'		if( isexport ) then
-'			ostr += NEWLINE + ".protected "
-'			ostr += *label
-'		else
-'			ostr += NEWLINE + ".hidden "
-'			ostr += *label
-'		end if
-'	end if
+'   if( env.clopt.target = FB_COMPTARGET_LINUX ) then
+'       if( isexport ) then
+'           ostr += NEWLINE + ".protected "
+'           ostr += *label
+'       else
+'           ostr += NEWLINE + ".hidden "
+'           ostr += *label
+'       end if
+'   end if
 
 	ostr += NEWLINE
 	outEx( ostr )
@@ -2915,16 +2915,16 @@ private sub _emitMULL _
 	outp "add esp, 8"
 
 	'' code:
-	'' mov	eax, low(dst)
-	'' mul	low(src)
-	'' mov	ebx, low(dst)
-	'' imul	ebx, high(src)
-	'' add	ebx, edx
-	'' mov	edx, high(dst)
-	'' imul	edx, low(src)
-	'' add	edx, ebx
-	'' mov	low(dst), eax
-	'' mov	high(dst), edx
+	'' mov  eax, low(dst)
+	'' mul  low(src)
+	'' mov  ebx, low(dst)
+	'' imul ebx, high(src)
+	'' add  ebx, edx
+	'' mov  edx, high(dst)
+	'' imul edx, low(src)
+	'' add  edx, ebx
+	'' mov  low(dst), eax
+	'' mov  high(dst), edx
 
 end sub
 
@@ -3143,10 +3143,10 @@ private sub _emitDIVI _
 		if( ecxindest and ecxtrashed ) then
 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
 				if( eaxfree = FALSE ) then
-					hPOP "ecx"					'' ecx= tos (eax)
-					outp "xchg ecx, [esp]"			'' tos= ecx; ecx= dst
+					hPOP "ecx"                  '' ecx= tos (eax)
+					outp "xchg ecx, [esp]"      '' tos= ecx; ecx= dst
 				else
-					hPOP "ecx"					'' ecx= tos (ecx)
+					hPOP "ecx"                  '' ecx= tos (ecx)
 				end if
 			end if
 		end if
@@ -3160,14 +3160,14 @@ private sub _emitDIVI _
 	else
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
 			if( (ecxfree = FALSE) and (ecxtrashed = FALSE) ) then
-				outp "xchg ecx, [esp]"			'' tos= ecx; ecx= dst
-				outp "xchg ecx, eax"			'' ecx= res; eax= dst
+				outp "xchg ecx, [esp]"          '' tos= ecx; ecx= dst
+				outp "xchg ecx, eax"            '' ecx= res; eax= dst
 			else
-				hMOV "ecx", "eax"			'' ecx= eax
-				hPOP "eax"					'' restore eax
+				hMOV "ecx", "eax"           '' ecx= eax
+				hPOP "eax"                  '' restore eax
 			end if
 
-			hMOV dst, ecx					'' [eax+...] = ecx
+			hMOV dst, ecx                   '' [eax+...] = ecx
 
 			if( (ecxfree = FALSE) and (ecxtrashed = FALSE) ) then
 				hPOP "ecx"
@@ -3299,10 +3299,10 @@ private sub _emitMODI _
 		if( ecxindest and ecxtrashed ) then
 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
 				if( eaxfree = FALSE ) then
-					hPOP "ecx"					'' ecx= tos (eax)
-					outp "xchg ecx, [esp]"			'' tos= ecx; ecx= dst
+					hPOP "ecx"                  '' ecx= tos (eax)
+					outp "xchg ecx, [esp]"      '' tos= ecx; ecx= dst
 				else
-					hPOP "ecx"					'' ecx= tos (ecx)
+					hPOP "ecx"                  '' ecx= tos (ecx)
 				end if
 			end if
 		end if
@@ -3316,14 +3316,14 @@ private sub _emitMODI _
 	else
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
 			if( (ecxfree = FALSE) and (ecxtrashed = FALSE) ) then
-				outp "xchg ecx, [esp]"			'' tos= ecx; ecx= dst
-				outp "xchg ecx, eax"			'' ecx= res; eax= dst
+				outp "xchg ecx, [esp]"          '' tos= ecx; ecx= dst
+				outp "xchg ecx, eax"            '' ecx= res; eax= dst
 			else
-				hMOV "ecx", "eax"			'' ecx= eax
-				hPOP "eax"					'' restore eax
+				hMOV "ecx", "eax"           '' ecx= eax
+				hPOP "eax"                  '' restore eax
 			end if
 
-			hMOV dst, ecx					'' [eax+...] = ecx
+			hMOV dst, ecx                   '' [eax+...] = ecx
 
 			if( (ecxfree = FALSE) and (ecxtrashed = FALSE) ) then
 				hPOP "ecx"
@@ -3486,122 +3486,122 @@ private sub hSHIFTL _
 		isecxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ECX )
 
 		eaxindest = hIsRegInVreg( dvreg, EMIT_REG_EAX )
- 		edxindest = hIsRegInVreg( dvreg, EMIT_REG_EDX )
- 		ecxindest = hIsRegInVreg( dvreg, EMIT_REG_ECX )
+		edxindest = hIsRegInVreg( dvreg, EMIT_REG_EDX )
+		ecxindest = hIsRegInVreg( dvreg, EMIT_REG_ECX )
 
 		if( (svreg->typ <> IR_VREGTYPE_REG) or (svreg->reg <> EMIT_REG_ECX) ) then
 			'' handle src < dword
 			if( typeGetSize( svreg->dtype ) <> 4 ) then
- 				'' if it's not a reg, the right size was already set at the hPrepOperand() above
- 				if( svreg->typ = IR_VREGTYPE_REG ) then
- 					src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
- 				end if
- 			end if
+				'' if it's not a reg, the right size was already set at the hPrepOperand() above
+				if( svreg->typ = IR_VREGTYPE_REG ) then
+					src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
+				end if
+			end if
 
- 			if( isecxfree = FALSE ) then
- 				if( ecxindest and dvreg->typ = IR_VREGTYPE_REG ) then
- 					hMOV( "ecx", src )
- 					isecxfree = TRUE
- 				else
- 					hPUSH( src )
- 					outp "xchg ecx, [esp]"
- 					ofs += 4
- 				end if
- 			else
- 				hMOV( "ecx", src )
- 			end if
- 		else
- 			isecxfree = TRUE
- 		end if
+			if( isecxfree = FALSE ) then
+				if( ecxindest and dvreg->typ = IR_VREGTYPE_REG ) then
+					hMOV( "ecx", src )
+					isecxfree = TRUE
+				else
+					hPUSH( src )
+					outp "xchg ecx, [esp]"
+					ofs += 4
+				end if
+			else
+				hMOV( "ecx", src )
+			end if
+		else
+			isecxfree = TRUE
+		end if
 
 		'' load dst1 to eax
- 		if( eaxindest ) then
- 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
- 				outp "xchg eax, [esp+" + str( ofs+0 ) + "]"
- 			else
- 				outp "mov eax, [esp+" + str( ofs+0 ) + "]"
- 			end if
- 		else
- 			if( iseaxfree = FALSE ) then
- 				outp "xchg eax, [esp+" + str( ofs+0 ) + "]"
- 			else
- 				outp "mov eax, [esp+" + str( ofs+0 ) + "]"
- 			end if
- 		end if
+		if( eaxindest ) then
+			if( dvreg->typ <> IR_VREGTYPE_REG ) then
+				outp "xchg eax, [esp+" + str( ofs+0 ) + "]"
+			else
+				outp "mov eax, [esp+" + str( ofs+0 ) + "]"
+			end if
+		else
+			if( iseaxfree = FALSE ) then
+				outp "xchg eax, [esp+" + str( ofs+0 ) + "]"
+			else
+				outp "mov eax, [esp+" + str( ofs+0 ) + "]"
+			end if
+		end if
 
- 		'' load dst2 to edx
- 		if( edxindest ) then
- 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
- 				outp "xchg edx, [esp+" + str( ofs+4 ) + "]"
- 			else
- 				outp "mov edx, [esp+" + str( ofs+4 ) + "]"
- 			end if
- 		else
- 			if( isedxfree = FALSE ) then
- 				outp "xchg edx, [esp+" + str( ofs+4 ) + "]"
- 			else
- 				outp "mov edx, [esp+" + str( ofs+4 ) + "]"
- 			end if
- 		end if
+		'' load dst2 to edx
+		if( edxindest ) then
+			if( dvreg->typ <> IR_VREGTYPE_REG ) then
+				outp "xchg edx, [esp+" + str( ofs+4 ) + "]"
+			else
+				outp "mov edx, [esp+" + str( ofs+4 ) + "]"
+			end if
+		else
+			if( isedxfree = FALSE ) then
+				outp "xchg edx, [esp+" + str( ofs+4 ) + "]"
+			else
+				outp "mov edx, [esp+" + str( ofs+4 ) + "]"
+			end if
+		end if
 
 		if( op = AST_OP_SHL ) then
- 			outp "shld edx, eax, cl"
- 			outp mnemonic32 + " eax, cl"
- 		else
- 			outp "shrd eax, edx, cl"
- 			outp mnemonic32 + " edx, cl"
- 		end if
+			outp "shld edx, eax, cl"
+			outp mnemonic32 + " eax, cl"
+		else
+			outp "shrd eax, edx, cl"
+			outp mnemonic32 + " edx, cl"
+		end if
 
- 		outp "test cl, 32"
- 		hBRANCH( "jz", label )
+		outp "test cl, 32"
+		hBRANCH( "jz", label )
 
- 		if( op = AST_OP_SHL ) then
- 			outp "mov edx, eax"
- 			outp "xor eax, eax"
- 		else
- 			outp "mov eax, edx"
- 			if( typeIsSigned( dvreg->dtype ) ) then
- 				outp "sar edx, 31"
- 			else
- 				outp "xor edx, edx"
- 			end if
- 		end if
+		if( op = AST_OP_SHL ) then
+			outp "mov edx, eax"
+			outp "xor eax, eax"
+		else
+			outp "mov eax, edx"
+			if( typeIsSigned( dvreg->dtype ) ) then
+				outp "sar edx, 31"
+			else
+				outp "xor edx, edx"
+			end if
+		end if
 
- 		hLABEL( label )
+		hLABEL( label )
 
- 		if( isecxfree = FALSE ) then
- 			hPOP "ecx"
- 		end if
+		if( isecxfree = FALSE ) then
+			hPOP "ecx"
+		end if
 
 		'' save dst2
- 		if( edxindest ) then
- 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
- 				outp "xchg edx, [esp+4]"
- 			else
- 				outp "mov [esp+4], edx"
- 			end if
- 		else
- 			if( isedxfree = FALSE ) then
- 				outp "xchg edx, [esp+4]"
- 			else
- 				outp "mov [esp+4], edx"
- 			end if
- 		end if
+		if( edxindest ) then
+			if( dvreg->typ <> IR_VREGTYPE_REG ) then
+				outp "xchg edx, [esp+4]"
+			else
+				outp "mov [esp+4], edx"
+			end if
+		else
+			if( isedxfree = FALSE ) then
+				outp "xchg edx, [esp+4]"
+			else
+				outp "mov [esp+4], edx"
+			end if
+		end if
 
- 		'' save dst1
- 		if( eaxindest ) then
- 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
- 				outp "xchg eax, [esp+0]"
- 			else
- 				outp "mov [esp+0], eax"
- 			end if
- 		else
- 			if( iseaxfree = FALSE ) then
- 				outp "xchg eax, [esp+0]"
- 			else
- 				outp "mov [esp+0], eax"
- 			end if
- 		end if
+		'' save dst1
+		if( eaxindest ) then
+			if( dvreg->typ <> IR_VREGTYPE_REG ) then
+				outp "xchg eax, [esp+0]"
+			else
+				outp "mov [esp+0], eax"
+			end if
+		else
+			if( iseaxfree = FALSE ) then
+				outp "xchg eax, [esp+0]"
+			else
+				outp "mov [esp+0], eax"
+			end if
+		end if
 
 		hPOP( dst1 )
 		hPOP( dst2 )
@@ -3693,9 +3693,9 @@ private sub hSHIFTI _
 			'' tmp not free?
 			if( eaxfree = FALSE ) then
 				eaxpreserved = TRUE
-				outp "xchg eax, [esp]"		'' eax= dst; push eax
+				outp "xchg eax, [esp]"      '' eax= dst; push eax
 			else
-				hPOP "eax"				'' eax= dst; pop tos
+				hPOP "eax"              '' eax= dst; pop tos
 			end if
 
 			tmp = rnameTB(dtypeTB(dvreg->dtype).rnametb, EMIT_REG_EAX )
@@ -3715,7 +3715,7 @@ private sub hSHIFTI _
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
 			hPOP "ecx"
 			if( eaxpreserved ) then
-				outp "xchg ecx, [esp]"		'' ecx= tos; tos= eax
+				outp "xchg ecx, [esp]"      '' ecx= tos; tos= eax
 			end if
 		end if
 		hMOV dst, rnameTB(dtypeTB(dvreg->dtype).rnametb, EMIT_REG_EAX)
@@ -4197,7 +4197,7 @@ private sub hCMPI _
 			outp ostr
 		end if
 
-		if( rvreg->dtype <> FB_DATATYPE_BOOLEAN ) then 
+		if( rvreg->dtype <> FB_DATATYPE_BOOLEAN ) then
 			'' convert 1 to -1 (TRUE in QB/FB)
 			ostr = "shr " + rname + ", 1"
 			outp ostr
@@ -4209,7 +4209,7 @@ private sub hCMPI _
 	'' old (and slow) boolean set
 	else
 
-		if( rvreg->dtype = FB_DATATYPE_BOOLEAN ) then 
+		if( rvreg->dtype = FB_DATATYPE_BOOLEAN ) then
 			ostr = "mov " + rname + ", 1"
 		else
 			ostr = "mov " + rname + ", -1"
@@ -4750,7 +4750,7 @@ private sub _emitNOTI _
 	else
 		ostr = "not " + dst
 	end if
-	
+
 	outp ostr
 
 end sub
@@ -4852,22 +4852,22 @@ end sub
 
 ''
 '' Algorithm:
-''	select case( highdword )
-''	case is < 0
-''		highdword = -1
-''		lowdword  = -1
-''	case is > 0
-''		highdword = 0
-''		lowdword  = 1
-''	case else
-''		if( lowdword <> 0 ) then
-''			highdword = 0
-''			lowdword  = 1
-''		else
-''			highdword = 0
-''			lowdword  = 0
-''		end if
-''	end select
+''  select case( highdword )
+''  case is < 0
+''      highdword = -1
+''      lowdword  = -1
+''  case is > 0
+''      highdword = 0
+''      lowdword  = 1
+''  case else
+''      if( lowdword <> 0 ) then
+''          highdword = 0
+''          lowdword  = 1
+''      else
+''          highdword = 0
+''          lowdword  = 0
+''      end if
+''  end select
 ''
 '' - Result is stored into the input registers, so must be careful
 ''   about overwriting
@@ -6109,7 +6109,7 @@ end sub
 private sub _emitLOADB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	'' Assumes that booleans are stored as 0|1 only, and any other value
 	'' is undefined.  Also assume src and dst are always same size.
-	
+
 	dim as string dst, src
 
 	hPrepOperand( dvreg, dst )
@@ -6120,7 +6120,7 @@ private sub _emitLOADB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 end sub
 
 private sub _emitSTORB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	'' storing boolean to boolean same as loading to boolean.  See LOADB2B 
+	'' storing boolean to boolean same as loading to boolean.  See LOADB2B
 	'' for assumptions
 	_emitLOADB2B( dvreg, svreg )
 end sub
@@ -6128,7 +6128,7 @@ end sub
 private sub _emitLOADB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 
 	dim as string src, dst
-	
+
 	hPrepOperand( svreg, src )
 	hPrepOperand( dvreg, dst )
 
@@ -6166,7 +6166,7 @@ private sub _emitLOADI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 
 	dim as string src, dst, dst8
 	dim as integer ddsize = any
-	
+
 	hPrepOperand( svreg, src )
 	hPrepOperand( dvreg, dst )
 
@@ -6263,14 +6263,14 @@ private sub _emitLOADF2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	if( svreg->typ <> IR_VREGTYPE_REG ) then
 		outp "fld " + src
 	end if
-	
+
 	if( isfree = FALSE ) then
 		outp "push eax"
 	end if
 
 	outp "ftst"
 	outp "fnstsw ax"
-	
+
 	#if 1
 	outp "sahf"
 	outp "setnz al"
@@ -6278,7 +6278,7 @@ private sub _emitLOADF2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	outp "test ah, 0b01000000"
 	outp "setz al"
 	#endif
-	
+
 	outp "fstp st(0)"
 
 	if( ddsize = 1 ) then
@@ -6298,10 +6298,10 @@ private sub _emitSTORF2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 end sub
 
 private sub _emitLOADB2F( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	
+
 	dim as string src, dst
 	dim as integer sdsize = any
-	
+
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
@@ -6355,7 +6355,7 @@ private sub _emitSTORB2F( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 
 	dim as string src, dst
 	dim as integer sdsize = any
-	
+
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
@@ -6486,7 +6486,7 @@ private sub _emitLOADL2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 		if( ddsize <> 1 ) then
 			outp( "movzx " + aux + ", " + aux8 )
 		end if
-	
+
 	'' use an extra reg
 	else
 
@@ -6520,7 +6520,7 @@ private sub _emitLOADL2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 			hMOV( aux, src1 )
 			outp( "or " + aux + ", " + src2 )
 		end if
-	
+
 		'' if (src1 or src2) is non-zero, produce 0|1 and store it into dst
 		outp( "cmp " + aux + ", 0" )
 		outp( "setne " + aux8 )
@@ -6907,7 +6907,7 @@ private sub _getResultReg _
 			r2 = INVALID
 		end if
 	else
-		r1 = 0							'' st(0)
+		r1 = 0                          '' st(0)
 		r2 = INVALID
 	end if
 

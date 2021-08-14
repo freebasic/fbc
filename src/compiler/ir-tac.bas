@@ -12,11 +12,11 @@
 #include once "hlp.bi"
 
 type IRTAC_CTX
-	tacTB			as TFLIST
-	taccnt			as integer
-	tacidx			as IRTAC ptr
+	tacTB           as TFLIST
+	taccnt          as integer
+	tacidx          as IRTAC ptr
 
-	vregTB			as TFLIST
+	vregTB          as TFLIST
 end type
 
 declare sub hFlushUOP _
@@ -126,7 +126,7 @@ declare sub hFreeREG _
 
 declare sub hFreePreservedRegs _
 	( _
- 		_
+		_
 	)
 
 #if __FB_DEBUG__
@@ -320,7 +320,7 @@ private sub _emit _
 	t->ex1 = ex1
 	t->ex2 = ex2
 	t->ex3 = ex3
-   
+
 	ctx.taccnt += 1
 
 end sub
@@ -883,8 +883,8 @@ private function hNewVR _
 	v->sym = NULL
 	v->ofs = 0
 	v->mult = 0
-	v->vidx	= NULL
-	v->vaux	= NULL
+	v->vidx = NULL
+	v->vaux = NULL
 	v->tacvhead = NULL
 	v->tacvtail = NULL
 	v->taclast = NULL
@@ -1325,7 +1325,7 @@ private sub hReuse _
 			hRename( vr, v1 )
 
 		elseif( v2rename ) then
-		 	swap t->v1, t->v2
+			swap t->v1, t->v2
 
 			hRename( vr, v2 )
 		end if
@@ -1906,7 +1906,7 @@ private sub hFlushBOP _
 
 	'' BOP to self? (x86 assumption at AST)
 	if( vr = NULL ) then
-		if( v2_typ <> IR_VREGTYPE_IMM ) then		'' x86 assumption
+		if( v2_typ <> IR_VREGTYPE_IMM ) then        '' x86 assumption
 			'' handle longint
 			if( ISLONGINT( v2_dtype ) ) then
 				va = v2->vaux
@@ -1916,7 +1916,7 @@ private sub hFlushBOP _
 			regTB(v2_dclass)->ensure( regTB(v2_dclass), v2, NULL, typeGetSize( v2_dtype ) )
 		end if
 	else
-		if( v2_typ = IR_VREGTYPE_REG ) then			'' x86 assumption
+		if( v2_typ = IR_VREGTYPE_REG ) then         '' x86 assumption
 			'' handle longint
 			if( ISLONGINT( v2_dtype ) ) then
 				va = v2->vaux
@@ -2023,9 +2023,9 @@ private sub hFlushCOMP _
 
 	'' load source if it's a reg, or if result was not allocated
 	doload = FALSE
-	if( vr = NULL ) then							'' x86 assumption
-		if( v2_dclass = FB_DATACLASS_INTEGER ) then	'' /
-			if( v2_typ <> IR_VREGTYPE_IMM ) then	'' /
+	if( vr = NULL ) then                            '' x86 assumption
+		if( v2_dclass = FB_DATACLASS_INTEGER ) then '' /
+			if( v2_typ <> IR_VREGTYPE_IMM ) then    '' /
 				if( v1_dclass <> FB_DATACLASS_FPOINT ) then
 					doload = TRUE
 				end if
@@ -2046,9 +2046,9 @@ private sub hFlushCOMP _
 
 	'' destine allocation comes *after* source, 'cause the FPU stack
 	doload = FALSE
-	if( (vr <> NULL) and (vr = v1) ) then			'' x86 assumption
+	if( (vr <> NULL) and (vr = v1) ) then           '' x86 assumption
 		doload = TRUE
-	elseif( v1_dclass = FB_DATACLASS_FPOINT ) then	'' /
+	elseif( v1_dclass = FB_DATACLASS_FPOINT ) then  '' /
 		doload = TRUE
 	elseif( v1_typ = IR_VREGTYPE_IMM) then          '' /
 		doload = TRUE
@@ -2243,7 +2243,7 @@ private sub hFlushLOAD _
 			emitLOAD( vr, v1 )
 
 			''
-			hFreeREG( vr )						'' assuming this is the last operation
+			hFreeREG( vr )                      '' assuming this is the last operation
 		end if
 	end select
 
@@ -2313,7 +2313,7 @@ private sub hFlushCONVERT _
 		v1->typ = IR_VREGTYPE_REG
 		regTB(v1_dclass)->setOwner( regTB(v1_dclass), v1->reg, v1, NULL )
 	else
-		if( v2_typ = IR_VREGTYPE_REG ) then			'' x86 assumption
+		if( v2_typ = IR_VREGTYPE_REG ) then         '' x86 assumption
 			'' handle longint
 			if( ISLONGINT( v2_dtype ) ) then
 				va = v2->vaux
@@ -2368,7 +2368,7 @@ private sub hFlushADDR _
 	hLoadIDX( vr )
 
 	''
-	if( v1_typ = IR_VREGTYPE_REG ) then				'' x86 assumption
+	if( v1_typ = IR_VREGTYPE_REG ) then             '' x86 assumption
 		regTB(v1_dclass)->ensure( regTB(v1_dclass), v1, NULL, typeGetSize( v1_dtype ) )
 	end if
 
@@ -2479,7 +2479,7 @@ private sub hFreeIDX _
 	vidx = vreg->vidx
 	if( vidx <> NULL ) then
 		if( vidx->reg <> INVALID ) then
-			hFreeREG( vidx, force )				'' recursively
+			hFreeREG( vidx, force )             '' recursively
 			vreg->vidx = NULL
 		end if
 	end if
@@ -2581,10 +2581,10 @@ private sub _loadVR _
 		'' Don't load aux vregs now - they'll be loaded when their
 		'' parent vreg is loaded
 		if( vauxparent = NULL ) then
-			rvreg.typ 	= IR_VREGTYPE_REG
+			rvreg.typ   = IR_VREGTYPE_REG
 			rvreg.dtype = vreg->dtype
-			rvreg.reg	= reg
-			rvreg.vaux	= vreg->vaux
+			rvreg.reg   = reg
+			rvreg.vaux  = vreg->vaux
 			rvreg.regFamily = vreg->regFamily
 			emitLOAD( @rvreg, vreg )
 		end if
@@ -2671,9 +2671,9 @@ private sub _xchgTOS _
 
 	dim as IRVREG rvreg
 
-	rvreg.typ 	= IR_VREGTYPE_REG
+	rvreg.typ   = IR_VREGTYPE_REG
 	rvreg.dtype = FB_DATATYPE_DOUBLE
-	rvreg.reg	= reg
+	rvreg.reg   = reg
 
 	emitXchgTOS( @rvreg )
 

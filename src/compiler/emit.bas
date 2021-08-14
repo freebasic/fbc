@@ -21,7 +21,7 @@
 		L = 64 bit
 '/
 
-declare function emitGasX86_ctor	_
+declare function emitGasX86_ctor _
 	( _
 	) as integer
 
@@ -633,7 +633,7 @@ function emitSTORE _
 		case else
 			function = hNewBOP( EMIT_OP_STORI2F, dvreg, svreg )
 		end select
-	
+
 	'' boolean?
 	case FB_SIZETYPE_BOOLEAN
 
@@ -1468,7 +1468,7 @@ sub emitASM( byval text as zstring ptr )
 
 	'' reset reg usage
 	for c as integer = 0 to EMIT_REGCLASSES-1
-		EMIT_REGTRASHALL( c )						'' can't check the reg usage
+		EMIT_REGTRASHALL( c )                       '' can't check the reg usage
 	next
 end sub
 

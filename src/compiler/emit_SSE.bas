@@ -44,10 +44,10 @@ private sub _emitLOADB2F_SSE( byval dvreg as IRVREG ptr, byval svreg as IRVREG p
 
 	dim as string dst
 	dim as integer ddsize = any
-	
+
 	'' load source to ST(0)
 	_emitLOADB2F_x86( dvreg, svreg )
-	
+
 	hPrepOperand( dvreg, dst )
 	ddsize = typeGetSize( dvreg->dtype )
 
@@ -211,8 +211,8 @@ end sub
 
 
 
-'' NOTE:	this is identical to the FPU code, which is probably
-'' 		faster than any SSE implementation
+'' NOTE:    this is identical to the FPU code, which is probably
+''      faster than any SSE implementation
 '':::::
 private sub _emitSTORL2F_SSE _
 	( _
@@ -799,7 +799,7 @@ private sub _emitLOADI2F_SSE _
 	if( (svreg->typ <> IR_VREGTYPE_IMM) and (sdsize = 4) ) then
 		'' src is 32-bit mem or register
 		isfree = TRUE
-		aux = src			'' just use it
+		aux = src           '' just use it
 	else
 		'' src is not 32-bit mem or register
 		'' find a register
@@ -1016,7 +1016,7 @@ private function hEmitConvertOperands_SSE _
 	end if
 
 end function
-	
+
 
 
 '':::::
@@ -1243,7 +1243,7 @@ private sub _emitMULF_SSE _
 	if( hEmitConvertOperands_SSE( dvreg, svreg ) ) then
 		src = "xmm7"
 	end if
-	
+
 	if( typeGetClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
 		if( ddsize > 4 ) then
 			'' multiply them as double-precision
@@ -1324,7 +1324,7 @@ private sub _emitDIVF_SSE _
 	if( hEmitConvertOperands_SSE( dvreg, svreg ) ) then
 		src = "xmm7"
 	end if
-	
+
 	if( typeGetClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
 		if( ddsize > 4 ) then
 			'' divide them as double-precision
@@ -1874,15 +1874,15 @@ private sub _emitSGNF_SSE _
 		sym->var_.align = 16
 		tempVreg = irAllocVRVAR( FB_DATATYPE_UINT, NULL, sym, symbGetOfs( sym ) )
 		hPrepOperand( tempVreg, src, FB_DATATYPE_XMMWORD )
-		outp "orps " + dst + COMMA + src		'' set bits 31-0, sign is unchanged"
+		outp "orps " + dst + COMMA + src        '' set bits 31-0, sign is unchanged"
 
 		sym = symbAllocIntConst(&hBF800000, FB_DATATYPE_UINT)
 		sym->var_.align = 16
 		tempVreg = irAllocVRVAR( FB_DATATYPE_UINT, NULL, sym, symbGetOfs( sym ) )
 		hPrepOperand( tempVreg, src, FB_DATATYPE_XMMWORD )
-		outp "andps xmm7" + COMMA + src			'' load -1.0f, kill if == 0.0f"
+		outp "andps xmm7" + COMMA + src         '' load -1.0f, kill if == 0.0f"
 
-		outp "andps " + dst + COMMA + "xmm7"	'' get +/-1.0f or 0.0f"
+		outp "andps " + dst + COMMA + "xmm7"    '' get +/-1.0f or 0.0f"
 	end if
 end sub
 
@@ -1903,7 +1903,7 @@ private sub _emitSINCOS_FAST_SSE _
 
 	hPrepOperand( dvreg, dst )
 
-	stackSize = 4		'' 4 bytes always needed
+	stackSize = 4       '' 4 bytes always needed
 
 	if( dvreg->regFamily = IR_REG_FPU_STACK ) then
 		stackSize += 4
@@ -2009,70 +2009,70 @@ private sub _emitSINCOS_FAST_SSE _
 	next i
 
 if( iscos = FALSE ) then
-	outp "movss	[esp]" + COMMA + dst
+	outp "movss [esp]" + COMMA + dst
 
 	hPrepOperand( vReg_twoOverPI, src )
-	outp "mulss	" + dst + COMMA + src
+	outp "mulss " + dst + COMMA + src
 
-	outp "and		dword ptr [esp], 0x80000000"
+	outp "and       dword ptr [esp], 0x80000000"
 end if
 
 	hPrepOperand( vReg_invSignBitMask, src, FB_DATATYPE_XMMWORD )
-	outp "andps	" + dst + COMMA + src
+	outp "andps " + dst + COMMA + src
 
 if( iscos = TRUE ) then
 	hPrepOperand( vReg_piOverTwo, src )
-	outp "addss	" + dst + COMMA + src
+	outp "addss " + dst + COMMA + src
 
 	hPrepOperand( vReg_twoOverPI, src )
-	outp "mulss	" + dst + COMMA + src
+	outp "mulss " + dst + COMMA + src
 end if
 
-	outp "cvttss2si	" + regName(0) + COMMA + dst
+	outp "cvttss2si " + regName(0) + COMMA + dst
 
 	hPrepOperand( vReg_one, src )
-	outp "movss	xmm7" + COMMA + src
-	outp "mov		" + regName(1) + COMMA + regName(0)
-	outp "cvtsi2ss	" + regName(2) + COMMA + regName(0)
-	outp "shl		" + regName(1) + COMMA + "30"
-	outp "not		" + regName(0)
-	outp "and		" + regName(1) + COMMA + "0x80000000"
-	outp "and		" + regName(0) + COMMA + "0x1"
-	outp "subss	" + dst + COMMA + regName(2)
-	outp "dec		" + regName(0)
-	outp "minss	" + dst + COMMA + "xmm7"
-	outp "movd		" + regName(2) + COMMA + regName(0)
-	outp "subss	xmm7" + COMMA + dst
-	outp "andps	xmm7" + COMMA + regName(2)
-	outp "andnps	" + regName(2) + COMMA + dst
-	outp "orps		xmm7" + COMMA + regName(2)
+	outp "movss xmm7" + COMMA + src
+	outp "mov       " + regName(1) + COMMA + regName(0)
+	outp "cvtsi2ss  " + regName(2) + COMMA + regName(0)
+	outp "shl       " + regName(1) + COMMA + "30"
+	outp "not       " + regName(0)
+	outp "and       " + regName(1) + COMMA + "0x80000000"
+	outp "and       " + regName(0) + COMMA + "0x1"
+	outp "subss " + dst + COMMA + regName(2)
+	outp "dec       " + regName(0)
+	outp "minss " + dst + COMMA + "xmm7"
+	outp "movd      " + regName(2) + COMMA + regName(0)
+	outp "subss xmm7" + COMMA + dst
+	outp "andps xmm7" + COMMA + regName(2)
+	outp "andnps    " + regName(2) + COMMA + dst
+	outp "orps      xmm7" + COMMA + regName(2)
 if( iscos = FALSE ) then
-	outp "xor		" + regName(1) + COMMA + "[esp]"
+	outp "xor       " + regName(1) + COMMA + "[esp]"
 end if
-	outp "movd		" + regName(0) + COMMA + "xmm7"
+	outp "movd      " + regName(0) + COMMA + "xmm7"
 
-	outp "mulss	xmm7, xmm7"
+	outp "mulss xmm7, xmm7"
 
-	outp "or		" + regName(1) + COMMA + regName(0)
-	
-	outp "movss	" + regName(2) + COMMA + "xmm7"
+	outp "or        " + regName(1) + COMMA + regName(0)
+
+	outp "movss " + regName(2) + COMMA + "xmm7"
 
 	hPrepOperand( vReg_sin_c3, src )
-	outp "mulss	xmm7" + COMMA + src
+	outp "mulss xmm7" + COMMA + src
 
 	hPrepOperand( vReg_sin_c2, src )
-	outp "addss	xmm7" + COMMA + src
-	outp "mulss	xmm7" + COMMA + regName(2)
+	outp "addss xmm7" + COMMA + src
+	outp "mulss xmm7" + COMMA + regName(2)
 
-	outp "movd		" + dst + COMMA + regName(1)
+	outp "movd      " + dst + COMMA + regName(1)
 
 	hPrepOperand( vReg_sin_c1, src )
-	outp "addss	xmm7" + COMMA + src
-	outp "mulss	xmm7" + COMMA + regName(2)
+	outp "addss xmm7" + COMMA + src
+	outp "mulss xmm7" + COMMA + regName(2)
 
 	hPrepOperand( vReg_sin_c0, src )
-	outp "addss	xmm7" + COMMA + src
-	outp "mulss	" + dst + COMMA + "xmm7"
+	outp "addss xmm7" + COMMA + src
+	outp "mulss " + dst + COMMA + "xmm7"
 
 	stackPointer = 4
 	for i = 0 to 2
@@ -2619,11 +2619,11 @@ private sub _emitFLOOR_SSE _
 
 	outp "fistp qword ptr [esp]"
 	outp "fild qword ptr [esp]"
-	outp "fstp " + dtypeTB(dvreg->dtype).mname + " [esp]"	'' round(f)
+	outp "fstp " + dtypeTB(dvreg->dtype).mname + " [esp]"   '' round(f)
 	outp "xorp" + suffix + dst + COMMA + dst
-	outp "subs" + suffix + "xmm7" + COMMA + "[esp]"	'' f - round(f)
-	outp "cmpnles" + suffix + dst + COMMA + "xmm7"	'' 0 > f - round(f) ? 1 : 0
-	outp "andp" + suffix + dst + COMMA + neg1		'' F > I ? -1.0 : 0.0
+	outp "subs" + suffix + "xmm7" + COMMA + "[esp]" '' f - round(f)
+	outp "cmpnles" + suffix + dst + COMMA + "xmm7"  '' 0 > f - round(f) ? 1 : 0
+	outp "andp" + suffix + dst + COMMA + neg1       '' F > I ? -1.0 : 0.0
 	outp "adds" + suffix + dst + COMMA + "[esp]"
 
 	outp "add esp, 8"
@@ -2692,23 +2692,23 @@ private sub _emitFIX_SSE _
 
 	outp "xorp" + suffix + "xmm7, xmm7"
 	if( ddsize > 4 ) then
-		outp "movlpd [esp+8], xmm7"							'' 0.0
+		outp "movlpd [esp+8], xmm7"                         '' 0.0
 	else
-		outp "movss [esp+8], xmm7"							'' 0.0
+		outp "movss [esp+8], xmm7"                          '' 0.0
 	end if
 
 	outp "fistp qword ptr [esp]"
-	outp "cmpnles" + suffix + "xmm7" + COMMA + dst			'' f < 0 ? 1 : 0
+	outp "cmpnles" + suffix + "xmm7" + COMMA + dst          '' f < 0 ? 1 : 0
 	outp "fild qword ptr [esp]"
-	outp "andp" + suffix + "xmm7" + COMMA + absval			'' f < 0 ? -/+ : 0
-	outp "fstp " + dtypeTB(dvreg->dtype).mname + " [esp]"		'' round(f)
-	outp "subs" + suffix + dst + COMMA + "[esp]"				'' difference = (f - round(f))
-	outp "xorp" + suffix + dst + COMMA + "xmm7"				'' f < 0 ? -difference : difference
-	outp "xorp" + suffix + "xmm7" + COMMA + neg1				'' f < 0 ? 1.0 : -1.0
+	outp "andp" + suffix + "xmm7" + COMMA + absval          '' f < 0 ? -/+ : 0
+	outp "fstp " + dtypeTB(dvreg->dtype).mname + " [esp]"       '' round(f)
+	outp "subs" + suffix + dst + COMMA + "[esp]"                '' difference = (f - round(f))
+	outp "xorp" + suffix + dst + COMMA + "xmm7"             '' f < 0 ? -difference : difference
+	outp "xorp" + suffix + "xmm7" + COMMA + neg1                '' f < 0 ? 1.0 : -1.0
 	'' difference < 0 ? 1 : 0
 	outp "cmplts" + suffix + dst + COMMA + "[esp+8]"
-	outp "andp" + suffix + dst + COMMA + "xmm7"				'' difference < 0 ? +/- 1.0 : 0.0
-	outp "adds" + suffix + dst + COMMA + "[esp]"				'' round(f) +/- 1
+	outp "andp" + suffix + dst + COMMA + "xmm7"             '' difference < 0 ? +/- 1.0 : 0.0
+	outp "adds" + suffix + dst + COMMA + "[esp]"                '' round(f) +/- 1
 	outp "add esp" + COMMA + str( ddsize + 8 )
 
 end sub
@@ -2742,7 +2742,7 @@ private sub _emitFRAC_SSE _
 		absval_sym = symbAllocIntConst(&h80000000, FB_DATATYPE_UINT)
 		absval_vreg = irAllocVRVAR( FB_DATATYPE_UINT, NULL, absval_sym, symbGetOfs( absval_sym ) )
 
-		suffix = "s "		
+		suffix = "s "
 	end if
 	neg1_sym->var_.align = 16
 	absval_sym->var_.align = 16
@@ -2774,30 +2774,30 @@ private sub _emitFRAC_SSE _
 	outp "xorp" + suffix + "xmm7, xmm7"
 	if( ddsize > 4 ) then
 		outp "shufpd " + dst + COMMA + dst + COMMA + "0"
-		outp "movlpd [esp+8], xmm7"							'' 0.0
+		outp "movlpd [esp+8], xmm7"                         '' 0.0
 	else
 		outp "movlhps " + dst + COMMA + dst
-		outp "movss [esp+8], xmm7"							'' 0.0
+		outp "movss [esp+8], xmm7"                          '' 0.0
 	end if
 
 	outp "fistp qword ptr [esp]"
-	outp "cmpnles" + suffix + "xmm7" + COMMA + dst			'' f < 0 ? 1 : 0
+	outp "cmpnles" + suffix + "xmm7" + COMMA + dst          '' f < 0 ? 1 : 0
 	outp "fild qword ptr [esp]"
-	outp "andp" + suffix + "xmm7" + COMMA + absval					'' f < 0 ? - : +
-	outp "fstp " + dtypeTB(dvreg->dtype).mname + " [esp]"	'' round(f)
-	outp "subs" + suffix + dst + COMMA + "[esp]"			'' difference = (f - round(f))
-	outp "xorp" + suffix + dst + COMMA + "xmm7"				'' f < 0 ? -difference : difference
-	outp "xorp" + suffix + "xmm7" + COMMA + neg1				'' f < 0 ? 1.0 : -1.0
+	outp "andp" + suffix + "xmm7" + COMMA + absval          '' f < 0 ? - : +
+	outp "fstp " + dtypeTB(dvreg->dtype).mname + " [esp]"   '' round(f)
+	outp "subs" + suffix + dst + COMMA + "[esp]"            '' difference = (f - round(f))
+	outp "xorp" + suffix + dst + COMMA + "xmm7"             '' f < 0 ? -difference : difference
+	outp "xorp" + suffix + "xmm7" + COMMA + neg1            '' f < 0 ? 1.0 : -1.0
 	'' difference < 0 ? 1 : 0
 	outp "cmplts" + suffix + dst + COMMA + "[esp+8]"
-	outp "andp" + suffix + "xmm7" + COMMA + dst				'' difference < 0 ? +/- 1.0 : 0.0
+	outp "andp" + suffix + "xmm7" + COMMA + dst             '' difference < 0 ? +/- 1.0 : 0.0
 	if( ddsize > 4 ) then
-		outp "shufpd " + dst + COMMA + dst + COMMA + "1"		'' restore dst
+		outp "shufpd " + dst + COMMA + dst + COMMA + "1"    '' restore dst
 	else
-		outp "movhlps " + dst + COMMA + dst				'' restore dst
+		outp "movhlps " + dst + COMMA + dst                 '' restore dst
 	end if
-	outp "adds" + suffix + "xmm7" + COMMA + "[esp]"			'' round(f) +/- 1
-	outp "subs" + suffix + dst + COMMA + "xmm7"				'' dst - fix(dst)
+	outp "adds" + suffix + "xmm7" + COMMA + "[esp]"         '' round(f) +/- 1
+	outp "subs" + suffix + dst + COMMA + "xmm7"             '' dst - fix(dst)
 	outp "add esp" + COMMA + str( ddsize+8 )
 
 end sub

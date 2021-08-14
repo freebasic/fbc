@@ -6,7 +6,7 @@
 #include once "ast.bi"
 #include once "ir.bi"
 
-const EMIT_INITNODES	= 2048
+const EMIT_INITNODES    = 2048
 const EMIT_INITVREGNODES= EMIT_INITNODES*3
 
 '' x86 specific: FB_DATACLASS_INTEGER and FB_DATACLASS_FPOINT
@@ -133,93 +133,93 @@ enum EMIT_NODECLASS_ENUM
 end enum
 
 type EMIT_BOPNODE
-	op			as integer
-	dvreg		as IRVREG ptr
-	svreg		as IRVREG ptr
+	op          as integer
+	dvreg       as IRVREG ptr
+	svreg       as IRVREG ptr
 end type
 
 type EMIT_UOPNODE
-	op			as integer
-	dvreg		as IRVREG ptr
+	op          as integer
+	dvreg       as IRVREG ptr
 end type
 
 type EMIT_RELNODE
-	op			as integer
-	rvreg		as IRVREG ptr
-	label		as FBSYMBOL ptr
-	dvreg		as IRVREG ptr
-	svreg		as IRVREG ptr
+	op          as integer
+	rvreg       as IRVREG ptr
+	label       as FBSYMBOL ptr
+	dvreg       as IRVREG ptr
+	svreg       as IRVREG ptr
 end type
 
 type EMIT_STKNODE
-	op			as integer
-	vreg		as IRVREG ptr
-	extra		as integer
+	op          as integer
+	vreg        as IRVREG ptr
+	extra       as integer
 end type
 
 type EMIT_BRCNODE
-	op			as integer
-	vreg		as IRVREG ptr
-	sym			as FBSYMBOL ptr
-	extra		as integer
+	op          as integer
+	vreg        as IRVREG ptr
+	sym         as FBSYMBOL ptr
+	extra       as integer
 end type
 
 type EMIT_SOPNODE
-	op			as integer
-	sym			as FBSYMBOL ptr
+	op          as integer
+	sym         as FBSYMBOL ptr
 end type
 
 type EMIT_LITNODE
-	isasm		as integer
-	text		as zstring ptr
+	isasm       as integer
+	text        as zstring ptr
 end type
 
 type EMIT_JTBNODE
-	tbsym				as FBSYMBOL ptr
+	tbsym               as FBSYMBOL ptr
 
 	'' Dynamically allocated buffer holding the jmptb's value/label pairs
-	values				as ulongint ptr
-	labels				as FBSYMBOL ptr ptr
-	labelcount			as integer
+	values              as ulongint ptr
+	labels              as FBSYMBOL ptr ptr
+	labelcount          as integer
 
-	deflabel			as FBSYMBOL ptr
-	bias				as ulongint
-	span				as ulongint
+	deflabel            as FBSYMBOL ptr
+	bias                as ulongint
+	span                as ulongint
 end type
 
 type EMIT_MEMNODE
-	op			as integer
-	dvreg		as IRVREG ptr
-	svreg		as IRVREG ptr
-	bytes		as integer
-	extra		as integer
+	op          as integer
+	dvreg       as IRVREG ptr
+	svreg       as IRVREG ptr
+	bytes       as integer
+	extra       as integer
 end type
 
 type EMIT_DBGNODE
-	op			as integer
-	sym			as FBSYMBOL ptr
-	lnum		as integer
-	filename 	as zstring ptr
-	pos			as integer
+	op          as integer
+	sym         as FBSYMBOL ptr
+	lnum        as integer
+	filename    as zstring ptr
+	pos         as integer
 end type
 
 type EMIT_NODE
-	class							as EMIT_NODECLASS_ENUM
+	class                           as EMIT_NODECLASS_ENUM
 
 	union
-		bop							as EMIT_BOPNODE
-		uop							as EMIT_UOPNODE
-		rel							as EMIT_RELNODE
-		stk						 	as EMIT_STKNODE
-		brc							as EMIT_BRCNODE
-		sop							as EMIT_SOPNODE
-		lit							as EMIT_LITNODE
-		jtb							as EMIT_JTBNODE
-		mem							as EMIT_MEMNODE
-		dbg							as EMIT_DBGNODE
+		bop                         as EMIT_BOPNODE
+		uop                         as EMIT_UOPNODE
+		rel                         as EMIT_RELNODE
+		stk                         as EMIT_STKNODE
+		brc                         as EMIT_BRCNODE
+		sop                         as EMIT_SOPNODE
+		lit                         as EMIT_LITNODE
+		jtb                         as EMIT_JTBNODE
+		mem                         as EMIT_MEMNODE
+		dbg                         as EMIT_DBGNODE
 	end union
 
-	regFreeTB(EMIT_REGCLASSES-1) 	as REG_FREETB
+	regFreeTB(EMIT_REGCLASSES-1)    as REG_FREETB
 end type
 
 
