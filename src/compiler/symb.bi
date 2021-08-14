@@ -188,6 +188,7 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_SUFFIXED         = &h00100000
 	FB_SYMBATTRIB_VIS_PRIVATE      = &h00200000  '' UDT members only
 	FB_SYMBATTRIB_VIS_PROTECTED    = &h00400000  '' UDT members only
+	FB_SYMBATTRIB_INTERNAL         = &h00800000  '' default UDT members / vtable / rtti - affects name mangling
 end enum
 
 '' proc symbol attributes mask
@@ -211,7 +212,7 @@ end enum
 
 '' parameter modes
 enum FB_PARAMMODE
-	FB_PARAMMODE_BYVAL 			= 1				'' must start at 1! used for mangling
+	FB_PARAMMODE_BYVAL          = 1             '' must start at 1! used for mangling
 	FB_PARAMMODE_BYREF
 	FB_PARAMMODE_BYDESC
 	FB_PARAMMODE_VARARG
@@ -219,8 +220,8 @@ end enum
 
 '' call conventions
 enum FB_FUNCMODE
-	FB_FUNCMODE_STDCALL			= 1             '' ditto
-	FB_FUNCMODE_STDCALL_MS						'' ms/vb-style: don't include the @n suffix
+	FB_FUNCMODE_STDCALL         = 1             '' ditto
+	FB_FUNCMODE_STDCALL_MS                      '' ms/vb-style: don't include the @n suffix
 	FB_FUNCMODE_CDECL
 	FB_FUNCMODE_PASCAL
 	FB_FUNCMODE_THISCALL
@@ -234,15 +235,15 @@ end enum
 
 '' options when adding new symbols
 enum FB_SYMBOPT
-	FB_SYMBOPT_NONE				= &h00000000
+	FB_SYMBOPT_NONE             = &h00000000
 
-	FB_SYMBOPT_PRESERVECASE		= &h00000001
-	FB_SYMBOPT_UNSCOPE			= &h00000002
-	FB_SYMBOPT_DECLARING		= &h00000004
-	FB_SYMBOPT_MOVETOGLOB		= &h00000008
-	FB_SYMBOPT_RTL				= &h00000010
-	FB_SYMBOPT_DOHASH			= &h00000020
-	FB_SYMBOPT_CREATEALIAS		= &h00000040
+	FB_SYMBOPT_PRESERVECASE     = &h00000001
+	FB_SYMBOPT_UNSCOPE          = &h00000002
+	FB_SYMBOPT_DECLARING        = &h00000004
+	FB_SYMBOPT_MOVETOGLOB       = &h00000008
+	FB_SYMBOPT_RTL              = &h00000010
+	FB_SYMBOPT_DOHASH           = &h00000020
+	FB_SYMBOPT_CREATEALIAS      = &h00000040
 	FB_SYMBOPT_NODUPCHECK       = &h00000080
 end enum
 
