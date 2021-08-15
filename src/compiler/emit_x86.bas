@@ -6891,6 +6891,30 @@ private function _isRegPreserved _
 end function
 
 '':::::
+private sub _getArgReg _
+	( _
+		byval dtype as integer, _
+		byval dclass as integer, _
+		byval argnum as integer, _
+		byref r1 as integer _
+	)
+
+	''  x86 32bit will pass arguments in registers
+	'' thiscall ECX
+	'' fastcall ECX, EDX
+
+	select case argnum
+	case 1
+		r1 = EMIT_REG_ECX
+	case 2
+		r1 = EMIT_REG_EDX
+	case else
+		r1 = INVALID
+	end select
+
+end sub
+
+'':::::
 private sub _getResultReg _
 	( _
 		byval dtype as integer, _
@@ -7290,6 +7314,7 @@ function emitGasX86_ctor _
 		@_close, _               '' emitClose()
 		@_isRegPreserved, _      '' emitIsRegPreserved()
 		@_getFreePreservedReg, _ '' emitGetFreePreservedReg()
+		@_getArgReg,           _ '' emitGetArgReg()_
 		@_getResultReg, _        '' emitGetResultReg()
 		@_procGetFrameRegName, _ '' emitProcGetFrameRegName()
 		@_procBegin, _           '' emitProcBegin()

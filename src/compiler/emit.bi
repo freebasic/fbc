@@ -304,6 +304,14 @@ type EMIT_VTBL
 		byval dtype as integer _
 	) as integer
 
+	getArgReg as sub _
+	( _
+		byval dtype as integer, _
+		byval dclass as integer, _
+		byval argnum as integer, _
+		byref r1 as integer _
+	)
+
 	getResultReg as sub _
 	( _
 		byval dtype as integer, _
@@ -881,6 +889,8 @@ declare sub emitFlush _
 #define emitIsRegPreserved( dclass, reg ) emit.vtbl.isRegPreserved( dclass, reg )
 
 #define emitGetFreePreservedReg( dclass, dtype ) emit.vtbl.getFreePreservedReg( dclass, dtype )
+
+#define emitGetArgReg( dclass, dtype, argnum, reg ) emit.vtbl.getArgReg( dclass, dtype, argnum, reg )
 
 #define emitGetResultReg( dtype, dclass, reg, reg2 ) emit.vtbl.getResultReg( dtype, dclass, reg, reg2 )
 

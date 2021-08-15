@@ -33,6 +33,7 @@ fbc: add initial support for FreeBSD on PowerPC
 - boostrap: add 'freebsd-ppc' and 'freebsd-ppc64' to bootstrap package (lenoil98)
 - fbc: add 'powerpc' and 'powerpc64' cpu families and cpu type for '-arch' command line option (lenoil98)
 - fbc: add the __FB_PPC__ intrinsic constant (lenoil98)
+- fbc: __thiscall declaration support for gcc 32-bit win32 calling g++ classes from fbc
 
 [fixed]
 - github #315: set parameters when calling SCREENCONTROL (was broken in fbc 1.08.0 due to new LONG/LONGINT SCREENCONTROL API's)

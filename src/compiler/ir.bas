@@ -54,7 +54,8 @@ sub irhlEmitPushArg _
 		byval param as FBSYMBOL ptr, _
 		byval vr as IRVREG ptr, _
 		byval udtlen as longint, _
-		byval level as integer _
+		byval level as integer, _
+		byval lreg as IRVREG ptr _ _
 	)
 
 	'' Remember for later, so during _emitCall[Ptr] we can emit the whole
@@ -63,6 +64,9 @@ sub irhlEmitPushArg _
 	arg->param = param
 	arg->vr = vr
 	arg->level = level
+
+	'' ignore udtlen, it's only used by ir-tac.bas:_emitPushArg()
+	'' ignore lreg, it's only used by ir-tac.bas:_emitPushArg()
 
 end sub
 

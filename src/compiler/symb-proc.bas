@@ -1,7 +1,7 @@
 '' symbol table module for procedures
 ''
 '' chng: sep/2004 written [v1ctor]
-''		 jan/2005 updated to use real linked-lists [v1ctor]
+''       jan/2005 updated to use real linked-lists [v1ctor]
 
 
 #include once "fb.bi"
@@ -162,7 +162,7 @@ function symbProcCalcBytesToPop( byval proc as FBSYMBOL ptr ) as longint
 	dim as longint bytestopop = 0
 	var notcdecl = (symbGetProcMode( proc ) <> FB_FUNCMODE_CDECL) and (symbGetProcMode( proc ) <> FB_FUNCMODE_THISCALL)
 
-	'' Need to pop parameters in case of stdcall/pascal, but not for cdecl
+	'' Need to pop parameters in case of stdcall/pascal/thiscall, but not for cdecl
 	if( notcdecl ) then
 		var param = symbGetProcHeadParam( proc )
 		while( param )
@@ -216,6 +216,12 @@ function symbAddProcParam _
 	proc->proc.params += 1
 
 	param->lgt = symbCalcParamLen( dtype, subtype, mode )
+
+	'' Store the argument number in the param symbol.  We could calculate it later
+	'' but it will remain constant throughout the lifetime of the parameter so
+	'' it is very convenient to cache it now
+	param->param.argnum = proc->proc.params
+
 	param->param.mode = mode
 	param->param.optexpr = NULL
 	param->param.bydescdimensions = dimensions
@@ -234,7 +240,7 @@ function symbAddProcParam _
 		end if
 	end if
 
-    function = param
+	function = param
 end function
 
 sub symbMakeParamOptional _
@@ -851,7 +857,7 @@ add_proc:
 	end if
 
 	''
-	proc->proc.mode	= mode
+	proc->proc.mode = mode
 
 	'' last compound was an EXTERN?
 	if( fbGetCompStmtId( ) = FB_TK_EXTERN ) then
@@ -1217,7 +1223,7 @@ function symbAddProcPtrFromFunction _
 
 	'' attribs to copy from the proc to the procptr
 	'' (anything needed for procptr call checking)
-	
+
 	var attribmask = FB_SYMBATTRIB_CONST '' THIS CONSTness, needed for symbCalcProcMatch() type checking
 
 	var pattribmask = FB_PROCATTRIB_RETURNBYREF '' return byref
@@ -1686,8 +1692,8 @@ private function hCalcTypesDiff _
 		byval param_ptrcnt as integer, _
 		byval arg_dtype_in as integer, _
 		byval arg_subtype as FBSYMBOL ptr, _
-	  	byval arg_expr as ASTNODE ptr, _
-	  	byval mode as FB_PARAMMODE = 0 _
+		byval arg_expr as ASTNODE ptr, _
+		byval mode as FB_PARAMMODE = 0 _
 	) as FB_OVLPROC_MATCH_SCORE
 
 	dim as integer arg_dclass = any, param_dt = any, arg_dt = any
@@ -1705,8 +1711,8 @@ private function hCalcTypesDiff _
 	'' STRING MATCHING
 	'' (F=FB_OVLPROC_FULLMATCH, H=FB_OVLPROC_HALFMATCH)
 	''
-	'' from / to -> string      zstring     zstring ptr wstring     wstring ptr  
-	'' ------------ ----------- ----------- ----------- ----------- -----------  	          
+	'' from / to -> string      zstring     zstring ptr wstring     wstring ptr
+	'' ------------ ----------- ----------- ----------- ----------- -----------
 	'' string       F-0         F-1         F-2         H-3         H-4
 	'' zstring      F-2         F-0         F-1         H-3         H-4
 	'' zstring ptr  F-2         F-1         F-0         H-3         H-4
@@ -1759,7 +1765,7 @@ private function hCalcTypesDiff _
 					'' zstring => zstring ptr
 					return FB_OVLPROC_FULLMATCH - OvlMatchScore( 0, 1 )
 				case FB_DATATYPE_WCHAR
-					'' wstring => zstring ptr 
+					'' wstring => zstring ptr
 					return FB_OVLPROC_HALFMATCH - OvlMatchScore( 0, 4 )
 				end select
 			case typeAddrOf( FB_DATATYPE_WCHAR )
@@ -1919,7 +1925,7 @@ private function hCheckOvlParam _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval param as FBSYMBOL ptr, _
-	  	byval arg_expr as ASTNODE ptr, _
+		byval arg_expr as ASTNODE ptr, _
 		byval arg_mode as integer _
 	) as FB_OVLPROC_MATCH_SCORE
 
@@ -1958,7 +1964,7 @@ private function hCheckOvlParam _
 		if( match < FB_OVLPROC_TYPEMATCH ) then
 			return FB_OVLPROC_NO_MATCH
 		end if
-	
+
 		assert( astIsVAR( arg_expr ) or astIsFIELD( arg_expr ) )
 		array = arg_expr->sym
 		assert( symbIsArray( array ) )
@@ -2237,21 +2243,21 @@ function symbFindBopOvlProc _
 	dim as FB_CALL_ARG arg1 = any, arg2 = any
 	dim as FBSYMBOL ptr proc = any
 
-   	*err_num = FB_ERRMSG_OK
+	*err_num = FB_ERRMSG_OK
 
 	'' at least one must be an UDT
-   	select case astGetDataType( l )
-   	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
+	select case astGetDataType( l )
+	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 
-   	case else
-   		'' try the 2nd one..
-   		select case astGetDataType( r )
-   		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
+	case else
+		'' try the 2nd one..
+		select case astGetDataType( r )
+		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 
-   		case else
-   			return NULL
-   		end select
-   	end select
+		case else
+			return NULL
+		end select
+	end select
 
 	'' try (l, r)
 	arg1.expr = l
@@ -2286,28 +2292,28 @@ function symbFindSelfBopOvlProc _
 	dim as FB_CALL_ARG arg1 = any
 	dim as FBSYMBOL ptr proc = any, head_proc = any
 
-   	*err_num = FB_ERRMSG_OK
+	*err_num = FB_ERRMSG_OK
 
 	'' lhs must be an UDT
-   	select case astGetDataType( l )
-   	case FB_DATATYPE_STRUCT
-   		dim as FBSYMBOL ptr subtype = astGetSubType( l )
+	select case astGetDataType( l )
+	case FB_DATATYPE_STRUCT
+		dim as FBSYMBOL ptr subtype = astGetSubType( l )
 
-   		if( subtype->udt.ext = NULL ) then
+		if( subtype->udt.ext = NULL ) then
 			return NULL
 		end if
 
-   		head_proc = symbGetUDTOpOvlTb( subtype )(op - AST_OP_SELFBASE)
+		head_proc = symbGetUDTOpOvlTb( subtype )(op - AST_OP_SELFBASE)
 
-   	'case FB_DATATYPE_CLASS
+	'case FB_DATATYPE_CLASS
 
-   	case else
-   		return NULL
-   	end select
+	case else
+		return NULL
+	end select
 
-   	if( head_proc = NULL ) then
-   		return NULL
-   	end if
+	if( head_proc = NULL ) then
+		return NULL
+	end if
 
 	'' try (l, r) -- don't pass the instance ptr
 	arg1.expr = r
@@ -2346,16 +2352,16 @@ function symbFindUopOvlProc _
 	dim as FB_CALL_ARG arg1 = any
 	dim as FBSYMBOL ptr proc = any
 
-   	*err_num = FB_ERRMSG_OK
+	*err_num = FB_ERRMSG_OK
 
 	'' arg must be an UDT
-   	select case astGetDataType( l )
-   	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
+	select case astGetDataType( l )
+	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 
-   	case else
-   		'' note: the CAST op shouldn't be passed to this function
-   		return NULL
-   	end select
+	case else
+		'' note: the CAST op shouldn't be passed to this function
+		return NULL
+	end select
 
 	arg1.expr = l
 	arg1.mode = INVALID
@@ -2383,28 +2389,28 @@ function symbFindSelfUopOvlProc _
 
 	dim as FBSYMBOL ptr proc = any, head_proc = any
 
-   	*err_num = FB_ERRMSG_OK
+	*err_num = FB_ERRMSG_OK
 
 	'' lhs must be an UDT
-   	select case astGetDataType( l )
-   	case FB_DATATYPE_STRUCT
-   		dim as FBSYMBOL ptr subtype = astGetSubType( l )
+	select case astGetDataType( l )
+	case FB_DATATYPE_STRUCT
+		dim as FBSYMBOL ptr subtype = astGetSubType( l )
 
-   		if( subtype->udt.ext = NULL ) then
+		if( subtype->udt.ext = NULL ) then
 			return NULL
 		end if
 
-   		head_proc = symbGetUDTOpOvlTb( subtype )(op - AST_OP_SELFBASE)
+		head_proc = symbGetUDTOpOvlTb( subtype )(op - AST_OP_SELFBASE)
 
-   	'case FB_DATATYPE_CLASS
+	'case FB_DATATYPE_CLASS
 
-   	case else
-   		return NULL
-   	end select
+	case else
+		return NULL
+	end select
 
-   	if( head_proc = NULL ) then
-   		return NULL
-   	end if
+	if( head_proc = NULL ) then
+		return NULL
+	end if
 
 	'' try (l) -- don't pass the instance ptr
 
@@ -2447,7 +2453,7 @@ private function hCheckCastOvl _
 
 	'' same types?
 	if( typeGetDtAndPtrOnly( proc_dtype ) = typeGetDtAndPtrOnly( to_dtype ) ) then
-		
+
 		'' same subtype?
 		if( proc_subtype = to_subtype ) then
 
@@ -2506,29 +2512,29 @@ function symbFindCastOvlProc _
 
 	dim as FBSYMBOL ptr proc_head = any
 
-   	*err_num = FB_ERRMSG_OK
+	*err_num = FB_ERRMSG_OK
 
 	'' arg must be an UDT
-   	select case astGetDataType( l )
-   	case FB_DATATYPE_STRUCT
-   		dim as FBSYMBOL ptr subtype = astGetSubType( l )
-   		if( subtype = NULL ) then
-   			return NULL
-   		end if
-
-   		if( subtype->udt.ext = NULL ) then
+	select case astGetDataType( l )
+	case FB_DATATYPE_STRUCT
+		dim as FBSYMBOL ptr subtype = astGetSubType( l )
+		if( subtype = NULL ) then
 			return NULL
 		end if
 
-   		proc_head = symbGetUDTOpOvlTb( subtype )(AST_OP_CAST - AST_OP_SELFBASE)
+		if( subtype->udt.ext = NULL ) then
+			return NULL
+		end if
 
-   	case else
-   		return NULL
-   	end select
+		proc_head = symbGetUDTOpOvlTb( subtype )(AST_OP_CAST - AST_OP_SELFBASE)
 
-   	if( proc_head = NULL ) then
-   		return NULL
-   	end if
+	case else
+		return NULL
+	end select
+
+	if( proc_head = NULL ) then
+		return NULL
+	end if
 
 	dim as FBSYMBOL ptr p = any, proc = any, closest_proc = any
 	dim as FB_OVLPROC_MATCH_SCORE matchscore = any, max_matchscore = any
@@ -2546,8 +2552,8 @@ function symbFindCastOvlProc _
 
 			matchscore = hCheckCastOvl( proc, to_dtype, to_subtype, is_explicit )
 			if( matchscore > max_matchscore ) then
-		   		closest_proc = proc
-		   		max_matchscore = matchscore
+				closest_proc = proc
+				max_matchscore = matchscore
 				matchcount = 1
 
 			'' same? ambiguity..
@@ -2572,8 +2578,8 @@ function symbFindCastOvlProc _
 				if( symbGetType( proc ) <= FB_DATATYPE_DOUBLE ) then
 					'' more precise than the last?
 					if( symbGetType( proc ) > to_dtype ) then
-		   				closest_proc = proc
-		   				to_dtype = symbGetType( proc )
+						closest_proc = proc
+						to_dtype = symbGetType( proc )
 					end if
 				end if
 			end if
@@ -2614,17 +2620,20 @@ function symbFindCtorOvlProc _
 		byval err_num as FB_ERRMSG ptr _
 	) as FBSYMBOL ptr
 
- 	dim as FB_CALL_ARG arg1 = any
+	dim as FB_CALL_ARG arg1 = any
 
- 	'' don't pass the instance ptr
- 	arg1.expr = expr
- 	arg1.mode = arg_mode
- 	arg1.next = NULL
+	'' don't pass the instance ptr
+	arg1.expr = expr
+	arg1.mode = arg_mode
+	arg1.next = NULL
 
- 	function = symbFindClosestOvlProc( symbGetCompCtorHead( sym ), _
- 								   	   1, _
- 								   	   @arg1, _
- 								   	   err_num )
+	function = symbFindClosestOvlProc _
+		( _
+			symbGetCompCtorHead( sym ), _
+			1, _
+			@arg1, _
+			err_num _
+		)
 
 end function
 
@@ -3098,7 +3107,7 @@ function symbGetFullProcName( byval proc as FBSYMBOL ptr ) as zstring ptr
 	loop
 
 	if( symbIsConstructor( proc ) ) then
-	 	res += "constructor"
+		res += "constructor"
 	elseif( symbIsDestructor1( proc ) ) then
 		res += "destructor"
 	elseif( symbIsDestructor0( proc ) ) then

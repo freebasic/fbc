@@ -83,6 +83,7 @@ declare sub hFlushSTACK _
 	( _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
+		byval vr as IRVREG ptr, _
 		byval ex as integer _
 	)
 
@@ -235,7 +236,7 @@ end sub
 
 		dt = typeGet( vreg->dtype )
 		if( dt = FB_DATATYPE_POINTER ) then
-			dt = FB_DATATYPE_ULONG
+			dt = FB_DATATYPE_UINT
 		end if
 
 		dc = symb_dtypeTB(dt).class
@@ -552,10 +553,11 @@ end sub
 private sub _emitStack _
 	( _
 		byval op as integer, _
-		byval v1 as IRVREG ptr _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr _
 	)
 
-	_emit( op, v1, NULL, NULL )
+	_emit( op, v1, v2, NULL )
 
 end sub
 
@@ -565,11 +567,35 @@ private sub _emitPushArg _
 		byval param as FBSYMBOL ptr, _
 		byval vr as IRVREG ptr, _
 		byval udtlen as longint, _
-		byval level as integer _
+		byval level as integer, _
+		byval lreg as IRVREG ptr _
 	)
 
+	'' passing argument in register?
+	if( lreg <> NULL ) then
+		dim as integer vr_dclass = any, vr_dtype = any, vr_typ = any
+		dim as integer reg1 = INVALID
+
+		hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
+		emitGetArgReg( vr_dclass, vr_typ, param->param.argnum, reg1 )
+
+		if( reg1 <> INVALID ) then
+			lreg->reg = reg1
+			if( irIsREG( vr ) ) then
+				lreg->dtype = vr->dtype
+			end if
+			regTB(vr_dclass)->ensure( regTB(vr_dclass), lreg, NULL, typeGetSize( vr_dtype ) )
+
+			'' Even if the argument is to be passed in register, still use the AST_OP_PUSH operation:
+			'' The proper register will get allocated when we flush the argument stack
+			_emitStack( AST_OP_PUSH, vr, lreg )
+
+			exit sub
+		end if
+	end if
+
 	if( udtlen = 0 ) then
-		_emitStack( AST_OP_PUSH, vr )
+		_emitStack( AST_OP_PUSH, vr, NULL )
 	else
 		_emit( AST_OP_PUSHUDT, vr, NULL, NULL, NULL, udtlen )
 	end if
@@ -1379,7 +1405,7 @@ private sub _flush static
 			hFlushCONVERT( op, v1, v2 )
 
 		case AST_NODECLASS_STACK
-			hFlushSTACK( op, v1, t->ex2 )
+			hFlushSTACK( op, v1, v2, t->ex2 )
 
 		case AST_NODECLASS_CALL
 			hFlushCALL( op, t->ex1, t->ex2, v1, vr )
@@ -1717,6 +1743,7 @@ private sub hFlushSTACK _
 	( _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
+		byval vr as IRVREG ptr, _
 		byval ex as integer _
 	) static
 
@@ -1733,6 +1760,7 @@ private sub hFlushSTACK _
 	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
 
 	hLoadIDX( v1 )
+	hLoadIDX( vr )
 
 	'' load only if it's a reg (x86 assumption)
 	if( v1_typ = IR_VREGTYPE_REG ) then
@@ -1748,7 +1776,11 @@ private sub hFlushSTACK _
 	''
 	select case op
 	case AST_OP_PUSH
-		emitPUSH( v1 )
+		if( vr ) then
+			emitLOAD( vr, v1 )
+		else
+			emitPUSH( v1 )
+		end if
 	case AST_OP_PUSHUDT
 		emitPUSHUDT( v1, ex )
 	case AST_OP_POP
