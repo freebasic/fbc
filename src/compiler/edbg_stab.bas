@@ -215,9 +215,9 @@ sub edbgEmitHeader( byval filename as zstring ptr )
 		exit sub
 	end if
 
-	ctx.typecnt 	= 1
-	ctx.label 		= NULL
-	ctx.incfile 	= NULL
+	ctx.typecnt     = 1
+	ctx.label       = NULL
+	ctx.incfile     = NULL
 
 	'' ctx.filename is never used
 	ctx.filename   = *filename

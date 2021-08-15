@@ -10,19 +10,19 @@
 #include once "ir.bi"
 
 type FB_MANGLEABBR
-	idx				as integer
-	dtype			as integer
-	subtype			as FBSYMBOL ptr
+	idx             as integer
+	dtype           as integer
+	subtype         as FBSYMBOL ptr
 end type
 
 type FB_MANGLECTX
-	flist			as TFLIST					'' of FB_MANGLEABBR
-	cnt				as integer
+	flist               as TFLIST                   '' of FB_MANGLEABBR
+	cnt                 as integer
 
-	tempstr			as zstring * 6 + 10 + 1
-	uniqueidcount		as integer
-	uniquelabelcount	as integer
-	profilelabelcount	as integer
+	tempstr             as zstring * 6 + 10 + 1
+	uniqueidcount       as integer
+	uniquelabelcount    as integer
+	profilelabelcount   as integer
 end type
 
 const FB_INITMANGARGS = 96
@@ -101,7 +101,7 @@ function symbMakeProfileLabelName( ) as zstring ptr
 end function
 
 function symbGetDBGName( byval sym as FBSYMBOL ptr ) as zstring ptr
-    '' GDB will demangle the symbols automatically
+	'' GDB will demangle the symbols automatically
 	if( hDoCppMangling( sym ) ) then
 		select case as const symbGetClass( sym )
 		'' but UDT's, they shouldn't include any mangling at all..
@@ -277,15 +277,15 @@ private function hAbbrevAdd _
 
 	dim as FB_MANGLEABBR ptr n = any
 
-    n = flistNewItem( @ctx.flist )
-    n->idx = ctx.cnt
+	n = flistNewItem( @ctx.flist )
+	n->idx = ctx.cnt
 
-    n->dtype = dtype
-    n->subtype = subtype
+	n->dtype = dtype
+	n->subtype = subtype
 
-    ctx.cnt += 1
+	ctx.cnt += 1
 
-    function = n
+	function = n
 end function
 
 private sub hAbbrevGet( byref mangled as string, byval idx as integer )
@@ -667,7 +667,7 @@ private function hDoCppMangling( byval sym as FBSYMBOL ptr ) as integer
 	if( sym->class = FB_SYMBCLASS_PROC ) then
 		'' overloaded? (this will handle operators too)
 		if( symbIsOverloaded( sym ) ) then
-    		return TRUE
+			return TRUE
 		end if
 	end if
 
@@ -1249,7 +1249,7 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 		'' not just the ones with @N suffix due the leading underscore handling
 		select case( env.clopt.target )
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
-			if(	quote_mangled_name = false ) then
+			if( quote_mangled_name = false ) then
 				mangled += """"
 				quote_mangled_name = true
 			end if
@@ -1257,7 +1257,7 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 			'' chr(1) will escape the name so it's passed through to assembler as-is
 			mangled += chr(1)
 		end select
-		
+
 	end if
 
 	'' Win32 underscore prefix
