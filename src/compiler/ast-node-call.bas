@@ -145,6 +145,22 @@ private sub hCopyStringsBack( byval f as ASTNODE ptr )
 	loop
 end sub
 
+private function hMaybePassArgInReg _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval argnum as integer _
+	) as integer
+
+	function = FALSE
+
+	if( symbGetProcMode( proc ) = FB_FUNCMODE_THISCALL ) then
+		if( argnum = 1 ) then
+			function = TRUE
+		end if
+	end if
+
+end function
+
 function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	static as integer reclevel = 0
 	'' totalstackbytes is the sum of all args and padding currently on the stack
@@ -155,7 +171,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	dim as FBSYMBOL ptr proc = any
 	dim as integer bytestopop = any, bytestoalign = any, argbytes = any
 	dim as integer prev_totalstackbytes = totalstackbytes
-	dim as IRVREG ptr vr = any, v1 = any
+	dim as IRVREG ptr vr = any, v1 = any, lreg = NULL
 
 	'' ARGs can contain CALLs themselves, then astLoadCALL() will recurse
 	reclevel += 1
@@ -172,7 +188,9 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		arg = n->r
 		while( arg )
 			l = arg->l
-			argbytes += symbCalcArgLen( l->dtype, l->subtype, arg->arg.mode )
+			if( hMaybePassArgInReg( proc, arg->sym->param.argnum ) = FALSE ) then
+				argbytes += symbCalcArgLen( l->dtype, l->subtype, arg->arg.mode )
+			end if
 			arg = arg->r
 		wend
 
@@ -204,10 +222,14 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 
 		'' cdecl: pushed arguments must be popped by caller
 		'' pascal/stdcall: callee does it instead
-		'' thiscall: could be either depending on target !!!TODO!!!
-		argbytes = symbCalcArgLen( l->dtype, l->subtype, arg->arg.mode )
-		if( symbGetProcMode( proc ) = FB_FUNCMODE_CDECL ) then
-			bytestopop += argbytes
+		'' thiscall: callee does it in gcc 32-bit win32
+		if( hMaybePassArgInReg( proc, arg->sym->param.argnum ) ) then
+			argbytes = 0
+		else
+			argbytes = symbCalcArgLen( l->dtype, l->subtype, arg->arg.mode )
+			if( symbGetProcMode( proc ) = FB_FUNCMODE_CDECL ) then
+				bytestopop += argbytes
+			end if
 		end if
 
 		if( l->class = AST_NODECLASS_CONV ) then
@@ -219,7 +241,15 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		astDelNode( l )
 
 		if( ast.doemit ) then
-			irEmitPUSHARG( arg->sym, v1, arg->arg.lgt, reclevel, NULL ) '' !!! thiscall needs register
+			if( hMaybePassArgInReg( proc, arg->sym->param.argnum ) ) then
+				lreg = irAllocVREG( typeGetDtAndPtrOnly( l->dtype ), l->subtype )
+				'' regFamily should be irrelevent for thiscall
+				'' lreg->regFamily = IR_REG_FPU_STACK | IR_REG_SSE
+				lreg->dtype = l->dtype
+			else
+				lreg = NULL
+			end if
+			irEmitPUSHARG( arg->sym, v1, arg->arg.lgt, reclevel, lreg )
 		end if
 		totalstackbytes += argbytes
 
