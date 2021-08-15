@@ -219,7 +219,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		astDelNode( l )
 
 		if( ast.doemit ) then
-			irEmitPUSHARG( arg->sym, v1, arg->arg.lgt, reclevel )
+			irEmitPUSHARG( arg->sym, v1, arg->arg.lgt, reclevel, NULL ) '' !!! thiscall needs register
 		end if
 		totalstackbytes += argbytes
 
@@ -250,7 +250,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 			v1 = astLoad( l )
 			'' (passing NULL param, because no PARAM symbol exists
 			'' for the hidden struct result param)
-			irEmitPUSHARG( NULL, v1, 0, reclevel )
+			irEmitPUSHARG( NULL, v1, 0, reclevel, NULL )
 		end if
 		totalstackbytes += env.pointersize
 	end if

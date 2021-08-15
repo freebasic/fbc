@@ -567,7 +567,8 @@ private sub _emitPushArg _
 		byval param as FBSYMBOL ptr, _
 		byval vr as IRVREG ptr, _
 		byval udtlen as longint, _
-		byval level as integer _
+		byval level as integer, _
+		byval lreg as IRVREG ptr _
 	)
 
 	if( udtlen = 0 ) then

@@ -203,7 +203,8 @@ type IR_VTBL
 		byval param as FBSYMBOL ptr, _
 		byval vr as IRVREG ptr, _
 		byval udtlen as longint, _
-		byval level as integer _
+		byval level as integer, _
+		byval lreg as IRVREG ptr _
 	)
 
 	emitAsmLine as sub( byval asmtokenhead as ASTASMTOK ptr )
@@ -558,7 +559,7 @@ declare sub vregDump( byval v as IRVREG ptr )
 
 #define irEmitRETURN(bytestopop) ir.vtbl.emitReturn( bytestopop )
 
-#define irEmitPUSHARG( param, vr, plen, level ) ir.vtbl.emitPushArg( param, vr, plen, level )
+#define irEmitPUSHARG( param, vr, plen, level, lreg ) ir.vtbl.emitPushArg( param, vr, plen, level, lreg )
 
 #define irEmitAsmLine( asmtokenhead ) ir.vtbl.emitAsmLine( asmtokenhead )
 
