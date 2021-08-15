@@ -313,12 +313,12 @@ ifneq ($(filter arm%,$(TARGET_ARCH)),)
   TARGET_ARCH := arm
 endif
 
-# Normalize TARGET_ARCH to arm
+# Normalize TARGET_ARCH to powerpc
 ifneq ($(filter powerpc,$(TARGET_ARCH)),)
   TARGET_ARCH := powerpc
 endif
 
-# Normalize TARGET_ARCH to arm
+# Normalize TARGET_ARCH to powerpc64
 ifneq ($(filter powerpc%,$(TARGET_ARCH)),)
   TARGET_ARCH := powerpc64
 endif

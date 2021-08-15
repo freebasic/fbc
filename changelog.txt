@@ -1,5 +1,7 @@
 Version 1.09.0
 
+fbc: add initial support for FreeBSD on PowerPC
+
 [changed]
 - github #314: fbc: pass '-T scriptfile' option to linker LD and add 'INSERT AFTER .data;' to fbextra.x linker script to quiet warning on LD version 2.36 and higher
 - gas64: .a64 replaced by .asm to be coherent with documentation
@@ -27,6 +29,10 @@ Version 1.09.0
 - added objinfo support for ELF files on freebsd
 - PROCPTR( identifier, type ) syntax to allow getting procedure pointer for based on sub/function type
 - sf.net #666: overload matching for UDT's with CAST() operators as [w|z]string type and implicit conversions
+- makefile: add initial support for powerpc and powerpc64 on FreeBSD (lenoil98)
+- boostrap: add 'freebsd-ppc' and 'freebsd-ppc64' to bootstrap package (lenoil98)
+- fbc: add 'powerpc' and 'powerpc64' cpu families and cpu type for '-arch' command line option (lenoil98)
+- fbc: add the __FB_PPC__ intrinsic constant (lenoil98)
 
 [fixed]
 - github #315: set parameters when calling SCREENCONTROL (was broken in fbc 1.08.0 due to new LONG/LONGINT SCREENCONTROL API's)
