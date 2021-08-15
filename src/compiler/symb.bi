@@ -555,7 +555,8 @@ type FBS_PARAM
 	var				as FBSYMBOL_ ptr			'' link to decl var in func bodies
 	optexpr			as ASTNODE_ ptr				'' default value
 	bydescdimensions	as integer
-	bydescrealsubtype	as FBSYMBOL_ ptr  '' bydesc array descriptor type
+	bydescrealsubtype	as FBSYMBOL_ ptr        '' bydesc array descriptor type
+	argnum			as integer                  '' argument number (1 is first)
 end type
 
 '' function

@@ -162,7 +162,7 @@ function symbProcCalcBytesToPop( byval proc as FBSYMBOL ptr ) as longint
 	dim as longint bytestopop = 0
 	var notcdecl = (symbGetProcMode( proc ) <> FB_FUNCMODE_CDECL) and (symbGetProcMode( proc ) <> FB_FUNCMODE_THISCALL)
 
-	'' Need to pop parameters in case of stdcall/pascal, but not for cdecl
+	'' Need to pop parameters in case of stdcall/pascal/thiscall, but not for cdecl
 	if( notcdecl ) then
 		var param = symbGetProcHeadParam( proc )
 		while( param )
@@ -216,6 +216,12 @@ function symbAddProcParam _
 	proc->proc.params += 1
 
 	param->lgt = symbCalcParamLen( dtype, subtype, mode )
+
+	'' Store the argument number in the param symbol.  We could calculate it later
+	'' but it will remain constant throughout the lifetime of the parameter so
+	'' it is very convenient to cache it now
+	param->param.argnum = proc->proc.params
+
 	param->param.mode = mode
 	param->param.optexpr = NULL
 	param->param.bydescdimensions = dimensions
