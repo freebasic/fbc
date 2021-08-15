@@ -571,6 +571,29 @@ private sub _emitPushArg _
 		byval lreg as IRVREG ptr _
 	)
 
+	'' passing argument in register?
+	if( lreg <> NULL ) then
+		dim as integer vr_dclass = any, vr_dtype = any, vr_typ = any
+		dim as integer reg1 = INVALID
+
+		hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
+		emitGetArgReg( vr_dclass, vr_typ, param->param.argnum, reg1 )
+
+		if( reg1 <> INVALID ) then
+			lreg->reg = reg1
+			if( irIsREG( vr ) ) then
+				lreg->dtype = vr->dtype
+			end if
+			regTB(vr_dclass)->ensure( regTB(vr_dclass), lreg, NULL, typeGetSize( vr_dtype ) )
+
+			'' Even if the argument is to be passed in register, still use the AST_OP_PUSH operation:
+			'' The proper register will get allocated when we flush the argument stack
+			_emitStack( AST_OP_PUSH, vr, lreg )
+
+			exit sub
+		end if
+	end if
+
 	if( udtlen = 0 ) then
 		_emitStack( AST_OP_PUSH, vr, NULL )
 	else
