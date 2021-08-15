@@ -304,6 +304,10 @@ function fbcQueryGcc( byref options as string ) as string
 		path += " -m32"
 	case FB_CPUFAMILY_X86_64
 		path += " -m64"
+	case FB_CPUFAMILY_PPC
+		path += " -m32"
+	case FB_CPUFAMILY_PPC64
+		path += " -m64"
 	end select
 
 	path += options
@@ -365,6 +369,10 @@ private function fbcBuildPathToLibFile( byval file as zstring ptr ) as string
 	case FB_CPUFAMILY_X86
 		path += " -m32"
 	case FB_CPUFAMILY_X86_64
+		path += " -m64"
+	case FB_CPUFAMILY_PPC
+		path += " -m32"
+	case FB_CPUFAMILY_PPC64
 		path += " -m64"
 	end select
 
@@ -1406,7 +1414,9 @@ dim shared as FBGNUARCHINFO gnuarchmap(0 to ...) => _
 	(@"armv6"  , FB_CPUTYPE_ARMV6          ), _
 	(@"armv7a" , FB_CPUTYPE_ARMV7A         ), _
 	(@"arm"    , FB_DEFAULT_CPUTYPE_ARM    ), _
-	(@"aarch64", FB_DEFAULT_CPUTYPE_AARCH64)  _
+	(@"aarch64", FB_DEFAULT_CPUTYPE_AARCH64), _
+	(@"powerpc", FB_DEFAULT_CPUTYPE_PPC    ), _
+	(@"powerpc64", FB_DEFAULT_CPUTYPE_PPC64)  _
 }
 
 '' Identify OS (FB_COMPTARGET_*) and architecture (FB_CPUTYPE_*) in a GNU
@@ -3101,13 +3111,27 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			ln += "-m32 "
 		case FB_CPUFAMILY_X86_64
 			ln += "-m64 "
+		case FB_CPUFAMILY_PPC
+			ln += "-m32 "
+		case FB_CPUFAMILY_PPC64
+			ln += "-m64 "
 		end select
 
 		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
-			if( fbc.cputype_is_native ) then
-				ln += "-march=native "
+            '' GCC doesn't recognize the -march option and PowerPC combination and recommendeds
+            '' the -mcpu option be used for PowerPC.
+			if( (fbGetCpuFamily( ) = FB_CPUFAMILY_PPC) orelse (fbGetCpuFamily( ) = FB_CPUFAMILY_PPC64) ) then
+				if( fbc.cputype_is_native ) then
+					ln += "-mcpu=native "
+				else
+					ln += "-mcpu=" + *fbGetGccArch( ) + " "
+				end if
 			else
-				ln += "-march=" + *fbGetGccArch( ) + " "
+				if( fbc.cputype_is_native ) then
+					ln += "-march=native "
+				else
+					ln += "-march=" + *fbGetGccArch( ) + " "
+				end if
 			end if
 		end if
 
@@ -3202,7 +3226,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			'' -march=name
 			'' Specify the name of the target architecture and, 
 			'' optionally, one or more feature modifiers. This option 
-			'' has the form ‘-march=arch{+[no]feature}*’.
+			'' has the form Â‘-march=arch{+[no]feature}*Â’.
 			'' 
 			'' The permissible values for arch are 
 			'' 'armv8-a'
@@ -3231,6 +3255,10 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			'' processors implementing the target architecture.
 
 			ln += "-march=armv8-a "
+		case FB_CPUFAMILY_PPC
+			ln += "-mcpu=powerpc "
+		case FB_CPUFAMILY_PPC64
+			ln += "-mcpu=powerpc64 "
 		end select
 
 		if( fbGetOption( FB_COMPOPT_PIC ) ) then

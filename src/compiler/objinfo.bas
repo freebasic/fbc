@@ -190,6 +190,8 @@ const EM_386 = 3
 const EM_X86_64 = &h3e
 const EM_ARM32 = &h28
 const EM_AARCH64 = &hb7
+const EM_PPC = &h14
+const EM_PPC64 = &h15
 
 '' ELF section headers
 type ELF32_SH field = 1
@@ -875,6 +877,12 @@ private sub hLoadFbctinfFromObj( )
 		case FB_CPUFAMILY_ARM
 			INFO( "reading arm32 ELF: " + parser.filename )
 			hLoadFbctinfFromELF32_H( EM_ARM32 )
+		case FB_CPUFAMILY_PPC64
+			INFO( "reading powerpc64 ELF: " + parser.filename )
+			hLoadFbctinfFromELF64_H( EM_PPC64 )
+		case FB_CPUFAMILY_PPC
+			INFO( "reading powerpc32 ELF: " + parser.filename )
+			hLoadFbctinfFromELF32_H( EM_PPC )
 		end select
 	elseif( fbTargetSupportsMachO( ) ) then
 		INFO( "reading Mach-O: " + parser.filename )

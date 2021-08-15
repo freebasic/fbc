@@ -234,6 +234,8 @@ dim shared as FBCPUFAMILYINFO cpufamilyinfo(0 to FB_CPUFAMILY__COUNT-1) = _
 	(@"x86_64" , FB_DEFAULT_CPUTYPE_X86_64 ), _
 	(@"arm"    , FB_DEFAULT_CPUTYPE_ARM    ), _
 	(@"aarch64", FB_DEFAULT_CPUTYPE_AARCH64), _
+	(@"powerpc"  , FB_DEFAULT_CPUTYPE_PPC), _
+	(@"powerpc64", FB_DEFAULT_CPUTYPE_PPC64), _
 	(@"asmjs"  , FB_DEFAULT_CPUTYPE_ASMJS  )  _
 }
 
@@ -263,6 +265,8 @@ dim shared as FBCPUTYPEINFO cputypeinfo(0 to FB_CPUTYPE__COUNT-1) = _
 	( NULL       , @"armv6"        , FB_CPUFAMILY_ARM    , 32 ), _ '' FB_CPUTYPE_ARMV6
 	( NULL       , @"armv7-a"      , FB_CPUFAMILY_ARM    , 32 ), _ '' FB_CPUTYPE_ARMV7A
 	( @"armv8-a" , @"aarch64"      , FB_CPUFAMILY_AARCH64, 64 ), _ '' FB_CPUTYPE_AARCH64
+	( NULL       , @"powerpc"      , FB_CPUFAMILY_PPC    , 32 ), _ '' FB_CPUTYPE_PPC
+	( NULL       , @"powerpc64"    , FB_CPUFAMILY_PPC64  , 64 ), _ '' FB_CPUTYPE_PPC64
 	( NULL       , @"asmjs"        , FB_CPUFAMILY_ASMJS	 , 32 )  _ '' FB_CPUTYPE_ASMJS
 }
 
@@ -845,6 +849,8 @@ private function hGetTargetId _
 	''    linux-aarch64
 	''    freebsd-x86
 	''    freebsd-x86_64
+	''    freebsd-ppc
+	''    freebsd-ppc64
 	''    ...
 
 	var cpufamily = cputypeinfo(cputype).family
@@ -937,7 +943,7 @@ function fbIdentifyFbcArch( byref fbcarch as string ) as integer
 		'' default, which is always safe for the host.
 		function = FB_DEFAULT_CPUTYPE
 
-		#if (not defined( __FB_64BIT__ )) and defined( __FB_X86__ )
+		#if (not defined( __FB_64BIT__ )) and defined( __FB_X86__ ) and (not defined(__FB_PPC__))
 			select case( fb_CpuDetect( ) shr 28 )
 			case 3 : function = FB_CPUTYPE_386
 			case 4 : function = FB_CPUTYPE_486
@@ -1580,6 +1586,12 @@ function fbGetBackendValistType _
 
 		case FB_CPUFAMILY_AARCH64
 			typedef = FB_CVA_LIST_BUILTIN_AARCH64
+
+		case FB_CPUFAMILY_PPC
+			typedef = FB_CVA_LIST_BUILTIN_POINTER
+
+		case FB_CPUFAMILY_PPC64
+			typedef = FB_CVA_LIST_BUILTIN_POINTER
 
 		case else
 			typedef = FB_CVA_LIST_BUILTIN_POINTER
