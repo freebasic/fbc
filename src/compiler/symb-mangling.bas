@@ -1218,7 +1218,7 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 	docpp = hDoCppMangling( sym )
 
 	'' Should the @N win32 stdcall suffix be added for this procedure?
-	'' * only for stdcall, not stdcallms/cdecl/pascal
+	'' * only for stdcall, not stdcallms/cdecl/pascal/thiscall
 	''   (that also makes it win32-only)
 	'' * only on x86, since these calling conventions matter there only
 	'' * only for ASM/LLVM backends, but not for the C backend, because gcc
