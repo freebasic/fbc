@@ -249,7 +249,8 @@ type IR_VTBL
 	emitStack as sub _
 	( _
 		byval op as integer, _
-		byval v1 as IRVREG ptr _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr _
 	)
 
 	emitAddr as sub _
@@ -585,7 +586,7 @@ declare sub vregDump( byval v as IRVREG ptr )
 
 #define irEmitLOADRES(v1, vr) ir.vtbl.emitLoadRes( v1, vr )
 
-#define irEmitSTACK(op, v1) ir.vtbl.emitStack( op, v1 )
+#define irEmitSTACK(op, v1, v2) ir.vtbl.emitStack( op, v1, v2 )
 
 #define irEmitPUSH(v1) ir.vtbl.emitStack( AST_OP_PUSH, v1 )
 

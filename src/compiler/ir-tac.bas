@@ -83,6 +83,7 @@ declare sub hFlushSTACK _
 	( _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
+		byval vr as IRVREG ptr, _
 		byval ex as integer _
 	)
 
@@ -235,7 +236,7 @@ end sub
 
 		dt = typeGet( vreg->dtype )
 		if( dt = FB_DATATYPE_POINTER ) then
-			dt = FB_DATATYPE_ULONG
+			dt = FB_DATATYPE_UINT
 		end if
 
 		dc = symb_dtypeTB(dt).class
@@ -552,10 +553,11 @@ end sub
 private sub _emitStack _
 	( _
 		byval op as integer, _
-		byval v1 as IRVREG ptr _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr _
 	)
 
-	_emit( op, v1, NULL, NULL )
+	_emit( op, v1, v2, NULL )
 
 end sub
 
@@ -569,7 +571,7 @@ private sub _emitPushArg _
 	)
 
 	if( udtlen = 0 ) then
-		_emitStack( AST_OP_PUSH, vr )
+		_emitStack( AST_OP_PUSH, vr, NULL )
 	else
 		_emit( AST_OP_PUSHUDT, vr, NULL, NULL, NULL, udtlen )
 	end if
@@ -1379,7 +1381,7 @@ private sub _flush static
 			hFlushCONVERT( op, v1, v2 )
 
 		case AST_NODECLASS_STACK
-			hFlushSTACK( op, v1, t->ex2 )
+			hFlushSTACK( op, v1, v2, t->ex2 )
 
 		case AST_NODECLASS_CALL
 			hFlushCALL( op, t->ex1, t->ex2, v1, vr )
@@ -1717,6 +1719,7 @@ private sub hFlushSTACK _
 	( _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
+		byval vr as IRVREG ptr, _
 		byval ex as integer _
 	) static
 
@@ -1733,6 +1736,7 @@ private sub hFlushSTACK _
 	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
 
 	hLoadIDX( v1 )
+	hLoadIDX( vr )
 
 	'' load only if it's a reg (x86 assumption)
 	if( v1_typ = IR_VREGTYPE_REG ) then
@@ -1748,7 +1752,11 @@ private sub hFlushSTACK _
 	''
 	select case op
 	case AST_OP_PUSH
-		emitPUSH( v1 )
+		if( vr ) then
+			emitLOAD( vr, v1 )
+		else
+			emitPUSH( v1 )
+		end if
 	case AST_OP_PUSHUDT
 		emitPUSHUDT( v1, ex )
 	case AST_OP_POP
