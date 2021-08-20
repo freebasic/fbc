@@ -531,9 +531,13 @@ end function
 '' FB_OVLPROC_HALFMATCH              => compatible, same data type class
 '' FB_OVLPROC_HALFMATCH - rank       => compatible, distance between numeric types
 '' FB_OVLPROC_HALFMATCH - stringrank => compatible, distance between string types (w<->z conversion)
-'' FB_OVLPROC_CONVMATCH - struct     => compatible, UDT ctor
 '' FB_OVLPROC_CASTMATCH              => compatible, implicit cast required (udt and string casts)
+''                                      TYPEMATCH is changed to a CASTMATCH if a CAST operator had to be
+''                                      invoked to allow a match
+'' FB_OVLPROC_CASTMATCH - struct     => compatible, UDT ctor
 '' FB_OVLPROC_CONVMATCH              => compatible, implicit conversion required (udt and string conversions)
+''                                      HALFMATCH is changed to CONVMATCH if a CAST operator had to be 
+''                                      invoked to allow a match
 '' FB_OVLPROC_CONVMATCH - struct     => compatible, lowest UDT conv/cast
 '' FB_OVLPROC_LOWEST_MATCH           => compatible, lowest scoring parameter
 '' FB_OVLPROC_NO_MATCH               => incompatible

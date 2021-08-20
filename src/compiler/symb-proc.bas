@@ -1658,7 +1658,7 @@ end function
 		if( proc <> NULL ) then
 			'' calculate a new match score based on the CAST() return type rank
 			'' we can't keep the FB_OVLPROC_TYPEMATCH and FB_OVLPROC_HALFMATCH
-			'' level of match scores because we don't wnat the score to interfere
+			'' level of match scores because we don't want the score to interfere
 			'' with non-cast and non-conversion scores.  Instead, reduce the scores:
 			'' FB_OVLPROC_TYPEMATCH => FB_OVLPROC_CASTMATCH
 			'' FB_OVLPROC_HALFMATCH => FB_OVLPROC_CONVMATCH
