@@ -153,13 +153,17 @@ private function hMaybePassArgInReg _
 
 	function = FALSE
 
-	'' only allow thiscall in 32-bit windows
-	'' and ignore for every other target
-	if( fbIs64bit( ) = FALSE ) then
-		if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_WIN32 ) then
-			if( symbGetProcMode( proc ) = FB_FUNCMODE_THISCALL ) then
-				if( argnum = 1 ) then
-					function = TRUE
+	'' only allow thiscall in 32-bit x86 and ignore for other targets
+	'' !!!TODO!!! - It would be better if the parser removed the thiscall calling
+	'' convention in all combinations of target/arch before here and we only have
+	'' asserts() here in the debug version with a simple check on FB_FUNCMODE_THISCALL
+	if( symbGetProcMode( proc ) = FB_FUNCMODE_THISCALL ) then
+		if( env.clopt.backend = FB_BACKEND_GAS ) then
+			if( fbIs64bit( ) = FALSE ) then
+				if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
+					if( argnum = 1 ) then
+						function = TRUE
+					end if
 				end if
 			end if
 		end if
