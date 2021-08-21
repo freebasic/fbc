@@ -1,10 +1,20 @@
 #!/bin/bash
 
+set -e
+
+# TODO: select gas or gas64 based on host
+
 function chk() {
-	rm -f $1-cpp.o
-	make -f $1.bmk CFLAGS="-m64 -O0"
-	fbc -g -exx $1-fbc.bas $1-cpp.o -x $1-fbc.exe $2
-	./$1-fbc.exe
+	testname="$1"
+	if [ -z $2 ]; then
+		genopt=
+	fi
+	genopt="-gen $2"
+	rm -f $testname-cpp.o
+	make -f $testname.bmk CFLAGS="-O0 -gstabs"
+	fbc -g $genopt -exx $testname-fbc.bas $testname-cpp.o -x $testname-fbc.exe
+	echo "Testing: $testname $genopt"
+	./$testname-fbc.exe
 }
 
 function do_clean() {
@@ -25,45 +35,34 @@ function do_clean_all() {
 }
 
 function chk_all() {
-#	chk "mangle" "-gen gas"
-	chk "mangle" "-gen gcc"
-
-#	chk "call" "-gen gas"
-	chk "call" "-gen gcc"
-
-#	chk "call2" "-gen gas"
-	chk "call2" "-gen gcc"
-
-#	chk "this" "-gen gas"
-	chk "this" "-gen gcc"
-
-#	chk "class" "-gen gas"
-	chk "class" "-gen gcc"
-
-#	chk "bop" "-gen gas"
-	chk "bop" "-gen gcc"
-
-#	chk "fbcall" "-gen gas"
-	chk "fbcall" "-gen gcc"
-
-#	chk "derived" "-gen gas"
-	chk "derived" "-gen gcc"
+	gen="$1"
+	chk "mangle" "$gen"
+	chk "call" "$gen"
+	chk "call2" "$gen"
+	chk "this" "$gen"
+	chk "class" "$gen"
+	chk "bop" "$gen"
+	chk "fbcall" "$gen"
+	chk "derived" "$gen"
 }
 
-if [ -z "$1" ]; then
-	chk_all
-	exit 0
-fi
-
-case $1 in
+case "$1" in
+all)
+	chk_all "gas"
+#	chk_all "gas64"
+	chk_all "gcc"
+	;;
 mangle|call|call2|this|class|bop|fbcall|derived)
-	chk "$1" "-gen gcc"
+	chk "$1" "gas"
+#	chk "$1" "gas64"
+	chk "$1" "gcc"
 	;;
 clean)
 	do_clean_all
 	;;
 *)
-	echo "expected clean|mangle|call|call2|this|class|bop|fbcall|derived"
+	echo "expected all|clean"
+	echo "         mangle|call|call2|this|class|bop|fbcall|derived"
 	;;
 esac
 
