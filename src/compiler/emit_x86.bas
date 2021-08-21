@@ -7052,9 +7052,9 @@ private sub _procAllocArg _
 
 	dim as integer lgt = any
 
-	assert( symbIsParam( sym ) )
+	assert( symbIsParamVar( sym ) )
 
-	if( symbIsParamByVal( sym ) ) then
+	if( symbIsParamVarByVal( sym ) ) then
 		lgt = symbGetLen( sym )
 	else
 		'' Bydesc/byref

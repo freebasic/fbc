@@ -1686,7 +1686,7 @@ end function
 
 private function symbIsCArray( byval sym as FBSYMBOL ptr ) as integer
 	'' No bydesc/byref, those are emitted as pointers...
-	if( symbIsRef( sym ) or symbIsParamBydescOrByref( sym ) or symbIsImport( sym ) ) then
+	if( symbIsRef( sym ) or symbIsParamVarBydescOrByref( sym ) or symbIsImport( sym ) ) then
 		return FALSE
 	end if
 

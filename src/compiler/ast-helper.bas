@@ -244,7 +244,7 @@ function astBuildVarField _
 	dim as ASTNODE ptr n = any
 
 	'' Do implicit DEREF if it's a byref symbol
-	if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
+	if( symbIsParamVarByRef( sym ) or symbIsImport( sym ) ) then
 		n = astNewDEREF( astNewVAR( sym, , typeAddrOf( symbGetFullType( sym ) ), symbGetSubtype( sym ) ) )
 	else
 		n = astNewVAR( sym )
@@ -831,7 +831,7 @@ function astBuildArrayDescIniTree _
 	assert( symbIsDescriptor( desc ) )
 	assert( symbGetType( desc ) = FB_DATATYPE_STRUCT )
 	assert( symbIsDescriptor( desc->subtype ) )
-	assert( symbIsParamBydesc( array ) = FALSE )
+	assert( symbIsParamVarBydesc( array ) = FALSE )
 	assert( symbIsVar( desc ) or symbIsField( desc ) )
 
 	tree = astTypeIniBegin( symbGetFullType( desc ), symbGetSubtype( desc ), not symbIsField( desc ), symbGetOfs( desc ) )

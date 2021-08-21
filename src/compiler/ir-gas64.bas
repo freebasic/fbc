@@ -1036,7 +1036,7 @@ sub edbgemitprocarg_asm64( byval sym as FBSYMBOL ptr )
 
 	desc = *symbGetName( sym ) + ":"
 
-	if( symbIsParamByVal( sym ) ) then
+	if( symbIsParamVarByVal( sym ) ) then
 		desc += "p"
 	else
 		desc += "v"
@@ -1161,7 +1161,7 @@ private function hgetdatatype_asm64 _
 	'' Shouldn't be a dynamic array - only the descriptor is emitted
 	assert( symbIsDynamic( sym ) = FALSE )
 
-	if( symbIsParamBydesc( sym ) ) then
+	if( symbIsParamVarBydesc( sym ) ) then
 		'' Bydesc parameter, need to emit as the real descriptor type
 		'' (it's really a pointer/ref, but that's already handled by edbgEmitProcArg())
 		dtype = FB_DATATYPE_STRUCT
@@ -1180,7 +1180,7 @@ private function hgetdatatype_asm64 _
 			'' Byref parameters on the other hand have a special "v" prefix,
 			'' this is handled in edbgEmitProcArg().
 			if( symbIsRef( sym ) ) then
-				assert( symbIsParam( sym ) = FALSE )
+				assert( symbIsParamVar( sym ) = FALSE )
 				dtype = typeAddrOf( dtype )
 			end if
 
@@ -2534,12 +2534,12 @@ private sub _procallocarg( byval proc as FBSYMBOL ptr, byval sym as FBSYMBOL ptr
 
 		if typeisptr(dtype)=false and symbisvaliststructarray( dtype,subtype)then
 			asm_info("Canceling byval and forcing byref for CVA_GCC")
-			sym->attrib xor = FB_SYMBATTRIB_PARAMBYVAL
-			sym->attrib or  = FB_SYMBATTRIB_PARAMBYREF
+			sym->attrib xor = FB_SYMBATTRIB_PARAMVARBYVAL
+			sym->attrib or  = FB_SYMBATTRIB_PARAMVARBYREF
 			'sym->typ or = 32 ''pointer
 		end if
 
-		If( symbIsParamByVal( sym ) ) then
+		If( symbIsParamVarByVal( sym ) ) then
 			''byval
 		'asm_info("dt="+str(dtype))
 		'asm_info("dtonly="+str(typeGetDtOnly(dtype)))
@@ -2685,7 +2685,7 @@ private sub _procallocarg( byval proc as FBSYMBOL ptr, byval sym as FBSYMBOL ptr
 		''========= windows =============
 		''===============================
 		ctx.ofs+=8
-		if( symbIsParamByVal( sym ) ) then
+		if( symbIsParamVarByVal( sym ) ) then
 			''byval
 			if typeGetDtAndPtrOnly(dtype)= FB_DATATYPE_STRUCT then
 				''byval structure
@@ -5015,7 +5015,7 @@ private sub _emitaddr(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRV
 		exit sub
 	end if
 
-	if v1->sym andalso symbisvaliststructarray( v1->sym->typ,v1->sym->subtype)and symbIsParamByRef(v1->sym) then
+	if v1->sym andalso symbisvaliststructarray( v1->sym->typ,v1->sym->subtype)and symbIsParamVarByRef(v1->sym) then
 		asm_info("CVA_GCC changing addrof by deref")
 		if op=AST_OP_ADDROF then
 			op=AST_OP_DEREF

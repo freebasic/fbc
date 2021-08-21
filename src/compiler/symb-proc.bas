@@ -1336,18 +1336,18 @@ function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 	select case as const param->param.mode
 	case FB_PARAMMODE_BYVAL
-		attrib = FB_SYMBATTRIB_PARAMBYVAL
+		attrib = FB_SYMBATTRIB_PARAMVARBYVAL
 
 		'' Byval non-trivial type? Passed Byref implicitly.
 		if( typeIsTrivial( dtype, param->subtype ) = FALSE ) then
-			attrib = FB_SYMBATTRIB_PARAMBYREF
+			attrib = FB_SYMBATTRIB_PARAMVARBYREF
 		end if
 
 	case FB_PARAMMODE_BYREF
-		attrib = FB_SYMBATTRIB_PARAMBYREF
+		attrib = FB_SYMBATTRIB_PARAMVARBYREF
 
 	case FB_PARAMMODE_BYDESC
-		attrib = FB_SYMBATTRIB_PARAMBYDESC
+		attrib = FB_SYMBATTRIB_PARAMVARBYDESC
 
 	case else
 		exit function
@@ -1390,7 +1390,7 @@ function symbAddVarForProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL 
 	end if
 
 	s = symbAddVar( symbUniqueId( ), NULL, FB_DATATYPE_STRUCT, proc->subtype, 0, _
-	                0, dTB(), FB_SYMBATTRIB_PARAMBYREF, FB_SYMBOPT_PRESERVECASE )
+	                0, dTB(), FB_SYMBATTRIB_PARAMVARBYREF, FB_SYMBOPT_PRESERVECASE )
 
 	symbProcAllocExt( proc )
 	proc->proc.ext->res = s

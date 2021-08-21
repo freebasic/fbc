@@ -974,7 +974,7 @@ end function
 
 private function hMakeArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 	'' argument passed by descriptor?
-	if( symbIsParamByDesc( sym ) ) then
+	if( symbIsParamVarByDesc( sym ) ) then
 		'' return descriptor->data
 		return astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
 				FB_DATATYPE_INTEGER, NULL, symb.fbarray_data )
@@ -1016,7 +1016,7 @@ function cVariableEx overload _
 	'' ID
 	lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
 
-	is_byref = symbIsParamByRef( sym ) or symbIsImport( sym ) or symbIsRef( sym )
+	is_byref = symbIsParamVarByRef( sym ) or symbIsImport( sym ) or symbIsRef( sym )
 	is_array = symbIsArray( sym )
 	is_funcptr = FALSE
 
@@ -1035,7 +1035,7 @@ function cVariableEx overload _
 
 				'' dynamic/bydescparam array var?
 				if( symbGetIsDynamic( sym ) ) then
-					if( symbIsParamBydesc( sym ) ) then
+					if( symbIsParamVarBydesc( sym ) ) then
 						'' Build a VAR access with the BYDESC param's real dtype
 						descexpr = astNewVAR( sym )
 						assert( symbIsStruct( sym->var_.array.desctype ) and symbIsDescriptor( sym->var_.array.desctype ) )

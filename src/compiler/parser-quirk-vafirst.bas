@@ -152,7 +152,7 @@ private sub hSolveValistType _
 
 		case FB_CVA_LIST_BUILTIN_C_STD
 			if( astIsVAR( n ) ) then
-				if( symbIsParamByval( astGetSymbol( n ) ) ) then
+				if( symbIsParamVarByval( astGetSymbol( n ) ) ) then
 
 					'' The dtype & subtype tell us that this is a
 					'' C struct array.  Only the pointer to the

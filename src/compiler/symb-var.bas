@@ -410,7 +410,7 @@ end function
 ''
 sub symbMaybeAddArrayDesc( byval sym as FBSYMBOL ptr )
 	assert( symbIsField( sym ) = FALSE )
-	assert( symbIsParamBydesc( sym ) = FALSE )
+	assert( symbIsParamVarBydesc( sym ) = FALSE )
 
 	if( symbGetArrayDimensions( sym ) = 0 ) then
 		exit sub
@@ -518,7 +518,7 @@ sub symbVarInitArrayDimensions _
 			symbSetArrayDimTb( sym, dimensions, dTB() )
 		end if
 
-		if( (not symbIsField( sym )) and (not symbIsParamBydesc( sym )) ) then
+		if( (not symbIsField( sym )) and (not symbIsParamVarBydesc( sym )) ) then
 			symbMaybeAddArrayDesc( sym )
 		end if
 	end if
@@ -719,16 +719,16 @@ sub symbGetRealType( byval sym as FBSYMBOL ptr, byref dtype as integer, byref su
 	assert( symbIsVar( sym ) or symbIsField( sym ) )
 	dtype = symbGetFullType( sym )
 	subtype = sym->subtype
-	if( symbIsParam( sym ) ) then
+	if( symbIsParamVar( sym ) ) then
 		dim parammode as integer
 		dim bydescrealsubtype as FBSYMBOL ptr
-		if( symbIsParamByref( sym ) ) then
+		if( symbIsParamVarByref( sym ) ) then
 			parammode = FB_PARAMMODE_BYREF
-		elseif( symbIsParamBydesc( sym ) ) then
+		elseif( symbIsParamVarBydesc( sym ) ) then
 			parammode = FB_PARAMMODE_BYDESC
 			bydescrealsubtype = sym->var_.array.desctype
 		else
-			assert( symbIsParamByval( sym ) )
+			assert( symbIsParamVarByval( sym ) )
 			parammode = FB_PARAMMODE_BYVAL
 		end if
 		symbGetRealParamDtype( parammode, bydescrealsubtype, dtype, subtype )
@@ -823,9 +823,9 @@ function symbGetVarHasCtor( byval s as FBSYMBOL ptr ) as integer
 	                    FB_SYMBATTRIB_STATIC or _
 	                    FB_SYMBATTRIB_COMMON or _
 	                    FB_SYMBATTRIB_REF or _
-	                    FB_SYMBATTRIB_PARAMBYDESC or _
-	                    FB_SYMBATTRIB_PARAMBYVAL or _
-	                    FB_SYMBATTRIB_PARAMBYREF or _
+	                    FB_SYMBATTRIB_PARAMVARBYDESC or _
+	                    FB_SYMBATTRIB_PARAMVARBYVAL or _
+	                    FB_SYMBATTRIB_PARAMVARBYREF or _
 	                    FB_SYMBATTRIB_TEMP or _
 	                    FB_SYMBATTRIB_FUNCRESULT)) <> 0 ) then
 		return FALSE
@@ -862,9 +862,9 @@ function symbGetVarHasDtor( byval s as FBSYMBOL ptr ) as integer
 	                    FB_SYMBATTRIB_STATIC or _
 	                    FB_SYMBATTRIB_COMMON or _
 	                    FB_SYMBATTRIB_REF or _
-	                    FB_SYMBATTRIB_PARAMBYDESC or _
-	                    FB_SYMBATTRIB_PARAMBYVAL or _
-	                    FB_SYMBATTRIB_PARAMBYREF or _
+	                    FB_SYMBATTRIB_PARAMVARBYDESC or _
+	                    FB_SYMBATTRIB_PARAMVARBYVAL or _
+	                    FB_SYMBATTRIB_PARAMVARBYREF or _
 	                    FB_SYMBATTRIB_TEMP or _
 	                    FB_SYMBATTRIB_FUNCRESULT)) <> 0 ) then
 		return FALSE

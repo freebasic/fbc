@@ -391,7 +391,7 @@ function astIsSymbolOnTree _
 
 		'' passed by ref or by desc? can't do any assumption..
 		if( s <> NULL ) then
-			if (symbIsParamBydescOrByref(s)) then
+			if (symbIsParamVarBydescOrByref(s)) then
 				return TRUE
 			end if
 		end if
@@ -1255,7 +1255,7 @@ function astIsAccessToLocal( byval expr as ASTNODE ptr ) as integer
 	case AST_NODECLASS_IDX
 		'' Disallow local array accesses, unless it's a bydesc param
 		'' (accesses to them also have an IDX at the top)
-		if( symbIsParamBydesc( expr->sym ) = FALSE ) then
+		if( symbIsParamVarBydesc( expr->sym ) = FALSE ) then
 			function = hSymbIsOnLocalStack( expr->sym )
 		end if
 

@@ -375,7 +375,7 @@ private function hCheckByDescParam _
 		assert( symbIsVar( s ) )
 
 		'' BYDESC param passed to BYDESC param?
-		if( symbIsParamByDesc( s ) ) then
+		if( symbIsParamVarByDesc( s ) ) then
 			if( hCheckBydescDimensions( param, s ) = FALSE ) then
 				exit function
 			end if

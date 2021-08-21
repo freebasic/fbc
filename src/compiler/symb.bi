@@ -120,7 +120,7 @@ end enum
 
 '' symbol state mask
 enum FB_SYMBSTATS
-	                        ''= &h00000001
+	''                      ''= &h00000001 '' not-used
 	FB_SYMBSTATS_ACCESSED     = &h00000002
 	FB_SYMBSTATS_CTORINITED   = &h00000004  '' ctor method procs only
 	FB_SYMBSTATS_DECLARED     = &h00000008
@@ -145,7 +145,7 @@ enum FB_SYMBSTATS
 	FB_SYMBSTATS_HASRTTI      = &h00400000
 	FB_SYMBSTATS_CANTUNDEF    = &h00800000
 	FB_SYMBSTATS_UNIONFIELD   = &h01000000  '' fields only
-	                        ''= &h02000000  '' params only
+	''                      ''= &h02000000  '' not-used
 	FB_SYMBSTATS_EMITTED      = &h04000000  '' needed by high-level IRs, to avoid emitting structs etc twice
 	FB_SYMBSTATS_BEINGEMITTED = &h08000000  '' ditto, for circular dependencies with structs
 
@@ -179,9 +179,9 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_CONST            = &h00000800  '' CONST value, expression, or method
 	FB_SYMBATTRIB_TEMP             = &h00001000  '' VARs
 	FB_SYMBATTRIB_DESCRIPTOR       = &h00002000  '' VARs (arrays)
-	FB_SYMBATTRIB_PARAMBYDESC      = &h00004000  '' VARs, TODO: Rename these and symbIsParam*() to clarify that they're about param vars (not params)
-	FB_SYMBATTRIB_PARAMBYVAL       = &h00008000  '' VARs
-	FB_SYMBATTRIB_PARAMBYREF       = &h00010000  '' VARs
+	FB_SYMBATTRIB_PARAMVARBYDESC   = &h00004000  '' VARs (paramater variables)
+	FB_SYMBATTRIB_PARAMVARBYVAL    = &h00008000  '' VARs (paramater variables)
+	FB_SYMBATTRIB_PARAMVARBYREF    = &h00010000  '' VARs (paramater variables)
 	FB_SYMBATTRIB_FUNCRESULT       = &h00020000
 	FB_SYMBATTRIB_REF              = &h00040000  '' VARs/FIELDs (if declared with BYREF)
 	FB_SYMBATTRIB_INSTANCEPARAM    = &h00080000
@@ -728,8 +728,8 @@ type FBS_VAR
 	stmtnum         as integer                  '' can't use colnum as it's unreliable
 	align           as integer                  '' 0 = use default alignment
 	data            as FBVAR_DATA               '' used with DATA stmts
-	bitpos          as integer  '' bitfields only: bit offset in container field
-	bits            as integer  '' bitfields only: size in bits
+	bitpos          as integer                  '' bitfields only: bit offset in container field
+	bits            as integer                  '' bitfields only: size in bits
 end type
 
 '' namespace
@@ -2474,7 +2474,7 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 
 #define symbGetExportNext(s) s->nsimp.exp_next
 
-#define symbGetIsDynamic(s) ((s->attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_PARAMBYDESC)) <> 0 )
+#define symbGetIsDynamic(s) ((s->attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_PARAMVARBYDESC)) <> 0 )
 
 #define symbIsShared(s) ((s->attrib and FB_SYMBATTRIB_SHARED) <> 0)
 
@@ -2486,17 +2486,17 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 
 #define symbIsTemp(s) ((s->attrib and FB_SYMBATTRIB_TEMP) <> 0)
 
-#define symbIsParamByDesc(s) ((s->attrib and FB_SYMBATTRIB_PARAMBYDESC) <> 0)
+#define symbIsParamVarByDesc(s) ((s->attrib and FB_SYMBATTRIB_PARAMVARBYDESC) <> 0)
 
-#define symbIsParamByVal(s) ((s->attrib and FB_SYMBATTRIB_PARAMBYVAL) <> 0)
+#define symbIsParamVarByVal(s) ((s->attrib and FB_SYMBATTRIB_PARAMVARBYVAL) <> 0)
 
-#define symbIsParamByRef(s) ((s->attrib and FB_SYMBATTRIB_PARAMBYREF) <> 0)
+#define symbIsParamVarByRef(s) ((s->attrib and FB_SYMBATTRIB_PARAMVARBYREF) <> 0)
 
 #define symbIsInstanceParam(s) ((s->attrib and FB_SYMBATTRIB_INSTANCEPARAM) <> 0)
 
-#define symbIsParam(s) ((s->attrib and (FB_SYMBATTRIB_PARAMBYREF or FB_SYMBATTRIB_PARAMBYVAL or FB_SYMBATTRIB_PARAMBYDESC)) <> 0)
+#define symbIsParamVar(s) ((s->attrib and (FB_SYMBATTRIB_PARAMVARBYREF or FB_SYMBATTRIB_PARAMVARBYVAL or FB_SYMBATTRIB_PARAMVARBYDESC)) <> 0)
 
-#define symbIsParamBydescOrByref(s) (((s)->attrib and (FB_SYMBATTRIB_PARAMBYDESC or FB_SYMBATTRIB_PARAMBYREF)) <> 0)
+#define symbIsParamVarBydescOrByref(s) (((s)->attrib and (FB_SYMBATTRIB_PARAMVARBYDESC or FB_SYMBATTRIB_PARAMVARBYREF)) <> 0)
 
 #define symbIsLocal(s) ((s->attrib and FB_SYMBATTRIB_LOCAL) <> 0)
 

@@ -475,7 +475,7 @@ private sub hDeclArgs(byval proc as FBSYMBOL ptr)
 	while (s)
 		if (symbIsVar(s)) then
 			'' Parameter?
-			if (symbIsParam(s)) then
+			if (symbIsParamVar(s)) then
 				edbgEmitProcArg(s)
 			end if
 		end if
@@ -579,9 +579,9 @@ private sub hDeclLocalVars _
 			'' function result variables, or fake dynamic array
 			'' variables (the descriptors will be emitted instead).
 			if( (symbGetAttrib( s ) and _
-				(FB_SYMBATTRIB_PARAMBYDESC or _
-				FB_SYMBATTRIB_PARAMBYVAL or _
-				FB_SYMBATTRIB_PARAMBYREF or _
+				(FB_SYMBATTRIB_PARAMVARBYDESC or _
+				FB_SYMBATTRIB_PARAMVARBYVAL or _
+				FB_SYMBATTRIB_PARAMVARBYREF or _
 				FB_SYMBATTRIB_TEMP or _
 				FB_SYMBATTRIB_FUNCRESULT or _
 				FB_SYMBATTRIB_DYNAMIC)) = 0 ) then
@@ -712,7 +712,7 @@ private function hGetDataType _
 	'' Shouldn't be a dynamic array - only the descriptor is emitted
 	assert( symbIsDynamic( sym ) = FALSE )
 
-	if( symbIsParamBydesc( sym ) ) then
+	if( symbIsParamVarBydesc( sym ) ) then
 		'' Bydesc parameter, need to emit as the real descriptor type
 		'' (it's really a pointer/ref, but that's already handled by edbgEmitProcArg())
 		dtype = FB_DATATYPE_STRUCT
@@ -731,7 +731,7 @@ private function hGetDataType _
 			'' Byref parameters on the other hand have a special "v" prefix,
 			'' this is handled in edbgEmitProcArg().
 			if( symbIsRef( sym ) ) then
-				assert( symbIsParam( sym ) = FALSE )
+				assert( symbIsParamVar( sym ) = FALSE )
 				dtype = typeAddrOf( dtype )
 			end if
 
@@ -1006,11 +1006,11 @@ sub edbgEmitProcArg( byval sym as FBSYMBOL ptr )
 
 	desc = *symbGetName( sym ) + ":"
 
-	if( symbIsParamByVal( sym ) ) then
+	if( symbIsParamVarByVal( sym ) ) then
 		desc += "p"
 	else
 		'' It's a reference or descriptor ptr
-		assert( symbIsParamBydescOrByref( sym ) )
+		assert( symbIsParamVarBydescOrByref( sym ) )
 		desc += "v"
 	end if
 
