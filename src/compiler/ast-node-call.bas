@@ -153,9 +153,15 @@ private function hMaybePassArgInReg _
 
 	function = FALSE
 
-	if( symbGetProcMode( proc ) = FB_FUNCMODE_THISCALL ) then
-		if( argnum = 1 ) then
-			function = TRUE
+	'' only allow thiscall in 32-bit windows
+	'' and ignore for every other target
+	if( fbIs64bit( ) = FALSE ) then
+		if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_WIN32 ) then
+			if( symbGetProcMode( proc ) = FB_FUNCMODE_THISCALL ) then
+				if( argnum = 1 ) then
+					function = TRUE
+				end if
+			end if
 		end if
 	end if
 
