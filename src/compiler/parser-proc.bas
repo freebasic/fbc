@@ -528,6 +528,9 @@ function cProcCallingConv( byval default as FB_FUNCMODE ) as FB_FUNCMODE
 	case FB_TK_THISCALL
 		'' ignore thiscall if '-z no-thiscall' was given
 		if( env.clopt.nothiscall = FALSE ) then
+			'' keep the thiscall call convention even if the target/archictecture wont't support it
+			'' this will allow us to check that the declaration matches the definition.  Also,
+			'' gcc supports extensions for using thiscall even with normal procedures
 			function = FB_FUNCMODE_THISCALL
 		end if
 		lexSkipToken( )

@@ -160,10 +160,22 @@ end function
 '' Calculate the number of bytes the procedure needs to pop from stack when returning
 function symbProcCalcBytesToPop( byval proc as FBSYMBOL ptr ) as longint
 	dim as longint bytestopop = 0
-	var notcdecl = (symbGetProcMode( proc ) <> FB_FUNCMODE_CDECL) and (symbGetProcMode( proc ) <> FB_FUNCMODE_THISCALL)
+	dim callee_cleanup as integer = FALSE
 
-	'' Need to pop parameters in case of stdcall/pascal/thiscall, but not for cdecl
-	if( notcdecl ) then
+	'' Need to pop parameters in case of thiscall on win32, but not any other target
+	if( symbGetProcMode( proc ) = FB_FUNCMODE_THISCALL ) then
+		if( fbIs64bit() = FALSE ) then
+			if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+				callee_cleanup = TRUE
+			end if
+		end if
+
+	'' Need to pop parameters in case of stdcall/pascal, but not for cdecl
+	else
+		callee_cleanup = (symbGetProcMode( proc ) <> FB_FUNCMODE_CDECL)
+	end if
+
+	if( callee_cleanup ) then
 		var param = symbGetProcHeadParam( proc )
 		while( param )
 
@@ -178,7 +190,7 @@ function symbProcCalcBytesToPop( byval proc as FBSYMBOL ptr ) as longint
 	'' Additionally pop the hidden struct result ptr param (if any) for stdcall/pascal,
 	'' or even for cdecl if needed for the target.
 	if( symbProcReturnsOnStack( proc ) ) then
-		if( notcdecl or ((env.target.options and FB_TARGETOPT_CALLEEPOPSHIDDENPTR) <> 0) ) then
+		if( callee_cleanup or ((env.target.options and FB_TARGETOPT_CALLEEPOPSHIDDENPTR) <> 0) ) then
 			bytestopop += env.pointersize
 		end if
 	end if
