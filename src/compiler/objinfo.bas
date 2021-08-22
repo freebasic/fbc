@@ -105,8 +105,8 @@
 #endif
 
 type DATABUFFER
-	p	as ubyte ptr
-	size	as integer
+	p       as ubyte ptr
+	size    as integer
 end type
 
 dim shared as DATABUFFER _
@@ -122,10 +122,10 @@ enum
 end enum
 
 type OBJINFOPARSERCTX
-	i		as integer
-	filename	as string
-	is_old		as integer  '' old .fbctinf format?
-	old_section	as integer  '' FB_INFOSEC_* or -1
+	i           as integer
+	filename    as string
+	is_old      as integer  '' old .fbctinf format?
+	old_section as integer  '' FB_INFOSEC_* or -1
 end type
 
 dim shared as OBJINFOPARSERCTX parser
@@ -180,7 +180,7 @@ dim shared as ubyte elfmagic(0 to 15) = _
 	&h01, _     '' 1 - the one and only version of ELF
 	&h00, _     '' target ABI
 	&h00, _     '' ABI version
-	&h00, _     '' unused 0 
+	&h00, _     '' unused 0
 	&h00, _     '' object file type
 	&h00  _     '' target machine
 }
@@ -313,6 +313,13 @@ private sub hLoadFbctinfFrom##ELF_H( byval ELF_MACHINE as integer )
 	'' set 32 or 64 bits
 	elfmagic(4) = ELF_MAGIC_4
 
+	'' set little endian or big endian
+	if( fbIsHostBigEndian( ) ) then
+		elfmagic(5) = 2 '' big endian
+	else
+		elfmagic(5) = 1 '' little endian
+	end if
+
 	'' set the target system expected
 	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_FREEBSD ) then
 		elfmagic(7) = &h09  '' FreeBSD
@@ -403,28 +410,28 @@ ELFLOADINGCODE( ELF64_H, ELF64_SH, 2 )
 
 '' COFF main header
 type COFF_H field = 1
-	magic		as ushort  '' magic number (type of target machine)
-	seccount	as ushort  '' number of sections/entries in section tb
+	magic       as ushort  '' magic number (type of target machine)
+	seccount    as ushort  '' number of sections/entries in section tb
 			           '' (which follows behind the headers)
-	timestamp	as ulong   '' creation time (time_t)
-	symtboffset	as ulong   '' file offset of symbol table
-	symcount	as ulong   '' entries in the symtb
-	optheadsize	as ushort  '' size of optional headers; 0 in obj file
-	flags		as ushort
+	timestamp   as ulong   '' creation time (time_t)
+	symtboffset as ulong   '' file offset of symbol table
+	symcount    as ulong   '' entries in the symtb
+	optheadsize as ushort  '' size of optional headers; 0 in obj file
+	flags       as ushort
 end type
 
 '' COFF section header
 type COFF_SH field = 1
-	name(0 to 7)	as ubyte  '' section name
-	paddr		as ulong  '' physical address
-	vaddr		as ulong  '' virtual address
-	size		as ulong  '' section size
-	dataoffset	as ulong  '' offset to section data
-	reloffset	as ulong  '' offset to relocation data
-	lnoffset	as ulong  '' offset to line number data
-	relcount	as ushort '' number of relocation entries
-	lncount		as ushort '' number of line number entries
-	flags		as ulong
+	name(0 to 7)    as ubyte  '' section name
+	paddr       as ulong  '' physical address
+	vaddr       as ulong  '' virtual address
+	size        as ulong  '' section size
+	dataoffset  as ulong  '' offset to section data
+	reloffset   as ulong  '' offset to relocation data
+	lnoffset    as ulong  '' offset to line number data
+	relcount    as ushort '' number of relocation entries
+	lncount     as ushort '' number of line number entries
+	flags       as ulong
 end type
 
 private sub hLoadFbctinfFromCOFF( byval magic as ushort )
@@ -501,18 +508,18 @@ end sub
 '' mach_header and mach_header_64 are identical aside from addition of
 '' a reserved member at the end, and different magic constant.
 type MACH_H
-	magic	    as ulong
-	cputype	    as ulong  ' cpu_type_t
+	magic       as ulong
+	cputype     as ulong  ' cpu_type_t
 	cpusubtype  as ulong  ' cpu_subtype_t
 	filetype    as ulong
-	ncmds	    as ulong
+	ncmds       as ulong
 	sizeofcmds  as ulong
-	flags	    as ulong
+	flags       as ulong
 end type
 
 '' Mach-O load command header
 type LOAD_COMMAND_H
-	cmd	as ulong
+	cmd as ulong
 	cmdsize as ulong
 end type
 
@@ -535,17 +542,17 @@ const LC_SEGMENT_64 = &h19
 
 #macro DEFINE_SEGMENT_COMMAND(NAME, SIZE_TYPE)
 type NAME
-	cmd	    as ulong
-	cmdsize	    as ulong
+	cmd         as ulong
+	cmdsize     as ulong
 	segname(15) as ubyte
-	vmaddr	    as SIZE_TYPE
-	vmsize	    as SIZE_TYPE
-	fileoff	    as SIZE_TYPE
+	vmaddr      as SIZE_TYPE
+	vmsize      as SIZE_TYPE
+	fileoff     as SIZE_TYPE
 	filesize    as SIZE_TYPE
-	maxprot	    as ulong  'vm_prot_t
+	maxprot     as ulong  'vm_prot_t
 	initprot    as ulong  'vm_prot_t
-	nsects	    as ulong
-	flags	    as ulong
+	nsects      as ulong
+	flags       as ulong
 end type
 #endmacro
 
@@ -555,17 +562,17 @@ DEFINE_SEGMENT_COMMAND(SEGMENT_COMMAND_64, ulongint) 'struct segment_command_64
 #macro DEFINE_SECTION(NAME, SIZE_TYPE, RESERVED3)
 '' Defined in /usr/include/mach-o/loader.h
 type NAME
-	sectname	 as zstring * 16
-	segname		 as zstring * 16
-	addr		 as SIZE_TYPE
-	size		 as SIZE_TYPE
-	offset		 as ulong
-	align		 as ulong
-	reloff		 as ulong
-	nreloc		 as ulong
-	flags		 as ulong
-	reserved1	 as ulong
-	reserved2	 as ulong
+	sectname     as zstring * 16
+	segname      as zstring * 16
+	addr         as SIZE_TYPE
+	size         as SIZE_TYPE
+	offset       as ulong
+	align        as ulong
+	reloff       as ulong
+	nreloc       as ulong
+	flags        as ulong
+	reserved1    as ulong
+	reserved2    as ulong
 	RESERVED3
 end type
 #endmacro
@@ -704,13 +711,13 @@ end sub
 '' .a archive entry header
 type AR_H field = 1
 	'' (all values right-padded with ASCII spaces)
-	name(0 to 15)		as ubyte '' ASCII
-	modifytime(0 to 11)	as ubyte '' decimal
-	ownerid(0 to 5)		as ubyte '' decimal
-	groupid(0 to 5)		as ubyte '' decimal
-	mode(0 to 7)		as ubyte '' octal
-	size(0 to 9)		as ubyte '' decimal
-	magic(0 to 1)		as ubyte '' &h60 &h0A
+	name(0 to 15)       as ubyte '' ASCII
+	modifytime(0 to 11) as ubyte '' decimal
+	ownerid(0 to 5)     as ubyte '' decimal
+	groupid(0 to 5)     as ubyte '' decimal
+	mode(0 to 7)        as ubyte '' octal
+	size(0 to 9)        as ubyte '' decimal
+	magic(0 to 1)       as ubyte '' &h60 &h0A
 end type
 
 dim shared as ubyte armagic(0 to 7) = _
@@ -877,7 +884,7 @@ private sub hLoadFbctinfFromObj( )
 		case FB_CPUFAMILY_ARM
 			INFO( "reading arm32 ELF: " + parser.filename )
 			hLoadFbctinfFromELF32_H( EM_ARM32 )
-		case FB_CPUFAMILY_PPC64
+		case FB_CPUFAMILY_PPC64, FB_CPUFAMILY_PPC64LE
 			INFO( "reading powerpc64 ELF: " + parser.filename )
 			hLoadFbctinfFromELF64_H( EM_PPC64 )
 		case FB_CPUFAMILY_PPC
