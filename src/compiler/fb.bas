@@ -852,9 +852,9 @@ private function hGetTargetId _
 	''    linux-aarch64
 	''    freebsd-x86
 	''    freebsd-x86_64
-	''    freebsd-powerpc
-	''    freebsd-powerpc64
-	''    freebsd-powerpc64le
+	''    freebsd-powerpc | freebsd-ppc
+	''    freebsd-powerpc64 | freebsd-ppc64
+	''    freebsd-powerpc64le | freebsd-ppc64le
 	''    ...
 
 	var cpufamily = cputypeinfo(cputype).family

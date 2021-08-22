@@ -32,6 +32,7 @@ Version 1.09.0
 - boostrap: normalize powerpc bootstrap directories to match ARCH as <os>-<powerpc*>
 - fbc: add 'powerpc' and 'powerpc64' cpu families and cpu type for '-arch' command line option (lenoil98)
 - fbc: add 'powerpc64le' cpu type for -arch command line option
+- fbc: allow shortnames 'ppc', 'ppc64', 'ppc64le' for '-target' command line option
 - fbc: add the __FB_PPC__ intrinsic constant (lenoil98)
 - fbc: internal add big endian information to the CPUFAMILYINFO() internal table
 - fbc: defined __FB_BIGENDIAN__ if cpu type is bigendian
