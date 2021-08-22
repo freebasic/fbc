@@ -3780,11 +3780,12 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -g               Add debug info, enable __FB_DEBUG__, and enable assert()"
 
 	if( verbose ) then
-	print "  -gen gas         Select GNU gas assembler backend"
+	print "  -gen gas         Select GNU gas 32-bit assembler backend"
+	print "  -gen gas64       Select GNU gas 64-bit assembler backend"
 	print "  -gen gcc         Select GNU gcc C backend"
 	print "  -gen llvm        Select LLVM backend"
 	else
-	print "  -gen gas|gcc|llvm  Select code generation backend"
+	print "  -gen gas|gas64|gcc|llvm  Select code generation backend"
 	end if
 
 	print "  [-]-help         Show this help output"
