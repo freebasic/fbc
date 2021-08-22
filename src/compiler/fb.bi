@@ -386,7 +386,7 @@ const FB_DEFAULT_TARGET     = FB_COMPTARGET_NETBSD
 #endif
 
 '' __FB_X86__ is new, so we need to support compiling with older fbc that didn't have it
-#if (not defined(__FB_X86__)) and (not defined(__FB_ARM__)) and defined(__FB_ASM__)
+#if (not defined(__FB_X86__)) and (not defined(__FB_ARM__)) and (not defined(__FB_PPC__)) and defined(__FB_ASM__)
 	#define __FB_X86__
 #endif
 

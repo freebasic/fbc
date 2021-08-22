@@ -1459,6 +1459,15 @@ private sub hParseGnuTriplet _
 
 end sub
 
+function fbCpuTypeFromGNUArchInfo( byref arch as string ) as integer
+	for i as integer = 0 to ubound( gnuarchmap )
+		if( arch = *gnuarchmap(i).gnuid ) then
+			return gnuarchmap(i).cputype
+		end if
+	next
+	return -1 
+end function
+
 type FBOSARCHINFO
 	targetid    as zstring ptr  '' -target option argument
 	os          as integer      '' FB_COMPTARGET_*
@@ -1563,6 +1572,13 @@ private sub hParseTargetArg _
 	if( separator > 0 ) then
 		os = fbIdentifyOs( left( lcasearg, separator - 1 ) )
 		cputype = fbCpuTypeFromCpuFamilyId( right( lcasearg, len( lcasearg ) - separator ) )
+
+		'' allow normalizing on gnu arch types to determine the standalone targetid
+		#ifdef ENABLE_STANDALONE
+			if( (os < 0) and (cputype < 0) ) then
+				cputype = fbCpuTypeFromGNUArchInfo( right( lcasearg, len( lcasearg ) - separator ) )
+			end if
+		#endif
 	end if
 
 	'' Normal build: Check for GNU triplets, if the above checks failed.
