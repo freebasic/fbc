@@ -13,15 +13,15 @@
 #include once "objinfo.bi"
 
 type FB_LANG_INFO
-	name		as const zstring ptr
-	options		as FB_LANG_OPT
+	name        as const zstring ptr
+	options     as FB_LANG_OPT
 end type
 
-declare sub	parserInit ( )
+declare sub parserInit ( )
 
-declare sub	parserEnd ( )
+declare sub parserEnd ( )
 
-declare sub	parserSetCtx ( )
+declare sub parserSetCtx ( )
 
 '' globals
 dim shared env as FBENV
@@ -57,13 +57,13 @@ dim shared env as FBENV
 			FB_LANG_OPT_LET or _
 			FB_LANG_OPT_PERIODS or _
 			FB_LANG_OPT_NUMLABEL or _
-            FB_LANG_OPT_IMPLICIT or _
-            FB_LANG_OPT_DEFTYPE or _
-            FB_LANG_OPT_SUFFIX or _
-            FB_LANG_OPT_METACMD or _
+			FB_LANG_OPT_IMPLICIT or _
+			FB_LANG_OPT_DEFTYPE or _
+			FB_LANG_OPT_SUFFIX or _
+			FB_LANG_OPT_METACMD or _
 			FB_LANG_OPT_OPTION or _
-    		FB_LANG_OPT_ONERROR or _
-    		FB_LANG_OPT_QUIRKFUNC _
+			FB_LANG_OPT_ONERROR or _
+			FB_LANG_OPT_QUIRKFUNC _
 		) _
 		, _
 		( _
@@ -94,13 +94,13 @@ dim shared env as FBENV
 			FB_LANG_OPT_LET or _
 			FB_LANG_OPT_PERIODS or _
 			FB_LANG_OPT_NUMLABEL or _
-            FB_LANG_OPT_IMPLICIT or _
-            FB_LANG_OPT_DEFTYPE or _
-            FB_LANG_OPT_SUFFIX or _
-            FB_LANG_OPT_METACMD or _
+			FB_LANG_OPT_IMPLICIT or _
+			FB_LANG_OPT_DEFTYPE or _
+			FB_LANG_OPT_SUFFIX or _
+			FB_LANG_OPT_METACMD or _
 			FB_LANG_OPT_OPTION or _
-    		FB_LANG_OPT_ONERROR or _
-    		FB_LANG_OPT_QUIRKFUNC _
+			FB_LANG_OPT_ONERROR or _
+			FB_LANG_OPT_QUIRKFUNC _
 		) _
 	}
 
@@ -111,7 +111,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_USHORT, _   '' wchar
 		FB_FUNCMODE_STDCALL, _  '' fbcall
 		FB_FUNCMODE_STDCALL, _  '' stdcall
-		0	or FB_TARGETOPT_EXPORT _
+		0   or FB_TARGETOPT_EXPORT _
 			or FB_TARGETOPT_RETURNINREGS _
 			or FB_TARGETOPT_COFF _
 	), _
@@ -120,7 +120,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_USHORT, _
 		FB_FUNCMODE_STDCALL, _
 		FB_FUNCMODE_STDCALL, _
-		0	or FB_TARGETOPT_UNIX _
+		0   or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_EXPORT _
 			or FB_TARGETOPT_RETURNINREGS _
 			or FB_TARGETOPT_COFF _
@@ -130,7 +130,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_ULONG, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		0	or FB_TARGETOPT_UNIX _
+		0   or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_STACKALIGN16 _
 			or FB_TARGETOPT_ELF _
@@ -140,7 +140,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_UBYTE, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		0	or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
+		0   or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_COFF _
 	), _
 	( _
@@ -148,7 +148,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_ULONG, _
 		FB_FUNCMODE_STDCALL, _
 		FB_FUNCMODE_STDCALL, _
-		0	or FB_TARGETOPT_RETURNINREGS _
+		0   or FB_TARGETOPT_RETURNINREGS _
 			or FB_TARGETOPT_COFF _
 	), _
 	( _
@@ -156,7 +156,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_ULONG, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		0	or FB_TARGETOPT_UNIX _
+		0   or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
 			or FB_TARGETOPT_ELF _
@@ -166,7 +166,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_ULONG, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		0	or FB_TARGETOPT_UNIX _
+		0   or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
 			or FB_TARGETOPT_ELF _
@@ -176,7 +176,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_ULONG, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		0	or FB_TARGETOPT_UNIX _
+		0   or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
 			or FB_TARGETOPT_ELF _
@@ -186,7 +186,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_ULONG, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		0	or FB_TARGETOPT_UNIX _
+		0   or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
 			or FB_TARGETOPT_ELF _
@@ -196,7 +196,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_ULONG, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		0	or FB_TARGETOPT_UNIX _
+		0   or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
 			or FB_TARGETOPT_STACKALIGN16 _
@@ -207,7 +207,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_ULONG, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		0	or FB_TARGETOPT_UNIX _
+		0   or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
 			or FB_TARGETOPT_ELF _
@@ -217,7 +217,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_USHORT, _   '' wchar
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		0	or FB_TARGETOPT_UNIX _
+		0   or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
 	) _
@@ -270,7 +270,7 @@ dim shared as FBCPUTYPEINFO cputypeinfo(0 to FB_CPUTYPE__COUNT-1) = _
 	( NULL       , @"powerpc"      , FB_CPUFAMILY_PPC    , 32, TRUE  ), _ '' FB_CPUTYPE_PPC
 	( NULL       , @"powerpc64"    , FB_CPUFAMILY_PPC64  , 64, TRUE  ), _ '' FB_CPUTYPE_PPC64
 	( NULL       , @"powerpc64le"  , FB_CPUFAMILY_PPC64LE, 64, FALSE ), _ '' FB_CPUTYPE_PPC64LE
-	( NULL       , @"asmjs"        , FB_CPUFAMILY_ASMJS	 , 32, FALSE )  _ '' FB_CPUTYPE_ASMJS
+	( NULL       , @"asmjs"        , FB_CPUFAMILY_ASMJS  , 32, FALSE )  _ '' FB_CPUTYPE_ASMJS
 }
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -306,8 +306,8 @@ private function hAddIncFile _
 		byval filename as zstring ptr _
 	) as zstring ptr static
 
-    dim as zstring ptr fname, res
-    dim as uinteger index
+	dim as zstring ptr fname, res
+	dim as uinteger index
 
 	fname = xallocate( len( *filename ) + 1 )
 #if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
@@ -428,9 +428,9 @@ sub fbInit( byval ismain as integer, byval restarts as integer, byval entry as z
 	end if
 
 	env.opt.parammode       = FB_PARAMMODE_BYREF
-	env.opt.procpublic		= TRUE
-	env.opt.escapestr		= FALSE
-	env.opt.dynamic			= FALSE
+	env.opt.procpublic      = TRUE
+	env.opt.escapestr       = FALSE
+	env.opt.dynamic         = FALSE
 	env.opt.base = 0
 	env.opt.gosub = (env.clopt.lang = FB_LANG_QB)
 
@@ -1014,11 +1014,11 @@ end function
 
 '':::::
 function fbGetModuleEntry( ) as string static
-    dim as string sname
+	dim as string sname
 
-   	sname = hStripPath( hStripExt( env.outf.name ) )
+	sname = hStripPath( hStripExt( env.outf.name ) )
 
-   	hClearName( sname )
+	hClearName( sname )
 
 	function = "fb_ctor__" + sname
 
@@ -1419,8 +1419,8 @@ private function solve_path( byval path as zstring ptr ) as integer
 end function
 
 sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
-    static as zstring * FB_MAXPATHLEN incfile
-    dim as zstring ptr fileidx
+	static as zstring * FB_MAXPATHLEN incfile
+	dim as zstring ptr fileidx
 
 	if( env.includerec >= FB_MAXINCRECLEVEL ) then
 		errReport( FB_ERRMSG_RECLEVELTOODEEP )
@@ -1474,7 +1474,7 @@ sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
 		exit sub
 	end if
 
- 	'' solve out the .. and .
+	'' solve out the .. and .
 	if( solve_path( incfile ) = FALSE ) then
 		errReportEx( FB_ERRMSG_FILENOTFOUND, QUOTE + incfile + QUOTE )
 		errHideFurtherErrors()
@@ -1498,12 +1498,12 @@ sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
 		exit sub
 	end if
 
-    '' we should respect the path here too
+	'' we should respect the path here too
 	fileidx = hAddIncFile( @env.incfilehash, @env.filenamehash, incfile )
 
 	'' push context
 	infileTb(env.includerec) = env.inf
-   	env.includerec += 1
+	env.includerec += 1
 
 	env.inf.name  = incfile
 	env.inf.incfile = fileidx
@@ -1568,7 +1568,7 @@ function fbGetLangId _
 end function
 
 '':::::
-function fbGetBackendValistType _	
+function fbGetBackendValistType _
 	( _
 	) as FB_CVA_LIST_TYPEDEF
 
@@ -1632,7 +1632,7 @@ function fbGetBackendValistType _
 	'' on gcc backend we prefer that the cva_list type
 	'' map to gcc's __builtin_va_list, which is a different
 	'' type depending on platform. If the combination of
-	'' target and arch support it, we can override this with 
+	'' target and arch support it, we can override this with
 	'' -z valist-as-ptr to force use of pointer expressions
 	'' instead of builtins even though gcc is backend.
 
