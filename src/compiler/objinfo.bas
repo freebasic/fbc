@@ -313,6 +313,13 @@ private sub hLoadFbctinfFrom##ELF_H( byval ELF_MACHINE as integer )
 	'' set 32 or 64 bits
 	elfmagic(4) = ELF_MAGIC_4
 
+	'' set little endian or big endian
+	if( fbIsHostBigEndian( ) ) then
+		elfmagic(5) = 2 '' big endian
+	else
+		elfmagic(5) = 1 '' little endian
+	end if
+
 	'' set the target system expected
 	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_FREEBSD ) then
 		elfmagic(7) = &h09  '' FreeBSD

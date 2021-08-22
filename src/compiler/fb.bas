@@ -230,44 +230,45 @@ end type
 
 dim shared as FBCPUFAMILYINFO cpufamilyinfo(0 to FB_CPUFAMILY__COUNT-1) = _
 { _
-	(@"x86"    , FB_DEFAULT_CPUTYPE_X86    ), _
-	(@"x86_64" , FB_DEFAULT_CPUTYPE_X86_64 ), _
-	(@"arm"    , FB_DEFAULT_CPUTYPE_ARM    ), _
-	(@"aarch64", FB_DEFAULT_CPUTYPE_AARCH64), _
-	(@"powerpc"  , FB_DEFAULT_CPUTYPE_PPC), _
-	(@"powerpc64", FB_DEFAULT_CPUTYPE_PPC64), _
-	(@"asmjs"  , FB_DEFAULT_CPUTYPE_ASMJS  )  _
+	(@"x86"        , FB_DEFAULT_CPUTYPE_X86    ), _
+	(@"x86_64"     , FB_DEFAULT_CPUTYPE_X86_64 ), _
+	(@"arm"        , FB_DEFAULT_CPUTYPE_ARM    ), _
+	(@"aarch64"    , FB_DEFAULT_CPUTYPE_AARCH64), _
+	(@"powerpc"    , FB_DEFAULT_CPUTYPE_PPC    ), _
+	(@"powerpc64"  , FB_DEFAULT_CPUTYPE_PPC64  ), _
+	(@"asmjs"      , FB_DEFAULT_CPUTYPE_ASMJS  )  _
 }
 
 type FBCPUTYPEINFO
-	gccarch		as zstring ptr  '' gcc -march argument (used for -gen gcc), or NULL if same as fbcarch
-	fbcarch		as zstring ptr  '' fbc -arch argument
-	family		as integer
-	bits		as integer
+	gccarch     as zstring ptr  '' gcc -march argument (used for -gen gcc), or NULL if same as fbcarch
+	fbcarch     as zstring ptr  '' fbc -arch argument
+	family      as integer      '' enum FB_CPUFAMILY
+	bits        as integer      '' 32 or 64
+	bigendian   as integer      '' endianness - TRUE=big endian, FALSE=little endian
 end type
 
 dim shared as FBCPUTYPEINFO cputypeinfo(0 to FB_CPUTYPE__COUNT-1) = _
 { _
-	( @"i386"    , @"386"          , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_386
-	( @"i486"    , @"486"          , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_486
-	( @"i586"    , @"586"          , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_586
-	( @"i686"    , @"686"          , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_686
-	( NULL       , @"athlon"       , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_ATHLON
-	( NULL       , @"athlon-xp"    , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_ATHLONXP
-	( NULL       , @"athlon-fx"    , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_ATHLONFX
-	( NULL       , @"k8-sse3"      , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_ATHLONSSE3
-	( NULL       , @"pentium-mmx"  , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUMMMX
-	( NULL       , @"pentium2"     , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUM2
-	( NULL       , @"pentium3"     , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUM3
-	( NULL       , @"pentium4"     , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUM4
-	( @"prescott", @"pentium4-sse3", FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUMSSE3
-	( NULL       , @"x86-64"       , FB_CPUFAMILY_X86_64 , 64 ), _ '' FB_CPUTYPE_X86_64
-	( NULL       , @"armv6"        , FB_CPUFAMILY_ARM    , 32 ), _ '' FB_CPUTYPE_ARMV6
-	( NULL       , @"armv7-a"      , FB_CPUFAMILY_ARM    , 32 ), _ '' FB_CPUTYPE_ARMV7A
-	( @"armv8-a" , @"aarch64"      , FB_CPUFAMILY_AARCH64, 64 ), _ '' FB_CPUTYPE_AARCH64
-	( NULL       , @"powerpc"      , FB_CPUFAMILY_PPC    , 32 ), _ '' FB_CPUTYPE_PPC
-	( NULL       , @"powerpc64"    , FB_CPUFAMILY_PPC64  , 64 ), _ '' FB_CPUTYPE_PPC64
-	( NULL       , @"asmjs"        , FB_CPUFAMILY_ASMJS	 , 32 )  _ '' FB_CPUTYPE_ASMJS
+	( @"i386"    , @"386"          , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_386
+	( @"i486"    , @"486"          , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_486
+	( @"i586"    , @"586"          , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_586
+	( @"i686"    , @"686"          , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_686
+	( NULL       , @"athlon"       , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_ATHLON
+	( NULL       , @"athlon-xp"    , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_ATHLONXP
+	( NULL       , @"athlon-fx"    , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_ATHLONFX
+	( NULL       , @"k8-sse3"      , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_ATHLONSSE3
+	( NULL       , @"pentium-mmx"  , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_PENTIUMMMX
+	( NULL       , @"pentium2"     , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_PENTIUM2
+	( NULL       , @"pentium3"     , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_PENTIUM3
+	( NULL       , @"pentium4"     , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_PENTIUM4
+	( @"prescott", @"pentium4-sse3", FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_PENTIUMSSE3
+	( NULL       , @"x86-64"       , FB_CPUFAMILY_X86_64 , 64, FALSE ), _ '' FB_CPUTYPE_X86_64
+	( NULL       , @"armv6"        , FB_CPUFAMILY_ARM    , 32, FALSE ), _ '' FB_CPUTYPE_ARMV6
+	( NULL       , @"armv7-a"      , FB_CPUFAMILY_ARM    , 32, FALSE ), _ '' FB_CPUTYPE_ARMV7A
+	( @"armv8-a" , @"aarch64"      , FB_CPUFAMILY_AARCH64, 64, FALSE ), _ '' FB_CPUTYPE_AARCH64
+	( NULL       , @"powerpc"      , FB_CPUFAMILY_PPC    , 32, TRUE  ), _ '' FB_CPUTYPE_PPC
+	( NULL       , @"powerpc64"    , FB_CPUFAMILY_PPC64  , 64, TRUE  ), _ '' FB_CPUTYPE_PPC64
+	( NULL       , @"asmjs"        , FB_CPUFAMILY_ASMJS	 , 32, FALSE )  _ '' FB_CPUTYPE_ASMJS
 }
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -849,8 +850,8 @@ private function hGetTargetId _
 	''    linux-aarch64
 	''    freebsd-x86
 	''    freebsd-x86_64
-	''    freebsd-ppc
-	''    freebsd-ppc64
+	''    freebsd-powerpc
+	''    freebsd-powerpc64
 	''    ...
 
 	var cpufamily = cputypeinfo(cputype).family
@@ -934,6 +935,10 @@ end function
 
 function fbGetCpuFamily( ) as integer
 	function = cputypeinfo(env.clopt.cputype).family
+end function
+
+function fbIsHostBigEndian( ) as integer
+	function = cputypeinfo(env.clopt.cputype).bigendian
 end function
 
 function fbIdentifyFbcArch( byref fbcarch as string ) as integer

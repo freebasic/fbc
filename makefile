@@ -314,12 +314,12 @@ ifneq ($(filter arm%,$(TARGET_ARCH)),)
 endif
 
 # Normalize TARGET_ARCH to powerpc
-ifneq ($(filter powerpc,$(TARGET_ARCH)),)
+ifneq ($(filter ppc powerpc,$(TARGET_ARCH)),)
   TARGET_ARCH := powerpc
 endif
 
 # Normalize TARGET_ARCH to powerpc64
-ifneq ($(filter powerpc%,$(TARGET_ARCH)),)
+ifneq ($(filter ppc% powerpc%,$(TARGET_ARCH)),)
   TARGET_ARCH := powerpc64
 endif
 
@@ -1281,8 +1281,8 @@ bootstrap-dist:
 	mkdir -p bootstrap/dos
 	mkdir -p bootstrap/freebsd-x86
 	mkdir -p bootstrap/freebsd-x86_64
-	mkdir -p bootstrap/freebsd-ppc
-	mkdir -p bootstrap/freebsd-ppc64
+	mkdir -p bootstrap/freebsd-powerpc
+	mkdir -p bootstrap/freebsd-powerpc64
 	mkdir -p bootstrap/dragonfly-x86_64
 	mkdir -p bootstrap/solaris-x86_64
 	mkdir -p bootstrap/linux-x86
@@ -1291,27 +1291,27 @@ bootstrap-dist:
 	mkdir -p bootstrap/win64
 	mkdir -p bootstrap/linux-arm
 	mkdir -p bootstrap/linux-aarch64
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target dos            && mv src/compiler/*.asm bootstrap/dos
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-x86    && mv src/compiler/*.asm bootstrap/freebsd-x86
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-x86_64 && mv src/compiler/*.c   bootstrap/freebsd-x86_64
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-ppc    && mv src/compiler/*.c bootstrap/freebsd-ppc
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-ppc64  && mv src/compiler/*.c   bootstrap/freebsd-ppc64
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target dragonfly-x86_64 && mv src/compiler/*.c bootstrap/dragonfly-x86_64
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target solaris-x86_64 && mv src/compiler/*.c   bootstrap/solaris-x86_64
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-x86      && mv src/compiler/*.asm bootstrap/linux-x86
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-x86_64   && mv src/compiler/*.c   bootstrap/linux-x86_64
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target win32          && mv src/compiler/*.asm bootstrap/win32
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target win64          && mv src/compiler/*.c   bootstrap/win64
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-arm      && mv src/compiler/*.c   bootstrap/linux-arm
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-aarch64  && mv src/compiler/*.c   bootstrap/linux-aarch64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target dos                 && mv src/compiler/*.asm bootstrap/dos
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-x86         && mv src/compiler/*.asm bootstrap/freebsd-x86
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-x86_64      && mv src/compiler/*.c   bootstrap/freebsd-x86_64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-powerpc     && mv src/compiler/*.c   bootstrap/freebsd-powerpc
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-powerpc64   && mv src/compiler/*.c   bootstrap/freebsd-powerpc64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target dragonfly-x86_64    && mv src/compiler/*.c   bootstrap/dragonfly-x86_64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target solaris-x86_64      && mv src/compiler/*.c   bootstrap/solaris-x86_64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-x86           && mv src/compiler/*.asm bootstrap/linux-x86
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-x86_64        && mv src/compiler/*.c   bootstrap/linux-x86_64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target win32               && mv src/compiler/*.asm bootstrap/win32
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target win64               && mv src/compiler/*.c   bootstrap/win64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-arm           && mv src/compiler/*.c   bootstrap/linux-arm
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-aarch64       && mv src/compiler/*.c   bootstrap/linux-aarch64
 
 	# Ensure to have LFs regardless of host system (LFs will probably work
 	# on DOS/Win32, but CRLFs could cause issues on Linux)
 	dos2unix bootstrap/dos/*
 	dos2unix bootstrap/freebsd-x86/*
 	dos2unix bootstrap/freebsd-x86_64/*
-	dos2unix bootstrap/freebsd-ppc/*
-	dos2unix bootstrap/freebsd-ppc64/*
+	dos2unix bootstrap/freebsd-powerpc/*
+	dos2unix bootstrap/freebsd-powerpc64/*
 	dos2unix bootstrap/dragonfly-x86_64/*
 	dos2unix bootstrap/solaris-x86_64/*
 	dos2unix bootstrap/linux-x86/*

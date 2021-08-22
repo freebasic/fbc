@@ -28,9 +28,13 @@ Version 1.09.0
 - PROCPTR( identifier, type ) syntax to allow getting procedure pointer for based on sub/function type
 - sf.net #666: overload matching for UDT's with CAST() operators as [w|z]string type and implicit conversions
 - makefile: add initial support for powerpc and powerpc64 on FreeBSD (lenoil98)
-- boostrap: add 'freebsd-ppc' and 'freebsd-ppc64' to bootstrap package (lenoil98)
+- makefile: normalize ppc* & powerpc* ARCH to powerpc*
+- boostrap: normalize powerpc bootstrap directories to match ARCH as <os>-<powerpc*>
 - fbc: add 'powerpc' and 'powerpc64' cpu families and cpu type for '-arch' command line option (lenoil98)
 - fbc: add the __FB_PPC__ intrinsic constant (lenoil98)
+- fbc: internal add big endian information to the CPUFAMILYINFO() internal table
+- fbc: defined __FB_BIGENDIAN__ if cpu type is bigendian
+- objinfo: check ELF files for little endian or big endian signature
 - fbc: __thiscall declaration support for gcc/gas 32-bit x86 calling g++ classes from fbc passing first argument in ECX register, caller cleans up stack except on win32 x86
 
 [fixed]

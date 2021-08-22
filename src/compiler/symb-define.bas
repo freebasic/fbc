@@ -958,6 +958,10 @@ sub symbDefineInit _
 		symbAddDefine( @"__FB_PPC__", NULL, 0 )
 	end select
 
+	if( fbIsHostBigEndian( ) ) then
+		symbAddDefine( @"__FB_BIGENDIAN__", NULL, 0 )
+	end if
+
 	'' add "main" define
 	if( ismain ) then
 		symbAddDefine( "__FB_MAIN__", NULL, 0 )
