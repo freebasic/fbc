@@ -323,6 +323,11 @@ ifneq ($(filter ppc% powerpc%,$(TARGET_ARCH)),)
   TARGET_ARCH := powerpc64
 endif
 
+# Normalize TARGET_ARCH to powerpc64le
+ifneq ($(filter ppc%le powerpc%le,$(TARGET_ARCH)),)
+  TARGET_ARCH := powerpc64le
+endif
+
 # Normalize TARGET_ARCH to x86_64 (e.g., FreeBSD's uname -m returns "amd64"
 # instead of "x86_64" like Linux)
 ifneq ($(filter amd64 x86-64,$(TARGET_ARCH)),)
@@ -1283,6 +1288,7 @@ bootstrap-dist:
 	mkdir -p bootstrap/freebsd-x86_64
 	mkdir -p bootstrap/freebsd-powerpc
 	mkdir -p bootstrap/freebsd-powerpc64
+	mkdir -p bootstrap/freebsd-powerpc64le
 	mkdir -p bootstrap/dragonfly-x86_64
 	mkdir -p bootstrap/solaris-x86_64
 	mkdir -p bootstrap/linux-x86
@@ -1296,6 +1302,7 @@ bootstrap-dist:
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-x86_64      && mv src/compiler/*.c   bootstrap/freebsd-x86_64
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-powerpc     && mv src/compiler/*.c   bootstrap/freebsd-powerpc
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-powerpc64   && mv src/compiler/*.c   bootstrap/freebsd-powerpc64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-powerpc64le && mv src/compiler/*.c   bootstrap/freebsd-powerpc64le
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target dragonfly-x86_64    && mv src/compiler/*.c   bootstrap/dragonfly-x86_64
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target solaris-x86_64      && mv src/compiler/*.c   bootstrap/solaris-x86_64
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-x86           && mv src/compiler/*.asm bootstrap/linux-x86
@@ -1312,6 +1319,7 @@ bootstrap-dist:
 	dos2unix bootstrap/freebsd-x86_64/*
 	dos2unix bootstrap/freebsd-powerpc/*
 	dos2unix bootstrap/freebsd-powerpc64/*
+	dos2unix bootstrap/freebsd-powerpc64le/*
 	dos2unix bootstrap/dragonfly-x86_64/*
 	dos2unix bootstrap/solaris-x86_64/*
 	dos2unix bootstrap/linux-x86/*

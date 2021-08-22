@@ -306,7 +306,7 @@ function fbcQueryGcc( byref options as string ) as string
 		path += " -m64"
 	case FB_CPUFAMILY_PPC
 		path += " -m32"
-	case FB_CPUFAMILY_PPC64
+	case FB_CPUFAMILY_PPC64, FB_CPUFAMILY_PPC64LE
 		path += " -m64"
 	end select
 
@@ -372,7 +372,7 @@ private function fbcBuildPathToLibFile( byval file as zstring ptr ) as string
 		path += " -m64"
 	case FB_CPUFAMILY_PPC
 		path += " -m32"
-	case FB_CPUFAMILY_PPC64
+	case FB_CPUFAMILY_PPC64, FB_CPUFAMILY_PPC64LE
 		path += " -m64"
 	end select
 
@@ -1388,35 +1388,36 @@ end type
 '' OS name strings recognized when parsing GNU triplets (-target option)
 dim shared as FBGNUOSINFO gnuosmap(0 to ...) => _
 { _
-	(@"linux"  , FB_COMPTARGET_LINUX  ), _
-	(@"mingw"  , FB_COMPTARGET_WIN32  ), _
-	(@"djgpp"  , FB_COMPTARGET_DOS    ), _
-	(@"cygwin" , FB_COMPTARGET_CYGWIN ), _
-	(@"darwin" , FB_COMPTARGET_DARWIN ), _
-	(@"freebsd", FB_COMPTARGET_FREEBSD), _
+	(@"linux"    , FB_COMPTARGET_LINUX    ), _
+	(@"mingw"    , FB_COMPTARGET_WIN32    ), _
+	(@"djgpp"    , FB_COMPTARGET_DOS      ), _
+	(@"cygwin"   , FB_COMPTARGET_CYGWIN   ), _
+	(@"darwin"   , FB_COMPTARGET_DARWIN   ), _
+	(@"freebsd"  , FB_COMPTARGET_FREEBSD  ), _
 	(@"dragonfly", FB_COMPTARGET_DRAGONFLY), _
-	(@"solaris", FB_COMPTARGET_SOLARIS), _
-	(@"netbsd" , FB_COMPTARGET_NETBSD ), _
-	(@"openbsd", FB_COMPTARGET_OPENBSD), _
-	(@"xbox"   , FB_COMPTARGET_XBOX   )  _
+	(@"solaris"  , FB_COMPTARGET_SOLARIS  ), _
+	(@"netbsd"   , FB_COMPTARGET_NETBSD   ), _
+	(@"openbsd"  , FB_COMPTARGET_OPENBSD  ), _
+	(@"xbox"     , FB_COMPTARGET_XBOX     )  _
 }
 
 '' Architectures recognized when parsing GNU triplets (-target option)
 dim shared as FBGNUARCHINFO gnuarchmap(0 to ...) => _
 { _
-	(@"i386"   , FB_CPUTYPE_386            ), _
-	(@"i486"   , FB_CPUTYPE_486            ), _
-	(@"i586"   , FB_CPUTYPE_586            ), _
-	(@"i686"   , FB_CPUTYPE_686            ), _
-	(@"x86"    , FB_DEFAULT_CPUTYPE_X86    ), _
-	(@"x86_64" , FB_DEFAULT_CPUTYPE_X86_64 ), _
-	(@"amd64"  , FB_DEFAULT_CPUTYPE_X86_64 ), _
-	(@"armv6"  , FB_CPUTYPE_ARMV6          ), _
-	(@"armv7a" , FB_CPUTYPE_ARMV7A         ), _
-	(@"arm"    , FB_DEFAULT_CPUTYPE_ARM    ), _
-	(@"aarch64", FB_DEFAULT_CPUTYPE_AARCH64), _
-	(@"powerpc", FB_DEFAULT_CPUTYPE_PPC    ), _
-	(@"powerpc64", FB_DEFAULT_CPUTYPE_PPC64)  _
+	(@"i386"       , FB_CPUTYPE_386            ), _
+	(@"i486"       , FB_CPUTYPE_486            ), _
+	(@"i586"       , FB_CPUTYPE_586            ), _
+	(@"i686"       , FB_CPUTYPE_686            ), _
+	(@"x86"        , FB_DEFAULT_CPUTYPE_X86    ), _
+	(@"x86_64"     , FB_DEFAULT_CPUTYPE_X86_64 ), _
+	(@"amd64"      , FB_DEFAULT_CPUTYPE_X86_64 ), _
+	(@"armv6"      , FB_CPUTYPE_ARMV6          ), _
+	(@"armv7a"     , FB_CPUTYPE_ARMV7A         ), _
+	(@"arm"        , FB_DEFAULT_CPUTYPE_ARM    ), _
+	(@"aarch64"    , FB_DEFAULT_CPUTYPE_AARCH64), _
+	(@"powerpc"    , FB_DEFAULT_CPUTYPE_PPC    ), _
+	(@"powerpc64"  , FB_DEFAULT_CPUTYPE_PPC64  ),  _
+	(@"powerpc64le", FB_DEFAULT_CPUTYPE_PPC64LE)  _
 }
 
 '' Identify OS (FB_COMPTARGET_*) and architecture (FB_CPUTYPE_*) in a GNU
@@ -3113,7 +3114,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			ln += "-m64 "
 		case FB_CPUFAMILY_PPC
 			ln += "-m32 "
-		case FB_CPUFAMILY_PPC64
+		case FB_CPUFAMILY_PPC64, FB_CPUFAMILY_PPC64LE
 			ln += "-m64 "
 		end select
 
@@ -3259,6 +3260,8 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			ln += "-mcpu=powerpc "
 		case FB_CPUFAMILY_PPC64
 			ln += "-mcpu=powerpc64 "
+		case FB_CPUFAMILY_PPC64LE
+			ln += "-mcpu=powerpc64le "
 		end select
 
 		if( fbGetOption( FB_COMPOPT_PIC ) ) then

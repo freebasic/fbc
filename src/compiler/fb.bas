@@ -224,8 +224,8 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 }
 
 type FBCPUFAMILYINFO
-	id		 as zstring ptr
-	defaultcputype	as integer
+	id as zstring ptr
+	defaultcputype as integer
 end type
 
 dim shared as FBCPUFAMILYINFO cpufamilyinfo(0 to FB_CPUFAMILY__COUNT-1) = _
@@ -236,6 +236,7 @@ dim shared as FBCPUFAMILYINFO cpufamilyinfo(0 to FB_CPUFAMILY__COUNT-1) = _
 	(@"aarch64"    , FB_DEFAULT_CPUTYPE_AARCH64), _
 	(@"powerpc"    , FB_DEFAULT_CPUTYPE_PPC    ), _
 	(@"powerpc64"  , FB_DEFAULT_CPUTYPE_PPC64  ), _
+	(@"powerpc64le", FB_DEFAULT_CPUTYPE_PPC64LE), _
 	(@"asmjs"      , FB_DEFAULT_CPUTYPE_ASMJS  )  _
 }
 
@@ -268,6 +269,7 @@ dim shared as FBCPUTYPEINFO cputypeinfo(0 to FB_CPUTYPE__COUNT-1) = _
 	( @"armv8-a" , @"aarch64"      , FB_CPUFAMILY_AARCH64, 64, FALSE ), _ '' FB_CPUTYPE_AARCH64
 	( NULL       , @"powerpc"      , FB_CPUFAMILY_PPC    , 32, TRUE  ), _ '' FB_CPUTYPE_PPC
 	( NULL       , @"powerpc64"    , FB_CPUFAMILY_PPC64  , 64, TRUE  ), _ '' FB_CPUTYPE_PPC64
+	( NULL       , @"powerpc64le"  , FB_CPUFAMILY_PPC64LE, 64, FALSE ), _ '' FB_CPUTYPE_PPC64LE
 	( NULL       , @"asmjs"        , FB_CPUFAMILY_ASMJS	 , 32, FALSE )  _ '' FB_CPUTYPE_ASMJS
 }
 
@@ -852,6 +854,7 @@ private function hGetTargetId _
 	''    freebsd-x86_64
 	''    freebsd-powerpc
 	''    freebsd-powerpc64
+	''    freebsd-powerpc64le
 	''    ...
 
 	var cpufamily = cputypeinfo(cputype).family
@@ -1595,7 +1598,7 @@ function fbGetBackendValistType _
 		case FB_CPUFAMILY_PPC
 			typedef = FB_CVA_LIST_BUILTIN_POINTER
 
-		case FB_CPUFAMILY_PPC64
+		case FB_CPUFAMILY_PPC64, FB_CPUFAMILY_PPC64LE
 			typedef = FB_CVA_LIST_BUILTIN_POINTER
 
 		case else

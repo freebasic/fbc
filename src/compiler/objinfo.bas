@@ -884,7 +884,7 @@ private sub hLoadFbctinfFromObj( )
 		case FB_CPUFAMILY_ARM
 			INFO( "reading arm32 ELF: " + parser.filename )
 			hLoadFbctinfFromELF32_H( EM_ARM32 )
-		case FB_CPUFAMILY_PPC64
+		case FB_CPUFAMILY_PPC64, FB_CPUFAMILY_PPC64LE
 			INFO( "reading powerpc64 ELF: " + parser.filename )
 			hLoadFbctinfFromELF64_H( EM_PPC64 )
 		case FB_CPUFAMILY_PPC
