@@ -29,6 +29,11 @@ Set target architecture for improved/restricted code generation or cross-compili
 				- ##armv7-a## (default for ARM)
 			- Related to 64bit ARM (""AArch64""):
 				- ##aarch64##
+			- Related to 32bit ""PowerPC"":
+				- ##powerpc## (big endian)
+			- Related to 64bit ""PowerPC"":
+				- ##powerpc64## (big endian)
+				- ##powerpc64le## (little endian)
 			- Others:
 				- ##native##: For compiling to the architecture which the compiler is running on.
 				- ##32##, ##64##: For quick cross-compiling to the 32bit or 64bit version of the default architecture.
@@ -44,7 +49,7 @@ Set target architecture for improved/restricted code generation or cross-compili
 	
 	However, ##-arch## only affects newly generated code, but not pre-compiled code such as the ""FreeBASIC"" runtime libraries, or any other library from the ##lib/## directory. For example, using ##-arch 386## is not necessarily enough to get a pure i386 executable -- it also depends on how all the libraries that will be linked in were compiled.
 	
-	The ##-arch 32## and ##-arch 64## shortcuts are similar to gcc's ##-m32/-m64## options. On 32bit architectures, ##-arch 64## is an abbreviation for cross-compiling to the default 64bit version of the architecture (e.g. from 32bit x86 to 64bit x86_64, or 32bit ARM to 64bit ""AArch64""), and ##-arch 32## does nothing. On 64bit systems, it is the other way round: ##-arch 32## cross-compiles to the default 32bit architecture, while ##-arch 64## does nothing.
+	The ##-arch 32## and ##-arch 64## shortcuts are similar to gcc's ##-m32/-m64## options. On 32bit architectures, ##-arch 64## is an abbreviation for cross-compiling to the default 64bit version of the architecture (e.g. from 32bit x86 to 64bit x86_64, or 32bit ARM to 64bit ""AArch64"", or 32bit ""PowerPC"" to 64bit ""PowerPC""), and ##-arch 32## does nothing. On 64bit systems, it is the other way round: ##-arch 32## cross-compiles to the default 32bit architecture, while ##-arch 64## does nothing.
 	
 	The ##-arch native## shortcut is similar to gcc's ##-march=native## option. On x86, it causes fbc to try and detect the host CPU automatically based on the ##cpuid## instruction and its availability or results. On other architectures, this will currently simply use the architecture which the compiler itself was built for. Under -gen gcc this will use ##gcc -march=native##.
 	

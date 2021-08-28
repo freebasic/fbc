@@ -370,7 +370,7 @@ Parent.Destructor()
 				
 		If the Type derives from several base Types (multiple-level inheritance), each derived Type constructor can explicitly call only one constructor, the one of its direct base Type, thus the all constituting a chaining of the base constructors.
 		
-		When using inheritance polymorphism, the object are manipulated through base Type pointers or references:
+		When using inheritance polymorphism (sub-type polymorphism), the object are manipulated through base Type pointers or references:
 			**""-""** If at least one derived Type has an explicit destructor defined, all its base destructors must be virtual so that the destruction can start at this most derived Type and works its way down to the last base Type.
 			**""-""** To do this, it may be necessary to add virtual destructors with an empty body anywhere an explicit destruction was not yet required, in order to supersede each non-virtual implicit destructor built by the compiler.
 			

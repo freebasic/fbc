@@ -37,7 +37,7 @@ The different operators **New** (//Implicit///Overload/Expression/Placement) and
 	Instance array constructed at a specified memory address with ##'Operator Placement New[]'## must never induce a symmetric freeing with any ##'Operator Delete[]'## on the address (because the memory has been allocated in another way than by the ##'Operator Placement New[]'##).
 	For such UDT instances, the proper way to just destroy each instance if necessary, is to call only the destructor if one exists (implicitly or explicitly), with syntax as for a member method by using member access operator.
 	
-	**Note:** Any operators //'New[]'// or //'Delete[]'// (the array versions for  statement/expression/overload operators) and even the overload operator //'Delete'// are not directly compatible with inheritance polymorphism, because the use of a sub-type pointer (instead of the real type) mainly fails for accessing the other elements (except the first).
+	**Note:** Any operators //'New[]'// or //'Delete[]'// (the array versions for  statement/expression/overload operators) and even the overload operator //'Delete'// are not directly compatible with inheritance polymorphism (sub-type polymorphism), because the use of a sub-type pointer (instead of the real type) mainly fails for accessing the other elements (except the first).
 
 {{fbdoc item="section" value="Algorithm (applied to user-defined types)"}}
 	Operator New/New[] Expression:

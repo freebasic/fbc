@@ -57,6 +57,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgDdfboutlib|__FB_OUT_LIB__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboutobj|__FB_OUT_OBJ__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbpcos|__FB_PCOS__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbppc|__FB_PPC__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbquote|__FB_QUOTE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbsignature|__FB_SIGNATURE__"}} 
 	- {{fbdoc item="keyword" value="KeyPgDdfbsse|__FB_SSE__"}}

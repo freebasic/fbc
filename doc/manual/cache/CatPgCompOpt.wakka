@@ -33,6 +33,8 @@ Command line compiler options for the fbc compiler:
 		- Add debug information
 	{{fbdoc item="keyword" value="CompilerOptelocation|-elocation"}}
 		- Enable full error location reporting 
+	{{fbdoc item="keyword" value="CompilerOptentry|-entry < name >"}}
+		- Override public exported name of implicit user main function
 	{{fbdoc item="keyword" value="CompilerOptenullptr|-enullptr"}}
 		- Enable null-pointer checking
 	{{fbdoc item="keyword" value="CompilerOptex|-ex"}}
@@ -62,7 +64,7 @@ Command line compiler options for the fbc compiler:
 	{{fbdoc item="keyword" value="CompilerOptlib|-lib"}}
 		- Create a static library
 	{{fbdoc item="keyword" value="CompilerOptm|-m < name >"}}
-		- Main file without extension, the entry point (default is the first .bas file on the command line)
+		- Define main file (without extension), the entry point (default is the first .bas file on the command line)
 	{{fbdoc item="keyword" value="CompilerOptmap|-map < name >"}}
 		- Save the linking map to file name
 	{{fbdoc item="keyword" value="CompilerOptmaxerr|-maxerr < val >"}}

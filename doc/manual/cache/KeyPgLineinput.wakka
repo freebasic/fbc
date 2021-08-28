@@ -6,12 +6,18 @@ Reads one line of input from the keyboard
 ##
 {{fbdoc item="param"}}
 	##//promptstring//##
-		prompt to display before waiting for input
+		optional prompt to display before waiting for input. If it is followed by a semicolon (##;##), a question mark (##"? "##) will be appended to the prompt. If it is followed by a comma, nothing will be appended.
 	##//stringvariable//##
 		variable to receive the line of text
 
 {{fbdoc item="desc"}}
 	Reads a line of text from the keyboard and stores it in a string variable.
+	
+	The ##//promptstring//## - if any - is written to the screen at the current cursor location, and characters read are echoed to the screen immediately following the prompt. If no prompt is specified, characters are echoed at the current cursor location.
+	
+	The optional leading semicolon (##;##) after ##**Line Input**## is similar to the optional trailing semicolon in a ##[[KeyPgPrint|Print]]## statement: the cursor will remain on the same line after all of the characters have been echoed, otherwise, the cursor will move to the beginning of the next line.
+	
+	##**Line Input**## has a limited edit capacity: it allows to use the left and right cursor keys to navigate the text, and to erase or insert characters. If a better user interface is needed, a custom input routine should be used.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/console/lineinput.bas"}}%%(freebasic)

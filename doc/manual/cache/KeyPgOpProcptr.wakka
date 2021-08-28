@@ -2,16 +2,17 @@
 Returns the address of a procedure
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Procptr** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] //T// ) [[KeyPgAs|as]] //T// [[KeyPgPtr|ptr]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Procptr** ( [[KeyPgByref|byref]] //identifier// [[KeyPgAs|as]] //proctype// [, //proctype// ] ) [[KeyPgAs|as]] //proctype// [[KeyPgPtr|ptr]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Procptr** ( //lhs// )
+	//result// = **Procptr** ( //identifier// [, //proctype// ] )
 ##
 {{fbdoc item="param"}}
-	##//lhs//##
-		A procedure.
-	##//T//##
-		The type of procedure.
+	##//identifier//##
+		A procedure identifier.
+	##//proctype//##
+		The type of procedure (sub/function).
+		Its use as a second argument (the optional) is only supported for fbc version >= 1.09.
 
 {{fbdoc item="ret"}}
 	Returns the address of the procedure.
@@ -19,10 +20,13 @@ Returns the address of a procedure
 {{fbdoc item="desc"}}
 	This operator returns the address of a ##[[KeyPgSub|Sub]]## or ##[[KeyPgFunction|Function]]## procedure.
 	
-	##[[KeyPgOpAt|Operator @ (Address of)]]##, when used with procedures, has identical behavior.
+	When using the two arguments ##PROCPTR( //identifier//, //type// )## syntax, this allows of getting procedure pointer for based on sub/function type.
+	This makes it possible to explicitly specify the 'type' of the sub/function, to resolve procedure overloads or make a check for compatible sub/function on non-overloaded procedures.
+	
+	##[[KeyPgOpAt|Operator @ (Address of)]]##, when used with procedures, behaves the same as ##**Procptr**## without its optional argument (the second).
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/operator/procptr.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/operator/procptr.bas"}}%%(freebasic)
 ' This example uses ProcPtr to demonstrate function pointers
 Declare Function Subtract( x as Integer, y as Integer) as Integer
 Declare Function Add( x as Integer, y as Integer) as Integer
@@ -43,8 +47,27 @@ end function
 Function Subtract( x as Integer, y as Integer) as Integer
 	return x - y
 end function
-%%
+	%%
+	{{fbdoc item="filename" value="examples/manual/operator/procptr2.bas"}}%%(freebasic)
+Sub s Overload()
+End Sub
 
+Sub s( Byval i As Integer )
+End Sub
+
+'----- Previously (fbc version < 1.09) was only possible with:
+
+'Dim s1 As Sub()
+'s1 = Procptr( s )
+
+'Dim s2 As Sub( Byval i As Integer)
+'s2 = Procptr( s )
+
+'----- Now (fbc version >= 1.09) is possible with:
+
+Var s1 = Procptr( s, Sub() )
+Var s2 = Procptr( s, Sub( Byval i As Integer ) )
+	%%
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Procptr""**##.
 

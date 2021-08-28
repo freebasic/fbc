@@ -7,20 +7,20 @@ Data type that stores a pointer to a ##[[KeyPgFunction|FUNCTION]]## procedure re
 {{fbdoc item="param"}}
 	##//parameter_list//##: parameter[, parameter[, ...]]
 	##//parameter//##: ##[[[KeyPgByref|ByRef]]|[[KeyPgByval|ByVal]]] //identifier// [[[KeyPgAs|As]] //type//] [= //default_value//]##
-		##//identifier//##: the name of the variable referenced in the subroutine
+		##//identifier//##: the name of the variable referenced in the function
 		##//type//##: the type of variable
 		##//default_value//##: the value of the argument if none is specified in the call
 	##//return_value//##: the value returned from the function
-	##//intializer//##: address of a subroutine to set as the intial value
+	##//intializer//##: address of a function to set as the initial value
 
 {{fbdoc item="desc"}}
 	A ##[[KeyPgFunction|Function]]## pointer is a procedure pointer that stores the memory location of compiled code that returns a value.  If no intializer is given the default initial value is zero (0).
 	
-	The memory address for the ##[[KeyPgFunction|Function]]## procedure can be assigned to the variable by taking the address of a subroutine with ##[[KeyPgOpProcptr|ProcPtr]]## or ##[[KeyPgOpAt|Operator @ (Address of)]]##.
+	The memory address for the ##[[KeyPgFunction|Function]]## procedure can be assigned to the variable by taking the address of a function with ##[[KeyPgOpProcptr|ProcPtr]]## or ##[[KeyPgOpAt|Operator @ (Address of)]]##.
 	
 	The procedure must match the same ##[[KeyPgFunction|Function]]## declaration as the declared ##[[KeyPgFunction|Function]]## pointer.
 	
-	To call the subroutine assigned, use the ##//variable//## name as if it were a normal declared ##[[KeyPgFunction|Function]]##.
+	To call the function assigned, use the ##//variable//## name as if it were a normal declared ##[[KeyPgFunction|Function]]##, always with parentheses around the parameter list even empty (without parentheses, only the pointer value, ie the address of the function, would be accessed).
 	
 	One of the primary uses for ##[[KeyPgFunction|Function]]## pointers is to create callback procedures:
 		**""-""** A callback ##[[KeyPgFunction|Function]]## is a ##[[KeyPgFunction|Function]]## that is passed through an argument (a ##[[KeyPgFunction|Function]]## pointer) to another procedure which is expected to call back (execute) the "argument" at a convenient time.
@@ -99,7 +99,7 @@ Print operation(4, @x3)
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgSub|Sub]]##
+	- ##[[KeyPgFunction|Function]]##
 	- ##[[KeyPgOpProcptr|ProcPtr]]##
 	- ##[[KeyPgOpAt|Operator @ (Address of)]]##
 

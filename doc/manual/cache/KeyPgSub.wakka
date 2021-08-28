@@ -47,6 +47,8 @@ Defines a procedure
 	When calling a subroutine, parentheses after the subroutine name (surrounding the argument list if any) are optional.
 	
 	The second syntax defines either a constructor or destructor using the ##[[KeyPgModuleConstructor|Constructor]]## and ##[[KeyPgModuleDestructor|Destructor]]## keywords, respectively. Constructor subroutines are executed before the first line of code in the module, while destructors execute on module exit. Note the public access specifier and empty parameter list for both constructors and destructors.
+	
+	**Warning for 64-bit compiler only:** Regarding the choice of user procedure identifier names, an additional restriction to the normal [[ProPgIdentifierRules|Identifier Rules]] also excludes in the global namespace all register names or other symbols from the assembler format used, because causing assembler errors or runtime bugs (due to the 64-bit compiler not decorating procedure names).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/sub-1.bas"}}%%(freebasic)

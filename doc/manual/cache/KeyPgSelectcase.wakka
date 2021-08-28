@@ -43,6 +43,8 @@ Conditional statement block
 	
 	With ##**As Const**##, a jump table is created to contain the full range of integer ##**Case**##s handled.  This allows ##**Select Case As Const**## to be faster than ##**Select Case**##.
 	However, the size of the range of values is limited, and after converting the values to the uinteger type, the largest value in the range may be no higher than the smallest value + 8191 (current implementation).
+	
+	**Note:** No statement can be placed between the ##**Select Case**## statement and the first ##**Case**## statement.
 
 {{fbdoc item="ex"}}
 
@@ -129,7 +131,7 @@ sleep
 %%
 
 {{fbdoc item="diff"}}
-	- ##**Select Case As Const**## did not exist in QB
+	- ##**Select Case As Const**## did not exist in QB.
 	- in an "##//expr1// TO //expr2//##" case, QB would always evaluate both expressions, even if ##//expr1//## was higher than the original expression.
 	- In the //[[CompilerOptlang|-lang qb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, variables declared inside a ##**Select**##..##**End Select**## block have a function-wide [[ProPgVariableScope|scope]] as in QB.
 	- In the //[[CompilerOptlang|-lang fb]]// and //[[CompilerOptlang|-lang deprecated]]// dialects, variables declared inside a ##**Select**##..##**End Select**## block are visible only inside the block, and can't be accessed outside it.
