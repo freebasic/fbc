@@ -89,6 +89,10 @@ private function hDefGui_cb () as string
 	function = str( env.clopt.modeview = FB_MODEVIEW_GUI )
 end function
 
+private function hDefOptimize_cb () as string
+	function = str( fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) )
+end function
+
 private function hDefOutExe_cb() as string
 	function = str( env.clopt.outtype = FB_OUTTYPE_EXECUTABLE )
 end function
@@ -877,7 +881,8 @@ dim shared defTb(0 to ...) as SYMBDEF => _
 	(@"__FB_FPU__"            , NULL          , FB_DEFINE_FLAGS_STR, @hDefFpu_cb        ), _
 	(@"__FB_FPMODE__"         , NULL          , FB_DEFINE_FLAGS_STR, @hDefFpmode_cb     ), _
 	(@"__FB_GCC__"            , NULL          , 0                  , @hDefGcc_cb        ), _
-	(@"__FB_GUI__"            , NULL          , 0                  , @hDefGui_cb        )  _
+	(@"__FB_GUI__"            , NULL          , 0                  , @hDefGui_cb        ), _
+	(@"__FB_OPTIMIZE__"       , NULL          , 0                  , @hDefoptimize_cb   )  _
 }
 
 type SYMBMACRO
