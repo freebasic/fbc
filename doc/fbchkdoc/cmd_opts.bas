@@ -29,6 +29,7 @@ using fbdoc
 #include once "fbchkdoc.bi"
 #include once "funcs.bi"
 #include once "cmd_opts.bi"
+#include once "fbdoc_trace.bi"
 
 '' ------------------------------------
 '' command line options
@@ -56,6 +57,7 @@ type CMD_OPTS_PRIVATE
 	enable_pagelist as boolean   '' enable reading in a text file with a list of page names
 	enable_manual as boolean     '' enable the manual dir option
 	enable_database as boolean   '' enable db_* options
+	enable_trace as boolean      '' enable communication tracing (libcurl verbose)
 
 	print as boolean             '' -printopts option on command line
 
@@ -124,11 +126,13 @@ sub cmd_opts_init( byval opts_flags as const CMD_OPTS_ENABLE_FLAGS )
 	cmd_opt.enable_pagelist = cbool( opts_flags and CMD_OPTS_ENABLE_PAGELIST )
 	cmd_opt.enable_manual = cbool( opts_flags and CMD_OPTS_ENABLE_MANUAL )
 	cmd_opt.enable_database = cbool( opts_flags and CMD_OPTS_ENABLE_DATABASE )
+	cmd_opt.enable_trace = cbool( opts_flags and CMD_OPTS_ENABLE_TRACE )
 
 	'' general options
 
 	app_opt.help = false     '' -h, -help given on command line
 	app_opt.verbose = false  '' -v given on command line
+	app_opt.trace = false    '' -trace given on command line
 
 	cmd_opt.print = false    '' -printopts options given
 	cmd_opt.ini = false      '' -ini given on command line
@@ -250,11 +254,19 @@ function cmd_opts_read( byref i as integer ) as boolean
 	if( left( command(i), 1 ) = "-" ) then
 
 		select case lcase(command(i))
-		case "-h", "-help"
+		case "-h", "-help", "--help"
 			app_opt.help = true
 
 		case "-v"
 			app_opt.verbose = true
+
+		case "-trace"
+			if( cmd_opt.enable_trace ) then
+				app_opt.trace = true
+				fbdoc.set_trace( true )
+			else
+				return false
+			end if
 
 		case "-printopts"
 			cmd_opt.print = true
@@ -852,4 +864,7 @@ sub cmd_opts_show_help( byref action as const string = "", locations as boolean 
 		print "   -db_port         database port number"
 	end if
 
+	if( cmd_opt.enable_trace ) then
+		print "   -trace           enable tracing (libcurl verbose)"
+	end if
 end sub

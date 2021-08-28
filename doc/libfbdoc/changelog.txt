@@ -1,3 +1,6 @@
+August 28, 2021
+- add '-trace' option to show libcurl verbosity
+
 January 28, 2018
 - copyright updates for 2018
 

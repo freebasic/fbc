@@ -26,6 +26,7 @@
 #include once "fbchkdoc.bi"
 #include once "funcs.bi"
 #include once "cmd_opts.bi"
+#include once "fbdoc_trace.bi"
 
 ''
 const MAX_IMAGEFILES = 100
@@ -58,8 +59,9 @@ function GetImage( byref url as string, byref filename as string ) as integer
 
 	if(curl) then
 
-		'' !!! TODO add verbose option for user
-		''curl_easy_setopt( curl, CURLOPT_VERBOSE, 1 )
+		if( fb.fbdoc.get_trace() ) then
+			curl_easy_setopt( curl, CURLOPT_VERBOSE, TRUE )
+		end if
 
 		curl_easy_setopt( curl, CURLOPT_URL, url )
 		curl_easy_setopt( curl, CURLOPT_FRESH_CONNECT, TRUE )
@@ -137,7 +139,7 @@ end function
 dim f as string
 
 '' enable image dir
-cmd_opts_init( CMD_OPTS_ENABLE_IMAGE )
+cmd_opts_init( CMD_OPTS_ENABLE_IMAGE or CMD_OPTS_ENABLE_TRACE )
 
 dim i as integer = 1
 while( command(i) > "" )

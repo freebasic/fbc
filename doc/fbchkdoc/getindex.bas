@@ -52,9 +52,9 @@ dim as boolean bUseSql = false '' -usesql given on command line
 
 '' enable url and cache
 #if defined(HAVE_MYSQL)
-cmd_opts_init( CMD_OPTS_ENABLE_URL or CMD_OPTS_ENABLE_CACHE or CMD_OPTS_ENABLE_DATABASE )
+cmd_opts_init( CMD_OPTS_ENABLE_URL or CMD_OPTS_ENABLE_CACHE or CMD_OPTS_ENABLE_DATABASE or CMD_OPTS_ENABLE_TRACE )
 #else
-cmd_opts_init( CMD_OPTS_ENABLE_URL or CMD_OPTS_ENABLE_CACHE )
+cmd_opts_init( CMD_OPTS_ENABLE_URL or CMD_OPTS_ENABLE_CACHE or CMD_OPTS_ENABLE_TRACE )
 #endif
 
 dim i as integer = 1

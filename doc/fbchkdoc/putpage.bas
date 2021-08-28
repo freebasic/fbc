@@ -45,7 +45,7 @@ using fbdoc
 dim as integer iComment = 0
 
 '' enable url, cache, and login
-cmd_opts_init( CMD_OPTS_ENABLE_URL or CMD_OPTS_ENABLE_CACHE or CMD_OPTS_ENABLE_LOGIN or CMD_OPTS_ENABLE_PAGELIST )
+cmd_opts_init( CMD_OPTS_ENABLE_URL or CMD_OPTS_ENABLE_CACHE or CMD_OPTS_ENABLE_LOGIN or CMD_OPTS_ENABLE_PAGELIST or CMD_OPTS_ENABLE_TRACE )
 
 dim i as integer = 1
 while( command(i) > "" )
