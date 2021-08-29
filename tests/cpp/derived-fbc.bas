@@ -2,7 +2,11 @@
 
 '' test mapping of mangling between c++ derived class and fbc type
 
+#ifdef __FB_FREEBSD__
+#inclib "c++"
+#else
 #inclib "stdc++"
+#endif
 
 '' helper macro to track progress
 #define DLOG( msg ) '' print #msg
