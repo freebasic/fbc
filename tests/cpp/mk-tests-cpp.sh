@@ -1,8 +1,22 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
 # TODO: select gas or gas64 based on host
+
+# determine make or gmake
+
+osname="`uname -s`"
+case "$osname" in
+FreeBSD*)
+	MAKECMD="gmake CC=gcc CXX=g++"
+	;;
+*)
+	MAKECMD="make"
+	;;
+esac
+
+echo $MAKCMD
 
 function chk() {
 	testname="$1"
@@ -11,7 +25,7 @@ function chk() {
 	fi
 	genopt="-gen $2"
 	rm -f $testname-cpp.o
-	make -f $testname.bmk CFLAGS="-O0 -gstabs"
+	$MAKECMD -f $testname.bmk CFLAGS="-O0 -gstabs"
 	fbc -g $genopt -exx $testname-fbc.bas $testname-cpp.o -x $testname-fbc.exe
 	echo "Testing: $testname $genopt"
 	./$testname-fbc.exe
