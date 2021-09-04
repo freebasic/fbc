@@ -807,7 +807,19 @@ function ppTypeOf( ) as string
 end function
 
 
-declare sub parseArgsFromString( byval args as zstring ptr )
+'' fbcParseArgsFromString() exists in fbc.bas which is out main
+'' entry point for the fbc compiler.  We would probably like to
+'' separate it in to another interface, but fbc.bas has everything
+'' we need to process options.  So, we've made fbcParseArgsFromString()
+'' public and just declare it here because for now this is the only
+'' place we use it outside of fbc.bas
+
+declare sub fbcParseArgsFromString _
+	( _
+		byval args as zstring ptr, _
+		byval is_source as integer, _
+		byval is_file as integer _
+	)
 
 '':::::
 '' ppCmdLine        =   '#'CMDLINE LIT_STR
@@ -824,7 +836,7 @@ private sub ppCmdline( )
 
 	args = lexGetText( )
 
-	ParseArgsFromString( args )
+	fbcParseArgsFromString( args, TRUE, FALSE )
 
 	'' Preserve under -pp
 	if( env.ppfile_num > 0 ) then

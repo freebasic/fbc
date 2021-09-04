@@ -295,7 +295,7 @@ end function
 
 '' Pass some arguments to gcc and read the results. Returns an empty string on
 '' an error.
-function fbcQueryGcc( byref options as string ) as string
+private function fbcQueryGcc( byref options as string ) as string
 	dim as string path
 	fbcFindBin( FBCTOOL_GCC, path )
 
@@ -2307,9 +2307,18 @@ private function parseOption(byval opt as zstring ptr) as integer
 	return -1
 end function
 
-declare sub parseArgsFromFile( byref filename as string )
+declare sub parseArgsFromFile _
+	( _
+		byref filename as string, _
+		byval is_source as integer _
+	)
 
-private sub handleArg( byref arg as string )
+private sub handleArg _
+	( _
+		byref arg as string, _
+		byval is_file as boolean, _
+		byval is_source as integer _
+	)
 	'' If the previous option wants this argument as parameter,
 	'' call the handler with it, now that it's known.
 	'' Note: Anything is accepted, even if it starts with '-' or '@'.
@@ -2377,7 +2386,7 @@ private sub handleArg( byref arg as string )
 
 		'' Recursively read in the additional options from the file
 		reclevel += 1
-		parseArgsFromFile( arg )
+		parseArgsFromFile( arg, is_source )
 		reclevel -= 1
 
 	case else
@@ -2421,7 +2430,12 @@ private sub handleArg( byref arg as string )
 	end select
 end sub
 
-sub parseArgsFromString( byval args_in as zstring ptr )
+sub fbcParseArgsFromString _
+	( _
+		byval args_in as zstring ptr, _
+		byval is_source as integer, _
+		byval is_file as integer _
+	)
 
 	dim as string args = *args_in
 	dim as string arg
@@ -2468,7 +2482,7 @@ sub parseArgsFromString( byval args_in as zstring ptr )
 			arg = left(args, i)
 			arg = trim(arg)
 			arg = strUnquote(arg)
-			handleArg(arg)
+			handleArg( arg, is_file, is_source )
 		end if
 
 		args = right(args, length - i)
@@ -2476,7 +2490,11 @@ sub parseArgsFromString( byval args_in as zstring ptr )
 
 end sub
 
-private sub parseArgsFromFile( byref filename as string )
+private sub parseArgsFromFile _
+	( _
+		byref filename as string, _
+		byval is_source as integer _
+	)
 	dim as integer f = freefile()
 	if (open(filename, for input, as #f)) then
 		errReportEx( FB_ERRMSG_FILEACCESSERROR, filename, -1 )
@@ -2488,7 +2506,7 @@ private sub parseArgsFromFile( byref filename as string )
 	while (eof(f) = FALSE)
 		line input #f, args
 		args = trim(args)
-		parseArgsFromString( strptr( args ) )
+		fbcParseArgsFromString( strptr( args ), is_source, TRUE )
 	wend
 
 	close #f
@@ -2513,7 +2531,7 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 	dim as string arg
 	for i as integer = 1 to (argc - 1)
 		arg = *argv[i]
-		handleArg(arg)
+		handleArg( arg, FALSE, FALSE )
 	next
 
 	'' Waiting for argument to an option? If the user did something like
