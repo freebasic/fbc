@@ -834,6 +834,19 @@ private sub ppCmdline( )
 		exit sub
 	end if
 
+	'' not in module scope?
+	if( parser.scope <> FB_MAINSCOPE ) then
+
+		if( fbIsModLevel( ) = FALSE ) then
+			errReport( FB_ERRMSG_ILLEGALINSIDEASUB )
+		else
+			errReport( FB_ERRMSG_ILLEGALINSIDEASCOPE )
+		end if
+
+		lexSkipToken( )
+		exit sub
+	end if
+
 	args = lexGetText( )
 
 	'' we don't have anyway to auto-detect when all #cmdline's have been read and we should
@@ -851,7 +864,9 @@ private sub ppCmdline( )
 	'' first module?
 	if( env.module_count = 1 ) then
 
-		'' first pass
+		'' first pass for cmdline processing
+		'' !!!TODO!!! we could have more than one restart
+		'' one for #lang and one for #cmdline "-end"
 		if( env.restarts = 0 ) then
 			if( fbGetOption( FB_COMPOPT_NOCMDLINE ) ) then
 				errReportWarn( FB_WARNINGMSG_CMDLINEIGNORED )
