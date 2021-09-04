@@ -916,8 +916,11 @@ private function hLinkFiles( ) as integer
 	if( fbGetOption( FB_COMPOPT_DEBUGINFO ) = FALSE ) then
 		if( fbGetOption( FB_COMPOPT_PROFILE ) = FALSE ) then
 			if(( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN ) and _
-			  ( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS )) then
-				ldcline += " -s"
+				( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS )) then
+
+				if( fbc.stripsymbols ) then
+					ldcline += " -s"
+				end if
 			end if
 		end if
 	end if

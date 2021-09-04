@@ -53,6 +53,7 @@ Version 1.09.0
 - rtlib: define fb_AtomicSetThreadFlags() even in the non-multithreaded version of run time library - it is needed by thread_core.c:threadproc() - unusual but not impossible to link the non-multithreaded rtlib and call thread functions
 - darwin: a variety of improvements to allow compiling and linking (TeeEmCee)
 - gfxlib2: fix d2d scaling issues for high dpi (adeyblue)
+- fbc: fix regression - fbc.stripsymbols (-strip/-nostrip) check clobbered by emscripten merge
 - fbc: improve error message on statement between SELECT and first CASE inside a subroutine and don't allow CONST/ENUM between any SELECT & first CASE.
 - fbc: don't allow labels or EXIT statements between SELECT and first CASE statement
 - sf.net #843: Implicit casting of argument to string works for Instr() and Mid() but not for Left() and Right() 
