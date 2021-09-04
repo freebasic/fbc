@@ -1321,8 +1321,13 @@ private sub hCollectObjinfo( )
 	wend
 end sub
 
-private sub hFatalInvalidOption( byref arg as string )
-	errReportEx( FB_ERRMSG_INVALIDCMDOPTION, QUOTE + arg + QUOTE, -1 )
+private sub hFatalInvalidOption _
+	( _
+		byref arg as string, _
+		byval is_source as integer _
+	)
+	'' if 'is_source' then show a line number, otherwise it's the actual command line and line number is undefined
+	errReportEx( FB_ERRMSG_INVALIDCMDOPTION, QUOTE + arg + QUOTE, iif( is_source, 0, -1 ) )
 	fbcEnd( 1 )
 end sub
 
@@ -1741,7 +1746,13 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( TRUE , FALSE, FALSE )  _ '' OPT_Z
 }
 
-private sub handleOpt(byval optid as integer, byref arg as string)
+private sub handleOpt _
+	( _
+		byval optid as integer, _
+		byref arg as string, _
+		byval is_source as integer _
+	)
+
 	select case as const (optid)
 	case OPT_A
 		fbcAddObj( arg )
@@ -1750,7 +1761,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbc.cputype_is_native = (arg = "native")
 		fbc.cputype = fbIdentifyFbcArch( arg )
 		if( fbc.cputype < 0 ) then
-			hFatalInvalidOption( "-arch " + arg )
+			hFatalInvalidOption( "-arch " + arg, is_source )
 		end if
 
 	case OPT_ASM
@@ -1760,7 +1771,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "intel"
 			fbc.asmsyntax = FB_ASMSYNTAX_INTEL
 		case else
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end select
 
 	case OPT_B
@@ -1823,7 +1834,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 	case OPT_FORCELANG
 		dim as integer value = fbGetLangId(strptr(arg))
 		if( value = FB_LANG_INVALID ) then
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end if
 
 		fbSetOption( FB_COMPOPT_LANG, value )
@@ -1839,7 +1850,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "FAST"
 			value = FB_FPMODE_FAST
 		case else
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end select
 
 		fbSetOption( FB_COMPOPT_FPMODE, value )
@@ -1853,7 +1864,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "SSE"
 			value = FB_FPUTYPE_SSE
 		case else
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end select
 
 		fbSetOption( FB_COMPOPT_FPUTYPE, value )
@@ -1874,7 +1885,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		Case "gas64"
 			fbc.backend = FB_BACKEND_GAS64
 		case else
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end select
 
 	case OPT_HELP
@@ -1892,7 +1903,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 	case OPT_LANG
 		dim as integer value = fbGetLangId( strptr(arg) )
 		if( value = FB_LANG_INVALID ) then
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end if
 
 		fbSetOption( FB_COMPOPT_LANG, value )
@@ -1916,7 +1927,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		else
 			value = clng( arg )
 			if( value <= 0 ) then
-				hFatalInvalidOption( arg )
+				hFatalInvalidOption( arg, is_source )
 			end if
 		end if
 
@@ -1991,7 +2002,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "fblibdir" : fbc.print = PRINT_FBLIBDIR
 		case "sha-1"  : fbc.print = PRINT_SHA1
 		case else
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end select
 
 	case OPT_PROFILE
@@ -2039,7 +2050,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		hParseTargetArg( arg, os, cputype, is_gnu_triplet )
 
 		if( (os < 0) or (cputype < 0) ) then
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end if
 
 		'' Store the OS/cputype, overwriting the values from any
@@ -2076,7 +2087,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "2"
 			value = FB_VECTORIZE_INTRATREE
 		case else
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end select
 
 		fbSetOption( FB_COMPOPT_VECTORIZE, value )
@@ -2161,7 +2172,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "fbrt"
 			fbSetOption( FB_COMPOPT_FBRT, TRUE )
 		case else
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end select
 
 	end select
@@ -2316,19 +2327,19 @@ declare sub parseArgsFromFile _
 private sub handleArg _
 	( _
 		byref arg as string, _
-		byval is_file as boolean, _
-		byval is_source as integer _
+		byval is_source as integer, _
+		byval is_file as integer _
 	)
 	'' If the previous option wants this argument as parameter,
 	'' call the handler with it, now that it's known.
 	'' Note: Anything is accepted, even if it starts with '-' or '@'.
-	if (fbc.optid >= 0) then
+	if( fbc.optid >= 0 ) then
 		'' Complain about empty next argument
 		if (len(arg) = 0) then
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end if
 
-		handleOpt(fbc.optid, arg)
+		handleOpt( fbc.optid, arg, is_source )
 		fbc.optid = -1
 		return
 	end if
@@ -2345,14 +2356,21 @@ private sub handleArg _
 		'' Complain about '-' only
 		if (cptr(ubyte ptr, opt)[0] = 0) then
 			'' Incomplete command line option
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end if
 
 		'' Parse the option after the '-'
 		dim as integer optid = parseOption(opt)
 		if (optid < 0) then
 			'' Unrecognized command line option
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
+		end if
+
+		'' Are we in source by option not allowed in source?
+		if( is_source ) then
+			if( not cmdlineOptionTB( optid ).allowed_in_source ) then
+				hFatalInvalidOption( arg, is_source )
+			endif
 		end if
 
 		'' Does this option take a parameter?
@@ -2361,7 +2379,7 @@ private sub handleArg _
 			fbc.optid = optid
 		else
 			'' Handle this option now
-			handleOpt(optid, arg)
+			handleOpt( optid, arg, is_source )
 		end if
 
 	case asc("@")
@@ -2381,7 +2399,7 @@ private sub handleArg _
 		'' Complain about '@' only
 		if (len(arg) = 0) then
 			'' Missing file name after '@'
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end if
 
 		'' Recursively read in the additional options from the file
@@ -2417,14 +2435,14 @@ private sub handleArg _
 			'' Can have only one .xpm, or the fb_program_icon
 			'' symbol will be duplicated
 			if( len( fbc.xpm.srcfile ) > 0 ) then
-				hFatalInvalidOption( arg )
+				hFatalInvalidOption( arg, is_source )
 			end if
 
 			hSetIofile( @fbc.xpm, arg, TRUE )
 
 		case else
 			'' Input file without or with unknown extension
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 
 		end select
 	end select
@@ -2482,7 +2500,7 @@ sub fbcParseArgsFromString _
 			arg = left(args, i)
 			arg = trim(arg)
 			arg = strUnquote(arg)
-			handleArg( arg, is_file, is_source )
+			handleArg( arg, is_source, is_file )
 		end if
 
 		args = right(args, length - i)
@@ -2538,7 +2556,7 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 	'' 'fbc foo.bas -o' this shows the error.
 	if (fbc.optid >= 0) then
 		'' Missing argument for command line option
-		hFatalInvalidOption( *argv[argc - 1] )
+		hFatalInvalidOption( *argv[argc - 1], FALSE )
 	end if
 
 	'' In case there was an '-o <file>', but no corresponding input file,
