@@ -1468,7 +1468,7 @@ function fbCpuTypeFromGNUArchInfo( byref arch as string ) as integer
 			return gnuarchmap(i).cputype
 		end if
 	next
-	return -1 
+	return -1
 end function
 
 type FBOSARCHINFO
@@ -2467,7 +2467,7 @@ sub parseArgsFromString( byval args_in as zstring ptr )
 
 		args = right(args, length - i)
 	loop
-	
+
 end sub
 
 private sub parseArgsFromFile(byref filename as string)
