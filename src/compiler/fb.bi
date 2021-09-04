@@ -441,10 +441,18 @@ const FB_INFOSEC_OBJNAME = "__fb_ct.inf"
 
 #include once "error.bi"
 
+enum FB_RESTART_FLAGS
+	FB_RESTART_NONE         '' no restart required
+	FB_RESTART_PARSER   = 1 '' parser restart needed
+	FB_RESTART_FBC      = 2 '' main fbc entry restart needed
+	FB_RESTART_LANG     = 4 '' restart due to #lang directive
+	FB_RESTART_CMDLINE  = 8 '' restart due to #cmdline directive
+end enum
+
 declare sub fbInit _
 	( _
 		byval ismain as integer, _
-		byval restarts as integer, _
+		byval restarts as FB_RESTART_FLAGS, _
 		byval entry as zstring ptr, _
 		byval module_count as integer _
 	)
@@ -460,6 +468,8 @@ declare sub fbCompile _
 
 declare function fbShouldRestart() as integer
 declare function fbShouldContinue() as integer
+declare sub fbSetDelayRestart( byval flags as FB_RESTART_FLAGS )
+declare function fbGetRestartFlags( ) as FB_RESTART_FLAGS
 
 declare sub fbGlobalInit()
 declare sub fbAddIncludePath(byref path as string)
@@ -468,7 +478,6 @@ declare sub fbAddPreInclude(byref file as string)
 
 declare sub fbSetOption( byval opt as integer, byval value as integer )
 declare function fbGetOption( byval opt as integer ) as integer
-declare sub fbSetDelayRestart()
 
 declare sub fbChangeOption(byval opt as integer, byval value as integer)
 declare sub fbSetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)

@@ -834,6 +834,13 @@ private sub ppCmdline( )
 		exit sub
 	end if
 
+	args = lexGetText( )
+
+	'' Preserve under -pp
+	if( env.ppfile_num > 0 ) then
+		lexPPOnlyEmitText( "#cmdline """ + *args + """" )
+	end if
+
 	'' not in module scope?
 	if( parser.scope <> FB_MAINSCOPE ) then
 
@@ -843,46 +850,41 @@ private sub ppCmdline( )
 			errReport( FB_ERRMSG_ILLEGALINSIDEASCOPE )
 		end if
 
-		lexSkipToken( )
-		exit sub
-	end if
+	'' not first module?
+	elseif( env.module_count <> 1 ) then
+		errReportWarn( FB_WARNINGMSG_CMDLINEIGNORED )
 
-	args = lexGetText( )
+	'' ignoring all #cmdline's due to '-z nocmdline' option?
+	elseif( fbGetOption(FB_COMPOPT_NOCMDLINE) ) then
+		errReportWarn( FB_WARNINGMSG_CMDLINEIGNORED )
 
-	'' we don't have anyway to auto-detect when all #cmdline's have been read and we should
-	'' restart the parser.  Check for '#cmdline "-end"' to begin a restart
+	'' Already restarted due to #cmdline "-end"?
+	elseif( (env.restartflags and FB_RESTART_CMDLINE) <> 0 ) then
+		'' do nothing
 
 	'' #cmdline "-end" ?
-	if( lcase(trim(*args)) = "-end" ) then
-		if( env.delayrestart ) then
-			env.dorestart = TRUE
-		end if
-		lexSkipToken( )
-		exit sub
-	end if
+	elseif( lcase(trim(*args)) = "-end" ) then
 
-	'' first module?
-	if( env.module_count = 1 ) then
+		'' We don't have any clever way to auto-detect when all #cmdline's have been read
+		'' Check for '#cmdline "-end"' to begin a restart
 
-		'' first pass for cmdline processing
-		'' !!!TODO!!! we could have more than one restart
-		'' one for #lang and one for #cmdline "-end"
-		if( env.restarts = 0 ) then
-			if( fbGetOption( FB_COMPOPT_NOCMDLINE ) ) then
-				errReportWarn( FB_WARNINGMSG_CMDLINEIGNORED )
-			else
-				fbcParseArgsFromString( args, TRUE, FALSE )
-			end if
+		'' only restart if we need a restart and
+		if( (env.delayrestart and FB_RESTART_CMDLINE) <> 0 ) then
+
+			'' only if we haven't already restarted for #cmdline
+			if( (env.restartflags and FB_RESTART_CMDLINE ) = 0 ) then
+				env.dorestart or= env.delayrestart
+			endif
+
 		end if
 
+	'' must be first pass in the first module, so process the option
 	else
-		errReportWarn( FB_WARNINGMSG_CMDLINEIGNORED )
+		fbcParseArgsFromString( args, TRUE, FALSE )
+
 	end if
 
-	'' Preserve under -pp
-	if( env.ppfile_num > 0 ) then
-		lexPPOnlyEmitText( "#cmdline """ + *args + """" )
-	end if
-
+	'' "args..."
 	lexSkipToken( )
+
 end sub

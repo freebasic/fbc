@@ -638,9 +638,9 @@ type FBENV
 
 	'' compile / restart state
 	inited          as integer                  '' set to TRUE if parser ready
-	restarts        as integer                  '' number of parser restarts
-	dorestart       as integer                  '' request parser restart as soon as possible
-	delayrestart    as integer                  '' request a delayed parser restart, trigger on #cmdline "-end"
+	restartflags    as FB_RESTART_FLAGS         '' history of parser or fbc restarts completed
+	dorestart       as FB_RESTART_FLAGS         '' request parser or fbc restart as soon as possible
+	delayrestart    as FB_RESTART_FLAGS         '' request a delayed parser or fbc restart and trigger on #cmdline "-end"
 	module_count    as integer                  '' module (.bas) count, 1 = first
 
 	'' Lists to collect #inclibs and #libpaths

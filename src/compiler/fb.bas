@@ -378,7 +378,7 @@ end function
 sub fbInit _
 	( _
 		byval ismain as integer, _
-		byval restarts as integer, _
+		byval restartflags as FB_RESTART_FLAGS, _
 		byval entry as zstring ptr, _
 		byval module_count as integer _
 	)
@@ -386,9 +386,9 @@ sub fbInit _
 	strsetInit( @env.libs, FB_INITLIBNODES \ 4 )
 	strsetInit( @env.libpaths, FB_INITLIBNODES \ 4 )
 
-	env.restarts = restarts
-	env.dorestart = FALSE
-	env.delayrestart = FALSE
+	env.restartflags = restartflags
+	env.dorestart = FB_RESTART_NONE
+	env.delayrestart = FB_RESTART_NONE
 
 	redim infileTb( 0 to FB_MAXINCRECLEVEL-1 )
 
@@ -575,14 +575,18 @@ sub fbAddPreInclude(byref file as string)
 	strlistAppend(@env.preincludes, file)
 end sub
 
-sub fbSetDelayRestart()
+sub fbSetDelayRestart( byval flags as FB_RESTART_FLAGS )
 	'' env is defined in this module and we want to set it from fbc.bas
 	'' which does not have access to env.  But we are re-using the command
 	'' line options processing fbc.bas:fbcParseArgsFromString() in
 	'' pp.bas:ppCmdline().  So, expose a setter for env.delayrestart here
 	'' to allow fbc.bas to work with env.delayrestart
-	env.delayrestart = TRUE
+	env.delayrestart or= flags
 end sub
+
+function fbGetRestartFlags() as FB_RESTART_FLAGS
+	return env.dorestart
+end function
 
 sub fbSetOption( byval opt as integer, byval value as integer )
 	select case as const( opt )
@@ -806,12 +810,13 @@ sub fbChangeOption(byval opt as integer, byval value as integer)
 					errReportWarn( FB_WARNINGMSG_CMDLINEOVERRIDES )
 				else
 
-					'' First pass?
-					if( env.restarts = 0 ) then
+					'' Never restarted due to #lang?
+					if( ( env.restartflags and FB_RESTART_LANG ) = 0 ) then
 						fbSetOption( opt, value )
 
 						'' Tell parser to restart as soon as possible
-						env.dorestart = TRUE
+						env.dorestart or= FB_RESTART_LANG
+						env.dorestart or= FB_RESTART_PARSER
 
 						'' and don't show any more errors
 						errHideFurtherErrors()
@@ -1263,11 +1268,11 @@ sub fbCompile _
 end sub
 
 function fbShouldRestart() as integer
-	return env.dorestart
+	return ((env.dorestart and (FB_RESTART_PARSER or FB_RESTART_FBC)) <> 0)
 end function
 
 function fbShouldContinue() as integer
-	return ((env.dorestart = FALSE) and (errGetCount() < env.clopt.maxerrors))
+	return ((env.dorestart = FB_RESTART_NONE) and (errGetCount() < env.clopt.maxerrors))
 end function
 
 sub fbSetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
