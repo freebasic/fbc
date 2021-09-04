@@ -107,6 +107,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_OBJINFO              '' boolean: write/read .fbctinf sections etc.?
 	FB_COMPOPT_SHOWINCLUDES         '' boolean: -showincludes
 	FB_COMPOPT_MODEVIEW             ''__FB_GUI__
+	FB_COMPOPT_NOCMDLINE            '' boolean: -z nocmdline, disable #cmdline directives
 
 	FB_COMPOPTIONS
 end enum
@@ -308,6 +309,7 @@ type FBCMMLINEOPT
 	objinfo         as integer
 	showincludes    as integer
 	modeview        as FB_MODEVIEW
+	nocmdline       as integer              '' dissallow #cmdline directive? (default = false)
 end type
 
 '' features allowed in the selected language

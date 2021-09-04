@@ -836,7 +836,11 @@ private sub ppCmdline( )
 
 	args = lexGetText( )
 
-	fbcParseArgsFromString( args, TRUE, FALSE )
+	if( fbGetOption( FB_COMPOPT_NOCMDLINE ) ) then
+		errReportWarn( FB_WARNINGMSG_CMDLINEIGNORED )
+	else
+		fbcParseArgsFromString( args, TRUE, FALSE )
+	end if
 
 	'' Preserve under -pp
 	if( env.ppfile_num > 0 ) then

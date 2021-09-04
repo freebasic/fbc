@@ -2171,6 +2171,8 @@ private sub handleOpt _
 			fbSetOption( FB_COMPOPT_NOTHISCALL, TRUE )
 		case "fbrt"
 			fbSetOption( FB_COMPOPT_FBRT, TRUE )
+		case "nocmdline"
+			fbSetOption( FB_COMPOPT_NOCMDLINE, TRUE )
 		case else
 			hFatalInvalidOption( arg, is_source )
 		end select
@@ -3923,6 +3925,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -z valist-as-ptr Use pointer expressions to implement CVA_*() macros"
 	print "  -z no-thiscall   Don't use '__thiscall' calling convention"
 	print "  -z fbrt          Link with 'fbrt' instead of 'fb' runtime library"
+	print "  -z nocmdline     Disable #cmdline source directives"
 	end if
 
 end sub
