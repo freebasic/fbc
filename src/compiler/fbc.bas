@@ -1664,75 +1664,81 @@ enum
 	OPT__COUNT
 end enum
 
-dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
+type FBC_CMDLINE_OPTION
+	takes_argument as boolean          '' true = option requires argument
+	allowed_in_source as boolean       '' true = can be used with #cmdline directive
+	restart_required as boolean        '' true = restart of parser is required when used with #cmdline directive
+end type
+
+dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 { _
-	TRUE , _ '' OPT_A
-	TRUE , _ '' OPT_ARCH
-	TRUE , _ '' OPT_ASM
-	TRUE , _ '' OPT_B
-	FALSE, _ '' OPT_C
-	FALSE, _ '' OPT_CKEEPOBJ
-	TRUE , _ '' OPT_D
-	FALSE, _ '' OPT_DLL
-	FALSE, _ '' OPT_DYLIB
-	FALSE, _ '' OPT_E
-	FALSE, _ '' OPT_EARRAY
-	FALSE, _ '' OPT_EASSERT
-	FALSE, _ '' OPT_EDEBUG
-	FALSE, _ '' OPT_EDEBUGINFO
-	FALSE, _ '' OPT_ELOCATION
-	FALSE, _ '' OPT_ENULLPTR
-	TRUE,  _ '' OPT_ENTRY
-	FALSE, _ '' OPT_EX
-	FALSE, _ '' OPT_EXX
-	FALSE, _ '' OPT_EXPORT
-	TRUE,  _ '' OPT_FORCELANG
-	TRUE , _ '' OPT_FPMODE
-	TRUE , _ '' OPT_FPU
-	FALSE, _ '' OPT_G
-	TRUE , _ '' OPT_GEN
-	FALSE, _ '' OPT_HELP
-	TRUE , _ '' OPT_I
-	TRUE , _ '' OPT_INCLUDE
-	TRUE , _ '' OPT_L
-	TRUE , _ '' OPT_LANG
-	FALSE, _ '' OPT_LIB
-	TRUE , _ '' OPT_M
-	TRUE , _ '' OPT_MAP
-	TRUE , _ '' OPT_MAXERR
-	FALSE, _ '' OPT_MT
-	FALSE, _ '' OPT_NODEFLIBS
-	FALSE, _ '' OPT_NOERRLINE
-	FALSE, _ '' OPT_NOOBJINFO
-	FALSE, _ '' OPT_NOSTRIP
-	TRUE , _ '' OPT_O
-	TRUE , _ '' OPT_OPTIMIZE
-	TRUE , _ '' OPT_P
-	FALSE, _ '' OPT_PIC
-	FALSE, _ '' OPT_PP
-	TRUE , _ '' OPT_PREFIX
-	TRUE , _ '' OPT_PRINT
-	FALSE, _ '' OPT_PROFILE
-	FALSE, _ '' OPT_R
-	FALSE, _ '' OPT_RKEEPASM
-	FALSE, _ '' OPT_RR
-	FALSE, _ '' OPT_RRKEEPASM
-	TRUE , _ '' OPT_S
-	FALSE, _ '' OPT_SHOWINCLUDES
-	FALSE, _ '' OPT_STATIC
-	FALSE, _ '' OPT_STRIP
-	TRUE , _ '' OPT_T
-	TRUE , _ '' OPT_TARGET
-	TRUE , _ '' OPT_TITLE
-	FALSE, _ '' OPT_V
-	TRUE , _ '' OPT_VEC
-	FALSE, _ '' OPT_VERSION
-	TRUE , _ '' OPT_W
-	TRUE , _ '' OPT_WA
-	TRUE , _ '' OPT_WC
-	TRUE , _ '' OPT_WL
-	TRUE , _ '' OPT_X
-	TRUE   _ '' OPT_Z
+	( TRUE , FALSE, FALSE ), _ '' OPT_A
+	( TRUE , FALSE, FALSE ), _ '' OPT_ARCH
+	( TRUE , FALSE, FALSE ), _ '' OPT_ASM
+	( TRUE , FALSE, FALSE ), _ '' OPT_B
+	( FALSE, FALSE, FALSE ), _ '' OPT_C
+	( FALSE, FALSE, FALSE ), _ '' OPT_CKEEPOBJ
+	( TRUE , FALSE, FALSE ), _ '' OPT_D
+	( FALSE, FALSE, FALSE ), _ '' OPT_DLL
+	( FALSE, FALSE, FALSE ), _ '' OPT_DYLIB
+	( FALSE, FALSE, FALSE ), _ '' OPT_E
+	( FALSE, FALSE, FALSE ), _ '' OPT_EARRAY
+	( FALSE, FALSE, FALSE ), _ '' OPT_EASSERT
+	( FALSE, FALSE, FALSE ), _ '' OPT_EDEBUG
+	( FALSE, FALSE, FALSE ), _ '' OPT_EDEBUGINFO
+	( FALSE, FALSE, FALSE ), _ '' OPT_ELOCATION
+	( FALSE, FALSE, FALSE ), _ '' OPT_ENULLPTR
+	( TRUE , FALSE, FALSE ), _ '' OPT_ENTRY
+	( FALSE, FALSE, FALSE ), _ '' OPT_EX
+	( FALSE, FALSE, FALSE ), _ '' OPT_EXX
+	( FALSE, FALSE, FALSE ), _ '' OPT_EXPORT
+	( TRUE , FALSE, FALSE ), _ '' OPT_FORCELANG
+	( TRUE , FALSE, FALSE ), _ '' OPT_FPMODE
+	( TRUE , FALSE, FALSE ), _ '' OPT_FPU
+	( FALSE, FALSE, FALSE ), _ '' OPT_G
+	( TRUE , FALSE, FALSE ), _ '' OPT_GEN
+	( FALSE, FALSE, FALSE ), _ '' OPT_HELP
+	( TRUE , FALSE, FALSE ), _ '' OPT_I
+	( TRUE , FALSE, FALSE ), _ '' OPT_INCLUDE
+	( TRUE , FALSE, FALSE ), _ '' OPT_L
+	( TRUE , FALSE, FALSE ), _ '' OPT_LANG
+	( FALSE, FALSE, FALSE ), _ '' OPT_LIB
+	( TRUE , FALSE, FALSE ), _ '' OPT_M
+	( TRUE , FALSE, FALSE ), _ '' OPT_MAP
+	( TRUE , FALSE, FALSE ), _ '' OPT_MAXERR
+	( FALSE, FALSE, FALSE ), _ '' OPT_MT
+	( FALSE, FALSE, FALSE ), _ '' OPT_NODEFLIBS
+	( FALSE, FALSE, FALSE ), _ '' OPT_NOERRLINE
+	( FALSE, FALSE, FALSE ), _ '' OPT_NOOBJINFO
+	( FALSE, FALSE, FALSE ), _ '' OPT_NOSTRIP
+	( TRUE , FALSE, FALSE ), _ '' OPT_O
+	( TRUE , FALSE, FALSE ), _ '' OPT_OPTIMIZE
+	( TRUE , FALSE, FALSE ), _ '' OPT_P
+	( FALSE, FALSE, FALSE ), _ '' OPT_PIC
+	( FALSE, FALSE, FALSE ), _ '' OPT_PP
+	( TRUE , FALSE, FALSE ), _ '' OPT_PREFIX
+	( TRUE , FALSE, FALSE ), _ '' OPT_PRINT
+	( FALSE, FALSE, FALSE ), _ '' OPT_PROFILE
+	( FALSE, FALSE, FALSE ), _ '' OPT_R
+	( FALSE, FALSE, FALSE ), _ '' OPT_RKEEPASM
+	( FALSE, FALSE, FALSE ), _ '' OPT_RR
+	( FALSE, FALSE, FALSE ), _ '' OPT_RRKEEPASM
+	( TRUE , FALSE, FALSE ), _ '' OPT_S
+	( FALSE, FALSE, FALSE ), _ '' OPT_SHOWINCLUDES
+	( FALSE, FALSE, FALSE ), _ '' OPT_STATIC
+	( FALSE, FALSE, FALSE ), _ '' OPT_STRIP
+	( TRUE , FALSE, FALSE ), _ '' OPT_T
+	( TRUE , FALSE, FALSE ), _ '' OPT_TARGET
+	( TRUE , FALSE, FALSE ), _ '' OPT_TITLE
+	( FALSE, FALSE, FALSE ), _ '' OPT_V
+	( TRUE , FALSE, FALSE ), _ '' OPT_VEC
+	( FALSE, FALSE, FALSE ), _ '' OPT_VERSION
+	( TRUE , FALSE, FALSE ), _ '' OPT_W
+	( TRUE , FALSE, FALSE ), _ '' OPT_WA
+	( TRUE , FALSE, FALSE ), _ '' OPT_WC
+	( TRUE , FALSE, FALSE ), _ '' OPT_WL
+	( TRUE , FALSE, FALSE ), _ '' OPT_X
+	( TRUE , FALSE, FALSE )  _ '' OPT_Z
 }
 
 private sub handleOpt(byval optid as integer, byref arg as string)
@@ -2301,9 +2307,9 @@ private function parseOption(byval opt as zstring ptr) as integer
 	return -1
 end function
 
-declare sub parseArgsFromFile(byref filename as string)
+declare sub parseArgsFromFile( byref filename as string )
 
-private sub handleArg(byref arg as string)
+private sub handleArg( byref arg as string )
 	'' If the previous option wants this argument as parameter,
 	'' call the handler with it, now that it's known.
 	'' Note: Anything is accepted, even if it starts with '-' or '@'.
@@ -2341,7 +2347,7 @@ private sub handleArg(byref arg as string)
 		end if
 
 		'' Does this option take a parameter?
-		if (option_takes_argument(optid)) then
+		if( cmdlineOptionTB( optid ).takes_argument ) then
 			'' Delay handling it, until the next argument is known.
 			fbc.optid = optid
 		else
@@ -2371,7 +2377,7 @@ private sub handleArg(byref arg as string)
 
 		'' Recursively read in the additional options from the file
 		reclevel += 1
-		parseArgsFromFile(arg)
+		parseArgsFromFile( arg )
 		reclevel -= 1
 
 	case else
@@ -2470,7 +2476,7 @@ sub parseArgsFromString( byval args_in as zstring ptr )
 
 end sub
 
-private sub parseArgsFromFile(byref filename as string)
+private sub parseArgsFromFile( byref filename as string )
 	dim as integer f = freefile()
 	if (open(filename, for input, as #f)) then
 		errReportEx( FB_ERRMSG_FILEACCESSERROR, filename, -1 )
