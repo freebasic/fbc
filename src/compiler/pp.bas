@@ -807,7 +807,7 @@ function ppTypeOf( ) as string
 end function
 
 
-'' fbcParseArgsFromString() exists in fbc.bas which is out main
+'' fbcParseArgsFromString() exists in fbc.bas which is our main
 '' entry point for the fbc compiler.  We would probably like to
 '' separate it in to another interface, but fbc.bas has everything
 '' we need to process options.  So, we've made fbcParseArgsFromString()
@@ -836,10 +836,32 @@ private sub ppCmdline( )
 
 	args = lexGetText( )
 
-	if( fbGetOption( FB_COMPOPT_NOCMDLINE ) ) then
-		errReportWarn( FB_WARNINGMSG_CMDLINEIGNORED )
+	'' we don't have anyway to auto-detect when all #cmdline's have been read and we should
+	'' restart the parser.  Check for '#cmdline "-end"' to begin a restart
+
+	'' #cmdline "-end" ?
+	if( lcase(trim(*args)) = "-end" ) then
+		if( env.delayrestart ) then
+			env.dorestart = TRUE
+		end if
+		lexSkipToken( )
+		exit sub
+	end if
+
+	'' first module?
+	if( env.module_count = 1 ) then
+
+		'' first pass
+		if( env.restarts = 0 ) then
+			if( fbGetOption( FB_COMPOPT_NOCMDLINE ) ) then
+				errReportWarn( FB_WARNINGMSG_CMDLINEIGNORED )
+			else
+				fbcParseArgsFromString( args, TRUE, FALSE )
+			end if
+		end if
+
 	else
-		fbcParseArgsFromString( args, TRUE, FALSE )
+		errReportWarn( FB_WARNINGMSG_CMDLINEIGNORED )
 	end if
 
 	'' Preserve under -pp

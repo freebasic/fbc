@@ -1673,77 +1673,78 @@ type FBC_CMDLINE_OPTION
 	takes_argument as boolean          '' true = option requires argument
 	allowed_in_source as boolean       '' true = can be used with #cmdline directive
 	restart_required as boolean        '' true = restart of parser is required when used with #cmdline directive
+	flags as integer                   '' reserved for future use
 end type
 
 dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 { _
-	( TRUE , FALSE, FALSE ), _ '' OPT_A
-	( TRUE , FALSE, FALSE ), _ '' OPT_ARCH
-	( TRUE , FALSE, FALSE ), _ '' OPT_ASM
-	( TRUE , FALSE, FALSE ), _ '' OPT_B
-	( FALSE, FALSE, FALSE ), _ '' OPT_C
-	( FALSE, FALSE, FALSE ), _ '' OPT_CKEEPOBJ
-	( TRUE , FALSE, FALSE ), _ '' OPT_D
-	( FALSE, FALSE, FALSE ), _ '' OPT_DLL
-	( FALSE, FALSE, FALSE ), _ '' OPT_DYLIB
-	( FALSE, FALSE, FALSE ), _ '' OPT_E
-	( FALSE, FALSE, FALSE ), _ '' OPT_EARRAY
-	( FALSE, FALSE, FALSE ), _ '' OPT_EASSERT
-	( FALSE, FALSE, FALSE ), _ '' OPT_EDEBUG
-	( FALSE, FALSE, FALSE ), _ '' OPT_EDEBUGINFO
-	( FALSE, FALSE, FALSE ), _ '' OPT_ELOCATION
-	( FALSE, FALSE, FALSE ), _ '' OPT_ENULLPTR
-	( TRUE , FALSE, FALSE ), _ '' OPT_ENTRY
-	( FALSE, FALSE, FALSE ), _ '' OPT_EX
-	( FALSE, FALSE, FALSE ), _ '' OPT_EXX
-	( FALSE, FALSE, FALSE ), _ '' OPT_EXPORT
-	( TRUE , FALSE, FALSE ), _ '' OPT_FORCELANG
-	( TRUE , FALSE, FALSE ), _ '' OPT_FPMODE
-	( TRUE , FALSE, FALSE ), _ '' OPT_FPU
-	( FALSE, FALSE, FALSE ), _ '' OPT_G
-	( TRUE , FALSE, FALSE ), _ '' OPT_GEN
-	( FALSE, FALSE, FALSE ), _ '' OPT_HELP
-	( TRUE , FALSE, FALSE ), _ '' OPT_I
-	( TRUE , FALSE, FALSE ), _ '' OPT_INCLUDE
-	( TRUE , FALSE, FALSE ), _ '' OPT_L
-	( TRUE , FALSE, FALSE ), _ '' OPT_LANG
-	( FALSE, FALSE, FALSE ), _ '' OPT_LIB
-	( TRUE , FALSE, FALSE ), _ '' OPT_M
-	( TRUE , FALSE, FALSE ), _ '' OPT_MAP
-	( TRUE , FALSE, FALSE ), _ '' OPT_MAXERR
-	( FALSE, FALSE, FALSE ), _ '' OPT_MT
-	( FALSE, FALSE, FALSE ), _ '' OPT_NODEFLIBS
-	( FALSE, FALSE, FALSE ), _ '' OPT_NOERRLINE
-	( FALSE, FALSE, FALSE ), _ '' OPT_NOOBJINFO
-	( FALSE, FALSE, FALSE ), _ '' OPT_NOSTRIP
-	( TRUE , FALSE, FALSE ), _ '' OPT_O
-	( TRUE , FALSE, FALSE ), _ '' OPT_OPTIMIZE
-	( TRUE , FALSE, FALSE ), _ '' OPT_P
-	( FALSE, FALSE, FALSE ), _ '' OPT_PIC
-	( FALSE, FALSE, FALSE ), _ '' OPT_PP
-	( TRUE , FALSE, FALSE ), _ '' OPT_PREFIX
-	( TRUE , FALSE, FALSE ), _ '' OPT_PRINT
-	( FALSE, FALSE, FALSE ), _ '' OPT_PROFILE
-	( FALSE, FALSE, FALSE ), _ '' OPT_R
-	( FALSE, FALSE, FALSE ), _ '' OPT_RKEEPASM
-	( FALSE, FALSE, FALSE ), _ '' OPT_RR
-	( FALSE, FALSE, FALSE ), _ '' OPT_RRKEEPASM
-	( TRUE , FALSE, FALSE ), _ '' OPT_S
-	( FALSE, FALSE, FALSE ), _ '' OPT_SHOWINCLUDES
-	( FALSE, FALSE, FALSE ), _ '' OPT_STATIC
-	( FALSE, FALSE, FALSE ), _ '' OPT_STRIP
-	( TRUE , FALSE, FALSE ), _ '' OPT_T
-	( TRUE , FALSE, FALSE ), _ '' OPT_TARGET
-	( TRUE , FALSE, FALSE ), _ '' OPT_TITLE
-	( FALSE, FALSE, FALSE ), _ '' OPT_V
-	( TRUE , FALSE, FALSE ), _ '' OPT_VEC
-	( FALSE, FALSE, FALSE ), _ '' OPT_VERSION
-	( TRUE , FALSE, FALSE ), _ '' OPT_W
-	( TRUE , FALSE, FALSE ), _ '' OPT_WA
-	( TRUE , FALSE, FALSE ), _ '' OPT_WC
-	( TRUE , FALSE, FALSE ), _ '' OPT_WL
-	( TRUE , FALSE, FALSE ), _ '' OPT_X
-	( TRUE , FALSE, FALSE )  _ '' OPT_Z
+	( TRUE , FALSE, FALSE, 0 ), _ '' OPT_A            !!!TODO!!! only add files once, affects link
+	( TRUE , FALSE, TRUE , 0 ), _ '' OPT_ARCH         !!!TODO!!! requires restart, affects major initialization
+	( TRUE , TRUE , FALSE, 0 ), _ '' OPT_ASM          affects second stage compile
+	( TRUE , FALSE, FALSE, 0 ), _ '' OPT_B            !!!TODO!!! only add files once, adds files to compile
+	( FALSE, TRUE , FALSE, 0 ), _ '' OPT_C            affects compile / assemble /link process
+	( FALSE, TRUE , FALSE, 0 ), _ '' OPT_CKEEPOBJ     affects removal of temporary files
+	( TRUE , FALSE, FALSE, 0 ), _ '' OPT_D            !!!TODO!!! add symbols to current source also, not just the preDefines, affects global defines
+	( FALSE, FALSE, TRUE , 0 ), _ '' OPT_DLL          !!!TODO!!! affects initialization, affects output format
+	( FALSE, FALSE, TRUE , 0 ), _ '' OPT_DYLIB        !!!TODO!!! affects initialization, affects output format
+	( FALSE, TRUE , TRUE , 0 ), _ '' OPT_E            !!!TODO!!! affects code generation
+	( FALSE, TRUE , TRUE , 0 ), _ '' OPT_EARRAY       !!!TODO!!! affects code generation
+	( FALSE, TRUE , TRUE , 0 ), _ '' OPT_EASSERT      !!!TODO!!! affects code generation
+	( FALSE, TRUE , TRUE , 0 ), _ '' OPT_EDEBUG       !!!TODO!!! affects code generation
+	( FALSE, TRUE , TRUE , 0 ), _ '' OPT_EDEBUGINFO   !!!TODO!!! affects code generation, affects link
+	( FALSE, TRUE , TRUE , 0 ), _ '' OPT_ELOCATION    !!!TODO!!! affects code generation
+	( FALSE, TRUE , TRUE , 0 ), _ '' OPT_ENULLPTR     !!!TODO!!! affects code generation
+	( TRUE , FALSE, TRUE , 0 ), _ '' OPT_ENTRY        !!!TODO!!! affects code generation, affects initialization
+	( FALSE, TRUE , FALSE, 0 ), _ '' OPT_EX           !!!TODO!!! affects code generation
+	( FALSE, TRUE , FALSE, 0 ), _ '' OPT_EXX          !!!TODO!!! affects code generation
+	( FALSE, TRUE , TRUE , 0 ), _ '' OPT_EXPORT       !!!TODO!!! affects code generation
+	( TRUE , FALSE, FALSE, 0 ), _ '' OPT_FORCELANG    never allow, command line only
+	( TRUE , TRUE , TRUE , 0 ), _ '' OPT_FPMODE       !!!TODO!!! affects code generation
+	( TRUE , TRUE , TRUE , 0 ), _ '' OPT_FPU          !!!TODO!!! affects code generation, affects second stage compile, affects link
+	( FALSE, TRUE , TRUE , 0 ), _ '' OPT_G            !!!TODO!!! affects code generation, affects link
+	( TRUE , FALSE, TRUE , 0 ), _ '' OPT_GEN          !!!TODO!!! affects initialization
+	( FALSE, FALSE, FALSE, 0 ), _ '' OPT_HELP         never allow, command line or #lang only
+	( TRUE , TRUE , TRUE , 0 ), _ '' OPT_I            !!!TODO!!! add include path before the default one
+	( TRUE , FALSE, TRUE , 0 ), _ '' OPT_INCLUDE      !!!TODO!!! restart required to inject preInclude
+	( TRUE , TRUE , FALSE, 0 ), _ '' OPT_L            affects link, same as #inclib
+	( TRUE , FALSE, FALSE, 0 ), _ '' OPT_LANG         never allow, command line or #lang only
+	( FALSE, FALSE, TRUE , 0 ), _ '' OPT_LIB          !!!TODO!!! affects initialization, affects output format
+	( TRUE , FALSE, TRUE , 0 ), _ '' OPT_M            !!!TODO!! affects initialization for all modules
+	( TRUE , TRUE , FALSE, 0 ), _ '' OPT_MAP          affects output files
+	( TRUE , TRUE , FALSE, 0 ), _ '' OPT_MAXERR       affects compile process
+	( FALSE, TRUE , FALSE, 0 ), _ '' OPT_MT           affects link, __FB_MT__
+	( FALSE, TRUE , FALSE, 0 ), _ '' OPT_NODEFLIBS    affects link
+	( FALSE, TRUE , FALSE, 0 ), _ '' OPT_NOERRLINE    affects compiler output display
+	( FALSE, TRUE , FALSE, 0 ), _ '' OPT_NOOBJINFO    affects post compile process
+	( FALSE, TRUE , FALSE, 0 ), _ '' OPT_NOSTRIP      affects link
+	( TRUE , TRUE , FALSE, 0 ), _ '' OPT_O            affects input file naming
+	( TRUE , TRUE , FALSE, 0 ), _ '' OPT_OPTIMIZE     affects link
+	( TRUE , TRUE , FALSE, 0 ), _ '' OPT_P            affects link, same as #libpath
+	( FALSE, TRUE , FALSE, 0 ), _ '' OPT_PIC          affects link
+	( FALSE, FALSE, FALSE, 0 ), _ '' OPT_PP           never allow, command line or #lang only
+	( TRUE , FALSE, FALSE, 0 ), _ '' OPT_PREFIX       never allow, command line or #lang only
+	( TRUE , FALSE, FALSE, 0 ), _ '' OPT_PRINT        never allow, command line or #lang only
+	( FALSE, FALSE, TRUE , 0 ), _ '' OPT_PROFILE      !!!TODO!!! affects initialization
+	( FALSE, TRUE , FALSE, 0 ), _ '' OPT_R            affects compile / assmble /link process
+	( FALSE, TRUE , FALSE, 0 ), _ '' OPT_RKEEPASM     affects removal of temporary files
+	( FALSE, TRUE , FALSE, 0 ), _ '' OPT_RR           affects compile / assmble /link process
+	( FALSE, TRUE , FALSE, 0 ), _ '' OPT_RRKEEPASM    affects removal of temporary files
+	( TRUE , TRUE , FALSE, 0 ), _ '' OPT_S            affects link
+	( FALSE, FALSE, FALSE, 0 ), _ '' OPT_SHOWINCLUDES never allow, command line or #lang only
+	( FALSE, TRUE , FALSE, 0 ), _ '' OPT_STATIC       affects link
+	( FALSE, TRUE , FALSE, 0 ), _ '' OPT_STRIP        affects link
+	( TRUE , TRUE , FALSE, 0 ), _ '' OPT_T            affects link
+	( TRUE , FALSE, TRUE , 0 ), _ '' OPT_TARGET       !!!TODO!!! affects initialization
+	( TRUE , TRUE , FALSE, 0 ), _ '' OPT_TITLE        affects link
+	( FALSE, FALSE, FALSE, 0 ), _ '' OPT_V            never allow, command line or #lang only
+	( TRUE , TRUE , TRUE , 0 ), _ '' OPT_VEC          !!!TODO!!! affects code generation
+	( FALSE, FALSE, FALSE, 0 ), _ '' OPT_VERSION      never allow, command line or #lang only
+	( TRUE , TRUE , FALSE, 0 ), _ '' OPT_W            affects compiler display output
+	( TRUE , TRUE , FALSE, 0 ), _ '' OPT_WA           affects assembly
+	( TRUE , TRUE , FALSE, 0 ), _ '' OPT_WC           affects second stage compile
+	( TRUE , TRUE , FALSE, 0 ), _ '' OPT_WL           affects link
+	( TRUE , TRUE , FALSE, 0 ), _ '' OPT_X            affects output file
+	( TRUE , FALSE, FALSE, 0 )  _ '' OPT_Z            never allow, command line or #lang only
 }
 
 private sub handleOpt _
@@ -2382,6 +2383,10 @@ private sub handleArg _
 		else
 			'' Handle this option now
 			handleOpt( optid, arg, is_source )
+
+			if( cmdlineOptionTB( optid ).restart_required ) then
+				fbSetDelayRestart()
+			end if
 		end if
 
 	case asc("@")
@@ -2877,7 +2882,8 @@ private sub hCompileBas _
 	( _
 		byval module as FBCIOFILE ptr, _
 		byval is_main as integer, _
-		byval is_fbctinf as integer _
+		byval is_fbctinf as integer, _
+		byval module_count as integer _
 	)
 
 	dim as integer prevlang = any, prevouttype = any, restarts = any
@@ -2933,7 +2939,7 @@ private sub hCompileBas _
 
 	do
 		'' init the parser
-		fbInit( is_main, restarts, fbc.entry )
+		fbInit( is_main, restarts, fbc.entry, module_count )
 
 		if( is_fbctinf ) then
 			'' Let the compiler know about all libs collected so far,
@@ -3030,6 +3036,7 @@ private sub hCompileModules( )
 	'' 3. and copy back into final lists
 	''    (compiler -> fbGetLibs() -> fbc.finallibs)
 
+	dim as integer module_count = 0
 	do
 		if( checkmain ) then
 			ismain = (mainfile = hStripPath( hStripExt( module->srcfile ) ))
@@ -3042,7 +3049,8 @@ private sub hCompileModules( )
 			/'checkmain = not ismain'/
 		end if
 
-		hCompileBas( module, ismain, FALSE )
+		module_count += 1
+		hCompileBas( module, ismain, FALSE, module_count )
 
 		module = listGetNext( module )
 	loop while( module )
@@ -3162,7 +3170,7 @@ private function hCompileXpm( ) as integer
 		fbcAddTemp( fbc.xpm.srcfile )
 	end if
 
-	hCompileBas( @fbc.xpm, FALSE, FALSE )
+	hCompileBas( @fbc.xpm, FALSE, FALSE, -1 )
 	function = TRUE
 end function
 
@@ -3555,7 +3563,7 @@ private function hCompileFbctinf( ) as integer
 		fbcAddTemp( fbctinf.srcfile )
 	end if
 
-	hCompileBas( @fbctinf, FALSE, TRUE )
+	hCompileBas( @fbctinf, FALSE, TRUE, -1 )
 	if( fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS ) then
 		hCompileStage2Module( @fbctinf )
 	end if

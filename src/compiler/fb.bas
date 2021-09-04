@@ -375,18 +375,27 @@ function fbGetBackendName _
 
 end function
 
-sub fbInit( byval ismain as integer, byval restarts as integer, byval entry as zstring ptr )
+sub fbInit _
+	( _
+		byval ismain as integer, _
+		byval restarts as integer, _
+		byval entry as zstring ptr, _
+		byval module_count as integer _
+	)
+
 	strsetInit( @env.libs, FB_INITLIBNODES \ 4 )
 	strsetInit( @env.libpaths, FB_INITLIBNODES \ 4 )
 
 	env.restarts = restarts
 	env.dorestart = FALSE
+	env.delayrestart = FALSE
 
 	redim infileTb( 0 to FB_MAXINCRECLEVEL-1 )
 
 	env.includerec = 0
 	env.main.proc = NULL
 	env.entry = *entry
+	env.module_count = module_count
 
 	env.opt.explicit = (env.clopt.lang = FB_LANG_FB)
 
@@ -564,6 +573,15 @@ end sub
 
 sub fbAddPreInclude(byref file as string)
 	strlistAppend(@env.preincludes, file)
+end sub
+
+sub fbSetDelayRestart()
+	'' env is defined in this module and we want to set it from fbc.bas
+	'' which does not have access to env.  But we are re-using the command
+	'' line options processing fbc.bas:fbcParseArgsFromString() in
+	'' pp.bas:ppCmdline().  So, expose a setter for env.delayrestart here
+	'' to allow fbc.bas to work with env.delayrestart
+	env.delayrestart = TRUE
 end sub
 
 sub fbSetOption( byval opt as integer, byval value as integer )

@@ -638,7 +638,9 @@ type FBENV
 
 	inited			as integer					'' set to TRUE if parser ready
 	restarts		as integer					'' number of parser restarts
-	dorestart		as integer					'' request parser restart
+	dorestart		as integer					'' request parser restart as soon as possible
+	delayrestart    as integer                  '' request a delayed parser restart, trigger on #cmdline "-end"
+	module_count    as integer                  '' module (.bas) count, 1 = first
 
 	'' Lists to collect #inclibs and #libpaths
 	libs			as TSTRSET

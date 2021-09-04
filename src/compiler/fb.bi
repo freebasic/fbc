@@ -441,7 +441,13 @@ const FB_INFOSEC_OBJNAME = "__fb_ct.inf"
 
 #include once "error.bi"
 
-declare sub fbInit(byval ismain as integer, byval restarts as integer, byval entry as zstring ptr)
+declare sub fbInit _
+	( _
+		byval ismain as integer, _
+		byval restarts as integer, _
+		byval entry as zstring ptr, _
+		byval module_count as integer _
+	)
 declare sub fbEnd()
 
 declare sub fbCompile _
@@ -462,6 +468,7 @@ declare sub fbAddPreInclude(byref file as string)
 
 declare sub fbSetOption( byval opt as integer, byval value as integer )
 declare function fbGetOption( byval opt as integer ) as integer
+declare sub fbSetDelayRestart()
 
 declare sub fbChangeOption(byval opt as integer, byval value as integer)
 declare sub fbSetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
