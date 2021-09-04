@@ -5,6 +5,7 @@ Version 1.08.2
 
 [fixed]
 - gfxlib2: fix d2d scaling issues for high dpi (adeyblue)
+- fbc: fix regression - fbc.stripsymbols (-strip/-nostrip) check clobbered by emscripten merge
 
 
 Version 1.08.1
