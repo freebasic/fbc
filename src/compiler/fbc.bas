@@ -1678,13 +1678,13 @@ end type
 
 dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 { _
-	( TRUE , FALSE, FALSE, FALSE ), _ '' OPT_A            !!!TODO!!! only add files once, affects link
+	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_A            add files to link, affects link
 	( TRUE , FALSE, TRUE , TRUE  ), _ '' OPT_ARCH         !!!TODO!!! affects major initialization
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_ASM          affects second stage compile
-	( TRUE , FALSE, FALSE, FALSE ), _ '' OPT_B            !!!TODO!!! only add files once, adds files to compile
+	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_B            adds files to compile
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_C            affects compile / assemble /link process
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_CKEEPOBJ     affects removal of temporary files
-	( TRUE , FALSE, FALSE, TRUE  ), _ '' OPT_D            !!!TODO!!! add symbols to current source also, not just the preDefines, affects global defines
+	( TRUE , TRUE , FALSE, TRUE  ), _ '' OPT_D            add symbols to current source also, not just the preDefines, affects global defines
 	( FALSE, FALSE, TRUE , TRUE  ), _ '' OPT_DLL          !!!TODO!!! affects major initialization, affects output format
 	( FALSE, FALSE, TRUE , TRUE  ), _ '' OPT_DYLIB        !!!TODO!!! affects major initialization, affects output format
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_E            affects code generation
@@ -1703,7 +1703,7 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_FPU          affects code generation, affects second stage compile, affects link
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_G            affects code generation, affects link
 	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_GEN          affects initialization
-	( FALSE, FALSE, FALSE, FALSE ), _ '' OPT_HELP         never allow, command line or #lang only
+	( FALSE, FALSE, FALSE, FALSE ), _ '' OPT_HELP         never allow, real command line only, makes no sense to have in source
 	( TRUE , FALSE, TRUE , FALSE ), _ '' OPT_I            !!!TODO!!! add include path before the default one
 	( TRUE , FALSE, TRUE , FALSE ), _ '' OPT_INCLUDE      !!!TODO!!! restart required to inject preInclude
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_L            affects link, same as #inclib
@@ -1721,9 +1721,9 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_OPTIMIZE     affects link
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_P            affects link, same as #libpath
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_PIC          affects link
-	( FALSE, FALSE, FALSE, TRUE  ), _ '' OPT_PP           never allow, command line or #lang only, affects major initialization
-	( TRUE , FALSE, FALSE, TRUE  ), _ '' OPT_PREFIX       never allow, command line or #lang only, affects major initialization
-	( TRUE , FALSE, FALSE, FALSE ), _ '' OPT_PRINT        never allow, command line or #lang only
+	( FALSE, FALSE, FALSE, TRUE  ), _ '' OPT_PP           never allow, real command line only, affects major initialization
+	( TRUE , FALSE, FALSE, TRUE  ), _ '' OPT_PREFIX       never allow, real command line only, affects major initialization
+	( TRUE , FALSE, FALSE, FALSE ), _ '' OPT_PRINT        never allow, makes no sense to have in source
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_PROFILE      affects initialization, affects code generation, affects link
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_R            affects compile / assmble /link process
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_RKEEPASM     affects removal of temporary files
@@ -1736,15 +1736,15 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_T            affects link
 	( TRUE , FALSE, TRUE , TRUE  ), _ '' OPT_TARGET       !!!TODO!!! affects major initialization
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_TITLE        affects link
-	( FALSE, FALSE, FALSE, FALSE ), _ '' OPT_V            never allow, command line or #lang only
+	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_V            affects nothing
 	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_VEC          affects code generation
-	( FALSE, FALSE, FALSE, FALSE ), _ '' OPT_VERSION      never allow, command line or #lang only
+	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_VERSION      affects nothing
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_W            affects compiler display output
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_WA           affects assembly
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_WC           affects second stage compile
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_WL           affects link
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_X            affects output file
-	( TRUE , FALSE, FALSE, FALSE )  _ '' OPT_Z            never allow, command line or #lang only
+	( TRUE , TRUE , TRUE , FALSE )  _ '' OPT_Z            affects various - code generation
 }
 
 private sub handleOpt _

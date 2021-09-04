@@ -1254,13 +1254,20 @@ sub fbCompile _
 end sub
 
 function fbShouldRestart() as integer
+
 	'' missing #cmdline "-end" ?
 	'' expecting a restart due to #cmdline?
 	if( (env.delayrestart and FB_RESTART_CMDLINE) <> 0 ) then
+
 		'' but we didn't have any restart due to #cmdline yet?
 		if( (env.restartflags and FB_RESTART_CMDLINE ) = 0 ) then
+
 			'' tell parser to restart
 			fbSetDoRestart( FB_RESTART_CMDLINE )
+
+			'' and don't show any more errors
+			errHideFurtherErrors()
+
 			return TRUE
 		endif
 	end if

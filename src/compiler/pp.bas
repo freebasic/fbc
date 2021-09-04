@@ -864,9 +864,13 @@ private sub ppCmdline( )
 
 	'' #cmdline "-end" ?
 	elseif( lcase(trim(*args)) = "-end" ) then
+
 		'' We don't have any clever way to auto-detect when all #cmdline's have been read
 		'' Check for '#cmdline "-end"' to begin a restart and not wait for end of file
 		fbSetDoRestart( FB_RESTART_CMDLINE )
+
+		'' and don't show any more errors
+		errHideFurtherErrors()
 
 	'' must be first pass in the first module, so process the option
 	else
