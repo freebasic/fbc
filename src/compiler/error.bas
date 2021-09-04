@@ -12,25 +12,25 @@
 type ERRPARAMLOCATION
 	'' While an argument location is pushed,
 	'' errors will be reported "at parameter N of F()"
-	proc			as FBSYMBOL ptr
-	tk			as integer
-	paramnum		as integer
-	paramid			as zstring ptr
+	proc            as FBSYMBOL ptr
+	tk              as integer
+	paramnum        as integer
+	paramid         as zstring ptr
 end type
 
 type FB_ERRCTX
-	inited			as integer
-	cnt				as integer
-	hide_further_messages		as integer
-	lastline		as integer
-	laststmt		as integer
-	undefhash		as THASH				'' undefined symbols
-	paramlocations		as TLIST  '' ERRPARAMLOCATION's
+	inited                  as integer
+	cnt                     as integer
+	hide_further_messages   as integer
+	lastline                as integer
+	laststmt                as integer
+	undefhash               as THASH                '' undefined symbols
+	paramlocations          as TLIST  '' ERRPARAMLOCATION's
 end type
 
 type FBWARNING
-	level		as integer
-	text		as const zstring ptr
+	level       as integer
+	text        as const zstring ptr
 end type
 
 declare function hMakeParamDesc _
