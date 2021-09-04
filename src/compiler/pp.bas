@@ -864,19 +864,9 @@ private sub ppCmdline( )
 
 	'' #cmdline "-end" ?
 	elseif( lcase(trim(*args)) = "-end" ) then
-
 		'' We don't have any clever way to auto-detect when all #cmdline's have been read
-		'' Check for '#cmdline "-end"' to begin a restart
-
-		'' only restart if we need a restart and
-		if( (env.delayrestart and FB_RESTART_CMDLINE) <> 0 ) then
-
-			'' only if we haven't already restarted for #cmdline
-			if( (env.restartflags and FB_RESTART_CMDLINE ) = 0 ) then
-				env.dorestart or= env.delayrestart
-			endif
-
-		end if
+		'' Check for '#cmdline "-end"' to begin a restart and not wait for end of file
+		fbSetDoRestart( FB_RESTART_CMDLINE )
 
 	'' must be first pass in the first module, so process the option
 	else

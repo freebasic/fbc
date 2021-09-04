@@ -219,14 +219,20 @@ o -exx should catch...
           be used as functions too
 
 [ ] ParamArray, but with this syntax: foo(...) as bar
-	- array must be built at compile-time and destroyed after the call
-	- take care with objects..
+    - array must be built at compile-time and destroyed after the call
+    - take care with objects..
 
 [ ] PP:
     [ ] add #pragma cmdline="-foo bar -baz"
-		- painful to add
-		- don't allow it if any line was parsed already
-    - [macro expansion: won't work for inner macros
+        [X] painful to add
+        [X] added as '#cmdline "args..."'
+        [ ] painful to complete
+        [ ] don't allow #cmdline if any line was parsed already
+        [X] add '-z nocmdline' to ignore #cmdline directives
+        [X] reset parser for command line options that require it
+        [ ] reset fbc for command line options that require it (-target, -arch, -lib, etc)
+            see !!!TODO!!!'s in fbc.bas:cmdlineOptionTB()
+    - macro expansion: won't work for inner macros
     - support default arguments?
 
 [ ] SCOPE..END SCOPE:

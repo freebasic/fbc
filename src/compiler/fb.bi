@@ -469,6 +469,7 @@ declare sub fbCompile _
 declare function fbShouldRestart() as integer
 declare function fbShouldContinue() as integer
 declare sub fbSetDelayRestart( byval flags as FB_RESTART_FLAGS )
+declare sub fbSetDoRestart( byval flags as FB_RESTART_FLAGS )
 declare function fbGetRestartFlags( ) as FB_RESTART_FLAGS
 
 declare sub fbGlobalInit()

@@ -575,19 +575,6 @@ sub fbAddPreInclude(byref file as string)
 	strlistAppend(@env.preincludes, file)
 end sub
 
-sub fbSetDelayRestart( byval flags as FB_RESTART_FLAGS )
-	'' env is defined in this module and we want to set it from fbc.bas
-	'' which does not have access to env.  But we are re-using the command
-	'' line options processing fbc.bas:fbcParseArgsFromString() in
-	'' pp.bas:ppCmdline().  So, expose a setter for env.delayrestart here
-	'' to allow fbc.bas to work with env.delayrestart
-	env.delayrestart or= flags
-end sub
-
-function fbGetRestartFlags() as FB_RESTART_FLAGS
-	return env.dorestart
-end function
-
 sub fbSetOption( byval opt as integer, byval value as integer )
 	select case as const( opt )
 	case FB_COMPOPT_OUTTYPE
@@ -815,8 +802,7 @@ sub fbChangeOption(byval opt as integer, byval value as integer)
 						fbSetOption( opt, value )
 
 						'' Tell parser to restart as soon as possible
-						env.dorestart or= FB_RESTART_LANG
-						env.dorestart or= FB_RESTART_PARSER
+						fbSetDoRestart( FB_RESTART_LANG or FB_RESTART_PARSER )
 
 						'' and don't show any more errors
 						errHideFurtherErrors()
@@ -1268,11 +1254,54 @@ sub fbCompile _
 end sub
 
 function fbShouldRestart() as integer
+	'' missing #cmdline "-end" ?
+	'' expecting a restart due to #cmdline?
+	if( (env.delayrestart and FB_RESTART_CMDLINE) <> 0 ) then
+		'' but we didn't have any restart due to #cmdline yet?
+		if( (env.restartflags and FB_RESTART_CMDLINE ) = 0 ) then
+			'' tell parser to restart
+			fbSetDoRestart( FB_RESTART_CMDLINE )
+			return TRUE
+		endif
+	end if
+
 	return ((env.dorestart and (FB_RESTART_PARSER or FB_RESTART_FBC)) <> 0)
 end function
 
 function fbShouldContinue() as integer
 	return ((env.dorestart = FB_RESTART_NONE) and (errGetCount() < env.clopt.maxerrors))
+end function
+
+sub fbSetDelayRestart( byval flags as FB_RESTART_FLAGS )
+	'' env is defined in this module and we want to set it from fbc.bas
+	'' which does not have access to env.  But we are re-using the command
+	'' line options processing fbc.bas:fbcParseArgsFromString() in
+	'' pp.bas:ppCmdline().  So, expose a setter for env.delayrestart here
+	'' to allow fbc.bas to work with env.delayrestart
+	env.delayrestart or= flags
+end sub
+
+sub fbSetDoRestart( byval flags as FB_RESTART_FLAGS )
+
+	if( (flags and FB_RESTART_LANG) <> 0 ) then
+		env.dorestart or= flags
+	end if
+
+	if( (flags and FB_RESTART_CMDLINE) <> 0 ) then
+		'' only restart if we need a restart and
+		if( (env.delayrestart and FB_RESTART_CMDLINE) <> 0 ) then
+
+			'' only if we haven't already restarted for #cmdline
+			if( (env.restartflags and FB_RESTART_CMDLINE ) = 0 ) then
+				env.dorestart or= env.delayrestart
+			endif
+		end if
+	end if
+
+end sub
+
+function fbGetRestartFlags() as FB_RESTART_FLAGS
+	return env.dorestart
 end function
 
 sub fbSetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
