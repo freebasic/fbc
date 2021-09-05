@@ -2386,11 +2386,11 @@ private sub handleArg _
 
 			if( is_source ) then
 				if( cmdlineOptionTB( optid ).parser_restart ) then
-					fbSetDelayRestart( FB_RESTART_PARSER or FB_RESTART_CMDLINE )
+					fbRestartBeginRequest( FB_RESTART_PARSER or FB_RESTART_CMDLINE )
 				end if
 
 				if( cmdlineOptionTB( optid ).fbc_restart ) then
-					fbSetDelayRestart( FB_RESTART_FBC or FB_RESTART_CMDLINE )
+					fbRestartBeginRequest( FB_RESTART_FBC or FB_RESTART_CMDLINE )
 				end if
 			end if
 		end if
@@ -2893,7 +2893,6 @@ private sub hCompileBas _
 	)
 
 	dim as integer prevlang = any, prevouttype = any
-	dim as FB_RESTART_FLAGS restartflags = any
 	dim as string asmfile, pponlyfile
 
 	asmfile = hGetAsmName( module, 1 )
@@ -2932,7 +2931,6 @@ private sub hCompileBas _
 		print
 	end if
 
-	restartflags = FB_RESTART_NONE
 	'' preserve orginal values that might have to restored
 	'' (e.g. -lang mode could be overwritten while parsing due to #lang,
 	'' but that shouldn't affect other modules)
@@ -2946,7 +2944,7 @@ private sub hCompileBas _
 
 	do
 		'' init the parser (note: initializes env)
-		fbInit( is_main, restartflags, fbc.entry, module_count )
+		fbInit( is_main, fbc.entry, module_count )
 
 		if( is_fbctinf ) then
 			'' Let the compiler know about all libs collected so far,
@@ -2974,16 +2972,18 @@ private sub hCompileBas _
 			exit do
 		end if
 
-		'' Restart
-		restartflags or= fbGetRestartFlags()
-
-		'' !!!TODO!!! some #cmdline options require us to restart before hCompileBas()
-		'' restarting fbc is harder and we would need to gracefully exit from here
-		'' and get back to a place where we can transfer new options
-		'' from the source file to fbc's main entry point
+		'' Close the request to restart the parser
+		fbRestartCloseRequest( FB_RESTART_PARSER )
 
 		'' Shutdown the parser before restarting
 		fbEnd( )
+
+		'' Still have restart set?  It must be a request to restart fbc
+		if( fbShouldRestart( ) ) then
+			'' Restore original #lang
+			fbSetOption( FB_COMPOPT_LANG, prevlang )
+			exit sub
+		end if
 	loop
 
 	'' (unnecessary for the empty fbctinf module, it won't add anything new)
@@ -2996,7 +2996,9 @@ private sub hCompileBas _
 	fbEnd( )
 
 	'' Restore original options
-	fbSetOption( FB_COMPOPT_OUTTYPE, prevouttype )
+	if( is_fbctinf ) then
+		fbSetOption( FB_COMPOPT_OUTTYPE, prevouttype )
+	end if
 	fbSetOption( FB_COMPOPT_LANG, prevlang )
 end sub
 
@@ -3063,6 +3065,10 @@ private sub hCompileModules( )
 
 		module_count += 1
 		hCompileBas( module, ismain, FALSE, module_count )
+
+		if( fbShouldRestart( ) ) then
+			exit sub
+		end if
 
 		module = listGetNext( module )
 	loop while( module )

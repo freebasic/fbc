@@ -378,7 +378,6 @@ end function
 sub fbInit _
 	( _
 		byval ismain as integer, _
-		byval restartflags as FB_RESTART_FLAGS, _
 		byval entry as zstring ptr, _
 		byval module_count as integer _
 	)
@@ -386,9 +385,10 @@ sub fbInit _
 	strsetInit( @env.libs, FB_INITLIBNODES \ 4 )
 	strsetInit( @env.libpaths, FB_INITLIBNODES \ 4 )
 
-	env.restartflags = restartflags
-	env.dorestart = FB_RESTART_NONE
-	env.delayrestart = FB_RESTART_NONE
+	'' when starting a compile, reset the restart requests
+	'' env.restart_status preserves state from previous runs
+	env.restart_request = FB_RESTART_NONE
+	env.restart_action = FB_RESTART_NONE
 
 	redim infileTb( 0 to FB_MAXINCRECLEVEL-1 )
 
@@ -558,6 +558,12 @@ sub fbGlobalInit()
 	env.clopt.objinfo       = TRUE
 	env.clopt.showincludes  = FALSE
 	env.clopt.modeview      = FB_DEFAULT_MODEVIEW
+
+	env.restart_request     = FB_RESTART_NONE
+	env.restart_action      = FB_RESTART_NONE
+	env.restart_status      = FB_RESTART_NONE
+
+	env.module_count        = 0
 
 	hUpdateLangOptions( )
 	hUpdateTargetOptions( )
@@ -798,11 +804,12 @@ sub fbChangeOption(byval opt as integer, byval value as integer)
 				else
 
 					'' Never restarted due to #lang?
-					if( ( env.restartflags and FB_RESTART_LANG ) = 0 ) then
+					if( ( env.restart_status and FB_RESTART_LANG ) = 0 ) then
 						fbSetOption( opt, value )
 
 						'' Tell parser to restart as soon as possible
-						fbSetDoRestart( FB_RESTART_LANG or FB_RESTART_PARSER )
+						fbRestartBeginRequest( FB_RESTART_LANG or FB_RESTART_PARSER )
+						fbRestartAcceptRequest( FB_RESTART_LANG )
 
 						'' and don't show any more errors
 						errHideFurtherErrors()
@@ -1256,14 +1263,14 @@ end sub
 function fbShouldRestart() as integer
 
 	'' missing #cmdline "-end" ?
-	'' expecting a restart due to #cmdline?
-	if( (env.delayrestart and FB_RESTART_CMDLINE) <> 0 ) then
+	'' have a request to restart due to #cmdline?
+	if( (env.restart_request and FB_RESTART_CMDLINE) <> 0 ) then
 
-		'' but we didn't have any restart due to #cmdline yet?
-		if( (env.restartflags and FB_RESTART_CMDLINE ) = 0 ) then
+		'' but we didn't have any restart yet?
+		if( (env.restart_status and FB_RESTART_CMDLINE ) = 0 ) then
 
-			'' tell parser to restart
-			fbSetDoRestart( FB_RESTART_CMDLINE )
+			'' tell parser / fbc to restart as soon as possible
+			fbRestartAcceptRequest( FB_RESTART_CMDLINE )
 
 			'' and don't show any more errors
 			errHideFurtherErrors()
@@ -1272,44 +1279,49 @@ function fbShouldRestart() as integer
 		endif
 	end if
 
-	return ((env.dorestart and (FB_RESTART_PARSER or FB_RESTART_FBC)) <> 0)
+	return ((env.restart_action and (FB_RESTART_PARSER or FB_RESTART_FBC)) <> 0)
 end function
 
 function fbShouldContinue() as integer
-	return ((env.dorestart = FB_RESTART_NONE) and (errGetCount() < env.clopt.maxerrors))
+	return ((env.restart_action = FB_RESTART_NONE) and (errGetCount() < env.clopt.maxerrors))
 end function
 
-sub fbSetDelayRestart( byval flags as FB_RESTART_FLAGS )
-	'' env is defined in this module and we want to set it from fbc.bas
-	'' which does not have access to env.  But we are re-using the command
-	'' line options processing fbc.bas:fbcParseArgsFromString() in
-	'' pp.bas:ppCmdline().  So, expose a setter for env.delayrestart here
-	'' to allow fbc.bas to work with env.delayrestart
-	env.delayrestart or= flags
+sub fbRestartBeginRequest( byval flags as FB_RESTART_FLAGS )
+	env.restart_request or= flags
 end sub
 
-sub fbSetDoRestart( byval flags as FB_RESTART_FLAGS )
+sub fbRestartAcceptRequest( byval flags as FB_RESTART_FLAGS )
 
+	'' #lang restarts are as soon as possible, and take priority over #cmdline restarts
+	'' if we reach a #lang before reaching a #cmdline "-end"
 	if( (flags and FB_RESTART_LANG) <> 0 ) then
-		env.dorestart or= flags
-	end if
-
-	if( (flags and FB_RESTART_CMDLINE) <> 0 ) then
+		env.restart_action or= ( env.restart_request and ( FB_RESTART_PARSER or FB_RESTART_LANG ) )
+	
+	'' #cmdline 
+	elseif( (flags and FB_RESTART_CMDLINE) <> 0 ) then
 		'' only restart if we need a restart and
-		if( (env.delayrestart and FB_RESTART_CMDLINE) <> 0 ) then
+		if( (env.restart_request and FB_RESTART_CMDLINE) <> 0 ) then
 
 			'' only if we haven't already restarted for #cmdline
-			if( (env.restartflags and FB_RESTART_CMDLINE ) = 0 ) then
-				env.dorestart or= env.delayrestart
+			if( (env.restart_status and FB_RESTART_CMDLINE ) = 0 ) then
+				env.restart_action or= env.restart_request
 			endif
 		end if
 	end if
 
 end sub
 
-function fbGetRestartFlags() as FB_RESTART_FLAGS
-	return env.dorestart
-end function
+sub fbRestartCloseRequest( byval flags as FB_RESTART_FLAGS )
+	'' closing the request to restart the parser
+	if( flags and FB_RESTART_PARSER ) then
+		env.restart_action and= not (FB_RESTART_PARSER)
+	end if
+
+	'' closing the request to restart fbc
+	if( flags and FB_RESTART_FBC ) then
+		env.restart_action and= not (FB_RESTART_FBC)
+	end if
+end sub
 
 sub fbSetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
 	strsetCopy(@env.libs, libs)

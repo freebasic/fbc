@@ -636,12 +636,14 @@ type FBENV
 
 	opt             as FBOPTION                 '' context-sensitive options
 
-	'' compile / restart state
-	inited          as integer                  '' set to TRUE if parser ready
-	restartflags    as FB_RESTART_FLAGS         '' history of parser or fbc restarts completed
-	dorestart       as FB_RESTART_FLAGS         '' request parser or fbc restart as soon as possible
-	delayrestart    as FB_RESTART_FLAGS         '' request a delayed parser or fbc restart and trigger on #cmdline "-end"
+	'' initialization state
+	inited          as integer                  '' set to TRUE if ready to parse source code
 	module_count    as integer                  '' module (.bas) count, 1 = first
+
+	'' restart state
+	restart_request  as FB_RESTART_FLAGS        '' request parser or fbc restart on a trigger later (e.g #cmdline "-end")
+	restart_action   as FB_RESTART_FLAGS        '' restart as soon as possible
+	restart_status   as FB_RESTART_FLAGS        '' current status of restarts #lang/#cmdline/parser/fbc
 
 	'' Lists to collect #inclibs and #libpaths
 	libs            as TSTRSET

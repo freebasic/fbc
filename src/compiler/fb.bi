@@ -452,7 +452,6 @@ end enum
 declare sub fbInit _
 	( _
 		byval ismain as integer, _
-		byval restarts as FB_RESTART_FLAGS, _
 		byval entry as zstring ptr, _
 		byval module_count as integer _
 	)
@@ -468,9 +467,9 @@ declare sub fbCompile _
 
 declare function fbShouldRestart() as integer
 declare function fbShouldContinue() as integer
-declare sub fbSetDelayRestart( byval flags as FB_RESTART_FLAGS )
-declare sub fbSetDoRestart( byval flags as FB_RESTART_FLAGS )
-declare function fbGetRestartFlags( ) as FB_RESTART_FLAGS
+declare sub fbRestartBeginRequest( byval flags as FB_RESTART_FLAGS )
+declare sub fbRestartAcceptRequest( byval flags as FB_RESTART_FLAGS )
+declare sub fbRestartCloseRequest( byval flags as FB_RESTART_FLAGS )
 
 declare sub fbGlobalInit()
 declare sub fbAddIncludePath(byref path as string)
