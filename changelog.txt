@@ -41,7 +41,8 @@ Version 1.09.0
 - fbc: add __FB_OPTIMIZE__ intrinisic define - always defined and will have a value from 0 to 3 to indicate the optimization level passed to the backend compiler
 - fbc: #cmdline "args..." directive to specify command line arguments within source files, restarting the parser from some options
 - fbc: #cmdline "-end" will trigger a parser or fbc restart if needed.  fbc can't detect the end of reading all the #cmdlines to do this automatically
-- fbc: only process #cmdline in the first module (which must be specified on the real command line)
+- fbc: #cmdline "-restart" will always trigger an fbc restart
+- fbc: only process #cmdline in the first source module (which must be specified on the real command line)
 - fbc: add '-z nocmdline' command line option to ignore #cmdline directives - allows overriding source directives with real fbc command line
 
 [fixed]

@@ -858,7 +858,7 @@ private sub ppCmdline( )
 	elseif( fbGetOption(FB_COMPOPT_NOCMDLINE) ) then
 		errReportWarn( FB_WARNINGMSG_CMDLINEIGNORED )
 
-	'' Already restarted due to #cmdline "-end"?
+	'' Already restarted due to #cmdline "-end" | "-restart"?
 	elseif( (env.restart_status and FB_RESTART_CMDLINE) <> 0 ) then
 		'' do nothing
 
@@ -868,6 +868,16 @@ private sub ppCmdline( )
 		'' We don't have any clever way to auto-detect when all #cmdline's have been read
 		'' Check for '#cmdline "-end"' to begin a restart and not wait for end of file
 		'' The restart request will have been stored in env.restart_request
+		fbRestartAcceptRequest( FB_RESTART_CMDLINE )
+
+		'' and don't show any more errors
+		errHideFurtherErrors()
+
+	'' #cmdline "-restart" ?
+	elseif( lcase(trim(*args)) = "-restart" ) then
+
+		'' like "-end" above, but always reset fbc
+		fbRestartBeginRequest( FB_RESTART_FBC_CMDLINE )
 		fbRestartAcceptRequest( FB_RESTART_CMDLINE )
 
 		'' and don't show any more errors

@@ -1679,14 +1679,14 @@ end type
 dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 { _
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_A            add files to link, affects link
-	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_ARCH         !!!TODO!!! affects major initialization
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_ARCH         affects major initialization
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_ASM          affects second stage compile
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_B            adds files to compile
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_C            affects compile / assemble /link process
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_CKEEPOBJ     affects removal of temporary files
 	( TRUE , TRUE , FALSE, TRUE  ), _ '' OPT_D            add symbols to current source also, not just the preDefines, affects global defines
-	( FALSE, TRUE , TRUE , TRUE  ), _ '' OPT_DLL          !!!TODO!!! affects major initialization, affects output format
-	( FALSE, TRUE , TRUE , TRUE  ), _ '' OPT_DYLIB        !!!TODO!!! affects major initialization, affects output format
+	( FALSE, TRUE , TRUE , TRUE  ), _ '' OPT_DLL          affects major initialization, affects output format
+	( FALSE, TRUE , TRUE , TRUE  ), _ '' OPT_DYLIB        affects major initialization, affects output format
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_E            affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EARRAY       affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EASSERT      affects code generation
@@ -1694,7 +1694,7 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EDEBUGINFO   affects code generation, affects link
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_ELOCATION    affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_ENULLPTR     affects code generation
-	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_ENTRY        !!!TODO!!! affects major initialization, affects code generation
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_ENTRY        affects major initialization, affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EX           affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EXX          affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EXPORT       affects code generation
@@ -1704,12 +1704,12 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_G            affects code generation, affects link
 	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_GEN          affects initialization
 	( FALSE, FALSE, FALSE, FALSE ), _ '' OPT_HELP         never allow, real command line only, makes no sense to have in source
-	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_I            !!!TODO!!! add include path before the default one
-	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_INCLUDE      !!!TODO!!! restart required to inject preInclude
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_I            add include path before the default one
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_INCLUDE      restart required to inject preInclude
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_L            affects link, same as #inclib
 	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_LANG         affects code generation, affects initialization
-	( FALSE, TRUE , TRUE , TRUE  ), _ '' OPT_LIB          !!!TODO!!! affects major initialization, affects output format
-	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_M            !!!TODO!!! affects major initialization for all modules
+	( FALSE, TRUE , TRUE , TRUE  ), _ '' OPT_LIB          affects major initialization, affects output format
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_M            affects major initialization for all modules
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_MAP          affects output files
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_MAXERR       affects compile process
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_MT           affects link, __FB_MT__
@@ -1721,8 +1721,8 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_OPTIMIZE     affects link
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_P            affects link, same as #libpath
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_PIC          affects link
-	( FALSE, TRUE , FALSE, TRUE  ), _ '' OPT_PP           !!!TODO!!! never allow, real command line only, affects major initialization
-	( TRUE , TRUE , FALSE, TRUE  ), _ '' OPT_PREFIX       !!!TODO!!!  affects major initialization
+	( FALSE, TRUE , FALSE, TRUE  ), _ '' OPT_PP           affects major initialization
+	( TRUE , TRUE , FALSE, TRUE  ), _ '' OPT_PREFIX       affects major initialization
 	( TRUE , FALSE, FALSE, FALSE ), _ '' OPT_PRINT        never allow, makes no sense to have in source
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_PROFILE      affects initialization, affects code generation, affects link
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_R            affects compile / assmble /link process
@@ -1730,11 +1730,11 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_RR           affects compile / assmble /link process
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_RRKEEPASM    affects removal of temporary files
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_S            affects link
-	( FALSE, FALSE, FALSE, FALSE ), _ '' OPT_SHOWINCLUDES never allow, command line or #lang only
+	( FALSE, TRUE , FALSE, TRUE  ), _ '' OPT_SHOWINCLUDES affects compiler output display
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_STATIC       affects link
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_STRIP        affects link
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_T            affects link
-	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_TARGET       !!!TODO!!! affects major initialization
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_TARGET       affects major initialization
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_TITLE        affects link
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_V            affects nothing
 	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_VEC          affects code generation
@@ -2383,15 +2383,16 @@ private sub handleArg _
 		else
 			'' Handle this option now
 			handleOpt( optid, arg, is_source )
+		end if
 
-			if( is_source ) then
-				if( cmdlineOptionTB( optid ).parser_restart ) then
-					fbRestartBeginRequest( FB_RESTART_PARSER_CMDLINE )
-				end if
+		'' even if the handling the option is delayed, check the restart options here
+		if( is_source ) then
+			if( cmdlineOptionTB( optid ).parser_restart ) then
+				fbRestartBeginRequest( FB_RESTART_PARSER_CMDLINE )
+			end if
 
-				if( cmdlineOptionTB( optid ).fbc_restart ) then
-					fbRestartBeginRequest( FB_RESTART_FBC_CMDLINE )
-				end if
+			if( cmdlineOptionTB( optid ).fbc_restart ) then
+				fbRestartBeginRequest( FB_RESTART_FBC_CMDLINE )
 			end if
 		end if
 
@@ -2571,7 +2572,9 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 		'' Missing argument for command line option
 		hFatalInvalidOption( *argv[argc - 1], FALSE )
 	end if
+end sub
 
+private sub hCheckArgs()
 	'' In case there was an '-o <file>', but no corresponding input file,
 	'' this will report the error.
 	hCheckWaitingObjfile( )
@@ -3999,22 +4002,27 @@ end sub
 
 	hParseArgs( __FB_ARGC__, __FB_ARGV__ )
 
-	if( fbc.showversion ) then
-		hPrintVersion( fbc.verbose )
-		fbcEnd( 0 )
-	end if
-
-	if( fbc.verbose ) then
-		hPrintVersion( FALSE )
-	end if
-
-	'' Show help if --help was given
-	if( fbc.showhelp ) then
-		hPrintOptions( fbc.verbose )
-		fbcEnd( 1 )
-	end if
-
+	dim restarted as boolean = FALSE
 	do
+		hCheckArgs( )
+
+		if( restarted = FALSE ) then
+			if( fbc.showversion ) then
+				hPrintVersion( fbc.verbose )
+				fbcEnd( 0 )
+			end if
+
+			if( fbc.verbose ) then
+				hPrintVersion( FALSE )
+			end if
+
+			'' Show help if --help was given
+			if( fbc.showhelp ) then
+				hPrintOptions( fbc.verbose )
+				fbcEnd( 1 )
+			end if
+		end if
+
 		fbcDeterminePrefix( )
 		fbcSetupCompilerPaths( )
 
@@ -4074,7 +4082,7 @@ end sub
 		end if
 
 		fbRestartCloseRequest( FB_RESTART_FBC_CMDLINE )
-
+		restarted = TRUE
 	loop
 
 	if( hCompileXpm( ) = FALSE ) then
