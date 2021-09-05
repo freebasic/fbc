@@ -107,6 +107,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_OBJINFO              '' boolean: write/read .fbctinf sections etc.?
 	FB_COMPOPT_SHOWINCLUDES         '' boolean: -showincludes
 	FB_COMPOPT_MODEVIEW             ''__FB_GUI__
+	FB_COMPOPT_NOCMDLINE            '' boolean: -z nocmdline, disable #cmdline directives
 
 	FB_COMPOPTIONS
 end enum
@@ -308,6 +309,7 @@ type FBCMMLINEOPT
 	objinfo         as integer
 	showincludes    as integer
 	modeview        as FB_MODEVIEW
+	nocmdline       as integer              '' dissallow #cmdline directive? (default = false)
 end type
 
 '' features allowed in the selected language
@@ -439,7 +441,22 @@ const FB_INFOSEC_OBJNAME = "__fb_ct.inf"
 
 #include once "error.bi"
 
-declare sub fbInit(byval ismain as integer, byval restarts as integer, byval entry as zstring ptr)
+enum FB_RESTART_FLAGS
+	FB_RESTART_NONE               '' no restart required
+	FB_RESTART_PARSER_LANG    = 1 '' parser restart needed due to #lang directive
+	FB_RESTART_PARSER_CMDLINE = 2 '' parser restart needed due to #cmdline directive
+	FB_RESTART_FBC_CMDLINE    = 4 '' main fbc entry restart needed due to #cmdline directive
+
+	FB_RESTART_CMDLINE = FB_RESTART_PARSER_CMDLINE or FB_RESTART_FBC_CMDLINE
+	FB_RESTART_PARSER  = FB_RESTART_PARSER_LANG or FB_RESTART_PARSER_CMDLINE
+end enum
+
+declare sub fbInit _
+	( _
+		byval ismain as integer, _
+		byval entry as zstring ptr, _
+		byval module_count as integer _
+	)
 declare sub fbEnd()
 
 declare sub fbCompile _
@@ -452,6 +469,9 @@ declare sub fbCompile _
 
 declare function fbShouldRestart() as integer
 declare function fbShouldContinue() as integer
+declare sub fbRestartBeginRequest( byval flags as FB_RESTART_FLAGS )
+declare sub fbRestartAcceptRequest( byval flags as FB_RESTART_FLAGS )
+declare sub fbRestartCloseRequest( byval flags as FB_RESTART_FLAGS )
 
 declare sub fbGlobalInit()
 declare sub fbAddIncludePath(byref path as string)

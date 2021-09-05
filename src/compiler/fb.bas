@@ -375,18 +375,27 @@ function fbGetBackendName _
 
 end function
 
-sub fbInit( byval ismain as integer, byval restarts as integer, byval entry as zstring ptr )
+sub fbInit _
+	( _
+		byval ismain as integer, _
+		byval entry as zstring ptr, _
+		byval module_count as integer _
+	)
+
 	strsetInit( @env.libs, FB_INITLIBNODES \ 4 )
 	strsetInit( @env.libpaths, FB_INITLIBNODES \ 4 )
 
-	env.restarts = restarts
-	env.dorestart = FALSE
+	'' when starting a compile, reset the restart requests
+	'' env.restart_status preserves state from previous runs
+	env.restart_request = FB_RESTART_NONE
+	env.restart_action = FB_RESTART_NONE
 
 	redim infileTb( 0 to FB_MAXINCRECLEVEL-1 )
 
 	env.includerec = 0
 	env.main.proc = NULL
 	env.entry = *entry
+	env.module_count = module_count
 
 	env.opt.explicit = (env.clopt.lang = FB_LANG_FB)
 
@@ -550,6 +559,12 @@ sub fbGlobalInit()
 	env.clopt.showincludes  = FALSE
 	env.clopt.modeview      = FB_DEFAULT_MODEVIEW
 
+	env.restart_request     = FB_RESTART_NONE
+	env.restart_action      = FB_RESTART_NONE
+	env.restart_status      = FB_RESTART_NONE
+
+	env.module_count        = 0
+
 	hUpdateLangOptions( )
 	hUpdateTargetOptions( )
 end sub
@@ -665,6 +680,8 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		env.clopt.showincludes = value
 	case FB_COMPOPT_MODEVIEW
 		env.clopt.modeview = value
+	case FB_COMPOPT_NOCMDLINE
+		env.clopt.nocmdline = value
 	end select
 end sub
 
@@ -753,6 +770,8 @@ function fbGetOption( byval opt as integer ) as integer
 		function = env.clopt.showincludes
 	case FB_COMPOPT_MODEVIEW
 		function = env.clopt.modeview
+	case FB_COMPOPT_NOCMDLINE
+		function = env.clopt.nocmdline
 
 	case else
 		function = 0
@@ -784,12 +803,13 @@ sub fbChangeOption(byval opt as integer, byval value as integer)
 					errReportWarn( FB_WARNINGMSG_CMDLINEOVERRIDES )
 				else
 
-					'' First pass?
-					if( env.restarts = 0 ) then
+					'' Never restarted due to #lang?
+					if( ( env.restart_status and FB_RESTART_PARSER_LANG ) = 0 ) then
 						fbSetOption( opt, value )
 
 						'' Tell parser to restart as soon as possible
-						env.dorestart = TRUE
+						fbRestartBeginRequest( FB_RESTART_PARSER_LANG )
+						fbRestartAcceptRequest( FB_RESTART_PARSER_LANG )
 
 						'' and don't show any more errors
 						errHideFurtherErrors()
@@ -1241,12 +1261,54 @@ sub fbCompile _
 end sub
 
 function fbShouldRestart() as integer
-	return env.dorestart
+
+	'' missing #cmdline "-end" ?
+	'' have a request to restart due to #cmdline?
+	if( (env.restart_request and FB_RESTART_CMDLINE ) <> 0 ) then
+
+		'' but we didn't have any restart yet?
+		if( (env.restart_status and FB_RESTART_CMDLINE) = 0 ) then
+
+			'' tell parser / fbc to restart as soon as possible
+			fbRestartAcceptRequest( FB_RESTART_CMDLINE )
+
+			'' and don't show any more errors
+			errHideFurtherErrors()
+
+			return TRUE
+		endif
+	end if
+
+	return (env.restart_action <> FB_RESTART_NONE)
 end function
 
 function fbShouldContinue() as integer
-	return ((env.dorestart = FALSE) and (errGetCount() < env.clopt.maxerrors))
+	return ((env.restart_action = FB_RESTART_NONE) and (errGetCount() < env.clopt.maxerrors))
 end function
+
+sub fbRestartBeginRequest( byval flags as FB_RESTART_FLAGS )
+	env.restart_request or= flags
+end sub
+
+sub fbRestartAcceptRequest( byval filter as FB_RESTART_FLAGS )
+	'' only restart if we need a restart
+	if( (env.restart_request and filter) <> 0 ) then
+		'' and only if we haven't already restarted
+		if( (env.restart_status and env.restart_request and filter) = 0 ) then
+			env.restart_action or= (env.restart_request and filter)
+		end if
+	end if
+	'' clear the request
+	env.restart_request and= not filter
+end sub
+
+sub fbRestartCloseRequest( byval filter as FB_RESTART_FLAGS )
+	'' update status, action is completed
+	env.restart_status or= (env.restart_action and filter)
+
+	'' clear the action
+	env.restart_action and= not filter
+end sub
 
 sub fbSetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
 	strsetCopy(@env.libs, libs)

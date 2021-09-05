@@ -12,25 +12,25 @@
 type ERRPARAMLOCATION
 	'' While an argument location is pushed,
 	'' errors will be reported "at parameter N of F()"
-	proc			as FBSYMBOL ptr
-	tk			as integer
-	paramnum		as integer
-	paramid			as zstring ptr
+	proc            as FBSYMBOL ptr
+	tk              as integer
+	paramnum        as integer
+	paramid         as zstring ptr
 end type
 
 type FB_ERRCTX
-	inited			as integer
-	cnt				as integer
-	hide_further_messages		as integer
-	lastline		as integer
-	laststmt		as integer
-	undefhash		as THASH				'' undefined symbols
-	paramlocations		as TLIST  '' ERRPARAMLOCATION's
+	inited                  as integer
+	cnt                     as integer
+	hide_further_messages   as integer
+	lastline                as integer
+	laststmt                as integer
+	undefhash               as THASH                '' undefined symbols
+	paramlocations          as TLIST  '' ERRPARAMLOCATION's
 end type
 
 type FBWARNING
-	level		as integer
-	text		as const zstring ptr
+	level       as integer
+	text        as const zstring ptr
 end type
 
 declare function hMakeParamDesc _
@@ -87,7 +87,8 @@ declare function hMakeParamDesc _
 		( /'FB_WARNINGMSG_CALLINGCONVMISMATCH       '/ 0, @"Calling convention mismatch" ), _
 		( /'FB_WARNINGMSG_ARGCNTMISMATCH            '/ 0, @"Argument count mismatch" ), _
 		( /'FB_WARNINGMSG_SUFFIXIGNORED             '/ 1, @"Suffix ignored" ), _
-		( /'FB_WARNINGMSG_FORENDTOOBIG              '/ 1, @"FOR counter variable is unable to exceed limit value" ) _
+		( /'FB_WARNINGMSG_FORENDTOOBIG              '/ 1, @"FOR counter variable is unable to exceed limit value" ), _
+		( /'FB_WARNINGMSG_CMDLINEIGNORED            '/ 0, @"#cmdline ignored" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as const zstring ptr => _

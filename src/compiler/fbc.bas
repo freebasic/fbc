@@ -295,7 +295,7 @@ end function
 
 '' Pass some arguments to gcc and read the results. Returns an empty string on
 '' an error.
-function fbcQueryGcc( byref options as string ) as string
+private function fbcQueryGcc( byref options as string ) as string
 	dim as string path
 	fbcFindBin( FBCTOOL_GCC, path )
 
@@ -1321,8 +1321,13 @@ private sub hCollectObjinfo( )
 	wend
 end sub
 
-private sub hFatalInvalidOption( byref arg as string )
-	errReportEx( FB_ERRMSG_INVALIDCMDOPTION, QUOTE + arg + QUOTE, -1 )
+private sub hFatalInvalidOption _
+	( _
+		byref arg as string, _
+		byval is_source as integer _
+	)
+	'' if 'is_source' then show a line number, otherwise it's the actual command line and line number is undefined
+	errReportEx( FB_ERRMSG_INVALIDCMDOPTION, QUOTE + arg + QUOTE, iif( is_source, 0, -1 ) )
 	fbcEnd( 1 )
 end sub
 
@@ -1468,7 +1473,7 @@ function fbCpuTypeFromGNUArchInfo( byref arch as string ) as integer
 			return gnuarchmap(i).cputype
 		end if
 	next
-	return -1 
+	return -1
 end function
 
 type FBOSARCHINFO
@@ -1664,78 +1669,91 @@ enum
 	OPT__COUNT
 end enum
 
-dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
+type FBC_CMDLINE_OPTION
+	takes_argument as boolean          '' true = option requires argument
+	allowed_in_source as boolean       '' true = can be used with #cmdline directive
+	parser_restart as boolean          '' true = restart of parser is required when used with #cmdline directive
+	fbc_restart as integer             '' true = major restart of fbc required
+end type
+
+dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 { _
-	TRUE , _ '' OPT_A
-	TRUE , _ '' OPT_ARCH
-	TRUE , _ '' OPT_ASM
-	TRUE , _ '' OPT_B
-	FALSE, _ '' OPT_C
-	FALSE, _ '' OPT_CKEEPOBJ
-	TRUE , _ '' OPT_D
-	FALSE, _ '' OPT_DLL
-	FALSE, _ '' OPT_DYLIB
-	FALSE, _ '' OPT_E
-	FALSE, _ '' OPT_EARRAY
-	FALSE, _ '' OPT_EASSERT
-	FALSE, _ '' OPT_EDEBUG
-	FALSE, _ '' OPT_EDEBUGINFO
-	FALSE, _ '' OPT_ELOCATION
-	FALSE, _ '' OPT_ENULLPTR
-	TRUE,  _ '' OPT_ENTRY
-	FALSE, _ '' OPT_EX
-	FALSE, _ '' OPT_EXX
-	FALSE, _ '' OPT_EXPORT
-	TRUE,  _ '' OPT_FORCELANG
-	TRUE , _ '' OPT_FPMODE
-	TRUE , _ '' OPT_FPU
-	FALSE, _ '' OPT_G
-	TRUE , _ '' OPT_GEN
-	FALSE, _ '' OPT_HELP
-	TRUE , _ '' OPT_I
-	TRUE , _ '' OPT_INCLUDE
-	TRUE , _ '' OPT_L
-	TRUE , _ '' OPT_LANG
-	FALSE, _ '' OPT_LIB
-	TRUE , _ '' OPT_M
-	TRUE , _ '' OPT_MAP
-	TRUE , _ '' OPT_MAXERR
-	FALSE, _ '' OPT_MT
-	FALSE, _ '' OPT_NODEFLIBS
-	FALSE, _ '' OPT_NOERRLINE
-	FALSE, _ '' OPT_NOOBJINFO
-	FALSE, _ '' OPT_NOSTRIP
-	TRUE , _ '' OPT_O
-	TRUE , _ '' OPT_OPTIMIZE
-	TRUE , _ '' OPT_P
-	FALSE, _ '' OPT_PIC
-	FALSE, _ '' OPT_PP
-	TRUE , _ '' OPT_PREFIX
-	TRUE , _ '' OPT_PRINT
-	FALSE, _ '' OPT_PROFILE
-	FALSE, _ '' OPT_R
-	FALSE, _ '' OPT_RKEEPASM
-	FALSE, _ '' OPT_RR
-	FALSE, _ '' OPT_RRKEEPASM
-	TRUE , _ '' OPT_S
-	FALSE, _ '' OPT_SHOWINCLUDES
-	FALSE, _ '' OPT_STATIC
-	FALSE, _ '' OPT_STRIP
-	TRUE , _ '' OPT_T
-	TRUE , _ '' OPT_TARGET
-	TRUE , _ '' OPT_TITLE
-	FALSE, _ '' OPT_V
-	TRUE , _ '' OPT_VEC
-	FALSE, _ '' OPT_VERSION
-	TRUE , _ '' OPT_W
-	TRUE , _ '' OPT_WA
-	TRUE , _ '' OPT_WC
-	TRUE , _ '' OPT_WL
-	TRUE , _ '' OPT_X
-	TRUE   _ '' OPT_Z
+	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_A            add files to link, affects link
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_ARCH         affects major initialization
+	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_ASM          affects second stage compile
+	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_B            adds files to compile
+	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_C            affects compile / assemble /link process
+	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_CKEEPOBJ     affects removal of temporary files
+	( TRUE , TRUE , FALSE, TRUE  ), _ '' OPT_D            add symbols to current source also, not just the preDefines, affects global defines
+	( FALSE, TRUE , TRUE , TRUE  ), _ '' OPT_DLL          affects major initialization, affects output format
+	( FALSE, TRUE , TRUE , TRUE  ), _ '' OPT_DYLIB        affects major initialization, affects output format
+	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_E            affects code generation
+	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EARRAY       affects code generation
+	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EASSERT      affects code generation
+	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EDEBUG       affects code generation
+	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EDEBUGINFO   affects code generation, affects link
+	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_ELOCATION    affects code generation
+	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_ENULLPTR     affects code generation
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_ENTRY        affects major initialization, affects code generation
+	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EX           affects code generation
+	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EXX          affects code generation
+	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EXPORT       affects code generation
+	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_FORCELANG    never allow, command line only
+	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_FPMODE       affects code generation
+	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_FPU          affects code generation, affects second stage compile, affects link
+	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_G            affects code generation, affects link
+	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_GEN          affects initialization
+	( FALSE, FALSE, FALSE, FALSE ), _ '' OPT_HELP         never allow, real command line only, makes no sense to have in source
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_I            add include path before the default one
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_INCLUDE      restart required to inject preInclude
+	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_L            affects link, same as #inclib
+	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_LANG         affects code generation, affects initialization
+	( FALSE, TRUE , TRUE , TRUE  ), _ '' OPT_LIB          affects major initialization, affects output format
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_M            affects major initialization for all modules
+	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_MAP          affects output files
+	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_MAXERR       affects compile process
+	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_MT           affects link, __FB_MT__
+	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_NODEFLIBS    affects link
+	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_NOERRLINE    affects compiler output display
+	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_NOOBJINFO    affects post compile process
+	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_NOSTRIP      affects link
+	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_O            affects input file naming
+	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_OPTIMIZE     affects link
+	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_P            affects link, same as #libpath
+	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_PIC          affects link
+	( FALSE, TRUE , FALSE, TRUE  ), _ '' OPT_PP           affects major initialization
+	( TRUE , TRUE , FALSE, TRUE  ), _ '' OPT_PREFIX       affects major initialization
+	( TRUE , FALSE, FALSE, FALSE ), _ '' OPT_PRINT        never allow, makes no sense to have in source
+	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_PROFILE      affects initialization, affects code generation, affects link
+	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_R            affects compile / assmble /link process
+	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_RKEEPASM     affects removal of temporary files
+	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_RR           affects compile / assmble /link process
+	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_RRKEEPASM    affects removal of temporary files
+	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_S            affects link
+	( FALSE, TRUE , FALSE, TRUE  ), _ '' OPT_SHOWINCLUDES affects compiler output display
+	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_STATIC       affects link
+	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_STRIP        affects link
+	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_T            affects link
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_TARGET       affects major initialization
+	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_TITLE        affects link
+	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_V            affects nothing
+	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_VEC          affects code generation
+	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_VERSION      affects nothing
+	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_W            affects compiler display output
+	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_WA           affects assembly
+	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_WC           affects second stage compile
+	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_WL           affects link
+	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_X            affects output file
+	( TRUE , TRUE , TRUE , FALSE )  _ '' OPT_Z            affects various - code generation
 }
 
-private sub handleOpt(byval optid as integer, byref arg as string)
+private sub handleOpt _
+	( _
+		byval optid as integer, _
+		byref arg as string, _
+		byval is_source as integer _
+	)
+
 	select case as const (optid)
 	case OPT_A
 		fbcAddObj( arg )
@@ -1744,7 +1762,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbc.cputype_is_native = (arg = "native")
 		fbc.cputype = fbIdentifyFbcArch( arg )
 		if( fbc.cputype < 0 ) then
-			hFatalInvalidOption( "-arch " + arg )
+			hFatalInvalidOption( "-arch " + arg, is_source )
 		end if
 
 	case OPT_ASM
@@ -1754,7 +1772,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "intel"
 			fbc.asmsyntax = FB_ASMSYNTAX_INTEL
 		case else
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end select
 
 	case OPT_B
@@ -1817,7 +1835,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 	case OPT_FORCELANG
 		dim as integer value = fbGetLangId(strptr(arg))
 		if( value = FB_LANG_INVALID ) then
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end if
 
 		fbSetOption( FB_COMPOPT_LANG, value )
@@ -1833,7 +1851,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "FAST"
 			value = FB_FPMODE_FAST
 		case else
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end select
 
 		fbSetOption( FB_COMPOPT_FPMODE, value )
@@ -1847,7 +1865,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "SSE"
 			value = FB_FPUTYPE_SSE
 		case else
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end select
 
 		fbSetOption( FB_COMPOPT_FPUTYPE, value )
@@ -1868,7 +1886,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		Case "gas64"
 			fbc.backend = FB_BACKEND_GAS64
 		case else
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end select
 
 	case OPT_HELP
@@ -1886,7 +1904,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 	case OPT_LANG
 		dim as integer value = fbGetLangId( strptr(arg) )
 		if( value = FB_LANG_INVALID ) then
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end if
 
 		fbSetOption( FB_COMPOPT_LANG, value )
@@ -1910,7 +1928,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		else
 			value = clng( arg )
 			if( value <= 0 ) then
-				hFatalInvalidOption( arg )
+				hFatalInvalidOption( arg, is_source )
 			end if
 		end if
 
@@ -1985,7 +2003,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "fblibdir" : fbc.print = PRINT_FBLIBDIR
 		case "sha-1"  : fbc.print = PRINT_SHA1
 		case else
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end select
 
 	case OPT_PROFILE
@@ -2033,7 +2051,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		hParseTargetArg( arg, os, cputype, is_gnu_triplet )
 
 		if( (os < 0) or (cputype < 0) ) then
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end if
 
 		'' Store the OS/cputype, overwriting the values from any
@@ -2070,7 +2088,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "2"
 			value = FB_VECTORIZE_INTRATREE
 		case else
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end select
 
 		fbSetOption( FB_COMPOPT_VECTORIZE, value )
@@ -2154,8 +2172,10 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 			fbSetOption( FB_COMPOPT_NOTHISCALL, TRUE )
 		case "fbrt"
 			fbSetOption( FB_COMPOPT_FBRT, TRUE )
+		case "nocmdline"
+			fbSetOption( FB_COMPOPT_NOCMDLINE, TRUE )
 		case else
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end select
 
 	end select
@@ -2301,19 +2321,28 @@ private function parseOption(byval opt as zstring ptr) as integer
 	return -1
 end function
 
-declare sub parseArgsFromFile(byref filename as string)
+declare sub parseArgsFromFile _
+	( _
+		byref filename as string, _
+		byval is_source as integer _
+	)
 
-private sub handleArg(byref arg as string)
+private sub handleArg _
+	( _
+		byref arg as string, _
+		byval is_source as integer, _
+		byval is_file as integer _
+	)
 	'' If the previous option wants this argument as parameter,
 	'' call the handler with it, now that it's known.
 	'' Note: Anything is accepted, even if it starts with '-' or '@'.
-	if (fbc.optid >= 0) then
+	if( fbc.optid >= 0 ) then
 		'' Complain about empty next argument
 		if (len(arg) = 0) then
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end if
 
-		handleOpt(fbc.optid, arg)
+		handleOpt( fbc.optid, arg, is_source )
 		fbc.optid = -1
 		return
 	end if
@@ -2330,23 +2359,41 @@ private sub handleArg(byref arg as string)
 		'' Complain about '-' only
 		if (cptr(ubyte ptr, opt)[0] = 0) then
 			'' Incomplete command line option
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end if
 
 		'' Parse the option after the '-'
 		dim as integer optid = parseOption(opt)
 		if (optid < 0) then
 			'' Unrecognized command line option
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
+		end if
+
+		'' Are we in source and option not allowed in source?
+		if( is_source ) then
+			if( not cmdlineOptionTB( optid ).allowed_in_source ) then
+				hFatalInvalidOption( arg, is_source )
+			endif
 		end if
 
 		'' Does this option take a parameter?
-		if (option_takes_argument(optid)) then
+		if( cmdlineOptionTB( optid ).takes_argument ) then
 			'' Delay handling it, until the next argument is known.
 			fbc.optid = optid
 		else
 			'' Handle this option now
-			handleOpt(optid, arg)
+			handleOpt( optid, arg, is_source )
+		end if
+
+		'' even if the handling the option is delayed, check the restart options here
+		if( is_source ) then
+			if( cmdlineOptionTB( optid ).parser_restart ) then
+				fbRestartBeginRequest( FB_RESTART_PARSER_CMDLINE )
+			end if
+
+			if( cmdlineOptionTB( optid ).fbc_restart ) then
+				fbRestartBeginRequest( FB_RESTART_FBC_CMDLINE )
+			end if
 		end if
 
 	case asc("@")
@@ -2366,12 +2413,12 @@ private sub handleArg(byref arg as string)
 		'' Complain about '@' only
 		if (len(arg) = 0) then
 			'' Missing file name after '@'
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 		end if
 
 		'' Recursively read in the additional options from the file
 		reclevel += 1
-		parseArgsFromFile(arg)
+		parseArgsFromFile( arg, is_source )
 		reclevel -= 1
 
 	case else
@@ -2402,20 +2449,84 @@ private sub handleArg(byref arg as string)
 			'' Can have only one .xpm, or the fb_program_icon
 			'' symbol will be duplicated
 			if( len( fbc.xpm.srcfile ) > 0 ) then
-				hFatalInvalidOption( arg )
+				hFatalInvalidOption( arg, is_source )
 			end if
 
 			hSetIofile( @fbc.xpm, arg, TRUE )
 
 		case else
 			'' Input file without or with unknown extension
-			hFatalInvalidOption( arg )
+			hFatalInvalidOption( arg, is_source )
 
 		end select
 	end select
 end sub
 
-private sub parseArgsFromFile(byref filename as string)
+sub fbcParseArgsFromString _
+	( _
+		byval args_in as zstring ptr, _
+		byval is_source as integer, _
+		byval is_file as integer _
+	)
+
+	dim as string args = *args_in
+	dim as string arg
+
+	'' Parse the line containing command line arguments,
+	'' separated by spaces. Double- and single-quoted strings
+	'' are handled too, but nothing else.
+	do
+		dim as integer length = len(args)
+		if (length = 0) then
+			exit do
+		end if
+
+		dim as integer i = 0
+		dim as integer quotech = 0
+
+		while (i < length)
+			dim as integer ch = args[i]
+
+			select case as const (ch)
+			case asc(" ")
+				if (quotech = 0) then
+					exit while
+				end if
+
+			case asc(""""), asc("'")
+				if (quotech = ch) then
+					'' String closed
+					quotech = 0
+				elseif (quotech = 0) then
+					'' String opened
+					quotech = ch
+				end if
+
+			end select
+
+			i += 1
+		wend
+
+		if (i = 0) then
+			'' Just space, skip it
+			i = 1
+		else
+			arg = left(args, i)
+			arg = trim(arg)
+			arg = strUnquote(arg)
+			handleArg( arg, is_source, is_file )
+		end if
+
+		args = right(args, length - i)
+	loop
+
+end sub
+
+private sub parseArgsFromFile _
+	( _
+		byref filename as string, _
+		byval is_source as integer _
+	)
 	dim as integer f = freefile()
 	if (open(filename, for input, as #f)) then
 		errReportEx( FB_ERRMSG_FILEACCESSERROR, filename, -1 )
@@ -2423,59 +2534,11 @@ private sub parseArgsFromFile(byref filename as string)
 	end if
 
 	dim as string args
-	dim as string arg
 
 	while (eof(f) = FALSE)
 		line input #f, args
 		args = trim(args)
-
-		'' Parse the line containing command line arguments,
-		'' separated by spaces. Double- and single-quoted strings
-		'' are handled too, but nothing else.
-		do
-			dim as integer length = len(args)
-			if (length = 0) then
-				exit do
-			end if
-
-			dim as integer i = 0
-			dim as integer quotech = 0
-
-			while (i < length)
-				dim as integer ch = args[i]
-
-				select case as const (ch)
-				case asc(" ")
-					if (quotech = 0) then
-						exit while
-					end if
-
-				case asc(""""), asc("'")
-					if (quotech = ch) then
-						'' String closed
-						quotech = 0
-					elseif (quotech = 0) then
-						'' String opened
-						quotech = ch
-					end if
-
-				end select
-
-				i += 1
-			wend
-
-			if (i = 0) then
-				'' Just space, skip it
-				i = 1
-			else
-				arg = left(args, i)
-				arg = trim(arg)
-				arg = strUnquote(arg)
-				handleArg(arg)
-			end if
-
-			args = right(args, length - i)
-		loop
+		fbcParseArgsFromString( strptr( args ), is_source, TRUE )
 	wend
 
 	close #f
@@ -2500,16 +2563,18 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 	dim as string arg
 	for i as integer = 1 to (argc - 1)
 		arg = *argv[i]
-		handleArg(arg)
+		handleArg( arg, FALSE, FALSE )
 	next
 
 	'' Waiting for argument to an option? If the user did something like
 	'' 'fbc foo.bas -o' this shows the error.
 	if (fbc.optid >= 0) then
 		'' Missing argument for command line option
-		hFatalInvalidOption( *argv[argc - 1] )
+		hFatalInvalidOption( *argv[argc - 1], FALSE )
 	end if
+end sub
 
+private sub hCheckArgs()
 	'' In case there was an '-o <file>', but no corresponding input file,
 	'' this will report the error.
 	hCheckWaitingObjfile( )
@@ -2826,10 +2891,11 @@ private sub hCompileBas _
 	( _
 		byval module as FBCIOFILE ptr, _
 		byval is_main as integer, _
-		byval is_fbctinf as integer _
+		byval is_fbctinf as integer, _
+		byval module_count as integer _
 	)
 
-	dim as integer prevlang = any, prevouttype = any, restarts = any
+	dim as integer prevlang = any, prevouttype = any
 	dim as string asmfile, pponlyfile
 
 	asmfile = hGetAsmName( module, 1 )
@@ -2868,7 +2934,6 @@ private sub hCompileBas _
 		print
 	end if
 
-	restarts = 0
 	'' preserve orginal values that might have to restored
 	'' (e.g. -lang mode could be overwritten while parsing due to #lang,
 	'' but that shouldn't affect other modules)
@@ -2881,8 +2946,8 @@ private sub hCompileBas _
 	end if
 
 	do
-		'' init the parser
-		fbInit( is_main, restarts, fbc.entry )
+		'' init the parser (note: initializes env)
+		fbInit( is_main, fbc.entry, module_count )
 
 		if( is_fbctinf ) then
 			'' Let the compiler know about all libs collected so far,
@@ -2910,11 +2975,18 @@ private sub hCompileBas _
 			exit do
 		end if
 
-		'' Restart
-		restarts += 1
+		'' Close the request to restart the parser
+		fbRestartCloseRequest( FB_RESTART_PARSER )
 
 		'' Shutdown the parser before restarting
 		fbEnd( )
+
+		'' Still have restart set?  It must be a request to restart fbc
+		if( fbShouldRestart( ) ) then
+			'' Restore original #lang
+			fbSetOption( FB_COMPOPT_LANG, prevlang )
+			exit sub
+		end if
 	loop
 
 	'' (unnecessary for the empty fbctinf module, it won't add anything new)
@@ -2927,7 +2999,9 @@ private sub hCompileBas _
 	fbEnd( )
 
 	'' Restore original options
-	fbSetOption( FB_COMPOPT_OUTTYPE, prevouttype )
+	if( is_fbctinf ) then
+		fbSetOption( FB_COMPOPT_OUTTYPE, prevouttype )
+	end if
 	fbSetOption( FB_COMPOPT_LANG, prevlang )
 end sub
 
@@ -2979,6 +3053,7 @@ private sub hCompileModules( )
 	'' 3. and copy back into final lists
 	''    (compiler -> fbGetLibs() -> fbc.finallibs)
 
+	dim as integer module_count = 0
 	do
 		if( checkmain ) then
 			ismain = (mainfile = hStripPath( hStripExt( module->srcfile ) ))
@@ -2991,7 +3066,12 @@ private sub hCompileModules( )
 			/'checkmain = not ismain'/
 		end if
 
-		hCompileBas( module, ismain, FALSE )
+		module_count += 1
+		hCompileBas( module, ismain, FALSE, module_count )
+
+		if( fbShouldRestart( ) ) then
+			exit sub
+		end if
 
 		module = listGetNext( module )
 	loop while( module )
@@ -3111,7 +3191,7 @@ private function hCompileXpm( ) as integer
 		fbcAddTemp( fbc.xpm.srcfile )
 	end if
 
-	hCompileBas( @fbc.xpm, FALSE, FALSE )
+	hCompileBas( @fbc.xpm, FALSE, FALSE, -1 )
 	function = TRUE
 end function
 
@@ -3504,7 +3584,7 @@ private function hCompileFbctinf( ) as integer
 		fbcAddTemp( fbctinf.srcfile )
 	end if
 
-	hCompileBas( @fbctinf, FALSE, TRUE )
+	hCompileBas( @fbctinf, FALSE, TRUE, -1 )
 	if( fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS ) then
 		hCompileStage2Module( @fbctinf )
 	end if
@@ -3874,6 +3954,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -z valist-as-ptr Use pointer expressions to implement CVA_*() macros"
 	print "  -z no-thiscall   Don't use '__thiscall' calling convention"
 	print "  -z fbrt          Link with 'fbrt' instead of 'fb' runtime library"
+	print "  -z nocmdline     Disable #cmdline source directives"
 	end if
 
 end sub
@@ -3921,74 +4002,88 @@ end sub
 
 	hParseArgs( __FB_ARGC__, __FB_ARGV__ )
 
-	if( fbc.showversion ) then
-		hPrintVersion( fbc.verbose )
-		fbcEnd( 0 )
-	end if
+	dim restarted as boolean = FALSE
+	do
+		hCheckArgs( )
 
-	if( fbc.verbose ) then
-		hPrintVersion( FALSE )
-	end if
-
-	'' Show help if --help was given
-	if( fbc.showhelp ) then
-		hPrintOptions( fbc.verbose )
-		fbcEnd( 1 )
-	end if
-
-	fbcDeterminePrefix( )
-	fbcSetupCompilerPaths( )
-
-	if( fbc.verbose ) then
-		fbcPrintTargetInfo( )
-	end if
-
-	'' Tell the compiler about the default include path (added after
-	'' the command line ones, so those will be searched first)
-	fbAddIncludePath( fbc.incpath )
-
-	var have_input_files = (listGetHead( @fbc.modules   ) <> NULL) or _
-	                       (listGetHead( @fbc.objlist   ) <> NULL) or _
-	                       (listGetHead( @fbc.libs.list ) <> NULL) or _
-	                       (listGetHead( @fbc.libfiles  ) <> NULL)
-
-	'' Answer -print query, if any, and stop
-	'' The -print option is intended to allow shell scripts, makefiles, etc.
-	'' to query information from fbc.
-	if( fbc.print >= 0 ) then
-		select case( fbc.print )
-		case PRINT_HOST
-			print fbGetHostId( )
-		case PRINT_TARGET
-			print fbGetTargetId( )
-		case PRINT_X
-			'' If we have input files, -print x should give the output name that we'd normally get.
-			'' However, a plain "fbc -print x" without input files should just give the .exe extension.
-			if( have_input_files ) then
-				fbcDetermineMainName( )
+		if( restarted = FALSE ) then
+			if( fbc.showversion ) then
+				hPrintVersion( fbc.verbose )
+				fbcEnd( 0 )
 			end if
-			hSetOutName( )
-			print fbc.outname
-		case PRINT_FBLIBDIR
-			print fbc.libpath
-		case PRINT_SHA1
-			print FB_BUILD_SHA1
-		end select
-		fbcEnd( 0 )
-	end if
 
-	fbcDetermineMainName( )
+			if( fbc.verbose ) then
+				hPrintVersion( FALSE )
+			end if
 
-	'' Show help if there are no input files
-	if( have_input_files = FALSE ) then
-		hPrintOptions( fbc.verbose )
-		fbcEnd( 1 )
-	end if
+			'' Show help if --help was given
+			if( fbc.showhelp ) then
+				hPrintOptions( fbc.verbose )
+				fbcEnd( 1 )
+			end if
+		end if
 
-	''
-	'' Compile .bas modules
-	''
-	hCompileModules( )
+		fbcDeterminePrefix( )
+		fbcSetupCompilerPaths( )
+
+		if( fbc.verbose ) then
+			fbcPrintTargetInfo( )
+		end if
+
+		'' Tell the compiler about the default include path (added after
+		'' the command line ones, so those will be searched first)
+		fbAddIncludePath( fbc.incpath )
+
+		var have_input_files = (listGetHead( @fbc.modules   ) <> NULL) or _
+							   (listGetHead( @fbc.objlist   ) <> NULL) or _
+							   (listGetHead( @fbc.libs.list ) <> NULL) or _
+							   (listGetHead( @fbc.libfiles  ) <> NULL)
+
+		'' Answer -print query, if any, and stop
+		'' The -print option is intended to allow shell scripts, makefiles, etc.
+		'' to query information from fbc.
+		if( fbc.print >= 0 ) then
+			select case( fbc.print )
+			case PRINT_HOST
+				print fbGetHostId( )
+			case PRINT_TARGET
+				print fbGetTargetId( )
+			case PRINT_X
+				'' If we have input files, -print x should give the output name that we'd normally get.
+				'' However, a plain "fbc -print x" without input files should just give the .exe extension.
+				if( have_input_files ) then
+					fbcDetermineMainName( )
+				end if
+				hSetOutName( )
+				print fbc.outname
+			case PRINT_FBLIBDIR
+				print fbc.libpath
+			case PRINT_SHA1
+				print FB_BUILD_SHA1
+			end select
+			fbcEnd( 0 )
+		end if
+
+		fbcDetermineMainName( )
+
+		'' Show help if there are no input files
+		if( have_input_files = FALSE ) then
+			hPrintOptions( fbc.verbose )
+			fbcEnd( 1 )
+		end if
+
+		''
+		'' Compile .bas modules
+		''
+		hCompileModules( )
+
+		if( fbShouldRestart( ) = FALSE ) then
+			exit do
+		end if
+
+		fbRestartCloseRequest( FB_RESTART_FBC_CMDLINE )
+		restarted = TRUE
+	loop
 
 	if( hCompileXpm( ) = FALSE ) then
 		fbcEnd( 1 )
