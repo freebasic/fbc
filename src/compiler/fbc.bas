@@ -1679,14 +1679,14 @@ end type
 dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 { _
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_A            add files to link, affects link
-	( TRUE , FALSE, TRUE , TRUE  ), _ '' OPT_ARCH         !!!TODO!!! affects major initialization
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_ARCH         !!!TODO!!! affects major initialization
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_ASM          affects second stage compile
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_B            adds files to compile
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_C            affects compile / assemble /link process
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_CKEEPOBJ     affects removal of temporary files
 	( TRUE , TRUE , FALSE, TRUE  ), _ '' OPT_D            add symbols to current source also, not just the preDefines, affects global defines
-	( FALSE, FALSE, TRUE , TRUE  ), _ '' OPT_DLL          !!!TODO!!! affects major initialization, affects output format
-	( FALSE, FALSE, TRUE , TRUE  ), _ '' OPT_DYLIB        !!!TODO!!! affects major initialization, affects output format
+	( FALSE, TRUE , TRUE , TRUE  ), _ '' OPT_DLL          !!!TODO!!! affects major initialization, affects output format
+	( FALSE, TRUE , TRUE , TRUE  ), _ '' OPT_DYLIB        !!!TODO!!! affects major initialization, affects output format
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_E            affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EARRAY       affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EASSERT      affects code generation
@@ -1694,22 +1694,22 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EDEBUGINFO   affects code generation, affects link
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_ELOCATION    affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_ENULLPTR     affects code generation
-	( TRUE , FALSE, TRUE , TRUE  ), _ '' OPT_ENTRY        !!!TODO!!! affects major initialization, affects code generation
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_ENTRY        !!!TODO!!! affects major initialization, affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EX           affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EXX          affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EXPORT       affects code generation
-	( TRUE , FALSE, FALSE, FALSE ), _ '' OPT_FORCELANG    never allow, command line only
+	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_FORCELANG    never allow, command line only
 	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_FPMODE       affects code generation
 	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_FPU          affects code generation, affects second stage compile, affects link
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_G            affects code generation, affects link
 	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_GEN          affects initialization
 	( FALSE, FALSE, FALSE, FALSE ), _ '' OPT_HELP         never allow, real command line only, makes no sense to have in source
-	( TRUE , FALSE, TRUE , FALSE ), _ '' OPT_I            !!!TODO!!! add include path before the default one
-	( TRUE , FALSE, TRUE , FALSE ), _ '' OPT_INCLUDE      !!!TODO!!! restart required to inject preInclude
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_I            !!!TODO!!! add include path before the default one
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_INCLUDE      !!!TODO!!! restart required to inject preInclude
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_L            affects link, same as #inclib
 	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_LANG         affects code generation, affects initialization
-	( FALSE, FALSE, TRUE , TRUE  ), _ '' OPT_LIB          !!!TODO!!! affects major initialization, affects output format
-	( TRUE , FALSE, TRUE , TRUE  ), _ '' OPT_M            !!!TODO!!! affects major initialization for all modules
+	( FALSE, TRUE , TRUE , TRUE  ), _ '' OPT_LIB          !!!TODO!!! affects major initialization, affects output format
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_M            !!!TODO!!! affects major initialization for all modules
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_MAP          affects output files
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_MAXERR       affects compile process
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_MT           affects link, __FB_MT__
@@ -1721,8 +1721,8 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_OPTIMIZE     affects link
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_P            affects link, same as #libpath
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_PIC          affects link
-	( FALSE, FALSE, FALSE, TRUE  ), _ '' OPT_PP           never allow, real command line only, affects major initialization
-	( TRUE , FALSE, FALSE, TRUE  ), _ '' OPT_PREFIX       never allow, real command line only, affects major initialization
+	( FALSE, TRUE , FALSE, TRUE  ), _ '' OPT_PP           !!!TODO!!! never allow, real command line only, affects major initialization
+	( TRUE , TRUE , FALSE, TRUE  ), _ '' OPT_PREFIX       !!!TODO!!!  affects major initialization
 	( TRUE , FALSE, FALSE, FALSE ), _ '' OPT_PRINT        never allow, makes no sense to have in source
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_PROFILE      affects initialization, affects code generation, affects link
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_R            affects compile / assmble /link process
@@ -1734,7 +1734,7 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_STATIC       affects link
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_STRIP        affects link
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_T            affects link
-	( TRUE , FALSE, TRUE , TRUE  ), _ '' OPT_TARGET       !!!TODO!!! affects major initialization
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_TARGET       !!!TODO!!! affects major initialization
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_TITLE        affects link
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_V            affects nothing
 	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_VEC          affects code generation
@@ -2386,11 +2386,11 @@ private sub handleArg _
 
 			if( is_source ) then
 				if( cmdlineOptionTB( optid ).parser_restart ) then
-					fbRestartBeginRequest( FB_RESTART_PARSER or FB_RESTART_CMDLINE )
+					fbRestartBeginRequest( FB_RESTART_PARSER_CMDLINE )
 				end if
 
 				if( cmdlineOptionTB( optid ).fbc_restart ) then
-					fbRestartBeginRequest( FB_RESTART_FBC or FB_RESTART_CMDLINE )
+					fbRestartBeginRequest( FB_RESTART_FBC_CMDLINE )
 				end if
 			end if
 		end if
@@ -4014,59 +4014,68 @@ end sub
 		fbcEnd( 1 )
 	end if
 
-	fbcDeterminePrefix( )
-	fbcSetupCompilerPaths( )
+	do
+		fbcDeterminePrefix( )
+		fbcSetupCompilerPaths( )
 
-	if( fbc.verbose ) then
-		fbcPrintTargetInfo( )
-	end if
+		if( fbc.verbose ) then
+			fbcPrintTargetInfo( )
+		end if
 
-	'' Tell the compiler about the default include path (added after
-	'' the command line ones, so those will be searched first)
-	fbAddIncludePath( fbc.incpath )
+		'' Tell the compiler about the default include path (added after
+		'' the command line ones, so those will be searched first)
+		fbAddIncludePath( fbc.incpath )
 
-	var have_input_files = (listGetHead( @fbc.modules   ) <> NULL) or _
-	                       (listGetHead( @fbc.objlist   ) <> NULL) or _
-	                       (listGetHead( @fbc.libs.list ) <> NULL) or _
-	                       (listGetHead( @fbc.libfiles  ) <> NULL)
+		var have_input_files = (listGetHead( @fbc.modules   ) <> NULL) or _
+							   (listGetHead( @fbc.objlist   ) <> NULL) or _
+							   (listGetHead( @fbc.libs.list ) <> NULL) or _
+							   (listGetHead( @fbc.libfiles  ) <> NULL)
 
-	'' Answer -print query, if any, and stop
-	'' The -print option is intended to allow shell scripts, makefiles, etc.
-	'' to query information from fbc.
-	if( fbc.print >= 0 ) then
-		select case( fbc.print )
-		case PRINT_HOST
-			print fbGetHostId( )
-		case PRINT_TARGET
-			print fbGetTargetId( )
-		case PRINT_X
-			'' If we have input files, -print x should give the output name that we'd normally get.
-			'' However, a plain "fbc -print x" without input files should just give the .exe extension.
-			if( have_input_files ) then
-				fbcDetermineMainName( )
-			end if
-			hSetOutName( )
-			print fbc.outname
-		case PRINT_FBLIBDIR
-			print fbc.libpath
-		case PRINT_SHA1
-			print FB_BUILD_SHA1
-		end select
-		fbcEnd( 0 )
-	end if
+		'' Answer -print query, if any, and stop
+		'' The -print option is intended to allow shell scripts, makefiles, etc.
+		'' to query information from fbc.
+		if( fbc.print >= 0 ) then
+			select case( fbc.print )
+			case PRINT_HOST
+				print fbGetHostId( )
+			case PRINT_TARGET
+				print fbGetTargetId( )
+			case PRINT_X
+				'' If we have input files, -print x should give the output name that we'd normally get.
+				'' However, a plain "fbc -print x" without input files should just give the .exe extension.
+				if( have_input_files ) then
+					fbcDetermineMainName( )
+				end if
+				hSetOutName( )
+				print fbc.outname
+			case PRINT_FBLIBDIR
+				print fbc.libpath
+			case PRINT_SHA1
+				print FB_BUILD_SHA1
+			end select
+			fbcEnd( 0 )
+		end if
 
-	fbcDetermineMainName( )
+		fbcDetermineMainName( )
 
-	'' Show help if there are no input files
-	if( have_input_files = FALSE ) then
-		hPrintOptions( fbc.verbose )
-		fbcEnd( 1 )
-	end if
+		'' Show help if there are no input files
+		if( have_input_files = FALSE ) then
+			hPrintOptions( fbc.verbose )
+			fbcEnd( 1 )
+		end if
 
-	''
-	'' Compile .bas modules
-	''
-	hCompileModules( )
+		''
+		'' Compile .bas modules
+		''
+		hCompileModules( )
+
+		if( fbShouldRestart( ) = FALSE ) then
+			exit do
+		end if
+
+		fbRestartCloseRequest( FB_RESTART_FBC_CMDLINE )
+
+	loop
 
 	if( hCompileXpm( ) = FALSE ) then
 		fbcEnd( 1 )

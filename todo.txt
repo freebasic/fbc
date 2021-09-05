@@ -230,7 +230,7 @@ o -exx should catch...
         [ ] don't allow #cmdline if any line was parsed already
         [X] add '-z nocmdline' to ignore #cmdline directives
         [X] reset parser for command line options that require it
-        [ ] reset fbc for command line options that require it (-target, -arch, -lib, etc)
+        [X] reset fbc for command line options that require it (-target, -arch, -lib, etc)
             see !!!TODO!!!'s in fbc.bas:cmdlineOptionTB()
     - macro expansion: won't work for inner macros
     - support default arguments?

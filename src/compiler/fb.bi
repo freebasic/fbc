@@ -442,11 +442,13 @@ const FB_INFOSEC_OBJNAME = "__fb_ct.inf"
 #include once "error.bi"
 
 enum FB_RESTART_FLAGS
-	FB_RESTART_NONE         '' no restart required
-	FB_RESTART_PARSER   = 1 '' parser restart needed
-	FB_RESTART_FBC      = 2 '' main fbc entry restart needed
-	FB_RESTART_LANG     = 4 '' restart due to #lang directive
-	FB_RESTART_CMDLINE  = 8 '' restart due to #cmdline directive
+	FB_RESTART_NONE               '' no restart required
+	FB_RESTART_PARSER_LANG    = 1 '' parser restart needed due to #lang directive
+	FB_RESTART_PARSER_CMDLINE = 2 '' parser restart needed due to #cmdline directive
+	FB_RESTART_FBC_CMDLINE    = 4 '' main fbc entry restart needed due to #cmdline directive
+
+	FB_RESTART_CMDLINE = FB_RESTART_PARSER_CMDLINE or FB_RESTART_FBC_CMDLINE
+	FB_RESTART_PARSER  = FB_RESTART_PARSER_LANG or FB_RESTART_PARSER_CMDLINE
 end enum
 
 declare sub fbInit _
