@@ -6374,7 +6374,12 @@ private sub _emitprocend _
 
 		asm_code("push rbp")
 		asm_code("mov  rbp,rsp")
-		asm_code("sub rsp, "+Str(ctx.stk))
+			if ctx.stk>=2147483648 then
+			asm_code("mov rax, "+Str(ctx.stk))
+			asm_code("sub rsp, rax")
+		else
+			asm_code("sub rsp, "+Str(ctx.stk))
+		end if
 
 		'inside prolog/epilog
 		'--------------------
