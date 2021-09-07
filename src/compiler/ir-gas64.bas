@@ -247,10 +247,10 @@ type ASM64_CONTEXT
 	''stack necessary for each procedure,stkmax if structure passed byval
 	''stkspil value stack at beginning of procedures to check no overflow for spilling
 	''stkcopy stack pointer when copying byval parameter
-	stk          as integer
-	stkmax       as integer
-	stkspil       as integer
-	stkcopy      as integer
+	stk          as longint
+	stkmax       as longint
+	stkspil      as longint
+	stkcopy      as longint
 	usedreg      as long
 	''to save register and virtuel register to be used with jmp reg after a cmp where reg is unmarked
 	''happens when -exx is set   check pointer not null --> cmp r11,0 / je LT_0001 / jmp [r11]
@@ -289,7 +289,7 @@ type DBGCTX
 	strmax    as integer
 	stabnb    as integer
 	stabmax   as integer
-	offst     as integer
+	offst     as longint
 end type
 
 union ustab
@@ -303,11 +303,11 @@ end union
 
 ''for strings used in debugging data to avoid duplicate
 type tdbgstr
-	offst as integer
+	offst as longint
 	txt   as string
 end type
 type tdbgstab
-	stab  as integer
+	stab  as longint
 	value as string
 end type
 ''=================== declares ==============================================
@@ -822,7 +822,7 @@ private function dbg_addstr(byref strg as string,byval nosearch as integer =1) a
 	ctxdbg.offst+=len(strg)+1
 end function
 private sub dbg_addstab(byref txt as string="",byval cod as ubyte,byval desc as short=0,byref value as string="0")
-	dim as integer offst
+	dim as longint offst
 	dim as ustab stab
 	if txt <>"" then
 		if cod=STAB_TYPE_SO or cod=STAB_TYPE_SOL then ''could be duplicated
