@@ -63,6 +63,7 @@ Version 1.09.0
 - fbc: don't allow labels or EXIT statements between SELECT and first CASE statement
 - sf.net #843: Implicit casting of argument to string works for Instr() and Mid() but not for Left() and Right() 
 - sf.net #483 fblite: Can't call LEN with nested WITH block string member 
+- gas64 : fix required size for local variables >2GB
 
 
 Version 1.08.0
