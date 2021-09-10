@@ -1200,11 +1200,11 @@ function rtlPrinter_cb _
 		byval sym as FBSYMBOL ptr _
 	) as integer
 
-    static as integer libsAdded = FALSE
+	'' minor optimization to avoid having to lookup env.libs hash
+	fbRestartableStaticVariable( integer, libsAdded, FALSE )
 
 	if( libsadded = FALSE ) then
-
-        libsAdded = TRUE
+		libsAdded = TRUE
 
 		select case env.clopt.target
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
@@ -1214,6 +1214,6 @@ function rtlPrinter_cb _
 
 	end if
 
-    function = TRUE
+	function = TRUE
 
 end function

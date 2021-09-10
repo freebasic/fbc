@@ -644,6 +644,7 @@ type FBENV
 	restart_request  as FB_RESTART_FLAGS        '' request parser or fbc restart on a trigger later (e.g #cmdline "-end")
 	restart_action   as FB_RESTART_FLAGS        '' restart as soon as possible
 	restart_status   as FB_RESTART_FLAGS        '' current status of restarts #lang/#cmdline/parser/fbc
+	pass_id          as integer                 '' number of restarts
 
 	'' Lists to collect #inclibs and #libpaths
 	libs            as TSTRSET

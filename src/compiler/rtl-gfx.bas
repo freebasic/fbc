@@ -1408,7 +1408,8 @@ private function hPorts_cb _
 		byval sym as FBSYMBOL ptr _
 	) as integer
 
-    static as integer libsAdded = FALSE
+	'' minor optimization to avoid having to lookup env.libs hash
+	fbRestartableStaticVariable( integer, libsAdded, FALSE )
 
 	if( libsadded = FALSE ) then
 		libsAdded = TRUE

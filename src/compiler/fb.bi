@@ -473,6 +473,16 @@ declare sub fbRestartBeginRequest( byval flags as FB_RESTART_FLAGS )
 declare sub fbRestartAcceptRequest( byval flags as FB_RESTART_FLAGS )
 declare sub fbRestartCloseRequest( byval flags as FB_RESTART_FLAGS )
 
+#macro fbRestartableStaticVariable( datatype, varname, defaultvalue )
+	'' create a local static variable, but reset it to the default if fb is restarted
+	static as integer pass_id
+	static as datatype varname = defaultvalue
+	if( pass_id <> env.pass_id ) then
+		pass_id = env.pass_id
+		varname = defaultvalue
+	end if
+#endmacro
+
 declare sub fbGlobalInit()
 declare sub fbAddIncludePath(byref path as string)
 declare sub fbAddPreDefine(byref def as string)

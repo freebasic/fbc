@@ -4021,6 +4021,10 @@ end sub
 				hPrintOptions( fbc.verbose )
 				fbcEnd( 1 )
 			end if
+		else
+			if( fbc.showversion ) then
+				hPrintVersion( fbc.verbose )
+			end if
 		end if
 
 		fbcDeterminePrefix( )

@@ -1306,6 +1306,8 @@ sub fbRestartCloseRequest( byval filter as FB_RESTART_FLAGS )
 	'' update status, action is completed
 	env.restart_status or= (env.restart_action and filter)
 
+	env.pass_id += 1
+
 	'' clear the action
 	env.restart_action and= not filter
 end sub
