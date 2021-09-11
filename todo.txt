@@ -227,7 +227,7 @@ o -exx should catch...
         [X] painful to add
         [X] added as '#cmdline "args..."'
         [ ] painful to complete
-        [ ] don't allow #cmdline if any line was parsed already
+        [ ] don't allow #cmdline if any line was parsed already that emits backend code
         [X] add '-z nocmdline' to ignore #cmdline directives
         [X] reset parser for command line options that require it
         [X] reset fbc for command line options that require it (-target, -arch, -lib, etc)

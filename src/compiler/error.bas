@@ -420,6 +420,10 @@ declare function hMakeParamDesc _
 	}
 
 
+sub errPreInit( )
+	errctx.hide_further_messages = FALSE
+end sub
+
 sub errInit( )
 	'' fbc.bas will call err*() even before errInit() or after errEnd()
 	errctx.inited += 1

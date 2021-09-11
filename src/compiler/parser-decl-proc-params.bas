@@ -207,6 +207,7 @@ private function hParamDecl _
 
 	static as zstring * FB_MAXNAMELEN+1 idTB(0 to FB_MAXARGRECLEVEL-1)
 	static as integer reclevel = 0
+
 	dim as zstring ptr id = any
 	dim as integer dtype = any, mode = any, attrib = any, dimensions = any
 	dim as integer readid = any, dotpos = any, doskip = any

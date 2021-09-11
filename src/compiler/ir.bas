@@ -22,11 +22,25 @@ sub irInit( )
 		assert( env.clopt.backend = FB_BACKEND_GAS )
 		ir.vtbl = irtac_vtbl
 	end select
+
+	'' reset ir.options becasue irSetOption() will merge (OR) values
+	ir.options = 0
+
 	ir.vtbl.init( )
 end sub
 
 sub irEnd( )
 	ir.vtbl.end( )
+
+	ir.options = 0
+
+	#if __FB_DEBUG__
+		'' debugging - reset the vtable - shouldn't matter in production
+		'' because ir.vtbl calls should never be called outside irInit()/irEnd()
+		dim null_vtbl as IR_VTBL
+		ir.vtbl = null_vtbl
+	#endif
+
 end sub
 
 dim shared irhl as IRHLCONTEXT

@@ -1680,7 +1680,7 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 { _
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_A            add files to link, affects link
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_ARCH         affects major initialization
-	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_ASM          affects second stage compile
+	( TRUE , TRUE , FALSE, TRUE  ), _ '' OPT_ASM          affects major initialization,affects second stage compile
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_B            adds files to compile
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_C            affects compile / assemble /link process
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_CKEEPOBJ     affects removal of temporary files
@@ -1699,10 +1699,10 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EXX          affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EXPORT       affects code generation
 	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_FORCELANG    never allow, command line only
-	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_FPMODE       affects code generation
-	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_FPU          affects code generation, affects second stage compile, affects link
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_FPMODE       affects major initialization, affects code generation
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_FPU          affects major initialization,affects code generation, affects second stage compile, affects link
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_G            affects code generation, affects link
-	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_GEN          affects initialization
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_GEN          affects major initialization
 	( FALSE, FALSE, FALSE, FALSE ), _ '' OPT_HELP         never allow, real command line only, makes no sense to have in source
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_I            add include path before the default one
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_INCLUDE      restart required to inject preInclude
@@ -1720,11 +1720,11 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_O            affects input file naming
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_OPTIMIZE     affects link
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_P            affects link, same as #libpath
-	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_PIC          affects link
+	( FALSE, TRUE , FALSE, TRUE  ), _ '' OPT_PIC          affects major initialization, affects link
 	( FALSE, TRUE , FALSE, TRUE  ), _ '' OPT_PP           affects major initialization
 	( TRUE , TRUE , FALSE, TRUE  ), _ '' OPT_PREFIX       affects major initialization
 	( TRUE , FALSE, FALSE, FALSE ), _ '' OPT_PRINT        never allow, makes no sense to have in source
-	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_PROFILE      affects initialization, affects code generation, affects link
+	( FALSE, TRUE , TRUE , TRUE  ), _ '' OPT_PROFILE      affects major initialization, affects initialization, affects code generation, affects link
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_R            affects compile / assmble /link process
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_RKEEPASM     affects removal of temporary files
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_RR           affects compile / assmble /link process
@@ -1737,14 +1737,14 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_TARGET       affects major initialization
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_TITLE        affects link
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_V            affects nothing
-	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_VEC          affects code generation
-	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_VERSION      affects nothing
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_VEC          affects major initialization, affects code generation
+	( FALSE, TRUE , FALSE, TRUE  ), _ '' OPT_VERSION      must restart fbc to get the version message
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_W            affects compiler display output
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_WA           affects assembly
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_WC           affects second stage compile
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_WL           affects link
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_X            affects output file
-	( TRUE , TRUE , TRUE , FALSE )  _ '' OPT_Z            affects various - code generation
+	( TRUE , TRUE , TRUE , TRUE  )  _ '' OPT_Z            affects various - code generation
 }
 
 private sub handleOpt _
@@ -2976,7 +2976,7 @@ private sub hCompileBas _
 		end if
 
 		'' Close the request to restart the parser
-		fbRestartCloseRequest( FB_RESTART_PARSER )
+		fbRestartEndRequest( FB_RESTART_PARSER )
 
 		'' Shutdown the parser before restarting
 		fbEnd( )
@@ -4002,11 +4002,14 @@ end sub
 
 	hParseArgs( __FB_ARGC__, __FB_ARGV__ )
 
-	dim restarted as boolean = FALSE
 	do
+		'' we are restarting, so show errors
+		errPreInit( )
+
 		hCheckArgs( )
 
-		if( restarted = FALSE ) then
+		'' first pass?
+		if( fbRestartGetCount() = 0 ) then
 			if( fbc.showversion ) then
 				hPrintVersion( fbc.verbose )
 				fbcEnd( 0 )
@@ -4020,6 +4023,16 @@ end sub
 			if( fbc.showhelp ) then
 				hPrintOptions( fbc.verbose )
 				fbcEnd( 1 )
+			end if
+
+
+		else
+			if( fbc.verbose ) then
+				print "Restarting fbc ..."
+			end if
+
+			if( fbc.showversion ) then
+				'' hPrintVersion( fbc.verbose )
 			end if
 		end if
 
@@ -4081,8 +4094,7 @@ end sub
 			exit do
 		end if
 
-		fbRestartCloseRequest( FB_RESTART_FBC_CMDLINE )
-		restarted = TRUE
+		fbRestartEndRequest( FB_RESTART_FBC_CMDLINE )
 	loop
 
 	if( hCompileXpm( ) = FALSE ) then

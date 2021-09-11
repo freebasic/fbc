@@ -870,7 +870,7 @@ private sub ppCmdline( )
 		'' The restart request will have been stored in env.restart_request
 		fbRestartAcceptRequest( FB_RESTART_CMDLINE )
 
-		'' and don't show any more errors
+		'' and don't show any more errors until we've restarted
 		errHideFurtherErrors()
 
 	'' #cmdline "-restart" ?
@@ -880,7 +880,7 @@ private sub ppCmdline( )
 		fbRestartBeginRequest( FB_RESTART_FBC_CMDLINE )
 		fbRestartAcceptRequest( FB_RESTART_CMDLINE )
 
-		'' and don't show any more errors
+		'' and don't show any more errors until we've restarted
 		errHideFurtherErrors()
 
 	'' must be first pass in the first module, so process the option

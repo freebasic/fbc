@@ -518,15 +518,16 @@ function rtlMathBop _
 end function
 
 private function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
-	static as integer added = FALSE
+	'' minor optimization to avoid having to lookup env.libs hash
+	fbRestartableStaticVariable( integer, libsAdded, FALSE )
 
-	if( added = FALSE ) then
-		added = TRUE
+	if( libsAdded = FALSE ) then
+		libsAdded = TRUE
 		select case env.clopt.target
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
 			fbAddLib( "advapi32" )
 		end select
 	end if
 
-        return TRUE
+	return TRUE
 end function

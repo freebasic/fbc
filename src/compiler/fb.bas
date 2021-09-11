@@ -386,7 +386,10 @@ sub fbInit _
 	strsetInit( @env.libpaths, FB_INITLIBNODES \ 4 )
 
 	'' when starting a compile, reset the restart requests
-	'' env.restart_status preserves state from previous runs
+	'' env.restart_status preserves state from previous runs 
+	''     and would have been initialized to 0 (FB_RESTART_NONE)
+	'' env.restart_count is preserved between runs (passes) so don't
+	''    re-initialize it here.
 	env.restart_request = FB_RESTART_NONE
 	env.restart_action = FB_RESTART_NONE
 
@@ -811,7 +814,7 @@ sub fbChangeOption(byval opt as integer, byval value as integer)
 						fbRestartBeginRequest( FB_RESTART_PARSER_LANG )
 						fbRestartAcceptRequest( FB_RESTART_PARSER_LANG )
 
-						'' and don't show any more errors
+						'' and don't show any more errors until we've restarted
 						errHideFurtherErrors()
 
 					'' Second pass? Show a warning and ignore
@@ -1272,7 +1275,7 @@ function fbShouldRestart() as integer
 			'' tell parser / fbc to restart as soon as possible
 			fbRestartAcceptRequest( FB_RESTART_CMDLINE )
 
-			'' and don't show any more errors
+			'' and don't show any more errors until we've restarted
 			errHideFurtherErrors()
 
 			return TRUE
@@ -1302,13 +1305,19 @@ sub fbRestartAcceptRequest( byval filter as FB_RESTART_FLAGS )
 	env.restart_request and= not filter
 end sub
 
-sub fbRestartCloseRequest( byval filter as FB_RESTART_FLAGS )
+sub fbRestartEndRequest( byval filter as FB_RESTART_FLAGS )
 	'' update status, action is completed
 	env.restart_status or= (env.restart_action and filter)
+
+	env.restart_count += 1
 
 	'' clear the action
 	env.restart_action and= not filter
 end sub
+
+function fbRestartGetCount() as integer
+	return env.restart_count
+end function
 
 sub fbSetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
 	strsetCopy(@env.libs, libs)
