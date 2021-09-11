@@ -27,6 +27,11 @@ end sub
 
 sub irEnd( )
 	ir.vtbl.end( )
+
+	'' !!!TODO!!! - reset the vtbl? 
+	dim x as IR_VTBL
+	ir.vtbl = x
+ 	ir.options = 0
 end sub
 
 dim shared irhl as IRHLCONTEXT
