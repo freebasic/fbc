@@ -4027,6 +4027,10 @@ end sub
 
 
 		else
+			if( fbc.verbose ) then
+				print "Restarting fbc ..."
+			end if
+
 			if( fbc.showversion ) then
 				'' hPrintVersion( fbc.verbose )
 			end if
