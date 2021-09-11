@@ -396,6 +396,7 @@ enum FB_ERRMSGOPT
 	FB_ERRMSGOPT_DEFAULT    = FB_ERRMSGOPT_ADDCOMMA
 end enum
 
+declare sub errPreInit( )
 declare sub errInit( )
 declare sub errEnd( )
 declare sub errHideFurtherErrors( )

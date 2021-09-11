@@ -814,7 +814,7 @@ sub fbChangeOption(byval opt as integer, byval value as integer)
 						fbRestartBeginRequest( FB_RESTART_PARSER_LANG )
 						fbRestartAcceptRequest( FB_RESTART_PARSER_LANG )
 
-						'' and don't show any more errors
+						'' and don't show any more errors until we've restarted
 						errHideFurtherErrors()
 
 					'' Second pass? Show a warning and ignore
@@ -1275,7 +1275,7 @@ function fbShouldRestart() as integer
 			'' tell parser / fbc to restart as soon as possible
 			fbRestartAcceptRequest( FB_RESTART_CMDLINE )
 
-			'' and don't show any more errors
+			'' and don't show any more errors until we've restarted
 			errHideFurtherErrors()
 
 			return TRUE

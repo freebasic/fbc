@@ -4003,6 +4003,9 @@ end sub
 	hParseArgs( __FB_ARGC__, __FB_ARGV__ )
 
 	do
+		'' we are restarting, so show errors
+		errPreInit( )
+
 		hCheckArgs( )
 
 		'' first pass?
