@@ -468,7 +468,6 @@ enum IR_OPT
 end enum
 
 type IRCTX
-	inited          as integer
 	vtbl            as IR_VTBL
 	options         as IR_OPT
 end type
