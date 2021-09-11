@@ -471,14 +471,15 @@ declare function fbShouldRestart() as integer
 declare function fbShouldContinue() as integer
 declare sub fbRestartBeginRequest( byval flags as FB_RESTART_FLAGS )
 declare sub fbRestartAcceptRequest( byval flags as FB_RESTART_FLAGS )
-declare sub fbRestartCloseRequest( byval flags as FB_RESTART_FLAGS )
+declare sub fbRestartEndRequest( byval flags as FB_RESTART_FLAGS )
+declare function fbRestartGetCount() as integer
 
 #macro fbRestartableStaticVariable( datatype, varname, defaultvalue )
 	'' create a local static variable, but reset it to the default if fb is restarted
-	static as integer pass_id
+	static as integer restart_count
 	static as datatype varname = defaultvalue
-	if( pass_id <> env.pass_id ) then
-		pass_id = env.pass_id
+	if( restart_count <> fbRestartGetCount() ) then
+		restart_count = fbRestartGetCount()
 		varname = defaultvalue
 	end if
 #endmacro

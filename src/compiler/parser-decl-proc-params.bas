@@ -206,7 +206,7 @@ private function hParamDecl _
 	) as FBSYMBOL ptr
 
 	static as zstring * FB_MAXNAMELEN+1 idTB(0 to FB_MAXARGRECLEVEL-1)
-	fbRestartableStaticVariable( integer, reclevel, 0 )
+	static as integer reclevel = 0
 
 	dim as zstring ptr id = any
 	dim as integer dtype = any, mode = any, attrib = any, dimensions = any

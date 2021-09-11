@@ -327,7 +327,7 @@ private function hArrayInit _
 end function
 
 private function hUDTInit( byref ctx as FB_INITCTX ) as integer
-	fbRestartableStaticVariable( integer, rec_cnt, 0 )
+	static as integer rec_cnt = 0
 
 	dim as integer elm_cnt = any
 	dim as longint lgt = any, baseofs = any, pad_lgt = any
