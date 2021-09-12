@@ -178,6 +178,8 @@ declare sub fbcFindBin _
 		byref path as string _
 	)
 
+declare sub hPrintVersion( byval verbose as integer )
+
 #macro safeKill(f)
 	if( kill( f ) <> 0 ) then
 	end if
@@ -1738,7 +1740,7 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_TITLE        affects link
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_V            affects nothing
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_VEC          affects major initialization, affects code generation
-	( FALSE, TRUE , FALSE, TRUE  ), _ '' OPT_VERSION      must restart fbc to get the version message
+	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_VERSION      print version information
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_W            affects compiler display output
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_WA           affects assembly
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_WC           affects second stage compile
@@ -2094,6 +2096,11 @@ private sub handleOpt _
 		fbSetOption( FB_COMPOPT_VECTORIZE, value )
 
 	case OPT_VERSION
+		if( is_source ) then
+			if( fbc.showversion = FALSE ) then
+				hPrintVersion( fbc.verbose )
+			end if
+		end if
 		fbc.showversion = TRUE
 
 	case OPT_W
@@ -4002,40 +4009,25 @@ end sub
 
 	hParseArgs( __FB_ARGC__, __FB_ARGV__ )
 
+	hCheckArgs( )
+
+	if( fbc.showversion ) then
+		hPrintVersion( fbc.verbose )
+		fbcEnd( 0 )
+	end if
+
+	if( fbc.verbose ) then
+		fbc.showversion = TRUE
+		hPrintVersion( FALSE )
+	end if
+
+	'' Show help if -help was given
+	if( fbc.showhelp ) then
+		hPrintOptions( fbc.verbose )
+		fbcEnd( 1 )
+	end if
+
 	do
-		'' we are restarting, so show errors
-		errPreInit( )
-
-		hCheckArgs( )
-
-		'' first pass?
-		if( fbRestartGetCount() = 0 ) then
-			if( fbc.showversion ) then
-				hPrintVersion( fbc.verbose )
-				fbcEnd( 0 )
-			end if
-
-			if( fbc.verbose ) then
-				hPrintVersion( FALSE )
-			end if
-
-			'' Show help if --help was given
-			if( fbc.showhelp ) then
-				hPrintOptions( fbc.verbose )
-				fbcEnd( 1 )
-			end if
-
-
-		else
-			if( fbc.verbose ) then
-				print "Restarting fbc ..."
-			end if
-
-			if( fbc.showversion ) then
-				'' hPrintVersion( fbc.verbose )
-			end if
-		end if
-
 		fbcDeterminePrefix( )
 		fbcSetupCompilerPaths( )
 
@@ -4095,6 +4087,16 @@ end sub
 		end if
 
 		fbRestartEndRequest( FB_RESTART_FBC_CMDLINE )
+
+		'' we are restarting, so show errors again
+		errPreInit( )
+
+		'' command line arguments have changed, check them again
+		hCheckArgs( )
+
+		if( fbc.verbose ) then
+			print "Restarting fbc ..."
+		end if
 	loop
 
 	if( hCompileXpm( ) = FALSE ) then
