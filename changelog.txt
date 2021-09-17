@@ -45,6 +45,7 @@ Version 1.09.0
 - github #341: fbc: only process #cmdline in the first pass of the source module (which must be specified on the real command line)
 - github #341: fbc: '-z nocmdline' command line option to ignore #cmdline directives, allows overriding source directives with real fbc command line, show warning if used with '-w all'
 - fbc: #cmdline "-version" will immediately print the fbc version information if it was not already printed.  To get verbose version information '-v' option must appear before '-version'.  fbc command line  option '-v' option behaviour overrides #cmdline "-v"
+- fbc: '#pragma reserve [shared] name' statement will reserve a symbol name in the current scope / namespace
 
 [fixed]
 - github #315: set parameters when calling SCREENCONTROL (was broken in fbc 1.08.0 due to new LONG/LONGINT SCREENCONTROL API's)

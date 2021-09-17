@@ -10,12 +10,13 @@
 #include once "pp.bi"
 
 enum LEXPP_PRAGMAFLAG_ENUM
-	LEXPP_PRAGMAFLAG_NONE = 0
-	LEXPP_PRAGMAFLAG_CAN_PUSHPOP = 1
-	LEXPP_PRAGMAFLAG_CAN_ASSIGN = 2
-	LEXPP_PRAGMAFLAG_HAS_CALLBACK = 4
-	LEXPP_PRAGMAFLAG_PRESERVE_UNDER_PP = 8
-	LEXPP_PRAGMAFLAG_PDCHECK = 16
+	LEXPP_PRAGMAFLAG_NONE                 = 0
+	LEXPP_PRAGMAFLAG_CAN_PUSHPOP          = 1
+	LEXPP_PRAGMAFLAG_CAN_ASSIGN           = 2
+	LEXPP_PRAGMAFLAG_HAS_CALLBACK         = 4
+	LEXPP_PRAGMAFLAG_PRESERVE_UNDER_PP    = 8
+	LEXPP_PRAGMAFLAG_PDCHECK              = 16
+	LEXPP_PRAGMAFLAG_NODEFINE             = 32
 
 	LEXPP_PRAGMAFLAG_DEFAULT = LEXPP_PRAGMAFLAG_CAN_PUSHPOP or _
 								LEXPP_PRAGMAFLAG_CAN_ASSIGN or _
@@ -32,6 +33,7 @@ enum LEXPP_PRAGMAOPT_ENUM
 	LEXPP_PRAGMAOPT_BITFIELD
 	LEXPP_PRAGMAOPT_ONCE
 	LEXPP_PRAGMAOPT_WARNCONSTNESS
+	LEXPP_PRAGMAOPT_RESERVE
 
 	LEXPP_PRAGMAS
 end enum
@@ -49,7 +51,8 @@ end type
 	{ _
 		("msbitfields", FB_COMPOPT_MSBITFIELDS, LEXPP_PRAGMAFLAG_DEFAULT         ), _
 		("once"       , 0                     , LEXPP_PRAGMAFLAG_HAS_CALLBACK    ), _
-		("constness"  , FB_PDCHECK_CONSTNESS  , LEXPP_PRAGMAFLAG_PDCHECK or LEXPP_PRAGMAFLAG_DEFAULT ) _
+		("constness"  , FB_PDCHECK_CONSTNESS  , LEXPP_PRAGMAFLAG_PDCHECK or LEXPP_PRAGMAFLAG_DEFAULT ), _
+		("reserve"    , 0                     , LEXPP_PRAGMAFLAG_HAS_CALLBACK or LEXPP_PRAGMAFLAG_NODEFINE ) _
 	}
 
 sub ppPragmaInit( )
@@ -90,10 +93,54 @@ private sub pragmaPop( byval pragmaIdx as LEXPP_PRAGMAOPT_ENUM, byref value as l
 end sub
 
 '':::::
+'' Pragma           =   PRAGMA RESERVE SHARED? symbol
+''
+private sub pragmaReserve( )
+	dim as FBSYMCHAIN ptr chain_ = any
+	dim as FBSYMBOL ptr base_parent = any, sym = any
+	dim as FB_SYMBATTRIB attrib = FB_SYMBATTRIB_NONE
+	dim as zstring ptr id = any
+
+	'' SHARED?
+	if( lexGetToken() = FB_TK_SHARED ) then
+		attrib or= FB_SYMBATTRIB_SHARED
+
+		'' SHARED
+		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
+	end if
+
+	chain_ = cIdentifier( base_parent, FB_IDOPT_NONE )
+	id = lexGetText( )
+
+	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+		NULL, _
+		NULL, NULL, _
+		FB_SYMBCLASS_RESERVED, _
+		id, NULL, _
+		FB_DATATYPE_INVALID, NULL, _
+		attrib, FB_PROCATTRIB_NONE )
+
+	if( sym = NULL ) then
+		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
+	else
+		if( env.ppfile_num > 0 ) then
+			lexPPOnlyEmitText( "#pragma reserve " + *id )
+		end if
+	end if
+
+	'' symbol
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
+
+end sub
+
+
+'':::::
 '' Pragma			=	PRAGMA
-''							  PUSH '(' symbol (',' expression{int})? ')'
+''                            ONCE
+''							| PUSH '(' symbol (',' expression{int})? ')'
 ''							| POP '(' symbol ')'
 ''							| symbol ('=' expression{int})?
+''                          | RESERVE SHARED? symbol
 ''
 sub ppPragma( )
 	dim as string tk
@@ -153,7 +200,11 @@ sub ppPragma( )
 	end if
 
 	'' symbol
-	lexSkipToken( LEXCHECK_POST_SUFFIX )
+	if( (pragmaOpt(p).flags and LEXPP_PRAGMAFLAG_NODEFINE) <> 0 ) then
+		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
+	else
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
+	end if
 
 	if( ispop ) then
 		pragmaPop( p, value )
@@ -223,6 +274,8 @@ sub ppPragma( )
 		select case p
 		case LEXPP_PRAGMAOPT_ONCE
 			fbPragmaOnce()
+		case LEXPP_PRAGMAOPT_RESERVE
+			pragmaReserve()
 		end select
 	else
 		if( (pragmaOpt(p).flags and (LEXPP_PRAGMAFLAG_CAN_PUSHPOP or LEXPP_PRAGMAFLAG_CAN_ASSIGN)) <> 0 ) then

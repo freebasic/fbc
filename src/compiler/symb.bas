@@ -277,7 +277,7 @@ function symbCanDuplicate _
 			'' anything but a define or another forward ref is allowed (keywords
 			'' (but quirk-keywords) are refused when parsing)
 			case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_NAMESPACE, _
-				 FB_SYMBCLASS_FWDREF, FB_SYMBCLASS_CLASS
+				FB_SYMBCLASS_FWDREF, FB_SYMBCLASS_CLASS
 
 				exit function
 
@@ -298,7 +298,7 @@ function symbCanDuplicate _
 			select case as const head_sym->class
 			'' only dup allowed are labels and UDTs
 			case FB_SYMBCLASS_LABEL, FB_SYMBCLASS_ENUM, _
-				 FB_SYMBCLASS_TYPEDEF, FB_SYMBCLASS_FWDREF
+				FB_SYMBCLASS_TYPEDEF, FB_SYMBCLASS_FWDREF
 
 			'' struct? only it's not unique
 			case FB_SYMBCLASS_STRUCT
@@ -391,7 +391,7 @@ function symbCanDuplicate _
 
 			'' and other vars if they have different suffixes -- if any
 			'' with suffix exist, a suffix-less will not be accepted (and vice-versa)
-			case FB_SYMBCLASS_VAR
+			case FB_SYMBCLASS_VAR, FB_SYMBCLASS_RESERVED
 				'' same scope?
 				if( s->scope = head_sym->scope ) then
 					if( env.clopt.lang = FB_LANG_FB ) then
@@ -424,8 +424,8 @@ function symbCanDuplicate _
 			select case as const head_sym->class
 			'' anything but a define, keyword or another label is allowed
 			case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_NAMESPACE, _
-				 FB_SYMBCLASS_KEYWORD, FB_SYMBCLASS_LABEL, _
-				 FB_SYMBCLASS_CLASS
+				FB_SYMBCLASS_KEYWORD, FB_SYMBCLASS_LABEL, _
+				FB_SYMBCLASS_CLASS
 
 				exit function
 
@@ -443,6 +443,27 @@ function symbCanDuplicate _
 	case FB_SYMBCLASS_PARAM
 
 		'' anything allowed, dups are only checked when adding params as variables
+
+	'' reserved?
+	case FB_SYMBCLASS_RESERVED
+
+		do
+			select case as const head_sym->class
+			'' only allow if it's in a different scope or namespace
+			case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_NAMESPACE, _
+				FB_SYMBCLASS_VAR, FB_SYMBCLASS_CONST, _
+				FB_SYMBCLASS_RESERVED
+				if( (s->scope = head_sym->scope) and (symbGetNamespace(s) = symbGetNamespace(head_sym)) ) then
+					exit function
+				end if
+
+			case else
+				exit function
+
+			end select
+
+			head_sym = head_sym->hash.next
+		loop while( head_sym <> NULL )
 
 	end select
 
@@ -2265,6 +2286,7 @@ static shared as zstring ptr classnames(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIMPOR
 	@"typedef"  , _
 	@"fwdref"   , _
 	@"scope"    , _
+	@"reserved" , _
 	@"nsimport"   _
 }
 
@@ -2765,6 +2787,7 @@ dim shared as zstring ptr classnamesPretty(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIM
 	@"type alias", _
 	@"forward reference", _
 	@"scope", _
+	@"reserved", _
 	@"namespace import" _
 }
 
