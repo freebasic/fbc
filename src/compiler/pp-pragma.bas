@@ -24,9 +24,9 @@ enum LEXPP_PRAGMAFLAG_ENUM
 end enum
 
 type LEXPP_PRAGMAOPT
-	tk		as zstring * 16
-	opt 	as integer
-	flags	as integer
+	tk      as zstring * 16
+	opt     as integer
+	flags   as integer
 end type
 
 enum LEXPP_PRAGMAOPT_ENUM
@@ -39,7 +39,7 @@ enum LEXPP_PRAGMAOPT_ENUM
 end enum
 
 type LEXPP_PRAGMASTK
-	tos 	as integer
+	tos     as integer
 	stk(0 to FB_MAXPRAGMARECLEVEL-1) as longint
 end type
 
@@ -129,7 +129,7 @@ private sub pragmaReserve( )
 			if( env.ppfile_num > 0 ) then
 				lexPPOnlyEmitText( "#pragma reserve asm " + *id )
 			end if
-		end if	
+		end if
 	else
 		sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
 			NULL, _
@@ -156,11 +156,11 @@ end sub
 
 
 '':::::
-'' Pragma			=	PRAGMA
+'' Pragma           =   PRAGMA
 ''                            ONCE
-''							| PUSH '(' symbol (',' expression{int})? ')'
-''							| POP '(' symbol ')'
-''							| symbol ('=' expression{int})?
+''                          | PUSH '(' symbol (',' expression{int})? ')'
+''                          | POP '(' symbol ')'
+''                          | symbol ('=' expression{int})?
 ''                          | RESERVE (SHARED|ASM)? symbol
 ''
 sub ppPragma( )
