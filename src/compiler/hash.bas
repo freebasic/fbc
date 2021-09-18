@@ -150,7 +150,7 @@ end function
 function hashLookup _
 	( _
 		byval hash as THASH ptr, _
-		byval symbol as zstring ptr _
+		byval symbol as const zstring ptr _
 	) as any ptr
 
     function = hashLookupEx( hash, symbol, hashHash( symbol ) )
