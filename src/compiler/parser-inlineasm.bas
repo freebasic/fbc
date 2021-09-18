@@ -84,30 +84,52 @@ dim shared asmKeywordsX86(0 to ...) as const zstring ptr => _
 
 type AsmKeywordsInfo
 	inited as integer
-	hash as THASH
+	hash as THASH     '' hash of all words pre-defined in asmKeywordsX86() and user added words
+	list as TLIST     '' only the user added words - will be deallocated when parser ends
 end type
 
 dim shared asmkeywords as AsmKeywordsInfo
 
 private sub hInitAsmKeywords( )
 	'' TODO: support x86_64, arm, aarch64; select keyword list based on compilation target
-	hashInit( @asmkeywords.hash, 600 )
-	for i as integer = 0 to ubound( asmKeywordsX86 )
-		hashAdd( @asmkeywords.hash, asmKeywordsX86(i), cast( any ptr, INVALID ), INVALID )
-	next
-end sub
-
-private function hIsAsmKeyword( byval text as zstring ptr ) as integer
 	if( asmkeywords.inited = FALSE ) then
-		hInitAsmKeywords( )
+		listInit( @asmkeywords.list, 8, sizeof( zstring ptr ) )
+		hashInit( @asmkeywords.hash, 600 )
+		for i as integer = 0 to ubound( asmKeywordsX86 )
+			hashAdd( @asmkeywords.hash, asmKeywordsX86(i), cast( any ptr, INVALID ), INVALID )
+		next
 		asmkeywords.inited = TRUE
 	end if
+end sub
+
+private function hIsAsmKeyword( byval text as const zstring ptr ) as integer
+	hInitAsmKeywords( )
 	function = (hashLookup( @asmkeywords.hash, text ) <> NULL)
+end function
+
+function addAsmKeyword( byval id as const zstring ptr ) as integer
+	hInitAsmKeywords( )
+	if( hIsAsmKeyword( id ) ) then
+		return FALSE
+	end if
+
+	dim as zstring ptr ptr s = listNewNode( @asmkeywords.list )
+	*s = callocate( len(*id) + 1 )
+	**s = lcase(*id)
+	hashAdd( @asmkeywords.hash, *s, cast( any ptr, INVALID ), INVALID )
+
+	return TRUE
 end function
 
 sub parserInlineAsmEnd( )
 	if( asmkeywords.inited ) then
 		hashEnd( @asmkeywords.hash )
+		dim s as zstring ptr ptr = listGetHead( @asmkeywords.list )
+		while( s )
+ 			deallocate( *s )
+			s = listGetNext( s )
+		wend
+		listEnd( @asmkeywords.list )
 		asmkeywords.inited = FALSE
 	end if
 end sub

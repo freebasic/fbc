@@ -92,40 +92,61 @@ private sub pragmaPop( byval pragmaIdx as LEXPP_PRAGMAOPT_ENUM, byref value as l
 	end with
 end sub
 
+'' from parser-inlineasm.bas:addAsmKeyword()
+declare function addAsmKeyword( byval id as zstring ptr ) as integer
+
 '':::::
-'' Pragma           =   PRAGMA RESERVE SHARED? symbol
+'' Pragma           =   PRAGMA RESERVE (SHARED|ASM)? symbol
 ''
 private sub pragmaReserve( )
 	dim as FBSYMCHAIN ptr chain_ = any
 	dim as FBSYMBOL ptr base_parent = any, sym = any
 	dim as FB_SYMBATTRIB attrib = FB_SYMBATTRIB_NONE
 	dim as zstring ptr id = any
+	dim as integer isAsm = FALSE
 
 	'' SHARED?
-	if( lexGetToken() = FB_TK_SHARED ) then
+	select case lexGetToken()
+	case FB_TK_SHARED
 		attrib or= FB_SYMBATTRIB_SHARED
 
 		'' SHARED
 		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
-	end if
+	case FB_TK_ASM
+		isAsm = TRUE
+
+		'' ASM
+		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
+	end select
 
 	chain_ = cIdentifier( base_parent, FB_IDOPT_NONE )
 	id = lexGetText( )
 
-	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-		NULL, _
-		NULL, NULL, _
-		FB_SYMBCLASS_RESERVED, _
-		id, NULL, _
-		FB_DATATYPE_INVALID, NULL, _
-		attrib, FB_PROCATTRIB_NONE )
-
-	if( sym = NULL ) then
-		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
+	if( isASM ) then
+		if( addAsmKeyword( id ) = FALSE ) then
+			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
+		else
+			if( env.ppfile_num > 0 ) then
+				lexPPOnlyEmitText( "#pragma reserve asm " + *id )
+			end if
+		end if	
 	else
-		if( env.ppfile_num > 0 ) then
-			lexPPOnlyEmitText( "#pragma reserve " + *id )
+		sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+			NULL, _
+			NULL, NULL, _
+			FB_SYMBCLASS_RESERVED, _
+			id, NULL, _
+			FB_DATATYPE_INVALID, NULL, _
+			attrib, FB_PROCATTRIB_NONE )
+
+		if( sym = NULL ) then
+			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
+		else
+			if( env.ppfile_num > 0 ) then
+				lexPPOnlyEmitText( "#pragma reserve " + iif( (attrib and FB_SYMBATTRIB_SHARED ), "shared", "" )+ *id )
+			end if
 		end if
+
 	end if
 
 	'' symbol
@@ -140,7 +161,7 @@ end sub
 ''							| PUSH '(' symbol (',' expression{int})? ')'
 ''							| POP '(' symbol ')'
 ''							| symbol ('=' expression{int})?
-''                          | RESERVE SHARED? symbol
+''                          | RESERVE (SHARED|ASM)? symbol
 ''
 sub ppPragma( )
 	dim as string tk
