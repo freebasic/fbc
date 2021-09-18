@@ -132,6 +132,12 @@ private sub pragmaReserve( )
 	chain_ = cIdentifier( base_parent, FB_IDOPT_NONE )
 	id = lexGetText( )
 
+	if( hIsValidSymbolName( id ) = FALSE ) then
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		'' error recovery: skip line
+		hSkipUntil( FB_TK_EOL )
+	end if
+
 	if( env.ppfile_num > 0 ) then
 		lexPPOnlyEmitToken( )
 	end if
@@ -139,6 +145,8 @@ private sub pragmaReserve( )
 	if( isASM ) then
 		if( parserInlineAsmAddKeyword( id ) = FALSE ) then
 			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
+			'' error recovery: skip line
+			hSkipUntil( FB_TK_EOL )
 		end if
 	else
 		sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
@@ -151,6 +159,8 @@ private sub pragmaReserve( )
 
 		if( sym = NULL ) then
 			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
+			'' error recovery: skip line
+			hSkipUntil( FB_TK_EOL )
 		end if
 
 	end if
