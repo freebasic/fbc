@@ -107,7 +107,7 @@ private function hIsAsmKeyword( byval text as const zstring ptr ) as integer
 	function = (hashLookup( @asmkeywords.hash, text ) <> NULL)
 end function
 
-function addAsmKeyword( byval id as const zstring ptr ) as integer
+function parserInlineAsmAddKeyword( byval id as const zstring ptr ) as integer
 	hInitAsmKeywords( )
 	if( hIsAsmKeyword( id ) ) then
 		return FALSE

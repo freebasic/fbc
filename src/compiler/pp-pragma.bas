@@ -92,9 +92,6 @@ private sub pragmaPop( byval pragmaIdx as LEXPP_PRAGMAOPT_ENUM, byref value as l
 	end with
 end sub
 
-'' from parser-inlineasm.bas:addAsmKeyword()
-declare function addAsmKeyword( byval id as zstring ptr ) as integer
-
 '':::::
 '' Pragma           =   PRAGMA RESERVE (SHARED|ASM)? symbol
 ''
@@ -105,15 +102,28 @@ private sub pragmaReserve( )
 	dim as zstring ptr id = any
 	dim as integer isAsm = FALSE
 
+	'' preserve under -pp
+	if( env.ppfile_num > 0 ) then
+		lexPPOnlyEmitText( "#pragma reserve")
+	end if
+
 	'' SHARED?
 	select case lexGetToken()
 	case FB_TK_SHARED
 		attrib or= FB_SYMBATTRIB_SHARED
 
+		if( env.ppfile_num > 0 ) then
+			lexPPOnlyEmitToken( )
+		end if
+
 		'' SHARED
 		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
 	case FB_TK_ASM
 		isAsm = TRUE
+
+		if( env.ppfile_num > 0 ) then
+			lexPPOnlyEmitToken( )
+		end if
 
 		'' ASM
 		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
@@ -122,13 +132,13 @@ private sub pragmaReserve( )
 	chain_ = cIdentifier( base_parent, FB_IDOPT_NONE )
 	id = lexGetText( )
 
+	if( env.ppfile_num > 0 ) then
+		lexPPOnlyEmitToken( )
+	end if
+
 	if( isASM ) then
-		if( addAsmKeyword( id ) = FALSE ) then
+		if( parserInlineAsmAddKeyword( id ) = FALSE ) then
 			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
-		else
-			if( env.ppfile_num > 0 ) then
-				lexPPOnlyEmitText( "#pragma reserve asm " + *id )
-			end if
 		end if
 	else
 		sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
@@ -141,10 +151,6 @@ private sub pragmaReserve( )
 
 		if( sym = NULL ) then
 			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
-		else
-			if( env.ppfile_num > 0 ) then
-				lexPPOnlyEmitText( "#pragma reserve " + iif( (attrib and FB_SYMBATTRIB_SHARED ), "shared", "" )+ *id )
-			end if
 		end if
 
 	end if

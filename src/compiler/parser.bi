@@ -243,6 +243,8 @@ end enum
 
 declare sub parserInlineAsmEnd( )
 
+declare function parserInlineAsmAddKeyword( byval id as const zstring ptr ) as integer
+
 declare sub cProgram()
 
 declare function cLabel _
