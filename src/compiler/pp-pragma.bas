@@ -175,6 +175,7 @@ private sub pragmaReserve( )
 			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 			'' error recovery: skip line
 			hSkipUntil( FB_TK_EOL )
+			exit sub
 		end if
 	end if
 
@@ -191,6 +192,7 @@ private sub pragmaReserve( )
 			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 			'' error recovery: skip line
 			hSkipUntil( FB_TK_EOL )
+			exit sub
 		end if
 
 	end if
