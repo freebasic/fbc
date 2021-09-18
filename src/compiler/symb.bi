@@ -113,9 +113,10 @@ enum FB_SYMBCLASS
 	FB_SYMBCLASS_CLASS
 	FB_SYMBCLASS_FIELD
 	FB_SYMBCLASS_TYPEDEF
-	FB_SYMBCLASS_FWDREF                         '' forward definition
+	FB_SYMBCLASS_FWDREF                     '' forward definition
 	FB_SYMBCLASS_SCOPE
-	FB_SYMBCLASS_NSIMPORT                       '' namespace import (an USING)
+	FB_SYMBCLASS_RESERVED                   '' reserved symbol
+	FB_SYMBCLASS_NSIMPORT                   '' namespace import (an USING)
 end enum
 
 '' symbol state mask

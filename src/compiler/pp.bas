@@ -200,6 +200,7 @@ sub ppParse( )
 		dim as FBSYMCHAIN ptr chain_ = any
 		dim as FBSYMBOL ptr base_parent = any
 
+		'' #undef
 		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
 
 		chain_ = cIdentifier( base_parent, FB_IDOPT_NONE )

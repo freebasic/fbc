@@ -84,30 +84,52 @@ dim shared asmKeywordsX86(0 to ...) as const zstring ptr => _
 
 type AsmKeywordsInfo
 	inited as integer
-	hash as THASH
+	hash as THASH     '' hash of all words pre-defined in asmKeywordsX86() and user added words
+	list as TLIST     '' only the user added words - will be deallocated when parser ends
 end type
 
 dim shared asmkeywords as AsmKeywordsInfo
 
 private sub hInitAsmKeywords( )
 	'' TODO: support x86_64, arm, aarch64; select keyword list based on compilation target
-	hashInit( @asmkeywords.hash, 600 )
-	for i as integer = 0 to ubound( asmKeywordsX86 )
-		hashAdd( @asmkeywords.hash, asmKeywordsX86(i), cast( any ptr, INVALID ), INVALID )
-	next
-end sub
-
-private function hIsAsmKeyword( byval text as zstring ptr ) as integer
 	if( asmkeywords.inited = FALSE ) then
-		hInitAsmKeywords( )
+		listInit( @asmkeywords.list, 8, sizeof( zstring ptr ) )
+		hashInit( @asmkeywords.hash, 600 )
+		for i as integer = 0 to ubound( asmKeywordsX86 )
+			hashAdd( @asmkeywords.hash, asmKeywordsX86(i), cast( any ptr, INVALID ), INVALID )
+		next
 		asmkeywords.inited = TRUE
 	end if
+end sub
+
+private function hIsAsmKeyword( byval text as const zstring ptr ) as integer
+	hInitAsmKeywords( )
 	function = (hashLookup( @asmkeywords.hash, text ) <> NULL)
+end function
+
+function parserInlineAsmAddKeyword( byval id as const zstring ptr ) as integer
+	hInitAsmKeywords( )
+	if( hIsAsmKeyword( id ) ) then
+		return FALSE
+	end if
+
+	dim as zstring ptr ptr s = listNewNode( @asmkeywords.list )
+	*s = callocate( len(*id) + 1 )
+	**s = lcase(*id)
+	hashAdd( @asmkeywords.hash, *s, cast( any ptr, INVALID ), INVALID )
+
+	return TRUE
 end function
 
 sub parserInlineAsmEnd( )
 	if( asmkeywords.inited ) then
 		hashEnd( @asmkeywords.hash )
+		dim s as zstring ptr ptr = listGetHead( @asmkeywords.list )
+		while( s )
+ 			deallocate( *s )
+			s = listGetNext( s )
+		wend
+		listEnd( @asmkeywords.list )
 		asmkeywords.inited = FALSE
 	end if
 end sub
@@ -195,7 +217,7 @@ sub cAsmCode()
 
 					chain_ = symbChainGetNext( chain_ )
 				loop
-            end if
+			end if
 
 		'' lit number?
 		case FB_TKCLASS_NUMLITERAL
@@ -208,18 +230,18 @@ sub cAsmCode()
 		case FB_TKCLASS_STRLITERAL
 			 expr = cStrLiteral( FALSE )
 			 if( expr <> NULL ) then
-             	dim as FBSYMBOL ptr litsym = astGetStrLitSymbol( expr )
-             	if( litsym <> NULL ) then
-                    text = """"
-                    if( symbGetType( litsym ) <> FB_DATATYPE_WCHAR ) then
-             			text += *symbGetVarLitText( litsym )
-             		else
-             			text += *symbGetVarLitTextW( litsym )
-             		end if
-             		text += """"
-			 	end if
+				dim as FBSYMBOL ptr litsym = astGetStrLitSymbol( expr )
+				if( litsym <> NULL ) then
+					text = """"
+					if( symbGetType( litsym ) <> FB_DATATYPE_WCHAR ) then
+						text += *symbGetVarLitText( litsym )
+					else
+						text += *symbGetVarLitTextW( litsym )
+					end if
+					text += """"
+				end if
 
-			 	astDelTree( expr )
+				astDelTree( expr )
 			 end if
 
 		''
@@ -227,13 +249,13 @@ sub cAsmCode()
 			select case thisTok
 			case FB_TK_FUNCTION
 			'' FUNCTION?
-    			sym = symbGetProcResult( parser.currproc )
-    			if( sym = NULL ) then
+				sym = symbGetProcResult( parser.currproc )
+				if( sym = NULL ) then
 					errReport( FB_ERRMSG_SYNTAXERROR )
 					doskip = TRUE
-    			else
-    				symbSetIsAccessed( sym )
-    			end if
+				else
+					symbSetIsAccessed( sym )
+				end if
 
 			case FB_TK_CINT
 				'' CINT( valid expression )?
@@ -280,9 +302,9 @@ end sub
 '':::::
 ''AsmBlock        =   ASM Comment? SttSeparator
 ''                        (AsmCode Comment? NewLine)+
-''					  END ASM .
+''                    END ASM .
 function cAsmBlock as integer
-    dim as integer issingleline = any
+	dim as integer issingleline = any
 
 	function = FALSE
 
@@ -291,11 +313,11 @@ function cAsmBlock as integer
 		exit function
 	end if
 
-    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
-    	'' error recovery: skip the whole compound stmt
-    	hSkipCompound( FB_TK_ASM )
-    	exit function
-    end if
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		'' error recovery: skip the whole compound stmt
+		hSkipCompound( FB_TK_ASM )
+		exit function
+	end if
 
 	'' ASM
 	lexSkipToken( LEXCHECK_POST_SUFFIX )
@@ -314,13 +336,13 @@ function cAsmBlock as integer
 	else
 		if( cStmtSeparator( ) = FALSE ) then
 			issingleline = TRUE
-        end if
+		end if
 	end if
 
 	'' (AsmCode Comment? NewLine)+
 	do
 		if( issingleline = FALSE ) then
-         astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ), env.inf.incfile ))
+		astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ), env.inf.incfile ))
 		end if
 
 		cAsmCode( )
