@@ -16,7 +16,6 @@ enum LEXPP_PRAGMAFLAG_ENUM
 	LEXPP_PRAGMAFLAG_HAS_CALLBACK         = 4
 	LEXPP_PRAGMAFLAG_PRESERVE_UNDER_PP    = 8
 	LEXPP_PRAGMAFLAG_PDCHECK              = 16
-	LEXPP_PRAGMAFLAG_NODEFINE             = 32
 
 	LEXPP_PRAGMAFLAG_DEFAULT = LEXPP_PRAGMAFLAG_CAN_PUSHPOP or _
 								LEXPP_PRAGMAFLAG_CAN_ASSIGN or _
@@ -52,7 +51,7 @@ end type
 		("msbitfields", FB_COMPOPT_MSBITFIELDS, LEXPP_PRAGMAFLAG_DEFAULT         ), _
 		("once"       , 0                     , LEXPP_PRAGMAFLAG_HAS_CALLBACK    ), _
 		("constness"  , FB_PDCHECK_CONSTNESS  , LEXPP_PRAGMAFLAG_PDCHECK or LEXPP_PRAGMAFLAG_DEFAULT ), _
-		("reserve"    , 0                     , LEXPP_PRAGMAFLAG_HAS_CALLBACK or LEXPP_PRAGMAFLAG_NODEFINE ) _
+		("reserve"    , 0                     , LEXPP_PRAGMAFLAG_HAS_CALLBACK    ) _
 	}
 
 sub ppPragmaInit( )
@@ -93,7 +92,7 @@ private sub pragmaPop( byval pragmaIdx as LEXPP_PRAGMAOPT_ENUM, byref value as l
 end sub
 
 '':::::
-'' Pragma           =   PRAGMA RESERVE (SHARED|ASM)? symbol
+'' Pragma           =   PRAGMA RESERVE ( '(' ASM? ','? SHARED? ')' )? symbol
 ''
 private sub pragmaReserve( )
 	dim as FBSYMCHAIN ptr chain_ = any
@@ -107,48 +106,79 @@ private sub pragmaReserve( )
 		lexPPOnlyEmitText( "#pragma reserve")
 	end if
 
-	'' SHARED?
-	select case lexGetToken()
-	case FB_TK_SHARED
-		attrib or= FB_SYMBATTRIB_SHARED
+	'' '('?
+	if( lexGetToken() = CHAR_LPRNT ) then
+
+		'' '('
+		lexSkipToken( )
 
 		if( env.ppfile_num > 0 ) then
 			lexPPOnlyEmitToken( )
 		end if
 
-		'' SHARED
-		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
-	case FB_TK_ASM
-		isAsm = TRUE
+		do
+			select case lexGetToken( )
+			case FB_TK_SHARED, FB_TK_ASM
+				select case lexGetToken( )
+				case FB_TK_SHARED
+					attrib or= FB_SYMBATTRIB_SHARED
+				case FB_TK_ASM
+					isASM = TRUE
+				end select
+				
+				'' SHARED|ASM
+				lexSkipToken( LEXCHECK_POST_SUFFIX )
 
-		if( env.ppfile_num > 0 ) then
-			lexPPOnlyEmitToken( )
+			case CHAR_COMMA
+				'' ','
+				lexSkipToken( )
+
+			case else
+				exit do
+
+			end select
+
+			if( env.ppfile_num > 0 ) then
+				lexPPOnlyEmitToken( )
+			end if
+
+		loop
+
+		'' ')'
+		if( lexGetToken() <> CHAR_RPRNT ) then
+			errReport( FB_ERRMSG_EXPECTEDRPRNT )
+			'' error recovery: skip until next ')'
+			hSkipUntil( CHAR_RPRNT, TRUE )
+		else
+			if( env.ppfile_num > 0 ) then
+				lexPPOnlyEmitToken( )
+			end if
+
+			lexSkipToken( )
 		end if
-
-		'' ASM
-		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
-	end select
+	end if
 
 	chain_ = cIdentifier( base_parent, FB_IDOPT_NONE )
 	id = lexGetText( )
 
 	if( hIsValidSymbolName( id ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-		'' error recovery: skip line
-		hSkipUntil( FB_TK_EOL )
+		exit sub
 	end if
 
 	if( env.ppfile_num > 0 ) then
 		lexPPOnlyEmitToken( )
 	end if
 
-	if( isASM ) then
+	if( isASM = TRUE ) then
 		if( parserInlineAsmAddKeyword( id ) = FALSE ) then
 			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 			'' error recovery: skip line
 			hSkipUntil( FB_TK_EOL )
 		end if
-	else
+	end if
+
+	if( (isASM = FALSE) or (attrib <> FB_SYMBATTRIB_NONE) ) then
 		sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
 			NULL, _
 			NULL, NULL, _
@@ -177,7 +207,7 @@ end sub
 ''                          | PUSH '(' symbol (',' expression{int})? ')'
 ''                          | POP '(' symbol ')'
 ''                          | symbol ('=' expression{int})?
-''                          | RESERVE (SHARED|ASM)? symbol
+''                          | RESERVE ( '(' ASM? ','? SHARED? ')' )? symbol
 ''
 sub ppPragma( )
 	dim as string tk
@@ -237,11 +267,7 @@ sub ppPragma( )
 	end if
 
 	'' symbol
-	if( (pragmaOpt(p).flags and LEXPP_PRAGMAFLAG_NODEFINE) <> 0 ) then
-		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
-	else
-		lexSkipToken( LEXCHECK_POST_SUFFIX )
-	end if
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	if( ispop ) then
 		pragmaPop( p, value )
