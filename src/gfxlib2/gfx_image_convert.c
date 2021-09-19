@@ -4,14 +4,14 @@
 
 /* !!!FIXME!!! little-endian only */
 
-/* Caller is expected to hold FB_GRAPHICSLOCK() */
+/* Caller is expected to hold FB_GRAPHICS_LOCK() */
 void fb_image_convert_8to8(const unsigned char *src, unsigned char *dest, int w)
 {
 	for (; w; w--)
 		*dest++ = *src++ & __fb_gfx->color_mask;
 }
 
-/* Caller is expected to hold FB_GRAPHICSLOCK() */
+/* Caller is expected to hold FB_GRAPHICS_LOCK() */
 void fb_image_convert_8to16(const unsigned char *src, unsigned char *dest, int w)
 {
 	int r, g, b;
@@ -26,7 +26,7 @@ void fb_image_convert_8to16(const unsigned char *src, unsigned char *dest, int w
 	}
 }
 
-/* Caller is expected to hold FB_GRAPHICSLOCK() */
+/* Caller is expected to hold FB_GRAPHICS_LOCK() */
 void fb_image_convert_8to32(const unsigned char *src, unsigned char *dest, int w)
 {
 	int r, g, b;

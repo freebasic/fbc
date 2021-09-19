@@ -38,7 +38,7 @@ void fb_GFXCTX_Destructor(void* data)
 	free( context->line );
 }
 
-/* Caller is expected to hold FB_GRAPHICSLOCK() */
+/* Caller is expected to hold FB_GRAPHICS_LOCK() */
 FB_GFXCTX *fb_hGetContext(void)
 {
 	FB_GFXCTX *context = FB_TLSGETCTX(GFX);
@@ -65,7 +65,7 @@ FB_GFXCTX *fb_hGetContext(void)
 	return context;
 }
 
-/* Caller is expected to hold FB_GRAPHICSLOCK() */
+/* Caller is expected to hold FB_GRAPHICS_LOCK() */
 void fb_hPrepareTarget(FB_GFXCTX *context, void *target)
 {
 	PUT_HEADER *header;
@@ -115,7 +115,7 @@ void fb_hPrepareTarget(FB_GFXCTX *context, void *target)
 	context->last_target = target;
 }
 
-/* Caller is expected to hold FB_GRAPHICSLOCK() */
+/* Caller is expected to hold FB_GRAPHICS_LOCK() */
 void fb_hSetPixelTransfer(FB_GFXCTX *context, unsigned int color)
 {
 	if ((__fb_gfx->flags & ALPHA_PRIMITIVES) && (context->target_bpp == 4) && ((color & MASK_A_32) != MASK_A_32)) {
@@ -286,7 +286,7 @@ static void *fb_hPixelCpy4(void *dest, const void *src, size_t size)
 	return fb_hMemCpy(dest, src, size << 2);
 }
 
-/* Caller is expected to hold FB_GRAPHICSLOCK() */
+/* Caller is expected to hold FB_GRAPHICS_LOCK() */
 void fb_hSetupFuncs(int bpp)
 {
 #ifdef HOST_X86
