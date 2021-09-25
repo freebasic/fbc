@@ -171,7 +171,7 @@ function cIdentifier _
 	end if
 
 	if( fbLangOptIsSet( FB_LANG_OPT_NAMESPC ) = FALSE ) then
-	    return chain_
+		return chain_
 	end if
 
 	if( chain_ = NULL ) then
@@ -197,6 +197,31 @@ function cIdentifier _
 
 	do
 		dim as FBSYMBOL ptr sym = chain_->sym
+
+		'' explicit base_parent? don't access locals
+		'' we are assuming that the logic is correct that any symbol with the local
+		'' attribute can't be accessed through an explicit namespace.  If we later find
+		'' out that is not the case, then we will need to add a new symbol attribute that
+		'' decides if symbols can be accessed through an explicit namespace or not
+		if( base_parent ) then
+			while( sym )
+				if( symbIsLocal( sym ) ) then
+					sym = sym->hash.next
+				else
+					chain_ = symbNewChainpool( sym )
+					exit while
+				end if
+			wend
+			if( sym = NULL ) then
+				if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
+					errReportUndef( FB_ERRMSG_UNDEFINEDSYMBOL, lexGetText( ) )
+				else
+					hSkipSymbol( )
+				end if
+
+				return NULL
+			end if
+		end if
 
 		select case as const symbGetClass( sym )
 		case FB_SYMBCLASS_NAMESPACE, FB_SYMBCLASS_CLASS, FB_SYMBCLASS_ENUM
@@ -319,7 +344,7 @@ function cIdentifier _
 				hSkipSymbol( )
 			end if
 
-		    return NULL
+			return NULL
 		end if
 
 		'' check access to non-static members
@@ -366,7 +391,7 @@ function cParentId _
 	dim as FBSYMBOL ptr sym = any, parent = any, base_parent = any
 
 	if( fbLangOptIsSet( FB_LANG_OPT_NAMESPC ) = FALSE ) then
-	    return NULL
+		return NULL
 	end if
 
 	chain_ = lexGetSymChain( )
