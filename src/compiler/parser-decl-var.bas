@@ -1637,10 +1637,18 @@ function cVarDecl _
 		'' typeless REDIM?
 		if( is_typeless ) then
 			if( sym ) then
-				'' REDIM'ing existing symbol, uses the same dtype
-				dtype = symbGetType( sym )
-				subtype = symbGetSubtype( sym )
-				lgt = symbGetLen( sym )
+				if( symbIsArray( sym ) ) then
+					'' REDIM'ing existing symbol, uses the same dtype
+					dtype = symbGetType( sym )
+					subtype = symbGetSubtype( sym )
+					lgt = symbGetLen( sym )
+					if( symbIsDynamic( sym ) = FALSE ) then
+						errReportEx( FB_ERRMSG_EXPECTEDDYNAMICARRAY, @id )
+					end if
+				else
+					'' -lang fb: typeless REDIM without pre-existing array not allowed
+					hErrorDefTypeNotAllowed( dtype, subtype, lgt )
+				end if
 			elseif( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) ) then
 				'' DEF* is allowed, so typeless REDIM defaults to the default type
 				'' (can just keep using the deftype set above)
@@ -1715,7 +1723,7 @@ function cVarDecl _
 		end if
 
 		''
-		'' Declare the new variable or comlain about duplicate
+		'' Declare the new variable or complain about duplicate
 		'' definition, etc.
 		''
 		sym = hAddVar( sym, parent, id, palias, dtype, subtype, lgt, addsuffix, _

@@ -70,6 +70,7 @@ Version 1.09.0
 - gas64 : fix required size for local variables >2GB
 - sf.net #645: don't access locals if explicit namespace is given on identifier
 - sf.net #645: don't access locals if explicit global namespace '.' and '..' prefixes are given on identifier
+- sf.net #645: throw compile time error if scoped REDIM variable shadows a variable of the same name
 
 
 Version 1.08.0
