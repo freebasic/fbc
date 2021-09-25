@@ -481,13 +481,13 @@ enum FB_UDTOPT
 	FB_UDTOPT_HASIDXGETPROPERTY = &h0200
 	FB_UDTOPT_HASIDXSETPROPERTY = &h0400
 	FB_UDTOPT_HASKWDFIELD       = &h0800
-	FB_UDTOPT_HASINITEDFIELD        = &h1000
-	FB_UDTOPT_HASANONUNION          = &h2000
-	FB_UDTOPT_HASSTATICVAR          = &h4000
-	FB_UDTOPT_HASBITFIELD           = &h8000
-	FB_UDTOPT_ISWSTRING             = &h10000
-	FB_UDTOPT_ISZSTRING             = &h20000
-	FB_UDTOPT_VALISTTYPEMASK       = &hf00000
+	FB_UDTOPT_HASINITEDFIELD    = &h1000
+	FB_UDTOPT_HASANONUNION      = &h2000
+	FB_UDTOPT_HASSTATICVAR      = &h4000
+	FB_UDTOPT_HASBITFIELD       = &h8000
+	FB_UDTOPT_ISWSTRING         = &h10000
+	FB_UDTOPT_ISZSTRING         = &h20000
+	FB_UDTOPT_VALISTTYPEMASK    = &hf00000
 end enum
 
 type FB_STRUCT_DBG
@@ -900,13 +900,13 @@ type SYMBCTX
 					0 to AST_OPCODES-1 _
 				)   as SYMB_OVLOP               '' global operator overloading
 
-	fbarray_data        as integer          '' offsetof( FBARRAY, data )
-	fbarray_ptr     as integer          '' offsetof( FBARRAY, ptr )
-	fbarray_size        as integer          '' offsetof( FBARRAY, size )
-	fbarray_dimtb       as integer          '' offsetof( FBARRAY, dimTB )
-	fbarraydim      as FBSYMBOL ptr         '' FBARRAYDIM (dimTB element structure)
-	fbarraydim_lbound   as integer          '' offsetof( FBARRAYDIM, lbound )
-	fbarraydim_ubound   as integer          '' offsetof( FBARRAYDIM, ubound )
+	fbarray_data        as integer              '' offsetof( FBARRAY, data )
+	fbarray_ptr         as integer              '' offsetof( FBARRAY, ptr )
+	fbarray_size        as integer              '' offsetof( FBARRAY, size )
+	fbarray_dimtb       as integer              '' offsetof( FBARRAY, dimTB )
+	fbarraydim          as FBSYMBOL ptr         '' FBARRAYDIM (dimTB element structure)
+	fbarraydim_lbound   as integer              '' offsetof( FBARRAYDIM, lbound )
+	fbarraydim_ubound   as integer              '' offsetof( FBARRAYDIM, ubound )
 
 	rtti            as FB_RTTICTX
 end type
@@ -949,6 +949,11 @@ declare sub symbEnd _
 	)
 
 declare sub symbDataInit( )
+
+declare function symbNewChainpool _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as FBSYMCHAIN ptr
 
 declare function symbLookup _
 	( _
