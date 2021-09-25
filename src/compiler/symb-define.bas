@@ -255,6 +255,8 @@ private function hMacro_EvalZ( byval arg as zstring ptr ) as string
 		'' - text to expand is to be loaded in LEX.CTX->DEFTEXT[W]
 		'' - use the parser to build an AST for the literal result
 
+		'' !!!FIXME!!! : check if env.includerec is too deep
+		'' if( env.includerec >= FB_MAXINCRECLEVEL ) then
 		lexPushCtx()
 		lexInit( FALSE, TRUE )
 
@@ -337,6 +339,8 @@ private function hMacro_EvalW( byval arg as wstring ptr ) as wstring ptr
 		'' - text to expand is to be loaded in LEX.CTX->DEFTEXT[W]
 		'' - use the parser to build an AST for the literal result
 
+		'' !!!FIXME!!! : check if env.includerec is too deep
+		'' if( env.includerec >= FB_MAXINCRECLEVEL ) then
 		lexPushCtx()
 		lexInit( FALSE, TRUE )
 
