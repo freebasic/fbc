@@ -1,7 +1,7 @@
 '' symbol table module for labels
 ''
 '' chng: sep/2004 written [v1ctor]
-''		 jan/2005 updated to use real linked-lists [v1ctor]
+''       jan/2005 updated to use real linked-lists [v1ctor]
 
 
 #include once "fb.bi"
@@ -18,38 +18,38 @@ function symbAddLabel _
 		byval options as FB_SYMBOPT _
 	) as FBSYMBOL ptr
 
-    dim as zstring ptr id = any, id_alias = any
-    dim as FBSYMBOL ptr l = any
-    dim as FBSYMBOLTB ptr symtb = any
-    dim as FBHASHTB ptr hashtb = any
-    dim as integer isglobal = any
+	dim as zstring ptr id = any, id_alias = any
+	dim as FBSYMBOL ptr l = any
+	dim as FBSYMBOLTB ptr symtb = any
+	dim as FBHASHTB ptr hashtb = any
+	dim as integer isglobal = any
 
-    function = NULL
+	function = NULL
 
-    if( symbol <> NULL ) then
-    	'' check if label already exists
-    	l = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
-    								  symbol, _
-    								  FB_SYMBCLASS_LABEL, _
-    								  FALSE )
-    	if( l <> NULL ) then
-    		if( (options and FB_SYMBOPT_DECLARING) <> 0 ) then
-    			'' dup definition?
-    			if( l->lbl.declared ) then
-	    			exit function
-    			end if
+	if( symbol <> NULL ) then
+		'' check if label already exists
+		l = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
+			symbol, _
+			FB_SYMBCLASS_LABEL, _
+			FALSE )
+		if( l <> NULL ) then
+			if( (options and FB_SYMBOPT_DECLARING) <> 0 ) then
+				'' dup definition?
+				if( l->lbl.declared ) then
+					exit function
+				end if
 
-    			'' set the right values
-    			l->lbl.declared = TRUE
-    			l->lbl.parent = parser.currblock
-    			l->lbl.stmtnum = parser.stmt.cnt
-    			l->scope = parser.scope
-    			return l
+				'' set the right values
+				l->lbl.declared = TRUE
+				l->lbl.parent = parser.currblock
+				l->lbl.stmtnum = parser.stmt.cnt
+				l->scope = parser.scope
+				return l
 
-    		else
-    			return l
-    		end if
-    	end if
+			else
+				return l
+			end if
+		end if
 
 		'' add the new label
 		if( (options and FB_SYMBOPT_CREATEALIAS) = 0 ) then
@@ -64,47 +64,47 @@ function symbAddLabel _
 		id_alias = symbUniqueLabel( )
 	end if
 
-    if( (options and FB_SYMBOPT_MOVETOGLOB) <> 0 ) then
-    	isglobal = TRUE
+	if( (options and FB_SYMBOPT_MOVETOGLOB) <> 0 ) then
+		isglobal = TRUE
 
-    	symtb = @symbGetGlobalTb( )
-    	hashtb = @symbGetGlobalHashTb( )
+		symtb = @symbGetGlobalTb( )
+		hashtb = @symbGetGlobalHashTb( )
 
-    else
-    	'' parsing main? add to global tb
-    	if( fbIsModLevel( ) ) then
-    		isglobal = TRUE
+	else
+		'' parsing main? add to global tb
+		if( fbIsModLevel( ) ) then
+			isglobal = TRUE
 
-    		'' unless inside a namespace..
-    		if( symbIsGlobalNamespc() = FALSE ) then
-    			symtb = symb.symtb
-    			hashtb = symb.hashtb
-    		else
-    			symtb = @symbGetGlobalTb( )
-    			hashtb = @symbGetGlobalHashTb( )
-    		end if
+			'' unless inside a namespace..
+			if( symbIsGlobalNamespc() = FALSE ) then
+				symtb = symb.symtb
+				hashtb = symb.hashtb
+			else
+				symtb = @symbGetGlobalTb( )
+				hashtb = @symbGetGlobalHashTb( )
+			end if
 
-    	'' otherside the current proc sym table must be used, not the
-    	'' current scope because labels inside scopes are unique,
-    	'' and branching to them from other scopes must be allowed
-    	else
-    		isglobal = FALSE
+		'' otherwise the current proc sym table must be used, not the
+		'' current scope because labels inside scopes are unique,
+		'' and branching to them from other scopes must be allowed
+		else
+			isglobal = FALSE
 
-    		symtb = @parser.currproc->proc.symtb
-    		hashtb = symb.hashtb
-    	end if
-    end if
+			symtb = @parser.currproc->proc.symtb
+			hashtb = symb.hashtb
+		end if
+	end if
 
-    l = symbNewSymbol( iif( symbol = NULL, FB_SYMBOPT_NONE, FB_SYMBOPT_DOHASH ), _
-    				   NULL, _
-    				   symtb, hashtb, _
-    				   FB_SYMBCLASS_LABEL, _
-    				   id, id_alias, _
-    				   FB_DATATYPE_INVALID, NULL, _
-    				   iif( isglobal, FB_SYMBATTRIB_NONE, FB_SYMBATTRIB_LOCAL ), FB_PROCATTRIB_NONE )
-    if( l = NULL ) then
-    	exit function
-    end if
+	l = symbNewSymbol( iif( symbol = NULL, FB_SYMBOPT_NONE, FB_SYMBOPT_DOHASH ), _
+		NULL, _
+		symtb, hashtb, _
+		FB_SYMBCLASS_LABEL, _
+		id, id_alias, _
+		FB_DATATYPE_INVALID, NULL, _
+		iif( isglobal, FB_SYMBATTRIB_NONE, FB_SYMBATTRIB_LOCAL ), FB_PROCATTRIB_NONE )
+	if( l = NULL ) then
+		exit function
+	end if
 
 	if( (options and FB_SYMBOPT_DECLARING) <> 0 ) then
 		'' label parent won't be the current proc block as
@@ -139,11 +139,11 @@ sub symbDelLabel _
 		byval s as FBSYMBOL ptr _
 	)
 
-    if( s = NULL ) then
-    	exit sub
-    end if
+	if( s = NULL ) then
+		exit sub
+	end if
 
-    symbFreeSymbol( s )
+	symbFreeSymbol( s )
 
 end sub
 
