@@ -31,7 +31,8 @@ end sub
 '':::::
 private function hGlobalId _
 	( _
-		byval options as FB_IDOPT = FB_IDOPT_SHOWERROR _
+		byval options as FB_IDOPT = FB_IDOPT_SHOWERROR, _
+		byref base_parent as FBSYMBOL ptr = NULL _
 	) as FBSYMCHAIN ptr
 
 	function = NULL
@@ -69,7 +70,9 @@ private function hGlobalId _
 		exit function
 	end select
 
-	function = symbLookupAt( @symbGetGlobalNamespc( ), _
+	base_parent = @symbGetGlobalNamespc( )
+
+	function = symbLookupAt( base_parent, _
 							 lexGetText( ), _
 							 FALSE, _
 							 TRUE )
@@ -181,7 +184,7 @@ function cIdentifier _
 			return NULL
 		end if
 
-		chain_ = hGlobalId( options )
+		chain_ = hGlobalId( options, base_parent )
 		if( chain_ = NULL ) then
 			if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
 				errReportUndef( FB_ERRMSG_UNDEFINEDSYMBOL, lexGetText( ) )
@@ -198,14 +201,14 @@ function cIdentifier _
 	do
 		dim as FBSYMBOL ptr sym = chain_->sym
 
-		'' explicit base_parent? don't access locals
+		'' explicit base_parent? don't access local variables
 		'' we are assuming that the logic is correct that any symbol with the local
 		'' attribute can't be accessed through an explicit namespace.  If we later find
 		'' out that is not the case, then we will need to add a new symbol attribute that
 		'' decides if symbols can be accessed through an explicit namespace or not
 		if( base_parent ) then
 			while( sym )
-				if( symbIsLocal( sym ) ) then
+				if( symbIsLocal( sym ) and symbIsVar( sym ) ) then
 					sym = sym->hash.next
 				else
 					chain_ = symbNewChainpool( sym )
