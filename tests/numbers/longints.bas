@@ -42,7 +42,6 @@ SUITE( fbc_tests.numbers.longints )
 		CU_ASSERT( v1 = 1 )
 
 		dim as ulongint v2
-	# print one warning to follow
 		v2 = 2 ^ 34
 		v2 shr= 34
 		CU_ASSERT( v2 = 1 )
