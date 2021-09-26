@@ -48,6 +48,7 @@ Version 1.09.0
 - fbc: '#pragma reserve symbol' statement will reserve a symbol name in the current scope / namespace
 - fbc: '#pragma reserve (shared) symbol' statement will reserve a symbol name in the shared scope
 - fbc: '#pragma reserve (asm) symbol' statement will reserve an ASM symbol name in all ASM statements and blocks
+- sf.net #645: respect global namespace '.' and '..' prefixes in REDIM
 
 [fixed]
 - github #315: set parameters when calling SCREENCONTROL (was broken in fbc 1.08.0 due to new LONG/LONGINT SCREENCONTROL API's)

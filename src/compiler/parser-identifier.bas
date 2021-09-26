@@ -80,22 +80,24 @@ private function hGlobalId _
 end function
 
 '':::::
-#macro hCheckDecl _
+private function hCheckDecl _
 	( _
-		base_parent, _
-		parent, _
-		chain_, _
-		options _
-	)
+		byval base_parent as FBSYMBOL ptr, _
+		byval parent as FBSYMBOL ptr, _
+		byval chain_ as FBSYMCHAIN ptr, _
+		byval options as FB_IDOPT _
+	) as integer
 
 	if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
 		'' declaration?
 		if( (options and FB_IDOPT_ISDECL) <> 0 ) then
 			if( base_parent <> NULL ) then
 				'' different parents?
-				if( symbGetParent( base_parent ) <> symbGetCurrentNamespc( ) ) then
-					errReport( FB_ERRMSG_DECLOUTSIDENAMESPC )
-					return NULL
+				if( base_parent <> @symbGetGlobalNamespc() ) then
+					if( symbGetParent( base_parent ) <> symbGetCurrentNamespc( ) ) then
+						errReport( FB_ERRMSG_DECLOUTSIDENAMESPC )
+						return FALSE
+					end if
 				end if
 			end if
 
@@ -120,7 +122,9 @@ end function
 		end if
 	end if
 
-#endmacro
+	function = TRUE
+
+end function
 
 private function hIsStructAllowed _
 	( _
@@ -376,7 +380,9 @@ function cIdentifier _
 	loop
 
 	''
-	hCheckDecl( base_parent, parent, chain_, options )
+	if( hCheckDecl( base_parent, parent, chain_, options ) = FALSE ) then
+		return NULL
+	end if
 
 	function = chain_
 
@@ -397,17 +403,22 @@ function cParentId _
 		return NULL
 	end if
 
+	sym = NULL
+	base_parent = NULL
+	parent = NULL
+
 	chain_ = lexGetSymChain( )
 	if( chain_ = NULL ) then
 		'' '.'?
 		if( lexGetToken( ) = CHAR_DOT ) then
-			chain_ = hGlobalId( )
+			chain_ = hGlobalId( , base_parent )
 		end if
 	end if
 
-	sym = NULL
-	parent = NULL
-	base_parent = NULL
+	'' explicit base parent?
+	if( base_parent ) then
+		parent = base_parent
+	end if
 
 	do while( chain_ <> NULL )
 
@@ -513,7 +524,9 @@ function cParentId _
 	loop
 
 	''
-	hCheckDecl( base_parent, parent, chain_, options )
+	if( hCheckDecl( base_parent, parent, chain_, options ) = FALSE ) then
+		return NULL
+	end if
 
 	function = sym
 
