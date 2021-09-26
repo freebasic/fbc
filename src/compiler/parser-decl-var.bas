@@ -638,8 +638,8 @@ private function hLookupVarAndCheckParent _
 
 	sym = hLookupVar( chain_, dtype, is_typeless, has_suffix )
 
-	'' Namespace prefix explicitly given?
-	if( parent ) then
+	'' Namespace prefix explicitly given? And is not global
+	if( (parent <> NULL) and (parent <> @symbGetGlobalNamespc()) ) then
 		if( sym ) then
 			'' "DIM Parent.foo" is only allowed if there was an
 			'' "EXTERN foo" in the Parent namespace, or if it's a
@@ -1643,7 +1643,10 @@ function cVarDecl _
 					subtype = symbGetSubtype( sym )
 					lgt = symbGetLen( sym )
 					if( symbIsDynamic( sym ) = FALSE ) then
-						errReportEx( FB_ERRMSG_EXPECTEDDYNAMICARRAY, @id )
+						'' if it's a parameter, we won't know if it's dynamic or not until run-time
+						if( symbIsParamVarByDesc( sym ) = FALSE ) then
+							errReportEx( FB_ERRMSG_EXPECTEDDYNAMICARRAY, @id )
+						end if
 					end if
 				else
 					'' -lang fb: typeless REDIM without pre-existing array not allowed
