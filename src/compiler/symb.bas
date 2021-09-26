@@ -855,6 +855,22 @@ private function chainpoolNext() as FBSYMCHAIN ptr
 end function
 
 '':::::
+function symbNewChainpool _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as FBSYMCHAIN ptr
+
+	assert( sym )
+
+	dim as FBSYMCHAIN ptr chain_ = chainpoolNext()
+	chain_->sym = sym
+	chain_->next = NULL
+	chain_->isimport = FALSE
+	return chain_
+
+end function
+
+'':::::
 function symbLookup _
 	( _
 		byval id as zstring ptr, _
@@ -2707,10 +2723,18 @@ function symbDumpToStr _
 end function
 
 sub symbDump( byval sym as FBSYMBOL ptr )
+	print "symbDump [" + hex( sym ) + "]:"
+	if( sym = NULL ) then
+		exit sub
+	end if
 	print symbDumpToStr( sym )
 end sub
 
 sub symbDumpNamespace( byval ns as FBSYMBOL ptr )
+	print "symbDumpNamespace [" + hex( ns ) + "]:"
+	if( ns = NULL ) then
+		exit sub
+	endif
 	select case( ns->class )
 	case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_ENUM, FB_SYMBCLASS_NAMESPACE
 
@@ -2768,7 +2792,7 @@ sub symbDumpChain( byval chain_ as FBSYMCHAIN ptr )
 		loop while( chain_ )
 	end if
 end sub
-#endif
+#endif '' __FB_DEBUG__
 
 dim shared as zstring ptr classnamesPretty(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIMPORT) = _
 { _

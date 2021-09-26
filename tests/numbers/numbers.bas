@@ -40,7 +40,6 @@ SUITE( fbc_tests.numbers.numbers_ )
 
 		test_b_lb = -128
 		test_b_ub = 127
-		# print two warnings follow
 		b_lb = -129
 		b_ub = 128
 		cu_assert( b_lb = test_b_ub )
@@ -52,7 +51,6 @@ SUITE( fbc_tests.numbers.numbers_ )
 
 		test_ub_lb = 0
 		test_ub_ub = 255
-		# print two warnings follow
 		ub_lb = -1
 		ub_ub = 256
 		cu_assert( ub_lb = test_ub_ub )
@@ -64,7 +62,6 @@ SUITE( fbc_tests.numbers.numbers_ )
 
 		test_s_lb = -32768
 		test_s_ub = 32767
-		# print two warnings follow
 		s_lb = -32769
 		s_ub = 32768
 		cu_assert( s_lb = test_s_ub )
@@ -76,7 +73,6 @@ SUITE( fbc_tests.numbers.numbers_ )
 
 		test_us_lb = 0
 		test_us_ub = 65535
-		# print two warnings follow
 		us_lb = -1
 		us_ub = 65536
 		cu_assert( us_lb = test_us_ub )
@@ -93,7 +89,6 @@ SUITE( fbc_tests.numbers.numbers_ )
 		test_i_lb = -2147483648
 		test_i_ub = 2147483647
 	#endif
-		# print two warnings follow
 	#ifdef __FB_64BIT__
 		i_lb = -9223372036854775809
 		i_ub = 9223372036854775808
@@ -112,7 +107,6 @@ SUITE( fbc_tests.numbers.numbers_ )
 		test_ui_lb = 0
 		test_ui_ub = 18446744073709551615
 
-		# print two warnings follow
 		ui_lb = -1
 		'' is truncated to 18446744073709551615, not wrapping around
 		ui_ub = 18446744073709551616
@@ -122,7 +116,6 @@ SUITE( fbc_tests.numbers.numbers_ )
 	#else
 		test_ui_lb = 0
 		test_ui_ub = 4294967295
-		# print two warnings follow
 		ui_lb = -1
 		ui_ub = 4294967296
 		cu_assert( ui_lb = test_ui_ub )
@@ -135,7 +128,6 @@ SUITE( fbc_tests.numbers.numbers_ )
 
 		test_l_lb = -9223372036854775808
 		test_l_ub = 9223372036854775807
-		# print two warnings follow
 		l_lb = -9223372036854775809
 		l_ub = 9223372036854775808
 		cu_assert( l_lb = test_l_ub )
@@ -147,7 +139,6 @@ SUITE( fbc_tests.numbers.numbers_ )
 
 		test_ul_lb = 0
 		test_ul_ub = 18446744073709551615
-		# print two warnings follow
 		ul_lb = -1
 		'' is truncated to 18446744073709551615, not wrapping around
 		ul_ub = 18446744073709551616

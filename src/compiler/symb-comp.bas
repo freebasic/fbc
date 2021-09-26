@@ -9,10 +9,10 @@
 declare function symbGetCompCopyCtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 type FB_SYMBNEST
-	sym				as FBSYMBOL ptr
-	symtb			as FBSYMBOLTB ptr			'' prev symbol tb
-	hashtb			as FBHASHTB ptr				'' prev hash tb
-	ns				as FBSYMBOL ptr				'' prev namespace
+	sym             as FBSYMBOL ptr
+	symtb           as FBSYMBOLTB ptr           '' prev symbol tb
+	hashtb          as FBHASHTB ptr             '' prev hash tb
+	ns              as FBSYMBOL ptr             '' prev namespace
 end type
 
 sub symbCompInit( )
@@ -379,9 +379,9 @@ private sub hAssignList _
 	subtype = symbGetSubtype( fld )
 
 	cnt = symbAddTempVar( FB_DATATYPE_INTEGER )
-    label = symbAddLabel( NULL )
-    dst = symbAddTempVar( typeAddrOf( symbGetType( fld ) ), subtype )
-    src = symbAddTempVar( typeAddrOf( symbGetType( fld ) ), subtype )
+	label = symbAddLabel( NULL )
+	dst = symbAddTempVar( typeAddrOf( symbGetType( fld ) ), subtype )
+	src = symbAddTempVar( typeAddrOf( symbGetType( fld ) ), subtype )
 
 	'' dst = @this.arrayfield(0)
 	astAdd( astBuildVarAssign( dst, astNewADDROF( astBuildVarField( this_, fld ) ), AST_OPOPT_ISINI ) )
@@ -391,13 +391,13 @@ private sub hAssignList _
 	'' for cnt = 0 to symbGetArrayElements( dst )-1
 	astAdd( astBuildForBegin( NULL, cnt, label, 0 ) )
 
-    '' *dst = *src
-    astAdd( astNewASSIGN( astBuildVarDeref( dst ), astBuildVarDeref( src ) ) )
+	'' *dst = *src
+	astAdd( astNewASSIGN( astBuildVarDeref( dst ), astBuildVarDeref( src ) ) )
 
 	'' dst += 1
-    astAdd( astBuildVarInc( dst, 1 ) )
+	astAdd( astBuildVarInc( dst, 1 ) )
 	'' src += 1
-    astAdd( astBuildVarInc( src, 1 ) )
+	astAdd( astBuildVarInc( src, 1 ) )
 
 	'' next
 	astAdd( astBuildForEnd( NULL, cnt, label, astNewCONSTi( symbGetArrayElements( fld ) ) ) )
@@ -430,7 +430,7 @@ private function hCopyUnionFields _
 		fld = fld->next
 	loop while( fld andalso symbIsField( fld ) andalso symbGetIsUnionField( fld ) )
 
-    '' copy all them at once
+	'' copy all them at once
 	astAdd( astNewMEM( AST_OP_MEMMOVE, _
 				astBuildVarField( this_, base_fld ), _
 				astBuildVarField( rhs, base_fld ), _
@@ -899,28 +899,28 @@ function symbGetCompOpOvlHead _
 		byval op as AST_OP _
 	) as FBSYMBOL ptr
 
-   	'' self?
-   	if( astGetOpIsSelf( op ) ) then
-   		select case symbGetClass( sym )
-   		case FB_SYMBCLASS_STRUCT
-   			if( sym->udt.ext = NULL ) then
-   				return NULL
-   			end if
+	'' self?
+	if( astGetOpIsSelf( op ) ) then
+		select case symbGetClass( sym )
+		case FB_SYMBCLASS_STRUCT
+			if( sym->udt.ext = NULL ) then
+				return NULL
+			end if
 
-   			function = symbGetUDTOpOvlTb(sym)(op - AST_OP_SELFBASE)
+			function = symbGetUDTOpOvlTb(sym)(op - AST_OP_SELFBASE)
 
-   		case FB_SYMBCLASS_ENUM
-   			function = NULL
+		case FB_SYMBCLASS_ENUM
+			function = NULL
 
-   		case FB_SYMBCLASS_CLASS
-   			'' ...
+		case FB_SYMBCLASS_CLASS
+			'' ...
 
-   		end select
+		end select
 
-   	'' not self..
-   	else
-   		function = symb.globOpOvlTb(op).head
-   	end if
+	'' not self..
+	else
+		function = symb.globOpOvlTb(op).head
+	end if
 
 end function
 
@@ -1047,7 +1047,7 @@ private sub hRemoveNested _
 		if( symbGetCompExt( ns )->cnt <> 0 ) then
 			'' add to import hash tb list
 			symbHashListInsertNamespace( ns, _
-										 symbGetCompSymbTb( ns ).head )
+				symbGetCompSymbTb( ns ).head )
 		end if
 
 		ns = symbGetNamespace( ns )
@@ -1074,7 +1074,7 @@ private sub hInsertImported _
 			if( symbGetCompExt( ns )->cnt = 1 ) then
 				'' add to import hash tb list
 				symbHashListInsertNamespace( ns, _
-											 symbGetCompSymbTb( ns ).head )
+					symbGetCompSymbTb( ns ).head )
 			end if
 		end if
 
@@ -1204,7 +1204,7 @@ sub symbNestEnd _
 		if( symbGetCompExt( sym )->cnt <> 0 ) then
 			'' add to import hash tb list
 			symbHashListInsertNamespace( sym, _
-										 symbGetCompSymbTb( sym ).head )
+				symbGetCompSymbTb( sym ).head )
 		end if
 
 		symbSetCurrentHashTb( n->hashtb )
@@ -1361,7 +1361,7 @@ sub symbCompRTTIInit( )
 	'' stdlibvtable as any ptr
 	symbAddField( rttitype, "stdlibvtable", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
 
-	'' dim id as zstring ptr 
+	'' dim id as zstring ptr
 	symbAddField( rttitype, "id", 0, dTB(), typeAddrOf( FB_DATATYPE_CHAR ), NULL, 0, 0, 0 )
 
 	'' dim rttibase as fb_RTTI$ ptr
