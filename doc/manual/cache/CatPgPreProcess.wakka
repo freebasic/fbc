@@ -55,8 +55,12 @@ Commands that control the preprocessor.
 		Includes a path to search for libraries in the linking process.
 
 {{anchor name="CONTROL"}}{{fbdoc item="section" value="Control Directives"}}
-	=={{fbdoc item="keyword" value="KeyPgPragma|#PRAGMA"}}==
+	=={{fbdoc item="keyword" value="KeyPgPpPragma|#PRAGMA"}}==
 		Sets compiling options.
+	=={{fbdoc item="keyword" value="KeyPgPpPragmaReserve|#PRAGMA RESERVE"}}==
+		Reserves symbol name.
+	=={{fbdoc item="keyword" value="KeyPgPpcmdline|#CMDLINE"}}==
+		Sets compiler command options from source.
 	=={{fbdoc item="keyword" value="KeyPgPplang|#LANG"}}==
 		Sets dialect from source.
 	=={{fbdoc item="keyword" value="KeyPgPpprint|#PRINT"}}==

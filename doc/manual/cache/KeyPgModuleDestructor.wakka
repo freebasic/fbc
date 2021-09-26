@@ -28,6 +28,8 @@ Specifies execution of a procedure at program termination
 	Public static member procedures (a ##[[KeyPgMemberSub|Sub]]## having an empty parameter list), of user defined ##[[KeyPgType|type]]## can be defined as a module destructor, by adding the ##**Constructor**## keyword used in the sub procedure definition.
 	
 	The module destructor feature exposes a low-level link-time feature of the build and run-time environment.  Accessing global static objects having destructors from module destructors should be avoided due to variations in execution order on different build systems.
+	
+	**Warning for 64-bit compiler only:** See the [[ProPgIdentifierRules|Identifier Rules]] page for the choice of user procedure identifier names (and specially the 'Platform Differences' paragraph).
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/procs/mod-dtor.bas"}}%%(freebasic)

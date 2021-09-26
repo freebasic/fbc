@@ -1,0 +1,131 @@
+{{fbdoc item="title" value="#PRAGMA RESERVE"}}----
+Preprocessor directive
+
+{{fbdoc item="syntax"}}##
+	**#pragma reserve** //symbol//
+	##//Or//##
+	**#pragma reserve** **(shared)** //symbol//
+	##//Or//##
+	**#pragma reserve** **(asm)** //symbol//
+##
+{{fbdoc item="param"}}
+	##//symbol//##
+		symbol name to reserve.
+
+{{fbdoc item="desc"}}
+	##**#pragma reserved**## statements are preprocessor directives that allow user to reserve symbol names by accessing to the internal symbol tables of the fbc compiler:
+		**""-""** ##**#pragma reserve** //symbol//##
+				statement will reserve a symbol name in the current scope / namespace.
+		**""-""** ##**#pragma reserve** **(shared)** //symbol//##
+				statement will reserve a symbol name in the shared scope (module or namespace).
+		**""-""** ##**#pragma reserve** **(asm)** //symbol//##
+				statement will reserve an ASM symbol name in all ASM statements and blocks.
+				
+	The primary objective (with the first two syntaxes) is to create a mechanism to help deal with some symbols causing compile errors or run-time crashes.
+	Some symbol names in fbc compiler are emitted as-is to the backend compilers (gcc, as, etc) where the symbol name is a reserved keyword by the backend compiler.
+	There are typically two outcomes:
+		**""-""** compilation error in the backend,
+		**""-""** bad code generation in the backend (successful compile and unexpected run time crashes).
+	Using ##**#pragma reserve** **[ (shared) ]** //symbol//## statement allows the fbc compiler to output an error message dedicated to the illegal use of this symbol name by the user.
+	
+	A closely related secondary objective (with the third syntax) is ASM words used in ASM blocks and statements.
+	This allows to add new ASM instruction name in the fbc ASM keywords list (so not yet implicitly reserved by fbc).
+	Therefore, using ##**#pragma reserve** **(asm)** //symbol//## statement allows the fbc compiler to always emit an undecorated ASM instruction symbol name to the backend compiler.
+	
+	**Note:** Some compound syntaxes, such as for example ##**#pragma reserve** **(asm, shared)** //symbol//## (equivalent to the two concatenated statements ##**#pragma reserve** **(asm)** //symbol//## and ##**#pragma reserve** **(shared)** //symbol//##), are currently allowed by the fbc compiler (for flexibility if more attributes) but not yet finalized as requirements (therefore to be used at own risk).
+
+{{fbdoc item="ex"}}
+	Example (for the mechanism only) to prohibit the definition of a local variable with the duplicate name of a variable already defined outside the local scope:
+		{{fbdoc item="filename" value="examples/manual/prepro/pragma_reserve1.bas"}}%%(freebasic)
+Dim As Integer variable1 = 1
+
+Scope
+	#pragma reserve variable1
+	Print variable1
+	Dim As Integer variable1 = 2  '' error: Duplicated definition, variable1 in .....
+End Scope
+
+Dim Shared As Integer variable2 = 3
+
+Sub s()
+	#pragma reserve variable2
+	Print variable2
+	Dim As Integer variable2 = 4  '' error: Duplicated definition, variable2 in .....
+End Sub
+
+Print variable1
+s()
+Print variable2
+
+Sleep
+		%%
+	Suppose that 'xyz' is a new ASM instruction not yet entered in the fbc ASM keywords list (so not yet implicitly reserved by fbc), and this 'xyz' symbol is also used to define a global variable name:
+		**""-""** thus fbc emits to the backend compiler a decorated 'xyz' symbol (##**XYZ$**##) in the inserted ASM block:
+				{{fbdoc item="filename" value="examples/manual/prepro/pragma_reserve2.bas"}}%%(freebasic)
+#cmdline "-gen gas64 -r"
+
+Dim Shared xyz As Integer
+
+Sub proc Naked()
+	asm
+		xyz
+		ret
+	end asm
+End Sub
+
+/'
+OUTPUT in the .asm file:
+
+   .intel_syntax noprefix
+   .section .text
+   .text
+   .globl PROC
+PROC:
+   .L_0004:
+   XYZ$
+   ret
+   .L_0005:
+   ret
+.....
+
+'/
+				%%
+		**""-""** after reserving the 'xyz' ASM symbol, fbc now emits to the backend compiler an undecorated 'xyz' symbol (##**xyz**##) in the inserted ASM block:
+				{{fbdoc item="filename" value="examples/manual/prepro/pragma_reserve3.bas"}}%%(freebasic)
+#cmdline "-gen gas64 -r"
+#pragma reserve(asm) xyz
+
+Dim Shared xyz As Integer
+
+Sub proc Naked()
+	asm
+		xyz
+		ret
+	end asm
+End Sub
+
+/'
+OUTPUT in the .asm file:
+
+   .intel_syntax noprefix
+   .section .text
+   .text
+   .globl PROC
+PROC:
+   .L_0004:
+   xyz
+   ret
+   .L_0005:
+   ret
+.....
+
+'/
+				%%
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPpPragma|#pragma]]##
+	- [[ProPgPreprocessor|Preprocessor Overview]]
+
+{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

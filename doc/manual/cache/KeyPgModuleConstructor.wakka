@@ -28,6 +28,8 @@ Specifies execution of a procedure before module-level code
 	Initialization of static simple numeric type variables, that have a value that can be determined at compile time (for example, default zero, constants, pointers to static objects, pointers to functions, etc), are initialized before any code is executed.  These values are part of the executable image and have an initial value when the executable is loaded in to memory.  Trivial static globals where no code is needed to initialize, are guaranteed to be initialized and can be reliably used in all code, including global static object constructors and module constructors.
 	
 	The module constructor feature exposes a low-level link-time feature of the build and run-time environment.  Accessing global static objects having constructors from module constructors should be avoided due to variations in execution order on different build systems.
+	
+	**Warning for 64-bit compiler only:** See the [[ProPgIdentifierRules|Identifier Rules]] page for the choice of user procedure identifier names (and specially the 'Platform Differences' paragraph).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/mod-ctor.bas"}}%%(freebasic)

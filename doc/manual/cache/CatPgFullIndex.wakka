@@ -46,6 +46,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgDdfbmt|__FB_MT__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbnetbsd|__FB_NETBSD__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbopenbsd|__FB_OPENBSD__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfboptimize|__FB_OPTIMIZE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptionbyval|__FB_OPTION_BYVAL__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptiondynamic|__FB_OPTION_DYNAMIC__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptionescape|__FB_OPTION_ESCAPE__"}}
@@ -84,6 +85,7 @@ Alphabetical listing of keywords, macros and procedures.
 
 {{fbdoc item="section" value="#"}}{{anchor name="hash"}}
 	- {{fbdoc item="keyword" value="KeyPgPpassert|#ASSERT"}}
+	- {{fbdoc item="keyword" value="KeyPgPpcmdline|#CMDLINE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpdefine|#DEFINE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpelse|#ELSE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpelseif|#ELSEIF"}}
@@ -99,7 +101,8 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgPplibpath|#LIBPATH"}}
 	- {{fbdoc item="keyword" value="KeyPgPpline|#LINE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpmacro|#MACRO"}}
-	- {{fbdoc item="keyword" value="KeyPgPragma|#PRAGMA"}}
+	- {{fbdoc item="keyword" value="KeyPgPpPragma|#PRAGMA"}}
+	- {{fbdoc item="keyword" value="KeyPgPpPragmaReserve|#PRAGMA RESERVE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpprint|#PRINT"}}
 	- {{fbdoc item="keyword" value="KeyPgPpundef|#UNDEF"}}
 

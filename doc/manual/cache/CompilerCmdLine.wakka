@@ -186,5 +186,6 @@ Using the **fbc** command-line.
 	- [[CatPgCompOpt|Compiler Options]]
 	- [[CompilerInstalling|Installing FreeBASIC]]
 	- [[CompilerRunning|Invoking the FreeBASIC compiler]]
+	- ##[[KeyPgPpcmdline|#cmdline]]##
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

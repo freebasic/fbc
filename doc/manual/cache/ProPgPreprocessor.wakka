@@ -50,7 +50,8 @@ It is automatically called by the compiler, before compilation, to process the f
 					**""-""** ##[[KeyPgPplang|#lang]] //"lang"// (directive to set compiler dialect)##
 					**""-""** ##[[KeyPgPplibpath|#libpath]] //"path"// (directive to add search path for libraries)##
 					**""-""** ##[[KeyPgPpline|#line]] //number// [//"name"//](directive to set current line number [and file name])##
-					**""-""** ##[[KeyPgPragma|#pragma]] ... (directive to set compiler options)##
+					**""-""** ##[[KeyPgPpPragma|#pragma]] / [[KeyPgPpcmdline|#cmdline]] (directive to set compiler options)##
+					**""-""** ##[[KeyPgPpPragmaReserve|#pragma reserve]] (directive to reserve symbol name)##
 					**""-""** ##[[KeyPgPpprint|#print]] //text// (directive to print text)##
 
 {{fbdoc item="section" value="Example"}}

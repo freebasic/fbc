@@ -43,6 +43,7 @@
 		[[KeyPgDdfbmt|__FB_MT__]]
 		[[KeyPgDdfbnetbsd|__FB_NETBSD__]]
 		[[KeyPgDdfbopenbsd|__FB_OPENBSD__]]
+		[[KeyPgDdfboptimize|__FB_OPTIMIZE__]]
 		[[KeyPgDdfboptionbyval|__FB_OPTION_BYVAL__]]
 		[[KeyPgDdfboptiondynamic|__FB_OPTION_DYNAMIC__]]
 		[[KeyPgDdfboptionescape|__FB_OPTION_ESCAPE__]]
@@ -81,6 +82,7 @@
 
 	{{fbdoc item="subsect" value="#"}}
 		[[KeyPgPpassert|#ASSERT]]
+		[[KeyPgPpcmdline|#CMDLINE]]
 		[[KeyPgPpdefine|#DEFINE]]
 		[[KeyPgPpelse|#ELSE]]
 		[[KeyPgPpelseif|#ELSEIF]]
@@ -96,7 +98,8 @@
 		[[KeyPgPplibpath|#LIBPATH]]
 		[[KeyPgPpline|#LINE]]
 		[[KeyPgPpmacro|#MACRO]]
-		[[KeyPgPragma|#PRAGMA]]
+		[[KeyPgPpPragma|#PRAGMA]]
+		[[KeyPgPpPragmaReserve|#PRAGMA RESERVE]]
 		[[KeyPgPpprint|#PRINT]]
 		[[KeyPgPpundef|#UNDEF]]
 

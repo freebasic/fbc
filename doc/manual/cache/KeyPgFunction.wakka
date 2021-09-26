@@ -44,7 +44,7 @@ Defines a procedure returning a value
 	
 	When calling a function, parentheses surrounding the argument list (if any) are required only for function calls in expressions. If there is no argument to pass, the parentheses become optional, but it is a common convention to place empty parentheses '()' after the function name, to signify a function call.
 	
-	**Warning for 64-bit compiler only:** Regarding the choice of user procedure identifier names, an additional restriction to the normal [[ProPgIdentifierRules|Identifier Rules]] also excludes in the global namespace all register names or other symbols from the assembler format used, because causing assembler errors or runtime bugs (due to the 64-bit compiler not decorating procedure names).
+	**Warning for 64-bit compiler only:** See the [[ProPgIdentifierRules|Identifier Rules]] page for the choice of user procedure identifier names (and specially the 'Platform Differences' paragraph).
 
 {{fbdoc item="ex"}}
 

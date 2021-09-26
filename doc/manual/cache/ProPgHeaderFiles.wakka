@@ -25,7 +25,7 @@ A header file is a special kind of source file that typically only contains prep
 	It is common that header files need to ##[[KeyPgInclude|#include]]## other header files to compile correctly.  FreeBASIC offers three methods for guarding against including a header file more than once.
 	- ##[[KeyPgPpifndef|#ifndef]]## guards in the header file
 	- ##[[KeyPgInclude|#include]] **once**## where the file is included
-	- ##[[KeyPgPragma|#pragma]] **once**## in the header file itself
+	- ##[[KeyPgPpPragma|#pragma]] **once**## in the header file itself
 
 {{fbdoc item="section" value="#ifndef guards in the header file"}}
 	The use of ##[[KeyPgPpifndef|#ifndef]]## and ##[[KeyPgPpdefine|#define]]## is a common practice in nearly any language that supports preprocessing.  The first time a file is included, a unique symbol is defined.  The next time the same header file is included, the definition of the symbol is checked, and if it is already defined, the contents of the header file are skipped.
@@ -54,7 +54,7 @@ A header file is a special kind of source file that typically only contains prep
 %%
 
 {{fbdoc item="section" value="#pragma once"}}
-	##[[KeyPgPragma|#pragma]] **once**## can be used in a header file to indicate that the header file should only be included once.  
+	##[[KeyPgPpPragma|#pragma]] **once**## can be used in a header file to indicate that the header file should only be included once.  
 %%(freebasic)
 '' header.bi
 #pragma once
