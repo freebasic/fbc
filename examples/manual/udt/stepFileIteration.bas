@@ -38,3 +38,4 @@ End Operator
 For i As FileIter = "./" To ""
 	Print i.fileName
 Next
+	

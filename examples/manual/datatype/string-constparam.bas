@@ -15,7 +15,7 @@ Sub silly_print( ByRef printme As Const String )
 	'printme = "silly printed"
 End Sub
 
-Var status = "OK"
+Dim As String status = "OK"
 
 silly_print( "Hello FreeBASIC!" )
 silly_print( "Status: " + status )

@@ -20,9 +20,9 @@ Namespace tui
 		'' public
 		Declare Constructor _
 			( _
-				x As Integer = 1, y As Integer = 1, _
-				w As Integer = 20, h As Integer = 5, _
-				title As ZString Ptr = 0 _
+				ByVal x As Integer = 1, ByVal y As Integer = 1, _
+				ByVal w As Integer = 20, ByVal h As Integer = 5, _
+				ByVal title As ZString Ptr = 0 _
 			)
 		
 		Declare Destructor
@@ -31,14 +31,14 @@ Namespace tui
 
 		'' title property
 		Declare Property title As String
-		Declare Property title( new_title As String )
+		Declare Property title( ByRef new_title As String )
 
 		'' position properties
 		Declare Property x As Integer
-		Declare Property x( new_x As Integer )
+		Declare Property x( ByVal new_x As Integer )
 
 		Declare Property y As Integer
-		Declare Property y( new_y As Integer )
+		Declare Property y( ByVal new_y As Integer )
 
 	Private:
 		Declare Sub redraw
@@ -52,9 +52,9 @@ Namespace tui
 
 	Constructor Window _
 		( _
-			x_ As Integer, y_ As Integer, _
-			w_ As Integer, h_ As Integer, _
-			title_ As ZString Ptr _
+			ByVal x_ As Integer, ByVal y_ As Integer, _
+			ByVal w_ As Integer, ByVal h_ As Integer, _
+			ByVal title_ As ZString Ptr _
 		)
 
 		pos.x = x_
@@ -78,7 +78,7 @@ Namespace tui
 		title = p_title
 	End Property
 
-	Property window.title( new_title As String )
+	Property window.title( ByRef new_title As String )
 		p_title = new_title
 		drawtitle
 	End Property
@@ -87,7 +87,7 @@ Namespace tui
 		Return pos.x
 	End Property
 
-	Property window.x( new_x As Integer )
+	Property window.x( ByVal new_x As Integer )
 		remove
 		pos.x = new_x
 		redraw
@@ -97,7 +97,7 @@ Namespace tui
 		Property = pos.y
 	End Property
 
-	Property window.y( new_y As Integer )
+	Property window.y( ByVal new_y As Integer )
 		remove
 		pos.y = new_y
 		redraw
@@ -117,20 +117,18 @@ Namespace tui
 
 	Sub window.remove
 		Color 0, 0
-		Var sp = Space( siz.x )
 		For i As Integer = pos.y To pos.y + siz.y - 1
 			Locate i, pos.x
-			Print sp;
+			Print Space( siz.x );
 		Next
 	End Sub
 
 	Sub window.redraw
 		drawtitle
 		Color 8, 7
-		Var sp = Space( siz.x )
 		For i As Integer = pos.y + 1 To pos.y + siz.y - 1
 			Locate i, pos.x
-			Print sp;
+			Print Space( siz.x );
 		Next
 	End Sub
 End Namespace
