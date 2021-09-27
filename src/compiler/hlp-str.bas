@@ -1381,6 +1381,10 @@ function hStr2Args( byval txt as const zstring ptr, res() as string ) as integer
 	dim as uinteger c = CHAR_NULL
 	dim as integer max_t = 10
 
+	if( txt = NULl ) then 
+		return 0
+	end if
+
 	#define PeekChar()   cast( uinteger, s[0] )
 	#define SkipChar()   s += 1
 	#define ReadChar(c)  res(t-1) += chr(c) : s += 1

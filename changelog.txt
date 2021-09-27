@@ -72,6 +72,7 @@ Version 1.09.0
 - sf.net #645: don't access locals if explicit namespace is given on identifier
 - sf.net #645: don't access locals if explicit global namespace '.' and '..' prefixes are given on identifier
 - sf.net #645: throw compile time error if scoped REDIM variable shadows a variable of the same name
+- sf.net #939: __FB_ARG_EXTRACT__ causes compiler abort; was NULL pointer use on empty argument list.
 
 
 Version 1.08.0
