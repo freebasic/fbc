@@ -205,6 +205,34 @@ function cIdentifier _
 	do
 		dim as FBSYMBOL ptr sym = chain_->sym
 
+		'' explicit base_parent? don't access local variables
+		'' we are assuming that the logic is correct that any symbol with the local
+		'' attribute can't be accessed through an explicit namespace.  If we later find
+		'' out that is not the case, then we will need to add a new symbol attribute that
+		'' decides if symbols can be accessed through an explicit namespace or not
+		'' !!!TODO!!! - we should be able to rewrite this logic more effeciently.  In theory,
+		'' if an explicit namespace is not given SymbLookup() should have returned an appropriate
+		'' symbol chain.
+		if( base_parent ) then
+			while( sym )
+				if( symbIsLocal( sym ) and symbIsVar( sym ) ) then
+					sym = sym->hash.next
+				else
+					chain_ = symbNewChainpool( sym )
+					exit while
+				end if
+			wend
+			if( sym = NULL ) then
+				if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
+					errReportUndef( FB_ERRMSG_UNDEFINEDSYMBOL, lexGetText( ) )
+				else
+					hSkipSymbol( )
+				end if
+
+				return NULL
+			end if
+		end if
+
 		select case as const symbGetClass( sym )
 		case FB_SYMBCLASS_NAMESPACE, FB_SYMBCLASS_CLASS, FB_SYMBCLASS_ENUM
 
