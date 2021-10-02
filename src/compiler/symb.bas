@@ -1061,16 +1061,23 @@ function symbLookupAt _
 
 	'' search in UDT's (NAMESPACE, TYPE, CLASS or ENUM) hash tb first
 	dim as FBSYMBOL ptr sym = hashLookupEx( @symbGetCompHashTb( ns ).tb, id, index )
+
+	'' don't access local variables in an explicit namespace
+	while( sym )
+		if( symbIsLocal( sym ) and symbIsVar( sym ) ) then
+			sym = sym->hash.next
+		else
+			exit while
+		end if
+	wend
+
 	if( sym = NULL ) then
 		if( search_imports = FALSE ) then
 			return NULL
 		end if
 
 	else
-		dim as FBSYMCHAIN ptr chain_ = chainpoolNext()
-		chain_->sym = sym
-		chain_->next = NULL
-		chain_->isimport = FALSE
+		dim as FBSYMCHAIN ptr chain_ = symbNewChainpool( sym )
 		return chain_
 	end if
 
