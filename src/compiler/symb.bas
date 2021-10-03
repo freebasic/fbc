@@ -888,58 +888,81 @@ function symbLookup _
 	id = @sname
 
 	dim as uinteger index = hashHash( id )
-	dim as FBSYMCHAIN ptr chain_ = NULL
 
 	'' for each nested hash tb, starting from last
-	dim as FBHASHTB ptr hashtb = symb.hashlist.tail
+	dim as FBHASHTB ptr hashtb = any
 
+	'' symbLookup() is used where we don't have an explicit namespace
+	'' and we need to use the context of the lexer to start our search
+	''
+	'' Make multiple passes on the hash lists to find the symbol.
+	'' Because symbols are added in the order that they are defined,
+	'' in some cases we can't just take the first symbol we find.
+	'' !!!TODO!!! optimize the cases where we can exit early with
+	'' the result
+
+	'' keyword?
+	hashtb = symb.hashlist.tail
 	do
 		dim as FBSYMBOL ptr sym = hashLookupEx( @hashtb->tb, id, index )
-		if( sym <> NULL ) then
-			chain_ = chainpoolNext()
-
-			chain_->sym = sym
-			chain_->next = NULL
-			chain_->isimport = FALSE
-
+		while( sym )
 			if( sym->class = FB_SYMBCLASS_KEYWORD ) then
 				tk = sym->key.id
 				tk_class = sym->key.tkclass
 				'' return if it's a KEYWORD or a OPERATOR token, they
 				'' can't never be redefined, even inside namespaces
 				if( tk_class <> FB_TKCLASS_QUIRKWD ) then
-					return chain_
+					return symbNewChainpool( sym )
 				end if
 			end if
+			sym = sym->hash.next
+		wend
+		hashtb = hashtb->prev
+	loop while( hashtb <> NULL )
 
+	'' any symbol not in the global namespace or we are already in the global namespace?
+	'' check the whole list before we check the imports
+	hashtb = symb.hashlist.tail
+	do
+		dim as FBSYMBOL ptr sym = hashLookupEx( @hashtb->tb, id, index )
+		while( sym )
 			'' return if it's not the global ns (as in C++, any nested
 			'' symbol has precedence over any imported one, even if the
 			'' latter was imported in the current ns)
 			if( hashtb->owner <> @symbGetGlobalNamespc( ) ) then
-				return chain_
+				return symbNewChainpool( sym )
 			else
 				'' also if we are at the global ns, no need to check the imports
 				if( symbGetCurrentNamespc( ) = @symbGetGlobalNamespc( ) ) then
-					return chain_
+					return symbNewChainpool( sym )
 				end if
-
-				'' check (and add) the imports..
-				exit do
 			end if
-		end if
-
+			sym = sym->hash.next
+		wend
 		hashtb = hashtb->prev
 	loop while( hashtb <> NULL )
 
-	'' now try the imported namespaces..
+	'' imports?
 	dim as FBSYMCHAIN ptr imp_chain = hashLookupEx( @symb.imphashtb, id, index )
-	if( chain_ = NULL ) then
+	if( imp_chain <> NULL ) then
 		return imp_chain
-	end if
+	endif
 
-	chain_->next = imp_chain
+	'' global?
+	hashtb = symb.hashlist.tail
+	do
+		dim as FBSYMBOL ptr sym = hashLookupEx( @hashtb->tb, id, index )
+		while( sym )
+			if( hashtb->owner = @symbGetGlobalNamespc( ) ) then
+				return symbNewChainpool( sym )
+			end if
+			sym = sym->hash.next
+		wend
+		hashtb = hashtb->prev
+	loop while( hashtb <> NULL )
 
-	return chain_
+	'' never found
+	return NULL
 
 end function
 
@@ -1006,10 +1029,10 @@ private function hLookupImportList _
 	dim as FBSYMBOL ptr imp_ = symbGetCompImportHead( ns )
 	do while( imp_ <> NULL )
 		dim as FBSYMBOL ptr sym = hashLookupEx( _
-									@symbGetCompHashTb( _
-										symbGetImportNamespc( imp_ ) ).tb, _
-									id, _
-									index )
+			@symbGetCompHashTb( _
+				symbGetImportNamespc( imp_ ) ).tb, _
+			id, _
+			index )
 		if( sym <> NULL ) then
 			dim as FBSYMCHAIN ptr chain_ = chainpoolNext()
 
