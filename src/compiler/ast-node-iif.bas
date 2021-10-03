@@ -410,7 +410,9 @@ function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 	dim as FBSYMBOL ptr exitlabel = any
 
 	assert( n->r->class = AST_NODECLASS_LINK )
-	assert( n->r->r->class = AST_NODECLASS_LINK )
+
+	'' exect a link or temporary variable assignment
+	assert( (n->r->r->class = AST_NODECLASS_LINK) or (n->r->r->class = AST_NODECLASS_ASSIGN) )
 
 	condexpr = n->r->l
 	truexpr  = n->r->r->l

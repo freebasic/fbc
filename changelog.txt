@@ -78,6 +78,7 @@ Version 1.09.0
 - sf.net #730: Using quirk keywords as identifier leads to parsing problems later
 - sf.net #942: string to wstring conversions causing a run-time crash if the string contained invalid multi-byte characters due to unhandled error result in the runtime library
 - sf.net #941: dim/redim of extern array causes compiler fail - add error recovery in rtlArrayRedim() for bad integer conversions of bounds
+- sf.net #935: bad code causes fbc to fail internal assert - adjust the internal assert to allow for actual generated code in IIF() expressions
 
 
 Version 1.08.0
