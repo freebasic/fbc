@@ -631,10 +631,15 @@ function rtlArrayRedim _
 		'' lbound
 		expr = exprTB(i, 0)
 
-    	'' convert to int
-    	if( astGetDataType( expr ) <> FB_DATATYPE_INTEGER ) then
-    		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
-    	end if
+		'' convert to int
+		if( astGetDataType( expr ) <> FB_DATATYPE_INTEGER ) then
+			expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
+
+			if( expr = NULL ) then
+				exit function
+			end if
+
+		end if
 
 		if( astNewARG( proc, expr ) = NULL ) then
 			exit function
@@ -643,10 +648,15 @@ function rtlArrayRedim _
 		'' ubound
 		expr = exprTB(i, 1)
 
-    	'' convert to int
-    	if( astGetDataType( expr ) <> FB_DATATYPE_INTEGER ) then
-    		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
-    	end if
+		'' convert to int
+		if( astGetDataType( expr ) <> FB_DATATYPE_INTEGER ) then
+			expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
+
+			if( expr = NULL ) then
+				exit function
+			end if
+
+		end if
 
 		if( astNewARG( proc, expr ) = NULL ) then
 			exit function

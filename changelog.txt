@@ -77,6 +77,7 @@ Version 1.09.0
 - sf.net #871: Inherited methods without this shadowed by global functions
 - sf.net #730: Using quirk keywords as identifier leads to parsing problems later
 - sf.net #942: string to wstring conversions causing a run-time crash if the string contained invalid multi-byte characters due to unhandled error result in the runtime library
+- sf.net #941: dim/redim of extern array causes compiler fail - add error recovery in rtlArrayRedim() for bad integer conversions of bounds
 
 
 Version 1.08.0
