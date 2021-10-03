@@ -76,6 +76,7 @@ Version 1.09.0
 - sf.net #581: Locals break/override THIS access to inherited members
 - sf.net #871: Inherited methods without this shadowed by global functions
 - sf.net #730: Using quirk keywords as identifier leads to parsing problems later
+- string to wstring conversions causing a run-time crash if the string contained invalid multi-byte characters due to unhandled error result in the runtime library
 
 
 Version 1.08.0
