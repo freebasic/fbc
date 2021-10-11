@@ -43,6 +43,7 @@ using fbdoc
 
 '' private options
 dim as integer iComment = 0
+dim as string sNoteDef
 
 '' enable url, cache, and login
 cmd_opts_init( CMD_OPTS_ENABLE_URL or CMD_OPTS_ENABLE_CACHE or CMD_OPTS_ENABLE_LOGIN or CMD_OPTS_ENABLE_PAGELIST or CMD_OPTS_ENABLE_TRACE )
@@ -57,6 +58,9 @@ while( command(i) > "" )
 			iComment = 1
 		case "-comment1"
 			iComment = 2
+		case "-c"
+			i += 1
+			sNoteDef = command(i)
 		case else
 			cmd_opts_unrecognized_die( i )
 		end select
@@ -76,6 +80,7 @@ if( app_opt.help ) then
 	print "   -dev+            put pages on the development server from dev_cache_dir"
 	print
 	print "options:"
+	print "   -c ""comment""     use message for comment line when storing pages"              
 	print "   -comment         prompt for comment line when storing pages"
 	print "   -comment1        prompt for comment line only once"
 	print "   -u user          specifiy wiki account username"
@@ -92,10 +97,9 @@ cmd_opts_check_url()
 
 '' --------------------------------------------------------
 
-dim as string sPage, sBody, sNote, sBodyOld, sNoteDef, sComment
+dim as string sPage, sBody, sNote, sBodyOld, sComment
 
 sNote = "Auto-update"
-sNoteDef = ""
 
 dim as CWikiCache ptr wikicache = NULL
 dim as CWikiConUrl ptr wikicon = NULL
