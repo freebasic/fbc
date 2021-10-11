@@ -49,6 +49,7 @@ Version 1.09.0
 - fbc: '#pragma reserve (shared) symbol' statement will reserve a symbol name in the shared scope
 - fbc: '#pragma reserve (asm) symbol' statement will reserve an ASM symbol name in all ASM statements and blocks
 - sf.net #645: respect global namespace '.' and '..' prefixes in REDIM
+- rtlib: Add new higher baud rates to the serial driver 1500000,2000000,2500000,3000000,35000000,4000000
 
 [fixed]
 - github #315: set parameters when calling SCREENCONTROL (was broken in fbc 1.08.0 due to new LONG/LONGINT SCREENCONTROL API's)
