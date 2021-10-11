@@ -1,5 +1,6 @@
 October 10, 2021
 - Add recognition for {{fbdoc item="ver"}} for "Version" section
+- Change index loading in CWikiConUrl.LoadIndex() to use PageIndex/rawlist and avoid having to process html tags
 
 August 28, 2021
 - add '-trace' option to show libcurl verbosity

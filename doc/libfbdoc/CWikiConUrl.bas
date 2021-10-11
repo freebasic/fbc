@@ -47,6 +47,8 @@ namespace fb.fbdoc
 	const wakka_prefix = "?wakka="
 	const wakka_loginpage = "UserSettings"
 	const wakka_raw = "/raw"
+	const wakka_rawlist = "/rawlist"
+	const wakka_rawlist_index = "/rawlist&format=index"
 	const wakka_edit = "/edit"
 	const wakka_getid = "/getid"
 	const wakka_error = "wiki-error"
@@ -560,6 +562,8 @@ namespace fb.fbdoc
 			byref body as string _
 		) as boolean
 
+		dim isHTML as boolean = false
+
 		function = FALSE
 		body = ""
 		
@@ -578,13 +582,25 @@ namespace fb.fbdoc
 		end if
 
 		dim URL as string
-		URL = build_url( ctx, NULL, NULL )
+
+		'' cheap trick to use the rawlist format for PageIndex and RecentChanges"
+		'' !!!TODO!!! maybe should choose the method based on an option in the INI file?
+		if( *page = "PageIndex" ) then
+			URL = build_url( ctx, NULL, wakka_rawlist )
+		elseif( *page = "RecentChanges" ) then
+			URL = build_url( ctx, NULL, wakka_rawlist_index )
+		else
+			URL = build_url( ctx, NULL, NULL )
+			isHTML = true
+		end if
 
 		if( stream->Receive( URL, TRUE, ctx->ca_file ) ) then
 			body = stream->Read()
 			remove_http_headers( body )
-			remove_html_tags( body )
-			extract_page_names( body )
+			if( isHTML ) then
+				remove_html_tags(  body )
+				extract_page_names( body )
+			end if
 			function = TRUE
 		end if
 
