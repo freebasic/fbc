@@ -31,7 +31,8 @@ APPS := \
     spellit$(EXEEXT) \
     spell$(EXEEXT) \
     samps$(EXEEXT) \
-	pretty$(EXEEXT)
+	pretty$(EXEEXT) \
+	insert$(EXEEXT)
 
 SAMPS_SRCS := \
     samps.bas \
@@ -114,6 +115,9 @@ samps$(EXEEXT): $(SAMPS_SRCS) $(LIBFUNCS) $(DEPS)
 	$(FBC) $(FBCFLAGS) $(SAMPS_SRCS) $(FBLFLAGS) -x $@
 
 pretty$(EXEEXT): pretty.bas $(LIBFUNCS) $(DEPS)
+	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
+
+insert$(EXEEXT): insert.bas $(LIBFUNCS) $(DEPS)
 	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
 
 $(LIBFUNCS): $(LIBFUNCS_SRC) $(HEADERS)
