@@ -15,6 +15,9 @@ Add debug information, define ##""__FB_DEBUG__""##, and enable asserts
 	
 	##[[KeyPgDdfberr|__FB_ERR__]]## can be used to determine in user source code if the ##**-g**## option was specified or implied on the command line.
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.00.0
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfbdebug|__FB_DEBUG__]]##
 	- ##[[KeyPgDdfberr|__FB_ERR__]]##

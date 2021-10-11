@@ -11,6 +11,9 @@ Set the optimization level for GCC
 {{fbdoc item="desc"}}
 	Specifies the optimization level to be passed to GCC when using ##**[[CompilerOptgen|-gen gcc]]**##.
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.00.0
+
 {{fbdoc item="see"}}
 	- [[CompilerOptgen|Compiler Option: -gen gcc]]
 	- [[CompilerCmdLine|Using the Command Line]]

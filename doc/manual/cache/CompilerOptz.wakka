@@ -25,6 +25,9 @@ Sets miscellaneous or experimental compiler options.
 	**##(for fbc version >= 1.09)##**
 		Instructs fbc to ignore all ##[[KeyPgPpcmdline|cmdline]]## directives in source file and take control from the real compiler command line only.
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.00.0
+
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]
 

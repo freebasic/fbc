@@ -13,6 +13,9 @@ Enable ##""__FB_DEBUG__""##
 	
 	##[[KeyPgDdfberr|__FB_ERR__]]## can be used to determine in user source code if the ##**-edebug**## option was specified or implied on the command line.
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.07.0
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfbdebug|__FB_DEBUG__]]##
 	- ##[[KeyPgDdfberr|__FB_ERR__]]##

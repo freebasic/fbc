@@ -9,6 +9,9 @@ Prefer static libraries over dynamic ones when linking
 	
 	Installing the proper static libraries and then using ##-static## can be used to avoid some or all dependencies on shared libraries.
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.00.0
+
 {{fbdoc item="target"}}
 	- On Linux & co it is possible to create purely statically linked executables, because static versions of the system libraries used by ""FreeBASIC"" are available.
 	- On Windows, there are no static versions of the system libraries, but ##-static## can still be useful to decide between static library or DLL versions of other libraries, if both are installed.

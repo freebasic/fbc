@@ -7,6 +7,9 @@ Add error checking
 {{fbdoc item="desc"}}
 	Adds QuickBASIC-like error checking.
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.00.0
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfberr|__FB_ERR__]]##
 	- [[CompilerOptex|Compiler Option: -ex]]

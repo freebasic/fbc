@@ -13,6 +13,9 @@ Enable full error location reporting
 	
 	//Note: the intent of this option is for a future fbc feature to optimize out some of the error tracking code associated with error location reporting.  When implemented, only ##-exx## or ##-elocation## will enable the full error location reporting and will be optimized away otherwise.//
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.07.0
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfberr|__FB_ERR__]]##
 	- [[CompilerOptexx|Compiler Option: -exx]]

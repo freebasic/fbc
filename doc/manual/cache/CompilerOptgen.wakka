@@ -23,6 +23,9 @@ Sets the backend code emitter.
 	{{fbdoc item="subsect" value="-gen llvm"}}
 		The compiler will emit LLVM IR code to a ##.ll## file which will then be compiled to an .asm file using '##llc##'. The LLVM backend is still a work in progress. It is intended for the same purpose as the C backend, and could theoretically solve some of the C backend's problems, such as debugging meta data support.
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.00.0
+
 {{fbdoc item="see"}}
 	- [[CompilerTools|Tools used by fbc]]
 	- [[CompilerCmdLine|Using the Command Line]]

@@ -73,6 +73,9 @@ Sleep
 '' END OF USER'S IMPLICIT MAIN
 '' ---------------------------------
 		%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.09.0
+
 {{fbdoc item="see"}}
 	- [[CompilerOptm|Compiler Option: -m]]
 	- [[ProPgExecutables|Executables]]

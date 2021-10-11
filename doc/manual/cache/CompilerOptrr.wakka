@@ -11,6 +11,9 @@ Compile into ##*.asm## file(s) only, do not assemble or link
 	
 	Use the ##[[CompilerOptrrupp|-RR]]## option to preserve the generated ##*.asm## files without affecting compilation/assembling/linking.
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.00.0
+
 {{fbdoc item="see"}}
 	- [[CompilerOptc|Compiler Option: -c]]
 	- [[CompilerOptr|Compiler Option: -r]]

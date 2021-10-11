@@ -31,6 +31,9 @@ Provides ""QuickBASIC"" or backward compatibility
 	
 		This dialect is for backward compatibility with some previous versions of ""FreeBASIC"", however, this dialect may not exist in future versions.  Programmers should consider using the "fblite" dialect instead.
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.00.0
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgPplang|#lang]]##
 	- ##[[KeyPgDdfblang|__FB_LANG__]]##

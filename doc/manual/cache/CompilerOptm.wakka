@@ -22,6 +22,9 @@ Main file without extension to indicate the main module
 	
 	The intrinsic macro ##[[KeyPgDdFBMain|__FB_MAIN__]]## is defined in the main module and not defined in other modules.
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.00.0
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdFBMain|__FB_MAIN__]]##
 	- [[CompilerOptc|Compiler Option: -c]]

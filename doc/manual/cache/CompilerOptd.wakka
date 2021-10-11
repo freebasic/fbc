@@ -14,6 +14,9 @@ Add a preprocessor definition
 {{fbdoc item="desc"}}
 	The ##-d## compiler option adds a preprocessor macro to all source files. The same as using the preprocessor directive ##[[KeyPgPpdefine|#define]]## or ##[[KeyPgPpmacro|#macro]]##.
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.00.0
+
 {{fbdoc item="see"}}
 	- [[KeyPgPpdefine|#define]]
 	- [[KeyPgPpmacro|#macro]]

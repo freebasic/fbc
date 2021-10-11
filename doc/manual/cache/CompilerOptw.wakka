@@ -39,6 +39,9 @@ Set minimum warning level.
 	
 	For fbc version >= 1.08: Warning level for all warnings is increased by 1. Default warning level is 1 (previously, default warning level was 0 and some warnings had level of -1).
 	
+{{fbdoc item="ver"}}
+	- Since fbc 1.00.0
+
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]
 

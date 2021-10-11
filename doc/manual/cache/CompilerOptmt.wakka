@@ -9,6 +9,9 @@ Link with thread-safe runtime library
 	
 	The intrinsic macro ##[[KeyPgDdfbmt|__FB_MT__]]## is set to non-zero (-1) if the ##-mt## option was specified, or whether one of the ##[[KeyPgThreadCreate|ThreadtCreate]]## or ##[[KeyPgThreadCall|ThreadCall]]## keywords is used more above in the source code. Otherwise, it is set to zero (0).
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.00.0
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfbmt|__FB_MT__]]##
 	- [[CompilerCmdLine|Using the Command Line]]

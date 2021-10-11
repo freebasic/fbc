@@ -15,6 +15,9 @@ Add a path to search for include files
 	
 		##fbc -i includes file.bas ##
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.00.0
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgInclude|#include]]##
 	- [[CompilerOptinclude|Compiler Option: -include]]

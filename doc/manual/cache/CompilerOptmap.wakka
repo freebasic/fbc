@@ -11,6 +11,9 @@ Save the linking map to file name
 {{fbdoc item="desc"}}
 	The ##-map## compiler option saves the a map file of the executable made.
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.00.0
+
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]
 

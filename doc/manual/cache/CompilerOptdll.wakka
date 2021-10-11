@@ -9,6 +9,9 @@ Create a DLL and import library
 	
 	The intrinsic macro ##[[KeyPgDdfboutdll|__FB_OUT_DLL__]]## is set to non-zero (-1) if the ##-dll## option was specified, and set to zero (0) otherwise.
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.00.0
+
 {{fbdoc item="target"}}
 	- Not supported on the DOS platform.
 

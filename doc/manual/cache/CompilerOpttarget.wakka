@@ -75,6 +75,9 @@ Set the target platform for cross compilation
 		
 		- Libraries besides FB's own runtime libraries are located by running ##gcc -print-file-name=...## (or ##<platform>-gcc -print-file-name=...##). This allows fbc to use the system and gcc libraries installed on Linux and similar systems without knowing the exact installation directories.
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.00.0
+
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]
 	- [[DevCrossCompiling|FB and cross-compiling]]

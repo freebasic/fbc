@@ -7,6 +7,9 @@ Export symbols for dynamic linkage
 {{fbdoc item="desc"}}
 	The ##-export## compiler option exports symbols for dynamic linkage.
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.00.0
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgExport|Export]]##
 	- [[ProPgSharedLibraries|Shared Libraries]]

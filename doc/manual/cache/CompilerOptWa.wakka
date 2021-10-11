@@ -15,6 +15,9 @@ Pass options to the assembler when using the assembly emitter (-gen gas).
 		##fbc -Wa -o,output.o,--verbose##
 		##fbc -Wa -o -Wa output.o -Wa --verbose##
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.00.0
+
 {{fbdoc item="see"}}
 	- [[CompilerOptgen|Compiler Option: -gen]]
 	- [[CompilerOptWc|Compiler Option: -Wc]]

@@ -17,6 +17,9 @@ Add a source file to compilation
 		
 	Note that the ##**-b**## option was not needed for //file1.bas// or //file2.bas//.
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.00.0
+
 {{fbdoc item="see"}}
 	- [[CompilerOpta|Compiler Option: -a]]
 	- [[CompilerCmdLine|Using the Command Line]]

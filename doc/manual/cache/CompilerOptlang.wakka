@@ -33,6 +33,9 @@ Provides ""QuickBASIC"" or backward compatibility
 	
 	Note: this command-line option can be overridden by any ##[[KeyPgPplang|#lang]]## statements used in the code.
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.00.0
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgPplang|#lang]]##
 	- ##[[KeyPgDdfblang|__FB_LANG__]]##

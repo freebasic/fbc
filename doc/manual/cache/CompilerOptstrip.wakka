@@ -7,6 +7,9 @@ Omit all symbol information from the output file
 {{fbdoc item="desc"}}
 	The ##-strip## compiler option passes an option to the linker to strip (remove) all symbols.
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.07.0
+
 {{fbdoc item="target"}}
 	- fbc strips all symbols by default on Dos and Windows platforms only
 
