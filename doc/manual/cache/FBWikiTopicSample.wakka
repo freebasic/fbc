@@ -17,6 +17,7 @@ __Components of a Topic:__
 	- **Return Value** - description of the return value if any
 	- **Description** - all other information about the function, data tables, special notes, etc.
 	- **Examples**
+	- **Version**
 	- **Dialect Differences**
 	- **Platform Differences**
 	- **Differences with QBasic**
@@ -96,6 +97,8 @@ sample output
 sample output
 sample output
 %%
+{{fbdoc item="ver"}}
+	- Since fbc 1.00.0
 
 {{fbdoc item="lang"}}
 	- Only available in the //[[CompilerOptlang|-lang fb]]// dialect.

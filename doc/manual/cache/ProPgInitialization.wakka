@@ -404,6 +404,7 @@ Sleep
 
 {{fbdoc item="see"}}
 	- [[ProPgImplicitdeclarations|Implicit declarations]]
+	- [[ProPgConstantExpressions|Constant Expressions]]
 	- ##[[KeyPgDim|Dim]]##
 	- ##[[KeyPgShared|Shared]]##
 	- ##[[KeyPgStatic|Static]]##

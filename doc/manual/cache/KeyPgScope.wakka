@@ -13,6 +13,8 @@ Statement to begin a new scope block
 	
 	The local variables are reserved on stack at granularity level of each procedure (including the main part of the program), not at granularity level of each individual scope block. So a same memory space can be used by local variables belonging to different scope blocks.
 	
+	To access duplicated symbols defined as global outside the scope block, add one or preferably two dot(s) as prefix: ##.""SomeSymbol""## or preferably ##..""SomeSymbol""## (or only ##..""SomeSymbol""## if inside a [[KeyPgWith|With..End With]] block).
+	
 	##**Scope..End Scope**## is not permitted when compiling with in the //[[CompilerOptlang|-lang qb]]// dialect.
 
 {{fbdoc item="ex"}}

@@ -90,7 +90,7 @@ Sleep
 	%%
 {{fbdoc item="lang"}}
 	- In the //[[CompilerOptlang|-lang qb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, variables declared inside an ##**If**##..##**Then**## block have a procedure-wide [[ProPgVariableScope|scope]]  as in QB 
-	- In the //[[CompilerOptlang|-lang fb]]// and //[[CompilerOptlang|-lang deprecated]]// dialects, variables declared inside an ##**If**##..##**Then**## block are visible only inside the block, and cannot be accessed outside it.
+	- In the //[[CompilerOptlang|-lang fb]]// and //[[CompilerOptlang|-lang deprecated]]// dialects, variables declared inside an ##**If**##..##**Then**## block are visible only inside the block, and cannot be accessed outside it. To access duplicated symbols defined as global outside this block, add one or preferably two dot(s) as prefix: ##.""SomeSymbol""## or preferably ##..""SomeSymbol""## (or only ##..""SomeSymbol""## if inside a [[KeyPgWith|With..End With]] block).
 	- In the //[[CompilerOptlang|-lang qb]]// dialect, if there is a new line or a single-line comment (##'##) directly after THEN, then the IF will be multi-line.  A colon, a ##[[KeyPgRem|Rem]]## or any other statement will result in a single-line IF.
 	- In the //[[CompilerOptlang|-lang fb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, if there is a new line, a single-line comment (##'##), a colon (##:##), or a ##[[KeyPgRem|Rem]]## statement directly after THEN, then the IF will be multi-line.  Any other statement will result in a single-line IF.
 

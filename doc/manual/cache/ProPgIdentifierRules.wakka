@@ -25,8 +25,10 @@ Naming conventions for ""FreeBASIC"" symbols.
 {{fbdoc item="target"}}
 	- Warning for 64-bit compiler only and regarding the choice of user procedure identifier names:
 			An additional restriction to the above normal 'Identifier Rules' also excludes in the global namespace all register names or other symbols issued from the only 'intel' format assembler when it is used (the one by default, no problem with 'att' format), because they causes assembler errors or runtime bugs (due to the 64-bit compiler not decorating procedure names).
-				**""-""** User procedure identifiers inducing assembler errors if using 'intel' format assembler (list may not be exhaustive): ##ah##, ##al##, ##axl##, ##bh##, ##bl##, ##bpl##, ##bxl##, ##ch##, ##cl##, ##cs##, ##cxl##, ##dh##, ##dil##, ##dl##, ##dr0## -> ##dr7##, ##ds##, ##dxl##, ##eax##, ##ebp##, ##ebx##, ##ecx##, ##edi##, ##edx##, ##eip##, ##eq##, ##es##, ##esi##, ##esp##, ##fs##, ##ge##, ##gs##, ##gt##, ##le##, ##lt##, ##mm0## -> ##mm7##, ##ne##, ##r8b## -> ##r15b##, ##r8d## -> ##r15d##, ##rip##, ##sil##, ##spl##, ##ss##, ##st##, ##xmm0## -> ##xmm15##, ##ymm0## -> ##ymm15##, ##zmm0## -> ##zmm31##.
-				**""-""** User procedure identifiers inducing only runtime errors if using 'intel' format assembler (list may not be exhaustive): ##ax##, ##bx##, ##bp##, ##cx##, ##di##, ##dx##, ##dword##, ##fword##, ##mmword##, ##oword##, ##qword##, ##r8## -> ##r15##, ##r8w## -> ##r15w##, ##rax##, ##rbp##, ##rbx##, ##rcx##, ##rdi##, ##rdx##, ##rsi##, ##rsp##, ##si##, ##sp##, ##tbyte##, ##word##, ##xmmword##, ##ymmword##, ##zmmword##.
+				**""-""** User procedure identifiers inducing assembler errors if using 'intel' format assembler (list may not be exhaustive):
+					##ah, al, axl, bh, bl, bpl, bxl, ch, cl, cs, cxl, dh, dil, dl, dr0 -> dr7, ds, dxl, eax, ebp, ebx, ecx, edi, edx, eip, eq, es, esi, esp, fs, ge, gs, gt, le, lt, mm0 -> mm7, ne, r8b -> r15b, r8d -> r15d, rip, sil, spl, ss, st, xmm0 -> xmm15, ymm0 -> ymm15, zmm0 -> zmm31##.
+				**""-""** User procedure identifiers inducing only runtime errors if using 'intel' format assembler (list may not be exhaustive):
+					##ax, bx, bp, cx, di, dx, dword, fword, mmword, oword, qword, r8 -> r15, r8w -> r15w, rax, rbp, rbx, rcx, rdi, rdx, rsi, rsp, si, sp, tbyte, word, xmmword, ymmword, zmmword##.
 
 {{fbdoc item="lang"}}
 	- Periods in symbol names are only supported in the //[[CompilerOptlang|-lang qb]]// and //[[CompilerOptlang|-lang fblite]]// dialects.

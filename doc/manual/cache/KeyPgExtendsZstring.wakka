@@ -14,7 +14,7 @@ Specifies a type which inherits a Zstring behavior
 	##[[KeyPgZstring|Zstring]]## behaviour can be inherited directly, or indirectly and singly from a base-type.
 	##[[KeyPgZstring|Zstring]]## behaviour can be inherited by a UDT also extending ##//base_typename//## (a kind of pseudo multiple-inheritance).
 	
-	**Note:** By declaring a type (directly or indirectly) as ##**Extends Zstring**## (in addition to defining a suitable ##[[KeyPgOpCast|Cast]]## operator only), this promotes it fully compatible even with ##[[KeyPgOpStrptr|Strptr]]##/##[[KeyPgSadd|Sadd]]##, ##[[KeyPgLset|Lset]]##/##[[KeyPgRset|Rset]]##, and ##[[KeyPgSelectcase|Select Case]]##, but currently not yet with the built in functions ##[[KeyPgVal|Val]]##/##[[KeyPgValint|Valint]]##/##[[KeyPgVallng|Vallng]]##/##[[KeyPgValuint|Valuint]]##/##[[KeyPgValulng|Valunlg]]## and ##[[KeyPgLeft|Left]]##/##[[KeyPgRight|Right]]##.
+	**Note:** By declaring a type (directly or indirectly) as ##**Extends Zstring**## (in addition to defining a suitable ##[[KeyPgOpCast|Cast]]## operator only), this promotes it fully compatible even with ##[[KeyPgOpStrptr|Strptr]]##/##[[KeyPgSadd|Sadd]]##, ##[[KeyPgLset|Lset]]##/##[[KeyPgRset|Rset]]##, and ##[[KeyPgSelectcase|Select Case]]##, but not yet for a fbc version < 1.09 with the built in functions ##[[KeyPgVal|Val]]##/##[[KeyPgValint|Valint]]##/##[[KeyPgVallng|Vallng]]##/##[[KeyPgValuint|Valuint]]##/##[[KeyPgValulng|Valunlg]]## and ##[[KeyPgLeft|Left]]##/##[[KeyPgRight|Right]]##.
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/udt/extendszstring1.bas"}}%%(freebasic)

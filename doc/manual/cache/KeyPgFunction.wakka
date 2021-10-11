@@ -42,6 +42,8 @@ Defines a procedure returning a value
 	
 	//Local Variable Preservation// : The ##[[KeyPgStatic|Static]]## keyword specifies that a function's locally declared variables are preserved between function calls. Upon entering a function defined with ##[[KeyPgStatic|Static]]##, local variables have the same value as when the function was last called.
 	
+	//Global Variable Access//: To access duplicated symbols defined as global outside the function body, add one or preferably two dot(s) as prefix: ##.""SomeSymbol""## or preferably ##..""SomeSymbol""## (or only ##..""SomeSymbol""## if inside a [[KeyPgWith|With..End With]] block).
+	
 	When calling a function, parentheses surrounding the argument list (if any) are required only for function calls in expressions. If there is no argument to pass, the parentheses become optional, but it is a common convention to place empty parentheses '()' after the function name, to signify a function call.
 	
 	**Warning for 64-bit compiler only:** See the [[ProPgIdentifierRules|Identifier Rules]] page for the choice of user procedure identifier names (and specially the 'Platform Differences' paragraph).

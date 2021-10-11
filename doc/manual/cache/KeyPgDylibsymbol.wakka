@@ -35,6 +35,7 @@ Returns the address of a function or variable in a dll
 {{fbdoc item="target"}}
 	- Dynamic link libraries are not available in DOS ,as the OS doesn't support them.
 	- Ordinals are not supported on Linux, 0 is always returned.
+	- Windows does not support ##**Dylibsymbol**## use with variables (only with procedures).
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Dylibsymbol""**##.

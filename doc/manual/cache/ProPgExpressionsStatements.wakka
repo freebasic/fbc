@@ -85,6 +85,7 @@ To introduce the **expressions and statements** (syntactic entities) in ""FreeBA
 				if the expression following the If statement evaluates to a truth value, statement 1 is executed else statement 2 is executed.
 
 {{fbdoc item="see"}}
+	- [[ProPgConstantExpressions|Constant Expressions]]
 	- [[ProPgAssignments|Assignments]]
 	- [[CatPgOperators|Operator list]]
 	- [[OpPrecedence|Operator Precedence]]

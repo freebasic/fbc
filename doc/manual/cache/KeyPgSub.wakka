@@ -41,6 +41,7 @@ Defines a procedure
 	A subroutine can also specify how parameters are passed, either as "##[[KeyPgByref|Byref]]##" or "##[[KeyPgByval|Byval]]##", as shown in the syntax definition. If a parameter is "##[[KeyPgByref|Byref]]##", the parameter name literally becomes a reference to the original variable passed to the subroutine. Any changes made to that variable will be reflected outside of the subroutine. If a parameter is passed "##[[KeyPgByval|Byval]]##", however, the value of any passed variable is copied into a new variable, and any changes made to it will not affect the original.
 	
 	The ##[[KeyPgStatic|Static]]## specifier indicates that the values of all local variables defined in the sub should be preserved between calls. To specify individual local variables as static see the ##[[KeyPgStatic|Static]]## keyword.
+	To access duplicated symbols defined as global outside the subroutine body, add one or preferably two dot(s) as prefix: ##.""SomeSymbol""## or preferably ##..""SomeSymbol""## (or only ##..""SomeSymbol""## if inside a [[KeyPgWith|With..End With]] block).
 	
 	Sub is the same as ##[[KeyPgFunction|Function]]##, except it does not allow a value to be returned.
 	

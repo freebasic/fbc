@@ -7,9 +7,9 @@ The library is referred to as static, because when the object files which it con
 
 Once the library is made, we can then use the code that it contains just as if we were compiling the source directly with our program.
 
-{{fbdoc item="section" value="Sharing variables with static library"}}
+{{fbdoc item="section" value="Exchanging/Sharing variables with static library"}}
 	A static library allows the direct sharing of variables by using the ##[[KeyPgCommon|Common]]## or ##[[KeyPgExtern|Extern]]## keyword, both in library code and module code.
-	Otherwise, passing a parameter (by value or by reference) to a library procedure or returning a variable (by value or by reference) from a library function allows to indirectly exchange data with a library.
+	Otherwise, passing a parameter (by value or by reference) to a library procedure or returning a variable (by value or by reference) from a library function allows to indirectly exchange data (by value) or share data (by reference) with a shared library.
 
 {{fbdoc item="section" value="Simple example of static library"}}
 	Following is a simple example of creating a static library using these three files:

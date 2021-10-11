@@ -851,6 +851,7 @@
 
 	{{fbdoc item="subsect" value="Statements and Expressions"}}
 		[[ProPgExpressionsStatements|Differences between Expressions and Statements]]
+		[[ProPgConstantExpressions|Constant Expressions]]
 		[[ProPgAssignments|Assignments]]
 		[[OpPrecedence|Operator Precedence]]
 		[[ProPgControlFlow|Control Flow Statements]]

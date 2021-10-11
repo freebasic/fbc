@@ -72,6 +72,7 @@
 	{{fbdoc item="keyword" value="ProPgCtorsAssignDtors2|Constructors, '=' Assignment-Operators, and Destructors (advanced, part #2)"}}
 <<>>{{fbdoc item="section" value="Statements and Expressions"}}
 	{{fbdoc item="keyword" value="ProPgExpressionsStatements|Differences between Expressions and Statements"}}
+	{{fbdoc item="keyword" value="ProPgConstantExpressions|Constant Expressions"}}
 	{{fbdoc item="keyword" value="ProPgAssignments|Assignments"}}
 	{{fbdoc item="keyword" value="CatPgOperators|Operator List"}}
 	{{fbdoc item="keyword" value="OpPrecedence|Operator Precedence"}}

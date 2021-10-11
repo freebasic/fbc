@@ -7,16 +7,16 @@ The library is referred to as shared, because the code in the library is loaded 
 
 Once the library is made, we can then use the code that it contains just as if we were compiling the source directly with our program.
 
-**{{anchor name="VARIABLES|Sharing variables with shared library"}}**
+**{{anchor name="VARIABLES|Exchanging/Sharing variables with shared library"}}**
 **{{anchor name="EXAMPLE1|Shared Library Example"}}**
 **{{anchor name="WINDOWS|Using Shared Libraries on Windows"}}**
 **{{anchor name="LINUX|Using Shared Libraries on Linux"}}**
 **{{anchor name="EXPORT|Executables that export symbols"}}**
 **{{anchor name="DYNAMIC|Loading Shared Libraries Dynamically"}}**
 
-{{anchor name="VARIABLES"}}{{fbdoc item="section" value="Sharing variables with shared library"}}
-	A shared library does not allow the direct sharing of variables by using the ##[[KeyPgCommon|Common]]## or ##[[KeyPgExtern|Extern]]## keyword.
-	Otherwise, passing a parameter (by value or by reference) to a library procedure or returning a variable (by value or by reference) from a library function allows to indirectly exchange data with a shared library.
+{{anchor name="VARIABLES"}}{{fbdoc item="section" value="Exchanging/Sharing variables with shared library"}}
+	Windows does not support the ##[[KeyPgCommon|Common]]## or ##[[KeyPgExtern|Extern]]## keywords for directly sharing variables with a shared library.
+	Otherwise, passing a parameter (by value or by reference) to a library procedure or returning a variable (by value or by reference) from a library function allows to indirectly exchange data (by value) or share data (by reference) with a shared library.
 
 {{anchor name="EXAMPLE1"}}{{fbdoc item="section" value="Shared Library Example"}}
 	Following is a simple example of creating a shared library using these three files:
@@ -103,7 +103,7 @@ Object files, and therefore shared libraries, are platform specific and in some 
 {{anchor name="DYNAMIC"}}{{fbdoc item="section" value="Loading Shared Libraries Dynamically"}}
 	Shared libraries can be loaded and used at run time by dynamically loading the library and its symbols at runtime.
 		- ##[[KeyPgDylibload|Dylibload]]## can be used to load and obtain a handle to a shared library.
-		- ##[[KeyPgDylibsymbol|Dylibsymbol]]## is used to obtain the address of a symbol in a loaded shared library.
+		- ##[[KeyPgDylibsymbol|Dylibsymbol]]## is used to obtain the address of a symbol in a loaded shared library (variable names not supported on Windows but only procedure names).
 		- ##[[KeyPgDylibfree|Dylibfree]]## is used to unload a shared library when it is no longer needed.
 
 		

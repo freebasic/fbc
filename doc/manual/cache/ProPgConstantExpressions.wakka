@@ -1,0 +1,53 @@
+{{fbdoc item="title" value="Constant Expressions"}}----
+**Constant** term defines an **expression** that can be evaluated at compile time.
+
+**Preamble:**
+
+	A constant expression is an expression that contains only constants (this means that it does not contain any variables at the evaluation time) with some operators/functions allowed,  and possibly parentheses to override the operator precedence order.
+	A constant expression can be evaluated during compilation rather than at run time, and can be used in any place that a constant can occur.
+	
+	Constant expressions are mainly required:
+		**""-""** as arguments for the preprocessor directives and intrinsic defines macros,
+		**""-""** as initializers for the Enum/Type structures and global/static variables,
+		**""-""** as data constants for the Data Statements.
+
+{{fbdoc item="section" value="List of operators/functions allowed in constant expressions"}}
+	fbc is not a scripting language and does not have a full feature macro processor on the front end.
+	Constant folding is an optimization in fbc that takes constant expressions, evaluates the constant expression at compile time and produces a single constant result.
+	For constant folding to work, a compile time implementation of the operators/functions must be written.
+	
+	Only the following operators/functions with constant arguments can be used to constitute constant expressions:
+		##""Bit"", ""BitReset"", ""BitSet"", ""HiByte"", ""HiWord"", ""LoByte"", ""LoWord""
+		""+"", ""-"", ""*"", ""/"", ""\"", ""^"", ""Mod"", ""Shl"", ""Shr""
+		""="", ""<>"", ""<="", "">="", ""<"", "">""
+		""And"", ""Eqv"", ""Imp"", ""Or"", ""Not"", ""Xor""
+		""Abs"", ""Acos"", ""Asin"", ""Atan2"", ""Atn"", ""Cos"", ""Exp"", ""Fix"", ""Frac"", ""Int"", ""Log"", ""Sgn"", ""Sin"", ""Sqr"", ""Tan""
+		""Asc"", ""Chr"", ""CVD"", ""CVI"", ""CVL"", ""CVLongInt"", ""CVS"", ""CVShort"", ""Len"", ""SizeOf""
+		""Cast"", ""CBool"", ""CByte"", ""CDbl"", ""CInt"", ""CLng"", ""CLngInt"", ""CShort"", ""CSign"", ""CSng"", ""CUByte"", ""CUInt"", ""CULng"", ""CULngInt"", ""CUnsg"", ""CUShort""
+		**more obviously all predefined symbols**##
+
+{{fbdoc item="section" value="Basic example of using constant expressions"}}
+	Example illustrating three different use-cases:
+		{{fbdoc item="filename" value="examples/manual/proguide/constant_expressions.bas"}}%%(freebasic)
+#define pi 4 * Atn(1)
+
+Dim Shared As Double d = Sqr(2)
+
+Type pt
+	Dim As Integer x = 300 * Cos(pi / 6)
+	Dim As Integer y = 300 * Sin(pi / 6)
+End Type
+
+Dim As pt p
+
+Print pi        ''  3.14159...
+Print d         ''  1.41421...
+Print p.x, p.y  ''  260           150
+
+Sleep
+		%%
+{{fbdoc item="see"}}
+	- [[ProPgExpressionsStatements|Differences between Expressions and Statements]]
+	- [[ProPgInitialization|Variable Initializers]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
