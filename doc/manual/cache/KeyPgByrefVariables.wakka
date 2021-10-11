@@ -176,6 +176,9 @@ rmd.hello()     '' rmd is a base-type reference referring to a derived-type obje
 
 Sleep
 	%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.04.0
+
 {{fbdoc item="lang"}}
 	- Only supported in //[[CompilerOptlang|-lang fb]]//, //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang deprecated]]// dialects.
 

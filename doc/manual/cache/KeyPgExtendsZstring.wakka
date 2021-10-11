@@ -118,6 +118,9 @@ Print "'" & Right(Str(v), 5) & "'"  '' workaround (or: 'Right(Type<String>(v), 5
 
 Sleep
 	%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.07.0
+
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Extends __Zstring""**##, but unusable because no member procedure is allowed in this dialect.
 

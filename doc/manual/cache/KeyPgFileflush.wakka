@@ -58,6 +58,9 @@ File length   File string
  0            ''
  23           'successful file flush'
 		%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.08.0
+
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC"".
 

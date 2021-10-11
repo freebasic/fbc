@@ -21,6 +21,9 @@ End If
 b is True
 %%
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.04.0
+
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__True""**##.
 

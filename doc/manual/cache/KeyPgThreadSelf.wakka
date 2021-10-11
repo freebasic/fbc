@@ -166,6 +166,9 @@ Print
 Print "end of threads"
 
 Sleep	%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.08.0
+
 {{fbdoc item="lang"}}
 	- Threading is not allowed in the //[[CompilerOptlang|-lang qb]]// dialect.
 

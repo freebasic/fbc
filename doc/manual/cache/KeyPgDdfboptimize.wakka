@@ -11,6 +11,9 @@ Intrinsic define set by the compiler
 	{{fbdoc item="filename" value="examples/manual/defines/fboptimize.bas"}}%%(freebasic)
 Print "Optimization level is: " & __FB_OPTIMIZE__
 	%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.09.0
+
 {{fbdoc item="diff"}}
 	- Did not exist in QB
 

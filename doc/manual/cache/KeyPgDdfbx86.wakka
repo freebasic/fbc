@@ -16,6 +16,9 @@ Intrinsic define set by the compiler
 #ENDIF 
 %%
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.08.0
+
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 

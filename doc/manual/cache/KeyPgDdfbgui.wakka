@@ -17,6 +17,9 @@ Intrinsic define (macro value) set by the compiler
 		#print Executable subsystem: console
 #endif
 %%
+{{fbdoc item="ver"}}
+	- Since fbc 1.06.0
+
 {{fbdoc item="target"}}
 	- Supported on Windows and Cygwin only.
 

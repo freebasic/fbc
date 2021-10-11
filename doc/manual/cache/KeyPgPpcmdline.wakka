@@ -113,6 +113,9 @@ Function IsTrickyTools() As Boolean
    #endif
 End Function
 		%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.09.0
+
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 

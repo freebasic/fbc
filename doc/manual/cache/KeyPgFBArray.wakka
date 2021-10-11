@@ -261,6 +261,9 @@ Sleep
 			min_index         = 1
 			max_index         = 100
 			%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.08.0
+
 {{fbdoc item="lang"}}
 	- Only available in the //[[CompilerOptlang|-lang fb]]// dialect.
 
