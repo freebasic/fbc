@@ -1,3 +1,6 @@
+October 10, 2021
+- Add recognition for {{fbdoc item="ver"}} for "Version" section
+
 August 28, 2021
 - add '-trace' option to show libcurl verbosity
 

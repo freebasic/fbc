@@ -61,6 +61,7 @@ namespace fb.fbdoc
 		FBDOC_ITEM_RET
 		FBDOC_ITEM_DESC
 		FBDOC_ITEM_EX
+		FBDOC_ITEM_VER
 		FBDOC_ITEM_LANG
 		FBDOC_ITEM_TARGET
 		FBDOC_ITEM_DIFF
@@ -631,6 +632,7 @@ namespace fb.fbdoc
 			( @"ret"      , true , @"{#fb_sect_ret}"    ), _
 			( @"desc"     , true , @"{#fb_sect_desc}"   ), _
 			( @"ex"       , true , @"{#fb_sect_ex}"     ), _
+			( @"ver"      , true , @"{#fb_sect_ver}"   ), _
 			( @"lang"     , true , @"{#fb_sect_lang}"   ), _
 			( @"target"   , true , @"{#fb_sect_target}" ), _
 			( @"diff"     , true , @"{#fb_sect_diff}"   ), _
