@@ -15,6 +15,7 @@ Version 1.08.1
 - gas64: .a64 replaced by .asm to be coherent with documentation
 
 [added]
+- '-z valist-as-ptr' command line option for varargs. On targets that implement va_list as a pointer, allow overriding gcc __builtin_va* macros with our own expressions
 
 [fixed]
 - github #315: set parameters when calling SCREENCONTROL (was broken in fbc 1.08.0 due to new LONG/LONGINT SCREENCONTROL API's)
