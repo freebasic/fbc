@@ -97,9 +97,10 @@ end sub
 private sub pragmaReserve( )
 	dim as FBSYMCHAIN ptr chain_ = any
 	dim as FBSYMBOL ptr base_parent = any, sym = any
-	dim as FB_SYMBATTRIB attrib = FB_SYMBATTRIB_NONE
+	'' dim as FB_SYMBATTRIB attrib = FB_SYMBATTRIB_NONE
 	dim as zstring ptr id = any
-	dim as integer isAsm = FALSE
+	dim as integer haveAsm = FALSE
+	dim as integer haveShared = FALSE
 
 	'' preserve under -pp
 	if( env.ppfile_num > 0 ) then
@@ -119,13 +120,29 @@ private sub pragmaReserve( )
 		do
 			select case lexGetToken( )
 			case FB_TK_SHARED, FB_TK_ASM
-				select case lexGetToken( )
-				case FB_TK_SHARED
-					attrib or= FB_SYMBATTRIB_SHARED
-				case FB_TK_ASM
-					isASM = TRUE
-				end select
-				
+
+				'' SHARED and ASM must be module level and not in a scope
+				if( parser.scope > FB_MAINSCOPE ) then
+					if( fbIsModLevel( ) = FALSE ) then
+						errReportEx( FB_ERRMSG_ILLEGALINSIDEASUB, lexGetText() )
+					else
+						errReportEx( FB_ERRMSG_ILLEGALINSIDEASCOPE, lexGetText() )
+					end if
+					'' error recovery: skip line
+					hSkipUntil( FB_TK_EOL )
+					exit sub
+				end if
+
+				if( haveASM or haveShared ) then
+					errReportEx( FB_ERRMSG_SYNTAXERROR, lexGetText( ) )
+					'' error recovery: skip line
+					hSkipUntil( FB_TK_EOL )
+					exit sub
+				end if
+
+				haveShared = ( lexGetToken( ) = FB_TK_SHARED )
+				haveASM    = ( lexGetToken( ) = FB_TK_ASM )
+
 				'' SHARED|ASM
 				lexSkipToken( LEXCHECK_POST_SUFFIX )
 
@@ -170,31 +187,54 @@ private sub pragmaReserve( )
 		lexPPOnlyEmitToken( )
 	end if
 
-	if( isASM = TRUE ) then
+	if( haveASM = TRUE ) then
 		if( parserInlineAsmAddKeyword( id ) = FALSE ) then
 			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 			'' error recovery: skip line
 			hSkipUntil( FB_TK_EOL )
-			exit sub
 		end if
+
+		'' symbol
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
+		exit sub
 	end if
 
-	if( (isASM = FALSE) or (attrib <> FB_SYMBATTRIB_NONE) ) then
-		sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-			NULL, _
-			NULL, NULL, _
-			FB_SYMBCLASS_RESERVED, _
-			id, NULL, _
-			FB_DATATYPE_INVALID, NULL, _
-			attrib, FB_PROCATTRIB_NONE )
+	dim as FB_SYMBATTRIB attrib = FB_SYMBATTRIB_NONE
+	dim as FBSYMBOL ptr parent = NULL
+	dim as FBSYMBOLTB ptr symtb = NULL
+	dim as FBHASHTB ptr hashtb = NULL
 
-		if( sym = NULL ) then
-			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
-			'' error recovery: skip line
-			hSkipUntil( FB_TK_EOL )
-			exit sub
+	if( haveShared = TRUE ) then
+		attrib or= FB_SYMBATTRIB_SHARED
+	else
+		if( fbIsModLevel() ) then
+			if( parser.scope = FB_MAINSCOPE ) then
+				parent = @symbGetGlobalNamespc( )
+				symtb = @symbGetCompSymbTb( parent )
+				hashtb = @symbGetCompHashTb( parent )
+			else
+				parent = symbGetCurrentNamespc( )
+				symtb = symb.symtb                    '' symtb of current scope
+				hashtb = @symbGetCompHashTb( parent ) '' hashtb of current namespace
+			end if
 		end if
 
+		attrib or= FB_SYMBATTRIB_LOCAL
+	end if
+
+	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+		NULL, _
+		symtb, hashtb, _
+		FB_SYMBCLASS_RESERVED, _
+		id, NULL, _
+		FB_DATATYPE_INVALID, NULL, _
+		attrib, FB_PROCATTRIB_NONE )
+
+	if( sym = NULL ) then
+		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
+		'' error recovery: skip line
+		hSkipUntil( FB_TK_EOL )
+		exit sub
 	end if
 
 	'' symbol

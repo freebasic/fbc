@@ -492,6 +492,7 @@ function symbNewSymbol _
 	function = NULL
 
 	if( symtb = NULL ) then
+		'' same as symbGetCurrentSymTb()
 		symtb = symb.symtb
 
 		'' parsing main?

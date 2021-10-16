@@ -49,6 +49,7 @@ Version 1.09.0
 - fbc: '#pragma reserve symbol' statement will reserve a symbol name in the current scope / namespace and generate an error if the symbol is used in an expression
 - fbc: '#pragma reserve (shared) symbol' statement will reserve a symbol name in the shared scope
 - fbc: '#pragma reserve (asm) symbol' statement will reserve an ASM symbol name in all ASM statements and blocks
+- fbc: '#pragma reserve',  asm and shared are mutually exclusive and throw an error if used in any scope block or procedure
 - sf.net #645: respect global namespace '.' and '..' prefixes in REDIM
 - rtlib: Add new higher baud rates to the serial driver 1500000,2000000,2500000,3000000,35000000,4000000
 
