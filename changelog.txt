@@ -19,6 +19,7 @@ Version 1.09.0
 
 [added]
 - fbc: add '-z fbrt' command line option to link against libfbrt*.a instead of libfb*.a
+- '-z valist-as-ptr' command line option for varargs. On targets that implement va_list as a pointer, allow overriding gcc __builtin_va* macros with our own expressions
 - makefile: add target for fbrt, fb runtime library written in fbc. Bulid libfbrt*.a and merge any missing object modules from libfb*.a
 - github #325, #326: fbc: add support for wstrings used with __FB_EVAL__()
 - crt headers: minimal crt headers to compile fbc and build test-suite on freebsd-13.0-i386
