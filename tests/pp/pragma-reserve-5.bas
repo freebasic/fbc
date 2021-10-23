@@ -1,9 +1,8 @@
-' TEST_MODE : COMPILE_ONLY_OK
+' TEST_MODE : COMPILE_ONLY_FAIL
 
-namespace ns
-	#pragma reserve symbol
+#pragma reserve symbol
 
-	sub proc()
-		const symbol = 2
-	end sub
-end namespace
+sub proc()
+	const symbol = 2
+end sub
+

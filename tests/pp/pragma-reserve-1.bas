@@ -2,7 +2,7 @@
 
 '' reserve a global symbol
 
-#pragma reserve (shared) symbol
+#pragma reserve symbol
 
 '' error: Duplicated definition
 sub symbol()

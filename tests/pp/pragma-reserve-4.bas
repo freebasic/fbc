@@ -2,7 +2,7 @@
 
 '' reserve in the global scope
 
-#pragma reserve (shared) symbol
+#pragma reserve symbol
 
 #if not defined(symbol)
 	#error

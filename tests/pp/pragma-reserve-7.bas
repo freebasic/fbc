@@ -2,7 +2,7 @@
 
 '' reserved ASM symbols have their own list
 
-#pragma reserve(asm) symbol
+#pragma reserve (asm) symbol
 
 #ifdef __FB_X86__
 

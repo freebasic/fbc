@@ -7,4 +7,4 @@
 #pragma reserve (,) symbol2
 #pragma reserve (,,) symbol3
 #pragma reserve (,asm,) symbol4
-#pragma reserve (,shared,) symbol5
+

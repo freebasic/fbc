@@ -1,7 +1,7 @@
 ' TEST_MODE : COMPILE_ONLY_FAIL
 
-'' shared can't be used in any scope
+'' asm can't be used in any scope
 
 scope
-	#pragma reserve (shared) symbol
+	#pragma reserve (asm) symbol
 end scope

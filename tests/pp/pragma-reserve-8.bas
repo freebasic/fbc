@@ -1,5 +1,7 @@
 ' TEST_MODE : COMPILE_ONLY_FAIL
 
-'' asm and shared are mutually exlusive
+'' asm can't be used in any procedure
 
-#pragma reserve (asm,shared) symbol
+sub proc()
+	#pragma reserve (asm) symbol
+end scope

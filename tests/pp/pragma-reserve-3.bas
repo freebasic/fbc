@@ -1,34 +1,43 @@
 ' TEST_MODE : COMPILE_ONLY_OK
 
-'' reserve in the implicit main only
+'' reserved symbols can be shadowed by variables
 
 #pragma reserve symbol
 
-#if not defined(symbol)
-	#error
-#endif
+scope
+	#pragma reserve symbol
+end scope
+
+scope
+	dim symbol as integer
+end scope
+
+sub proc()
+	#pragma reserve symbol
+
+	scope
+		#pragma reserve symbol
+	end scope
+
+	scope
+		dim symbol as integer
+	end scope
+
+end sub
 
 sub proc_var()
-
-#if ENABLE_CHECK_BUGS
-	'' symbol should not be defined
-	#if defined(symbol)
-		#error
-	#endif
-#endif
-
 	dim symbol as integer
+
+	scope
+		#pragma reserve symbol
+	end scope
+
+	scope
+		dim symbol as integer
+	end scope
 end sub
 
 sub proc_type()
-
-#if ENABLE_CHECK_BUGS
-	'' symbol should not be defined
-	#if defined(symbol)
-		#error
-	#endif
-#endif
-
 	type symbol
 		__ as integer
 	end type
