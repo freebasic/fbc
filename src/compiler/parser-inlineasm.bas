@@ -18,16 +18,10 @@
 '' an equally-named FB symbol (e.g. a variable/procedure/label), if one was
 '' declared (such that, for example, a call to f becomes a call to F@0).
 ''
+
 dim shared asmKeywordsX86(0 to ...) as const zstring ptr => _
 { _
-	@"dl", @"di", @"si", @"cl", @"bl", @"al", @"bp", @"sp", _
-	@"dx", @"cx", @"bx", @"ax", _
-	@"edx",  @"edi",  @"esi",  @"ecx",  @"ebx",  @"eax",  @"ebp",  @"esp", _
-	@"st", @"cs", @"ds", @"es", @"fs", @"gs", @"ss", _
-	@"mm0", @"mm1", @"mm2", @"mm3", @"mm4", @"mm5", @"mm6", @"mm7", _
-	@"xmm0", @"xmm1", @"xmm2", @"xmm3", @"xmm4", @"xmm5", @"xmm6", @"xmm7", _
-	@"byte", @"word", @"dword", @"qword", _
-	@"ptr", @"offset", _
+	@"byte", @"ptr", @"offset", _
 	@"aaa", @"aad", @"aam", @"aas", @"adc", @"add", @"addpd", @"addps", @"addsd", @"addss", @"and", @"andpd", @"andps", _
 	@"andnpd", @"andnps", @"arpl", @"bound", @"bsf", @"bsr", @"bswap", @"bt", @"btc", @"btr", @"bts", @"call", @"cbw", _
 	@"cwde", @"cdq", @"clc", @"cld", @"clflush", @"cli", @"clts", @"cmc", @"cmova", @"cmovae", @"cmovb", @"cmovbe", _
@@ -82,6 +76,36 @@ dim shared asmKeywordsX86(0 to ...) as const zstring ptr => _
 	@"pmulhrw", @"pswapw", @"femms", @"prefetch", @"prefetchw", @"pfnacc", @"pfpnacc", @"pswapd", @"pmulhuw" _
 }
 
+'' Ditto as above: - (!!!TODO!!! - add these symbols to the global namespace so we don't have 
+'' shared variables and procedure names with the same name as intel syntax reserved words)
+dim shared asmGlobalKeywordsX86(0 to ...) as zstring ptr => _
+{ _
+	@"dl", @"di", @"si", @"cl", @"bl", @"al", _
+	@"bp", @"sp", @"dx", @"cx", @"bx", @"ax", _
+	@"edx", @"edi", @"esi", @"ecx", @"ebx", @"eax", @"ebp", @"esp", _
+	@"st", @"cs", @"ds", @"es", @"fs", @"gs", @"ss", _
+	@"mm0", @"mm1", @"mm2", @"mm3", @"mm4", @"mm5", @"mm6", @"mm7", _
+	@"xmm0", @"xmm1", @"xmm2", @"xmm3", @"xmm4", @"xmm5", @"xmm6", @"xmm7", _
+	@"xmm8", @"xmm9", @"xmm10", @"xmm11", @"xmm12", @"xmm13", @"xmm14", @"xmm15", _
+	@"word", @"dword", @"qword", @"fword", @"mmword", @"oword", _
+	@"r8", @"r9", @"r10", @"r11", @"r12", @"r13", @"r14", @"r15", _
+	@"r8w", @"r9w", @"r10w", @"r11w", @"r12w", @"r13w", @"r14w", @"r15w", _
+	@"rax", @"rbp", @"rbx", @"rcx", @"rdi", @"rdx", @"rsi", @"rsp", _
+	@"tbyte", @"xmmword", @"ymmword", @"zmmword", _
+	@"ah", @"axl", @"bh", @"bpl", @"bxl", @"ch", @"cxl", @"dh", @"dil", _
+	@"dr0", @"dr1", @"dr2", @"dr3", @"dr4", @"dr5", @"dr6", @"dr7", _
+	@"dxl", @"eip", @"eq", @"ge", @"gt", @"le", @"lt", @"ne", _
+	@"r8b", @"r9b", @"r10b", @"r11b", @"r12b", @"r13b", @"r14b", @"r15b", _
+	@"r8d", @"r9d", @"r10d", @"r11d", @"r12d", @"r13d", @"r14d", @"r15d", _
+	@"rip", @"sil", @"spl", _
+	@"ymm0", @"ymm1", @"ymm2", @"ymm3", @"ymm4", @"ymm5", @"ymm6", @"ymm7", _
+	@"ymm8", @"ymm9", @"ymm10", @"ymm11", @"ymm12", @"ymm13", @"ymm14", @"ymm15", _
+	@"zmm0", @"zmm1", @"zmm2", @"zmm3", @"zmm4", @"zmm5", @"zmm6", @"zmm7", _
+	@"zmm8", @"zmm9", @"zmm10", @"zmm11", @"zmm12", @"zmm13", @"zmm14", @"zmm15", _
+	@"zmm16", @"zmm17", @"zmm18", @"zmm19", @"zmm20", @"zmm21", @"zmm22", @"zmm23", _
+	@"zmm24", @"zmm25", @"zmm26", @"zmm27", @"zmm28", @"zmm29", @"zmm30", @"zmm31" _
+}
+
 type AsmKeywordsInfo
 	inited as integer
 	hash as THASH     '' hash of all words pre-defined in asmKeywordsX86() and user added words
@@ -94,9 +118,12 @@ private sub hInitAsmKeywords( )
 	'' TODO: support x86_64, arm, aarch64; select keyword list based on compilation target
 	if( asmkeywords.inited = FALSE ) then
 		listInit( @asmkeywords.list, 8, sizeof( zstring ptr ) )
-		hashInit( @asmkeywords.hash, 600 )
+		hashInit( @asmkeywords.hash, 800 )
 		for i as integer = 0 to ubound( asmKeywordsX86 )
 			hashAdd( @asmkeywords.hash, asmKeywordsX86(i), cast( any ptr, INVALID ), INVALID )
+		next
+		for i as integer = 0 to ubound( asmGlobalKeywordsX86 )
+			hashAdd( @asmkeywords.hash, asmGlobalKeywordsX86(i), cast( any ptr, INVALID ), INVALID )
 		next
 		asmkeywords.inited = TRUE
 	end if

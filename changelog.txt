@@ -48,6 +48,7 @@ Version 1.09.0
 - fbc: #cmdline "-version" will immediately print the fbc version information if it was not already printed.  To get verbose version information '-v' option must appear before '-version'.  fbc command line  option '-v' option behaviour overrides #cmdline "-v"
 - fbc: '#pragma reserve symbol' statement will reserve a symbol name in the current scope / namespace and generate an error if the symbol redefined or is used in an expression
 - fbc: '#pragma reserve (asm) symbol' statement will reserve an ASM symbol name in all ASM statements and blocks
+- sf.net #515: fbc: update reserved ASM keywords list for ASM statements and ASM blocks
 - sf.net #645: respect global namespace '.' and '..' prefixes in REDIM
 - rtlib: Add new higher baud rates to the serial driver 1500000,2000000,2500000,3000000,35000000,4000000
 
