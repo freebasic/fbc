@@ -51,6 +51,7 @@ Version 1.09.0
 - sf.net #515: fbc: update reserved ASM keywords list for ASM statements and ASM blocks
 - sf.net #645: respect global namespace '.' and '..' prefixes in REDIM
 - rtlib: Add new higher baud rates to the serial driver 1500000,2000000,2500000,3000000,35000000,4000000
+- fbc: '-w error' command line option to report warnings as errors.  Warnings cause the error count to increase, warning messages are displayed as "error warning...", compilation / assembly / linking aborts, fbc exits with an error code
 
 [fixed]
 - github #315: set parameters when calling SCREENCONTROL (was broken in fbc 1.08.0 due to new LONG/LONGINT SCREENCONTROL API's)

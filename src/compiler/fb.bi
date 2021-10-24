@@ -132,6 +132,7 @@ enum FB_PDCHECK
 	FB_PDCHECK_CASTFUNCPTR  = &h00000040
 	FB_PDCHECK_CONSTNESS    = &h00000080
 	FB_PDCHECK_SUFFIX       = &h00000100
+	FB_PDCHECK_ERROR        = &h00000200  '' handle warnings as errors
 
 	FB_PDCHECK_ALL          = &hffffffff
 

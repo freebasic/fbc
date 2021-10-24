@@ -402,6 +402,7 @@ declare sub errInit( )
 declare sub errEnd( )
 declare sub errHideFurtherErrors( )
 declare function errGetCount( ) as integer
+
 declare sub errPushParamLocation _
 	( _
 		byval proc as FBSYMBOL_ ptr, _

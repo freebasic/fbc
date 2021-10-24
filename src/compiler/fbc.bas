@@ -2149,6 +2149,10 @@ private sub handleOpt _
 				value = FB_WARNINGMSGS_DEFAULT_LEVEL
 			end if
 
+		case "error"
+			fbSetOption( FB_COMPOPT_PEDANTICCHK, _
+						 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_ERROR )
+
 		case else
 			value = clng( arg )
 		end select
@@ -3950,6 +3954,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -w signedness    Enable type signedness warnings"
 	print "  -w constness     Enable const type warnings"
 	print "  -w suffix        Enable invalid suffix warnings"
+	print "  -w error         Report warnings as errors"
 	end if
 	print "  -Wa <a,b,c>      Pass options to 'as'"
 	print "  -Wc <a,b,c>      Pass options to 'gcc' (-gen gcc) or 'llc' (-gen llvm)"

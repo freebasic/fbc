@@ -704,6 +704,10 @@ sub errReportWarnEx _
 		exit sub
 	end if
 
+	if( fbPdCheckIsSet( FB_PDCHECK_ERROR ) ) then
+		errctx.cnt += 1
+	end if
+
 	if( errctx.inited > 0 ) then
 		msgex = hMakeParamDesc( msgex )
 	end if
@@ -721,6 +725,10 @@ sub errReportWarnEx _
 		print "(" & linenum & ")";
 	else
 		print "()";
+	end if
+
+	if( fbPdCheckIsSet( FB_PDCHECK_ERROR ) ) then
+		print " error";
 	end if
 
 	print " warning " & msgnum & "(" & warningMsgs(msgnum).level & "): ";
