@@ -1976,9 +1976,9 @@ private sub hemitvariable( byval sym as FBSYMBOL ptr )
 	end if
 
 	is_global = symbGetAttrib( sym ) and _
-	(FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or _
-	FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_static or _
-	FB_SYMBATTRIB_SHARED)
+		(FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or _
+		FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_STATIC or _
+		FB_SYMBATTRIB_SHARED)
 
 	if( is_global ) then
 		' asm_section(".data")

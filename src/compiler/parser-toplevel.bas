@@ -62,18 +62,20 @@ sub	parserInit( )
 
 	parserLetInit( )
 
+	parserAsmInit( )
+
 end sub
 
 '':::::
 sub	parserEnd( )
+
+	parserAsmEnd( )
 
 	parserLetEnd( )
 
 	parserProcCallEnd( )
 
 	parserCompoundStmtEnd( )
-
-	parserInlineAsmEnd( )
 
 end sub
 

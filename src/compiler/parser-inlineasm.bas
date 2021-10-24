@@ -19,7 +19,7 @@
 '' declared (such that, for example, a call to f becomes a call to F@0).
 ''
 
-dim shared asmKeywordsX86(0 to ...) as const zstring ptr => _
+dim shared inlineAsmKeywordsX86(0 to ...) as const zstring ptr => _
 { _
 	@"byte", @"ptr", @"offset", _
 	@"aaa", @"aad", @"aam", @"aas", @"adc", @"add", @"addpd", @"addps", @"addsd", @"addss", @"and", @"andpd", @"andps", _
@@ -76,9 +76,9 @@ dim shared asmKeywordsX86(0 to ...) as const zstring ptr => _
 	@"pmulhrw", @"pswapw", @"femms", @"prefetch", @"prefetchw", @"pfnacc", @"pfpnacc", @"pswapd", @"pmulhuw" _
 }
 
-'' Ditto as above: - (!!!TODO!!! - add these symbols to the global namespace so we don't have 
-'' shared variables and procedure names with the same name as intel syntax reserved words)
-dim shared asmGlobalKeywordsX86(0 to ...) as zstring ptr => _
+'' Ditto as above, but reserve on the extern keyword list.  Any public symbol having the
+'' same name will conflict with assembly usage.
+dim shared globalAsmKeywordsX86(0 to ...) as zstring ptr => _
 { _
 	@"dl", @"di", @"si", @"cl", @"bl", @"al", _
 	@"bp", @"sp", @"dx", @"cx", @"bx", @"ax", _
@@ -108,57 +108,102 @@ dim shared asmGlobalKeywordsX86(0 to ...) as zstring ptr => _
 
 type AsmKeywordsInfo
 	inited as integer
-	hash as THASH     '' hash of all words pre-defined in asmKeywordsX86() and user added words
+	hash as THASH     '' hash of all words pre-defined in inline|globalAsmKeywordsX86() and user added words
 	list as TLIST     '' only the user added words - will be deallocated when parser ends
 end type
 
-dim shared asmkeywords as AsmKeywordsInfo
+dim shared inlineAsmKeywords as AsmKeywordsInfo
+dim shared globalAsmKeywords as AsmKeywordsInfo
 
-private sub hInitAsmKeywords( )
+private sub hAddAsmKeywords( byref info as AsmKeywordsInfo, keywords() as const zstring ptr )
+	for i as integer = 0 to ubound( keywords )
+		hashAdd( @info.hash, keywords(i), cast( any ptr, INVALID ), INVALID )
+	next
+end sub
+
+private sub hInitInlineAsmKeywords( )
 	'' TODO: support x86_64, arm, aarch64; select keyword list based on compilation target
-	if( asmkeywords.inited = FALSE ) then
-		listInit( @asmkeywords.list, 8, sizeof( zstring ptr ) )
-		hashInit( @asmkeywords.hash, 800 )
-		for i as integer = 0 to ubound( asmKeywordsX86 )
-			hashAdd( @asmkeywords.hash, asmKeywordsX86(i), cast( any ptr, INVALID ), INVALID )
-		next
-		for i as integer = 0 to ubound( asmGlobalKeywordsX86 )
-			hashAdd( @asmkeywords.hash, asmGlobalKeywordsX86(i), cast( any ptr, INVALID ), INVALID )
-		next
-		asmkeywords.inited = TRUE
+	if( inlineAsmKeywords.inited = FALSE ) then
+		listInit( @inlineAsmKeywords.list, 8, sizeof( zstring ptr ) )
+		hashInit( @inlineAsmKeywords.hash, 800 )
+		hAddAsmKeywords( inlineAsmKeywords, inlineAsmKeywordsX86() )
+		hAddAsmKeywords( inlineAsmKeywords, globalAsmKeywordsX86() )
+		inlineAsmKeywords.inited = TRUE
 	end if
 end sub
 
-private function hIsAsmKeyword( byval text as const zstring ptr ) as integer
-	hInitAsmKeywords( )
-	function = (hashLookup( @asmkeywords.hash, text ) <> NULL)
-end function
-
-function parserInlineAsmAddKeyword( byval id as const zstring ptr ) as integer
-	hInitAsmKeywords( )
-	if( hIsAsmKeyword( id ) ) then
-		return FALSE
+private sub hInitGlobalAsmKeywords( )
+	if( globalAsmKeywords.inited = FALSE ) then
+		listInit( @globalAsmKeywords.list, 8, sizeof( zstring ptr ) )
+		hashInit( @globalAsmKeywords.hash, 200 )
+		'' TODO: support x86_64, arm, aarch64; select keyword list based on compilation target
+		select case( fbGetCpuFamily( ) )
+		case FB_CPUFAMILY_X86, FB_CPUFAMILY_X86_64
+			hAddAsmKeywords( globalAsmKeywords, globalAsmKeywordsX86() )
+		end select
+		globalAsmKeywords.inited = TRUE
 	end if
+end sub
 
-	dim as zstring ptr ptr s = listNewNode( @asmkeywords.list )
-	*s = callocate( len(*id) + 1 )
-	**s = lcase(*id)
-	hashAdd( @asmkeywords.hash, *s, cast( any ptr, INVALID ), INVALID )
-
-	return TRUE
-end function
-
-sub parserInlineAsmEnd( )
-	if( asmkeywords.inited ) then
-		hashEnd( @asmkeywords.hash )
-		dim s as zstring ptr ptr = listGetHead( @asmkeywords.list )
+private sub hAsmKeywordsEnd( byref info as AsmKeywordsInfo )
+	if( info.inited ) then
+		hashEnd( @info.hash )
+		dim s as zstring ptr ptr = listGetHead( @info.list )
 		while( s )
  			deallocate( *s )
 			s = listGetNext( s )
 		wend
-		listEnd( @asmkeywords.list )
-		asmkeywords.inited = FALSE
+		listEnd( @info.list )
+		info.inited = FALSE
 	end if
+end sub
+
+private function hIsInlineAsmKeyword( byval id as const zstring ptr ) as integer
+	hInitInlineAsmKeywords( )
+	function = (hashLookup( @inlineAsmKeywords.hash, id ) <> NULL)
+end function
+
+private sub hAddAsmKeyword( byref info as AsmKeywordsInfo, byval id as const zstring ptr )
+	dim as zstring ptr ptr s = listNewNode( @info.list )
+	*s = callocate( len(*id) + 1 )
+	**s = *id
+	hashAdd( @info.hash, *s, cast( any ptr, INVALID ), INVALID )
+end sub
+
+function parserInlineAsmAddKeyword( byval id as const zstring ptr ) as integer
+	static as zstring * FB_MAXLITLEN+1 text
+	text = lcase( *id )
+	hInitInlineAsmKeywords( )
+	if( hIsInlineAsmKeyword( @text ) ) then
+		return FALSE
+	end if
+	hAddAsmKeyword( inlineAsmKeywords, @text )
+	return TRUE
+end function
+
+function parserGlobalAsmAddKeyword( byval id as const zstring ptr ) as integer
+	static as zstring * FB_MAXLITLEN+1 text
+	text = lcase( *id )
+	if( parserIsGlobalAsmKeyword( @text ) ) then
+		return FALSE
+	end if
+	hAddAsmKeyword( globalAsmKeywords, @text )
+	return TRUE
+end function
+
+function parserIsGlobalAsmKeyword( byval id as const zstring ptr ) as integer
+	'' no need to call hInitGlobalAsmKeywords( ) 
+	'' - it will already have been called from parserInit( )/parserAsmInit( )
+	function = (hashLookup( @GlobalAsmKeywords.hash, lcase(*id) ) <> NULL)
+end function
+
+sub parserAsmInit( )
+	hInitGlobalAsmKeywords( )
+end sub
+
+sub parserAsmEnd( )
+	hAsmKeywordsEnd( globalAsmKeywords )
+	hAsmKeywordsEnd( inlineAsmKeywords )
 end sub
 
 const LEX_FLAGS = (LEXCHECK_NOWHITESPC or LEXCHECK_NOLETTERSUFFIX)
@@ -211,7 +256,7 @@ sub cAsmCode()
 					doskip = TRUE
 				end if
 
-			elseif( hIsAsmKeyword( lcase(text) ) = FALSE ) then
+			elseif( hIsInlineAsmKeyword( lcase(text) ) = FALSE ) then
 				dim as FBSYMBOL ptr base_parent = any
 
 				chain_ = cIdentifier( base_parent )

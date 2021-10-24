@@ -241,9 +241,13 @@ enum FB_VAREXPROPT
 	FB_VAREXPROPT_ISASSIGN     = &h00000010  '' Used by SWAP to disallow CALLs etc.
 end enum
 
-declare sub parserInlineAsmEnd( )
+declare sub parserAsmInit( )
+declare sub parserAsmEnd( )
 
 declare function parserInlineAsmAddKeyword( byval id as const zstring ptr ) as integer
+
+declare function parserGlobalAsmAddKeyword( byval id as const zstring ptr ) as integer
+declare function parserIsGlobalAsmKeyword( byval id as const zstring ptr ) as integer
 
 declare sub cProgram()
 

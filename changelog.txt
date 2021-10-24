@@ -49,6 +49,7 @@ Version 1.09.0
 - fbc: '#pragma reserve symbol' statement will reserve a symbol name in the current scope / namespace and generate an error if the symbol redefined or is used in an expression
 - fbc: '#pragma reserve (asm) symbol' statement will reserve an ASM symbol name in all ASM statements and blocks
 - sf.net #515: fbc: update reserved ASM keywords list for ASM statements and ASM blocks
+- fbc: '#pragma reserve (extern) symbol' reserves global asm symbols.  fbc shows a warning if a reserved symbol is used for a public sub or shared variable in the global namespace
 - sf.net #645: respect global namespace '.' and '..' prefixes in REDIM
 - rtlib: Add new higher baud rates to the serial driver 1500000,2000000,2500000,3000000,35000000,4000000
 - fbc: '-w error' command line option to report warnings as errors.  Warnings cause the error count to increase, warning messages are displayed as "error warning...", compilation / assembly / linking aborts, fbc exits with an error code
@@ -82,6 +83,7 @@ Version 1.09.0
 - sf.net #942: string to wstring conversions causing a run-time crash if the string contained invalid multi-byte characters due to unhandled error result in the runtime library
 - sf.net #941: dim/redim of extern array causes compiler fail - add error recovery in rtlArrayRedim() for bad integer conversions of bounds
 - sf.net #935: bad code causes fbc to fail internal assert - adjust the internal assert to allow for actual generated code in IIF() expressions
+- sf.net #515: fbc: show a warning if a public sub or a shared variable have the same name as global asm keywords (x86 and x86_64 only)
 
 
 Version 1.08.0
