@@ -78,7 +78,7 @@ dim shared inlineAsmKeywordsX86(0 to ...) as const zstring ptr => _
 
 '' Ditto as above, but reserve on the extern keyword list.  Any public symbol having the
 '' same name will conflict with assembly usage.
-dim shared globalAsmKeywordsX86(0 to ...) as zstring ptr => _
+dim shared globalAsmKeywordsX86(0 to ...) as const zstring ptr => _
 { _
 	@"dl", @"di", @"si", @"cl", @"bl", @"al", _
 	@"bp", @"sp", @"dx", @"cx", @"bx", @"ax", _
@@ -115,19 +115,28 @@ end type
 dim shared inlineAsmKeywords as AsmKeywordsInfo
 dim shared globalAsmKeywords as AsmKeywordsInfo
 
+#if 0
+!!!FIXME!!! - we'd like to use this sub, but see https://sourceforge.net/p/fbc/bugs/944/
 private sub hAddAsmKeywords( byref info as AsmKeywordsInfo, keywords() as const zstring ptr )
 	for i as integer = 0 to ubound( keywords )
 		hashAdd( @info.hash, keywords(i), cast( any ptr, INVALID ), INVALID )
 	next
 end sub
+#else
+#macro hAddAsmKeywords( info, keywords )
+	for i as integer = 0 to ubound( keywords )
+		hashAdd( @info.hash, keywords(i), cast( any ptr, INVALID ), INVALID )
+	next
+#endmacro
+#endif
 
 private sub hInitInlineAsmKeywords( )
 	'' TODO: support x86_64, arm, aarch64; select keyword list based on compilation target
 	if( inlineAsmKeywords.inited = FALSE ) then
 		listInit( @inlineAsmKeywords.list, 8, sizeof( zstring ptr ) )
 		hashInit( @inlineAsmKeywords.hash, 800 )
-		hAddAsmKeywords( inlineAsmKeywords, inlineAsmKeywordsX86() )
-		hAddAsmKeywords( inlineAsmKeywords, globalAsmKeywordsX86() )
+		hAddAsmKeywords( inlineAsmKeywords, inlineAsmKeywordsX86 )
+		hAddAsmKeywords( inlineAsmKeywords, globalAsmKeywordsX86 )
 		inlineAsmKeywords.inited = TRUE
 	end if
 end sub
@@ -139,7 +148,7 @@ private sub hInitGlobalAsmKeywords( )
 		'' TODO: support x86_64, arm, aarch64; select keyword list based on compilation target
 		select case( fbGetCpuFamily( ) )
 		case FB_CPUFAMILY_X86, FB_CPUFAMILY_X86_64
-			hAddAsmKeywords( globalAsmKeywords, globalAsmKeywordsX86() )
+			hAddAsmKeywords( globalAsmKeywords, globalAsmKeywordsX86 )
 		end select
 		globalAsmKeywords.inited = TRUE
 	end if
