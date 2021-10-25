@@ -159,7 +159,7 @@ private sub hAsmKeywordsEnd( byref info as AsmKeywordsInfo )
 		hashEnd( @info.hash )
 		dim s as zstring ptr ptr = listGetHead( @info.list )
 		while( s )
- 			deallocate( *s )
+			deallocate( *s )
 			s = listGetNext( s )
 		wend
 		listEnd( @info.list )
@@ -201,7 +201,7 @@ function parserGlobalAsmAddKeyword( byval id as const zstring ptr ) as integer
 end function
 
 function parserIsGlobalAsmKeyword( byval id as const zstring ptr ) as integer
-	'' no need to call hInitGlobalAsmKeywords( ) 
+	'' no need to call hInitGlobalAsmKeywords( )
 	'' - it will already have been called from parserInit( )/parserAsmInit( )
 	function = (hashLookup( @GlobalAsmKeywords.hash, lcase(*id) ) <> NULL)
 end function

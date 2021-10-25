@@ -41,12 +41,12 @@ end function
 
 '':::::
 ''NegNotExpression=   ('-'|'+'|) ExpExpression
-''				  |   NOT RelExpression
-''				  |   HighestPresExpr .
+''                |   NOT RelExpression
+''                |   HighestPresExpr .
 ''
 function cNegNotExpression _
 	( _
-	 	_
+		_
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr negexpr = any
@@ -66,11 +66,11 @@ function cNegNotExpression _
 			negexpr = astNewUOP( AST_OP_NEG, negexpr )
 		end if
 
-    	if( negexpr = NULL ) Then
+		if( negexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a new node
 			negexpr = astNewCONSTi( 0 )
-    	end if
+		end if
 
 		return negexpr
 
@@ -88,13 +88,13 @@ function cNegNotExpression _
 			negexpr = astNewUOP( AST_OP_PLUS, negexpr )
 		end if
 
-    	if( negexpr = NULL ) Then
+		if( negexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a new node
 			negexpr = astNewCONSTi( 0 )
-    	end if
+		end if
 
-    	return negexpr
+		return negexpr
 
 	'' NOT
 	case FB_TK_NOT
@@ -110,11 +110,11 @@ function cNegNotExpression _
 			negexpr = astNewUOP( AST_OP_NOT, negexpr )
 		end if
 
-    	if( negexpr = NULL ) Then
+		if( negexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a new node
 			negexpr = astNewCONSTi( 0 )
-    	end if
+		end if
 
 		return negexpr
 	end select
@@ -151,15 +151,15 @@ function cStrIdxOrMemberDeref _
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		select case( lexGetToken( ) )
 		case CHAR_DOT
-    		lexSkipToken( LEXCHECK_NOPERIOD )
+			lexSkipToken( LEXCHECK_NOPERIOD )
 
 			expr = cMemberAccess( dtype, subtype, expr )
 			if( expr = NULL ) then
 				return NULL
 			end if
 
- 			dtype = astGetFullType( expr )
- 			subtype = astGetSubType( expr )
+			dtype = astGetFullType( expr )
+			subtype = astGetSubType( expr )
 
 		'' ('->' | '[')? (possible on non-pointer UDT types due to operator overloading)
 		case FB_TK_FIELDDEREF, CHAR_LBRACKET
@@ -198,13 +198,13 @@ end function
 
 ''::::
 '' HighestPrecExpr=   AddrOfExpression
-''				  |	  ( DerefExpr
-''				  	  |	CastingExpr
-''					  | PtrTypeCastingExpr
-''				  	  | ParentExpression
-''					  ) FuncPtrOrMemberDeref?
-''				  |	  AnonType
-''				  |   Atom .
+''                |   ( DerefExpr
+''                    | CastingExpr
+''                    | PtrTypeCastingExpr
+''                    | ParentExpression
+''                    ) FuncPtrOrMemberDeref?
+''                |   AnonType
+''                |   Atom .
 ''
 function cHighestPrecExpr _
 	( _
@@ -397,11 +397,11 @@ private function hCast( byval options as AST_CONVOPT ) as ASTNODE ptr
 end function
 
 '':::::
-''DerefExpression	= 	DREF+ HighestPresExpr .
+''DerefExpression   =   DREF+ HighestPresExpr .
 ''
 function cDerefExpression( ) as ASTNODE ptr
-    dim as integer derefcnt = any
-    dim as ASTNODE ptr expr = any
+	dim as integer derefcnt = any
+	dim as ASTNODE ptr expr = any
 
 	'' DREF?
 	if( lexGetToken( ) <> FB_TK_DEREFCHAR ) then
@@ -409,7 +409,7 @@ function cDerefExpression( ) as ASTNODE ptr
 	end if
 
 	'' DREF+
-    derefcnt = 0
+	derefcnt = 0
 	do
 		lexSkipToken( )
 		derefcnt += 1
@@ -446,17 +446,17 @@ private function hProcPtrBody _
 
 	'' resolve overloaded procs
 	if( (symbIsOverloaded( proc ) <> 0) or (check_exact <> FALSE) ) then
-        if( parser.ctxsym <> NULL ) then
-        	if( symbIsProc( parser.ctxsym ) ) then
-        		sym = symbFindOverloadProc( proc, parser.ctxsym )
-        		if( sym <> NULL ) then
-        			proc = sym
+		if( parser.ctxsym <> NULL ) then
+			if( symbIsProc( parser.ctxsym ) ) then
+				sym = symbFindOverloadProc( proc, parser.ctxsym )
+				if( sym <> NULL ) then
+					proc = sym
 				elseif( check_exact ) then
 					errReport( FB_ERRMSG_NOMATCHINGPROC, TRUE )
 					return astNewCONSTi( 0 )
-        		end if
-        	end if
-        end if
+				end if
+			end if
+		end if
 	end if
 
 	'' taking the address of an method? pointer to methods not supported yet..
@@ -545,9 +545,9 @@ end function
 
 '':::::
 ''AddrOfExpression  =   VARPTR '(' HighPrecExpr ')'
-''					|   PROCPTR '(' Proc ('('')')? ')'
-'' 					| 	'@' (Proc ('('')')? | HighPrecExpr)
-''					|   SADD|STRPTR '(' Variable{str}|Const{str}|Literal{str} ')' .
+''                  |   PROCPTR '(' Proc ('('')')? ')'
+''                  |   '@' (Proc ('('')')? | HighPrecExpr)
+''                  |   SADD|STRPTR '(' Variable{str}|Const{str}|Literal{str} ')' .
 ''
 function cAddrOfExpression( ) as ASTNODE ptr
 	dim as ASTNODE ptr expr = NULL
@@ -556,18 +556,18 @@ function cAddrOfExpression( ) as ASTNODE ptr
 	if( lexGetToken( ) = FB_TK_ADDROFCHAR ) then
 		lexSkipToken( )
 
-  		'' not inside a WITH block?
-  		dim as integer check_id = TRUE
+		'' not inside a WITH block?
+		dim as integer check_id = TRUE
 		if( parser.stmt.with ) then
-  			if( lexGetToken( ) = CHAR_DOT ) then
-  				'' not a '..'?
-  				check_id = (lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) = CHAR_DOT)
-  			end if
+			if( lexGetToken( ) = CHAR_DOT ) then
+				'' not a '..'?
+				check_id = (lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) = CHAR_DOT)
+			end if
 		end if
 
-  		'' check if the address of function is being taken
-  		dim as FBSYMCHAIN ptr chain_ = NULL
-  		dim as FBSYMBOL ptr sym = NULL, base_parent = NULL
+		'' check if the address of function is being taken
+		dim as FBSYMCHAIN ptr chain_ = NULL
+		dim as FBSYMBOL ptr sym = NULL, base_parent = NULL
 
 		if( check_id ) then
 			chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )

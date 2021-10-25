@@ -287,7 +287,7 @@ private function hCheckIdToken( byval has_parent as integer ) as integer
 		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
 			'' if inside a namespace, symbols can't contain periods (.)'s
 			if( symbIsGlobalNamespc( ) = FALSE ) then
-  				if( lexGetPeriodPos( ) > 0 ) then
+				if( lexGetPeriodPos( ) > 0 ) then
 					errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
 				end if
 			end if
@@ -650,7 +650,7 @@ private function hCheckOpOvlParams _
 		'' self only if FOR, STEP and NEXT
 		if( astGetOpIsSelf( op ) ) then
 			min_params = 0
-	'			min_params = iif( op = AST_OP_NEXT, 1, 0 )
+	'           min_params = iif( op = AST_OP_NEXT, 1, 0 )
 			max_params = 1
 			if( op = AST_OP_NEXT ) then
 				min_params += 1
@@ -671,7 +671,7 @@ private function hCheckOpOvlParams _
 	dim as integer real_params = params - iif( is_method, 1, 0 )
 	if( (real_params < min_params) or (real_params > max_params) ) then
 		errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
-	   	exit function
+		exit function
 	end if
 
 	if( params > 0 ) then
@@ -759,25 +759,25 @@ private function hCheckOpOvlParams _
 			case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
 				if( params > 1 ) then
 					dim as FBSYMBOL ptr nxtparam = param->next
-	
+
 					hCheckParam( proc, nxtparam, 2 )
-	
+
 					'' is the 1st param an UDT?
 					select case symbGetType( param )
 					case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
-	
+
 					case else
 						'' try the 2nd one..
 						select case symbGetType( nxtparam )
 						case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
-	
+
 						case else
 							hParamError( proc, 2, FB_ERRMSG_ATLEASTONEPARAMMUSTBEANUDT )
 							exit function
 						end select
 					end select
 				end if
-	
+
 			'' FOR, STEP or NEXT?
 			case AST_OP_FOR, AST_OP_STEP, AST_OP_NEXT
 				if( astGetOpIsSelf( op ) ) then
@@ -786,15 +786,15 @@ private function hCheckOpOvlParams _
 						if( is_method ) then
 							param = param->next
 						end if
-	
+
 						'' must be of the same type as parent
 						if( (param = NULL) or (parent = NULL) ) then
 							hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
 							exit function
 						end if
-	
+
 						hCheckParam( proc, param, 1 )
-	
+
 						'' same type?
 						if( (symbGetType( param ) <> symbGetType( parent )) or _
 						    (symbGetSubtype( param ) <> parent) ) then
@@ -921,11 +921,11 @@ private function hCheckIsSelfCloneByval _
 	if( options and FB_PROCOPT_ISPROTO ) then
 		param = param->next
 	end if
-	
+
 	if( param = NULL ) then
 		exit function
 	end if
-	
+
 	'' struct?
 	if( symbGetType( param ) <> FB_DATATYPE_STRUCT ) then
 		exit function
@@ -935,7 +935,7 @@ private function hCheckIsSelfCloneByval _
 	if( symbGetSubtype( param ) <> parent ) then
 		exit function
 	end if
-	
+
 	'' byval?
 	if( symbGetParamMode( param ) <> FB_PARAMMODE_BYVAL ) then
 		exit function
@@ -947,7 +947,7 @@ private function hCheckIsSelfCloneByval _
 			exit function
 		end if
 	end if
-	
+
 	'' At least one additional non-optional parameter?
 	param = param->next
 	while( param <> NULL )
@@ -1237,7 +1237,7 @@ function cProcHeader _
 
 		if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
 			if( dtype <> FB_DATATYPE_INVALID ) then
-				attrib or= FB_SYMBATTRIB_SUFFIXED 
+				attrib or= FB_SYMBATTRIB_SUFFIXED
 			end if
 		end if
 
@@ -1576,7 +1576,7 @@ function cProcHeader _
 
 		fbSetOption( FB_COMPOPT_EXPORT, TRUE )
 		'''''if( fbGetOption( FB_COMPOPT_EXPORT ) = FALSE ) then
-		'''''	errReportWarn( FB_WARNINGMSG_CANNOTEXPORT )
+		'''''   errReportWarn( FB_WARNINGMSG_CANNOTEXPORT )
 		'''''end if
 		attrib or= FB_SYMBATTRIB_EXPORT or FB_SYMBATTRIB_PUBLIC
 	end if
@@ -1707,7 +1707,7 @@ function cProcHeader _
 			end if
 		end if
 	end if
-	
+
 	'' Register global ctors/dtors
 	if( stats and FB_SYMBSTATS_GLOBALCTOR ) then
 		if( proc->attrib and (FB_SYMBATTRIB_VIS_PRIVATE or FB_SYMBATTRIB_VIS_PROTECTED) ) then
