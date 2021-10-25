@@ -445,7 +445,7 @@ private function hProcPtrBody _
 	end if
 
 	'' resolve overloaded procs
-	if( symbIsOverloaded( proc ) or check_exact ) then
+	if( (symbIsOverloaded( proc ) <> 0) or (check_exact <> FALSE) ) then
         if( parser.ctxsym <> NULL ) then
         	if( symbIsProc( parser.ctxsym ) ) then
         		sym = symbFindOverloadProc( proc, parser.ctxsym )
