@@ -1,0 +1,1 @@
+pragma-reserve-13.bas(9) error warning 47(1): Use of reserved global or backend symbol, symbol
