@@ -141,8 +141,12 @@ private sub pragmaReserve( )
 					exit sub
 				end if
 
-				haveAsm    = ( lexGetToken( ) = FB_TK_ASM )
-				haveExtern = ( lexGetToken( ) = FB_TK_EXTERN )
+				select case lexGetToken( )
+				case FB_TK_ASM
+					haveAsm    = TRUE
+				case FB_TK_EXTERN
+					haveExtern = TRUE
+				end select
 
 				'' ASM|EXTERN
 				lexSkipToken( LEXCHECK_POST_SUFFIX )

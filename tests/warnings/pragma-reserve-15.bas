@@ -4,6 +4,7 @@
 
 '' #cmdline "-w error"
 
-#pragma reserve (extern) symbol
+#pragma reserve (extern,asm) symbol
 
-dim shared symbol as integer
+sub symbol
+end sub
