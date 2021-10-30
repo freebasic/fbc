@@ -27,3 +27,4 @@ Print Int(Rnd * 10) + 1
 '' prints a random integral number in the range [69, 420], or {69 <= n <= 420}.
 ''     (because: 69 <= rnd_range(69, 421) < 421)
 Print Int(rnd_range(69, 421))
+	

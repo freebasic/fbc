@@ -15,3 +15,4 @@ Dim As String foo
 #if TypeOf(foo) = TypeOf(String)
   #print "It's a String!"
 #endif
+		

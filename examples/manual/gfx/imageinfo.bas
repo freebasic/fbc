@@ -35,3 +35,4 @@ Put (10, 10), image
 ImageDestroy( image )
 
 Sleep
+	

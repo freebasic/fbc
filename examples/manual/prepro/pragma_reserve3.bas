@@ -6,6 +6,8 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPpPragmaReserve
 '' --------
 
+'' for x86_64
+
 #cmdline "-gen gas64 -r"
 #pragma reserve(Asm) xyz
 

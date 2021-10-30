@@ -12,7 +12,7 @@ End Sub
 Sub s( ByVal i As Integer )
 End Sub
 
-'----- Previously (fbc version < 1.09) was only possible with:
+'----- Previously (fbc version < 1.09.0) was only possible with:
 
 'Dim s1 As Sub()
 's1 = Procptr( s )
@@ -20,7 +20,7 @@ End Sub
 'Dim s2 As Sub( Byval i As Integer)
 's2 = Procptr( s )
 
-'----- Now (fbc version >= 1.09) is possible with:
+'----- Now (fbc version >= 1.09.0) is possible with:
 
 Var s1 = ProcPtr( s, Sub() )
 Var s2 = ProcPtr( s, Sub( ByVal i As Integer ) )

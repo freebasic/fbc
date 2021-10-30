@@ -6,25 +6,40 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPpPragmaReserve
 '' --------
 
-Dim As Integer variable1 = 1
+#pragma reserve myName1
+#pragma reserve myName2
+#pragma reserve myName3
+#pragma reserve myName4
+#pragma reserve (Extern) myName11
+#pragma reserve (Extern) myName12
+#pragma reserve (Extern) myName13
+#pragma reserve (Extern) myName14
+
+Dim As Integer myName1             '' error: Duplicated definition, myName1 in 'Dim As Integer myName1 ...
+Print myName1                      '' error: Illegal use of reserved symbol, found 'myName1' in 'Print myName1 ...
 
 Scope
-	#pragma reserve variable1
-	Print variable1
-	Dim As Integer variable1 = 2  '' error: Duplicated definition, variable1 in .....
+	Dim As Integer myName2         '' OK
+	Print myName2                  '' OK
 End Scope
 
-Dim Shared As Integer variable2 = 3
+Dim As Integer myName11            '' OK
+Print myName11
+Dim Shared As Integer myName12     '' warning: Use of reserved global or backend symbol, myName12
+Print myName12                     '' OK
 
-Sub s()
-	#pragma reserve variable2
-	Print variable2
-	Dim As Integer variable2 = 4  '' error: Duplicated definition, variable2 in .....
+Namespace N
+	Dim As Integer myName3         '' OK
+	Dim As Integer myName13        '' OK
+End Namespace
+Print N.myName3                    '' OK
+Print N.myName13                   '' OK
+
+Sub myName4()                      '' error: Duplicated definition, before ''' in 'Sub myName4() ...
 End Sub
+myName4()                          '' error: Illegal use of reserved symbol, found 'myName4' in 'myName4() ...
 
-Print variable1
-s()
-Print variable2
-
-Sleep
+Sub myName14()                     '' warning: Use of reserved global or backend symbol, myName14
+End Sub
+myName14()                         '' OK
 		

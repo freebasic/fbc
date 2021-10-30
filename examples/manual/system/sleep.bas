@@ -8,6 +8,7 @@
 
 Print "press a key"
 Sleep
-GetKey 'clear the keyboard buffer
+GetKey  '' clear the keyboard input buffer, and even in that code case, the 'Sleep' keyword can be outright omitted
 Print "waiting half second"
 Sleep 500
+	

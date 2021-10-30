@@ -20,3 +20,4 @@ Sleep
 Screen 0 
 ScreenInfo w, h, depth 
 Print "Desktop running at " + Str(w) + "x" + Str(h) + "x" + Str(depth); 
+	

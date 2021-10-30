@@ -49,3 +49,4 @@ Do
 	'' Stay in loop until user holds down CTRL and H at the same time
 	If MultiKey(SC_CONTROL) And MultiKey(SC_H) Then Exit Do
 Loop
+	
