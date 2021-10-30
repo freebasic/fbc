@@ -915,16 +915,6 @@ function is_header_text( byval token as WikiToken ptr ) as integer
 	return PAGEINFO_HEADER_MSG_NO_INTRO_TEXT
 end function
 
-'':::::
-#macro CHK_TOKEN( f )
-	if( token <> NULL ) then
-		if( msg = PAGEINFO_HEADER_MSG_NONE ) then
-			if( msg = PAGEINFO_HEADER_MSG_NONE ) then msg = f( token )
-			token = tokenlist->GetNext( token )
-		end if
-	end if
-#endmacro
-
 ''::::
 function Links_LoadFromPage_ScanHeader _
 	( _
@@ -935,6 +925,25 @@ function Links_LoadFromPage_ScanHeader _
 	/'
 		check that certain kinds of pages start off with correct formats
 	'/
+
+	#macro CHK_TOKEN( f )
+		if( token <> NULL ) then
+			if( msg = PAGEINFO_HEADER_MSG_NONE ) then
+				msg = f( token )
+				token = tokenlist->GetNext( token )
+			end if
+		end if
+	#endmacro
+
+	#macro SKP_TOKEN( tokenid )
+		if( token <> NULL ) then
+			if( msg = PAGEINFO_HEADER_MSG_NONE ) then
+				if( token->id = tokenid ) then
+					token = tokenlist->GetNext( token )
+				end if
+			end if
+		end if
+	#endmacro
 
 	dim as string text, sPage, sItem, sValue, sTitle, n
 	dim as CList ptr tokenlist
@@ -955,6 +964,7 @@ function Links_LoadFromPage_ScanHeader _
 		CHK_TOKEN( is_fbdoc_title )
 		CHK_TOKEN( is_horzline )
 		CHK_TOKEN( is_newline )
+		SKP_TOKEN( WIKI_TOKEN_BOLD )
 		CHK_TOKEN( is_header_text )
 
 	elseif lcase(left(sName,5)) = "catpg" then
