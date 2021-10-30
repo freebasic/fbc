@@ -1089,7 +1089,7 @@ function symbLookupInternallyMangledSubtype _
 
 	dim as FBSYMCHAIN ptr chain_ = any
 
-	if( parser.scope = FB_MAINSCOPE ) then
+	if( (parser.scope = FB_MAINSCOPE) or (symbGetCurrentNamespc( ) = @symbGetGlobalNamespc( )) ) then
 		'' When outside scopes, it's a global, because whichever symbol
 		'' uses this procptr proto/descriptor type can be globally
 		'' visible (global vars, procs, etc.)

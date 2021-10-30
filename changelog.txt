@@ -84,6 +84,7 @@ Version 1.09.0
 - sf.net #941: dim/redim of extern array causes compiler fail - add error recovery in rtlArrayRedim() for bad integer conversions of bounds
 - sf.net #935: bad code causes fbc to fail internal assert - adjust the internal assert to allow for actual generated code in IIF() expressions
 - sf.net #515: fbc: show a warning if a public sub or a shared variable have the same name as global asm keywords (x86 and x86_64 only)
+- sf.net #944: Array descriptors are defined more than once (gcc backend)
 
 
 Version 1.08.0
