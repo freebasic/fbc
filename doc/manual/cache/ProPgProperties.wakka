@@ -1,6 +1,7 @@
 {{fbdoc item="title" value="Properties"}}----
+Properties are a special mix of member variable and member procedure. 
 
-Properties are a special mix of member variable and member procedure. They provide a way to set or retrieve values of an object, through normal looking assignments or member accesses, but also let the object perform actions if it needs to update itself.
+They provide a way to set or retrieve values of an object, through normal looking assignments or member accesses, but also let the object perform actions if it needs to update itself.
 
 **{{anchor name="BASIC|Basic properties"}}**
 	Declaring and using setter and getter properties.
@@ -135,55 +136,55 @@ print w.get_title()
 	Here is an example demonstrating a text user interface window class allowing to set position and title using properties:
 	
 	{{fbdoc item="filename" value="examples/manual/proguide/udt/properties-tui.bas"}}%%(freebasic)
-Namespace tui
-	Type Point
-		Dim As Integer x, y
-	End Type
+namespace tui
+	type point
+		dim as integer x, y
+	end type
 
-	Type char
-		Dim As UByte value
-		Dim As UByte Color
-	End Type
+	type char
+		dim as ubyte value
+		dim as ubyte color
+	end type
 
-	Type Window
+	type window
 		'' public
-		Declare Constructor _
+		declare constructor _
 			( _
-				ByVal x As Integer = 1, ByVal y As Integer = 1, _
-				ByVal w As Integer = 20, ByVal h As Integer = 5, _
-				ByVal title As ZString Ptr = 0 _
+				x as integer = 1, y as integer = 1, _
+				w as integer = 20, h as integer = 5, _
+				title as zstring ptr = 0 _
 			)
 		
-		Declare Destructor
+		declare destructor
 
-		Declare Sub show
+		declare sub show
 
 		'' title property
-		Declare Property title As String
-		Declare Property title( ByRef new_title As String )
+		declare property title as string
+		declare property title( new_title as string )
 
 		'' position properties
-		Declare Property x As Integer
-		Declare Property x( ByVal new_x As Integer )
+		declare property x as integer
+		declare property x( new_x as integer )
 
-		Declare Property y As Integer
-		Declare Property y( ByVal new_y As Integer )
+		declare property y as integer
+		declare property y( new_y as integer )
 
-	Private:
-		Declare Sub redraw
-		Declare Sub remove
-		Declare Sub drawtitle
+	private:
+		declare sub redraw
+		declare sub remove
+		declare sub drawtitle
 
-		Dim As String p_title
-		Dim As Point Pos
-		Dim As Point siz
-	End Type
+		dim as string p_title
+		dim as point pos
+		dim as point siz
+	end type
 
-	Constructor Window _
+	constructor window _
 		( _
-			ByVal x_ As Integer, ByVal y_ As Integer, _
-			ByVal w_ As Integer, ByVal h_ As Integer, _
-			ByVal title_ As ZString Ptr _
+			x_ as integer, y_ as integer, _
+			w_ as integer, h_ as integer, _
+			title_ as zstring ptr _
 		)
 
 		pos.x = x_
@@ -191,97 +192,99 @@ Namespace tui
 		siz.x = w_
 		siz.y = h_
 
-		If( title_ = 0 ) Then
+		if( title_ = 0 ) then
 			title_ = @"untitled"
-		End If
+		end if
 
 		p_title = *title_
-	End Constructor
+	end constructor
 
-	Destructor Window
-		Color 7, 0
-		Cls
-	End Destructor
+	destructor window
+		color 7, 0
+		cls
+	end destructor
 
-	Property window.title As String
+	property window.title as string
 		title = p_title
-	End Property
+	end property
 
-	Property window.title( ByRef new_title As String )
+	property window.title( new_title as string )
 		p_title = new_title
 		drawtitle
-	End Property
+	end property
 
-	Property window.x As Integer
-		Return pos.x
-	End Property
+	property window.x as integer
+		return pos.x
+	end property
 
-	Property window.x( ByVal new_x As Integer )
+	property window.x( new_x as integer )
 		remove
 		pos.x = new_x
 		redraw
-	End Property
+	end property
 
-	Property window.y As Integer
-		Property = pos.y
-	End Property
+	property window.y as integer
+		property = pos.y
+	end property
 
-	Property window.y( ByVal new_y As Integer )
+	property window.y( new_y as integer )
 		remove
 		pos.y = new_y
 		redraw
-	End Property
+	end property
 
-	Sub window.show
+	sub window.show
 		redraw
-	End Sub
+	end sub
 
-	Sub window.drawtitle
-		Locate pos.y, pos.x
-		Color 15, 1
-		Print Space( siz.x );
-		Locate pos.y, pos.x + (siz.x \ 2) - (Len( p_title ) \ 2)
-		Print p_title;
-	End Sub
+	sub window.drawtitle
+		locate pos.y, pos.x
+		color 15, 1
+		print space( siz.x );
+		locate pos.y, pos.x + (siz.x \ 2) - (len( p_title ) \ 2)
+		print p_title;
+	end sub
 
-	Sub window.remove
-		Color 0, 0
-		For i As Integer = pos.y To pos.y + siz.y - 1
-			Locate i, pos.x
-			Print Space( siz.x );
-		Next
-	End Sub
+	sub window.remove
+		color 0, 0
+		var sp = space( siz.x )
+		for i as integer = pos.y to pos.y + siz.y - 1
+			locate i, pos.x
+			print sp;
+		next
+	end sub
 
-	Sub window.redraw
+	sub window.redraw
 		drawtitle
-		Color 8, 7
-		For i As Integer = pos.y + 1 To pos.y + siz.y - 1
-			Locate i, pos.x
-			Print Space( siz.x );
-		Next
-	End Sub
-End Namespace
+		color 8, 7
+		var sp = space( siz.x )
+		for i as integer = pos.y + 1 to pos.y + siz.y - 1
+			locate i, pos.x
+			print sp;
+		next
+	end sub
+end namespace
 
-Dim win As tui.window = tui.window( 3, 5, 50, 15 )
+dim win as tui.window = tui.window( 3, 5, 50, 15 )
 
 win.show
-Sleep 500
+sleep 500
 
 win.title = "Window 1"
-Sleep 250
+sleep 250
 win.x = win.x + 10
-Sleep 250
+sleep 250
 
 win.title = "Window 2"
-Sleep 250
+sleep 250
 win.y = win.y - 2
-Sleep 250
+sleep 250
 
-Locate 25, 1
-Color 7, 0
-Print "Press any key...";
+locate 25, 1
+color 7, 0
+print "Press any key...";
 
-Sleep
+sleep
 %%
 	
 	Note how updating the window's position or title automatically causes the window to be redrawn.

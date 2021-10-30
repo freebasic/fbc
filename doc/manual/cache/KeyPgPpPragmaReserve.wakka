@@ -4,9 +4,9 @@ Preprocessor directive
 {{fbdoc item="syntax"}}##
 		**#pragma reserve** //symbol//
 	##or##
-		**#pragma reserve** **(asm)** //symbol//
-	##or##
 		**#pragma reserve** **(extern)** //symbol//
+	##or##
+		**#pragma reserve** **(asm)** //symbol//
 	##or##
 		**#pragma reserve** **(asm, extern)** //symbol//)## or ##**#pragma reserve** **(extern, asm)** //symbol//)
 ##
@@ -18,12 +18,12 @@ Preprocessor directive
 	##**#pragma reserved**## statements are preprocessor directives that allow user to reserve symbol names by accessing to the internal symbol tables of the fbc compiler:
 		**""-""** ##**#pragma reserve** //symbol//##
 				statement will reserve a symbol name in the current scope / namespace and generate an error if the symbol is redefined or used in an expression.
-		**""-""** ##**#pragma reserve** **(asm)** //symbol//##
-				statement will reserve an ASM symbol name in all ASM statements and blocks.
 		**""-""** ##**#pragma reserve** **(extern)** //symbol//##
 				statement will reserve a global symbol name and generate a warning if the reserved symbol is used for a public sub or shared variable in the global namespace.
+		**""-""** ##**#pragma reserve** **(asm)** //symbol//##
+				statement will reserve an ASM symbol name in all ASM statements and blocks.
 		**""-""** ##**#pragma reserve** **(asm, extern)** //symbol//)## or ##**#pragma reserve** **(extern, asm)** //symbol//)##
-				Do both  previous statements: this statement will reserve a global ASM symbol name and generate a warning if the reserved symbol is used for a public sub or shared variable in the global namespace.
+				Do both  previous statements: this combined statement will reserve a global ASM symbol name and generate a warning if the reserved symbol is used for a public sub or shared variable in the global namespace.
 				
 	The primary objective with the two first syntaxes is to create a mechanism to help deal with some symbols causing compile errors or run-time crashes.
 	Some symbol names in fbc compiler are emitted as-is to the backend compilers (gcc, as, etc) where the symbol name is a reserved keyword by the backend compiler.
