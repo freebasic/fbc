@@ -175,7 +175,7 @@ function symbAddArrayDescriptorType _
 	'' dtype), that may end up being deleted before the global.
 	attrib = FB_SYMBATTRIB_NONE
 	pattrib = FB_PROCATTRIB_NONE
-	sym = symbLookupInternallyMangledSubtype( id, attrib, pattrib, NULL, symtb, hashtb )
+	sym = symbLookupInternallyMangledSubtype( id, FALSE, attrib, pattrib, NULL, symtb, hashtb )
 	if( sym ) then
 		return sym
 	end if

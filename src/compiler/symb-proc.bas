@@ -1080,6 +1080,7 @@ end function
 function symbLookupInternallyMangledSubtype _
 	( _
 		byval id as zstring ptr, _
+		byval scoped as integer, _
 		byref attrib as FB_SYMBATTRIB, _
 		byref pattrib as FB_PROCATTRIB, _
 		byref parent as FBSYMBOL ptr, _
@@ -1089,7 +1090,22 @@ function symbLookupInternallyMangledSubtype _
 
 	dim as FBSYMCHAIN ptr chain_ = any
 
-	if( (parser.scope = FB_MAINSCOPE) or (symbGetCurrentNamespc( ) = @symbGetGlobalNamespc( )) ) then
+	dim is_global as integer = FALSE
+
+	'' !!!FIXME!!! - this is likely the wrong place to fix sf.net #944
+	'' more likely is that C emitter needs to emit the array descriptors
+	'' where they are needed instead of moving them to global scope
+	if( scoped ) then
+		if( (parser.scope = FB_MAINSCOPE) ) then
+			is_global = TRUE
+		end if
+	else
+		if( (parser.scope = FB_MAINSCOPE) or (symbGetCurrentNamespc( ) = @symbGetGlobalNamespc( )) ) then
+			is_global = TRUE
+		end if
+	end if
+
+	if( is_global ) then
 		'' When outside scopes, it's a global, because whichever symbol
 		'' uses this procptr proto/descriptor type can be globally
 		'' visible (global vars, procs, etc.)
@@ -1191,7 +1207,7 @@ function symbAddProcPtr _
 	id += "$"
 	id += hex( mode )
 
-	sym = symbLookupInternallyMangledSubtype( id, attrib, pattrib, parent, symtb, hashtb )
+	sym = symbLookupInternallyMangledSubtype( id, TRUE, attrib, pattrib, parent, symtb, hashtb )
 	if( sym ) then
 		return sym
 	end if
