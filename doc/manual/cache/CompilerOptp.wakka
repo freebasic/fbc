@@ -11,9 +11,6 @@ Add a path to search for libraries
 {{fbdoc item="desc"}}
 	The ##-p## compiler option adds a path to search for libraries. By default, libraries are looked for in the system FreeBASIC libraries directory and in the current directory.
 
-{{fbdoc item="ver"}}
-	- Since fbc 1.00.0
-
 {{fbdoc item="see"}}
 	- ##[[KeyPgPplibpath|#libpath]]##
 	- [[CompilerCmdLine|Using the Command Line]]

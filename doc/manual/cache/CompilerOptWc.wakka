@@ -15,9 +15,6 @@ Pass options to the C compiler when using the C emitter (-gen gcc).
 		##fbc -gen gcc -Wc -m32,--verbose,-include,some-header.h##
 		##fbc -gen gcc -Wc -m32 -Wc --verbose -Wc -include -Wc some-header.h##
 
-{{fbdoc item="ver"}}
-	- Since fbc 1.00.0
-
 {{fbdoc item="see"}}
 	- [[CompilerOptgen|Compiler Option: -gen]]
 	- [[CompilerOptWa|Compiler Option: -Wa]]

@@ -7,9 +7,6 @@ Be verbose
 {{fbdoc item="desc"}}
 	The ##-v## compiler option activates verbose mode. In this mode the compiler shows its actions step by step
 
-{{fbdoc item="ver"}}
-	- Since fbc 1.00.0
-
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]
 

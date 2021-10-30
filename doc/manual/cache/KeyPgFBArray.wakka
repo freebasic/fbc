@@ -2,7 +2,7 @@
 Pre-defined structure (UDT) and procedure declarations from the ##fbc-int/array.bi## include file, usable to access the array descriptor data fields.
 
 {{fbdoc item="syntax"}}
-	From ##./inc/fbc-int/array.bi (for fbc versions >= 1.08)##:
+	From ##./inc/fbc-int/array.bi##:
 		%%(freebasic)
 # if __FB_LANG__ = "fb"
 namespace FBC
@@ -130,7 +130,7 @@ end namespace
 		Retrieves a pointer to the array descriptor, returning a pointer to ##FBC.ARRAY## that is read only.
 
 {{fbdoc item="ex"}}
-	Very simple syntaxic example highlighting the access capabilities to the data fields of an array descriptor (for fbc versions >= 1.08):
+	Very simple syntaxic example highlighting the access capabilities to the data fields of an array descriptor:
 		{{fbdoc item="filename" value="examples/manual/check/FBArray.bas"}}%%(freebasic)
 #include "fbc-int/array.bi"
 

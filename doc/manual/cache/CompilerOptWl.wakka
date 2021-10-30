@@ -11,9 +11,6 @@ Pass options to linker
 {{fbdoc item="desc"}}
 	The ##-Wl## compiler option passes additional options to LD, the linker.  Options must be separated by commas only.   The -Wl compiler option may be specified multiple times on the command line.
 
-{{fbdoc item="ver"}}
-	- Since fbc 1.00.0
-
 {{fbdoc item="see"}}
 	- [[CompilerOptWa|Compiler Option: -Wa]]
 	- [[CompilerOptWc|Compiler Option: -Wc]]

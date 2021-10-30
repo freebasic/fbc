@@ -32,7 +32,7 @@ End Function
 		**""-""** Then compile with the ##-entry custom_main## option.
 		
 	**Note:**
-		This feature is being developed (fbc version 1.09) and may change in future (see ##[[https://www.freebasic.net/forum/viewtopic.php?f=9&t=29504|Compiler Option: -entry]]## in Documentation forum).
+		This feature is being developed and may change in future (see ##[[https://www.freebasic.net/forum/viewtopic.php?f=9&t=29504|Compiler Option: -entry]]## in Documentation forum).
 		There will maybe a better way to deal with this: a compiler option that lets to outright specify an explicit "main".
 
 {{fbdoc item="ex"}}

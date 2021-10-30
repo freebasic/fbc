@@ -66,6 +66,8 @@ OPEN COM "COM1:115200" as 1
 		##"COM2:"## maps to ##"/dev/ttyS1"##, etc 
 		##"/dev/xyz:"## maps to ##"/dev/xyz"##, etc
 		baud rate must be one of 50, 150, 300, 600, 1200, 1800, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800, 500000, 576000, 921600, 1000000, 1152000
+		in fbc >= 1.09.0, baud rate can also be one of 1500000, 2000000, 2500000, 3000000, 3500000, 4000000
+		the baud rates supported depend on the system where the fbc compiler itself was compiled and built
 	- The DOS serial driver is experimental and can access COM ports 1 to 4 
 		It uses the following base io and IRQ's as default: 
 		COM1 - &h3f8 - IRQ4 

@@ -19,9 +19,6 @@ Print out information
 	##fbc -print x -m foo## will print out the executable file name that would be used when compiling a module called foo.bas.
 	##fbc 1.bas 2.bas -lib -print x## will compile 1.bas and 2.bas into a library, whose file name will be displayed.
 
-{{fbdoc item="ver"}}
-	- Since fbc 1.00.0
-
 {{fbdoc item="see"}}
 	- [[CompilerOptx|-x]]
 	- [[CompilerOpttarget|-target]]

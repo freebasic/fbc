@@ -73,7 +73,7 @@ Commands that control the preprocessor.
 		Sets the current line number and file name.
 
 {{anchor name="METACOMMAND"}}{{fbdoc item="section" value="Metacommands"}}
-	=={{fbdoc item="keyword" value="KeyPgInclude|'$INCLUDE"}}==
+	=={{fbdoc item="keyword" value="KeyPgMetaInclude|'$INCLUDE"}}==
 		Alternate form of the [[KeyPgInclude|#INCLUDE]] directive.
 	=={{fbdoc item="keyword" value="KeyPgMetaDynamic|'$DYNAMIC"}}==
 		Alternate form of the [[KeyPgOptiondynamic|OPTION DYNAMIC]] statement.

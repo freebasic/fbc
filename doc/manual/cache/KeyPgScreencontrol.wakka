@@ -2,28 +2,19 @@
 Sets or gets internal graphics library settings
 
 {{fbdoc item="syntax"}}##
-	for fbc version < 1.08:
-		[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param1 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param2 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param3 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param4 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0 )
-		[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param [[KeyPgAs|as]] [[KeyPgString|string]] = ##"####"## )
-	for fbc version >= 1.08:
-		[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param1 [[KeyPgAs|as]] [[KeyPgLong|long]] = &h80000000, [[KeyPgByref|byref]] param2 [[KeyPgAs|as]] [[KeyPgLong|long]] = &h80000000, [[KeyPgByref|byref]] param3 [[KeyPgAs|as]] [[KeyPgLong|long]] = &h80000000, [[KeyPgByref|byref]] param4 [[KeyPgAs|as]] [[KeyPgLong|long]] = &h80000000 )
-		[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param1 [[KeyPgAs|as]] [[KeyPgLongint|longint]], [[KeyPgByref|byref]] param2 [[KeyPgAs|as]] [[KeyPgLongint|longint]] = &h80000000, [[KeyPgByref|byref]] param3 [[KeyPgAs|as]] [[KeyPgLongint|longint]] = &h80000000, [[KeyPgByref|byref]] param4 [[KeyPgAs|as]] [[KeyPgLongint|longint]] = &h80000000 )
-		[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param [[KeyPgAs|as]] [[KeyPgString|string]])
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param1 [[KeyPgAs|as]] [[KeyPgLong|long]] = &h80000000, [[KeyPgByref|byref]] param2 [[KeyPgAs|as]] [[KeyPgLong|long]] = &h80000000, [[KeyPgByref|byref]] param3 [[KeyPgAs|as]] [[KeyPgLong|long]] = &h80000000, [[KeyPgByref|byref]] param4 [[KeyPgAs|as]] [[KeyPgLong|long]] = &h80000000 )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param1 [[KeyPgAs|as]] [[KeyPgLongint|longint]], [[KeyPgByref|byref]] param2 [[KeyPgAs|as]] [[KeyPgLongint|longint]] = &h80000000, [[KeyPgByref|byref]] param3 [[KeyPgAs|as]] [[KeyPgLongint|longint]] = &h80000000, [[KeyPgByref|byref]] param4 [[KeyPgAs|as]] [[KeyPgLongint|longint]] = &h80000000 )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param [[KeyPgAs|as]] [[KeyPgString|string]])
 ##
 {{fbdoc item="usage"}}##
-	for fbc version < 1.08:
-		**""ScreenControl""**( //what// [, [ //param1// ] [, [ //param2// ] [, [ //param3// ] [, [ //param4// ]]]]] )
+	in the LONG (or INTEGER<32>) version of the sub:
+		**""ScreenControl""**( //what// [, [ //param1// ] [, [ //param2// ] [, [ //param3// ] [, //param4// ]]]] )
 			or,
-		**""ScreenControl""**( //what// [, //param// ] )
-	for fbc version >= 1.08:
-		in the LONG (or INTEGER<32>) version of the sub:
-			**""ScreenControl""**( //what// [, [ //param1// ] [, [ //param2// ] [, [ //param3// ] [, //param4// ]]]] )
-				or,
-			**""ScreenControl""**( //what// , //param// )
-		in the LONGINT (or INTEGER<64>) version of the sub:
-			**""ScreenControl""**( //what// , //param1// [, [ //param2// ] [, [ //param3// ] [, //param4// ]]] )
-				or,
-			**""ScreenControl""**( //what// , //param// )
+		**""ScreenControl""**( //what// , //param// )
+	in the LONGINT (or INTEGER<64>) version of the sub:
+		**""ScreenControl""**( //what// , //param1// [, [ //param2// ] [, [ //param3// ] [, //param4// ]]] )
+			or,
+		**""ScreenControl""**( //what// , //param// )
 ##
 {{fbdoc item="param"}}
 	##//what//##
@@ -147,7 +138,7 @@ Sets or gets internal graphics library settings
 	- ##POLL_EVENTS## Cause the library to poll all events, ie to check the system event queue, specifically used for retrieving keyboard and mouse events.  This is most useful for ""OpenGL"" code where ##[[KeyPgFlip|Flip]]## is not used, as normally ##[[KeyPgFlip|Flip]]## will cause these events to be polled.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/gfx/screencontrol.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/gfx/screencontrol.bas"}}%%(freebasic)
 '' include fbgfx.bi for some useful definitions
 #include "fbgfx.bi"
 
@@ -215,9 +206,9 @@ do
 	sleep 5
 
 loop
-%%
+	%%
 
-{{fbdoc item="filename" value="examples/manual/gfx/screencontrol2.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/gfx/screencontrol2.bas"}}%%(freebasic)
 '' include fbgfx.bi for some useful definitions
 #include "fbgfx.bi"
 
@@ -236,7 +227,16 @@ print "Graphics driver name: " & driver
 
 '' wait for a keypress before closing the window
 sleep
-%%
+	%%
+{{fbdoc item="ver"}}
+	- Before fbc 1.08.0:
+			Syntax:
+				##[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param1 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param2 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param3 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param4 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0 )
+				[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param [[KeyPgAs|as]] [[KeyPgString|string]] = ##"####"## )##
+			Usage:
+				##**""ScreenControl""**( //what// [, [ //param1// ] [, [ //param2// ] [, [ //param3// ] [, [ //param4// ]]]]] )
+					or,
+				**""ScreenControl""**( //what// [, //param// ] )##
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Screencontrol""**##.

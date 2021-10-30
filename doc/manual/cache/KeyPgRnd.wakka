@@ -22,11 +22,11 @@ Returns a random [[KeyPgDouble|double]] precision number in the range ##[0, 1)##
 	##**Rnd**## will return the same sequence of numbers every time a program is run.  This sequence can be changed by reseeding the generator.
 	
 	**Note:**
-		**""-""** For fbc version < 1.08, ##**Rnd**## is not thread-safe. Used in the context of a multi-threaded program with race conditions due to asynchronous calls to ##**Rnd**##, many values ​​are temporarily returned in duplicate for a same thread.
-		**""-""** For fbc version >= 1.08, ##**Rnd**## is became thread-safe (by using an internal mutex), but not thread specific. Used in the context of a multi-threaded program, only the execution speed is significantly slowed down compared to a single thread call context. Structures for other random number generators are also now available in the standard header "fbmath.bi".
+		##**Rnd**## is thread-safe (by using an internal mutex), but not thread specific. Used in the context of a multi-threaded program, only the execution speed is significantly slowed down compared to a single thread call context.
+		Structures for other random number generators are also available in the standard header "fbmath.bi".
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/math/rnd.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/math/rnd.bas"}}%%(freebasic)
 '' Function to a random number in the range [first, last), or {first <= x < last}.
 function rnd_range (first as double, last as double) as double
 	function = rnd * (last - first) + first
@@ -48,7 +48,12 @@ print int(rnd * 10) + 1
 '' prints a random integral number in the range [69, 420], or {69 <= n <= 420}.
 ''     (because: 69 <= rnd_range(69, 421) < 421)
 print int(rnd_range(69, 421))
-%%
+	%%
+{{fbdoc item="ver"}}
+	- Before fbc 1.08.0:
+			##**Rnd**## was not thread-safe (many values temporarily returned in duplicate for a same thread).
+			The standard "fbmath.bi" header for available algorithms did not exist.
+
 {{fbdoc item="lang"}}
 	The default algorithm used depends on the current dialect in use:
 		- With the //[[CompilerOptlang|-lang fb]]// dialect, a 32 bit Mersenne Twister function with a granularity of 32 bits is used.

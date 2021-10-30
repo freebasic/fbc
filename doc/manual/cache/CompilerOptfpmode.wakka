@@ -19,9 +19,6 @@ Selects faster, less accurate or slower, more precise floating-point math.
 	
 	Using ##-fpmode PRECISE## is dependent on the ##[[CompilerOptfpu|-fpu SSE]]## command line option. Using ##-fpmode PRECISE## without using ##[[CompilerOptfpu|-fpu SSE]]## will generate an error.
 
-{{fbdoc item="ver"}}
-	- Since fbc 1.00.0
-
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]
 	- [[CompilerOptfpu|Compiler Option: -fpu]]

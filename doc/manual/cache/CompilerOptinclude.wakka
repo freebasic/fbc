@@ -15,9 +15,6 @@ Include a header file on each source compiled
 	
 		##fbc -include header.bi file1.bas file2.bas##
 
-{{fbdoc item="ver"}}
-	- Since fbc 1.00.0
-
 {{fbdoc item="see"}}
 	- ##[[KeyPgInclude|#include]]##
 	- [[CompilerOpti|Compiler Option: -i]]

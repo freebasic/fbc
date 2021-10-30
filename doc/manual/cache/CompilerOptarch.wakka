@@ -55,9 +55,6 @@ Set target architecture for improved/restricted code generation or cross-compili
 	
 	Specifying an ##-arch## setting incompatible to the native architecture will trigger [[DevCrossCompiling|cross-compilation]], just like the ##[[CompilerOpttarget|-target]]## option, except that only the target architecture, but not the target operating system, is changed.
 
-{{fbdoc item="ver"}}
-	- Since fbc 1.00.0
-
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]
 	- [[CompilerOpttarget|-target]]

@@ -2,20 +2,14 @@
 Retrieves information about an image
 
 {{fbdoc item="syntax"}}##
-	for fbc version < 1.08:
-		[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Imageinfo** ( [[KeyPgByval|byval]] //image// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]], [[KeyPgByref|byref]] //width// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //height// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //bypp// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //pitch// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //pixdata// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] = 0, [[KeyPgByref|byref]] //size// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
-	for fbc version >= 1.08:
-		[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Imageinfo** ( [[KeyPgByval|byval]] //image// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]], [[KeyPgByref|byref]] //width// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //height// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //bypp// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //pitch// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //pixdata// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] = 0, [[KeyPgByref|byref]] //size// [[KeyPgAs|as]] [[KeyPgLongint|longint]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
-		[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Imageinfo** ( [[KeyPgByval|byval]] //image// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]], [[KeyPgByref|byref]] //width// [[KeyPgAs|as]] [[KeyPgLongint|longint]], [[KeyPgByref|byref]] //height// [[KeyPgAs|as]] [[KeyPgLongint|longint]], [[KeyPgByref|byref]] //bypp// [[KeyPgAs|as]] [[KeyPgLongint|longint]] = 0, [[KeyPgByref|byref]] //pitch// [[KeyPgAs|as]] [[KeyPgLongint|longint]] = 0, [[KeyPgByref|byref]] //pixdata// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] = 0, [[KeyPgByref|byref]] //size// [[KeyPgAs|as]] [[KeyPgLongint|longint]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Imageinfo** ( [[KeyPgByval|byval]] //image// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]], [[KeyPgByref|byref]] //width// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //height// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //bypp// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //pitch// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //pixdata// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] = 0, [[KeyPgByref|byref]] //size// [[KeyPgAs|as]] [[KeyPgLongint|longint]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Imageinfo** ( [[KeyPgByval|byval]] //image// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]], [[KeyPgByref|byref]] //width// [[KeyPgAs|as]] [[KeyPgLongint|longint]], [[KeyPgByref|byref]] //height// [[KeyPgAs|as]] [[KeyPgLongint|longint]], [[KeyPgByref|byref]] //bypp// [[KeyPgAs|as]] [[KeyPgLongint|longint]] = 0, [[KeyPgByref|byref]] //pitch// [[KeyPgAs|as]] [[KeyPgLongint|longint]] = 0, [[KeyPgByref|byref]] //pixdata// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] = 0, [[KeyPgByref|byref]] //size// [[KeyPgAs|as]] [[KeyPgLongint|longint]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
-	for fbc version < 1.08::
-		//result// = **Imageinfo**( //image// [, [ //width// ] [, [ //height// ] [, [ //bypp// ] [, [ //pitch// ] [, [ //pixdata// ] [, //size// ]]]]]] )
-	for fbc version >= 1.08:
-		in the LONG (or INTEGER<32>) version of the function:
-			//result// = **Imageinfo**( //image// [, [ //width// ] [, [ //height// ] [, [ //bypp// ] [, [ //pitch// ] [ , [ //pixdata// ] [, //size// ]]]]]] )
-		in the LONGINT (or INTEGER<64>) version of the function:
-			//result// = **Imageinfo**( //image// , //width// , //height// [, [ //bypp// ] [, [ //pitch// ] [ , [ //pixdata// ] [, //size// ]]]] )
+	in the LONG (or INTEGER<32>) version of the function:
+		//result// = **Imageinfo**( //image// [, [ //width// ] [, [ //height// ] [, [ //bypp// ] [, [ //pitch// ] [ , [ //pixdata// ] [, //size// ]]]]]] )
+	in the LONGINT (or INTEGER<64>) version of the function:
+		//result// = **Imageinfo**( //image// , //width// , //height// [, [ //bypp// ] [, [ //pitch// ] [ , [ //pixdata// ] [, //size// ]]]] )
 ##
 {{fbdoc item="param"}}
 	##//image//##
@@ -46,7 +40,7 @@ Retrieves information about an image
 	The error code returned by ##**""ImageInfo""**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**""ImageInfo""**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/gfx/pixelptr.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/gfx/pixelptr.bas"}}%%(freebasic)
 '' pixelptr(): use imageinfo() to find the pointer to a pixel in the image
 '' returns null on error or x,y out of bounds
 function pixelptr(byval img as any ptr, byval x as integer, byval y as integer) as any ptr
@@ -108,10 +102,10 @@ else
 end if
 
 sleep
-%%
+	%%
 {{image class="center" title="Output image for pixelptr() example" url="/images/pixelptr.png"}}
 
-{{fbdoc item="filename" value="examples/manual/gfx/imageinfo.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/gfx/imageinfo.bas"}}%%(freebasic)
 '' Create 32-bit graphics screen and image.
 screenres 320, 200, 32
 dim image as any ptr = imagecreate( 64, 64 )
@@ -141,8 +135,15 @@ put (10, 10), image
 imagedestroy( image )
 
 sleep
-%%
+	%%
 {{image class="center" title="Output image for ImageInfo example" url="/images/imageinfo.png"}}
+
+{{fbdoc item="ver"}}
+	- Before fbc 1.08.0:
+			Syntax:
+				##[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Imageinfo** ( [[KeyPgByval|byval]] //image// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]], [[KeyPgByref|byref]] //width// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //height// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //bypp// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //pitch// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //pixdata// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] = 0, [[KeyPgByref|byref]] //size// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]##
+			Usage:
+				##//result// = **Imageinfo**( //image// [, [ //width// ] [, [ //height// ] [, [ //bypp// ] [, [ //pitch// ] [, [ //pixdata// ] [, //size// ]]]]]] )##
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Imageinfo""**##.

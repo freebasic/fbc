@@ -11,8 +11,8 @@ Returns the address of a procedure
 	##//identifier//##
 		A procedure identifier.
 	##//proctype//##
-		The type of procedure (sub/function).
-		Its use as a second argument (the optional) is only supported for fbc version >= 1.09.
+		Any type of procedure (sub/function).
+		Its use as a second argument (the optional) is only supported for fbc version >= 1.09.0.
 
 {{fbdoc item="ret"}}
 	Returns the address of the procedure.
@@ -55,7 +55,7 @@ End Sub
 Sub s( Byval i As Integer )
 End Sub
 
-'----- Previously (fbc version < 1.09) was only possible with:
+'----- Previously (fbc version < 1.09.0) was only possible with:
 
 'Dim s1 As Sub()
 's1 = Procptr( s )
@@ -63,7 +63,7 @@ End Sub
 'Dim s2 As Sub( Byval i As Integer)
 's2 = Procptr( s )
 
-'----- Now (fbc version >= 1.09) is possible with:
+'----- Now (fbc version >= 1.09.0) is possible with:
 
 Var s1 = Procptr( s, Sub() )
 Var s2 = Procptr( s, Sub( Byval i As Integer ) )

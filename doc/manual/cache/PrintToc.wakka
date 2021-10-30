@@ -796,7 +796,8 @@
 		[[ProPgIdentifierRules|Identifier Rules]]
 		[[ProPgLiterals|Literals]]
 		[[ProPgLabels|Labels]]
-		[[ProPgLineContinuation|Line continuation]]
+		[[ProPgLineContinuation|Line Continuation]]
+		[[ProPgLineSeparator|Line Separator]]
 
 	{{fbdoc item="subsect" value="Variables and Datatypes"}}
 		[[ProPgEnumerations|Constants and Enumerations]]
@@ -900,6 +901,7 @@
 		[[ProPgDynamicMemory|Dynamic memory management with FreeBASIC]]
 		[[ProPgRecursionIteration|Replace Recursion with Iteration]]
 		[[ProPgObjectRtti|OBJECT built-in and RTTI info]]
+		[[ProPgDataExecutable|Embed and Access binary Data in Executable]]
 
 	{{fbdoc item="subsect" value="Other Topics"}}
 		[[CptAscii|ASCII]]

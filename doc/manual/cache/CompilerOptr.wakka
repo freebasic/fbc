@@ -12,9 +12,6 @@ Compile into ##*.asm/*.c/*.ll## file(s) only, do not assemble or link
 	Use the ##[[CompilerOptrupp|-R]]## option to preserve intermediate files without affecting compilation/assembling/linking.
 	Use the ##[[CompilerOptrr|-rr]]## option to compile input source files to ##*.asm## regardless of the code generation backend.
 
-{{fbdoc item="ver"}}
-	- Since fbc 1.00.0
-
 {{fbdoc item="see"}}
 	- [[CompilerOptc|Compiler Option: -c]]
 	- [[CompilerOptrupp|Compiler Option: -R]]

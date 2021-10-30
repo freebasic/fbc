@@ -7,9 +7,6 @@ Do not include the default libraries
 {{fbdoc item="desc"}}
 	The ##-nodeflibs## compiler option causes default libraries not to be used when linking.  The libraries which are normally linked by default can still be used, but only if they are explicitly specified.
 
-{{fbdoc item="ver"}}
-	- Since fbc 1.00.0
-
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]
 

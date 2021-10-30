@@ -29,10 +29,6 @@ Output:
 %%
 TEST=123
 %%
-
-{{fbdoc item="ver"}}
-	- Since fbc 1.00.0
-
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]
 

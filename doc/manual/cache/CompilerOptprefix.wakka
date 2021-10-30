@@ -11,9 +11,6 @@ Set the compiler prefix path
 {{fbdoc item="desc"}}
 	The ##-prefix## compiler option sets the compiler prefix (where the compiler finds the bin, lib, and inc directories); and defaults to the path where fbc resides, if this can be determined.
 
-{{fbdoc item="ver"}}
-	- Since fbc 1.00.0
-
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]
 

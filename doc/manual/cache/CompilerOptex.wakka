@@ -7,9 +7,6 @@ Add error checking with ##[[KeyPgResume|Resume]]## support
 {{fbdoc item="desc"}}
 	The ##-ex## compiler option adds error handling as with the //[[CompilerOpte|-e]]// option plus support for ##[[KeyPgResume|Resume]]##.
 
-{{fbdoc item="ver"}}
-	- Since fbc 1.00.0
-
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfberr|__FB_ERR__]]##
 	- [[CompilerOpte|Compiler Option: -e]]

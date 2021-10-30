@@ -7,9 +7,6 @@ Show compiler version
 {{fbdoc item="desc"}}
 	The ##-version## compiler option makes FBC show the compiler version and exit.  Any other command-line options are ignored, and no compilation will be performed.
 
-{{fbdoc item="ver"}}
-	- Since fbc 1.00.0
-
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]
 

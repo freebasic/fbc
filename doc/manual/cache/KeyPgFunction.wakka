@@ -2,7 +2,7 @@
 Defines a procedure returning a value
 
 {{fbdoc item="syntax"}}##
-	[[[KeyPgPublic|Public]]|[[KeyPgPrivate|Private]]] **Function** //identifier// [[[KeyPgCdecl|CDecl]]|[[KeyPgPascal|Pascal]]|[[KeyPgStdcall|StdCall]]] [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //external_identifier//] [([//parameter_list//])] [ [[KeyPgByrefFunction|ByRef]] ] [[[KeyPgAs|As]] //return_type//] [[[KeyPgStatic|Static]]] [[[KeyPgExport|Export]]]
+	[[[KeyPgPublic|Public]]|[[KeyPgPrivate|Private]]] **Function** //identifier// [[[KeyPgCdecl|CDecl]]|[[KeyPgPascal|Pascal]]|[[KeyPgStdcall|StdCall]]] [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //external_identifier//] [([//parameter_list//])] [ [[KeyPgByrefFunction|ByRef]] ] [[KeyPgAs|As]] //return_type// [[[KeyPgStatic|Static]]] [[[KeyPgExport|Export]]]
 		//statements//
 		...
 		{ {[[KeyPgReturn|Return]] [//return_value//]}|{Function = //return_value//}|{//identifier// = //return_value//} }

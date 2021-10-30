@@ -13,9 +13,6 @@ Sets the executable subsystem
 	
 	The intrinsic macro ##[[KeyPgDdfbgui|__FB_GUI__]]## is set to non-zero (-1) if the option with ##gui## as subsystem was specified, and set to zero (0) otherwise.
 
-{{fbdoc item="ver"}}
-	- Since fbc 1.00.0
-
 {{fbdoc item="target"}}
 	- Supported on Windows and Cygwin only.
 

@@ -23,9 +23,6 @@ Set object file path/name
 		
 	The ##[[CompilerOptv|-v]]## option makes the compiler show the actual file names that it uses.
 
-{{fbdoc item="ver"}}
-	- Since fbc 1.00.0
-
 {{fbdoc item="see"}}
 	- [[CompilerOptb|Compiler Option: -b]]
 	- [[CompilerOptc|Compiler Option: -c]]

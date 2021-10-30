@@ -19,9 +19,6 @@ Enables vector optimizations by the compiler.
 	
 	This option is dependent on the ##-fpu SSE## command line option.  Attempting to enable vector optimizations without using ##-fpu SSE## will generate an error.
 
-{{fbdoc item="ver"}}
-	- Since fbc 1.00.0
-
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]
 	- [[CompilerOptfpu|Compiler option -fpu]]
