@@ -85,6 +85,7 @@ Version 1.09.0
 - sf.net #935: bad code causes fbc to fail internal assert - adjust the internal assert to allow for actual generated code in IIF() expressions
 - sf.net #515: fbc: show a warning if a public sub or a shared variable have the same name as global asm keywords (x86 and x86_64 only)
 - sf.net #944: Array descriptors are defined more than once (gcc backend)
+- sf.net #947: enum declaration in a namespace incorrectly checks for parent
 
 
 Version 1.08.0

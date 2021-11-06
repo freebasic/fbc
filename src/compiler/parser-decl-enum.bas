@@ -155,9 +155,6 @@ sub cEnumDecl( byval attrib as FB_SYMBATTRIB )
 	'' ENUM
 	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
-	'' Namespace identifier if it matches the current namespace
-	cCurrentParentId()
-
 	'' ID?
 	select case lexGetClass( )
 	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
