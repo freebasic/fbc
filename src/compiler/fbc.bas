@@ -1000,7 +1000,11 @@ private function hLinkFiles( ) as integer
 	end if
 
 	if( fbGetOption( FB_COMPOPT_PIC ) ) then
-		ldcline += " -pie"
+		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE ) then
+			ldcline += " -pie"
+		else
+			'' Dynamic library: no flag needed
+		end if
 	end if
 
 	if( len( fbc.mapfile ) > 0) then
