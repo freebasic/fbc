@@ -1539,7 +1539,7 @@ end type
 '' OS name strings recognized when parsing GNU triplets (-target option)
 dim shared as FBGNUOSINFO gnuosmap(0 to ...) => _
 { _
-	(@"android"    , FB_COMPTARGET_ANDROID  ), _
+	(@"android"    , FB_COMPTARGET_ANDROID  ), _ '' Must appear before linux
 	(@"linux"      , FB_COMPTARGET_LINUX    ), _
 	(@"mingw"      , FB_COMPTARGET_WIN32    ), _
 	(@"djgpp"      , FB_COMPTARGET_DOS      ), _
