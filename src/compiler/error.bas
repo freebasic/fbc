@@ -93,6 +93,7 @@ declare function hMakeParamDesc _
 		( /'FB_WARNINGMSG_EXPECTEDDIGIT             '/ 1, @"Expected digit" ), _
 		( /'FB_WARNINGMSG_UPCASTDISCARDSINITIALIZER '/ 1, @"Up-casting discards initializer(s)" ), _
 		( /'FB_WARNINGMSG_BYREFTEMPVAR              '/ 2, @"Suspicious address expression passed to BYREF parameter" ), _
+		( /'FB_WARNINGMSG_MISSINGANDROIDSYSROOT     '/ 1, @"GCC didn't provide a proper sysroot. You probably have to pass fbc an argument of the form '-sysroot $NDK/platforms/android-$API/arch-$ARCH'" ), _
 		( /'FB_WARNINGMSGS                          '/ 0, @"FB_WARNINGMSGS" ) _
 	}
 

@@ -408,6 +408,7 @@ private function fbcBuildPathToLibFile( byval file as zstring ptr ) as string
 	function = found
 end function
 
+'' gcc may have a default sysroot which we need to pass on to ld. Or it may not know the sysroot.
 private function fbcFindSysroot( ) as string
 	'' Query the target-specific gcc
 	'' (TODO: need to tell which arch and ABI we are targetting, especially on android)
@@ -747,7 +748,21 @@ private function hLinkFiles( ) as integer
 			ldcline += "-m armelf_linux_eabi "
 		end select
 	case FB_COMPTARGET_ANDROID
-		ldcline += "-sysroot=" + fbcFindSysroot( ) + " "
+		if( len( fbc.sysroot ) = 0 ) then
+			'' We need the sysroot before calling hFindLib().
+			'' At least in older NDKs, if a standalone NDK toolchain (for a particular
+			'' platform+arch) is used then gcc --print-sysroot returns the correct
+			'' sysroot. Otherwise, running directly from a full NDK install, it prints a
+			'' /tmp/... directory, and the user needs to manually pass the correct sysroot.
+			'' The link-time sysroot should be $NDK/platforms/android-$API/arch-$ARCH
+			'' (Since NDK r15, the sysroot for the C headers is $NDK/sysroot, but we
+			'' don't need them.)
+			fbc.sysroot = fbcFindSysroot( )
+			if( left( fbc.sysroot, 5 ) = "/tmp/" ) then
+				errReportWarnEx( FB_WARNINGMSG_MISSINGANDROIDSYSROOT, , 0 )
+			end if
+		end if
+
 		'' androideabi-v7a ABI requires extra linker options; apparently
 		'' others don't. See https://developer.android.com/ndk/guides/standalone_toolchain.html
 		if( fbGetOption( FB_COMPOPT_CPUTYPE ) = FB_CPUTYPE_ARMV7A ) then
