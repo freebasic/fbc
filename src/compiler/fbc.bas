@@ -99,6 +99,7 @@ type FBCCTX
 #ifndef ENABLE_STANDALONE
 	target              as zstring * FB_MAXNAMELEN+1  '' Target system identifier (e.g. a name like "win32", or a GNU triplet) to prefix in front of cross-compiling tool names
 	targetprefix        as zstring * FB_MAXNAMELEN+1  '' same, but with "-" appended, if there was a target id given; otherwise empty.
+	sysroot             as zstring * FB_MAXPATHLEN+1
 #endif
 	xbe_title           as zstring * FB_MAXNAMELEN+1  '' For the '-title <title>' xbox option
 	nodeflibs           as integer
@@ -387,6 +388,10 @@ private function fbcBuildPathToLibFile( byval file as zstring ptr ) as string
 	case FB_CPUFAMILY_PPC64, FB_CPUFAMILY_PPC64LE
 		path += " -m64"
 	end select
+
+	if( len( fbc.sysroot ) ) then
+		path += " --sysroot=" + fbc.sysroot
+	end if
 
 	path += " -print-file-name=" + *file
 
@@ -1039,6 +1044,11 @@ private function hLinkFiles( ) as integer
 			i = listGetNext(i)
 		wend
 	end scope
+
+	'' And the sysroot
+	if( len( fbc.sysroot ) ) then
+		ldcline += " --sysroot=" + fbc.sysroot
+	end if
 
 	'' crt begin objects
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
@@ -1824,6 +1834,7 @@ enum
 	OPT_SHOWINCLUDES
 	OPT_STATIC
 	OPT_STRIP
+	OPT_SYSROOT
 	OPT_T
 	OPT_TARGET
 	OPT_TITLE
@@ -1907,6 +1918,7 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( FALSE, TRUE , FALSE, TRUE  ), _ '' OPT_SHOWINCLUDES affects compiler output display
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_STATIC       affects link
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_STRIP        affects link
+	( TRUE,  TRUE , FALSE, FALSE ), _ '' OPT_SYSROOT      affects link
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_T            affects link
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_TARGET       affects major initialization
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_TITLE        affects link
@@ -1957,7 +1969,7 @@ private sub handleOpt _
 		fbc.buildprefix = arg
 
 	case OPT_C
-		'' -c changes the output type to from exe/lib/dll to object,
+		'' -c changes the output type from exe/lib/dll to object,
 		'' overwriting previous -dll, -lib or the default exe.
 		fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_OBJECT )
 		fbc.keepobj = TRUE
@@ -2262,6 +2274,9 @@ private sub handleOpt _
 	case OPT_STRIP
 		fbc.stripsymbols = TRUE
 
+	case OPT_SYSROOT
+		fbc.sysroot = arg
+
 	case OPT_T
 		fbSetOption( FB_COMPOPT_STACKSIZE, clng( arg ) * 1024 )
 
@@ -2527,6 +2542,7 @@ private function parseOption(byval opt as zstring ptr) as integer
 		CHECK("showincludes", OPT_SHOWINCLUDES)
 		CHECK("static", OPT_STATIC)
 		CHECK("strip", OPT_STRIP)
+		CHECK("sysroot", OPT_SYSROOT)
 
 	case asc("t")
 		ONECHAR(OPT_T)
@@ -4261,6 +4277,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -entry           Change the entry point of the program from main()"
 	end if
 
+	print "  -entry <name>    Change the entry point of the program from main()"
 	print "  -ex              -e plus RESUME support"
 	print "  -exx             -ex plus array bounds/null-pointer checking"
 	print "  -export          Export symbols for dynamic linkage"
@@ -4319,6 +4336,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -showincludes    Display a tree of file names of #included files"
 	print "  -static          Prefer static libraries over dynamic ones when linking"
 	print "  -strip           Omit all symbol information from the output file"
+	print "  -sysroot <path>  Linker sysroot, needed by some cross-compiling toolchains"
 	print "  -t <value>       Set .exe stack size in kbytes, default: 1024 (win32/dos)"
 	if( verbose ) then
 	'' !!!TODO!!! provide more examples of available targets
@@ -4356,6 +4374,8 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -z fbrt          Link with 'fbrt' instead of 'fb' runtime library"
 	print "  -z nocmdline     Disable #cmdline source directives"
 	print "  -z retinflts     Enable returning some types in floating point registers"
+	else
+	print "  -z <option>      Extended options (see fbc -help -v)"
 	end if
 
 end sub

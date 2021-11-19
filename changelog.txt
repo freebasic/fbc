@@ -299,6 +299,7 @@ Version 1.09.0
 - ./inc/fbc-int/array.bi - add fb.ArrayLen( array ) function to return total number of elements in an array
 - ./inc/fbc-int/array.bi - add fb.ArraySize( array ) function to return total size of an array in bytes
 - fbc: #pragma push( lookup108 ) to use symbol lookup method from fbc-1.08.x and earlier on unqualified symbol names
+- fbc: add '-sysroot <path>' command line option to specify the sysroot, needed by some cross-compiling toolchains
 
 [fixed]
 - github #315: set parameters when calling SCREENCONTROL (was broken in fbc 1.08.0 due to new LONG/LONGINT SCREENCONTROL API's)
