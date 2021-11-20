@@ -695,10 +695,12 @@ LIBFBGFXMT_C    := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtobjdir)/%,$(LIBFBG
 LIBFBGFXMT_S    := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtobjdir)/%,$(LIBFBGFX_S))
 LIBFBGFXMTPIC_C := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtpicobjdir)/%,$(LIBFBGFX_C))
 
+
+RTL_LIBS := $(libdir)/$(FB_LDSCRIPT)
 ifdef ENABLE_NONPIC
-  RTL_LIBS := $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a
-  FBRTL_LIBS := $(libdir)/libfbrt.a
-  GFX_LIBS := $(libdir)/libfbgfx.a
+  RTL_LIBS += $(libdir)/fbrt0.o $(libdir)/libfb.a
+  FBRTL_LIBS += $(libdir)/libfbrt.a
+  GFX_LIBS += $(libdir)/libfbgfx.a
 endif
 ifdef ENABLE_PIC
   RTL_LIBS += $(libdir)/fbrt0pic.o $(libdir)/libfbpic.a
