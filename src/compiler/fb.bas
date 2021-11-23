@@ -137,7 +137,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 	), _
 	( _
 		@"android", _
-		FB_DATATYPE_UBYTE, _
+		FB_DATATYPE_ULONG, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
 		0	or FB_TARGETOPT_UNIX _

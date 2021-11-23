@@ -523,7 +523,7 @@ ifeq ($(TARGET_OS),android)
   # Android has very limited locale support in the NDK -- only the C locale is supported.
   # Locale information is available from Java. The CrystaX alternative NDK has locale support.
 
-  ALLCFLAGS += -DDISABLE_NCURSES -DDISABLE_X11 -DDISABLE_FFI -DDISABLE_LANGINFO -DDISABLE_WCHAR
+  ALLCFLAGS += -DDISABLE_NCURSES -DDISABLE_X11 -DDISABLE_FFI -DDISABLE_LANGINFO
 endif
 
 ifeq ($(TARGET_OS),xbox)

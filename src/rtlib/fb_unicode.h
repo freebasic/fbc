@@ -90,8 +90,8 @@ typedef uint8_t  UTF_8;
 
 /* Note: old NDKs defined wchar_t as 8 bit in APIs before 9 (Android 2.3), and 32 bit in API 9 and later,
   but now NDKs define it as 32 bit everywhere. https://code.google.com/p/android/issues/detail?id=57267*/
-	/* The following were not added until Android 5.0 */
 #ifndef wcstoull
+	/* Not added until Android 5.0 */
 #	define wcstoull wcstoul
 #endif
 /* Early NDKs (before Android 2.3?) declared mbstowcs and wcstombs in <stdlib.h>, but didn't actually provide an
