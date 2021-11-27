@@ -80,6 +80,32 @@ private function hGlobalId _
 end function
 
 '':::::
+'' !!!TODO!!! combine with or re-use symb.bas:hGetNamespacePrefix
+private function hGetChainNames( byval chain_ as FBSYMCHAIN ptr ) as string
+	dim as FBSYMBOL ptr ns = any
+	dim as string names
+	do
+		dim s as string
+		ns = symbGetNamespace( chain_->sym )
+		while( ns <> @symbGetGlobalNamespc( ) )
+			s = *symbGetName( ns ) + "." + s
+			if( symbGetHashtb( ns ) = NULL ) then
+				exit while
+			end if
+			ns = symbGetNamespace( ns )
+		wend
+		names &= s & *symbGetName( chain_->sym )
+
+		chain_ = chain_->next
+		if( chain_ = NULL ) then
+			exit do
+		end if
+		names &= ", "
+	loop
+	return names
+end function
+
+'':::::
 private function hCheckDecl _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
@@ -113,7 +139,7 @@ private function hCheckDecl _
 						'' first symbol declared in other namespace?
 						if( iif( parent, ns <> parent, ns <> ns2 ) ) then
 							'' more than one imported symbol
-							errReport( FB_ERRMSG_AMBIGUOUSSYMBOLACCESS )
+							errReport( FB_ERRMSG_AMBIGUOUSSYMBOLACCESS, FALSE, " for " & hGetChainNames(chain_) )
 							'' (don't return NULL or a new variable would be implicitly created)
 						end if
 					end if

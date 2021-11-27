@@ -14,9 +14,7 @@ declare sub         symbDelGlobalTb     ( )
 
 declare sub         symbKeywordInit     ( )
 
-declare sub         symbDefineInit      ( _
-											byval ismain as integer _
-										)
+declare sub         symbDefineInit      ( byval ismain as integer )
 
 declare sub         symbDefineEnd       ( )
 
@@ -999,8 +997,10 @@ private function hLookupImportHash _
 					head = node
 				else
 					tail->next = node
-					'' it's ambiguous, just return the first two
-					return head
+					'' it's ambiguous, instead of returning just the current head
+					'' which would indicate that access is ambiguous, keep going
+					'' and return all of the matches so we can show a better error
+					'' message
 				end if
 
 				tail = node
