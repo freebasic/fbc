@@ -88,13 +88,25 @@ private function hGetChainNames( byval chain_ as FBSYMCHAIN ptr ) as string
 		dim s as string
 		ns = symbGetNamespace( chain_->sym )
 		while( ns <> @symbGetGlobalNamespc( ) )
-			s = *symbGetName( ns ) + "." + s
+			if( (symbGetAttrib( ns ) and FB_SYMBATTRIB_ANONYMOUS) <> 0 ) then
+				if( symbIsEnum( ns ) ) then
+					s = "<enum>." + s
+				else
+					s = "<enum>." + s
+				end if
+			else
+				s = *symbGetName( ns ) + "." + s
+			end if
 			if( symbGetHashtb( ns ) = NULL ) then
 				exit while
 			end if
 			ns = symbGetNamespace( ns )
 		wend
-		names &= s & *symbGetName( chain_->sym )
+		if( (symbGetAttrib( chain_->sym ) and FB_SYMBATTRIB_ANONYMOUS) <> 0 ) then
+			names += s + "<unnamed>"
+		else
+			names += s + *symbGetName( chain_->sym )
+		end if
 
 		chain_ = chain_->next
 		if( chain_ = NULL ) then

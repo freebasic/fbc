@@ -726,7 +726,7 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 	'' local optimization for 'id' allocation - it's always initialized by logic below
 	static as string id
 
-	'' !!!TODO!!! should varcounter  reset between modules and on restarts with fbRestartableStaticVariable()?
+	'' !!!TODO!!! should varcounter reset between modules and on restarts with fbRestartableStaticVariable()?
 	static as integer varcounter
 	dim as string mangled
 	dim as zstring ptr p = any
