@@ -48,4 +48,15 @@ end extern
 
 end namespace
 
+namespace FB
+
+extern "rtlib"
+	declare function ArrayLen alias "fb_ArrayLen" _
+		( array() as const any ) as uinteger
+	declare function ArraySize alias "fb_ArraySize" _
+		( array() as const any ) as uinteger
+end extern
+
+end namespace
+
 #endif
