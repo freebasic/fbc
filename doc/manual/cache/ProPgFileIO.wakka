@@ -1,5 +1,4 @@
 {{fbdoc item="title" value="File I/O with FreeBASIC"}}----
-
 In ""FreeBASIC"", there are 4 possible ways to perform file I/O:
 
 1. Using the built-in BASIC commands like ##[[KeyPgOpen|Open]]## , ##[[KeyPgGetfileio|Get]]##, ##[[KeyPgPutfileio|Put]]##, and ##[[KeyPgClose|Close]]##. This way is mostly portable across all platforms supported by ""FreeBASIC"". Open files are identified by "file numbers", that are specific to ""FreeBASIC"" and can't be passed into functions from below.

@@ -26,10 +26,10 @@ function astNewCALL _
 		byval ptrexpr as ASTNODE ptr = NULL _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
-    dim as FBRTLCALLBACK callback = any
-    dim as integer dtype = any
-    dim as FBSYMBOL ptr subtype = any
+	dim as ASTNODE ptr n = any
+	dim as FBRTLCALLBACK callback = any
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
 
 	'' sym might be null if user undefined a builtin rtl proc
 	'' and it was undefined.  rtlLookUpProc() a.k.a. PROCLOOKUP()
@@ -82,7 +82,7 @@ function astNewCALL _
 	n->call.args = 0
 
 	if( sym <> NULL ) then
-		n->call.currarg	= symbGetProcHeadParam( sym )
+		n->call.currarg = symbGetProcHeadParam( sym )
 		n->call.isrtl = symbGetIsRTL( sym )
 
 		callback = symbGetProcCallback( sym )
@@ -90,7 +90,7 @@ function astNewCALL _
 			callback( sym )
 		end if
 	else
-		n->call.currarg	= NULL
+		n->call.currarg = NULL
 		n->call.isrtl = FALSE
 	end if
 
@@ -129,8 +129,8 @@ end function
 
 '' Copy-back any fixed-length strings that were passed to BYREF parameters
 private sub hCopyStringsBack( byval f as ASTNODE ptr )
-    dim as ASTNODE ptr t = any
-    dim as AST_TMPSTRLIST_ITEM ptr n = any, p = any
+	dim as ASTNODE ptr t = any
+	dim as AST_TMPSTRLIST_ITEM ptr n = any, p = any
 
 	n = f->call.strtail
 	do while( n <> NULL )
@@ -145,6 +145,32 @@ private sub hCopyStringsBack( byval f as ASTNODE ptr )
 	loop
 end sub
 
+private function hMaybePassArgInReg _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval argnum as integer _
+	) as integer
+
+	function = FALSE
+
+	'' only allow thiscall in 32-bit x86 and ignore for other targets
+	'' !!!TODO!!! - It would be better if the parser removed the thiscall calling
+	'' convention in all combinations of target/arch before here and we only have
+	'' asserts() here in the debug version with a simple check on FB_FUNCMODE_THISCALL
+	if( symbGetProcMode( proc ) = FB_FUNCMODE_THISCALL ) then
+		if( env.clopt.backend = FB_BACKEND_GAS ) then
+			if( fbIs64bit( ) = FALSE ) then
+				if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
+					if( argnum = 1 ) then
+						function = TRUE
+					end if
+				end if
+			end if
+		end if
+	end if
+
+end function
+
 function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	static as integer reclevel = 0
 	'' totalstackbytes is the sum of all args and padding currently on the stack
@@ -155,7 +181,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	dim as FBSYMBOL ptr proc = any
 	dim as integer bytestopop = any, bytestoalign = any, argbytes = any
 	dim as integer prev_totalstackbytes = totalstackbytes
-	dim as IRVREG ptr vr = any, v1 = any
+	dim as IRVREG ptr vr = any, v1 = any, lreg = NULL
 
 	'' ARGs can contain CALLs themselves, then astLoadCALL() will recurse
 	reclevel += 1
@@ -172,7 +198,9 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		arg = n->r
 		while( arg )
 			l = arg->l
-			argbytes += symbCalcArgLen( l->dtype, l->subtype, arg->arg.mode )
+			if( hMaybePassArgInReg( proc, arg->sym->param.argnum ) = FALSE ) then
+				argbytes += symbCalcArgLen( l->dtype, l->subtype, arg->arg.mode )
+			end if
 			arg = arg->r
 		wend
 
@@ -204,10 +232,14 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 
 		'' cdecl: pushed arguments must be popped by caller
 		'' pascal/stdcall: callee does it instead
-		'' thiscall: could be either depending on target !!!TODO!!!
-		argbytes = symbCalcArgLen( l->dtype, l->subtype, arg->arg.mode )
-		if( symbGetProcMode( proc ) = FB_FUNCMODE_CDECL ) then
-			bytestopop += argbytes
+		'' thiscall: callee does it in gcc 32-bit win32
+		if( hMaybePassArgInReg( proc, arg->sym->param.argnum ) ) then
+			argbytes = 0
+		else
+			argbytes = symbCalcArgLen( l->dtype, l->subtype, arg->arg.mode )
+			if( symbGetProcMode( proc ) = FB_FUNCMODE_CDECL ) then
+				bytestopop += argbytes
+			end if
 		end if
 
 		if( l->class = AST_NODECLASS_CONV ) then
@@ -219,7 +251,15 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		astDelNode( l )
 
 		if( ast.doemit ) then
-			irEmitPUSHARG( arg->sym, v1, arg->arg.lgt, reclevel )
+			if( hMaybePassArgInReg( proc, arg->sym->param.argnum ) ) then
+				lreg = irAllocVREG( typeGetDtAndPtrOnly( l->dtype ), l->subtype )
+				'' regFamily should be irrelevent for thiscall
+				'' lreg->regFamily = IR_REG_FPU_STACK | IR_REG_SSE
+				lreg->dtype = l->dtype
+			else
+				lreg = NULL
+			end if
+			irEmitPUSHARG( arg->sym, v1, arg->arg.lgt, reclevel, lreg )
 		end if
 		totalstackbytes += argbytes
 
@@ -250,7 +290,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 			v1 = astLoad( l )
 			'' (passing NULL param, because no PARAM symbol exists
 			'' for the hidden struct result param)
-			irEmitPUSHARG( NULL, v1, 0, reclevel )
+			irEmitPUSHARG( NULL, v1, 0, reclevel, NULL )
 		end if
 		totalstackbytes += env.pointersize
 	end if
@@ -261,7 +301,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 			vr = NULL
 		else
 
-			'' va_list 
+			'' va_list
 			if( typeGetMangleDt( astGetFullType( n ) ) = FB_DATATYPE_VA_LIST ) then
 				'' if dtype has a mangle modifier, let the emitter
 				'' handle the remapping
@@ -328,19 +368,19 @@ sub astCloneCALL _
 	)
 
 	'' copy-back list
-    scope
-    	dim as AST_TMPSTRLIST_ITEM ptr sn = any, sc = any
+	scope
+		dim as AST_TMPSTRLIST_ITEM ptr sn = any, sc = any
 
 		c->call.strtail = NULL
 		sn = n->call.strtail
 		do while( sn <> NULL )
-        	sc = listNewNode( @ast.call.tmpstrlist )
+			sc = listNewNode( @ast.call.tmpstrlist )
 
-        	sc->sym = sn->sym
-        	sc->srctree = astCloneTree( sn->srctree )
-        	sc->prev = c->call.strtail
+			sc->sym = sn->sym
+			sc->srctree = astCloneTree( sn->srctree )
+			sc->prev = c->call.strtail
 
-        	c->call.strtail = sc
+			c->call.strtail = sc
 
 			sn = sn->prev
 		loop
@@ -366,7 +406,7 @@ sub astDelCALL _
 	)
 
 	'' copy-back list
-    scope
+	scope
 	    dim as AST_TMPSTRLIST_ITEM ptr s = any, p = any
 		s = n->call.strtail
 		do while( s <> NULL )
@@ -376,8 +416,8 @@ sub astDelCALL _
 
 			listDelNode( @ast.call.tmpstrlist, s )
 			s = p
-    	loop
-    end scope
+		loop
+	end scope
 
 end sub
 

@@ -45,6 +45,9 @@ Sleep
 memmove can be very useful......
 memmove can be very very useful.
 		%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.08.0
+
 {{fbdoc item="diff"}}
 	- The behavior and usage is new to ""FreeBASIC"".
 

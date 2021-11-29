@@ -12,9 +12,9 @@ Sub mythread( ByVal param As Any Ptr )
 	Print "hi!"
 End Sub
 
-Var thread = ThreadCreate( @mythread )
+Dim As Any Ptr thread = ThreadCreate( @mythread )
 ThreadDetach( thread )
-
+'' or
 ThreadDetach( ThreadCreate( @mythread ) )
 
 Sleep

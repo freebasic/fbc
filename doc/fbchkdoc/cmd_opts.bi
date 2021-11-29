@@ -28,6 +28,7 @@ enum CMD_OPTS_ENABLE_FLAGS
 	CMD_OPTS_ENABLE_PAGELIST = 16
 	CMD_OPTS_ENABLE_MANUAL = 32
 	CMD_OPTS_ENABLE_DATABASE = 64
+	CMD_OPTS_ENABLE_TRACE = 128
 
 	CMD_OPTS_ENABLE_AUTOCACHE = &h1000
 
@@ -50,6 +51,7 @@ type CMD_OPTS_GLOBAL
 	'' command line options
 	help as boolean
 	verbose as boolean
+	trace as boolean
 
 	''resolved options
 	wiki_url as string

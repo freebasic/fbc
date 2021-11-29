@@ -316,7 +316,7 @@ private function cStrASC() as ASTNODE ptr
 			''   from here back in to the rtlib
 			''     ASC( const zstring ptr, pos as integer, textlen as integer ) as ulong
 			''     ASC( const wstring ptr, pos as integer, textlen as integer ) as ulong
-			'' Because previsouly in either the zstring or wstring case:
+			'' Because previously in either the zstring or wstring case:
 			''    function = astNewCONSTi( asc( *zs, p ), FB_DATATYPE_UINT )
 			''    function = astNewCONSTi( asc( *ws, p ), FB_DATATYPE_UINT )
 			'' The zstring|wstring ptr loses the actual length when passed to ASC() in the rtlib

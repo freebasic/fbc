@@ -13,22 +13,20 @@ Returns the type of a variable.
 {{fbdoc item="desc"}}
 	##**Typeof**## is a compiler intrinsic that replaces itself with the type of the variable passed to it. It can either be used in a variable declaration (Example 1) or it can be used in the preprocessor for comparison, printing. (Example 2)
 	
-	##**Typeof**## also supports passing any intrinsic data type, or user-defined type (and its data fields for fbc version >= 1.08), not only variables defined as those types. Also supported are expressions, the type is inferred from the expression (much like ##[[KeyPgVar|Var]]##).
-	
-	For fbc version < 1.08: When a variable from a given namespace is accessed with the namespace's name prefix, wrap the argument to ##**Typeof**## with parentheses to force it to be seen as an expression. For example ##Typeof((namespace_name.variable))##.
+	##**Typeof**## also supports passing any intrinsic data type, or user-defined type (and its data fields), not only variables defined as those types. Also supported are expressions, the type is inferred from the expression (much like ##[[KeyPgVar|Var]]##).
 	
 	If there is both a user defined type and a variable visible with the same name in the current scope, the user defined type takes precedence over the variable.  To ensure that the ##**Typeof**## takes the variable instead of the user defined type, wrap the argument to ##**Typeof**## with parentheses to force it to be seen as an expression.  For example ##Typeof((variable))##.
 
 {{fbdoc item="ex"}}
-Example 1:
-{{fbdoc item="filename" value="examples/manual/misc/typeof1.bas"}}%%(freebasic)
+	Example 1:
+		{{fbdoc item="filename" value="examples/manual/misc/typeof1.bas"}}%%(freebasic)
 Dim As Integer foo
 Dim As TypeOf(67.2) bar '' '67.2' is a literal double
 Dim As TypeOf( foo + bar ) teh_double '' double + integer results in double
 Print SizeOf(teh_double)
-%%
-Example 2:
-{{fbdoc item="filename" value="examples/manual/misc/typeof2.bas"}}%%(freebasic)
+		%%
+	Example 2:
+		{{fbdoc item="filename" value="examples/manual/misc/typeof2.bas"}}%%(freebasic)
 Dim As String foo
 #print TypeOf(foo)
 #if TypeOf(foo) = TypeOf(Integer)
@@ -38,7 +36,11 @@ Dim As String foo
 #if TypeOf(foo) = TypeOf(String)
   #print "It's a String!"
 #endif
-%%
+		%%
+{{fbdoc item="ver"}}
+	- Before fbc 1.08.0:
+			##**Typeof**## was not returning the type of the data fields of a UDT.
+			When a variable from a given namespace was accessed with the namespace's name prefix, the argument to ##**Typeof**## had to be wrapped with parentheses to force it to be seen as an expression. For example ##Typeof((namespace_name.variable))##.
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Typeof""**##.

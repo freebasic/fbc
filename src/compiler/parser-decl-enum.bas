@@ -1,6 +1,7 @@
 '' enumerator (ENUM) declarations
 ''
 '' chng: sep/2004 written [v1ctor]
+'' chng: jul/2021 don't allow ENUM between SELECT and CASE [jeffm]
 
 
 #include once "fb.bi"
@@ -144,11 +145,15 @@ sub cEnumDecl( byval attrib as FB_SYMBATTRIB )
 	static as zstring * FB_MAXNAMELEN+1 id
 	dim as FBSYMBOL ptr e = any
 
+	'' ENUM doesn't generate any code, but should not be allowed between SELECT and CASE
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		'' error recovery: skip the whole compound stmt
+		hSkipCompound( FB_TK_ENUM )
+		exit sub
+	end if
+
 	'' ENUM
 	lexSkipToken( LEXCHECK_POST_SUFFIX )
-
-	'' Namespace identifier if it matches the current namespace
-	cCurrentParentId()
 
 	'' ID?
 	select case lexGetClass( )
@@ -168,6 +173,7 @@ sub cEnumDecl( byval attrib as FB_SYMBATTRIB )
 
 	case else
 		id = *symbUniqueId( )
+		attrib or= FB_SYMBATTRIB_ANONYMOUS
 	end select
 
 	'' [ALIAS "id"]
@@ -222,8 +228,8 @@ sub cEnumDecl( byval attrib as FB_SYMBATTRIB )
 		symbNestBegin( e, FALSE )
 	end if
 
-	'' EnumBody
-	cEnumBody( e, attrib )
+	'' EnumBody (enum elements don't inherit anonymous attribute)
+	cEnumBody( e, attrib and (not FB_SYMBATTRIB_ANONYMOUS) )
 
 	'' close scope
 	if( use_hashtb ) then

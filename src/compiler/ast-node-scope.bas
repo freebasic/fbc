@@ -643,7 +643,7 @@ sub astScopeAllocLocals( byval symtbhead as FBSYMBOL ptr )
 		while( s )
 			'' temp var?
 			if( symbIsVar( s ) and symbIsTemp( s ) ) then
-				assert( (symbIsShared( s ) = FALSE) and (symbIsParam( s ) = FALSE) )
+				assert( (symbIsShared( s ) = FALSE) and (symbIsParamVar( s ) = FALSE) )
 				'' Fake a DECL to emit the variable declaration
 				irEmitDECL( s )
 			end if
@@ -661,7 +661,7 @@ sub astScopeAllocLocals( byval symtbhead as FBSYMBOL ptr )
 			'' non-shared/static variable?
 			if( symbIsVar( s ) and ((symbGetAttrib( s ) and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0) ) then
 				'' Procedure parameter?
-				if( symbIsParam( s ) ) then
+				if( symbIsParamVar( s ) ) then
 					irProcAllocArg( parser.currproc, s )
 				else
 					irProcAllocLocal( parser.currproc, s )

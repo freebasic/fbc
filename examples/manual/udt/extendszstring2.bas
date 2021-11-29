@@ -71,8 +71,8 @@ End Select
 v[0] = Asc("-")
 Print "'" & v & "'", Len(v)
 
-'Print "'" & Right(v, 5) & "'"      '' 'Right' does not yet support types with 'Extends Zstring'
-Print "'" & Right(Str(v), 5) & "'"  '' workaround (or: 'Right(Type<String>(v), 5)')
+'Print "'" & Right(v, 5) & "'"      '' 'Right' does not yet support types with 'Extends Zstring' (corrected in fbc version 1.09.0)
+Print "'" & Right(Str(v), 5) & "'"  '' workaround (or: 'Right(Type<String>(v), 5)') for fbc version < 1.09.0
 
 Sleep
 	

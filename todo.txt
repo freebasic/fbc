@@ -71,10 +71,11 @@ o ABI
     [ ] use __thiscall calling by default for mingw gcc 32-bit, currently
         currently, users must manage this explicitly, recommend using a 
         #define thiscall __thiscall depending on target platform
-    [ ] silently ignore on 64-bit, but warn if declare & procedure is different
-    [ ] implement in -gen gas 32-bit. Hard to do, AST/IR/EMIT currently doesn't
-        have enough information or implementation for passing arguments in registers.
     [ ] more tests and documentation for mangling/calling conventions, not every
+        calling convention is tested or documented completely - also hard to test
+    [x] silently ignore on 64-bit, but warn if declare & procedure is different
+    [x] implement in -gen gas 32-bit. Hard to do, AST/IR/EMIT currently doesn't
+        have enough information or implementation for passing arguments in registers.
     [x] add the __thiscall keyword
     [x] add '-z no-thiscall' to ignore "thiscall" and revert to default calling
         convention
@@ -218,14 +219,19 @@ o -exx should catch...
           be used as functions too
 
 [ ] ParamArray, but with this syntax: foo(...) as bar
-	- array must be built at compile-time and destroyed after the call
-	- take care with objects..
+    - array must be built at compile-time and destroyed after the call
+    - take care with objects..
 
 [ ] PP:
     [ ] add #pragma cmdline="-foo bar -baz"
-		- painful to add
-		- don't allow it if any line was parsed already
-    - [macro expansion: won't work for inner macros
+        [X] painful to add
+        [X] added as '#cmdline "args..."'
+        [ ] painful to complete
+        [ ] don't allow #cmdline if any line was parsed already that emits backend code
+        [X] add '-z nocmdline' to ignore #cmdline directives
+        [X] reset parser for command line options that require it
+        [X] reset fbc for command line options that require it (-target, -arch, -lib, etc)
+    - macro expansion: won't work for inner macros
     - support default arguments?
 
 [ ] SCOPE..END SCOPE:
@@ -268,6 +274,16 @@ o -exx should catch...
       - can be hard to be added because they don't have to come in order, params in
         prototypes don't require a name and because overloading
       - := must be a new token because the "foo bar : baz" ambiguity
+
+[ ] method pointers / delegates
+    - extend PROCPTR( id, type ) to allow pointers to methods
+    - fbc handles method pointers fairly well but the syntax is not symmetrical with
+      invoking a method on a TYPE (class)
+    - var x = procptr( T.method ) could return a method pointer but must currently be
+      invoked with x( instance, [params]... ).  This is a different syntax from other
+      languages that support method pointers.
+    - delegates would need to aggregate the instance and method pointer which will
+      likely requre a new built-in type to handle by the compiler
 
 *** *** *** *** ***
 [ ] All functions returning STRING should actually return the FBSTRING object

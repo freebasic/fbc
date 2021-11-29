@@ -7,16 +7,12 @@ The library is referred to as shared, because the code in the library is loaded 
 
 Once the library is made, we can then use the code that it contains just as if we were compiling the source directly with our program.
 
-**{{anchor name="VARIABLES|Sharing variables with shared library"}}**
 **{{anchor name="EXAMPLE1|Shared Library Example"}}**
 **{{anchor name="WINDOWS|Using Shared Libraries on Windows"}}**
 **{{anchor name="LINUX|Using Shared Libraries on Linux"}}**
 **{{anchor name="EXPORT|Executables that export symbols"}}**
 **{{anchor name="DYNAMIC|Loading Shared Libraries Dynamically"}}**
-
-{{anchor name="VARIABLES"}}{{fbdoc item="section" value="Sharing variables with shared library"}}
-	A shared library does not allow the direct sharing of variables by using the ##[[KeyPgCommon|Common]]## or ##[[KeyPgExtern|Extern]]## keyword.
-	Otherwise, passing a parameter (by value or by reference) to a library procedure or returning a variable (by value or by reference) from a library function allows to indirectly exchange data with a shared library.
+**{{anchor name="VARIABLES|Exchanging/Sharing variables with shared library on Windows"}}**
 
 {{anchor name="EXAMPLE1"}}{{fbdoc item="section" value="Shared Library Example"}}
 	Following is a simple example of creating a shared library using these three files:
@@ -103,12 +99,12 @@ Object files, and therefore shared libraries, are platform specific and in some 
 {{anchor name="DYNAMIC"}}{{fbdoc item="section" value="Loading Shared Libraries Dynamically"}}
 	Shared libraries can be loaded and used at run time by dynamically loading the library and its symbols at runtime.
 		- ##[[KeyPgDylibload|Dylibload]]## can be used to load and obtain a handle to a shared library.
-		- ##[[KeyPgDylibsymbol|Dylibsymbol]]## is used to obtain the address of a symbol in a loaded shared library.
+		- ##[[KeyPgDylibsymbol|Dylibsymbol]]## is used to obtain the address of a symbol in a loaded shared library (variable names not supported on Windows but only procedure names).
 		- ##[[KeyPgDylibfree|Dylibfree]]## is used to unload a shared library when it is no longer needed.
 
 		
 	Procedures in the shared library must use the ##[[KeyPgExport|Export]]## specifier at first line of procedure definition to ensure that the symbols name is placed in the shared library's export table:
-	{{fbdoc item="filename" value="examples/manual/proguide/shared-lib/mydll.bas"}}%%(freebasic)
+		{{fbdoc item="filename" value="examples/manual/proguide/shared-lib/mydll.bas"}}%%(freebasic)
 '' mydll.bas
 '' compile as: fbc -dll mydll.bas
 '' This will create mydll.dll (and libmydll.dll.a import library) on Windows,
@@ -125,8 +121,8 @@ Object files, and therefore shared libraries, are platform specific and in some 
 function AddNumbers alias "AddNumbers"( byval a as integer, byval b as integer ) as integer export
 	function = a + b
 end function
-	%%
-	{{fbdoc item="filename" value="examples/manual/proguide/shared-lib/load.bas"}}%%(freebasic)
+		%%
+		{{fbdoc item="filename" value="examples/manual/proguide/shared-lib/load.bas"}}%%(freebasic)
 '' load.bas: Loads mydll.dll (or libmydll.so) at runtime, calls one of mydll's
 '' functions and prints the result. mydll is not needed at compile time.
 '' compile as: fbc test.bas
@@ -167,7 +163,114 @@ print x; " +"; y; " ="; AddNumbers( x, y )
 '' you got from it via dylibsymbol will become invalid, and accessing them
 '' will cause the application to crash.
 dylibfree( libhandle )
-	%%
+		%%
+{{anchor name="VARIABLES"}}{{fbdoc item="section" value="Exchanging/Sharing variables with shared library on Windows"}}
+	Windows does not support the ##[[KeyPgCommon|Common]]## or ##[[KeyPgExtern|Extern]]## keywords for directly sharing variables with a shared library.
+	Otherwise (running on any platform), passing a parameter (by value or by reference) to a library procedure or returning a variable (by value or by reference) from a library function allows to indirectly exchange data (by value) or share data (by reference) with a shared library.
+	
+	Example of workaround on Windows for sharing data (by reference) between main and dll code (works on any platform):
+	(dll loadable statically or dynamically as desired)
+		{{fbdoc item="filename" value="examples/manual/proguide/shared-lib/dllShareData.bas"}}%%(freebasic)
+' dllShareData.bas to be compile with -dll
+' Sharing data between main and dll code
+
+' 'Alias' clause (in addition to 'Export') allows compatibility with dll loaded statically or dynamically
+
+' share main variable
+Dim Shared Byref As Integer Idll = *Cptr(Integer Ptr, 0)
+Sub passIntByRef Alias"passIntByRef"(Byref i As Integer) Export
+	Print "   dll code receives by reference main integer"
+	@Idll = @i
+End Sub
+
+Sub printIdll Alias"printIdll"() Export
+	Print "   dll code prints its own reference"
+	Print "   " & Idll
+End Sub
+
+Sub incrementIdll Alias"incrementIdll"() Export
+	Idll += 1
+End Sub
+
+' share dll variable
+Dim Shared As Integer Jdll = 5
+Function returnIntByRef Alias"returnIntByRef"() Byref As Integer Export
+	Print "   dll code returns by reference dll integer"
+	Return Jdll
+End Function
+
+Sub printJdll Alias"printJdll"() Export
+	Print "   dll code prints its dll integer"
+	Print "   " & Jdll
+End Sub
+
+Sub incrementJdll Alias"incrementJdll"() Export
+	Jdll +=1
+End Sub
+		%%
+		{{fbdoc item="filename" value="examples/manual/proguide/shared-lib/mainShareData.bas"}}%%(freebasic)
+' mainShareData.bas
+' Sharing data between main and dll code
+
+' 'Alias' clause allows compatibility with dll loaded statically or dynamically
+
+' dll loaded statically
+	#inclib "dllShareData"
+	Declare Sub passIntByRef Alias"passIntByRef"(Byref i As Integer)
+	Declare Function returnIntByRef Alias"returnIntByRef"() Byref  As Integer
+	Declare Sub printIdll Alias"printIdll"()
+	Declare Sub printJdll Alias"printJdll"()
+	Declare Sub incrementIdll Alias"incrementIdll"()
+	Declare Sub incrementJdll Alias"incrementJdll"()
+ ' or dll loaded dynamically
+	'Dim As Any Ptr libhandle = DyLibLoad("dllShareData")
+	'Dim As Sub(Byref i As Integer) passIntByRef = DyLibSymbol(libhandle, "passIntByRef")
+	'Dim As Function() Byref  As Integer returnIntByRef = DyLibSymbol(libhandle, "returnIntByRef")
+	'Dim As Sub() printIdll = DyLibSymbol(libhandle, "printIdll")
+	'Dim As Sub() printJdll = DyLibSymbol(libhandle, "printJdll")
+	'Dim As Sub() incrementIdll = DyLibSymbol(libhandle, "incrementIdll")
+	'Dim As Sub() incrementJdll = DyLibSymbol(libhandle, "incrementJdll")
+
+' share main variable
+Dim Shared As Integer Imain = 1
+Print "main code passes by reference main integer to dll code"
+passIntByref(Imain)
+Print "main code requests dll code to print its own reference"
+printIdll()
+Print "main code increments its main integer value"
+Imain += 1
+Print "main code requests dll code to print its own reference"
+printIdll()
+Print "main code requests dll to increments its own reference"
+incrementIdll()
+Print "main code prints its main integer"
+Print "" & Imain
+
+Print
+
+' share dll variable
+Dim Shared Byref As Integer Jdll = *Cptr(Integer Ptr, 0)
+Print "main code requests by reference dll integer from dll code"
+Dim As Integer Ptr pJdll = @(returnIntByRef())
+Print "main code receives by reference dll integer"
+@Jdll = pJdll
+Print "main code prints its own reference"
+Print "" & Jdll
+Print "main code requests dll to increment its dll integer value"
+incrementJdll()
+Print "main code prints its own reference"
+Print "" & Jdll
+Print "main code increments its own reference"
+Jdll += 1
+Print "main code requests dll code to print its dll integer"
+printJdll()
+Print
+
+' dll loaded dynamically
+	'DyLibFree(libhandle)
+
+Sleep
+		%%
 {{fbdoc item="see"}}
 	- [[ProPgStaticLibraries|Static Libraries]]
 	- ##[[KeyPgInclib|#inclib]]##

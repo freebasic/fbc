@@ -92,6 +92,9 @@ myprintf( !"integer=%i, longint=%lli float=%f\n", _
 myprintf( !"string=%s, string=%s\n", "foo", s )
 %%
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.07.0
+
 {{fbdoc item="target"}}
 	- The exact type and size of ##**cva_list**## depends on [[CompilerOpttarget|-target]], [[CompilerOptarch|-arch]], [[CompilerOptgen|-gen]] command line options.
 	- In ##[[CompilerOptgen|-gen gas]]##, ##**cva_list**## is a pointer

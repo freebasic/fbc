@@ -76,6 +76,9 @@ Counting 7 to 2
  2
 '/
 	%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.08.0
+
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 

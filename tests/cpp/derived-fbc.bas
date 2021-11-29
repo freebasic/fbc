@@ -2,7 +2,11 @@
 
 '' test mapping of mangling between c++ derived class and fbc type
 
+#ifdef __FB_FREEBSD__
+#inclib "c++"
+#else
 #inclib "stdc++"
+#endif
 
 '' helper macro to track progress
 #define DLOG( msg ) '' print #msg
@@ -11,11 +15,6 @@
 	#define DOTEST
 	#define DOFUNCS
 #else
-	'' thiscall is not supported in -gen gas
-	#if __FB_BACKEND__ <> "gas"
-		#define DOTEST
-	#endif
-
 	'' structures returned by value from c++
 	'' needs some work on arm targets (bugs!)
 	#if not defined( __FB_ARM__ )

@@ -65,7 +65,7 @@ private function hNidxArray2ArrayAccess( byval nidxarray as ASTNODE ptr ) as AST
 	sym = varexpr->sym
 
     ''  argument passed by descriptor?
-    if( symbIsParamByDesc( sym ) ) then
+    if( symbIsParamVarByDesc( sym ) ) then
 		'' deref descriptor->data
 		idxexpr = astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
 				FB_DATATYPE_INTEGER, NULL, symb.fbarray_data )

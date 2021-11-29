@@ -440,6 +440,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDdfbmt|__FB_MT__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbnetbsd|__FB_NETBSD__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbopenbsd|__FB_OPENBSD__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfboptimize|__FB_OPTIMIZE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptionbyval|__FB_OPTION_BYVAL__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptiondynamic|__FB_OPTION_DYNAMIC__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptionescape|__FB_OPTION_ESCAPE__"}}
@@ -451,6 +452,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDdfboutlib|__FB_OUT_LIB__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboutobj|__FB_OUT_OBJ__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbpcos|__FB_PCOS__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbppc|__FB_PPC__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbquote|__FB_QUOTE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbsignature|__FB_SIGNATURE__"}} 
 	- {{fbdoc item="keyword" value="KeyPgDdfbsse|__FB_SSE__"}}
@@ -479,6 +481,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 
 {{fbdoc item="section" value="Preprocessor"}}
 	- {{fbdoc item="keyword" value="KeyPgPpassert|#ASSERT"}}
+	- {{fbdoc item="keyword" value="KeyPgPpcmdline|#CMDLINE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpdefine|#DEFINE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpelse|#ELSE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpelseif|#ELSEIF"}}
@@ -494,7 +497,8 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgPplang|#LANG"}}
 	- {{fbdoc item="keyword" value="KeyPgPpline|#LINE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpmacro|#MACRO"}}
-	- {{fbdoc item="keyword" value="KeyPgPragma|#PRAGMA"}}
+	- {{fbdoc item="keyword" value="KeyPgPpPragma|#PRAGMA"}}
+	- {{fbdoc item="keyword" value="KeyPgPpPragmaReserve|#PRAGMA RESERVE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpprint|#PRINT"}}
 	- {{fbdoc item="keyword" value="KeyPgPpundef|#UNDEF"}}
 	- {{fbdoc item="keyword" value="KeyPgDefined|DEFINED"}}

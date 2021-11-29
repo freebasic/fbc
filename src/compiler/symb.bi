@@ -55,26 +55,32 @@ end enum
 
 const FB_DATATYPES = (FB_DATATYPE_XMMWORD - FB_DATATYPE_VOID) + 1
 
-const FB_DT_TYPEMASK 		= &b00000000000000000000000000011111 '' max 32 built-in dts
-const FB_DT_PTRMASK  		= &b00000000000000000000000111100000 '' level of pointer indirection
-const FB_DT_CONSTMASK		= &b00000000000000111111111000000000 '' PTRLEVELS + 1 bit-masks
-const FB_DATATYPE_REFERENCE	= &b00000000000010000000000000000000 '' used for mangling BYREF parameters
-const FB_DT_MANGLEMASK		= &b00000001111100000000000000000000 '' used to modify mangling for builtin types
-const FB_DATATYPE_INVALID	= &b10000000000000000000000000000000
+const FB_DT_TYPEMASK        = &b00000000000000000000000000011111 '' max 32 built-in dts
+const FB_DT_PTRMASK         = &b00000000000000000000000111100000 '' level of pointer indirection
+const FB_DT_CONSTMASK       = &b00000000000000111111111000000000 '' PTRLEVELS + 1 bit-masks
+const FB_DATATYPE_REFERENCE = &b00000000000010000000000000000000 '' used for mangling BYREF parameters
+const FB_DT_MANGLEMASK      = &b00000001111100000000000000000000 '' used to modify mangling for builtin types
+const FB_DATATYPE_INVALID   = &b10000000000000000000000000000000
 
-const FB_DT_PTRLEVELS		= 8					'' max levels of pointer indirection
+const FB_DT_PTRLEVELS       = 8                 '' max levels of pointer indirection
 
-const FB_DT_PTRPOS			= 5
-const FB_DT_CONSTPOS		= FB_DT_PTRPOS + 4
+const FB_DT_PTRPOS          = 5
+const FB_DT_CONSTPOS        = FB_DT_PTRPOS + 4
 
-const FB_DT_MANGLEPOS		= 20
+const FB_DT_MANGLEPOS       = 20
+
+const FB_OVLPROC_MINORSCALE = 10
+
+#define OvlMatchScore(major, minor) (((major) * FB_OVLPROC_MINORSCALE) + (minor))
 
 enum FB_OVLPROC_MATCH_SCORE
 	FB_OVLPROC_NO_MATCH = 0
 	FB_OVLPROC_LOWEST_MATCH = 1
-	FB_OVLPROC_HALFMATCH = FB_DATATYPES
-	FB_OVLPROC_TYPEMATCH = FB_DATATYPES * 2
-	FB_OVLPROC_FULLMATCH = FB_DATATYPES * 3
+	FB_OVLPROC_CONVMATCH = OvlMatchScore( FB_DATATYPES * 1, 0 )
+	FB_OVLPROC_CASTMATCH = OvlMatchScore( FB_DATATYPES * 2, 0 )
+	FB_OVLPROC_HALFMATCH = OvlMatchScore( FB_DATATYPES * 3, 0 )
+	FB_OVLPROC_TYPEMATCH = OvlMatchScore( FB_DATATYPES * 4, 0 )
+	FB_OVLPROC_FULLMATCH = OvlMatchScore( FB_DATATYPES * 5, 0 )
 end enum
 
 enum
@@ -94,7 +100,7 @@ end enum
 '' symbol classes
 '' When changing, update symb.bas:classnames() and symb.bas:classnamesPretty()
 enum FB_SYMBCLASS
-	FB_SYMBCLASS_VAR			= 1
+	FB_SYMBCLASS_VAR            = 1
 	FB_SYMBCLASS_CONST
 	FB_SYMBCLASS_PROC
 	FB_SYMBCLASS_PARAM
@@ -107,14 +113,15 @@ enum FB_SYMBCLASS
 	FB_SYMBCLASS_CLASS
 	FB_SYMBCLASS_FIELD
 	FB_SYMBCLASS_TYPEDEF
-	FB_SYMBCLASS_FWDREF							'' forward definition
+	FB_SYMBCLASS_FWDREF                     '' forward definition
 	FB_SYMBCLASS_SCOPE
-	FB_SYMBCLASS_NSIMPORT						'' namespace import (an USING)
+	FB_SYMBCLASS_RESERVED                   '' reserved symbol
+	FB_SYMBCLASS_NSIMPORT                   '' namespace import (an USING)
 end enum
 
 '' symbol state mask
 enum FB_SYMBSTATS
-	                        ''= &h00000001
+	''                      ''= &h00000001 '' not-used
 	FB_SYMBSTATS_ACCESSED     = &h00000002
 	FB_SYMBSTATS_CTORINITED   = &h00000004  '' ctor method procs only
 	FB_SYMBSTATS_DECLARED     = &h00000008
@@ -139,7 +146,7 @@ enum FB_SYMBSTATS
 	FB_SYMBSTATS_HASRTTI      = &h00400000
 	FB_SYMBSTATS_CANTUNDEF    = &h00800000
 	FB_SYMBSTATS_UNIONFIELD   = &h01000000  '' fields only
-	                        ''= &h02000000  '' params only
+	''                      ''= &h02000000  '' not-used
 	FB_SYMBSTATS_EMITTED      = &h04000000  '' needed by high-level IRs, to avoid emitting structs etc twice
 	FB_SYMBSTATS_BEINGEMITTED = &h08000000  '' ditto, for circular dependencies with structs
 
@@ -157,7 +164,7 @@ end enum
 
 '' symbol attributes mask
 enum FB_SYMBATTRIB
-	FB_SYMBATTRIB_NONE			   = &h00000000
+	FB_SYMBATTRIB_NONE             = &h00000000
 
 	FB_SYMBATTRIB_SHARED           = &h00000001  '' all symbols
 	FB_SYMBATTRIB_STATIC           = &h00000002  '' all symbols
@@ -173,15 +180,17 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_CONST            = &h00000800  '' CONST value, expression, or method
 	FB_SYMBATTRIB_TEMP             = &h00001000  '' VARs
 	FB_SYMBATTRIB_DESCRIPTOR       = &h00002000  '' VARs (arrays)
-	FB_SYMBATTRIB_PARAMBYDESC      = &h00004000  '' VARs, TODO: Rename these and symbIsParam*() to clarify that they're about param vars (not params)
-	FB_SYMBATTRIB_PARAMBYVAL       = &h00008000  '' VARs
-	FB_SYMBATTRIB_PARAMBYREF       = &h00010000  '' VARs
+	FB_SYMBATTRIB_PARAMVARBYDESC   = &h00004000  '' VARs (paramater variables)
+	FB_SYMBATTRIB_PARAMVARBYVAL    = &h00008000  '' VARs (paramater variables)
+	FB_SYMBATTRIB_PARAMVARBYREF    = &h00010000  '' VARs (paramater variables)
 	FB_SYMBATTRIB_FUNCRESULT       = &h00020000
 	FB_SYMBATTRIB_REF              = &h00040000  '' VARs/FIELDs (if declared with BYREF)
 	FB_SYMBATTRIB_INSTANCEPARAM    = &h00080000
 	FB_SYMBATTRIB_SUFFIXED         = &h00100000
 	FB_SYMBATTRIB_VIS_PRIVATE      = &h00200000  '' UDT members only
 	FB_SYMBATTRIB_VIS_PROTECTED    = &h00400000  '' UDT members only
+	FB_SYMBATTRIB_INTERNAL         = &h00800000  '' default UDT members / vtable / rtti - affects name mangling
+	FB_SYMBATTRIB_ANONYMOUS        = &h01000000  '' anonymous / unnamed id
 end enum
 
 '' proc symbol attributes mask
@@ -205,7 +214,7 @@ end enum
 
 '' parameter modes
 enum FB_PARAMMODE
-	FB_PARAMMODE_BYVAL 			= 1				'' must start at 1! used for mangling
+	FB_PARAMMODE_BYVAL          = 1             '' must start at 1! used for mangling
 	FB_PARAMMODE_BYREF
 	FB_PARAMMODE_BYDESC
 	FB_PARAMMODE_VARARG
@@ -213,8 +222,8 @@ end enum
 
 '' call conventions
 enum FB_FUNCMODE
-	FB_FUNCMODE_STDCALL			= 1             '' ditto
-	FB_FUNCMODE_STDCALL_MS						'' ms/vb-style: don't include the @n suffix
+	FB_FUNCMODE_STDCALL         = 1             '' ditto
+	FB_FUNCMODE_STDCALL_MS                      '' ms/vb-style: don't include the @n suffix
 	FB_FUNCMODE_CDECL
 	FB_FUNCMODE_PASCAL
 	FB_FUNCMODE_THISCALL
@@ -228,15 +237,15 @@ end enum
 
 '' options when adding new symbols
 enum FB_SYMBOPT
-	FB_SYMBOPT_NONE				= &h00000000
+	FB_SYMBOPT_NONE             = &h00000000
 
-	FB_SYMBOPT_PRESERVECASE		= &h00000001
-	FB_SYMBOPT_UNSCOPE			= &h00000002
-	FB_SYMBOPT_DECLARING		= &h00000004
-	FB_SYMBOPT_MOVETOGLOB		= &h00000008
-	FB_SYMBOPT_RTL				= &h00000010
-	FB_SYMBOPT_DOHASH			= &h00000020
-	FB_SYMBOPT_CREATEALIAS		= &h00000040
+	FB_SYMBOPT_PRESERVECASE     = &h00000001
+	FB_SYMBOPT_UNSCOPE          = &h00000002
+	FB_SYMBOPT_DECLARING        = &h00000004
+	FB_SYMBOPT_MOVETOGLOB       = &h00000008
+	FB_SYMBOPT_RTL              = &h00000010
+	FB_SYMBOPT_DOHASH           = &h00000020
+	FB_SYMBOPT_CREATEALIAS      = &h00000040
 	FB_SYMBOPT_NODUPCHECK       = &h00000080
 end enum
 
@@ -304,13 +313,13 @@ type EMIT_NODE_ as EMIT_NODE
 
 ''
 type FBSYMLIST
-	head			as FBSYMBOL_ ptr
-	tail			as FBSYMBOL_ ptr
+	head            as FBSYMBOL_ ptr
+	tail            as FBSYMBOL_ ptr
 end type
 
 type FBARRAYDIM
-	lower			as longint
-	upper			as longint
+	lower           as longint
+	upper           as longint
 end type
 
 '' Special value to represent the case where '...' ellipsis was given as ubound
@@ -318,71 +327,71 @@ const FB_ARRAYDIM_UNKNOWN = &h8000000000000000ll
 
 ''
 type FBSYMCHAIN
-	sym				as FBSYMBOL_ ptr			'' first symbol
-	next			as FBSYMCHAIN ptr
-	isimport		as integer
+	sym             as FBSYMBOL_ ptr            '' first symbol
+	next            as FBSYMCHAIN ptr
+	isimport        as integer
 
 	'' all fields below are only set when importing (with USING) a ns
-	prev			as FBSYMCHAIN ptr
-	item			as HASHITEM ptr
-	imp_next		as FBSYMCHAIN ptr
+	prev            as FBSYMCHAIN ptr
+	item            as HASHITEM ptr
+	imp_next        as FBSYMCHAIN ptr
 end type
 
 ''
 type FBHASHTB
-	owner			as FBSYMBOL_ ptr            '' back link
-	tb				as THASH
-	prev			as FBHASHTB ptr				'' prev node in the current hash tbs lookup list
-	next			as FBHASHTB ptr				'' next  //
+	owner           as FBSYMBOL_ ptr            '' back link
+	tb              as THASH
+	prev            as FBHASHTB ptr             '' prev node in the current hash tbs lookup list
+	next            as FBHASHTB ptr             '' next  //
 end type
 
 type FBSYMHASH
-	tb				as FBHASHTB ptr             '' parent's hash tb
-	item			as HASHITEM ptr				'' hash item, for fast deletion
-	index			as uinteger					'' ditto
-	prev			as FBSYMBOL_ ptr			'' prev duplicated symbol
-	next			as FBSYMBOL_ ptr			'' next //
+	tb              as FBHASHTB ptr             '' parent's hash tb
+	item            as HASHITEM ptr             '' hash item, for fast deletion
+	index           as uinteger                 '' ditto
+	prev            as FBSYMBOL_ ptr            '' prev duplicated symbol
+	next            as FBSYMBOL_ ptr            '' next //
 end type
 
 ''
 type FBSYMBOLTB
-	owner			as FBSYMBOL_ ptr			'' back link
-	head			as FBSYMBOL_ ptr			'' first node
-	tail			as FBSYMBOL_ ptr			'' last node
+	owner           as FBSYMBOL_ ptr            '' back link
+	head            as FBSYMBOL_ ptr            '' first node
+	tail            as FBSYMBOL_ ptr            '' last node
 end type
 
 ''
 type FBNAMESPC_EXT
-	implist			as FBSYMLIST  				'' all namespaces imported by this ns
-	explist			as FBSYMLIST  				'' all namespaces importing this ns
-	cnt				as integer					'' times this ns was imported/nested
-	impsym_head		as FBSYMCHAIN ptr			'' imported symbols by the last USING
-	impsym_tail		as FBSYMCHAIN ptr			'' /
+	implist         as FBSYMLIST                '' all namespaces imported by this ns
+	explist         as FBSYMLIST                '' all namespaces importing this ns
+	cnt             as integer                  '' times this ns was imported/nested
+	impsym_head     as FBSYMCHAIN ptr           '' imported symbols by the last USING
+	impsym_tail     as FBSYMCHAIN ptr           '' /
 end type
 
 type FBNAMESPC
-	symtb			as FBSYMBOLTB
-	hashtb			as FBHASHTB
-	ext				as FBNAMESPC_EXT ptr
+	symtb           as FBSYMBOLTB
+	hashtb          as FBHASHTB
+	ext             as FBNAMESPC_EXT ptr
 end type
 
 union FBVALUE
-	s			as FBSYMBOL_ ptr
-	i			as longint
-	f			as double
+	s           as FBSYMBOL_ ptr
+	i           as longint
+	f           as double
 end union
 
 '' keyword
 type FBS_KEYWORD
-	id				as integer
-	tkclass			as FB_TKCLASS
+	id              as integer
+	tkclass         as FB_TKCLASS
 end type
 
 '' define or macro
 type FB_DEFPARAM
-	name			as zstring ptr
-	num				as integer
-	next			as FB_DEFPARAM ptr
+	name            as zstring ptr
+	num             as integer
+	next            as FB_DEFPARAM ptr
 end type
 
 enum FB_DEFTOK_TYPE
@@ -393,16 +402,16 @@ enum FB_DEFTOK_TYPE
 end enum
 
 type FB_DEFTOK
-	type			as FB_DEFTOK_TYPE
+	type            as FB_DEFTOK_TYPE
 
 	union
-		text		as zstring ptr
-		textw		as wstring ptr
-		paramnum	as integer
+		text        as zstring ptr
+		textw       as wstring ptr
+		paramnum    as integer
 	end union
 
-	prev			as FB_DEFTOK ptr
-	next			as FB_DEFTOK ptr
+	prev            as FB_DEFTOK ptr
+	next            as FB_DEFTOK ptr
 end type
 
 enum FB_DEFINE_FLAGS
@@ -420,70 +429,70 @@ type FBS_MACRO_PROCZ as function( byval argtb as LEXPP_ARGTB_, byval errnum as i
 type FBS_MACRO_PROCW as function( byval argtb as LEXPP_ARGTB_, byval errnum as integer ptr ) as wstring ptr
 
 type FBS_DEFINE
-	params			as integer
-	paramhead 		as FB_DEFPARAM ptr
+	params          as integer
+	paramhead       as FB_DEFPARAM ptr
 
 	union
-		tokhead		as FB_DEFTOK ptr			'' only if args > 0
-		text		as zstring ptr				'' //           = 0
-		textw		as wstring ptr
+		tokhead     as FB_DEFTOK ptr            '' only if args > 0
+		text        as zstring ptr              '' //           = 0
+		textw       as wstring ptr
 	end union
 
-	isargless		as integer
-	flags           as FB_DEFINE_FLAGS			'' bit 0: 1=numeric, 0=string
+	isargless       as integer
+	flags           as FB_DEFINE_FLAGS          '' bit 0: 1=numeric, 0=string
 	union
-		dprocz			as FBS_DEFINE_PROCZ
-		mprocz			as FBS_MACRO_PROCZ
+		dprocz          as FBS_DEFINE_PROCZ
+		mprocz          as FBS_MACRO_PROCZ
 	end union
 	union
-		mprocw			as FBS_MACRO_PROCW
+		mprocw          as FBS_MACRO_PROCW
 	end union
 end type
 
 '' forward definition
 type FBFWDREF
-	ref				as FBSYMBOL_ ptr    '' The user that has to be backpatched
-	prev			as FBFWDREF ptr
+	ref             as FBSYMBOL_ ptr    '' The user that has to be backpatched
+	prev            as FBFWDREF ptr
 end type
 
 type FBS_FWDREF
-	tail			as FBFWDREF ptr     '' List of users of this fwdref
+	tail            as FBFWDREF ptr     '' List of users of this fwdref
 end type
 
 '' label
 type FBS_LABEL
-	parent			as FBSYMBOL_ ptr			'' parent block, not always a proc
-	declared		as integer
-	stmtnum			as integer					'' can't use colnum as it's unreliable
+	parent          as FBSYMBOL_ ptr            '' parent block, not always a proc
+	declared        as integer
+	stmtnum         as integer                  '' can't use colnum as it's unreliable
 
 	gosub           as boolean                  '' if label is used for gosub with gas64
 end type
 
 '' structure
 enum FB_UDTOPT
-	FB_UDTOPT_ISUNION			= &h0001
-	FB_UDTOPT_ISANON			= &h0002
-	FB_UDTOPT_HASPTRFIELD		= &h0004
-	FB_UDTOPT_HASCTORFIELD		= &h0008
-	FB_UDTOPT_HASDTORFIELD		= &h0010
+	FB_UDTOPT_ISUNION           = &h0001
+	FB_UDTOPT_ISANON            = &h0002
+	FB_UDTOPT_HASPTRFIELD       = &h0004
+	FB_UDTOPT_HASCTORFIELD      = &h0008
+	FB_UDTOPT_HASDTORFIELD      = &h0010
 	FB_UDTOPT_HASRECBYVALPARAM  = &h0020
-	FB_UDTOPT_HASRECBYVALRES 	= &h0040
-	FB_UDTOPT_HASGETPROPERTY	= &h0080
-	FB_UDTOPT_HASSETPROPERTY	= &h0100
-	FB_UDTOPT_HASIDXGETPROPERTY	= &h0200
-	FB_UDTOPT_HASIDXSETPROPERTY	= &h0400
-	FB_UDTOPT_HASKWDFIELD		= &h0800
-	FB_UDTOPT_HASINITEDFIELD        = &h1000
-	FB_UDTOPT_HASANONUNION          = &h2000
-	FB_UDTOPT_HASSTATICVAR          = &h4000
-	FB_UDTOPT_HASBITFIELD           = &h8000
-	FB_UDTOPT_ISWSTRING             = &h10000
-	FB_UDTOPT_ISZSTRING             = &h20000
-	FB_UDTOPT_VALISTTYPEMASK       = &hf00000
+	FB_UDTOPT_HASRECBYVALRES    = &h0040
+	FB_UDTOPT_HASGETPROPERTY    = &h0080
+	FB_UDTOPT_HASSETPROPERTY    = &h0100
+	FB_UDTOPT_HASIDXGETPROPERTY = &h0200
+	FB_UDTOPT_HASIDXSETPROPERTY = &h0400
+	FB_UDTOPT_HASKWDFIELD       = &h0800
+	FB_UDTOPT_HASINITEDFIELD    = &h1000
+	FB_UDTOPT_HASANONUNION      = &h2000
+	FB_UDTOPT_HASSTATICVAR      = &h4000
+	FB_UDTOPT_HASBITFIELD       = &h8000
+	FB_UDTOPT_ISWSTRING         = &h10000
+	FB_UDTOPT_ISZSTRING         = &h20000
+	FB_UDTOPT_VALISTTYPEMASK    = &hf00000
 end enum
 
 type FB_STRUCT_DBG
-	typenum			as integer
+	typenum         as integer
 end type
 
 type FB_STRUCTEXT
@@ -504,112 +513,113 @@ end type
 
 type FBS_STRUCT
 	'' extends FBNAMESCP
-	ns 				as FBNAMESPC
-	
-	base			as FBSYMBOL_ ptr			'' base class
-	anonparent		as FBSYMBOL_ ptr
-	natalign		as integer					'' UDT's natural alignment based on largest natural field alignment
-	unpadlgt		as longint					'' unpadded len
-	options			as long						'' FB_UDTOPT
-	bitpos			as ubyte
-	align			as ubyte
+	ns              as FBNAMESPC
+
+	base            as FBSYMBOL_ ptr            '' base class
+	anonparent      as FBSYMBOL_ ptr
+	natalign        as integer                  '' UDT's natural alignment based on largest natural field alignment
+	unpadlgt        as longint                  '' unpadded len
+	options         as long                     '' FB_UDTOPT
+	bitpos          as ubyte
+	align           as ubyte
 
 	'' real type used to return this UDT from functions
-	retdtype		as FB_DATATYPE
+	retdtype        as FB_DATATYPE
 	retin2regs      as FB_STRUCT_INREG ''for gas64
-	dbg				as FB_STRUCT_DBG
-	ext				as FB_STRUCTEXT ptr
+	dbg             as FB_STRUCT_DBG
+	ext             as FB_STRUCTEXT ptr
 end type
 
 '' enumeration
 type FBS_ENUM
 	'' extends FBNAMESPC
-	ns				as FBNAMESPC
+	ns              as FBNAMESPC
 
-	elements		as integer
-	dbg				as FB_STRUCT_DBG
+	elements        as integer
+	dbg             as FB_STRUCT_DBG
 end type
 
-type FB_CALL_ARG								'' used by overloaded function calls
-	expr			as ASTNODE_ ptr
-	mode			as FB_PARAMMODE
-	next			as FB_CALL_ARG ptr
+type FB_CALL_ARG                                '' used by overloaded function calls
+	expr            as ASTNODE_ ptr
+	mode            as FB_PARAMMODE
+	next            as FB_CALL_ARG ptr
 end type
 
 type FB_CALL_ARG_LIST
-	args			as integer
-	head			as FB_CALL_ARG ptr
-	tail			as FB_CALL_ARG ptr
+	args            as integer
+	head            as FB_CALL_ARG ptr
+	tail            as FB_CALL_ARG ptr
 end type
 
 '' function param
 type FBS_PARAM
-	mode			as FB_PARAMMODE
-	var				as FBSYMBOL_ ptr			'' link to decl var in func bodies
-	optexpr			as ASTNODE_ ptr				'' default value
-	bydescdimensions	as integer
-	bydescrealsubtype	as FBSYMBOL_ ptr  '' bydesc array descriptor type
+	mode            as FB_PARAMMODE
+	var             as FBSYMBOL_ ptr            '' link to decl var in func bodies
+	optexpr         as ASTNODE_ ptr             '' default value
+	bydescdimensions    as integer
+	bydescrealsubtype   as FBSYMBOL_ ptr        '' bydesc array descriptor type
+	argnum          as integer                  '' argument number (1 is first)
 end type
 
 '' function
 type FBRTLCALLBACK as function( byval sym as FBSYMBOL_ ptr ) as integer
 
 type FB_PROCOVL
-	minparams		as short
-	maxparams		as short
-	next			as FBSYMBOL_ ptr
+	minparams       as short
+	maxparams       as short
+	next            as FBSYMBOL_ ptr
 end type
 
 '' used by x86 ASM emitter only
 type FB_PROCSTK
-	argofs			as integer
-	localofs		as integer
-	localmax		as integer
+	argofs          as integer
+	localofs        as integer
+	localmax        as integer
 end type
 
 type FB_PROCDBG
-	iniline			as integer					'' sub|function
-	endline			as integer					'' end sub|function
-	incfile			as zstring ptr
+	iniline         as integer                  '' sub|function
+	endline         as integer                  '' end sub|function
+	incfile         as zstring ptr
 end type
 
 type FB_PROCERR
-	lasthnd			as FBSYMBOL_ ptr			'' last error handler
-	lastmod			as FBSYMBOL_ ptr			'' last module name
-	lastfun			as FBSYMBOL_ ptr			'' last function name
+	lasthnd         as FBSYMBOL_ ptr            '' last error handler
+	lastmod         as FBSYMBOL_ ptr            '' last module name
+	lastfun         as FBSYMBOL_ ptr            '' last function name
 end type
 
 type FB_PROCOPOVL
-	op				as AST_OP
+	op              as AST_OP
 end type
 
 type FB_DTORWRAPPER
-	proc			as FBSYMBOL_ ptr
-	sym				as FBSYMBOL_ ptr			'' for symbol
+	proc            as FBSYMBOL_ ptr
+	sym             as FBSYMBOL_ ptr            '' for symbol
 end type
 
 enum FB_PROCSTATS
-	FB_PROCSTATS_RETURNUSED		= &h0001
-	FB_PROCSTATS_ASSIGNUSED		= &h0002
-	FB_PROCSTATS_GOSUBUSED		= &h0004
+	FB_PROCSTATS_RETURNUSED     = &h0001
+	FB_PROCSTATS_ASSIGNUSED     = &h0002
+	FB_PROCSTATS_GOSUBUSED      = &h0004
 end enum
 
 type FB_PROCGSB
-	ctx				as FBSYMBOL_ ptr			'' local pointer for gosub stack
+	ctx             as FBSYMBOL_ ptr            '' local pointer for gosub stack
 end type
 
 type FB_PROCEXT
-	res				as FBSYMBOL_ ptr			'' result, if any
-	stk				as FB_PROCSTK 				'' to keep track of the stack frame
-	dbg				as FB_PROCDBG 				'' debugging
-	err				as FB_PROCERR
-	opovl			as FB_PROCOPOVL
-	statdtor		as TLIST ptr				'' list of static instances with dtors
-	stats			as FB_PROCSTATS
-	stmtnum			as integer
-	priority		as integer
-	gosub			as FB_PROCGSB
-	base_initree		as ASTNODE_ ptr  '' base() ctorcall/initializer given in constructor bodies
+	res             as FBSYMBOL_ ptr            '' result, if any
+	stk             as FB_PROCSTK               '' to keep track of the stack frame
+	dbg             as FB_PROCDBG               '' debugging
+	err             as FB_PROCERR
+	opovl           as FB_PROCOPOVL
+	statdtor        as TLIST ptr                '' list of static instances with dtors
+	stats           as FB_PROCSTATS
+	stmtnum         as integer
+	priority        as integer
+	gosub           as FB_PROCGSB
+	base_initree        as ASTNODE_ ptr  '' base() ctorcall/initializer given in constructor bodies
 
 	'' virtual methods:
 	''    vtable array index, location of the procptr in the vtbl
@@ -619,59 +629,59 @@ type FB_PROCEXT
 	''    0
 	'' A valid index must be >= 2 since the first two vtable elements are
 	'' the null pointer and the rtti pointer.
-	vtableindex		as integer
+	vtableindex     as integer
 
 	'' For methods that override a virtual method: the method that's
 	'' overridden (if any); or else NULL.
-	overridden		as FBSYMBOL_ ptr
+	overridden      as FBSYMBOL_ ptr
 end type
 
 type FB_PROCRTL
-	callback		as FBRTLCALLBACK
+	callback        as FBRTLCALLBACK
 end type
 
 enum FB_PROC_RETURN_METHOD
 	FB_RETURN_FPU
 	FB_RETURN_SSE
-	FB_RETURN_DEFAULT			'' if none specified, take from the proto
+	FB_RETURN_DEFAULT           '' if none specified, take from the proto
 end enum
 
 
 type FBS_PROC
-	symtb			as FBSYMBOLTB				'' local symbols table
-	params			as short
-	optparams		as short					'' number of optional/default params
-	paramtb			as FBSYMBOLTB				'' parameters symbol tb
-	mode			as FB_FUNCMODE				'' calling convention
+	symtb           as FBSYMBOLTB               '' local symbols table
+	params          as short
+	optparams       as short                    '' number of optional/default params
+	paramtb         as FBSYMBOLTB               '' parameters symbol tb
+	mode            as FB_FUNCMODE              '' calling convention
 
 	'' result type remapped to what it will be emitted as, including CONSTs
-	realdtype		as FB_DATATYPE
-	realsubtype		as FBSYMBOL_ ptr
+	realdtype       as FB_DATATYPE
+	realsubtype     as FBSYMBOL_ ptr
 
-	returnMethod	as FB_PROC_RETURN_METHOD
-	rtl				as FB_PROCRTL
-	ovl				as FB_PROCOVL				'' overloading
-	ext				as FB_PROCEXT ptr           '' extra fields, not used with prototypes
+	returnMethod    as FB_PROC_RETURN_METHOD
+	rtl             as FB_PROCRTL
+	ovl             as FB_PROCOVL               '' overloading
+	ext             as FB_PROCEXT ptr           '' extra fields, not used with prototypes
 end type
 
 '' scope
 type FB_SCOPEDBG
-	iniline			as integer					'' scope
-	endline			as integer					'' end scope
-	inilabel		as FBSYMBOL_ ptr
-	endlabel		as FBSYMBOL_ ptr
+	iniline         as integer                  '' scope
+	endline         as integer                  '' end scope
+	inilabel        as FBSYMBOL_ ptr
+	endlabel        as FBSYMBOL_ ptr
 end type
 
 '' used by x86 ASM emitter only
 type FB_SCOPEEMIT
-	baseofs			as integer
+	baseofs         as integer
 end type
 
 type FBS_SCOPE
-	backnode		as ASTNODE_ ptr
-	symtb			as FBSYMBOLTB
-	dbg				as FB_SCOPEDBG
-	emit			as FB_SCOPEEMIT
+	backnode        as ASTNODE_ ptr
+	symtb           as FBSYMBOLTB
+	dbg             as FB_SCOPEDBG
+	emit            as FB_SCOPEEMIT
 end type
 
 enum FBARRAY_FLAGS
@@ -686,235 +696,235 @@ type FBS_ARRAY
 	'' 0 = none (not an array),
 	'' -1 = () = not yet known (should be filled in ASAP),
 	'' 1..n = known dimensions (fixed-size or dynamic arrays)
-	dimensions		as integer
+	dimensions      as integer
 
 	'' Dynamically allocated array of dimension bounds (static arrays only)
-	dimtb			as FBARRAYDIM ptr
+	dimtb           as FBARRAYDIM ptr
 
-	diff			as longint
-	elements		as longint
-	desc			as FBSYMBOL_ ptr
+	diff            as longint
+	elements        as longint
+	desc            as FBSYMBOL_ ptr
 
 	'' Array descriptor type (useful especially for BYDESC param vars, which
 	'' don't have a descriptor var associated, but still need to know the
 	'' exact descriptor type sometimes)
-	desctype		as FBSYMBOL_ ptr
+	desctype        as FBSYMBOL_ ptr
 end type
 
 type FBVAR_DESC
-	array			as FBSYMBOL_ ptr			'' back-link
+	array           as FBSYMBOL_ ptr            '' back-link
 end type
 
 type FBVAR_DATA
-	prev			as FBSYMBOL_ ptr
+	prev            as FBSYMBOL_ ptr
 end type
 
 type FBS_VAR
 	union
-		littext		as zstring ptr
-		littextw	as wstring ptr
-		initree		as ASTNODE_ ptr
+		littext     as zstring ptr
+		littextw    as wstring ptr
+		initree     as ASTNODE_ ptr
 	end union
-	array			as FBS_ARRAY
-	desc			as FBVAR_DESC
-	stmtnum			as integer					'' can't use colnum as it's unreliable
-	align			as integer					'' 0 = use default alignment
-	data			as FBVAR_DATA				'' used with DATA stmts
-	bitpos			as integer  '' bitfields only: bit offset in container field
-	bits			as integer  '' bitfields only: size in bits
+	array           as FBS_ARRAY
+	desc            as FBVAR_DESC
+	stmtnum         as integer                  '' can't use colnum as it's unreliable
+	align           as integer                  '' 0 = use default alignment
+	data            as FBVAR_DATA               '' used with DATA stmts
+	bitpos          as integer                  '' bitfields only: bit offset in container field
+	bits            as integer                  '' bitfields only: size in bits
 end type
 
 '' namespace
 type FBS_NAMESPACE
 	'' extends FBNAMESPC
-	ns				as FBNAMESPC
+	ns              as FBNAMESPC
 
-	cnt				as integer					'' times this ns was re-opened
-	last_tail		as FBSYMBOL_ ptr			'' point to last tail
+	cnt             as integer                  '' times this ns was re-opened
+	last_tail       as FBSYMBOL_ ptr            '' point to last tail
 end type
 
 '' namespace import (USING)
 type FBS_NSIMPORT
 	'' imported ns (src)
-	imp_ns			as FBSYMBOL_ ptr
-	imp_prev		as FBSYMBOL_ ptr
-	imp_next		as FBSYMBOL_ ptr
+	imp_ns          as FBSYMBOL_ ptr
+	imp_prev        as FBSYMBOL_ ptr
+	imp_next        as FBSYMBOL_ ptr
 	'' exported ns (dst)
-	exp_ns			as FBSYMBOL_ ptr
-	exp_prev		as FBSYMBOL_ ptr
-	exp_next		as FBSYMBOL_ ptr
+	exp_ns          as FBSYMBOL_ ptr
+	exp_prev        as FBSYMBOL_ ptr
+	exp_next        as FBSYMBOL_ ptr
 end type
 
 ''
 type FB_SYMBID
-	name			as zstring ptr				'' upper-cased name, shared by hash tb
-	alias			as zstring ptr              '' alias/preserved (if EXTERN was used) name
-	mangled			as zstring ptr				'' mangled name
+	name            as zstring ptr              '' upper-cased name, shared by hash tb
+	alias           as zstring ptr              '' alias/preserved (if EXTERN was used) name
+	mangled         as zstring ptr              '' mangled name
 end type
 
 ''
 type FBSYMBOL
-	class			as FB_SYMBCLASS
-	attrib			as FB_SYMBATTRIB
-	pattrib			as FB_PROCATTRIB
-	stats			as FB_SYMBSTATS
+	class           as FB_SYMBCLASS
+	attrib          as FB_SYMBATTRIB
+	pattrib         as FB_PROCATTRIB
+	stats           as FB_SYMBSTATS
 
-	id				as FB_SYMBID
+	id              as FB_SYMBID
 
-	typ				as FB_DATATYPE
-	subtype			as FBSYMBOL ptr
+	typ             as FB_DATATYPE
+	subtype         as FBSYMBOL ptr
 
-	scope			as ushort
-	mangling		as short 					'' FB_MANGLING
+	scope           as ushort
+	mangling        as short                    '' FB_MANGLING
 
-	lgt			as longint
-	ofs			as longint					'' for local vars, args, UDT's and fields
+	lgt         as longint
+	ofs         as longint                  '' for local vars, args, UDT's and fields
 
 	union
-		var_		as FBS_VAR
-		val			as FBVALUE  '' constants
-		udt			as FBS_STRUCT
-		enum_		as FBS_ENUM
-		proc		as FBS_PROC
-		param		as FBS_PARAM
-		lbl			as FBS_LABEL
-		def			as FBS_DEFINE
-		key			as FBS_KEYWORD
-		fwd			as FBS_FWDREF
-		scp			as FBS_SCOPE
-		nspc		as FBS_NAMESPACE
-		nsimp 		as FBS_NSIMPORT
+		var_        as FBS_VAR
+		val         as FBVALUE  '' constants
+		udt         as FBS_STRUCT
+		enum_       as FBS_ENUM
+		proc        as FBS_PROC
+		param       as FBS_PARAM
+		lbl         as FBS_LABEL
+		def         as FBS_DEFINE
+		key         as FBS_KEYWORD
+		fwd         as FBS_FWDREF
+		scp         as FBS_SCOPE
+		nspc        as FBS_NAMESPACE
+		nsimp       as FBS_NSIMPORT
 	end union
 
-	hash			as FBSYMHASH				'' hash tb (namespace) it's part of
+	hash            as FBSYMHASH                '' hash tb (namespace) it's part of
 
-	symtb			as FBSYMBOLTB ptr			'' symbol tb it's part of
+	symtb           as FBSYMBOLTB ptr           '' symbol tb it's part of
 
 	parent          as FBSYMBOL Ptr
-	
-	prev			as FBSYMBOL ptr				'' next in symbol tb list
-	next			as FBSYMBOL ptr             '' prev /
+
+	prev            as FBSYMBOL ptr             '' next in symbol tb list
+	next            as FBSYMBOL ptr             '' prev /
 end type
 
 type FBHASHTBLIST
-	head			as FBHASHTB ptr
-	tail			as FBHASHTB ptr
+	head            as FBHASHTB ptr
+	tail            as FBHASHTB ptr
 end type
 
 type SYMB_DEF_PARAM
-	item			as HASHITEM ptr
-	index			as uinteger
+	item            as HASHITEM ptr
+	index           as uinteger
 end type
 
 type SYMB_DEF_UniqueId_Elm
-	name			as zstring ptr
-	prev			as SYMB_DEF_UniqueId_Elm ptr
+	name            as zstring ptr
+	prev            as SYMB_DEF_UniqueId_Elm ptr
 end type
 
 type SYMB_DEF_UniqueId_Stack
-	top				as SYMB_DEF_UniqueId_Elm ptr
+	top             as SYMB_DEF_UniqueId_Elm ptr
 end type
 
 type SYMB_DEF_UniqueId
-	dict			as THASH					'' of SYMB_DEF_UniqueId_Stack
+	dict            as THASH                    '' of SYMB_DEF_UniqueId_Stack
 end type
 
 type SYMB_DEF_CTX
-	paramlist		as TLIST					'' define parameters
-	toklist			as TLIST					'' define tokens
-	uniqueid		as SYMB_DEF_UniqueId
+	paramlist       as TLIST                    '' define parameters
+	toklist         as TLIST                    '' define tokens
+	uniqueid        as SYMB_DEF_UniqueId
 
 	'' macros only..
-	param			as integer					'' param count
-	paramhash		as THASH
+	param           as integer                  '' param count
+	paramhash       as THASH
 	hash(0 to FB_MAXDEFINEARGS-1) as SYMB_DEF_PARAM
 end type
 
 type SYMB_OVLOP
-	head			as FBSYMBOL ptr				'' head proc
+	head            as FBSYMBOL ptr             '' head proc
 end type
 
 type FB_GLOBCTORLIST_ITEM
-	sym				as FBSYMBOL ptr
-	next			as FB_GLOBCTORLIST_ITEM ptr
+	sym             as FBSYMBOL ptr
+	next            as FB_GLOBCTORLIST_ITEM ptr
 end type
 
 type FB_GLOBCTORLIST
-	head			as FB_GLOBCTORLIST_ITEM ptr
-	tail			as FB_GLOBCTORLIST_ITEM ptr
-	list			as TLIST
+	head            as FB_GLOBCTORLIST_ITEM ptr
+	tail            as FB_GLOBCTORLIST_ITEM ptr
+	list            as TLIST
 end type
 
 type FB_RTTICTX
-	fb_rtti			as FBSYMBOL ptr
-	fb_object		as FBSYMBOL ptr
+	fb_rtti         as FBSYMBOL ptr
+	fb_object       as FBSYMBOL ptr
 End Type
 
 const CHAINPOOL_SIZE = 1 shl 12
 
 type SYMBCTX
-	inited			as integer
+	inited          as integer
 
-	symlist			as TLIST					'' (of FBSYMBOL)
-	hashlist		as FBHASHTBLIST
+	symlist         as TLIST                    '' (of FBSYMBOL)
+	hashlist        as FBHASHTBLIST
 
 	'' FBSYMCHAIN's are allocated from this buffer
 	chainpool(0 to (CHAINPOOL_SIZE - 1)) as FBSYMCHAIN
-	chainpoolhead		as integer
+	chainpoolhead       as integer
 
-	globnspc		as FBSYMBOL					'' global namespace
+	globnspc        as FBSYMBOL                 '' global namespace
 
-	namespc			as FBSYMBOL ptr				'' current ns
-	hashtb			as FBHASHTB ptr				'' current hash tb
-	symtb			as FBSYMBOLTB ptr			'' current symbol tb
+	namespc         as FBSYMBOL ptr             '' current ns
+	hashtb          as FBHASHTB ptr             '' current hash tb
+	symtb           as FBSYMBOLTB ptr           '' current symbol tb
 
-	neststk			as TSTACK					'' nest stack (namespace/class nesting)
-	imphashtb		as THASH					'' imported symbol (USING) tb
-	imphashlist		as TLIST					'' (of FBSYMHASH)
+	neststk         as TSTACK                   '' nest stack (namespace/class nesting)
+	imphashtb       as THASH                    '' imported symbol (USING) tb
+	imphashlist     as TLIST                    '' (of FBSYMHASH)
 
-	namepool		as TPOOL
+	namepool        as TPOOL
 
-	fwdlist			as TLIST					'' forward typedef refs
+	fwdlist         as TLIST                    '' forward typedef refs
 
-	nsextlist		as TLIST					'' of FBNAMESPC_EXT
+	nsextlist       as TLIST                    '' of FBNAMESPC_EXT
 
-	fwdrefcnt 		as integer
+	fwdrefcnt       as integer
 
-	def				as SYMB_DEF_CTX				'' #define context
+	def             as SYMB_DEF_CTX             '' #define context
 
-	lastlbl			as FBSYMBOL ptr
+	lastlbl         as FBSYMBOL ptr
 
-	globctorlist	as FB_GLOBCTORLIST			'' global ctors list
-	globdtorlist	as FB_GLOBCTORLIST			'' global dtors list
+	globctorlist    as FB_GLOBCTORLIST          '' global ctors list
+	globdtorlist    as FB_GLOBCTORLIST          '' global dtors list
 
 	globOpOvlTb ( _
 					0 to AST_OPCODES-1 _
-				)	as SYMB_OVLOP				'' global operator overloading
+				)   as SYMB_OVLOP               '' global operator overloading
 
-	fbarray_data		as integer			'' offsetof( FBARRAY, data )
-	fbarray_ptr		as integer			'' offsetof( FBARRAY, ptr )
-	fbarray_size		as integer			'' offsetof( FBARRAY, size )
-	fbarray_dimtb		as integer			'' offsetof( FBARRAY, dimTB )
-	fbarraydim		as FBSYMBOL ptr			'' FBARRAYDIM (dimTB element structure)
-	fbarraydim_lbound	as integer			'' offsetof( FBARRAYDIM, lbound )
-	fbarraydim_ubound	as integer			'' offsetof( FBARRAYDIM, ubound )
+	fbarray_data        as integer              '' offsetof( FBARRAY, data )
+	fbarray_ptr         as integer              '' offsetof( FBARRAY, ptr )
+	fbarray_size        as integer              '' offsetof( FBARRAY, size )
+	fbarray_dimtb       as integer              '' offsetof( FBARRAY, dimTB )
+	fbarraydim          as FBSYMBOL ptr         '' FBARRAYDIM (dimTB element structure)
+	fbarraydim_lbound   as integer              '' offsetof( FBARRAYDIM, lbound )
+	fbarraydim_ubound   as integer              '' offsetof( FBARRAYDIM, ubound )
 
-	rtti			as FB_RTTICTX 
+	rtti            as FB_RTTICTX
 end type
 
 type SYMB_DATATYPE
-	class			as FB_DATACLASS				'' INTEGER, FPOINT
-	size			as integer					'' in bytes
-	signed			as integer					'' TRUE or FALSE
+	class           as FB_DATACLASS             '' INTEGER, FPOINT
+	size            as integer                  '' in bytes
+	signed          as integer                  '' TRUE or FALSE
 
 	'' For basic integer types only: ranking value, to establish a proper
 	'' target-specific (32bit/64bit) order (the FB_DATATYPE enum order is
 	'' not enough because it's not target-specific)
-	intrank			as integer
+	intrank         as integer
 
-	remaptype		as FB_DATATYPE				'' remapped type for ENUM, POINTER, etc
-	sizetype		as integer      '' FB_SIZETYPE_*
-	name			as const zstring ptr
+	remaptype       as FB_DATATYPE              '' remapped type for ENUM, POINTER, etc
+	sizetype        as integer      '' FB_SIZETYPE_*
+	name            as const zstring ptr
 end type
 
 '' Data passed from symbUdtDeclareDefaultMembers() to symbUdtImplementDefaultMembers()
@@ -940,6 +950,11 @@ declare sub symbEnd _
 	)
 
 declare sub symbDataInit( )
+
+declare function symbNewChainpool _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as FBSYMCHAIN ptr
 
 declare function symbLookup _
 	( _
@@ -1299,7 +1314,7 @@ declare sub symbInsertInnerUDT _
 declare sub symbStructEnd _
 	( _
 		byval t as FBSYMBOL ptr, _
-		byval isnested as integer = FALSE _ 
+		byval isnested as integer = FALSE _
 	)
 
 declare function symbAddEnum _
@@ -1376,6 +1391,7 @@ declare function symbAddCtor _
 declare function symbLookupInternallyMangledSubtype _
 	( _
 		byval id as zstring ptr, _
+		byval scoped as integer, _
 		byref attrib as FB_SYMBATTRIB, _
 		byref pattrib as FB_PROCATTRIB, _
 		byref parent as FBSYMBOL ptr, _
@@ -2466,7 +2482,7 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 
 #define symbGetExportNext(s) s->nsimp.exp_next
 
-#define symbGetIsDynamic(s) ((s->attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_PARAMBYDESC)) <> 0 )
+#define symbGetIsDynamic(s) ((s->attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_PARAMVARBYDESC)) <> 0 )
 
 #define symbIsShared(s) ((s->attrib and FB_SYMBATTRIB_SHARED) <> 0)
 
@@ -2478,17 +2494,17 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 
 #define symbIsTemp(s) ((s->attrib and FB_SYMBATTRIB_TEMP) <> 0)
 
-#define symbIsParamByDesc(s) ((s->attrib and FB_SYMBATTRIB_PARAMBYDESC) <> 0)
+#define symbIsParamVarByDesc(s) ((s->attrib and FB_SYMBATTRIB_PARAMVARBYDESC) <> 0)
 
-#define symbIsParamByVal(s) ((s->attrib and FB_SYMBATTRIB_PARAMBYVAL) <> 0)
+#define symbIsParamVarByVal(s) ((s->attrib and FB_SYMBATTRIB_PARAMVARBYVAL) <> 0)
 
-#define symbIsParamByRef(s) ((s->attrib and FB_SYMBATTRIB_PARAMBYREF) <> 0)
+#define symbIsParamVarByRef(s) ((s->attrib and FB_SYMBATTRIB_PARAMVARBYREF) <> 0)
 
 #define symbIsInstanceParam(s) ((s->attrib and FB_SYMBATTRIB_INSTANCEPARAM) <> 0)
 
-#define symbIsParam(s) ((s->attrib and (FB_SYMBATTRIB_PARAMBYREF or FB_SYMBATTRIB_PARAMBYVAL or FB_SYMBATTRIB_PARAMBYDESC)) <> 0)
+#define symbIsParamVar(s) ((s->attrib and (FB_SYMBATTRIB_PARAMVARBYREF or FB_SYMBATTRIB_PARAMVARBYVAL or FB_SYMBATTRIB_PARAMVARBYDESC)) <> 0)
 
-#define symbIsParamBydescOrByref(s) (((s)->attrib and (FB_SYMBATTRIB_PARAMBYDESC or FB_SYMBATTRIB_PARAMBYREF)) <> 0)
+#define symbIsParamVarBydescOrByref(s) (((s)->attrib and (FB_SYMBATTRIB_PARAMVARBYDESC or FB_SYMBATTRIB_PARAMVARBYREF)) <> 0)
 
 #define symbIsLocal(s) ((s->attrib and FB_SYMBATTRIB_LOCAL) <> 0)
 
@@ -2601,22 +2617,22 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 	 (((dt and FB_DT_CONSTMASK) shr cnt) and FB_DT_CONSTMASK) or _
 	 (dt and FB_DT_MANGLEMASK))
 
-#define	typeIsPtr( dt ) (((dt and FB_DT_PTRMASK) <> 0))
+#define typeIsPtr( dt ) (((dt and FB_DT_PTRMASK) <> 0))
 #define typeGetPtrCnt( dt ) ((dt and FB_DT_PTRMASK) shr FB_DT_PTRPOS)
 
-#define	typeIsConstAt( dt, at ) ((dt and (1 shl (FB_DT_CONSTPOS + at))) <> 0)
-#define	typeIsConst( dt ) typeIsConstAt(dt, 0)
-#define	typeSetIsConst( dt ) (dt or (1 shl FB_DT_CONSTPOS))
-#define	typeUnsetIsConst( dt ) (dt and not (1 shl FB_DT_CONSTPOS))
-#define	typeGetConstMask( dt ) (dt and FB_DT_CONSTMASK)
-#define	typeGetPtrConstMask( dt ) _
+#define typeIsConstAt( dt, at ) ((dt and (1 shl (FB_DT_CONSTPOS + at))) <> 0)
+#define typeIsConst( dt ) typeIsConstAt(dt, 0)
+#define typeSetIsConst( dt ) (dt or (1 shl FB_DT_CONSTPOS))
+#define typeUnsetIsConst( dt ) (dt and not (1 shl FB_DT_CONSTPOS))
+#define typeGetConstMask( dt ) (dt and FB_DT_CONSTMASK)
+#define typeGetPtrConstMask( dt ) _
 	(typeGetConstMask( dt ) and not (1 shl FB_DT_CONSTPOS))
 
-#define	typeIsRef( dt ) ((dt and FB_DATATYPE_REFERENCE) <> 0)
-#define	typeSetIsRef( dt ) (dt or FB_DATATYPE_REFERENCE)
-#define	typeUnsetIsRef( dt ) (dt and not FB_DATATYPE_REFERENCE)
+#define typeIsRef( dt ) ((dt and FB_DATATYPE_REFERENCE) <> 0)
+#define typeSetIsRef( dt ) (dt or FB_DATATYPE_REFERENCE)
+#define typeUnsetIsRef( dt ) (dt and not FB_DATATYPE_REFERENCE)
 
-#define	typeHasMangleDt( dt ) (((dt and FB_DT_MANGLEMASK) <> 0))
+#define typeHasMangleDt( dt ) (((dt and FB_DT_MANGLEMASK) <> 0))
 #define typeGetMangleDt( dt ) ((dt and FB_DT_MANGLEMASK) shr FB_DT_MANGLEPOS)
 #define typeSetMangleDt( dt, mangle_dt ) ((dt and not FB_DT_MANGLEMASK) or ((mangle_dt shl FB_DT_MANGLEPOS) and FB_DT_MANGLEMASK ))
 

@@ -18,11 +18,8 @@ namespace ns
 	end sub
 
 	private sub f2( )
-		'' Even with the . global namespace resolution, this will currently
-		'' not redim the COMMON SHARED (which is somewhat weird)
-		dim .array1(2 to 2) as integer
-
-		'' These should REDIM the globals though
+		'' These REDIM the globals
+		redim .array1(2 to 2) as integer
 		redim .array2(2 to 2) as integer
 		redim .array3(2 to 2) as integer
 		redim .array4(2 to 2) as integer
@@ -52,7 +49,7 @@ private sub test_proc
 
 	ns.f2( )
 
-	CU_ASSERT( lbound( array1 ) = 0 ) : CU_ASSERT( ubound( array1 ) = -1 )
+	CU_ASSERT( lbound( array1 ) = 2 ) : CU_ASSERT( ubound( array1 ) = 2 )
 	CU_ASSERT( lbound( array2 ) = 2 ) : CU_ASSERT( ubound( array2 ) = 2 )
 	CU_ASSERT( lbound( array3 ) = 2 ) : CU_ASSERT( ubound( array3 ) = 2 )
 	CU_ASSERT( lbound( array4 ) = 2 ) : CU_ASSERT( ubound( array4 ) = 2 )

@@ -107,6 +107,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_OBJINFO              '' boolean: write/read .fbctinf sections etc.?
 	FB_COMPOPT_SHOWINCLUDES         '' boolean: -showincludes
 	FB_COMPOPT_MODEVIEW             ''__FB_GUI__
+	FB_COMPOPT_NOCMDLINE            '' boolean: -z nocmdline, disable #cmdline directives
 
 	FB_COMPOPTIONS
 end enum
@@ -131,10 +132,11 @@ enum FB_PDCHECK
 	FB_PDCHECK_CASTFUNCPTR  = &h00000040
 	FB_PDCHECK_CONSTNESS    = &h00000080
 	FB_PDCHECK_SUFFIX       = &h00000100
+	FB_PDCHECK_ERROR        = &h00000200  '' handle warnings as errors
 
 	FB_PDCHECK_ALL          = &hffffffff
 
-	FB_PDCHECK_DEFAULT      = FB_PDCHECK_ALL xor ( FB_PDCHECK_NEXTVAR or FB_PDCHECK_SIGNEDNESS or FB_PDCHECK_CASTFUNCPTR or FB_PDCHECK_CONSTNESS )
+	FB_PDCHECK_DEFAULT      = FB_PDCHECK_ALL xor ( FB_PDCHECK_NEXTVAR or FB_PDCHECK_SIGNEDNESS or FB_PDCHECK_CASTFUNCPTR or FB_PDCHECK_CONSTNESS or FB_PDCHECK_ERROR )
 end enum
 
 '' cpu types
@@ -157,6 +159,9 @@ enum FB_CPUTYPE
 	FB_CPUTYPE_ARMV6
 	FB_CPUTYPE_ARMV7A
 	FB_CPUTYPE_AARCH64
+	FB_CPUTYPE_PPC
+	FB_CPUTYPE_PPC64
+	FB_CPUTYPE_PPC64LE
 	FB_CPUTYPE_ASMJS
 	FB_CPUTYPE__COUNT
 end enum
@@ -166,6 +171,9 @@ enum
 	FB_CPUFAMILY_X86_64
 	FB_CPUFAMILY_ARM
 	FB_CPUFAMILY_AARCH64
+	FB_CPUFAMILY_PPC
+	FB_CPUFAMILY_PPC64
+	FB_CPUFAMILY_PPC64LE
 	FB_CPUFAMILY_ASMJS
 	FB_CPUFAMILY__COUNT
 end enum
@@ -182,24 +190,24 @@ enum FB_FPMODE
 	FB_FPMODE_FAST
 end enum
 
-const FB_DEFAULT_FPMODE		= FB_FPMODE_PRECISE
-const FB_DEFAULT_FPUTYPE		= FB_FPUTYPE_FPU
+const FB_DEFAULT_FPMODE         = FB_FPMODE_PRECISE
+const FB_DEFAULT_FPUTYPE        = FB_FPUTYPE_FPU
 
 enum FB_VECTORIZELEVEL
-	FB_VECTORIZE_NONE				'' no vectorization
-	FB_VECTORIZE_NORMAL				'' complete expression merging
-	FB_VECTORIZE_INTRATREE			'' intra-expression merging
-	FB_VECTORIZE_SUBEXPRESSION		'' sub-expression merging (not implemented yet)
+	FB_VECTORIZE_NONE               '' no vectorization
+	FB_VECTORIZE_NORMAL             '' complete expression merging
+	FB_VECTORIZE_INTRATREE          '' intra-expression merging
+	FB_VECTORIZE_SUBEXPRESSION      '' sub-expression merging (not implemented yet)
 end enum
 
 const FB_DEFAULT_VECTORIZELEVEL    = FB_VECTORIZE_NONE
 
 '' output file type
 enum FB_OUTTYPE
-    FB_OUTTYPE_EXECUTABLE
-    FB_OUTTYPE_STATICLIB
-    FB_OUTTYPE_DYNAMICLIB
-    FB_OUTTYPE_OBJECT
+	FB_OUTTYPE_EXECUTABLE
+	FB_OUTTYPE_STATICLIB
+	FB_OUTTYPE_DYNAMICLIB
+	FB_OUTTYPE_OBJECT
 end enum
 
 const FB_DEFAULT_OUTTYPE    = FB_OUTTYPE_EXECUTABLE
@@ -302,37 +310,38 @@ type FBCMMLINEOPT
 	objinfo         as integer
 	showincludes    as integer
 	modeview        as FB_MODEVIEW
+	nocmdline       as integer              '' dissallow #cmdline directive? (default = false)
 end type
 
 '' features allowed in the selected language
 enum FB_LANG_OPT
 	FB_LANG_OPT_MT          = &h00000001
-    FB_LANG_OPT_SCOPE       = &h00000002
-    FB_LANG_OPT_NAMESPC     = &h00000004
-    FB_LANG_OPT_EXTERN      = &h00000008
-    FB_LANG_OPT_FUNCOVL     = &h00000010
-    FB_LANG_OPT_OPEROVL     = &h00000020
-    FB_LANG_OPT_CLASS       = &h00000040
-    FB_LANG_OPT_INITIALIZER = &h00000080
-    FB_LANG_OPT_SINGERRLINE = &h00000100
+	FB_LANG_OPT_SCOPE       = &h00000002
+	FB_LANG_OPT_NAMESPC     = &h00000004
+	FB_LANG_OPT_EXTERN      = &h00000008
+	FB_LANG_OPT_FUNCOVL     = &h00000010
+	FB_LANG_OPT_OPEROVL     = &h00000020
+	FB_LANG_OPT_CLASS       = &h00000040
+	FB_LANG_OPT_INITIALIZER = &h00000080
+	FB_LANG_OPT_SINGERRLINE = &h00000100
 
-    FB_LANG_OPT_ALWAYSOVL   = &h00000400
-    FB_LANG_OPT_AUTOVAR     = &h00000800
+	FB_LANG_OPT_ALWAYSOVL   = &h00000400
+	FB_LANG_OPT_AUTOVAR     = &h00000800
 
-    FB_LANG_OPT_GOSUB       = &h00010000
-    FB_LANG_OPT_CALL        = &h00020000
-    FB_LANG_OPT_LET         = &h00040000
-    FB_LANG_OPT_PERIODS     = &h00080000
-    FB_LANG_OPT_NUMLABEL    = &h00100000
-    FB_LANG_OPT_IMPLICIT    = &h00200000
-    FB_LANG_OPT_DEFTYPE     = &h00400000
-    FB_LANG_OPT_SUFFIX      = &h00800000
-    FB_LANG_OPT_METACMD     = &h01000000
-    FB_LANG_OPT_OPTION      = &h02000000
+	FB_LANG_OPT_GOSUB       = &h00010000
+	FB_LANG_OPT_CALL        = &h00020000
+	FB_LANG_OPT_LET         = &h00040000
+	FB_LANG_OPT_PERIODS     = &h00080000
+	FB_LANG_OPT_NUMLABEL    = &h00100000
+	FB_LANG_OPT_IMPLICIT    = &h00200000
+	FB_LANG_OPT_DEFTYPE     = &h00400000
+	FB_LANG_OPT_SUFFIX      = &h00800000
+	FB_LANG_OPT_METACMD     = &h01000000
+	FB_LANG_OPT_OPTION      = &h02000000
 
-    FB_LANG_OPT_ONERROR     = &h08000000
+	FB_LANG_OPT_ONERROR     = &h08000000
 
-    FB_LANG_OPT_QUIRKFUNC   = &h20000000
+	FB_LANG_OPT_QUIRKFUNC   = &h20000000
 end enum
 
 #if defined(__FB_WIN32__)
@@ -380,7 +389,7 @@ const FB_DEFAULT_TARGET     = FB_COMPTARGET_NETBSD
 #endif
 
 '' __FB_X86__ is new, so we need to support compiling with older fbc that didn't have it
-#if (not defined(__FB_X86__)) and (not defined(__FB_ARM__)) and defined(__FB_ASM__)
+#if (not defined(__FB_X86__)) and (not defined(__FB_ARM__)) and (not defined(__FB_PPC__)) and defined(__FB_ASM__)
 	#define __FB_X86__
 #endif
 
@@ -388,11 +397,21 @@ const FB_DEFAULT_CPUTYPE_X86     = FB_CPUTYPE_486
 const FB_DEFAULT_CPUTYPE_X86_64  = FB_CPUTYPE_X86_64
 const FB_DEFAULT_CPUTYPE_ARM     = FB_CPUTYPE_ARMV7A
 const FB_DEFAULT_CPUTYPE_AARCH64 = FB_CPUTYPE_AARCH64
-const FB_DEFAULT_CPUTYPE_ASMJS 	 = FB_CPUTYPE_ASMJS
+const FB_DEFAULT_CPUTYPE_PPC     = FB_CPUTYPE_PPC
+const FB_DEFAULT_CPUTYPE_PPC64   = FB_CPUTYPE_PPC64
+const FB_DEFAULT_CPUTYPE_PPC64LE = FB_CPUTYPE_PPC64LE
+const FB_DEFAULT_CPUTYPE_ASMJS   = FB_CPUTYPE_ASMJS
 
 #ifdef __FB_ARM__
 	const FB_DEFAULT_CPUTYPE32 = FB_DEFAULT_CPUTYPE_ARM
 	const FB_DEFAULT_CPUTYPE64 = FB_DEFAULT_CPUTYPE_AARCH64
+#elseif defined(__FB_PPC__)
+	const FB_DEFAULT_CPUTYPE32 = FB_DEFAULT_CPUTYPE_PPC
+	#if defined(__FB_BIGENDIAN__)
+		const FB_DEFAULT_CPUTYPE64 = FB_DEFAULT_CPUTYPE_PPC64
+	#else
+		const FB_DEFAULT_CPUTYPE64 = FB_DEFAULT_CPUTYPE_PPC64LE
+	#endif
 #elseif defined(__FB_X86__)
 	const FB_DEFAULT_CPUTYPE32 = FB_DEFAULT_CPUTYPE_X86
 	const FB_DEFAULT_CPUTYPE64 = FB_DEFAULT_CPUTYPE_X86_64
@@ -423,7 +442,22 @@ const FB_INFOSEC_OBJNAME = "__fb_ct.inf"
 
 #include once "error.bi"
 
-declare sub fbInit(byval ismain as integer, byval restarts as integer)
+enum FB_RESTART_FLAGS
+	FB_RESTART_NONE               '' no restart required
+	FB_RESTART_PARSER_LANG    = 1 '' parser restart needed due to #lang directive
+	FB_RESTART_PARSER_CMDLINE = 2 '' parser restart needed due to #cmdline directive
+	FB_RESTART_FBC_CMDLINE    = 4 '' main fbc entry restart needed due to #cmdline directive
+
+	FB_RESTART_CMDLINE = FB_RESTART_PARSER_CMDLINE or FB_RESTART_FBC_CMDLINE
+	FB_RESTART_PARSER  = FB_RESTART_PARSER_LANG or FB_RESTART_PARSER_CMDLINE
+end enum
+
+declare sub fbInit _
+	( _
+		byval ismain as integer, _
+		byval entry as zstring ptr, _
+		byval module_count as integer _
+	)
 declare sub fbEnd()
 
 declare sub fbCompile _
@@ -436,6 +470,20 @@ declare sub fbCompile _
 
 declare function fbShouldRestart() as integer
 declare function fbShouldContinue() as integer
+declare sub fbRestartBeginRequest( byval flags as FB_RESTART_FLAGS )
+declare sub fbRestartAcceptRequest( byval flags as FB_RESTART_FLAGS )
+declare sub fbRestartEndRequest( byval flags as FB_RESTART_FLAGS )
+declare function fbRestartGetCount() as integer
+
+#macro fbRestartableStaticVariable( datatype, varname, defaultvalue )
+	'' create a local static variable, but reset it to the default if fb is restarted
+	static as integer restart_count
+	static as datatype varname = defaultvalue
+	if( restart_count <> fbRestartGetCount() ) then
+		restart_count = fbRestartGetCount()
+		varname = defaultvalue
+	end if
+#endmacro
 
 declare sub fbGlobalInit()
 declare sub fbAddIncludePath(byref path as string)
@@ -463,9 +511,11 @@ declare function fbIs64Bit( ) as integer
 declare function fbGetBits( ) as integer
 declare function fbGetHostBits( ) as integer
 declare function fbGetCpuFamily( ) as integer
+declare function fbIsHostBigEndian( ) as integer
 declare function fbIdentifyFbcArch( byref fbcarch as string ) as integer
 declare function fbTargetSupportsELF( ) as integer
 declare function fbTargetSupportsCOFF( ) as integer
+declare function fbTargetSupportsMachO( ) as integer
 
 declare function fbGetEntryPoint _
 	( _

@@ -22,11 +22,25 @@ sub irInit( )
 		assert( env.clopt.backend = FB_BACKEND_GAS )
 		ir.vtbl = irtac_vtbl
 	end select
+
+	'' reset ir.options becasue irSetOption() will merge (OR) values
+	ir.options = 0
+
 	ir.vtbl.init( )
 end sub
 
 sub irEnd( )
 	ir.vtbl.end( )
+
+	ir.options = 0
+
+	#if __FB_DEBUG__
+		'' debugging - reset the vtable - shouldn't matter in production
+		'' because ir.vtbl calls should never be called outside irInit()/irEnd()
+		dim null_vtbl as IR_VTBL
+		ir.vtbl = null_vtbl
+	#endif
+
 end sub
 
 dim shared irhl as IRHLCONTEXT
@@ -54,7 +68,8 @@ sub irhlEmitPushArg _
 		byval param as FBSYMBOL ptr, _
 		byval vr as IRVREG ptr, _
 		byval udtlen as longint, _
-		byval level as integer _
+		byval level as integer, _
+		byval lreg as IRVREG ptr _ _
 	)
 
 	'' Remember for later, so during _emitCall[Ptr] we can emit the whole
@@ -63,6 +78,9 @@ sub irhlEmitPushArg _
 	arg->param = param
 	arg->vr = vr
 	arg->level = level
+
+	'' ignore udtlen, it's only used by ir-tac.bas:_emitPushArg()
+	'' ignore lreg, it's only used by ir-tac.bas:_emitPushArg()
 
 end sub
 

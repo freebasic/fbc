@@ -1,5 +1,5 @@
 fbchkdoc - FreeBASIC Wiki Management Tools
-Copyright (C) 2008-2020 Jeffery R. Marshall (coder[at]execulink[dot]com)
+Copyright (C) 2008-2021 Jeffery R. Marshall (coder[at]execulink[dot]com)
 
     A collection of utilities to help maintain the FreeBASIC documentation
     at https://www.freebasic.net/wiki
@@ -229,10 +229,8 @@ PageIndex.txt.  Type './getindex' without any command line arguments to see
 a full list of options.  The PageIndex.txt file that is generated is used by 
 other utilities.
 
-    Currently this utility downloads PageIndex from the wiki as HTML and
-extracts the page names.  A better solution would be having a query available
-in the wiki's PHP application that returns a plain list.  Even better would
-allowing a plain list that returns all pages changed since a certain date.
+    Currently this utility downloads PageIndex from a plain list format from
+the wiki.
 
     If the -local option is given, the cache directory is scanned for file
 names instead allowing the creation of PageIndex.txt without having to connect

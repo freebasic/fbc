@@ -1983,15 +1983,20 @@ end of threads
 				If there is no thread available, a new thread can be created, and at the end of the task, the thread would be in turn available in the pool of threads.
 				
 		- Content:
-				Two Type structures are proposed below:
+				Two Type structures are first proposed below:
 						- ""ThreadInitThenMultiStart"".
 						- ""ThreadPooling"".
 						
-				The two structures make it possible to use one thread per instance created, and to chain on this dedicated thread the execution of user procedures one after the other, but without the thread stopping between each:
+				These two structures make it possible to use one thread per instance created, and to chain on this dedicated thread the execution of user procedures one after the other, but without the thread stopping between each:
 					**""-""** The ""'ThreadInitThenMultiStart'"" structure requires a manual start after initialization (and manual wait for completion) for each user procedure to be executed in sequence in the thread.
 					**""-""** The ""'ThreadPooling'"" structure allows to register a sequence of user thread procedure submissions in a queue, while at same time the user procedures start to be executed in the thread without waiting (a last registered wait command is enough to test for full sequence completion).
 					
-				By creating and using several instances, the two structures make it possible to execute sequences of user procedures in several threads, therefore executed in parallel (temporally).
+				By creating and using several instances, these two structures make it possible to execute sequences of user procedures in several threads, therefore executed in parallel (temporally).
+				
+				A last structure is finally proposed:
+						- ""ThreadDispatching"".
+						
+				This last structure is an over-structure of the ""ThreadPooling structure"", dispatching user thread procedures over a given max number of secondary threads.
 				
 		- **""ThreadInitThenMultiStart""** Type:
 				- Principle:
@@ -2496,16 +2501,17 @@ Sleep
   1: UserCode #4
   2: UserCode #5
   3: UserCode #6
-								%%**Note:** If the first user thread procedure of each sequence starts very quickly, the acknowledgement message of each sequence of 3 submissions may appear inserted after the beginning of the text printed by the first user procedure of the sequence.
+								%%Note: If the first user thread procedure of each sequence starts very quickly, the acknowledgement message of each sequence of 3 submissions may appear inserted after the beginning of the text printed by the first user procedure of the sequence.
 								That is not the case here.
 								
-		- **""ThreadInitThenMultiStart""** and **""ThreadPooling""** Types - Execution time gain checking with different multi-threading configurations:
-				A user task is defined:
-					**""-""** Display 64 characters (2*32) on the screen, each separated by an identical time achieved by a ##[For ... Next]## loop (no Sleep keyword so as not to free up CPU resources).
-					**""-""** Depending on the number of threads chosen 1/2/4/8/16/32, this same user task is split in 1/2/4/8/16/32 sub-tasks, each being executed on a thread.
-					
-				Full code with the ""'ThreadInitThenMultiStart'"" and ""'ThreadPooling'"" Types:
-					{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq13-3.bas"}}%%(freebasic)
+		- **""ThreadInitThenMultiStart""** and **""ThreadPooling""** Types
+				- Execution time gain checking with different multi-threading configurations:
+						A user task is defined:
+							**""-""** Display 64 characters (2*32) on the screen, each separated by an identical time achieved by a ##[For ... Next]## loop (no Sleep keyword so as not to free up CPU resources).
+							**""-""** Depending on the number of threads chosen 1/2/4/8/16/32, this same user task is split in 1/2/4/8/16/32 sub-tasks, each being executed on a thread.
+							
+						Full code with the ""'ThreadInitThenMultiStart'"" and ""'ThreadPooling'"" Types:
+							{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq13-3.bas"}}%%(freebasic)
 Type ThreadInitThenMultiStart
 	Public:
 		Declare Constructor()
@@ -2829,8 +2835,8 @@ ThreadPoolingSequence(32)
 Print
 
 Sleep
-					%%Output example:
-						%%
+							%%Output example:
+								%%
 'ThreadInitThenMultiStart' with 1 secondary thread:
    00112233445566778899AABBCCDDEEFFGGHHIIJJKKLLMMNNOOPPQQRRSSTTUUVV :    7.38 s
 'ThreadPooling' with 1 secondary thread:
@@ -2860,13 +2866,13 @@ Sleep
    0123457698ABDCEFGHIKLJNOMPRQSTVU05743218A69BFECDKHIGLJMTRPSVQOUN :    2.12 s
 'ThreadPooling' with 32 secondary threads:
    0V23546789ACBDFEIHGJKMLNOPQRSTU1V3024C78D5F6B9AHGMLKJIEORSPQUT1N :    2.09 s
-						%%**Note:** From a certain number of threads used, the gain in execution time becomes more or less constant (even slightly decreasing), which corresponds roughly to the number of threads the used CPU really has (4 in the case above).
-						
-		- **""ThreadInitThenMultiStart""** and **""ThreadPooling""** Types - **Warning** when using dynamic instances of such Types:
-				When using dynamic instances of these types, their addresses should not be changed during their lifetimes, due to the associated internal thread that constantly accesses the data members from a pointer passed once to the thread beginning:
-					**""-""** Thus, the use of ##Redim Preserve## or ##Reallocate## on such Type instances is prohibited, otherwise the program crashes.
-					**""-""** One solution is to use dynamic pointers to such Type instances instead, so that the addresses of these pointers can be changed without their values changing.
-					
+								%%Note: From a certain number of threads used, the gain in execution time becomes more or less constant (even slightly decreasing), which corresponds roughly to the number of threads the used CPU really has (4 in the case above).
+								
+				- Warning when using dynamic instances of such Types:
+						When using dynamic instances of these types, their addresses should not be changed during their lifetimes, due to the associated internal thread that constantly accesses the data members from a pointer passed once to the thread beginning:
+							**""-""** Thus, the use of ##Redim Preserve## or ##Reallocate## on such Type instances is prohibited, otherwise the program crashes.
+							**""-""** One solution is to use dynamic pointers to such Type instances instead, so that the addresses of these pointers can be changed without their values changing.
+							
 		- **""ThreadDispatching""** Type, over-structure of **""ThreadPooling""** Type, dispatching user thread procedures over a given max number of secondary threads:
 				- Principle:
 						The maximum number of secondary threads that can be used is fixed when constructing the ""'ThreadDispatching'"" instance (1 secondary thread by default).

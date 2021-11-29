@@ -31,5 +31,6 @@ Preprocessor statement to set the compiler dialect.
 	- [[CompilerOptlang|Compiler Option: -lang]]
 	- [[CompilerOptforcelang|Compiler Option: -forcelang]]
 	- [[CompilerDialects|FreeBASIC Dialects]]
+	- ##[[KeyPgPpcmdline|#cmdline]]##
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

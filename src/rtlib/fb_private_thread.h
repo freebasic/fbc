@@ -15,6 +15,22 @@
 	};
 #endif
 
+/* Solaris pthread.h does not define PTHREAD_STACK_MIN */
+#ifndef PTHREAD_STACK_MIN
+	#define PTHREAD_STACK_MIN 8192
+#endif
+
+/* phtreads will crash freebsd when stack size is too small
+// The default of 2048 KiB is too small.as tested on freebsd-13.0-i386
+// 8192 KiB seems about alright (jeffm) 
+// see https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=234775
+*/
+#ifdef HOST_FREEBSD
+	#define FBTHREAD_STACK_MIN 8192
+#else
+	#define FBTHREAD_STACK_MIN PTHREAD_STACK_MIN
+#endif
+
 /* Thread handle returned by threadcreate(), so the caller is able to track the
    thread (freed by threadwait/threaddetach).
 

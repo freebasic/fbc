@@ -246,7 +246,7 @@
 				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE, 0, TRUE ) _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE, 0 ) _
 			} _
 		), _
 		/' function fb_ArrayBoundChk _
@@ -267,7 +267,7 @@
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE, 0, TRUE ) _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE, 0 ) _
 			} _
 		), _
 		/' EOL '/ _
@@ -631,10 +631,15 @@ function rtlArrayRedim _
 		'' lbound
 		expr = exprTB(i, 0)
 
-    	'' convert to int
-    	if( astGetDataType( expr ) <> FB_DATATYPE_INTEGER ) then
-    		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
-    	end if
+		'' convert to int
+		if( astGetDataType( expr ) <> FB_DATATYPE_INTEGER ) then
+			expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
+
+			if( expr = NULL ) then
+				exit function
+			end if
+
+		end if
 
 		if( astNewARG( proc, expr ) = NULL ) then
 			exit function
@@ -643,10 +648,15 @@ function rtlArrayRedim _
 		'' ubound
 		expr = exprTB(i, 1)
 
-    	'' convert to int
-    	if( astGetDataType( expr ) <> FB_DATATYPE_INTEGER ) then
-    		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
-    	end if
+		'' convert to int
+		if( astGetDataType( expr ) <> FB_DATATYPE_INTEGER ) then
+			expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
+
+			if( expr = NULL ) then
+				exit function
+			end if
+
+		end if
 
 		if( astNewARG( proc, expr ) = NULL ) then
 			exit function

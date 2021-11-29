@@ -39,7 +39,7 @@ end 0
 
 {{fbdoc item="lang"}}
 	- In the //[[CompilerOptlang|-lang qb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, variables declared inside a ##**While**##..##**Wend**## loop have a function-wide [[ProPgVariableScope|scope]] as in QB 
-	- In the //[[CompilerOptlang|-lang fb]]// and //[[CompilerOptlang|-lang deprecated]]// dialects, variables declared inside a ##**While**##..##**Wend**## block are visible only inside the block, and can't be accessed outside it.
+	- In the //[[CompilerOptlang|-lang fb]]// and //[[CompilerOptlang|-lang deprecated]]// dialects, variables declared inside a ##**While**##..##**Wend**## block are visible only inside the block, and can't be accessed outside it. To access duplicated symbols defined as global outside this block, add one or preferably two dot(s) as prefix: ##.""SomeSymbol""## or preferably ##..""SomeSymbol""## (or only ##..""SomeSymbol""## if inside a [[KeyPgWith|With..End With]] block).
 
 {{fbdoc item="diff"}}
 	- None

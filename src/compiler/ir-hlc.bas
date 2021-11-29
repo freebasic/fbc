@@ -1686,7 +1686,7 @@ end function
 
 private function symbIsCArray( byval sym as FBSYMBOL ptr ) as integer
 	'' No bydesc/byref, those are emitted as pointers...
-	if( symbIsRef( sym ) or symbIsParamBydescOrByref( sym ) or symbIsImport( sym ) ) then
+	if( symbIsRef( sym ) or symbIsParamVarBydescOrByref( sym ) or symbIsImport( sym ) ) then
 		return FALSE
 	end if
 
@@ -3824,7 +3824,12 @@ private sub _emitFbctinfBegin( )
 	'' section attribute - This global must be put into a custom .fbctinf
 	''                     section, as done by the ASM backend.
 	ctx.fbctinf = "static const char "
-	ctx.fbctinf += "__attribute__((used, section(""." + FB_INFOSEC_NAME + """))) "
+	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN) then
+		'' Must specify a segment name (can use any name)
+		ctx.fbctinf += "__attribute__((used, section(""__DATA," + FB_INFOSEC_NAME + """))) "
+	else
+		ctx.fbctinf += "__attribute__((used, section(""." + FB_INFOSEC_NAME + """))) "
+	end if
 	ctx.fbctinf += "__fbctinf[] = """
 end sub
 

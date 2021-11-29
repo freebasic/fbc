@@ -32,7 +32,8 @@ declare sub irhlEmitPushArg _
 		byval param as FBSYMBOL ptr, _
 		byval vr as IRVREG ptr, _
 		byval udtlen as longint, _
-		byval level as integer _
+		byval level as integer, _
+		byval lreg as IRVREG ptr _ _
 	)
 
 declare function irhlNewVreg _

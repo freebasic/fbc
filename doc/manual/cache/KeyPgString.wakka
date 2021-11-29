@@ -34,7 +34,7 @@ Print a
 a += ", world!"
 Print a
 
-Var b = "Welcome to FreeBASIC"
+Dim As String b = "Welcome to FreeBASIC"
 Print b + "! " + a
 %%
 
@@ -57,7 +57,7 @@ print a$ + b$
 
 '' Reserving space for a string,
 '' using Space() to produce lots of space characters (ASCII 32)
-Var mybigstring = Space(1024)
+Dim As String mybigstring = Space(1024)
 Print "buffer address: &h" & Hex( StrPtr( mybigstring ), 8 ) & ", length: " & Len( mybigstring )
 
 '' Explicitly destroying a string
@@ -75,7 +75,7 @@ Sub silly_print( ByRef printme As Const String )
 	'printme = "silly printed"
 End Sub
 
-Var status = "OK"
+Dim As String status = "OK"
 
 silly_print( "Hello FreeBASIC!" )
 silly_print( "Status: " + status )

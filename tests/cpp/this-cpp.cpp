@@ -40,6 +40,7 @@ UDT_DEFAULT::UDT_DEFAULT() {
 	ptr1 = this;
 	ptr2 = 0;
 	ptr3 = 0;
+	value = 0;
 }
 
 UDT_DEFAULT::~UDT_DEFAULT() {
@@ -86,6 +87,7 @@ UDT_THISCALL::UDT_THISCALL() {
 	ptr1 = this;
 	ptr2 = 0;
 	ptr3 = 0;
+	value = 0;
 }
 
 UDT_THISCALL::~UDT_THISCALL() {
@@ -128,6 +130,7 @@ UDT_CDECL::UDT_CDECL() {
 	ptr1 = this;
 	ptr2 = 0;
 	ptr3 = 0;
+	value = 0;
 }
 
 UDT_CDECL::~UDT_CDECL() {
@@ -175,6 +178,7 @@ UDT_STDCALL::UDT_STDCALL() {
 	ptr1 = this;
 	ptr2 = 0;
 	ptr3 = 0;
+	value = 0;
 }
 
 UDT_STDCALL::~UDT_STDCALL() {

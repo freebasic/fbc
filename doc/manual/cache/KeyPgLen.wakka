@@ -22,7 +22,7 @@ Returns the length of an expression or data type
 		A [[DataType|DataType]].
 
 {{fbdoc item="ret"}}
-	Returns the size of an expression or [[DataType|DataType]] (and the data fields of a UDT for fbc version >= 1.08) in bytes.
+	Returns the size of an expression or [[DataType|DataType]] (including the data fields of a UDT) in bytes.
 
 {{fbdoc item="desc"}}
 	##**Len**## returns the length of an expression or the size of a [[DataType|DataType]], in bytes.
@@ -31,14 +31,12 @@ Returns the length of an expression or data type
 	
 	In the second form, if ##//expression//## is ##[[KeyPgZstring|Zstring]]## or ##[[KeyPgWstring|Wstring]]##, the size in bytes of an ASCII or Unicode character is returned, respectively. If ##//datatype//## is ##[[KeyPgString|String]]##, the size of the string descriptor type is returned.
 	
-	For fbc version < 1.08: When a variable from a given namespace is accessed with the namespace's name prefix, wrap the argument to ##**Len**## with parentheses to force it to be seen as an expression. For example ##Len((namespace_name.variable))##.
-	
 	If there is both a user defined type and a variable visible with the same name in the current scope, the user defined type takes precedence over the variable.  To ensure that the ##**Len**## takes the variable instead of the user defined type, wrap the argument to ##**Len**## with parentheses to force it to be seen as an expression.  For example ##Len((variable))##.
 	
 	The ##**Len**## unary ##[[KeyPgOperator|operator]]## can be overloaded with user defined types.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/strings/len.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/strings/len.bas"}}%%(freebasic)
 print len("hello world") 'returns "11"
 print len(Integer) ' returns 4
 
@@ -48,7 +46,11 @@ type xyz
 end type
 
 print len(xyz) ' returns 8
-%%
+	%%
+{{fbdoc item="ver"}}
+	- Before fbc 1.08.0:
+			##**Len**## was not returning the size of the data fields of a UDT.
+			When a variable from a given namespace was accessed with the namespace's name prefix, the argument to ##**Len**## had to be wrapped with parentheses to force it to be seen as an expression. For example ##Len((namespace_name.variable))##.
 
 {{fbdoc item="lang"}}
 	- ##**Len**## only allows expressions in the //[[CompilerOptlang|-lang qb]]// dialect. 

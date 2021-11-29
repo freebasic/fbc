@@ -19,7 +19,7 @@ Data type that stores a pointer to a ##[[KeyPgSub|SUB]]## procedure
 	
 	The procedure must match the same ##[[KeyPgSub|Sub]]## declaration as the declared ##[[KeyPgSub|Sub]]## pointer.
 	
-	To call the subroutine assigned, use the ##//variable//## name as if it were a normal declared ##[[KeyPgSub|Sub]]##.
+	To call the subroutine assigned, use the ##//variable//## name as if it were a normal declared ##[[KeyPgSub|Sub]]##, always with parentheses around the parameter list even empty (without parentheses, only the pointer value, ie the address of the subroutine, would be accessed).
 	
 	One of the primary uses for ##[[KeyPgSub|Sub]]## pointers is to create callback procedures:
 		**""-""** A callback ##[[KeyPgSub|Sub]]## is a ##[[KeyPgSub|Sub]]## that is passed through an argument (a ##[[KeyPgSub|Sub]]## pointer) to another procedure which is expected to call back (execute) the "argument" at a convenient time.

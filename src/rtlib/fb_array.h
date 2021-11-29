@@ -41,9 +41,11 @@ FBCALL void *fb_ArraySngBoundChk
 		const char *fname
 	);
 
-       void       fb_hArrayCtorObj     ( FBARRAY *array, FB_DEFCTOR ctor, size_t base_idx );
-       void       fb_hArrayDtorObj     ( FBARRAY *array, FB_DEFCTOR dtor, size_t base_idx );
-       void       fb_hArrayDtorStr     ( FBARRAY *array, FB_DEFCTOR dtor, size_t base_idx );
+FBCALL size_t     fb_ArrayLen          ( FBARRAY *array );
+FBCALL size_t     fb_ArraySize         ( FBARRAY *array );
+       void       fb_hArrayCtorObj     ( FBARRAY *array, FB_DEFCTOR ctor );
+       void       fb_hArrayDtorObj     ( FBARRAY *array, FB_DEFCTOR dtor, size_t keep_idx );
+       void       fb_hArrayDtorStr     ( FBARRAY *array, FB_DEFCTOR dtor, size_t keep_idx );
 FBCALL void       fb_ArrayDestructObj  ( FBARRAY *array, FB_DEFCTOR dtor );
 FBCALL void       fb_ArrayDestructStr  ( FBARRAY *array );
 FBCALL int        fb_ArrayClear        ( FBARRAY *array );

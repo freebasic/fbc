@@ -5,7 +5,7 @@ Saves an array of arbitrary data and palette information to a file on disk
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Bsave** ( [[KeyPgByref|byref]] //filename// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]], [[KeyPgByval|byval]] //source// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]], [[KeyPgByval|byval]] //size// [[KeyPgAs|as]] [[KeyPgUlong|ulong]] = 0, [[KeyPgByval|byval]] //pal// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] = 0, [[KeyPgByval|byval]] //bitsperpixel// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Bsave**( //filename//, //source// [,[ //size// ][,[ //pal// ][, //bitsperpixel// ]]] )
+	//result// = **Bsave**( //filename//, //source// [,[ //size// ][,{ //pal// | //pal//, //bitsperpixel// }]] )
 ##
 {{fbdoc item="param"}}
 	##//filename//##
@@ -17,7 +17,7 @@ Saves an array of arbitrary data and palette information to a file on disk
 	##//pal//##
 		optional, the address of a buffer holding 256 ##[[KeyPgPalette|Palette]]## colors, or null (##0##) for the current screen palette.
 	##//bitsperpixel//##
-		optional, a requested bit depth for the output BMP image.
+		optional, a requested bit depth for the output BMP image. If ##//bitsperpixel//## is specified, ##//pal//## must also be specified (at a least null (##0##) value), otherwise an error is obtained.
 
 {{fbdoc item="ret"}}
 	Returns zero (##0##) if successful, or a non-zero error code to indicate a failure. //[[ProPgErrorHandling|(throws a runtime error)]]//

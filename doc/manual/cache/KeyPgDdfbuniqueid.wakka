@@ -49,6 +49,9 @@ Lt_0006
 	%%
 	See also ##[[KeyPgDdfbuniqueidpush|__FB_UNIQUEID_PUSH__]]## and ##[[KeyPgDdfbuniqueidpop|__FB_UNIQUEID_POP__]]## examples.
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.08.0
+
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 

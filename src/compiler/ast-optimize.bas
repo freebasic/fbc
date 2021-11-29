@@ -422,7 +422,7 @@ private sub hOptConstIdxMult( byval n as ASTNODE ptr )
 						'' but only when accessing a global symbol, instead of one on stack.
 						optimize = TRUE
 						dim as FBSYMBOL ptr s = astGetSymbol( n->r )
-						if( symbIsParam( s ) ) then
+						if( symbIsParamVar( s ) ) then
 							optimize = FALSE
 						elseif( symbIsLocal( s ) ) then
 							if( symbIsStatic( s ) = FALSE ) then
@@ -1436,7 +1436,7 @@ private function hIsMultStrConcat _
 		case AST_NODECLASS_VAR, AST_NODECLASS_IDX
 			sym = astGetSymbol( l )
 			if( sym <> NULL ) then
-				if (symbIsParamBydescOrByref(sym) = FALSE) then
+				if (symbIsParamVarBydescOrByref(sym) = FALSE) then
 					function = (astIsSymbolOnTree( sym, r ) = FALSE)
 				end if
 			end if
@@ -1481,7 +1481,7 @@ private function hOptStrAssignment _
 			if( astIsTreeEqual( l, r->l ) ) then
 				sym = astGetSymbol( l )
 				if( sym <> NULL ) then
-					if (symbIsParamBydescOrByref(sym) = FALSE) then
+					if (symbIsParamVarBydescOrByref(sym) = FALSE) then
 						optimize = astIsSymbolOnTree( sym, r->r ) = FALSE
 					end if
 				end if

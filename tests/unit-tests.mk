@@ -32,6 +32,7 @@ GREP := grep
 SED := sed
 ECHO := echo
 PRINTF := printf
+CAT := cat
 
 ifndef FBC
 FBC := fbc$(EXEEXT)
@@ -195,7 +196,7 @@ clean_main_exe :
 clean_tests :
 	@$(ECHO) Cleaning unit-tests files ...
 	@$(RM) ./$(MAINBAS).o
-	@if [ -f $(UNIT_TESTS_OBJ_LST) ]; then $(XARGS) -r -a $(UNIT_TESTS_OBJ_LST) $(RM) ; fi
+	@if [ -f $(UNIT_TESTS_OBJ_LST) ]; then $(CAT) $(UNIT_TESTS_OBJ_LST) | $(XARGS) -r $(RM) ; fi
 
 .PHONY: clean_fbcu
 clean_fbcu :

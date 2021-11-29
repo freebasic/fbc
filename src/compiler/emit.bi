@@ -6,11 +6,11 @@
 #include once "ast.bi"
 #include once "ir.bi"
 
-const EMIT_INITNODES	= 2048
+const EMIT_INITNODES    = 2048
 const EMIT_INITVREGNODES= EMIT_INITNODES*3
 
 '' x86 specific: FB_DATACLASS_INTEGER and FB_DATACLASS_FPOINT
-const EMIT_REGCLASSES	= 2						'' assuming FB_DATACLASS_ will start at 0!
+const EMIT_REGCLASSES = 2                       '' assuming FB_DATACLASS_ will start at 0!
 
 '' if changed, update the _opFnTB() arrays at emit_*.bas
 enum EMIT_NODEOP
@@ -92,9 +92,9 @@ enum EMIT_NODEOP
 	'' branch
 	EMIT_OP_CALL
 	EMIT_OP_CALLPTR
-    EMIT_OP_BRANCH
-    EMIT_OP_JUMP
-    EMIT_OP_JUMPPTR
+	EMIT_OP_BRANCH
+	EMIT_OP_JUMP
+	EMIT_OP_JUMPPTR
 	EMIT_OP_RET
 
 	'' misc
@@ -133,93 +133,93 @@ enum EMIT_NODECLASS_ENUM
 end enum
 
 type EMIT_BOPNODE
-	op			as integer
-	dvreg		as IRVREG ptr
-	svreg		as IRVREG ptr
+	op          as integer
+	dvreg       as IRVREG ptr
+	svreg       as IRVREG ptr
 end type
 
 type EMIT_UOPNODE
-	op			as integer
-	dvreg		as IRVREG ptr
+	op          as integer
+	dvreg       as IRVREG ptr
 end type
 
 type EMIT_RELNODE
-	op			as integer
-	rvreg		as IRVREG ptr
-	label		as FBSYMBOL ptr
-	dvreg		as IRVREG ptr
-	svreg		as IRVREG ptr
+	op          as integer
+	rvreg       as IRVREG ptr
+	label       as FBSYMBOL ptr
+	dvreg       as IRVREG ptr
+	svreg       as IRVREG ptr
 end type
 
 type EMIT_STKNODE
-	op			as integer
-	vreg		as IRVREG ptr
-	extra		as integer
+	op          as integer
+	vreg        as IRVREG ptr
+	extra       as integer
 end type
 
 type EMIT_BRCNODE
-	op			as integer
-	vreg		as IRVREG ptr
-	sym			as FBSYMBOL ptr
-	extra		as integer
+	op          as integer
+	vreg        as IRVREG ptr
+	sym         as FBSYMBOL ptr
+	extra       as integer
 end type
 
 type EMIT_SOPNODE
-	op			as integer
-	sym			as FBSYMBOL ptr
+	op          as integer
+	sym         as FBSYMBOL ptr
 end type
 
 type EMIT_LITNODE
-	isasm		as integer
-	text		as zstring ptr
+	isasm       as integer
+	text        as zstring ptr
 end type
 
 type EMIT_JTBNODE
-	tbsym				as FBSYMBOL ptr
+	tbsym               as FBSYMBOL ptr
 
 	'' Dynamically allocated buffer holding the jmptb's value/label pairs
-	values				as ulongint ptr
-	labels				as FBSYMBOL ptr ptr
-	labelcount			as integer
+	values              as ulongint ptr
+	labels              as FBSYMBOL ptr ptr
+	labelcount          as integer
 
-	deflabel			as FBSYMBOL ptr
-	bias				as ulongint
-	span				as ulongint
+	deflabel            as FBSYMBOL ptr
+	bias                as ulongint
+	span                as ulongint
 end type
 
 type EMIT_MEMNODE
-	op			as integer
-	dvreg		as IRVREG ptr
-	svreg		as IRVREG ptr
-	bytes		as integer
-	extra		as integer
+	op          as integer
+	dvreg       as IRVREG ptr
+	svreg       as IRVREG ptr
+	bytes       as integer
+	extra       as integer
 end type
 
 type EMIT_DBGNODE
-	op			as integer
-	sym			as FBSYMBOL ptr
-	lnum		as integer
-	filename 	as zstring ptr
-	pos			as integer
+	op          as integer
+	sym         as FBSYMBOL ptr
+	lnum        as integer
+	filename    as zstring ptr
+	pos         as integer
 end type
 
 type EMIT_NODE
-	class							as EMIT_NODECLASS_ENUM
+	class                           as EMIT_NODECLASS_ENUM
 
 	union
-		bop							as EMIT_BOPNODE
-		uop							as EMIT_UOPNODE
-		rel							as EMIT_RELNODE
-		stk						 	as EMIT_STKNODE
-		brc							as EMIT_BRCNODE
-		sop							as EMIT_SOPNODE
-		lit							as EMIT_LITNODE
-		jtb							as EMIT_JTBNODE
-		mem							as EMIT_MEMNODE
-		dbg							as EMIT_DBGNODE
+		bop                         as EMIT_BOPNODE
+		uop                         as EMIT_UOPNODE
+		rel                         as EMIT_RELNODE
+		stk                         as EMIT_STKNODE
+		brc                         as EMIT_BRCNODE
+		sop                         as EMIT_SOPNODE
+		lit                         as EMIT_LITNODE
+		jtb                         as EMIT_JTBNODE
+		mem                         as EMIT_MEMNODE
+		dbg                         as EMIT_DBGNODE
 	end union
 
-	regFreeTB(EMIT_REGCLASSES-1) 	as REG_FREETB
+	regFreeTB(EMIT_REGCLASSES-1)    as REG_FREETB
 end type
 
 
@@ -255,15 +255,21 @@ type EMIT_JTBCB as sub _
 		byval span as ulongint _
 	)
 
-type EMIT_MEMCB as sub( byval dvreg as IRVREG ptr, _
-						byval svreg as IRVREG ptr, _
-						byval bytes as integer, _
-						byval extra as integer )
+type EMIT_MEMCB as sub _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr, _
+		byval bytes as integer, _
+		byval extra as integer _
+	)
 
-type EMIT_DBGCB as sub( byval sym as FBSYMBOL ptr, _
-						byval lnum as integer, _
-                  byval pos as Integer, _
-                  ByVal filename As ZString Ptr =0 )
+type EMIT_DBGCB as sub _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval lnum as integer, _
+		byval pos as Integer, _
+		ByVal filename As ZString Ptr = 0 _
+	)
 
 '' if changed, update the _vtbl symbols at emit_*.bas::*_ctor
 type EMIT_VTBL
@@ -292,11 +298,19 @@ type EMIT_VTBL
 		byval reg as integer _
 	) as integer
 
-	getFreePreservedReg as function  _
+	getFreePreservedReg as function _
 	( _
 		byval dclass as integer, _
 		byval dtype as integer _
 	) as integer
+
+	getArgReg as sub _
+	( _
+		byval dtype as integer, _
+		byval dclass as integer, _
+		byval argnum as integer, _
+		byref r1 as integer _
+	)
 
 	getResultReg as sub _
 	( _
@@ -377,26 +391,26 @@ type EMIT_VTBL
 end type
 
 type EMITCTX
-	inited								as integer
+	inited                              as integer
 
-	pos									as integer			'' to help debugging
+	pos                                 as integer          '' to help debugging
 
-	regTB(0 to EMIT_REGCLASSES-1) 		as REGCLASS ptr		'' reg classes
+	regTB(0 to EMIT_REGCLASSES-1)       as REGCLASS ptr     '' reg classes
 
 	'' node tb
-	nodeTB								as TFLIST
-	vregTB								as TFLIST
-	curnode								as EMIT_NODE ptr
+	nodeTB                              as TFLIST
+	vregTB                              as TFLIST
+	curnode                             as EMIT_NODE ptr
 
-	regUsedTB(EMIT_REGCLASSES-1) 		as REG_FREETB       '' keep track of register usage
+	regUsedTB(EMIT_REGCLASSES-1)        as REG_FREETB       '' keep track of register usage
 
 	'' platform-dependent
-	lastsection							as integer
+	lastsection                         as integer
 	lastpriority                        as integer
 
 	''
-	vtbl								as EMIT_VTBL
-	opFnTb								as any ptr ptr
+	vtbl                                as EMIT_VTBL
+	opFnTb                              as any ptr ptr
 end type
 
 ''
@@ -792,8 +806,8 @@ declare function emitSTKCLEAR _
 declare function emitDBGLineBegin _
 	( _
 		byval proc as FBSYMBOL ptr, _
-      byval ex as Integer, _
-      ByVal filename As ZString Ptr _
+		byval ex as integer, _
+		byval filename as zstring ptr _
 	) as EMIT_NODE ptr
 
 declare function emitDBGLineEnd _
@@ -876,9 +890,11 @@ declare sub emitFlush _
 
 #define emitGetFreePreservedReg( dclass, dtype ) emit.vtbl.getFreePreservedReg( dclass, dtype )
 
+#define emitGetArgReg( dclass, dtype, argnum, reg ) emit.vtbl.getArgReg( dclass, dtype, argnum, reg )
+
 #define emitGetResultReg( dtype, dclass, reg, reg2 ) emit.vtbl.getResultReg( dtype, dclass, reg, reg2 )
 
-#define emitSection( sec, priority ) emit.vtbl.setSection( sec, priority )
+#define emitSetSection( sec, priority ) emit.vtbl.setSection( sec, priority )
 
 ''::::
 #define EMIT_REGSETUSED(c,r) emit.regUsedTB(c) or= (1 shl r)

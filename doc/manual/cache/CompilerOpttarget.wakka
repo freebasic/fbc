@@ -25,6 +25,9 @@ Set the target platform for cross compilation
 					- ##x86_64##
 					- ##arm##
 					- ##aarch64##
+					- ##powerpc## or ##ppc##
+					- ##powerpc64## or ##ppc64##
+					- ##powerpc64le## or ##ppc64le##
 				Examples:
 					- ##linux-x86##
 					- ##linux-x86_64##

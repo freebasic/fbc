@@ -36,6 +36,9 @@ end type
 end extern
 %%
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.08.0
+
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 

@@ -27,17 +27,34 @@ Waits until a specified time has elapsed, or a key is pressed.
 	
 	Call ##**Sleep**## with 25ms or less to release time-slice when waiting for user input or looping inside a thread.  This will prevent the program from unnecessarily hogging the CPU.
 	
-	##**Sleep**## does not clear the keyboard buffer and any keys pressed during a call to ##**Sleep**## are retained and can be read using ##[[KeyPgInkey|Inkey]]##.  In order to wait for a key press, and remove the key from the buffer, ##[[KeyPgGetkey|Getkey]]## can be used instead.
-
+	##**Sleep**## does not clear the keyboard input buffer and any keys pressed during a call to ##**Sleep**## are retained and can be later read by ##[[KeyPgInkey|Inkey]]## or ##[[KeyPgGetkey|Getkey]]## or ##[[KeyPgInput|Input]]##.
+	When ##**Sleep**## has no parameters (waiting for a key pressed only), ##[[KeyPgGetkey|Getkey]]## keyword can be used instead of Sleep.
+	For the general form of ##**Sleep**## (with parameters), if the user want to clear the keyboard input buffer from any eventual keys pressed during the ##**Sleep**## execution, he can use after the ##**Sleep**## instruction line something like the following method:
+		%%(freebasic)
+While Inkey <> "": Wend  '' loop until the keyboard input buffer is empty
+		%%
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/system/sleep.bas"}}%%(freebasic)
-print "press a key"
-sleep
-getkey 'clear the keyboard buffer
-print "waiting half second"
-sleep 500
-%%
+	{{fbdoc item="filename" value="examples/manual/system/sleep.bas"}}%%(freebasic)
+Print "press a key"
+Sleep
+GetKey  '' clear the keyboard input buffer, and even in that code case, the 'Sleep' keyword can be outright omitted
+Print "waiting half second"
+Sleep 500
+	%%
+	{{fbdoc item="filename" value="examples/manual/system/sleep2.bas"}}%%(freebasic)
+Dim As String s
 
+Print "wait 3 seconds or press a key"
+Sleep 3000
+Print "outputed by timeout or key pressed"
+While Inkey <> ""  '' loop until the keyboard input buffer is empty
+Wend
+
+Input "enter a string"; s
+Print "string entered: " & "'" & s & "'"
+
+Sleep
+	%%
 {{fbdoc item="lang"}}
 	- In the //[[CompilerOptlang|-lang fb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, the ##//amount//## value is in **milliseconds**.
 	- In the //[[CompilerOptlang|-lang qb]]// dialect, the ##//amount//## value is in **seconds** as in QB. If the second parameter ##//keyflag//## is given, or the keyword is written as ##**""__Sleep""**##  the value is expected to be in **milliseconds**.

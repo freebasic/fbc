@@ -9,21 +9,15 @@
 
 #include "fb.h"
 
-void fb_hArrayCtorObj( FBARRAY *array, FB_DEFCTOR ctor, size_t base_idx )
+void fb_hArrayCtorObj( FBARRAY *array, FB_DEFCTOR ctor )
 {
-	size_t i, elements, element_len;
-	FBARRAYDIM *dim;
+	size_t elements, element_len;
 	unsigned char *this_;
 
 	if( array->ptr == NULL )
 		return;
 
-	dim = &array->dimTB[0];
-	elements = dim->elements - base_idx;
-	++dim;
-
-	for( i = 1; i < array->dimensions; i++, dim++ )
-		elements *= dim->elements;
+	elements = fb_ArrayLen( array );
 
 	/* call ctors */
 	element_len = array->element_len;
@@ -52,7 +46,7 @@ FBCALL int fb_ArrayClearObj
 	/* re-initialize (ctor can be NULL if there only is a dtor) */
 	if( ctor )
 		/* if a ctor exists, it should handle the whole initialization */
-		fb_hArrayCtorObj( array, ctor, 0 );
+		fb_hArrayCtorObj( array, ctor );
 	else
 		/* otherwise, just clear */
 		fb_ArrayClear( array );

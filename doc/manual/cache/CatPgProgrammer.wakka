@@ -18,7 +18,8 @@
 	{{fbdoc item="keyword" value="ProPgIdentifierRules|Identifier Rules"}}
 	{{fbdoc item="keyword" value="ProPgLiterals|Literals"}}
 	{{fbdoc item="keyword" value="ProPgLabels|Labels"}}
-	{{fbdoc item="keyword" value="ProPgLineContinuation|Line continuation"}}
+	{{fbdoc item="keyword" value="ProPgLineContinuation|Line Continuation"}}
+	{{fbdoc item="keyword" value="ProPgLineSeparator|Line Separator"}}
 
 {{fbdoc item="section" value="Variables and Datatypes"}}
 	{{fbdoc item="keyword" value="ProPgEnumerations|Constants and Enumerations"}}
@@ -72,6 +73,7 @@
 	{{fbdoc item="keyword" value="ProPgCtorsAssignDtors2|Constructors, '=' Assignment-Operators, and Destructors (advanced, part #2)"}}
 <<>>{{fbdoc item="section" value="Statements and Expressions"}}
 	{{fbdoc item="keyword" value="ProPgExpressionsStatements|Differences between Expressions and Statements"}}
+	{{fbdoc item="keyword" value="ProPgConstantExpressions|Constant Expressions"}}
 	{{fbdoc item="keyword" value="ProPgAssignments|Assignments"}}
 	{{fbdoc item="keyword" value="CatPgOperators|Operator List"}}
 	{{fbdoc item="keyword" value="OpPrecedence|Operator Precedence"}}
@@ -121,6 +123,7 @@
 	{{fbdoc item="keyword" value="ProPgDynamicMemory|Dynamic memory management with FreeBASIC"}}
 	{{fbdoc item="keyword" value="ProPgRecursionIteration|Replace Recursion with Iteration"}}
 	{{fbdoc item="keyword" value="ProPgObjectRtti|OBJECT built-in and RTTI info"}}
+	{{fbdoc item="keyword" value="ProPgDataExecutable|Embed and Access binary Data in Executable"}}
 
 {{fbdoc item="section" value="Other Topics"}}
 (And topics that need to get placed elsewhere)

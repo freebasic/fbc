@@ -7,6 +7,9 @@ Do not strip symbol information from the output file
 {{fbdoc item="desc"}}
 	The ##-nostrip## compiler option explicitly prevents fbc from passing the option to strip (remove) all symbols to the linker.  Object modules and libraries will retain any symbols present after linking.
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.07.0
+
 {{fbdoc item="target"}}
 	- fbc strips all symbols by default on Dos and Windows platforms only
 

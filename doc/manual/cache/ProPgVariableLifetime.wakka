@@ -19,8 +19,8 @@
 		or
 				##(3)	{[[KeyPgDim|Dim]]|[[KeyPgStatic|Static]]} [[KeyPgShared|Shared]] [[KeyPgAs|As]] [[DataType|datatype]] [[[KeyPgPtr|Ptr]]] //variablename// ...##
 			##or##
-				##(4)	[[KeyPgVar|Var]] [[KeyPgShared|Shared]] //variablename// = //expression//##
-						##(equivalent to: '[[KeyPgDim|Dim]] [[KeyPgShared|Shared]] [[KeyPgAs|As]] [[KeyPgTypeof|Typeof]]((//expression//)) = //expression//')##
+				##(4)	[[[KeyPgStatic|Static]]] [[KeyPgVar|Var]] [[KeyPgShared|Shared]] //variablename// = //expression//##
+						##(equivalent to: '{[[KeyPgDim|Dim]]|[[KeyPgStatic|Static]]} [[KeyPgShared|Shared]] [[KeyPgAs|As]] [[KeyPgTypeof|Typeof]]((//expression//)) = //expression//')##
 			##or##
 				##(5)	[[KeyPgCommon|Common]] [[[KeyPgShared|Shared]]] [[KeyPgAs|As]] [[DataType|datatype]] [[[KeyPgPtr|Ptr]]] //variablename//##
 	they always have a lifetime matching their surrounding scope (global scope, or scope block, or compound statement block, or procedure scope).
@@ -31,6 +31,7 @@
 {{fbdoc item="section" value="Declaration syntax for a lifetime that may be greater than the surrounding scope"}}
 	For such variables declared anywhere, as follows (or similar syntax):
 			##[[KeyPgStatic|Static]] ++Shared++ [[KeyPgAs|As]] [[DataType|datatype]] [[[KeyPgPtr|Ptr]]] //variablename// ...##
+			##[[KeyPgStatic|Static]] [[KeyPgVar|Var]] ++Shared++ //variablename// = //expression//##
 	they always have a lifetime equal to the program duration, so greater than their surrounding scope if there are declared in any local scope block (matching their surrounding scope if there are declared in the global scope).
 	
 	The static variable is always allocated in the .BSS or .DATA section of the executable (its lifetimes begins at program creation and ends with program termination).

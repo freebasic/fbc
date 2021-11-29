@@ -4,7 +4,7 @@
 #include once "list.bi"
 
 enum FB_TOKEN_PP
-	FB_TK_PP_IF					= FB_TK_IF
+	FB_TK_PP_IF                 = FB_TK_IF
 	FB_TK_PP_IFDEF
 	FB_TK_PP_IFNDEF
 	FB_TK_PP_ELSE
@@ -25,14 +25,15 @@ enum FB_TOKEN_PP
 	FB_TK_PP_ASSERT
 	FB_TK_PP_DUMP
 	FB_TK_PP_ODUMP
+	FB_TK_PP_CMDLINE
 end enum
 
 type PP_CTX
-	kwdns		as FBSYMBOL
-	argtblist	as TLIST
-	level 		as integer
-	skipping	as integer
-	invoking	as integer		'' to let macros passed to other macros by name
+	kwdns       as FBSYMBOL
+	argtblist   as TLIST
+	level       as integer
+	skipping    as integer
+	invoking    as integer      '' to let macros passed to other macros by name
 end type
 
 declare sub ppInit _

@@ -11,7 +11,7 @@
 # 2) '.bas' file extension is dropped
 # 3) hyphen '-' characters in directory/filename are replaced
 #    with underscore '_'
-# 4) if the directory.filename conflicts wity a keyword, i.e. compile error, 
+# 4) if the directory.filename conflicts with a fbc keyword, i.e. compile error, 
 #    an underscore '_' suffix is added
 #
 
@@ -26,9 +26,10 @@ usage () {
 	echo "            temporary files ${tmpfile}?.lst will be created"
 	echo "            results are output to stdout"
 	echo "   clean    clean-up temporary files (if script aborted)"
+	echo "   list-utf list all unicode encoded files based on git"
 	echo
 	echo "exit code:"
-	echo "   0 = no mismatches found"
+	echo "   0 = suite names match dir/file - no mismatches found"
 	echo "   1 = mismatches found"
 	echo
 	exit 1 
@@ -43,6 +44,9 @@ do_check () {
 	# search for *.bas files containing SUITE lines (ignore case)
 	# output from grep expected to be './dir/file.bas:line:SUITE( fbc_tests.dir.file)'
 	# note that the pattern contains a literal tab character
+
+	# !!!FIXME!!! - grep does not search the utf encoded file	
+
 	grep -i -r -n --include=*.bas --exclude-dir=fbcunit -e '^[ 	]*SUITE.*(.*).*$' . > ${tmpfile}1.lst 
 
 	# extract dir/file and dir.file from previous output
@@ -76,9 +80,25 @@ do_check () {
 	exit ${return_val}
 }
 
+do_list_utf () {
+	# search the current git repo and list all files that appear to be unicode
+	#
+	# git diff `git hash-object -t tree /dev/null` --numstat origin/master -- '*.bas' '*.bi' | grep '^\-'
+	#
+	# `git hash-object -t tree /dev/null`
+	# this is a known object name, so we can just write it out
+	# windows has trouble with the /dev/null in a script (but not from the shell prompt)
+	emptytree=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+	
+	git diff $emptytree HEAD --numstat -- '*.bas' '*.bi' | grep '^\-'
+}
+
 case "$1" in
 check)
 	do_check
+	;;
+list-utf)
+	do_list_utf
 	;;
 clean)
 	do_clean

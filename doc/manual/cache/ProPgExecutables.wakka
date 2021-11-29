@@ -165,5 +165,6 @@ linking:      D:\fb.git\bin\win32\ld.exe -m i386pe -o "a.exe" -subsystem console
 	- [[ProPgStaticLibraries|Static Libraries]]
 	- [[ProPgSharedLibraries|Shared Libraries (DLLs)]]
 	- [[ProPgProfiling|Profiling]]
+	- [[ProPgDataExecutable|Embed and Access binary Data in Executable]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

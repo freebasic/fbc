@@ -31,7 +31,6 @@ end type
 
 extern "C"
 
-declare function wmemcpy (byval __s1 as wchar_t ptr, byval __s2 as wchar_t ptr, byval __n as size_t) as wchar_t ptr
 declare function __mbrlen (byval __s as zstring ptr, byval __n as size_t, byval __ps as mbstate_t ptr) as size_t
 declare function __wcstod_internal   (byval __nptr as wchar_t ptr, byval __endptr as wchar_t ptr ptr, byval __group as long) as double
 declare function __wcstof_internal   (byval __nptr as wchar_t ptr, byval __endptr as wchar_t ptr ptr, byval __group as long) as single

@@ -12,6 +12,9 @@ Intrinsic define (macro string) set by the compiler
 	Print "This program compiled with a compiler built on this date:" & __FB_BUILD_DATE_ISO__
 %%
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.07.1
+
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 

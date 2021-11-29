@@ -287,7 +287,7 @@ private function hCheckIdToken( byval has_parent as integer ) as integer
 		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
 			'' if inside a namespace, symbols can't contain periods (.)'s
 			if( symbIsGlobalNamespc( ) = FALSE ) then
-  				if( lexGetPeriodPos( ) > 0 ) then
+				if( lexGetPeriodPos( ) > 0 ) then
 					errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
 				end if
 			end if
@@ -528,6 +528,9 @@ function cProcCallingConv( byval default as FB_FUNCMODE ) as FB_FUNCMODE
 	case FB_TK_THISCALL
 		'' ignore thiscall if '-z no-thiscall' was given
 		if( env.clopt.nothiscall = FALSE ) then
+			'' keep the thiscall call convention even if the target/archictecture wont't support it
+			'' this will allow us to check that the declaration matches the definition.  Also,
+			'' gcc supports extensions for using thiscall even with normal procedures
 			function = FB_FUNCMODE_THISCALL
 		end if
 		lexSkipToken( )
@@ -647,7 +650,7 @@ private function hCheckOpOvlParams _
 		'' self only if FOR, STEP and NEXT
 		if( astGetOpIsSelf( op ) ) then
 			min_params = 0
-	'			min_params = iif( op = AST_OP_NEXT, 1, 0 )
+	'           min_params = iif( op = AST_OP_NEXT, 1, 0 )
 			max_params = 1
 			if( op = AST_OP_NEXT ) then
 				min_params += 1
@@ -668,7 +671,7 @@ private function hCheckOpOvlParams _
 	dim as integer real_params = params - iif( is_method, 1, 0 )
 	if( (real_params < min_params) or (real_params > max_params) ) then
 		errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
-	   	exit function
+		exit function
 	end if
 
 	if( params > 0 ) then
@@ -756,25 +759,25 @@ private function hCheckOpOvlParams _
 			case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
 				if( params > 1 ) then
 					dim as FBSYMBOL ptr nxtparam = param->next
-	
+
 					hCheckParam( proc, nxtparam, 2 )
-	
+
 					'' is the 1st param an UDT?
 					select case symbGetType( param )
 					case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
-	
+
 					case else
 						'' try the 2nd one..
 						select case symbGetType( nxtparam )
 						case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
-	
+
 						case else
 							hParamError( proc, 2, FB_ERRMSG_ATLEASTONEPARAMMUSTBEANUDT )
 							exit function
 						end select
 					end select
 				end if
-	
+
 			'' FOR, STEP or NEXT?
 			case AST_OP_FOR, AST_OP_STEP, AST_OP_NEXT
 				if( astGetOpIsSelf( op ) ) then
@@ -783,15 +786,15 @@ private function hCheckOpOvlParams _
 						if( is_method ) then
 							param = param->next
 						end if
-	
+
 						'' must be of the same type as parent
 						if( (param = NULL) or (parent = NULL) ) then
 							hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
 							exit function
 						end if
-	
+
 						hCheckParam( proc, param, 1 )
-	
+
 						'' same type?
 						if( (symbGetType( param ) <> symbGetType( parent )) or _
 						    (symbGetSubtype( param ) <> parent) ) then
@@ -918,11 +921,11 @@ private function hCheckIsSelfCloneByval _
 	if( options and FB_PROCOPT_ISPROTO ) then
 		param = param->next
 	end if
-	
+
 	if( param = NULL ) then
 		exit function
 	end if
-	
+
 	'' struct?
 	if( symbGetType( param ) <> FB_DATATYPE_STRUCT ) then
 		exit function
@@ -932,7 +935,7 @@ private function hCheckIsSelfCloneByval _
 	if( symbGetSubtype( param ) <> parent ) then
 		exit function
 	end if
-	
+
 	'' byval?
 	if( symbGetParamMode( param ) <> FB_PARAMMODE_BYVAL ) then
 		exit function
@@ -944,7 +947,7 @@ private function hCheckIsSelfCloneByval _
 			exit function
 		end if
 	end if
-	
+
 	'' At least one additional non-optional parameter?
 	param = param->next
 	while( param <> NULL )
@@ -1234,7 +1237,7 @@ function cProcHeader _
 
 		if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
 			if( dtype <> FB_DATATYPE_INVALID ) then
-				attrib or= FB_SYMBATTRIB_SUFFIXED 
+				attrib or= FB_SYMBATTRIB_SUFFIXED
 			end if
 		end if
 
@@ -1573,7 +1576,7 @@ function cProcHeader _
 
 		fbSetOption( FB_COMPOPT_EXPORT, TRUE )
 		'''''if( fbGetOption( FB_COMPOPT_EXPORT ) = FALSE ) then
-		'''''	errReportWarn( FB_WARNINGMSG_CANNOTEXPORT )
+		'''''   errReportWarn( FB_WARNINGMSG_CANNOTEXPORT )
 		'''''end if
 		attrib or= FB_SYMBATTRIB_EXPORT or FB_SYMBATTRIB_PUBLIC
 	end if
@@ -1601,10 +1604,11 @@ function cProcHeader _
 			head_proc = symbAddCtor( proc, palias, attrib, pattrib, mode, FB_SYMBOPT_DECLARING )
 		case FB_TK_OPERATOR
 			head_proc = symbAddOperator( proc, op, palias, dtype, subtype, _
-			                             attrib, pattrib, mode, FB_SYMBOPT_DECLARING )
+				attrib, pattrib, mode, FB_SYMBOPT_DECLARING )
 		case else
 			head_proc = symbAddProc( proc, @id, palias, dtype, subtype, _
-			                         attrib, pattrib, mode, FB_SYMBOPT_DECLARING )
+				attrib, pattrib, mode, FB_SYMBOPT_DECLARING )
+
 		end select
 
 		if( head_proc = NULL ) then
@@ -1686,6 +1690,21 @@ function cProcHeader _
 			end if
 
 			symbSetIsDeclared( proc )
+		end if
+	end if
+
+	if( proc ) then
+		var is_global = (symbGetAttrib( proc ) and _
+			(FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or _
+			FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_SHARED)) <> 0
+
+		'' only warn if the symbol is global and in the global namespace
+		if( is_global ) then
+			if( (len(id) > 0) and (symbGetNamespace( proc ) = @symbGetGlobalNamespc( )) ) then
+				if( parserIsGlobalAsmKeyword( @id ) ) then
+					errReportWarnEx( FB_WARNINGMSG_RESERVEDGLOBALSYMBOL, @id , lexLineNum( ) )
+				end if
+			end if
 		end if
 	end if
 

@@ -2368,7 +2368,12 @@ private sub _emitFbctinfEnd( )
 	ln = "@__fbctinf = internal constant "
 	ln += hEmitStrLitType( ctx.fbctinf_len )
 	ln += " c""" + ctx.fbctinf + """"
-	ln += ", section ""." + FB_INFOSEC_NAME + """"
+	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN) then
+		'' Must specify a segment name (can use any name)
+		ln += ", section ""__DATA," + FB_INFOSEC_NAME + """"
+	else
+		ln += ", section ""." + FB_INFOSEC_NAME + """"
+	end if
 	hWriteLine( ln )
 
 	'' Append to the special llvm.used symbol to ensure it won't be

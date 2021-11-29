@@ -121,7 +121,7 @@ abcdefghijkl
 	- Syntax of declaration:
 			##{[[KeyPgDim|Dim]]|[[KeyPgStatic|Static]]} [[[KeyPgShared|Shared]]] [[KeyPgByrefVariables|Byref]] [[KeyPgAs|As]] [[[KeyPgConstQualifier|Const]]] [[DataType|datatype]] //ref// = //variable//##
 		or
-			##[[KeyPgVar|Var]] [[[KeyPgShared|Shared]]] [[KeyPgByrefVariables|Byref]] //ref// = //variable//##
+			##[[[KeyPgStatic|Static]]] [[KeyPgVar|Var]] [[[KeyPgShared|Shared]]] [[KeyPgByrefVariables|Byref]] //ref// = //variable//##
 			
 		Unlike pointers, the reference variable must be assigned as soon as the declaration using an initializer.
 		//datatype// must be the same type as that of the variable, or a compatible type (for example one from the types of its Bases in case of inheritance):

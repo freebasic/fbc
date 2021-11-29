@@ -2,7 +2,7 @@
 Declares a variable whose type is implied from the initializer expression
 
 {{fbdoc item="syntax"}}##
-	**Var** [[[KeyPgShared|shared]]] //symbolname// = //expression//[, //symbolname// = //expression//]
+	[[[KeyPgStatic|static]]] **Var** [[[KeyPgShared|shared]]] //symbolname// = //expression//[, //symbolname// = //expression//]
 ##
 {{fbdoc item="desc"}}
 	##**Var**## declares a variable whose type is implied from the initializer expression. It is illegal to specify an explicit type in a ##**Var**## declaration. The initializer expression can be either a constant or any variable of any type.

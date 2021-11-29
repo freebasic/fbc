@@ -90,6 +90,9 @@ Modifies the data type name mangling (decoration) of a public symbol
 {{fbdoc item="ex"}}
 	See example at ##[[KeyPgAlias|Alias (Name)]]##.
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.06.0
+
 {{fbdoc item="diff"}}
 	- In QB, ##Alias## only worked with ##[[KeyPgDeclare|Declare]]##.
 

@@ -22,6 +22,7 @@ PRINTF := printf
 ifndef FBC
 FBC := fbc$(EXEEXT)
 endif
+export FBC
 
 ENABLE_CHECK_BUGS :=
 export ENABLE_CHECK_BUGS
@@ -49,10 +50,10 @@ endif
 # build sub-targets based on FB_LANG option
 #
 ifeq ($(FB_LANG),)
-REQ_MOSTLYCLEAN := mostlyclean-unit mostlyclean-fb mostlyclean-qb mostlyclean-deprecated
-REQ_CLEAN := clean-unit clean-fb clean-qb clean-deprecated
-REQ_TESTS := log-tests-fb log-tests-qb log-tests-deprecated
-REQ_FAILED := failed-tests-fb failed-tests-qb failed-tests-deprecated
+REQ_MOSTLYCLEAN := mostlyclean-unit mostlyclean-fb mostlyclean-fblite mostlyclean-qb mostlyclean-deprecated
+REQ_CLEAN := clean-unit clean-fb clean-fblite clean-qb clean-deprecated
+REQ_TESTS := log-tests-fb log-tests-fblite log-tests-qb log-tests-deprecated
+REQ_FAILED := failed-tests-fb failed-tests-fblite failed-tests-qb failed-tests-deprecated
 else
 REQ_MOSTLYCLEAN := mostlyclean-unit mostlyclean-$(FB_LANG)
 REQ_CLEAN := clean-unit clean-$(FB_LANG)
@@ -174,6 +175,12 @@ log-tests-fb :
 	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) all FB_LANG=fb
 	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) results FB_LANG=fb
 
+.PHONY: log-tests-fblite
+log-tests-fblite :
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) mostlyclean FB_LANG=fblite
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) all FB_LANG=fblite
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) results FB_LANG=fblite
+
 .PHONY: log-tests-qb
 log-tests-qb :
 	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) mostlyclean FB_LANG=qb
@@ -194,6 +201,12 @@ failed-tests-fb :
 	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) mostlyclean FAILED_ONLY=1 FB_LANG=fb
 	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) all FAILED_ONLY=1 FB_LANG=fb
 	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) results FB_LANG=fb
+
+.PHONY: failed-tests-fblite
+failed-tests-fblite :
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) mostlyclean FAILED_ONLY=1 FB_LANG=fblite
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) all FAILED_ONLY=1 FB_LANG=fblite
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) results FB_LANG=fblite
 
 .PHONY: failed-tests-qb
 failed-tests-qb :
@@ -221,6 +234,10 @@ mostlyclean-unit :
 mostlyclean-fb :
 	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) mostlyclean FB_LANG=fb
 
+.PHONY: mostlyclean-fblite
+mostlyclean-fblite :
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) mostlyclean FB_LANG=fblite
+
 .PHONY: mostlyclean-qb
 mostlyclean-qb :
 	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) mostlyclean FB_LANG=qb
@@ -240,6 +257,10 @@ clean-unit :
 .PHONY: clean-fb
 clean-fb :
 	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) clean FB_LANG=fb
+
+.PHONY: clean-fblite
+clean-fblite :
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) clean FB_LANG=fblite
 
 .PHONY: clean-qb
 clean-qb :

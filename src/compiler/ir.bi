@@ -3,10 +3,10 @@
 
 #include once "ast-op.bi"
 
-const IR_INITADDRNODES		= 2048
-const IR_INITVREGNODES		= IR_INITADDRNODES*3
+const IR_INITADDRNODES      = 2048
+const IR_INITVREGNODES      = IR_INITADDRNODES*3
 
-const IR_MAXDIST			= 2147483647
+const IR_MAXDIST            = 2147483647
 
 '' when changing, update vregDumpToStr():vregtypes()
 enum IRVREGTYPE_ENUM
@@ -25,9 +25,9 @@ enum IR_SECTION
 	IR_SECTION_BSS
 	IR_SECTION_CODE
 	IR_SECTION_DIRECTIVE
-    IR_SECTION_CONSTRUCTOR
-    IR_SECTION_DESTRUCTOR
-    IR_SECTION_INFO
+	IR_SECTION_CONSTRUCTOR
+	IR_SECTION_DESTRUCTOR
+	IR_SECTION_INFO
 end enum
 
 enum IR_REGFAMILY
@@ -36,7 +36,7 @@ enum IR_REGFAMILY
 end enum
 
 enum IR_OPTIONVALUE
-	IR_OPTIONVALUE_MAXMEMBLOCKLEN				= 1
+	IR_OPTIONVALUE_MAXMEMBLOCKLEN               = 1
 end enum
 
 
@@ -45,53 +45,53 @@ type IRVREG_ as IRVREG
 type IRTAC_ as IRTAC
 
 type IRTACVREG
-	vreg		as IRVREG_ ptr
-	parent		as IRVREG_ ptr  '' pointer to parent if idx or aux
-	next		as IRTACVREG ptr				'' next in tac (-> vr, v1 or v2)
+	vreg        as IRVREG_ ptr
+	parent      as IRVREG_ ptr  '' pointer to parent if idx or aux
+	next        as IRTACVREG ptr                '' next in tac (-> vr, v1 or v2)
 end type
 
 type IRTACVREG_GRP
-	reg			as IRTACVREG
-	idx			as IRTACVREG					'' index
-	aux			as IRTACVREG                    '' auxiliary
+	reg         as IRTACVREG
+	idx         as IRTACVREG                    '' index
+	aux         as IRTACVREG                    '' auxiliary
 end type
 
 type IRTAC
-	pos			as integer
+	pos         as integer
 
-	op			as AST_OP						'' opcode
+	op          as AST_OP                       '' opcode
 
-	vr			as IRTACVREG_GRP                '' result
-	v1			as IRTACVREG_GRP                '' operand 1
-	v2			as IRTACVREG_GRP				'' operand 2
+	vr          as IRTACVREG_GRP                '' result
+	v1          as IRTACVREG_GRP                '' operand 1
+	v2          as IRTACVREG_GRP                '' operand 2
 
-	ex1			as FBSYMBOL ptr					'' extra field, used by call/jmp
-	ex2			as integer						'' /
-	ex3			as zstring ptr					'' filename, used by DBG
+	ex1         as FBSYMBOL ptr                 '' extra field, used by call/jmp
+	ex2         as integer                      '' /
+	ex3         as zstring ptr                  '' filename, used by DBG
 end type
 
 type IRVREG
-	typ			as IRVREGTYPE_ENUM				'' VAR, IMM, IDX, etc
+	typ         as IRVREGTYPE_ENUM              '' VAR, IMM, IDX, etc
 
-	dtype		as FB_DATATYPE					'' CHAR, INTEGER, ...
-	subtype		as FBSYMBOL ptr
+	dtype       as FB_DATATYPE                  '' CHAR, INTEGER, ...
+	subtype     as FBSYMBOL ptr
 
-	reg			as integer						'' reg
-	regFamily		as IR_REGFAMILY
-	vector		as integer
+	reg         as integer                      '' reg
+	regFamily       as IR_REGFAMILY
+	vector      as integer
 
-	value		as FBVALUE						'' imm value (hi-word of longint's at vaux->value)
+	value       as FBVALUE                      '' imm value (hi-word of longint's at vaux->value)
 
-	sym			as FBSYMBOL ptr					'' symbol
-	ofs			as longint					'' +offset
-	mult		as integer						'' multipler, only valid for IDX and PTR under ir-tac
+	sym         as FBSYMBOL ptr                 '' symbol
+	ofs         as longint                  '' +offset
+	mult        as integer                      '' multipler, only valid for IDX and PTR under ir-tac
 
-	vidx		as IRVREG ptr					'' index vreg
-	vaux		as IRVREG ptr					'' aux vreg (used with longint's)
+	vidx        as IRVREG ptr                   '' index vreg
+	vaux        as IRVREG ptr                   '' aux vreg (used with longint's)
 
-	tacvhead	as IRTACVREG ptr				'' back-link to tac table
-	tacvtail	as IRTACVREG ptr				'' /
-	taclast		as IRTAC ptr					'' /
+	tacvhead    as IRTACVREG ptr                '' back-link to tac table
+	tacvtail    as IRTACVREG ptr                '' /
+	taclast     as IRTAC ptr                    '' /
 end type
 
 enum AST_ASMTOKTYPE
@@ -100,12 +100,12 @@ enum AST_ASMTOKTYPE
 end enum
 
 type ASTASMTOK
-	type		as AST_ASMTOKTYPE
+	type        as AST_ASMTOKTYPE
 	union
-		sym	as FBSYMBOL ptr
-		text	as zstring ptr
+		sym as FBSYMBOL ptr
+		text    as zstring ptr
 	end union
-	next		as ASTASMTOK ptr
+	next        as ASTASMTOK ptr
 end type
 
 '' if changed, update the _vtbl symbols at ir-*.bas::*_ctor
@@ -203,7 +203,8 @@ type IR_VTBL
 		byval param as FBSYMBOL ptr, _
 		byval vr as IRVREG ptr, _
 		byval udtlen as longint, _
-		byval level as integer _
+		byval level as integer, _
+		byval lreg as IRVREG ptr _
 	)
 
 	emitAsmLine as sub( byval asmtokenhead as ASTASMTOK ptr )
@@ -249,7 +250,8 @@ type IR_VTBL
 	emitStack as sub _
 	( _
 		byval op as integer, _
-		byval v1 as IRVREG ptr _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr _
 	)
 
 	emitAddr as sub _
@@ -466,9 +468,8 @@ enum IR_OPT
 end enum
 
 type IRCTX
-	inited			as integer
-	vtbl			as IR_VTBL
-	options			as IR_OPT
+	vtbl            as IR_VTBL
+	options         as IR_OPT
 end type
 
 ''
@@ -557,7 +558,7 @@ declare sub vregDump( byval v as IRVREG ptr )
 
 #define irEmitRETURN(bytestopop) ir.vtbl.emitReturn( bytestopop )
 
-#define irEmitPUSHARG( param, vr, plen, level ) ir.vtbl.emitPushArg( param, vr, plen, level )
+#define irEmitPUSHARG( param, vr, plen, level, lreg ) ir.vtbl.emitPushArg( param, vr, plen, level, lreg )
 
 #define irEmitAsmLine( asmtokenhead ) ir.vtbl.emitAsmLine( asmtokenhead )
 
@@ -585,7 +586,7 @@ declare sub vregDump( byval v as IRVREG ptr )
 
 #define irEmitLOADRES(v1, vr) ir.vtbl.emitLoadRes( v1, vr )
 
-#define irEmitSTACK(op, v1) ir.vtbl.emitStack( op, v1 )
+#define irEmitSTACK(op, v1, v2) ir.vtbl.emitStack( op, v1, v2 )
 
 #define irEmitPUSH(v1) ir.vtbl.emitStack( AST_OP_PUSH, v1 )
 

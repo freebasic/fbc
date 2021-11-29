@@ -732,11 +732,11 @@ declare function hPorts_cb _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			5, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE, 0 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE, 0 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0 ) _
 			} _
 		), _
 		/' function getmouse overload _
@@ -753,11 +753,11 @@ declare function hPorts_cb _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			5, _
 			{ _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ) _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE, 0  ), _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE, 0 ), _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, TRUE, 0 ) _
 			} _
 		), _
 		/' function setmouse _
@@ -798,16 +798,16 @@ declare function hPorts_cb _
 			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			10, _
 			{ _
-				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE, 0, TRUE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE, 0 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 ) _
 			} _
 		), _
 		/' function stick( byval n as const long ) as long '/ _
@@ -1022,7 +1022,7 @@ declare function hPorts_cb _
 			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0, TRUE ) _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
 			} _
 		), _
 		/' sub screencontrol overload _
@@ -1408,7 +1408,8 @@ private function hPorts_cb _
 		byval sym as FBSYMBOL ptr _
 	) as integer
 
-    static as integer libsAdded = FALSE
+	'' minor optimization to avoid having to lookup env.libs hash
+	fbRestartableStaticVariable( integer, libsAdded, FALSE )
 
 	if( libsadded = FALSE ) then
 		libsAdded = TRUE

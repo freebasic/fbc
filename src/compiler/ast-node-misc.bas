@@ -9,7 +9,6 @@
 #include once "parser.bi"
 #include once "ir.bi"
 #include once "ast.bi"
-#include once "emit.bi"
 
 '' Labels (l = NULL; r = NULL)
 function astNewLABEL _
@@ -643,7 +642,7 @@ function astLoadSTACK( byval n as ASTNODE ptr ) as IRVREG ptr
 	vr = astLoad( l )
 
 	if( ast.doemit ) then
-		irEmitSTACK( n->stack.op, vr )
+		irEmitSTACK( n->stack.op, vr, NULL )
 	end if
 
 	astDelNode( l )
@@ -969,7 +968,7 @@ private function hAstNodeToStr _
 	case AST_NODECLASS_MACRO
 		return "MACRO: " & astDumpOpToStr( n->op.op ) & " " & NODE_TYPE
 
-	case AST_NODECLASS_LINK	
+	case AST_NODECLASS_LINK
 		dim s as string = ""
 
 		'' append the return side (left, right, or none)

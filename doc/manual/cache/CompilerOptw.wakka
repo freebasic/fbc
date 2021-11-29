@@ -8,7 +8,7 @@ Set minimum warning level.
 	##//level//##
 		Warning messages only with a level equal or greater to this value will be output.  
 	##**all**##
-		Equivalent to specifying a ##//level//## of negative one (##-1##).
+		Equivalent to specifying a ##//level//## of zero (##0##).
 	##**none**##
 		Suppresses all warnings.
 	##**param**##
@@ -25,20 +25,24 @@ Set minimum warning level.
 		Warn when ##[[KeyPgConstQualifier|CONST (Qualifier)]]## is discarded in an assignment. Implies '-w funcptr' and '-w all'.  Behaviour may change in future versions.
 	##**suffix**##
 		Warn on useless suffixes in '-lang fb'.
+	##**error**##
+		Report warnings as errors.  Warnings cause the error count to increase, warning messages are displayed as "error warning...", compilation / assembly / linking aborts, and fbc exits with an error code.
 
 {{fbdoc item="desc"}}
-	The ##-w## compiler option determines which compiler warnings, if any, are output. Each possible warning is associated with a warning level, starting from negative one (##-1##) and increasing with the potential problems that may occur.
+	The ##-w## compiler option determines which compiler warnings, if any, are output. Each possible warning is associated with a warning level, starting from zero (##0##) and increasing with the potential problems that may occur.
 	
 	The ##**param**##, ##**escape**##, ##**pedantic**##, ##**next**##, ##**funcptr**##, and ##**constness**## arguments provide additional warnings not ordinarily output, even by default.
 	
-	The default, if the ##**-w**## option is not specified, is as if ##**-w 0**## was used. The ##**-w**## option can be specified multiple times.  Warning messages having a level of ##-1## are not shown by default.
+	The default, if the ##**-w**## option is not specified, is as if ##**-w 1**## was used. The ##**-w**## option can be specified multiple times.  Warning messages having a level of ##0## are not shown by default.
 	
 	##-w none##, or a significantly high ##//level//## value will have the effect of suppressing all warning messages.
 
 	##fbc## does not issue warning or error if the warning name itself is not valid.  For example ##-w flarg##, is not a recognized name for a warning.  The compiler silently ignores this to allow command lines with warnings added in new versions of ##fbc## to also be used with older versions of ##fbc## without complaint.
-	
-	For fbc version >= 1.08: Warning level for all warnings is increased by 1. Default warning level is 1 (previously, default warning level was 0 and some warnings had level of -1).
-	
+
+{{fbdoc item="ver"}}
+	- Before fbc 1.08.0, default warning level was 0 and some warnings had level of -1.
+	- Since fbc 1.09.0: '-w error' option.
+
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]
 

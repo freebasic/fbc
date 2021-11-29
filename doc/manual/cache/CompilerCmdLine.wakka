@@ -62,7 +62,9 @@ Using the **fbc** command-line.
 
 {{fbdoc item="section" value="Compilation"}}
 	=={{fbdoc item="keyword" value="CompilerOptm|-m < name >"}}==
-		Main file without extension, the entry point (default is the first .bas file on the command line)
+		Define main file (without extension), the entry point (default is the first .bas file on the command line)
+	=={{fbdoc item="keyword" value="CompilerOptentry|-entry < name >"}}==
+		Override public exported name of implicit user main function
 	=={{fbdoc item="keyword" value="CompilerOptg|-g"}}==
 		Add debug info
 	=={{fbdoc item="keyword" value="CompilerOptprofile|-profile"}}==
@@ -184,5 +186,6 @@ Using the **fbc** command-line.
 	- [[CatPgCompOpt|Compiler Options]]
 	- [[CompilerInstalling|Installing FreeBASIC]]
 	- [[CompilerRunning|Invoking the FreeBASIC compiler]]
+	- ##[[KeyPgPpcmdline|#cmdline]]##
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

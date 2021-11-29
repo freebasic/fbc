@@ -440,11 +440,13 @@ static int GdiInteropSetup(D2DGlobalState* pGlobalState, HWND hwnd)
 		pD3DTexture = NULL;
 		renderProps.pixelFormat.alphaMode = D2D1_ALPHA_MODE_IGNORE;
 		renderProps.usage = D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE;
+		renderProps.dpiX = renderProps.dpiY = 96.f;
 		if(NOTIFY_FAILED_HR(ID2D1Factory_CreateDxgiSurfaceRenderTarget(pGlobalState->pD2DFactory, pDXGISurface, &renderProps, &pRenderTarget))) {
 			goto errorReturn;
 		}
 		bitmapProps.pixelFormat.format = texDesc.Format;
 		bitmapProps.pixelFormat.alphaMode = renderProps.pixelFormat.alphaMode;
+		bitmapProps.dpiX = bitmapProps.dpiY = 96.f;
 		if(NOTIFY_FAILED_HR(ID2D1RenderTarget_CreateBitmap(pRenderTarget, bitmapSize, NULL, stride, &bitmapProps, &pBitmap))) {
 			goto errorReturn;
 		}
@@ -513,6 +515,7 @@ static int D2DDirectSetup(D2DGlobalState* pGlobalState, HWND hwnd)
 	renderProps.type = D2D1_RENDER_TARGET_TYPE_DEFAULT;
 	renderProps.usage = D2D1_RENDER_TARGET_USAGE_NONE;
 	renderProps.pixelFormat.alphaMode = D2D1_ALPHA_MODE_IGNORE;
+	renderProps.dpiX = renderProps.dpiY = 96.f;
 	while(*pFormats != DXGI_FORMAT_UNKNOWN) {
 		renderProps.pixelFormat.format = *(pFormats++);
 		if(!NOTIFY_FAILED_HR(ID2D1Factory_CreateHwndRenderTarget(
@@ -528,6 +531,7 @@ static int D2DDirectSetup(D2DGlobalState* pGlobalState, HWND hwnd)
 		goto errorReturn;
 	}
 	bitmapProps.pixelFormat = renderProps.pixelFormat;
+	bitmapProps.dpiX = bitmapProps.dpiY = 96.f;
 	if(NOTIFY_FAILED_HR(ID2D1HwndRenderTarget_CreateBitmap(
 		pHwndRenderTarget, 
 		hwndRenderProps.pixelSize, 

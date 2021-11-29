@@ -37,6 +37,9 @@ Preprocessor directive
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgPpPragmaReserve|#pragma reserve]]##
 	- ##[[KeyPgInclude|#include]]##
+	- ##[[KeyPgPpcmdline|#cmdline]]##
+	- [[ProPgPreprocessor|Preprocessor Overview]]
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

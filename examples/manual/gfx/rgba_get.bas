@@ -29,3 +29,4 @@ Print Using "Red:         _&H\\ = ###"; Hex(r, 2); r
 Print Using "Green:       _&H\\ = ###"; Hex(g, 2); g
 Print Using "Blue:        _&H\\ = ###"; Hex(b, 2); b
 Print Using "Alpha:       _&H\\ = ###"; Hex(a, 2); a
+	

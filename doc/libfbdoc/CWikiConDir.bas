@@ -108,7 +108,7 @@ namespace fb.fbdoc
 	end function
 
 	''
-	function cmpPageName cdecl ( byval x as any ptr, byval y as any ptr ) as long
+	function cmpPageName cdecl ( byval x as const any ptr, byval y as const any ptr ) as long
 		function = _stricmp( *cast(zstring ptr ptr,x), *cast(zstring ptr ptr,y) )
 	end function
 

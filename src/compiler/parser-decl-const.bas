@@ -1,6 +1,7 @@
 '' constant (CONST) declarations
 ''
 '' chng: sep/2004 written [v1ctor]
+'' chng: jul/2021 don't allow CONST between SELECT and CASE [jeffm]
 
 #include once "fb.bi"
 #include once "fbint.bi"
@@ -43,11 +44,11 @@ private sub cConstAssign _
 		byval attrib as FB_SYMBATTRIB _
 	)
 
-    static as zstring * FB_MAXNAMELEN+1 id
+	static as zstring * FB_MAXNAMELEN+1 id
 	dim as integer doskip = any, suffix = any
-    dim as ASTNODE ptr expr = any
-    dim as FBSYMBOL ptr litsym = any
-    dim as FBVALUE value = any
+	dim as ASTNODE ptr expr = any
+	dim as FBSYMBOL ptr litsym = any
+	dim as FBVALUE value = any
 
 	'' Namespace identifier if it matches the current namespace
 	cCurrentParentId()
@@ -204,7 +205,7 @@ private sub cConstAssign _
 		if( symbReuseOrAddConst( @id, dtype, subtype, astConstGetVal( expr ), attrib ) = NULL ) then
 			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		end if
-    end if
+	end if
 
 	astDelNode( expr )
 
@@ -216,10 +217,16 @@ end sub
 
 '' ConstDecl  =  CONST (AS SymbolType)? ConstAssign (DECL_SEPARATOR ConstAssign)* .
 sub cConstDecl( byval attrib as FB_SYMBATTRIB )
-    dim as integer dtype = any
-    dim as FBSYMBOL ptr subtype = any
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
 
-    '' CONST
+	'' CONST doesn't generate any code, but should not be allowed between SELECT and CASE
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		hSkipStmt( )
+		exit sub
+	end if
+
+	'' CONST
 	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' (AS SymbolType)?

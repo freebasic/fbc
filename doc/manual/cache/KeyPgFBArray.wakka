@@ -2,7 +2,7 @@
 Pre-defined structure (UDT) and procedure declarations from the ##fbc-int/array.bi## include file, usable to access the array descriptor data fields.
 
 {{fbdoc item="syntax"}}
-	From ##./inc/fbc-int/array.bi (for fbc versions >= 1.08)##:
+	From ##./inc/fbc-int/array.bi##:
 		%%(freebasic)
 # if __FB_LANG__ = "fb"
 namespace FBC
@@ -100,7 +100,9 @@ end namespace
 		The flags field contains information about the array descriptor that needs to be known at run time.
 		
 			##FBARRAY_FLAGS_DIMENSIONS## : a 4 bit field to indicate the number of elements allocated in ##dimTb()##.  If fbc can determine at compile time that less than ##FB_MAXDIMENSIONS## are needed to represent the array, then only the number of dimensions needed are allocated in ##dimTb()##.
-			
+			The real size allocated for the array descriptor can be calculated by:
+				##Sizeof(FBC.FBARRAY) - (FBC.FB_MAXDIMENSIONS - (FBC.""ArrayDescriptorPtr""(array())->flags And FBC.FBARRAY_FLAGS_DIMENSIONS)) * Sizeof(FBC.FBARRAYDIM)##
+				
 			##FBARRAY_FLAGS_FIXED_DIM## : if this bit is set, indicates that the number of dimensions are set and are given in ##dimTb()## and must not be changed.
 			
 			##FBARRAY_FLAGS_FIXED_LEN## : if this bit is set, indicates that the array data is fixed length and must not be resized or reallocated
@@ -128,7 +130,7 @@ end namespace
 		Retrieves a pointer to the array descriptor, returning a pointer to ##FBC.ARRAY## that is read only.
 
 {{fbdoc item="ex"}}
-	Very simple syntaxic example highlighting the access capabilities to the data fields of an array descriptor (for fbc versions >= 1.08):
+	Very simple syntaxic example highlighting the access capabilities to the data fields of an array descriptor:
 		{{fbdoc item="filename" value="examples/manual/check/FBArray.bas"}}%%(freebasic)
 #include "fbc-int/array.bi"
 
@@ -259,6 +261,9 @@ Sleep
 			min_index         = 1
 			max_index         = 100
 			%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.08.0
+
 {{fbdoc item="lang"}}
 	- Only available in the //[[CompilerOptlang|-lang fb]]// dialect.
 

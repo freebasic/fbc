@@ -47,3 +47,4 @@ ImageDestroy img
 
 'Keep the window open until the user presses a key
 Sleep
+	

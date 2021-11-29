@@ -30,9 +30,20 @@ private sub test2_proc
 	using module.ns.glob
 
 	CU_ASSERT( foo = LOCA_VAL )
-	CU_ASSERT( .foo = LOCA_VAL )
-	CU_ASSERT( ..foo = LOCA_VAL )
-	CU_ASSERT( global.foo = LOCA_VAL )
+	CU_ASSERT( .foo = GLOB_VAL )
+	CU_ASSERT( ..foo = GLOB_VAL )
+	CU_ASSERT( global.foo = GLOB_VAL )
+end sub	
+
+private sub test2a_proc
+	using module.ns.glob
+
+	dim as integer foo = LOCA_VAL
+
+	CU_ASSERT( foo = LOCA_VAL )
+	CU_ASSERT( .foo = GLOB_VAL )
+	CU_ASSERT( ..foo = GLOB_VAL )
+	CU_ASSERT( global.foo = GLOB_VAL )
 end sub	
 
 private sub test3_proc

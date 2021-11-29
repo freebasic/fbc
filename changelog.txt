@@ -9,11 +9,53 @@ Version 1.09.0
 - crt headers: add const qualifiers in crt/stdio.bi, crt/sys/stat.bi, crt/wchar.bi
 - crt headers: add const qualifiers in crt/sys/win32/stat.bi, crt/win32/stdio.bi
 - github #325, #326: fbc: internal changes for string processing functions
+- fbc-tests: xargs on freebsd does not support the '-a filename' option, use 'cat filename | xargs' instead
+- fbc: gen gcc: allow compiling with GCC 4.5 and older, by avoiding -Wno-unused-but-set-variable (TeeEmCee)
+- fbc: internal function fbcQueryGcc() to ask gcc for the correct as & ld to use (TeeEmCee)
+- rtlib: freebsd: minimum thread stacksize 8192 KiB
+- sf.net #666: allow overload 'as string' with 'as zstring ptr' parameters
+- fbc: internal changes to restructure fbctools table, cache search results in fbctoolTB(), solve out fbcFindBin() parameters
+- fbc: EXTERN "rtlib" will still mangle internally generated symbols: vtable, rtti, default constructors and destructors
 
 [added]
 - fbc: add '-z fbrt' command line option to link against libfbrt*.a instead of libfb*.a
+- '-z valist-as-ptr' command line option for varargs. On targets that implement va_list as a pointer, allow overriding gcc __builtin_va* macros with our own expressions
 - makefile: add target for fbrt, fb runtime library written in fbc. Bulid libfbrt*.a and merge any missing object modules from libfb*.a
 - github #325, #326: fbc: add support for wstrings used with __FB_EVAL__()
+- crt headers: minimal crt headers to compile fbc and build test-suite on freebsd-13.0-i386
+- darwin: Implemented objinfo for Darwin/OSX Mach-O .o files, so #inclib etc. work (TeeEmCee)
+- fbc: add '-entry name' command line option to set program entry point (TeeEmCee)
+- added objinfo support for ELF files on freebsd
+- PROCPTR( identifier, type ) syntax to allow getting procedure pointer for based on sub/function type
+- sf.net #666: overload matching for UDT's with CAST() operators as [w|z]string type and implicit conversions
+- makefile: add initial support for powerpc and powerpc64 on FreeBSD (lenoil98)
+- makefile: normalize ppc*[le] & powerpc*[le] ARCH to powerpc*[le]
+- boostrap: normalize powerpc bootstrap directories to match ARCH as <os>-<powerpc*>
+- fbc: add 'powerpc' and 'powerpc64' cpu families and cpu type for '-arch' command line option (lenoil98)
+- fbc: add 'powerpc64le' cpu type for -arch command line option
+- fbc: allow shortnames 'ppc', 'ppc64', 'ppc64le' for '-target' command line option
+- fbc: add the __FB_PPC__ intrinsic constant (lenoil98)
+- fbc: internal add big endian information to the CPUFAMILYINFO() internal table
+- fbc: defined __FB_BIGENDIAN__ if cpu type is bigendian
+- objinfo: check ELF files for little endian or big endian signature
+- fbc: __thiscall declaration support for gcc/gas 32-bit x86 calling g++ classes from fbc passing first argument in ECX register, caller cleans up stack except on win32 x86
+- fbc: add __FB_OPTIMIZE__ intrinisic define - always defined and will have a value from 0 to 3 to indicate the optimization level passed to the backend compiler
+- github #341: fbc: #cmdline "args..." directive to specify command line arguments within source files, restarting the parser for some options, and restarting fbc for others.  Don't allow '-print', '-help' options
+- github #341: fbc: #cmdline "-end" will trigger a parser or fbc restart if needed.  fbc can't detect the end of reading all the #cmdlines to do this automatically
+- github #341: fbc: #cmdline "-restart" will always trigger one fbc restart
+- github #341: fbc: only process #cmdline in the first pass of the source module (which must be specified on the real command line)
+- github #341: fbc: '-z nocmdline' command line option to ignore #cmdline directives, allows overriding source directives with real fbc command line, show warning if used with '-w all'
+- fbc: #cmdline "-version" will immediately print the fbc version information if it was not already printed.  To get verbose version information '-v' option must appear before '-version'.  fbc command line  option '-v' option behaviour overrides #cmdline "-v"
+- fbc: '#pragma reserve symbol' statement will reserve a symbol name in the current scope / namespace and generate an error if the symbol redefined or is used in an expression
+- fbc: '#pragma reserve (asm) symbol' statement will reserve an ASM symbol name in all ASM statements and blocks
+- sf.net #515: fbc: update reserved ASM keywords list for ASM statements and ASM blocks
+- fbc: '#pragma reserve (extern) symbol' reserves global symbols.  fbc shows a warning if a reserved symbol is used for a public sub or shared variable in the global namespace
+- sf.net #645: respect global namespace '.' and '..' prefixes in REDIM
+- rtlib: Add new higher baud rates to the serial driver 1500000,2000000,2500000,3000000,35000000,4000000
+- fbc: '-w error' command line option to report warnings as errors.  Warnings cause the error count to increase, warning messages are displayed as "error warning...", compilation / assembly / linking aborts, fbc exits with an error code
+- sf.net #945, #948: improve error message for ambiguous symbol access to list all of the conflicted symbols
+- ./inc/fbc-int/array.bi - add fb.ArrayLen( array ) function to return total number of elements in an array
+- ./inc/fbc-int/array.bi - add fb.ArraySize( array ) function to return total size of an array in bytes (computed from dimensions and element length)
 
 [fixed]
 - github #315: set parameters when calling SCREENCONTROL (was broken in fbc 1.08.0 due to new LONG/LONGINT SCREENCONTROL API's)
@@ -25,6 +67,29 @@ Version 1.09.0
 - github #324: fbc: When converting a wide character escape sequence to an internal format, the escaped value is incorrect. (Skyfish)
 - fbc: remove warning on function suffix in '-lang qb'
 - github #325, #326: fbc: constant folding ASC() on constant strings with embedded NUL characters - previously ASC returned 0 for anything past the first embedded NUL char, for example ASC(!"A\000B",3) incorrectly returned 0 and should return 66
+- rtlib: define fb_AtomicSetThreadFlags() even in the non-multithreaded version of run time library - it is needed by thread_core.c:threadproc() - unusual but not impossible to link the non-multithreaded rtlib and call thread functions
+- darwin: a variety of improvements to allow compiling and linking (TeeEmCee)
+- gfxlib2: fix d2d scaling issues for high dpi (adeyblue)
+- fbc: fix regression - fbc.stripsymbols (-strip/-nostrip) check clobbered by emscripten merge
+- fbc: improve error message on statement between SELECT and first CASE inside a subroutine and don't allow CONST/ENUM between any SELECT & first CASE.
+- fbc: don't allow labels or EXIT statements between SELECT and first CASE statement
+- sf.net #843: Implicit casting of argument to string works for Instr() and Mid() but not for Left() and Right() 
+- sf.net #483 fblite: Can't call LEN with nested WITH block string member 
+- gas64 : fix required size for local variables >2GB
+- sf.net #645: don't access locals if explicit namespace is given on identifier
+- sf.net #645: don't access locals if explicit global namespace '.' and '..' prefixes are given on identifier
+- sf.net #645: throw compile time error if scoped REDIM variable shadows a variable of the same name
+- sf.net #939: __FB_ARG_EXTRACT__ causes compiler abort; was NULL pointer use on empty argument list.
+- sf.net #581: Locals break/override THIS access to inherited members
+- sf.net #871: Inherited methods without this shadowed by global functions
+- sf.net #730: Using quirk keywords as identifier leads to parsing problems later
+- sf.net #942: string to wstring conversions causing a run-time crash if the string contained invalid multi-byte characters due to unhandled error result in the runtime library
+- sf.net #941: dim/redim of extern array causes compiler fail - add error recovery in rtlArrayRedim() for bad integer conversions of bounds
+- sf.net #935: bad code causes fbc to fail internal assert - adjust the internal assert to allow for actual generated code in IIF() expressions
+- sf.net #515: fbc: show a warning if a public sub or a shared variable have the same name as global asm keywords (x86 and x86_64 only)
+- sf.net #944: Array descriptors are defined more than once (gcc backend)
+- sf.net #947: enum declaration in a namespace incorrectly checks for parent
+- sf.net #950: REDIM PRESERVE does not destroy the correct array elements of a multidimensional array -> memory leak
 
 
 Version 1.08.0

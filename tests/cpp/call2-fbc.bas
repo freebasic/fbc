@@ -10,11 +10,6 @@
 	#define DOTEST
 	#define DOFUNCS
 #else
-	'' thiscall is not supported in -gen gas
-	#if __FB_BACKEND__ <> "gas"
-		#define DOTEST
-	#endif
-
 	'' strutures returned by value from c++
 	'' needs some work on arm targets (bugs!)
 	#if not defined( __FB_ARM__ )

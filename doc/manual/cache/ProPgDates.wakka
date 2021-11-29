@@ -1,4 +1,5 @@
 {{fbdoc item="title" value="Date Serials"}}----
+A floating point number representing a date and time
 
 {{fbdoc item="desc"}}
 	A date serial is a number that holds a date and time value in the same format used by PDS or VBDOS. The value is a count of the days from 0:00 AM of December 30,1899; it's mainly used for easy counting of the time between two dates.

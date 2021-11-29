@@ -134,7 +134,7 @@ sub symbDataInit( )
 		'' populate symb_dtypeMatchTB() with ranking numbers
 		for i = 0 to NUMTYPES - 1
 			dtype2 = rank(i)
-			symb_dtypeMatchTB( dtype1, dtype2 ) = i
+			symb_dtypeMatchTB( dtype1, dtype2 ) = OvlMatchScore( i, 0 )
 		next
 
 	next
@@ -525,13 +525,24 @@ end function
 '' result:
 ''
 '' FB_OVLPROC_FULLMATCH              => compatible, exact match
+'' FB_OVLPROC_FULLMATCH - stringrank => compatible, distance between string types (no w<->z conversion)
 '' FB_OVLPROC_FULLMATCH - baselevel  => compatible, derived types
 '' FB_OVLPROC_TYPEMATCH + consts     => same type, different consts
 '' FB_OVLPROC_HALFMATCH              => compatible, same data type class
 '' FB_OVLPROC_HALFMATCH - rank       => compatible, distance between numeric types
-'' FB_OVLPROC_HALFMATCH - struct     => compatible, UDT ctor/cast
+'' FB_OVLPROC_HALFMATCH - stringrank => compatible, distance between string types (w<->z conversion)
+'' FB_OVLPROC_CASTMATCH              => compatible, implicit cast required (udt and string casts)
+''                                      TYPEMATCH is changed to a CASTMATCH if a CAST operator had to be
+''                                      invoked to allow a match
+'' FB_OVLPROC_CASTMATCH - struct     => compatible, UDT ctor
+'' FB_OVLPROC_CONVMATCH              => compatible, implicit conversion required (udt and string conversions)
+''                                      HALFMATCH is changed to CONVMATCH if a CAST operator had to be 
+''                                      invoked to allow a match
+'' FB_OVLPROC_CONVMATCH - struct     => compatible, lowest UDT conv/cast
 '' FB_OVLPROC_LOWEST_MATCH           => compatible, lowest scoring parameter
 '' FB_OVLPROC_NO_MATCH               => incompatible
+
+'' FB_OVLPROC_MAJORSCALE             => granularity of the matching score
 
 ''
 function typeCalcMatch _
@@ -558,7 +569,7 @@ function typeCalcMatch _
 	end if
 
 	if( (typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( rdtype )) and (lsubtype = rsubtype) ) then
-		return FB_OVLPROC_TYPEMATCH + const_matches
+		return FB_OVLPROC_TYPEMATCH + OvlMatchScore( const_matches, 0 )
 	end if
 
 	'' We know that they're different (in terms of dtype or subtype or both),

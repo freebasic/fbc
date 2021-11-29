@@ -4,14 +4,6 @@
 '' has same address as the instance parameter
 '' in the callee
 
-#if ENABLE_CHECK_BUGS
-	#define DOTEST
-#else
-	'' thiscall is not supported in -gen gas
-	#if __FB_BACKEND__ <> "gas"
-		#define DOTEST
-	#endif
-#endif
 
 extern "c++"
 	'' getters to retrieve call information
@@ -107,8 +99,6 @@ end extern
 	assert( r2 = getPtr2() )
 	assert( r3 = getPtr3() )
 #endmacro
-
-#ifdef DOTEST
 
 '' !!! TODO !!! combine duplicate code to #macro
 '' currently separate to track assert locatons
@@ -216,5 +206,3 @@ end scope
 
 '' check results of destructor called
 checkResults( p1, 0, 0 )
-
-#endif '' DOTEST

@@ -323,6 +323,9 @@ private function hFindId _
 					return cStrIdxOrMemberDeref( cCtorCall( symbGetSubtype( sym ) ) )
 				end if
 
+			case FB_SYMBCLASS_RESERVED
+				errReport( FB_ERRMSG_ILLEGALUSEOFRESERVEDSYMBOL )
+
 			end select
 
 			sym = sym->hash.next

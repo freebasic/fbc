@@ -26,6 +26,7 @@
 #include once "CHttpForm.bi"
 #include once "CHttpStream.bi"
 #include once "curl.bi"
+#include once "fbdoc_trace.bi"
 
 namespace fb
 
@@ -50,8 +51,9 @@ namespace fb
 
 		ctx->curl = curl_easy_init()
 
-		'' !!! TODO add verbose option for user
-		''curl_easy_setopt( ctx->curl, CURLOPT_VERBOSE, TRUE )
+		if( fbdoc.get_trace() ) then
+			curl_easy_setopt( ctx->curl, CURLOPT_VERBOSE, TRUE )
+		end if
 
 		curl_easy_setopt( ctx->curl, CURLOPT_COOKIEFILE, "" )
 

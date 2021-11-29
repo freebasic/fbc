@@ -2,6 +2,10 @@
 
 #include once "crt/math.bi"
 
+#ifndef ENABLE_CHECK_BUGS
+#define ENABLE_CHECK_BUGS 0
+#endif
+
 SUITE( fbc_tests.optimizations.inline_ops )
 
 	const EPSILON_SNG as single = 1.19290929e-7
@@ -191,8 +195,18 @@ SUITE( fbc_tests.optimizations.inline_ops )
 			CU_ASSERT_DOUBLE_EQUAL( asin( v ), asin_( v ), EPSILON_DBL )
 			CU_ASSERT_DOUBLE_EQUAL(  cos( v ),  cos_( v ), EPSILON_DBL )
 			CU_ASSERT_DOUBLE_EQUAL( acos( v ), acos_( v ), EPSILON_DBL )
+#if defined(__FB_FREEBSD__)
+	#if (ENABLE_CHECK_BUGS<>0)
 			CU_ASSERT_DOUBLE_EQUAL(  tan( v ),  tan_( v ), EPSILON_DBL )
+	#else
+			'' freebsd tightened up accuracy on tan() function in feb 2021
+			'' so we might see a inaccuracy in results here depending on
+			'' what crt is being used and what in-line operation is used
+			CU_ASSERT_DOUBLE_EQUAL(  tan( v ),  tan_( v ), EPSILON_DBL*2 )
+	#endif
+#else
 			CU_ASSERT_DOUBLE_EQUAL(  atn( v ), atan_( v ), EPSILON_DBL )
+#endif
 			CU_ASSERT_DOUBLE_EQUAL(  exp( v ),  exp_( v ), EPSILON_DBL )
 		next
 

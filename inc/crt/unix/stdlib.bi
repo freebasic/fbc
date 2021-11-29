@@ -6,11 +6,11 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __crt_linux_stdlib_bi__
-#define __crt_linux_stdlib_bi__
+#ifndef __crt_unix_stdlib_bi__
+#define __crt_unix_stdlib_bi__
 
 extern "c"
 declare function mkstemp (byval template_ as zstring ptr) as long
 end extern
 
-#endif '' __crt_linux_stdlib_bi__
+#endif '' __crt_unix_stdlib_bi__

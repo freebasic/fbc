@@ -15,5 +15,5 @@ Print a
 a += ", world!"
 Print a
 
-Var b = "Welcome to FreeBASIC"
+Dim As String b = "Welcome to FreeBASIC"
 Print b + "! " + a

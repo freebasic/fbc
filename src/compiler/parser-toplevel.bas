@@ -11,17 +11,17 @@
 #include once "ast.bi"
 #include once "pp.bi"
 
-declare sub	parserCompoundStmtInit ( )
+declare sub parserCompoundStmtInit ( )
 
-declare sub	parserCompoundStmtEnd ( )
+declare sub parserCompoundStmtEnd ( )
 
-declare sub	parserCompoundStmtSetCtx ( )
+declare sub parserCompoundStmtSetCtx ( )
 
-declare sub	parserProcCallInit ( )
+declare sub parserProcCallInit ( )
 
-declare sub	parserProcCallEnd ( )
+declare sub parserProcCallEnd ( )
 
-declare sub	parserLetInit( )
+declare sub parserLetInit( )
 
 declare sub parserLetEnd( )
 
@@ -33,7 +33,7 @@ sub parserSetCtx( )
 
 	parser.scope = FB_MAINSCOPE
 
-	parser.currproc	= NULL
+	parser.currproc = NULL
 	parser.currblock = NULL
 
 	parser.nspcrec = 0
@@ -54,7 +54,7 @@ sub parserSetCtx( )
 end sub
 
 '':::::
-sub	parserInit( )
+sub parserInit( )
 
 	parserCompoundStmtInit( )
 
@@ -62,18 +62,20 @@ sub	parserInit( )
 
 	parserLetInit( )
 
+	parserAsmInit( )
+
 end sub
 
 '':::::
-sub	parserEnd( )
+sub parserEnd( )
+
+	parserAsmEnd( )
 
 	parserLetEnd( )
 
 	parserProcCallEnd( )
 
 	parserCompoundStmtEnd( )
-
-	parserInlineAsmEnd( )
 
 end sub
 

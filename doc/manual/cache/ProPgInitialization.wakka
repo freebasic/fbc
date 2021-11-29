@@ -45,7 +45,7 @@ Variable initializers are supported for initializing pre-built type variables, U
 			##'""PreBuiltType""'## variable or compatible, when ##'[[KeyPgAs|As]] ""PreBuiltType""'## is specified.
 			
 	__Declaration syntax for global symbol__
-		If using global symbols when declaring pre-built type variable with initializer (##'[[KeyPgDim|Dim]] [[KeyPgShared|Shared]]'## or ##'[[KeyPgStatic|Static]] [[[KeyPgShared|Shared]]]'## instead of ##'[[KeyPgDim|Dim]]'##), the initializer argument must at least be able to be evaluated at the start of the program so that it can be placed in the .data section:
+		If using global symbols when declaring pre-built type variable with initializer (##'[[KeyPgDim|Dim]] [[KeyPgShared|Shared]]'## or ##'[[KeyPgStatic|Static]] [[[KeyPgShared|Shared]]]'## or ##'[[KeyPgStatic|Static]] [[KeyPgVar|Var]] [[[KeyPgShared|Shared]]]'##, instead of ##'[[KeyPgDim|Dim]]'##), the initializer argument must at least be able to be evaluated at the start of the program so that it can be placed in the .data section:
 			**""-""** The initializer syntaxe for variable-length string becomes no longer valid because the ##'//variable_symbol//'## must refer to a dynamic memory block in the heap.
 			**""-""** For the other pre-built type variables, the initializer syntaxe remains valid if the provided argument can be evaluated at compile time.
 			
@@ -126,7 +126,7 @@ Sleep
 		The third initializer syntax in the list (3) is the special case of reference declaration which must always have an initializer. This initializer syntax always works if ##'//udt_instance//'## is a reference (or a dereferenced pointer).
 		
 	__Declaration syntax for global symbol__
-		If using global symbols when declaring UDT object with initializer (##'[[KeyPgDim|Dim]] [[KeyPgShared|Shared]]'## or ##'[[KeyPgStatic|Static]] [[[KeyPgShared|Shared]]]'## instead of ##'[[KeyPgDim|Dim]]'##), the initializer argument(s) must at least be able to be evaluated at the start of the program so that it can be placed in the .data section:
+		If using global symbols when declaring UDT object with initializer (##'[[KeyPgDim|Dim]] [[KeyPgShared|Shared]]'## or ##'[[KeyPgStatic|Static]] [[[KeyPgShared|Shared]]]'## or ##'[[KeyPgStatic|Static]] [[KeyPgVar|Var]] [[[KeyPgShared|Shared]]]'##, instead of ##'[[KeyPgDim|Dim]]'##), the initializer argument(s) must at least be able to be evaluated at the start of the program so that it can be placed in the .data section:
 			**""-""** The initializer syntaxes (6) and (7) in the list become no longer valid because the symbol must refer to a dynamic memory block in the heap.
 			**""-""** The other initializer syntaxes remain valid if the provided argument(s) can be evaluated at compile time. If the initializer must call an existing constructor (implicit or explicit), it is the constructor code, called when the program starts, which writes the "initial" values into the .data section.
 			
@@ -324,7 +324,7 @@ Sleep
 		Only fixed-length (static) array declaration supports an initializer.
 		
 	__Declaration syntax for global symbol__
-		If using global symbols when declaring array variable with initializer (##'[[KeyPgDim|Dim]] [[KeyPgShared|Shared]]'## or ##'[[KeyPgStatic|Static]] [[[KeyPgShared|Shared]]]'## instead of ##'[[KeyPgDim|Dim]]'##), the initializer argument(s) must at least be able to be evaluated at the start of the program so that it can be placed in the .data section:
+		If using global symbols when declaring array variable with initializer (##'[[KeyPgDim|Dim]] [[KeyPgShared|Shared]]'## or ##'[[KeyPgStatic|Static]] [[[KeyPgShared|Shared]]]'##, instead of ##'[[KeyPgDim|Dim]]'##), the initializer argument(s) must at least be able to be evaluated at the start of the program so that it can be placed in the .data section:
 			**""-""** The initializer syntaxe for fixed-length (static) array of variable-length string become no longer valid because the symbol must refer to a dynamic memory block in the heap.
 			**""-""** For the fixed-length (static) arrays of other pre-built type variables, the initializer syntaxe remains valid if the provided expression(s) can be evaluated at compile time.
 			
@@ -404,6 +404,7 @@ Sleep
 
 {{fbdoc item="see"}}
 	- [[ProPgImplicitdeclarations|Implicit declarations]]
+	- [[ProPgConstantExpressions|Constant Expressions]]
 	- ##[[KeyPgDim|Dim]]##
 	- ##[[KeyPgShared|Shared]]##
 	- ##[[KeyPgStatic|Static]]##

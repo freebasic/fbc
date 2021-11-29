@@ -2,10 +2,7 @@
 Computes a valid color value for hi/truecolor modes
 
 {{fbdoc item="syntax"}}##
-	for fbc version < 1.08:
-		[[KeyPgPpdefine|#define]] **RGB**(//r//,//g//,//b//) (([[KeyPgCulng|culng]](r) [[KeyPgOpShiftLeft|shl]] 16) [[KeyPgOpOr|or]] ([[KeyPgCulng|culng]](g) [[KeyPgOpShiftLeft|shl]] 8) [[KeyPgOpOr|or]] [[KeyPgCulng|culng]](b) [[KeyPgOpOr|or]] &hFF000000)
-	for fbc version >= 1.08:
-		[[KeyPgPpdefine|#define]] **RGB**(//r//,//g//,//b//) [[KeyPgCulng|culng]](([[KeyPgCubyte|cubyte]](r) [[KeyPgOpShiftLeft|shl]] 16) [[KeyPgOpOr|or]] ([[KeyPgCubyte|cubyte]](g) [[KeyPgOpShiftLeft|shl]] 8) [[KeyPgOpOr|or]] [[KeyPgCubyte|cubyte]](b) [[KeyPgOpOr|or]] (&hFF000000ul))
+	[[KeyPgPpdefine|#define]] **RGB**(//r//,//g//,//b//) [[KeyPgCulng|culng]](([[KeyPgCubyte|cubyte]](r) [[KeyPgOpShiftLeft|shl]] 16) [[KeyPgOpOr|or]] ([[KeyPgCubyte|cubyte]](g) [[KeyPgOpShiftLeft|shl]] 8) [[KeyPgOpOr|or]] [[KeyPgCubyte|cubyte]](b) [[KeyPgOpOr|or]] (&hFF000000ul))
 ##
 {{fbdoc item="usage"}}##
 	//result// = **RGB**(//red//, //green//, //blue//)
@@ -24,7 +21,7 @@ Computes a valid color value for hi/truecolor modes
 {{fbdoc item="desc"}}
 	##//red//##, ##//green//## and ##//blue//## are components ranging ##0##-##255##.
 	
-	The ##**RGB**## function can be used to compute a valid color value for use while in hi/truecolor modes. It returns an unsigned integer for fbc version < 1.08, or an unsigned long for fbc version >= 1.08, in the format ##&h//AARRGGBB//##, where ##//RR//##, ##//GG//## and ##//BB//## equal the values passed to this function, in hexadecimal format. ##//AA//## is the implicit alpha value and is automatically set to ##&hFF## (opaque).
+	The ##**RGB**## function can be used to compute a valid color value for use while in hi/truecolor modes. It returns an unsigned long, in the format ##&h//AARRGGBB//##, where ##//RR//##, ##//GG//## and ##//BB//## equal the values passed to this function, in hexadecimal format. ##//AA//## is the implicit alpha value and is automatically set to ##&hFF## (opaque).
 	It is possible to retrieve the red, green, blue and alpha values from a color value, by using a combination of ##[[KeyPgOpAnd|And]]## and ##[[KeyPgOpShiftRight|Shr]]##.  The second example below shows how to ##[[KeyPgPpdefine|#Define]]## and use macros to do this.
 	
 	**Note for Windows API programmers**: The macro named ##RGB## in the Windows references has been renamed ##BGR## in the FB headers for Windows to avoid collisions. 
@@ -32,15 +29,15 @@ Computes a valid color value for hi/truecolor modes
 {{fbdoc item="ex"}}
 	See ##[[KeyPgPutgraphics|Put (Graphics)]]## example in addition.
 	
-{{fbdoc item="filename" value="examples/manual/gfx/rgb.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/gfx/rgb.bas"}}%%(freebasic)
 ScreenRes 640,480,32  '32 bit color
 Line(0,0)-(319,479), Rgb(255,0,0) 'draws a bright red box on the left side of the window
 Line(639,0)-(320,479), Rgb(0,0,255) 'draws a bright blue box on the right side of the window
 
 Sleep 'wait before exiting
-%%
+	%%
 
-{{fbdoc item="filename" value="examples/manual/gfx/rgb_get.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/gfx/rgb_get.bas"}}%%(freebasic)
 '' setting and retrieving Red, Green, Blue and Alpha values
 
 #define RGBA_R( c ) ( CULng( c ) Shr 16 And 255 )
@@ -64,7 +61,12 @@ Print Using "Red:         _&H\\ = ###"; Hex(r, 2); r
 Print Using "Green:       _&H\\ = ###"; Hex(g, 2); g
 Print Using "Blue:        _&H\\ = ###"; Hex(b, 2); b
 Print Using "Alpha:       _&H\\ = ###"; Hex(a, 2); a
-%%
+	%%
+{{fbdoc item="ver"}}
+	- Before fbc 1.08.0:
+			Syntax:
+				##[[KeyPgPpdefine|#define]] **RGB**(//r//,//g//,//b//) (([[KeyPgCulng|culng]](r) [[KeyPgOpShiftLeft|shl]] 16) [[KeyPgOpOr|or]] ([[KeyPgCulng|culng]](g) [[KeyPgOpShiftLeft|shl]] 8) [[KeyPgOpOr|or]] [[KeyPgCulng|culng]](b) [[KeyPgOpOr|or]] &hFF000000)##
+			##**RGB**## function returned an unsigned integer.
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Rgb""**##.

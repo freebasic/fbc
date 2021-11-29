@@ -85,6 +85,9 @@ myprintf(!"integer=%i, longint=%l single=%f, double=%d, string=%s, string=%s\n",
 		 1, 1ll shl 32, 2.2, 3.3, "foo", s)
 %%
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.07.0
+
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__cva_arg""**##.
 

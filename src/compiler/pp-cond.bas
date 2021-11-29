@@ -11,8 +11,8 @@
 const FB_PP_MAXRECLEVEL = 64
 
 type LEXPP_REC
-	istrue		as integer
-	elsecnt		as integer
+	istrue      as integer
+	elsecnt     as integer
 end type
 
 declare sub ppSkip( )
@@ -55,15 +55,15 @@ private function ppExpression( ) as integer
 end function
 
 sub ppCondIf( )
-    dim as integer istrue = any
-    dim as FBSYMBOL ptr base_parent = any
+	dim as integer istrue = any
+	dim as FBSYMBOL ptr base_parent = any
 
 	istrue = FALSE
 
 	select case as const lexGetToken( LEXCHECK_KWDNAMESPC )
 	'' IFDEF ID
 	case FB_TK_PP_IFDEF
-        lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
+		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
 
 		if( cIdentifier( base_parent, FB_IDOPT_NONE ) <> NULL ) then
 			'' any symbol is okay or type's wouldn't be found
@@ -73,7 +73,7 @@ sub ppCondIf( )
 
 	'' IFNDEF ID
 	case FB_TK_PP_IFNDEF
-        lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
+		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
 
 		if( cIdentifier( base_parent, FB_IDOPT_NONE ) = NULL ) then
 			'' ditto
@@ -107,7 +107,7 @@ end sub
 sub ppCondElse( )
 	dim as integer istrue = any
 
-   	istrue = FALSE
+	istrue = FALSE
 
 	if( pp.level = 0 ) then
 		errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP )
@@ -139,9 +139,9 @@ sub ppCondElse( )
 	else
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
-        pptb(pp.level).elsecnt += 1
-        pptb(pp.level).istrue = not pptb(pp.level).istrue
-    end if
+		pptb(pp.level).elsecnt += 1
+		pptb(pp.level).istrue = not pptb(pp.level).istrue
+	end if
 
 	if( pptb(pp.level).istrue = FALSE ) then
 		ppSkip( )
@@ -161,21 +161,21 @@ end sub
 
 '':::::
 sub ppAssert( )
-    dim as integer istrue = any
+	dim as integer istrue = any
 
 	'' ASSERT Expression
 
 	istrue = ppExpression( )
 
 	if( istrue = FALSE ) then
-		errReport( FB_ERRMSG_PPASSERT_FAILED ) 
+		errReport( FB_ERRMSG_PPASSERT_FAILED )
 	end if
 
 end sub
 
 '':::::
 private sub ppSkip( )
-    dim as integer iflevel = any
+	dim as integer iflevel = any
 
 	pp.skipping = TRUE
 
@@ -231,7 +231,7 @@ private sub ppSkip( )
 			case FB_TK_PP_DEFINE, FB_TK_PP_UNDEF, FB_TK_PP_PRINT, FB_TK_PP_ERROR, _
 			     FB_TK_PP_INCLUDE, FB_TK_PP_INCLIB, FB_TK_PP_LIBPATH, FB_TK_PP_PRAGMA, _
 			     FB_TK_PP_MACRO, FB_TK_PP_ENDMACRO, FB_TK_PP_LINE, FB_TK_PP_LANG, _
-			     FB_TK_PP_ASSERT, FB_TK_PP_DUMP, FB_TK_PP_ODUMP
+			     FB_TK_PP_ASSERT, FB_TK_PP_DUMP, FB_TK_PP_ODUMP, FB_TK_PP_CMDLINE
 
 			case else
 				errReport( FB_ERRMSG_SYNTAXERROR )

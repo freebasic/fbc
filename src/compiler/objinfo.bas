@@ -73,6 +73,10 @@
 ''    reads in a lib*.a archive file,
 ''    looks for the fbctinf object file added to static libraries by fbc -lib,
 ''    and if found, calls hLoadFbctinfFromObj().
+''    Note that Darwin has two different types of static libraries, both with
+''    extension .a: normal 'ar' archives, and 'lipo' fat/universal binaries.
+''    fbc creates ar archives, and it seems to generally be the default.
+''    We only support reading 'ar' archives.
 ''
 '' objinfoReadLib():
 ''    searches a libfile for the given libname in the given libpaths,
@@ -80,7 +84,8 @@
 ''
 '' hLoadFbctinfFromObj():
 ''    reads the currently loaded object file,
-''    using either the COFF (Win32, DOS) or ELF32 (Linux, *BSD) format.
+''    using either the COFF (Win32, DOS), ELF32/64 (Linux, *BSD) or
+''    Mach-O (Darwin) format.
 ''    ELF32 (linux-arm) or ELF64 (linux-aarch64)
 ''    looks for the .fbctinf section,
 ''    and if found, parses its content, and tells the frontend about the
@@ -100,8 +105,8 @@
 #endif
 
 type DATABUFFER
-	p	as ubyte ptr
-	size	as integer
+	p       as ubyte ptr
+	size    as integer
 end type
 
 dim shared as DATABUFFER _
@@ -117,10 +122,10 @@ enum
 end enum
 
 type OBJINFOPARSERCTX
-	i		as integer
-	filename	as string
-	is_old		as integer  '' old .fbctinf format?
-	old_section	as integer  '' FB_INFOSEC_* or -1
+	i           as integer
+	filename    as string
+	is_old      as integer  '' old .fbctinf format?
+	old_section as integer  '' FB_INFOSEC_* or -1
 end type
 
 dim shared as OBJINFOPARSERCTX parser
@@ -166,8 +171,18 @@ end type
 
 dim shared as ubyte elfmagic(0 to 15) = _
 { _
-	&h7f, &h45, &h4c, &h46,    0, &h01, _  '' index 4 is set to 1 (32bit) or 2 (64bit)
-	&h01, &h00, &h00, &h00, &h00, &h00 _   '' index 12 is set to machine
+	&h7f, _     '' '.'
+	&h45, _     '' 'E'
+	&h4c, _     '' 'L'
+	&h46, _     '' 'F'
+	&h00, _     '' 1 (32bit) or 2 (64bit)
+	&h01, _     '' 1 (little endian) or 2 (big endian)
+	&h01, _     '' 1 - the one and only version of ELF
+	&h00, _     '' target ABI
+	&h00, _     '' ABI version
+	&h00, _     '' unused 0
+	&h00, _     '' object file type
+	&h00  _     '' target machine
 }
 
 const ET_REL = 1
@@ -175,6 +190,8 @@ const EM_386 = 3
 const EM_X86_64 = &h3e
 const EM_ARM32 = &h28
 const EM_AARCH64 = &hb7
+const EM_PPC = &h14
+const EM_PPC64 = &h15
 
 '' ELF section headers
 type ELF32_SH field = 1
@@ -209,6 +226,10 @@ end type
 '' are different too.
 
 #macro ELFLOADINGCODE(ELF_H, ELF_SH, ELF_MAGIC_4)
+
+'' ELF_H        - elf main header (ELF32_H or ELF64_H)
+'' ELF_SH       - typename of the section header type (ELF32_SH or ELF64_SH)
+'' ELF_MAGIC_4  - 1 for 32 bit, 2 for 64-bit
 
 private function hCheck##ELF_SH _
 	( _
@@ -289,7 +310,24 @@ private sub hLoadFbctinfFrom##ELF_H( byval ELF_MACHINE as integer )
 
 	h = cptr( any ptr, objdata.p )
 
+	'' set 32 or 64 bits
 	elfmagic(4) = ELF_MAGIC_4
+
+	'' set little endian or big endian
+	if( fbIsHostBigEndian( ) ) then
+		elfmagic(5) = 2 '' big endian
+	else
+		elfmagic(5) = 1 '' little endian
+	end if
+
+	'' set the target system expected
+	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_FREEBSD ) then
+		elfmagic(7) = &h09  '' FreeBSD
+	else
+		elfmagic(7) = 0     '' System V
+	end if
+
+	'' check that magic given is the magic needed
 	for i as integer = 0 to 15
 		if( h->e_ident(i) <> elfmagic(i) ) then
 			INFO( "elf: magic mismatch" )
@@ -372,28 +410,28 @@ ELFLOADINGCODE( ELF64_H, ELF64_SH, 2 )
 
 '' COFF main header
 type COFF_H field = 1
-	magic		as ushort  '' magic number (type of target machine)
-	seccount	as ushort  '' number of sections/entries in section tb
+	magic       as ushort  '' magic number (type of target machine)
+	seccount    as ushort  '' number of sections/entries in section tb
 			           '' (which follows behind the headers)
-	timestamp	as ulong   '' creation time (time_t)
-	symtboffset	as ulong   '' file offset of symbol table
-	symcount	as ulong   '' entries in the symtb
-	optheadsize	as ushort  '' size of optional headers; 0 in obj file
-	flags		as ushort
+	timestamp   as ulong   '' creation time (time_t)
+	symtboffset as ulong   '' file offset of symbol table
+	symcount    as ulong   '' entries in the symtb
+	optheadsize as ushort  '' size of optional headers; 0 in obj file
+	flags       as ushort
 end type
 
 '' COFF section header
 type COFF_SH field = 1
-	name(0 to 7)	as ubyte  '' section name
-	paddr		as ulong  '' physical address
-	vaddr		as ulong  '' virtual address
-	size		as ulong  '' section size
-	dataoffset	as ulong  '' offset to section data
-	reloffset	as ulong  '' offset to relocation data
-	lnoffset	as ulong  '' offset to line number data
-	relcount	as ushort '' number of relocation entries
-	lncount		as ushort '' number of line number entries
-	flags		as ulong
+	name(0 to 7)    as ubyte  '' section name
+	paddr       as ulong  '' physical address
+	vaddr       as ulong  '' virtual address
+	size        as ulong  '' section size
+	dataoffset  as ulong  '' offset to section data
+	reloffset   as ulong  '' offset to relocation data
+	lnoffset    as ulong  '' offset to line number data
+	relcount    as ushort '' number of relocation entries
+	lncount     as ushort '' number of line number entries
+	flags       as ulong
 end type
 
 private sub hLoadFbctinfFromCOFF( byval magic as ushort )
@@ -462,16 +500,224 @@ private sub hLoadFbctinfFromCOFF( byval magic as ushort )
 	next
 end sub
 
+
+'' Mach-O implementation
+
+'' All of these structures are defined in /usr/include/mach-o/loader.h
+
+'' mach_header and mach_header_64 are identical aside from addition of
+'' a reserved member at the end, and different magic constant.
+type MACH_H
+	magic       as ulong
+	cputype     as ulong  ' cpu_type_t
+	cpusubtype  as ulong  ' cpu_subtype_t
+	filetype    as ulong
+	ncmds       as ulong
+	sizeofcmds  as ulong
+	flags       as ulong
+end type
+
+'' Mach-O load command header
+type LOAD_COMMAND_H
+	cmd as ulong
+	cmdsize as ulong
+end type
+
+'' cpu_type_t constants
+const MACH_CPU_ARCH_ABI64 = &h01000000
+const MACH_CPU_TYPE_X86 = 7
+const MACH_CPU_TYPE_X86_64 = (MACH_CPU_TYPE_X86 or MACH_CPU_ARCH_ABI64)
+const MACH_CPU_TYPE_ARM = 12
+const MACH_CPU_TYPE_ARM64 = (MACH_CPU_TYPE_ARM or MACH_CPU_ARCH_ABI64)
+const MACH_CPU_TYPE_POWERPC = 18
+const MACH_CPU_TYPE_POWERPC64 = (MACH_CPU_TYPE_POWERPC or MACH_CPU_ARCH_ABI64)
+
+const MH_MAGIC_32 = &hfeedface
+const MH_MAGIC_64 = &hfeedfacf
+
+const MH_OBJECT = 1  ' MH_OBJECT
+
+const LC_SEGMENT = &h1
+const LC_SEGMENT_64 = &h19
+
+#macro DEFINE_SEGMENT_COMMAND(NAME, SIZE_TYPE)
+type NAME
+	cmd         as ulong
+	cmdsize     as ulong
+	segname(15) as ubyte
+	vmaddr      as SIZE_TYPE
+	vmsize      as SIZE_TYPE
+	fileoff     as SIZE_TYPE
+	filesize    as SIZE_TYPE
+	maxprot     as ulong  'vm_prot_t
+	initprot    as ulong  'vm_prot_t
+	nsects      as ulong
+	flags       as ulong
+end type
+#endmacro
+
+DEFINE_SEGMENT_COMMAND(SEGMENT_COMMAND_32, ulong)    'struct segment_command
+DEFINE_SEGMENT_COMMAND(SEGMENT_COMMAND_64, ulongint) 'struct segment_command_64
+
+#macro DEFINE_SECTION(NAME, SIZE_TYPE, RESERVED3)
+'' Defined in /usr/include/mach-o/loader.h
+type NAME
+	sectname     as zstring * 16
+	segname      as zstring * 16
+	addr         as SIZE_TYPE
+	size         as SIZE_TYPE
+	offset       as ulong
+	align        as ulong
+	reloff       as ulong
+	nreloc       as ulong
+	flags        as ulong
+	reserved1    as ulong
+	reserved2    as ulong
+	RESERVED3
+end type
+#endmacro
+
+DEFINE_SECTION(SECTION_32, ulong, )                   'struct section
+DEFINE_SECTION(SECTION_64, ulongint, reserved3 as ulong) 'struct section_64
+
+
+#macro MACHO_SECTION_CODE(BITS)
+
+'' Iterate over the sections of a segment load command. Returns non-zero on error.
+private function hProcessMachOSegment##BITS( byval loadcmd as LOAD_COMMAND_H ptr ) as integer
+	dim segmentp as SEGMENT_COMMAND_##BITS ptr
+	dim sectionp as SECTION_##BITS ptr
+
+	segmentp = cptr( SEGMENT_COMMAND_##BITS ptr, loadcmd )
+	if( segmentp + 1 > objdata.p + objdata.size ) then
+		INFO( "mach-o: segment load_command past end of file" )
+		return 1
+	end if
+
+	'' Section headers follow immediately after the segment header
+	sectionp = cptr( SECTION_##BITS ptr, segmentp + 1 )
+	for sectionidx as integer = 0 to segmentp->nsects - 1
+		if( sectionp + 1 > objdata.p + objdata.size ) then
+			INFO( "mach-o: section header past end of file" )
+			return 1
+		end if
+
+		INFO( "mach-o: found segment=" & sectionp->segname & " section=" & sectionp->sectname )
+		if( sectionp->sectname = FB_INFOSEC_NAME ) then
+			if( sectionp->offset + sectionp->size > objdata.size ) then
+				INFO( "mach-o: fbctinf section data past end of file" )
+				return 1
+			end if
+
+			fbctinf.p = objdata.p + sectionp->offset
+			fbctinf.size = sectionp->size
+			exit for
+		end if
+
+		sectionp += 1
+	next
+end function
+
+#endmacro
+
+MACHO_SECTION_CODE(32)
+MACHO_SECTION_CODE(64)
+
+private sub hLoadFbctinfFromMachO( )
+	dim header as MACH_H ptr = any
+	dim loadcmd as LOAD_COMMAND_H ptr = any
+	dim dataptr as ubyte ptr = any
+
+	fbctinf.p = NULL
+	fbctinf.size = 0
+
+	if( objdata.size < sizeof( MACH_H ) ) then
+		INFO( "mach-o: no room for header" )
+		exit sub
+	end if
+
+	header = cptr( any ptr, objdata.p )
+
+	'' Check magic
+	if( header->magic <> MH_MAGIC_32 and header->magic <> MH_MAGIC_64 ) then
+		INFO( "mach-o: magic constant mismatch" )
+		exit sub
+	end if
+
+	'' Check cpu type matches
+	select case( fbGetCpuFamily( ) )
+	case FB_CPUFAMILY_X86
+		if( header->cputype <> MACH_CPU_TYPE_X86 ) then
+			INFO( "mach-o: CPU type is not x86" )
+			exit sub
+		end if
+	case FB_CPUFAMILY_X86_64
+		if( header->cputype <> MACH_CPU_TYPE_X86_64 ) then
+			INFO( "mach-o: CPU type is not x86_64" )
+			exit sub
+		end if
+	case FB_CPUFAMILY_ARM
+		if( header->cputype <> MACH_CPU_TYPE_ARM ) then
+			INFO( "mach-o: CPU type is not 32bit ARM" )
+			exit sub
+		end if
+	case FB_CPUFAMILY_AARCH64
+		if( header->cputype <> MACH_CPU_TYPE_ARM64 ) then
+			INFO( "mach-o: CPU type is not ARM64" )
+			exit sub
+		end if
+	end select
+
+	'' Check file type
+	if( header->filetype <> MH_OBJECT ) then
+		INFO( "mach-o: Not an object file" )
+		exit sub
+	end if
+
+	'' 64 bit mach-o files have 4 bytes padding after header so load commands are 8-byte aligned
+	dataptr = objdata.p + sizeof( MACH_H )
+	if( header->magic = MH_MAGIC_64 ) then
+		dataptr += 4
+	end if
+
+	'' Iterate over load commands. Note: 'segment' load commands are not the same
+	'' thing as the memory segments the sections belong to. Instead, to reduce space overhead
+	'' of .o files, all sections are stored under a single segment load command regardless of
+	'' their actual segment.
+	for cmdidx as integer = 0 to header->ncmds - 1
+		loadcmd = cptr( LOAD_COMMAND_H ptr, dataptr )
+
+		if( loadcmd + 1 > objdata.p + objdata.size ) then
+			INFO( "mach-o: load_command past end of file" )
+			exit sub
+		end if
+
+		INFO( "mach-o: load command " & loadcmd->cmd )
+		if( loadcmd->cmd = LC_SEGMENT ) then
+			if( hProcessMachOSegment32( loadcmd ) ) then
+				exit sub
+			end if
+		elseif( loadcmd->cmd = LC_SEGMENT_64 ) then
+			if( hProcessMachOSegment64( loadcmd ) ) then
+				exit sub
+			end if
+		end if
+
+		dataptr += loadcmd->cmdsize
+	next
+end sub
+
+
 '' .a archive entry header
 type AR_H field = 1
 	'' (all values right-padded with ASCII spaces)
-	name(0 to 15)		as ubyte '' ASCII
-	modifytime(0 to 11)	as ubyte '' decimal
-	ownerid(0 to 5)		as ubyte '' decimal
-	groupid(0 to 5)		as ubyte '' decimal
-	mode(0 to 7)		as ubyte '' octal
-	size(0 to 9)		as ubyte '' decimal
-	magic(0 to 1)		as ubyte '' &h60 &h0A
+	name(0 to 15)       as ubyte '' ASCII
+	modifytime(0 to 11) as ubyte '' decimal
+	ownerid(0 to 5)     as ubyte '' decimal
+	groupid(0 to 5)     as ubyte '' decimal
+	mode(0 to 7)        as ubyte '' octal
+	size(0 to 9)        as ubyte '' decimal
+	magic(0 to 1)       as ubyte '' &h60 &h0A
 end type
 
 dim shared as ubyte armagic(0 to 7) = _
@@ -638,7 +884,16 @@ private sub hLoadFbctinfFromObj( )
 		case FB_CPUFAMILY_ARM
 			INFO( "reading arm32 ELF: " + parser.filename )
 			hLoadFbctinfFromELF32_H( EM_ARM32 )
+		case FB_CPUFAMILY_PPC64, FB_CPUFAMILY_PPC64LE
+			INFO( "reading powerpc64 ELF: " + parser.filename )
+			hLoadFbctinfFromELF64_H( EM_PPC64 )
+		case FB_CPUFAMILY_PPC
+			INFO( "reading powerpc32 ELF: " + parser.filename )
+			hLoadFbctinfFromELF32_H( EM_PPC )
 		end select
+	elseif( fbTargetSupportsMachO( ) ) then
+		INFO( "reading Mach-O: " + parser.filename )
+		hLoadFbctinfFromMachO( )
 	end if
 
 	if( fbctinf.size = 0 ) then
