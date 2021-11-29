@@ -302,6 +302,303 @@ private function hMemberId( byval parent as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 end function
 
+private function hsymbGetCompOvlProcHead _
+	( _
+	byval parent as FBSYMBOL ptr, _
+	byval pzsID as zstring ptr, _
+	byval options as FB_PROCSYMBTYPEOPT _
+	) as FBSYMBOL ptr
+	dim as FBSYMBOL ptr newproc = NULL
+	'' resolve overloaded procs
+	'' Only check if this really is a derived UDT
+	if ( symbIsStruct( parent ) ) then
+		dim as FB_PROCSYMBTYPEOPT tk = (options and FB_PROCSYMBTYPEOPT_TOKEN_MASK)
+		dim as FB_PROCSYMBTYPEOPT op = (options and FB_PROCSYMBTYPEOPT_PROP_MASK)
+		do while parent
+			select case( tk )
+				case FB_PROCSYMBTYPEOPT_TOKEN_FUNCTION, FB_PROCSYMBTYPEOPT_TOKEN_SUB, FB_PROCSYMBTYPEOPT_TOKEN_PROPERTY
+					newproc = symbLookupByNameAndClass( _
+					parent, _
+					pzsID, _
+					FB_SYMBCLASS_PROC, _
+					0, TRUE )
+				case FB_PROCSYMBTYPEOPT_TOKEN_CONSTRUCTOR
+					newproc = symbGetCompCtorHead( parent )
+				case FB_PROCSYMBTYPEOPT_TOKEN_DESTRUCTOR'' Destructor?
+					'' There can always only be one complete dtor, so there is no
+					'' need to do a lookup and/or overload checks.
+					newproc = symbGetCompDtor1( parent )
+				case FB_PROCSYMBTYPEOPT_TOKEN_OPERATOR
+					newproc = symbGetCompOpOvlHead( parent, op )
+				case else
+					exit do
+			end select
+			if newproc then	exit do
+			parent = parent->udt.base
+			if parent then
+				parent = symbGetSubType(parent)
+			end if
+		loop
+	end if
+	return newproc
+End Function
+
+private function hsymbFindOvlVirtualProc _
+	( _
+	byval parent as FBSYMBOL ptr, _
+	byval pzsID as zstring ptr, _
+	byval subtype as FBSYMBOL ptr, _
+	byval options as FB_PROCSYMBTYPEOPT _
+	) as FBSYMBOL ptr
+	dim as FBSYMBOL ptr overridden = NULL
+
+	'' resolve overloaded procs
+	'' Only check if this really is a derived UDT
+	if ( symbIsStruct( parent ) ) then
+		dim as FB_PROCSYMBTYPEOPT tk = (options and FB_PROCSYMBTYPEOPT_TOKEN_MASK)
+		dim as FB_PROCSYMBTYPEOPT op = (options and FB_PROCSYMBTYPEOPT_PROP_MASK)
+		dim as FB_SYMBLOOKUPOPT PropOptions = iif((options and FB_PROCSYMBTYPEOPT_PROPGET) <> 0, FB_SYMBLOOKUPOPT_PROPGET, 0)
+
+		do while parent
+			select case( tk )
+				case FB_PROCSYMBTYPEOPT_TOKEN_CONSTRUCTOR
+					overridden = symbGetCompCtorHead( parent )
+					if overridden then
+						overridden = symbFindCtorProc( overridden, subtype )
+					end if
+				case FB_PROCSYMBTYPEOPT_TOKEN_DESTRUCTOR'' Destructor?
+					'' There can always only be one complete dtor, so there is no
+					'' need to do a lookup and/or overload checks.
+					overridden = symbGetCompDtor1( parent )
+				case FB_PROCSYMBTYPEOPT_TOKEN_OPERATOR
+					'' Get the corresponding operator from the base
+					'' (actually a chain of overloads for that particular operator)
+					overridden = symbGetCompOpOvlHead( parent, op )
+
+					'' Find the overload with the exact same signature
+					if overridden then
+						overridden = symbFindOpOvlProc( op, overridden, subtype )
+					end if
+				case else
+					if( pzsID ) then
+						'' If this method has the same id and signature as
+						'' a virtual derived from some base, it overrides that
+						'' virtual, by being assigned the same vtable index.
+
+						'' Find a method in the base with the same name
+						overridden = symbLookupByNameAndClass( _
+						parent, _
+						pzsID, FB_SYMBCLASS_PROC, _
+						FALSE, _
+						TRUE )  '' search NSIMPORTs (bases)
+
+						'' Find the overload with the exact same signature
+						if overridden then
+							overridden = symbFindOverloadProc( overridden, subtype, PropOptions )
+						end if
+					end if
+			end select
+
+			'' Found anything?
+			if( overridden ) then
+				'' Only override if the found overload really is a virtual
+				if( symbIsVirtual( overridden ) = FALSE andalso ( (options and FB_PROCSYMBTYPEOPT_ISANY) = 0 ) ) then
+					overridden = NULL
+				else
+					exit do
+				end if
+			end if
+			parent = parent->udt.base
+			if parent then
+				parent = symbGetSubType(parent)
+			end if
+		loop
+	end if
+	return overridden
+End Function
+
+'':::::
+''UdtMemberProcPtr =  ( (MemberId|OperatorID)? (,(ANY)?(FUNCTION|SUB|PROPERTY|OPERATOR|CONSTRUCTOR|DESTRUCTOR) ('(' args ')') (AS SymbolType)?)? )
+''
+function cGetUdtMemberProcPtr _
+	( _
+	byval dtype as integer, _
+	byval subtype as FBSYMBOL ptr, _
+	byval varexpr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	'' note: assuming a pointer is being passed to this function
+	dim as integer procdtype, idx = any
+	dim as FBSYMBOL ptr procsubtype, procsym = NULL, symsubtype = any
+	dim as ASTNODE ptr procexpr = NULL
+	dim as FB_PROCSYMBTYPEOPT options = FB_PROCSYMBTYPEOPT_NONE
+	'' '('
+	if( lexGetToken( ) = CHAR_LPRNT ) then
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
+
+		select case( lexGetToken() )
+			case CHAR_COMMA/','/
+				idx = iif(lexGetLookAhead(1) <> FB_TK_ANY, 1, 2)
+				select case lexGetLookAhead(idx)
+					case FB_TK_CONSTRUCTOR
+						options = FB_PROCSYMBTYPEOPT_TOKEN_CONSTRUCTOR
+
+					case FB_TK_DESTRUCTOR
+						options = FB_PROCSYMBTYPEOPT_TOKEN_DESTRUCTOR
+
+					case else
+						lexSkipToken( LEXCHECK_POST_SUFFIX )
+						if idx = 2 then	lexSkipToken( LEXCHECK_POST_SUFFIX )
+						errReport( FB_ERRMSG_SYNTAXERROR, FALSE )
+						return astNewCONSTi( 0 )
+				end select
+				procsym = hsymbGetCompOvlProcHead( subtype, 0, options )
+
+			case else
+				select case( lexGetLookAhead(1) )
+					case CHAR_RPRNT /')'/
+						options = FB_PROCSYMBTYPEOPT_TOKEN_OPERATOR
+					case CHAR_COMMA/','/
+						idx = iif(lexGetLookAhead(2) <> FB_TK_ANY, 2, 3)
+						select case lexGetLookAhead(idx)
+							case FB_TK_OPERATOR, CHAR_RPRNT/'default'/
+								options = FB_PROCSYMBTYPEOPT_TOKEN_OPERATOR
+
+							case FB_TK_PROPERTY
+								options = FB_PROCSYMBTYPEOPT_TOKEN_PROPERTY
+
+							case FB_TK_FUNCTION
+								options = FB_PROCSYMBTYPEOPT_TOKEN_FUNCTION
+
+							case FB_TK_SUB
+								options = FB_PROCSYMBTYPEOPT_TOKEN_SUB
+
+							case else
+								lexSkipToken( LEXCHECK_POST_SUFFIX )
+								lexSkipToken( LEXCHECK_POST_SUFFIX )
+								if idx = 3 then	lexSkipToken( LEXCHECK_POST_SUFFIX )
+								errReport( FB_ERRMSG_SYNTAXERROR, FALSE )
+								return astNewCONSTi( 0 )
+						end select
+					case else
+						lexSkipToken( LEXCHECK_POST_SUFFIX )
+						errReport( FB_ERRMSG_EXPECTEDCOMMA, FALSE )
+
+						return astNewCONSTi( 0 )
+				end select
+
+				if (options and FB_PROCSYMBTYPEOPT_TOKEN_OPERATOR) <> 0 then
+					'' Operator (instead of an ID)
+					dim as integer op = cOperator( TRUE )
+					if op <> INVALID then
+						options or= op
+						procsym = hsymbGetCompOvlProcHead( subtype, 0, options )
+						procsubtype = procsym
+					else
+						options = FB_PROCSYMBTYPEOPT_NONE
+					end if
+				end if
+				if (options and FB_PROCSYMBTYPEOPT_TOKEN_OPERATOR) = 0 then
+					procsym = hMemberId( subtype )
+					if procsym <> NULL then
+						if( symbIsMethod( procsym ) ) then
+							lexSkipToken( LEXCHECK_POST_SUFFIX )
+							procsubtype = procsym
+							if( symbIsProperty( procsym ) ) then
+								options or= FB_TK_PROPERTY
+								if ( symbGetType( procsym ) <> FB_DATATYPE_VOID ) then'' Not a sub?
+									options or= FB_PROCSYMBTYPEOPT_PROPGET
+								endif
+							else
+								if symbGetType( procsym ) = FB_DATATYPE_VOID then
+									options or= FB_TK_SUB
+								else
+									options or= FB_TK_FUNCTION
+								endif
+							endif
+						else
+							'' not inside a method?
+							errReport( FB_ERRMSG_ILLEGALOUTSIDEAMETHOD )
+							return astNewCONSTi( 0 )
+						end if
+					else ' error
+						return astNewCONSTi( 0 )
+					end if
+				end if
+		end select
+
+		'' ',' ?
+		if( hMatch( CHAR_COMMA )) then
+			'' 'ANY' ?
+			dim as integer Is_Any = hMatch( FB_TK_ANY )
+			'' ')' ?
+			if( lexGetToken( ) <> CHAR_RPRNT ) then
+				if( cProcSymbolType( procdtype, procsubtype, options ) = FALSE ) then
+					return astNewCONSTi( 0 ) ' error
+				end if
+			end if
+			if Is_Any <> 0 then
+				options or= FB_PROCSYMBTYPEOPT_ISANY
+			end if
+		end if
+
+		'' ')'
+		if( lexGetToken( ) = CHAR_RPRNT ) then
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
+
+			if(	procsym ) then
+				'' method?
+				if symbGetClass( procsym ) = FB_SYMBCLASS_PROC then
+					''' Try to find a prototype with the same signature
+					if( (options and FB_PROCSYMBTYPEOPT_ISANY) = 0 orelse symbGetProcIsOverloaded( procsym ) ) then'' overloaded?
+						dim as FBSYMBOL ptr sym = hsymbFindOvlVirtualProc( subtype, symbGetName(procsym) , procsubtype, options)
+						if sym = NULL then
+							errReport( FB_ERRMSG_SAMEPARAMANDRESULTTYPES,,"[" & *symbGetName(procsym) & "]" )
+							'' error recovery: skip until ')' and fake a node
+							hSkipUntil( CHAR_RPRNT, TRUE )
+							return astNewCONSTi( 0 )
+						else
+							procsym = sym
+						end if
+					end if
+					if( symbIsVirtual( procsym ) ) then
+						dim as Integer IsNullThisPtr = FALSE
+						if varexpr then
+							varexpr = astOptimizeTree( varexpr )
+							if( astIsCONST( varexpr ) ) then
+								IsNullThisPtr = ( astConstGetAsInt64( varexpr ) = 0 )
+							end if
+							varexpr = astNewDEREF(varexpr,	dtype, subtype)
+						end if
+						if IsNullThisPtr then
+							dim as integer vtableindex = symbProcGetVtableIndex( procsym )
+							astDelNode( varexpr )
+							procexpr = astNewCONSTi( ( vtableindex - 2 ) * env.pointersize )
+							procexpr = astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, procexpr, AST_CONVOPT_DONTCHKPTR )
+						else
+							procexpr = astBuildVtableLookup( procsym, varexpr )
+						end if
+						if procexpr then
+							procexpr = astNewDEREF(procexpr)
+						end if
+					elseif (options and FB_PROCSYMBTYPEOPT_ISANY) <> 0 then
+						procexpr = astNewDEREF(astNewADDROF(astNewVAR(procsym)))
+					end if
+				end if
+			end if
+		end if
+
+		if( procexpr = NULL  ) then
+			errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
+			'' error recovery: skip until ')' and fake a node
+			hSkipUntil( CHAR_RPRNT, TRUE )
+
+			procexpr = astNewCONSTi( 0 )
+		end if
+	end if
+	function = procexpr
+end function
+
 '':::::
 '' UdtMember       =   MemberId ('.' MemberId)*
 ''
@@ -314,6 +611,12 @@ function cUdtMember _
 		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
+	if ( fbGetExplicitVarptr() ) then
+		'' '('
+		if( lexGetToken( ) = CHAR_LPRNT ) then
+			return cGetUdtMemberProcPtr( dtype, subtype, varexpr )
+		end if
+	endif
 	'' note: assuming a pointer is being passed to this function
 	dim as integer is_ptr = TRUE, mask = typeGetConstMask( dtype )
 

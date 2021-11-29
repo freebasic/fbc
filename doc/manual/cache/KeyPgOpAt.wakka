@@ -6,13 +6,29 @@ Returns the address of a string literal, variable, object or procedure
 ##
 {{fbdoc item="usage"}}##
 	//result// = **@** //rhs//
+
+	**Get the address or virtual function table offset value of the member procedure:**
+	//result// = **@** //rhs//->( [[KeyPgByref|byref]] //identifier// [[KeyPgAs|as]] proctype [, [//Any//] [//proctype//] ] )
+	//result// = **@** //rhs//.( [[KeyPgByref|byref]] //identifier// [[KeyPgAs|as]] proctype [, [//Any//] [//proctype//] ] )
 ##
 {{fbdoc item="param"}}
 	##//rhs//##
 		The string literal, variable, object or procedure to retrieve the address of.
 	##//T//##
 		Any [[CatPgStdDataTypes|standard]], [[CatPgUserDefTypes|user-defined]] or procedure type.
-
+	##//identifier//##
+		A procedure identifier.
+	##//Any//##
+		Optional, the matching method of member procedure. It is only supported for fbc version >= 1.09. By default, this option is not enabled. At this time, only the real address of the member process is obtained through the virtual function table;
+		If this option is enabled, the member process matching proctype type will be used unconditionally, regardless of its private, protected or public properties. The scope of the member process will be fully considered by the user. At this time, it may obtain the real address of the member process directly or through the virtual function table;
+		In particular, when the pointer variable RHS is const null (0) and the real address of the member process is obtained through the virtual function table, the offset value of the member process in the virtual function table will be returned.
+	##//proctype//##
+		Optional. The type of member procedure to be matched. It is only supported for fbc version >= 1.09. If it is not specified, any procedure matching according to matching priority is returned.
+		The type of member procedure (Sub/Function/Constructor/Destructor/Property/Operator) that is supported in any [[CatPgUserDefTypes|user-defined]] type.
+		**Match priority:**
+		1. When the '**Any**' option is not enabled, first query the member process with virtual attribute of the current level. If it fails, query the base class until it matches the qualified member process or there is no base class;
+		2. When '**Any**' option is enabled, first query the member process of the current level without judging whether it has virtual attributes. If it fails, query the base class until it matches the qualified member process or there is no base class.
+		3. When obtaining the member function address, the priority is obtained through the virtual function table.
 {{fbdoc item="ret"}}
 	Returns the address of the right-hand side (##//rhs//##) operand.
 
@@ -70,6 +86,208 @@ say_Hello() 'Now we can run say_Hello just like mySubroutine.
 Sub mySubroutine
 	Print "hi"
 End Sub
+%%
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/operator/address-var.bas"}}%%(freebasic)
+
+'' 1. gets the address or virtual function table offset value of the member procedure.
+'' 2. get the address of the member procedure and call the corresponding address.
+
+Type VirtualRoot extends object
+    /'0'/  Declare Abstract Operator Cast() As Integer
+    /'4'/  Declare Abstract Operator Cast() As Long
+    /'8'/  Declare Abstract Property Length() As Single
+    /'12'/ Declare Abstract Property Length( ByVal new_length As Single )
+    /'16'/ Declare virtual Sub ObjectRealType ()
+    /'20'/ Declare Abstract Sub ObjectRealType(ByVal new_length As Integer )
+    /'24'/ Declare Abstract Function ObjectRealType(ByVal new_length As Single ) As Single
+    /'28'/ Declare virtual Destructor ()
+End Type
+
+Type Root Extends VirtualRoot
+    /'0'/  Declare Operator Cast() As Integer
+    /'4'/  Declare Operator Cast() As Long
+    /'8'/  Declare Property Length() As Single
+    /'12'/ Declare Property Length( ByVal new_length As Single )
+    /'16'/ Declare Sub ObjectRealType ()
+    /'20'/ Declare Sub ObjectRealType(ByVal new_length As Integer )
+    /'24'/ Declare Function ObjectRealType(ByVal new_length As Single ) As Single
+    /'28'/ Declare Destructor ()
+End Type
+
+Enum Em_Root
+    /'0'/  Em_Cast_Integer                  = 0
+    /'4'/  Em_Cast__Long                    = 4
+    /'8'/  Em_Length__Single                = 8
+    /'12'/ Em_Length_Single_                = 12
+    /'16'/ Em_ObjectRealType__              = 16
+    /'20'/ Em_ObjectRealType_Integer_       = 20
+    /'24'/ Em_ObjectRealType_Single_Single  = 24
+    /'28'/ Em_Destructor__                  = 28
+End Enum
+
+#ifdef __FB_64BIT__
+    #define FixSize 2
+#else
+    #define FixSize 1
+#endif
+
+dim shared id as integer
+
+Sub VirtualRoot.ObjectRealType ()
+    id = -(FixSize*Em_ObjectRealType__)
+End Sub
+
+Destructor VirtualRoot()
+    id = -(FixSize*Em_Destructor__)
+End Destructor
+
+Operator Root.Cast() As Integer
+    id = FixSize*Em_Cast_Integer
+    return id
+End Operator
+
+Operator Root.Cast() As Long
+    id = FixSize*Em_Cast__Long
+    return id
+End Operator
+
+Property Root.Length() As Single
+    id = FixSize*Em_Length__Single
+    return id
+End Property
+
+Property Root.Length( ByVal new_length As Single )
+    id = FixSize*Em_Length_Single_
+End Property
+
+Sub Root.ObjectRealType ()
+    id = FixSize*Em_ObjectRealType__
+End Sub
+
+Sub Root.ObjectRealType(ByVal new_length As Integer )
+    id = FixSize*Em_ObjectRealType_Integer_
+End Sub
+
+Function Root.ObjectRealType(ByVal new_length As Single ) As Single
+    id = FixSize*Em_ObjectRealType_Single_Single
+    return id
+End Function
+
+Destructor Root()
+    id = FixSize*Em_Destructor__
+End Destructor
+
+#define DoTest_GetAddressAnyAny( ProcName, ProcType... ) _
+print "    Any offsetof:", offsetof(Root, (ProcName, Any ProcType)), "Any vroot:", @vroot.(ProcName, Any ProcType)
+
+#define DoTest_GetAddressAnyNone( ProcName, ProcType... ) _
+print "    Any offsetof:", offsetof(Root, (ProcName, Any ProcType)), " proot[0]:", @proot[0].(ProcName, ProcType)
+
+#define DoTest_GetAddressAnyNone1( ProcName, ProcType... ) _
+print "    Any offsetof:", offsetof(Root, (ProcName, Any ProcType)), "    proot:", @proot->(ProcName, ProcType)
+
+#macro DoTest_GetAddressNoneNone( ProcName, ProcType... )
+    pAddress = *cast(integer ptr, cast(any ptr, proot)) + offsetof(Root, (ProcName, ProcType))
+    print "proot + offsetof:", *pAddress, "    proot:", @proot->(ProcName, ProcType)
+#endmacro
+
+#macro DoTest_GetProcAddress( ProcName, ProcType... )
+    print
+    print #ProcName,#ProcType
+    DoTest_GetAddressAnyAny( ProcName, ProcType )
+    DoTest_GetAddressAnyNone( ProcName, ProcType )
+    DoTest_GetAddressAnyNone1( ProcName, ProcType )
+    DoTest_GetAddressNoneNone( ProcName, ProcType )
+    print "        offsetof:", offsetof(Root, (ProcName, ProcType)), "    vroot:", @vroot.(ProcName, ProcType)
+#endmacro
+
+#macro DoTest_RunAddressAnyAny( offset, new_length ,ProcName, ProcType, Args... )
+    pAddress = @proot->(ProcName, ProcType##Args)
+    #if #new_length<>""
+        pcallSub1 = pAddress
+        pcallSub1( proot, new_length )
+    #else
+        pcallSub = pAddress
+        pcallSub( proot )
+    #endIf
+    print "          offset:" , FixSize * offset, "       id:", id
+#endmacro
+
+#macro DoTest_RunAddressAnyNone( offset, new_length ,ProcName, ProcType, Args... )
+    pAddress = offsetof(Root, (ProcName, Any ProcType##Args))
+    #if #new_length<>""
+        pcallSub1 = pAddress
+        pcallSub1( proot, new_length )
+    #else
+        pcallSub = pAddress
+        pcallSub( proot )
+    #endIf
+    print "          offset:" , FixSize * offset, "       id:", id
+#endmacro
+
+#macro DoTest_RunAddressNoneNone( offset, new_length ,ProcName, ProcType, Args... )
+    pAddress = *cast(integer ptr, cast(any ptr, proot)) + offsetof(Root, (ProcName, ProcType##Args))
+    #if #new_length<>""
+        pcallSub1 = *pAddress
+        pcallSub1( proot, new_length )
+    #else
+        pcallSub = *pAddress
+        pcallSub( proot )
+    #endIf
+    print "          offset:" , FixSize * offset, "       id:", id
+#endmacro
+
+#macro DoTest_RunProcRealAddress( offset, new_length , ProcNameTypeArgs... )
+    DoTest_RunAddressAnyAny( offset, new_length ,ProcNameTypeArgs )
+    DoTest_RunAddressAnyNone( offset, new_length ,ProcNameTypeArgs )
+    DoTest_RunAddressNoneNone( offset, new_length ,ProcNameTypeArgs )
+#endmacro
+
+dim shared as Root vroot
+dim shared as Root ptr proot = @vroot
+dim shared as integer ptr pAddress
+dim shared as sub(byval this as any ptr ) pcallSub
+dim shared as sub(byval this as any ptr, ByVal new_length As Single ) pcallSub1
+
+'Gets the address of the function
+DoTest_GetProcAddress( Cast )
+DoTest_RunProcRealAddress( Em_Cast_Integer, ,Cast,, )
+
+DoTest_GetProcAddress( Length )
+DoTest_RunProcRealAddress( Em_Length__Single, ,Length, , )
+
+DoTest_GetProcAddress( ObjectRealType )
+DoTest_RunProcRealAddress( Em_ObjectRealType__, ,ObjectRealType, , )
+
+DoTest_GetProcAddress( , Destructor() )
+
+DoTest_GetProcAddress( Cast, Operator() As Integer )
+DoTest_RunProcRealAddress( Em_Cast_Integer, ,Cast, Operator, () As Integer )
+
+DoTest_GetProcAddress( Cast, Operator() As Long )
+DoTest_RunProcRealAddress( Em_Cast__Long,, Cast, Operator, () As Long )
+
+DoTest_GetProcAddress( Length, Property() As Single )
+DoTest_RunProcRealAddress( Em_Length__Single, ,Length, Property, () As Single )
+
+DoTest_GetProcAddress( Length, Property( ByVal new_length As Single ) )
+DoTest_RunProcRealAddress( Em_Length_Single_,1 ,Length, Property, ( ByVal new_length As Single ) )
+
+DoTest_GetProcAddress( ObjectRealType, Sub() )
+DoTest_RunProcRealAddress( Em_ObjectRealType__, ,ObjectRealType, Sub, () )
+
+DoTest_GetProcAddress( ObjectRealType, Sub(ByVal new_length As Integer) )
+DoTest_RunProcRealAddress( Em_ObjectRealType_Integer_,1 ,ObjectRealType, Sub, (ByVal new_length As Integer) )
+
+DoTest_GetProcAddress( ObjectRealType, Function(ByVal new_length As Single ) As Single )
+DoTest_RunProcRealAddress( Em_ObjectRealType_Single_Single,1 ,ObjectRealType, Function, (ByVal new_length As Single ) As Single )
+
+DoTest_GetProcAddress( , Destructor() )
+''======== Calling this function will release the structure data ======
+'  DoTest_RunAddressNoneNone( Em_Destructor__, , , Destructor, () )
+''=====================================================================
 %%
 
 {{fbdoc item="lang"}}

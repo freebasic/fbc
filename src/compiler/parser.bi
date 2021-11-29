@@ -165,6 +165,7 @@ enum FB_PARSEROPT
 	FB_PARSEROPT_ISPP             = &h00000400  '' PP expression? (e.g. #if condition)
 	FB_PARSEROPT_EXPLICITBASE     = &h00000800  '' Used to tell cProcArgList() & co about explicit BASE accesses from hBaseMemberAccess() functions
 	FB_PARSEROPT_IDXINPARENSONLY  = &h00001000  '' Only parse array index if inside parentheses (used by REDIM, so it can handle 'expr(1 to 2)', where the expression parser should parse 'expr' but not the '(1 to 2)' part)
+	FB_PARSEROPT_EXPLICITVARPTR   = &h00002000
 end enum
 
 type PARSERCTX
@@ -201,6 +202,25 @@ enum FB_SYMBTYPEOPT
 	FB_SYMBTYPEOPT_SAVENSPREFIX = &h00000008    '' used by cTypeOrExpression() & cIdentifier()
 
 	FB_SYMBTYPEOPT_DEFAULT      = FB_SYMBTYPEOPT_CHECKSTRPTR
+end enum
+
+'' cProcSymbolType flags
+enum FB_PROCSYMBTYPEOPT
+	FB_PROCSYMBTYPEOPT_NONE                 = &h00000000
+	FB_PROCSYMBTYPEOPT_PROP_MASK            = &h0000FFFF
+	FB_PROCSYMBTYPEOPT_TOKEN_MASK           = &h00FF0000
+
+	FB_PROCSYMBTYPEOPT_TOKEN_FUNCTION       = &h00010000
+	FB_PROCSYMBTYPEOPT_TOKEN_SUB            = &h00020000
+	FB_PROCSYMBTYPEOPT_TOKEN_PROPERTY       = &h00040000
+	FB_PROCSYMBTYPEOPT_TOKEN_OPERATOR       = &h00080000
+	FB_PROCSYMBTYPEOPT_TOKEN_CONSTRUCTOR    = &h00100000
+	FB_PROCSYMBTYPEOPT_TOKEN_DESTRUCTOR     = &h00200000
+
+	FB_PROCSYMBTYPEOPT_PROPGET              = &h10000000
+	FB_PROCSYMBTYPEOPT_ISANY                = &h20000000
+
+	FB_PROCSYMBTYPEOPT_DEFAULT              = FB_PROCSYMBTYPEOPT_NONE
 end enum
 
 '' cIdentifier flags
@@ -324,6 +344,13 @@ declare function cSymbolType _
 		byref lgt as longint = 0, _
 		byref is_fixlenstr as integer = FALSE, _
 		byval options as FB_SYMBTYPEOPT = FB_SYMBTYPEOPT_DEFAULT _
+	) as integer
+
+declare function cProcSymbolType _
+	( _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref options as FB_PROCSYMBTYPEOPT = FB_PROCSYMBTYPEOPT_DEFAULT _
 	) as integer
 
 declare function cIdentifier _
@@ -1061,6 +1088,15 @@ declare function hIntegerTypeFromBitSize _
 	end if
 #endmacro
 
+#define fbGetExplicitVarptr( ) ((parser.options and FB_PARSEROPT_EXPLICITVARPTR) <> 0)
+
+#macro fbSetExplicitVarptr( _bool )
+	if( _bool ) then
+		parser.options or= FB_PARSEROPT_EXPLICITVARPTR
+	else
+		parser.options and= not FB_PARSEROPT_EXPLICITVARPTR
+	end if
+#endmacro
 ''
 '' inter-module globals
 ''

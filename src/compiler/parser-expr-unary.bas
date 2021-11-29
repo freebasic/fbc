@@ -580,7 +580,11 @@ function cAddrOfExpression( ) as ASTNODE ptr
 			return hProcPtrBody( base_parent, sym )
 		'' anything else..
 		else
-			return hVarPtrBody( base_parent, chain_ )
+			dim as integer StateExplicitVarptr = fbGetExplicitVarptr()
+			fbSetExplicitVarptr(TRUE)
+			function = hVarPtrBody( base_parent, chain_ )
+			fbSetExplicitVarptr(StateExplicitVarptr)
+			exit function
 		end if
 	end if
 

@@ -949,3 +949,146 @@ function cSymbolType _
 	function = TRUE
 
 end function
+
+'':::::
+''ProcSymbolType = (FUNCTION|SUB|PROPERTY|OPERATOR|CONSTRUCTOR|DESTRUCTOR) ('(' args ')') (AS SymbolType)?
+''
+function cProcSymbolType _
+	( _
+	byref dtype as integer, _
+	byref subtype as FBSYMBOL ptr, _
+	byref options as FB_PROCSYMBTYPEOPT _
+	) as integer
+
+	dim as FBSYMBOL ptr proc = any, subtype2 = any
+	dim as integer dtype2 = any, mode = any, attrib = any, pattrib = any
+	dim tk as integer, is_get as integer
+	mode = FB_FUNCMODE_FBCALL
+	'Reserved property ID
+	attrib = FB_SYMBATTRIB_NONE
+	pattrib = FB_PROCATTRIB_NONE
+	options and= FB_PROCSYMBTYPEOPT_PROP_MASK
+	tk = lexGetToken( )
+	select case tk
+		'' ctors/dtors default to CDECL, so they can be passed to
+		'' the rtlib's REDIM or ERASE functions by procptr
+		case FB_TK_CONSTRUCTOR
+			mode = FB_FUNCMODE_CDECL
+			pattrib = FB_PROCATTRIB_CONSTRUCTOR
+			options or= FB_PROCSYMBTYPEOPT_TOKEN_CONSTRUCTOR
+
+		case FB_TK_DESTRUCTOR
+			mode = FB_FUNCMODE_CDECL
+			pattrib = FB_PROCATTRIB_DESTRUCTOR1
+			options or= FB_PROCSYMBTYPEOPT_TOKEN_DESTRUCTOR
+
+		case FB_TK_OPERATOR
+			pattrib = FB_PROCATTRIB_OPERATOR
+			options or= FB_PROCSYMBTYPEOPT_TOKEN_OPERATOR
+
+		case FB_TK_PROPERTY
+			pattrib = FB_PROCATTRIB_PROPERTY
+			options or= FB_PROCSYMBTYPEOPT_TOKEN_PROPERTY
+
+		case FB_TK_FUNCTION
+			pattrib = 0
+			options or= FB_PROCSYMBTYPEOPT_TOKEN_FUNCTION
+
+		case FB_TK_SUB
+			pattrib = 0
+			options or= FB_PROCSYMBTYPEOPT_TOKEN_SUB
+
+		case else
+			subtype = NULL
+			dtype = FB_DATATYPE_INVALID
+			options = FB_PROCSYMBTYPEOPT_NONE
+			errReport( FB_ERRMSG_SYNTAXERROR, FALSE )
+			return FALSE
+	end select
+
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
+
+
+	' no need for naked check here, naked only effects the way a function
+	' is emitted, not the way it's called
+
+	'' mode, CallConvention?
+	mode = cProcCallingConv( mode )
+
+	proc = symbPreAddProc( NULL )
+	'' Parameters?
+	cParameters( NULL, proc, mode, TRUE )
+
+
+	subtype2 = NULL
+	dtype = typeAddrOf( FB_DATATYPE_FUNCTION )
+	select case tk
+		case FB_TK_FUNCTION, FB_TK_SUB, FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
+			'' BYREF?
+			cByrefAttribute( pattrib, TRUE )
+
+			'' (AS SymbolType)?
+			if( lexGetToken( ) = FB_TK_AS ) then
+				'' if it was SUB, don't allow a return type
+				if( tk <> FB_TK_FUNCTION ) then
+					errReport( FB_ERRMSG_SYNTAXERROR )
+					dtype2 = FB_DATATYPE_VOID
+				else
+					cProcRetType( attrib, pattrib, proc, TRUE, dtype2, subtype2 )
+				end if
+			else
+				'' if it's a function and type was not given, it can't be guessed
+				if( tk = FB_TK_FUNCTION ) then
+					errReport( FB_ERRMSG_EXPECTEDRESTYPE )
+					'' error recovery: fake a type
+					dtype2 = FB_DATATYPE_INTEGER
+				else
+					dtype2 = FB_DATATYPE_VOID
+				end if
+			end if
+
+		case FB_TK_OPERATOR
+			'' self? (but type casting)
+			if( astGetOpNoResult( options and FB_PROCSYMBTYPEOPT_PROP_MASK ) ) then
+				dtype2 = FB_DATATYPE_VOID
+			else
+				'' BYREF?
+				cByrefAttribute( pattrib, TRUE )
+
+				'' AS SymbolType
+				if( lexGetToken( ) = FB_TK_AS ) then
+					cProcRetType( attrib, pattrib, proc, TRUE, dtype2, subtype2 )
+				else
+					errReport( FB_ERRMSG_EXPECTEDRESTYPE )
+					'' error recovery: fake a type
+					dtype2 = FB_DATATYPE_INTEGER
+				end if
+			end if
+
+		case else
+			'' BYREF?
+			cByrefAttribute( pattrib, TRUE )
+
+			'' (AS SymbolType)?
+			if( lexGetToken( ) = FB_TK_AS ) then
+				if tk = FB_TK_PROPERTY then
+					options or= FB_PROCSYMBTYPEOPT_PROPGET
+				end if
+				cProcRetType( attrib, pattrib, proc, TRUE, dtype2, subtype2 )
+			else
+				dtype2 = FB_DATATYPE_VOID
+			end if
+	end select
+	subtype = symbAddProcPtr( proc, dtype2, subtype2, attrib, pattrib, mode )
+
+	if( subtype = NULL ) then
+		return FALSE
+	else
+		if (pattrib and FB_PROCATTRIB_PROPERTY) <> 0 then
+			symbProcAllocExt( subtype )
+			subtype->proc.ext->opovl.op = (options and FB_PROCSYMBTYPEOPT_PROP_MASK)
+		end if
+		return TRUE
+	end if
+
+end function
