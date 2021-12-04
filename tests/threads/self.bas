@@ -1,6 +1,10 @@
 #include "fbcunit.bi"
 #include "..\..\inc\fbthread.bi"
 
+#ifndef ENABLE_CHECK_BUGS
+#define ENABLE_CHECK_BUGS 0
+#endif
+
 SUITE( fbc_tests.threads.self )
 
 	'' Tests whether ThreadSelf in a created thread is equal to the 
@@ -108,6 +112,11 @@ SUITE( fbc_tests.threads.self )
 			test_proc2
 		END_TEST
 
+'' - don't check ThreadDetach on main thread in the debug version
+'' - debug asserts in libfbrt will throw an error if the caller tries to detach the main thread
+'' - the test-suite can't recover from this type of failure so must be disabled
+'' - maybe in future if ON ERROR is made to work, we can catch the debug assert
+#if (not defined( __FB_DEBUG__ )) or (ENABLE_CHECK_BUGS<>0)
 		'' Waiting/detaching the main thread shouldn't do anything
 		TEST(mainThreadDetach)
 			Dim tid as Any Ptr = ThreadSelf()
@@ -141,6 +150,8 @@ SUITE( fbc_tests.threads.self )
 			Dim tid2 As Any Ptr = ThreadSelf()
 			CU_ASSERT_EQUAL(tid, tid2)
 		END_TEST
+#endif
+
 	END_TEST_GROUP
 #endif '' FB_DOS
 
