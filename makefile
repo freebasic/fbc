@@ -1156,7 +1156,7 @@ bootstrap-dist:
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target solaris-x86_64 && mv src/compiler/*.c   bootstrap/solaris-x86_64
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-x86      && mv src/compiler/*.asm bootstrap/linux-x86
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-x86_64   && mv src/compiler/*.c   bootstrap/linux-x86_64
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target cygwin-x64_64  && mv src/compiler/*.c   bootstrap/cygwin-x64_64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target cygwin-x86_64  && mv src/compiler/*.c   bootstrap/cygwin-x86_64
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target win32          && mv src/compiler/*.asm bootstrap/win32
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target win64          && mv src/compiler/*.c   bootstrap/win64
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-arm      && mv src/compiler/*.c   bootstrap/linux-arm
@@ -1171,7 +1171,7 @@ bootstrap-dist:
 	dos2unix bootstrap/solaris-x86_64/*
 	dos2unix bootstrap/linux-x86/*
 	dos2unix bootstrap/linux-x86_64/*
-	dos2unix bootstrap/cygwin-x64_64/*
+	dos2unix bootstrap/cygwin-x86_64/*
 	dos2unix bootstrap/win32/*
 	dos2unix bootstrap/win64/*
 	dos2unix bootstrap/linux-arm/*
