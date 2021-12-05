@@ -2,6 +2,7 @@ Version 1.08.2
 [changed]
 
 [added]
+- bootstrap: add cygwin-x86_64 to the bootstrap package- bootstrap: add cygwin-x86_64 to the bootstrap package
 
 [fixed]
 - gfxlib2: fix d2d scaling issues for high dpi (adeyblue)
