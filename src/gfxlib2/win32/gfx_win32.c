@@ -123,7 +123,7 @@ static void ToggleFullScreen( EVENT *e )
 static VOID CALLBACK fb_hTrackMouseTimerProc(
 	HWND hWnd, 
 	UINT uMsg,
-#if _WIN64 
+#ifdef _WIN64 
 	UINT_PTR idEvent, 
 #else
 	UINT idEvent,
