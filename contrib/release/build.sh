@@ -595,6 +595,7 @@ win32-mingworg)
 	download_extract_mingw gmp-5.1.2-1-mingw32-dll.tar.lzma
 	download_extract_mingw mpc-1.0.1-2-mingw32-dll.tar.lzma
 	download_extract_mingw mpfr-3.1.2-2-mingw32-dll.tar.lzma
+	download_extract_mingw libiconv-1.14-3-mingw32-dll.tar.lzma
 
 	# Add ddraw.h and dinput.h for FB's gfxlib2
 
@@ -965,6 +966,7 @@ windowsbuild() {
 		win32-mingworg)
 			cp bin/gdb.exe              fbc/bin/win32
 			cp bin/libgcc_s_dw2-1.dll   fbc/bin/win32
+			cp bin/libiconv-2.dll       fbc/bin/win32
 			cp bin/zlib1.dll            fbc/bin/win32
 			;;
 		win64)
