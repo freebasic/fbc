@@ -2680,6 +2680,11 @@ function symbDumpToStr _
 			s += hDumpDynamicArrayDimensions( sym->param.bydescdimensions )
 		end if
 
+		if( sym->param.optexpr <> NULL ) then
+			s += "?"
+		end if
+
+
 	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
 		hDumpName( s, sym )
 
