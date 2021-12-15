@@ -92,7 +92,7 @@ private function hGetChainNames( byval chain_ as FBSYMCHAIN ptr ) as string
 				if( symbIsEnum( ns ) ) then
 					s = "<enum>." + s
 				else
-					s = "<enum>." + s
+					s = "<unknown>." + s
 				end if
 			else
 				s = *symbGetName( ns ) + "." + s
@@ -249,7 +249,7 @@ function cIdentifier _
 		'' out that is not the case, then we will need to add a new symbol attribute that
 		'' decides if symbols can be accessed through an explicit namespace or not
 		'' !!!TODO!!! - we should be able to rewrite this logic more effeciently.  In theory,
-		'' if an explicit namespace is not given SymbLookup() should have returned an appropriate
+		'' if an explicit namespace is not given symbLookup() should have returned an appropriate
 		'' symbol chain.
 		if( base_parent ) then
 			while( sym )

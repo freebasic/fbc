@@ -92,6 +92,7 @@ Version 1.09.0
 - sf.net #944: Array descriptors are defined more than once (gcc backend)
 - sf.net #947: enum declaration in a namespace incorrectly checks for parent
 - sf.net #950: REDIM PRESERVE does not destroy the correct array elements of a multidimensional array -> memory leak
+- sf.net #945: regression: Scoping rules have changed inside methods - allow globals to shadow non-explicit enums implicitly imported in to the current namespace
 
 
 Version 1.08.0

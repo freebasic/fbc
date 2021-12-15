@@ -878,6 +878,7 @@ function symbLookup _
 	) as FBSYMCHAIN ptr
 
 	static as zstring * FB_MAXNAMELEN+1 sname
+	dim as FBSYMBOL ptr firstglobal = NULL
 
 	'' assume it's an unknown identifier
 	tk = FB_TK_ID
@@ -897,8 +898,6 @@ function symbLookup _
 	'' Make multiple passes on the hash lists to find the symbol.
 	'' Because symbols are added in the order that they are defined,
 	'' in some cases we can't just take the first symbol we find.
-	'' !!!TODO!!! optimize the cases where we can exit early with
-	'' the result
 
 	'' keyword?
 	hashtb = symb.hashlist.tail
@@ -934,6 +933,10 @@ function symbLookup _
 				'' also if we are at the global ns, no need to check the imports
 				if( symbGetCurrentNamespc( ) = @symbGetGlobalNamespc( ) ) then
 					return symbNewChainpool( sym )
+				else
+					if( firstglobal = NULL ) then
+						firstglobal = sym
+					end if
 				end if
 			end if
 			sym = sym->hash.next
@@ -944,21 +947,42 @@ function symbLookup _
 	'' imports?
 	dim as FBSYMCHAIN ptr imp_chain = hashLookupEx( @symb.imphashtb, id, index )
 	if( imp_chain <> NULL ) then
+
+		if( firstglobal ) then
+			'' If we have found both imports and a global, then check the import.
+			'' If the import is actually a member of an  enum, then we'd prefer to
+			'' return the global instead. If the anonymous enum is not the first 
+			'' listed in the chain, then assume that the symbFindBy*() calls will
+			'' deal with finding a suitable symbol.
+
+			if( symbGetNamespace( imp_chain->sym ) <> NULL ) then
+				if( symbIsEnum( symbGetNamespace( imp_chain->sym ) ) ) then
+					return symbNewChainpool( firstglobal )
+				end if
+			end if
+
+#if 0
+			/'
+				not yet entirely known is if we should return a symbchain for
+				the global plus the imports.  This is what fbc < 1.09.0 did
+				but the look-ups were also broken then.  This note is left here 
+				as a hint if some future bug report is filed where we should expect
+				ambiguous access but didn't get it
+			'/
+			dim as FBSYMCHAIN ptr chain_ = symbNewChainpool( firstglobal )
+			chain_->next = imp_chain
+			return chain_
+#endif
+		end if
+
+		'' if we didn't find any global, then return the imports
 		return imp_chain
 	endif
 
-	'' global?
-	hashtb = symb.hashlist.tail
-	do
-		dim as FBSYMBOL ptr sym = hashLookupEx( @hashtb->tb, id, index )
-		while( sym )
-			if( hashtb->owner = @symbGetGlobalNamespc( ) ) then
-				return symbNewChainpool( sym )
-			end if
-			sym = sym->hash.next
-		wend
-		hashtb = hashtb->prev
-	loop while( hashtb <> NULL )
+	'' no imports too? then return the global (if we already found it)
+	if( firstglobal ) then
+		return symbNewChainpool( firstglobal )
+	end if
 
 	'' never found
 	return NULL
@@ -1045,8 +1069,10 @@ private function hLookupImportList _
 				head = chain_
 			else
 				tail->next = chain_
-				'' it's ambiguous, just return the first two
-				return head
+				'' it's ambiguous, instead of returning just the current head
+				'' which would indicate that access is ambiguous, keep going
+				'' and return all of the matches so we can show a better error
+				'' message
 			end if
 
 			tail = chain_
