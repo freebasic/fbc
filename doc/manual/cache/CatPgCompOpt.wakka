@@ -44,7 +44,7 @@ Command line compiler options for the fbc compiler:
 		- Export symbols for dynamic linkage
 	{{fbdoc item="keyword" value="CompilerOptforcelang|-forcelang <name>"}}
 		- Select language compatibility, overriding #lang/$lang in code
-	{{fbdoc item="keyword" value="compileroptfpmode|-fpmode < type >"}}
+	{{fbdoc item="keyword" value="CompilerOptfpmode|-fpmode < type >"}}
 		- Select between fast and accurate floating-point operations (default: PRECISE)
 	{{fbdoc item="keyword" value="CompilerOptfpu|-fpu < type >"}}
 		- Set the floating point arithmetics unit (default: FPU)

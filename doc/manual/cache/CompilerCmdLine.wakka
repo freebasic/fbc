@@ -53,7 +53,7 @@ Using the **fbc** command-line.
 		Set level of vector optimizations enabled by the compiler (default: ##0##)
 	=={{fbdoc item="keyword" value="CompilerOptfpu|-fpu < type >"}}==
 		Set the floating point arithmetics unit (default: ##FPU##)
-	=={{fbdoc item="keyword" value="compileroptfpmode|-fpmode < type >"}}==
+	=={{fbdoc item="keyword" value="CompilerOptfpmode|-fpmode < type >"}}==
 		Select between fast and accurate floating-point operations (default: ##PRECISE##)
 	=={{fbdoc item="keyword" value="CompilerOptz|-z < value >"}}==
 		Sets miscellaneous or experimental options

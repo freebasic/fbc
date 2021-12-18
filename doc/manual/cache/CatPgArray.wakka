@@ -28,9 +28,9 @@ Statements and procedures for working with arrays.
 	=={{fbdoc item="keyword" value="KeyPgErase|ERASE"}}==
 		Destroys variable-length array elements and initializes fixed-length array elements.
 <<>>{{anchor name="SIZE"}}{{fbdoc item="section" value="Retrieving Array Size"}}
-	=={{fbdoc item="keyword" value="KeyPgArraylen|ARRAYLEN"}}==
+	=={{fbdoc item="keyword" value="KeyPgArrayLen|ARRAYLEN"}}==
 		Returns the total number of array elements.
-	=={{fbdoc item="keyword" value="KeyPgArraysize|ARRAYSIZE"}}==
+	=={{fbdoc item="keyword" value="KeyPgArraySize|ARRAYSIZE"}}==
 		Returns the total array size (in bytes).
 	=={{fbdoc item="keyword" value="KeyPgLbound|LBOUND"}}==
 		Returns the lower bound of an array's dimension.

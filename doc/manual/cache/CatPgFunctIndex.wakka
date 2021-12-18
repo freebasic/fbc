@@ -2,8 +2,8 @@
 List of ""FreeBASIC"" keywords sorted by the function they perform.
 
 <<{{fbdoc item="section" value="Arrays"}}
-	- {{fbdoc item="keyword" value="KeyPgArraylen|ARRAYLEN"}}
-	- {{fbdoc item="keyword" value="KeyPgArraysize|ARRAYSIZE"}}
+	- {{fbdoc item="keyword" value="KeyPgArrayLen|ARRAYLEN"}}
+	- {{fbdoc item="keyword" value="KeyPgArraySize|ARRAYSIZE"}}
 	- {{fbdoc item="keyword" value="KeyPgErase|ERASE"}}
 	- {{fbdoc item="keyword" value="KeyPgFBArray|FBARRAY (array descriptor structure and access)"}}
 	- {{fbdoc item="keyword" value="KeyPgLbound|LBOUND"}}

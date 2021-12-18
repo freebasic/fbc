@@ -35,7 +35,7 @@ Print array_size                 '' 240
 	- New to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgArraylen|ArrayLen]]##
+	- ##[[KeyPgArrayLen|ArrayLen]]##
 	- ##[[KeyPgFBArray|FBARRAY (array descriptor structure and access)]]##
 
 {{fbdoc item="back" value="CatPgArray|Array Functions"}}
