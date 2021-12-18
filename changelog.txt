@@ -93,7 +93,7 @@ Version 1.09.0
 - sf.net #947: enum declaration in a namespace incorrectly checks for parent
 - sf.net #950: REDIM PRESERVE does not destroy the correct array elements of a multidimensional array -> memory leak
 - sf.net #945: regression: Scoping rules have changed inside methods - allow globals to shadow non-explicit enums implicitly imported in to the current namespace
-- sf.net #982: Bug when default calling via a pointer to a 'Sub' defined with the only 'Any Ptr' - fbc now differentiates between function pointers that have different numbers and positions of optional parameters
+- sf.net #892: Bug when default calling via a pointer to a 'Sub' defined with the only 'Any Ptr' - fbc now differentiates between function pointers that have different numbers and positions of optional parameters
 
 
 Version 1.08.0
