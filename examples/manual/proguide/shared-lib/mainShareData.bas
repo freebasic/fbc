@@ -63,7 +63,7 @@ Print "main code requests dll code to print its dll integer"
 printJdll()
 Print
 
-' dll loaded dynamically
+' for dll loaded dynamically
 	'DyLibFree(libhandle)
 
 Sleep

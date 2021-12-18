@@ -34,4 +34,3 @@ z &= " compiler"
 Print "'" & z & "'"
 
 Sleep
-	
