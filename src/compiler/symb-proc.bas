@@ -1081,6 +1081,7 @@ function symbLookupInternallyMangledSubtype _
 	( _
 		byval id as zstring ptr, _
 		byval scoped as integer, _
+		byval proc as FBSYMBOL ptr, _
 		byref attrib as FB_SYMBATTRIB, _
 		byref pattrib as FB_PROCATTRIB, _
 		byref parent as FBSYMBOL ptr, _
@@ -1133,8 +1134,46 @@ function symbLookupInternallyMangledSubtype _
 	'' prefixed with {fbsc}, there will be no clashes with func ptr mangled names)
 	chain_ = symbLookupAt( parent, id, TRUE, FALSE )
 	if( chain_ <> NULL ) then
-		function = chain_->sym
+
+		'' not a procedure pointer, return the first symbol
+		if( proc = NULL ) then
+			return chain_->sym
+		end if
+
+		'' for procedure pointers, the parameters types are encoded in the
+		'' mangled name, but the optional parameters are stored with the
+		'' procedure declaration.  Search all symbols in the chain to check
+		'' if there is match on number / position of optional parameters.
+
+		do
+			dim as FBSYMBOL ptr sym = chain_->sym
+			dim as FBSYMBOL ptr lookup_param = any
+			dim as FBSYMBOL ptr proc_param = any
+			do
+				lookup_param = symbGetProcHeadParam( chain_->sym )
+				proc_param = symbGetProcHeadParam( proc )
+				while( (lookup_param <> NULL) and (proc_param <> NULL) )
+					if( (symbGetParamOptExpr( lookup_param ) <> NULL) <> (symbGetParamOptExpr( proc_param ) <> NULL) ) then
+						exit while
+					end if
+					lookup_param = symbGetParamNext( lookup_param )
+					proc_param = symbGetParamNext( proc_param )
+				wend
+
+				'' no differences? return the symbol
+				if( (lookup_param = NULL) and (proc_param = NULL) ) then
+					return sym
+				end if
+
+				sym = sym->hash.next
+			loop while( sym )
+
+			chain_ = symbChainGetNext( chain_ )
+		loop while( chain_ )
 	end if
+
+	'' not found - or has different combination of optional parameters
+	return NULL
 end function
 
 function symbAddProcPtr _
@@ -1207,7 +1246,7 @@ function symbAddProcPtr _
 	id += "$"
 	id += hex( mode )
 
-	sym = symbLookupInternallyMangledSubtype( id, TRUE, attrib, pattrib, parent, symtb, hashtb )
+	sym = symbLookupInternallyMangledSubtype( id, TRUE, proc, attrib, pattrib, parent, symtb, hashtb )
 	if( sym ) then
 		return sym
 	end if
@@ -1215,7 +1254,7 @@ function symbAddProcPtr _
 	'' create a new prototype
 	sym = hSetupProc( proc, parent, symtb, hashtb, id, symbUniqueId( ), _
 	                  dtype, subtype, attrib, pattrib, mode, _
-	                  FB_SYMBOPT_DECLARING or FB_SYMBOPT_PRESERVECASE )
+	                  FB_SYMBOPT_DECLARING or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
 
 	if( sym <> NULL ) then
 		symbSetIsFuncPtr( sym )

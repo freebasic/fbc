@@ -1392,6 +1392,7 @@ declare function symbLookupInternallyMangledSubtype _
 	( _
 		byval id as zstring ptr, _
 		byval scoped as integer, _
+		byval proc as FBSYMBOL ptr, _
 		byref attrib as FB_SYMBATTRIB, _
 		byref pattrib as FB_PROCATTRIB, _
 		byref parent as FBSYMBOL ptr, _
