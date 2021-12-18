@@ -720,8 +720,8 @@ declare function hPorts_cb _
 		), _
 		/' function getmouse overload _
 			( _
-				byref x as long = 0, _
-				byref y as long = 0, _
+				byref x as long, _
+				byref y as long, _
 				byref z as long = 0, _
 				byref buttons as long = 0, _
 				byref clip as long = 0 _
@@ -741,8 +741,8 @@ declare function hPorts_cb _
 		), _
 		/' function getmouse overload _
 			( _
-				byref x as longint = 0, _
-				byref y as longint = 0, _
+				byref x as longint, _
+				byref y as longint, _
 				byref z as longint = 0, _
 				byref buttons as longint = 0, _
 				byref clip as longint = 0 _
