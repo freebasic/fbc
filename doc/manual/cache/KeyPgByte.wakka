@@ -31,5 +31,6 @@ Print "Byte Range = "; x; " to "; y
 {{fbdoc item="see"}}
 	- ##[[KeyPgUbyte|Ubyte]]##
 	- ##[[KeyPgCbyte|Cbyte]]##
+	- ##[[TblVarTypes|Table with variable types overview, limits and suffixes]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

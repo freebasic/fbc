@@ -26,7 +26,8 @@ buffer = space(10)
 rset buffer, "91.5"
 print "-[" & buffer & "]-"
 %%
-
+The example above outputs:
+%%-[      91.5]-%%
 {{fbdoc item="diff"}}
 	- In QBasic the syntax was ##**Rset** //dst// = //src//##. That syntax is also supported by FB.
 

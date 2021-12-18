@@ -12,7 +12,6 @@ Returns the address of a procedure
 		A procedure identifier.
 	##//proctype//##
 		Any type of procedure (sub/function).
-		Its use as a second argument (the optional) is only supported for fbc version >= 1.09.0.
 
 {{fbdoc item="ret"}}
 	Returns the address of the procedure.
@@ -47,27 +46,27 @@ end function
 Function Subtract( x as Integer, y as Integer) as Integer
 	return x - y
 end function
-	%%
+%%
 	{{fbdoc item="filename" value="examples/manual/operator/procptr2.bas"}}%%(freebasic)
 Sub s Overload()
 End Sub
 
-Sub s( Byval i As Integer )
+Sub s( ByVal i As Integer )
 End Sub
 
-'----- Previously (fbc version < 1.09.0) was only possible with:
+'----- since fbc 1.09.0, ProcPtr supports a second parameter (optional):
+Var s1 = ProcPtr( s, Sub() )
+Var s2 = ProcPtr( s, Sub( ByVal i As Integer ) )
 
+'----- before fbc 1.09.0, it was only possible with:
 'Dim s1 As Sub()
-'s1 = Procptr( s )
-
+'s1 = ProcPtr( s )
 'Dim s2 As Sub( Byval i As Integer)
-'s2 = Procptr( s )
+'s2 = ProcPtr( s )
+%%
+{{fbdoc item="ver"}}
+	- Before fbc 1.09.0, the second argument (the optional) was not supported.
 
-'----- Now (fbc version >= 1.09.0) is possible with:
-
-Var s1 = Procptr( s, Sub() )
-Var s2 = Procptr( s, Sub( Byval i As Integer ) )
-	%%
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Procptr""**##.
 

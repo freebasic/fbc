@@ -37,5 +37,6 @@ Equivalent to ##[[KeyPgUnsigned|Unsigned]] [[KeyPgInteger|Integer]]##.
 	- ##[[KeyPgInteger|Integer]]##
 	- ##[[KeyPgUnsigned|Unsigned]]##
 	- ##[[KeyPgCuint|Cuint]]##
+	- ##[[TblVarTypes|Table with variable types overview, limits and suffixes]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

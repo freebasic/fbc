@@ -40,8 +40,8 @@ Set minimum warning level.
 	##fbc## does not issue warning or error if the warning name itself is not valid.  For example ##-w flarg##, is not a recognized name for a warning.  The compiler silently ignores this to allow command lines with warnings added in new versions of ##fbc## to also be used with older versions of ##fbc## without complaint.
 
 {{fbdoc item="ver"}}
-	- Before fbc 1.08.0, default warning level was 0 and some warnings had level of -1.
 	- Since fbc 1.09.0: '-w error' option.
+	- Before fbc 1.08.0, default warning level was 0 and some warnings had level of -1.
 
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]

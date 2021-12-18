@@ -26,6 +26,9 @@ Declares a union user defined type.
 	
 	A ##**Union**## supports member procedures including ##[[KeyPgConstructor|Constructor]]##, ##[[KeyPgDestructor|Destructor]]##, ##[[KeyPgMemberFunction|Function]]##, ##[[KeyPgOperator|Operator]]##, ##[[KeyPgProperty|Property]]## and ##[[KeyPgMemberSub|Sub]]##. All members of a ##**Union**## are public and access modifiers are not supported. 
 	
+	A ##**Union**## can also contain nested types or unions, allowing data members to be grouped as desired.
+	##[[KeyPgType|Type]]## and ##**Union**## can be directly nested on condition of alternating their nesting.
+	Only the main structure (Type or Union) can be named, the others (nested) must be unnamed.
 	Nested unnamed ##[[KeyPgType|Type]]## or ##**Union**## can not have procedure members or static data members (same restriction for local scope named Type/Union).
 	
 	A ##**Union**## can be passed in a similar way of a User Defined Type to overloaded operator procedures.

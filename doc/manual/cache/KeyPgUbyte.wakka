@@ -32,5 +32,6 @@ PRINT "ubytevar= ", ubytevar
 {{fbdoc item="see"}}
 	- ##[[KeyPgByte|Byte]]##
 	- ##[[KeyPgCubyte|Cubyte]]##
+	- ##[[TblVarTypes|Table with variable types overview, limits and suffixes]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

@@ -129,6 +129,8 @@
 		[[KeyPgAndGfx|AND (GRAPHICS PUT)]]
 		[[KeyPgAny|ANY]]
 		[[KeyPgAppend|APPEND]]
+		[[KeyPgArraylen|ARRAYLEN]]
+		[[KeyPgArraysize|ARRAYSIZE]]
 		[[KeyPgAs|AS]]
 		[[KeyPgAsc|ASC]]
 		[[KeyPgAsin|ASIN]]

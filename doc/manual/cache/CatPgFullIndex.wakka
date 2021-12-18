@@ -132,6 +132,8 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgAndGfx|AND (GRAPHICS PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgAny|ANY"}}
 	- {{fbdoc item="keyword" value="KeyPgAppend|APPEND"}}
+	- {{fbdoc item="keyword" value="KeyPgArraylen|ARRAYLEN"}}
+	- {{fbdoc item="keyword" value="KeyPgArraysize|ARRAYSIZE"}}
 	- {{fbdoc item="keyword" value="KeyPgAs|AS"}}
 	- {{fbdoc item="keyword" value="KeyPgAsc|ASC"}}
 	- {{fbdoc item="keyword" value="KeyPgAsin|ASIN"}}

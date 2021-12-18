@@ -25,5 +25,6 @@ Standard data type: 64 bit signed
 {{fbdoc item="see"}}
 	- ##[[KeyPgUlongint|Ulongint]]##
 	- ##[[KeyPgClngint|Clngint]]##
+	- ##[[TblVarTypes|Table with variable types overview, limits and suffixes]]##
 	
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

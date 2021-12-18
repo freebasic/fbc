@@ -97,5 +97,6 @@ print i
 	- ##[[KeyPgFunction|Function]]##
 	- ##[[KeyPgByval|Byval]]##
 	- ##[[KeyPgByref|Byref]]##
+	- ##[[KeyPgDots|... (Ellipsis)]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

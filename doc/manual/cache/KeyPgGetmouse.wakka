@@ -2,7 +2,8 @@
 Retrieves the status of the mouse pointing device
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Getmouse** ( [[KeyPgByref|byref]] //x// [[KeyPgAs|as]] [[KeyPgInteger|integer]], [[KeyPgByref|byref]] //y// [[KeyPgAs|as]] [[KeyPgInteger|integer]], [[KeyPgByref|byref]] //wheel// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //buttons// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //clip// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Getmouse** ( [[KeyPgByref|byref]] //x// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByref|byref]] //y// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByref|byref]] //wheel// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //buttons// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //clip// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Getmouse** ( [[KeyPgByref|byref]] //x// [[KeyPgAs|as]] [[KeyPgLongint|longint]], [[KeyPgByref|byref]] //y// [[KeyPgAs|as]] [[KeyPgLongint|longint]], [[KeyPgByref|byref]] //wheel// [[KeyPgAs|as]] [[KeyPgLongint|longint]] = 0, [[KeyPgByref|byref]] //buttons// [[KeyPgAs|as]] [[KeyPgLongint|longint]] = 0, [[KeyPgByref|byref]] //clip// [[KeyPgAs|as]] [[KeyPgLongint|longint]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Getmouse** (//x//, //y// [, [ //wheel// ] [, [ //buttons// ] [, [ //clip// ]]]])
@@ -41,7 +42,7 @@ Retrieves the status of the mouse pointing device
 	**Warning:** When the flag GFX_SHAPED_WINDOW is set (see ##[[KeyPgScreenres|Screenres]]##), ##**Getmouse**## is only active in any colored area, ie there where color <> RGBA(255, 0, 255, alpha).
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/input/getmouse.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/input/getmouse.bas"}}%%(freebasic)
 
 DIM AS INTEGER x, y, buttons, res 
 ' Set video mode and enter loop
@@ -68,7 +69,7 @@ DO
 LOOP WHILE INKEY = ""
 END
 %%
-{{fbdoc item="filename" value="examples/manual/input/getmouse2.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/input/getmouse2.bas"}}%%(freebasic)
 'Example 2: type-union-type structure
 type mouse
 	as integer res
@@ -97,7 +98,6 @@ do
 	sleep 10, 1
 loop while inkey = ""
 %%
-
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Getmouse""**##.  The variables passed must also be of type ##[[KeyPgLong|Long]]## instead of ##[[KeyPgInteger|Integer]]##.
 

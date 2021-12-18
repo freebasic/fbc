@@ -63,7 +63,7 @@ Declares or defines an overloaded operator.
 	
 	See ##[[KeyPgOpFor|For]]##, ##[[KeyPgOpStep|Step]]##, and ##[[KeyPgOpNext|Next]]## for more information on overloading the ##[[KeyPgFornext|For..Next]]## statement for use with user defined types.
 	
-	Member operators ##**New**##, ##**New[]**##, ##**Delete**##, and ##**Delete[]**## are always static, even if not explicitly declared (##[[KeyPgStaticMember|static]]## keyword is unnecessary but allowed).
+	Although declared inside the ##[[KeyPgType|Type]]##, ##[[KeyPgClass|Class]]##, or ##[[KeyPgUnion|Union]]##, the member operators ##**New**##, ##**New[]**##, ##**Delete**##, and ##**Delete[]**## are always static, even if not explicitly declared (##[[KeyPgStaticMember|static]]## keyword is unnecessary but allowed).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/operator1.bas"}}%%(freebasic)

@@ -32,7 +32,7 @@ Declares an enumerated type.
 	The size of an ##**Enum**## instance will be always that of an ##[[KeyPgInteger|Integer]]## (no matter how many defined symbols are just declarations for the compiler assignment).
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/udt/enum.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/udt/enum.bas"}}%%(freebasic)
 enum MyEnum
 	option1 = 1
 	option2
@@ -52,10 +52,30 @@ select case MyVar
 		print "Option 3"
 end select
 %%
+	
+	You can reference formerly declared symbol names within the same enum:
+	{{fbdoc item="filename" value="examples/manual/udt/enum2.bas"}}%%(freebasic)
+enum MyEnum
+	option1 = 1
+	option2
+	option3
+	__
+	MAX_VALUE = __ -1
+end enum
 
+print "Option #1:", MyEnum.option1
+print "Option #2:", MyEnum.option2
+print "Option #3:", MyEnum.option3
+print "Max Value:", MyEnum.MAX_VALUE
+%%	Output:
+	%%
+Option #1:     1
+Option #2:     2
+Option #3:     3
+Max Value:     3
+%%
 {{fbdoc item="lang"}}
 	- Explicit Enum not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Explicit""**##.
-
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
@@ -63,5 +83,6 @@ end select
 {{fbdoc item="see"}}
 	- ##[[KeyPgConst|Const]]##
 	- ##[[KeyPgOperator|Operator]]##
+	- ##[[TblVarTypes|Table with variable types overview, limits and suffixes]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

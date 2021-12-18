@@ -38,29 +38,27 @@ Loads arbitrary data from a file created with ##[[KeyPgBsave|Bsave]]##, or a com
 
 **Runtime errors:**
 	##**Bload**## throws one of the following [[ProPgErrorHandling|runtime errors]]:
-	
-	//(##1##) Illegal function call//
-		- ##//dest//## was not specified or was null (##0##), and no graphics screen was set.
-		- The Bitmap uses an unsupported BMP file compression type (##BI_RLE4##, ##BI_RLE8##)
-		- The Bitmap is true-color (16, 24, or 32 bits per pixel) and the current graphics screen uses a palette (8 bits per pixel or lower).
-	//(##2##) File not found//
-		- The file ##//filename//## could not be found.
-	//(##3##) File I/O error//
-		- The file doesn't have any of the supported types 
-		- A general read error occurred.
-	
+		//(##1##) Illegal function call//
+			- ##//dest//## was not specified or was null (##0##), and no graphics screen was set.
+			- The Bitmap uses an unsupported BMP file compression type (##BI_RLE4##, ##BI_RLE8##)
+			- The Bitmap is true-color (16, 24, or 32 bits per pixel) and the current graphics screen uses a palette (8 bits per pixel or lower).
+		//(##2##) File not found//
+			- The file ##//filename//## could not be found.
+		//(##3##) File I/O error//
+			- The file doesn't have any of the supported types 
+			- A general read error occurred.
+			
 ~&//Note: When you use ##**BLoad**## to load a BMP file into an image buffer, the original dimensions of the image are not changed.  If you want the image buffer to have the same dimensions as the BMP file, you have to find out the dimensions beforehand, and create an image of the right size yourself.  See {{anchor name="bmp_load|the example below"}} for an example of how to do this.//
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/gfx/bload.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/gfx/bload.bas"}}%%(freebasic)
 'Load a graphic to current work page
 SCREEN 18, 32
 cls
 bload "picture.bmp"
 sleep
 %%
-
-{{fbdoc item="filename" value="examples/manual/gfx/bload2.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/gfx/bload2.bas"}}%%(freebasic)
 'Load a 48x48 bitmap into an image
 screenres 320, 200, 32
 dim myImage as any ptr = imagecreate( 48, 48 )
@@ -69,8 +67,7 @@ put (10,10), myImage
 imagedestroy( myImage )
 sleep
 %%
-
-{{fbdoc item="filename" value="examples/manual/gfx/bload3.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/gfx/bload3.bas"}}%%(freebasic)
 screenres 640, 480, 8 '' 8-bit palette graphics mode
 dim pal(0 to 256-1) as integer '' 32-bit integer array with room for 256 colors
 
@@ -84,10 +81,10 @@ sleep
 palette using pal(0)
 
 windowtitle "New palette"
-sleep%%
-
+sleep
+%%
 {{anchor name="bmp_load"}}
-{{fbdoc item="filename" value="examples/manual/gfx/bload4.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/gfx/bload4.bas"}}%%(freebasic)
 '' A function that creates an image buffer with the same 
 '' dimensions as a BMP image, and loads a file into it.
 
@@ -139,7 +136,8 @@ else
 
 end if
 
-sleep%%
+sleep
+%%
 {{fbdoc item="diff"}}
 	- Support for loading BMP files is new to ""FreeBASIC"".
 	- Support for retrieving the palette from BMP files is new to ""FreeBASIC"".
