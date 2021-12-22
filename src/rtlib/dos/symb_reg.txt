@@ -88,6 +88,7 @@ extern_asm(_fb_WriteUByte);
 extern_asm(_fb_FileOpenEx);
 extern_asm(___fb_hDrvIntHandler_start);
 extern_asm(_fb_GetMouse);
+extern_asm(_fb_ArraySize);
 extern_asm(_fb_dos_lock_data);
 extern_asm(_fb_dos_cli);
 extern_asm(_fb_PrintBuffer);
@@ -232,6 +233,7 @@ extern_asm(_fb_LPrintUShort);
 extern_asm(_fb_FileDateTime);
 extern_asm(_fb_DevLptClose);
 extern_asm(_fb_WriteUShort);
+extern_asm(_fb_ArrayLen);
 extern_asm(_fb_FileResetEx);
 extern_asm(_fb_FileOpenVfsEx);
 extern_asm(_fb_SleepQB);
@@ -304,6 +306,7 @@ extern_asm(_fb_WriteSingle);
 extern_asm(_fb_GosubPush);
 extern_asm(_fb_LPrintFixString);
 extern_asm(_fb_FileGet);
+extern_asm(_fb_AtomicSetThreadFlags);
 extern_asm(_fb_DevStdIoClose);
 extern_asm(___fb_dos_cli_level);
 extern_asm(_fb_Minute);
@@ -932,6 +935,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_FileOpenEx)
     DXE_EXPORT_ASM (___fb_hDrvIntHandler_start)
     DXE_EXPORT_ASM (_fb_GetMouse)
+    DXE_EXPORT_ASM (_fb_ArraySize)
     DXE_EXPORT_ASM (_fb_dos_lock_data)
     DXE_EXPORT_ASM (_fb_dos_cli)
     DXE_EXPORT_ASM (_fb_PrintBuffer)
@@ -1076,6 +1080,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_FileDateTime)
     DXE_EXPORT_ASM (_fb_DevLptClose)
     DXE_EXPORT_ASM (_fb_WriteUShort)
+    DXE_EXPORT_ASM (_fb_ArrayLen)
     DXE_EXPORT_ASM (_fb_FileResetEx)
     DXE_EXPORT_ASM (_fb_FileOpenVfsEx)
     DXE_EXPORT_ASM (_fb_SleepQB)
@@ -1148,6 +1153,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_GosubPush)
     DXE_EXPORT_ASM (_fb_LPrintFixString)
     DXE_EXPORT_ASM (_fb_FileGet)
+    DXE_EXPORT_ASM (_fb_AtomicSetThreadFlags)
     DXE_EXPORT_ASM (_fb_DevStdIoClose)
     DXE_EXPORT_ASM (___fb_dos_cli_level)
     DXE_EXPORT_ASM (_fb_Minute)
