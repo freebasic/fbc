@@ -2,6 +2,8 @@
 
 #include "fb.h"
 
+#if !defined( HOST_DOS )
+
 static ssize_t fb_wstr_ConvFromA_nomultibyte(FB_WCHAR *dst, ssize_t dst_chars, const char *src)
 {
 	/* mbstowcs() must have failed; translate at least ASCII chars
@@ -19,6 +21,8 @@ static ssize_t fb_wstr_ConvFromA_nomultibyte(FB_WCHAR *dst, ssize_t dst_chars, c
 	*dst = _LC('\0');
 	return dst - origdst;
 }
+
+#endif
 
 /* dst_chars == room in dst buffer without null terminator. Thus, the dst buffer
    must be at least (dst_chars + 1) * sizeof(FB_WCHAR).
