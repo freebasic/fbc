@@ -157,6 +157,7 @@
     - MinGW-w64     https://mingw-w64.org/
     - OpenXDK       http://openxdk.sourceforge.net/
     - TDM-GCC       http://tdm-gcc.tdragon.net/
+    - WinLibs       https://winlibs.com/
 
   o Credits
 
