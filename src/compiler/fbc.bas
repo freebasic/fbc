@@ -438,20 +438,32 @@ private sub fbcFindBin _
 	if( (fbctoolTB(tool).flags and FBCTOOLFLAG_CAN_USE_ENVIRON) <> 0 ) then
 		path = environ( ucase( fbctoolTB(tool).name ) )
 	end if
+
 	if( len( path ) = 0 ) then
 		'' b) Try bin/ directory
 		path = fbc.binpath + fbctoolTB(tool).name + FB_HOST_EXEEXT
 
 		#ifndef ENABLE_STANDALONE
-			if( (hFileExists( path ) = FALSE) and _
-			    (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GCC)) then
-				'' c) Ask GCC where it is, if applicable (GCC might have its
-				'' own copy which we must use instead of the system one)
-				if( tool = FBCTOOL_AS ) then
-					path = fbcQueryGcc( " -print-prog-name=as" )
-				elseif( tool = FBCTOOL_LD ) then
-					path = fbcQueryGcc( " -print-prog-name=ld" )
-				end if
+			if( hFileExists( path ) = FALSE ) then
+				select case fbGetOption( FB_COMPOPT_BACKEND )
+				case FB_BACKEND_GCC
+					'' c) Ask GCC where it is, if applicable (GCC might have its
+					'' own copy which we must use instead of the system one)
+					if( tool = FBCTOOL_AS ) then
+						path = fbcQueryGcc( " -print-prog-name=as" )
+					elseif( tool = FBCTOOL_LD ) then
+						path = fbcQueryGcc( " -print-prog-name=ld" )
+					end if
+				case FB_BACKEND_GAS, FB_BACKEND_GAS64
+					#if defined( __FB_FREEBSD__ )
+						'' gas backend? and we are looking for the linker? and we're hosted freebsd?
+						'' switch to ld.bfd instead...
+						if( tool = FBCTOOL_LD ) then
+							fbctoolTB(tool).name = "ld.bfd"
+							path = fbc.binpath + fbctoolTB(tool).name + FB_HOST_EXEEXT
+						end if
+					#endif
+				end select
 			end if
 
 			if( hFileExists( path ) = FALSE ) then
