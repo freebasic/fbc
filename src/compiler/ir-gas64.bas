@@ -3147,11 +3147,20 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 			end if
 			prefix1=""
 		case IR_VREGTYPE_VAR ''format varname ofs1   local/static  ofs1 could be zero
-			if symbIsStatic(v1->sym) Or symbisshared(v1->sym) then
-				op1=*symbGetMangledName(v1->sym)+"[rip+"+Str(v1->ofs)+"]"
+
+			if ctx.target=FB_COMPTARGET_LINUX andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB andalso v1->sym<>0 andalso (symbIsCommon(v1->sym)) then ''linux dll common shared
+				tempo=reg_findfree(999994)
+				regtempo=*regstrq(tempo)
+				op3="mov "+regtempo+", "+*symbGetMangledName(v1->sym)+"@GOTPCREL[rip]"
+				op1="["+regtempo+"]"
 			else
-				op1=Str(v1->ofs)+"[rbp]"
+				if symbIsStatic(v1->sym) Or symbisshared(v1->sym) then
+					op1=*symbGetMangledName(v1->sym)+"[rip+"+Str(v1->ofs)+"]"
+				else
+					op1=Str(v1->ofs)+"[rbp]"
+				end if
 			end if
+
 		case else
 			asm_error("in loadoperand typ not handled v1")
 	end select
@@ -3197,11 +3206,23 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 			prepare_idx(v2,op2,op4)
 
 		case IR_VREGTYPE_VAR ''format varname ofs1   local/static  ofs1 could be zero
-			if symbIsStatic(v2->sym) Or symbisshared(v2->sym) then
-				op2=*symbGetMangledName(v2->sym)+"[rip+"+Str(v2->ofs)+"]"
+
+			if ctx.target=FB_COMPTARGET_LINUX andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB andalso v1->sym<>0 andalso (symbIsCommon(v1->sym)) then
+
+				tempo=reg_findfree(999993)
+				regtempo=*regstrq(tempo)
+				op4="mov "+regtempo+", "+*symbGetMangledName(v1->sym)+"@GOTPCREL[rip]"
+				op2="["+regtempo+"]"
+
 			else
-				op2=Str(v2->ofs)+"[rbp]"
+
+				if symbIsStatic(v2->sym) Or symbisshared(v2->sym) then
+					op2=*symbGetMangledName(v2->sym)+"[rip+"+Str(v2->ofs)+"]"
+				else
+					op2=Str(v2->ofs)+"[rbp]"
+				end if
 			end if
+
 		case else
 			asm_error("in loadoperand typ not handled v2")
 	end select
@@ -3473,26 +3494,6 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 					case AST_OP_EQ
 						suffix="e"
 				end select
-			end if
-			if ctx.target=FB_COMPTARGET_LINUX andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
-
-				if v1->sym<>0 andalso (symbIsCommon(v1->sym)) then
-					asm_code("mov rax, "+*symbGetMangledName(v1->sym)+"@GOTPCREL[rip]")
-					asm_code("mov rax, [rax]")
-					op1="rax"
-
-					if v2->sym<>0 andalso (symbIsCommon(v2->sym)) then
-						tempo=reg_findfree(999999)
-						regtempo=*regstrq(tempo)
-						reghandle(tempo)=KREGFREE
-						asm_code("mov "+regtempo+", "+*symbGetMangledName(v2->sym)+"@GOTPCREL[rip]")
-						op2="["+regtempo+"]"
-					end if
-				elseif v2->sym<>0 andalso (symbIsCommon(v2->sym)) then
-					asm_code("mov rax, "+*symbGetMangledName(v2->sym)+"@GOTPCREL[rip]")
-					asm_code("mov rax, [rax]")
-					op2="rax"
-				end if
 			end if
 
 			asm_code("cmp "+op1+", "+op2)
