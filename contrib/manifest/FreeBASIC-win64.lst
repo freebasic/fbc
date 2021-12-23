@@ -345,7 +345,10 @@ examples/loops.bas
 examples/manual/array/clear.bas
 examples/manual/array/ellipsis.bas
 examples/manual/array/erase.bas
+examples/manual/array/erase2.bas
+examples/manual/array/erase3.bas
 examples/manual/array/lbound.bas
+examples/manual/array/len.bas
 examples/manual/array/memcopy.bas
 examples/manual/array/memcopyclear.bas
 examples/manual/array/memmove.bas
@@ -353,6 +356,7 @@ examples/manual/array/preserve.bas
 examples/manual/array/redim.bas
 examples/manual/array/redim2d.bas
 examples/manual/array/redim3.bas
+examples/manual/array/size.bas
 examples/manual/array/ubound.bas
 examples/manual/array/ubound2.bas
 examples/manual/array/ubound3.bas
@@ -402,7 +406,6 @@ examples/manual/check/KeyPgDim_4.bas
 examples/manual/check/KeyPgDim_5.bas
 examples/manual/check/KeyPgDim_6.bas
 examples/manual/check/KeyPgDim_7.bas
-examples/manual/check/KeyPgMultikey_1.bas
 examples/manual/check/KeyPgOptionbase_1.bas
 examples/manual/check/KeyPgResume_1.bas
 examples/manual/check/KeyPgResumenext_1.bas
@@ -568,6 +571,7 @@ examples/manual/defines/fbminversion.bas
 examples/manual/defines/fbmt.bas
 examples/manual/defines/fbnetbsd.bas
 examples/manual/defines/fbopenbsd.bas
+examples/manual/defines/fboptimize.bas
 examples/manual/defines/fboptionbyval.bas
 examples/manual/defines/fboptiondynamic.bas
 examples/manual/defines/fboptionescape.bas
@@ -579,6 +583,7 @@ examples/manual/defines/fboutexe.bas
 examples/manual/defines/fboutlib.bas
 examples/manual/defines/fboutobj.bas
 examples/manual/defines/fbpcos.bas
+examples/manual/defines/fbppc.bas
 examples/manual/defines/fbquote.bas
 examples/manual/defines/fbquote2.bas
 examples/manual/defines/fbsignature.bas
@@ -843,6 +848,7 @@ examples/manual/module/extern2.bas
 examples/manual/module/import.bas
 examples/manual/module/mydll.c
 examples/manual/module/namespace.bas
+examples/manual/module/option_entry.bas
 examples/manual/module/opts.bas
 examples/manual/module/sub-private.bas
 examples/manual/module/sub-public.bas
@@ -903,6 +909,7 @@ examples/manual/operator/orelse.bas
 examples/manual/operator/placement_new.bas
 examples/manual/operator/pointer-index.bas
 examples/manual/operator/procptr.bas
+examples/manual/operator/procptr2.bas
 examples/manual/operator/shift-left.bas
 examples/manual/operator/shift-right.bas
 examples/manual/operator/shl-assign.bas
@@ -917,6 +924,8 @@ examples/manual/operator/xor-assign.bas
 examples/manual/operator/xor-bitwise.bas
 examples/manual/operator/xor-logical.bas
 examples/manual/prepro/assert.bas
+examples/manual/prepro/cmdline1.bas
+examples/manual/prepro/cmdline2.bas
 examples/manual/prepro/concat.bas
 examples/manual/prepro/define.bas
 examples/manual/prepro/defined.bas
@@ -940,6 +949,9 @@ examples/manual/prepro/macro3.bas
 examples/manual/prepro/macro4.bas
 examples/manual/prepro/noescape.bas
 examples/manual/prepro/pragma.bas
+examples/manual/prepro/pragma_reserve1.bas
+examples/manual/prepro/pragma_reserve2.bas
+examples/manual/prepro/pragma_reserve3.bas
 examples/manual/prepro/print.bas
 examples/manual/prepro/stringize.bas
 examples/manual/prepro/undef.bas
@@ -983,6 +995,7 @@ examples/manual/procs/pascal.bas
 examples/manual/procs/stdcall.bas
 examples/manual/procs/sub-1.bas
 examples/manual/procs/sub-2.bas
+examples/manual/procs/thiscall.bas
 examples/manual/procs/vararg1.bas
 examples/manual/procs/vararg2.bas
 examples/manual/proguide/all_rtti_info.bas
@@ -1015,9 +1028,11 @@ examples/manual/proguide/comments/comment7.bas
 examples/manual/proguide/comments/comment8.bas
 examples/manual/proguide/compare_all_rtti_info.bas
 examples/manual/proguide/conditional_compilation.bas
+examples/manual/proguide/constant_expressions.bas
 examples/manual/proguide/constants/constants.bas
 examples/manual/proguide/dates.bas
 examples/manual/proguide/dynamicmemory.bas
+examples/manual/proguide/embed-access-data-in-executable.bas
 examples/manual/proguide/emulation_polymorphism-animal.bas
 examples/manual/proguide/enumerations1.bas
 examples/manual/proguide/enumerations2.bas
@@ -1048,6 +1063,7 @@ examples/manual/proguide/libs/libs5.bas
 examples/manual/proguide/linecontinuation1.bas
 examples/manual/proguide/linecontinuation2.bas
 examples/manual/proguide/linecontinuation3.bas
+examples/manual/proguide/lineseparator.bas
 examples/manual/proguide/literals/bin.bas
 examples/manual/proguide/literals/boolean.bas
 examples/manual/proguide/literals/dblsuff.bas
@@ -1114,6 +1130,7 @@ examples/manual/proguide/objectlifetime/dynamicobject.bas
 examples/manual/proguide/opovld/global-ops.bas
 examples/manual/proguide/opovld/iif.bas
 examples/manual/proguide/opovld/member-ops.bas
+examples/manual/proguide/opovld/smart-pointer-macro.bas
 examples/manual/proguide/opovld/smart-pointer.bas
 examples/manual/proguide/pointers/addsub.bas
 examples/manual/proguide/pointers/builtin.bas
@@ -1138,7 +1155,8 @@ examples/manual/proguide/procptrs/method-ptr.bas
 examples/manual/proguide/procptrs/passing.bas
 examples/manual/proguide/procptrs/pfunc.bi
 examples/manual/proguide/procptrs/procptrs.bas
-examples/manual/proguide/procptrs/typing-rule.bas
+examples/manual/proguide/procptrs/typing-rule1.bas
+examples/manual/proguide/procptrs/typing-rule2.bas
 examples/manual/proguide/procs/byrefparam-explicit-byval.bas
 examples/manual/proguide/procs/byrefresult-explicit-byval.bas
 examples/manual/proguide/procs/functions.bas
@@ -1196,7 +1214,9 @@ examples/manual/proguide/references/with-pointer2.bas
 examples/manual/proguide/references/with-reference1.bas
 examples/manual/proguide/references/with-reference2.bas
 examples/manual/proguide/rtti_info.bas
+examples/manual/proguide/shared-lib/dllShareData.bas
 examples/manual/proguide/shared-lib/load.bas
+examples/manual/proguide/shared-lib/mainShareData.bas
 examples/manual/proguide/shared-lib/mydll.bas
 examples/manual/proguide/shared-lib/mylib.bas
 examples/manual/proguide/shared-lib/mylib.bi
@@ -1342,6 +1362,7 @@ examples/manual/system/chdir.bas
 examples/manual/system/command.bas
 examples/manual/system/curdir.bas
 examples/manual/system/dir.bas
+examples/manual/system/dirfolder.bas
 examples/manual/system/dirnbfiles.bas
 examples/manual/system/dirretat.bas
 examples/manual/system/environ.bas
@@ -1366,6 +1387,7 @@ examples/manual/system/setenviron2.bas
 examples/manual/system/settime.bas
 examples/manual/system/shell.bas
 examples/manual/system/sleep.bas
+examples/manual/system/sleep2.bas
 examples/manual/system/system.bas
 examples/manual/threads/condcreate.bas
 examples/manual/threads/condcreate2.bas
@@ -1393,6 +1415,7 @@ examples/manual/udt/constructor.bas
 examples/manual/udt/copyconstructor.bas
 examples/manual/udt/destructor.bas
 examples/manual/udt/enum.bas
+examples/manual/udt/enum2.bas
 examples/manual/udt/extends1.bas
 examples/manual/udt/extends2.bas
 examples/manual/udt/extendszstring1.bas
@@ -2058,6 +2081,9 @@ inc/crt/dos/unistd.bi
 inc/crt/dos/wchar.bi
 inc/crt/errno.bi
 inc/crt/fcntl.bi
+inc/crt/freebsd/stdio.bi
+inc/crt/freebsd/time.bi
+inc/crt/freebsd/wchar.bi
 inc/crt/iconv.bi
 inc/crt/io.bi
 inc/crt/limits.bi
@@ -2065,7 +2091,6 @@ inc/crt/linux/ctype.bi
 inc/crt/linux/fcntl.bi
 inc/crt/linux/netdb.bi
 inc/crt/linux/stdio.bi
-inc/crt/linux/stdlib.bi
 inc/crt/linux/syslog.bi
 inc/crt/linux/time.bi
 inc/crt/linux/unistd.bi
@@ -2092,6 +2117,7 @@ inc/crt/stdlib.bi
 inc/crt/string.bi
 inc/crt/sys/dos/time.bi
 inc/crt/sys/dos/types.bi
+inc/crt/sys/freebsd/types.bi
 inc/crt/sys/linux/select.bi
 inc/crt/sys/linux/socket.bi
 inc/crt/sys/linux/time.bi
@@ -2107,6 +2133,7 @@ inc/crt/sys/win32/time.bi
 inc/crt/sys/win32/types.bi
 inc/crt/time.bi
 inc/crt/unistd.bi
+inc/crt/unix/stdlib.bi
 inc/crt/wchar.bi
 inc/crt/win32/ctype.bi
 inc/crt/win32/fcntl.bi

@@ -48,6 +48,9 @@ include/freebas/crt/dos/unistd.bi
 include/freebas/crt/dos/wchar.bi
 include/freebas/crt/errno.bi
 include/freebas/crt/fcntl.bi
+include/freebas/crt/freebsd/stdio.bi
+include/freebas/crt/freebsd/time.bi
+include/freebas/crt/freebsd/wchar.bi
 include/freebas/crt/io.bi
 include/freebas/crt/limits.bi
 include/freebas/crt/locale.bi
@@ -66,6 +69,7 @@ include/freebas/crt/stdlib.bi
 include/freebas/crt/string.bi
 include/freebas/crt/sys/dos/time.bi
 include/freebas/crt/sys/dos/types.bi
+include/freebas/crt/sys/freebsd/types.bi
 include/freebas/crt/sys/select.bi
 include/freebas/crt/sys/stat.bi
 include/freebas/crt/sys/time.bi
@@ -73,6 +77,7 @@ include/freebas/crt/sys/types.bi
 include/freebas/crt/sys/uio.bi
 include/freebas/crt/time.bi
 include/freebas/crt/unistd.bi
+include/freebas/crt/unix/stdlib.bi
 include/freebas/crt/wchar.bi
 include/freebas/cryptlib.bi
 include/freebas/curl.bi

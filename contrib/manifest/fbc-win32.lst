@@ -415,6 +415,9 @@ include/freebasic/crt/dos/unistd.bi
 include/freebasic/crt/dos/wchar.bi
 include/freebasic/crt/errno.bi
 include/freebasic/crt/fcntl.bi
+include/freebasic/crt/freebsd/stdio.bi
+include/freebasic/crt/freebsd/time.bi
+include/freebasic/crt/freebsd/wchar.bi
 include/freebasic/crt/iconv.bi
 include/freebasic/crt/io.bi
 include/freebasic/crt/limits.bi
@@ -422,7 +425,6 @@ include/freebasic/crt/linux/ctype.bi
 include/freebasic/crt/linux/fcntl.bi
 include/freebasic/crt/linux/netdb.bi
 include/freebasic/crt/linux/stdio.bi
-include/freebasic/crt/linux/stdlib.bi
 include/freebasic/crt/linux/syslog.bi
 include/freebasic/crt/linux/time.bi
 include/freebasic/crt/linux/unistd.bi
@@ -449,6 +451,7 @@ include/freebasic/crt/stdlib.bi
 include/freebasic/crt/string.bi
 include/freebasic/crt/sys/dos/time.bi
 include/freebasic/crt/sys/dos/types.bi
+include/freebasic/crt/sys/freebsd/types.bi
 include/freebasic/crt/sys/linux/select.bi
 include/freebasic/crt/sys/linux/socket.bi
 include/freebasic/crt/sys/linux/time.bi
@@ -464,6 +467,7 @@ include/freebasic/crt/sys/win32/time.bi
 include/freebasic/crt/sys/win32/types.bi
 include/freebasic/crt/time.bi
 include/freebasic/crt/unistd.bi
+include/freebasic/crt/unix/stdlib.bi
 include/freebasic/crt/wchar.bi
 include/freebasic/crt/win32/ctype.bi
 include/freebasic/crt/win32/fcntl.bi
