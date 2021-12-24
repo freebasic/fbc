@@ -10,13 +10,13 @@ SUITE( fbc_tests.string_.asc_ )
 	TEST( default )
 
 		CU_ASSERT( TEST_A = asc( "a" ) )
-		
+
 		CU_ASSERT( TEST_B = asc( "b" ) )
-		
+
 		CU_ASSERT( TEST_C = asc( "c" ) )
-		
+
 		CU_ASSERT( TEST_D = 0 )
-		
+
 	END_TEST
 
 	TEST( const_ )
@@ -25,7 +25,7 @@ SUITE( fbc_tests.string_.asc_ )
 			CU_ASSERT_EQUAL( asc(s, 0 ), 0 )
 			CU_ASSERT_EQUAL( asc(s, 1 ), 0 )
 			CU_ASSERT_EQUAL( asc(s, 2 ), 0 )
-		end scope 
+		end scope
 
 		scope
 			const S = "AB"
@@ -33,7 +33,7 @@ SUITE( fbc_tests.string_.asc_ )
 			CU_ASSERT_EQUAL( asc(s, 1 ), 65 )
 			CU_ASSERT_EQUAL( asc(s, 2 ), 66 )
 			CU_ASSERT_EQUAL( asc(s, 3 ), 0 )
-		end scope 
+		end scope
 
 		scope
 			const S = !"A\000B"
@@ -42,7 +42,7 @@ SUITE( fbc_tests.string_.asc_ )
 			CU_ASSERT_EQUAL( asc(s, 2 ), 0 )
 			CU_ASSERT_EQUAL( asc(s, 3 ), 66 )
 			CU_ASSERT_EQUAL( asc(s, 4 ), 0 )
-		end scope 
+		end scope
 
 	END_TEST
 
@@ -72,7 +72,7 @@ SUITE( fbc_tests.string_.asc_ )
 			CU_ASSERT_EQUAL( asc(s, 0 ), 0 )
 			CU_ASSERT_EQUAL( asc(s, 1 ), 0 )
 			CU_ASSERT_EQUAL( asc(s, 2 ), 0 )
-		end scope 
+		end scope
 
 		scope
 			const S = wstr("AB")
@@ -80,7 +80,7 @@ SUITE( fbc_tests.string_.asc_ )
 			CU_ASSERT_EQUAL( asc(s, 1 ), 65 )
 			CU_ASSERT_EQUAL( asc(s, 2 ), 66 )
 			CU_ASSERT_EQUAL( asc(s, 3 ), 0 )
-		end scope 
+		end scope
 
 		scope
 			const S = wstr(!"A\000B")
@@ -89,8 +89,11 @@ SUITE( fbc_tests.string_.asc_ )
 			CU_ASSERT_EQUAL( asc(s, 2 ), 0 )
 			CU_ASSERT_EQUAL( asc(s, 3 ), 66 )
 			CU_ASSERT_EQUAL( asc(s, 4 ), 0 )
-		end scope 
+		end scope
 
+		'' the following test is invalid for dos
+		'' target since sizeof(wstring) = 1
+		#if not defined(__FB_DOS__)
 		scope
 			const S = wstr(!"\u1111\u0000\u2222")
 			CU_ASSERT_EQUAL( asc(s, 0 ), 0 )
@@ -98,7 +101,8 @@ SUITE( fbc_tests.string_.asc_ )
 			CU_ASSERT_EQUAL( asc(s, 2 ), 0 )
 			CU_ASSERT_EQUAL( asc(s, 3 ), &h2222 )
 			CU_ASSERT_EQUAL( asc(s, 4 ), 0 )
-		end scope 
+		end scope
+		#endif
 
 	END_TEST
 
