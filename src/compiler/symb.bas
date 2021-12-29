@@ -870,6 +870,79 @@ function symbNewChainpool _
 end function
 
 '':::::
+function symbLookup108 _
+	( _
+		byval id as zstring ptr, _
+		byref tk as FB_TOKEN, _
+		byref tk_class as FB_TKCLASS _
+	) as FBSYMCHAIN ptr
+
+	static as zstring * FB_MAXNAMELEN+1 sname
+
+	'' assume it's an unknown identifier
+	tk = FB_TK_ID
+	tk_class = FB_TKCLASS_IDENTIFIER
+
+	hUcase( *id, sname )
+	id = @sname
+
+	dim as uinteger index = hashHash( id )
+	dim as FBSYMCHAIN ptr chain_ = NULL
+
+	'' for each nested hash tb, starting from last
+	dim as FBHASHTB ptr hashtb = symb.hashlist.tail
+
+	do
+		dim as FBSYMBOL ptr sym = hashLookupEx( @hashtb->tb, id, index )
+		if( sym <> NULL ) then
+			chain_ = chainpoolNext()
+
+			chain_->sym = sym
+			chain_->next = NULL
+			chain_->isimport = FALSE
+
+			if( sym->class = FB_SYMBCLASS_KEYWORD ) then
+				tk = sym->key.id
+				tk_class = sym->key.tkclass
+				'' return if it's a KEYWORD or a OPERATOR token, they
+				'' can't never be redefined, even inside namespaces
+				if( tk_class <> FB_TKCLASS_QUIRKWD ) then
+					return chain_
+				end if
+			end if
+
+			'' return if it's not the global ns (as in C++, any nested
+			'' symbol has precedence over any imported one, even if the
+			'' latter was imported in the current ns)
+			if( hashtb->owner <> @symbGetGlobalNamespc( ) ) then
+				return chain_
+			else
+				'' also if we are at the global ns, no need to check the imports
+				if( symbGetCurrentNamespc( ) = @symbGetGlobalNamespc( ) ) then
+					return chain_
+				end if
+
+				'' check (and add) the imports..
+				exit do
+			end if
+		end if
+
+		hashtb = hashtb->prev
+	loop while( hashtb <> NULL )
+
+	'' now try the imported namespaces..
+	dim as FBSYMCHAIN ptr imp_chain = hashLookupEx( @symb.imphashtb, id, index )
+	if( chain_ = NULL ) then
+		return imp_chain
+	end if
+
+	chain_->next = imp_chain
+
+	return chain_
+
+end function
+
+'':::::
 function symbLookup _
 	( _
 		byval id as zstring ptr, _
@@ -918,6 +991,10 @@ function symbLookup _
 		hashtb = hashtb->prev
 	loop while( hashtb <> NULL )
 
+	'' use old lookup method from fbc 1.08.x and earlier?
+	if( env.clopt.lookup108 ) then
+		return symbLookup108( id, tk, tk_class )
+	end if
 	'' any symbol not in the global namespace or we are already in the global namespace?
 	'' check the whole list before we check the imports
 	hashtb = symb.hashlist.tail
@@ -949,7 +1026,7 @@ function symbLookup _
 	if( imp_chain <> NULL ) then
 
 		if( firstglobal ) then
-			'' If we have found both imports and a global, then check the import.
+			'' If we have found both imports and a global, then check the imports.
 			'' If the import is actually a member of an  enum, then we'd prefer to
 			'' return the global instead. If the anonymous enum is not the first 
 			'' listed in the chain, then assume that the symbFindBy*() calls will

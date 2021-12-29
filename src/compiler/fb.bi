@@ -100,6 +100,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_FBRT                 '' boolean: we are building or linking the fbrt library
 	FB_COMPOPT_EXPORT               '' boolean: export all symbols declared as EXPORT?
 	FB_COMPOPT_MSBITFIELDS          '' boolean: use M$'s bitfields packing?
+	FB_COMPOPT_LOOKUP108            '' boolean: use old lookup rules fbc 1.08.x and earlier
 	FB_COMPOPT_MULTITHREADED        '' boolean: -mt
 	FB_COMPOPT_GFX                  '' boolean: -gfx (whether gfxlib should be linked)
 	FB_COMPOPT_PIC                  '' boolean: -pic (whether to use position-independent code)
@@ -303,6 +304,7 @@ type FBCMMLINEOPT
 	fbrt            as integer              '' we are building or linking fbrt (default = false)
 	export          as integer              '' export all symbols declared as EXPORT (default = true)
 	msbitfields     as integer              '' use M$'s bitfields packing
+	lookup108       as integer              '' use old lookup rules fbc 1.08.x and earlier
 	multithreaded   as integer              '' link against thread-safe runtime library (default = false)
 	gfx             as integer              '' Link against gfx library (default = false)
 	pic             as integer              '' Whether to use position-independent code (default = false)

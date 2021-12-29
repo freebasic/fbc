@@ -557,6 +557,7 @@ sub fbGlobalInit()
 	env.clopt.gfx           = FALSE
 	env.clopt.pic           = FALSE
 	env.clopt.msbitfields   = FALSE
+	env.clopt.lookup108     = FALSE
 	env.clopt.stacksize     = 0 '' default will be set by fbSetOption() called from hParseArgs()
 	env.clopt.objinfo       = TRUE
 	env.clopt.showincludes  = FALSE
@@ -657,6 +658,8 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		env.clopt.export = value
 	case FB_COMPOPT_MSBITFIELDS
 		env.clopt.msbitfields = value
+	case FB_COMPOPT_LOOKUP108
+		env.clopt.lookup108 = value
 	case FB_COMPOPT_MULTITHREADED
 		env.clopt.multithreaded = value
 	case FB_COMPOPT_GFX
@@ -759,6 +762,8 @@ function fbGetOption( byval opt as integer ) as integer
 		function = env.clopt.export
 	case FB_COMPOPT_MSBITFIELDS
 		function = env.clopt.msbitfields
+	case FB_COMPOPT_LOOKUP108
+		function = env.clopt.lookup108
 	case FB_COMPOPT_MULTITHREADED
 		function = env.clopt.multithreaded
 	case FB_COMPOPT_GFX
@@ -784,7 +789,7 @@ end function
 '':::::
 sub fbChangeOption(byval opt as integer, byval value as integer)
 	select case as const opt
-	case FB_COMPOPT_MSBITFIELDS
+	case FB_COMPOPT_MSBITFIELDS, FB_COMPOPT_LOOKUP108
 		fbSetOption( opt, value )
 
 	case FB_COMPOPT_LANG
