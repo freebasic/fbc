@@ -2931,6 +2931,37 @@ sub symbDumpChain( byval chain_ as FBSYMCHAIN ptr )
 		loop while( chain_ )
 	end if
 end sub
+
+sub symbDumpLookup( byval id as zstring ptr )
+
+	static as zstring * FB_MAXNAMELEN+1 sname
+	hUcase( *id, sname )
+	id = @sname
+
+	print "symbol: " & *id
+	
+	if( symbGetCurrentNamespc( ) <> NULL ) then
+		print "namespace: " & symbDumpToStr( symbGetCurrentNamespc( ) )
+	else
+		print "global namespace"
+	end if
+
+	dim as uinteger index = hashHash( id )
+	dim as FBHASHTB ptr hashtb = any
+	hashtb = symb.hashlist.tail
+	do
+		dim as FBSYMBOL ptr sym = hashLookupEx( @hashtb->tb, id, index )
+		while( sym )
+			print symbDumpToStr( sym )
+			sym = sym->hash.next
+		wend
+		hashtb = hashtb->prev
+	loop while( hashtb <> NULL )
+
+	dim as FBSYMCHAIN ptr imp_chain = hashLookupEx( @symb.imphashtb, id, index )
+	symbDumpChain( imp_chain )
+	
+end sub
 #endif '' __FB_DEBUG__
 
 dim shared as zstring ptr classnamesPretty(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIMPORT) = _
