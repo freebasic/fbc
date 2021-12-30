@@ -48,6 +48,14 @@ declare sub         symbKeywordTypeInit ( )
 
 declare function hGetNamespacePrefix( byval sym as FBSYMBOL ptr ) as string
 
+declare function hLookupImportList _
+	( _
+		byval ns as FBSYMBOL ptr, _
+		byval id as const zstring ptr, _
+		byval index as uinteger _
+	) as FBSYMCHAIN ptr
+
+
 ''globals
 	dim shared as SYMBCTX symb
 
@@ -869,6 +877,15 @@ function symbNewChainpool _
 
 end function
 
+/'
+!!!TODO!!! - clean up code for lookups
+refactor the duplicated code in:
+	- symbLookup108()
+	- symbLookupNS()
+	- symbLookupTypeNS()
+	- symbLookup()
+'/
+
 '':::::
 function symbLookup108 _
 	( _
@@ -943,7 +960,7 @@ function symbLookup108 _
 end function
 
 '':::::
-function symbLookup _
+function symbLookupNS _
 	( _
 		byval id as zstring ptr, _
 		byref tk as FB_TOKEN, _
@@ -951,7 +968,7 @@ function symbLookup _
 	) as FBSYMCHAIN ptr
 
 	static as zstring * FB_MAXNAMELEN+1 sname
-	dim as FBSYMBOL ptr firstglobal = NULL
+	dim as FBSYMBOL ptr first_ancestor = NULL
 
 	'' assume it's an unknown identifier
 	tk = FB_TK_ID
@@ -966,7 +983,7 @@ function symbLookup _
 	dim as FBHASHTB ptr hashtb = any
 
 	'' symbLookup() is used where we don't have an explicit namespace
-	'' and we need to use the context of the lexer to start our search
+	'' and we need to use the context of the lexer/parser to start our search
 	''
 	'' Make multiple passes on the hash lists to find the symbol.
 	'' Because symbols are added in the order that they are defined,
@@ -991,10 +1008,6 @@ function symbLookup _
 		hashtb = hashtb->prev
 	loop while( hashtb <> NULL )
 
-	'' use old lookup method from fbc 1.08.x and earlier?
-	if( env.clopt.lookup108 ) then
-		return symbLookup108( id, tk, tk_class )
-	end if
 	'' any symbol not in the global namespace or we are already in the global namespace?
 	'' check the whole list before we check the imports
 	hashtb = symb.hashlist.tail
@@ -1011,8 +1024,8 @@ function symbLookup _
 				if( symbGetCurrentNamespc( ) = @symbGetGlobalNamespc( ) ) then
 					return symbNewChainpool( sym )
 				else
-					if( firstglobal = NULL ) then
-						firstglobal = sym
+					if( first_ancestor = NULL ) then
+						first_ancestor = sym
 					end if
 				end if
 			end if
@@ -1025,44 +1038,187 @@ function symbLookup _
 	dim as FBSYMCHAIN ptr imp_chain = hashLookupEx( @symb.imphashtb, id, index )
 	if( imp_chain <> NULL ) then
 
-		if( firstglobal ) then
-			'' If we have found both imports and a global, then check the imports.
-			'' If the import is actually a member of an  enum, then we'd prefer to
-			'' return the global instead. If the anonymous enum is not the first 
-			'' listed in the chain, then assume that the symbFindBy*() calls will
-			'' deal with finding a suitable symbol.
+		'' We have both an ancestor (which was reached directly in the current
+		'' namespace, plus we also have imports.
+		'' !!!TODO!!! scoped+non-eplicit enums are going to give us trouble here
+		'' because the enum member is imported in to the current namespace
+		'' The choices are:
+		'' - always return the first_ancestor found
+		'' - return the first_ancestor + imports, and give ambiguous errors
+		'' - something else where we search the imports for enums
+		'' For now, return the first ancestor and all imports
 
-			if( symbGetNamespace( imp_chain->sym ) <> NULL ) then
-				if( symbIsEnum( symbGetNamespace( imp_chain->sym ) ) ) then
-					return symbNewChainpool( firstglobal )
-				end if
-			end if
-
-#if 0
-			/'
-				not yet entirely known is if we should return a symbchain for
-				the global plus the imports.  This is what fbc < 1.09.0 did
-				but the look-ups were also broken then.  This note is left here 
-				as a hint if some future bug report is filed where we should expect
-				ambiguous access but didn't get it
-			'/
-			dim as FBSYMCHAIN ptr chain_ = symbNewChainpool( firstglobal )
+		if( first_ancestor ) then
+			dim as FBSYMCHAIN ptr chain_ = symbNewChainpool( first_ancestor )
 			chain_->next = imp_chain
 			return chain_
-#endif
 		end if
 
-		'' if we didn't find any global, then return the imports
+		'' No ancestor? Just return the imports.
 		return imp_chain
-	endif
+	end if
 
-	'' no imports too? then return the global (if we already found it)
-	if( firstglobal ) then
-		return symbNewChainpool( firstglobal )
+	'' no imports? return only the first ancestor (if we already found it)
+	if( first_ancestor ) then
+		return symbNewChainpool( first_ancestor )
 	end if
 
 	'' never found
 	return NULL
+
+end function
+
+'':::::
+function symbLookupTypeNS _
+	( _
+		byval id as zstring ptr, _
+		byref tk as FB_TOKEN, _
+		byref tk_class as FB_TKCLASS _
+	) as FBSYMCHAIN ptr
+
+	assert( symbGetCurrentNamespc( ) <> NULL )
+
+	static as zstring * FB_MAXNAMELEN+1 sname
+	dim as FBSYMBOL ptr first_ancestor = NULL
+
+	'' assume it's an unknown identifier
+	tk = FB_TK_ID
+	tk_class = FB_TKCLASS_IDENTIFIER
+
+	hUcase( *id, sname )
+	id = @sname
+
+	dim as uinteger index = hashHash( id )
+
+	'' for each nested hash tb, starting from last
+	dim as FBHASHTB ptr hashtb = any
+
+	'' symbLookup() is used where we don't have an explicit namespace
+	'' and we need to use the context of the lexer/parser to start our search
+	''
+	'' Make multiple passes on the hash lists to find the symbol.
+	'' Because symbols are added in the order that they are defined,
+	'' in some cases we can't just take the first symbol we find.
+
+	'' keyword?
+	hashtb = symb.hashlist.tail
+	do
+		dim as FBSYMBOL ptr sym = hashLookupEx( @hashtb->tb, id, index )
+		while( sym )
+			if( sym->class = FB_SYMBCLASS_KEYWORD ) then
+				tk = sym->key.id
+				tk_class = sym->key.tkclass
+				'' return if it's a KEYWORD or a OPERATOR token, they
+				'' can't never be redefined, even inside namespaces
+				if( tk_class <> FB_TKCLASS_QUIRKWD ) then
+					return symbNewChainpool( sym )
+				end if
+			end if
+			sym = sym->hash.next
+		wend
+		hashtb = hashtb->prev
+	loop while( hashtb <> NULL )
+
+	'' any symbol not in the global namespace or we are already in the global namespace?
+	'' check the whole list before we check the imports
+	hashtb = symb.hashlist.tail
+	do
+		dim as FBSYMBOL ptr sym = hashLookupEx( @hashtb->tb, id, index )
+		while( sym )
+			'' return if it's not the global ns (as in C++, any nested
+			'' symbol has precedence over any imported one, even if the
+			'' latter was imported in the current ns)
+			if( hashtb->owner <> @symbGetGlobalNamespc( ) ) then
+				return symbNewChainpool( sym )
+			else
+				'' also if we are at the global ns, no need to check the imports
+				if( symbGetCurrentNamespc( ) = @symbGetGlobalNamespc( ) ) then
+					return symbNewChainpool( sym )
+				else
+					if( first_ancestor = NULL ) then
+						first_ancestor = sym
+					end if
+				end if
+			end if
+			sym = sym->hash.next
+		wend
+		hashtb = hashtb->prev
+	loop while( hashtb <> NULL )
+
+	dim as FBSYMBOL ptr ns = symbGetCurrentNamespc( )
+
+	'' search in UDT's (TYPE or CLASS) hash tb first
+	dim as FBSYMBOL ptr sym = hashLookupEx( @symbGetCompHashTb( ns ).tb, id, index )
+
+	'' don't access local variables in an explicit namespace
+	while( sym )
+		if( symbIsLocal( sym ) and symbIsVar( sym ) ) then
+			sym = sym->hash.next
+		else
+			exit while
+		end if
+	wend
+
+	'' Found the symbol in the type's namespace?
+	if( sym ) then
+		dim as FBSYMCHAIN ptr chain_ = symbNewChainpool( sym )
+		return chain_
+	end if
+
+	'' Search the type's imports
+	if( (symbGetCompExt( ns ) <> NULL) and (symbGetCompImportHead( ns ) <> NULL) ) then
+		dim as FBSYMCHAIN ptr chain_ = hLookupImportList( ns, id, index )
+		if( chain_ ) then
+			'' return the first one
+			return symbNewChainpool( chain_->sym )
+		end if
+	end if
+
+	'' search all the imports?
+	dim as FBSYMCHAIN ptr imp_chain = hashLookupEx( @symb.imphashtb, id, index )
+	if( imp_chain <> NULL ) then
+
+		if( first_ancestor ) then
+			dim as FBSYMCHAIN ptr chain_ = symbNewChainpool( first_ancestor )
+			chain_->next = imp_chain
+			return chain_
+		end if
+
+		return imp_chain
+	end if
+
+	'' no imports? return only first ancestor (if we already found it)
+	if( first_ancestor ) then
+		return symbNewChainpool( first_ancestor )
+	end if
+
+	'' never found
+	return NULL
+
+end function
+
+'':::::
+function symbLookup _
+	( _
+		byval id as zstring ptr, _
+		byref tk as FB_TOKEN, _
+		byref tk_class as FB_TKCLASS _
+	) as FBSYMCHAIN ptr
+
+	'' use old lookup method from fbc 1.08.x and earlier?
+	if( env.clopt.lookup108 ) then
+		return symbLookup108( id, tk, tk_class )
+	end if
+
+	'' In a TYPE's namespace?
+	if( symbGetCurrentNamespc( ) <> NULL ) then
+		select case symbGetClass( symbGetCurrentNamespc( ) )
+		case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_CLASS
+			return symbLookupTypeNS( id, tk, tk_class )
+		end select
+	end if
+
+	return symbLookupNS( id, tk, tk_class )
 
 end function
 

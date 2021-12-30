@@ -1,6 +1,6 @@
 #include once "fbcunit.bi"
 
-#macro check( arg1, arg2 )
+#macro checkType( arg1, arg2 )
 	#if( typeof(arg1) = typeof(arg2) )
 		CU_PASS()
 	#else
@@ -8,74 +8,81 @@
 	#endif
 #endmacro
 
-#define toStr( arg ) #arg
-#define typeof2Str( arg ) toStr( typeof(arg) )
+'' define namespace names to allow short names
+'' in this source but avoid namespace collisions
+'' in other sources
+
+#define N  using_types_N
+#define P0 using_types_P0
+#define P1 using_types_P1
+#define P2 using_types_P2
+#define P3 using_types_P3
 
 type T
 	__ as integer
 end type
 
-namespace using_types_N
+namespace N
 	type T
 		__ as integer
 	end type
 end namespace
 
-namespace using_types_P0
+namespace P0
 	sub proc()
-		check( T, ..T )
+		checkType( T, ..T )
 	end sub
 end namespace
 
-namespace using_types_P1
+namespace P1
 	type T
 		__ as integer
 	end type
 	sub proc()
-		check( T, USING_TYPES_P1.T )
+		checkType( T, P1.T )
 	end sub
 end namespace
 
-namespace using_types_P2
-	using using_types_N
+namespace P2
+	using N
 	type T
 		__ as integer
 	end type
 	sub proc()
-		check( T, USING_TYPES_P2.T )
+		checkType( T, P2.T )
 	end sub
 end namespace
 
-namespace using_types_P3
+namespace P3
 	type T
 		__ as integer
 	end type
-	using using_types_N
+	using N
 	sub proc()
-		check( T, USING_TYPES_P3.T )
+		checkType( T, P3.T )
 	end sub
 end namespace
 
-namespace using_types_P4
-	using using_types_N
+namespace P4
+	using N
 	sub proc()
-		check( T, USING_TYPES_N.T )
+		checkType( T, ..T )
 	end sub
 end namespace
 
 private sub module_proc()
-	using using_types_P4
-	check( T, ..T )
+	using P4
+	checkType( T, ..T )
 end sub
 
 SUITE( fbc_tests.namespace_.using_types )
 
 	TEST( default )
-		using_types_P0.proc()
-		using_types_P1.proc()
-		using_types_P2.proc()
-		using_types_P3.proc()
-		using_types_P4.proc()
+		P0.proc()
+		P1.proc()
+		P2.proc()
+		P3.proc()
+		P4.proc()
 		module_proc()
 
 	END_TEST
