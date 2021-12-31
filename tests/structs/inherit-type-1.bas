@@ -131,7 +131,7 @@ private sub module_proc()
 
 	scope
 		dim x as N.A3.C
-		checkCall( x.method(), "N.PROC" )
+		checkCall( x.method(), "N.P.PROC" )
 	end scope
 
 end sub

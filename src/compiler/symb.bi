@@ -512,7 +512,7 @@ type FB_STRUCTEXT
 end type
 
 type FBS_STRUCT
-	'' extends FBNAMESCP
+	'' extends FBNAMESPC
 	ns              as FBNAMESPC
 
 	base            as FBSYMBOL_ ptr            '' base class

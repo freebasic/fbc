@@ -1100,100 +1100,128 @@ function symbLookupTypeNS _
 	'' Because symbols are added in the order that they are defined,
 	'' in some cases we can't just take the first symbol we find.
 
-	'' keyword?
-	hashtb = symb.hashlist.tail
-	do
-		dim as FBSYMBOL ptr sym = hashLookupEx( @hashtb->tb, id, index )
-		while( sym )
-			if( sym->class = FB_SYMBCLASS_KEYWORD ) then
-				tk = sym->key.id
-				tk_class = sym->key.tkclass
-				'' return if it's a KEYWORD or a OPERATOR token, they
-				'' can't never be redefined, even inside namespaces
-				if( tk_class <> FB_TKCLASS_QUIRKWD ) then
-					return symbNewChainpool( sym )
-				end if
-			end if
-			sym = sym->hash.next
-		wend
-		hashtb = hashtb->prev
-	loop while( hashtb <> NULL )
-
-	'' any symbol not in the global namespace or we are already in the global namespace?
-	'' check the whole list before we check the imports
-	hashtb = symb.hashlist.tail
-	do
-		dim as FBSYMBOL ptr sym = hashLookupEx( @hashtb->tb, id, index )
-		while( sym )
-			'' return if it's not the global ns (as in C++, any nested
-			'' symbol has precedence over any imported one, even if the
-			'' latter was imported in the current ns)
-			if( hashtb->owner <> @symbGetGlobalNamespc( ) ) then
-				return symbNewChainpool( sym )
-			else
-				'' also if we are at the global ns, no need to check the imports
-				if( symbGetCurrentNamespc( ) = @symbGetGlobalNamespc( ) ) then
-					return symbNewChainpool( sym )
-				else
-					if( first_ancestor = NULL ) then
-						first_ancestor = sym
+	scope
+		'' keyword?
+		hashtb = symb.hashlist.tail
+		do
+			dim as FBSYMBOL ptr sym = hashLookupEx( @hashtb->tb, id, index )
+			while( sym )
+				if( sym->class = FB_SYMBCLASS_KEYWORD ) then
+					tk = sym->key.id
+					tk_class = sym->key.tkclass
+					'' return if it's a KEYWORD or a OPERATOR token, they
+					'' can't never be redefined, even inside namespaces
+					if( tk_class <> FB_TKCLASS_QUIRKWD ) then
+						return symbNewChainpool( sym )
 					end if
 				end if
+				sym = sym->hash.next
+			wend
+			hashtb = hashtb->prev
+		loop while( hashtb <> NULL )
+	end scope
+
+	scope
+		'' Search locals - if we are in a procedure, and the symbol can be found
+		'' directly, return the first one on the top of the stack
+		hashtb = symb.hashlist.tail
+		do
+			dim as FBSYMBOL ptr sym = hashLookupEx( @hashtb->tb, id, index )
+			while( sym )
+				if( symbIsLocal( sym ) ) then
+					return symbNewChainpool( sym )
+				end if
+				sym = sym->hash.next
+			wend
+			hashtb = hashtb->prev
+		loop while( hashtb <> NULL )
+	end scope
+
+
+	scope
+		'' Search symbols in the UDT's namespace
+		dim as FBSYMBOL ptr ns = symbGetCurrentNamespc( )
+
+		'' search in UDT's (TYPE or CLASS) hash tb first
+		dim as FBSYMBOL ptr sym = hashLookupEx( @symbGetCompHashTb( ns ).tb, id, index )
+
+		'' don't access locals in a TYPE's namespace
+		while( sym )
+			if( symbIsLocal( sym ) ) then
+				sym = sym->hash.next
+			else
+				exit while
 			end if
-			sym = sym->hash.next
 		wend
-		hashtb = hashtb->prev
-	loop while( hashtb <> NULL )
 
-	dim as FBSYMBOL ptr ns = symbGetCurrentNamespc( )
-
-	'' search in UDT's (TYPE or CLASS) hash tb first
-	dim as FBSYMBOL ptr sym = hashLookupEx( @symbGetCompHashTb( ns ).tb, id, index )
-
-	'' don't access local variables in an explicit namespace
-	while( sym )
-		if( symbIsLocal( sym ) and symbIsVar( sym ) ) then
-			sym = sym->hash.next
-		else
-			exit while
-		end if
-	wend
-
-	'' Found the symbol in the type's namespace?
-	if( sym ) then
-		dim as FBSYMCHAIN ptr chain_ = symbNewChainpool( sym )
-		return chain_
-	end if
-
-	'' Search the type's imports
-	if( (symbGetCompExt( ns ) <> NULL) and (symbGetCompImportHead( ns ) <> NULL) ) then
-		dim as FBSYMCHAIN ptr chain_ = hLookupImportList( ns, id, index )
-		if( chain_ ) then
-			'' return the first one
-			return symbNewChainpool( chain_->sym )
-		end if
-	end if
-
-	'' search all the imports?
-	dim as FBSYMCHAIN ptr imp_chain = hashLookupEx( @symb.imphashtb, id, index )
-	if( imp_chain <> NULL ) then
-
-		if( first_ancestor ) then
-			dim as FBSYMCHAIN ptr chain_ = symbNewChainpool( first_ancestor )
-			chain_->next = imp_chain
+		'' Found the symbol in the type's namespace?
+		if( sym ) then
+			dim as FBSYMCHAIN ptr chain_ = symbNewChainpool( sym )
 			return chain_
 		end if
+	end scope
 
-		return imp_chain
-	end if
+	scope
+		'' Search symbols in the the type's imports, but only if inherieted from
+		'' a parent type - don't check imports from a normal namespace
 
-	'' no imports? return only first ancestor (if we already found it)
-	if( first_ancestor ) then
-		return symbNewChainpool( first_ancestor )
-	end if
+		'' we already know that the current namespace is a TYPE
+		dim as FBSYMBOL ptr ns = symbGetCurrentNamespc( )
+
+		if( (symbGetCompExt( ns ) <> NULL) and (symbGetCompImportHead( ns ) <> NULL) ) then
+			dim as FBSYMCHAIN ptr chain_ = hLookupImportList( ns, id, index )
+			dim as FBSYMBOL ptr sym = NULL
+
+			'' search UDT variables
+			while ( chain_ )
+				sym = chain_->sym
+				while( sym )
+					dim as FBSYMBOL ptr parent = symbGetParent( sym )
+					if( symbGetType( parent ) = FB_DATATYPE_STRUCT ) then
+						if( symbGetUDTBaseLevel( ns, parent ) > 0 ) then
+							return symbNewChainpool( chain_->sym )
+						end if
+					end if
+					sym = sym->hash.next
+				wend
+
+				chain_ = symbChainGetNext( chain_ )
+			wend
+
+		end if
+	end scope
+
+	scope
+		'' any symbol not in the global namespace or we are already in the global namespace?
+		'' check the whole list before we check the imports
+		hashtb = symb.hashlist.tail
+		do
+			dim as FBSYMBOL ptr sym = hashLookupEx( @hashtb->tb, id, index )
+			if( sym ) then
+				return symbNewChainpool( sym )
+			end if
+			hashtb = hashtb->prev
+		loop while( hashtb <> NULL )
+	end scope
+
+	scope
+		'' search the current namespace
+		dim as FBSYMBOL ptr ns = symbGetCurrentNamespc( )
+
+		if( (symbGetCompExt( ns ) <> NULL) and (symbGetCompImportHead( ns ) <> NULL) ) then
+			dim as FBSYMCHAIN ptr chain_ = hLookupImportList( ns, id, index )
+			if( chain_ ) then
+				'' return the first one
+				return symbNewChainpool( chain_->sym )
+			end if
+		end if
+	end scope
+
+	'' search all the imports
+	dim as FBSYMCHAIN ptr imp_chain = hashLookupEx( @symb.imphashtb, id, index )
 
 	'' never found
-	return NULL
+	return imp_chain
 
 end function
 
@@ -1344,6 +1372,9 @@ function symbLookupAt _
 
 	'' search in UDT's (NAMESPACE, TYPE, CLASS or ENUM) hash tb first
 	dim as FBSYMBOL ptr sym = hashLookupEx( @symbGetCompHashTb( ns ).tb, id, index )
+
+	'' !!!TODO!!! some imports won't make sense in an explicit namespace
+	'' for example this.proc() where proc() is imported from a plain old namespace
 
 	'' don't access local variables in an explicit namespace
 	while( sym )

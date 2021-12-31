@@ -144,7 +144,7 @@ namespace N
 		end type
 
 		sub C.method()
-			proc()  '' << ambiguous N.P.PROC, B.PROC, E.PROC
+			proc()
 		end sub
 
 		sub method2()
