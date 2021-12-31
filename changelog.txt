@@ -97,6 +97,7 @@ Version 1.09.0
 - sf.net #892: Bug when default calling via a pointer to a 'Sub' defined with the only 'Any Ptr' - fbc now differentiates between function pointers that have different numbers and positions of optional parameters
 - sf.net #948: Overriding class members doesn't work inside methods of further-extended subclasses
 - sf.net #948: Duplicated class members inherit from the base class instead of incorrectly from the namespace
+- compiler fault when accessing this.member, where member is incorrectly inherited from a namespace (i.e. not derived from UDT) and report 'Element not defined' instead
 
 
 Version 1.08.0
