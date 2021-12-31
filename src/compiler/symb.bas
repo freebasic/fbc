@@ -1162,8 +1162,8 @@ function symbLookupTypeNS _
 	end scope
 
 	scope
-		'' Search symbols in the the type's imports, but only if inherieted from
-		'' a parent type - don't check imports from a normal namespace
+		'' Search symbols in the the UDT's imports, but only if inherieted from
+		'' a parent UDT - don't check imports from non-UDT namespaces
 
 		'' we already know that the current namespace is a TYPE
 		dim as FBSYMBOL ptr ns = symbGetCurrentNamespc( )
@@ -1172,7 +1172,7 @@ function symbLookupTypeNS _
 			dim as FBSYMCHAIN ptr chain_ = hLookupImportList( ns, id, index )
 			dim as FBSYMBOL ptr sym = NULL
 
-			'' search UDT variables
+			'' search UDT members
 			while ( chain_ )
 				sym = chain_->sym
 				while( sym )
@@ -1192,8 +1192,8 @@ function symbLookupTypeNS _
 	end scope
 
 	scope
-		'' any symbol not in the global namespace or we are already in the global namespace?
-		'' check the whole list before we check the imports
+		'' it's not any local or inherited UDT member, so we can now
+		'' just search the current namespace for the first symbol found
 		hashtb = symb.hashlist.tail
 		do
 			dim as FBSYMBOL ptr sym = hashLookupEx( @hashtb->tb, id, index )
@@ -1204,23 +1204,10 @@ function symbLookupTypeNS _
 		loop while( hashtb <> NULL )
 	end scope
 
-	scope
-		'' search the current namespace
-		dim as FBSYMBOL ptr ns = symbGetCurrentNamespc( )
-
-		if( (symbGetCompExt( ns ) <> NULL) and (symbGetCompImportHead( ns ) <> NULL) ) then
-			dim as FBSYMCHAIN ptr chain_ = hLookupImportList( ns, id, index )
-			if( chain_ ) then
-				'' return the first one
-				return symbNewChainpool( chain_->sym )
-			end if
-		end if
-	end scope
-
-	'' search all the imports
+	'' still nothing? just return all the imports, which should only be from
+	'' using statements
 	dim as FBSYMCHAIN ptr imp_chain = hashLookupEx( @symb.imphashtb, id, index )
 
-	'' never found
 	return imp_chain
 
 end function
