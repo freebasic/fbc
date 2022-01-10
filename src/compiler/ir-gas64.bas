@@ -3785,7 +3785,7 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 		return
 	end if
 
-	if v1->dtype = FB_DATATYPE_SINGLE then
+	if tempodtype = FB_DATATYPE_SINGLE then
 		if v1->typ=IR_VREGTYPE_REG then
 			asm_code("movd xmm0, "+op1)
 		else
@@ -3811,6 +3811,7 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 				save_call("atanf",vr,vrreg)
 			case AST_OP_SQRT
 				asm_code("sqrtss	xmm0, xmm0") ''todo could do directly with op1
+				restore_vrreg(vr,vrreg)
 			case AST_OP_ABS
 				asm_code("mov eax, 0x7FFFFFFF")
 				asm_code("movd xmm1, eax")
@@ -3842,7 +3843,7 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 		return
 	end if
 	''some case for integer
-	if op=AST_OP_ABS And v1->dtype <> FB_DATATYPE_DOUBLE then
+	if op=AST_OP_ABS And tempodtype <> FB_DATATYPE_DOUBLE then
 		asm_code("mov rax, "+op1)
 
 		if reghandle(KREG_RDX)<>KREGFREE then ''as rdx is used need to transfer its contain to another register
@@ -3868,7 +3869,7 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 		return
 	end if
 
-	if op=AST_OP_NEG And v1->dtype <> FB_DATATYPE_DOUBLE then
+	if op=AST_OP_NEG And tempodtype <> FB_DATATYPE_DOUBLE then
 
 		if vr<>0 and v1->typ<>IR_VREGTYPE_REG then
 			asm_code("mov "+*regstrq(vrreg)+", "+op1)
@@ -3880,7 +3881,7 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 		return
 	end if
 
-	if op=AST_OP_SGN And v1->dtype <> FB_DATATYPE_DOUBLE then
+	if op=AST_OP_SGN And tempodtype <> FB_DATATYPE_DOUBLE then
 
 		if op1<>*regstrq(KREG_RCX) then
 			if reghandle(KREG_RCX)<>KREGFREE then ''as rcx is used need to transfer its contain to another register
