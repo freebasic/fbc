@@ -3232,15 +3232,18 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 
 	select case( fbGetOption( FB_COMPOPT_BACKEND ) )
 	case FB_BACKEND_GCC
+		dim as boolean ism64target = false
 		select case( fbGetCpuFamily( ) )
 		case FB_CPUFAMILY_X86
 			ln += "-m32 "
 		case FB_CPUFAMILY_X86_64
 			ln += "-m64 "
+			ism64Target = True
 		case FB_CPUFAMILY_PPC
 			ln += "-m32 "
 		case FB_CPUFAMILY_PPC64, FB_CPUFAMILY_PPC64LE
 			ln += "-m64 "
+			ism64Target = True
 		end select
 
 		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
@@ -3315,7 +3318,15 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		ln += "-fwrapv "
 
 		'' Avoid gcc exception handling bloat
-		ln += "-fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables "
+		ln += "-fno-exceptions -fno-asynchronous-unwind-tables "
+
+		'' But enable unwind-tables on x64, these GREATLY increase the accuracy of
+		'' debuggers and crash tools across platforms for minimal overhead
+		if ( ism64Target ) then
+			ln += "-funwind-tables "
+		else
+			ln += "-fno-unwind-tables "
+		end if
 
 		'' Prevent format string errors on gcc 9.x. (enabled by default with '-Wall')
 		'' TODO: fbc currently emits the ZSTRING type as 'uint8' when it
@@ -3352,7 +3363,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			'' -march=name
 			'' Specify the name of the target architecture and,
 			'' optionally, one or more feature modifiers. This option
-			'' has the form -march=arch{+[no]feature}*.
+			'' has the form -march=arch{+[no]feature}*.
 			''
 			'' The permissible values for arch are
 			'' 'armv8-a'
