@@ -333,7 +333,6 @@ __CONT_DBG_PRINT("Copying & list elements starting at list position & to an arra
 		If (arrayStart < arrLBound) OrElse (arrayStart > arrUBound) Then
 			__CONT_DBG_PRINT("arrayStart (&) is less than array LBound (&) or larger than the array UBound (&), ignoring CopyTo", arrayStart; arrLBound; arrUBound)
 			__CONT_Internals_SetError(6)
-			Print "Exiting second exit sub"
 			Exit Sub
 		End If
 		'' If the array is dimensioned, we won't resize it so cap to its ubound

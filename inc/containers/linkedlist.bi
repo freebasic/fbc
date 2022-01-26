@@ -238,7 +238,6 @@ End Constructor
 
 Private Constructor _LinkedListType(ByRef objects As _ContainerInterfaceType)
 	Constructor(@objects)
-	Print "ContainerRef cons"
 End Constructor
 
 Private Destructor _LinkedListType
