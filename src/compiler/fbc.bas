@@ -1118,6 +1118,24 @@ private function hLinkFiles( ) as integer
 		ldcline += " -macosx_version_min 10.4"
 	end if
 
+	'' This is required for 64-bit modules on *nix-y platforms
+	'' for the unwind tables to have any effect
+	'' Windows doesn't need this option
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
+	     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD, _
+	     FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS, _
+	     FB_COMPTARGET_DARWIN
+		dim as long outtype = fbGetOption( FB_COMPOPT_OUTTYPE )
+		if outtype = FB_OUTTYPE_EXECUTABLE OrElse outtype = FB_OUTTYPE_DYNAMICLIB Then
+			dim as long cpufamily = fbGetCpuFamily( )
+			if cpufamily = FB_CPUFAMILY_X86_64 OrElse cpufamily = FB_CPUFAMILY_AARCH64 OrElse _
+			   cpuFamily = FB_CPUFAMILY_PPC64 OrElse cpufamily = FB_CPUFAMILY_PPC64LE Then
+				ldcline += " --eh-frame-hdr"
+			end if
+		end if
+	end select
+
 	'' extra options
 	ldcline += " " + fbc.extopt.ld
 
