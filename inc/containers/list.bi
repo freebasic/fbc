@@ -1,7 +1,7 @@
 #include once "_typemacros.bi"
+#include once "_helpers.bi"
 #include once "ilist.bi"
 #include once "listiterator.bi"
-#include once "_helpers.bi"
 
 #pragma once
 
@@ -28,7 +28,7 @@ __FB_UNQUOTE__(__FB_EVAL__("#define " __FB_QUOTE__(_TypeDefine()) " 1"))
 #Print __FB_JOIN__(Containers: Generating-, _ListType)
 #endif
 
-#define Min(x, y) (IIf(x < y, x, y))
+#define _Min(x, y) (IIf(x < y, x, y))
 
 Type _ListType extends _ListInterfaceType
 Private:
@@ -44,6 +44,7 @@ Private:
 
 Public:
     Declare Constructor
+    Declare Constructor(initialCapacity As Long)
     Declare Constructor(Byref copy As _ListType)
     Declare Constructor(ByRef iterator As _IteratorInterfaceType)
     Declare Constructor(ByVal iterator As _IteratorInterfaceType Ptr)
@@ -89,19 +90,23 @@ Public:
     '' Also Operator Len()
     
 #ifdef FB_CONTAINER_DEBUG
-	Declare Sub PrintContainer() Override
+    Declare Sub PrintContainer() Override
 #endif
 
 End Type
 
 Private Constructor _ListType()
-__CONT_DBG_PRINT("Default constructor", 0)
-    Reserve(16)
+    Constructor(16)
+End Constructor
+
+Private Constructor _ListType(initialCapacity As Long)
+__CONT_DBG_PRINT("Capacity constructor for & items", initialCapacity)
+    Reserve(initialCapacity)
     _count = 0
 End Constructor
 
 Private Constructor _ListType(Byref copy As _ListType)
-__CONT_DBG_PRINT("Copy constructor", 0)
+__CONT_DBG_PRINT("Copy constructor")
 	copy.CopyTo(_objects())
 	Reserve(copy.Capacity)
 	_count = copy.Count
@@ -109,7 +114,7 @@ End Constructor
 
 Private Constructor _ListType(ByVal iterator As _IteratorInterfaceType Ptr)
 	Constructor()
-__CONT_DBG_PRINT("Iterator constructor", 0)
+__CONT_DBG_PRINT("Iterator constructor")
     
     Add(iterator)
     
@@ -333,7 +338,7 @@ __CONT_DBG_PRINT("Copying & list elements starting at list position & to an arra
 		End If
 		'' If the array is dimensioned, we won't resize it so cap to its ubound
 		dim availableArraySlots As Long = (arrUBound - arrayStart) + 1
-        listCount = Min(listCount, availableArraySlots)
+        listCount = _Min(listCount, availableArraySlots)
         
     Else '' non-dimensioned array
     
@@ -521,7 +526,7 @@ __CONT_DBG_PRINT("Index (&) was out of bounds (0-&) or howMany (&) was 0 or nega
 		Exit Sub
 	End If
     
-    howMany = Min(n - index, howMany)
+    howMany = _Min(n - index, howMany)
     
     if howMany > 0 Then
     
@@ -542,11 +547,11 @@ End Sub
 
 Private Sub _ListType.Resize(ByVal newSize As Long)
 __CONT_DBG_PRINT("Resizing from & to &", Capacity; newSize)
-	Assert(newSize >= 0)
-	If newSize < 0 Then
-		__CONT_Internals_SetError(1)
-		Exit Sub
-	End If
+    Assert(newSize >= 0)
+    If newSize < 0 Then
+        __CONT_Internals_SetError(1)
+        Exit Sub
+    End If
     Reserve(newSize + 16)
     _count = newSize
     
@@ -597,11 +602,13 @@ Private Sub _ListType.PrintContainer()
 #if ((__FB_Is_BuiltIn(FBType)) OrElse (__FB_Is_Ptr(FBType)))
     Dim i As Long, n As Long = Count
     For i = 0 To n - 1
-        Print Using "&) &, "; i; _objects(i);
+        Print Using "&) &, "; i; Str(_objects(i))
     Next
 #endif
 End Sub
 #endif '' FB_CONTAINER_DEBUG
+
+#undef _Min
 
 #endif '' __FB_QUOTE__(_TypeDefine()) <> "1"
 
@@ -612,7 +619,6 @@ End Sub
 #undef _IteratorInterfaceType
 #undef _TypeDefine
 #undef _PassType
-#undef Min
 
 #endmacro '' __CONT_DefineListOf_
 

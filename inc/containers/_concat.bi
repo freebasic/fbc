@@ -55,3 +55,15 @@
 #define __MAC_LAST_ARG8(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) arg8
 #define __MAC_LAST_ARG9(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) arg9
 #define __MAC_LAST_ARG10(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10) arg10
+
+'' Replaces the last arg of a sequence
+#define __MAC_REPLACE_LAST_ARG1(arg1, newArg) newArg
+#define __MAC_REPLACE_LAST_ARG2(arg1, arg2, newArg) arg1, newArg
+#define __MAC_REPLACE_LAST_ARG3(arg1, arg2, arg3, newArg) arg1, arg2, newArg
+#define __MAC_REPLACE_LAST_ARG4(arg1, arg2, arg3, arg4, newArg) arg1, arg2, arg3, newArg
+#define __MAC_REPLACE_LAST_ARG5(arg1, arg2, arg3, arg4, arg5, newArg) arg1, arg2, arg3, arg4, newArg
+#define __MAC_REPLACE_LAST_ARG6(arg1, arg2, arg3, arg4, arg5, arg6, newArg) arg1, arg2, arg3, arg4, arg5, newArg
+#define __MAC_REPLACE_LAST_ARG7(arg1, arg2, arg3, arg4, arg5, arg6, arg7, newArg) arg1, arg2, arg3, arg4, arg5, arg6, newArg
+#define __MAC_REPLACE_LAST_ARG8(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, newArg) arg1, arg2, arg3, arg4, arg5, arg6, arg7, newArg
+#define __MAC_REPLACE_LAST_ARG9(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, newArg) arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, newArg
+#define __MAC_REPLACE_LAST_ARG10(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, newArg) arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, newArg

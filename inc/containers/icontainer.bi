@@ -4,17 +4,16 @@
 
 #pragma once
 
-'' Turn debug on if compiling with -exx
-#if (__FB_ERR__ And 7) = 7
-#define FB_CONTAINER_DEBUG
-#endif
-
-#if defined(FB_CONTAINER_DEBUG) OrElse defined(FB_CONTAINER_LOG_CALLS)
+#if defined(FB_CONTAINER_LOG_CALLS)
 #macro __CONT_DBG_PRINT(str, params...) 
-If __CONT_Internals.g_stopRecursiveLoggingFlag = False Then
-    __CONT_Internals.g_stopRecursiveLoggingFlag = True
-	Print Using "FBContainerDbg: &, " & str; __FUNCTION__; params
-	__CONT_Internals.g_stopRecursiveLoggingFlag = false
+If ..__CONT_Internals.g_stopRecursiveLoggingFlag = False Then
+    ..__CONT_Internals.g_stopRecursiveLoggingFlag = True
+#if __FB_ARG_COUNT__(params) > 0
+    Print Using "FBContainerDbg: & " str; __FUNCTION__; params
+#else
+    Print Using "FBContainerDbg: & " str; __FUNCTION__
+#endif
+    ..__CONT_Internals.g_stopRecursiveLoggingFlag = False
 End If
 #endmacro
 #else
@@ -39,7 +38,7 @@ __FB_UNQUOTE__(__FB_EVAL__("#define " __FB_QUOTE__(_TypeDefine()) " 1"))
 
 Type _ContainerInterfaceType extends Object
 
-	Declare abstract Sub Clear()
+    Declare abstract Sub Clear()
     Declare abstract Property Count() As Long
     Declare abstract Sub CopyTo(newData() As FBType)
     Declare abstract Function Contains(_PassType element As FBType) As Boolean
@@ -47,7 +46,7 @@ Type _ContainerInterfaceType extends Object
 #ifdef FB_CONTAINER_DEBUG
     Declare abstract Sub PrintContainer()
 #endif
-	Declare virtual Destructor()
+    Declare virtual Destructor()
 
 End Type
 
@@ -57,11 +56,11 @@ End Destructor
 Namespace __CONT_Internals
 
 Private Sub ContainerToArray Overload (ByVal pContainer As _ContainerInterfaceType Ptr, newData() As FBType)
-	If pContainer = 0 OrElse pContainer->Count = 0 Then
-		__CONT_DBG_PRINT("Container (&) was null or empty, not copying", Hex(pContainer))
-		__CONT_Internals_SetError(1)
-		Exit Sub
-	End If
+    If pContainer = 0 OrElse pContainer->Count = 0 Then
+        __CONT_DBG_PRINT("Container (&) was null or empty, not copying", Hex(pContainer))
+        __CONT_Internals_SetError(1)
+        Exit Sub
+    End If
     Dim pIterator As _IteratorInterfaceType Ptr = pContainer->GetIterator()
     dim toCopy As Long = pContainer->Count
     dim arrUBound As Long

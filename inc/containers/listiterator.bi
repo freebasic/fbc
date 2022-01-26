@@ -31,12 +31,12 @@ Public:
     Declare Constructor(ByVal parent As _ListInterfaceType Ptr)
     Declare Constructor()
     Declare Operator For()
-	Declare Operator Next(ByRef cond As _ListIteratorType) As Integer
-	Declare Operator Step()
+    Declare Operator Next(ByRef cond As _ListIteratorType) As Integer
+    Declare Operator Step()
 	
-	Declare Function Advance() As Boolean Override
-	Declare Function Item() Byref As FBType Override
-	Declare Sub Reset() Override
+    Declare Function Advance() As Boolean Override
+    Declare Function Item() Byref As FBType Override
+    Declare Sub Reset() Override
 End Type
 
 Private Constructor _ListIteratorType(ByVal parent As _ListInterfaceType Ptr)

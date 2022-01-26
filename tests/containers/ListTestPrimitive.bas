@@ -1,5 +1,5 @@
 ''#define FB_CONTAINER_DEBUG 1
-#include "../../inc/containers/List.bi"
+#include "../../inc/containers/list.bi"
 #include "ContainerTestPrereqs.bi"
 #include "fbcunit.bi"
 

@@ -1,4 +1,4 @@
-#define FB_CONTAINER_DEBUG 1
+''#define FB_CONTAINER_DEBUG 1
 #include "../../inc/containers/bitcontainer.bi"
 #include "fbcunit.bi"
 

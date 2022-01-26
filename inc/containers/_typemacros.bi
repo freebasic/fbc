@@ -19,30 +19,28 @@
 '' Smushes all args together into one long string 
 '' So for __FB_MakePPType(MyNamespace, MySecondNamespace, MyType)
 '' Produce MyNamespaceMySecondNamespaceMyType
-#macro __FB_MakePPType_InternalPtr(args...)
-
-'' concat all but the last arg, and do that manually with Ptr
-__FB_JOIN__( _
-    __FB_JOIN__( _
-        __MAC_CONCAT_ARG_LIST_BUT_LAST, _
-        __FB_ARG_COUNT__(args) _
-    )(args), _
-    __FB_JOIN__(__FB_Ptr_Base_Type(__FB_JOIN__(__MAC_LAST_ARG, __FB_ARG_COUNT__(args))(args)), Ptr) _
-)
-
-#endmacro
-
-'' Smushes all args together into one long string 
-'' So for __FB_MakePPType(MyNamespace, MySecondNamespace, MyType)
-'' Produce MyNamespaceMySecondNamespaceMyType
 #macro __FB_MakePPType_InternalBase(args...)
-
 '' No ptrs, just concat everything
 __FB_JOIN__( _
     __MAC_CONCAT_ARG_LIST, _
     __FB_ARG_COUNT__(args) _
 ) (args)
 
+#endmacro
+
+'' Replaces the last arg with out smushed together pointer type
+'' then throws the whole lot to the non-ptr version to concat everything
+#macro __FB_MakePPType_InternalPtr(args...)
+__FB_MakePPType_InternalBase( _
+    __FB_JOIN__( _
+        __MAC_REPLACE_LAST_ARG, _
+        __FB_ARG_COUNT__(args) _
+    ) _
+    ( _
+        args, _
+        __FB_JOIN__(__FB_Ptr_Base_Type(__FB_JOIN__(__MAC_LAST_ARG, __FB_ARG_COUNT__(args))(args)), Ptr) _
+    ) _
+)
 #endmacro
 
 '' adds PTR to the end of the type name, then extracts what's to the right of Ptr
@@ -55,7 +53,6 @@ __FB_JOIN__( _
 '' Produce MyNamespaceMySecondNamespaceMyType
 '' Works with ptrs too
 #macro __FB_MakePPType(args...)
-
 __FB_JOIN__( _
     __FB_MakePPType_Internal, _
     __FB_GetTypePtrOrBase( _
@@ -63,7 +60,7 @@ __FB_JOIN__( _
 			__MAC_LAST_ARG, _
 			__FB_ARG_COUNT__(args) _
 		)(args) _
-	) _
+    ) _
 )(args)
 
 #endmacro
@@ -79,8 +76,18 @@ __FB_JOIN__(__MAC_JOIN_ARG_LIST, __FB_ARG_COUNT__(args))(.,args)
 #if  __FB_Is_Integer(Type) OrElse __FB_Is_Float(Type) OrElse __FB_Is_Ptr(Type)
 __FB_UNQUOTE__(__FB_EVAL__("#define " __FB_QUOTE__(Name) " ByVal"))
 #else
-__FB_UNQUOTE__(__FB_EVAL__("#define " __FB_QUOTE__(Name) " "))
+__FB_UNQUOTE__(__FB_EVAL__("#define " __FB_QUOTE__(Name) " ByRef"))
 #endif
 #endmacro
 
 #define __FB_MakeTypeName(BaseType, UserType) __FB_JOIN__(BaseType, UserType)
+
+#define __FB_Unwrap(x) x
+
+#define __FB_MakeAssocTypeName(key, value) __FB_MakeTypeName( __FB_MakePPType key, __FB_MakePPType value)
+
+'' Turn debug on if compiling with -exx
+#if (__FB_ERR__ And 7) = 7
+#define FB_CONTAINER_DEBUG
+#endif
+
