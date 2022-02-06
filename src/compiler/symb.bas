@@ -3123,12 +3123,12 @@ function symbDumpToStr _
 	function = s
 end function
 
-sub symbDump( byval sym as FBSYMBOL ptr )
+sub symbDump( byval sym as FBSYMBOL ptr, byval verbose as integer = 0 )
 	print "symbDump [" + hex( sym ) + "]:"
 	if( sym = NULL ) then
 		exit sub
 	end if
-	print symbDumpToStr( sym )
+	print symbDumpToStr( sym, verbose )
 end sub
 
 sub symbDumpNamespace( byval ns as FBSYMBOL ptr )
@@ -3197,7 +3197,8 @@ end sub
 sub symbDumpLookup( byval id as zstring ptr )
 
 	static as zstring * FB_MAXNAMELEN+1 sname
-	hUcase( *id, sname )
+	'' hUcase( *id, sname )
+	sname = *id
 	id = @sname
 
 	print "symbol: " & *id

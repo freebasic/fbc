@@ -2661,7 +2661,7 @@ declare function symbDumpToStr _
 		byval verbose as boolean = false _
 	) as string
 
-declare sub symbDump( byval s as FBSYMBOL ptr )
+declare sub symbDump( byval s as FBSYMBOL ptr, byval verbose as integer = 0 )
 declare sub symbDumpNamespace( byval ns as FBSYMBOL ptr )
 declare sub symbDumpChain( byval chain_ as FBSYMCHAIN ptr )
 declare sub symbDumpLookup( byval id as zstring ptr )
