@@ -1,0 +1,747 @@
+{{fbdoc item="title" value="Identifier Look-ups in namespaces and types"}}----
+When referencing to an **identifier** is encountered in a program, a **look-up** is performed to locate the declaration that introduced that identifier.
+
+**Preamble:**
+
+	The identifiers to look-up can be unqualified or qualified:
+		**""-""** An unqualified identifier is an identifier that does not have a prefix to specify what scope it comes from.
+		**""-""** A qualified identifier includes a prefix to clarify the interpretive scope by overriding the default scope.
+
+{{fbdoc item="section" value="Scope priority hierarchy"}}
+	Unqualified identifier look-ups verify the priority hierarchy as follows:
+		- [1] Current ##[[KeyPgNamespace|Namespace]]##/##[[KeyPgType|Type]]##.
+		- [2] Base Types (by ##[[KeyPgExtends|Extends]]##), ranked from closest to furthest in inheritance hierarchy.
+		- [3] Parent Namespaces (by nesting), ranked from closest to furthest in ancestry hierarchy (including global namespace: always furthest in hierarchy).
+		- [4] Imported Namespaces (by ##[[KeyPgUsing|Using]]##), without hierarchy between them (regardless of their respective level of nesting).
+
+		
+		Unqualified identifiers for look-up can be:
+			**""-""** Variable identifiers.
+				=> Look-up order: [1], [2], [3], [4].
+			**""-""** Procedure identifiers.
+				=> Look-up order: [1], [2], [3], [4].
+			**""-""** Type/Union identifiers.
+				=> Look-up order: [1], [3], [4].
+			**""-""** Enum identifiers, not their field symbols alone.
+				=> Look-up order: [1], [3], [4].
+				
+	If a qualified identifier with a prefix referring to a namespace is used instead of an unqualified identifier, the previous rules for unqualified identifiers are amended as follows:
+		- The look-up begins at the level of the namespace corresponding to the specified prefix (as in [1]).
+		- Failing that, then only namespaces imported into this namespace can be candidates for the look-up (as in [4]).
+		- But never the parent namespaces of this namespace nor also the global namespace can be candidates (not as in [3]).
+		=> Look-up order: [1], [4].
+		
+	If a qualified identifier with a prefix (##object-name/[[KeyPgThis|This]]## or ##[[KeyPgBase|Base]]##) referring to a type is used instead of an unqualified identifier, the previous rules for unqualified identifiers are amended as follows:
+		- The look-up begins at the level of the type or base type depending on the specified prefix ##object-name/[[KeyPgThis|This]]## or ##[[KeyPgBase|Base]]## (similarly to [1]).
+		- Failing that, then only higher base types from closest to furthest can be successively candidates for the look-up (as in [2]).
+		- But never any namespaces, the current also excluded, can be candidates (not as in [3] or [4]).
+		=> Look-up order: [1], [2].
+
+{{fbdoc item="section" value="Full process"}}
+	The full process simplifies the problem by dealing with it in two successive phases:
+		- Using the scope priority hierarchy rules above, selection of a single scope among all those which are accessible by only taking into account the identifier for look-up, regardless of the signature supplied by the caller (if at least two scopes containing this identifier have equivalent accessibility priority, then the process is stopped with an ambiguity status).
+		- Within the single scope retained if it exists, one final overload resolution taking into account the full signature is carried out (if there is no compatibility with the declared signature(s), the process is stopped without testing another accessible scope).
+
+		
+	The problem is thus simplified to one single full overload resolution within a same scope (instead of a full overload resolution within each scope candidate, and then the difficult choice of the best result among the scope candidates).
+	
+	The coding of a very optimized resolution process (the best of human intelligence) for a procedure identifier is cumbersome, because having to take into account from the start the complete signature of the called procedure (identifier of the procedure + type and number of parameters + calling convention + return type if it exists).
+	In addition, it must be taken into account that the signature deduced from the call may not necessarily be identical but just compatible with certain declared ones in the scope candidates.
+	
+	__Identifier look-ups for the overload non-member operators__
+		Currently, the look-up for the overload non-member operator identifiers is simplified by the fact that the compiler always define these operators in the global namespace even if the user declared them in named namespaces. 
+		But the global namespace is always a scope candidate when looking-up for a non-member overload operator identifier from another scope, because this operator identifier cannot be used with a qualifier prefix but always as an unqualified identifier (seen from the operator call, the global namespace is either the current namescape or a parent namescape).
+		
+	__Identifier look-ups for the Using commands__
+		The look-up for the Using command identifiers follows rules similar to those of a Type.
+
+{{fbdoc item="section" value="Examples"}}
+	The following four codes test different look-ups both for one unqualified and one qualified identifier of procedures defined in different scope cases (from the highest to the lowest priority hierarchy):
+		{{fbdoc item="filename" value="examples/manual/proguide/lookups/lookup01.bas"}}%%(freebasic)
+Sub duplicateSub()
+	Print "   ..duplicateSub"
+End Sub
+
+Namespace M
+	Sub duplicateSub()
+		Print "   M.duplicateSub"
+	End Sub
+End Namespace
+
+Namespace N
+	Sub duplicateSub()
+		Print "   N.duplicateSub"
+	End Sub
+	Namespace P
+		Using M
+		Sub duplicateSub()
+			Print "   N.P.duplicateSub"
+		End Sub
+		Sub test()
+			Using M  '' useless, but just to demonstrate that does not increase priority level of imported namespace 
+			duplicateSub()
+		End Sub
+	End namespace
+End Namespace
+
+Print "From Namespace:"
+' "N.P.test()" calls the unqualified identifier "duplicateSub"
+' "N.P.duplicateSub()" calls the qualified identifier "N.P.duplicateSub"
+
+N.P.test()               '' "N.P.duplicateSub" expected : in (1) current namespace/type
+N.P.duplicateSub()       '' "N.P.duplicateSub" expected : in (1) current namespace/type
+
+Print
+Sleep
+%%
+		{{fbdoc item="filename" value="examples/manual/proguide/lookups/lookup02.bas"}}%%(freebasic)
+Sub duplicateSub()
+	Print "   ..duplicateSub"
+End Sub
+
+Namespace M
+	Sub duplicateSub()
+		Print "   M.duplicateSub"
+	End Sub
+End Namespace
+
+Namespace N
+	Sub duplicateSub()
+		Print "   N.duplicateSub"
+	End Sub
+	Namespace P
+		Using M
+		'Sub duplicateSub()
+		'    Print "   N.P.duplicateSub"
+		'End Sub
+		Sub test()
+			Using M  '' useless, but just to demonstrate that does not increase priority level of imported namespace 
+			duplicateSub()
+		End Sub
+	End namespace
+End Namespace
+
+Print "From Namespace:"
+' "N.P.test()" calls the unqualified identifier "duplicateSub"
+' "N.P.duplicateSub()" calls the qualified identifier "N.P.duplicateSub"
+
+N.P.test()               '' "N.duplicateSub" expected : in [3] parent namespaces (by nesting)
+N.P.duplicateSub()       '' "M.duplicateSub" expected : in [4] imported namespaces (by 'Using')
+
+Print
+Sleep
+%%
+		{{fbdoc item="filename" value="examples/manual/proguide/lookups/lookup03.bas"}}%%(freebasic)
+Sub duplicateSub()
+	Print "   ..duplicateSub"
+End Sub
+
+Namespace M
+	Sub duplicateSub()
+		Print "   M.duplicateSub"
+	End Sub
+End Namespace
+
+Namespace N
+	'Sub duplicateSub()
+	'    Print "   N.duplicateSub"
+	'End Sub
+	Namespace P
+		Using M
+		'Sub duplicateSub()
+		'    Print "   N.P.duplicateSub"
+		'End Sub
+		Sub test()
+			Using M  '' useless, but just to demonstrate that does not increase priority level of imported namespace 
+			duplicateSub()
+		End Sub
+	End namespace
+End Namespace
+
+Print "From Namespace:"
+' "N.P.test()" calls the unqualified identifier "duplicateSub"
+' "N.P.duplicateSub()" calls the qualified identifier "N.P.duplicateSub"
+
+N.P.test()               '' "..duplicateSub" expected : in [3] parent namespaces (by nesting)
+N.P.duplicateSub()       '' "M.duplicateSub" expected : in [4] imported namespaces (by 'Using')
+
+Print
+Sleep
+%%
+		{{fbdoc item="filename" value="examples/manual/proguide/lookups/lookup04.bas"}}%%(freebasic)
+'Sub duplicateSub()
+'    Print "   ..duplicateSub"
+'End Sub
+
+Namespace M
+	Sub duplicateSub()
+		Print "   M.duplicateSub"
+	End Sub
+End Namespace
+
+Namespace N
+	'Sub duplicateSub()
+	'    Print "   N.duplicateSub"
+	'End Sub
+	Namespace P
+		Using M
+		'Sub duplicateSub()
+		'    Print "   N.P.duplicateSub"
+		'End Sub
+		Sub test()
+			Using M  '' useless, but just to demonstrate that does not increase priority level of imported namespace 
+			duplicateSub()
+		End Sub
+	End namespace
+End Namespace
+
+Print "From Namespace:"
+' "N.P.test()" calls the unqualified identifier "duplicateSub"
+' "N.P.duplicateSub()" calls the qualified identifier "N.P.duplicateSub"
+
+N.P.test()               '' "M.duplicateSub" expected : in [4] imported namespaces (by 'Using')
+N.P.duplicateSub()       '' "M.duplicateSub" expected : in [4] imported namespaces (by 'Using')
+
+Print
+Sleep
+%%
+
+	The following six codes test different look-ups both for one unqualified and one qualified identifier of variables defined in different scope cases (from the highest to the lowest priority hierarchy):
+		{{fbdoc item="filename" value="examples/manual/proguide/lookups/lookup11.bas"}}%%(freebasic)
+Dim Shared As Zstring * 32 duplicateVar = "   ..duplicateVar"
+
+Namespace M
+	Dim As Zstring *32 duplicateVar = "   M.duplicateVar"
+End Namespace
+
+Namespace N
+	Using M
+	Dim As Zstring * 32 duplicateVar = "   N.duplicateVar"
+	Type Parent Extends Object
+		Dim As Zstring * 32 duplicateVar = "   N.Parent.duplicateVar"
+	End Type
+	Type Child Extends Parent
+		Dim As Zstring * 32 duplicateVar = "   N.Child.duplicateVar"
+	End Type
+	Type GrandChild Extends Child
+		Dim As Zstring * 32 duplicateVar = "   N.GrandChild.duplicateVar"
+		Declare Sub test()
+	End Type
+	Sub GrandChild.test()
+		Using M  '' useless, but just to demonstrate that does not increase priority level of imported namespace
+		Print duplicateVar
+	End Sub
+End Namespace
+
+Print "From Type:"
+Dim As N.GrandChild gc
+' "gc.test()" calls the unqualified identifier "duplicateVar"
+' "Print gc.duplicateVar" calls the qualified identifier "gc.duplicateVar"
+
+gc.test()                '' "N.GrandChild.duplicateVar" expected : in [1] current namespace/type
+Print gc.duplicateVar    '' "N.GrandChild.duplicateVar" expected : in [1] current namespace/type
+
+Print
+Sleep
+%%
+		{{fbdoc item="filename" value="examples/manual/proguide/lookups/lookup12.bas"}}%%(freebasic)
+Dim Shared As Zstring * 32 duplicateVar = "   ..duplicateVar"
+
+Namespace M
+	Dim As Zstring *32 duplicateVar = "   M.duplicateVar"
+End Namespace
+
+Namespace N
+	Using M
+	Dim As Zstring * 32 duplicateVar = "   N.duplicateVar"
+	Type Parent Extends Object
+		Dim As Zstring * 32 duplicateVar = "   N.Parent.duplicateVar"
+	End Type
+	Type Child Extends Parent
+		Dim As Zstring * 32 duplicateVar = "   N.Child.duplicateVar"
+	End Type
+	Type GrandChild Extends Child
+		'Dim As Zstring * 32 duplicateVar = "   N.GrandChild.duplicateVar"
+		Declare Sub test()
+	End Type
+	Sub GrandChild.test()
+		Using M  '' useless, but just to demonstrate that does not increase priority level of imported namespace
+		Print duplicateVar
+	End Sub
+End Namespace
+
+Print "From Type:"
+Dim As N.GrandChild gc
+' "gc.test()" calls the unqualified identifier "duplicateVar"
+' "Print gc.duplicateVar" calls the qualified identifier "gc.duplicateVar"
+
+gc.test()                '' "N.Child.duplicateVar" expected : in [2] base types (by 'Extends')
+Print gc.duplicateVar    '' "N.Child.duplicateVar" expected : in [2] base types (by 'Extends')
+
+Print
+Sleep
+%%
+		{{fbdoc item="filename" value="examples/manual/proguide/lookups/lookup13.bas"}}%%(freebasic)
+Dim Shared As Zstring * 32 duplicateVar = "   ..duplicateVar"
+
+Namespace M
+	Dim As Zstring *32 duplicateVar = "   M.duplicateVar"
+End Namespace
+
+Namespace N
+	Using M
+	Dim As Zstring * 32 duplicateVar = "   N.duplicateVar"
+	Type Parent Extends Object
+		Dim As Zstring * 32 duplicateVar = "   N.Parent.duplicateVar"
+	End Type
+	Type Child Extends Parent
+		'Dim As Zstring * 32 duplicateVar = "   N.Child.duplicateVar"
+	End Type
+	Type GrandChild Extends Child
+		'Dim As Zstring * 32 duplicateVar = "   N.GrandChild.duplicateVar"
+		Declare Sub test()
+	End Type
+	Sub GrandChild.test()
+		Using M  '' useless, but just to demonstrate that does not increase priority level of imported namespace
+		Print duplicateVar
+	End Sub
+End Namespace
+
+Print "From Type:"
+Dim As N.GrandChild gc
+' "gc.test()" calls the unqualified identifier "duplicateVar"
+' "Print gc.duplicateVar" calls the qualified identifier "gc.duplicateVar"
+
+gc.test()                '' "N.Parent.duplicateVar" expected : in [2] base types (by 'Extends')
+Print gc.duplicateVar    '' "N.Parent.duplicateVar" expected : in [2] base types (by 'Extends')
+
+Print
+Sleep
+%%
+		{{fbdoc item="filename" value="examples/manual/proguide/lookups/lookup14.bas"}}%%(freebasic)
+Dim Shared As Zstring * 32 duplicateVar = "   ..duplicateVar"
+
+Namespace M
+	Dim As Zstring *32 duplicateVar = "   M.duplicateVar"
+End Namespace
+
+Namespace N
+	Using M
+	Dim As Zstring * 32 duplicateVar = "   N.duplicateVar"
+	Type Parent Extends Object
+		'Dim As Zstring * 32 duplicateVar = "   N.Parent.duplicateVar"
+	End Type
+	Type Child Extends Parent
+		'Dim As Zstring * 32 duplicateVar = "   N.Child.duplicateVar"
+	End Type
+	Type GrandChild Extends Child
+		'Dim As Zstring * 32 duplicateVar = "   N.GrandChild.duplicateVar"
+		Declare Sub test()
+	End Type
+	Sub GrandChild.test()
+		Using M  '' useless, but just to demonstrate that does not increase priority level of imported namespace
+		Print duplicateVar
+	End Sub
+End Namespace
+
+Print "From Type:"
+Dim As N.GrandChild gc
+' "gc.test()" calls the unqualified identifier "duplicateVar"
+' "Print gc.duplicateVar" calls the qualified identifier "gc.duplicateVar"
+
+gc.test()                '' "N.duplicateVar" expected : in [3] parent namespaces (by nesting)
+'Print gc.duplicateVar   '' error
+
+Print
+Sleep
+%%
+		{{fbdoc item="filename" value="examples/manual/proguide/lookups/lookup15.bas"}}%%(freebasic)
+Dim Shared As Zstring * 32 duplicateVar = "   ..duplicateVar"
+
+Namespace M
+	Dim As Zstring *32 duplicateVar = "   M.duplicateVar"
+End Namespace
+
+Namespace N
+	Using M
+	'Dim As Zstring * 32 duplicateVar = "   N.duplicateVar"
+	Type Parent Extends Object
+		'Dim As Zstring * 32 duplicateVar = "   N.Parent.duplicateVar"
+	End Type
+	Type Child Extends Parent
+		'Dim As Zstring * 32 duplicateVar = "   N.Child.duplicateVar"
+	End Type
+	Type GrandChild Extends Child
+		'Dim As Zstring * 32 duplicateVar = "   N.GrandChild.duplicateVar"
+		Declare Sub test()
+	End Type
+	Sub GrandChild.test()
+		Using M  '' useless, but just to demonstrate that does not increase priority level of imported namespace
+		Print duplicateVar
+	End Sub
+End Namespace
+
+Print "From Type:"
+Dim As N.GrandChild gc
+' "gc.test()" calls the unqualified identifier "duplicateVar"
+' "Print gc.duplicateVar" calls the qualified identifier "gc.duplicateVar"
+
+gc.test()                '' "..duplicateVar" expected : in [3] parent namespaces (by nesting)
+'Print gc.duplicateVar   '' error
+
+Print
+Sleep
+%%
+		{{fbdoc item="filename" value="examples/manual/proguide/lookups/lookup16.bas"}}%%(freebasic)
+'Dim Shared As Zstring * 32 duplicateVar = "   ..duplicateVar"
+
+Namespace M
+	Dim As Zstring *32 duplicateVar = "   M.duplicateVar"
+End Namespace
+
+Namespace N
+	Using M
+	'Dim As Zstring * 32 duplicateVar = "   N.duplicateVar"
+	Type Parent Extends Object
+		'Dim As Zstring * 32 duplicateVar = "   N.Parent.duplicateVar"
+	End Type
+	Type Child Extends Parent
+		'Dim As Zstring * 32 duplicateVar = "   N.Child.duplicateVar"
+	End Type
+	Type GrandChild Extends Child
+		'Dim As Zstring * 32 duplicateVar = "   N.GrandChild.duplicateVar"
+		Declare Sub test()
+	End Type
+	Sub GrandChild.test()
+		Using M  '' useless, but just to demonstrate that does not increase priority level of imported namespace
+		Print duplicateVar
+	End Sub
+End Namespace
+
+Print "From Type:"
+Dim As N.GrandChild gc
+' "gc.test()" calls the unqualified identifier "duplicateVar"
+' "Print gc.duplicateVar" calls the qualified identifier "gc.duplicateVar"
+
+gc.test()                '' "M.duplicateVar" expected : in [4] imported namespaces (by 'Using')
+'Print gc.duplicateVar   '' error
+
+Print
+Sleep
+%%
+
+	The following four codes test different look-ups both for one unqualified and one qualified identifier of types defined in different scope cases (from the highest to the lowest priority hierarchy):
+		{{fbdoc item="filename" value="examples/manual/proguide/lookups/lookup21.bas"}}%%(freebasic)
+Type duplicateType
+	Dim As Zstring * 32 root = "   ..duplicateType"
+End type
+
+Namespace M
+	Type duplicateType
+		Dim As Zstring * 32 root = "   M.duplicateType"
+	End type
+End Namespace
+
+Namespace N
+	Type duplicateType
+		Dim As Zstring * 32 root = "   N.duplicateType"
+	End type
+	Namespace P
+		Using M
+		Type duplicateType
+			Dim As Zstring * 32 root = "   N.P.duplicateType"
+		End type
+		Sub test()
+			Using M  '' useless, but just to demonstrate that does not increase priority level of imported namespace
+			Print Type<duplicateType>.root
+		End Sub
+	End namespace
+End Namespace
+
+' "N.P.test()" calls the unqualified identifier "duplicateType"
+' "Print Type<N.P.duplicateType>.root" calls the qualified identifier "N.P.duplicateType"
+
+Print "From Namespace:"
+N.P.test()                          '' "N.P.duplicateSub" expected : in (1) current namespace/type
+Print Type<N.P.duplicateType>.root  '' "N.P.duplicateSub" expected : in (1) current namespace/type
+
+Print
+Sleep
+%%
+		{{fbdoc item="filename" value="examples/manual/proguide/lookups/lookup22.bas"}}%%(freebasic)
+Type duplicateType
+	Dim As Zstring * 32 root = "   ..duplicateType"
+End type
+
+Namespace M
+	Type duplicateType
+		Dim As Zstring * 32 root = "   M.duplicateType"
+	End type
+End Namespace
+
+Namespace N
+	Type duplicateType
+		Dim As Zstring * 32 root = "   N.duplicateType"
+	End type
+	Namespace P
+		Using M
+		'Type duplicateType
+		'    Dim As Zstring * 32 root = "   N.P.duplicateType"
+		'End type
+		Sub test()
+			Using M  '' useless, but just to demonstrate that does not increase priority level of imported namespace
+			Print Type<duplicateType>.root
+		End Sub
+	End namespace
+End Namespace
+
+' "N.P.test()" calls the unqualified identifier "duplicateType"
+' "Print Type<N.P.duplicateType>.root" calls the qualified identifier "N.P.duplicateType"
+
+Print "From Namespace:"
+N.P.test()                          '' "N.duplicateSub" expected : in [3] parent namespaces (by nesting)
+Print Type<N.P.duplicateType>.root  '' "M.duplicateSub" expected : in [4] imported namespaces (by 'Using')
+
+Print
+Sleep
+%%
+		{{fbdoc item="filename" value="examples/manual/proguide/lookups/lookup23.bas"}}%%(freebasic)
+Type duplicateType
+	Dim As Zstring * 32 root = "   ..duplicateType"
+End type
+
+Namespace M
+	Type duplicateType
+		Dim As Zstring * 32 root = "   M.duplicateType"
+	End type
+End Namespace
+
+Namespace N
+	'Type duplicateType
+	'    Dim As Zstring * 32 root = "   N.duplicateType"
+	'End type
+	Namespace P
+		Using M
+		'Type duplicateType
+		'    Dim As Zstring * 32 root = "   N.P.duplicateType"
+		'End type
+		Sub test()
+			Using M  '' useless, but just to demonstrate that does not increase priority level of imported namespace
+			Print Type<duplicateType>.root
+		End Sub
+	End namespace
+End Namespace
+
+' "N.P.test()" calls the unqualified identifier "duplicateType"
+' "Print Type<N.P.duplicateType>.root" calls the qualified identifier "N.P.duplicateType"
+
+Print "From Namespace:"
+N.P.test()                          '' "..duplicateSub" expected : in [3] parent namespaces (by nesting)
+Print Type<N.P.duplicateType>.root  '' "M.duplicateSub" expected : in [4] imported namespaces (by 'Using')
+
+Print
+Sleep
+%%
+		{{fbdoc item="filename" value="examples/manual/proguide/lookups/lookup24.bas"}}%%(freebasic)
+'Type duplicateType
+'    Dim As Zstring * 32 root = "   ..duplicateType"
+'End type
+
+Namespace M
+	Type duplicateType
+		Dim As Zstring * 32 root = "   M.duplicateType"
+	End type
+End Namespace
+
+Namespace N
+	'Type duplicateType
+	'    Dim As Zstring * 32 root = "   N.duplicateType"
+	'End type
+	Namespace P
+		Using M
+		'Type duplicateType
+		'    Dim As Zstring * 32 root = "   N.P.duplicateType"
+		'End type
+		Sub test()
+			Using M  '' useless, but just to demonstrate that does not increase priority level of imported namespace
+			Print Type<duplicateType>.root
+		End Sub
+	End namespace
+End Namespace
+
+' "N.P.test()" calls the unqualified identifier "duplicateType"
+' "Print Type<N.P.duplicateType>.root" calls the qualified identifier "N.P.duplicateType"
+
+Print "From Namespace:"
+N.P.test()                          '' "M.duplicateSub" expected : in [4] imported namespaces (by 'Using')
+Print Type<N.P.duplicateType>.root  '' "M.duplicateSub" expected : in [4] imported namespaces (by 'Using')
+
+Print
+Sleep
+%%
+
+	The following four codes test different look-ups both for one unqualified and one qualified identifier of enums defined in different scope cases (from the highest to the lowest priority hierarchy):
+		{{fbdoc item="filename" value="examples/manual/proguide/lookups/lookup31.bas"}}%%(freebasic)
+Dim Shared As Zstring * 32 root(...) = {"   ..duplicateEnum", "   M.duplicateEnum", "   N.duplicateEnum", "   N.P.duplicateEnum"}
+
+Enum duplicateEnum
+	nb = 0
+End Enum
+
+Namespace M
+	Enum duplicateEnum
+		nb = 1
+	End Enum
+End Namespace
+
+Namespace N
+	Enum duplicateEnum
+		nb = 2
+	End Enum
+	Namespace P
+		Using M
+		Enum duplicateEnum
+			nb = 3
+		End Enum
+		Sub test()
+			Using M  '' useless, but just to demonstrate that does not increase priority level of imported namespace
+			Print root(duplicateEnum.nb)
+		End Sub
+	End namespace
+End Namespace
+
+' "N.P.test()" calls the unqualified identifier "duplicateEnum"
+' "Print root(N.P.duplicateEnum.nb)" calls the qualified identifier "N.P.duplicateEnum"
+
+Print "From Namespace:"
+N.P.test()                        '' "N.P.duplicateEnum" expected : in (1) current namespace/type
+Print root(N.P.duplicateEnum.nb)  '' "N.P.duplicateEnum" expected : in (1) current namespace/type
+
+Print
+Sleep
+%%
+		{{fbdoc item="filename" value="examples/manual/proguide/lookups/lookup32.bas"}}%%(freebasic)
+Dim Shared As Zstring * 32 root(...) = {"   ..duplicateEnum", "   M.duplicateEnum", "   N.duplicateEnum", "   N.P.duplicateEnum"}
+
+Enum duplicateEnum
+	nb = 0
+End Enum
+
+Namespace M
+	Enum duplicateEnum
+		nb = 1
+	End Enum
+End Namespace
+
+Namespace N
+	Enum duplicateEnum
+		nb = 2
+	End Enum
+	Namespace P
+		Using M
+		'Enum duplicateEnum
+		'    nb = 3
+		'End Enum
+		Sub test()
+			Using M  '' useless, but just to demonstrate that does not increase priority level of imported namespace
+			Print root(duplicateEnum.nb)
+		End Sub
+	End namespace
+End Namespace
+
+' "N.P.test()" calls the unqualified identifier "duplicateEnum"
+' "Print root(N.P.duplicateEnum.nb)" calls the qualified identifier "N.P.duplicateEnum"
+
+Print "From Namespace:"
+N.P.test()                        '' "N.duplicateEnum" expected : in [3] parent namespaces (by nesting)
+Print root(N.P.duplicateEnum.nb)  '' "M.duplicateEnum" expected : in [4] imported namespaces (by 'Using')
+
+Print
+Sleep
+%%
+		{{fbdoc item="filename" value="examples/manual/proguide/lookups/lookup33.bas"}}%%(freebasic)
+Dim Shared As Zstring * 32 root(...) = {"   ..duplicateEnum", "   M.duplicateEnum", "   N.duplicateEnum", "   N.P.duplicateEnum"}
+
+Enum duplicateEnum
+	nb = 0
+End Enum
+
+Namespace M
+	Enum duplicateEnum
+		nb = 1
+	End Enum
+End Namespace
+
+Namespace N
+	'Enum duplicateEnum
+	'    nb = 2
+	'End Enum
+	Namespace P
+		Using M
+		'Enum duplicateEnum
+		'    nb = 3
+		'End Enum
+		Sub test()
+			Using M  '' useless, but just to demonstrate that does not increase priority level of imported namespace
+			Print root(duplicateEnum.nb)
+		End Sub
+	End namespace
+End Namespace
+
+' "N.P.test()" calls the unqualified identifier "duplicateEnum"
+' "Print root(N.P.duplicateEnum.nb)" calls the qualified identifier "N.P.duplicateEnum"
+
+Print "From Namespace:"
+N.P.test()                        '' "..duplicateEnum" expected : in [3] parent namespaces (by nesting)
+Print root(N.P.duplicateEnum.nb)  '' "M.duplicateEnum" expected : in [4] imported namespaces (by 'Using')
+
+Print
+Sleep
+%%
+		{{fbdoc item="filename" value="examples/manual/proguide/lookups/lookup34.bas"}}%%(freebasic)
+Dim Shared As Zstring * 32 root(...) = {"   ..duplicateEnum", "   M.duplicateEnum", "   N.duplicateEnum", "   N.P.duplicateEnum"}
+
+'Enum duplicateEnum
+'    nb = 0
+'End Enum
+
+Namespace M
+	Enum duplicateEnum
+		nb = 1
+	End Enum
+End Namespace
+
+Namespace N
+	'Enum duplicateEnum
+	'    nb = 2
+	'End Enum
+	Namespace P
+		Using M
+		'Enum duplicateEnum
+		'    nb = 3
+		'End Enum
+		Sub test()
+			Using M  '' useless, but just to demonstrate that does not increase priority level of imported namespace
+			Print root(duplicateEnum.nb)
+		End Sub
+	End namespace
+End Namespace
+
+' "N.P.test()" calls the unqualified identifier "duplicateEnum"
+' "Print root(N.P.duplicateEnum.nb)" calls the qualified identifier "N.P.duplicateEnum"
+
+Print "From Namespace:"
+N.P.test()                        '' "M.duplicateEnum" expected : in [4] imported namespaces (by 'Using')
+Print root(N.P.duplicateEnum.nb)  '' "M.duplicateEnum" expected : in [4] imported namespaces (by 'Using')
+
+Print
+Sleep
+%%
+{{fbdoc item="section" value="Version"}}
+	- Since fbc 1.09.0.
+	- Before fbc 1.09.0, the priority hierarchy was poorly managed with inconsistencies.
+
+{{fbdoc item="section" value="See also"}}
+	- [[ProPgIdentifierRules|Identifier Rules]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

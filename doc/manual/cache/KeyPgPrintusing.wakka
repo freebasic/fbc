@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="(PRINT | ?) USING"}}----
-Outputs formatted text to the screen or output device
+Outputs formatted text to the screen or output device.
 
 {{fbdoc item="syntax"}}##
 	([[KeyPgPrint|Print]] | [[KeyPgPrint|?]]) [# //filenum// ,] [ //printexpressionlist// {,|;} ] **Using** //formatstring// **;** [ //expressionlist// [ ; ] ]
@@ -23,7 +23,9 @@ Outputs formatted text to the screen or output device
 	
 	{{fbdoc item="section" value="String formatting"}}
 	
-		{{table columns="2" cellpadding="2" cells="Marker;Formatting;!;prints the first character of a string;\   \;prints as many characters of a string as occupied between the pair \ \;&amp;;prints the entire string"}}
+		{{table columns="2" cellpadding="2" cells="Marker;Formatting;!;prints the first character of a string;\   \;prints two or more characters of a string - as many as are occupied by the backslashes ('\') and any enclosed space characters (' ');&amp;;prints the entire string"}}
+
+	If an exact amount of characters is specified (with ##"!"## or ##"\ \"##), the string will be truncated or padded with spaces on the right as needed to output that many characters.
 	
 	{{fbdoc item="section" value="Numeric formatting"}}
 	
@@ -62,4 +64,4 @@ The last day in the year is 31 Dec%%
 	- ##[[KeyPgUsing|Using]]##
 	- ##[[KeyPgPalette|Palette Using]]##
 
-{{fbdoc item="back" value="CatPgConsole|Console Functions"}}
+{{fbdoc item="back" value="CatPgConsole|Console Functions"}}			

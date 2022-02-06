@@ -31,7 +31,7 @@ Once the library is made, we can then use the code that it contains just as if w
 Public Function Add2( ByVal x As Integer, ByVal y As Integer ) As Integer Export
   Return( x + y )
 End Function
-		%%
+%%
 		Compile the library with:
 			##fbc -dll mylib.bas##
 			
@@ -44,7 +44,7 @@ End Function
 '' mylib.bi
 #inclib "mylib"
 Declare Function Add2( ByVal x As Integer, ByVal y As Integer ) As Integer
-		%%
+%%
 		There is no need to compile the header.  We want this in its source form so it can be included with other source files.  The ##[[KeyPgInclib|#inclib]]## statement will tell the compiler the name of a shared library that we need to link with at runtime running an executable that needs it.
 		
 	With our library (.dll / .so file) and a header (.bi file) we can try them out in a test program:
@@ -53,7 +53,7 @@ Declare Function Add2( ByVal x As Integer, ByVal y As Integer ) As Integer
 '' compile with: fbc mytest.bas
 #include once "mylib.bi"
 Print Add2(1,2)
-		%%
+%%
 		The ##[[KeyPgInclude|#include]]## statement tells the compiler to include the source code from ##mylib.bi## just as if we had typed it in to the original source.  With the way we have written our include file, it tells the compiler everything it needs to know about the library.
 		
 		We compile this with:
@@ -63,13 +63,13 @@ Print Add2(1,2)
 			%%
  3
 			%%
-More than one source module can be used when making a library.  And basic programs can use more than one library by including each needed header.  Some libraries are so large that they might use several headers.  On very large projects, making shared libraries out of some code modules that seldom change can improve compile times and link times dramatically.
-
-Shared libraries can optionally contain debugging information specified with the //[[CompilerOptg|-g]]// command line option.
-
-A shared library can optionally have module constructors, a main code, and module destructors. The module constructors, then the main code are executed at library load. The module destructors are executed at library unload.
-
-Object files, and therefore shared libraries, are platform specific and in some cases specific to a particular version of the compiler and ""FreeBASIC"" runtime library.
+	More than one source module can be used when making a library.  And basic programs can use more than one library by including each needed header.  Some libraries are so large that they might use several headers.  On very large projects, making shared libraries out of some code modules that seldom change can improve compile times and link times dramatically.
+	
+	Shared libraries can optionally contain debugging information specified with the //[[CompilerOptg|-g]]// command line option.
+	
+	A shared library can optionally have module constructors, a main code, and module destructors. The module constructors, then the main code are executed at library load. The module destructors are executed at library unload.
+	
+	Object files, and therefore shared libraries, are platform specific and in some cases specific to a particular version of the compiler and ""FreeBASIC"" runtime library.
 
 {{anchor name="WINDOWS"}}{{fbdoc item="section" value="Using Shared Libraries on Windows"}}
 	On Windows, the shared library must be stored in a location where it can be found by the executable that needs it a run-time.  
@@ -122,7 +122,7 @@ Object files, and therefore shared libraries, are platform specific and in some 
 function AddNumbers alias "AddNumbers"( byval a as integer, byval b as integer ) as integer export
 	function = a + b
 end function
-		%%
+%%
 		{{fbdoc item="filename" value="examples/manual/proguide/shared-lib/load.bas"}}%%(freebasic)
 '' load.bas: Loads mydll.dll (or libmydll.so) at runtime, calls one of mydll's
 '' functions and prints the result. mydll is not needed at compile time.
@@ -164,7 +164,7 @@ print x; " +"; y; " ="; AddNumbers( x, y )
 '' you got from it via dylibsymbol will become invalid, and accessing them
 '' will cause the application to crash.
 dylibfree( libhandle )
-		%%
+%%
 {{anchor name="VARIABLES"}}{{fbdoc item="section" value="Exchanging/Sharing variables with shared library on Windows"}}
 	Windows does not support the ##[[KeyPgCommon|Common]]## or ##[[KeyPgExtern|Extern]]## keywords for directly sharing variables with a shared library.
 	Otherwise (running on any platform), passing a parameter (by value or by reference) to a library procedure or returning a variable (by value or by reference) from a library function allows to indirectly exchange data (by value) or share data (by reference) with a shared library.
@@ -208,7 +208,7 @@ End Sub
 Sub incrementJdll Alias"incrementJdll"() Export
 	Jdll +=1
 End Sub
-		%%
+%%
 		{{fbdoc item="filename" value="examples/manual/proguide/shared-lib/mainShareData.bas"}}%%(freebasic)
 ' mainShareData.bas
 ' Sharing data between main and dll code
@@ -271,7 +271,72 @@ Print
 	'DyLibFree(libhandle)
 
 Sleep
-		%%
+%%
+
+	Simpler example of workaround on Windows for sharing data (by a single static function returning by reference) between main and dll code (works on any platform):
+	(dll loadable statically or dynamically as desired)
+		{{fbdoc item="filename" value="examples/manual/proguide/shared-lib/dllShareData2.bas"}}%%(freebasic)
+' dllShareData2.bas to be compile with -dll
+' Sharing data between main and dll code by using static funtion returning by reference
+
+' 'Alias' clause (in addition to 'Export') allows compatibility with dll loaded statically or dynamically
+
+Function returnIntByRef Alias"returnIntByRef"() ByRef As Integer Export
+	Static As Integer Jdll = 1
+	Return Jdll
+End Function
+
+Sub printJdll Alias"printJdll"() Export
+	Print "   dll code prints the reference"
+	Print "   " & returnIntByRef()
+End Sub
+
+Sub incrementJdll Alias"incrementJdll"() Export
+	returnIntByRef() +=1
+End Sub
+%%
+		{{fbdoc item="filename" value="examples/manual/proguide/shared-lib/mainShareData2.bas"}}%%(freebasic)
+' mainShareData2.bas
+' Sharing data between main and dll code by using static funtion returning by reference
+
+' 'Alias' clause allows compatibility with dll loaded statically or dynamically
+
+' dll loaded statically
+	#inclib "dllShareData2"
+	Declare Function returnIntByRef Alias"returnIntByRef"() ByRef  As Integer
+	Declare Sub printJdll Alias"printJdll"()
+	Declare Sub incrementJdll Alias"incrementJdll"()
+ ' or dll loaded dynamically
+	'Dim As Any Ptr libhandle = DyLibLoad("dllShareData2")
+	'Dim As Function() Byref As Integer returnIntByRef = DyLibSymbol(libhandle, "returnIntByRef")
+	'Dim As Sub() printJdll = DyLibSymbol(libhandle, "printJdll")
+	'Dim As Sub() incrementJdll = DyLibSymbol(libhandle, "incrementJdll")
+
+Print "main code requests dll code to print the reference"
+printJdll()
+Print "main code prints the reference"
+Print "" & returnIntByRef()
+Print
+Print "main code requests dll to increment the reference"
+incrementJdll()
+Print "main code requests dll code to print the reference"
+printJdll()
+Print "main code prints the reference"
+Print "" & returnIntByRef()
+Print
+Print "main code increments the reference"
+returnIntByRef() += 1
+Print "main code prints the reference"
+Print "" & returnIntByRef()
+Print "main code requests dll code to print the reference"
+printJdll()
+Print
+
+' for dll loaded dynamically
+	'DyLibFree(libhandle)
+
+Sleep
+%%
 {{anchor name="IMPORT"}}{{fbdoc item="section" value="Creating import Libraries from def files on Windows"}}
 	When using a third-party dll in ""FreeBASIC"" on Windows, it may be necessary to manually build an import library to satisfy the linker.
 	

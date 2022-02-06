@@ -35,5 +35,6 @@ Naming conventions for ""FreeBASIC"" symbols.
 
 {{fbdoc item="see"}}
 	- [[ProPgVariables|Variables]]
+	- [[ProPgIdentifierLookup|Identifier Look-ups in namespaces and types]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

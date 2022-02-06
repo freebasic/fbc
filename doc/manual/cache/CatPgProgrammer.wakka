@@ -133,6 +133,7 @@
 	{{fbdoc item="keyword" value="ProPgErrorHandling|Error Handling"}}
 	{{fbdoc item="keyword" value="ProPgEventHandling|Event Handling"}}
 	{{fbdoc item="keyword" value="CatPgDddefines|Intrinsic Defines"}}
+	{{fbdoc item="keyword" value="ProPgIdentifierLookup|Identifier Look-ups in namespaces and types"}}
 
 NOTE: Existing ""CatPg"" pages should be recreated as ""ProPg"" pages providing a general overview to the grouping of keywords.
 >>::c::

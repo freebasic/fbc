@@ -42,4 +42,3 @@ End Sub
 Sub incrementJdll Alias"incrementJdll"() Export
 	Jdll +=1
 End Sub
-		

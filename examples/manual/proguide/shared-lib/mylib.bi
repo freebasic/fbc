@@ -9,4 +9,3 @@
 '' mylib.bi
 #inclib "mylib"
 Declare Function Add2( ByVal x As Integer, ByVal y As Integer ) As Integer
-		

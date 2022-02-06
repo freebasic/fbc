@@ -913,6 +913,7 @@
 		[[ProPgErrorHandling|Error Handling]]
 		[[ProPgEventHandling|Event Handling]]
 		[[CatPgDddefines|Intrinsic Defines]]
+		[[ProPgIdentifierLookup|Identifier Look-ups in namespaces and types]]
 	[[CommunityTutorials|Community Tutorials]]
 	[[CodeLibrary|Community Code Library]]
 

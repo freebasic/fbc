@@ -12,6 +12,6 @@ The memory operators provide a way to dynamically allocate and deallocate variab
 <<>>=={{fbdoc item="keyword" value="KeyPgOpDelete|Operator Delete Statement"}}==
 	Destroys and deallocates memory for objects.
 	=={{fbdoc item="keyword" value="KeyPgOpDeleteOverload|Operator Delete Overload"}}==
-		Overloads memory deallocation process of Operator Delete Statement when applying to UDT.>>::c::
-
+		Overloads memory deallocation process of Operator Delete Statement when applying to UDT.
+>>::c::
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

@@ -10,4 +10,3 @@
 '' compile with: fbc mytest.bas
 #include Once "mylib.bi"
 Print Add2(1,2)
-		
