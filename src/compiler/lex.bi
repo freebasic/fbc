@@ -5,41 +5,41 @@
 #include once "dstr.bi"
 
 enum LEXCHECK
-	
-	LEXCHECK_EVERYTHING		= &h0000
-	
+
+	LEXCHECK_EVERYTHING     = &h0000
+
 	'' ? write this comment
-	LEXCHECK_NOLINECONT		= &h0001 
-	
+	LEXCHECK_NOLINECONT     = &h0001
+
 	'' don't replace define/macro text
-	LEXCHECK_NODEFINE		= &h0002 
-	
+	LEXCHECK_NODEFINE       = &h0002
+
 	'' return CHAR_SPACE, CHAR_TAB... (usually skipped when lexing)
-	LEXCHECK_NOWHITESPC		= &h0004 
-	
+	LEXCHECK_NOWHITESPC     = &h0004
+
 	'' don't interpret $, #, &, etc as a suffix on a token (for #include, $include, &h1, more?)
-	LEXCHECK_NOSUFFIX		= &h0008 
-	
+	LEXCHECK_NOSUFFIX       = &h0008
+
 	'' retain quotes in any literal string's token (otherwise, hReadString removes quotes so lexGetText can cleanly return the string's content)
-	LEXCHECK_NOQUOTES		= &h0010 
-	
-	'' don't associate the token with a symbol chain (dim shared as integer foo: #define bar(foo) 
-	LEXCHECK_NOSYMBOL		= &h0020 
-	
+	LEXCHECK_NOQUOTES       = &h0010
+
+	'' don't associate the token with a symbol chain (dim shared as integer foo: #define bar(foo)
+	LEXCHECK_NOSYMBOL       = &h0020
+
 	'' return CHAR_DOT (usually incorporated into whatever symbol when lexing)
-	LEXCHECK_NOPERIOD		= &h0040 
-	
+	LEXCHECK_NOPERIOD       = &h0040
+
 	'' used to handle the 'periods in symbol name' garbage
-	LEXCHECK_EATPERIOD		= &h0080 
-	
+	LEXCHECK_EATPERIOD      = &h0080
+
 	'' use the special symbol 'namespace' for pre-processing, to prevent polluting the global ns
-	LEXCHECK_KWDNAMESPC		= &h0100 
-	
+	LEXCHECK_KWDNAMESPC     = &h0100
+
 	'' ignore multi-line comment markers in code (don't allow them in single-line comments)
-	LEXCHECK_NOMULTILINECOMMENT	= &h0200 
-	
+	LEXCHECK_NOMULTILINECOMMENT = &h0200
+
 	'' don't interpret f, u, l as type-specifier suffixes on numeric literals (used in asm blocks)
-	LEXCHECK_NOLETTERSUFFIX	= &h0400
+	LEXCHECK_NOLETTERSUFFIX = &h0400
 
 	LEXCHECK_POST_SUFFIX        = &h0800  '' no suffix in any lang dialect
 	LEXCHECK_POST_LANG_SUFFIX   = &h1000  '' suffix allowed only if lang dialect allows it
@@ -48,103 +48,103 @@ enum LEXCHECK
 end enum
 
 type FBTOKEN
-	id				as integer
-	class			as integer
-	dtype			as integer
+	id              as integer
+	class           as integer
+	dtype           as integer
 
 	'' used by literal strings too
 	union
-		text		as zstring * FB_MAXLITLEN+1
-		textw		as wstring * FB_MAXLITLEN+1
+		text        as zstring * FB_MAXLITLEN+1
+		textw       as wstring * FB_MAXLITLEN+1
 	end union
 
-	len				as integer                  '' length
-	sym_chain		as FBSYMCHAIN ptr			'' symbol found, if any
+	len             as integer                  '' length
+	sym_chain       as FBSYMCHAIN ptr           '' symbol found, if any
 
 	union
-		prdpos		as integer					'' period '.' pos in symbol names
-		hasesc		as integer					'' any '\' in literals
+		prdpos      as integer                  '' period '.' pos in symbol names
+		hasesc      as integer                  '' any '\' in literals
 	end union
-	suffixchar		as integer
+	suffixchar      as integer
 
-	after_space		as integer
+	after_space     as integer
 
-	next			as FBTOKEN ptr
+	next            as FBTOKEN ptr
 end type
 
-const FB_LEX_MAXK	= 3
+const FB_LEX_MAXK   = 3
 
 const LEX_MAXBUFFCHARS = 8192
 
 type LEX_TKCTX
 	tokenTB(0 to FB_LEX_MAXK) as FBTOKEN
-	k				as integer					'' look ahead cnt (1..MAXK)
+	k               as integer                  '' look ahead cnt (1..MAXK)
 
-	head			as FBTOKEN ptr
-	tail			as FBTOKEN ptr
+	head            as FBTOKEN ptr
+	tail            as FBTOKEN ptr
 
-	currchar		as uinteger					'' current char
-	lahdchar1		as uinteger					'' look ahead first char
-	lahdchar2		as uinteger					'' look ahead second char
+	currchar        as uinteger                 '' current char
+	lahdchar1       as uinteger                 '' look ahead first char
+	lahdchar2       as uinteger                 '' look ahead second char
 
-	linenum 		as integer
-	lasttk_id 		as integer
+	linenum         as integer
+	lasttk_id       as integer
 
-	reclevel 		as integer					'' PP recursion
-	currmacro		as FBSYMBOL ptr				'' used to check macro recursion
+	reclevel        as integer                  '' PP recursion
+	currmacro       as FBSYMBOL ptr             '' used to check macro recursion
 
-	kwdns			as FBSYMBOL ptr				'' used by the PP
+	kwdns           as FBSYMBOL ptr             '' used by the PP
 
 	'' last #define's text
-	deflen 			as integer
+	deflen          as integer
 
 	union
 		type
-			defptr 				as zstring ptr
-			deftext				as DZSTRING
+			defptr              as zstring ptr
+			deftext             as DZSTRING
 		end type
 
 		type
-			defptrw				as wstring ptr
-			deftextw			as DWSTRING
+			defptrw             as wstring ptr
+			deftextw            as DWSTRING
 		end type
 	end union
 
 	'' input buffer
-	bufflen			as integer
+	bufflen         as integer
 
 	union
 		type
-			buffptr				as zstring ptr
-			buff				as zstring * LEX_MAXBUFFCHARS+1
+			buffptr             as zstring ptr
+			buff                as zstring * LEX_MAXBUFFCHARS+1
 		end type
 
 		type
-			buffptrw			as wstring ptr
-			buffw				as wstring * LEX_MAXBUFFCHARS+1
+			buffptrw            as wstring ptr
+			buffw               as wstring * LEX_MAXBUFFCHARS+1
 		end type
 	end union
 
-	filepos			as integer
-	lastfilepos 	as integer
+	filepos         as integer
+	lastfilepos     as integer
 
-	currline		as DZSTRING					'' current line in text form
+	currline        as DZSTRING                 '' current line in text form
 
-	after_space		as integer
+	after_space     as integer
 end type
 
 type LEX_CTX
 	ctxTB( 0 TO FB_MAXINCRECLEVEL-0 ) as LEX_TKCTX
-	ctx 			as LEX_TKCTX ptr
+	ctx             as LEX_TKCTX ptr
 
-	insidemacro 	as integer
+	insidemacro     as integer
 end type
 
 
 type LEXPP_ARG
 	union
-		text		as DZSTRING
-		textw		as DWSTRING
+		text        as DZSTRING
+		textw       as DWSTRING
 	end union
 end type
 

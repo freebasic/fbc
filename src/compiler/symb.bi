@@ -2596,27 +2596,27 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 
 #define typeAddrOf( dt ) _
 	((dt and FB_DT_TYPEMASK) or _
-	 ((dt and FB_DT_PTRMASK) + (1 shl FB_DT_PTRPOS)) or _
-	 ((dt and FB_DT_CONSTMASK) shl 1) or _
-	 (dt and FB_DT_MANGLEMASK))
+	((dt and FB_DT_PTRMASK) + (1 shl FB_DT_PTRPOS)) or _
+	((dt and FB_DT_CONSTMASK) shl 1) or _
+	(dt and FB_DT_MANGLEMASK))
 
 #define typeMultAddrOf( dt, cnt ) _
 	((dt and FB_DT_TYPEMASK) or _
-	 ((dt and FB_DT_PTRMASK) + (cnt shl FB_DT_PTRPOS)) or _
-	 ((dt and FB_DT_CONSTMASK) shl cnt) or _
-	 (dt and FB_DT_MANGLEMASK))
+	((dt and FB_DT_PTRMASK) + (cnt shl FB_DT_PTRPOS)) or _
+	((dt and FB_DT_CONSTMASK) shl cnt) or _
+	(dt and FB_DT_MANGLEMASK))
 
 #define typeDeref( dt ) _
 	((dt and FB_DT_TYPEMASK) or _
-	 ((dt and FB_DT_PTRMASK) - (1 shl FB_DT_PTRPOS)) or _
-	 (((dt and FB_DT_CONSTMASK) shr 1) and FB_DT_CONSTMASK) or _
-	 (dt and FB_DT_MANGLEMASK))
+	((dt and FB_DT_PTRMASK) - (1 shl FB_DT_PTRPOS)) or _
+	(((dt and FB_DT_CONSTMASK) shr 1) and FB_DT_CONSTMASK) or _
+	(dt and FB_DT_MANGLEMASK))
 
 #define typeMultDeref( dt, cnt ) _
 	((dt and FB_DT_TYPEMASK) or _
-	 ((dt and FB_DT_PTRMASK) - (cnt shl FB_DT_PTRPOS)) or _
-	 (((dt and FB_DT_CONSTMASK) shr cnt) and FB_DT_CONSTMASK) or _
-	 (dt and FB_DT_MANGLEMASK))
+	((dt and FB_DT_PTRMASK) - (cnt shl FB_DT_PTRPOS)) or _
+	(((dt and FB_DT_CONSTMASK) shr cnt) and FB_DT_CONSTMASK) or _
+	(dt and FB_DT_MANGLEMASK))
 
 #define typeIsPtr( dt ) (((dt and FB_DT_PTRMASK) <> 0))
 #define typeGetPtrCnt( dt ) ((dt and FB_DT_PTRMASK) shr FB_DT_PTRPOS)

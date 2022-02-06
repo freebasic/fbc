@@ -4,7 +4,7 @@
 '' if changed, update ast.bas:ast_opTB() and ast-node-misc.bas:dbg_astNodeOpNames()
 enum AST_OP
 	'' ini self ops (see below: AST_OP_SELFBASE and AST_OP_SELFOPS)
-	AST_OP_ASSIGN		= 0
+	AST_OP_ASSIGN       = 0
 	AST_OP_ADD_SELF
 	AST_OP_SUB_SELF
 	AST_OP_MUL_SELF
@@ -147,7 +147,7 @@ enum AST_OP
 	AST_OP_TOSIGNED
 	AST_OP_TOUNSIGNED
 
-	AST_OPCODES									'' total
+	AST_OPCODES                                 '' total
 end enum
 
 const AST_OP_SELFBASE = AST_OP_ASSIGN

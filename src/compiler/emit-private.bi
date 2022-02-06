@@ -1,22 +1,22 @@
 const COMMA   = ", "
 
 type EMITDATATYPE
-	rnametb			as integer
-	mname			as zstring * 11+1
+	rnametb         as integer
+	mname           as zstring * 11+1
 end type
 
 extern dtypeTB(0 to FB_DATATYPES-1) as EMITDATATYPE
 
-const EMIT_MEMBLOCK_MAXLEN	= 16				'' when to use memblk clear/move (needed by AST)
+const EMIT_MEMBLOCK_MAXLEN  = 16          '' when to use memblk clear/move (needed by AST)
 
 const EMIT_MAXRNAMES  = REG_MAXREGS
-const EMIT_MAXRTABLES = 4				'' 8-bit, 16-bit, 32-bit, fpoint
+const EMIT_MAXRTABLES   = 4               '' 8-bit, 16-bit, 32-bit, fpoint
 
-const EMIT_LOCSTART 	= 0
-const EMIT_ARGSTART 	= 4 + 4 '' skip return address + saved ebp
+const EMIT_LOCSTART     = 0
+const EMIT_ARGSTART     = 4 + 4 '' skip return address + saved ebp
 
 enum EMITREG_ENUM
-	EMIT_REG_FP0	= 0
+	EMIT_REG_FP0    = 0
 	EMIT_REG_FP1
 	EMIT_REG_FP2
 	EMIT_REG_FP3
@@ -25,7 +25,7 @@ enum EMITREG_ENUM
 	EMIT_REG_FP6
 	EMIT_REG_FP7
 
-	EMIT_REG_EDX	= EMIT_REG_FP0				'' aliased
+	EMIT_REG_EDX    = EMIT_REG_FP0              '' aliased
 	EMIT_REG_EDI
 	EMIT_REG_ESI
 	EMIT_REG_ECX

@@ -1,11 +1,11 @@
 #ifndef __DSTR_BI__
 #define __DSTR_BI__
 
-#define DECL_STRTYPE(_name,_type)		_
+#define DECL_STRTYPE(_name,_type)       _
 	type _name                          :_
-		data		as _type ptr        :_
-		len			as integer          :_
-		size		as integer          :_
+		data        as _type ptr        :_
+		len         as integer          :_
+		size        as integer          :_
 	end type
 
 DECL_STRTYPE( DSTRING, any )

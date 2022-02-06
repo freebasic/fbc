@@ -4,37 +4,37 @@
 #include once "common.bi"
 
 enum LIST_FLAGS
-	LIST_FLAGS_NONE				= &h00000000
+	LIST_FLAGS_NONE             = &h00000000
 
-	LIST_FLAGS_CLEARNODES		= &h00000001
-	LIST_FLAGS_LINKFREENODES	= &h00000002
-	LIST_FLAGS_LINKUSEDNODES	= &h00000004
+	LIST_FLAGS_CLEARNODES       = &h00000001
+	LIST_FLAGS_LINKFREENODES    = &h00000002
+	LIST_FLAGS_LINKUSEDNODES    = &h00000004
 
-	LIST_FLAGS_CLEAR			= LIST_FLAGS_CLEARNODES or LIST_FLAGS_LINKFREENODES or LIST_FLAGS_LINKUSEDNODES
-	LIST_FLAGS_NOCLEAR			= LIST_FLAGS_LINKFREENODES or LIST_FLAGS_LINKUSEDNODES
-	LIST_FLAGS_ALL 				= &hFFFFFFFF
+	LIST_FLAGS_CLEAR            = LIST_FLAGS_CLEARNODES or LIST_FLAGS_LINKFREENODES or LIST_FLAGS_LINKUSEDNODES
+	LIST_FLAGS_NOCLEAR          = LIST_FLAGS_LINKFREENODES or LIST_FLAGS_LINKUSEDNODES
+	LIST_FLAGS_ALL              = &hFFFFFFFF
 end enum
 
 type TLISTNODE
-	prev	as TLISTNODE ptr
-	next	as TLISTNODE ptr
+	prev    as TLISTNODE ptr
+	next    as TLISTNODE ptr
 end type
 
 type TLISTTB
-	next	as TLISTTB ptr
-	nodetb	as any ptr
-	nodes	as integer
+	next    as TLISTTB ptr
+	nodetb  as any ptr
+	nodes   as integer
 end type
 
 type TLIST
-	tbhead	as TLISTTB ptr
-	tbtail	as TLISTTB ptr
-	nodes 	as integer
-	nodelen	as integer
-	fhead	as TLISTNODE ptr					'' free list
-	head	as any ptr							'' used list
-	tail	as any ptr							'' /
-	flags	as LIST_FLAGS
+	tbhead  as TLISTTB ptr
+	tbtail  as TLISTTB ptr
+	nodes   as integer
+	nodelen as integer
+	fhead   as TLISTNODE ptr                    '' free list
+	head    as any ptr                          '' used list
+	tail    as any ptr                          '' /
+	flags   as LIST_FLAGS
 end type
 
 declare sub listInit _

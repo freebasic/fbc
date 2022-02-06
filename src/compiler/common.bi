@@ -1,5 +1,5 @@
 #ifdef BOOLEAN
-'' fbc sources do not use the boolean datatype and therefore 
+'' fbc sources do not use the boolean datatype and therefore
 '' probably shouldn't use the intrinsic false/true constants,
 '' so undef the built-in false/true constants and #define
 '' the values expected (jeffm - july 2015)

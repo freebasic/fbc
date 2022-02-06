@@ -544,7 +544,7 @@ end type
 
 enum FB_TARGETOPT
 	FB_TARGETOPT_UNIX       = &h00000001  '' Unix-like system? (for __FB_UNIX__ #define)
-	                      ''= &h00000002
+	''                      = &h00000002
 	FB_TARGETOPT_EXPORT     = &h00000004  '' Support for exporting symbols from DLLs?
 
 	'' Whether callee always pops the hidden struct result ptr
