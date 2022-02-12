@@ -122,6 +122,8 @@ rbp-y -->  local vars
 #define KNOOPTIM 3
 
 #define asm_code(s,opt...) hWriteasm64(s,opt)
+#define cfi_asm_code(s, opt...) hWriteasm64(s,opt)
+declare sub cfi_windows_asm_code(byval statement as string)
 
 #if __FB_DEBUG__ <> 0
 	#define asm_info(s) hWriteasm64("# "+s)
@@ -2132,6 +2134,7 @@ private function _emitbegin( ) as integer
 	if( env.clopt.debuginfo = true ) then edbgemitheader_asm64( env.inf.name )
 
 	asm_code( ".intel_syntax noprefix")
+	cfi_asm_code( ".cfi_sections .debug_frame")
 	asm_section(".text")
 	ctx.indent-=1
 	function = TRUE
@@ -6336,6 +6339,8 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 	if symbisprivate(proc)=FALSE then
 		asm_code(".globl "+*symbGetMangledName( proc ))
 	end if
+	cfi_asm_code(".cfi_startproc")
+	cfi_windows_asm_code(".seh_proc "+*symbGetMangledName( proc ))
 	ctx.indent-=1
 	asm_code(*symbGetMangledName( proc )+":")
 	ctx.indent+=1
@@ -6375,13 +6380,22 @@ private sub _emitprocend _
 	if symbIsNaked(proc)=false then
 
 		asm_code("push rbp")
+		'' the locations of the cfi/seh statements are important
+		'' so they do have to split the two prologue instructions
+		cfi_windows_asm_code(".seh_pushreg rbp")
+		cfi_asm_code(".cfi_def_cfa_offset 16") '' 16 = return address + this push
+		cfi_asm_code(".cfi_offset 6, -16") '' register 6 = rbp
 		asm_code("mov  rbp,rsp")
+		cfi_windows_asm_code(".seh_setframe rbp, 0") '' 0 = offset into this function's stack alloocation
+		cfi_asm_code(".cfi_def_cfa_register 6")
 			if ctx.stk>=2147483648 then
 			asm_code("mov rax, "+Str(ctx.stk))
 			asm_code("sub rsp, rax")
 		else
 			asm_code("sub rsp, "+Str(ctx.stk))
 		end if
+		cfi_windows_asm_code(".seh_stackalloc " + Str(ctx.stk))
+		cfi_windows_asm_code(".seh_endprologue")
 
 		'inside prolog/epilog
 		'--------------------
@@ -6441,8 +6455,12 @@ private sub _emitprocend _
 		''not usefull Asm_code("add rsp,XXXXX") as moving rbp to rsp restore the value just after the call and the push rbp
 		asm_code("mov rsp,rbp")
 		asm_code("pop rbp")
+		cfi_asm_code(".cfi_restore 6") '' rbp now back to what it was
+		cfi_asm_code(".cfi_def_cfa 7, 8") '' and the stack frame is back to rsp+8
 	end if
 	asm_code("ret")
+	cfi_asm_code(".cfi_endproc")
+	cfi_windows_asm_code(".seh_endproc")
 
 	if( env.clopt.debuginfo = true ) then
 		dim as string lname = *symbUniqueLabel( )
@@ -6824,4 +6842,9 @@ end sub
 private sub _emitlabelnf(byval label as FBSYMBOL Ptr)
 	'_emit( AST_OP_LABEL, NULL, NULL, NULL, label )
 	asm_error("emitlabelINF used ???? = "+ *symbGetMangledName( label ) )
+end sub
+private sub cfi_windows_asm_code(byval statement as string)
+	if ctx.target = FB_COMPTARGET_WIN32 then
+		cfi_asm_code(statement)
+	end if
 end sub

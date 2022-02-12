@@ -1118,6 +1118,24 @@ private function hLinkFiles( ) as integer
 		ldcline += " -macosx_version_min 10.4"
 	end if
 
+	'' This is required for 64-bit modules on *nix-y platforms
+	'' for the unwind tables to have any effect
+	'' Windows doesn't need this option
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
+	     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD, _
+	     FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS, _
+	     FB_COMPTARGET_DARWIN
+		dim as long outtype = fbGetOption( FB_COMPOPT_OUTTYPE )
+		if outtype = FB_OUTTYPE_EXECUTABLE OrElse outtype = FB_OUTTYPE_DYNAMICLIB Then
+			dim as long cpufamily = fbGetCpuFamily( )
+			if cpufamily = FB_CPUFAMILY_X86_64 OrElse cpufamily = FB_CPUFAMILY_AARCH64 OrElse _
+			   cpuFamily = FB_CPUFAMILY_PPC64 OrElse cpufamily = FB_CPUFAMILY_PPC64LE Then
+				ldcline += " --eh-frame-hdr"
+			end if
+		end if
+	end select
+
 	'' extra options
 	ldcline += " " + fbc.extopt.ld
 
@@ -3232,15 +3250,18 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 
 	select case( fbGetOption( FB_COMPOPT_BACKEND ) )
 	case FB_BACKEND_GCC
+		dim as boolean ism64target = false
 		select case( fbGetCpuFamily( ) )
 		case FB_CPUFAMILY_X86
 			ln += "-m32 "
 		case FB_CPUFAMILY_X86_64
 			ln += "-m64 "
+			ism64Target = True
 		case FB_CPUFAMILY_PPC
 			ln += "-m32 "
 		case FB_CPUFAMILY_PPC64, FB_CPUFAMILY_PPC64LE
 			ln += "-m64 "
+			ism64Target = True
 		end select
 
 		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
@@ -3315,7 +3336,15 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		ln += "-fwrapv "
 
 		'' Avoid gcc exception handling bloat
-		ln += "-fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables "
+		ln += "-fno-exceptions -fno-asynchronous-unwind-tables "
+
+		'' But enable unwind-tables on x64, these GREATLY increase the accuracy of
+		'' debuggers and crash tools across platforms for minimal overhead
+		if ( ism64Target ) then
+			ln += "-funwind-tables "
+		else
+			ln += "-fno-unwind-tables "
+		end if
 
 		'' Prevent format string errors on gcc 9.x. (enabled by default with '-Wall')
 		'' TODO: fbc currently emits the ZSTRING type as 'uint8' when it
@@ -3352,7 +3381,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			'' -march=name
 			'' Specify the name of the target architecture and,
 			'' optionally, one or more feature modifiers. This option
-			'' has the form -march=arch{+[no]feature}*.
+			'' has the form -march=arch{+[no]feature}*.
 			''
 			'' The permissible values for arch are
 			'' 'armv8-a'
