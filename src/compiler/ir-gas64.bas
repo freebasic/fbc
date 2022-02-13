@@ -6392,7 +6392,7 @@ private sub _emitprocend _
 		asm_code("mov  rbp,rsp")
 		cfi_windows_asm_code(".seh_setframe rbp, 0") '' 0 = offset into this function's stack alloocation
 		cfi_asm_code(".cfi_def_cfa_register 6")
-			if ctx.stk>=2147483648 then
+		if ctx.stk>=2147483648 then
 			asm_code("mov rax, "+Str(ctx.stk))
 			asm_code("sub rsp, rax")
 		else

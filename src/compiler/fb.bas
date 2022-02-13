@@ -386,7 +386,7 @@ sub fbInit _
 	strsetInit( @env.libpaths, FB_INITLIBNODES \ 4 )
 
 	'' when starting a compile, reset the restart requests
-	'' env.restart_status preserves state from previous runs 
+	'' env.restart_status preserves state from previous runs
 	''     and would have been initialized to 0 (FB_RESTART_NONE)
 	'' env.restart_count is preserved between runs (passes) so don't
 	''    re-initialize it here.
@@ -1252,8 +1252,8 @@ sub fbCompile _
 
 	'' compiling only, not cross-compiling?
 	if( fbGetOption( FB_COMPOPT_OBJINFO ) and _
-	    (not fbIsCrossComp( )) and _
-	    (env.clopt.outtype = FB_OUTTYPE_OBJECT) ) then
+		(not fbIsCrossComp( )) and _
+		(env.clopt.outtype = FB_OUTTYPE_OBJECT) ) then
 		'' store libs, paths and cmd-line options in the obj
 		hEmitObjinfo( )
 	end if

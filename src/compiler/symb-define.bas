@@ -941,7 +941,7 @@ sub symbDefineInit _
 		end if
 
 		symbAddDefine( defTb(i).name, value, len( value ), _
-				 FALSE, defTb(i).proc, defTb(i).flags )
+			FALSE, defTb(i).proc, defTb(i).flags )
 	next
 
 	'' Add __FB_<target>__ define
@@ -1044,11 +1044,11 @@ function symbAddDefine _
 
 	'' allocate new node (always on global hash, ns' won't work in lexer)
 	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-						 NULL, _
-						 NULL, @symbGetGlobalHashTb( ), _
-						 FB_SYMBCLASS_DEFINE, _
-						 symbol, NULL, _
-						 FB_DATATYPE_CHAR, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
+		NULL, _
+		NULL, @symbGetGlobalHashTb( ), _
+		FB_SYMBCLASS_DEFINE, _
+		symbol, NULL, _
+		FB_DATATYPE_CHAR, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
 	if( sym = NULL ) then
 		exit function
 	end if
@@ -1083,11 +1083,11 @@ function symbAddDefineW _
 
 	'' allocate new node (always on global hash, ns' won't work in lexer)
 	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-						 NULL, _
-						 NULL, @symbGetGlobalHashTb( ), _
-						 FB_SYMBCLASS_DEFINE, _
-						 symbol, NULL, _
-						 FB_DATATYPE_WCHAR, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
+		NULL, _
+		NULL, @symbGetGlobalHashTb( ), _
+		FB_SYMBCLASS_DEFINE, _
+		symbol, NULL, _
+		FB_DATATYPE_WCHAR, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
 	if( sym = NULL ) then
 		exit function
 	end if
@@ -1121,11 +1121,11 @@ function symbAddDefineMacro _
 
 	'' allocate new node (always on global hash, ns' won't work in lexer)
 	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-						 NULL, _
-						 NULL, @symbGetGlobalHashTb( ), _
-						 FB_SYMBCLASS_DEFINE, _
-						 symbol, NULL, _
-						 FB_DATATYPE_INVALID, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
+		NULL, _
+		NULL, @symbGetGlobalHashTb( ), _
+		FB_SYMBCLASS_DEFINE, _
+		symbol, NULL, _
+		FB_DATATYPE_INVALID, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
 	if( sym = NULL ) then
 		exit function
 	end if
