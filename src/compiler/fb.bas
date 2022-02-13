@@ -563,6 +563,7 @@ sub fbGlobalInit()
 	env.clopt.objinfo       = TRUE
 	env.clopt.showincludes  = FALSE
 	env.clopt.modeview      = FB_DEFAULT_MODEVIEW
+	env.clopt.nocmdline     = FALSE
 
 	env.restart_request     = FB_RESTART_NONE
 	env.restart_action      = FB_RESTART_NONE
