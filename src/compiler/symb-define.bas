@@ -152,6 +152,10 @@ private function hDefErr_cb() as string
 		res or= &h0100
 	end if
 
+	if( env.clopt.unwindinfo ) then
+		res or= &h0200
+	end if
+
 	function = str( res )
 end function
 

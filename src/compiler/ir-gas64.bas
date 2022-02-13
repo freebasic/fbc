@@ -122,7 +122,11 @@ rbp-y -->  local vars
 #define KNOOPTIM 3
 
 #define asm_code(s,opt...) hWriteasm64(s,opt)
-#define cfi_asm_code(s, opt...) hWriteasm64(s,opt)
+#macro cfi_asm_code(s, opt...) 
+	if( env.clopt.unwindinfo = true ) then
+		hWriteasm64(s,opt)
+	end if
+#endmacro
 declare sub cfi_windows_asm_code(byval statement as string)
 
 #if __FB_DEBUG__ <> 0
@@ -6844,7 +6848,9 @@ private sub _emitlabelnf(byval label as FBSYMBOL Ptr)
 	asm_error("emitlabelINF used ???? = "+ *symbGetMangledName( label ) )
 end sub
 private sub cfi_windows_asm_code(byval statement as string)
-	if ctx.target = FB_COMPTARGET_WIN32 then
-		cfi_asm_code(statement)
+	if( env.clopt.unwindinfo = true ) then
+		if ctx.target = FB_COMPTARGET_WIN32 then
+			hWriteasm64(statement)
+		end if
 	end if
 end sub

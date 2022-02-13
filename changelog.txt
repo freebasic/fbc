@@ -1,8 +1,14 @@
 Version 1.10.0
 
 [changed]
+- gcc: '-funwind-tables' enabled on 64-bit targets for stack unwinding (adeyblue)
+- fbc: '--eh-frame-hdr' for linking on 64-bit nix targets for stack unwinding (adeyblue)
 
 [added]
+- gas64: '.cif_sections' and '.cif_' directives for stack unwinding (adeyblue)
+- gas64: '.seh_' directives for stack unwinding (adeyblue)
+- fbc: '-eunwind' command line option to enable stack unwind information
+- fbc: set bit value '__FB_ERR__' = &h200 if '-eunwind' is enabled
 
 [fixed]
 - gas64: missing restoring of use of one virtual register on sqr for float (SARG)

@@ -1647,6 +1647,7 @@ enum
 	OPT_EDEBUGINFO
 	OPT_ELOCATION
 	OPT_ENULLPTR
+	OPT_EUNWIND
 	OPT_ENTRY
 	OPT_EX
 	OPT_EXX
@@ -1726,6 +1727,7 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EDEBUGINFO   affects code generation, affects link
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_ELOCATION    affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_ENULLPTR     affects code generation
+	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EUNWIND      affects code generation
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_ENTRY        affects major initialization, affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EX           affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EXX          affects code generation
@@ -1827,6 +1829,7 @@ private sub handleOpt _
 
 	case OPT_E
 		fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
+		fbSetOption( FB_COMPOPT_UNWINDINFO, TRUE )
 
 	case OPT_EARRAY
 		fbSetOption( FB_COMPOPT_ARRAYBOUNDCHECK, TRUE )
@@ -1845,6 +1848,9 @@ private sub handleOpt _
 
 	case OPT_ENULLPTR
 		fbSetOption( FB_COMPOPT_NULLPTRCHECK, TRUE )
+
+	case OPT_EUNWIND
+		fbSetOption( FB_COMPOPT_UNWINDINFO, TRUE )
 
 	case OPT_ENTRY
 		fbc.entry = arg
@@ -2264,6 +2270,7 @@ private function parseOption(byval opt as zstring ptr) as integer
 		CHECK("edebuginfo", OPT_EDEBUGINFO)
 		CHECK("elocation", OPT_ELOCATION)
 		CHECK("enullptr", OPT_ENULLPTR)
+		CHECK("eunwind", OPT_EUNWIND)
 		CHECK("entry", OPT_ENTRY)
 		CHECK("exx", OPT_EXX)
 		CHECK("export", OPT_EXPORT)
@@ -3919,6 +3926,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -edebuginfo      Add debug info"
 	print "  -elocation       Enable error location reporting"
 	print "  -enullptr        Enable null-pointer checking"
+	print "  -eunwind         Enable call stack unwind information"
 	end if
 
 	print "  -entry           Change the entry point of the program from main()"
