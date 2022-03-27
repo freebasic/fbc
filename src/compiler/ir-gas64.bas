@@ -283,6 +283,7 @@ type ASM64_CONTEXT
 	''handling of vreg after a call
 	opereg    as integer
 	opepass   as integer
+	maxstack  as integer
 end type
 
 type DBGCTX
@@ -2127,9 +2128,11 @@ private function _emitbegin( ) as integer
 	reghandle(KREG_RSP)=KREGRSVD ''rsp
 
 	if ctx.target=FB_COMPTARGET_LINUX then
+		ctx.maxstack=8388608 ''Linux default stack size 8MB for 64bit
 		redim listreg(1 to 8)
 		listreg(1)=KREG_RDI:listreg(2)=KREG_RSI:listreg(3)=KREG_RDX:listreg(4)=KREG_RCX:listreg(5)=KREG_R8:listreg(6)=KREG_R9:listreg(7)=KREG_R10:listreg(8)=KREG_R11
 	else
+		ctx.maxstack=env.clopt.stacksize
 		redim listreg(1 to 6)
 		listreg(1)=KREG_RCX:listreg(2)=KREG_RDX:listreg(3)=KREG_R8:listreg(4)=KREG_R9:listreg(5)=KREG_R10:listreg(6)=KREG_R11
 	end if
@@ -6364,7 +6367,6 @@ private sub _emitprocend _
 	)
 	dim as long idx
 	dim as string restreg,lname
-
 	asm_info("stk="+Str(ctx.stk))
 	if ctx.stkmax>ctx.stk then ctx.stk=ctx.stkmax
 
@@ -6401,6 +6403,10 @@ private sub _emitprocend _
 		cfi_windows_asm_code(".seh_stackalloc " + Str(ctx.stk))
 		cfi_windows_asm_code(".seh_endprologue")
 
+		if ctx.stk>=culngint( ctx.maxstack ) then
+			dim as string msgex=" proc="+*symbGetMangledName( proc )+" STACK OVERFLOW, review array size, use redim/shared or increase stack size"
+			errReportWarnex(FB_WARNINGMSG_HUGEVARONSTACK,0,-1,,strptr(msgex) )
+		end if
 		'inside prolog/epilog
 		'--------------------
 		''reg used in called
