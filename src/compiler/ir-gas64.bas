@@ -414,12 +414,12 @@ dim shared as long listreg(any)
 '' ================== for optimization =========================================================
 private sub check_optim(byref code as string)
 
-	dim as string part1,part2,mov,newcode
-	static as string prevpart1,prevpart2,prevmov
+	dim as string part1,part2,instruc,newcode
+	static as string prevpart1,prevpart2,previnstruc
 	static as long prevwpos,flag
 	dim as long poschar1,poschar2,writepos
 	if len(code)=0 then
-		prevpart1="":prevpart2="":prevmov="":flag=KUSE_MOV ''reinit statics
+		prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV ''reinit statics
 		exit sub
 	end if
 
@@ -428,80 +428,165 @@ private sub check_optim(byref code as string)
 		if instr(code,prevpart1+":") then
 			mid(ctx.proc_txt,prevwpos)="#O9"
 		end if
-		prevpart1="":prevpart2="":prevmov="":flag=KUSE_MOV ''reinit
+		prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV ''reinit
 		exit sub
 	end if
 
-	if left(code,3)<>"mov" and left(code,3)<>"lea" and left(code,3)<>"jmp" then
-		prevpart1="":prevpart2="":prevmov="":flag=KUSE_MOV ''reinit
-		exit sub
-	end if
-
-	''todo reactivate but exclude if dest not a register
-	if left(code,6)="movsxd" then prevpart1="":prevpart2="":prevmov="":flag=KUSE_MOV :exit sub
-	if left(code,5)="movsx"  then prevpart1="":prevpart2="":prevmov="":flag=KUSE_MOV :exit sub
-	if left(code,5)="movzx"  then prevpart1="":prevpart2="":prevmov="":flag=KUSE_MOV :exit sub
-	writepos=len(ctx.proc_txt)+1
-
-	poschar1=instr(code," ")
-	mov=left(code,poschar1-1)
-	poschar2=instr(code,",")
-	part1=trim(mid(code,poschar1+1,poschar2-poschar1-1))
-	poschar1=instr(code,"#")
-	if poschar1=0 then
-		poschar1=len(code) ''Add 1 as after removing 2
-	else
-		poschar1-=2
-	end if
-	part2=trim(Mid(code,poschar2+1,poschar1-poschar2))
-
-	''cancel mov regx, regx
-	if mov="mov" then
-		if part1=part2 then
-			if instr("rsi rdi rcx rdx rbx rax r8 r9 r10 r11 r12 r13 r14 r15",part1) then
-				code="#O0"+code
-				prevpart1="":prevpart2="":prevmov="":flag=KUSE_MOV
-				exit sub
+	select case left(code,3)
+		case "mov"
+			writepos=len(ctx.proc_txt)+1
+			poschar1=instr(code," ")
+			instruc=left(code,poschar1-1)
+			poschar2=instr(code,",")
+			part1=trim(mid(code,poschar1+1,poschar2-poschar1-1))
+			poschar1=instr(code,"#")
+			if poschar1=0 then
+				poschar1=len(code) ''Add 1 as after removing 2
+			else
+				poschar1-=2
 			end if
-		end if
-	end if
+			part2=trim(Mid(code,poschar2+1,poschar1-poschar2))
 
-	if mov="lea" then
-		if instr(code,"   add ") then prevpart1="":prevpart2="":exit sub ''case where an add xxx is associated with lea see store for example
-		flag=KUSE_LEA
-		prevpart1=part1
-		prevpart2=part2
-		prevwpos=writepos
-		exit sub
-	end if
+			''cancel mov regx, regx
+			if part1=part2 then
+				if instr("rsi rdi rcx rdx rbx rax r8 r9 r10 r11 r12 r13 r14 r15",part1) then
+					code="#O0"+code
+					prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV
+					exit sub
+				end if
+			end if
 
-	if mov="jmp" then
-		if part1=prevpart1 then
-			''mov r11, rax  --> #10mov r11, rax
-			''jmp r11       --> #10jmp r11
-			''              --> jmp rax
-			mid(ctx.proc_txt,prevwpos)="#10"
-			code="#10"+code+newline+string( ctx.indent*3, 32 )+"jmp "+prevpart2+" #Optim 10"
-			prevpart1="":prevpart2="":prevmov="":flag=KUSE_MOV
-			exit sub
-		else
+		case "lea"
+			writepos=len(ctx.proc_txt)+1
+			poschar1=instr(code," ")
+			instruc=left(code,poschar1-1)
+			poschar2=instr(code,",")
+			part1=trim(mid(code,poschar1+1,poschar2-poschar1-1))
+			poschar1=instr(code,"#")
+			if poschar1=0 then
+				poschar1=len(code) ''Add 1 as after removing 2
+			else
+				poschar1-=2
+			end if
+			part2=trim(Mid(code,poschar2+1,poschar1-poschar2))
+
+			if instr(code,"   add ") then
+				prevpart1="":prevpart2=""
+				exit sub ''case where an add xxx is associated with lea see store for example
+			end if
+			flag=KUSE_LEA
 			prevpart1=part1
-			flag=KUSE_JMP
+			prevpart2=part2
 			prevwpos=writepos
 			exit sub
-		end if
-	end if
+
+		case "jmp"
+			writepos=len(ctx.proc_txt)+1
+			poschar1=instr(code," ")
+			instruc=left(code,poschar1-1)
+			poschar2=instr(code,",")
+			part1=trim(mid(code,poschar1+1,poschar2-poschar1-1))
+			poschar1=instr(code,"#")
+			if poschar1=0 then
+				poschar1=len(code) ''Add 1 as after removing 2
+			else
+				poschar1-=2
+			end if
+			part2=trim(Mid(code,poschar2+1,poschar1-poschar2))
+
+			if part1=prevpart1 then
+				''mov r11, rax  --> #10mov r11, rax
+				''jmp r11       --> #10jmp r11
+				''              --> jmp rax
+				mid(ctx.proc_txt,prevwpos)="#10"
+				code="#10"+code+newline+string( ctx.indent*3, 32 )+"jmp "+prevpart2+" #Optim 10"
+				prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV
+				exit sub
+			else
+				prevpart1=part1
+				flag=KUSE_JMP
+				prevwpos=writepos
+				exit sub
+			end if
+
+		case "cmp"
+			if len(prevpart1) then
+				if flag<>KUSE_LEA then
+					writepos=len(ctx.proc_txt)+1
+					poschar1=instr(code," ")
+					instruc=left(code,poschar1-1)
+					poschar2=instr(code,",")
+					part1=trim(mid(code,poschar1+1,poschar2-poschar1-1))
+					poschar1=instr(code,"#")
+					if poschar1=0 then
+						poschar1=len(code) ''Add 1 as after removing 2
+					else
+						poschar1-=2
+					end if
+					part2=trim(Mid(code,poschar2+1,poschar1-poschar2))
+
+					''mov r11, rax
+					''cmp r11,xx    --> cmp rax, xx
+					''or
+					''mov r11, xx[rbp]
+					''cmp r10, r11  --> cmp r10, xx[rbp]
+					if part1[0]=asc("r") then
+						if part1=prevpart1 and prevpart2[0]=asc("r") then
+							mid(ctx.proc_txt,prevwpos)="#13"
+							code="#13"+code+newline+string( ctx.indent*3, 32 )+"cmp "+prevpart2+", "+part2+" #Optim 13"
+						elseif part2=prevpart1 and instr(prevpart2,"[") then
+							mid(ctx.proc_txt,prevwpos)="#14"
+							code="#14"+code+newline+string( ctx.indent*3, 32 )+"cmp "+part1+", "+prevpart2+" #Optim 14"
+						end if
+					end if
+				end if
+				prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV ''reinit
+			end if
+			exit sub
+		case else
+
+			select case left(code,4)
+				case "adds","subs","muls","divs"
+
+					writepos=len(ctx.proc_txt)+1
+					poschar1=instr(code," ")
+					instruc=left(code,poschar1-1)
+					poschar2=instr(code,",")
+					part1=trim(mid(code,poschar1+1,poschar2-poschar1-1))
+					poschar1=instr(code,"#")
+					if poschar1=0 then
+						poschar1=len(code) ''Add 1 as after removing 2
+					else
+						poschar1-=2
+					end if
+					part2=trim(Mid(code,poschar2+1,poschar1-poschar2))
+
+					if prevpart1=part2 then
+						if instr(prevpart2,"[r") then
+							mid(ctx.proc_txt,prevwpos)="#15"
+							code="#15"+code+newline+string( ctx.indent*3, 32 )+instruc+" "+part1+", "+prevpart2+" #Optim 15"
+						end if
+					end if
+			end select
+			prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV ''reinit
+			exit sub
+	end select
+
+	''todo reactivate but exclude if dest not a register
+	if instruc="movsxd" then prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV :exit sub
+	if instruc="movsx"  then prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV :exit sub
+	if instruc="movzx"  then prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV :exit sub
 
 	if flag=KUSE_LEA then
 		if instr(part1,"["+prevpart1+"]") then
 			''check register or immediate
 			if part2[0]=asc("r") Or part2[0]=asc("e") or (asc(Right(part2,1))>=48 and asc(right(part2,1))<=57) then
-				asm_info("OPTIMIZATION 4 (lea)")
+				'asm_info("OPTIMIZATION 4 (lea)")
 				'asm_info("removed =lea "+prevpart1+", "+prevpart2)
 				mid(ctx.proc_txt,prevwpos)="#O4"
 
 				'asm_info("removed ="+mov+" "+part1+", "+part2)
-				newcode=mov+" "+mid(part1,1,instr(part1,"[")-1)+prevpart2+", "+part2
+				newcode=instruc+" "+mid(part1,1,instr(part1,"[")-1)+prevpart2+", "+part2
 				'newcode="lea "+Mid(part1,1,instr(part1,"[")-1)+prevpart2+", "+part2
 				'asm_info("proposed="+newcode)
 
@@ -510,7 +595,7 @@ private sub check_optim(byref code as string)
 			end if
 		else
 			if part2=prevpart1 and part1[0]=asc("r") then
-				asm_info("OPTIMIZATION 5 (lea)")
+				'asm_info("OPTIMIZATION 5 (lea)")
 				'asm_info("removed =lea "+prevpart1+", "+prevpart2)
 				mid(ctx.proc_txt,prevwpos)="#O5"
 
@@ -523,13 +608,13 @@ private sub check_optim(byref code as string)
 				code="#O5"+code+newline+string( ctx.indent*3, 32 )+newcode+" #Optim 5"
 			else
 				if part1[0]=asc("r") andalso part2="["+prevpart1+"]" then
-					asm_info("OPTIMIZATION 7 (lea)")
+					'asm_info("OPTIMIZATION 7 (lea)")
 					mid(ctx.proc_txt,prevwpos)="#O7"
-					newcode=mov+" "+part1+", "+prevpart2
+					newcode=instruc+" "+part1+", "+prevpart2
 					writepos=len(ctx.proc_txt)+len(code)+9
 					code="#O7"+code+newline+string( ctx.indent*3, 32 )+newcode+" #Optim 7"
 				else
-					prevpart1="":prevpart2="":prevmov=""
+					prevpart1="":prevpart2="":previnstruc=""
 
 				end if
 			end if
@@ -541,7 +626,7 @@ private sub check_optim(byref code as string)
 
 	if part2=prevpart1 then
 		if part1=prevpart2 then
-			asm_info("OPTIMIZATION 1")
+			'asm_info("OPTIMIZATION 1")
 			code="#O1 "+code
 		else
 			if prevpart2="" then ''todo remove me after fixed
@@ -554,66 +639,66 @@ private sub check_optim(byref code as string)
 			''direct simple register ?
 			if prevpart2[0]=asc("r") then
 				if instr(prevpart1,"[")<>0 then
-					asm_info("OPTIMIZATION 2-1")
+					'asm_info("OPTIMIZATION 2-1")
 					''skip comment
 					if part1[0]=asc("x") then
-						if mov="movss" then
-							prevmov="movd"
+						if instruc="movss" then
+							previnstruc="movd"
 						else
-							prevmov="movq"
+							previnstruc="movq"
 						end if
 					end if
 				else
-					asm_info("OPTIMIZATION 2-2")
+					'asm_info("OPTIMIZATION 2-2")
 					mid(ctx.proc_txt,prevwpos)="#O2"
-					if mov="movq" or mov="movd" then
-						prevmov=mov
-					elseif mov="movsx" then
-						prevmov=mov
+					if instruc="movq" or instruc="movd" then
+						previnstruc=instruc
+					elseif instruc="movsx" then
+						previnstruc=instruc
 					end if
 				end if
 				writepos=len(ctx.proc_txt)+len(code)+9
-				code="#O2"+code+newline+string( ctx.indent*3, 32 )+prevmov+" "+part1+", "+prevpart2+" #Optim 2"
+				code="#O2"+code+newline+string( ctx.indent*3, 32 )+previnstruc+" "+part1+", "+prevpart2+" #Optim 2"
 				part2=prevpart2
 			''xmm register ?
 			elseif prevpart2[0]=asc("x") then
 				if instr(prevpart1,"[")<>0 then
-					asm_info("OPTIMIZATION 3-1")
+					'asm_info("OPTIMIZATION 3-1")
 					''skip comment
-					if prevmov="movss" then
-						mov="movd"
+					if previnstruc="movss" then
+						instruc="movd"
 					else
-						mov="movq"
+						instruc="movq"
 					end if
 				else
-					asm_info("OPTIMIZATION 3-2")
+					'asm_info("OPTIMIZATION 3-2")
 					mid(ctx.proc_txt,prevwpos)="#O3"
 
-					if prevmov="movq" then
+					if previnstruc="movq" then
 						if instr(part2,"[") then
-							mov="movsd"
+							instruc="movsd"
 						else
-							mov="movq"
+							instruc="movq"
 						end if
-					elseif prevmov="movd" then
+					elseif previnstruc="movd" then
 						if part1[0]=asc("r") or part1[0]=asc("e") then
-						   mov="movd"
+						   instruc="movd"
 						else
-						   mov="movss"
+						   instruc="movss"
 						end if
 					else
-						asm_error("in check_optim 3-2 mov unknown="+mov)
+						asm_error("in check_optim 3-2 instruc unknown="+instruc)
 					end if
 				end if
 				writepos=len(ctx.proc_txt)+len(code)+9
-				code="#O3"+code+newline+string( ctx.indent*3, 32 )+mov+" "+part1+", "+prevpart2+" #Optim 3"
+				code="#O3"+code+newline+string( ctx.indent*3, 32 )+instruc+" "+part1+", "+prevpart2+" #Optim 3"
 				part2=prevpart2
 			elseif ( part1[0]=asc("r") or part1[0]=asc("e") ) and prevpart1=part2 and instr(prevpart1,"[")=0 then
-				asm_info("OPTIMIZATION 6")
+				'asm_info("OPTIMIZATION 6")
 				mid(ctx.proc_txt,prevwpos)="#O6"
 				'asm_info("part1="+part1+" part2="+part2+" prevpart1="+prevpart1+" prevpart2="+prevpart2)
 				writepos=len(ctx.proc_txt)+len(code)+9
-				code="#O6"+code+newline+string( ctx.indent*3, 32 )+prevmov+" "+part1+", "+prevpart2+" #Optim 6"
+				code="#O6"+code+newline+string( ctx.indent*3, 32 )+previnstruc+" "+part1+", "+prevpart2+" #Optim 6"
 				part2=prevpart2
 			end if
 		end if
@@ -621,7 +706,7 @@ private sub check_optim(byref code as string)
 
 	prevpart1=part1
 	prevpart2=part2
-	prevmov=mov
+	previnstruc=instruc
 	prevwpos=writepos
 end sub
 private sub reg_freeable(byref lineasm as string)
@@ -3106,7 +3191,11 @@ private sub bop_float( _
 				case AST_OP_DIV
 					asm_code(divreg+"xmm0, xmm1")
 			end select
-			asm_code("movq "+*regstrq(vrreg)+", xmm0")
+			if v1dtype=FB_DATATYPE_DOUBLE then
+				asm_code("movq "+*regstrq(vrreg)+", xmm0")
+			else
+				asm_code("movd "+*regstrd(vrreg)+", xmm0")
+			end if
 			restore_vrreg(vr,vrreg)
 		case AST_OP_ATAN2
 			if v1dtype=FB_DATATYPE_DOUBLE then
