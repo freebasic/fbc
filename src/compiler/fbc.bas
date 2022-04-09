@@ -3909,7 +3909,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "options:"
 	print "  @<file>          Read more command line arguments from a file"
 	print "  -a <file>        Treat file as .o/.a input file"
-	print "  -arch <type>     Set target architecture (default: 486)"
+	print "  -arch <type>     Set target architecture (default: 686)"
 	print "  -asm att|intel   Set asm format (-gen gcc|llvm, x86 or x86_64 only)"
 	print "  -b <file>        Treat file as .bas input file"
 	print "  -c               Compile only, do not link"

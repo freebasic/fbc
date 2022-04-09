@@ -3,12 +3,16 @@ Version 1.10.0
 [changed]
 - gcc: '-funwind-tables' enabled on 64-bit targets for stack unwinding (adeyblue)
 - fbc: '--eh-frame-hdr' for linking on 64-bit nix targets for stack unwinding (adeyblue)
+- x86: arch 686 by default instead of 486 (SARG)
+- asm backend: only with 686 arch, use of fcomi(p) to avoid slower instructions and also less code (SARG)
 
 [added]
 - gas64: '.cif_sections' and '.cif_' directives for stack unwinding (adeyblue)
 - gas64: '.seh_' directives for stack unwinding (adeyblue)
 - fbc: '-eunwind' command line option to enable stack unwind information
 - fbc: set bit value '__FB_ERR__' = &h200 if '-eunwind' is enabled
+- gas64 : stack overflow check (total of all local variables) at compile time --> warning - stack size for linux = 8MB, for Windows = default or defined by user (SARG)
+- gas64 : stack overflow check at run time if -exx is used - stack size for linux = 8MB, for Windows = default or defined by user (SARG)
 
 [fixed]
 - gas64: missing restoring of use of one virtual register on sqr for float (SARG)

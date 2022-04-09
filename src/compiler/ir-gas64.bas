@@ -122,7 +122,7 @@ rbp-y -->  local vars
 #define KNOOPTIM 3
 
 #define asm_code(s,opt...) hWriteasm64(s,opt)
-#macro cfi_asm_code(s, opt...) 
+#macro cfi_asm_code(s, opt...)
 	if( env.clopt.unwindinfo = true ) then
 		hWriteasm64(s,opt)
 	end if
@@ -153,7 +153,7 @@ declare sub cfi_windows_asm_code(byval statement as string)
 #define KREGFREE  -2 ''register not free
 #define KREGRSVD  -3 ''register reserved
 #define KREGLOCK  -4 ''register locked (used as parameter)
-#define KREGUPPER 15 ''registers 0 to 15 / 16=rip /17=dummy reg to avoid crash 
+#define KREGUPPER 15 ''registers 0 to 15 / 16=rip /17=dummy reg to avoid crash
 #define KNOTFOUND -1
 #define KSIZEPROCTXT 4000000 ''initial size of proc_txt used for speed up text adding
 
@@ -283,6 +283,7 @@ type ASM64_CONTEXT
 	''handling of vreg after a call
 	opereg    as integer
 	opepass   as integer
+	maxstack  as integer
 end type
 
 type DBGCTX
@@ -1404,7 +1405,7 @@ private sub reg_spilling(byval regspilled as long)
 	reghandle(regspilled)=KREGFREE
 
 	''need to keep a trace when handling second branch
-	if( regroom(regspilled).status = KROOMMARKED ) then 
+	if( regroom(regspilled).status = KROOMMARKED ) then
 		regroom(regspilled).vreg = v
 		regroom(regspilled).status = KROOMUSED
 	end if
@@ -1564,7 +1565,7 @@ private sub reg_branch(byval label as FBSYMBOL ptr )
 	elseif label=ctx.labeljump then
 		if( ctx.vreg_count > 0 ) then
 			''restoring registers spilled in the second branch
-			dim v as ASM64_SAVEDREG ptr = any 
+			dim v as ASM64_SAVEDREG ptr = any
 			v = flistGetHead( @ctx.spillvregs )
 			while( v <> NULL )
 				if( v->spilbranch1 ) then
@@ -1572,7 +1573,7 @@ private sub reg_branch(byval label as FBSYMBOL ptr )
 					asm_info("SPILBRANCH1 restoring saved vreg="+str(v->id)+" in register="+*regstrq(regfree))
 					v->sdvreg = KREGFREE
 					asm_code("mov "+*regstrq(regfree)+", QWORD PTR "+str(v->sdoffset)+"[rbp]")
-				end if			
+				end if
 				v = flistGetNext( v )
 			wend
 		end if
@@ -2127,9 +2128,11 @@ private function _emitbegin( ) as integer
 	reghandle(KREG_RSP)=KREGRSVD ''rsp
 
 	if ctx.target=FB_COMPTARGET_LINUX then
+		ctx.maxstack=8388608 ''Linux default stack size 8MB for 64bit
 		redim listreg(1 to 8)
 		listreg(1)=KREG_RDI:listreg(2)=KREG_RSI:listreg(3)=KREG_RDX:listreg(4)=KREG_RCX:listreg(5)=KREG_R8:listreg(6)=KREG_R9:listreg(7)=KREG_R10:listreg(8)=KREG_R11
 	else
+		ctx.maxstack=env.clopt.stacksize
 		redim listreg(1 to 6)
 		listreg(1)=KREG_RCX:listreg(2)=KREG_RDX:listreg(3)=KREG_R8:listreg(4)=KREG_R9:listreg(5)=KREG_R10:listreg(6)=KREG_R11
 	end if
@@ -2140,6 +2143,9 @@ private function _emitbegin( ) as integer
 	asm_code( ".intel_syntax noprefix")
 	cfi_asm_code( ".cfi_sections .debug_frame")
 	asm_section(".text")
+	if env.clopt.nullptrchk=true then
+		asm_code("mov qword ptr $totalstacksize[rip], 0")
+	end if
 	ctx.indent-=1
 	function = TRUE
 end function
@@ -2191,6 +2197,17 @@ private sub _emitend( )
 	irForEachDataStmt( @hEmitVariable )
 	'' Global arrays for global ctors/dtors
 	symbForEachGlobal( FB_SYMBCLASS_PROC, @hAddGlobalCtorDtor )
+
+	''for checking stack overflow
+	if env.clopt.nullptrchk=true then
+		asm_section(".bss")
+		if ctx.target=FB_COMPTARGET_LINUX then
+			asm_code(".local $totalstacksize")
+			asm_code(".comm $totalstacksize,8,8")
+		else
+			asm_code(".lcomm $totalstacksize,8,8")
+		end if
+	EndIf
 
 	''if float rounding is used check sse4_1 for using roundsd/roundss
 	if ctx.roundfloat=true then
@@ -6364,7 +6381,6 @@ private sub _emitprocend _
 	)
 	dim as long idx
 	dim as string restreg,lname
-
 	asm_info("stk="+Str(ctx.stk))
 	if ctx.stkmax>ctx.stk then ctx.stk=ctx.stkmax
 
@@ -6382,6 +6398,47 @@ private sub _emitprocend _
 	ctx.section=SECTION_PROLOG
 
 	if symbIsNaked(proc)=false then
+
+		if env.clopt.nullptrchk=true then
+			asm_code("add qword ptr $totalstacksize[rip], "+str(ctx.stk))
+			asm_code("cmp qword ptr $totalstacksize[rip], "+str(ctx.maxstack))
+
+
+			asm_code(".section .data")
+			asm_code(".align 8")
+			var lname1 = *symbUniqueLabel( )
+			asm_code(lname1+":")
+			'asm_code(".ascii """+*s+$"\0""")
+			asm_code(".ascii ""Aborting : stack overflow "+env.inf.name+" "+*symbGetMangledName( proc )+$"\0""")
+
+			asm_code(".text")
+			var lname = *symbUniqueLabel( )
+			asm_code("jl "+lname)
+
+			if ctx.target=FB_COMPTARGET_LINUX then
+				asm_code("lea rdi, "+lname1+"[rip]")
+				asm_code("call fb_StrAllocTempDescZ")
+
+				asm_code("xor edi, edi")
+				asm_code("mov rsi, rax")
+				asm_code("mov rdx, 1")
+				asm_code("call fb_PrintString")
+
+				asm_code("mov rdi, 4")
+			else
+				asm_code("lea rcx, "+lname1+"[rip]")
+				asm_code("call fb_StrAllocTempDescZ")
+
+				asm_code("xor ecx, ecx")
+				asm_code("mov rdx, rax")
+				asm_code("mov r8d, 1")
+				asm_code("call fb_PrintString")
+
+				asm_code("mov rcx, 4")
+			end if
+			asm_code("call fb_End")
+			asm_code(lname+":")
+		end if
 
 		asm_code("push rbp")
 		'' the locations of the cfi/seh statements are important
@@ -6401,6 +6458,10 @@ private sub _emitprocend _
 		cfi_windows_asm_code(".seh_stackalloc " + Str(ctx.stk))
 		cfi_windows_asm_code(".seh_endprologue")
 
+		if ctx.stk>=culngint( ctx.maxstack ) then
+			dim as string msgex=" proc="+*symbGetMangledName( proc )+" STACK OVERFLOW, review array size, use redim/shared or increase stack size"
+			errReportWarnex(FB_WARNINGMSG_HUGEVARONSTACK,0,-1,,strptr(msgex) )
+		end if
 		'inside prolog/epilog
 		'--------------------
 		''reg used in called
@@ -6447,6 +6508,10 @@ private sub _emitprocend _
 
 	''--> EPILOG code
 	ctx.section=SECTION_EPILOG
+
+	if env.clopt.nullptrchk=true then
+		asm_code("sub qword ptr $totalstacksize[rip], "+str(ctx.stk))
+	EndIf
 
 	if( env.clopt.debuginfo = true ) then
 		lname = *symbUniqueLabel( )

@@ -2145,19 +2145,26 @@ private sub _emitLOADF2L _
 
 		outp "sub esp, 8"
 		outp "mov dword ptr [esp], 0x5F000000" '' 2^63
-		outp "fcom dword ptr [esp]"
+		if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
+			outp "fld dword ptr [esp]"
+			outp "fcomip"
+			hBRANCH( "jbe", label_geq )
 
-		if( iseaxfree ) then
-			outp "fnstsw ax"
-			outp "test ah, 1"
 		else
-			hPUSH( "eax" )
-			outp "fnstsw ax"
-			outp "test ah, 1"
-			hPOP( "eax" )
-		end if
+			outp "fcom dword ptr [esp]"
 
-		hBRANCH( "jz", label_geq )
+			if( iseaxfree ) then
+				outp "fnstsw ax"
+				outp "test ah, 1"
+			else
+				hPUSH( "eax" )
+				outp "fnstsw ax"
+				outp "test ah, 1"
+				hPOP( "eax" )
+			end if
+
+			hBRANCH( "jz", label_geq )
+		end if
 
 		'' if x < 2^63
 		outp "fistp qword ptr [esp]"
@@ -4227,7 +4234,6 @@ private sub hCMPI _
 
 end sub
 
-
 '':::::
 private sub hCMPF _
 	( _
@@ -4250,41 +4256,49 @@ private sub hCMPF _
 	else
 		lname = *symbGetMangledName( label )
 	end if
-
 	'' do comp
-	if( svreg->typ = IR_VREGTYPE_REG ) then
-		outp "fcompp"
+	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
+		''fcomi usable, faster
+		if( svreg->typ = IR_VREGTYPE_REG ) then
+			outp "fxch" ''in this case inverse order
+			outp "fcomip st, st(1)"
+			outp "fstp st(0)" ''pop register stack as fcomippp doesn't exist
+		else
+			ostr = "fld "+src
+			outp ostr
+			outp "fcomip st, st(1)"
+			outp "fstp st(0)" ''pop register stack as fcomippp doesn't exist
+		end if
 	else
-		'' can it be optimized to ftst?
-		if( typeGetClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
+		if( svreg->typ = IR_VREGTYPE_REG ) then
+			outp "fcompp"
+		else
+			'' can it be optimized to ftst?
 			ostr = "fcomp " + src
 			outp ostr
-		else
-			ostr = "ficomp " + src
-			outp ostr
 		end if
-	end if
 
-	iseaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
-	if( rvreg <> NULL ) then
-		iseaxfree = (rvreg->reg = EMIT_REG_EAX)
-	end if
+		iseaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
+		if( rvreg <> NULL ) then
+			iseaxfree = (rvreg->reg = EMIT_REG_EAX)
+		end if
 
-	if( iseaxfree = FALSE ) then
-		hPUSH( "eax" )
-	end if
+		if( iseaxfree = FALSE ) then
+			hPUSH( "eax" )
+		end if
 
-	'' load fpu flags
-	outp "fnstsw ax"
-	if( len( *mask ) > 0 ) then
-		ostr = "test ah, " + *mask
-		outp ostr
-	else
-		outp "sahf"
-	end if
+		'' load fpu flags
+		outp "fnstsw ax"
+		if( len( *mask ) > 0 ) then
+			ostr = "test ah, " + *mask
+			outp ostr
+		else
+			outp "sahf"
+		end if
 
-	if( iseaxfree = FALSE ) then
-		hPOP( "eax" )
+		if( iseaxfree = FALSE ) then
+			hPOP( "eax" )
+		end if
 	end if
 
 	'' no result to be set? just branch
@@ -4390,8 +4404,6 @@ private sub _emitCGTI _
 
 end sub
 
-
-
 '':::::
 private sub _emitCGTF _
 	( _
@@ -4401,8 +4413,11 @@ private sub _emitCGTF _
 		byval svreg as IRVREG ptr _
 	) static
 
-	hCMPF( rvreg, label, "z", "0b01000001", dvreg, svreg )
-
+	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
+		hCMPF( rvreg, label, "b", "", dvreg, svreg )
+	else
+		hCMPF( rvreg, label, "z", "0b01000001", dvreg, svreg )
+	end if
 end sub
 
 '':::::
@@ -4459,7 +4474,11 @@ private sub _emitCLTF _
 		byval svreg as IRVREG ptr _
 	) static
 
-	hCMPF( rvreg, label, "nz", "0b00000001", dvreg, svreg )
+	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
+		hCMPF( rvreg, label, "a", "", dvreg, svreg )
+	else
+		hCMPF( rvreg, label, "nz", "0b00000001", dvreg, svreg )
+	end if
 
 end sub
 
@@ -4499,7 +4518,11 @@ private sub _emitCEQF _
 		byval svreg as IRVREG ptr _
 	) static
 
-	hCMPF( rvreg, label, "nz", "0b01000000", dvreg, svreg )
+	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
+		hCMPF( rvreg, label, "z", "", dvreg, svreg )
+	else
+		hCMPF( rvreg, label, "nz", "0b01000000", dvreg, svreg )
+	end if
 
 end sub
 
@@ -4539,7 +4562,11 @@ private sub _emitCNEF _
 		byval svreg as IRVREG ptr _
 	) static
 
-	hCMPF( rvreg, label, "z", "0b01000000", dvreg, svreg )
+	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
+		hCMPF( rvreg, label, "nz", "", dvreg, svreg )
+	else
+		hCMPF( rvreg, label, "z", "0b01000000", dvreg, svreg )
+	end if
 
 end sub
 
@@ -4597,7 +4624,11 @@ private sub _emitCLEF _
 		byval svreg as IRVREG ptr _
 	) static
 
-	hCMPF( rvreg, label, "nz", "0b01000001", dvreg, svreg )
+	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
+		hCMPF( rvreg, label, "ae", "", dvreg, svreg )
+	else
+		hCMPF( rvreg, label, "nz", "0b01000001", dvreg, svreg )
+	end if
 
 end sub
 
@@ -4656,7 +4687,11 @@ private sub _emitCGEF _
 		byval svreg as IRVREG ptr _
 	) static
 
-	hCMPF( rvreg, label, "ae", "", dvreg, svreg )
+	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
+		hCMPF( rvreg, label, "be", "", dvreg, svreg )
+	else
+		hCMPF( rvreg, label, "ae", "", dvreg, svreg )
+	end if
 
 end sub
 
@@ -4934,18 +4969,26 @@ private sub _emitSGNF( byval dvreg as IRVREG ptr )
 
 	label = *symbUniqueLabel( )
 
-	iseaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
+	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
+		outp "fldz"
+		outp "fxch"
+		outp "fcomip"
 
-	if( iseaxfree = FALSE ) then
-		hPUSH( "eax" )
-	end if
+	else
+		iseaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
 
-	outp "ftst"
-	outp "fnstsw ax"
-	outp "sahf"
+		if( iseaxfree = FALSE ) then
+			hPUSH( "eax" )
+		end if
 
-	if( iseaxfree = FALSE ) then
-		hPOP( "eax" )
+		outp "ftst"
+		outp "fnstsw ax"
+		outp "sahf"
+
+		if( iseaxfree = FALSE ) then
+			hPOP( "eax" )
+		end if
+
 	end if
 
 	'' if dst = 0
@@ -6268,16 +6311,24 @@ private sub _emitLOADF2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 		outp "push eax"
 	end if
 
-	outp "ftst"
-	outp "fnstsw ax"
+	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
+		outp "fldz"
+		outp "fcomip"
+		outp "setnz al"
 
-	#if 1
-	outp "sahf"
-	outp "setnz al"
-	#else
-	outp "test ah, 0b01000000"
-	outp "setz al"
-	#endif
+	else
+		outp "ftst"
+		outp "fnstsw ax"
+
+		#if 1
+		outp "sahf"
+		outp "setnz al"
+		#else
+		outp "test ah, 0b01000000"
+		outp "setz al"
+		#endif
+
+	end if
 
 	outp "fstp st(0)"
 
