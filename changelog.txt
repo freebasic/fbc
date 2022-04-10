@@ -6,6 +6,7 @@ Version 1.10.0
 - x86: arch 686 by default instead of 486 (SARG)
 - asm backend: only with 686 arch, use of fcomi(p) to avoid slower instructions and also less code (SARG)
 - fbc: #DUMP <expr> and #ODUMP <expr> pragmas only available in debug version of fbc
+- inc/fbmath.bi renamed to inc/fbprng.bi
 
 [added]
 - gas64: '.cif_sections' and '.cif_' directives for stack unwinding (adeyblue)

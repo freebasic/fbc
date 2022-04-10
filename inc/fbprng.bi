@@ -1,5 +1,5 @@
-#ifndef __FBMATH_BI__ 
-#define __FBMATH_BI__
+#ifndef __FBPRNG_BI__ 
+#define __FBPRNG_BI__
 
 # if __FB_LANG__ = "qb"
 # error not supported in qb dialect
@@ -151,4 +151,4 @@ namespace FB
 
 end namespace
 
-#endif '' __FBMATH_BI__
+#endif '' __FBPRNG_BI__

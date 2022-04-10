@@ -5,10 +5,10 @@
 # error not supported in qb dialect
 # endif
 
-'' fbmath.bi provides definitions for:
+'' fbprng.bi provides definitions for:
 '' - FB.FB_RND_ALGORTITMS
 
-#include once "fbmath.bi"
+#include once "fbprng.bi"
 
 '' DISCLAIMER!!!
 ''

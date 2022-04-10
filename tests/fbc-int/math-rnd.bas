@@ -1,5 +1,5 @@
 #include "fbcunit.bi"
-#include "fbmath.bi"
+#include "fbprng.bi"
 #include "fbc-int/math.bi"
 
 #ifndef NULL
