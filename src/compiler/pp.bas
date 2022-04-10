@@ -28,10 +28,19 @@ declare sub ppLine()
 declare sub ppLang()
 declare sub ppCmdline()
 
+#if __FB_DEBUG__
+
 declare sub ppDumpTree _
 	( _
 		byval optimize as integer = FALSE _
 	)
+
+declare sub ppLookup _
+	( _
+	)
+
+#endif
+
 
 '' globals
 	dim shared as PP_CTX pp
@@ -59,9 +68,10 @@ const SYMB_MAXKEYWORDS = 24
 		(@"LINE"    , FB_TK_PP_LINE     ), _
 		(@"LANG"    , FB_TK_PP_LANG     ), _
 		(@"ASSERT"  , FB_TK_PP_ASSERT   ), _
+		(@"CMDLINE" , FB_TK_PP_CMDLINE  ), _
 		(@"DUMP"    , FB_TK_PP_DUMP     ), _
 		(@"ODUMP"   , FB_TK_PP_ODUMP    ), _
-		(@"CMDLINE" , FB_TK_PP_CMDLINE  ), _
+		(@"LOOKUP"  , FB_TK_PP_LOOKUP   ), _
 		(NULL) _
 	}
 
@@ -252,13 +262,30 @@ sub ppParse( )
 
 	'' DUMP Expression
 	case FB_TK_PP_DUMP
-		lexSkipToken( LEXCHECK_POST_SUFFIX )
-		ppDumpTree( FALSE )
+		#if __FB_DEBUG__
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
+			ppDumpTree( FALSE )
+		#else
+			errReport( FB_ERRMSG_SYNTAXERROR )
+		#endif
 
 	'' ODUMP Expression
 	case FB_TK_PP_ODUMP
-		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
-		ppDumpTree( TRUE )
+		#if __FB_DEBUG__
+			lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
+			ppDumpTree( TRUE )
+		#else
+			errReport( FB_ERRMSG_SYNTAXERROR )
+		#endif
+
+	'' LOOKUP Symbol
+	case FB_TK_PP_LOOKUP
+		#if __FB_DEBUG__
+			lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
+			ppLookup( )
+		#else
+			errReport( FB_ERRMSG_SYNTAXERROR )
+		#endif
 
 	'' PRINT LITERAL*
 	case FB_TK_PP_PRINT
@@ -437,6 +464,8 @@ private sub ppLang( )
 	lexSkipToken( )
 end sub
 
+#if __FB_DEBUG__
+
 '':::::
 '' ppDump      =   '#'DUMP|ODUMP Expression
 ''
@@ -463,6 +492,20 @@ private sub ppDumpTree _
 	end if
 
 end sub
+
+'':::::
+'' ppLookup    =   '#'LOOKUP name
+''
+private sub ppLookup _
+	( _
+	)
+
+	symbDumpLookup( lexGetText( ) )
+	lexSkipToken( )
+
+end sub
+
+#endif
 
 '':::::
 private sub hRtrimMacroText _

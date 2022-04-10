@@ -5,6 +5,7 @@ Version 1.10.0
 - fbc: '--eh-frame-hdr' for linking on 64-bit nix targets for stack unwinding (adeyblue)
 - x86: arch 686 by default instead of 486 (SARG)
 - asm backend: only with 686 arch, use of fcomi(p) to avoid slower instructions and also less code (SARG)
+- fbc: #DUMP <expr> and #ODUMP <expr> pragmas only available in debug version of fbc
 
 [added]
 - gas64: '.cif_sections' and '.cif_' directives for stack unwinding (adeyblue)
@@ -13,6 +14,7 @@ Version 1.10.0
 - fbc: set bit value '__FB_ERR__' = &h200 if '-eunwind' is enabled
 - gas64 : stack overflow check (total of all local variables) at compile time --> warning - stack size for linux = 8MB, for Windows = default or defined by user (SARG)
 - gas64 : stack overflow check at run time if -exx is used - stack size for linux = 8MB, for Windows = default or defined by user (SARG)
+- fbc: debug pragma #LOOKUP <sym>
 
 [fixed]
 - gas64: missing restoring of use of one virtual register on sqr for float (SARG)
