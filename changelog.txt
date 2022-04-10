@@ -18,6 +18,7 @@ Version 1.10.0
 - gas64: missing restoring of use of one virtual register on sqr for float (SARG)
 - gas64: variable of constant datatype not propagated when emitting uop (SARG)
 - llvm: add missing data type in datatype array (not tested)
+- sf.net #951: fbc: remove guessed type for cva_list (aka __builtin_va_list)
 
 
 Version 1.09.0

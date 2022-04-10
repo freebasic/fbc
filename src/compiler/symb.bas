@@ -2049,11 +2049,6 @@ function symbGetValistType _
 	'' or std::va_list type using
 	''   - symbGetUdtValistType()
 
-	'' Determine the following:
-	''   1) va_list type?  (any target/va_list type)
-	''   2) is a __builtin_va_list type? (gcc)
-	''   3) is a struct type, or an array struct type? (gcc)
-
 	function = FB_CVA_LIST_NONE
 
 	'' mangle modifier?
@@ -2075,20 +2070,6 @@ function symbGetValistType _
 					function = FB_CVA_LIST_POINTER
 				end if
 			end if
-
-		end select
-
-	'' maybe subtype has the information
-	elseif( subtype ) then
-
-		select case typeGetDtOnly( symbGetFullType( subtype ) )
-		case FB_DATATYPE_VOID
-			if( typeGetMangleDt( symbGetFullType( subtype ) ) = FB_DATATYPE_VA_LIST ) then
-				function = FB_CVA_LIST_BUILTIN_POINTER
-			end if
-
-		case FB_DATATYPE_STRUCT
-			function = symbGetUdtValistType( subtype )
 
 		end select
 
