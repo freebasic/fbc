@@ -277,22 +277,33 @@ function astCheckCONV _
 end function
 
 '':::::
-#macro hDoGlobOpOverload( to_dtype, to_subtype, node )
-	scope
-		dim as FBSYMBOL ptr proc = any
-		dim as FB_ERRMSG err_num = any
+private function astTryOvlOpCastCONV _
+	( _
+		byref n as ASTNODE ptr, _
+		byval to_dtype as integer, _
+		byval to_subtype as FBSYMBOL ptr, _
+		byval node as ASTNODE ptr, _
+		byval options as AST_CONVOPT _
+	) as integer
 
-		proc = symbFindCastOvlProc( to_dtype, to_subtype, node, @err_num )
-		if( proc <> NULL ) then
-			'' build a proc call
-			return astBuildCall( proc, node )
-		else
-			if( err_num <> FB_ERRMSG_OK ) then
-				return NULL
-			end if
+	dim as FBSYMBOL ptr proc = any
+	dim as FB_ERRMSG err_num = any
+
+	proc = symbFindCastOvlProc( to_dtype, to_subtype, node, @err_num, ((options and AST_CONVOPT_EXACT_CAST)<>0) )
+	if( proc <> NULL ) then
+		'' build a proc call
+		n = astBuildCall( proc, node )
+		return TRUE
+	else
+		if( err_num <> FB_ERRMSG_OK ) then
+			n = NULL
+			return TRUE
 		end if
-	end scope
-#endmacro
+	end if
+
+	return FALSE
+
+end function
 
 '':::::
 function astTryOvlStringCONV( byref expr as ASTNODE ptr ) as integer
@@ -387,9 +398,6 @@ function astNewCONV _
 	end if
 
 	'' UDT? check if it is z|wstring? 
-	'' !!!TODO!!! make this block in to a function
-	''              re-use in astNewOvlCONV()
-	''              rewrite hDoGlobOpOverload() as astTry* function
 	if( typeGet( ldtype ) = FB_DATATYPE_STRUCT ) then
 		dim as FBSYMBOL ptr subtype = astGetSubtype( l )
 
@@ -425,7 +433,9 @@ function astNewCONV _
 	end if
 
 	'' try casting op overloading
-	hDoGlobOpOverload( to_dtype, to_subtype, l )
+	if( astTryOvlOpCastCONV( n, to_dtype, to_subtype, l, options ) ) then
+		return n
+	end if
 
 	select case as const typeGet( to_dtype )
 	case FB_DATATYPE_VOID, FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
@@ -620,11 +630,14 @@ function astNewOvlCONV _
 		byval l as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	'' try casting op overloading only
-	hDoGlobOpOverload( to_dtype, to_subtype, l )
+	dim as ASTNODE ptr n = NULL
+
+	if( astTryOvlOpCastCONV( n, to_dtype, to_subtype, l, AST_CONVOPT_NONE ) ) then
+		return n
+	end if
 
 	'' nothing to do
-	function = l
+	return l
 
 end function
 

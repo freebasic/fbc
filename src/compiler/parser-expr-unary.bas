@@ -369,7 +369,7 @@ private function hCast( byval options as AST_CONVOPT ) as ASTNODE ptr
 		options or= AST_CONVOPT_DONTWARNFUNCPTR
 	end if
 
-	expr = astNewCONV( dtype, subtype, expr, options, @errmsg )
+	expr = astNewCONV( dtype, subtype, expr, options or AST_CONVOPT_EXACT_CAST, @errmsg )
 	if( expr = NULL ) then
 		if( errmsg = FB_ERRMSG_OK ) then
 			if( options and AST_CONVOPT_PTRONLY ) then

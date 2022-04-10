@@ -115,7 +115,7 @@ function cTypeConvExpr _
 	    dtype = typeToUnsigned( astGetFullType( expr ) )
 	end select
 
-	expr = astNewCONV( dtype, NULL, expr, AST_CONVOPT_CHECKSTR, @errmsg )
+	expr = astNewCONV( dtype, NULL, expr, AST_CONVOPT_CHECKSTR or AST_CONVOPT_EXACT_CAST, @errmsg )
 	if( expr = NULL ) then
 		if( errmsg = FB_ERRMSG_OK ) then
 			errmsg = FB_ERRMSG_TYPEMISMATCH
