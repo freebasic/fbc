@@ -418,7 +418,9 @@ declare function hMakeParamDesc _
 		 /'FB_ERRMSG_ARRAYOFREFS                        '/ @"Array of references - not supported yet", _
 		 /'FB_ERRMSG_INVALIDCASERANGE                   '/ @"Invalid CASE range, start value is greater than the end value", _
 		 /'FB_ERRMSG_BYREFFIXSTR                        '/ @"Fixed-length string combined with BYREF (not supported)", _
-		 /'FB_ERRMSG_ILLEGALUSEOFRESERVEDSYMBOL         '/ @"Illegal use of reserved symbol" _
+		 /'FB_ERRMSG_ILLEGALUSEOFRESERVEDSYMBOL         '/ @"Illegal use of reserved symbol", _
+		 /'FB_ERRMSG_EXPECTEDCOMMAORSEMICOLON           '/ @"Expected ',' or ';'", _
+		 /'FB_ERRMSG_EXPECTEDFILENUMBEREXPRESSION       '/ @"Expected file number expression" _
 	}
 
 
