@@ -44,7 +44,7 @@ function cPrintStmt  _
 	else
 		'' ('#' Expression)?
 		if( hMatch( CHAR_SHARP ) ) then
-			hMatchExpressionEx( filexpr, FB_DATATYPE_INTEGER )
+			hMatchFileNumberExpression( filexpr, FB_DATATYPE_INTEGER )
 			hMatchCOMMA( )
 		else
 			filexpr = astNewCONSTi( 0 )
@@ -205,7 +205,7 @@ function cWriteStmt() as integer
 
 	'' ('#' Expression)?
 	if( hMatch( CHAR_SHARP ) ) then
-		hMatchExpressionEx( filexpr, FB_DATATYPE_INTEGER )
+		hMatchFileNumberExpression( filexpr, FB_DATATYPE_INTEGER )
 
 		hMatchCOMMA( )
 
@@ -293,7 +293,7 @@ function cLineInputStmt _
 	expr = cExpression( )
 	if( expr = NULL ) then
 		if( isfile ) then
-			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			errReport( FB_ERRMSG_EXPECTEDFILENUMBEREXPRESSION )
 			expr = astNewCONSTi( 0 )
 		else
 			expr = NULL
@@ -306,7 +306,13 @@ function cLineInputStmt _
 		if( hMatch( CHAR_SEMICOLON ) = FALSE ) then
 			issep = FALSE
 			if( (expr = NULL) or (isfile) ) then
-				errReport( FB_ERRMSG_EXPECTEDCOMMA )
+				'' fbc allows both comma and semicolon following the file number
+				'' but should probably only be comma
+				if( isfile ) then
+					errReport( FB_ERRMSG_EXPECTEDCOMMA )
+				else
+					errReport( FB_ERRMSG_EXPECTEDCOMMAORSEMICOLON )
+				end if
 			end if
 		else
 			addquestion = TRUE
@@ -377,7 +383,7 @@ function cInputStmt _
 	if( hMatch( CHAR_SHARP ) ) then
 		isfile = TRUE
 		'' Expression
-		hMatchExpressionEx( filestrexpr, FB_DATATYPE_INTEGER )
+		hMatchFileNumberExpression( filestrexpr, FB_DATATYPE_INTEGER )
 
 	else
 		isfile = FALSE
@@ -395,7 +401,13 @@ function cInputStmt _
 	if( (isfile) or (filestrexpr <> NULL) ) then
 		if( hMatch( CHAR_COMMA ) = FALSE ) then
 			if( hMatch( CHAR_SEMICOLON ) = FALSE ) then
-				errReport( FB_ERRMSG_EXPECTEDCOMMA )
+				'' fbc allows both comma and semicolon following the file number
+				'' but should probably only be comma
+				if( isfile ) then
+					errReport( FB_ERRMSG_EXPECTEDCOMMA )
+				else
+					errReport( FB_ERRMSG_EXPECTEDCOMMAORSEMICOLON )
+				end if
 			else
 				addquestion = TRUE
 			end if
@@ -467,7 +479,7 @@ private function hFileClose _
 			if( cnt = 0 ) then
 				'' pass NULL to rtlFileClose to get close-all function
 			else
-				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+				errReport( FB_ERRMSG_EXPECTEDFILENUMBEREXPRESSION )
 				filenum = astNewCONSTi( 0 )
 			end if
 		end if
@@ -513,7 +525,7 @@ private function hFilePut _
 		lexSkipToken( )
 	end if
 
-	hMatchExpressionEx( fileexpr, FB_DATATYPE_INTEGER )
+	hMatchFileNumberExpression( fileexpr, FB_DATATYPE_INTEGER )
 
 	'' ',' offset
 	hMatchCOMMA( )
@@ -643,7 +655,7 @@ private function hFileGet _
 		lexSkipToken( )
 	end if
 
-	hMatchExpressionEx( fileexpr, FB_DATATYPE_INTEGER )
+	hMatchFileNumberExpression( fileexpr, FB_DATATYPE_INTEGER )
 
 	'' ',' offset
 	hMatchCOMMA( )
@@ -899,7 +911,7 @@ private function hFileOpen _
 
 		'' '#'? file number
 		hMatch( CHAR_SHARP )
-		hMatchExpressionEx( filenum, FB_DATATYPE_INTEGER )
+		hMatchFileNumberExpression( filenum, FB_DATATYPE_INTEGER )
 
 		hMatchCOMMA( )
 		'' file name
@@ -1047,7 +1059,7 @@ private function hFileOpen _
 
 	hMatch( CHAR_SHARP )
 
-	hMatchExpressionEx( filenum, FB_DATATYPE_INTEGER )
+	hMatchFileNumberExpression( filenum, FB_DATATYPE_INTEGER )
 
 	if( isfunc ) then
 		'' ','?
@@ -1154,7 +1166,7 @@ function cFileStmt _
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		hMatch( CHAR_SHARP )
 
-		hMatchExpressionEx( filenum, FB_DATATYPE_INTEGER )
+		hMatchFileNumberExpression( filenum, FB_DATATYPE_INTEGER )
 
 		hMatchCOMMA( )
 
@@ -1194,7 +1206,7 @@ function cFileStmt _
 
 		hMatch( CHAR_SHARP )
 
-		hMatchExpressionEx( filenum, FB_DATATYPE_INTEGER )
+		hMatchFileNumberExpression( filenum, FB_DATATYPE_INTEGER )
 
 		hMatchCOMMA( )
 
@@ -1243,7 +1255,7 @@ function cFileFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 		if( hMatch( CHAR_COMMA ) ) then
 			hMatch( CHAR_SHARP )
-			hMatchExpressionEx( filenum, FB_DATATYPE_INTEGER )
+			hMatchFileNumberExpression( filenum, FB_DATATYPE_INTEGER )
 		else
 			filenum = astNewCONSTi( 0 )
 		end if

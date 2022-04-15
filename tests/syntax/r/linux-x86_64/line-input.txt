@@ -1,11 +1,11 @@
 line input
-line-input.bas(21) error 16: Expected ',' in 't( 1, line input       )'
+line-input.bas(21) error 326: Expected ',' or ';' in 't( 1, line input       )'
 line input ;
-line-input.bas(22) error 16: Expected ',' in 't( 1, line input  ;    )'
+line-input.bas(22) error 326: Expected ',' or ';' in 't( 1, line input  ;    )'
 line input 
-line-input.bas(23) error 16: Expected ',', found ''' in 't( 1, line input    '' )'
+line-input.bas(23) error 326: Expected ',' or ';', found ''' in 't( 1, line input    '' )'
 line input ; 
-line-input.bas(24) error 16: Expected ',', found ''' in 't( 1, line input  ; '' )'
+line-input.bas(24) error 326: Expected ',' or ';', found ''' in 't( 1, line input  ; '' )'
 line input ,
 line-input.bas(25) error 14: Expected identifier in 't( 1, line input   ,     )'
 line input ;,
@@ -227,11 +227,11 @@ line-input.bas(139) error 3: Expected End-of-Line, found ';' in 't( 1, line inpu
 line input ;, b ;; 
 line-input.bas(140) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;,  b ;; '' )'
 line input ;
-line-input.bas(141) error 16: Expected ',' in 't( 1, line input   ;     )'
+line-input.bas(141) error 326: Expected ',' or ';' in 't( 1, line input   ;     )'
 line input ;;
 line-input.bas(142) error 14: Expected identifier in 't( 1, line input  ;;     )'
 line input ; 
-line-input.bas(143) error 16: Expected ',', found ''' in 't( 1, line input   ;  '' )'
+line-input.bas(143) error 326: Expected ',' or ';', found ''' in 't( 1, line input   ;  '' )'
 line input ;; 
 line-input.bas(144) error 14: Expected identifier, found ''' in 't( 1, line input  ;;  '' )'
 line input ; 1

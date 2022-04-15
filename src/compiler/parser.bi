@@ -968,10 +968,15 @@ declare function hIntegerTypeFromBitSize _
 
 '':::::
 #macro hMatchFileNumberExpression(e, dtype)
-	e = hMatchExpr( dtype )
+	e = cExpression( )
 	if( e = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDFILENUMBEREXPRESSION )
-		exit function
+		'' error recovery: fake an expr
+		if( dtype = FB_DATATYPE_INVALID ) then
+			return NULL
+		end if
+
+		e = astNewCONSTz( dtype )
 	end if
 #endmacro
 

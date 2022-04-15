@@ -359,11 +359,11 @@ input.bas(199) error 3: Expected End-of-Line, found ';' in 't( 1, input   ;  a ;
 input ;; a ;; 
 input.bas(200) error 14: Expected identifier, found ';' in 't( 1, input  ;;  a ;; '' )'
 input ; "T"
-input.bas(201) error 16: Expected ',' in 't( 1, input   ; "T"    )'
+input.bas(201) error 326: Expected ',' or ';' in 't( 1, input   ; "T"    )'
 input ;; "T"
 input.bas(202) error 14: Expected identifier, found ';' in 't( 1, input  ;; "T"    )'
 input ; "T" 
-input.bas(203) error 16: Expected ',', found ''' in 't( 1, input   ; "T" '' )'
+input.bas(203) error 326: Expected ',' or ';', found ''' in 't( 1, input   ; "T" '' )'
 input ;; "T" 
 input.bas(204) error 14: Expected identifier, found ';' in 't( 1, input  ;; "T" '' )'
 input ; "T",
@@ -1891,13 +1891,13 @@ input.bas(967) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;; 
 input ; a ;; b 
 input.bas(968) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;; b  '' )'
 input "T"
-input.bas(969) error 16: Expected ',' in 't( 1, input   "T"    )'
+input.bas(969) error 326: Expected ',' or ';' in 't( 1, input   "T"    )'
 input ;"T"
-input.bas(970) error 16: Expected ',' in 't( 1, input  ;"T"    )'
+input.bas(970) error 326: Expected ',' or ';' in 't( 1, input  ;"T"    )'
 input "T" 
-input.bas(971) error 16: Expected ',', found ''' in 't( 1, input   "T" '' )'
+input.bas(971) error 326: Expected ',' or ';', found ''' in 't( 1, input   "T" '' )'
 input ;"T" 
-input.bas(972) error 16: Expected ',', found ''' in 't( 1, input  ;"T" '' )'
+input.bas(972) error 326: Expected ',' or ';', found ''' in 't( 1, input  ;"T" '' )'
 input "T",
 input.bas(973) error 14: Expected identifier in 't( 1, input   "T",     )'
 input ;"T",

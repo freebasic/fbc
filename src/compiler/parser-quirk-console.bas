@@ -99,7 +99,7 @@ function cWidthStmt(byval isfunc as integer) as ASTNODE ptr
 	elseif( hMatch( CHAR_SHARP ) ) then
 		' fb_WidthFile
 
-		hMatchExpressionEx( fnum, FB_DATATYPE_INTEGER )
+		hMatchFileNumberExpression( fnum, FB_DATATYPE_INTEGER )
 
 		if( hMatch( CHAR_COMMA ) ) then
 			hMatchExpressionEx( width_arg, FB_DATATYPE_INTEGER )
