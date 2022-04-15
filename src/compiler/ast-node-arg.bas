@@ -304,7 +304,7 @@ private sub hCheckByrefParam _
 	if( astIsCALL( t ) ) then
 		select case as const( astGetDataType( t ) )
 		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-		     FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 			exit sub
 		end select
 	end if
@@ -334,8 +334,8 @@ private function hCheckBydescDimensions( byval param as FBSYMBOL ptr, byval arg 
 	assert( symbIsVar( arg ) or symbIsField( arg ) )
 
 	return (symbGetArrayDimensions( arg ) = -1) or _
-	       (param->param.bydescdimensions = -1) or _
-	       (param->param.bydescdimensions = symbGetArrayDimensions( arg ))
+		(param->param.bydescdimensions = -1) or _
+		(param->param.bydescdimensions = symbGetArrayDimensions( arg ))
 end function
 
 private function hCheckByDescParam _
@@ -366,7 +366,7 @@ private function hCheckByDescParam _
 	sym_dtype = symbGetType( param )
 	if( (parent->call.isrtl = FALSE) and (sym_dtype <> FB_DATATYPE_VOID) ) then
 		if( (typeGetClass( arg_dtype ) <> typeGetClass( sym_dtype )) or _
-		    (typeGetSize( arg_dtype ) <> typeGetSize( sym_dtype )) ) then
+			(typeGetSize( arg_dtype ) <> typeGetSize( sym_dtype )) ) then
 			exit function
 		end if
 	end if
@@ -693,13 +693,13 @@ private function hCheckUDTParam _
 		return TRUE
 	end if
 
-    '' check for invalid UDT's (different subtypes)
+	'' check for invalid UDT's (different subtypes)
 	if( n->l->subtype <> symbGetSubtype( param ) ) then
 		'' param is not a base type of arg?
 		if( symbGetUDTBaseLevel( n->l->subtype, symbGetSubtype( param ) ) = 0 ) then
 			'' no ctor in the param's type?
 			if( hImplicitCtor( param, n ) = FALSE ) then
-				'' no cast operator? 
+				'' no cast operator?
 				n->l = astNewCONV( symbGetType( param ), symbGetSubtype( param ), n->l )
 				if( n->l = NULL ) then
 					errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
@@ -761,7 +761,7 @@ private function hCheckParam _
 
 	dim as integer param_dtype = any, arg_dtype = any
 
-    function = FALSE
+	function = FALSE
 
 	'' string concatenation is delayed for optimization reasons..
 	n->l = astUpdStrConcat( n->l )
@@ -780,8 +780,8 @@ private function hCheckParam _
 
 		return TRUE
 
-    '' vararg?
-    case FB_PARAMMODE_VARARG
+	'' vararg?
+	case FB_PARAMMODE_VARARG
 		return hCheckVarargParam( parent, param, n )
 
 	case FB_PARAMMODE_BYREF
@@ -821,9 +821,9 @@ private function hCheckParam _
 						n->l, @err_num )
 
 		if( proc <> NULL ) then
-    		static as integer rec_cnt = 0
-    		'' recursion? (astBuildCall() will call newARG with the same expr)
-    		if( rec_cnt = 0 ) then
+			static as integer rec_cnt = 0
+			'' recursion? (astBuildCall() will call newARG with the same expr)
+			if( rec_cnt = 0 ) then
 				'' build a proc call
 				rec_cnt += 1
 				n->l = astBuildCall( proc, n->l )
@@ -850,7 +850,7 @@ private function hCheckParam _
 		'' string just fine)
 		select case( arg_dtype )
 		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-		     FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 			'' Rest will be handled below
 		case else
 			errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
@@ -865,7 +865,7 @@ private function hCheckParam _
 	select case as const arg_dtype
 	'' string arg? check z- and w-string ptr params
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
 		select case param_dtype
 		'' zstring ptr / zstring param?
@@ -940,7 +940,7 @@ private function hCheckParam _
 		'' Cannot pass BYREF if different size/class, but we do allow
 		'' passing INTEGER vars to BYREF AS UINTEGER params etc.
 		if( (typeGetSize( param_dtype ) <> typeGetSize( arg_dtype )) or _
-		    (typeGetClass( param_dtype ) <> typeGetClass( arg_dtype ))    ) then
+			(typeGetClass( param_dtype ) <> typeGetClass( arg_dtype ))    ) then
 			if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
 				'' Different size/dclass; can't allow passing BYREF
 				'' if it's a var because the pointer types are
@@ -965,10 +965,10 @@ private function hCheckParam _
 	'' byref arg? check if a temp param isn't needed
 	if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
 		hCheckByrefParam( param, n )
-        '' it's an implicit pointer
+		'' it's an implicit pointer
 	end if
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -1005,7 +1005,7 @@ function astNewARG _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
-    dim as FBSYMBOL ptr sym = any, param = any
+	dim as FBSYMBOL ptr sym = any, param = any
 
 	sym = parent->sym
 
@@ -1031,7 +1031,7 @@ function astNewARG _
 	'' dtors run the object is dead anyways, so modifications made by the
 	'' dtor don't matter)
 	if( ((not symbIsInstanceParam( param )) or _
-	     ((sym->pattrib and FB_PROCATTRIB_NOTHISCONSTNESS) = 0)) ) then
+		((sym->pattrib and FB_PROCATTRIB_NOTHISCONSTNESS) = 0)) ) then
 		if( symbCheckConstAssignTopLevel( symbGetFullType( param ), dtype, param->subtype, arg->subtype, symbGetParamMode( param ) ) = FALSE ) then
 			if( symbIsInstanceParam( param ) ) then
 				errReportParam( parent->sym, 0, NULL, FB_ERRMSG_CONSTUDTTONONCONSTMETHOD )

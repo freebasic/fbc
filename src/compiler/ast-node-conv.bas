@@ -195,7 +195,7 @@ private function hCheckPtr _
 				if( typeGetDtOnly( expr_dtype ) <> FB_DATATYPE_VOID ) then
 					return FB_ERRMSG_CASTDERIVEDPTRFROMINCOMPATIBLE
 				end if
-			else			
+			else
 				'' not a upcasting?
 				if( symbGetUDTBaseLevel( expr->subtype, to_subtype ) = 0 ) then
 					'' try downcasting..
@@ -208,7 +208,7 @@ private function hCheckPtr _
 	End If
 
 	'' From derived pointer?
-	if( typeGetDtOnly( expr_dtype ) = FB_DATATYPE_STRUCT ) then		
+	if( typeGetDtOnly( expr_dtype ) = FB_DATATYPE_STRUCT ) then
 		if( expr->subtype->udt.base <> NULL ) then
 			if( typeGetDtOnly( to_dtype ) <> FB_DATATYPE_STRUCT ) then
 				if( typeGetDtOnly( to_dtype ) <> FB_DATATYPE_VOID ) then
@@ -244,9 +244,9 @@ function astCheckCONV _
 
 	'' to or from UDT? only upcasting supported by now
 	if( (typeGet( to_dtype ) = FB_DATATYPE_STRUCT) or _
-	    (typeGet( ldtype   ) = FB_DATATYPE_STRUCT)      ) then
+		(typeGet( ldtype   ) = FB_DATATYPE_STRUCT)) then
 		if( (typeGet( to_dtype ) = FB_DATATYPE_STRUCT) and _
-		    (typeGet( ldtype   ) = FB_DATATYPE_STRUCT)      ) then
+			(typeGet( ldtype   ) = FB_DATATYPE_STRUCT)) then
 			function = (symbGetUDTBaseLevel( l->subtype, to_subtype ) > 0)
 		end if
 		exit function
@@ -378,7 +378,7 @@ function astNewCONV _
 
 					n->cast.doconv = FALSE
 					n->cast.do_convfd2fs = FALSE
-					
+
 					'' data types and levels of pointer inderection are the same,
 					'' always record this as const conversion
 					n->cast.convconst = TRUE
@@ -397,7 +397,7 @@ function astNewCONV _
 		end if
 	end if
 
-	'' UDT? check if it is z|wstring? 
+	'' UDT? check if it is z|wstring?
 	if( typeGet( ldtype ) = FB_DATATYPE_STRUCT ) then
 		dim as FBSYMBOL ptr subtype = astGetSubtype( l )
 
@@ -439,7 +439,7 @@ function astNewCONV _
 
 	select case as const typeGet( to_dtype )
 	case FB_DATATYPE_VOID, FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-	     FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		'' refuse void (used by uop/bop to cast to be most precise
 		'' possible) and strings, as op overloading already failed
 		exit function
@@ -489,7 +489,7 @@ function astNewCONV _
 	if( options and AST_CONVOPT_CHECKSTR ) then
 		select case as const typeGet( ldtype )
 		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-			 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 			return rtlStrToVal( l, to_dtype )
 		end select
 	else
@@ -578,7 +578,7 @@ function astNewCONV _
 		n->cast.convconst = ( symbCheckConstAssign( to_dtype, ldtype, to_subtype, l->subtype, , , wrnmsg ) = FALSE )
 
 		'' -w funcptr  -w constness
-		''    no           no          don't warn anything         
+		''    no           no          don't warn anything
 		''    yes          yes         warn everything
 		''    yes          no          warn if wrnmsg<>0
 		''    no           yes         warn everything (-w constness implies -w funcptr)
@@ -605,7 +605,6 @@ function astNewCONV _
 			end if
 
 		end if
-	
 
 	end if
 

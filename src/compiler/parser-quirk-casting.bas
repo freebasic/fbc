@@ -9,7 +9,7 @@
 #include once "ast.bi"
 
 '':::::
-''TypeConvExpr		=    (C### '(' expression ')') .
+''TypeConvExpr      =    (C### '(' expression ')') .
 ''
 function cTypeConvExpr _
 	( _
@@ -112,7 +112,7 @@ function cTypeConvExpr _
 	case AST_OP_TOSIGNED
 		dtype = typeToSigned( astGetFullType( expr ) )
 	case AST_OP_TOUNSIGNED
-	    dtype = typeToUnsigned( astGetFullType( expr ) )
+		dtype = typeToUnsigned( astGetFullType( expr ) )
 	end select
 
 	expr = astNewCONV( dtype, NULL, expr, AST_CONVOPT_CHECKSTR or AST_CONVOPT_EXACT_CAST, @errmsg )
