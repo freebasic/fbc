@@ -10,7 +10,7 @@
 #include once "ast.bi"
 
 '':::::
-'' ViewStmt	  =   VIEW (PRINT (Expression TO Expression)?) .
+'' ViewStmt   =   VIEW (PRINT (Expression TO Expression)?) .
 ''
 function cViewStmt(byval is_func as integer) as ASTNODE ptr
 	dim as ASTNODE ptr expr1, expr2
@@ -195,7 +195,7 @@ end function
 
 '':::::
 '' ScreenFunct   =   SCREEN '(' expr ',' expr ( ',' expr )? ')'
-''				 |   SCREEN ( '(' ')' )? -- returns the current active/visible pages
+''               |   SCREEN ( '(' ')' )? -- returns the current active/visible pages
 ''
 function cScreenFunct() as ASTNODE ptr
 	function = NULL
