@@ -23,6 +23,7 @@ Version 1.10.0
 - llvm: add missing data type in datatype array (not tested)
 - sf.net #951: fbc: remove guessed type for cva_list (aka __builtin_va_list)
 - sf.net #952: fbc: CINT (and other conversion keywords) fails - don't allow inexact conversions or casts from UDT cast operators
+- sf.net #817: fbc: Type mismatch not detected when passing an array of UDT incompatible with the expected UDT
 
 
 Version 1.09.0

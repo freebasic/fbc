@@ -371,6 +371,14 @@ private function hCheckByDescParam _
 		end if
 	end if
 
+	'' both UDT?
+	if( (sym_dtype = FB_DATATYPE_STRUCT) and (arg_dtype = FB_DATATYPE_STRUCT) ) then
+		if( n->l->subtype <> symbGetSubtype( param ) ) then
+			errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
+			exit function
+		end if
+	end if
+
 	if( astIsVAR( n->l ) ) then
 		assert( symbIsVar( s ) )
 
