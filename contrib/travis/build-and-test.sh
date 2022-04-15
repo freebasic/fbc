@@ -69,6 +69,16 @@ if ! git diff-files --quiet --ignore-submodules; then
 	exit 1
 fi
 
+FBC_FOR_SYNTAX_TESTS="$PWD/bin/fbc -i $PWD/inc"
+cd tests/syntax
+FBC="$FBC_FOR_SYNTAX_TESTS" ./test.sh </dev/null
+cd ../..
+git update-index -q --ignore-submodules --refresh
+if ! git diff-files --quiet --ignore-submodules; then
+	git diff
+	exit 1
+fi
+
 # Build fbdoc tools
 cd doc/libfbdoc
 make FBC="$FBC_FOR_TESTS" </dev/null
