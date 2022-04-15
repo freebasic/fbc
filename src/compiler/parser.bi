@@ -967,6 +967,15 @@ declare function hIntegerTypeFromBitSize _
 #endmacro
 
 '':::::
+#macro hMatchFileNumberExpression(e, dtype)
+	e = hMatchExpr( dtype )
+	if( e = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDFILENUMBEREXPRESSION )
+		exit function
+	end if
+#endmacro
+
+'':::::
 #macro hEmitCurrLine( )
 	if( env.clopt.debuginfo ) then
 		if( env.includerec = 0 ) then
