@@ -264,8 +264,9 @@ function cLineInputStmt _
 		_
 	) as integer
 
-	dim as ASTNODE ptr fileexpr = NULL, promptexpr = NULL, dstexpr = NULL
+	dim as ASTNODE ptr filestrexpr = NULL, dstexpr = NULL, maxlenexpr = NULL
 	dim as integer isfile = FALSE, addnewline = FALSE, issep = FALSE, addquestion = FALSE
+	dim as integer dtype = any
 
 	function = FALSE
 
@@ -287,7 +288,7 @@ function cLineInputStmt _
 	if( hMatch( CHAR_SHARP ) ) then
 		isfile = TRUE
 		'' Expression
-		hMatchFileNumberExpression( fileexpr, FB_DATATYPE_INTEGER )
+		hMatchFileNumberExpression( filestrexpr, FB_DATATYPE_INTEGER )
 
 	else
 		'' could be a prompt or variable, we don't know until we get the next delimiter
@@ -321,7 +322,8 @@ function cLineInputStmt _
 	'' if we got a separator and dstexpr, then it must be a prompt
 	if( issep = TRUE ) then
 		if( dstexpr ) then
-			promptexpr = dstexpr
+			assert( isfile = FALSE )
+			filestrexpr = dstexpr
 			dstexpr = NULL
 		end if
 	end if
@@ -343,12 +345,24 @@ function cLineInputStmt _
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )
 	end if
 
+	'' string variable length unknown? allow specifying a max length
+	if( rtlCalcStrLen( dstexpr, astGetDataType( dstexpr ) ) = 0 ) then
+		'' ',' max_chars
+		if( hMatch( CHAR_COMMA ) ) then
+			maxlenexpr = cExpression( )
+			if( maxlenexpr = NULL ) then
+				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+				'' error recovery: none rtlFileLineInput[Wstr] will handle it
+			end if 
+		end if
+	end if
+
 	select case astGetDataType( dstexpr )
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-		function = rtlFileLineInput( isfile, iif( isfile, fileexpr, promptexpr ), dstexpr, addquestion, addnewline )
+		function = rtlFileLineInput( isfile, filestrexpr, dstexpr, maxlenexpr, addquestion, addnewline )
 
 	case FB_DATATYPE_WCHAR
-		function = rtlFileLineInputWstr( isfile, iif( isfile, fileexpr, promptexpr ), dstexpr, addquestion, addnewline )
+		function = rtlFileLineInputWstr( isfile, filestrexpr, dstexpr, maxlenexpr, addquestion, addnewline )
 
 	'' not a string?
 	case else

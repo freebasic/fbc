@@ -1458,6 +1458,7 @@ declare function rtlFileLineInput _
 		byval isfile as integer, _
 		byval expr as ASTNODE ptr, _
 		byval dstexpr as ASTNODE ptr, _
+		byval maxlenexpr as ASTNODE ptr, _
 		byval addquestion as integer, _
 		byval addnewline as integer _
 	) as integer
@@ -1467,6 +1468,7 @@ declare function rtlFileLineInputWstr _
 		byval isfile as integer, _
 		byval expr as ASTNODE ptr, _
 		byval dstexpr as ASTNODE ptr, _
+		byval maxlenexpr as ASTNODE ptr, _
 		byval addquestion as integer, _
 		byval addnewline as integer _
 	) as integer

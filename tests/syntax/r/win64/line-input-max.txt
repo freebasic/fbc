@@ -1,0 +1,19 @@
+line-input-max.bas(19) error 7: Expected ')', expanding: T in 't( 0, line input #1, *z'
+line input #1, *z
+OK
+line-input-max.bas(19) error 17: Syntax error, found 'endift' in 't( 0, line input #1, *w'
+line-input-max.bas(21) error 7: Expected ')', expanding: T in 't( 0, line input #1, *z, 10'
+line input #1, *z, 10
+OK
+line-input-max.bas(21) error 17: Syntax error, found 'endift' in 't( 0, line input #1, *w, 10'
+line-input-max.bas(23) error 7: Expected ')', expanding: T in 't( 0, line input #1, s'
+line input #1, s
+OK
+line-input-max.bas(23) error 17: Syntax error, found 'endift' in 't( 0, line input #1, fz'
+line-input-max.bas(24) error 7: Expected ')', expanding: T in 't( 0, line input #1, fw'
+line input #1, fw
+OK
+line-input-max.bas(25) error 7: Expected ')', expanding: T in 't( 1, line input #1, s, 10'
+line input #1, s, 10
+line-input-max.bas(25) error 3: Expected End-of-Line, found ',' in 't( 1, line input #1, fz, 10'
+line-input-max.bas(34) error 290: Expected '#ENDIF'

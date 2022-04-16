@@ -1847,13 +1847,14 @@ function rtlFileLineInput _
 		byval isfile as integer, _
 		byval expr as ASTNODE ptr, _
 		byval dstexpr as ASTNODE ptr, _
+		byval maxlenexpr as ASTNODE ptr, _
 		byval addquestion as integer, _
 		byval addnewline as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
-    dim as integer args = any, dtype = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
+	dim as integer args = any, dtype = any
 	dim as longint lgt = any
 
 	function = FALSE
@@ -1867,29 +1868,37 @@ function rtlFileLineInput _
 		args = 6
 	end if
 
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
-    '' "byval filenum as integer" or "text as string "
-    if( (isfile = FALSE) and (expr = NULL) ) then
+	'' "byval filenum as integer" or "text as string "
+	if( (isfile = FALSE) and (expr = NULL) ) then
 		expr = astNewVAR( symbAllocStrConst( "", 0 ) )
 	end if
 
-    if( astNewARG( proc, expr ) = NULL ) then
- 		exit function
- 	end if
+	if( astNewARG( proc, expr ) = NULL ) then
+		exit function
+	end if
 
-    '' always calc len before pushing the param
+	'' always calc len before pushing the param
 	dtype = astGetDataType( dstexpr )
 	lgt = rtlCalcStrLen( dstexpr, dtype )
 
 	'' dst as any
-    if( astNewARG( proc, dstexpr ) = NULL ) then
- 		exit function
- 	end if
-
-	'' byval dstlen as integer
-	if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+	if( astNewARG( proc, dstexpr ) = NULL ) then
 		exit function
+	end if
+
+	'' only use maxlenexpr if the size of the string is unknown
+	if( lgt = 0 and maxlenexpr <> NULL ) then
+		'' byval dstlen as integer
+		if( astNewARG( proc, maxlenexpr ) = NULL ) then
+			exit function
+		end if
+	else
+		'' byval dstlen as integer
+		if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+			exit function
+		end if
 	end if
 
 	'' byval fillrem as integer
@@ -1909,9 +1918,9 @@ function rtlFileLineInput _
 		end if
 	end if
 
-    astAdd( proc )
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -1921,13 +1930,14 @@ function rtlFileLineInputWstr _
 		byval isfile as integer, _
 		byval expr as ASTNODE ptr, _
 		byval dstexpr as ASTNODE ptr, _
+		byval maxlenexpr as ASTNODE ptr, _
 		byval addquestion as integer, _
 		byval addnewline as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
-    dim as integer args = any, dtype = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
+	dim as integer args = any, dtype = any
 	dim as longint lgt = any
 
 	function = FALSE
@@ -1941,29 +1951,37 @@ function rtlFileLineInputWstr _
 		args = 5
 	end if
 
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
-    '' "byval filenum as integer" or "byval text as wstring ptr"
-    if( (isfile = FALSE) and (expr = NULL) ) then
+	'' "byval filenum as integer" or "byval text as wstring ptr"
+	if( (isfile = FALSE) and (expr = NULL) ) then
 		expr = astNewVAR( symbAllocWStrConst( "", 0 ) )
 	end if
 
-    if( astNewARG( proc, expr ) = NULL ) then
- 		exit function
- 	end if
+	if( astNewARG( proc, expr ) = NULL ) then
+		exit function
+	end if
 
-    '' always calc len before pushing the param
+	'' always calc len before pushing the param
 	dtype = astGetDataType( dstexpr )
 	lgt = rtlCalcStrLen( dstexpr, dtype )
 
 	'' byval dst as wstring ptr
-    if( astNewARG( proc, dstexpr ) = NULL ) then
- 		exit function
- 	end if
-
-	'' byval max_chars as integer
-	if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+	if( astNewARG( proc, dstexpr ) = NULL ) then
 		exit function
+	end if
+
+	'' only use maxlenexpr if the size of the string is unknown
+	if( lgt = 0 and maxlenexpr <> NULL ) then
+		'' byval max_chars as integer
+		if( astNewARG( proc, maxlenexpr ) = NULL ) then
+			exit function
+		end if
+	else
+		'' byval max_chars as integer
+		if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+			exit function
+		end if
 	end if
 
 	if( args = 5 ) then
@@ -1978,9 +1996,9 @@ function rtlFileLineInputWstr _
 		end if
 	end if
 
-    astAdd( proc )
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
