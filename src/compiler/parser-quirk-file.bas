@@ -264,8 +264,8 @@ function cLineInputStmt _
 		_
 	) as integer
 
-	dim as ASTNODE ptr expr, dstexpr
-	dim as integer isfile, addnewline, issep, addquestion
+	dim as ASTNODE ptr fileexpr = NULL, promptexpr = NULL, dstexpr = NULL
+	dim as integer isfile = FALSE, addnewline = FALSE, issep = FALSE, addquestion = FALSE
 
 	function = FALSE
 
@@ -284,28 +284,24 @@ function cLineInputStmt _
 	addnewline = (hMatch( CHAR_SEMICOLON ) = FALSE)
 
 	'' '#'?
-	isfile = FALSE
 	if( hMatch( CHAR_SHARP ) ) then
 		isfile = TRUE
-	end if
+		'' Expression
+		hMatchFileNumberExpression( fileexpr, FB_DATATYPE_INTEGER )
 
-	'' Expression?
-	expr = cExpression( )
-	if( expr = NULL ) then
-		if( isfile ) then
-			errReport( FB_ERRMSG_EXPECTEDFILENUMBEREXPRESSION )
-			expr = astNewCONSTi( 0 )
-		else
-			expr = NULL
-		end if
+	else
+		'' could be a prompt or variable, we don't know until we get the next delimiter
+		dstexpr = cExpression( )
+
 	end if
 
 	'' ','|';'?
-	issep = TRUE
 	if( hMatch( CHAR_COMMA ) = FALSE ) then
 		if( hMatch( CHAR_SEMICOLON ) = FALSE ) then
-			issep = FALSE
-			if( (expr = NULL) or (isfile) ) then
+
+			'' only show an error if we didn't get a dstexpr, which means we may not
+			'' expect a delimiter here if we read in a variable below
+			if( dstexpr = NULL ) then
 				'' fbc allows both comma and semicolon following the file number
 				'' but should probably only be comma
 				if( isfile ) then
@@ -316,39 +312,43 @@ function cLineInputStmt _
 			end if
 		else
 			addquestion = TRUE
+			issep = TRUE
 		end if
 	else
-		addquestion = FALSE
+		issep = TRUE
 	end if
 
-	'' Variable?
-	dstexpr = cVarOrDeref( )
+	'' if we got a separator and dstexpr, then it must be a prompt
+	if( issep = TRUE ) then
+		if( dstexpr ) then
+			promptexpr = dstexpr
+			dstexpr = NULL
+		end if
+	end if
+
+	'' Variable? - but only if we don't have it yet
 	if( dstexpr = NULL ) then
-		if( (expr = NULL) or (isfile) ) then
+		dstexpr = cVarOrDeref( )
+		if( dstexpr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			hSkipStmt( )
 			return TRUE
-		else
-			dstexpr = expr
-			expr = NULL
-		end if
-	else
-		if( issep = FALSE ) then
-			errReport( FB_ERRMSG_EXPECTEDCOMMA )
 		end if
 	end if
 
 	'' dest can't be a top-level const
 	if( typeIsConst( astGetFullType( dstexpr ) ) ) then
 		errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
+	elseif( astGetStrLitSymbol( dstexpr ) ) then
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )
 	end if
 
 	select case astGetDataType( dstexpr )
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-		function = rtlFileLineInput( isfile, expr, dstexpr, addquestion, addnewline )
+		function = rtlFileLineInput( isfile, iif( isfile, fileexpr, promptexpr ), dstexpr, addquestion, addnewline )
 
 	case FB_DATATYPE_WCHAR
-		function = rtlFileLineInputWstr( isfile, expr, dstexpr, addquestion, addnewline )
+		function = rtlFileLineInputWstr( isfile, iif( isfile, fileexpr, promptexpr ), dstexpr, addquestion, addnewline )
 
 	'' not a string?
 	case else
@@ -395,7 +395,7 @@ function cInputStmt _
 		end if
 	end if
 
-	'' ','|';'
+	'' ','|';'?
 	if( (isfile) or (filestrexpr <> NULL) ) then
 		if( hMatch( CHAR_COMMA ) = FALSE ) then
 			if( hMatch( CHAR_SEMICOLON ) = FALSE ) then

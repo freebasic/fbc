@@ -71,9 +71,13 @@ line-input.bas(55) error 24: Invalid data types, found ';' in 't( 1, line input 
 line input ;, 1 ;; 
 line-input.bas(56) error 24: Invalid data types, found ';' in 't( 1, line input  ;,  1 ;; '' )'
 line input , a
+OK
 line input ;, a
+OK
 line input , a 
+OK
 line input ;, a 
+OK
 line input , a ,
 line-input.bas(61) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ,  a ,     )'
 line input ;, a ,
@@ -123,61 +127,69 @@ line-input.bas(83) error 3: Expected End-of-Line, found ';' in 't( 1, line input
 line input ;, a ;; 
 line-input.bas(84) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;,  a ;; '' )'
 line input , "T"
+line-input.bas(85) error 14: Expected identifier in 't( 1, line input   , "T"    )'
 line input ;, "T"
+line-input.bas(86) error 14: Expected identifier in 't( 1, line input  ;, "T"    )'
 line input , "T" 
+line-input.bas(87) error 14: Expected identifier, before ''' in 't( 1, line input   , "T" '' )'
 line input ;, "T" 
+line-input.bas(88) error 14: Expected identifier, before ''' in 't( 1, line input  ;, "T" '' )'
 line input , "T",
-line-input.bas(89) error 3: Expected End-of-Line, found ',' in 't( 1, line input   , "T",     )'
+line-input.bas(89) error 14: Expected identifier, before ',' in 't( 1, line input   , "T",     )'
 line input ;, "T",
-line-input.bas(90) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;, "T",     )'
+line-input.bas(90) error 14: Expected identifier, before ',' in 't( 1, line input  ;, "T",     )'
 line input , "T", 
-line-input.bas(91) error 3: Expected End-of-Line, found ',' in 't( 1, line input   , "T",  '' )'
+line-input.bas(91) error 14: Expected identifier, before ',' in 't( 1, line input   , "T",  '' )'
 line input ;, "T", 
-line-input.bas(92) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;, "T",  '' )'
+line-input.bas(92) error 14: Expected identifier, before ',' in 't( 1, line input  ;, "T",  '' )'
 line input , "T";
-line-input.bas(93) error 3: Expected End-of-Line, found ';' in 't( 1, line input   , "T";     )'
+line-input.bas(93) error 14: Expected identifier, before ';' in 't( 1, line input   , "T";     )'
 line input ;, "T";
-line-input.bas(94) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;, "T";     )'
+line-input.bas(94) error 14: Expected identifier, before ';' in 't( 1, line input  ;, "T";     )'
 line input , "T"; 
-line-input.bas(95) error 3: Expected End-of-Line, found ';' in 't( 1, line input   , "T";  '' )'
+line-input.bas(95) error 14: Expected identifier, before ';' in 't( 1, line input   , "T";  '' )'
 line input ;, "T"; 
-line-input.bas(96) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;, "T";  '' )'
+line-input.bas(96) error 14: Expected identifier, before ';' in 't( 1, line input  ;, "T";  '' )'
 line input , "T",,
-line-input.bas(97) error 3: Expected End-of-Line, found ',' in 't( 1, line input   , "T",,    )'
+line-input.bas(97) error 14: Expected identifier, before ',' in 't( 1, line input   , "T",,    )'
 line input ;, "T",,
-line-input.bas(98) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;, "T",,    )'
+line-input.bas(98) error 14: Expected identifier, before ',' in 't( 1, line input  ;, "T",,    )'
 line input , "T",, 
-line-input.bas(99) error 3: Expected End-of-Line, found ',' in 't( 1, line input   , "T",, '' )'
+line-input.bas(99) error 14: Expected identifier, before ',' in 't( 1, line input   , "T",, '' )'
 line input ;, "T",, 
-line-input.bas(100) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;, "T",, '' )'
+line-input.bas(100) error 14: Expected identifier, before ',' in 't( 1, line input  ;, "T",, '' )'
 line input , "T",;
-line-input.bas(101) error 3: Expected End-of-Line, found ',' in 't( 1, line input   , "T",;    )'
+line-input.bas(101) error 14: Expected identifier, before ',' in 't( 1, line input   , "T",;    )'
 line input ;, "T",;
-line-input.bas(102) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;, "T",;    )'
+line-input.bas(102) error 14: Expected identifier, before ',' in 't( 1, line input  ;, "T",;    )'
 line input , "T",; 
-line-input.bas(103) error 3: Expected End-of-Line, found ',' in 't( 1, line input   , "T",; '' )'
+line-input.bas(103) error 14: Expected identifier, before ',' in 't( 1, line input   , "T",; '' )'
 line input ;, "T",; 
-line-input.bas(104) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;, "T",; '' )'
+line-input.bas(104) error 14: Expected identifier, before ',' in 't( 1, line input  ;, "T",; '' )'
 line input , "T";,
-line-input.bas(105) error 3: Expected End-of-Line, found ';' in 't( 1, line input   , "T";,    )'
+line-input.bas(105) error 14: Expected identifier, before ';' in 't( 1, line input   , "T";,    )'
 line input ;, "T";,
-line-input.bas(106) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;, "T";,    )'
+line-input.bas(106) error 14: Expected identifier, before ';' in 't( 1, line input  ;, "T";,    )'
 line input , "T";, 
-line-input.bas(107) error 3: Expected End-of-Line, found ';' in 't( 1, line input   , "T";, '' )'
+line-input.bas(107) error 14: Expected identifier, before ';' in 't( 1, line input   , "T";, '' )'
 line input ;, "T";, 
-line-input.bas(108) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;, "T";, '' )'
+line-input.bas(108) error 14: Expected identifier, before ';' in 't( 1, line input  ;, "T";, '' )'
 line input , "T";;
-line-input.bas(109) error 3: Expected End-of-Line, found ';' in 't( 1, line input   , "T";;    )'
+line-input.bas(109) error 14: Expected identifier, before ';' in 't( 1, line input   , "T";;    )'
 line input ;, "T";;
-line-input.bas(110) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;, "T";;    )'
+line-input.bas(110) error 14: Expected identifier, before ';' in 't( 1, line input  ;, "T";;    )'
 line input , "T";; 
-line-input.bas(111) error 3: Expected End-of-Line, found ';' in 't( 1, line input   , "T";; '' )'
+line-input.bas(111) error 14: Expected identifier, before ';' in 't( 1, line input   , "T";; '' )'
 line input ;, "T";; 
-line-input.bas(112) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;, "T";; '' )'
+line-input.bas(112) error 14: Expected identifier, before ';' in 't( 1, line input  ;, "T";; '' )'
 line input , b
+OK
 line input ;, b
+OK
 line input , b 
+OK
 line input ;, b 
+OK
 line input , b ,
 line-input.bas(117) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ,  b ,     )'
 line input ;, b ,
@@ -243,199 +255,219 @@ line-input.bas(147) error 24: Invalid data types, found ''' in 't( 1, line input
 line input ;; 1 
 line-input.bas(148) error 24: Invalid data types, found ''' in 't( 1, line input  ;;  1  '' )'
 line input ; 1 ,
-line-input.bas(149) error 24: Invalid data types in 't( 1, line input   ;  1 ,     )'
+line-input.bas(149) error 14: Expected identifier in 't( 1, line input   ;  1 ,     )'
 line input ;; 1 ,
 line-input.bas(150) error 24: Invalid data types, found ',' in 't( 1, line input  ;;  1 ,     )'
 line input ; 1 , 
-line-input.bas(151) error 24: Invalid data types, found ''' in 't( 1, line input   ;  1 ,  '' )'
+line-input.bas(151) error 14: Expected identifier, found ''' in 't( 1, line input   ;  1 ,  '' )'
 line input ;; 1 , 
 line-input.bas(152) error 24: Invalid data types, found ',' in 't( 1, line input  ;;  1 ,  '' )'
 line input ; 1 ;
-line-input.bas(153) error 24: Invalid data types in 't( 1, line input   ;  1 ;     )'
+line-input.bas(153) error 14: Expected identifier in 't( 1, line input   ;  1 ;     )'
 line input ;; 1 ;
 line-input.bas(154) error 24: Invalid data types, found ';' in 't( 1, line input  ;;  1 ;     )'
 line input ; 1 ; 
-line-input.bas(155) error 24: Invalid data types, found ''' in 't( 1, line input   ;  1 ;  '' )'
+line-input.bas(155) error 14: Expected identifier, found ''' in 't( 1, line input   ;  1 ;  '' )'
 line input ;; 1 ; 
 line-input.bas(156) error 24: Invalid data types, found ';' in 't( 1, line input  ;;  1 ;  '' )'
 line input ; 1 ,,
-line-input.bas(157) error 24: Invalid data types, found ',' in 't( 1, line input   ;  1 ,,    )'
+line-input.bas(157) error 14: Expected identifier, found ',' in 't( 1, line input   ;  1 ,,    )'
 line input ;; 1 ,,
 line-input.bas(158) error 24: Invalid data types, found ',' in 't( 1, line input  ;;  1 ,,    )'
 line input ; 1 ,, 
-line-input.bas(159) error 24: Invalid data types, found ',' in 't( 1, line input   ;  1 ,, '' )'
+line-input.bas(159) error 14: Expected identifier, found ',' in 't( 1, line input   ;  1 ,, '' )'
 line input ;; 1 ,, 
 line-input.bas(160) error 24: Invalid data types, found ',' in 't( 1, line input  ;;  1 ,, '' )'
 line input ; 1 ,;
-line-input.bas(161) error 24: Invalid data types, found ';' in 't( 1, line input   ;  1 ,;    )'
+line-input.bas(161) error 14: Expected identifier, found ';' in 't( 1, line input   ;  1 ,;    )'
 line input ;; 1 ,;
 line-input.bas(162) error 24: Invalid data types, found ',' in 't( 1, line input  ;;  1 ,;    )'
 line input ; 1 ,; 
-line-input.bas(163) error 24: Invalid data types, found ';' in 't( 1, line input   ;  1 ,; '' )'
+line-input.bas(163) error 14: Expected identifier, found ';' in 't( 1, line input   ;  1 ,; '' )'
 line input ;; 1 ,; 
 line-input.bas(164) error 24: Invalid data types, found ',' in 't( 1, line input  ;;  1 ,; '' )'
 line input ; 1 ;,
-line-input.bas(165) error 24: Invalid data types, found ',' in 't( 1, line input   ;  1 ;,    )'
+line-input.bas(165) error 14: Expected identifier, found ',' in 't( 1, line input   ;  1 ;,    )'
 line input ;; 1 ;,
 line-input.bas(166) error 24: Invalid data types, found ';' in 't( 1, line input  ;;  1 ;,    )'
 line input ; 1 ;, 
-line-input.bas(167) error 24: Invalid data types, found ',' in 't( 1, line input   ;  1 ;, '' )'
+line-input.bas(167) error 14: Expected identifier, found ',' in 't( 1, line input   ;  1 ;, '' )'
 line input ;; 1 ;, 
 line-input.bas(168) error 24: Invalid data types, found ';' in 't( 1, line input  ;;  1 ;, '' )'
 line input ; 1 ;;
-line-input.bas(169) error 24: Invalid data types, found ';' in 't( 1, line input   ;  1 ;;    )'
+line-input.bas(169) error 14: Expected identifier, found ';' in 't( 1, line input   ;  1 ;;    )'
 line input ;; 1 ;;
 line-input.bas(170) error 24: Invalid data types, found ';' in 't( 1, line input  ;;  1 ;;    )'
 line input ; 1 ;; 
-line-input.bas(171) error 24: Invalid data types, found ';' in 't( 1, line input   ;  1 ;; '' )'
+line-input.bas(171) error 14: Expected identifier, found ';' in 't( 1, line input   ;  1 ;; '' )'
 line input ;; 1 ;; 
 line-input.bas(172) error 24: Invalid data types, found ';' in 't( 1, line input  ;;  1 ;; '' )'
 line input ; a
 OK
 line input ;; a
+OK
 line input ; a 
 OK
 line input ;; a 
+OK
 line input ; a ,
+line-input.bas(177) error 14: Expected identifier in 't( 1, line input   ;  a ,     )'
 line input ;; a ,
 line-input.bas(178) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;;  a ,     )'
 line input ; a , 
+line-input.bas(179) error 14: Expected identifier, found ''' in 't( 1, line input   ;  a ,  '' )'
 line input ;; a , 
 line-input.bas(180) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;;  a ,  '' )'
 line input ; a ;
+line-input.bas(181) error 14: Expected identifier in 't( 1, line input   ;  a ;     )'
 line input ;; a ;
 line-input.bas(182) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;;  a ;     )'
 line input ; a ; 
+line-input.bas(183) error 14: Expected identifier, found ''' in 't( 1, line input   ;  a ;  '' )'
 line input ;; a ; 
 line-input.bas(184) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;;  a ;  '' )'
 line input ; a ,,
-line-input.bas(185) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ;  a ,,    )'
+line-input.bas(185) error 14: Expected identifier, found ',' in 't( 1, line input   ;  a ,,    )'
 line input ;; a ,,
 line-input.bas(186) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;;  a ,,    )'
 line input ; a ,, 
-line-input.bas(187) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ;  a ,, '' )'
+line-input.bas(187) error 14: Expected identifier, found ',' in 't( 1, line input   ;  a ,, '' )'
 line input ;; a ,, 
 line-input.bas(188) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;;  a ,, '' )'
 line input ; a ,;
-line-input.bas(189) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ;  a ,;    )'
+line-input.bas(189) error 14: Expected identifier, found ';' in 't( 1, line input   ;  a ,;    )'
 line input ;; a ,;
 line-input.bas(190) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;;  a ,;    )'
 line input ; a ,; 
-line-input.bas(191) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ;  a ,; '' )'
+line-input.bas(191) error 14: Expected identifier, found ';' in 't( 1, line input   ;  a ,; '' )'
 line input ;; a ,; 
 line-input.bas(192) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;;  a ,; '' )'
 line input ; a ;,
-line-input.bas(193) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ;  a ;,    )'
+line-input.bas(193) error 14: Expected identifier, found ',' in 't( 1, line input   ;  a ;,    )'
 line input ;; a ;,
 line-input.bas(194) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;;  a ;,    )'
 line input ; a ;, 
-line-input.bas(195) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ;  a ;, '' )'
+line-input.bas(195) error 14: Expected identifier, found ',' in 't( 1, line input   ;  a ;, '' )'
 line input ;; a ;, 
 line-input.bas(196) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;;  a ;, '' )'
 line input ; a ;;
-line-input.bas(197) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ;  a ;;    )'
+line-input.bas(197) error 14: Expected identifier, found ';' in 't( 1, line input   ;  a ;;    )'
 line input ;; a ;;
 line-input.bas(198) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;;  a ;;    )'
 line input ; a ;; 
-line-input.bas(199) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ;  a ;; '' )'
+line-input.bas(199) error 14: Expected identifier, found ';' in 't( 1, line input   ;  a ;; '' )'
 line input ;; a ;; 
 line-input.bas(200) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;;  a ;; '' )'
 line input ; "T"
+line-input.bas(201) error 14: Expected identifier in 't( 1, line input   ; "T"    )'
 line input ;; "T"
+line-input.bas(202) error 14: Expected identifier in 't( 1, line input  ;; "T"    )'
 line input ; "T" 
+line-input.bas(203) error 14: Expected identifier, before ''' in 't( 1, line input   ; "T" '' )'
 line input ;; "T" 
+line-input.bas(204) error 14: Expected identifier, before ''' in 't( 1, line input  ;; "T" '' )'
 line input ; "T",
+line-input.bas(205) error 14: Expected identifier in 't( 1, line input   ; "T",     )'
 line input ;; "T",
-line-input.bas(206) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;; "T",     )'
+line-input.bas(206) error 14: Expected identifier, before ',' in 't( 1, line input  ;; "T",     )'
 line input ; "T", 
+line-input.bas(207) error 14: Expected identifier, found ''' in 't( 1, line input   ; "T",  '' )'
 line input ;; "T", 
-line-input.bas(208) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;; "T",  '' )'
+line-input.bas(208) error 14: Expected identifier, before ',' in 't( 1, line input  ;; "T",  '' )'
 line input ; "T";
+line-input.bas(209) error 14: Expected identifier in 't( 1, line input   ; "T";     )'
 line input ;; "T";
-line-input.bas(210) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;; "T";     )'
+line-input.bas(210) error 14: Expected identifier, before ';' in 't( 1, line input  ;; "T";     )'
 line input ; "T"; 
+line-input.bas(211) error 14: Expected identifier, found ''' in 't( 1, line input   ; "T";  '' )'
 line input ;; "T"; 
-line-input.bas(212) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;; "T";  '' )'
+line-input.bas(212) error 14: Expected identifier, before ';' in 't( 1, line input  ;; "T";  '' )'
 line input ; "T",,
-line-input.bas(213) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ; "T",,    )'
+line-input.bas(213) error 14: Expected identifier, found ',' in 't( 1, line input   ; "T",,    )'
 line input ;; "T",,
-line-input.bas(214) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;; "T",,    )'
+line-input.bas(214) error 14: Expected identifier, before ',' in 't( 1, line input  ;; "T",,    )'
 line input ; "T",, 
-line-input.bas(215) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ; "T",, '' )'
+line-input.bas(215) error 14: Expected identifier, found ',' in 't( 1, line input   ; "T",, '' )'
 line input ;; "T",, 
-line-input.bas(216) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;; "T",, '' )'
+line-input.bas(216) error 14: Expected identifier, before ',' in 't( 1, line input  ;; "T",, '' )'
 line input ; "T",;
-line-input.bas(217) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ; "T",;    )'
+line-input.bas(217) error 14: Expected identifier, found ';' in 't( 1, line input   ; "T",;    )'
 line input ;; "T",;
-line-input.bas(218) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;; "T",;    )'
+line-input.bas(218) error 14: Expected identifier, before ',' in 't( 1, line input  ;; "T",;    )'
 line input ; "T",; 
-line-input.bas(219) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ; "T",; '' )'
+line-input.bas(219) error 14: Expected identifier, found ';' in 't( 1, line input   ; "T",; '' )'
 line input ;; "T",; 
-line-input.bas(220) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;; "T",; '' )'
+line-input.bas(220) error 14: Expected identifier, before ',' in 't( 1, line input  ;; "T",; '' )'
 line input ; "T";,
-line-input.bas(221) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ; "T";,    )'
+line-input.bas(221) error 14: Expected identifier, found ',' in 't( 1, line input   ; "T";,    )'
 line input ;; "T";,
-line-input.bas(222) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;; "T";,    )'
+line-input.bas(222) error 14: Expected identifier, before ';' in 't( 1, line input  ;; "T";,    )'
 line input ; "T";, 
-line-input.bas(223) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ; "T";, '' )'
+line-input.bas(223) error 14: Expected identifier, found ',' in 't( 1, line input   ; "T";, '' )'
 line input ;; "T";, 
-line-input.bas(224) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;; "T";, '' )'
+line-input.bas(224) error 14: Expected identifier, before ';' in 't( 1, line input  ;; "T";, '' )'
 line input ; "T";;
-line-input.bas(225) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ; "T";;    )'
+line-input.bas(225) error 14: Expected identifier, found ';' in 't( 1, line input   ; "T";;    )'
 line input ;; "T";;
-line-input.bas(226) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;; "T";;    )'
+line-input.bas(226) error 14: Expected identifier, before ';' in 't( 1, line input  ;; "T";;    )'
 line input ; "T";; 
-line-input.bas(227) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ; "T";; '' )'
+line-input.bas(227) error 14: Expected identifier, found ';' in 't( 1, line input   ; "T";; '' )'
 line input ;; "T";; 
-line-input.bas(228) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;; "T";; '' )'
+line-input.bas(228) error 14: Expected identifier, before ';' in 't( 1, line input  ;; "T";; '' )'
 line input ; b
 OK
 line input ;; b
+OK
 line input ; b 
 OK
 line input ;; b 
+OK
 line input ; b ,
+line-input.bas(233) error 14: Expected identifier in 't( 1, line input   ;  b ,     )'
 line input ;; b ,
 line-input.bas(234) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;;  b ,     )'
 line input ; b , 
+line-input.bas(235) error 14: Expected identifier, found ''' in 't( 1, line input   ;  b ,  '' )'
 line input ;; b , 
 line-input.bas(236) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;;  b ,  '' )'
 line input ; b ;
+line-input.bas(237) error 14: Expected identifier in 't( 1, line input   ;  b ;     )'
 line input ;; b ;
 line-input.bas(238) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;;  b ;     )'
 line input ; b ; 
+line-input.bas(239) error 14: Expected identifier, found ''' in 't( 1, line input   ;  b ;  '' )'
 line input ;; b ; 
 line-input.bas(240) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;;  b ;  '' )'
 line input ; b ,,
-line-input.bas(241) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ;  b ,,    )'
+line-input.bas(241) error 14: Expected identifier, found ',' in 't( 1, line input   ;  b ,,    )'
 line input ;; b ,,
 line-input.bas(242) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;;  b ,,    )'
 line input ; b ,, 
-line-input.bas(243) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ;  b ,, '' )'
+line-input.bas(243) error 14: Expected identifier, found ',' in 't( 1, line input   ;  b ,, '' )'
 line input ;; b ,, 
 line-input.bas(244) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;;  b ,, '' )'
 line input ; b ,;
-line-input.bas(245) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ;  b ,;    )'
+line-input.bas(245) error 14: Expected identifier, found ';' in 't( 1, line input   ;  b ,;    )'
 line input ;; b ,;
 line-input.bas(246) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;;  b ,;    )'
 line input ; b ,; 
-line-input.bas(247) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ;  b ,; '' )'
+line-input.bas(247) error 14: Expected identifier, found ';' in 't( 1, line input   ;  b ,; '' )'
 line input ;; b ,; 
 line-input.bas(248) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;;  b ,; '' )'
 line input ; b ;,
-line-input.bas(249) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ;  b ;,    )'
+line-input.bas(249) error 14: Expected identifier, found ',' in 't( 1, line input   ;  b ;,    )'
 line input ;; b ;,
 line-input.bas(250) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;;  b ;,    )'
 line input ; b ;, 
-line-input.bas(251) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ;  b ;, '' )'
+line-input.bas(251) error 14: Expected identifier, found ',' in 't( 1, line input   ;  b ;, '' )'
 line input ;; b ;, 
 line-input.bas(252) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;;  b ;, '' )'
 line input ; b ;;
-line-input.bas(253) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ;  b ;;    )'
+line-input.bas(253) error 14: Expected identifier, found ';' in 't( 1, line input   ;  b ;;    )'
 line input ;; b ;;
 line-input.bas(254) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;;  b ;;    )'
 line input ; b ;; 
-line-input.bas(255) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ;  b ;; '' )'
+line-input.bas(255) error 14: Expected identifier, found ';' in 't( 1, line input   ;  b ;; '' )'
 line input ;; b ;; 
 line-input.bas(256) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;;  b ;; '' )'
 line input ,,
@@ -967,9 +999,11 @@ line-input.bas(519) error 24: Invalid data types, found ';' in 't( 1, line input
 line input ;;, 1 ;; 
 line-input.bas(520) error 14: Expected identifier, found ',' in 't( 1, line input  ;;, 1 ;; '' )'
 line input ;, a
+OK
 line input ;;, a
 line-input.bas(522) error 14: Expected identifier, found ',' in 't( 1, line input  ;;, a     )'
 line input ;, a 
+OK
 line input ;;, a 
 line-input.bas(524) error 14: Expected identifier, found ',' in 't( 1, line input  ;;, a  '' )'
 line input ;, a ,
@@ -1021,63 +1055,67 @@ line-input.bas(547) error 3: Expected End-of-Line, found ';' in 't( 1, line inpu
 line input ;;, a ;; 
 line-input.bas(548) error 14: Expected identifier, found ',' in 't( 1, line input  ;;, a ;; '' )'
 line input ;,"T"
+line-input.bas(549) error 14: Expected identifier in 't( 1, line input   ;,"T"    )'
 line input ;;,"T"
 line-input.bas(550) error 14: Expected identifier, found ',' in 't( 1, line input  ;;,"T"    )'
 line input ;,"T" 
+line-input.bas(551) error 14: Expected identifier, before ''' in 't( 1, line input   ;,"T" '' )'
 line input ;;,"T" 
 line-input.bas(552) error 14: Expected identifier, found ',' in 't( 1, line input  ;;,"T" '' )'
 line input ;,"T",
-line-input.bas(553) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ;,"T",     )'
+line-input.bas(553) error 14: Expected identifier, before ',' in 't( 1, line input   ;,"T",     )'
 line input ;;,"T",
 line-input.bas(554) error 14: Expected identifier, found ',' in 't( 1, line input  ;;,"T",     )'
 line input ;,"T", 
-line-input.bas(555) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ;,"T",  '' )'
+line-input.bas(555) error 14: Expected identifier, before ',' in 't( 1, line input   ;,"T",  '' )'
 line input ;;,"T", 
 line-input.bas(556) error 14: Expected identifier, found ',' in 't( 1, line input  ;;,"T",  '' )'
 line input ;,"T";
-line-input.bas(557) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ;,"T";     )'
+line-input.bas(557) error 14: Expected identifier, before ';' in 't( 1, line input   ;,"T";     )'
 line input ;;,"T";
 line-input.bas(558) error 14: Expected identifier, found ',' in 't( 1, line input  ;;,"T";     )'
 line input ;,"T"; 
-line-input.bas(559) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ;,"T";  '' )'
+line-input.bas(559) error 14: Expected identifier, before ';' in 't( 1, line input   ;,"T";  '' )'
 line input ;;,"T"; 
 line-input.bas(560) error 14: Expected identifier, found ',' in 't( 1, line input  ;;,"T";  '' )'
 line input ;,"T",,
-line-input.bas(561) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ;,"T",,    )'
+line-input.bas(561) error 14: Expected identifier, before ',' in 't( 1, line input   ;,"T",,    )'
 line input ;;,"T",,
 line-input.bas(562) error 14: Expected identifier, found ',' in 't( 1, line input  ;;,"T",,    )'
 line input ;,"T",, 
-line-input.bas(563) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ;,"T",, '' )'
+line-input.bas(563) error 14: Expected identifier, before ',' in 't( 1, line input   ;,"T",, '' )'
 line input ;;,"T",, 
 line-input.bas(564) error 14: Expected identifier, found ',' in 't( 1, line input  ;;,"T",, '' )'
 line input ;,"T",;
-line-input.bas(565) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ;,"T",;    )'
+line-input.bas(565) error 14: Expected identifier, before ',' in 't( 1, line input   ;,"T",;    )'
 line input ;;,"T",;
 line-input.bas(566) error 14: Expected identifier, found ',' in 't( 1, line input  ;;,"T",;    )'
 line input ;,"T",; 
-line-input.bas(567) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ;,"T",; '' )'
+line-input.bas(567) error 14: Expected identifier, before ',' in 't( 1, line input   ;,"T",; '' )'
 line input ;;,"T",; 
 line-input.bas(568) error 14: Expected identifier, found ',' in 't( 1, line input  ;;,"T",; '' )'
 line input ;,"T";,
-line-input.bas(569) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ;,"T";,    )'
+line-input.bas(569) error 14: Expected identifier, before ';' in 't( 1, line input   ;,"T";,    )'
 line input ;;,"T";,
 line-input.bas(570) error 14: Expected identifier, found ',' in 't( 1, line input  ;;,"T";,    )'
 line input ;,"T";, 
-line-input.bas(571) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ;,"T";, '' )'
+line-input.bas(571) error 14: Expected identifier, before ';' in 't( 1, line input   ;,"T";, '' )'
 line input ;;,"T";, 
 line-input.bas(572) error 14: Expected identifier, found ',' in 't( 1, line input  ;;,"T";, '' )'
 line input ;,"T";;
-line-input.bas(573) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ;,"T";;    )'
+line-input.bas(573) error 14: Expected identifier, before ';' in 't( 1, line input   ;,"T";;    )'
 line input ;;,"T";;
 line-input.bas(574) error 14: Expected identifier, found ',' in 't( 1, line input  ;;,"T";;    )'
 line input ;,"T";; 
-line-input.bas(575) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ;,"T";; '' )'
+line-input.bas(575) error 14: Expected identifier, before ';' in 't( 1, line input   ;,"T";; '' )'
 line input ;;,"T";; 
 line-input.bas(576) error 14: Expected identifier, found ',' in 't( 1, line input  ;;,"T";; '' )'
 line input ;, b
+OK
 line input ;;, b
 line-input.bas(578) error 14: Expected identifier, found ',' in 't( 1, line input  ;;, b     )'
 line input ;, b 
+OK
 line input ;;, b 
 line-input.bas(580) error 14: Expected identifier, found ',' in 't( 1, line input  ;;, b  '' )'
 line input ;, b ,
@@ -1193,9 +1231,11 @@ line-input.bas(635) error 24: Invalid data types, found ';' in 't( 1, line input
 line input ;;; 1 ;; 
 line-input.bas(636) error 14: Expected identifier, found ';' in 't( 1, line input  ;;; 1 ;; '' )'
 line input ;; a
+OK
 line input ;;; a
 line-input.bas(638) error 14: Expected identifier, found ';' in 't( 1, line input  ;;; a     )'
 line input ;; a 
+OK
 line input ;;; a 
 line-input.bas(640) error 14: Expected identifier, found ';' in 't( 1, line input  ;;; a  '' )'
 line input ;; a ,
@@ -1247,63 +1287,67 @@ line-input.bas(663) error 3: Expected End-of-Line, found ';' in 't( 1, line inpu
 line input ;;; a ;; 
 line-input.bas(664) error 14: Expected identifier, found ';' in 't( 1, line input  ;;; a ;; '' )'
 line input ;;"T"
+line-input.bas(665) error 14: Expected identifier in 't( 1, line input   ;;"T"    )'
 line input ;;;"T"
 line-input.bas(666) error 14: Expected identifier, found ';' in 't( 1, line input  ;;;"T"    )'
 line input ;;"T" 
+line-input.bas(667) error 14: Expected identifier, before ''' in 't( 1, line input   ;;"T" '' )'
 line input ;;;"T" 
 line-input.bas(668) error 14: Expected identifier, found ';' in 't( 1, line input  ;;;"T" '' )'
 line input ;;"T",
-line-input.bas(669) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ;;"T",     )'
+line-input.bas(669) error 14: Expected identifier, before ',' in 't( 1, line input   ;;"T",     )'
 line input ;;;"T",
 line-input.bas(670) error 14: Expected identifier, found ';' in 't( 1, line input  ;;;"T",     )'
 line input ;;"T", 
-line-input.bas(671) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ;;"T",  '' )'
+line-input.bas(671) error 14: Expected identifier, before ',' in 't( 1, line input   ;;"T",  '' )'
 line input ;;;"T", 
 line-input.bas(672) error 14: Expected identifier, found ';' in 't( 1, line input  ;;;"T",  '' )'
 line input ;;"T";
-line-input.bas(673) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ;;"T";     )'
+line-input.bas(673) error 14: Expected identifier, before ';' in 't( 1, line input   ;;"T";     )'
 line input ;;;"T";
 line-input.bas(674) error 14: Expected identifier, found ';' in 't( 1, line input  ;;;"T";     )'
 line input ;;"T"; 
-line-input.bas(675) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ;;"T";  '' )'
+line-input.bas(675) error 14: Expected identifier, before ';' in 't( 1, line input   ;;"T";  '' )'
 line input ;;;"T"; 
 line-input.bas(676) error 14: Expected identifier, found ';' in 't( 1, line input  ;;;"T";  '' )'
 line input ;;"T",,
-line-input.bas(677) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ;;"T",,    )'
+line-input.bas(677) error 14: Expected identifier, before ',' in 't( 1, line input   ;;"T",,    )'
 line input ;;;"T",,
 line-input.bas(678) error 14: Expected identifier, found ';' in 't( 1, line input  ;;;"T",,    )'
 line input ;;"T",, 
-line-input.bas(679) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ;;"T",, '' )'
+line-input.bas(679) error 14: Expected identifier, before ',' in 't( 1, line input   ;;"T",, '' )'
 line input ;;;"T",, 
 line-input.bas(680) error 14: Expected identifier, found ';' in 't( 1, line input  ;;;"T",, '' )'
 line input ;;"T",;
-line-input.bas(681) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ;;"T",;    )'
+line-input.bas(681) error 14: Expected identifier, before ',' in 't( 1, line input   ;;"T",;    )'
 line input ;;;"T",;
 line-input.bas(682) error 14: Expected identifier, found ';' in 't( 1, line input  ;;;"T",;    )'
 line input ;;"T",; 
-line-input.bas(683) error 3: Expected End-of-Line, found ',' in 't( 1, line input   ;;"T",; '' )'
+line-input.bas(683) error 14: Expected identifier, before ',' in 't( 1, line input   ;;"T",; '' )'
 line input ;;;"T",; 
 line-input.bas(684) error 14: Expected identifier, found ';' in 't( 1, line input  ;;;"T",; '' )'
 line input ;;"T";,
-line-input.bas(685) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ;;"T";,    )'
+line-input.bas(685) error 14: Expected identifier, before ';' in 't( 1, line input   ;;"T";,    )'
 line input ;;;"T";,
 line-input.bas(686) error 14: Expected identifier, found ';' in 't( 1, line input  ;;;"T";,    )'
 line input ;;"T";, 
-line-input.bas(687) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ;;"T";, '' )'
+line-input.bas(687) error 14: Expected identifier, before ';' in 't( 1, line input   ;;"T";, '' )'
 line input ;;;"T";, 
 line-input.bas(688) error 14: Expected identifier, found ';' in 't( 1, line input  ;;;"T";, '' )'
 line input ;;"T";;
-line-input.bas(689) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ;;"T";;    )'
+line-input.bas(689) error 14: Expected identifier, before ';' in 't( 1, line input   ;;"T";;    )'
 line input ;;;"T";;
 line-input.bas(690) error 14: Expected identifier, found ';' in 't( 1, line input  ;;;"T";;    )'
 line input ;;"T";; 
-line-input.bas(691) error 3: Expected End-of-Line, found ';' in 't( 1, line input   ;;"T";; '' )'
+line-input.bas(691) error 14: Expected identifier, before ';' in 't( 1, line input   ;;"T";; '' )'
 line input ;;;"T";; 
 line-input.bas(692) error 14: Expected identifier, found ';' in 't( 1, line input  ;;;"T";; '' )'
 line input ;; b
+OK
 line input ;;; b
 line-input.bas(694) error 14: Expected identifier, found ';' in 't( 1, line input  ;;; b     )'
 line input ;; b 
+OK
 line input ;;; b 
 line-input.bas(696) error 14: Expected identifier, found ';' in 't( 1, line input  ;;; b  '' )'
 line input ;; b ,
@@ -1363,13 +1407,13 @@ line-input.bas(723) error 24: Invalid data types, found ''' in 't( 1, line input
 line input ; 1 
 line-input.bas(724) error 24: Invalid data types, found ''' in 't( 1, line input  ; 1  '' )'
 line input 1 ,
-line-input.bas(725) error 24: Invalid data types in 't( 1, line input    1 ,     )'
+line-input.bas(725) error 14: Expected identifier in 't( 1, line input    1 ,     )'
 line input ; 1 ,
-line-input.bas(726) error 24: Invalid data types in 't( 1, line input  ; 1 ,     )'
+line-input.bas(726) error 14: Expected identifier in 't( 1, line input  ; 1 ,     )'
 line input 1 , 
-line-input.bas(727) error 24: Invalid data types, found ''' in 't( 1, line input    1 ,  '' )'
+line-input.bas(727) error 14: Expected identifier, found ''' in 't( 1, line input    1 ,  '' )'
 line input ; 1 , 
-line-input.bas(728) error 24: Invalid data types, found ''' in 't( 1, line input  ; 1 ,  '' )'
+line-input.bas(728) error 14: Expected identifier, found ''' in 't( 1, line input  ; 1 ,  '' )'
 line input 1 , 1
 line-input.bas(729) error 24: Invalid data types in 't( 1, line input    1 ,  1     )'
 line input ; 1 , 1
@@ -1387,13 +1431,13 @@ line-input.bas(735) error 58: Type mismatch, at parameter 1 in 't( 1, line input
 line input ; 1 , a 
 line-input.bas(736) error 58: Type mismatch, at parameter 1 in 't( 1, line input  ; 1 ,  a  '' )'
 line input 1 , "T"
-line-input.bas(737) error 58: Type mismatch, at parameter 1 in 't( 1, line input    1 , "T"    )'
+line-input.bas(737) error 14: Expected identifier in 't( 1, line input    1 , "T"    )'
 line input ; 1 , "T"
-line-input.bas(738) error 58: Type mismatch, at parameter 1 in 't( 1, line input  ; 1 , "T"    )'
+line-input.bas(738) error 14: Expected identifier in 't( 1, line input  ; 1 , "T"    )'
 line input 1 , "T" 
-line-input.bas(739) error 58: Type mismatch, at parameter 1 in 't( 1, line input    1 , "T" '' )'
+line-input.bas(739) error 14: Expected identifier, before ''' in 't( 1, line input    1 , "T" '' )'
 line input ; 1 , "T" 
-line-input.bas(740) error 58: Type mismatch, at parameter 1 in 't( 1, line input  ; 1 , "T" '' )'
+line-input.bas(740) error 14: Expected identifier, before ''' in 't( 1, line input  ; 1 , "T" '' )'
 line input 1 , b
 line-input.bas(741) error 58: Type mismatch, at parameter 1 in 't( 1, line input    1 ,  b     )'
 line input ; 1 , b
@@ -1403,13 +1447,13 @@ line-input.bas(743) error 58: Type mismatch, at parameter 1 in 't( 1, line input
 line input ; 1 , b 
 line-input.bas(744) error 58: Type mismatch, at parameter 1 in 't( 1, line input  ; 1 ,  b  '' )'
 line input 1 ;
-line-input.bas(745) error 24: Invalid data types in 't( 1, line input    1 ;     )'
+line-input.bas(745) error 14: Expected identifier in 't( 1, line input    1 ;     )'
 line input ; 1 ;
-line-input.bas(746) error 24: Invalid data types in 't( 1, line input  ; 1 ;     )'
+line-input.bas(746) error 14: Expected identifier in 't( 1, line input  ; 1 ;     )'
 line input 1 ; 
-line-input.bas(747) error 24: Invalid data types, found ''' in 't( 1, line input    1 ;  '' )'
+line-input.bas(747) error 14: Expected identifier, found ''' in 't( 1, line input    1 ;  '' )'
 line input ; 1 ; 
-line-input.bas(748) error 24: Invalid data types, found ''' in 't( 1, line input  ; 1 ;  '' )'
+line-input.bas(748) error 14: Expected identifier, found ''' in 't( 1, line input  ; 1 ;  '' )'
 line input 1 ; 1
 line-input.bas(749) error 24: Invalid data types in 't( 1, line input    1 ;  1     )'
 line input ; 1 ; 1
@@ -1427,13 +1471,13 @@ line-input.bas(755) error 58: Type mismatch, at parameter 1 in 't( 1, line input
 line input ; 1 ; a 
 line-input.bas(756) error 58: Type mismatch, at parameter 1 in 't( 1, line input  ; 1 ;  a  '' )'
 line input 1 ; "T"
-line-input.bas(757) error 58: Type mismatch, at parameter 1 in 't( 1, line input    1 ; "T"    )'
+line-input.bas(757) error 14: Expected identifier in 't( 1, line input    1 ; "T"    )'
 line input ; 1 ; "T"
-line-input.bas(758) error 58: Type mismatch, at parameter 1 in 't( 1, line input  ; 1 ; "T"    )'
+line-input.bas(758) error 14: Expected identifier in 't( 1, line input  ; 1 ; "T"    )'
 line input 1 ; "T" 
-line-input.bas(759) error 58: Type mismatch, at parameter 1 in 't( 1, line input    1 ; "T" '' )'
+line-input.bas(759) error 14: Expected identifier, before ''' in 't( 1, line input    1 ; "T" '' )'
 line input ; 1 ; "T" 
-line-input.bas(760) error 58: Type mismatch, at parameter 1 in 't( 1, line input  ; 1 ; "T" '' )'
+line-input.bas(760) error 14: Expected identifier, before ''' in 't( 1, line input  ; 1 ; "T" '' )'
 line input 1 ; b
 line-input.bas(761) error 58: Type mismatch, at parameter 1 in 't( 1, line input    1 ;  b     )'
 line input ; 1 ; b
@@ -1443,165 +1487,165 @@ line-input.bas(763) error 58: Type mismatch, at parameter 1 in 't( 1, line input
 line input ; 1 ; b 
 line-input.bas(764) error 58: Type mismatch, at parameter 1 in 't( 1, line input  ; 1 ;  b  '' )'
 line input 1 ,,
-line-input.bas(765) error 24: Invalid data types, found ',' in 't( 1, line input    1 ,,    )'
+line-input.bas(765) error 14: Expected identifier, found ',' in 't( 1, line input    1 ,,    )'
 line input ; 1 ,,
-line-input.bas(766) error 24: Invalid data types, found ',' in 't( 1, line input  ; 1 ,,    )'
+line-input.bas(766) error 14: Expected identifier, found ',' in 't( 1, line input  ; 1 ,,    )'
 line input 1 ,, 
-line-input.bas(767) error 24: Invalid data types, found ',' in 't( 1, line input    1 ,, '' )'
+line-input.bas(767) error 14: Expected identifier, found ',' in 't( 1, line input    1 ,, '' )'
 line input ; 1 ,, 
-line-input.bas(768) error 24: Invalid data types, found ',' in 't( 1, line input  ; 1 ,, '' )'
+line-input.bas(768) error 14: Expected identifier, found ',' in 't( 1, line input  ; 1 ,, '' )'
 line input 1 ,, 1
-line-input.bas(769) error 24: Invalid data types, found ',' in 't( 1, line input    1 ,, 1     )'
+line-input.bas(769) error 14: Expected identifier, found ',' in 't( 1, line input    1 ,, 1     )'
 line input ; 1 ,, 1
-line-input.bas(770) error 24: Invalid data types, found ',' in 't( 1, line input  ; 1 ,, 1     )'
+line-input.bas(770) error 14: Expected identifier, found ',' in 't( 1, line input  ; 1 ,, 1     )'
 line input 1 ,, 1 
-line-input.bas(771) error 24: Invalid data types, found ',' in 't( 1, line input    1 ,, 1  '' )'
+line-input.bas(771) error 14: Expected identifier, found ',' in 't( 1, line input    1 ,, 1  '' )'
 line input ; 1 ,, 1 
-line-input.bas(772) error 24: Invalid data types, found ',' in 't( 1, line input  ; 1 ,, 1  '' )'
+line-input.bas(772) error 14: Expected identifier, found ',' in 't( 1, line input  ; 1 ,, 1  '' )'
 line input 1 ,, a
-line-input.bas(773) error 24: Invalid data types, found ',' in 't( 1, line input    1 ,, a     )'
+line-input.bas(773) error 14: Expected identifier, found ',' in 't( 1, line input    1 ,, a     )'
 line input ; 1 ,, a
-line-input.bas(774) error 24: Invalid data types, found ',' in 't( 1, line input  ; 1 ,, a     )'
+line-input.bas(774) error 14: Expected identifier, found ',' in 't( 1, line input  ; 1 ,, a     )'
 line input 1 ,, a 
-line-input.bas(775) error 24: Invalid data types, found ',' in 't( 1, line input    1 ,, a  '' )'
+line-input.bas(775) error 14: Expected identifier, found ',' in 't( 1, line input    1 ,, a  '' )'
 line input ; 1 ,, a 
-line-input.bas(776) error 24: Invalid data types, found ',' in 't( 1, line input  ; 1 ,, a  '' )'
+line-input.bas(776) error 14: Expected identifier, found ',' in 't( 1, line input  ; 1 ,, a  '' )'
 line input 1 ,,"T"
-line-input.bas(777) error 24: Invalid data types, found ',' in 't( 1, line input    1 ,,"T"    )'
+line-input.bas(777) error 14: Expected identifier, found ',' in 't( 1, line input    1 ,,"T"    )'
 line input ; 1 ,,"T"
-line-input.bas(778) error 24: Invalid data types, found ',' in 't( 1, line input  ; 1 ,,"T"    )'
+line-input.bas(778) error 14: Expected identifier, found ',' in 't( 1, line input  ; 1 ,,"T"    )'
 line input 1 ,,"T" 
-line-input.bas(779) error 24: Invalid data types, found ',' in 't( 1, line input    1 ,,"T" '' )'
+line-input.bas(779) error 14: Expected identifier, found ',' in 't( 1, line input    1 ,,"T" '' )'
 line input ; 1 ,,"T" 
-line-input.bas(780) error 24: Invalid data types, found ',' in 't( 1, line input  ; 1 ,,"T" '' )'
+line-input.bas(780) error 14: Expected identifier, found ',' in 't( 1, line input  ; 1 ,,"T" '' )'
 line input 1 ,, b
-line-input.bas(781) error 24: Invalid data types, found ',' in 't( 1, line input    1 ,, b     )'
+line-input.bas(781) error 14: Expected identifier, found ',' in 't( 1, line input    1 ,, b     )'
 line input ; 1 ,, b
-line-input.bas(782) error 24: Invalid data types, found ',' in 't( 1, line input  ; 1 ,, b     )'
+line-input.bas(782) error 14: Expected identifier, found ',' in 't( 1, line input  ; 1 ,, b     )'
 line input 1 ,, b 
-line-input.bas(783) error 24: Invalid data types, found ',' in 't( 1, line input    1 ,, b  '' )'
+line-input.bas(783) error 14: Expected identifier, found ',' in 't( 1, line input    1 ,, b  '' )'
 line input ; 1 ,, b 
-line-input.bas(784) error 24: Invalid data types, found ',' in 't( 1, line input  ; 1 ,, b  '' )'
+line-input.bas(784) error 14: Expected identifier, found ',' in 't( 1, line input  ; 1 ,, b  '' )'
 line input 1 ,;
-line-input.bas(785) error 24: Invalid data types, found ';' in 't( 1, line input    1 ,;    )'
+line-input.bas(785) error 14: Expected identifier, found ';' in 't( 1, line input    1 ,;    )'
 line input ; 1 ,;
-line-input.bas(786) error 24: Invalid data types, found ';' in 't( 1, line input  ; 1 ,;    )'
+line-input.bas(786) error 14: Expected identifier, found ';' in 't( 1, line input  ; 1 ,;    )'
 line input 1 ,; 
-line-input.bas(787) error 24: Invalid data types, found ';' in 't( 1, line input    1 ,; '' )'
+line-input.bas(787) error 14: Expected identifier, found ';' in 't( 1, line input    1 ,; '' )'
 line input ; 1 ,; 
-line-input.bas(788) error 24: Invalid data types, found ';' in 't( 1, line input  ; 1 ,; '' )'
+line-input.bas(788) error 14: Expected identifier, found ';' in 't( 1, line input  ; 1 ,; '' )'
 line input 1 ,; 1
-line-input.bas(789) error 24: Invalid data types, found ';' in 't( 1, line input    1 ,; 1     )'
+line-input.bas(789) error 14: Expected identifier, found ';' in 't( 1, line input    1 ,; 1     )'
 line input ; 1 ,; 1
-line-input.bas(790) error 24: Invalid data types, found ';' in 't( 1, line input  ; 1 ,; 1     )'
+line-input.bas(790) error 14: Expected identifier, found ';' in 't( 1, line input  ; 1 ,; 1     )'
 line input 1 ,; 1 
-line-input.bas(791) error 24: Invalid data types, found ';' in 't( 1, line input    1 ,; 1  '' )'
+line-input.bas(791) error 14: Expected identifier, found ';' in 't( 1, line input    1 ,; 1  '' )'
 line input ; 1 ,; 1 
-line-input.bas(792) error 24: Invalid data types, found ';' in 't( 1, line input  ; 1 ,; 1  '' )'
+line-input.bas(792) error 14: Expected identifier, found ';' in 't( 1, line input  ; 1 ,; 1  '' )'
 line input 1 ,; a
-line-input.bas(793) error 24: Invalid data types, found ';' in 't( 1, line input    1 ,; a     )'
+line-input.bas(793) error 14: Expected identifier, found ';' in 't( 1, line input    1 ,; a     )'
 line input ; 1 ,; a
-line-input.bas(794) error 24: Invalid data types, found ';' in 't( 1, line input  ; 1 ,; a     )'
+line-input.bas(794) error 14: Expected identifier, found ';' in 't( 1, line input  ; 1 ,; a     )'
 line input 1 ,; a 
-line-input.bas(795) error 24: Invalid data types, found ';' in 't( 1, line input    1 ,; a  '' )'
+line-input.bas(795) error 14: Expected identifier, found ';' in 't( 1, line input    1 ,; a  '' )'
 line input ; 1 ,; a 
-line-input.bas(796) error 24: Invalid data types, found ';' in 't( 1, line input  ; 1 ,; a  '' )'
+line-input.bas(796) error 14: Expected identifier, found ';' in 't( 1, line input  ; 1 ,; a  '' )'
 line input 1 ,;"T"
-line-input.bas(797) error 24: Invalid data types, found ';' in 't( 1, line input    1 ,;"T"    )'
+line-input.bas(797) error 14: Expected identifier, found ';' in 't( 1, line input    1 ,;"T"    )'
 line input ; 1 ,;"T"
-line-input.bas(798) error 24: Invalid data types, found ';' in 't( 1, line input  ; 1 ,;"T"    )'
+line-input.bas(798) error 14: Expected identifier, found ';' in 't( 1, line input  ; 1 ,;"T"    )'
 line input 1 ,;"T" 
-line-input.bas(799) error 24: Invalid data types, found ';' in 't( 1, line input    1 ,;"T" '' )'
+line-input.bas(799) error 14: Expected identifier, found ';' in 't( 1, line input    1 ,;"T" '' )'
 line input ; 1 ,;"T" 
-line-input.bas(800) error 24: Invalid data types, found ';' in 't( 1, line input  ; 1 ,;"T" '' )'
+line-input.bas(800) error 14: Expected identifier, found ';' in 't( 1, line input  ; 1 ,;"T" '' )'
 line input 1 ,; b
-line-input.bas(801) error 24: Invalid data types, found ';' in 't( 1, line input    1 ,; b     )'
+line-input.bas(801) error 14: Expected identifier, found ';' in 't( 1, line input    1 ,; b     )'
 line input ; 1 ,; b
-line-input.bas(802) error 24: Invalid data types, found ';' in 't( 1, line input  ; 1 ,; b     )'
+line-input.bas(802) error 14: Expected identifier, found ';' in 't( 1, line input  ; 1 ,; b     )'
 line input 1 ,; b 
-line-input.bas(803) error 24: Invalid data types, found ';' in 't( 1, line input    1 ,; b  '' )'
+line-input.bas(803) error 14: Expected identifier, found ';' in 't( 1, line input    1 ,; b  '' )'
 line input ; 1 ,; b 
-line-input.bas(804) error 24: Invalid data types, found ';' in 't( 1, line input  ; 1 ,; b  '' )'
+line-input.bas(804) error 14: Expected identifier, found ';' in 't( 1, line input  ; 1 ,; b  '' )'
 line input 1 ;,
-line-input.bas(805) error 24: Invalid data types, found ',' in 't( 1, line input    1 ;,    )'
+line-input.bas(805) error 14: Expected identifier, found ',' in 't( 1, line input    1 ;,    )'
 line input ; 1 ;,
-line-input.bas(806) error 24: Invalid data types, found ',' in 't( 1, line input  ; 1 ;,    )'
+line-input.bas(806) error 14: Expected identifier, found ',' in 't( 1, line input  ; 1 ;,    )'
 line input 1 ;, 
-line-input.bas(807) error 24: Invalid data types, found ',' in 't( 1, line input    1 ;, '' )'
+line-input.bas(807) error 14: Expected identifier, found ',' in 't( 1, line input    1 ;, '' )'
 line input ; 1 ;, 
-line-input.bas(808) error 24: Invalid data types, found ',' in 't( 1, line input  ; 1 ;, '' )'
+line-input.bas(808) error 14: Expected identifier, found ',' in 't( 1, line input  ; 1 ;, '' )'
 line input 1 ;, 1
-line-input.bas(809) error 24: Invalid data types, found ',' in 't( 1, line input    1 ;, 1     )'
+line-input.bas(809) error 14: Expected identifier, found ',' in 't( 1, line input    1 ;, 1     )'
 line input ; 1 ;, 1
-line-input.bas(810) error 24: Invalid data types, found ',' in 't( 1, line input  ; 1 ;, 1     )'
+line-input.bas(810) error 14: Expected identifier, found ',' in 't( 1, line input  ; 1 ;, 1     )'
 line input 1 ;, 1 
-line-input.bas(811) error 24: Invalid data types, found ',' in 't( 1, line input    1 ;, 1  '' )'
+line-input.bas(811) error 14: Expected identifier, found ',' in 't( 1, line input    1 ;, 1  '' )'
 line input ; 1 ;, 1 
-line-input.bas(812) error 24: Invalid data types, found ',' in 't( 1, line input  ; 1 ;, 1  '' )'
+line-input.bas(812) error 14: Expected identifier, found ',' in 't( 1, line input  ; 1 ;, 1  '' )'
 line input 1 ;, a
-line-input.bas(813) error 24: Invalid data types, found ',' in 't( 1, line input    1 ;, a     )'
+line-input.bas(813) error 14: Expected identifier, found ',' in 't( 1, line input    1 ;, a     )'
 line input ; 1 ;, a
-line-input.bas(814) error 24: Invalid data types, found ',' in 't( 1, line input  ; 1 ;, a     )'
+line-input.bas(814) error 14: Expected identifier, found ',' in 't( 1, line input  ; 1 ;, a     )'
 line input 1 ;, a 
-line-input.bas(815) error 24: Invalid data types, found ',' in 't( 1, line input    1 ;, a  '' )'
+line-input.bas(815) error 14: Expected identifier, found ',' in 't( 1, line input    1 ;, a  '' )'
 line input ; 1 ;, a 
-line-input.bas(816) error 24: Invalid data types, found ',' in 't( 1, line input  ; 1 ;, a  '' )'
+line-input.bas(816) error 14: Expected identifier, found ',' in 't( 1, line input  ; 1 ;, a  '' )'
 line input 1 ;,"T"
-line-input.bas(817) error 24: Invalid data types, found ',' in 't( 1, line input    1 ;,"T"    )'
+line-input.bas(817) error 14: Expected identifier, found ',' in 't( 1, line input    1 ;,"T"    )'
 line input ; 1 ;,"T"
-line-input.bas(818) error 24: Invalid data types, found ',' in 't( 1, line input  ; 1 ;,"T"    )'
+line-input.bas(818) error 14: Expected identifier, found ',' in 't( 1, line input  ; 1 ;,"T"    )'
 line input 1 ;,"T" 
-line-input.bas(819) error 24: Invalid data types, found ',' in 't( 1, line input    1 ;,"T" '' )'
+line-input.bas(819) error 14: Expected identifier, found ',' in 't( 1, line input    1 ;,"T" '' )'
 line input ; 1 ;,"T" 
-line-input.bas(820) error 24: Invalid data types, found ',' in 't( 1, line input  ; 1 ;,"T" '' )'
+line-input.bas(820) error 14: Expected identifier, found ',' in 't( 1, line input  ; 1 ;,"T" '' )'
 line input 1 ;, b
-line-input.bas(821) error 24: Invalid data types, found ',' in 't( 1, line input    1 ;, b     )'
+line-input.bas(821) error 14: Expected identifier, found ',' in 't( 1, line input    1 ;, b     )'
 line input ; 1 ;, b
-line-input.bas(822) error 24: Invalid data types, found ',' in 't( 1, line input  ; 1 ;, b     )'
+line-input.bas(822) error 14: Expected identifier, found ',' in 't( 1, line input  ; 1 ;, b     )'
 line input 1 ;, b 
-line-input.bas(823) error 24: Invalid data types, found ',' in 't( 1, line input    1 ;, b  '' )'
+line-input.bas(823) error 14: Expected identifier, found ',' in 't( 1, line input    1 ;, b  '' )'
 line input ; 1 ;, b 
-line-input.bas(824) error 24: Invalid data types, found ',' in 't( 1, line input  ; 1 ;, b  '' )'
+line-input.bas(824) error 14: Expected identifier, found ',' in 't( 1, line input  ; 1 ;, b  '' )'
 line input 1 ;;
-line-input.bas(825) error 24: Invalid data types, found ';' in 't( 1, line input    1 ;;    )'
+line-input.bas(825) error 14: Expected identifier, found ';' in 't( 1, line input    1 ;;    )'
 line input ; 1 ;;
-line-input.bas(826) error 24: Invalid data types, found ';' in 't( 1, line input  ; 1 ;;    )'
+line-input.bas(826) error 14: Expected identifier, found ';' in 't( 1, line input  ; 1 ;;    )'
 line input 1 ;; 
-line-input.bas(827) error 24: Invalid data types, found ';' in 't( 1, line input    1 ;; '' )'
+line-input.bas(827) error 14: Expected identifier, found ';' in 't( 1, line input    1 ;; '' )'
 line input ; 1 ;; 
-line-input.bas(828) error 24: Invalid data types, found ';' in 't( 1, line input  ; 1 ;; '' )'
+line-input.bas(828) error 14: Expected identifier, found ';' in 't( 1, line input  ; 1 ;; '' )'
 line input 1 ;; 1
-line-input.bas(829) error 24: Invalid data types, found ';' in 't( 1, line input    1 ;; 1     )'
+line-input.bas(829) error 14: Expected identifier, found ';' in 't( 1, line input    1 ;; 1     )'
 line input ; 1 ;; 1
-line-input.bas(830) error 24: Invalid data types, found ';' in 't( 1, line input  ; 1 ;; 1     )'
+line-input.bas(830) error 14: Expected identifier, found ';' in 't( 1, line input  ; 1 ;; 1     )'
 line input 1 ;; 1 
-line-input.bas(831) error 24: Invalid data types, found ';' in 't( 1, line input    1 ;; 1  '' )'
+line-input.bas(831) error 14: Expected identifier, found ';' in 't( 1, line input    1 ;; 1  '' )'
 line input ; 1 ;; 1 
-line-input.bas(832) error 24: Invalid data types, found ';' in 't( 1, line input  ; 1 ;; 1  '' )'
+line-input.bas(832) error 14: Expected identifier, found ';' in 't( 1, line input  ; 1 ;; 1  '' )'
 line input 1 ;; a
-line-input.bas(833) error 24: Invalid data types, found ';' in 't( 1, line input    1 ;; a     )'
+line-input.bas(833) error 14: Expected identifier, found ';' in 't( 1, line input    1 ;; a     )'
 line input ; 1 ;; a
-line-input.bas(834) error 24: Invalid data types, found ';' in 't( 1, line input  ; 1 ;; a     )'
+line-input.bas(834) error 14: Expected identifier, found ';' in 't( 1, line input  ; 1 ;; a     )'
 line input 1 ;; a 
-line-input.bas(835) error 24: Invalid data types, found ';' in 't( 1, line input    1 ;; a  '' )'
+line-input.bas(835) error 14: Expected identifier, found ';' in 't( 1, line input    1 ;; a  '' )'
 line input ; 1 ;; a 
-line-input.bas(836) error 24: Invalid data types, found ';' in 't( 1, line input  ; 1 ;; a  '' )'
+line-input.bas(836) error 14: Expected identifier, found ';' in 't( 1, line input  ; 1 ;; a  '' )'
 line input 1 ;;"T"
-line-input.bas(837) error 24: Invalid data types, found ';' in 't( 1, line input    1 ;;"T"    )'
+line-input.bas(837) error 14: Expected identifier, found ';' in 't( 1, line input    1 ;;"T"    )'
 line input ; 1 ;;"T"
-line-input.bas(838) error 24: Invalid data types, found ';' in 't( 1, line input  ; 1 ;;"T"    )'
+line-input.bas(838) error 14: Expected identifier, found ';' in 't( 1, line input  ; 1 ;;"T"    )'
 line input 1 ;;"T" 
-line-input.bas(839) error 24: Invalid data types, found ';' in 't( 1, line input    1 ;;"T" '' )'
+line-input.bas(839) error 14: Expected identifier, found ';' in 't( 1, line input    1 ;;"T" '' )'
 line input ; 1 ;;"T" 
-line-input.bas(840) error 24: Invalid data types, found ';' in 't( 1, line input  ; 1 ;;"T" '' )'
+line-input.bas(840) error 14: Expected identifier, found ';' in 't( 1, line input  ; 1 ;;"T" '' )'
 line input 1 ;; b
-line-input.bas(841) error 24: Invalid data types, found ';' in 't( 1, line input    1 ;; b     )'
+line-input.bas(841) error 14: Expected identifier, found ';' in 't( 1, line input    1 ;; b     )'
 line input ; 1 ;; b
-line-input.bas(842) error 24: Invalid data types, found ';' in 't( 1, line input  ; 1 ;; b     )'
+line-input.bas(842) error 14: Expected identifier, found ';' in 't( 1, line input  ; 1 ;; b     )'
 line input 1 ;; b 
-line-input.bas(843) error 24: Invalid data types, found ';' in 't( 1, line input    1 ;; b  '' )'
+line-input.bas(843) error 14: Expected identifier, found ';' in 't( 1, line input    1 ;; b  '' )'
 line input ; 1 ;; b 
-line-input.bas(844) error 24: Invalid data types, found ';' in 't( 1, line input  ; 1 ;; b  '' )'
+line-input.bas(844) error 14: Expected identifier, found ';' in 't( 1, line input  ; 1 ;; b  '' )'
 line input a
 OK
 line input ; a
@@ -1611,9 +1655,13 @@ OK
 line input ; a 
 OK
 line input a ,
+line-input.bas(849) error 14: Expected identifier in 't( 1, line input    a ,     )'
 line input ; a ,
+line-input.bas(850) error 14: Expected identifier in 't( 1, line input  ; a ,     )'
 line input a , 
+line-input.bas(851) error 14: Expected identifier, found ''' in 't( 1, line input    a ,  '' )'
 line input ; a , 
+line-input.bas(852) error 14: Expected identifier, found ''' in 't( 1, line input  ; a ,  '' )'
 line input a , 1
 line-input.bas(853) error 24: Invalid data types in 't( 1, line input    a ,  1     )'
 line input ; a , 1
@@ -1631,9 +1679,13 @@ OK
 line input ; a , a 
 OK
 line input a , "T"
+line-input.bas(861) error 14: Expected identifier in 't( 1, line input    a , "T"    )'
 line input ; a , "T"
+line-input.bas(862) error 14: Expected identifier in 't( 1, line input  ; a , "T"    )'
 line input a , "T" 
+line-input.bas(863) error 14: Expected identifier, before ''' in 't( 1, line input    a , "T" '' )'
 line input ; a , "T" 
+line-input.bas(864) error 14: Expected identifier, before ''' in 't( 1, line input  ; a , "T" '' )'
 line input a , b
 OK
 line input ; a , b
@@ -1643,9 +1695,13 @@ OK
 line input ; a , b 
 OK
 line input a ;
+line-input.bas(869) error 14: Expected identifier in 't( 1, line input    a ;     )'
 line input ; a ;
+line-input.bas(870) error 14: Expected identifier in 't( 1, line input  ; a ;     )'
 line input a ; 
+line-input.bas(871) error 14: Expected identifier, found ''' in 't( 1, line input    a ;  '' )'
 line input ; a ; 
+line-input.bas(872) error 14: Expected identifier, found ''' in 't( 1, line input  ; a ;  '' )'
 line input a ; 1
 line-input.bas(873) error 24: Invalid data types in 't( 1, line input    a ;  1     )'
 line input ; a ; 1
@@ -1663,9 +1719,13 @@ OK
 line input ; a ; a 
 OK
 line input a ; "T"
+line-input.bas(881) error 14: Expected identifier in 't( 1, line input    a ; "T"    )'
 line input ; a ; "T"
+line-input.bas(882) error 14: Expected identifier in 't( 1, line input  ; a ; "T"    )'
 line input a ; "T" 
+line-input.bas(883) error 14: Expected identifier, before ''' in 't( 1, line input    a ; "T" '' )'
 line input ; a ; "T" 
+line-input.bas(884) error 14: Expected identifier, before ''' in 't( 1, line input  ; a ; "T" '' )'
 line input a ; b
 OK
 line input ; a ; b
@@ -1675,173 +1735,181 @@ OK
 line input ; a ; b 
 OK
 line input a ,,
-line-input.bas(889) error 3: Expected End-of-Line, found ',' in 't( 1, line input    a ,,    )'
+line-input.bas(889) error 14: Expected identifier, found ',' in 't( 1, line input    a ,,    )'
 line input ; a ,,
-line-input.bas(890) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; a ,,    )'
+line-input.bas(890) error 14: Expected identifier, found ',' in 't( 1, line input  ; a ,,    )'
 line input a ,, 
-line-input.bas(891) error 3: Expected End-of-Line, found ',' in 't( 1, line input    a ,, '' )'
+line-input.bas(891) error 14: Expected identifier, found ',' in 't( 1, line input    a ,, '' )'
 line input ; a ,, 
-line-input.bas(892) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; a ,, '' )'
+line-input.bas(892) error 14: Expected identifier, found ',' in 't( 1, line input  ; a ,, '' )'
 line input a ,, 1
-line-input.bas(893) error 3: Expected End-of-Line, found ',' in 't( 1, line input    a ,, 1     )'
+line-input.bas(893) error 14: Expected identifier, found ',' in 't( 1, line input    a ,, 1     )'
 line input ; a ,, 1
-line-input.bas(894) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; a ,, 1     )'
+line-input.bas(894) error 14: Expected identifier, found ',' in 't( 1, line input  ; a ,, 1     )'
 line input a ,, 1 
-line-input.bas(895) error 3: Expected End-of-Line, found ',' in 't( 1, line input    a ,, 1  '' )'
+line-input.bas(895) error 14: Expected identifier, found ',' in 't( 1, line input    a ,, 1  '' )'
 line input ; a ,, 1 
-line-input.bas(896) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; a ,, 1  '' )'
+line-input.bas(896) error 14: Expected identifier, found ',' in 't( 1, line input  ; a ,, 1  '' )'
 line input a ,, a
-line-input.bas(897) error 3: Expected End-of-Line, found ',' in 't( 1, line input    a ,, a     )'
+line-input.bas(897) error 14: Expected identifier, found ',' in 't( 1, line input    a ,, a     )'
 line input ; a ,, a
-line-input.bas(898) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; a ,, a     )'
+line-input.bas(898) error 14: Expected identifier, found ',' in 't( 1, line input  ; a ,, a     )'
 line input a ,, a 
-line-input.bas(899) error 3: Expected End-of-Line, found ',' in 't( 1, line input    a ,, a  '' )'
+line-input.bas(899) error 14: Expected identifier, found ',' in 't( 1, line input    a ,, a  '' )'
 line input ; a ,, a 
-line-input.bas(900) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; a ,, a  '' )'
+line-input.bas(900) error 14: Expected identifier, found ',' in 't( 1, line input  ; a ,, a  '' )'
 line input a ,,"T"
-line-input.bas(901) error 3: Expected End-of-Line, found ',' in 't( 1, line input    a ,,"T"    )'
+line-input.bas(901) error 14: Expected identifier, found ',' in 't( 1, line input    a ,,"T"    )'
 line input ; a ,,"T"
-line-input.bas(902) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; a ,,"T"    )'
+line-input.bas(902) error 14: Expected identifier, found ',' in 't( 1, line input  ; a ,,"T"    )'
 line input a ,,"T" 
-line-input.bas(903) error 3: Expected End-of-Line, found ',' in 't( 1, line input    a ,,"T" '' )'
+line-input.bas(903) error 14: Expected identifier, found ',' in 't( 1, line input    a ,,"T" '' )'
 line input ; a ,,"T" 
-line-input.bas(904) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; a ,,"T" '' )'
+line-input.bas(904) error 14: Expected identifier, found ',' in 't( 1, line input  ; a ,,"T" '' )'
 line input a ,, b
-line-input.bas(905) error 3: Expected End-of-Line, found ',' in 't( 1, line input    a ,, b     )'
+line-input.bas(905) error 14: Expected identifier, found ',' in 't( 1, line input    a ,, b     )'
 line input ; a ,, b
-line-input.bas(906) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; a ,, b     )'
+line-input.bas(906) error 14: Expected identifier, found ',' in 't( 1, line input  ; a ,, b     )'
 line input a ,, b 
-line-input.bas(907) error 3: Expected End-of-Line, found ',' in 't( 1, line input    a ,, b  '' )'
+line-input.bas(907) error 14: Expected identifier, found ',' in 't( 1, line input    a ,, b  '' )'
 line input ; a ,, b 
-line-input.bas(908) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; a ,, b  '' )'
+line-input.bas(908) error 14: Expected identifier, found ',' in 't( 1, line input  ; a ,, b  '' )'
 line input a ,;
-line-input.bas(909) error 3: Expected End-of-Line, found ';' in 't( 1, line input    a ,;    )'
+line-input.bas(909) error 14: Expected identifier, found ';' in 't( 1, line input    a ,;    )'
 line input ; a ,;
-line-input.bas(910) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; a ,;    )'
+line-input.bas(910) error 14: Expected identifier, found ';' in 't( 1, line input  ; a ,;    )'
 line input a ,; 
-line-input.bas(911) error 3: Expected End-of-Line, found ';' in 't( 1, line input    a ,; '' )'
+line-input.bas(911) error 14: Expected identifier, found ';' in 't( 1, line input    a ,; '' )'
 line input ; a ,; 
-line-input.bas(912) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; a ,; '' )'
+line-input.bas(912) error 14: Expected identifier, found ';' in 't( 1, line input  ; a ,; '' )'
 line input a ,; 1
-line-input.bas(913) error 3: Expected End-of-Line, found ';' in 't( 1, line input    a ,; 1     )'
+line-input.bas(913) error 14: Expected identifier, found ';' in 't( 1, line input    a ,; 1     )'
 line input ; a ,; 1
-line-input.bas(914) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; a ,; 1     )'
+line-input.bas(914) error 14: Expected identifier, found ';' in 't( 1, line input  ; a ,; 1     )'
 line input a ,; 1 
-line-input.bas(915) error 3: Expected End-of-Line, found ';' in 't( 1, line input    a ,; 1  '' )'
+line-input.bas(915) error 14: Expected identifier, found ';' in 't( 1, line input    a ,; 1  '' )'
 line input ; a ,; 1 
-line-input.bas(916) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; a ,; 1  '' )'
+line-input.bas(916) error 14: Expected identifier, found ';' in 't( 1, line input  ; a ,; 1  '' )'
 line input a ,; a
-line-input.bas(917) error 3: Expected End-of-Line, found ';' in 't( 1, line input    a ,; a     )'
+line-input.bas(917) error 14: Expected identifier, found ';' in 't( 1, line input    a ,; a     )'
 line input ; a ,; a
-line-input.bas(918) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; a ,; a     )'
+line-input.bas(918) error 14: Expected identifier, found ';' in 't( 1, line input  ; a ,; a     )'
 line input a ,; a 
-line-input.bas(919) error 3: Expected End-of-Line, found ';' in 't( 1, line input    a ,; a  '' )'
+line-input.bas(919) error 14: Expected identifier, found ';' in 't( 1, line input    a ,; a  '' )'
 line input ; a ,; a 
-line-input.bas(920) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; a ,; a  '' )'
+line-input.bas(920) error 14: Expected identifier, found ';' in 't( 1, line input  ; a ,; a  '' )'
 line input a ,;"T"
-line-input.bas(921) error 3: Expected End-of-Line, found ';' in 't( 1, line input    a ,;"T"    )'
+line-input.bas(921) error 14: Expected identifier, found ';' in 't( 1, line input    a ,;"T"    )'
 line input ; a ,;"T"
-line-input.bas(922) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; a ,;"T"    )'
+line-input.bas(922) error 14: Expected identifier, found ';' in 't( 1, line input  ; a ,;"T"    )'
 line input a ,;"T" 
-line-input.bas(923) error 3: Expected End-of-Line, found ';' in 't( 1, line input    a ,;"T" '' )'
+line-input.bas(923) error 14: Expected identifier, found ';' in 't( 1, line input    a ,;"T" '' )'
 line input ; a ,;"T" 
-line-input.bas(924) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; a ,;"T" '' )'
+line-input.bas(924) error 14: Expected identifier, found ';' in 't( 1, line input  ; a ,;"T" '' )'
 line input a ,; b
-line-input.bas(925) error 3: Expected End-of-Line, found ';' in 't( 1, line input    a ,; b     )'
+line-input.bas(925) error 14: Expected identifier, found ';' in 't( 1, line input    a ,; b     )'
 line input ; a ,; b
-line-input.bas(926) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; a ,; b     )'
+line-input.bas(926) error 14: Expected identifier, found ';' in 't( 1, line input  ; a ,; b     )'
 line input a ,; b 
-line-input.bas(927) error 3: Expected End-of-Line, found ';' in 't( 1, line input    a ,; b  '' )'
+line-input.bas(927) error 14: Expected identifier, found ';' in 't( 1, line input    a ,; b  '' )'
 line input ; a ,; b 
-line-input.bas(928) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; a ,; b  '' )'
+line-input.bas(928) error 14: Expected identifier, found ';' in 't( 1, line input  ; a ,; b  '' )'
 line input a ;,
-line-input.bas(929) error 3: Expected End-of-Line, found ',' in 't( 1, line input    a ;,    )'
+line-input.bas(929) error 14: Expected identifier, found ',' in 't( 1, line input    a ;,    )'
 line input ; a ;,
-line-input.bas(930) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; a ;,    )'
+line-input.bas(930) error 14: Expected identifier, found ',' in 't( 1, line input  ; a ;,    )'
 line input a ;, 
-line-input.bas(931) error 3: Expected End-of-Line, found ',' in 't( 1, line input    a ;, '' )'
+line-input.bas(931) error 14: Expected identifier, found ',' in 't( 1, line input    a ;, '' )'
 line input ; a ;, 
-line-input.bas(932) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; a ;, '' )'
+line-input.bas(932) error 14: Expected identifier, found ',' in 't( 1, line input  ; a ;, '' )'
 line input a ;, 1
-line-input.bas(933) error 3: Expected End-of-Line, found ',' in 't( 1, line input    a ;, 1     )'
+line-input.bas(933) error 14: Expected identifier, found ',' in 't( 1, line input    a ;, 1     )'
 line input ; a ;, 1
-line-input.bas(934) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; a ;, 1     )'
+line-input.bas(934) error 14: Expected identifier, found ',' in 't( 1, line input  ; a ;, 1     )'
 line input a ;, 1 
-line-input.bas(935) error 3: Expected End-of-Line, found ',' in 't( 1, line input    a ;, 1  '' )'
+line-input.bas(935) error 14: Expected identifier, found ',' in 't( 1, line input    a ;, 1  '' )'
 line input ; a ;, 1 
-line-input.bas(936) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; a ;, 1  '' )'
+line-input.bas(936) error 14: Expected identifier, found ',' in 't( 1, line input  ; a ;, 1  '' )'
 line input a ;, a
-line-input.bas(937) error 3: Expected End-of-Line, found ',' in 't( 1, line input    a ;, a     )'
+line-input.bas(937) error 14: Expected identifier, found ',' in 't( 1, line input    a ;, a     )'
 line input ; a ;, a
-line-input.bas(938) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; a ;, a     )'
+line-input.bas(938) error 14: Expected identifier, found ',' in 't( 1, line input  ; a ;, a     )'
 line input a ;, a 
-line-input.bas(939) error 3: Expected End-of-Line, found ',' in 't( 1, line input    a ;, a  '' )'
+line-input.bas(939) error 14: Expected identifier, found ',' in 't( 1, line input    a ;, a  '' )'
 line input ; a ;, a 
-line-input.bas(940) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; a ;, a  '' )'
+line-input.bas(940) error 14: Expected identifier, found ',' in 't( 1, line input  ; a ;, a  '' )'
 line input a ;,"T"
-line-input.bas(941) error 3: Expected End-of-Line, found ',' in 't( 1, line input    a ;,"T"    )'
+line-input.bas(941) error 14: Expected identifier, found ',' in 't( 1, line input    a ;,"T"    )'
 line input ; a ;,"T"
-line-input.bas(942) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; a ;,"T"    )'
+line-input.bas(942) error 14: Expected identifier, found ',' in 't( 1, line input  ; a ;,"T"    )'
 line input a ;,"T" 
-line-input.bas(943) error 3: Expected End-of-Line, found ',' in 't( 1, line input    a ;,"T" '' )'
+line-input.bas(943) error 14: Expected identifier, found ',' in 't( 1, line input    a ;,"T" '' )'
 line input ; a ;,"T" 
-line-input.bas(944) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; a ;,"T" '' )'
+line-input.bas(944) error 14: Expected identifier, found ',' in 't( 1, line input  ; a ;,"T" '' )'
 line input a ;, b
-line-input.bas(945) error 3: Expected End-of-Line, found ',' in 't( 1, line input    a ;, b     )'
+line-input.bas(945) error 14: Expected identifier, found ',' in 't( 1, line input    a ;, b     )'
 line input ; a ;, b
-line-input.bas(946) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; a ;, b     )'
+line-input.bas(946) error 14: Expected identifier, found ',' in 't( 1, line input  ; a ;, b     )'
 line input a ;, b 
-line-input.bas(947) error 3: Expected End-of-Line, found ',' in 't( 1, line input    a ;, b  '' )'
+line-input.bas(947) error 14: Expected identifier, found ',' in 't( 1, line input    a ;, b  '' )'
 line input ; a ;, b 
-line-input.bas(948) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; a ;, b  '' )'
+line-input.bas(948) error 14: Expected identifier, found ',' in 't( 1, line input  ; a ;, b  '' )'
 line input a ;;
-line-input.bas(949) error 3: Expected End-of-Line, found ';' in 't( 1, line input    a ;;    )'
+line-input.bas(949) error 14: Expected identifier, found ';' in 't( 1, line input    a ;;    )'
 line input ; a ;;
-line-input.bas(950) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; a ;;    )'
+line-input.bas(950) error 14: Expected identifier, found ';' in 't( 1, line input  ; a ;;    )'
 line input a ;; 
-line-input.bas(951) error 3: Expected End-of-Line, found ';' in 't( 1, line input    a ;; '' )'
+line-input.bas(951) error 14: Expected identifier, found ';' in 't( 1, line input    a ;; '' )'
 line input ; a ;; 
-line-input.bas(952) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; a ;; '' )'
+line-input.bas(952) error 14: Expected identifier, found ';' in 't( 1, line input  ; a ;; '' )'
 line input a ;; 1
-line-input.bas(953) error 3: Expected End-of-Line, found ';' in 't( 1, line input    a ;; 1     )'
+line-input.bas(953) error 14: Expected identifier, found ';' in 't( 1, line input    a ;; 1     )'
 line input ; a ;; 1
-line-input.bas(954) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; a ;; 1     )'
+line-input.bas(954) error 14: Expected identifier, found ';' in 't( 1, line input  ; a ;; 1     )'
 line input a ;; 1 
-line-input.bas(955) error 3: Expected End-of-Line, found ';' in 't( 1, line input    a ;; 1  '' )'
+line-input.bas(955) error 14: Expected identifier, found ';' in 't( 1, line input    a ;; 1  '' )'
 line input ; a ;; 1 
-line-input.bas(956) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; a ;; 1  '' )'
+line-input.bas(956) error 14: Expected identifier, found ';' in 't( 1, line input  ; a ;; 1  '' )'
 line input a ;; a
-line-input.bas(957) error 3: Expected End-of-Line, found ';' in 't( 1, line input    a ;; a     )'
+line-input.bas(957) error 14: Expected identifier, found ';' in 't( 1, line input    a ;; a     )'
 line input ; a ;; a
-line-input.bas(958) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; a ;; a     )'
+line-input.bas(958) error 14: Expected identifier, found ';' in 't( 1, line input  ; a ;; a     )'
 line input a ;; a 
-line-input.bas(959) error 3: Expected End-of-Line, found ';' in 't( 1, line input    a ;; a  '' )'
+line-input.bas(959) error 14: Expected identifier, found ';' in 't( 1, line input    a ;; a  '' )'
 line input ; a ;; a 
-line-input.bas(960) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; a ;; a  '' )'
+line-input.bas(960) error 14: Expected identifier, found ';' in 't( 1, line input  ; a ;; a  '' )'
 line input a ;;"T"
-line-input.bas(961) error 3: Expected End-of-Line, found ';' in 't( 1, line input    a ;;"T"    )'
+line-input.bas(961) error 14: Expected identifier, found ';' in 't( 1, line input    a ;;"T"    )'
 line input ; a ;;"T"
-line-input.bas(962) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; a ;;"T"    )'
+line-input.bas(962) error 14: Expected identifier, found ';' in 't( 1, line input  ; a ;;"T"    )'
 line input a ;;"T" 
-line-input.bas(963) error 3: Expected End-of-Line, found ';' in 't( 1, line input    a ;;"T" '' )'
+line-input.bas(963) error 14: Expected identifier, found ';' in 't( 1, line input    a ;;"T" '' )'
 line input ; a ;;"T" 
-line-input.bas(964) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; a ;;"T" '' )'
+line-input.bas(964) error 14: Expected identifier, found ';' in 't( 1, line input  ; a ;;"T" '' )'
 line input a ;; b
-line-input.bas(965) error 3: Expected End-of-Line, found ';' in 't( 1, line input    a ;; b     )'
+line-input.bas(965) error 14: Expected identifier, found ';' in 't( 1, line input    a ;; b     )'
 line input ; a ;; b
-line-input.bas(966) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; a ;; b     )'
+line-input.bas(966) error 14: Expected identifier, found ';' in 't( 1, line input  ; a ;; b     )'
 line input a ;; b 
-line-input.bas(967) error 3: Expected End-of-Line, found ';' in 't( 1, line input    a ;; b  '' )'
+line-input.bas(967) error 14: Expected identifier, found ';' in 't( 1, line input    a ;; b  '' )'
 line input ; a ;; b 
-line-input.bas(968) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; a ;; b  '' )'
+line-input.bas(968) error 14: Expected identifier, found ';' in 't( 1, line input  ; a ;; b  '' )'
 line input "T"
+line-input.bas(969) error 14: Expected identifier in 't( 1, line input   "T"    )'
 line input ;"T"
+line-input.bas(970) error 14: Expected identifier in 't( 1, line input  ;"T"    )'
 line input "T" 
+line-input.bas(971) error 14: Expected identifier, before ''' in 't( 1, line input   "T" '' )'
 line input ;"T" 
+line-input.bas(972) error 14: Expected identifier, before ''' in 't( 1, line input  ;"T" '' )'
 line input "T",
+line-input.bas(973) error 14: Expected identifier in 't( 1, line input   "T",     )'
 line input ;"T",
+line-input.bas(974) error 14: Expected identifier in 't( 1, line input  ;"T",     )'
 line input "T", 
+line-input.bas(975) error 14: Expected identifier, found ''' in 't( 1, line input   "T",  '' )'
 line input ;"T", 
+line-input.bas(976) error 14: Expected identifier, found ''' in 't( 1, line input  ;"T",  '' )'
 line input "T", 1
 line-input.bas(977) error 24: Invalid data types in 't( 1, line input   "T",  1     )'
 line input ;"T", 1
@@ -1859,9 +1927,13 @@ OK
 line input ;"T", a 
 OK
 line input "T", "T"
+line-input.bas(985) error 14: Expected identifier in 't( 1, line input   "T", "T"    )'
 line input ;"T", "T"
+line-input.bas(986) error 14: Expected identifier in 't( 1, line input  ;"T", "T"    )'
 line input "T", "T" 
+line-input.bas(987) error 14: Expected identifier, before ''' in 't( 1, line input   "T", "T" '' )'
 line input ;"T", "T" 
+line-input.bas(988) error 14: Expected identifier, before ''' in 't( 1, line input  ;"T", "T" '' )'
 line input "T", b
 OK
 line input ;"T", b
@@ -1871,9 +1943,13 @@ OK
 line input ;"T", b 
 OK
 line input "T";
+line-input.bas(993) error 14: Expected identifier in 't( 1, line input   "T";     )'
 line input ;"T";
+line-input.bas(994) error 14: Expected identifier in 't( 1, line input  ;"T";     )'
 line input "T"; 
+line-input.bas(995) error 14: Expected identifier, found ''' in 't( 1, line input   "T";  '' )'
 line input ;"T"; 
+line-input.bas(996) error 14: Expected identifier, found ''' in 't( 1, line input  ;"T";  '' )'
 line input "T"; 1
 line-input.bas(997) error 24: Invalid data types in 't( 1, line input   "T";  1     )'
 line input ;"T"; 1
@@ -1891,9 +1967,13 @@ OK
 line input ;"T"; a 
 OK
 line input "T"; "T"
+line-input.bas(1005) error 14: Expected identifier in 't( 1, line input   "T"; "T"    )'
 line input ;"T"; "T"
+line-input.bas(1006) error 14: Expected identifier in 't( 1, line input  ;"T"; "T"    )'
 line input "T"; "T" 
+line-input.bas(1007) error 14: Expected identifier, before ''' in 't( 1, line input   "T"; "T" '' )'
 line input ;"T"; "T" 
+line-input.bas(1008) error 14: Expected identifier, before ''' in 't( 1, line input  ;"T"; "T" '' )'
 line input "T"; b
 OK
 line input ;"T"; b
@@ -1903,165 +1983,165 @@ OK
 line input ;"T"; b 
 OK
 line input "T",,
-line-input.bas(1013) error 3: Expected End-of-Line, found ',' in 't( 1, line input   "T",,    )'
+line-input.bas(1013) error 14: Expected identifier, found ',' in 't( 1, line input   "T",,    )'
 line input ;"T",,
-line-input.bas(1014) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;"T",,    )'
+line-input.bas(1014) error 14: Expected identifier, found ',' in 't( 1, line input  ;"T",,    )'
 line input "T",, 
-line-input.bas(1015) error 3: Expected End-of-Line, found ',' in 't( 1, line input   "T",, '' )'
+line-input.bas(1015) error 14: Expected identifier, found ',' in 't( 1, line input   "T",, '' )'
 line input ;"T",, 
-line-input.bas(1016) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;"T",, '' )'
+line-input.bas(1016) error 14: Expected identifier, found ',' in 't( 1, line input  ;"T",, '' )'
 line input "T",, 1
-line-input.bas(1017) error 3: Expected End-of-Line, found ',' in 't( 1, line input   "T",, 1     )'
+line-input.bas(1017) error 14: Expected identifier, found ',' in 't( 1, line input   "T",, 1     )'
 line input ;"T",, 1
-line-input.bas(1018) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;"T",, 1     )'
+line-input.bas(1018) error 14: Expected identifier, found ',' in 't( 1, line input  ;"T",, 1     )'
 line input "T",, 1 
-line-input.bas(1019) error 3: Expected End-of-Line, found ',' in 't( 1, line input   "T",, 1  '' )'
+line-input.bas(1019) error 14: Expected identifier, found ',' in 't( 1, line input   "T",, 1  '' )'
 line input ;"T",, 1 
-line-input.bas(1020) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;"T",, 1  '' )'
+line-input.bas(1020) error 14: Expected identifier, found ',' in 't( 1, line input  ;"T",, 1  '' )'
 line input "T",, a
-line-input.bas(1021) error 3: Expected End-of-Line, found ',' in 't( 1, line input   "T",, a     )'
+line-input.bas(1021) error 14: Expected identifier, found ',' in 't( 1, line input   "T",, a     )'
 line input ;"T",, a
-line-input.bas(1022) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;"T",, a     )'
+line-input.bas(1022) error 14: Expected identifier, found ',' in 't( 1, line input  ;"T",, a     )'
 line input "T",, a 
-line-input.bas(1023) error 3: Expected End-of-Line, found ',' in 't( 1, line input   "T",, a  '' )'
+line-input.bas(1023) error 14: Expected identifier, found ',' in 't( 1, line input   "T",, a  '' )'
 line input ;"T",, a 
-line-input.bas(1024) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;"T",, a  '' )'
+line-input.bas(1024) error 14: Expected identifier, found ',' in 't( 1, line input  ;"T",, a  '' )'
 line input "T",,"T"
-line-input.bas(1025) error 3: Expected End-of-Line, found ',' in 't( 1, line input   "T",,"T"    )'
+line-input.bas(1025) error 14: Expected identifier, found ',' in 't( 1, line input   "T",,"T"    )'
 line input ;"T",,"T"
-line-input.bas(1026) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;"T",,"T"    )'
+line-input.bas(1026) error 14: Expected identifier, found ',' in 't( 1, line input  ;"T",,"T"    )'
 line input "T",,"T" 
-line-input.bas(1027) error 3: Expected End-of-Line, found ',' in 't( 1, line input   "T",,"T" '' )'
+line-input.bas(1027) error 14: Expected identifier, found ',' in 't( 1, line input   "T",,"T" '' )'
 line input ;"T",,"T" 
-line-input.bas(1028) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;"T",,"T" '' )'
+line-input.bas(1028) error 14: Expected identifier, found ',' in 't( 1, line input  ;"T",,"T" '' )'
 line input "T",, b
-line-input.bas(1029) error 3: Expected End-of-Line, found ',' in 't( 1, line input   "T",, b     )'
+line-input.bas(1029) error 14: Expected identifier, found ',' in 't( 1, line input   "T",, b     )'
 line input ;"T",, b
-line-input.bas(1030) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;"T",, b     )'
+line-input.bas(1030) error 14: Expected identifier, found ',' in 't( 1, line input  ;"T",, b     )'
 line input "T",, b 
-line-input.bas(1031) error 3: Expected End-of-Line, found ',' in 't( 1, line input   "T",, b  '' )'
+line-input.bas(1031) error 14: Expected identifier, found ',' in 't( 1, line input   "T",, b  '' )'
 line input ;"T",, b 
-line-input.bas(1032) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;"T",, b  '' )'
+line-input.bas(1032) error 14: Expected identifier, found ',' in 't( 1, line input  ;"T",, b  '' )'
 line input "T",;
-line-input.bas(1033) error 3: Expected End-of-Line, found ';' in 't( 1, line input   "T",;    )'
+line-input.bas(1033) error 14: Expected identifier, found ';' in 't( 1, line input   "T",;    )'
 line input ;"T",;
-line-input.bas(1034) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;"T",;    )'
+line-input.bas(1034) error 14: Expected identifier, found ';' in 't( 1, line input  ;"T",;    )'
 line input "T",; 
-line-input.bas(1035) error 3: Expected End-of-Line, found ';' in 't( 1, line input   "T",; '' )'
+line-input.bas(1035) error 14: Expected identifier, found ';' in 't( 1, line input   "T",; '' )'
 line input ;"T",; 
-line-input.bas(1036) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;"T",; '' )'
+line-input.bas(1036) error 14: Expected identifier, found ';' in 't( 1, line input  ;"T",; '' )'
 line input "T",; 1
-line-input.bas(1037) error 3: Expected End-of-Line, found ';' in 't( 1, line input   "T",; 1     )'
+line-input.bas(1037) error 14: Expected identifier, found ';' in 't( 1, line input   "T",; 1     )'
 line input ;"T",; 1
-line-input.bas(1038) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;"T",; 1     )'
+line-input.bas(1038) error 14: Expected identifier, found ';' in 't( 1, line input  ;"T",; 1     )'
 line input "T",; 1 
-line-input.bas(1039) error 3: Expected End-of-Line, found ';' in 't( 1, line input   "T",; 1  '' )'
+line-input.bas(1039) error 14: Expected identifier, found ';' in 't( 1, line input   "T",; 1  '' )'
 line input ;"T",; 1 
-line-input.bas(1040) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;"T",; 1  '' )'
+line-input.bas(1040) error 14: Expected identifier, found ';' in 't( 1, line input  ;"T",; 1  '' )'
 line input "T",; a
-line-input.bas(1041) error 3: Expected End-of-Line, found ';' in 't( 1, line input   "T",; a     )'
+line-input.bas(1041) error 14: Expected identifier, found ';' in 't( 1, line input   "T",; a     )'
 line input ;"T",; a
-line-input.bas(1042) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;"T",; a     )'
+line-input.bas(1042) error 14: Expected identifier, found ';' in 't( 1, line input  ;"T",; a     )'
 line input "T",; a 
-line-input.bas(1043) error 3: Expected End-of-Line, found ';' in 't( 1, line input   "T",; a  '' )'
+line-input.bas(1043) error 14: Expected identifier, found ';' in 't( 1, line input   "T",; a  '' )'
 line input ;"T",; a 
-line-input.bas(1044) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;"T",; a  '' )'
+line-input.bas(1044) error 14: Expected identifier, found ';' in 't( 1, line input  ;"T",; a  '' )'
 line input "T",;"T"
-line-input.bas(1045) error 3: Expected End-of-Line, found ';' in 't( 1, line input   "T",;"T"    )'
+line-input.bas(1045) error 14: Expected identifier, found ';' in 't( 1, line input   "T",;"T"    )'
 line input ;"T",;"T"
-line-input.bas(1046) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;"T",;"T"    )'
+line-input.bas(1046) error 14: Expected identifier, found ';' in 't( 1, line input  ;"T",;"T"    )'
 line input "T",;"T" 
-line-input.bas(1047) error 3: Expected End-of-Line, found ';' in 't( 1, line input   "T",;"T" '' )'
+line-input.bas(1047) error 14: Expected identifier, found ';' in 't( 1, line input   "T",;"T" '' )'
 line input ;"T",;"T" 
-line-input.bas(1048) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;"T",;"T" '' )'
+line-input.bas(1048) error 14: Expected identifier, found ';' in 't( 1, line input  ;"T",;"T" '' )'
 line input "T",; b
-line-input.bas(1049) error 3: Expected End-of-Line, found ';' in 't( 1, line input   "T",; b     )'
+line-input.bas(1049) error 14: Expected identifier, found ';' in 't( 1, line input   "T",; b     )'
 line input ;"T",; b
-line-input.bas(1050) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;"T",; b     )'
+line-input.bas(1050) error 14: Expected identifier, found ';' in 't( 1, line input  ;"T",; b     )'
 line input "T",; b 
-line-input.bas(1051) error 3: Expected End-of-Line, found ';' in 't( 1, line input   "T",; b  '' )'
+line-input.bas(1051) error 14: Expected identifier, found ';' in 't( 1, line input   "T",; b  '' )'
 line input ;"T",; b 
-line-input.bas(1052) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;"T",; b  '' )'
+line-input.bas(1052) error 14: Expected identifier, found ';' in 't( 1, line input  ;"T",; b  '' )'
 line input "T";,
-line-input.bas(1053) error 3: Expected End-of-Line, found ',' in 't( 1, line input   "T";,    )'
+line-input.bas(1053) error 14: Expected identifier, found ',' in 't( 1, line input   "T";,    )'
 line input ;"T";,
-line-input.bas(1054) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;"T";,    )'
+line-input.bas(1054) error 14: Expected identifier, found ',' in 't( 1, line input  ;"T";,    )'
 line input "T";, 
-line-input.bas(1055) error 3: Expected End-of-Line, found ',' in 't( 1, line input   "T";, '' )'
+line-input.bas(1055) error 14: Expected identifier, found ',' in 't( 1, line input   "T";, '' )'
 line input ;"T";, 
-line-input.bas(1056) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;"T";, '' )'
+line-input.bas(1056) error 14: Expected identifier, found ',' in 't( 1, line input  ;"T";, '' )'
 line input "T";, 1
-line-input.bas(1057) error 3: Expected End-of-Line, found ',' in 't( 1, line input   "T";, 1     )'
+line-input.bas(1057) error 14: Expected identifier, found ',' in 't( 1, line input   "T";, 1     )'
 line input ;"T";, 1
-line-input.bas(1058) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;"T";, 1     )'
+line-input.bas(1058) error 14: Expected identifier, found ',' in 't( 1, line input  ;"T";, 1     )'
 line input "T";, 1 
-line-input.bas(1059) error 3: Expected End-of-Line, found ',' in 't( 1, line input   "T";, 1  '' )'
+line-input.bas(1059) error 14: Expected identifier, found ',' in 't( 1, line input   "T";, 1  '' )'
 line input ;"T";, 1 
-line-input.bas(1060) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;"T";, 1  '' )'
+line-input.bas(1060) error 14: Expected identifier, found ',' in 't( 1, line input  ;"T";, 1  '' )'
 line input "T";, a
-line-input.bas(1061) error 3: Expected End-of-Line, found ',' in 't( 1, line input   "T";, a     )'
+line-input.bas(1061) error 14: Expected identifier, found ',' in 't( 1, line input   "T";, a     )'
 line input ;"T";, a
-line-input.bas(1062) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;"T";, a     )'
+line-input.bas(1062) error 14: Expected identifier, found ',' in 't( 1, line input  ;"T";, a     )'
 line input "T";, a 
-line-input.bas(1063) error 3: Expected End-of-Line, found ',' in 't( 1, line input   "T";, a  '' )'
+line-input.bas(1063) error 14: Expected identifier, found ',' in 't( 1, line input   "T";, a  '' )'
 line input ;"T";, a 
-line-input.bas(1064) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;"T";, a  '' )'
+line-input.bas(1064) error 14: Expected identifier, found ',' in 't( 1, line input  ;"T";, a  '' )'
 line input "T";,"T"
-line-input.bas(1065) error 3: Expected End-of-Line, found ',' in 't( 1, line input   "T";,"T"    )'
+line-input.bas(1065) error 14: Expected identifier, found ',' in 't( 1, line input   "T";,"T"    )'
 line input ;"T";,"T"
-line-input.bas(1066) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;"T";,"T"    )'
+line-input.bas(1066) error 14: Expected identifier, found ',' in 't( 1, line input  ;"T";,"T"    )'
 line input "T";,"T" 
-line-input.bas(1067) error 3: Expected End-of-Line, found ',' in 't( 1, line input   "T";,"T" '' )'
+line-input.bas(1067) error 14: Expected identifier, found ',' in 't( 1, line input   "T";,"T" '' )'
 line input ;"T";,"T" 
-line-input.bas(1068) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;"T";,"T" '' )'
+line-input.bas(1068) error 14: Expected identifier, found ',' in 't( 1, line input  ;"T";,"T" '' )'
 line input "T";, b
-line-input.bas(1069) error 3: Expected End-of-Line, found ',' in 't( 1, line input   "T";, b     )'
+line-input.bas(1069) error 14: Expected identifier, found ',' in 't( 1, line input   "T";, b     )'
 line input ;"T";, b
-line-input.bas(1070) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;"T";, b     )'
+line-input.bas(1070) error 14: Expected identifier, found ',' in 't( 1, line input  ;"T";, b     )'
 line input "T";, b 
-line-input.bas(1071) error 3: Expected End-of-Line, found ',' in 't( 1, line input   "T";, b  '' )'
+line-input.bas(1071) error 14: Expected identifier, found ',' in 't( 1, line input   "T";, b  '' )'
 line input ;"T";, b 
-line-input.bas(1072) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;"T";, b  '' )'
+line-input.bas(1072) error 14: Expected identifier, found ',' in 't( 1, line input  ;"T";, b  '' )'
 line input "T";;
-line-input.bas(1073) error 3: Expected End-of-Line, found ';' in 't( 1, line input   "T";;    )'
+line-input.bas(1073) error 14: Expected identifier, found ';' in 't( 1, line input   "T";;    )'
 line input ;"T";;
-line-input.bas(1074) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;"T";;    )'
+line-input.bas(1074) error 14: Expected identifier, found ';' in 't( 1, line input  ;"T";;    )'
 line input "T";; 
-line-input.bas(1075) error 3: Expected End-of-Line, found ';' in 't( 1, line input   "T";; '' )'
+line-input.bas(1075) error 14: Expected identifier, found ';' in 't( 1, line input   "T";; '' )'
 line input ;"T";; 
-line-input.bas(1076) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;"T";; '' )'
+line-input.bas(1076) error 14: Expected identifier, found ';' in 't( 1, line input  ;"T";; '' )'
 line input "T";; 1
-line-input.bas(1077) error 3: Expected End-of-Line, found ';' in 't( 1, line input   "T";; 1     )'
+line-input.bas(1077) error 14: Expected identifier, found ';' in 't( 1, line input   "T";; 1     )'
 line input ;"T";; 1
-line-input.bas(1078) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;"T";; 1     )'
+line-input.bas(1078) error 14: Expected identifier, found ';' in 't( 1, line input  ;"T";; 1     )'
 line input "T";; 1 
-line-input.bas(1079) error 3: Expected End-of-Line, found ';' in 't( 1, line input   "T";; 1  '' )'
+line-input.bas(1079) error 14: Expected identifier, found ';' in 't( 1, line input   "T";; 1  '' )'
 line input ;"T";; 1 
-line-input.bas(1080) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;"T";; 1  '' )'
+line-input.bas(1080) error 14: Expected identifier, found ';' in 't( 1, line input  ;"T";; 1  '' )'
 line input "T";; a
-line-input.bas(1081) error 3: Expected End-of-Line, found ';' in 't( 1, line input   "T";; a     )'
+line-input.bas(1081) error 14: Expected identifier, found ';' in 't( 1, line input   "T";; a     )'
 line input ;"T";; a
-line-input.bas(1082) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;"T";; a     )'
+line-input.bas(1082) error 14: Expected identifier, found ';' in 't( 1, line input  ;"T";; a     )'
 line input "T";; a 
-line-input.bas(1083) error 3: Expected End-of-Line, found ';' in 't( 1, line input   "T";; a  '' )'
+line-input.bas(1083) error 14: Expected identifier, found ';' in 't( 1, line input   "T";; a  '' )'
 line input ;"T";; a 
-line-input.bas(1084) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;"T";; a  '' )'
+line-input.bas(1084) error 14: Expected identifier, found ';' in 't( 1, line input  ;"T";; a  '' )'
 line input "T";;"T"
-line-input.bas(1085) error 3: Expected End-of-Line, found ';' in 't( 1, line input   "T";;"T"    )'
+line-input.bas(1085) error 14: Expected identifier, found ';' in 't( 1, line input   "T";;"T"    )'
 line input ;"T";;"T"
-line-input.bas(1086) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;"T";;"T"    )'
+line-input.bas(1086) error 14: Expected identifier, found ';' in 't( 1, line input  ;"T";;"T"    )'
 line input "T";;"T" 
-line-input.bas(1087) error 3: Expected End-of-Line, found ';' in 't( 1, line input   "T";;"T" '' )'
+line-input.bas(1087) error 14: Expected identifier, found ';' in 't( 1, line input   "T";;"T" '' )'
 line input ;"T";;"T" 
-line-input.bas(1088) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;"T";;"T" '' )'
+line-input.bas(1088) error 14: Expected identifier, found ';' in 't( 1, line input  ;"T";;"T" '' )'
 line input "T";; b
-line-input.bas(1089) error 3: Expected End-of-Line, found ';' in 't( 1, line input   "T";; b     )'
+line-input.bas(1089) error 14: Expected identifier, found ';' in 't( 1, line input   "T";; b     )'
 line input ;"T";; b
-line-input.bas(1090) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;"T";; b     )'
+line-input.bas(1090) error 14: Expected identifier, found ';' in 't( 1, line input  ;"T";; b     )'
 line input "T";; b 
-line-input.bas(1091) error 3: Expected End-of-Line, found ';' in 't( 1, line input   "T";; b  '' )'
+line-input.bas(1091) error 14: Expected identifier, found ';' in 't( 1, line input   "T";; b  '' )'
 line input ;"T";; b 
-line-input.bas(1092) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;"T";; b  '' )'
+line-input.bas(1092) error 14: Expected identifier, found ';' in 't( 1, line input  ;"T";; b  '' )'
 line input b
 OK
 line input ; b
@@ -2071,9 +2151,13 @@ OK
 line input ; b 
 OK
 line input b ,
+line-input.bas(1097) error 14: Expected identifier in 't( 1, line input    b ,     )'
 line input ; b ,
+line-input.bas(1098) error 14: Expected identifier in 't( 1, line input  ; b ,     )'
 line input b , 
+line-input.bas(1099) error 14: Expected identifier, found ''' in 't( 1, line input    b ,  '' )'
 line input ; b , 
+line-input.bas(1100) error 14: Expected identifier, found ''' in 't( 1, line input  ; b ,  '' )'
 line input b , 1
 line-input.bas(1101) error 24: Invalid data types in 't( 1, line input    b ,  1     )'
 line input ; b , 1
@@ -2091,9 +2175,13 @@ OK
 line input ; b , a 
 OK
 line input b , "T"
+line-input.bas(1109) error 14: Expected identifier in 't( 1, line input    b , "T"    )'
 line input ; b , "T"
+line-input.bas(1110) error 14: Expected identifier in 't( 1, line input  ; b , "T"    )'
 line input b , "T" 
+line-input.bas(1111) error 14: Expected identifier, before ''' in 't( 1, line input    b , "T" '' )'
 line input ; b , "T" 
+line-input.bas(1112) error 14: Expected identifier, before ''' in 't( 1, line input  ; b , "T" '' )'
 line input b , b
 OK
 line input ; b , b
@@ -2103,9 +2191,13 @@ OK
 line input ; b , b 
 OK
 line input b ;
+line-input.bas(1117) error 14: Expected identifier in 't( 1, line input    b ;     )'
 line input ; b ;
+line-input.bas(1118) error 14: Expected identifier in 't( 1, line input  ; b ;     )'
 line input b ; 
+line-input.bas(1119) error 14: Expected identifier, found ''' in 't( 1, line input    b ;  '' )'
 line input ; b ; 
+line-input.bas(1120) error 14: Expected identifier, found ''' in 't( 1, line input  ; b ;  '' )'
 line input b ; 1
 line-input.bas(1121) error 24: Invalid data types in 't( 1, line input    b ;  1     )'
 line input ; b ; 1
@@ -2123,9 +2215,13 @@ OK
 line input ; b ; a 
 OK
 line input b ; "T"
+line-input.bas(1129) error 14: Expected identifier in 't( 1, line input    b ; "T"    )'
 line input ; b ; "T"
+line-input.bas(1130) error 14: Expected identifier in 't( 1, line input  ; b ; "T"    )'
 line input b ; "T" 
+line-input.bas(1131) error 14: Expected identifier, before ''' in 't( 1, line input    b ; "T" '' )'
 line input ; b ; "T" 
+line-input.bas(1132) error 14: Expected identifier, before ''' in 't( 1, line input  ; b ; "T" '' )'
 line input b ; b
 OK
 line input ; b ; b
@@ -2135,162 +2231,162 @@ OK
 line input ; b ; b 
 OK
 line input b ,,
-line-input.bas(1137) error 3: Expected End-of-Line, found ',' in 't( 1, line input    b ,,    )'
+line-input.bas(1137) error 14: Expected identifier, found ',' in 't( 1, line input    b ,,    )'
 line input ; b ,,
-line-input.bas(1138) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; b ,,    )'
+line-input.bas(1138) error 14: Expected identifier, found ',' in 't( 1, line input  ; b ,,    )'
 line input b ,, 
-line-input.bas(1139) error 3: Expected End-of-Line, found ',' in 't( 1, line input    b ,, '' )'
+line-input.bas(1139) error 14: Expected identifier, found ',' in 't( 1, line input    b ,, '' )'
 line input ; b ,, 
-line-input.bas(1140) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; b ,, '' )'
+line-input.bas(1140) error 14: Expected identifier, found ',' in 't( 1, line input  ; b ,, '' )'
 line input b ,, 1
-line-input.bas(1141) error 3: Expected End-of-Line, found ',' in 't( 1, line input    b ,, 1     )'
+line-input.bas(1141) error 14: Expected identifier, found ',' in 't( 1, line input    b ,, 1     )'
 line input ; b ,, 1
-line-input.bas(1142) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; b ,, 1     )'
+line-input.bas(1142) error 14: Expected identifier, found ',' in 't( 1, line input  ; b ,, 1     )'
 line input b ,, 1 
-line-input.bas(1143) error 3: Expected End-of-Line, found ',' in 't( 1, line input    b ,, 1  '' )'
+line-input.bas(1143) error 14: Expected identifier, found ',' in 't( 1, line input    b ,, 1  '' )'
 line input ; b ,, 1 
-line-input.bas(1144) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; b ,, 1  '' )'
+line-input.bas(1144) error 14: Expected identifier, found ',' in 't( 1, line input  ; b ,, 1  '' )'
 line input b ,, a
-line-input.bas(1145) error 3: Expected End-of-Line, found ',' in 't( 1, line input    b ,, a     )'
+line-input.bas(1145) error 14: Expected identifier, found ',' in 't( 1, line input    b ,, a     )'
 line input ; b ,, a
-line-input.bas(1146) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; b ,, a     )'
+line-input.bas(1146) error 14: Expected identifier, found ',' in 't( 1, line input  ; b ,, a     )'
 line input b ,, a 
-line-input.bas(1147) error 3: Expected End-of-Line, found ',' in 't( 1, line input    b ,, a  '' )'
+line-input.bas(1147) error 14: Expected identifier, found ',' in 't( 1, line input    b ,, a  '' )'
 line input ; b ,, a 
-line-input.bas(1148) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; b ,, a  '' )'
+line-input.bas(1148) error 14: Expected identifier, found ',' in 't( 1, line input  ; b ,, a  '' )'
 line input b ,,"T"
-line-input.bas(1149) error 3: Expected End-of-Line, found ',' in 't( 1, line input    b ,,"T"    )'
+line-input.bas(1149) error 14: Expected identifier, found ',' in 't( 1, line input    b ,,"T"    )'
 line input ; b ,,"T"
-line-input.bas(1150) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; b ,,"T"    )'
+line-input.bas(1150) error 14: Expected identifier, found ',' in 't( 1, line input  ; b ,,"T"    )'
 line input b ,,"T" 
-line-input.bas(1151) error 3: Expected End-of-Line, found ',' in 't( 1, line input    b ,,"T" '' )'
+line-input.bas(1151) error 14: Expected identifier, found ',' in 't( 1, line input    b ,,"T" '' )'
 line input ; b ,,"T" 
-line-input.bas(1152) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; b ,,"T" '' )'
+line-input.bas(1152) error 14: Expected identifier, found ',' in 't( 1, line input  ; b ,,"T" '' )'
 line input b ,, b
-line-input.bas(1153) error 3: Expected End-of-Line, found ',' in 't( 1, line input    b ,, b     )'
+line-input.bas(1153) error 14: Expected identifier, found ',' in 't( 1, line input    b ,, b     )'
 line input ; b ,, b
-line-input.bas(1154) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; b ,, b     )'
+line-input.bas(1154) error 14: Expected identifier, found ',' in 't( 1, line input  ; b ,, b     )'
 line input b ,, b 
-line-input.bas(1155) error 3: Expected End-of-Line, found ',' in 't( 1, line input    b ,, b  '' )'
+line-input.bas(1155) error 14: Expected identifier, found ',' in 't( 1, line input    b ,, b  '' )'
 line input ; b ,, b 
-line-input.bas(1156) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; b ,, b  '' )'
+line-input.bas(1156) error 14: Expected identifier, found ',' in 't( 1, line input  ; b ,, b  '' )'
 line input b ,;
-line-input.bas(1157) error 3: Expected End-of-Line, found ';' in 't( 1, line input    b ,;    )'
+line-input.bas(1157) error 14: Expected identifier, found ';' in 't( 1, line input    b ,;    )'
 line input ; b ,;
-line-input.bas(1158) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; b ,;    )'
+line-input.bas(1158) error 14: Expected identifier, found ';' in 't( 1, line input  ; b ,;    )'
 line input b ,; 
-line-input.bas(1159) error 3: Expected End-of-Line, found ';' in 't( 1, line input    b ,; '' )'
+line-input.bas(1159) error 14: Expected identifier, found ';' in 't( 1, line input    b ,; '' )'
 line input ; b ,; 
-line-input.bas(1160) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; b ,; '' )'
+line-input.bas(1160) error 14: Expected identifier, found ';' in 't( 1, line input  ; b ,; '' )'
 line input b ,; 1
-line-input.bas(1161) error 3: Expected End-of-Line, found ';' in 't( 1, line input    b ,; 1     )'
+line-input.bas(1161) error 14: Expected identifier, found ';' in 't( 1, line input    b ,; 1     )'
 line input ; b ,; 1
-line-input.bas(1162) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; b ,; 1     )'
+line-input.bas(1162) error 14: Expected identifier, found ';' in 't( 1, line input  ; b ,; 1     )'
 line input b ,; 1 
-line-input.bas(1163) error 3: Expected End-of-Line, found ';' in 't( 1, line input    b ,; 1  '' )'
+line-input.bas(1163) error 14: Expected identifier, found ';' in 't( 1, line input    b ,; 1  '' )'
 line input ; b ,; 1 
-line-input.bas(1164) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; b ,; 1  '' )'
+line-input.bas(1164) error 14: Expected identifier, found ';' in 't( 1, line input  ; b ,; 1  '' )'
 line input b ,; a
-line-input.bas(1165) error 3: Expected End-of-Line, found ';' in 't( 1, line input    b ,; a     )'
+line-input.bas(1165) error 14: Expected identifier, found ';' in 't( 1, line input    b ,; a     )'
 line input ; b ,; a
-line-input.bas(1166) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; b ,; a     )'
+line-input.bas(1166) error 14: Expected identifier, found ';' in 't( 1, line input  ; b ,; a     )'
 line input b ,; a 
-line-input.bas(1167) error 3: Expected End-of-Line, found ';' in 't( 1, line input    b ,; a  '' )'
+line-input.bas(1167) error 14: Expected identifier, found ';' in 't( 1, line input    b ,; a  '' )'
 line input ; b ,; a 
-line-input.bas(1168) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; b ,; a  '' )'
+line-input.bas(1168) error 14: Expected identifier, found ';' in 't( 1, line input  ; b ,; a  '' )'
 line input b ,;"T"
-line-input.bas(1169) error 3: Expected End-of-Line, found ';' in 't( 1, line input    b ,;"T"    )'
+line-input.bas(1169) error 14: Expected identifier, found ';' in 't( 1, line input    b ,;"T"    )'
 line input ; b ,;"T"
-line-input.bas(1170) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; b ,;"T"    )'
+line-input.bas(1170) error 14: Expected identifier, found ';' in 't( 1, line input  ; b ,;"T"    )'
 line input b ,;"T" 
-line-input.bas(1171) error 3: Expected End-of-Line, found ';' in 't( 1, line input    b ,;"T" '' )'
+line-input.bas(1171) error 14: Expected identifier, found ';' in 't( 1, line input    b ,;"T" '' )'
 line input ; b ,;"T" 
-line-input.bas(1172) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; b ,;"T" '' )'
+line-input.bas(1172) error 14: Expected identifier, found ';' in 't( 1, line input  ; b ,;"T" '' )'
 line input b ,; b
-line-input.bas(1173) error 3: Expected End-of-Line, found ';' in 't( 1, line input    b ,; b     )'
+line-input.bas(1173) error 14: Expected identifier, found ';' in 't( 1, line input    b ,; b     )'
 line input ; b ,; b
-line-input.bas(1174) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; b ,; b     )'
+line-input.bas(1174) error 14: Expected identifier, found ';' in 't( 1, line input  ; b ,; b     )'
 line input b ,; b 
-line-input.bas(1175) error 3: Expected End-of-Line, found ';' in 't( 1, line input    b ,; b  '' )'
+line-input.bas(1175) error 14: Expected identifier, found ';' in 't( 1, line input    b ,; b  '' )'
 line input ; b ,; b 
-line-input.bas(1176) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; b ,; b  '' )'
+line-input.bas(1176) error 14: Expected identifier, found ';' in 't( 1, line input  ; b ,; b  '' )'
 line input b ;,
-line-input.bas(1177) error 3: Expected End-of-Line, found ',' in 't( 1, line input    b ;,    )'
+line-input.bas(1177) error 14: Expected identifier, found ',' in 't( 1, line input    b ;,    )'
 line input ; b ;,
-line-input.bas(1178) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; b ;,    )'
+line-input.bas(1178) error 14: Expected identifier, found ',' in 't( 1, line input  ; b ;,    )'
 line input b ;, 
-line-input.bas(1179) error 3: Expected End-of-Line, found ',' in 't( 1, line input    b ;, '' )'
+line-input.bas(1179) error 14: Expected identifier, found ',' in 't( 1, line input    b ;, '' )'
 line input ; b ;, 
-line-input.bas(1180) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; b ;, '' )'
+line-input.bas(1180) error 14: Expected identifier, found ',' in 't( 1, line input  ; b ;, '' )'
 line input b ;, 1
-line-input.bas(1181) error 3: Expected End-of-Line, found ',' in 't( 1, line input    b ;, 1     )'
+line-input.bas(1181) error 14: Expected identifier, found ',' in 't( 1, line input    b ;, 1     )'
 line input ; b ;, 1
-line-input.bas(1182) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; b ;, 1     )'
+line-input.bas(1182) error 14: Expected identifier, found ',' in 't( 1, line input  ; b ;, 1     )'
 line input b ;, 1 
-line-input.bas(1183) error 3: Expected End-of-Line, found ',' in 't( 1, line input    b ;, 1  '' )'
+line-input.bas(1183) error 14: Expected identifier, found ',' in 't( 1, line input    b ;, 1  '' )'
 line input ; b ;, 1 
-line-input.bas(1184) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; b ;, 1  '' )'
+line-input.bas(1184) error 14: Expected identifier, found ',' in 't( 1, line input  ; b ;, 1  '' )'
 line input b ;, a
-line-input.bas(1185) error 3: Expected End-of-Line, found ',' in 't( 1, line input    b ;, a     )'
+line-input.bas(1185) error 14: Expected identifier, found ',' in 't( 1, line input    b ;, a     )'
 line input ; b ;, a
-line-input.bas(1186) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; b ;, a     )'
+line-input.bas(1186) error 14: Expected identifier, found ',' in 't( 1, line input  ; b ;, a     )'
 line input b ;, a 
-line-input.bas(1187) error 3: Expected End-of-Line, found ',' in 't( 1, line input    b ;, a  '' )'
+line-input.bas(1187) error 14: Expected identifier, found ',' in 't( 1, line input    b ;, a  '' )'
 line input ; b ;, a 
-line-input.bas(1188) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; b ;, a  '' )'
+line-input.bas(1188) error 14: Expected identifier, found ',' in 't( 1, line input  ; b ;, a  '' )'
 line input b ;,"T"
-line-input.bas(1189) error 3: Expected End-of-Line, found ',' in 't( 1, line input    b ;,"T"    )'
+line-input.bas(1189) error 14: Expected identifier, found ',' in 't( 1, line input    b ;,"T"    )'
 line input ; b ;,"T"
-line-input.bas(1190) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; b ;,"T"    )'
+line-input.bas(1190) error 14: Expected identifier, found ',' in 't( 1, line input  ; b ;,"T"    )'
 line input b ;,"T" 
-line-input.bas(1191) error 3: Expected End-of-Line, found ',' in 't( 1, line input    b ;,"T" '' )'
+line-input.bas(1191) error 14: Expected identifier, found ',' in 't( 1, line input    b ;,"T" '' )'
 line input ; b ;,"T" 
-line-input.bas(1192) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; b ;,"T" '' )'
+line-input.bas(1192) error 14: Expected identifier, found ',' in 't( 1, line input  ; b ;,"T" '' )'
 line input b ;, b
-line-input.bas(1193) error 3: Expected End-of-Line, found ',' in 't( 1, line input    b ;, b     )'
+line-input.bas(1193) error 14: Expected identifier, found ',' in 't( 1, line input    b ;, b     )'
 line input ; b ;, b
-line-input.bas(1194) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; b ;, b     )'
+line-input.bas(1194) error 14: Expected identifier, found ',' in 't( 1, line input  ; b ;, b     )'
 line input b ;, b 
-line-input.bas(1195) error 3: Expected End-of-Line, found ',' in 't( 1, line input    b ;, b  '' )'
+line-input.bas(1195) error 14: Expected identifier, found ',' in 't( 1, line input    b ;, b  '' )'
 line input ; b ;, b 
-line-input.bas(1196) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ; b ;, b  '' )'
+line-input.bas(1196) error 14: Expected identifier, found ',' in 't( 1, line input  ; b ;, b  '' )'
 line input b ;;
-line-input.bas(1197) error 3: Expected End-of-Line, found ';' in 't( 1, line input    b ;;    )'
+line-input.bas(1197) error 14: Expected identifier, found ';' in 't( 1, line input    b ;;    )'
 line input ; b ;;
-line-input.bas(1198) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; b ;;    )'
+line-input.bas(1198) error 14: Expected identifier, found ';' in 't( 1, line input  ; b ;;    )'
 line input b ;; 
-line-input.bas(1199) error 3: Expected End-of-Line, found ';' in 't( 1, line input    b ;; '' )'
+line-input.bas(1199) error 14: Expected identifier, found ';' in 't( 1, line input    b ;; '' )'
 line input ; b ;; 
-line-input.bas(1200) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; b ;; '' )'
+line-input.bas(1200) error 14: Expected identifier, found ';' in 't( 1, line input  ; b ;; '' )'
 line input b ;; 1
-line-input.bas(1201) error 3: Expected End-of-Line, found ';' in 't( 1, line input    b ;; 1     )'
+line-input.bas(1201) error 14: Expected identifier, found ';' in 't( 1, line input    b ;; 1     )'
 line input ; b ;; 1
-line-input.bas(1202) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; b ;; 1     )'
+line-input.bas(1202) error 14: Expected identifier, found ';' in 't( 1, line input  ; b ;; 1     )'
 line input b ;; 1 
-line-input.bas(1203) error 3: Expected End-of-Line, found ';' in 't( 1, line input    b ;; 1  '' )'
+line-input.bas(1203) error 14: Expected identifier, found ';' in 't( 1, line input    b ;; 1  '' )'
 line input ; b ;; 1 
-line-input.bas(1204) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; b ;; 1  '' )'
+line-input.bas(1204) error 14: Expected identifier, found ';' in 't( 1, line input  ; b ;; 1  '' )'
 line input b ;; a
-line-input.bas(1205) error 3: Expected End-of-Line, found ';' in 't( 1, line input    b ;; a     )'
+line-input.bas(1205) error 14: Expected identifier, found ';' in 't( 1, line input    b ;; a     )'
 line input ; b ;; a
-line-input.bas(1206) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; b ;; a     )'
+line-input.bas(1206) error 14: Expected identifier, found ';' in 't( 1, line input  ; b ;; a     )'
 line input b ;; a 
-line-input.bas(1207) error 3: Expected End-of-Line, found ';' in 't( 1, line input    b ;; a  '' )'
+line-input.bas(1207) error 14: Expected identifier, found ';' in 't( 1, line input    b ;; a  '' )'
 line input ; b ;; a 
-line-input.bas(1208) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; b ;; a  '' )'
+line-input.bas(1208) error 14: Expected identifier, found ';' in 't( 1, line input  ; b ;; a  '' )'
 line input b ;;"T"
-line-input.bas(1209) error 3: Expected End-of-Line, found ';' in 't( 1, line input    b ;;"T"    )'
+line-input.bas(1209) error 14: Expected identifier, found ';' in 't( 1, line input    b ;;"T"    )'
 line input ; b ;;"T"
-line-input.bas(1210) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; b ;;"T"    )'
+line-input.bas(1210) error 14: Expected identifier, found ';' in 't( 1, line input  ; b ;;"T"    )'
 line input b ;;"T" 
-line-input.bas(1211) error 3: Expected End-of-Line, found ';' in 't( 1, line input    b ;;"T" '' )'
+line-input.bas(1211) error 14: Expected identifier, found ';' in 't( 1, line input    b ;;"T" '' )'
 line input ; b ;;"T" 
-line-input.bas(1212) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; b ;;"T" '' )'
+line-input.bas(1212) error 14: Expected identifier, found ';' in 't( 1, line input  ; b ;;"T" '' )'
 line input b ;; b
-line-input.bas(1213) error 3: Expected End-of-Line, found ';' in 't( 1, line input    b ;; b     )'
+line-input.bas(1213) error 14: Expected identifier, found ';' in 't( 1, line input    b ;; b     )'
 line input ; b ;; b
-line-input.bas(1214) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; b ;; b     )'
+line-input.bas(1214) error 14: Expected identifier, found ';' in 't( 1, line input  ; b ;; b     )'
 line input b ;; b 
-line-input.bas(1215) error 3: Expected End-of-Line, found ';' in 't( 1, line input    b ;; b  '' )'
+line-input.bas(1215) error 14: Expected identifier, found ';' in 't( 1, line input    b ;; b  '' )'
 line input ; b ;; b 
-line-input.bas(1216) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ; b ;; b  '' )'
+line-input.bas(1216) error 14: Expected identifier, found ';' in 't( 1, line input  ; b ;; b  '' )'

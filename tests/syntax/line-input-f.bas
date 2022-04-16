@@ -214,14 +214,14 @@ t( 1, line input   # , "T"    )
 t( 1, line input  ;# , "T"    )
 t( 1, line input   # , "T" '' )
 t( 1, line input  ;# , "T" '' )
-t( 1, line input   #1, "T"    ) '' bad result
-t( 1, line input  ;#1, "T"    ) '' bad result
-t( 1, line input   #1, "T" '' ) '' bad result
-t( 1, line input  ;#1, "T" '' ) '' bad result
-t( 1, line input   #h, "T"    ) '' bad result
-t( 1, line input  ;#h, "T"    ) '' bad result
-t( 1, line input   #h, "T" '' ) '' bad result
-t( 1, line input  ;#h, "T" '' ) '' bad result
+t( 1, line input   #1, "T"    )
+t( 1, line input  ;#1, "T"    )
+t( 1, line input   #1, "T" '' )
+t( 1, line input  ;#1, "T" '' )
+t( 1, line input   #h, "T"    )
+t( 1, line input  ;#h, "T"    )
+t( 1, line input   #h, "T" '' )
+t( 1, line input  ;#h, "T" '' )
 t( 1, line input   # , "T",     )
 t( 1, line input  ;# , "T",     )
 t( 1, line input   # , "T",  '' )
@@ -562,14 +562,14 @@ t( 1, line input   # ; "T"    )
 t( 1, line input  ;# ; "T"    )
 t( 1, line input   # ; "T" '' )
 t( 1, line input  ;# ; "T" '' )
-t( 1, line input   #1; "T"    ) '' - bad result
-t( 1, line input  ;#1; "T"    ) '' - bad result
-t( 1, line input   #1; "T" '' ) '' - bad result
-t( 1, line input  ;#1; "T" '' ) '' - bad result
-t( 1, line input   #h; "T"    ) '' - bad result
-t( 1, line input  ;#h; "T"    ) '' - bad result
-t( 1, line input   #h; "T" '' ) '' - bad result
-t( 1, line input  ;#h; "T" '' ) '' - bad result
+t( 1, line input   #1; "T"    )
+t( 1, line input  ;#1; "T"    )
+t( 1, line input   #1; "T" '' )
+t( 1, line input  ;#1; "T" '' )
+t( 1, line input   #h; "T"    )
+t( 1, line input  ;#h; "T"    )
+t( 1, line input   #h; "T" '' )
+t( 1, line input  ;#h; "T" '' )
 t( 1, line input   # ; "T",     )
 t( 1, line input  ;# ; "T",     )
 t( 1, line input   # ; "T",  '' )
@@ -646,14 +646,14 @@ t( 1, line input   # ;  b     )
 t( 1, line input  ;# ;  b     )
 t( 1, line input   # ;  b  '' )
 t( 1, line input  ;# ;  b  '' )
-t( 1, line input   #1;  b     ) '' - bad result
-t( 1, line input  ;#1;  b     ) '' - bad result
-t( 1, line input   #1;  b  '' ) '' - bad result
-t( 1, line input  ;#1;  b  '' ) '' - bad result
-t( 1, line input   #h;  b     ) '' - bad result
-t( 1, line input  ;#h;  b     ) '' - bad result
-t( 1, line input   #h;  b  '' ) '' - bad result
-t( 1, line input  ;#h;  b  '' ) '' - bad result
+t( 0, line input   #1;  b     )
+t( 0, line input  ;#1;  b     )
+t( 0, line input   #1;  b  '' )
+t( 0, line input  ;#1;  b  '' )
+t( 0, line input   #h;  b     )
+t( 0, line input  ;#h;  b     )
+t( 0, line input   #h;  b  '' )
+t( 0, line input  ;#h;  b  '' )
 t( 1, line input   # ;  b ,     )
 t( 1, line input  ;# ;  b ,     )
 t( 1, line input   # ;  b ,  '' )
@@ -2166,10 +2166,10 @@ t( 1, line input   #h 1 ,  a     )
 t( 1, line input  ;#h 1 ,  a     )
 t( 1, line input   #h 1 ,  a  '' )
 t( 1, line input  ;#h 1 ,  a  '' )
-t( 1, line input   #  1 , "T"    ) '' - bad result
-t( 1, line input  ;#  1 , "T"    ) '' - bad result
-t( 1, line input   #  1 , "T" '' ) '' - bad result
-t( 1, line input  ;#  1 , "T" '' ) '' - bad result
+t( 1, line input   #  1 , "T"    )
+t( 1, line input  ;#  1 , "T"    )
+t( 1, line input   #  1 , "T" '' )
+t( 1, line input  ;#  1 , "T" '' )
 t( 1, line input   #1 1 , "T"    )
 t( 1, line input  ;#1 1 , "T"    )
 t( 1, line input   #1 1 , "T" '' )
@@ -2226,10 +2226,10 @@ t( 1, line input   #h 1 ;  a     )
 t( 1, line input  ;#h 1 ;  a     )
 t( 1, line input   #h 1 ;  a  '' )
 t( 1, line input  ;#h 1 ;  a  '' )
-t( 1, line input   #  1 ; "T"    ) '' bad result
-t( 1, line input  ;#  1 ; "T"    ) '' bad result
-t( 1, line input   #  1 ; "T" '' ) '' bad result
-t( 1, line input  ;#  1 ; "T" '' ) '' bad result
+t( 1, line input   #  1 ; "T"    )
+t( 1, line input  ;#  1 ; "T"    )
+t( 1, line input   #  1 ; "T" '' )
+t( 1, line input  ;#  1 ; "T" '' )
 t( 1, line input   #1 1 ; "T"    )
 t( 1, line input  ;#1 1 ; "T"    )
 t( 1, line input   #1 1 ; "T" '' )

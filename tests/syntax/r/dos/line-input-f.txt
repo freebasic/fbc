@@ -391,13 +391,21 @@ line-input-f.bas(215) error 327: Expected file number expression, found ',' in '
 line input ;#, "T" 
 line-input-f.bas(216) error 327: Expected file number expression, found ',' in 't( 1, line input  ;# , "T" '' )'
 line input #1, "T"
+line-input-f.bas(217) error 14: Expected identifier in 't( 1, line input   #1, "T"    )'
 line input ;#1, "T"
+line-input-f.bas(218) error 14: Expected identifier in 't( 1, line input  ;#1, "T"    )'
 line input #1, "T" 
+line-input-f.bas(219) error 14: Expected identifier, before ''' in 't( 1, line input   #1, "T" '' )'
 line input ;#1, "T" 
+line-input-f.bas(220) error 14: Expected identifier, before ''' in 't( 1, line input  ;#1, "T" '' )'
 line input #h, "T"
+line-input-f.bas(221) error 14: Expected identifier in 't( 1, line input   #h, "T"    )'
 line input ;#h, "T"
+line-input-f.bas(222) error 14: Expected identifier in 't( 1, line input  ;#h, "T"    )'
 line input #h, "T" 
+line-input-f.bas(223) error 14: Expected identifier, before ''' in 't( 1, line input   #h, "T" '' )'
 line input ;#h, "T" 
+line-input-f.bas(224) error 14: Expected identifier, before ''' in 't( 1, line input  ;#h, "T" '' )'
 line input #, "T",
 line-input-f.bas(225) error 327: Expected file number expression, found ',' in 't( 1, line input   # , "T",     )'
 line input ;#, "T",
@@ -407,21 +415,21 @@ line-input-f.bas(227) error 327: Expected file number expression, found ',' in '
 line input ;#, "T", 
 line-input-f.bas(228) error 327: Expected file number expression, found ',' in 't( 1, line input  ;# , "T",  '' )'
 line input #1, "T",
-line-input-f.bas(229) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #1, "T",     )'
+line-input-f.bas(229) error 14: Expected identifier, before ',' in 't( 1, line input   #1, "T",     )'
 line input ;#1, "T",
-line-input-f.bas(230) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#1, "T",     )'
+line-input-f.bas(230) error 14: Expected identifier, before ',' in 't( 1, line input  ;#1, "T",     )'
 line input #1, "T", 
-line-input-f.bas(231) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #1, "T",  '' )'
+line-input-f.bas(231) error 14: Expected identifier, before ',' in 't( 1, line input   #1, "T",  '' )'
 line input ;#1, "T", 
-line-input-f.bas(232) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#1, "T",  '' )'
+line-input-f.bas(232) error 14: Expected identifier, before ',' in 't( 1, line input  ;#1, "T",  '' )'
 line input #h, "T",
-line-input-f.bas(233) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #h, "T",     )'
+line-input-f.bas(233) error 14: Expected identifier, before ',' in 't( 1, line input   #h, "T",     )'
 line input ;#h, "T",
-line-input-f.bas(234) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#h, "T",     )'
+line-input-f.bas(234) error 14: Expected identifier, before ',' in 't( 1, line input  ;#h, "T",     )'
 line input #h, "T", 
-line-input-f.bas(235) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #h, "T",  '' )'
+line-input-f.bas(235) error 14: Expected identifier, before ',' in 't( 1, line input   #h, "T",  '' )'
 line input ;#h, "T", 
-line-input-f.bas(236) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#h, "T",  '' )'
+line-input-f.bas(236) error 14: Expected identifier, before ',' in 't( 1, line input  ;#h, "T",  '' )'
 line input #, "T";
 line-input-f.bas(237) error 327: Expected file number expression, found ',' in 't( 1, line input   # , "T";     )'
 line input ;#, "T";
@@ -431,21 +439,21 @@ line-input-f.bas(239) error 327: Expected file number expression, found ',' in '
 line input ;#, "T"; 
 line-input-f.bas(240) error 327: Expected file number expression, found ',' in 't( 1, line input  ;# , "T";  '' )'
 line input #1, "T";
-line-input-f.bas(241) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #1, "T";     )'
+line-input-f.bas(241) error 14: Expected identifier, before ';' in 't( 1, line input   #1, "T";     )'
 line input ;#1, "T";
-line-input-f.bas(242) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#1, "T";     )'
+line-input-f.bas(242) error 14: Expected identifier, before ';' in 't( 1, line input  ;#1, "T";     )'
 line input #1, "T"; 
-line-input-f.bas(243) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #1, "T";  '' )'
+line-input-f.bas(243) error 14: Expected identifier, before ';' in 't( 1, line input   #1, "T";  '' )'
 line input ;#1, "T"; 
-line-input-f.bas(244) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#1, "T";  '' )'
+line-input-f.bas(244) error 14: Expected identifier, before ';' in 't( 1, line input  ;#1, "T";  '' )'
 line input #h, "T";
-line-input-f.bas(245) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #h, "T";     )'
+line-input-f.bas(245) error 14: Expected identifier, before ';' in 't( 1, line input   #h, "T";     )'
 line input ;#h, "T";
-line-input-f.bas(246) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#h, "T";     )'
+line-input-f.bas(246) error 14: Expected identifier, before ';' in 't( 1, line input  ;#h, "T";     )'
 line input #h, "T"; 
-line-input-f.bas(247) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #h, "T";  '' )'
+line-input-f.bas(247) error 14: Expected identifier, before ';' in 't( 1, line input   #h, "T";  '' )'
 line input ;#h, "T"; 
-line-input-f.bas(248) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#h, "T";  '' )'
+line-input-f.bas(248) error 14: Expected identifier, before ';' in 't( 1, line input  ;#h, "T";  '' )'
 line input #, "T",,
 line-input-f.bas(249) error 327: Expected file number expression, found ',' in 't( 1, line input   # , "T",,    )'
 line input ;#, "T",,
@@ -455,21 +463,21 @@ line-input-f.bas(251) error 327: Expected file number expression, found ',' in '
 line input ;#, "T",, 
 line-input-f.bas(252) error 327: Expected file number expression, found ',' in 't( 1, line input  ;# , "T",, '' )'
 line input #1, "T",,
-line-input-f.bas(253) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #1, "T",,    )'
+line-input-f.bas(253) error 14: Expected identifier, before ',' in 't( 1, line input   #1, "T",,    )'
 line input ;#1, "T",,
-line-input-f.bas(254) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#1, "T",,    )'
+line-input-f.bas(254) error 14: Expected identifier, before ',' in 't( 1, line input  ;#1, "T",,    )'
 line input #1, "T",, 
-line-input-f.bas(255) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #1, "T",, '' )'
+line-input-f.bas(255) error 14: Expected identifier, before ',' in 't( 1, line input   #1, "T",, '' )'
 line input ;#1, "T",, 
-line-input-f.bas(256) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#1, "T",, '' )'
+line-input-f.bas(256) error 14: Expected identifier, before ',' in 't( 1, line input  ;#1, "T",, '' )'
 line input #h, "T",,
-line-input-f.bas(257) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #h, "T",,    )'
+line-input-f.bas(257) error 14: Expected identifier, before ',' in 't( 1, line input   #h, "T",,    )'
 line input ;#h, "T",,
-line-input-f.bas(258) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#h, "T",,    )'
+line-input-f.bas(258) error 14: Expected identifier, before ',' in 't( 1, line input  ;#h, "T",,    )'
 line input #h, "T",, 
-line-input-f.bas(259) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #h, "T",, '' )'
+line-input-f.bas(259) error 14: Expected identifier, before ',' in 't( 1, line input   #h, "T",, '' )'
 line input ;#h, "T",, 
-line-input-f.bas(260) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#h, "T",, '' )'
+line-input-f.bas(260) error 14: Expected identifier, before ',' in 't( 1, line input  ;#h, "T",, '' )'
 line input #, "T",;
 line-input-f.bas(261) error 327: Expected file number expression, found ',' in 't( 1, line input   # , "T",;    )'
 line input ;#, "T",;
@@ -479,21 +487,21 @@ line-input-f.bas(263) error 327: Expected file number expression, found ',' in '
 line input ;#, "T",; 
 line-input-f.bas(264) error 327: Expected file number expression, found ',' in 't( 1, line input  ;# , "T",; '' )'
 line input #1, "T",;
-line-input-f.bas(265) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #1, "T",;    )'
+line-input-f.bas(265) error 14: Expected identifier, before ',' in 't( 1, line input   #1, "T",;    )'
 line input ;#1, "T",;
-line-input-f.bas(266) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#1, "T",;    )'
+line-input-f.bas(266) error 14: Expected identifier, before ',' in 't( 1, line input  ;#1, "T",;    )'
 line input #1, "T",; 
-line-input-f.bas(267) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #1, "T",; '' )'
+line-input-f.bas(267) error 14: Expected identifier, before ',' in 't( 1, line input   #1, "T",; '' )'
 line input ;#1, "T",; 
-line-input-f.bas(268) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#1, "T",; '' )'
+line-input-f.bas(268) error 14: Expected identifier, before ',' in 't( 1, line input  ;#1, "T",; '' )'
 line input #h, "T",;
-line-input-f.bas(269) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #h, "T",;    )'
+line-input-f.bas(269) error 14: Expected identifier, before ',' in 't( 1, line input   #h, "T",;    )'
 line input ;#h, "T",;
-line-input-f.bas(270) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#h, "T",;    )'
+line-input-f.bas(270) error 14: Expected identifier, before ',' in 't( 1, line input  ;#h, "T",;    )'
 line input #h, "T",; 
-line-input-f.bas(271) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #h, "T",; '' )'
+line-input-f.bas(271) error 14: Expected identifier, before ',' in 't( 1, line input   #h, "T",; '' )'
 line input ;#h, "T",; 
-line-input-f.bas(272) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#h, "T",; '' )'
+line-input-f.bas(272) error 14: Expected identifier, before ',' in 't( 1, line input  ;#h, "T",; '' )'
 line input #, "T";,
 line-input-f.bas(273) error 327: Expected file number expression, found ',' in 't( 1, line input   # , "T";,    )'
 line input ;#, "T";,
@@ -503,21 +511,21 @@ line-input-f.bas(275) error 327: Expected file number expression, found ',' in '
 line input ;#, "T";, 
 line-input-f.bas(276) error 327: Expected file number expression, found ',' in 't( 1, line input  ;# , "T";, '' )'
 line input #1, "T";,
-line-input-f.bas(277) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #1, "T";,    )'
+line-input-f.bas(277) error 14: Expected identifier, before ';' in 't( 1, line input   #1, "T";,    )'
 line input ;#1, "T";,
-line-input-f.bas(278) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#1, "T";,    )'
+line-input-f.bas(278) error 14: Expected identifier, before ';' in 't( 1, line input  ;#1, "T";,    )'
 line input #1, "T";, 
-line-input-f.bas(279) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #1, "T";, '' )'
+line-input-f.bas(279) error 14: Expected identifier, before ';' in 't( 1, line input   #1, "T";, '' )'
 line input ;#1, "T";, 
-line-input-f.bas(280) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#1, "T";, '' )'
+line-input-f.bas(280) error 14: Expected identifier, before ';' in 't( 1, line input  ;#1, "T";, '' )'
 line input #h, "T";,
-line-input-f.bas(281) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #h, "T";,    )'
+line-input-f.bas(281) error 14: Expected identifier, before ';' in 't( 1, line input   #h, "T";,    )'
 line input ;#h, "T";,
-line-input-f.bas(282) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#h, "T";,    )'
+line-input-f.bas(282) error 14: Expected identifier, before ';' in 't( 1, line input  ;#h, "T";,    )'
 line input #h, "T";, 
-line-input-f.bas(283) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #h, "T";, '' )'
+line-input-f.bas(283) error 14: Expected identifier, before ';' in 't( 1, line input   #h, "T";, '' )'
 line input ;#h, "T";, 
-line-input-f.bas(284) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#h, "T";, '' )'
+line-input-f.bas(284) error 14: Expected identifier, before ';' in 't( 1, line input  ;#h, "T";, '' )'
 line input #, "T";;
 line-input-f.bas(285) error 327: Expected file number expression, found ',' in 't( 1, line input   # , "T";;    )'
 line input ;#, "T";;
@@ -527,21 +535,21 @@ line-input-f.bas(287) error 327: Expected file number expression, found ',' in '
 line input ;#, "T";; 
 line-input-f.bas(288) error 327: Expected file number expression, found ',' in 't( 1, line input  ;# , "T";; '' )'
 line input #1, "T";;
-line-input-f.bas(289) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #1, "T";;    )'
+line-input-f.bas(289) error 14: Expected identifier, before ';' in 't( 1, line input   #1, "T";;    )'
 line input ;#1, "T";;
-line-input-f.bas(290) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#1, "T";;    )'
+line-input-f.bas(290) error 14: Expected identifier, before ';' in 't( 1, line input  ;#1, "T";;    )'
 line input #1, "T";; 
-line-input-f.bas(291) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #1, "T";; '' )'
+line-input-f.bas(291) error 14: Expected identifier, before ';' in 't( 1, line input   #1, "T";; '' )'
 line input ;#1, "T";; 
-line-input-f.bas(292) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#1, "T";; '' )'
+line-input-f.bas(292) error 14: Expected identifier, before ';' in 't( 1, line input  ;#1, "T";; '' )'
 line input #h, "T";;
-line-input-f.bas(293) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #h, "T";;    )'
+line-input-f.bas(293) error 14: Expected identifier, before ';' in 't( 1, line input   #h, "T";;    )'
 line input ;#h, "T";;
-line-input-f.bas(294) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#h, "T";;    )'
+line-input-f.bas(294) error 14: Expected identifier, before ';' in 't( 1, line input  ;#h, "T";;    )'
 line input #h, "T";; 
-line-input-f.bas(295) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #h, "T";; '' )'
+line-input-f.bas(295) error 14: Expected identifier, before ';' in 't( 1, line input   #h, "T";; '' )'
 line input ;#h, "T";; 
-line-input-f.bas(296) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#h, "T";; '' )'
+line-input-f.bas(296) error 14: Expected identifier, before ';' in 't( 1, line input  ;#h, "T";; '' )'
 line input #, b
 line-input-f.bas(297) error 327: Expected file number expression, found ',' in 't( 1, line input   # ,  b     )'
 line input ;#, b
@@ -1079,13 +1087,21 @@ line-input-f.bas(563) error 327: Expected file number expression, found ';' in '
 line input ;#; "T" 
 line-input-f.bas(564) error 327: Expected file number expression, found ';' in 't( 1, line input  ;# ; "T" '' )'
 line input #1; "T"
+line-input-f.bas(565) error 14: Expected identifier in 't( 1, line input   #1; "T"    )'
 line input ;#1; "T"
+line-input-f.bas(566) error 14: Expected identifier in 't( 1, line input  ;#1; "T"    )'
 line input #1; "T" 
+line-input-f.bas(567) error 14: Expected identifier, before ''' in 't( 1, line input   #1; "T" '' )'
 line input ;#1; "T" 
+line-input-f.bas(568) error 14: Expected identifier, before ''' in 't( 1, line input  ;#1; "T" '' )'
 line input #h; "T"
+line-input-f.bas(569) error 14: Expected identifier in 't( 1, line input   #h; "T"    )'
 line input ;#h; "T"
+line-input-f.bas(570) error 14: Expected identifier in 't( 1, line input  ;#h; "T"    )'
 line input #h; "T" 
+line-input-f.bas(571) error 14: Expected identifier, before ''' in 't( 1, line input   #h; "T" '' )'
 line input ;#h; "T" 
+line-input-f.bas(572) error 14: Expected identifier, before ''' in 't( 1, line input  ;#h; "T" '' )'
 line input #; "T",
 line-input-f.bas(573) error 327: Expected file number expression, found ';' in 't( 1, line input   # ; "T",     )'
 line input ;#; "T",
@@ -1095,21 +1111,21 @@ line-input-f.bas(575) error 327: Expected file number expression, found ';' in '
 line input ;#; "T", 
 line-input-f.bas(576) error 327: Expected file number expression, found ';' in 't( 1, line input  ;# ; "T",  '' )'
 line input #1; "T",
-line-input-f.bas(577) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #1; "T",     )'
+line-input-f.bas(577) error 14: Expected identifier, before ',' in 't( 1, line input   #1; "T",     )'
 line input ;#1; "T",
-line-input-f.bas(578) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#1; "T",     )'
+line-input-f.bas(578) error 14: Expected identifier, before ',' in 't( 1, line input  ;#1; "T",     )'
 line input #1; "T", 
-line-input-f.bas(579) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #1; "T",  '' )'
+line-input-f.bas(579) error 14: Expected identifier, before ',' in 't( 1, line input   #1; "T",  '' )'
 line input ;#1; "T", 
-line-input-f.bas(580) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#1; "T",  '' )'
+line-input-f.bas(580) error 14: Expected identifier, before ',' in 't( 1, line input  ;#1; "T",  '' )'
 line input #h; "T",
-line-input-f.bas(581) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #h; "T",     )'
+line-input-f.bas(581) error 14: Expected identifier, before ',' in 't( 1, line input   #h; "T",     )'
 line input ;#h; "T",
-line-input-f.bas(582) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#h; "T",     )'
+line-input-f.bas(582) error 14: Expected identifier, before ',' in 't( 1, line input  ;#h; "T",     )'
 line input #h; "T", 
-line-input-f.bas(583) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #h; "T",  '' )'
+line-input-f.bas(583) error 14: Expected identifier, before ',' in 't( 1, line input   #h; "T",  '' )'
 line input ;#h; "T", 
-line-input-f.bas(584) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#h; "T",  '' )'
+line-input-f.bas(584) error 14: Expected identifier, before ',' in 't( 1, line input  ;#h; "T",  '' )'
 line input #; "T";
 line-input-f.bas(585) error 327: Expected file number expression, found ';' in 't( 1, line input   # ; "T";     )'
 line input ;#; "T";
@@ -1119,21 +1135,21 @@ line-input-f.bas(587) error 327: Expected file number expression, found ';' in '
 line input ;#; "T"; 
 line-input-f.bas(588) error 327: Expected file number expression, found ';' in 't( 1, line input  ;# ; "T";  '' )'
 line input #1; "T";
-line-input-f.bas(589) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #1; "T";     )'
+line-input-f.bas(589) error 14: Expected identifier, before ';' in 't( 1, line input   #1; "T";     )'
 line input ;#1; "T";
-line-input-f.bas(590) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#1; "T";     )'
+line-input-f.bas(590) error 14: Expected identifier, before ';' in 't( 1, line input  ;#1; "T";     )'
 line input #1; "T"; 
-line-input-f.bas(591) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #1; "T";  '' )'
+line-input-f.bas(591) error 14: Expected identifier, before ';' in 't( 1, line input   #1; "T";  '' )'
 line input ;#1; "T"; 
-line-input-f.bas(592) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#1; "T";  '' )'
+line-input-f.bas(592) error 14: Expected identifier, before ';' in 't( 1, line input  ;#1; "T";  '' )'
 line input #h; "T";
-line-input-f.bas(593) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #h; "T";     )'
+line-input-f.bas(593) error 14: Expected identifier, before ';' in 't( 1, line input   #h; "T";     )'
 line input ;#h; "T";
-line-input-f.bas(594) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#h; "T";     )'
+line-input-f.bas(594) error 14: Expected identifier, before ';' in 't( 1, line input  ;#h; "T";     )'
 line input #h; "T"; 
-line-input-f.bas(595) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #h; "T";  '' )'
+line-input-f.bas(595) error 14: Expected identifier, before ';' in 't( 1, line input   #h; "T";  '' )'
 line input ;#h; "T"; 
-line-input-f.bas(596) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#h; "T";  '' )'
+line-input-f.bas(596) error 14: Expected identifier, before ';' in 't( 1, line input  ;#h; "T";  '' )'
 line input #; "T",,
 line-input-f.bas(597) error 327: Expected file number expression, found ';' in 't( 1, line input   # ; "T",,    )'
 line input ;#; "T",,
@@ -1143,21 +1159,21 @@ line-input-f.bas(599) error 327: Expected file number expression, found ';' in '
 line input ;#; "T",, 
 line-input-f.bas(600) error 327: Expected file number expression, found ';' in 't( 1, line input  ;# ; "T",, '' )'
 line input #1; "T",,
-line-input-f.bas(601) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #1; "T",,    )'
+line-input-f.bas(601) error 14: Expected identifier, before ',' in 't( 1, line input   #1; "T",,    )'
 line input ;#1; "T",,
-line-input-f.bas(602) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#1; "T",,    )'
+line-input-f.bas(602) error 14: Expected identifier, before ',' in 't( 1, line input  ;#1; "T",,    )'
 line input #1; "T",, 
-line-input-f.bas(603) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #1; "T",, '' )'
+line-input-f.bas(603) error 14: Expected identifier, before ',' in 't( 1, line input   #1; "T",, '' )'
 line input ;#1; "T",, 
-line-input-f.bas(604) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#1; "T",, '' )'
+line-input-f.bas(604) error 14: Expected identifier, before ',' in 't( 1, line input  ;#1; "T",, '' )'
 line input #h; "T",,
-line-input-f.bas(605) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #h; "T",,    )'
+line-input-f.bas(605) error 14: Expected identifier, before ',' in 't( 1, line input   #h; "T",,    )'
 line input ;#h; "T",,
-line-input-f.bas(606) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#h; "T",,    )'
+line-input-f.bas(606) error 14: Expected identifier, before ',' in 't( 1, line input  ;#h; "T",,    )'
 line input #h; "T",, 
-line-input-f.bas(607) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #h; "T",, '' )'
+line-input-f.bas(607) error 14: Expected identifier, before ',' in 't( 1, line input   #h; "T",, '' )'
 line input ;#h; "T",, 
-line-input-f.bas(608) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#h; "T",, '' )'
+line-input-f.bas(608) error 14: Expected identifier, before ',' in 't( 1, line input  ;#h; "T",, '' )'
 line input #; "T",;
 line-input-f.bas(609) error 327: Expected file number expression, found ';' in 't( 1, line input   # ; "T",;    )'
 line input ;#; "T",;
@@ -1167,21 +1183,21 @@ line-input-f.bas(611) error 327: Expected file number expression, found ';' in '
 line input ;#; "T",; 
 line-input-f.bas(612) error 327: Expected file number expression, found ';' in 't( 1, line input  ;# ; "T",; '' )'
 line input #1; "T",;
-line-input-f.bas(613) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #1; "T",;    )'
+line-input-f.bas(613) error 14: Expected identifier, before ',' in 't( 1, line input   #1; "T",;    )'
 line input ;#1; "T",;
-line-input-f.bas(614) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#1; "T",;    )'
+line-input-f.bas(614) error 14: Expected identifier, before ',' in 't( 1, line input  ;#1; "T",;    )'
 line input #1; "T",; 
-line-input-f.bas(615) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #1; "T",; '' )'
+line-input-f.bas(615) error 14: Expected identifier, before ',' in 't( 1, line input   #1; "T",; '' )'
 line input ;#1; "T",; 
-line-input-f.bas(616) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#1; "T",; '' )'
+line-input-f.bas(616) error 14: Expected identifier, before ',' in 't( 1, line input  ;#1; "T",; '' )'
 line input #h; "T",;
-line-input-f.bas(617) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #h; "T",;    )'
+line-input-f.bas(617) error 14: Expected identifier, before ',' in 't( 1, line input   #h; "T",;    )'
 line input ;#h; "T",;
-line-input-f.bas(618) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#h; "T",;    )'
+line-input-f.bas(618) error 14: Expected identifier, before ',' in 't( 1, line input  ;#h; "T",;    )'
 line input #h; "T",; 
-line-input-f.bas(619) error 3: Expected End-of-Line, found ',' in 't( 1, line input   #h; "T",; '' )'
+line-input-f.bas(619) error 14: Expected identifier, before ',' in 't( 1, line input   #h; "T",; '' )'
 line input ;#h; "T",; 
-line-input-f.bas(620) error 3: Expected End-of-Line, found ',' in 't( 1, line input  ;#h; "T",; '' )'
+line-input-f.bas(620) error 14: Expected identifier, before ',' in 't( 1, line input  ;#h; "T",; '' )'
 line input #; "T";,
 line-input-f.bas(621) error 327: Expected file number expression, found ';' in 't( 1, line input   # ; "T";,    )'
 line input ;#; "T";,
@@ -1191,21 +1207,21 @@ line-input-f.bas(623) error 327: Expected file number expression, found ';' in '
 line input ;#; "T";, 
 line-input-f.bas(624) error 327: Expected file number expression, found ';' in 't( 1, line input  ;# ; "T";, '' )'
 line input #1; "T";,
-line-input-f.bas(625) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #1; "T";,    )'
+line-input-f.bas(625) error 14: Expected identifier, before ';' in 't( 1, line input   #1; "T";,    )'
 line input ;#1; "T";,
-line-input-f.bas(626) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#1; "T";,    )'
+line-input-f.bas(626) error 14: Expected identifier, before ';' in 't( 1, line input  ;#1; "T";,    )'
 line input #1; "T";, 
-line-input-f.bas(627) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #1; "T";, '' )'
+line-input-f.bas(627) error 14: Expected identifier, before ';' in 't( 1, line input   #1; "T";, '' )'
 line input ;#1; "T";, 
-line-input-f.bas(628) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#1; "T";, '' )'
+line-input-f.bas(628) error 14: Expected identifier, before ';' in 't( 1, line input  ;#1; "T";, '' )'
 line input #h; "T";,
-line-input-f.bas(629) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #h; "T";,    )'
+line-input-f.bas(629) error 14: Expected identifier, before ';' in 't( 1, line input   #h; "T";,    )'
 line input ;#h; "T";,
-line-input-f.bas(630) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#h; "T";,    )'
+line-input-f.bas(630) error 14: Expected identifier, before ';' in 't( 1, line input  ;#h; "T";,    )'
 line input #h; "T";, 
-line-input-f.bas(631) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #h; "T";, '' )'
+line-input-f.bas(631) error 14: Expected identifier, before ';' in 't( 1, line input   #h; "T";, '' )'
 line input ;#h; "T";, 
-line-input-f.bas(632) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#h; "T";, '' )'
+line-input-f.bas(632) error 14: Expected identifier, before ';' in 't( 1, line input  ;#h; "T";, '' )'
 line input #; "T";;
 line-input-f.bas(633) error 327: Expected file number expression, found ';' in 't( 1, line input   # ; "T";;    )'
 line input ;#; "T";;
@@ -1215,21 +1231,21 @@ line-input-f.bas(635) error 327: Expected file number expression, found ';' in '
 line input ;#; "T";; 
 line-input-f.bas(636) error 327: Expected file number expression, found ';' in 't( 1, line input  ;# ; "T";; '' )'
 line input #1; "T";;
-line-input-f.bas(637) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #1; "T";;    )'
+line-input-f.bas(637) error 14: Expected identifier, before ';' in 't( 1, line input   #1; "T";;    )'
 line input ;#1; "T";;
-line-input-f.bas(638) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#1; "T";;    )'
+line-input-f.bas(638) error 14: Expected identifier, before ';' in 't( 1, line input  ;#1; "T";;    )'
 line input #1; "T";; 
-line-input-f.bas(639) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #1; "T";; '' )'
+line-input-f.bas(639) error 14: Expected identifier, before ';' in 't( 1, line input   #1; "T";; '' )'
 line input ;#1; "T";; 
-line-input-f.bas(640) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#1; "T";; '' )'
+line-input-f.bas(640) error 14: Expected identifier, before ';' in 't( 1, line input  ;#1; "T";; '' )'
 line input #h; "T";;
-line-input-f.bas(641) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #h; "T";;    )'
+line-input-f.bas(641) error 14: Expected identifier, before ';' in 't( 1, line input   #h; "T";;    )'
 line input ;#h; "T";;
-line-input-f.bas(642) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#h; "T";;    )'
+line-input-f.bas(642) error 14: Expected identifier, before ';' in 't( 1, line input  ;#h; "T";;    )'
 line input #h; "T";; 
-line-input-f.bas(643) error 3: Expected End-of-Line, found ';' in 't( 1, line input   #h; "T";; '' )'
+line-input-f.bas(643) error 14: Expected identifier, before ';' in 't( 1, line input   #h; "T";; '' )'
 line input ;#h; "T";; 
-line-input-f.bas(644) error 3: Expected End-of-Line, found ';' in 't( 1, line input  ;#h; "T";; '' )'
+line-input-f.bas(644) error 14: Expected identifier, before ';' in 't( 1, line input  ;#h; "T";; '' )'
 line input #; b
 line-input-f.bas(645) error 327: Expected file number expression, found ';' in 't( 1, line input   # ;  b     )'
 line input ;#; b
@@ -1239,13 +1255,21 @@ line-input-f.bas(647) error 327: Expected file number expression, found ';' in '
 line input ;#; b 
 line-input-f.bas(648) error 327: Expected file number expression, found ';' in 't( 1, line input  ;# ;  b  '' )'
 line input #1; b
+OK
 line input ;#1; b
+OK
 line input #1; b 
+OK
 line input ;#1; b 
+OK
 line input #h; b
+OK
 line input ;#h; b
+OK
 line input #h; b 
+OK
 line input ;#h; b 
+OK
 line input #; b ,
 line-input-f.bas(657) error 327: Expected file number expression, found ';' in 't( 1, line input   # ;  b ,     )'
 line input ;#; b ,
@@ -4271,9 +4295,13 @@ line-input-f.bas(2167) error 16: Expected ',' in 't( 1, line input   #h 1 ,  a  
 line input ;#h 1 , a 
 line-input-f.bas(2168) error 16: Expected ',' in 't( 1, line input  ;#h 1 ,  a  '' )'
 line input #1 , "T"
+line-input-f.bas(2169) error 14: Expected identifier in 't( 1, line input   #  1 , "T"    )'
 line input ;#1 , "T"
+line-input-f.bas(2170) error 14: Expected identifier in 't( 1, line input  ;#  1 , "T"    )'
 line input #1 , "T" 
+line-input-f.bas(2171) error 14: Expected identifier, before ''' in 't( 1, line input   #  1 , "T" '' )'
 line input ;#1 , "T" 
+line-input-f.bas(2172) error 14: Expected identifier, before ''' in 't( 1, line input  ;#  1 , "T" '' )'
 line input #1 1 , "T"
 line-input-f.bas(2173) error 16: Expected ',' in 't( 1, line input   #1 1 , "T"    )'
 line input ;#1 1 , "T"
@@ -4387,9 +4415,13 @@ line-input-f.bas(2227) error 16: Expected ',' in 't( 1, line input   #h 1 ;  a  
 line input ;#h 1 ; a 
 line-input-f.bas(2228) error 16: Expected ',' in 't( 1, line input  ;#h 1 ;  a  '' )'
 line input #1 ; "T"
+line-input-f.bas(2229) error 14: Expected identifier in 't( 1, line input   #  1 ; "T"    )'
 line input ;#1 ; "T"
+line-input-f.bas(2230) error 14: Expected identifier in 't( 1, line input  ;#  1 ; "T"    )'
 line input #1 ; "T" 
+line-input-f.bas(2231) error 14: Expected identifier, before ''' in 't( 1, line input   #  1 ; "T" '' )'
 line input ;#1 ; "T" 
+line-input-f.bas(2232) error 14: Expected identifier, before ''' in 't( 1, line input  ;#  1 ; "T" '' )'
 line input #1 1 ; "T"
 line-input-f.bas(2233) error 16: Expected ',' in 't( 1, line input   #1 1 ; "T"    )'
 line input ;#1 1 ; "T"
@@ -5007,13 +5039,13 @@ line-input-f.bas(2539) error 16: Expected ',', found 'a' in 't( 1, line input   
 line input ;#h a , a 
 line-input-f.bas(2540) error 16: Expected ',', found 'a' in 't( 1, line input  ;#h a ,  a  '' )'
 line input #a , "T"
-line-input-f.bas(2541) error 58: Type mismatch, at parameter 1 in 't( 1, line input   #  a , "T"    )'
+line-input-f.bas(2541) error 14: Expected identifier in 't( 1, line input   #  a , "T"    )'
 line input ;#a , "T"
-line-input-f.bas(2542) error 58: Type mismatch, at parameter 1 in 't( 1, line input  ;#  a , "T"    )'
+line-input-f.bas(2542) error 14: Expected identifier in 't( 1, line input  ;#  a , "T"    )'
 line input #a , "T" 
-line-input-f.bas(2543) error 58: Type mismatch, at parameter 1 in 't( 1, line input   #  a , "T" '' )'
+line-input-f.bas(2543) error 14: Expected identifier, before ''' in 't( 1, line input   #  a , "T" '' )'
 line input ;#a , "T" 
-line-input-f.bas(2544) error 58: Type mismatch, at parameter 1 in 't( 1, line input  ;#  a , "T" '' )'
+line-input-f.bas(2544) error 14: Expected identifier, before ''' in 't( 1, line input  ;#  a , "T" '' )'
 line input #1 a , "T"
 line-input-f.bas(2545) error 16: Expected ',', found 'a' in 't( 1, line input   #1 a , "T"    )'
 line input ;#1 a , "T"
@@ -5127,13 +5159,13 @@ line-input-f.bas(2599) error 16: Expected ',', found 'a' in 't( 1, line input   
 line input ;#h a ; a 
 line-input-f.bas(2600) error 16: Expected ',', found 'a' in 't( 1, line input  ;#h a ;  a  '' )'
 line input #a ; "T"
-line-input-f.bas(2601) error 58: Type mismatch, at parameter 1 in 't( 1, line input   #  a ; "T"    )'
+line-input-f.bas(2601) error 14: Expected identifier in 't( 1, line input   #  a ; "T"    )'
 line input ;#a ; "T"
-line-input-f.bas(2602) error 58: Type mismatch, at parameter 1 in 't( 1, line input  ;#  a ; "T"    )'
+line-input-f.bas(2602) error 14: Expected identifier in 't( 1, line input  ;#  a ; "T"    )'
 line input #a ; "T" 
-line-input-f.bas(2603) error 58: Type mismatch, at parameter 1 in 't( 1, line input   #  a ; "T" '' )'
+line-input-f.bas(2603) error 14: Expected identifier, before ''' in 't( 1, line input   #  a ; "T" '' )'
 line input ;#a ; "T" 
-line-input-f.bas(2604) error 58: Type mismatch, at parameter 1 in 't( 1, line input  ;#  a ; "T" '' )'
+line-input-f.bas(2604) error 14: Expected identifier, before ''' in 't( 1, line input  ;#  a ; "T" '' )'
 line input #1 a ; "T"
 line-input-f.bas(2605) error 16: Expected ',', found 'a' in 't( 1, line input   #1 a ; "T"    )'
 line input ;#1 a ; "T"
@@ -5751,13 +5783,13 @@ line-input-f.bas(2911) error 16: Expected ',', found 'T' in 't( 1, line input   
 line input ;#h"T", a 
 line-input-f.bas(2912) error 16: Expected ',', found 'T' in 't( 1, line input  ;#h"T",  a  '' )'
 line input #"T", "T"
-line-input-f.bas(2913) error 58: Type mismatch, at parameter 1 in 't( 1, line input   # "T", "T"    )'
+line-input-f.bas(2913) error 14: Expected identifier in 't( 1, line input   # "T", "T"    )'
 line input ;#"T", "T"
-line-input-f.bas(2914) error 58: Type mismatch, at parameter 1 in 't( 1, line input  ;# "T", "T"    )'
+line-input-f.bas(2914) error 14: Expected identifier in 't( 1, line input  ;# "T", "T"    )'
 line input #"T", "T" 
-line-input-f.bas(2915) error 58: Type mismatch, at parameter 1 in 't( 1, line input   # "T", "T" '' )'
+line-input-f.bas(2915) error 14: Expected identifier, before ''' in 't( 1, line input   # "T", "T" '' )'
 line input ;#"T", "T" 
-line-input-f.bas(2916) error 58: Type mismatch, at parameter 1 in 't( 1, line input  ;# "T", "T" '' )'
+line-input-f.bas(2916) error 14: Expected identifier, before ''' in 't( 1, line input  ;# "T", "T" '' )'
 line input #1"T", "T"
 line-input-f.bas(2917) error 16: Expected ',', found 'T' in 't( 1, line input   #1"T", "T"    )'
 line input ;#1"T", "T"
@@ -5871,13 +5903,13 @@ line-input-f.bas(2971) error 16: Expected ',', found 'T' in 't( 1, line input   
 line input ;#h"T"; a 
 line-input-f.bas(2972) error 16: Expected ',', found 'T' in 't( 1, line input  ;#h"T";  a  '' )'
 line input #"T"; "T"
-line-input-f.bas(2973) error 58: Type mismatch, at parameter 1 in 't( 1, line input   # "T"; "T"    )'
+line-input-f.bas(2973) error 14: Expected identifier in 't( 1, line input   # "T"; "T"    )'
 line input ;#"T"; "T"
-line-input-f.bas(2974) error 58: Type mismatch, at parameter 1 in 't( 1, line input  ;# "T"; "T"    )'
+line-input-f.bas(2974) error 14: Expected identifier in 't( 1, line input  ;# "T"; "T"    )'
 line input #"T"; "T" 
-line-input-f.bas(2975) error 58: Type mismatch, at parameter 1 in 't( 1, line input   # "T"; "T" '' )'
+line-input-f.bas(2975) error 14: Expected identifier, before ''' in 't( 1, line input   # "T"; "T" '' )'
 line input ;#"T"; "T" 
-line-input-f.bas(2976) error 58: Type mismatch, at parameter 1 in 't( 1, line input  ;# "T"; "T" '' )'
+line-input-f.bas(2976) error 14: Expected identifier, before ''' in 't( 1, line input  ;# "T"; "T" '' )'
 line input #1"T"; "T"
 line-input-f.bas(2977) error 16: Expected ',', found 'T' in 't( 1, line input   #1"T"; "T"    )'
 line input ;#1"T"; "T"
@@ -6495,13 +6527,13 @@ line-input-f.bas(3283) error 16: Expected ',', found 'b' in 't( 1, line input   
 line input ;#h b , a 
 line-input-f.bas(3284) error 16: Expected ',', found 'b' in 't( 1, line input  ;#h b ,  a  '' )'
 line input #b , "T"
-line-input-f.bas(3285) error 58: Type mismatch, at parameter 1 in 't( 1, line input   #  b , "T"    )'
+line-input-f.bas(3285) error 14: Expected identifier in 't( 1, line input   #  b , "T"    )'
 line input ;#b , "T"
-line-input-f.bas(3286) error 58: Type mismatch, at parameter 1 in 't( 1, line input  ;#  b , "T"    )'
+line-input-f.bas(3286) error 14: Expected identifier in 't( 1, line input  ;#  b , "T"    )'
 line input #b , "T" 
-line-input-f.bas(3287) error 58: Type mismatch, at parameter 1 in 't( 1, line input   #  b , "T" '' )'
+line-input-f.bas(3287) error 14: Expected identifier, before ''' in 't( 1, line input   #  b , "T" '' )'
 line input ;#b , "T" 
-line-input-f.bas(3288) error 58: Type mismatch, at parameter 1 in 't( 1, line input  ;#  b , "T" '' )'
+line-input-f.bas(3288) error 14: Expected identifier, before ''' in 't( 1, line input  ;#  b , "T" '' )'
 line input #1 b , "T"
 line-input-f.bas(3289) error 16: Expected ',', found 'b' in 't( 1, line input   #1 b , "T"    )'
 line input ;#1 b , "T"
@@ -6615,13 +6647,13 @@ line-input-f.bas(3343) error 16: Expected ',', found 'b' in 't( 1, line input   
 line input ;#h b ; a 
 line-input-f.bas(3344) error 16: Expected ',', found 'b' in 't( 1, line input  ;#h b ;  a  '' )'
 line input #b ; "T"
-line-input-f.bas(3345) error 58: Type mismatch, at parameter 1 in 't( 1, line input   #  b ; "T"    )'
+line-input-f.bas(3345) error 14: Expected identifier in 't( 1, line input   #  b ; "T"    )'
 line input ;#b ; "T"
-line-input-f.bas(3346) error 58: Type mismatch, at parameter 1 in 't( 1, line input  ;#  b ; "T"    )'
+line-input-f.bas(3346) error 14: Expected identifier in 't( 1, line input  ;#  b ; "T"    )'
 line input #b ; "T" 
-line-input-f.bas(3347) error 58: Type mismatch, at parameter 1 in 't( 1, line input   #  b ; "T" '' )'
+line-input-f.bas(3347) error 14: Expected identifier, before ''' in 't( 1, line input   #  b ; "T" '' )'
 line input ;#b ; "T" 
-line-input-f.bas(3348) error 58: Type mismatch, at parameter 1 in 't( 1, line input  ;#  b ; "T" '' )'
+line-input-f.bas(3348) error 14: Expected identifier, before ''' in 't( 1, line input  ;#  b ; "T" '' )'
 line input #1 b ; "T"
 line-input-f.bas(3349) error 16: Expected ',', found 'b' in 't( 1, line input   #1 b ; "T"    )'
 line input ;#1 b ; "T"
