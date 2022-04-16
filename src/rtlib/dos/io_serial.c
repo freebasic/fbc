@@ -8,9 +8,13 @@
 #include <dpmi.h>
 
 /* PIC port addresses. */
-#define ICU_BASE	0x20
-#define ICU_OCW2	(ICU_BASE + 0)
-#define ICU_MASK	(ICU_BASE + 1)
+#define ICU1_BASE	0x20
+#define ICU1_OCW2	(ICU1_BASE + 0)
+#define ICU1_MASK	(ICU1_BASE + 1)
+
+#define ICU2_BASE	0xA0
+#define ICU2_OCW2	(ICU2_BASE + 0)
+#define ICU2_MASK	(ICU2_BASE + 1)
 
 /* UART port registers */
 #define UART_RBR	0x00  /* DLAB = 0 - Receive Buffer*/
@@ -55,9 +59,9 @@
 #define COMM_CHECKED_CHIPTYPE 1
 #define COMM_HAVE_BUFFER 2
 
-/* Only irq3 to irq7 are supported */
+/* irq3 to irq15 are supported */
 #define FIRST_IRQ 3
-#define IRQ_COUNT 5
+#define IRQ_COUNT 13
 #define LAST_IRQ (FIRST_IRQ+IRQ_COUNT-1)
 
 #define MAX_COMM 4
@@ -78,7 +82,8 @@
 typedef struct
 {
 	int usecount;						/* irq usage count for IRQ sharing */
-	int old_pic_mask;					/* old pic mask */
+	int old_pic1_mask;					/* old pic1 mask (master) */
+	int old_pic2_mask;					/* old pic2 mask (slave) */
 	int first;							/* first comm in shared IRQ chain */
 #ifndef FB_MANAGED_IRQ
 	int irq;
@@ -133,6 +138,15 @@ static void comm_handler_irq_4 ( void );
 static void comm_handler_irq_5 ( void );
 static void comm_handler_irq_6 ( void );
 static void comm_handler_irq_7 ( void );
+static void comm_handler_irq_8 ( void );
+static void comm_handler_irq_9 ( void );
+static void comm_handler_irq_10( void );
+static void comm_handler_irq_11( void );
+static void comm_handler_irq_12( void );
+static void comm_handler_irq_13( void );
+static void comm_handler_irq_14( void );
+static void comm_handler_irq_15( void );
+
 static int comm_init_irq( irq_props_t *ip );
 static void comm_exit_irq( irq_props_t *ip );
 #define ENABLE() enable()
@@ -159,14 +173,30 @@ static int comm_init_count = 0;
 
 #ifndef FB_MANAGED_IRQ
 static irq_props_t irq_props[IRQ_COUNT] = {
-	{ 0, 0, 0, 3, 0xb, comm_handler_irq_3, { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
-	{ 0, 0, 0, 4, 0xc, comm_handler_irq_4, { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
-	{ 0, 0, 0, 5, 0xd, comm_handler_irq_5, { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
-	{ 0, 0, 0, 6, 0xe, comm_handler_irq_6, { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
-	{ 0, 0, 0, 7, 0xf, comm_handler_irq_7, { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } }
+	{ 0, 0, 0, 0,  3, 0x0b, comm_handler_irq_3 , { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
+	{ 0, 0, 0, 0,  4, 0x0c, comm_handler_irq_4 , { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
+	{ 0, 0, 0, 0,  5, 0x0d, comm_handler_irq_5 , { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
+	{ 0, 0, 0, 0,  6, 0x0e, comm_handler_irq_6 , { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
+	{ 0, 0, 0, 0,  7, 0x0f, comm_handler_irq_7 , { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
+	{ 0, 0, 0, 0,  8, 0x70, comm_handler_irq_8 , { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
+	{ 0, 0, 0, 0,  9, 0x71, comm_handler_irq_9 , { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
+	{ 0, 0, 0, 0, 10, 0x72, comm_handler_irq_10, { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
+	{ 0, 0, 0, 0, 11, 0x73, comm_handler_irq_11, { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
+	{ 0, 0, 0, 0, 12, 0x74, comm_handler_irq_12, { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
+	{ 0, 0, 0, 0, 13, 0x75, comm_handler_irq_13, { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
+	{ 0, 0, 0, 0, 14, 0x76, comm_handler_irq_14, { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
+	{ 0, 0, 0, 0, 15, 0x77, comm_handler_irq_15, { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } }
 };
 #else
 static irq_props_t irq_props[IRQ_COUNT] = {
+	{ 0, 0, 0 },
+	{ 0, 0, 0 },
+	{ 0, 0, 0 },
+	{ 0, 0, 0 },
+	{ 0, 0, 0 },
+	{ 0, 0, 0 },
+	{ 0, 0, 0 },
+	{ 0, 0, 0 },
 	{ 0, 0, 0 },
 	{ 0, 0, 0 },
 	{ 0, 0, 0 },
@@ -393,6 +423,14 @@ static void comm_handler_irq_4( void ) { comm_isr( 4 ); } void end_comm_handler_
 static void comm_handler_irq_5( void ) { comm_isr( 5 ); } void end_comm_handler_irq_5( void ) { }
 static void comm_handler_irq_6( void ) { comm_isr( 6 ); } void end_comm_handler_irq_6( void ) { }
 static void comm_handler_irq_7( void ) { comm_isr( 7 ); } void end_comm_handler_irq_7( void ) { }
+static void comm_handler_irq_8( void ) { comm_isr( 8 ); } void end_comm_handler_irq_8( void ) { }
+static void comm_handler_irq_9( void ) { comm_isr( 9 ); } void end_comm_handler_irq_9( void ) { }
+static void comm_handler_irq_10( void ) { comm_isr( 10 ); } void end_comm_handler_irq_10( void ) { }
+static void comm_handler_irq_11( void ) { comm_isr( 11 ); } void end_comm_handler_irq_11( void ) { }
+static void comm_handler_irq_12( void ) { comm_isr( 12 ); } void end_comm_handler_irq_12( void ) { }
+static void comm_handler_irq_13( void ) { comm_isr( 13 ); } void end_comm_handler_irq_13( void ) { }
+static void comm_handler_irq_14( void ) { comm_isr( 14 ); } void end_comm_handler_irq_14( void ) { }
+static void comm_handler_irq_15( void ) { comm_isr( 15 ); } void end_comm_handler_irq_15( void ) { }
 
 #endif /* #ifndef FB_MANAGED_IRQ */
 
@@ -402,7 +440,13 @@ static int comm_isr( unsigned irq )
 	irq_props_t *ip;
 	int ret, i, ch;
 
-	outportb (ICU_OCW2, 0x20);
+	if( irq >= 8 )
+	{
+		/* end-of-interrupt */
+		outportb( ICU2_OCW2, 0x20 );
+	}
+	/* end-of-interrupt */
+	outportb( ICU1_OCW2, 0x20 );
 
 #if 0
 	ENABLE();
@@ -500,6 +544,14 @@ static void comm_init_addref( void )
 		lock_proc( comm_handler_irq_5 );
 		lock_proc( comm_handler_irq_6 );
 		lock_proc( comm_handler_irq_7 );
+		lock_proc( comm_handler_irq_8 );
+		lock_proc( comm_handler_irq_9 );
+		lock_proc( comm_handler_irq_10 );
+		lock_proc( comm_handler_irq_11 );
+		lock_proc( comm_handler_irq_12 );
+		lock_proc( comm_handler_irq_13 );
+		lock_proc( comm_handler_irq_14 );
+		lock_proc( comm_handler_irq_15 );
 #endif
 
 		lock_proc( comm_isr );
@@ -527,6 +579,14 @@ static void comm_init_release( void )
 		unlock_proc( comm_handler_irq_5 );
 		unlock_proc( comm_handler_irq_6 );
 		unlock_proc( comm_handler_irq_7 );
+		unlock_proc( comm_handler_irq_8 );
+		unlock_proc( comm_handler_irq_9 );
+		unlock_proc( comm_handler_irq_10 );
+		unlock_proc( comm_handler_irq_11 );
+		unlock_proc( comm_handler_irq_12 );
+		unlock_proc( comm_handler_irq_13 );
+		unlock_proc( comm_handler_irq_14 );
+		unlock_proc( comm_handler_irq_15 );
 #endif
 
 		unlock_array( comm_props );
@@ -640,7 +700,7 @@ static int comm_init( int com_num, unsigned int baseaddr, int irq )
 	outportb( cp->baseaddr + UART_MCR, MCR_OUT2 );
 
 
-	/* steup the irq for comm handling */
+	/* setup the irq for comm handling */
 	ip = IRQ_PROPS(cp->irq);
 
 	if( ip->usecount == 0 )
@@ -660,10 +720,29 @@ static int comm_init( int com_num, unsigned int baseaddr, int irq )
 		DISABLE();
 
 		ip->usecount++;
-  
-		/* TODO: Support for slave PIC? */
-		ip->old_pic_mask = inportb (ICU_MASK);
-		outportb (ICU_MASK, ip->old_pic_mask & ~(1 << cp->irq));
+
+		if( irq >= 8 )
+		{
+			/* enable irq on slave */
+			
+			ip->old_pic2_mask = inportb( ICU2_MASK );
+			outportb( ICU2_MASK, ip->old_pic2_mask & ~(1 << (cp->irq - 8)) );
+
+/* assume that the host OS already set this up */
+#if 1
+			/* TODO: chain pic2 to pic1 irq 2 */
+
+			/* enable irq 2 on master */
+			ip->old_pic1_mask = inportb( ICU1_MASK );
+			outportb( ICU1_MASK, ip->old_pic1_mask & ~(1 << 2) );
+#endif
+		}
+		else
+		{
+			/* enable irq on master */
+			ip->old_pic1_mask = inportb( ICU1_MASK );
+			outportb( ICU1_MASK, ip->old_pic1_mask & ~(1 << cp->irq) );
+		}
 
 		ENABLE();
 	}
@@ -743,8 +822,28 @@ static void comm_exit( int com_num )
 	if( ip->usecount == 1 )
 	{
 		DISABLE();
-		/* TODO: Support for slave PIC? */
-		outportb (ICU_MASK, inportb (ICU_MASK) | (ip->old_pic_mask & (1 << cp->irq)));
+
+		outportb( ICU1_MASK, inportb( ICU1_MASK ) | (ip->old_pic1_mask & (1 << cp->irq)) );
+
+		if( cp->irq >= 8 )
+		{
+			/* disable irq on slave */
+			outportb( ICU2_MASK, inportb( ICU2_MASK ) | (ip->old_pic2_mask & (1 << (cp->irq - 8))) );
+
+/* assume that the host OS already set this up */
+#if 1
+			/* disable irq 2 on master */
+			outportb( ICU1_MASK, inportb( ICU1_MASK ) | (ip->old_pic1_mask & (1 << 2)) );
+
+			/* TODO: also unchain slave from master */
+#endif
+		}
+		else
+		{
+			/* disable irq on master */
+			outportb( ICU1_MASK, inportb( ICU1_MASK ) | (ip->old_pic1_mask & (1 << cp->irq)) );
+		}
+
 		ENABLE();
 
 #ifndef FB_MANAGED_IRQ	
@@ -953,7 +1052,7 @@ int fb_SerialOpen
 		[x]  int                 KeepDTREnabled  -- DT 
 		[ ]  int                 DiscardOnError  -- FE 
 		[ ]  int                 IgnoreAllErrors -- ME 
-		[ ]  unsigned            IRQNumber       -- IR2..IR15
+		[x]  unsigned            IRQNumber       -- IR8..IR15
 		[x]  unsigned            IRQNumber       -- IR2..IR7 
 		[x]  unsigned            TransmitBuffer  -- TBn - a value 0 means: default value 
 		[x]  unsigned            ReceiveBuffer   -- RBn - a value 0 means: default value 

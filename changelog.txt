@@ -21,6 +21,7 @@ Version 1.10.0
 - gas64 : stack overflow check (total of all local variables) at compile time --> warning - stack size for linux = 8MB, for Windows = default or defined by user (SARG)
 - gas64 : stack overflow check at run time if -exx is used - stack size for linux = 8MB, for Windows = default or defined by user (SARG)
 - fbc: debug pragma #LOOKUP <sym>
+- rtlib: DOS serial driver - add support for second PIC and IRQ 8 to 15
 
 [fixed]
 - gas64: missing restoring of use of one virtual register on sqr for float (SARG)
