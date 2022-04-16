@@ -858,10 +858,10 @@ t( 0, input    a ,  a     )
 t( 0, input  ; a ,  a     )
 t( 0, input    a ,  a  '' )
 t( 0, input  ; a ,  a  '' )
-t( 1, input    a , "T"    ) '' bad result
-t( 1, input  ; a , "T"    ) '' bad result
-t( 1, input    a , "T" '' ) '' bad result
-t( 1, input  ; a , "T" '' ) '' bad result
+t( 1, input    a , "T"    )
+t( 1, input  ; a , "T"    )
+t( 1, input    a , "T" '' )
+t( 1, input  ; a , "T" '' )
 t( 0, input    a ,  b     )
 t( 0, input  ; a ,  b     )
 t( 0, input    a ,  b  '' )
@@ -982,10 +982,10 @@ t( 0, input   "T",  a     )
 t( 0, input  ;"T",  a     )
 t( 0, input   "T",  a  '' )
 t( 0, input  ;"T",  a  '' )
-t( 1, input   "T", "T"    ) '' bad result
-t( 1, input  ;"T", "T"    ) '' bad result
-t( 1, input   "T", "T" '' ) '' bad result
-t( 1, input  ;"T", "T" '' ) '' bad result
+t( 1, input   "T", "T"    )
+t( 1, input  ;"T", "T"    )
+t( 1, input   "T", "T" '' )
+t( 1, input  ;"T", "T" '' )
 t( 0, input   "T",  b     )
 t( 0, input  ;"T",  b     )
 t( 0, input   "T",  b  '' )
@@ -1002,10 +1002,10 @@ t( 0, input   "T";  a     )
 t( 0, input  ;"T";  a     )
 t( 0, input   "T";  a  '' )
 t( 0, input  ;"T";  a  '' )
-t( 1, input   "T"; "T"    ) '' bad result
-t( 1, input  ;"T"; "T"    ) '' bad result
-t( 1, input   "T"; "T" '' ) '' bad result
-t( 1, input  ;"T"; "T" '' ) '' bad result
+t( 1, input   "T"; "T"    )
+t( 1, input  ;"T"; "T"    )
+t( 1, input   "T"; "T" '' )
+t( 1, input  ;"T"; "T" '' )
 t( 0, input   "T";  b     )
 t( 0, input  ;"T";  b     )
 t( 0, input   "T";  b  '' )
@@ -1106,10 +1106,10 @@ t( 0, input    b ,  a     )
 t( 0, input  ; b ,  a     )
 t( 0, input    b ,  a  '' )
 t( 0, input  ; b ,  a  '' )
-t( 1, input    b , "T"    ) '' bad result
-t( 1, input  ; b , "T"    ) '' bad result
-t( 1, input    b , "T" '' ) '' bad result
-t( 1, input  ; b , "T" '' ) '' bad result
+t( 1, input    b , "T"    )
+t( 1, input  ; b , "T"    )
+t( 1, input    b , "T" '' )
+t( 1, input  ; b , "T" '' )
 t( 0, input    b ,  b     )
 t( 0, input  ; b ,  b     )
 t( 0, input    b ,  b  '' )

@@ -1679,9 +1679,13 @@ OK
 input ; a , a 
 OK
 input a , "T"
+input.bas(861) error 14: Expected identifier in 't( 1, input    a , "T"    )'
 input ; a , "T"
+input.bas(862) error 14: Expected identifier in 't( 1, input  ; a , "T"    )'
 input a , "T" 
+input.bas(863) error 14: Expected identifier, before ''' in 't( 1, input    a , "T" '' )'
 input ; a , "T" 
+input.bas(864) error 14: Expected identifier, before ''' in 't( 1, input  ; a , "T" '' )'
 input a , b
 OK
 input ; a , b
@@ -1923,9 +1927,13 @@ OK
 input ;"T", a 
 OK
 input "T", "T"
+input.bas(985) error 14: Expected identifier in 't( 1, input   "T", "T"    )'
 input ;"T", "T"
+input.bas(986) error 14: Expected identifier in 't( 1, input  ;"T", "T"    )'
 input "T", "T" 
+input.bas(987) error 14: Expected identifier, before ''' in 't( 1, input   "T", "T" '' )'
 input ;"T", "T" 
+input.bas(988) error 14: Expected identifier, before ''' in 't( 1, input  ;"T", "T" '' )'
 input "T", b
 OK
 input ;"T", b
@@ -1959,9 +1967,13 @@ OK
 input ;"T"; a 
 OK
 input "T"; "T"
+input.bas(1005) error 14: Expected identifier in 't( 1, input   "T"; "T"    )'
 input ;"T"; "T"
+input.bas(1006) error 14: Expected identifier in 't( 1, input  ;"T"; "T"    )'
 input "T"; "T" 
+input.bas(1007) error 14: Expected identifier, before ''' in 't( 1, input   "T"; "T" '' )'
 input ;"T"; "T" 
+input.bas(1008) error 14: Expected identifier, before ''' in 't( 1, input  ;"T"; "T" '' )'
 input "T"; b
 OK
 input ;"T"; b
@@ -2163,9 +2175,13 @@ OK
 input ; b , a 
 OK
 input b , "T"
+input.bas(1109) error 14: Expected identifier in 't( 1, input    b , "T"    )'
 input ; b , "T"
+input.bas(1110) error 14: Expected identifier in 't( 1, input  ; b , "T"    )'
 input b , "T" 
+input.bas(1111) error 14: Expected identifier, before ''' in 't( 1, input    b , "T" '' )'
 input ; b , "T" 
+input.bas(1112) error 14: Expected identifier, before ''' in 't( 1, input  ; b , "T" '' )'
 input b , b
 OK
 input ; b , b

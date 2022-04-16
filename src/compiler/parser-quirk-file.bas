@@ -367,8 +367,8 @@ function cInputStmt _
 		_
 	) as integer
 
-	dim as ASTNODE ptr filestrexpr, dstexpr
-	dim as integer islast, isfile, addnewline, addquestion
+	dim as ASTNODE ptr filestrexpr = NULL, dstexpr = NULL
+	dim as integer islast = FALSE, isfile = FALSE, addnewline = FALSE, addquestion = FALSE
 
 	function = FALSE
 
@@ -379,14 +379,12 @@ function cInputStmt _
 	addnewline = (hMatch( CHAR_SEMICOLON ) = FALSE)
 
 	'' '#'?
-	addquestion = FALSE
 	if( hMatch( CHAR_SHARP ) ) then
 		isfile = TRUE
 		'' Expression
 		hMatchFileNumberExpression( filestrexpr, FB_DATATYPE_INTEGER )
 
 	else
-		isfile = FALSE
 		'' STRING_LIT?
 		if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
 			filestrexpr = astNewVAR( symbAllocStrConst( *lexGetText( ), lexGetTextLen( ) ) )
@@ -428,6 +426,15 @@ function cInputStmt _
 			hSkipUntil( CHAR_COMMA )
 		end if
 
+		if( dstexpr <> NULL ) then
+			'' dest can't be a top-level const
+			if( typeIsConst( astGetFullType( dstexpr ) ) ) then
+				errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
+			elseif( astGetStrLitSymbol( dstexpr ) ) then
+				errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )
+			end if
+		end if
+
 		if( hMatch( CHAR_COMMA ) ) then
 			islast = FALSE
 		else
@@ -435,11 +442,6 @@ function cInputStmt _
 		end if
 
 		if( dstexpr <> NULL ) then
-			'' dest can't be a top-level const
-			if( typeIsConst( astGetFullType( dstexpr ) ) ) then
-				errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
-			end if
-
 			if( rtlFileInputGet( dstexpr ) = FALSE ) then
 				exit function
 			end if
