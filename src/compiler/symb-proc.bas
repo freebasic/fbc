@@ -1150,7 +1150,7 @@ function symbLookupInternallyMangledSubtype _
 			dim as FBSYMBOL ptr lookup_param = any
 			dim as FBSYMBOL ptr proc_param = any
 			do
-				lookup_param = symbGetProcHeadParam( chain_->sym )
+				lookup_param = symbGetProcHeadParam( sym )
 				proc_param = symbGetProcHeadParam( proc )
 				while( (lookup_param <> NULL) and (proc_param <> NULL) )
 					if( (symbGetParamOptExpr( lookup_param ) <> NULL) <> (symbGetParamOptExpr( proc_param ) <> NULL) ) then
