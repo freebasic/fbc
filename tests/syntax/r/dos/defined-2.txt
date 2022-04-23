@@ -1,0 +1,8 @@
+value defined
+value not defined
+value defined
+..value defined
+ns.value defined
+novalue not defined
+..novalue not defined
+ns.novalue not defined

@@ -1,0 +1,67 @@
+gSymbol not defined
+gSymbol not defined
+gSymbol not defined
+gSymbol not defined
+gSymbol has const value
+gSymbol defined
+gSymbol defined
+gSymbol defined
+-------------------
+gConst has const value
+gConst defined
+gConst defined
+gConst defined
+-------------------
+variable defined
+variable defined
+variable defined
+-------------------
+ns defined
+ns defined
+ns defined
+ns.novalue not defined
+ns.novalue not defined
+ns.novalue not defined
+ns.value defined
+ns.value defined
+ns.value defined
+-------------------
+gEnum defined
+gEnum defined
+gEnum defined
+gEnum.novalue not defined
+gEnum.novalue not defined
+gEnum.novalue not defined
+gEnum.eValue defined
+gEnum.eValue defined
+gEnum.eValue defined
+-------------------
+localvar defined
+localvar defined
+localvar defined
+.noglobal not defined
+.noglobal not defined
+.noglobal not defined
+..noglobal not defined
+..noglobal not defined
+..noglobal not defined
+.localvar not defined
+.localvar not defined
+.localvar not defined
+..localvar not defined
+..localvar not defined
+..localvar not defined
+-------------------
+EXPECT ERROR TO FOLLOW
+defined-1.bas(336) error 11: Expected constant in '#if variable'
+variable not defined or has no value
+EXPECT ERROR TO FOLLOW
+defined-1.bas(343) error 120: Expected period ('.') in '#if ns'
+ns not defined or has no value
+EXPECT ERROR TO FOLLOW
+defined-1.bas(350) error 8: Undefined symbol, novalue in '#if ns.novalue'
+ns.novalue not defined or has no value
+EXPECT ERROR TO FOLLOW (but we don't get one)
+gEnum not defined or has no value
+EXPECT ERROR TO FOLLOW (but we don't get one)
+gEnum.novalue not defined with value

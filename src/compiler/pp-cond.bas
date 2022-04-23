@@ -65,7 +65,7 @@ sub ppCondIf( )
 	case FB_TK_PP_IFDEF
 		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
 
-		if( cIdentifier( base_parent, FB_IDOPT_NONE ) <> NULL ) then
+		if( cIdentifier( base_parent, FB_IDOPT_NOSKIP ) <> NULL ) then
 			'' any symbol is okay or type's wouldn't be found
 			istrue = TRUE
 		end if
@@ -75,7 +75,7 @@ sub ppCondIf( )
 	case FB_TK_PP_IFNDEF
 		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
 
-		if( cIdentifier( base_parent, FB_IDOPT_NONE ) = NULL ) then
+		if( cIdentifier( base_parent, FB_IDOPT_NOSKIP ) = NULL ) then
 			'' ditto
 			istrue = TRUE
 		end if

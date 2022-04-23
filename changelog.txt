@@ -33,6 +33,7 @@ Version 1.10.0
 - sf.net #953: fbc: no error generated on LINE INPUT #h, "text" statements
 - sf.net #826: fbc: Weird overload resolution with booleans
 - sf.net #892: fbc: Bug when default calling via a pointer to a 'Sub' defined with the only 'Any Ptr' optional parameter
+- fbc: parser skips extra token on error recovery for #if/#ifndef/defined() statements
 
 
 Version 1.09.0

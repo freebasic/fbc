@@ -26,7 +26,7 @@ private function hPPDefinedExpr( ) as ASTNODE ptr
 	end if
 
 	'' Identifier
-	is_defined = (cIdentifier( base_parent, FB_IDOPT_NONE ) <> NULL)
+	is_defined = (cIdentifier( base_parent, FB_IDOPT_NOSKIP ) <> NULL)
 	lexSkipToken( )
 
 	'' ')'

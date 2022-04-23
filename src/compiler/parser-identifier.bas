@@ -219,9 +219,10 @@ function cIdentifier _
 		return chain_
 	end if
 
+	'' no symbols in this chain? check if it's a global/parent
 	if( chain_ = NULL ) then
-		'' '.'?
 
+		'' '.'?
 		if( lexGetToken( ) <> CHAR_DOT ) then
 			return NULL
 		end if
@@ -230,7 +231,9 @@ function cIdentifier _
 		if( chain_ = NULL ) then
 			if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
 				errReportUndef( FB_ERRMSG_UNDEFINEDSYMBOL, lexGetText( ) )
-			else
+			end if
+
+			if( (options and FB_IDOPT_NOSKIP) = 0 ) then
 				hSkipSymbol( )
 			end if
 
@@ -244,13 +247,14 @@ function cIdentifier _
 		dim as FBSYMBOL ptr sym = chain_->sym
 
 		'' explicit base_parent? don't access local variables
-		'' we are assuming that the logic is correct that any symbol with the local
-		'' attribute can't be accessed through an explicit namespace.  If we later find
-		'' out that is not the case, then we will need to add a new symbol attribute that
-		'' decides if symbols can be accessed through an explicit namespace or not
-		'' !!!TODO!!! - we should be able to rewrite this logic more effeciently.  In theory,
-		'' if an explicit namespace is not given symbLookup() should have returned an appropriate
-		'' symbol chain.
+		'' we are assuming that the logic is correct that any symbol with the
+		'' local attribute can't be accessed through an explicit namespace.
+		'' If we later find out that is not the case, then we will need to add
+		'' a new symbol attribute that decides if symbols can be accessed
+		'' through an explicit namespace or not.
+		'' !!!TODO!!! - we should be able to rewrite this logic more
+		'' efficiently.  In theory, if an explicit namespace is not given,
+		'' symbLookup() should have returned an appropriate symbol chain.
 		if( base_parent ) then
 			while( sym )
 				if( symbIsLocal( sym ) and symbIsVar( sym ) ) then
@@ -389,7 +393,9 @@ function cIdentifier _
 			if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
 				errReportUndef( FB_ERRMSG_UNDEFINEDSYMBOL, lexGetText( ) )
 			else
-				hSkipSymbol( )
+				if( (options and FB_IDOPT_NOSKIP) = 0 ) then
+					hSkipSymbol( )
+				end if
 			end if
 
 			return NULL
