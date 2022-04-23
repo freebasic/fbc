@@ -11,6 +11,7 @@ Version 1.10.0
 - fbc: [LINE] INPUT statements return "Expected ',' or ';'" error when checking for the comma or semi-colon separator
 - sf.net #953: fbc: improve compile time error messages for INPUT [#] statements
 - sf.net #953: fbc: improve compile time error messages for LINE INPUT [#] statements giving better positional information
+- sf.net #826: fbc: booleans are ranked against integer types to determine closest match in type resolution
 
 [added]
 - gas64: '.cif_sections' and '.cif_' directives for stack unwinding (adeyblue)
@@ -30,6 +31,7 @@ Version 1.10.0
 - sf.net #817: fbc: Type mismatch not detected when passing an array of UDT incompatible with the expected UDT
 - sf.net #953: fbc: no error generated on INPUT #h, "text" statements
 - sf.net #953: fbc: no error generated on LINE INPUT #h, "text" statements
+- sf.net #826: fbc: Weird overload resolution with booleans
 
 
 Version 1.09.0
