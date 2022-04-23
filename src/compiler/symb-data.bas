@@ -109,17 +109,17 @@ sub symbDataInit( )
 
 
 	'' Create symb_dtypeMatchTB(), used to score overload resolutions
-	const NUMTYPES = FB_DATATYPE_DOUBLE - FB_DATATYPE_BYTE + 1
+	const NUMTYPES = FB_DATATYPE_DOUBLE - FB_DATATYPE_BOOLEAN + 1
 	dim as FB_DATATYPE rank(0 to NUMTYPES - 1)
 
 	dim as FB_DATATYPE dtype1 = any, dtype2 = any
 	dim as integer i = any, j = any
 
-	for dtype1 = FB_DATATYPE_BYTE to FB_DATATYPE_DOUBLE
+	for dtype1 = FB_DATATYPE_BOOLEAN to FB_DATATYPE_DOUBLE
 
 		'' fill the rank() table with data types
-		for dtype2 = FB_DATATYPE_BYTE to FB_DATATYPE_DOUBLE
-			rank(dtype2 - FB_DATATYPE_BYTE) = dtype2
+		for dtype2 = FB_DATATYPE_BOOLEAN to FB_DATATYPE_DOUBLE
+			rank(dtype2 - FB_DATATYPE_BOOLEAN) = dtype2
 		next
 
 		'' sort the table in order of closeness
