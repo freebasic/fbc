@@ -353,7 +353,9 @@ function cLineInputStmt _
 			if( maxlenexpr = NULL ) then
 				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 				'' error recovery: none rtlFileLineInput[Wstr] will handle it
-			end if 
+			end if
+		else
+			errReport( FB_ERRMSG_EXPECTEDCOMMA )
 		end if
 	end if
 

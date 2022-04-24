@@ -33,6 +33,8 @@ Version 1.10.0
 - sf.net #953: fbc: no error generated on INPUT #h, "text" statements
 - sf.net #953: fbc: no error generated on LINE INPUT #h, "text" statements
 - sf.net #826: fbc: Weird overload resolution with booleans
+- sf.net #916: fbc: 'LINE INPUT [#1 | prompt,] variable [, maxchars]' requires length parameter for ZSTRING/WSTRING PTR variable
+- sf.net #916: fbc: Error on LINE INPUT [#1] if either missing or irrelevant max length argument
 - sf.net #892: fbc: Bug when default calling via a pointer to a 'Sub' defined with the only 'Any Ptr' optional parameter
 - fbc: parser skips extra token on error recovery for #if/#ifndef/defined() statements
 
