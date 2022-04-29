@@ -635,7 +635,7 @@ private sub check_optim(byref code as string)
 			end if
 
 			''direct simple register ?
-			if prevpart2[0]=asc("r") then
+			if prevpart2[0]=asc("r") and part1[3]<>asc("d") and part1[0]<>asc("e") then
 				if instr(prevpart1,"[")<>0 then
 					'asm_info("OPTIMIZATION 2-1")
 					''skip comment
