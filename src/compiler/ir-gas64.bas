@@ -449,11 +449,9 @@ private sub check_optim(byref code as string)
 
 			''cancel mov regx, regx
 			if part1=part2 then
-				if instr("rsi rdi rcx rdx rbx rax r8 r9 r10 r11 r12 r13 r14 r15",part1) then
-					code="#O0"+code
-					prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV
-					exit sub
-				end if
+				code="#O0"+code
+				prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV
+				exit sub
 			end if
 
 		case "lea"
@@ -4442,8 +4440,8 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 				lname2 = *symbUniqueLabel( )
 				asm_code("jmp "+lname2)
 				asm_code(lname1+":")
-				asm_code("movsd	xmm1, xmm2")
-				asm_code("subsd	xmm0, xmm1")
+				asm_code("movsd xmm1, xmm2")
+				asm_code("subsd xmm0, xmm1")
 				asm_code("cvttsd2si rax, xmm0")
 
 				reg=reg_findfree(999999)
@@ -4504,7 +4502,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 				lname2 = *symbUniqueLabel( )
 				asm_code("jmp "+lname2)
 				asm_code(lname1+":")
-				asm_code("movss	xmm1, xmm2")
+				asm_code("movss xmm1, xmm2")
 				asm_code("subss	xmm0, xmm1")
 				asm_code("cvttss2si rax, xmm0")
 
@@ -4641,9 +4639,18 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 		select case typeGetSize( v2dtype )
 			case 1,2 ''ubyte/ushort
 				asm_code("movzx "+op1+", "+prefix2+op2)
+
 			case 4 ''ulong
-				asm_code("mov "+*regstrd(regresult)+", "+op2)
-				asm_code("mov "+*regstrd(regresult)+", "+*regstrd(regresult),KNOOPTIM)  ''to zero the high 32bits
+				'' in case of register the higher 32bit are already zeroed
+				if v2->typ = IR_VREGTYPE_REG then
+					asm_info("changing register v1->reg by "+str(v2->reg)+" / "+str(srcreg)+" and "+str(regresult)+" freed")
+					reghandle(regresult)=KREGFREE
+					regresult=srcreg
+					v1->reg=v2->reg
+				else
+					asm_code("mov "+*regstrd(regresult)+", "+op2)',KNOOPTIM)
+				end if
+
 			case else
 				Asm_error("in conv something missing 02")
 		end select
