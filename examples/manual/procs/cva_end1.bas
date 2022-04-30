@@ -1,21 +1,21 @@
 '' examples/manual/procs/cva_end1.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'CVA_END'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCvaEnd
 '' --------
 
 Sub proc cdecl(count As Integer, ... )
-	Dim args As cva_list
+	Dim args As Cva_List
 
-	cva_start( args, count )
+	Cva_Start( args, count )
 
 	For i As Integer = 1 To count
-		Print cva_arg( args, Integer )
+		Print Cva_Arg( args, Integer )
 	Next
    
-	cva_end( args )
+	Cva_End( args )
 End Sub
 
 proc( 4, 4000, 300, 20, 1 )

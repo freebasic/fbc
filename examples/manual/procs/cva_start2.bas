@@ -1,7 +1,7 @@
 '' examples/manual/procs/cva_start2.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'CVA_START'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCvaStart
 '' --------
@@ -10,19 +10,19 @@
 '' then restarting to get all the arguments
 
 Sub proc cdecl(count As Integer, ... )
-	Dim args As cva_list
+	Dim args As Cva_List
 
 	'' get the first argument only
-	cva_start( args, count )
-	Print cva_arg( args, Integer )
-	cva_end( args )
+	Cva_Start( args, count )
+	Print Cva_Arg( args, Integer )
+	Cva_End( args )
 
 	'' restart and get all the arguments
-	cva_start( args, count )
+	Cva_Start( args, count )
 	For i As Integer = 1 To count
-		Print cva_arg( args, Integer )
+		Print Cva_Arg( args, Integer )
 	Next
-	cva_end( args )
+	Cva_End( args )
 
 End Sub
 

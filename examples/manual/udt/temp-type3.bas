@@ -1,7 +1,7 @@
 '' examples/manual/udt/temp-type3.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'Temporary Types'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgTypeTemp
 '' --------

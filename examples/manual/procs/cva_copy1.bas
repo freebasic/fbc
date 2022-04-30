@@ -1,7 +1,7 @@
 '' examples/manual/procs/cva_copy1.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'CVA_COPY'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCvaCopy
 '' --------
@@ -10,22 +10,22 @@
 '' a copy of the variable argument list
 
 Sub proc cdecl(count As Integer, ... )
-	Dim args1 As cva_list
-	Dim args2 As cva_list
+	Dim args1 As Cva_List
+	Dim args2 As Cva_List
 
 	'' first list
-	cva_start( args1, count )
+	Cva_Start( args1, count )
 
 	'' create a copy
-	cva_copy( args2, args1 )
+	Cva_Copy( args2, args1 )
 
 	For i As Integer = 1 To count
-		Print cva_arg( args1, Integer ), cva_arg( args2, Integer )
+		Print Cva_Arg( args1, Integer ), Cva_Arg( args2, Integer )
 	Next
 	
 	'' clean-up
-	cva_end( args2 )
-	cva_end( args1 )
+	Cva_End( args2 )
+	Cva_End( args1 )
 
 End Sub
 

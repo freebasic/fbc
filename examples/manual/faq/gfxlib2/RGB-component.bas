@@ -1,7 +1,7 @@
 '' examples/manual/faq/gfxlib2/RGB-component.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'Frequently Asked FreeBASIC Graphics Library Questions'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=FaqPggfxlib2
 '' --------

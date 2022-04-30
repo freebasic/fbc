@@ -1,7 +1,7 @@
 '' examples/manual/misc/rem.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'REM'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgRem
 '' --------

@@ -1,7 +1,7 @@
 '' examples/manual/libraries/aspell.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'GNU Aspell'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ExtLibaspell
 '' --------
@@ -38,7 +38,7 @@ Do
 		Dim As AspellStringEnumeration Ptr elements = _
 			aspell_word_list_elements(aspell_speller_suggest(speller, StrPtr(word), Len(word)))
 		Do
-			Dim As const ZString Ptr w = aspell_string_enumeration_next(elements)
+			Dim As Const ZString Ptr w = aspell_string_enumeration_next(elements)
 			If (w = 0) Then
 				Exit Do
 			End If

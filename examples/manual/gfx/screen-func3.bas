@@ -1,7 +1,7 @@
 '' examples/manual/gfx/screen-func3.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'SCREEN (Console)'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgScreenCons
 '' --------

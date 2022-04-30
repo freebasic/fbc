@@ -1,17 +1,17 @@
 '' examples/manual/procs/cva_arg1.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'CVA_ARG'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCvaArg
 '' --------
 
 '' Example of a simple custom printf
 Sub myprintf cdecl(ByRef formatstring As String, ...)
-	Dim As cva_list args
+	Dim As Cva_List args
 
 	'' Initialize the cva_list object to first var-arg
-	cva_start( args, formatstring )
+	Cva_Start( args, formatstring )
 
 	'' For each char in format string...
 	Dim As UByte Ptr p = StrPtr(formatstring)
@@ -38,22 +38,22 @@ Sub myprintf cdecl(ByRef formatstring As String, ...)
 			Select Case char
 			'' integer?
 			Case Asc("i")
-				Print Str(cva_arg(args, Integer));
+				Print Str(Cva_Arg(args, Integer));
 
 			'' long integer? (64-bit)
 			Case Asc("l")
-				Print Str(cva_arg(args, LongInt));
+				Print Str(Cva_Arg(args, LongInt));
 
 			'' single or double?
 			'' Note: because the C ABI, all singles passed on
 			'' var-args are converted to doubles.
 			Case Asc( "f" ), Asc( "d" )
-				Print Str(cva_arg(args, Double));
+				Print Str(Cva_Arg(args, Double));
 
 			'' string?
 			Case Asc("s")
 				'' Strings are passed byval, so the length is unknown
-				Print *cva_arg(args, ZString Ptr);
+				Print *Cva_Arg(args, ZString Ptr);
 
 			End Select
 
@@ -63,7 +63,7 @@ Sub myprintf cdecl(ByRef formatstring As String, ...)
 		End If
 	Wend
 
-	cva_end( args )
+	Cva_End( args )
 
 End Sub
 
