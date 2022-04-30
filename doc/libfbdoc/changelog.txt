@@ -1,6 +1,7 @@
 April 30, 2022
 - allow force query for CSRFToken
 - set-up libCurl to keep POST on redirects
+- copyright updates for 2022
 
 October 10, 2021
 - Add recognition for {{fbdoc item="ver"}} for "Version" section
