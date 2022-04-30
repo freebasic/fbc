@@ -759,3 +759,15 @@ SINGLE
 SINGLE
 DOUBLE
 DOUBLE
+
+--------------------------------------------------------------------------------
+missing non decimal digits
+expect 3 warnings
+	Expected digit
+	Expected digit
+	Expected digit
+expect 0 warnings
+expect 3 warnings
+	Expected digit
+	Expected digit
+	Expected digit

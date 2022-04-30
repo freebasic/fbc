@@ -533,9 +533,10 @@ private sub hReadIdentifier _
 end sub
 
 ''::::
-''hex_oct_bin     = 'H' HEXDIG+
-''                | 'O' OCTDIG+
-''                | 'B' BINDIG+
+''hex_oct_bin     = '&' OCTDIG+
+''                | '&' 'H' HEXDIG+
+''                | '&' 'O' OCTDIG+
+''                | '&' 'B' BINDIG+
 ''
 private function hReadNonDecNumber _
 	( _
@@ -547,7 +548,7 @@ private function hReadNonDecNumber _
 
 	dim as uinteger value = any, c = any, first_c = any
 	dim as ulongint value64 = any
-	dim as integer lgt = any
+	dim as integer lgt = any, havedigits = any
 	dim as integer skipchar = any
 
 	assert( dtype = FB_DATATYPE_SHORT )
@@ -555,8 +556,27 @@ private function hReadNonDecNumber _
 	value = 0
 	lgt = 0
 	skipchar = FALSE
+	havedigits = FALSE
 
-	c = lexCurrentChar( )
+	#if __FB_DEBUG__
+		'' expect that hReadNonDecNumber( ) was called with '&' in lexCurrentChar( )
+		c = lexCurrentChar( )
+		assert( c = CHAR_AMP )
+	#endif
+
+	c = lexGetLookAheadChar( )
+
+	'' and octal number immediately after '&' indicates octal
+	select case as const c
+	case CHAR_0 to CHAR_7
+		c = CHAR_OUPP
+		'' don't lexEatChar( ) here, case CHAR_OUPP, CHAR_OLOW
+		'' will take take of it below
+	case else
+		'' no octal char is next so consume the char and lex normally
+		'' '&'
+		lexEatChar( )
+	end select
 
 	select case as const c
 	'' hex
@@ -567,13 +587,14 @@ private function hReadNonDecNumber _
 		tlen += 2
 		lexEatChar( )
 
-		'' skip trailing zeroes if not inside a comment or parsing an $include
+		'' skip leading zeroes if not inside a comment or parsing an $include
 		if( (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) = 0 ) then
 			while( lexCurrentChar( ) = CHAR_0 )
 				*pnum = CHAR_0
 				pnum += 1
 				tlen += 1
 				lexEatChar( )
+				havedigits = TRUE
 			wend
 		end if
 
@@ -582,6 +603,7 @@ private function hReadNonDecNumber _
 			select case c
 			case CHAR_ALOW to CHAR_FLOW, CHAR_AUPP to CHAR_FUPP, CHAR_0 to CHAR_9
 				lexEatChar( )
+				havedigits = TRUE
 				if( skipchar = FALSE ) then
 					*pnum = c
 					pnum += 1
@@ -629,13 +651,14 @@ private function hReadNonDecNumber _
 		tlen += 2
 		lexEatChar( )
 
-		'' skip trailing zeroes if not inside a comment or parsing an $include
+		'' skip leading zeroes if not inside a comment or parsing an $include
 		if( (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) = 0 ) then
 			while( lexCurrentChar( ) = CHAR_0 )
 				*pnum = CHAR_0
 				pnum += 1
 				tlen += 1
 				lexEatChar( )
+				havedigits = TRUE
 			wend
 		end if
 
@@ -645,6 +668,7 @@ private function hReadNonDecNumber _
 			select case c
 			case CHAR_0 to CHAR_7
 				lexEatChar( )
+				havedigits = TRUE
 
 				if( skipchar = FALSE ) then
 					*pnum = c
@@ -716,13 +740,14 @@ private function hReadNonDecNumber _
 		tlen += 2
 		lexEatChar( )
 
-		'' skip trailing zeroes if not inside a comment or parsing an $include
+		'' skip leading zeroes if not inside a comment or parsing an $include
 		if( (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) = 0 ) then
 			while( lexCurrentChar( ) = CHAR_0 )
 				*pnum = CHAR_0
 				pnum += 1
 				tlen += 1
 				lexEatChar( )
+				havedigits = TRUE
 			wend
 		end if
 
@@ -731,6 +756,8 @@ private function hReadNonDecNumber _
 			select case c
 			case CHAR_0, CHAR_1
 				lexEatChar( )
+				havedigits = TRUE
+
 				if( skipchar = FALSE ) then
 					*pnum = c
 					pnum += 1
@@ -771,7 +798,22 @@ private function hReadNonDecNumber _
 		exit function
 	end select
 
+	
+	'' lgt havedigits
+	''  0     FALSE    no numbers, show a warning and recover
+	''  0     TRUE     all leading zeroes, truncate to single zero
+	''  >0    FALSE    not possible - do nothing here
+	''  >0    TRUE     normal number - do nothing here
+
+	'' no number or only leading zeros?
 	if( lgt = 0 ) then
+		'' no digits at all? show a warning
+		if( havedigits = FALSE ) then
+			if( (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) = 0 ) then
+				errReportWarn( FB_WARNINGMSG_EXPECTEDDIGIT )
+			end if
+		end if
+		'' truncate or recover with a single 0
 		*pnum = CHAR_0
 		pnum += 1
 		tlen += 1
@@ -1102,7 +1144,8 @@ private sub hReadNumber( byref t as FBTOKEN, byval flags as LEXCHECK )
 
 	'' hex, oct, bin
 	case CHAR_AMP
-		lexEatChar( )
+		'' let hReadNonDecNumber call lexEatChar( ) just in case the
+		'' literal number starts with &[0..7]
 		t.len = 0
 		value = hReadNonDecNumber( pnum, t.len, t.dtype, flags )
 
@@ -1744,7 +1787,7 @@ re_read:
 	'' '&'?
 	case CHAR_AMP
 		select case lexGetLookAheadChar( )
-		case CHAR_HUPP, CHAR_HLOW, CHAR_OUPP, CHAR_OLOW, CHAR_BUPP, CHAR_BLOW
+		case CHAR_HUPP, CHAR_HLOW, CHAR_OUPP, CHAR_OLOW, CHAR_BUPP, CHAR_BLOW, CHAR_0 to CHAR_7
 			hReadNumber( *t, flags )
 		case else
 			t->class = FB_TKCLASS_OPERATOR

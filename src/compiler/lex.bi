@@ -8,7 +8,8 @@ enum LEXCHECK
 
 	LEXCHECK_EVERYTHING     = &h0000
 
-	'' ? write this comment
+	'' don't check for line continuation characters, OR
+	'' don't show warnings if a warning was already given
 	LEXCHECK_NOLINECONT     = &h0001
 
 	'' don't replace define/macro text

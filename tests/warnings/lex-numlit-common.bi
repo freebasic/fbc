@@ -179,3 +179,19 @@ checkHex( # )
 #print typeof( 0.1234567 )
 #print typeof( 0.12345678 )
 #print typeof( 0.123456789 )
+
+#print
+#print "--------------------------------------------------------------------------------"
+#print "missing non decimal digits"
+#print "expect 3 warnings"
+const c02 = &b
+const c08 = &o
+const c16 = &h
+#print "expect 0 warnings"
+#define d02 &b
+#define d08 &o
+#define d16 &h
+#print "expect 3 warnings"
+const cd02 = &b
+const cd08 = &o
+const cd16 = &h

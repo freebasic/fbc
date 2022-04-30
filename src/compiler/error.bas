@@ -89,7 +89,8 @@ declare function hMakeParamDesc _
 		( /'FB_WARNINGMSG_SUFFIXIGNORED             '/ 1, @"Suffix ignored" ), _
 		( /'FB_WARNINGMSG_FORENDTOOBIG              '/ 1, @"FOR counter variable is unable to exceed limit value" ), _
 		( /'FB_WARNINGMSG_CMDLINEIGNORED            '/ 0, @"#cmdline ignored" ), _
-		( /'FB_WARNINGMSG_RESERVEDGLOBALSYMBOL      '/ 1, @"Use of reserved global or backend symbol" ) _
+		( /'FB_WARNINGMSG_RESERVEDGLOBALSYMBOL      '/ 1, @"Use of reserved global or backend symbol" ), _
+		( /'FB_WARNINGMSG_EXPECTEDDIGIT             '/ 1, @"Expected digit" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as const zstring ptr => _

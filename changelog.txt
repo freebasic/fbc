@@ -12,6 +12,7 @@ Version 1.10.0
 - sf.net #953: fbc: improve compile time error messages for INPUT [#] statements
 - sf.net #953: fbc: improve compile time error messages for LINE INPUT [#] statements giving better positional information
 - sf.net #826: fbc: booleans are ranked against integer types to determine closest match in type resolution
+- sf.net #455: fbc: Allow &nnn... octal literals in source (like VALINT and friends)
 
 [added]
 - gas64: '.cif_sections' and '.cif_' directives for stack unwinding (adeyblue)
@@ -37,6 +38,7 @@ Version 1.10.0
 - sf.net #916: fbc: Error on LINE INPUT [#1] if either missing or irrelevant max length argument
 - sf.net #892: fbc: Bug when default calling via a pointer to a 'Sub' defined with the only 'Any Ptr' optional parameter
 - fbc: parser skips extra token on error recovery for #if/#ifndef/defined() statements
+- sf.net #455: fbc: Number lexing allows much bad input - a show a warning message "Expected digit" where '&o', '&h', '&b' has no digits following
 
 
 Version 1.09.0
