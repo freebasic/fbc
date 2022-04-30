@@ -1,3 +1,7 @@
+April 30, 2022
+- allow force query for CSRFToken
+- set-up libCurl to keep POST on redirects
+
 October 10, 2021
 - Add recognition for {{fbdoc item="ver"}} for "Version" section
 - Change index loading in CWikiConUrl.LoadIndex() to use PageIndex/rawlist and avoid having to process html tags

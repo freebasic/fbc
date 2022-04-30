@@ -39,8 +39,8 @@ namespace fb.fbdoc
 		as zstring ptr		pagename
 		as integer			pageid
 		as string csrftoken
-		declare function queryCsrfToken( ) as string
-		declare function queryCsrfTokenIfNeeded( ) as boolean
+		declare function queryCsrfTokenString( ) as string
+		declare function queryCsrfToken( byval force as boolean = TRUE ) as boolean
 		declare sub maybeAddCsrfTokenToForm( byval form as CHttpForm ptr )
 	end type
 
@@ -114,7 +114,7 @@ namespace fb.fbdoc
 		return token
 	end function
 
-	function CWikiConUrlCtx.queryCsrfToken( ) as string
+	function CWikiConUrlCtx.queryCsrfTokenString( ) as string
 		dim stream as CHttpStream = CHttpStream( http )
 		if( stream.Receive( build_url( @this, wakka_loginpage ), TRUE, ca_file ) = FALSE ) then
 			return ""
@@ -122,9 +122,9 @@ namespace fb.fbdoc
 		return extractCsrfToken( stream.Read() )
 	end function
 
-	function CWikiConUrlCtx.queryCsrfTokenIfNeeded( ) as boolean
-		if( len( csrftoken ) = 0 ) then
-			csrftoken = queryCsrfToken( )
+	function CWikiConUrlCtx.queryCsrfToken( byval force as boolean = TRUE ) as boolean
+		if( (len( csrftoken ) = 0) orelse (force = TRUE) ) then
+			csrftoken = queryCsrfTokenString( )
 			if( len( csrftoken ) = 0 ) then
 				return FALSE
 			end if
@@ -211,7 +211,7 @@ namespace fb.fbdoc
 			return FALSE
 		end if
 
-		if( ctx->queryCsrfTokenIfNeeded( ) = FALSE ) then
+		if( ctx->queryCsrfToken( ) = FALSE ) then
 			return FALSE
 		end if
 
@@ -623,6 +623,10 @@ namespace fb.fbdoc
 			return FALSE
 		end if
 
+		if( ctx->queryCsrfToken( ) = FALSE ) then
+			return FALSE
+		end if
+
 		if( ctx->pageid <= 0 ) then
 			return FALSE
 		end if
@@ -672,6 +676,10 @@ namespace fb.fbdoc
 		) as boolean
 
 		if( ctx = NULL ) then
+			return FALSE
+		end if
+
+		if( ctx->queryCsrfToken( ) = FALSE ) then
 			return FALSE
 		end if
 
