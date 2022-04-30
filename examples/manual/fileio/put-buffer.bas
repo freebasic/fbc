@@ -7,7 +7,9 @@
 '' --------
 
 Dim As Byte Ptr lpBuffer
-Dim As Integer hFile, Counter, Size
+Dim As Long hFile
+Dim As Integer Counter
+Dim As UInteger Size
 
 Size = 256
 

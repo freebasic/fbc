@@ -7,7 +7,7 @@
 '' --------
 
 ' Create variables for the file number, and the number to put
-Dim As Integer f
+Dim As Long f
 Dim As Long value
 
 ' Find the first free file number

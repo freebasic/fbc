@@ -12,7 +12,7 @@
 SetEnviron("fbgfx=GDI")
 
   '' Desktop width/height
-Dim As Integer ScrW, ScrH, BPP
+Dim As Long ScrW, ScrH, BPP
 ScreenInfo ScrW, ScrH, BPP
 
   '' Create a screen at the half width/height of your monitor.

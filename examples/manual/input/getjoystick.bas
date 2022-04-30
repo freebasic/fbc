@@ -11,7 +11,7 @@ Screen 12
 Dim x As Single
 Dim y As Single
 Dim buttons As Integer
-Dim result As Integer
+Dim result As Long
 Dim a As Integer
 
 Const JoystickID = 0

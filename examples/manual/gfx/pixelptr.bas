@@ -10,9 +10,9 @@
 '' returns null on error or x,y out of bounds
 Function pixelptr(ByVal img As Any Ptr, ByVal x As Integer, ByVal y As Integer) As Any Ptr
 
-	Dim As Integer w, h, bypp, pitch
+	Dim As Long w, h, bypp, pitch
 	Dim As Any Ptr pixdata
-	Dim As Integer success
+	Dim As Long success
 	
 	success = (ImageInfo(img, w, h, bypp, pitch, pixdata) = 0)
 	

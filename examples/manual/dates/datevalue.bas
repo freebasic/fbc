@@ -8,7 +8,7 @@
 
 #include "vbcompat.bi"
 
-Dim As Integer v1, v2
+Dim As Long v1, v2
 Dim As String  s1, s2
 
 Print "Enter first date: ";

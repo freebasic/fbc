@@ -39,7 +39,7 @@ End Scope
 
 ''
 Scope
-  Dim s As String, n As Integer
+  Dim s As String, n As LongInt
 
   '' open the same file for binary and read all the bytes
   Open f For Binary As #1

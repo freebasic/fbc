@@ -6,7 +6,7 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgFre
 '' --------
 
-Dim mem As Integer = Fre
+Dim mem As UInteger = Fre
 
 Print "Free memory:"
 Print

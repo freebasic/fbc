@@ -14,7 +14,7 @@ ScreenRes 320, 200, 4
 Color 7, 1
 Print "A"
 
-Dim As UInteger char, col, fg, bg
+Dim As ULong char, col, fg, bg
 
 '' get the ASCII value of the character we've just printed
 char = Screen(1, 1, 0)

@@ -20,7 +20,7 @@ Error 100
 End
 
 ErrorHandler:
-  Dim num As Integer = Err
+  Dim num As Long = Err
   Print "Error "; num; " on line "; Erl
   Resume Next
 

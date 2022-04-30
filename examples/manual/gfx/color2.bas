@@ -11,7 +11,7 @@
 #include "fbgfx.bi"
 
 '' screencontrol expects integer/uinteger
-Dim As UInteger fgcolor, bkcolor
+Dim As Long fgcolor, bkcolor
 
 ScreenRes 500, 500, 32
 Width 500\8, 500\16

@@ -6,7 +6,7 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPos
 '' --------
 
-Dim As Integer p
+Dim As Long p
 
 '' print starting column position
 p = Pos()

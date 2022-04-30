@@ -10,8 +10,8 @@
 ScreenRes 320, 200, 8
 
 ' Draw color bands in a diagonal pattern over the whole screen
-For y As Integer = 0 To 200-1
-	For x As Integer = 0 To 320-1
+For y As Long = 0 To 200-1
+	For x As Long = 0 To 320-1
 		PSet (x,y),(x + y) And 255
 	Next x
 Next y

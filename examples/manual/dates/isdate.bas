@@ -8,7 +8,7 @@
 
 #include "vbcompat.bi"
 
-Dim s As String, d As Integer
+Dim s As String, d As Long
 
 Do
   Print

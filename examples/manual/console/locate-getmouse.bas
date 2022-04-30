@@ -7,7 +7,7 @@
 '' --------
 
 '' Text cursor + mouse tracking
-Dim As Integer x = 0, y = 0, dx, dy
+Dim As Long x = 0, y = 0, dx, dy
 
 Cls
 Locate , , 1

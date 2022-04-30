@@ -7,7 +7,7 @@
 '' --------
 
 Const SCREEN_WIDTH = 640, SCREEN_HEIGHT = 480
-Dim As Integer w, h, bypp, pitch
+Dim As Long w, h, bypp, pitch
 
 '' Make 8-bit screen.
 ScreenRes SCREEN_WIDTH, SCREEN_HEIGHT, 8

@@ -6,7 +6,7 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgSeekreturn
 '' --------
 
-Dim f As Integer, position As Integer
+Dim f As Long, position As LongInt
 
 f = FreeFile
 Open "file.ext" For Binary As #f

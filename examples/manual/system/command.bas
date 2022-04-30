@@ -8,7 +8,7 @@
 
 Print "program launched via: " & Command(0)
 
-Dim As Integer i = 1
+Dim As Long i = 1
 Do
 	Dim As String arg = Command(i)
 	If Len(arg) = 0 Then

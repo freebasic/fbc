@@ -8,14 +8,14 @@
 
 'Example 2: type-union-type structure
 Type mouse
-	As Integer res
-	As Integer x, y, wheel, clip
+	As Long res
+	As Long x, y, wheel, clip
 	Union
-		buttons As Integer
+		buttons As Long
 		Type
-			Left:1 As Integer
-			Right:1 As Integer
-			middle:1 As Integer
+			Left:1 As Long
+			Right:1 As Long
+			middle:1 As Long
 		End Type
 	End Union
 End Type

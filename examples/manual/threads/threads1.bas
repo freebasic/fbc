@@ -16,7 +16,7 @@ Const MAX_THREADS = 10
 Dim Shared As Any Ptr ttylock
 
 '' Teletype unfurls some text across the screen at a given location
-Sub teletype( ByRef text As String, ByVal x As Integer, ByVal y As Integer )
+Sub teletype( ByRef text As String, ByVal x As Long, ByVal y As Long )
 	''
 	'' This MutexLock makes simultaneously running threads wait for each
 	'' other, so only one at a time can continue and print output.

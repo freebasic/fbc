@@ -9,7 +9,7 @@
 'A Windows based example but the same idea applies to Linux
 Const exename = "NoSuchProgram.exe"
 Const cmdline = "arg1 arg2 arg3"
-Dim result As Integer
+Dim result As Long
 result = Exec( exename, cmdline )
 If result = -1 Then
 	Print "Error running "; exename

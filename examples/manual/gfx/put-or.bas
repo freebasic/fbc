@@ -10,7 +10,7 @@
 ScreenRes 320, 200, 16
 
 ''create 3 sprites containing red, green and blue circles
-Const As Integer r = 32
+Const As Long r = 32
 Dim As Any Ptr cr, cg, cb
 cr = ImageCreate(r * 2 + 1, r * 2 + 1, RGBA(0, 0, 0, 0))
 cg = ImageCreate(r * 2 + 1, r * 2 + 1, RGBA(0, 0, 0, 0))

@@ -11,7 +11,7 @@
 Using FB
 #endif
 
-Const As Integer w = 64, h = 64
+Const As Long w = 64, h = 64
 Dim As IMAGE Ptr img8, img32
 Dim As Integer x, y
 

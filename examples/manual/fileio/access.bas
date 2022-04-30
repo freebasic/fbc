@@ -6,7 +6,7 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgAccess
 '' --------
 
-Dim As Integer o
+Dim As Long o
 
   '' get an open file number.
   o = FreeFile

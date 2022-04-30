@@ -7,7 +7,7 @@
 '' --------
 
 Const SCREEN_WIDTH = 256, SCREEN_HEIGHT = 256
-Dim As Integer w, h, bypp, pitch
+Dim As Long w, h, bypp, pitch
 
 '' Make 32-bit screen.
 ScreenRes SCREEN_WIDTH, SCREEN_HEIGHT, 32

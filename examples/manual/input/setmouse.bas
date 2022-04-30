@@ -6,7 +6,7 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgSetmouse
 '' --------
 
-Dim As Integer x, y, buttons
+Dim As Long x, y, buttons
 
 ' create a screen 640*480
 ScreenRes 640, 480

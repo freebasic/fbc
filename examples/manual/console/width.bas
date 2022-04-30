@@ -10,7 +10,8 @@
 Const W = 320, H = 200
 ScreenRes W, H
 
-Dim As Integer twid, tw, th
+Dim As Long twid
+Dim As UInteger tw, th
 
 '' Fetch and print current text width/height:
 twid = Width()

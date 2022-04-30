@@ -9,7 +9,7 @@
 Dim char As WString * 2
 
 Dim filename As String, enc As String
-Dim f As Integer
+Dim f As Long
 
 Line Input "Please enter a file name: ", filename
 Line Input "Please enter an encoding type (optional): ", enc

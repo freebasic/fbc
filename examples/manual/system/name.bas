@@ -8,7 +8,7 @@
 
 Dim OldName As String
 Dim NewName As String
-Dim result As Integer 
+Dim result As Long 
 
 OldName = "dsc001.jpg"
 NewName = "landscape.jpg"

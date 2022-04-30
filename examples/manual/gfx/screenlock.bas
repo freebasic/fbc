@@ -7,7 +7,7 @@
 '' --------
 
 '' Draws a circle on-screen at the mouse cursor
-Dim As Integer mx, my
+Dim As Long mx, my
 Dim As String key
 
 ScreenRes 640, 480, 32

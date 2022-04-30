@@ -13,7 +13,7 @@ For i As Integer = 1 To 10
 Next
 
 ' Find the first free file file number
-Dim f As Integer
+Dim f As Long
 f = FreeFile()
 
 ' Open the file "file.ext" for binary usage, using the file number "f"

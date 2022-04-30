@@ -8,7 +8,7 @@
 
 ' Sends contents of text file test.txt to Windows printer named "ReceiptPrinter"
 Dim RptInput As String
-Dim PrintFileNum As Integer, RptFileFileNum As Integer
+Dim PrintFileNum As Long, RptFileFileNum As Long
 
 RptFileFileNum = FreeFile
 Open "test.txt" For Input As #RptFileFileNum

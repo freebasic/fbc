@@ -62,7 +62,7 @@ handle = ThreadCreate(@ProcedureThread, 0)  '' launch thread
 Dim As String s
 Do
 	MutexLock(sync)                     '' Mutex for exclusion of displaying
-		Dim As Integer x, y, b
+		Dim As Long x, y, b
 		GetMouse x, y , , b             '' keyword outside [Screenlock...Screenunlock] and protected by Mutex
 		ScreenLock                      '' keyword after Mutexlock
 			Locate 15, 37               '' re-initialize cursor position

@@ -6,7 +6,7 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgLof
 '' --------
 
-Dim f As Integer
+Dim f As Long
 f = FreeFile
 Open "file.ext" For Binary As #f
 Print LOF(f)

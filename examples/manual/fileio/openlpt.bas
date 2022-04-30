@@ -7,7 +7,7 @@
 '' --------
 
 'This simple program will print a PostScript file to a PostScript compatible printer.
-Dim As UByte FFI, PPO
+Dim As Long FFI, PPO
 Dim As String temp
 
 FFI = FreeFile()

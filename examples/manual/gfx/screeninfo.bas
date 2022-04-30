@@ -6,8 +6,8 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgScreeninfo
 '' --------
 
-Dim w As Integer, h As Integer
-Dim depth As Integer
+Dim w As Long, h As Long
+Dim depth As Long
 Dim driver_name As String
 
 Screen 15, 32 
@@ -20,4 +20,3 @@ Sleep
 Screen 0 
 ScreenInfo w, h, depth 
 Print "Desktop running at " + Str(w) + "x" + Str(h) + "x" + Str(depth); 
-	

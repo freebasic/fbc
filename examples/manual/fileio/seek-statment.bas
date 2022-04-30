@@ -8,7 +8,7 @@
 
 ' e.g. if you want to skip to the 100th byte in the file for reading/writing:
 
-Dim f As Integer
+Dim f As Long
 
 f = FreeFile
 Open "file.ext" For Binary As #f

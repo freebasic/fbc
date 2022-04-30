@@ -7,5 +7,5 @@
 '' --------
 
 #include "file.bi"
-Dim length As Integer
+Dim length As LongInt
 length = FileLen("file.txt")

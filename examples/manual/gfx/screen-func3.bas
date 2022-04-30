@@ -13,7 +13,7 @@ ScreenRes 320, 200, 32
 Color RGB(255, 255, 0), RGB(0, 0, 255) 'yellow on blue
 Print "M"
 
-Dim As Integer char, fg, bg
+Dim As ULong char, fg, bg
 
 '' get the ASCII value of the character we've just printed
 char = Screen(1, 1, 0)
