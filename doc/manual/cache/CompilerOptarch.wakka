@@ -10,9 +10,9 @@ Set target architecture for improved/restricted code generation or cross-compili
 		
 			- Related to 32bit x86:
 				- ##386##
-				- ##486## (default for x86)
+				- ##486##
 				- ##586##
-				- ##686##
+				- ##686## (default for x86)
 				- ##athlon##
 				- ##athlon-xp##
 				- ##athlon-fx##
@@ -40,7 +40,7 @@ Set target architecture for improved/restricted code generation or cross-compili
 
 {{fbdoc item="desc"}}
 	The ##-arch## compiler option sets the target CPU architecture. This can be used for multiple purposes:
-		- Improving code generation; for example: You can use ##-arch 686## to override the default ##-arch 486##, and the compiler will generate faster code in some cases, by using certain instructions which were not available on i486 (or other CPUs older than i686).
+		- Improving code generation; for example: You can use ##-arch pentium4-sse3## to override the default ##-arch 686##, and the compiler will generate faster code in some cases, by using certain instructions which were not available on i686.
 		- Restricting code generation; for example: You can use ##-arch 386## to limit the compiler to using only i386-compatible instructions.
 		- Cross-compiling; for example: You can use ##-arch x86_64## on 32bit x86 systems to cross-compile to 64bit x86_64.
 		
@@ -54,6 +54,9 @@ Set target architecture for improved/restricted code generation or cross-compili
 	The ##-arch native## shortcut is similar to gcc's ##-march=native## option. On x86, it causes fbc to try and detect the host CPU automatically based on the ##cpuid## instruction and its availability or results. On other architectures, this will currently simply use the architecture which the compiler itself was built for. Under -gen gcc this will use ##gcc -march=native##.
 	
 	Specifying an ##-arch## setting incompatible to the native architecture will trigger [[DevCrossCompiling|cross-compilation]], just like the ##[[CompilerOpttarget|-target]]## option, except that only the target architecture, but not the target operating system, is changed.
+
+{{fbdoc item="ver"}}
+	- Before fbc 1.10.0, default was 486 for 32bit x86.
 
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]

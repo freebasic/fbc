@@ -5,11 +5,12 @@ A header file is a special kind of source file that typically only contains prep
 
 {{fbdoc item="section" value="FreeBASIC Header Files"}}
 	Some of the keywords, constants, and procedures documented in this manual are not normally available when compiling a source code unless a specific header file is included in the source first.
+	- ##array.bi##
 	- ##datetime.bi##
 	- ##dir.bi##
 	- ##fbgfx.bi##
 	- ##fbio.bi##
-	- ##fbmath.bi##
+	- ##fbprng.bi##
 	- ##fbthread.bi##
 	- ##file.bi##
 	- ##string.bi##
@@ -60,6 +61,9 @@ A header file is a special kind of source file that typically only contains prep
 #pragma once
 #print this header will only ever be included once per module
 %%
+{{fbdoc item="ver"}}
+	- Before fbc 1.10.0 (for fbc 1.08.0 and fbc 1.09.0), ##fbprng.bi## was named ##fbmath.bi##.
+	- Before fbc 1.08.0, the standard ##fbmath.bi## header did not exist.
 
 {{fbdoc item="see"}}
 	- [[ProPgSourceFiles|Source Files (.bas)]]

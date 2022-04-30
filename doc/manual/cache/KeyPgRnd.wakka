@@ -23,7 +23,7 @@ Returns a random [[KeyPgDouble|double]] precision number in the range ##[0, 1)##
 	
 	**Note:**
 		##**Rnd**## is thread-safe (by using an internal mutex), but not thread specific. Used in the context of a multi-threaded program, only the execution speed is significantly slowed down compared to a single thread call context.
-		Structures for other random number generators are also available in the standard header "fbmath.bi".
+		Unfinished structures for other random number generators are also available in the standard header "fbprng.bi".
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/math/rnd.bas"}}%%(freebasic)
@@ -50,6 +50,7 @@ print int(rnd * 10) + 1
 print int(rnd_range(69, 421))
 	%%
 {{fbdoc item="ver"}}
+	- Before fbc 1.10.0 (for fbc 1.08.0 and fbc 1.09.0), "fbprng.bi" was named "fbmath.bi".
 	- Before fbc 1.08.0:
 			##**Rnd**## was not thread-safe (many values temporarily returned in duplicate for a same thread).
 			The standard "fbmath.bi" header for available algorithms did not exist.

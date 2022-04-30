@@ -44,7 +44,7 @@ Retrieves the status of the mouse pointing device
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/input/getmouse.bas"}}%%(freebasic)
 
-DIM AS INTEGER x, y, buttons, res 
+DIM AS LONG x, y, buttons, res 
 ' Set video mode and enter loop
 SCREENRES 640, 480, 8
 DO
@@ -72,14 +72,14 @@ END
 	{{fbdoc item="filename" value="examples/manual/input/getmouse2.bas"}}%%(freebasic)
 'Example 2: type-union-type structure
 type mouse
-	as integer res
-	as integer x, y, wheel, clip
+	as long res
+	as long x, y, wheel, clip
 	union
-		buttons as integer
+		buttons as long
 		type
-			left:1 as integer
-			right:1 as integer
-			middle:1 as integer
+			left:1 as long
+			right:1 as long
+			middle:1 as long
 		end type
 	end union
 end type

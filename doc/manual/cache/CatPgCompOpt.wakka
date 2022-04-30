@@ -5,7 +5,7 @@ Command line compiler options for the fbc compiler:
 	{{fbdoc item="keyword" value="CompilerOpta|-a < name >"}}
 		- Add an object file to linker's list
 	{{fbdoc item="keyword" value="CompilerOptarch|-arch < type >"}}
-		- Set target architecture (default: 486)
+		- Set target architecture
 	{{fbdoc item="keyword" value="CompilerOptasm|-asm < format >"}}
 		- Sets the assembler format for Asm block
 	{{fbdoc item="keyword" value="CompilerOptb|-b < name >"}}
@@ -36,6 +36,8 @@ Command line compiler options for the fbc compiler:
 		- Override public exported name of implicit user main function
 	{{fbdoc item="keyword" value="CompilerOptenullptr|-enullptr"}}
 		- Enable null-pointer checking
+	{{fbdoc item="keyword" value="CompilerOpteunwind|-eunwind"}}
+		- Enable stack unwind information
 	{{fbdoc item="keyword" value="CompilerOptex|-ex"}}
 		- Add error checking with RESUME support
 	{{fbdoc item="keyword" value="CompilerOptexx|-exx"}}

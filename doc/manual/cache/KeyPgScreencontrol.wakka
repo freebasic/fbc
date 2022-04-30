@@ -146,7 +146,7 @@ Sets or gets internal graphics library settings
 using FB
 
 dim e as EVENT
-dim as integer x0, y0, x, y
+dim as long x0, y0, x, y
 dim as integer shakes = 0
 dim as any ptr img
 

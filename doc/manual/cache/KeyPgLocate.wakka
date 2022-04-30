@@ -42,7 +42,7 @@ print "Current line:"; CSRLIN
 	
 	{{fbdoc item="filename" value="examples/manual/console/locate-getmouse.bas"}}%%(freebasic)
 '' Text cursor + mouse tracking
-dim as integer x = 0, y = 0, dx, dy
+dim as long x = 0, y = 0, dx, dy
 
 cls
 locate , , 1
@@ -58,7 +58,6 @@ while inkey <> chr(27)
 	end if
 wend
 %%
-
 {{fbdoc item="diff"}}
 	- The ##//start//## and ##//stop//## arguments have no effect in ""FreeBASIC"".
 	- QB will raise an error if ##//row//## or ##//column//## are beyond the screen extents.

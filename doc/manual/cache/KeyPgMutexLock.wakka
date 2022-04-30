@@ -20,7 +20,7 @@ Acquires a mutex
 {{fbdoc item="ex"}}
 	See also the examples in ##[[KeyPgMutexCreate|Mutexcreate]]## and also ##[[KeyPgThreadCreate|Threadcreate]]##.
 
-{{fbdoc item="filename" value="examples/manual/threads/mutexlock.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/threads/mutexlock.bas"}}%%(freebasic)
 'Example of mutual exclusion for synchronization between 2 threads
 'by using 2 Mutexes only (by self lock and mutual unlock):
 'The Producer works one time, then the Consumer works one time.
@@ -89,7 +89,7 @@ MutexDestroy produced
 Sleep
 %%
 
-{{fbdoc item="filename" value="examples/manual/threads/mutexlock2.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/threads/mutexlock2.bas"}}%%(freebasic)
 ' 'Threadcreate' launches one time the user-defined Sub in a separate execution thread
 '    (which runs simultaneously with the rest of the main code).
 ' If you want obtain a periodically display from the thread,
@@ -146,7 +146,7 @@ handle = Threadcreate(@ProcedureThread, 0)  '' launch thread
 Dim As String s
 Do
 	Mutexlock(sync)                     '' Mutex for exclusion of displaying
-		Dim As Integer x, y, b
+		Dim As Long x, y, b
 		GetMouse x, y , , b             '' keyword outside [Screenlock...Screenunlock] and protected by Mutex
 		Screenlock                      '' keyword after Mutexlock
 			Locate 15, 37               '' re-initialize cursor position
@@ -163,7 +163,6 @@ quit = Not quit     '' order thread end
 Threadwait(handle)  '' wait for thread end
 Mutexdestroy(sync)  '' free Mutex
 %%
-
 {{fbdoc item="lang"}}
 	- Threading is not allowed in the //[[CompilerOptlang|-lang qb]]// dialect.
 

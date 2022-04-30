@@ -23,8 +23,8 @@ Clause of the ##[[KeyPgOpen|Open]]## statement to specify requested privileges
 {{fbdoc item="ex"}}
 
 This example shows how to open the file "data.raw" with ##[[KeyPgReadFile|read]]## and then "data.out" with ##[[KeyPgWriteFile|write]]## access, in ##[[KeyPgBinary|Binary]]## mode, in an open file number returned by ##[[KeyPgFreefile|FreeFile]]##.
-{{fbdoc item="filename" value="examples/manual/fileio/access.bas"}}%%(freebasic)
-Dim As Integer o
+	{{fbdoc item="filename" value="examples/manual/fileio/access.bas"}}%%(freebasic)
+Dim As Long o
 
   '' get an open file number.
   o = FreeFile
@@ -55,7 +55,6 @@ Dim As Integer o
 
   Sleep
 %%
-
 {{fbdoc item="diff"}}
 	- None known.
 

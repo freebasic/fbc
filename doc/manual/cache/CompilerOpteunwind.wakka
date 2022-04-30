@@ -1,0 +1,17 @@
+{{fbdoc item="title" value="Compiler Option: -eunwind"}}----
+Enable stack unwind information.
+
+{{fbdoc item="syntax"}}##
+	**-eunwind**
+##
+{{fbdoc item="desc"}}
+	The ##**-eunwind**## compiler option turns on the code generation and link options to enable stack unwind information.
+
+{{fbdoc item="ver"}}
+	- Since fbc 1.10.0
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfberr|__FB_ERR__]]##
+	- [[CompilerCmdLine|Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

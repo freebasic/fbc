@@ -5,6 +5,8 @@
 ... refers to the ability of a ##[[KeyPgFunction|Function]]## procedure to have a value when the function finishes such that the value can be used in an expression or assigned to a variable.
 
 The value of a function can be returned in three ways:
+	**""-""** ##Return## keyword followed by a value exits the function immediately, and returns that value to the caller.
+	**""-""** Functions can also return values by assigning the ##Function## keyword or the ##function_identifier## to the desired return value (but ##Function## keyword or ##function_identifier## does not allow to evaluate the current assigned value). The latter two methods do not cause the function to exit, however.
 
 {{fbdoc item="filename" value="examples/manual/proguide/procs/return-methods.bas"}}%%(freebasic)
 '' Using the name of the function to set the return value and continue executing the function:
@@ -22,7 +24,6 @@ Function myfunc3() As Integer
    Return 3
 End Function
 %%
-
 {{fbdoc item="filename" value="examples/manual/proguide/procs/returnval.bas"}}%%(freebasic)
 '' This program demonstrates a function returning a value.
 
@@ -41,6 +42,8 @@ Function myFunction () As Integer
   function = 10 
 End Function
 %%
+
+##Return## keyword mixed with ##Function=## keyword or ##function_identifier=## or ##Exit Function## keyword in a same function is unsupported when returning objects with constructors.
 
 {{fbdoc item="section" value="Returning References"}}
 	Function results can also be returned by reference, rather than by value. The semantics are quite different.

@@ -11,11 +11,11 @@ Seeds the random number generator
 	##//seed//##
 		A ##[[KeyPgDouble|double]]## seed value for the random number generator, but the fractional part is clipped for all algorithms except algorithm #4 (see below). If omitted, a value based on ##[[KeyPgTimer|Timer]]## will be used instead.
 	##//algorithm//##
-		An integer value to select the algorithm (see the standard header "fbmath.bi" for available algorithms). If omitted, the default algorithm for the current [[CompilerDialects|language dialect]] is used.
+		An integer value to select the algorithm (see the standard header "fbprng.bi" for available algorithms). If omitted, the default algorithm for the current [[CompilerDialects|language dialect]] is used.
 
 {{fbdoc item="desc"}}
 	Sets the random seed that helps ##[[KeyPgRnd|Rnd]]## generate random numbers, and selects the algorithm to use.
-	The constants for ##//algorithm//## are defined in ##fbmath.bi##. In the //[[CompilerOptlang|-lang fb]]// dialect, these constants are part of the ##FB## ##[[KeyPgNamespace|Namespace]]##.
+	The constants for ##//algorithm//## are defined in ##fbprng.bi##. In the //[[CompilerOptlang|-lang fb]]// dialect, these constants are part of the ##FB## ##[[KeyPgNamespace|Namespace]]##.
 	Valid values for ##//algorithm//## are:
 		##FB_RND_AUTO (0)## - Default for current [[CompilerDialects|language dialect]]. This is algorithm ##FB_RND_MTWIST (3)## in the //[[CompilerOptlang|-lang fb]]// dialect, ##FB_RND_QB (4)## in the //[[CompilerOptlang|-lang qb]]// dialect and ##FB_RND_CRT (1)## in the //[[CompilerOptlang|-lang fblite]]// dialect.
 		##FB_RND_CRT (1)## - Uses the C runtime library's ##rand()## function. This will give different results depending on the platform.
@@ -32,7 +32,7 @@ Seeds the random number generator
 		
 		**Note:**
 				##**Randomize**## is thread-safe (by using an internal mutex), but not thread specific.
-				Structures for other random number generators are also available in the standard header "fbmath.bi".
+				Unfinished structures for other random number generators are also available in the standard header "fbprng.bi".
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/math/randomize.bas"}}%%(freebasic)
@@ -45,6 +45,7 @@ for i as integer = 1 to 10
 next
 	%%
 {{fbdoc item="ver"}}
+	- Before fbc 1.10.0 (for fbc 1.08.0 and fbc 1.09.0), "fbprng.bi" was named "fbmath.bi".
 	- Before fbc 1.08.0:
 		The standard "fbmath.bi" header for available algorithms did not exist.
 		##**Randomize**## was not thread-safe.

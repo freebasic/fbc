@@ -29,7 +29,7 @@ Sets the display foreground / background color that is used with console output 
 	A ##[[GfxDefPalettes|Default Palette]]## is automatically set when entering a ##[[KeyPgScreengraphics|Screen]]## mode. 
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/gfx/color.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/gfx/color.bas"}}%%(freebasic)
 ' Sets 320x240 in 32bpp color depth
 screen 14, 32
 
@@ -46,7 +46,7 @@ print "Hello World!"
 sleep
 %%
 {{image class="center" title="Color example" url="/images/color.png"}}
-{{fbdoc item="filename" value="examples/manual/console/color.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/console/color.bas"}}%%(freebasic)
 Dim c As Ulong
 
 'retrieve current color values
@@ -58,13 +58,13 @@ Print "Foreground: " & LOWORD(c)
 Print "Background: " & HIWORD(c)
 %%
 
-{{fbdoc item="filename" value="examples/manual/gfx/color2.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/gfx/color2.bas"}}%%(freebasic)
 ' In 32-bit color depth, Function Color() returns only the foreground color
 
 #include "fbgfx.bi"
 
 '' screencontrol expects integer/uinteger
-Dim As UInteger fgcolor, bkcolor
+Dim As Long fgcolor, bkcolor
 
 ScreenRes 500, 500, 32
 Width 500\8, 500\16
@@ -82,7 +82,6 @@ Print "  Background Color: "; Hex(bkcolor, 8)
 
 Sleep
 %%
-
 {{fbdoc item="diff"}}
 	- Direct color modes were not supported in QB.
 	- There is no border argument.

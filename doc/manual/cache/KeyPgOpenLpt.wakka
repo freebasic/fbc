@@ -53,16 +53,16 @@ Platform specific notes:
 		The data must be sent in the printer's language (ESC/P, HPGL, ""PostScript"", etc...).  Emulation modes aren't supported yet.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/fileio/openlpt1.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/fileio/openlpt1.bas"}}%%(freebasic)
 ' Send some text to the Windows printer on LPT1:, using driver text imaging.
 Open LPT "LPT1:EMU=TTY" For Output  As #1
 Print #1, "Testing!" 
 Close
 %%
-{{fbdoc item="filename" value="examples/manual/fileio/openlpt2.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/fileio/openlpt2.bas"}}%%(freebasic)
 ' Sends contents of text file test.txt to Windows printer named "ReceiptPrinter"
 Dim RptInput As String
-Dim PrintFileNum as integer, RptFileFileNum as integer
+Dim PrintFileNum as long, RptFileFileNum as long
 
 RptFileFileNum = Freefile
 Open "test.txt" For Input As #RptFileFileNum
@@ -86,9 +86,9 @@ GetKey
 End
 %%
 
-{{fbdoc item="filename" value="examples/manual/fileio/openlpt.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/fileio/openlpt.bas"}}%%(freebasic)
 'This simple program will print a PostScript file to a PostScript compatible printer.
-Dim As UByte FFI, PPO
+Dim As Long FFI, PPO
 Dim As String temp
 
 FFI = FreeFile()
@@ -105,7 +105,6 @@ Close #PPO
 
 Print "Printing Completed!"
 %%
-
 {{fbdoc item="lang"}}
 	- In the //[[CompilerOptlang|-lang qb]]// dialect the old syntax is supported OPEN "LPT:..." . This syntax used in the other dialects will open a regular file.
 

@@ -18,10 +18,10 @@ Sets the position of the next read/write operation on a file
 	The ##[[KeyPgSeekreturn|Seek]]## function is used to get the position of the next read or write operation.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/fileio/seek-statment.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/fileio/seek-statment.bas"}}%%(freebasic)
 ' e.g. if you want to skip to the 100th byte in the file for reading/writing:
 
-dim f as integer
+dim f as long
 
 f = freefile
 open "file.ext" for binary as #f
@@ -30,7 +30,6 @@ seek f, 100
 
 close #f
 %%
-
 {{fbdoc item="diff"}}
 	- None
 

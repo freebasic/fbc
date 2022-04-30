@@ -52,10 +52,10 @@ End Function
 		Filename globbing is handled by the command shell.  Quote the argument containing wildcards or disable filename globbing in the shell prior to executing the command.  For example in bash use 'set -f' to disable wildcard expansion
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/system/command.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/system/command.bas"}}%%(freebasic)
 print "program launched via: " & command(0)
 
-dim as integer i = 1
+dim as long i = 1
 do
 	dim as string arg = command(i)
 	if len(arg) = 0 then
@@ -72,7 +72,6 @@ end if
 
 sleep
 %%
-
 {{fbdoc item="lang"}}
 	- The string type suffix "$" is required in the //[[CompilerOptlang|-lang qb]]// dialect.
 	- The string type suffix "$" is optional in the //[[CompilerOptlang|-lang fblite]]// dialect.

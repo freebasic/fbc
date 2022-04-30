@@ -11,13 +11,15 @@ Intrinsic define (macro value) set by the compiler
 	
 	##""__FB_ERR__""## indicates if //[[CompilerOptedebug|-edebug]]//, //[[CompilerOptedebuginfo|-edebuginfo]]//, or //[[CompilerOpteassert|-eassert]]// was specified on the compiler command line, or implied by use of //[[CompilerOptg|-g]]//, at the time of compilation of a module.
 	
-	Returns bit-wise ##OR## of the following values:
-		{{table columns="2" cellpadding="1" cells="value;description;0;'-e', '-ex', '-exx' and other error options not specified;1;'-e' was specified;3;'-ex' was specified (implies '-e');7;'-exx' was specified (implies '-e, -ex');8;'-earray' was specified (or implied by '-exx');16;'-enullptr' was specified (or implied by '-exx');32;'-eassert' was specified (or implied by '-g');64;'-edebuginfo' was specified (or implied by '-g');128;'-edebug' was specified (or implied by '-g');256;'-elocation' was specified (or implied by '-exx')"}}
+	##""__FB_ERR__""## indicates if //[[CompilerOpteunwind|-eunwind]]// was specified on the compiler command line at the time of compilation of a module.
 	
+	Returns bit-wise ##OR## of the following values:
+		{{table columns="2" cellpadding="1" cells="value;description;0;'-e', '-ex', '-exx' and other error options not specified;1;'-e' was specified;3;'-ex' was specified (implies '-e');7;'-exx' was specified (implies '-e, -ex');8;'-earray' was specified (or implied by '-exx');16;'-enullptr' was specified (or implied by '-exx');32;'-eassert' was specified (or implied by '-g');64;'-edebuginfo' was specified (or implied by '-g');128;'-edebug' was specified (or implied by '-g');256;'-elocation' was specified (or implied by '-exx');512;'-eunwind' was specified"}}
+		
 	##""__FB_ERR__""## is always defined.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/defines/fberr.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/defines/fberr.bas"}}%%(freebasic)
 'Example code to demonstrate a use of __FB_ERR__
 dim err_command_line as ubyte
 err_command_line = __FB_ERR__
@@ -33,8 +35,9 @@ print "Extreme Error Checking enabled on the Command Line!"
 case else
 print "Some Unknown Error level has been set!"
 end select
-
 %%
+{{fbdoc item="ver"}}
+	- Since fbc 1.10.0: //[[CompilerOpteunwind|-eunwind]]// indication.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
@@ -45,6 +48,7 @@ end select
 	- [[CompilerOpte|Compiler Option: -e]]
 	- [[CompilerOptex|Compiler Option: -ex]]
 	- [[CompilerOptexx|Compiler Option: -exx]]
+	- [[CompilerOpteunwind|Compiler Option: -eunwind]]
 	- [[ProPgErrorHandling|Error Handling]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

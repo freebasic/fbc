@@ -13,7 +13,8 @@ Error handling statement to set the current error handler
 	
 	Note: The error checking for built-in statements is only enabled if the program is compiled with one of the //[[CompilerOpte|-e]]//, //[[CompilerOptex|-ex]]// or //[[CompilerOptexx|-exx]]// options. **On Error** remains working with ##[[KeyPgError|Error]]## even when none of these options are used.
 	
-	##[[KeyPgLocal|On Local Error]]## can be used to specify a local error handler inside a procedure. This allows for specialized per-procedure error handling and will override the global error handler, if any. Without ##[[KeyPgLocal|Local]]##, the handler must be in the main part of the module.
+	##[[KeyPgLocal|On Local Error]]## can be used to specify a local error handler inside a procedure. This allows for specialized per-procedure error handling and will override the global error handler, if any.
+	Without ##[[KeyPgLocal|Local]]##, the handler must be in the main part of the module.
 	Remark: Presently, the ##[[KeyPgLocal|Local]]## clause is ignored by the compiler.
 	
 	##**On Error Goto 0**## deactivates the current error handler.

@@ -21,12 +21,11 @@ Finds the length of a file given its filename
 	Returns the size in bytes of the file specified by //filename//.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/system/filelen.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/system/filelen.bas"}}%%(freebasic)
 #include "file.bi"
-dim length as integer
+dim length as longint
 length = FILELEN("file.txt")
 %%
-
 {{fbdoc item="target"}}
 	- Linux requires the //filename// case matches the real name of the file. Windows and DOS are case insensitive. 
 	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 

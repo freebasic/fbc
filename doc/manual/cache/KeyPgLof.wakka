@@ -20,14 +20,13 @@ Returns the length of an open disk file
 	With ##[[KeyPgOpenCom|Open Com]]## it returns the length of the data pending to be read in the receive buffer.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/fileio/lof.bas"}}%%(freebasic)
-dim f as integer
+	{{fbdoc item="filename" value="examples/manual/fileio/lof.bas"}}%%(freebasic)
+dim f as long
 f = freefile
 open "file.ext" for binary as #f
 print lof(f)
 close #f
 %%
-
 {{fbdoc item="diff"}}
 	- None
 

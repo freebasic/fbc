@@ -20,14 +20,14 @@ Checks to see if the end of an open file has been reached
 	For file numbers bound to files opened for ##[[KeyPgOutput|Output]]##, EOF always returns 0.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/fileio/eof.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/fileio/eof.bas"}}%%(freebasic)
 '' This code finds a free file number to use and attempts to open the file
 '' "file.ext" and if successful, binds our file number to the opened file. It
 '' reads the file line by line, outputting it to the screen. We loop until eof()
 '' returns true, in this case we ignore the loop if file is empty.
 
 dim as string file_name
-dim as integer file_num
+dim as long file_num
 
 file_name = "file.ext"
 file_num = freefile( )                 '' retrieve an available file number
@@ -48,7 +48,6 @@ close #file_num                        '' close file via our file number
 
 end 0
 %%
-
 {{fbdoc item="diff"}}
 	- In QB the comm port signaled an EOF when there were no chars waiting to be read.
 	- In QB, for files opened in RANDOM or BINARY mode, EOF returned non-zero only after a read past the end of file has been attempted.  In FreeBASIC, EOF returns true after the last item is read.

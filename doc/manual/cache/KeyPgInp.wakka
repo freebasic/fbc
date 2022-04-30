@@ -2,7 +2,7 @@
 Returns a value at a hardware port.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Inp** ( [[KeyPgByval|byval]] //port// [[KeyPgAs|as]] [[KeyPgUshort|ushort]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Inp** ( [[KeyPgByval|byval]] //port// [[KeyPgAs|as]] [[KeyPgUshort|ushort]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//value// = **Inp**(//port//)
@@ -18,11 +18,10 @@ Returns a value at a hardware port.
 	This function retrieves the value at 'port' and returns immediately.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/hardware/inp.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/hardware/inp.bas"}}%%(freebasic)
 '' Turn off PC speaker
 out &h61,inp(&h61) and &hfc
 %%	
-
 {{fbdoc item="target"}}
 	- In the Windows and Linux versions three port numbers (&H3C7, &H3C8, &H3C9) are hooked by the graphics library when a graphics mode is in use to emulate QB's VGA palette handling. This use is deprecated; use ##[[KeyPgPalette|Palette]]## to retrieve and set palette colors.
 	

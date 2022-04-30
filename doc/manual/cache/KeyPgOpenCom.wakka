@@ -74,7 +74,7 @@ OPEN COM "COM1:115200" as 1
 		COM2 - &h2f8 - IRQ3 
 		COM3 - &h3e8 - IRQ4 
 		COM4 - &h2e8 - IRQ3 
-		An alternate IRQ can be specified using the the ##"IR//n//"## protocol option where ##//n//## is ##3## through ##7##.
+		An alternate IRQ can be specified using the the ##"IR//n//"## protocol option where ##//n//## is ##3## through ##7## (first PIC). **Since fbc 1.10.0**, ##//n//## can also be ##8## through ##15## (second PIC).
 		Currently not supported: IRQ's on the slave PIC, alternate base I/O addresses, Timeouts and most errors as detected in QB, hardware flow control, FIFO's.
 		##"COM:"## maps to ##"COM1:"##
 		baud rate must be between 50 and 115200

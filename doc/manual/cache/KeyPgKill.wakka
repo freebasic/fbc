@@ -20,13 +20,12 @@ Deletes a file from disk / storage media.
 	The error code returned by ##**Kill**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**Kill**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
  
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/system/kill.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/system/kill.bas"}}%%(freebasic)
 Dim filename As String = "file.ext"
-Dim result As Integer = Kill( filename )
+Dim result As Long = Kill( filename )
 
 If result <> 0 Then Print "error trying to kill " ; filename ; " !"
 %%
-
 {{fbdoc item="target"}}
 	On some platforms, ##**Kill**## may be able to remove folders and read-only files.  Whether it succeeds or fails here is not currently defined.  It may be necessary to check the attributes of the file you are deleting, and decide accordingly whether you want to try ##**Kill**##ing it.
 

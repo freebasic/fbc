@@ -45,9 +45,9 @@ Retrieves information about an image
 '' returns null on error or x,y out of bounds
 function pixelptr(byval img as any ptr, byval x as integer, byval y as integer) as any ptr
 
-	dim as integer w, h, bypp, pitch
+	dim as long w, h, bypp, pitch
 	dim as any ptr pixdata
-	dim as integer success
+	dim as long success
 	
 	success = (imageinfo(img, w, h, bypp, pitch, pixdata) = 0)
 	

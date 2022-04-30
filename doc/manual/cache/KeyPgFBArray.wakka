@@ -272,5 +272,7 @@ Sleep
 
 {{fbdoc item="see"}}
 	- [[ProPgArrays|Arrays]]
+	- ##[[KeyPgArrayLen|ArrayLen]]##
+	- ##[[KeyPgArraySize|ArraySize]]##
 	 
 {{fbdoc item="back" value="CatPgArray|Array Functions"}}

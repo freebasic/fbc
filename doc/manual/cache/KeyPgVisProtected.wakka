@@ -14,7 +14,8 @@ Specifies protected member access control in a ##[[KeyPgType|Type]]## or ##[[Key
 		declarations for fields, functions, or enumerations
 
 {{fbdoc item="desc"}}
-	##**Protected:**## indicates that ##//member declarations//## following it have protected access.  Protected members are accessible only from inside a member function for the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##, and classes which are derived from the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##.
+	##**Protected:**## indicates that ##//member declarations//## following it have protected access.
+	Protected members are accessible only from inside a member procedure of their ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##, and classes which are derived from this ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##. Seen from inside such a member procedure, it is as if the protected member is in fact public, and that regardless of the object on which the access operator is applied.
 	
 	##//member declarations//## following ##**Protected:**## are protected until a different access control specifier is given, like ##[[KeyPgVisPrivate|Private:]]## or ##[[KeyPgVisPublic|Public:]]##.
 	

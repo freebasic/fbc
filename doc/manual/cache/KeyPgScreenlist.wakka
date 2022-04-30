@@ -23,8 +23,10 @@ Finds available fullscreen video modes
 	
 	It is safe to call this function before any graphics mode has been set.
 
-{{fbdoc item="filename" value="examples/manual/gfx/screenlist.bas"}}%%(freebasic)
-Dim As Integer mode, w, h
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/gfx/screenlist.bas"}}%%(freebasic)
+Dim As Long mode
+Dim As Uinteger w, h
 
 Print "Resolutions supported at 8 bits per pixel:"
 
@@ -36,7 +38,6 @@ While (mode <> 0)
 	mode = ScreenList()
 Wend
 %%
-
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Screenlist""**##.
 

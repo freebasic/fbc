@@ -20,14 +20,13 @@ Gets the day of the month from a [[ProPgDates|Date Serial]]
 	The compiler will not recognize this function unless ##vbcompat.bi## is included.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/dates/day.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/dates/day.bas"}}%%(freebasic)
 #include "vbcompat.bi"
 
-dim ds as double = dateserial(2005, 11, 28)
+dim ds as long = dateserial(2005, 11, 28)
 
 print format(ds, "yyyy/mm/dd "); day(ds)
 %%
-
 {{fbdoc item="diff"}}
 	- Did not exist in QB. This function appeared in PDS and VBDOS
 

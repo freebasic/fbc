@@ -46,7 +46,7 @@ Using the **fbc** command-line.
 	=={{fbdoc item="keyword" value="CompilerOptasm|-asm < format >"}}==
 		Sets the assembler format for Asm block
 	=={{fbdoc item="keyword" value="CompilerOptarch|-arch < type >"}}==
-		Set target architecture (default: ##486##)
+		Set target architecture
 	=={{fbdoc item="keyword" value="CompilerOptoptimization|-O < level >"}}==
 		Set the optimization level (-gen gcc)
 	=={{fbdoc item="keyword" value="CompilerOptvec|-vec < level >"}}==
@@ -75,6 +75,8 @@ Using the **fbc** command-line.
 		Add error checking with RESUME support
 	=={{fbdoc item="keyword" value="CompilerOptexx|-exx"}}==
 		Same as ##-ex##, plus array bounds, null-pointer, and error location reporting
+	=={{fbdoc item="keyword" value="CompilerOpteunwind|-eunwind"}}==
+		Enable stack unwind information
 	=={{fbdoc item="keyword" value="CompilerOptWa|-Wa < opt >"}}==
 		Pass options to GAS (separated by commas)
 	=={{fbdoc item="keyword" value="CompilerOptWc|-Wc < opt >"}}==

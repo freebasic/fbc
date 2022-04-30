@@ -21,9 +21,9 @@ Makes a folder/directory on the local file system
 	(only one folder/directory can be created for each request)
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/system/mkdir.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/system/mkdir.bas"}}%%(freebasic)
 Dim pathname As String = "foo\bar\baz"
-Dim result As Integer = MkDir( pathname )
+Dim result As Long = MkDir( pathname )
 
 If 0 <> result Then Print "error: unable to create folder " & pathname & " in the current path."
 %%

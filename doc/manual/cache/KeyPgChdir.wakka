@@ -18,11 +18,11 @@ Changes the current drive and directory
 	Changes the current drive and directory to that specified.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/system/chdir.bas"}}%%(freebasic)
-Dim pathname As String = "x:\folder"
-Dim result As Integer = ChDir(pathname)
+	{{fbdoc item="filename" value="examples/manual/system/chdir.bas"}}%%(freebasic)
+Dim pathname As String = $"x:\folder"
+Dim result As Long = ChDir(pathname)
 
-If 0 <> result Then Print "error changing current directory to " & pathname & "."
+If result <> 0 Then Print "error changing current directory to " & pathname & "."
 %%
 {{fbdoc item="target"}}
 	- Linux requires the //filename// case matches the real name of the file. Windows and DOS are case insensitive. 

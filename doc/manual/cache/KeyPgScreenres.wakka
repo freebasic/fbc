@@ -76,13 +76,13 @@ __Graphics mode console__
 	Console commands (##[[KeyPgLocate|Locate]]##, ##[[KeyPgPrint|Print]]##), input can be used both with standard QB ##**Screen**## modes and with the extended ones too, provided the standard color depth is not modified by using the second argument of ##**Screen**##. Where the table says more than one text resolution is available for the text mode, the required text resolution can be requested by using ##[[KeyPgWidth|Width]]##.  Any characters ##[[KeyPgPrint|Print]]##ed will erase the background around them; it does not use a transparent background.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/gfx/screenres.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/gfx/screenres.bas"}}%%(freebasic)
 ' Set the screen mode to 320*200, with 8 bits per pixel
 screenres 320, 200, 8
 
 ' Draw color bands in a diagonal pattern over the whole screen
-for y as integer = 0 to 200-1
-	for x as integer = 0 to 320-1
+for y as long = 0 to 200-1
+	for x as long = 0 to 320-1
 		pset (x,y),(x + y) and 255
 	next x
 next y
@@ -93,7 +93,6 @@ print "Hello world!!"
 ' Keep the window open until the user presses a key
 sleep
 %%
-
 {{fbdoc item="target"}}
 	- In DOS, Windowing and ""OpenGL"" related switches are not available, and other issues, see [[GfxLib|GfxLib overview]]
 

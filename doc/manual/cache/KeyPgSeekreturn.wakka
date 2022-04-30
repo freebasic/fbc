@@ -17,8 +17,8 @@ Gets the position of the next read/write operation for a file or device
 	The ##[[KeyPgSeekset|Seek]]## statement is used to set the position of the next read or write operation.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/fileio/seek-func.bas"}}%%(freebasic)
-dim f as integer, position as integer
+	{{fbdoc item="filename" value="examples/manual/fileio/seek-func.bas"}}%%(freebasic)
+dim f as long, position as longint
 
 f = freefile
 open "file.ext" for binary as #f
@@ -27,7 +27,6 @@ position = seek(f)
 
 close #f
 %%
-
 {{fbdoc item="diff"}}
 	- None
 

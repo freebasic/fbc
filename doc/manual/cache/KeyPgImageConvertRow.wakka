@@ -25,13 +25,13 @@ Converts a row of image data into another color depth
 	Copies the row of an image from one memory location to another, converting the color information in each pixel to match the destination image.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/gfx/imageconvertrow.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/gfx/imageconvertrow.bas"}}%%(freebasic)
 #include "fbgfx.bi"
 #if __fb_lang__ = "fb"
 Using FB
 #endif
 
-Const As Integer w = 64, h = 64
+Const As Long w = 64, h = 64
 Dim As IMAGE Ptr img8, img32
 Dim As Integer x, y
 
@@ -99,7 +99,6 @@ Sleep
 ImageDestroy img8
 ImageDestroy img32
 %%
-
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__ImageConvertRow""**##.
 

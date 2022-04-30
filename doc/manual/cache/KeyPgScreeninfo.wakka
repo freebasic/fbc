@@ -38,8 +38,8 @@ Retrieves information about current video mode or the desktop.
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/gfx/screeninfo.bas"}}%%(freebasic)
-dim w as integer, h as integer
-dim depth as integer
+dim w as long, h as long
+dim depth as long
 dim driver_name as string
 
 SCREEN 15, 32 
@@ -52,7 +52,7 @@ SLEEP
 SCREEN 0 
 SCREENINFO w, h, depth 
 PRINT "Desktop running at " + STR(w) + "x" + STR(h) + "x" + STR(depth); 
-	%%
+%%
 {{fbdoc item="ver"}}
 	- Before fbc 1.08.0:
 			Syntax:

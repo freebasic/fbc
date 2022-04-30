@@ -34,20 +34,20 @@ Sets or gets the number of rows and columns of the display
 	Using the ##**Width**## command in graphic mode also forces a screen clear (##[[KeyPgCls|Cls]]##).
 
 {{fbdoc item="ex"}}
-
-{{fbdoc item="filename" value="examples/manual/console/width-func.bas"}}%%(freebasic)
-Dim As Integer w
+	{{fbdoc item="filename" value="examples/manual/console/width-func.bas"}}%%(freebasic)
+Dim As Long w
 w = Width
 Print "rows: " & hiword(w)
 Print "cols: " & loword(w)
 %%
 
-{{fbdoc item="filename" value="examples/manual/console/width.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/console/width.bas"}}%%(freebasic)
 ''Set up a graphics screen
 const W = 320, H = 200
 screenres W, H
 
-dim as integer twid, tw, th
+dim as long twid
+dim as uinteger tw, th
 
 '' Fetch and print current text width/height:
 twid = width()
@@ -84,7 +84,6 @@ print "Width:  " & tw
 print "Height: " & th
 sleep
 %%
-
 {{fbdoc item="target"}}
 	- In a Windows console any values > ##0## can be used in windowed mode.
 	- On a DOS or Windows full-screen console, the valid dimensions depend on the capabilities of the hardware.

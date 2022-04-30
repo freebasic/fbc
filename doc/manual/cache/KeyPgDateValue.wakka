@@ -2,7 +2,7 @@
 Returns a [[ProPgDates|Date Serial]] from a string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **""DateValue""** ( [[KeyPgByref|byref]] //date_string// [[KeyPgAs|as]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **""DateValue""** ( [[KeyPgByref|byref]] //date_string// [[KeyPgAs|as]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
@@ -23,10 +23,10 @@ Returns a [[ProPgDates|Date Serial]] from a string
 	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/dates/datevalue.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/dates/datevalue.bas"}}%%(freebasic)
 #include "vbcompat.bi"
 
-dim as integer v1, v2
+dim as long v1, v2
 dim as string  s1, s2
 
 print "Enter first date: ";
@@ -51,7 +51,6 @@ v2 = DateValue( s2 )
 
 print "Number of days between dates is " & abs( v2 - v1 )
 %%
-
 {{fbdoc item="diff"}}
 	- Did not exist in QB. This function appeared in PDS and VBDOS
 
