@@ -387,7 +387,7 @@ function cmd_extract_proc() as integer
 				if( wikiex->filename > "" ) then
 				'' !!! FIXME !!! - only allow "examples/manual/"
 					if( left( wikiex->filename, len( sample_dir ) ) = sample_dir ) then
-						if( WriteExampleFile( sPage, base_dir, wikiex->filename, wikiex->text, TRUE, "", opt_force ) ) then
+						if( WriteExampleFile( sPage, base_dir, wikiex->filename, wikiex->text, TRUE, "", opt_force, wiki->GetPageTitle( ) ) ) then
 							''
 						end if
 					else
@@ -510,7 +510,7 @@ function cmd_getex_proc() as integer
 			dim wikiex as WikiExample ptr = new WikiExample( wiki )
 			while( wikiex->FindNext() )
 				if( wikiex->filename = "" ) then
-					WriteExampleFile( sPage, base_dir, sample_dir & "incoming/" & wikiex->refid & ".bas", wikiex->text, FALSE, wikiex->refid, opt_force )
+					WriteExampleFile( sPage, base_dir, sample_dir & "incoming/" & wikiex->refid & ".bas", wikiex->text, FALSE, wikiex->refid, opt_force, wiki->GetPageTitle( ) )
 				end if
 			wend
 			delete wikiex
@@ -758,7 +758,7 @@ function cmd_addlang_proc() as integer
 
 		if( changed ) then
 			text = b1.text()
-			if( WriteExampleFile( refs(i).pagename, base_dir, sample_dir & refs(i).filename, text, TRUE, "", opt_force ) ) then
+			if( WriteExampleFile( refs(i).pagename, base_dir, sample_dir & refs(i).filename, text, TRUE, "", opt_force, "" ) ) then
 				''
 			end if
 		end if
