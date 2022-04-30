@@ -18,7 +18,7 @@ Provides the length of an array given its array-name.
 	Returns the total number of elements of the array specified by ##//arrayname()//## (taking into account all dimensions of array).
 
 {{fbdoc item="ex"}}
-	{{fbdoc item="filename" value="examples/manual/array/len.bas""}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/array/len.bas"}}%%(freebasic)
 #include once "fbc-int/array.bi"
 Using FB
 

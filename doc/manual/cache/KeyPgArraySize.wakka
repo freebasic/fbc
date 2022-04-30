@@ -18,7 +18,7 @@ Provides the size of an array given its array-name.
 	Returns the total size (in bytes) of the array specified by ##//arrayname()//## (size of array element multiplied by total number of array elements).
 
 {{fbdoc item="ex"}}
-	{{fbdoc item="filename" value="examples/manual/array/size.bas""}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/array/size.bas"}}%%(freebasic)
 #include once "fbc-int/array.bi"
 Using FB
 
