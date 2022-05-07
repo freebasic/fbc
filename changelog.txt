@@ -4,6 +4,7 @@ Version 1.10.0
 - gcc: '-funwind-tables' enabled on 64-bit targets for stack unwinding (adeyblue)
 - fbc: '--eh-frame-hdr' for linking on 64-bit nix targets for stack unwinding (adeyblue)
 - x86: arch 686 by default instead of 486 (SARG)
+- x86: arch 586 by default instead of 586 on DOS
 - asm backend: only with 686 arch, use of fcomi(p) to avoid slower instructions and also less code (SARG)
 - fbc: #DUMP <expr> and #ODUMP <expr> pragmas only available in debug version of fbc
 - inc/fbmath.bi renamed to inc/fbprng.bi
