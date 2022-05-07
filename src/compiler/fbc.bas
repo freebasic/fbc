@@ -1428,17 +1428,18 @@ end type
 '' OS name strings recognized when parsing GNU triplets (-target option)
 dim shared as FBGNUOSINFO gnuosmap(0 to ...) => _
 { _
-	(@"linux"    , FB_COMPTARGET_LINUX    ), _
-	(@"mingw"    , FB_COMPTARGET_WIN32    ), _
-	(@"djgpp"    , FB_COMPTARGET_DOS      ), _
-	(@"cygwin"   , FB_COMPTARGET_CYGWIN   ), _
-	(@"darwin"   , FB_COMPTARGET_DARWIN   ), _
-	(@"freebsd"  , FB_COMPTARGET_FREEBSD  ), _
-	(@"dragonfly", FB_COMPTARGET_DRAGONFLY), _
-	(@"solaris"  , FB_COMPTARGET_SOLARIS  ), _
-	(@"netbsd"   , FB_COMPTARGET_NETBSD   ), _
-	(@"openbsd"  , FB_COMPTARGET_OPENBSD  ), _
-	(@"xbox"     , FB_COMPTARGET_XBOX     )  _
+	(@"linux"      , FB_COMPTARGET_LINUX    ), _
+	(@"mingw"      , FB_COMPTARGET_WIN32    ), _
+	(@"djgpp"      , FB_COMPTARGET_DOS      ), _
+	(@"msdosdjgpp" , FB_COMPTARGET_DOS      ), _
+	(@"cygwin"     , FB_COMPTARGET_CYGWIN   ), _
+	(@"darwin"     , FB_COMPTARGET_DARWIN   ), _
+	(@"freebsd"    , FB_COMPTARGET_FREEBSD  ), _
+	(@"dragonfly"  , FB_COMPTARGET_DRAGONFLY), _
+	(@"solaris"    , FB_COMPTARGET_SOLARIS  ), _
+	(@"netbsd"     , FB_COMPTARGET_NETBSD   ), _
+	(@"openbsd"    , FB_COMPTARGET_OPENBSD  ), _
+	(@"xbox"       , FB_COMPTARGET_XBOX     )  _
 }
 
 '' Architectures recognized when parsing GNU triplets (-target option)
@@ -1478,6 +1479,9 @@ private sub hParseGnuTriplet _
 	''    arm-linux-gnueabihf  -> linux
 	''    i686-w64-mingw32     -> mingw
 	''    i686-pc-linux-gnu    -> linux
+	''    i386-pc-msdosdjgpp   -> dos386
+	''    i486-pc-msdosdjgpp   -> dos486
+	''    i586-pc-msdosdjgpp   -> dos586
 	for i as integer = 0 to ubound( gnuosmap )
 		if( instr( arg, *gnuosmap(i).gnuid ) > 0 ) then
 			os = gnuosmap(i).os
@@ -1626,6 +1630,10 @@ private sub hParseTargetArg _
 		if( (os < 0) and (cputype < 0) ) then
 			hParseGnuTriplet( arg, separator, os, cputype )
 			is_gnu_triplet = TRUE
+		end if
+	#else
+		if( (os < 0) and (cputype < 0) ) then
+			hParseGnuTriplet( arg, separator, os, cputype )
 		end if
 	#endif
 end sub
@@ -2433,7 +2441,7 @@ private sub handleArg _
 			handleOpt( optid, arg, is_source )
 		end if
 
-		'' even if the handling the option is delayed, check the restart options here
+		'' even if the handling of the option is delayed, check the restart options here
 		if( is_source ) then
 			if( cmdlineOptionTB( optid ).parser_restart ) then
 				fbRestartBeginRequest( FB_RESTART_PARSER_CMDLINE )

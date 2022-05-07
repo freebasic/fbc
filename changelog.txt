@@ -15,6 +15,7 @@ Version 1.10.0
 - sf.net #826: fbc: booleans are ranked against integer types to determine closest match in type resolution
 - sf.net #455: fbc: Allow &nnn... octal literals in source (like VALINT and friends)
 - fbc: automatically restart fbc/parser at first executable statement if required
+- fbc: allow gnu triplets for -target option even in standalone builds
 
 [added]
 - gas64: '.cif_sections' and '.cif_' directives for stack unwinding (adeyblue)
@@ -25,6 +26,7 @@ Version 1.10.0
 - gas64 : stack overflow check at run time if -exx is used - stack size for linux = 8MB, for Windows = default or defined by user (SARG)
 - fbc: debug pragma #LOOKUP <sym>
 - rtlib: DOS serial driver - add support for second PIC and IRQ 8 to 15
+- fbc allow '-target i386-pc-msdosdjgpp' and similar for cross compiling dos targets (even in stand alone)
 
 [fixed]
 - gas64: missing restoring of use of one virtual register on sqr for float (SARG)
