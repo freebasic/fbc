@@ -18,6 +18,7 @@ Version 1.10.0
 - fbc: -forcelang overrides default lang, -lang, previous -forcelang, #lang, #cmdline "-lang", #cmdline "-forcelang"
 - fbc: allow gnu triplets for -target option even in standalone builds
 - gfxlib2: store alpha from source to destination when blending alpha primitives in MMX blender to match C blender
+- makefile: internal rename (TARGET_PRFEX => BUILD_PREFIX) and conditionally set the library and object directories (default is still based on TARGET)
 
 [added]
 - gas64: '.cif_sections' and '.cif_' directives for stack unwinding (adeyblue)

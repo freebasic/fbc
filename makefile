@@ -102,7 +102,8 @@
 #   FBMANIFEST    bindist: The manifest file name without path or extension
 #   FBVERSION     bindist/gitdist: FB version number
 #   DISABLE_DOCS  bindist: Don't package readme/changelog/manpage/examples
-#
+#   BUILD_PREFIX     automatically set depending on the target but can override for special builds where the
+#                    build tools have different file naming than the target to build (i.e. cross compiling)
 # compiler source code configuration (FBCFLAGS, FBLFLAGS):
 #   -d ENABLE_STANDALONE     build for a self-contained installation
 #   -d ENABLE_SUFFIX=-0.24   assume FB's lib dir uses the given suffix (non-standalone only)
@@ -110,6 +111,10 @@
 #   -d ENABLE_LIB64          use prefix/lib64/ instead of prefix/lib/ for 64bit libs (non-standalone only)
 #   -d ENABLE_STRIPALL       configure fbc to pass down '--strip-all' to linker by default
 #   -d FBSHA1=some-sha-1     store 'some-sha-1' in the compiler for version information
+#
+# internal makefile configuration (but can override):
+#   libsubdir       override the library directory - default is set depending on TARGET
+#   objsubdir       override object file directory - default is set depending on TARGET
 #
 # fbrt source code configuration (FBRTCFLAGS, FBRTLFLAGS)
 #
@@ -148,9 +153,9 @@ CFLAGS := -Wfatal-errors -O2
 # Avoid gcc exception handling bloat
 CFLAGS += -fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables
 FBFLAGS := -maxerr 1
-AS = $(TARGET_PREFIX)as
-AR = $(TARGET_PREFIX)ar
-CC = $(TARGET_PREFIX)gcc
+AS = $(BUILD_PREFIX)as
+AR = $(BUILD_PREFIX)ar
+CC = $(BUILD_PREFIX)gcc
 prefix := /usr/local
 
 # Determine the makefile's directory, this may be a relative path when
@@ -180,7 +185,9 @@ include $(rootdir)version.mk
 ifdef TARGET
   # Parse TARGET
   triplet := $(subst -, ,$(TARGET))
-  TARGET_PREFIX := $(TARGET)-
+  ifeq ($(BUILD_PREFIX),)
+  BUILD_PREFIX := $(TARGET)-
+  endif
 
   ifndef TARGET_OS
     ifneq ($(filter cygwin%,$(triplet)),)
@@ -396,7 +403,13 @@ endif
 #
 # Determine directory layout for .o files and final binaries.
 #
-libsubdir := $(FBTARGET)
+ifeq ($(libsubdir),)
+  libsubdir := $(FBTARGET)
+endif
+ifeq ($(objsubdir),)
+  objsubdir := $(libsubdir)
+endif
+
 ifdef ENABLE_STANDALONE
   # Traditional standalone layout: fbc.exe at toplevel, libs in lib/<fbtarget>/,
   # includes in inc/
@@ -429,19 +442,19 @@ else
   prefixlibdir   := $(prefix)/$(libdir)
 endif
 fbcobjdir           := src/compiler/obj/$(FBTARGET)
-libfbobjdir         := src/rtlib/obj/$(libsubdir)
-libfbpicobjdir      := src/rtlib/obj/$(libsubdir)/pic
-libfbmtobjdir       := src/rtlib/obj/$(libsubdir)/mt
-libfbmtpicobjdir    := src/rtlib/obj/$(libsubdir)/mt/pic
-libfbrtobjdir       := src/fbrt/obj/$(libsubdir)
-libfbrtpicobjdir    := src/fbrt/obj/$(libsubdir)/pic
-libfbrtmtobjdir     := src/fbrt/obj/$(libsubdir)/mt
-libfbrtmtpicobjdir  := src/fbrt/obj/$(libsubdir)/mt/pic
-libfbgfxobjdir      := src/gfxlib2/obj/$(libsubdir)
-libfbgfxpicobjdir   := src/gfxlib2/obj/$(libsubdir)/pic
-libfbgfxmtobjdir    := src/gfxlib2/obj/$(libsubdir)/mt
-libfbgfxmtpicobjdir := src/gfxlib2/obj/$(libsubdir)/mt/pic
-djgpplibcobjdir     := contrib/djgpp/libc/crt0/obj/$(libsubdir)
+libfbobjdir         := src/rtlib/obj/$(objsubdir)
+libfbpicobjdir      := src/rtlib/obj/$(objsubdir)/pic
+libfbmtobjdir       := src/rtlib/obj/$(objsubdir)/mt
+libfbmtpicobjdir    := src/rtlib/obj/$(objsubdir)/mt/pic
+libfbrtobjdir       := src/fbrt/obj/$(objsubdir)
+libfbrtpicobjdir    := src/fbrt/obj/$(objsubdir)/pic
+libfbrtmtobjdir     := src/fbrt/obj/$(objsubdir)/mt
+libfbrtmtpicobjdir  := src/fbrt/obj/$(objsubdir)/mt/pic
+libfbgfxobjdir      := src/gfxlib2/obj/$(objsubdir)
+libfbgfxpicobjdir   := src/gfxlib2/obj/$(objsubdir)/pic
+libfbgfxmtobjdir    := src/gfxlib2/obj/$(objsubdir)/mt
+libfbgfxmtpicobjdir := src/gfxlib2/obj/$(objsubdir)/mt/pic
+djgpplibcobjdir     := contrib/djgpp/libc/crt0/obj/$(objsubdir)
 
 # If cross-compiling, use -target
 ifdef TARGET
