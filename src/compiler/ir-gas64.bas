@@ -950,13 +950,14 @@ private sub dbg_emitstab()
 	else
 		asm_section(".dbgdat,""dr""")
 	end if
+
 	for istab as integer = 0 to ctxdbg.stabnb
 		stab.full=dbgstab(istab).stab
 		asm_code(".quad 0x"+hex(dbgstab(istab).stab)+" # "+str(stab.cod)+" "+str(stab.desc)+" "+str(stab.offst))
 		asm_code(".quad "+dbgstab(istab).value)
 	next
 end sub
-sub edbgemitheader_asm64( byval filename as zstring ptr )
+private sub edbgemitheader_asm64( byval filename as zstring ptr )
 	dim as string lname
 
 	ctxdbg.typecnt 	= 1
@@ -996,7 +997,7 @@ sub edbgemitheader_asm64( byval filename as zstring ptr )
 	next
 
 end sub
-sub edbgemitglobalvar_asm64 _
+private sub edbgemitglobalvar_asm64 _
 	( _
 	byval sym as FBSYMBOL ptr, _
 	byval section as integer _
@@ -1038,7 +1039,7 @@ sub edbgemitglobalvar_asm64 _
 
 end sub
 
-sub edbgemitlocalvar_asm64 _
+private sub edbgemitlocalvar_asm64 _
 	( _
 	byval sym as FBSYMBOL ptr, _
 	byval isstatic as integer _
@@ -1078,7 +1079,7 @@ sub edbgemitlocalvar_asm64 _
 	dbg_addstab(desc,t,,value)
 
 end sub
-sub edbgemitprocheader_asm64 _
+private sub edbgemitprocheader_asm64 _
 	( _
 	byval proc as FBSYMBOL ptr _
 	) static
@@ -1121,7 +1122,7 @@ sub edbgemitprocheader_asm64 _
 	dbg_addstab(desc,STAB_TYPE_FUN,proc->proc.ext->dbg.iniline,procname)
 	dbg_addstab(,STAB_TYPE_SLINE,1)
 end sub
-sub edbgemitprocarg_asm64( byval sym as FBSYMBOL ptr )
+private sub edbgemitprocarg_asm64( byval sym as FBSYMBOL ptr )
 	dim as string desc
 
 	desc = *symbGetName( sym ) + ":"
