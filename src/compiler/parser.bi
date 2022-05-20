@@ -174,6 +174,7 @@ type PARSERCTX
 	nsprefix        as FBSYMCHAIN ptr           '' used by cTypeOrExpression() & cIdentifier()
 
 	'' globals
+	stage           as uinteger                 '' current stage (0=preprocessor, 1=executable)
 	scope           as uinteger                 '' current scope (0=main module)
 
 	mangling        as FB_MANGLING              '' current EXTERN's mangling

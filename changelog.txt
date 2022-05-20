@@ -14,6 +14,7 @@ Version 1.10.0
 - sf.net #953: fbc: improve compile time error messages for LINE INPUT [#] statements giving better positional information
 - sf.net #826: fbc: booleans are ranked against integer types to determine closest match in type resolution
 - sf.net #455: fbc: Allow &nnn... octal literals in source (like VALINT and friends)
+- fbc: automatically restart fbc/parser at first executable statement if required
 
 [added]
 - gas64: '.cif_sections' and '.cif_' directives for stack unwinding (adeyblue)

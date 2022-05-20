@@ -10,10 +10,10 @@
 #include once "pp.bi"
 
 #define LEX_FLAGS (LEXCHECK_NOWHITESPC or _
-				   LEXCHECK_NOSUFFIX or _
-				   LEXCHECK_NODEFINE or _
-				   LEXCHECK_NOQUOTES or _
-				   LEXCHECK_NOSYMBOL)
+	LEXCHECK_NOSUFFIX or _
+	LEXCHECK_NODEFINE or _
+	LEXCHECK_NOQUOTES or _
+	LEXCHECK_NOSYMBOL)
 
 type SYMBKWD
 	name            as const zstring ptr
@@ -94,9 +94,9 @@ sub ppInit( )
 		end if
 
 		kwdTb(i).sym = symbAddKeyword( kwdTb(i).name, _
-									   kwdTb(i).id, _
-									   FB_TKCLASS_KEYWORD, _
-									   @pp.kwdns.nspc.ns.hashtb )
+			kwdTb(i).id, _
+			FB_TKCLASS_KEYWORD, _
+			@pp.kwdns.nspc.ns.hashtb )
 		if( kwdTb(i).sym = NULL ) then
 			exit sub
 		end if
@@ -870,6 +870,14 @@ declare sub fbcParseArgsFromString _
 ''
 private sub ppCmdline( )
 	dim as zstring ptr args = any
+
+	'' Prepocessor is done parsing? warn that statement is ignored
+	if( parser.stage > 0 ) then
+		errReportWarn( FB_WARNINGMSG_CMDLINEIGNORED )
+		'' error recovery: skip
+		lexSkipToken( )
+		exit sub
+	end if
 
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
 		errReport( FB_ERRMSG_SYNTAXERROR )

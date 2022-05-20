@@ -31,6 +31,7 @@ declare sub parserLetEnd( )
 '':::::
 sub parserSetCtx( )
 
+	parser.stage = 0 '' start in preprocessor stage
 	parser.scope = FB_MAINSCOPE
 
 	parser.currproc = NULL
@@ -116,9 +117,16 @@ sub cProgram()
 		end if
 	#endmacro
 
+	#macro maybeRestartParser()
+		if( fbShouldRestart() ) then
+			exit sub
+		elseif( fbShouldContinue() = FALSE ) then
+			exit sub
+		end if
+	#endmacro
+
 	'' For each line...
 	do
-
 		'' parse the empty lines and comments and process directives, but
 		'' don't write to the ASM output.  Clear the output buffer for
 		'' the current line instead of calling hEmitCurrentLineText( )
@@ -138,7 +146,7 @@ sub cProgram()
 			lexSkipToken( )
 			'' need to check for exit here because directives may have been
 			'' invoked or errors occur in ppCheck() calls in lexSkipToken()
-			maybeExitParser()
+			maybeRestartParser()
 
 			'' must increment statement count after EOL's
 			parser.stmt.cnt += 1
@@ -149,14 +157,21 @@ sub cProgram()
 		'' statements in the current file scope.  if #include is
 		'' invoked, then should be handled by new include scope
 		if( cComment() ) then
-			maybeExitParser()
+			maybeRestartParser()
 			continue do
 		end if
 
-		maybeExitParser()
+		maybeRestartParser()
 
 		'' if it wasn't an empty line, comment, or directive then
 		'' we should expect a statement next requiring debug nodes
+		'' i.e. even on first entry to CProgram(), if execution makes
+		'' it to this point then next statement is expected to be something
+		'' executable.  And if the parser or fbc needed to be restarted,
+		'' it would have happened already in maybeExitParser() above
+
+		'' set parser executable code stage
+		parser.stage = 1
 
 		'' line begin
 		astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ), env.inf.incfile ) )
