@@ -1866,6 +1866,7 @@ private sub handleOpt _
 	case OPT_EX
 		fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
 		fbSetOption( FB_COMPOPT_RESUMEERROR, TRUE )
+		fbSetOption( FB_COMPOPT_UNWINDINFO, TRUE )
 
 	case OPT_EXX
 		fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
@@ -1874,6 +1875,7 @@ private sub handleOpt _
 		fbSetOption( FB_COMPOPT_ERRLOCATION, TRUE )
 		fbSetOption( FB_COMPOPT_ARRAYBOUNDCHECK, TRUE )
 		fbSetOption( FB_COMPOPT_NULLPTRCHECK, TRUE )
+		fbSetOption( FB_COMPOPT_UNWINDINFO, TRUE )
 
 	case OPT_EXPORT
 		fbSetOption( FB_COMPOPT_EXPORT, TRUE )
@@ -3355,7 +3357,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 
 		'' But enable unwind-tables on x64, these GREATLY increase the accuracy of
 		'' debuggers and crash tools across platforms for minimal overhead
-		if ( ism64Target ) then
+		if( (ism64Target = TRUE) or (fbGetOption( FB_COMPOPT_UNWINDINFO ) = TRUE) ) then
 			ln += "-funwind-tables "
 		else
 			ln += "-fno-unwind-tables "
