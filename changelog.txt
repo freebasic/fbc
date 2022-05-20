@@ -40,6 +40,7 @@ Version 1.10.0
 - sf.net #892: fbc: Bug when default calling via a pointer to a 'Sub' defined with the only 'Any Ptr' optional parameter
 - fbc: parser skips extra token on error recovery for #if/#ifndef/defined() statements
 - sf.net #455: fbc: Number lexing allows much bad input - a show a warning message "Expected digit" where '&o', '&h', '&b' has no digits following
+- gas64: initialize debug structure even if not emitting debug info to prevent errors due to setup changes by #cmdline inside the parser
 
 
 Version 1.09.0

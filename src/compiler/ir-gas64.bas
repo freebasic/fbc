@@ -2138,7 +2138,21 @@ private function _emitbegin( ) as integer
 	end if
 	ctx.indent+=1
 
-	if( env.clopt.debuginfo = true ) then edbgemitheader_asm64( env.inf.name )
+	if( env.clopt.debuginfo = true ) then
+		edbgemitheader_asm64( env.inf.name )
+	else
+		'' just in case we get a #cmdline that affects debug info code gen
+		'' go ahead and ctxdbg / dbgstr / dbgstab
+		ctxdbg.typecnt 	= 1
+		ctxdbg.strnb=-1
+		ctxdbg.strmax=4
+		redim dbgstr(ctxdbg.strmax)
+		ctxdbg.stabnb=-1
+		ctxdbg.stabmax=4
+		redim dbgstab(ctxdbg.stabmax)
+		ctxdbg.offst=1
+		ctxdbg.lnum=-1
+	end if
 
 	asm_code( ".intel_syntax noprefix")
 	cfi_asm_code( ".cfi_sections .debug_frame")
