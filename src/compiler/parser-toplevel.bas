@@ -146,7 +146,7 @@ sub cProgram()
 			lexSkipToken( )
 			'' need to check for exit here because directives may have been
 			'' invoked or errors occur in ppCheck() calls in lexSkipToken()
-			maybeRestartParser()
+			maybeExitParser()
 
 			'' must increment statement count after EOL's
 			parser.stmt.cnt += 1
@@ -157,7 +157,7 @@ sub cProgram()
 		'' statements in the current file scope.  if #include is
 		'' invoked, then should be handled by new include scope
 		if( cComment() ) then
-			maybeRestartParser()
+			maybeExitParser()
 			continue do
 		end if
 

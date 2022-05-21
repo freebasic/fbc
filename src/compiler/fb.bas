@@ -388,10 +388,13 @@ sub fbInit _
 	'' when starting a compile, reset the restart requests
 	'' env.restart_status preserves state from previous runs
 	''     and would have been initialized to 0 (FB_RESTART_NONE)
+	''     but we need to clear the PARSER_LANG status because
+	''     #lang directives should only apply to current module
 	'' env.restart_count is preserved between runs (passes) so don't
 	''    re-initialize it here.
 	env.restart_request = FB_RESTART_NONE
 	env.restart_action = FB_RESTART_NONE
+	env.restart_status and= not FB_RESTART_PARSER_LANG
 
 	redim infileTb( 0 to FB_MAXINCRECLEVEL-1 )
 
@@ -568,6 +571,8 @@ sub fbGlobalInit()
 	env.restart_request     = FB_RESTART_NONE
 	env.restart_action      = FB_RESTART_NONE
 	env.restart_status      = FB_RESTART_NONE
+	env.restart_lang        = FB_LANG_INVALID
+	env.restart_count       = 0
 
 	env.module_count        = 0
 
@@ -617,6 +622,8 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		hUpdateLangOptions( )
 	case FB_COMPOPT_FORCELANG
 		env.clopt.forcelang = value
+	case FB_COMPOPT_RESTART_LANG
+		env.restart_lang = value
 
 	case FB_COMPOPT_DEBUG
 		env.clopt.debug = value
@@ -723,6 +730,8 @@ function fbGetOption( byval opt as integer ) as integer
 		function = env.clopt.lang
 	case FB_COMPOPT_FORCELANG
 		function = env.clopt.forcelang
+	case FB_COMPOPT_RESTART_LANG
+		function = env.restart_lang
 
 	case FB_COMPOPT_DEBUG
 		function = env.clopt.debug

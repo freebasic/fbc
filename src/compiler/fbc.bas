@@ -1886,9 +1886,21 @@ private sub handleOpt _
 			hFatalInvalidOption( arg, is_source )
 		end if
 
-		fbSetOption( FB_COMPOPT_LANG, value )
-		fbSetOption( FB_COMPOPT_FORCELANG, TRUE )
-		fbc.objinf.lang = value
+		'' show a warning only if forcelang was already set and
+		'' we are handling this from a #cmdline.  We'd like that
+		'' -forcelang from the real command line takes priority
+		'' over source code #cmdline "-forcelang"
+		if( is_source and fbGetOption( FB_COMPOPT_FORCELANG ) ) then
+			errReportWarn( FB_WARNINGMSG_CMDLINEOVERRIDES )
+		else
+			fbSetOption( FB_COMPOPT_LANG, value )
+			fbSetOption( FB_COMPOPT_FORCELANG, TRUE )
+			fbc.objinf.lang = value
+
+			if( is_source ) then
+				fbSetOption( FB_COMPOPT_RESTART_LANG, value )
+			end if
+		end if
 
 	case OPT_FPMODE
 		dim as integer value = any
@@ -1955,8 +1967,15 @@ private sub handleOpt _
 			hFatalInvalidOption( arg, is_source )
 		end if
 
-		fbSetOption( FB_COMPOPT_LANG, value )
-		fbc.objinf.lang = value
+		'' don't let '-lang' option or #cmdline "-lang" overide -forcelang
+		if( fbGetOption( FB_COMPOPT_FORCELANG ) = FALSE ) then
+			fbSetOption( FB_COMPOPT_LANG, value )
+			fbc.objinf.lang = value
+
+			if( is_source ) then
+				fbSetOption( FB_COMPOPT_RESTART_LANG, value )
+			endif
+		end if
 
 	case OPT_LIB
 		fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_STATICLIB )
@@ -2079,7 +2098,9 @@ private sub handleOpt _
 	case OPT_S
 		fbc.subsystem = arg
 		select case( arg )
-			case "gui" : fbSetOption( FB_COMPOPT_MODEVIEW, FB_MODEVIEW_GUI )
+		case "gui"
+			fbSetOption( FB_COMPOPT_MODEVIEW, FB_MODEVIEW_GUI )
+
 		end select
 
 	case OPT_SHOWINCLUDES
@@ -2992,6 +3013,12 @@ private sub hCompileBas _
 		print
 	end if
 
+	'' Restarting with a new lang option?
+	'' We need to initialize with the restart lang
+	if( fbGetOption( FB_COMPOPT_RESTART_LANG ) <> FB_LANG_INVALID ) then
+		fbSetOption( FB_COMPOPT_LANG, fbGetOption( FB_COMPOPT_RESTART_LANG ) )
+	end if
+
 	'' preserve orginal values that might have to restored
 	'' (e.g. -lang mode could be overwritten while parsing due to #lang,
 	'' but that shouldn't affect other modules)
@@ -3041,8 +3068,10 @@ private sub hCompileBas _
 
 		'' Still have restart set?  It must be a request to restart fbc
 		if( fbShouldRestart( ) ) then
-			'' Restore original #lang
-			fbSetOption( FB_COMPOPT_LANG, prevlang )
+			'' Restore original #lang? only if we didn't set a new lang to restart with
+			if( fbGetOption( FB_COMPOPT_RESTART_LANG ) = FB_LANG_INVALID ) then
+				fbSetOption( FB_COMPOPT_LANG, prevlang )
+			end if
 			exit sub
 		end if
 	loop

@@ -227,7 +227,26 @@ o -exx should catch...
         [X] painful to add
         [X] added as '#cmdline "args..."'
         [ ] painful to complete
-        [ ] don't allow #cmdline if any line was parsed already that emits backend code
+        [X] don't allow #cmdline if any line was parsed already that emits backend code
+        [ ] clean-up the lang compatibility options in fbc source,
+            the restart logic and option tracking is difficult to
+            follow (even with the comments and well named symbols).
+        [ ] #if( sizeof() ) and other expressions will give wrong results
+            unless user specifically adds #cmdline "-end" since the auto
+            detection of first executable line can't be determined
+            For example real command line is "fbc -target win32 file.bas"
+               #cmdline "-target win64 -gen gcc"
+               #if( sizeof(integer) = 4 ) )
+                  #print "this shouldn't happen, but will"
+               #endif
+        [x] default to -lang FB
+        [x] allow '-lang' to override '-lang' on real command line
+        [x] allow '-forcelang' to override '-lang' on real command line
+        [x] don't allow '-lang' to override '-forcelang' on the command line
+        [x] #lang directive applies to current module only
+        [x] '-forcelang' on real command line overrides #lang directives.
+        [x] '#cmdline "-lang"' should apply to all modules and can overide real command line
+        [x] '#cmdline "-forcelang ..."' should apply to all modules and can overide real command line '-lang' but not '-forcelang'
         [X] add '-z nocmdline' to ignore #cmdline directives
         [X] reset parser for command line options that require it
         [X] reset fbc for command line options that require it (-target, -arch, -lib, etc)

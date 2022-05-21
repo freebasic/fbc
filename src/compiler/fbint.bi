@@ -645,6 +645,7 @@ type FBENV
 	restart_action   as FB_RESTART_FLAGS        '' restart as soon as possible
 	restart_status   as FB_RESTART_FLAGS        '' current status of restarts #lang/#cmdline/parser/fbc
 	restart_count    as integer                 '' number of restarts
+	restart_lang     as FB_LANG                 '' lang compatibility on restart if processed in #cmdline "-lang LANG"
 
 	'' Lists to collect #inclibs and #libpaths
 	libs            as TSTRSET

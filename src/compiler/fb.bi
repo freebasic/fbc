@@ -74,6 +74,7 @@ enum FB_COMPOPT
 	'' parser -lang mode
 	FB_COMPOPT_LANG                 '' FB_LANG_*: lang compatibility
 	FB_COMPOPT_FORCELANG            '' boolean: TRUE if -forcelang was specified
+	FB_COMPOPT_RESTART_LANG         '' FB_LANG_*: lang compatibility after restart (due change by #cmdline)
 
 	'' debugging/error checking
 	FB_COMPOPT_DEBUG                '' boolean: enable __FB_DEBUG__ (affects code generation)
