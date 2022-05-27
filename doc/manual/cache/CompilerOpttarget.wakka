@@ -43,11 +43,12 @@ Set the target platform for cross compilation
 				- ##freebsd##
 				- ##netbsd##
 				- ##openbsd##
-			- The [[DevNormalVsStandalone|Normal]] fbc (e.g. FB-linux release) additionally recognizes GNU triplets, for example:
+			- fbc (e.g. FB-linux release) additionally recognizes GNU triplets, for example:
 				- ##i686-w64-mingw32##
 				- ##x86_64-w64-mingw32##
 				- ##i686-pc-linux-gnu##
 				- ##arm-linux-gnueabihf##
+				- ##i386-pc-msdosdjgpp##
 				- ##...##
 
 {{fbdoc item="desc"}}
@@ -63,6 +64,8 @@ Set the target platform for cross compilation
 		
 		- If ##-target## is not specified, the compiler defaults to compiling for the native system. It will then use the compiler tools and libraries from the ##bin/## and ##lib/## directories corresponding to the native system.
 		
+		- ##-target## may be specified as a gnu triplet as an alternate method for specifying the platform target and architecture.  For example, ##-target i586-pc-mdosdjgpp## will identify as ##-arch 586 -target dos## and will look for binaries in bin/dos/ and libraries in lib/dos/.  The platform string is not prefixed to names of binary tools. 
+		
 
 	With a normal FB setup such as the FB-linux release:
 	
@@ -75,6 +78,9 @@ Set the target platform for cross compilation
 		- If ##-target## is not specified, the compiler defaults to compiling for the native system, and it will invoke binutils/gcc without a target-specific prefix. This allows fbc to integrate with usual Linux (and similar) systems where binutils/gcc for native compilation are installed without any target-specific prefix.
 		
 		- Libraries besides FB's own runtime libraries are located by running ##gcc -print-file-name=...## (or ##<platform>-gcc -print-file-name=...##). This allows fbc to use the system and gcc libraries installed on Linux and similar systems without knowing the exact installation directories.
+
+{{fbdoc item="ver"}}
+	- Before fbc 1.10.0, gnu triplets were not allowed in standalone builds, and '-target i386-pc-msdosdjgpp' and similar were not allowed.
 
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]

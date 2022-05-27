@@ -13,7 +13,7 @@ Once the library is made, we can then use the code that it contains just as if w
 **{{anchor name="EXPORT|Executables that export symbols"}}**
 **{{anchor name="DYNAMIC|Loading Shared Libraries Dynamically"}}**
 **{{anchor name="VARIABLES|Exchanging/Sharing variables with shared library on Windows"}}**
-**{{anchor name="IMPORT|Creating import Libraries from def files on Windows"}}**
+**{{anchor name="IMPORT|Creating import Libraries from def files, or import libraries or def files from DLL files, on Windows"}}**
 
 {{anchor name="EXAMPLE1"}}{{fbdoc item="section" value="Shared Library Example"}}
 	Following is a simple example of creating a shared library using these three files:
@@ -337,19 +337,37 @@ Print
 
 Sleep
 %%
-{{anchor name="IMPORT"}}{{fbdoc item="section" value="Creating import Libraries from def files on Windows"}}
-	When using a third-party dll in ""FreeBASIC"" on Windows, it may be necessary to manually build an import library to satisfy the linker.
+{{anchor name="IMPORT"}}{{fbdoc item="section" value="Creating import Libraries from def files, or import libraries or def files from DLL files, on Windows"}}
+	When using a third-party dll in ""FreeBASIC"" on Windows, it may be necessary to manually build an import library or a def file to satisfy the linker.
 	
 	Syntax to create the import library file ##//(*.dll.a)//## for Windows, from the def file ##//(*.def)//## of an existing DLL ##//(*.dll)//##:
 		**""-""** 32-bit:
-			##//drive:\""FreeBASIC""\bin\win32\dlltool.exe -d XXX.def -l drive:\""FreeBASIC""\lib\win32\libXXX.dll.a//##
+			##//drive:\""FreeBASIC""\bin\win32\dlltool.exe -d XXX.def -l libXXX.dll.a//##
 		**""-""** 64-bit:
-			##//drive:\""FreeBASIC""\bin\win64\dlltool.exe -m i386:x86-64 --as-flags --64 -d XXX.def -l drive:\""FreeBASIC""\lib\win64\libXXX.dll.a//##
-		with:
-			##//drive:\""FreeBASIC""\//##
-				""FreeBASIC"" installation path
-			##//XXX//##
-				name of the lib and def file
+			##//drive:\""FreeBASIC""\bin\win64\dlltool.exe -m i386:x86-64 --as-flags --64 -d XXX.def -l libXXX.dll.a//##
+			
+	Syntax to create the import library file ##//(*.dll.a)//## for Windows, directly from an existing DLL ##//(*.dll)//##:
+			**""-""** 32-bit:
+				##//drive:\""FreeBASIC""\bin\win32\dlltool -k -d XXX.dll -l libXXX.dll.a//##
+			**""-""** 64-bit:
+				##//drive:\""FreeBASIC""\bin\win32\dlltool -k -d XXX.dll -l libXXX.dll.a//##
+				
+	Syntax to create the def file ##//(*.def)//## for Windows, from an existing DLL ##//(*.dll)//##:
+			**""-""** 32-bit:
+				##//drive:\""FreeBASIC""\bin\win32\dlltool --dllname XXX.dll --output-def XXX.def//##
+			**""-""** 64-bit:
+				##//drive:\""FreeBASIC""\bin\win64\dlltool --dllname XXX.dll --output-def XXX.def//##
+		or using -D and -z:
+			**""-""** 32-bit:
+				##//drive:\""FreeBASIC""\bin\win32\dlltool -D XXX.dll -z XXX.def//##
+			**""-""** 64-bit:
+				##//drive:\""FreeBASIC""\bin\win64\dlltool -D XXX.dll -z XXX.def//##
+				
+	with:
+		##//drive:\""FreeBASIC""\//##
+			""FreeBASIC"" installation path
+		##//XXX//##
+			name of the lib and def file
 
 {{fbdoc item="see"}}
 	- [[ProPgStaticLibraries|Static Libraries]]

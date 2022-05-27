@@ -25,7 +25,7 @@ Dim b As Byte = &H80
 %%
 			
 	__Octal__
-	"##&O##" ( O as in "Octal" ), followed by octal digits ( ##0 1 2 3 4 5 6 7## )
+	"##&O##" (or "##&##"), followed by octal digits ( ##0 1 2 3 4 5 6 7## )
 
 {{fbdoc item="filename" value="examples/manual/proguide/literals/oct.bas"}}%%(freebasic)
 Dim x as integer = &O361100

@@ -11,8 +11,8 @@ Set target architecture for improved/restricted code generation or cross-compili
 			- Related to 32bit x86:
 				- ##386##
 				- ##486##
-				- ##586##
-				- ##686## (default for x86)
+				- ##586## (default for x86 on DOS)
+				- ##686## (default for x86 except on DOS)
 				- ##athlon##
 				- ##athlon-xp##
 				- ##athlon-fx##
