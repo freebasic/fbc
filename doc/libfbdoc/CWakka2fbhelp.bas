@@ -981,8 +981,8 @@ namespace fb.fbdoc
 		'' "filename" and "tag" are also valid, but have no output, 
 		'' so they aren't in the table above
 
-		dim as string strItem, strValue, strName, strPage, ext
-		dim as integer isblock, itemidx
+		dim as string strItem, strValue, strVisible, strName, strPage, ext
+		dim as integer isblock, itemidx, isVisible
 
 		strItem = paramsTb->GetParam( "item" )
 		strValue = paramsTb->GetParam( "value" )
@@ -1000,10 +1000,16 @@ namespace fb.fbdoc
 
 		select case lcase( strItem )
 		case "title":
-			if( ctx->tagGenTb(WIKI_TOKEN_SECT_ITEM) ) then
-				_emitAttrib( ctx, 1 )
-				return _emitText( ctx, strValue, TRUE )
+			strVisible = paramsTb->GetParam( "visible", "1" )
+			isVisible = cbool( strVisible )
+
+			if( isVisible ) then
+				if( ctx->tagGenTb(WIKI_TOKEN_SECT_ITEM) ) then
+					_emitAttrib( ctx, 1 )
+					return _emitText( ctx, strValue, TRUE )
+				end if
 			end if
+
 			return FALSE
 
 		case "section":			

@@ -1,3 +1,6 @@
+May 26, 2022
+- support 'visible' parameter in {{fbdoc item="title"}} action
+
 April 30, 2022
 - allow force query for CSRFToken
 - set-up libCurl to keep POST on redirects

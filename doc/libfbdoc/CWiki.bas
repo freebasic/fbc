@@ -1072,7 +1072,8 @@ namespace fb.fbdoc
 	'':::::
 	function WikiToken_Action.GetParam _
 		( _
-			byval sParamName as zstring ptr _
+			byval sParamName as zstring ptr, _
+			byval default as zstring ptr = NULL _
 		) as string
 
 		dim as WikiAction_Param ptr param = this.paramhead
@@ -1089,6 +1090,10 @@ namespace fb.fbdoc
 			param = param->next
 
 		loop
+
+		if( default ) then
+			function = *default
+		end if
 
 	end function
 

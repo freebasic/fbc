@@ -95,7 +95,8 @@ namespace fb.fbdoc
 
 		declare function GetParam _
 			( _
-				byval sParamName as zstring ptr _
+				byval sParamName as zstring ptr, _
+				byval default as zstring ptr = NULL _
 			) as string
 
 		declare sub SetParam _
