@@ -1,4 +1,4 @@
-#ifndef __FBC_INT_MATH_BI__ 
+#ifndef __FBC_INT_MATH_BI__
 #define __FBC_INT_MATH_BI__
 
 # if __FB_LANG__ = "qb"
@@ -18,7 +18,7 @@
 '' declarations must follow ./src/rtlib/fb_math.h
 ''                          ./src/rtlib/fb_rnd.c
 
-'' Remove RANDOMIZE & RND from the global namespace 
+'' Remove RANDOMIZE & RND from the global namespace
 '' otherwise 'using fb' won't work with new declarations
 '' in the fb namespace
 #if defined( ..RANDOMIZE )

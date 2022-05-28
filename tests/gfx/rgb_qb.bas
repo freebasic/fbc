@@ -4,7 +4,7 @@
 SUITE( fbc_tests.gfx.rgb_qb )
 
 	dim shared c(1 to 5) as __ubyte
-	
+
 	SUITE_INIT
 		c(1) = 0
 		c(2) = 1

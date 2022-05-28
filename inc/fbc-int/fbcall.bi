@@ -1,4 +1,4 @@
-#ifndef __FBC_INT_FBCALL_BI__ 
+#ifndef __FBC_INT_FBCALL_BI__
 #define __FBC_INT_FBCALL_BI__
 
 '' definition for FBCALL
@@ -6,7 +6,7 @@
 '' FBCALL is not a built-in word.  In fbc, calling convention is only implied as "fbcall"
 '' in the absence of any other calling convention specifiers e.g. stdcall / cdecl / pascal
 '' or some other structure that imply another default calling convention e.g. EXTERN "C"
-'' 
+''
 
 # if __FB_LANG__ = "qb"
 #     error "include not supported in qb dialect"

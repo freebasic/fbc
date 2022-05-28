@@ -15,7 +15,7 @@ SUITE( fbc_tests.gfx.palette_ )
 	''   PALETTE GET USING pointer
 	''   PALETTE GET USING UDT
 	''   PALETTE GET USING byref-variable
-	
+
 	'' The palette values we are comparing with come from gfxlib.   If the fbgfx default
 	'' palette ever changes, these values must be updated to match.
 
@@ -160,7 +160,7 @@ SUITE( fbc_tests.gfx.palette_ )
 		end type
 
 		constructor PAL_##T
-			pal = new T[256] 
+			pal = new T[256]
 		end constructor
 
 		destructor PAL_##t
