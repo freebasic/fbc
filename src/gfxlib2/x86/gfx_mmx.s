@@ -73,9 +73,9 @@ FUNC(fb_hMemSetMMX)
 	movl %esp, %ebp
 	pushl %edi
 	
-	movl ARG1, %edi
-	movl ARG2, %eax
-	movl ARG3, %ecx
+	movl ARG1, %edi                /* edi = dst                         */
+	movl ARG2, %eax                /* esi = sc                          */
+	movl ARG3, %ecx                /* ecx = len                         */
 	movb %al, %ah
 	movw %ax, %dx
 	shll $16, %eax
@@ -119,9 +119,9 @@ FUNC(fb_hPixelSet2MMX)
 	movl %esp, %ebp
 	pushl %edi
 	
-	movl ARG1, %edi
-	movl ARG2, %eax
-	movl ARG3, %ecx
+	movl ARG1, %edi                /* edi = dst                         */
+	movl ARG2, %eax                /* esi = sc                          */
+	movl ARG3, %ecx                /* ecx = len                         */
 	movw %ax, %dx
 	shll $16, %eax
 	movw %dx, %ax
@@ -166,9 +166,9 @@ FUNC(fb_hPixelSet4MMX)
 	movl %esp, %ebp
 	pushl %edi
 	
-	movl ARG1, %edi
-	movl ARG2, %eax
-	movl ARG3, %ecx
+	movl ARG1, %edi                /* edi = dst                         */
+	movl ARG2, %eax                /* esi = sc                          */
+	movl ARG3, %ecx                /* ecx = len                         */
 	shrl $1, %ecx
 	jnc pixelset4_skip_1
 	stosl
@@ -216,41 +216,41 @@ FUNC(fb_hPixelSetAlpha4MMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl ARG2, %esi
-	movl ARG1, %edi
-	movd %esi, %mm6
-	movl ARG3, %ecx
+	movl ARG2, %esi                /* esi = sc                          */
+	movl ARG1, %edi                /* edi = dst                         */
+	movd %esi, %mm6                /* mm6 = esi                         */
+	movl ARG3, %ecx                /* ecx = len                         */
 
 	shrl $1, %ecx
 	jnc pixelsetalpha4_skip_1
 	
-	addl $4, %edi
-	movl %esi, %eax
-	movl -4(%edi), %ebx
-	movl %eax, %ecx
-	movl %ebx, %edx
-	andl $MASK_RB_32, %eax
-	andl $MASK_RB_32, %edx
-	shrl $24, %esi
-	subl %edx, %eax
-	imull %esi
-	xchg %eax, %ecx
-	movl %ebx, %edx
-	andl $MASK_GA_32, %eax
-	andl $MASK_GA_32, %edx
-	subl %edx, %eax
-	shrl $8, %eax
-	imull %esi
-	shrl $8, %ecx
-	movl %ebx, %edx
-	andl $MASK_RB_32, %ebx
-	andl $MASK_GA_32, %edx
-	addl %ecx, %ebx
-	addl %edx, %eax
-	andl $MASK_RB_32, %ebx
-	andl $MASK_GA_32, %eax
-	orl %ebx, %eax
-	movl %eax, -4(%edi)
+	addl $4, %edi                  /* edi = d+=4                        */
+	movl %esi, %eax                /* eax = sc                          */
+	movl -4(%edi), %ebx            /* ebx = dc                          */
+	movl %eax, %ecx                /* ecx = sc                          */
+	movl %ebx, %edx                /* edx = dc                          */
+	andl $MASK_RB_32, %eax         /* eax = srb                         */
+	andl $MASK_RB_32, %edx         /* edx = drb                         */
+	shrl $24, %esi                 /* esi = a                           */
+	subl %edx, %eax                /* eax = srb-drb                     */
+	imull %esi                     /* eax:edx = (srb-drb)*a             */
+	xchg %eax, %ecx                /* ecx = (srb-drb)*a, eax = sc       */
+	movl %ebx, %edx                /* edx = dc                          */
+	andl $MASK_GA_32, %eax         /* eax = sg                          */
+	andl $MASK_GA_32, %edx         /* edx = dg                          */
+	subl %edx, %eax                /* eax = sg-dg                       */
+	shrl $8, %eax                  /* eax = ((sg-dg)*a)>>8         [ig] */
+	imull %esi                     /* eax:edx = (sg-dg)*a               */
+	shrl $8, %ecx                  /* eax = ((sg-dg)*a)>>8         [ig] */
+	movl %ebx, %edx                /* edx = dc                          */
+	andl $MASK_RB_32, %ebx         /* ebx = drb                         */
+	andl $MASK_GA_32, %edx         /* ebx = dga                         */
+	addl %ecx, %ebx                /* ebx = drb+irb                     */
+	addl %edx, %eax                /* eax = dga+iga                     */
+	andl $MASK_RB_32, %ebx         /* ebx = (drb+irb)&MRB32             */
+	andl $MASK_GA_32, %eax         /* eax = (dga+iga)&MGA32             */
+	orl %ebx, %eax                 /* eax = a_g_ | _r_b                 */
+	movl %eax, -4(%edi)            /* dc = argb                         */
 
 LABEL(pixelsetalpha4_skip_1)
 	movl ARG3, %ecx
@@ -258,34 +258,36 @@ LABEL(pixelsetalpha4_skip_1)
 	jz pixelsetalpha4_end
 	punpckldq %mm6, %mm6
 	movq GLOBL(__fb_gfx_rb_32), %mm5
+	/*                                mm6 = ssss   ssss | ssss   ssss   */
+	/*                                mm5 = __xx   __xx | __xx   __xx   */
 
 LABEL(pixelsetalpha4_x_loop)
-	movq %mm6, %mm0
-	movq (%edi), %mm1
-	movq %mm0, %mm2
-	movq %mm0, %mm3
-	movq %mm1, %mm4
-	psrld $24, %mm2
-	psrlw $8, %mm3
-	psrlw $8, %mm4
-	packssdw %mm2, %mm2
-	pand %mm5, %mm0
-	pand %mm5, %mm1
-	punpcklwd %mm2, %mm2
-	psubw %mm1, %mm0
-	psubw %mm4, %mm3
-	pmullw %mm2, %mm0
-	pmullw %mm2, %mm3
-	psraw $8, %mm0
-	psraw $8, %mm3
-	paddw %mm1, %mm0
-	paddw %mm4, %mm3
-	pand %mm5, %mm0
-	psllw $8, %mm3
+	movq %mm6, %mm0                /* mm0 = ssss   ssss | ssss   ssss   */
+	movq (%edi), %mm1              /* mm1 = dddd   dddd | dddd   dddd   */
+	movq %mm0, %mm2                /* mm2 = ssss   ssss | ssss   ssss   */
+	movq %mm0, %mm3                /* mm3 = ssss   ssss | ssss   ssss   */
+	movq %mm1, %mm4                /* mm4 = dddd   dddd | dddd   dddd   */
+	psrld $24, %mm2                /* mm2 = ____ | __aa | ____ | __aa   */
+	psrlw $8, %mm3                 /* mm3 = __sa | __sg | __sa | __sg   */
+	psrlw $8, %mm4                 /* mm4 = __da | __dg | __da | __dg   */
+	packssdw %mm2, %mm2            /* mm2 = __aa | __aa | __aa | __aa   */
+	pand %mm5, %mm0                /* mm0 = __sr | __sb | __sr | __sb   */
+	pand %mm5, %mm1                /* mm1 = __dr | __db | __dr | __db   */
+	punpcklwd %mm2, %mm2           /* mm2 = __aa | __aa | __aa | __aa   */
+	psubw %mm1, %mm0               /* mm0 = sr-dr| sb-db| sr-dr| sb-db  */
+	psubw %mm4, %mm3               /* mm3 = sa-da| sg-dg| sa-da| sg-dg  */
+	pmullw %mm2, %mm0              /* mm0 = rr** | bb** | rr** | bb**   */
+	pmullw %mm2, %mm3              /* mm3 = aa** | gg** | aa** | gg**   */
+	psraw $8, %mm0                 /* mm0 =   rr |   bb |   rr |   bb   */
+	psraw $8, %mm3                 /* mm3 =   aa |   gg |   aa |   gg   */
+	paddw %mm1, %mm0               /* mm0 = rr++ | bb++ | rr++ | bb++   */
+	paddw %mm4, %mm3               /* mm3 = aa++ | gg++ | aa++ | gg++   */
+	pand %mm5, %mm0                /* mm0 = __rr | __bb | __rr | __bb   */
+	psllw $8, %mm3                 /* mm3 = ??__ | gg__ | ??__ | gg__   */
 	addl $8, %edi
-	por %mm3, %mm0
-	movq %mm0, -8(%edi)
-	decl %ecx
+	por %mm3, %mm0                 /* mm0 = ??rr | ggbb | ??rr | ggbb   */
+	movq %mm0, -8(%edi)            /* dc  = aarr | ggbb | aarr | ggbb   */
+	decl %ecx                      /* next 2 pixels                     */
 	jnz pixelsetalpha4_x_loop
 
 LABEL(pixelsetalpha4_end)
@@ -303,29 +305,29 @@ FUNC(fb_hPutPixelAlpha4MMX)
 	movl %esp, %ebp
 	pushl %edi
 	
-	movl ARG1, %edi
-	movl ARG4, %edx
-	movl ARG3, %ecx
-	movl ARG2, %eax
-	movl CTX_LINE(%edi), %ebp
-	movd %edx, %mm1
-	movl (%ebp, %ecx, 4), %edi
-	shrl $24, %edx
-	leal (%edi, %eax, 4), %edi
-	pxor %mm2, %mm2
-	movd (%edi), %mm0
-	movd %edx, %mm3
-	punpcklbw %mm2, %mm1			/* mm1 = | ca | cr | cg | cb | */
-	punpcklbw %mm2, %mm0			/* mm0 = | da | dr | dg | db | */
-	punpcklwd %mm3, %mm3
-	psubw %mm0, %mm1				/* mm1 = | ca-da | cr-dr | cg-dg | cb-db | */
-	punpcklwd %mm3, %mm3			/* mm3 = |  a |  a |  a |  a | */
-	psllw $8, %mm0
-	pmullw %mm3, %mm1
-	paddw %mm1, %mm0
-	psrlw $8, %mm0
-	packuswb %mm0, %mm0
-	movd %mm0, (%edi)
+	movl ARG1, %edi                /* edi = FB_GFXCTX *ctx                */
+	movl ARG4, %edx                /* edx = unsigned int color)           */
+	movl ARG3, %ecx                /* ecx = int y                         */
+	movl ARG2, %eax                /* eax = int x                         */
+	movl CTX_LINE(%edi), %ebp      /* ebp = context->line                 */
+	movd %edx, %mm1                /* mm1 = | 0000 | 0000 | cacr | cgcb | */
+	movl (%ebp, %ecx, 4), %edi     /* edi = context->line[y]              */
+	shrl $24, %edx                 /* edx =               | 0000 | 00aa | */
+	leal (%edi, %eax, 4), %edi     /* edi = context->line[y][x]           */
+	pxor %mm2, %mm2                /* mm2 = | 0000 | 0000 | 0000 | 0000 | */
+	movd (%edi), %mm0              /* mm0 = | 0000 | 0000 | dadr | dgdb | */
+	movd %edx, %mm3                /* mm3 = | 0000 | 0000 | 0000 | 00aa | */
+	punpcklbw %mm2, %mm1           /* mm1 = | __ca | __cr | __cg | __cb | */
+	punpcklbw %mm2, %mm0           /* mm0 = | __da | __dr | __dg | __db | */
+	punpcklwd %mm3, %mm3           /* mm3 = | 0000 | 0000 | 00aa | 00aa | */
+	psubw %mm0, %mm1               /* mm1 = |ca-da |cr-dr |cg-dg |cb-db | */
+	punpcklwd %mm3, %mm3           /* mm3 = | __aa | __aa | __aa | __aa | */
+	psllw $8, %mm0                 /* mm0 = | ca__ | cr__ | cg__ | cb__ | */
+	pmullw %mm3, %mm1              /* mm1 = | aa** | rr** | gg** | bb** | */
+	paddw %mm1, %mm0               /* mm0 = | aa++ | rr++ | gg++ | bb++ | */
+	psrlw $8, %mm0                 /* mm0 = | __aa | __rr | __gg | __bb | */
+	packuswb %mm0, %mm0            /* mm0 = | aarr | ggbb | aarr | ggbb | */
+	movd %mm0, %eax                /* eax =               | xxrr | ggbb | */
 
 	emms
 	popl %edi
