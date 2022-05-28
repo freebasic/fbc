@@ -29,6 +29,7 @@ Version 1.10.0
 - fbc: debug pragma #LOOKUP <sym>
 - rtlib: DOS serial driver - add support for second PIC and IRQ 8 to 15
 - fbc allow '-target i386-pc-msdosdjgpp' and similar for cross compiling dos targets (even in stand alone)
+- rtlib: ./inc/fbc-int/system.bi - to expose fb_CpuDetect()
 
 [fixed]
 - gas64: missing restoring of use of one virtual register on sqr for float (SARG)
