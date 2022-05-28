@@ -46,7 +46,7 @@ SUITE( fbc_tests.fbc_int.memory )
 		fbc.deallocate( p2 )
 		fbc.deallocate( p1 )
 	END_TEST
-	
+
 	TEST( allocs )
 		dim p1 as ubyte ptr = fbc.callocate( BUFF_SIZE )
 		dim p2 as ubyte ptr = fbc.allocate( BUFF_SIZE )
@@ -115,7 +115,7 @@ SUITE( fbc_tests.fbc_int.memory )
 
 		init_buffer( p1 )
 		init_buffer( p2 )
-		
+
 		'' move to lower overlapping location
 		fbc.memmove( p1, p1 + index, bytes )
 		move_from_idx( p2, index, bytes )
@@ -188,7 +188,7 @@ SUITE( fbc_tests.fbc_int.memory )
 		'' check that the resulting destination buffer
 		'' has expected contents
 		''
-		''      dst-len    src-len    srcbytes   zerobytes  dstbytes 
+		''      dst-len    src-len    srcbytes   zerobytes  dstbytes
 		''
 		chk_cc( BUFF_SIZE, BUFF_SIZE, BUFF_SIZE, 0        , 0         )
 		chk_cc( BUFF_SIZE, bytes    , bytes    , bytes    , 0         )
@@ -203,7 +203,7 @@ SUITE( fbc_tests.fbc_int.memory )
 	END_TEST
 
 	TEST( using_fbc )
-	
+
 		'' essentially, a compile test only
 		using fbc
 
@@ -218,7 +218,7 @@ SUITE( fbc_tests.fbc_int.memory )
 		deallocate( p1 )
 
 		CU_PASS()
-		
+
 	END_TEST
 
 END_SUITE
@@ -260,7 +260,7 @@ end sub
 SUITE( fbc_tests.fbc_int.memory )
 
 	TEST( new_delete1 )
-		
+
 		allocate_count = 0
 		deallocate_count = 0
 
@@ -292,7 +292,7 @@ SUITE( fbc_tests.fbc_int.memory )
 	END_TEST
 
 	TEST( new_delete2 )
-		
+
 		'' even though we are importing fbc
 		'' namespace, we expect that we still
 		'' get our global level allocate/deallocate
@@ -334,7 +334,7 @@ SUITE( fbc_tests.fbc_int.memory )
 		'' after 'using fbc', when calling
 		'' allocate/deallocate directly,
 		'' we should get the one declared
-		'' in the fbc namespace and not 
+		'' in the fbc namespace and not
 		'' the global one, however, this
 		'' this appears to be a bug since
 		'' the global definition seems

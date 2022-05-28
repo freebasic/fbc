@@ -12,7 +12,7 @@ SUITE( fbc_tests.fbc_int.array_size )
 			dim a( ) as T
 			CU_ASSERT_EQUAL( fb.ArrayLen( a() ), 0 )
 			CU_ASSERT_EQUAL( fb.ArraySize( a() ), 0 )
-			
+
 			redim a( 0 to 9 ) as T
 			CU_ASSERT_EQUAL( fb.ArrayLen( a() ), 10 )
 			CU_ASSERT_EQUAL( fb.ArraySize( a() ), 10 * sizeof( T ) )

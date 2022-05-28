@@ -19,7 +19,7 @@ SUITE( fbc_tests.fbc_int.math_rnd )
 		CU_ASSERT_EQUAL( fbc.rnd32(), 2165703038 )
 		CU_ASSERT_EQUAL( fbc.rnd32(), 3027450565 )
 		CU_ASSERT_EQUAL( fbc.rnd32(), 217083232 )
-		
+
 		dim info as FBC.FB_RNDSTATE ptr
 		info = fbc.rndGetState( )
 
@@ -30,7 +30,7 @@ SUITE( fbc_tests.fbc_int.math_rnd )
 	END_TEST
 
 	TEST( using_fbc )
-	
+
 		using fbc
 
 		randomize
