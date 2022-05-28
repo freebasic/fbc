@@ -120,6 +120,7 @@ SUITE( fbc_tests.gfx.blender_alpha4 )
 				next
 
 #ifdef __FB_X86__
+#ifndef __FB_64BIT__
 				if( fb_CpuDetect() and &h800000 ) then
 					for i as integer = 0 to length-1
 						dc2(i) = dc
@@ -129,6 +130,7 @@ SUITE( fbc_tests.gfx.blender_alpha4 )
 						CU_ASSERT_EQUAL( dc1(i), dc2(i) )
 					next
 				endif
+#endif
 #endif
 			next
 		next
@@ -168,7 +170,7 @@ SUITE( fbc_tests.gfx.blender_alpha4 )
 		ctx->old_view_w = w        '' viewport
 		ctx->old_view_h = h        '' viewport
 		ctx->win_x = 0             '' scaling (not enable since flags are zero)
-		ctx->win_x = 0.0           '' scaling (not enable since flags are zero) 
+		ctx->win_x = 0.0           '' scaling (not enable since flags are zero)
 		ctx->win_y = 0.0           '' scaling (not enable since flags are zero)
 		ctx->win_w = 0.0           '' scaling (not enable since flags are zero)
 		ctx->win_h = 0.0           '' scaling (not enable since flags are zero)
@@ -185,7 +187,7 @@ SUITE( fbc_tests.gfx.blender_alpha4 )
 	sub DestroyFakeGfxContext( byval ctx as fbgfxlib.FB_GFXCTX ptr, byval buffer as ubyte ptr )
 		deallocate( ctx->line )
 		if( buffer ) then
-			deallocate( buffer )		
+			deallocate( buffer )
 		end if
 	end sub
 
@@ -210,7 +212,7 @@ SUITE( fbc_tests.gfx.blender_alpha4 )
 		foreach db as ubyte in VALUE_LIST
 			dim as ulong sc = rgba(sr,sg,sb,a)
 			dc1 = rgba(dr,dg,db,0)
-			AlphaC( @dc1, sc, 1 )		
+			AlphaC( @dc1, sc, 1 )
 
 #if 0
 	'' !!!TODO!!!- we can't actually declare this to test because it is static in GFX
@@ -220,11 +222,13 @@ SUITE( fbc_tests.gfx.blender_alpha4 )
 #endif
 
 #ifdef __FB_X86__
+#ifndef __FB_64BIT__
 			dc2 = rgba(dr,dg,db,0)
-			if( fb_CpuDetect() and &h800000 ) then		
+			if( fb_CpuDetect() and &h800000 ) then
 				fb_hPutPixelAlpha4MMX( ctx, 0, 0, sc )
 				CU_ASSERT_EQUAL( dc1, dc2 )
 			end if
+#endif
 #endif
 		next
 		next
