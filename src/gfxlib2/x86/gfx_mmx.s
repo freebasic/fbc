@@ -212,6 +212,7 @@ LABEL(pixelset4_end)
 FUNC(fb_hPixelSetAlpha4MMX)
 	pushl %ebp
 	movl %esp, %ebp
+	RESERVE_LOCALS(2)
 	pushl %esi
 	pushl %edi
 	pushl %ebx
@@ -225,31 +226,36 @@ FUNC(fb_hPixelSetAlpha4MMX)
 	jnc pixelsetalpha4_skip_1
 	
 	addl $4, %edi                  /* edi = d+=4                        */
-	movl %esi, %eax                /* eax = sc                          */
+	movl %esi, %ecx                /* ecx = sc                          */
 	movl -4(%edi), %ebx            /* ebx = dc                          */
-	movl %eax, %ecx                /* ecx = sc                          */
+	shrl $24, %esi                 /* esi = a                           */
+	movl %ecx, %eax                /* eax = sc                          */
 	movl %ebx, %edx                /* edx = dc                          */
 	andl $MASK_RB_32, %eax         /* eax = srb                         */
 	andl $MASK_RB_32, %edx         /* edx = drb                         */
-	shrl $24, %esi                 /* esi = a                           */
 	subl %edx, %eax                /* eax = srb-drb                     */
-	imull %esi                     /* eax:edx = (srb-drb)*a             */
-	xchg %eax, %ecx                /* ecx = (srb-drb)*a, eax = sc       */
+	imull %esi                     /* eax = (srb-drb)*a                 */
+	shrl $8, %eax                  /* eax = ((srb-drb)*a)>>8      [irb] */
+	movl %eax, LOCAL1              /* store irb                         */
+	movl %ecx, %eax                /* eax = sc                          */
 	movl %ebx, %edx                /* edx = dc                          */
-	andl $MASK_GA_32, %eax         /* eax = sg                          */
-	andl $MASK_GA_32, %edx         /* edx = dg                          */
+	andl $MASK_G_32, %eax          /* eax = sg                          */
+	andl $MASK_G_32, %edx          /* edx = dg                          */
 	subl %edx, %eax                /* eax = sg-dg                       */
+	imull %esi                     /* eax = (sg-dg)*a                   */
 	shrl $8, %eax                  /* eax = ((sg-dg)*a)>>8         [ig] */
-	imull %esi                     /* eax:edx = (sg-dg)*a               */
-	shrl $8, %ecx                  /* eax = ((sg-dg)*a)>>8         [ig] */
-	movl %ebx, %edx                /* edx = dc                          */
+	movl %eax, LOCAL2              /* store ig                          */
+	movl %ecx, %eax                /* eax = sc                          */
+	andl $MASK_A_32, %eax          /* eax = sa                          */
+	movl %ebx, %ecx                /* ecx = dc                          */
 	andl $MASK_RB_32, %ebx         /* ebx = drb                         */
-	andl $MASK_GA_32, %edx         /* ebx = dga                         */
-	addl %ecx, %ebx                /* ebx = drb+irb                     */
-	addl %edx, %eax                /* eax = dga+iga                     */
+	andl $MASK_G_32, %ecx          /* ecx = dg                          */
+	addl LOCAL1, %ebx              /* ebx = drb+irb                     */
 	andl $MASK_RB_32, %ebx         /* ebx = (drb+irb)&MRB32             */
-	andl $MASK_GA_32, %eax         /* eax = (dga+iga)&MGA32             */
-	orl %ebx, %eax                 /* eax = a_g_ | _r_b                 */
+	orl  %ebx, %eax                /* eax = a | _r_b                    */
+	addl LOCAL2, %ecx              /* ecx = dg+ig                       */
+	andl $MASK_G_32, %ecx          /* ecx = (dg+ig)&MG32                */
+	orl  %ecx, %eax                /* eax = ar_b | __g_                 */
 	movl %eax, -4(%edi)            /* dc = argb                         */
 
 LABEL(pixelsetalpha4_skip_1)
@@ -284,8 +290,12 @@ LABEL(pixelsetalpha4_x_loop)
 	paddw %mm4, %mm3               /* mm3 = aa++ | gg++ | aa++ | gg++   */
 	pand %mm5, %mm0                /* mm0 = __rr | __bb | __rr | __bb   */
 	psllw $8, %mm3                 /* mm3 = ??__ | gg__ | ??__ | gg__   */
+	pslld $8, %mm3                 /* mm3 = __gg | ____ | __gg | ____   */
+	psrld $8, %mm3                 /* mm3 = ____ | gg__ | ____ | gg__   */
+	pslld $24, %mm2                /* mm2 = aa__ | ____ | aa__ | ____   */
 	addl $8, %edi
-	por %mm3, %mm0                 /* mm0 = ??rr | ggbb | ??rr | ggbb   */
+	por %mm3, %mm0                 /* mm0 = __rr | ggbb | __rr | ggbb   */
+	por %mm2, %mm0                 /* mm0 = aarr | ggbb | aarr | ggbb   */
 	movq %mm0, -8(%edi)            /* dc  = aarr | ggbb | aarr | ggbb   */
 	decl %ecx                      /* next 2 pixels                     */
 	jnz pixelsetalpha4_x_loop
@@ -295,6 +305,7 @@ LABEL(pixelsetalpha4_end)
 	popl %ebx
 	popl %edi
 	popl %esi
+	FREE_LOCALS(2)
 	popl %ebp
 	ret
 
@@ -319,7 +330,7 @@ FUNC(fb_hPutPixelAlpha4MMX)
 	movd %edx, %mm3                /* mm3 = | 0000 | 0000 | 0000 | 00aa | */
 	punpcklbw %mm2, %mm1           /* mm1 = | __ca | __cr | __cg | __cb | */
 	punpcklbw %mm2, %mm0           /* mm0 = | __da | __dr | __dg | __db | */
-	punpcklwd %mm3, %mm3           /* mm3 = | 0000 | 0000 | 00aa | 00aa | */
+	punpcklwd %mm3, %mm3           /* mm3 = | ____ | ____ | __aa | __aa | */
 	psubw %mm0, %mm1               /* mm1 = |ca-da |cr-dr |cg-dg |cb-db | */
 	punpcklwd %mm3, %mm3           /* mm3 = | __aa | __aa | __aa | __aa | */
 	psllw $8, %mm0                 /* mm0 = | ca__ | cr__ | cg__ | cb__ | */
@@ -328,6 +339,11 @@ FUNC(fb_hPutPixelAlpha4MMX)
 	psrlw $8, %mm0                 /* mm0 = | __aa | __rr | __gg | __bb | */
 	packuswb %mm0, %mm0            /* mm0 = | aarr | ggbb | aarr | ggbb | */
 	movd %mm0, %eax                /* eax =               | xxrr | ggbb | */
+	shll $24, %edx                 /* edx =               | aa00 | 0000 | */
+	shll $8, %eax                  /* eax =               | rrgg | gg__ | */
+	shrl $8, %eax                  /* eax =               | 00rr | ggbb | */
+	or %edx, %eax                  /* eax =               | aarr | ggbb | */
+	movl %eax, (%edi)              /* dst =               | aarr | ggbb | */
 
 	emms
 	popl %edi

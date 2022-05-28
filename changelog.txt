@@ -17,6 +17,7 @@ Version 1.10.0
 - fbc: automatically restart fbc/parser at first executable statement if required after preprocessor statements parsed
 - fbc: -forcelang overrides default lang, -lang, previous -forcelang, #lang, #cmdline "-lang", #cmdline "-forcelang"
 - fbc: allow gnu triplets for -target option even in standalone builds
+- gfxlib2: store alpha from source to destination when blending alpha primitives in MMX blender to match C blender
 
 [added]
 - gas64: '.cif_sections' and '.cif_' directives for stack unwinding (adeyblue)
@@ -46,6 +47,7 @@ Version 1.10.0
 - sf.net #455: fbc: Number lexing allows much bad input - a show a warning message "Expected digit" where '&o', '&h', '&b' has no digits following
 - gas64: initialize debug structure even if not emitting debug info to prevent errors due to setup changes by #cmdline inside the parser
 - fbc: don't allow '-lang' option to override '-forcelang' option on command line
+- github #199: Gfxlib Different Pixel Output Between C & MMX - change MMX Alpha blenders to match C blenders
 
 
 Version 1.09.0
