@@ -48,7 +48,6 @@ SUITE( fbc_tests.pp.macro_arg_extract )
 		CU_ASSERT_EQUAL( "", __FB_QUOTE__(__FB_ARG_EXTRACT__( 175, NumList ) ) )
 		CU_ASSERT_EQUAL( "", __FB_QUOTE__(__FB_ARG_EXTRACT__( 99, NumList ) ) )
 		CU_ASSERT_EQUAL( "", __FB_QUOTE__(__FB_ARG_EXTRACT__( 23, 9, 8, 7, 6, 5, 4, 3, 2, 1 ) ) )
-		CU_ASSERT_EQUAL( "", __FB_QUOTE__(__FB_ARG_EXTRACT__( 654857635644674, GetNumList() ) ) )
 	END_TEST
 
 	TEST( literal_list )

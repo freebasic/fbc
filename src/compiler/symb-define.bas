@@ -532,31 +532,27 @@ private function hDefArgExtract_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum
 		'' so check and construct the number manually
 
 		dim as string varstr = hMacro_EvalZ(numStr)
-		var pnumStr = strptr(varstr)
+		dim as long index
 
-		dim numArgLen as Long = Len(*pnumStr), i as Long, index as ULong = 0
-		dim zeroVal As ULong = Asc("0")
-		For i = 0 To numArgLen - 1
-			if( Not hIsCharNumeric(pnumStr[i]) ) then
-				Exit For
-			End If
-			index *= 10
-			index += (pnumStr[i] - zeroVal)
-		Next
-		If i = numArgLen Then
-			dim numVarArgs As ULong = argtb->count - 1
-			if(index < numVarArgs) then
-				var argString = hMacro_getArgZ( argtb, 1 )
-				dim varArgs() as string
+		if( hStr2long( varstr, index ) ) then
+			if( index >= 0 ) then
+				dim numVarArgs As ULong = argtb->count - 1
+				if(index < numVarArgs) then
+					var argString = hMacro_getArgZ( argtb, 1 )
+					dim varArgs() as string
 
-				if( hStr2Args( argString, varArgs() ) > 0 ) then
-					res = varArgs(index)
+					if( hStr2Args( argString, varArgs() ) > 0 ) then
+						res = varArgs(index)
+					end if
+
+					ZStrFree(argString)
 				end if
-
-				ZStrFree(argString)
+			else
+				'' expected positive
+				*errnum = FB_ERRMSG_SYNTAXERROR	
 			end if
-
-		else '' NUMARG isn't a number
+		else
+			'' NUMARG isn't a number
 			*errnum = FB_ERRMSG_SYNTAXERROR
 		end if
 
@@ -569,7 +565,7 @@ private function hDefArgExtract_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum
 
 end function
 
-private function hDefArgLeft_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
+private function hDefArgLeft_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
 
 	'' __FB_ARG_LEFTTOF__( ARG, SEP [, RET = ""] )
 
@@ -615,7 +611,7 @@ private function hDefArgLeft_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as
 
 end function
 
-private function hDefArgRight_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
+private function hDefArgRight_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
 
 	'' __FB_ARG_RIGHTOF__( ARG, SEP [, RET = ""] )
 
@@ -660,7 +656,7 @@ private function hDefArgRight_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 
 end function
 
-private function hDefJoinZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
+private function hDefJoinZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
 
 	'' __FB_JOIN__( L, R )
 
@@ -681,7 +677,7 @@ private function hDefJoinZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as i
 
 end function
 
-private function hDefJoinW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as wstring ptr
+private function hDefJoinW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as wstring ptr
 
 	'' __FB_JOIN__( L, R )
 
@@ -702,7 +698,7 @@ private function hDefJoinW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as i
 
 end function
 
-private function hDefQuoteZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
+private function hDefQuoteZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
 
 	'' __FB_QUOTE__( arg )
 
@@ -725,7 +721,7 @@ private function hDefQuoteZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as 
 
 end function
 
-private function hDefQuoteW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as wstring ptr
+private function hDefQuoteW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as wstring ptr
 
 	'' __FB_QUOTE__( arg )
 
@@ -749,7 +745,7 @@ private function hDefQuoteW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as 
 
 end function
 
-private function hDefUnquoteZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
+private function hDefUnquoteZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
 
 	'' __FB_UNQUOTE__( arg )
 
@@ -783,7 +779,7 @@ private function hDefUnquoteZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 
 end function
 
-private function hDefUnquoteW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as wstring ptr
+private function hDefUnquoteW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as wstring ptr
 
 	'' __FB_UNQUOTE__( arg )
 

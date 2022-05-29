@@ -1272,6 +1272,40 @@ function hIsValidHexDigit( byval ch as integer ) as integer
 		((ch >= asc( "A" )) and (ch <= asc( "F" )))
 end function
 
+function hStr2long( byref txt as string, byref value as long ) as integer
+	'' could we not use VALINT() or some variation from rtlib?
+
+	const CHAR_ZERO = asc("0")
+
+	dim nvalue as long = 0
+	dim nsign as long = 1
+	dim s as ubyte ptr = strptr(txt)
+
+	if( *s = CHAR_NULL ) then
+		return FALSE
+	end if
+
+	if( *s = CHAR_MINUS ) then
+		nsign = -1
+		s += 1
+	end if
+
+	if( *s = CHAR_NULL ) then
+		return FALSE
+	end if
+
+	while( hIsCharNumeric(*s) )
+		nvalue *= 10
+		nvalue += (*s - CHAR_ZERO)
+		s += 1
+	wend
+
+	value = nvalue * nsign
+
+	'' return TRUE if we read the entire string
+	return (*s = CHAR_NULL)
+end function
+
 '':::::
 sub hSplitStr(byref txt as string, byref del as string, res() as string)
 
