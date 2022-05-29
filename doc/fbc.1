@@ -1,4 +1,4 @@
-.TH FBC 1 "2022-02-11" "FreeBASIC Compiler 1.10.0" "FreeBASIC Compiler"
+.TH FBC 1 "2022-05-29" "FreeBASIC Compiler 1.10.0" "FreeBASIC Compiler"
 .SH NAME
 fbc \- The FreeBASIC compiler
 .SH DESCRIPTION
@@ -26,6 +26,9 @@ Set the assembler format for Asm blocks and for code generation (x86 only)
 .TP
 \fB\-b\fR \fIfile\fR
 Treat file as .bas input file
+.TP
+\fB\-buildprefix\fR \fIname\fR
+Specify prefix on tool names (as, ar, ld)
 .TP
 \fB\-c\fR
 Compile only, do not link
@@ -62,6 +65,9 @@ Enable full error location reporting
 .TP
 \fB\-enullptr\fR
 Enable null-pointer checking
+.TP
+\fB\-eunwind\fR
+Enable call stack unwind information
 .TP
 \fB\-entry\fR \fIname\fR
 Change the entry point of the program from main()
@@ -265,7 +271,7 @@ The full language specification and help is available in wiki format at
 .B 
 https://www.freebasic.net/wiki/
 .SH COPYRIGHT
-Copyright \(co 2004\-2021 The FreeBASIC Development Team
+Copyright \(co 2004\-2022 The FreeBASIC Development Team
 .br
 This is free software.  You may redistribute copies of it under the terms of
 the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.

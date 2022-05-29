@@ -106,9 +106,12 @@ type FBCCTX
 
 	'' Compiler paths
 	prefix              as zstring * FB_MAXPATHLEN+1  '' Path from -prefix or empty
-	binpath             as zstring * FB_MAXPATHLEN+1
-	incpath             as zstring * FB_MAXPATHLEN+1
-	libpath             as zstring * FB_MAXPATHLEN+1
+	binpath             as zstring * FB_MAXPATHLEN+1  '' standalone=prefix/bin/target/  normal=prefix/<fbname>/(target|build)prefix
+	incpath             as zstring * FB_MAXPATHLEN+1  '' standalone=prefix/inc          normal=prefix/include/<fbname>
+	libpath             as zstring * FB_MAXPATHLEN+1  '' standalone=prefix/lib/target   normal=prefix/lib[64]/<fbname>/target
+
+	'' Tool prefix
+	buildprefix         as zstring * FB_MAXPATHLEN+1  '' command line option to override target prefix (affects tool names executed)
 
 	objinf              as FBC_OBJINF
 end type
@@ -441,7 +444,13 @@ private sub fbcFindBin _
 
 	if( len( path ) = 0 ) then
 		'' b) Try bin/ directory
-		path = fbc.binpath + fbctoolTB(tool).name + FB_HOST_EXEEXT
+		#ifndef ENABLE_STANDALONE
+			'' normal build, the build/target prefix is already appended to binpath
+			path = fbc.binpath + fbctoolTB(tool).name + FB_HOST_EXEEXT
+		#else
+			'' standalone build, we need to use insert it here
+			path = fbc.binpath + fbc.buildprefix + fbctoolTB(tool).name + FB_HOST_EXEEXT
+		#endif
 
 		#ifndef ENABLE_STANDALONE
 			if( hFileExists( path ) = FALSE ) then
@@ -469,7 +478,11 @@ private sub fbcFindBin _
 			if( hFileExists( path ) = FALSE ) then
 				'' d) Rely on PATH
 				if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
-					path = fbc.targetprefix + fbctoolTB(tool).name + FB_HOST_EXEEXT
+					if( len(fbc.buildprefix) > 0 ) then
+						path = fbc.buildprefix + fbctoolTB(tool).name + FB_HOST_EXEEXT
+					else
+						path = fbc.targetprefix + fbctoolTB(tool).name + FB_HOST_EXEEXT
+					end if
 				else
 					path = fbctoolTB(tool).name
 				end if
@@ -1180,8 +1193,10 @@ private function hLinkFiles( ) as integer
 				end if
 			end if
 		#else
+			dim toolnamelen = len( "ld.exe " ) + _
+				iif( len( fbc.targetprefix ) > len( fbc.buildprefix ), len( fbc.targetprefix ), len( fbc.buildprefix ) )
 			if( (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) or _
-				(len( ldcline ) > (2047 - len( "ld.exe " ) - len( fbc.targetprefix ))) ) then
+				(len( ldcline ) > (2047 - toolnamelen)) ) then
 				if( hPutLdArgsIntoFile( ldcline ) = FALSE ) then
 					exit function
 				end if
@@ -1643,6 +1658,7 @@ enum
 	OPT_ARCH
 	OPT_ASM
 	OPT_B
+	OPT_BUILDPREFIX
 	OPT_C
 	OPT_CKEEPOBJ
 	OPT_D
@@ -1723,6 +1739,7 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_ARCH         affects major initialization
 	( TRUE , TRUE , FALSE, TRUE  ), _ '' OPT_ASM          affects major initialization,affects second stage compile
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_B            adds files to compile
+	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_BUILDPREFIX  affects tools executed
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_C            affects compile / assemble /link process
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_CKEEPOBJ     affects removal of temporary files
 	( TRUE , TRUE , FALSE, TRUE  ), _ '' OPT_D            add symbols to current source also, not just the preDefines, affects global defines
@@ -1819,6 +1836,9 @@ private sub handleOpt _
 
 	case OPT_B
 		hAddBas( arg )
+
+	case OPT_BUILDPREFIX
+		fbc.buildprefix = arg
 
 	case OPT_C
 		'' -c changes the output type to from exe/lib/dll to object,
@@ -2280,6 +2300,7 @@ private function parseOption(byval opt as zstring ptr) as integer
 
 	case asc("b")
 		ONECHAR(OPT_B)
+		CHECK("buildprefix", OPT_BUILDPREFIX)
 
 	case asc("c")
 		ONECHAR(OPT_C)
@@ -2887,7 +2908,11 @@ private sub fbcSetupCompilerPaths( )
 		end if
 	#endif
 
-	fbc.binpath = fbc.prefix + "bin"     + FB_HOST_PATHDIV + fbc.targetprefix
+	if( len(fbc.buildprefix) > 0 ) then
+		fbc.binpath = fbc.prefix + "bin"     + FB_HOST_PATHDIV + fbc.buildprefix
+	else
+		fbc.binpath = fbc.prefix + "bin"     + FB_HOST_PATHDIV + fbc.targetprefix
+	end if
 	fbc.incpath = fbc.prefix + "include" + FB_HOST_PATHDIV + fbname
 	fbc.libpath = fbc.prefix + libdirname + FB_HOST_PATHDIV + fbname + FB_HOST_PATHDIV + targetid
 #endif
@@ -3951,6 +3976,9 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -arch <type>     Set target architecture (default: 686)"
 	print "  -asm att|intel   Set asm format (-gen gcc|llvm, x86 or x86_64 only)"
 	print "  -b <file>        Treat file as .bas input file"
+	if( verbose ) then
+	print "  -buildprefix <name>  specify prefix on tool names (as, ar, ld)"
+	end if
 	print "  -c               Compile only, do not link"
 	print "  -C               Preserve temporary .o files"
 	print "  -d <name>[=<val>]  Add a global #define"
@@ -3966,15 +3994,17 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -elocation       Enable error location reporting"
 	print "  -enullptr        Enable null-pointer checking"
 	print "  -eunwind         Enable call stack unwind information"
+	print "  -entry           Change the entry point of the program from main()"
 	end if
 
-	print "  -entry           Change the entry point of the program from main()"
 	print "  -ex              -e plus RESUME support"
 	print "  -exx             -ex plus array bounds/null-pointer checking"
 	print "  -export          Export symbols for dynamic linkage"
 	print "  -forcelang <name>  Override #lang statements in source code"
+	if( verbose ) then
 	print "  -fpmode fast|precise  Select floating-point math accuracy/speed"
 	print "  -fpu x87|sse     Set target FPU"
+	endif
 	print "  -g               Add debug info, enable __FB_DEBUG__, and enable assert()"
 
 	if( verbose ) then
@@ -3986,7 +4016,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -gen gas|gas64|gcc|llvm  Select code generation backend"
 	end if
 
-	print "  [-]-help         Show this help output"
+	print "  [-]-help         Show this help output; use '-help -v' to show verbose help"
 	print "  -i <path>        Add an include file search path"
 	print "  -include <file>  Pre-#include a file for each input .bas"
 	print "  -l <name>        Link in a library"
