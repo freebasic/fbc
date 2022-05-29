@@ -32,6 +32,7 @@ Version 1.10.0
 - fbc allow '-target i386-pc-msdosdjgpp' and similar for cross compiling dos targets (even in stand alone)
 - rtlib: ./inc/fbc-int/system.bi - for fb_CpuDetect()
 - gfxlib2: ./inc/fbc-int/gfx.bi - to expose FB_GFXCTX structure and some typedefs from gfx lib (useful for some tests in the test-suite)
+- fbc: basic-macros: add __FB_IIF__( compare-expr, true-expr, false-expr ) macro
 
 [fixed]
 - gas64: missing restoring of use of one virtual register on sqr for float (SARG)

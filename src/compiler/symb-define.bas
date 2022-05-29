@@ -845,6 +845,54 @@ private function hDefEvalW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as i
 
 end function
 
+private function hDefIifZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
+
+	'' __FB_IIF__( CMPEXPR, TEXPR, FEXPR )
+
+	var res = ""
+	var cexpr = hMacro_getArgZ( argtb, 0 )  '' comparison
+	var texpr = hMacro_getArgZ( argtb, 1 )  '' true-expression
+	var fexpr = hMacro_getArgZ( argtb, 2 )  '' false-expression
+
+	if( (cexpr <> NULL) and (texpr <> NULL) and (fexpr <> NULL) ) then
+		dim as string varstr = hMacro_EvalZ( cexpr )
+		dim as boolean value = cbool( varstr )
+		res = iif( cbool( varstr ), *texpr, *fexpr )
+	else
+		*errnum = FB_ERRMSG_ARGCNTMISMATCH
+	end if
+
+	ZstrFree(fexpr)
+	ZstrFree(texpr)
+	ZstrFree(cexpr)
+	
+	function =  res
+	
+end function
+
+private function hDefIifW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as wstring ptr
+
+	'' __FB_IIF__( CMPEXPR, TEXPR, FEXPR )
+
+	static res as DWSTRING
+	static wvarstr as DWSTRING
+	var cexpr = hMacro_getArgW( argtb, 0 )  '' comparison
+	var texpr = hMacro_getArgW( argtb, 1 )  '' true-expression
+	var fexpr = hMacro_getArgW( argtb, 2 )  '' false-expression
+
+	if( (cexpr <> NULL) and (texpr <> NULL) and (fexpr <> NULL) ) then
+		dim as long value = 0
+		dim as string varstr
+		DWstrAssign( wvarstr, hMacro_EvalW( cexpr ) )
+		varstr = str( wvarstr.data )
+		DWstrAssign( res, iif( cbool( varstr ), *texpr, *fexpr ) )
+	else
+		*errnum = FB_ERRMSG_ARGCNTMISMATCH
+	end if
+	
+	function = res.data
+	
+end function
 
 '' Intrinsic #defines which are always defined
 dim shared defTb(0 to ...) as SYMBDEF => _
@@ -911,7 +959,8 @@ dim shared macroTb(0 to ...) as SYMBMACRO => _
 	(@"__FB_JOIN__"           , 0                       , @hDefJoinZ_cb       , @hDefJoinW_cb        , 2, { (@"L"), (@"R") } ), _
 	(@"__FB_QUOTE__"          , 0                       , @hDefQuoteZ_cb      , @hDefQuoteW_cb       , 1, { (@"ARG") } ), _
 	(@"__FB_UNQUOTE__"        , 0                       , @hDefUnquoteZ_cb    , @hDefUnquoteW_cb     , 1, { (@"ARG") } ), _
-	(@"__FB_EVAL__"           , 0                       , @hDefEvalZ_cb       , @hDefEvalW_cb        , 1, { (@"ARG") } ) _
+	(@"__FB_EVAL__"           , 0                       , @hDefEvalZ_cb       , @hDefEvalW_cb        , 1, { (@"ARG") } ), _
+	(@"__FB_IIF__"            , 0                       , @hDefIifZ_cb        , @hDefIifW_cb         , 3, { (@"CMPEXPR"), (@"TEXPR"), (@"FEXPR") } ) _
 }
 
 sub symbDefineInit _
