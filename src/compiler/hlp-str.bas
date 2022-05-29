@@ -8,53 +8,55 @@
 #include once "dstr.bi"
 
 '':::::
-#define ASSIGN_SETUP(dst, src, _type)							_
-	dim as integer dst_len, src_len								:_
-	                                                            :_
-	if( src = NULL ) then                                       :_
-		src_len = 0                                             :_
-	else                                                        :_
-		src_len = len( *src )                        			:_
-	end if														:_
-																:_
-	if( src_len = 0 ) then                                      :_
-		if( *dst <> NULL ) then                             	:_
-			deallocate( *dst )                              	:_
-			*dst = NULL                                     	:_
-			exit sub                                            :_
-		end if                                                  :_
-	end if                                                      :_
-	                                                            :_
-	if( *dst = NULL ) then                                      :_
-		dst_len = 0                                             :_
-	else                                                        :_
-		dst_len = len( **dst )									:_
-	end if														:_
-	                                                            :_
-	if( dst_len <> src_len ) then                               :_
-		*dst = xallocate( (src_len+1) * len( _type ) )    		:_
+#macro ASSIGN_SETUP(dst, src, _type)
+	dim as integer dst_len, src_len
+
+	if( src = NULL ) then
+		src_len = 0
+	else
+		src_len = len( *src )
 	end if
 
-'':::::
-#define CONCATASSIGN_SETUP(dst, src, _type)						_
-	dim as integer dst_len, src_len								:_
-	                                                            :_
-	if( src = NULL ) then                                       :_
-		exit sub												:_
-	end if														:_
-																:_
-	src_len = len( *src )                        				:_
-	if( src_len = 0 ) then                                      :_
-		exit sub                                                :_
-	end if                                                      :_
-	                                                            :_
-	if( *dst = NULL ) then                                      :_
-		dst_len = 0                                             :_
-		*dst = xallocate( (src_len+1) * len( _type ) )			:_
-	else                                                        :_
-		dst_len = len( **dst )									:_
-		*dst = xreallocate( *dst, (dst_len+src_len+1) * len( _type ) ) :_
+	if( src_len = 0 ) then
+		if( *dst <> NULL ) then
+			deallocate( *dst )
+			*dst = NULL
+			exit sub
+		end if
 	end if
+
+	if( *dst = NULL ) then
+		dst_len = 0
+	else
+		dst_len = len( **dst )
+	end if
+
+	if( dst_len <> src_len ) then
+		*dst = xallocate( (src_len+1) * len( _type ) )
+	end if
+#endmacro
+
+'':::::
+#macro CONCATASSIGN_SETUP(dst, src, _type)
+	dim as integer dst_len, src_len
+
+	if( src = NULL ) then
+		exit sub
+	end if
+
+	src_len = len( *src )
+	if( src_len = 0 ) then
+		exit sub
+	end if
+
+	if( *dst = NULL ) then
+		dst_len = 0
+		*dst = xallocate( (src_len+1) * len( _type ) )
+	else
+		dst_len = len( **dst )
+		*dst = xreallocate( *dst, (dst_len+src_len+1) * len( _type ) )
+	end if
+#endmacro
 
 '':::::
 sub ZstrAssign _
@@ -381,8 +383,8 @@ function hReEscape _
 						char = *src
 						select case char
 						case CHAR_ALOW to CHAR_FLOW, _
-							 CHAR_AUPP to CHAR_FUPP, _
-							 CHAR_0 to CHAR_9
+							CHAR_AUPP to CHAR_FUPP, _
+							CHAR_0 to CHAR_9
 							char -= CHAR_0
 							if( char > 9 ) then
 								char -= (CHAR_AUPP - CHAR_9 - 1)
@@ -618,8 +620,8 @@ function hReEscapeW _
 						char = *src
 						select case char
 						case CHAR_ALOW to CHAR_FLOW, _
-							 CHAR_AUPP to CHAR_FUPP, _
-							 CHAR_0 to CHAR_9
+							CHAR_AUPP to CHAR_FUPP, _
+							CHAR_0 to CHAR_9
 							char -= CHAR_0
 							if( char > 9 ) then
 								char -= (CHAR_AUPP - CHAR_9 - 1)
@@ -907,18 +909,18 @@ function hHasEscape _
 			char = *text
 			select case as const char
 			case asc( "r" ), _
-				 asc( "l" ), _
-				 asc( "n" ), _
-				 asc( "t" ), _
-				 asc( "b" ), _
-				 asc( "a" ), _
-				 asc( "f" ), _
-				 asc( "v" ), _
-				 CHAR_QUOTE, _
-				 CHAR_0 to CHAR_9, _
-				 CHAR_AMP, _
-				 CHAR_ULOW, CHAR_UUPP, _
-				 CHAR_RSLASH
+				asc( "l" ), _
+				asc( "n" ), _
+				asc( "t" ), _
+				asc( "b" ), _
+				asc( "a" ), _
+				asc( "f" ), _
+				asc( "v" ), _
+				CHAR_QUOTE, _
+				CHAR_0 to CHAR_9, _
+				CHAR_AMP, _
+				CHAR_ULOW, CHAR_UUPP, _
+				CHAR_RSLASH
 
 				return TRUE
 			end select
@@ -950,18 +952,18 @@ function hHasEscapeW _
 			char = *text
 			select case as const char
 			case asc( "r" ), _
-				 asc( "l" ), _
-				 asc( "n" ), _
-				 asc( "t" ), _
-				 asc( "b" ), _
-				 asc( "a" ), _
-				 asc( "f" ), _
-				 asc( "v" ), _
-				 CHAR_QUOTE, _
-				 CHAR_0 to CHAR_9, _
-				 CHAR_AMP, _
-				 CHAR_ULOW, CHAR_UUPP, _
-				 CHAR_RSLASH
+				asc( "l" ), _
+				asc( "n" ), _
+				asc( "t" ), _
+				asc( "b" ), _
+				asc( "a" ), _
+				asc( "f" ), _
+				asc( "v" ), _
+				CHAR_QUOTE, _
+				CHAR_0 to CHAR_9, _
+				CHAR_AMP, _
+				CHAR_ULOW, CHAR_UUPP, _
+				CHAR_RSLASH
 
 				return TRUE
 			end select
@@ -1261,13 +1263,13 @@ function hCharNeedsEscaping _
 	'' context) must be escaped. Also any high (i.e. non-ASCII) codepage or
 	'' Unicode chars should be escaped, to be safe.
 	function = (ch < 32) or (ch >= 127) or _
-	           (ch = asc( $"\" )) or (ch = quotechar)
+		(ch = asc( $"\" )) or (ch = quotechar)
 end function
 
 function hIsValidHexDigit( byval ch as integer ) as integer
 	function = ((ch >= asc( "0" )) and (ch <= asc( "9" ))) or _
-	           ((ch >= asc( "a" )) and (ch <= asc( "f" ))) or _
-	           ((ch >= asc( "A" )) and (ch <= asc( "F" )))
+		((ch >= asc( "a" )) and (ch <= asc( "f" ))) or _
+		((ch >= asc( "A" )) and (ch <= asc( "F" )))
 end function
 
 '':::::
@@ -1275,12 +1277,12 @@ sub hSplitStr(byref txt as string, byref del as string, res() as string)
 
 	var items = 10
 	redim dpos(0 to items-1) as integer
-	
+
 	var dellen = len(del)
-	
+
 	var cnt = 0
 	var p = 1
-	do 
+	do
 		p = instr(p, txt, del)
 		if( p > 0 ) then
 			if( cnt >= items ) then
@@ -1292,14 +1294,14 @@ sub hSplitStr(byref txt as string, byref del as string, res() as string)
 		end if
 		cnt += 1
 	loop until( p = 0 )
-	
+
 	cnt -= 1
 	if( cnt = 0 ) then
 		redim res(0 to 0)
 		res(0) = txt
 		return
 	end if
-	
+
 	redim res(0 to cnt)
 	res(0) = Left(txt, dpos(0) - 1 )
 	p = 1
@@ -1316,20 +1318,20 @@ function hStr2Tok(byval txt as const zstring ptr, res() as string) as integer
 
 	dim as integer t = 0
 	dim as uinteger lc = CHAR_SPACE
-	dim as const ubyte ptr s = cast(const ubyte ptr, txt)	
+	dim as const ubyte ptr s = cast(const ubyte ptr, txt)
 	do while( *s <> CHAR_NULL )
 		dim as uinteger c = cast(uinteger, *s)
-		
+
 		if( c = CHAR_BELL ) then
 			c = CHAR_SPACE
 		end if
-		
+
 		if( c = CHAR_SPACE ) then
 			if( lc <> CHAR_SPACE ) then
 				t += 1
 			end if
 		end if
-		
+
 		lc = c
 		s += 1
 	loop
@@ -1337,23 +1339,23 @@ function hStr2Tok(byval txt as const zstring ptr, res() as string) as integer
 	if( lc <> CHAR_SPACE ) then
 		t += 1
 	end if
-	
+
 	if( t = 0 ) then
 		return 0
 	end if
-	
+
 	redim res(0 to t-1)
-	
+
 	t = 0
 	lc = CHAR_SPACE
-	s = cast(const ubyte ptr, txt)	
+	s = cast(const ubyte ptr, txt)
 	do while( *s <> CHAR_NULL )
 		var c = cast(uinteger, *s)
-		
+
 		if( c = CHAR_BELL ) then
 			c = CHAR_SPACE
 		end if
-		
+
 		if( c = CHAR_SPACE ) then
 			if( lc <> CHAR_SPACE ) then
 				t += 1
@@ -1361,13 +1363,13 @@ function hStr2Tok(byval txt as const zstring ptr, res() as string) as integer
 		else
 			res(t) += chr(c)
 		end if
-		
+
 		lc = c
 		s += 1
 	loop
-	
+
 	function = iif(lc <> CHAR_SPACE, t + 1, t)
-	
+
 end function
 
 '':::::
@@ -1381,14 +1383,14 @@ function hStr2Args( byval txt as const zstring ptr, res() as string ) as integer
 	dim as uinteger c = CHAR_NULL
 	dim as integer max_t = 10
 
-	if( txt = NULl ) then 
+	if( txt = NULl ) then
 		return 0
 	end if
 
 	#define PeekChar()   cast( uinteger, s[0] )
 	#define SkipChar()   s += 1
 	#define ReadChar(c)  res(t-1) += chr(c) : s += 1
-		
+
 	redim res( 0 to max_t-1 ) as string
 
 	do
@@ -1433,11 +1435,11 @@ function hStr2Args( byval txt as const zstring ptr, res() as string ) as integer
 				SkipChar()
 				continue do
 			end if
-		
+
 		case CHAR_QUOTE, CHAR_EXCL, CHAR_DOLAR
 			dim as integer escaped = env.opt.escapestr
 			if( c <> CHAR_QUOTE ) then
-				escaped = ( c = CHAR_EXCL ) 
+				escaped = ( c = CHAR_EXCL )
 
 				'' '!' | '$'
 				ReadChar(c)
@@ -1525,7 +1527,7 @@ function hStr2Args( byval txt as const zstring ptr, res() as string ) as integer
 			exit do
 
 		end select
-	
+
 		'' any other char not handled above
 		ReadChar(c)
 
