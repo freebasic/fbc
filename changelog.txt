@@ -33,7 +33,7 @@ Version 1.10.0
 - rtlib: ./inc/fbc-int/system.bi - for fb_CpuDetect()
 - gfxlib2: ./inc/fbc-int/gfx.bi - to expose FB_GFXCTX structure and some typedefs from gfx lib (useful for some tests in the test-suite)
 - fbc: basic-macros: add __FB_IIF__( compare-expr, true-expr, false-expr ) macro
-- fbc: add '-buildprefix <name>' command line option to override internal targetprefix option (targetprefix is set by default from -target command line option)
+- github #357: fbc: add '-buildprefix <name>' command line option to specify tool name prefix in both fbc standalone and normal set-ups.  Overrides default 'target-' prefix on tool names in normal fbc set-up
 
 [fixed]
 - gas64: missing restoring of use of one virtual register on sqr for float (SARG)

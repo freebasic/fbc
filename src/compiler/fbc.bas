@@ -1193,7 +1193,7 @@ private function hLinkFiles( ) as integer
 				end if
 			end if
 		#else
-			dim toolnamelen = len( "ld.exe " ) + _
+			dim toolnamelen as integer = len( "ld.exe " ) + _
 				iif( len( fbc.targetprefix ) > len( fbc.buildprefix ), len( fbc.targetprefix ), len( fbc.buildprefix ) )
 			if( (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) or _
 				(len( ldcline ) > (2047 - toolnamelen)) ) then
@@ -1739,7 +1739,7 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_ARCH         affects major initialization
 	( TRUE , TRUE , FALSE, TRUE  ), _ '' OPT_ASM          affects major initialization,affects second stage compile
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_B            adds files to compile
-	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_BUILDPREFIX  affects tools executed
+	( TRUE , TRUE , FALSE, TRUE  ), _ '' OPT_BUILDPREFIX  affects tools executed (fbcSetupCompilerPaths(), so restart is required)
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_C            affects compile / assemble /link process
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_CKEEPOBJ     affects removal of temporary files
 	( TRUE , TRUE , FALSE, TRUE  ), _ '' OPT_D            add symbols to current source also, not just the preDefines, affects global defines
