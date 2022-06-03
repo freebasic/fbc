@@ -111,6 +111,23 @@
 #define GET_HIGH_PRIORITY           16
 #define GET_SCANLINE_SIZE           17
 
+#define GET_GL_COLOR_BITS           37
+#define GET_GL_COLOR_RED_BITS       38
+#define GET_GL_COLOR_GREEN_BITS     39
+#define GET_GL_COLOR_BLUE_BITS      40
+#define GET_GL_COLOR_ALPHA_BITS     41
+#define GET_GL_DEPTH_BITS           42
+#define GET_GL_STENCIL_BITS         43
+#define GET_GL_ACCUM_BITS           44
+#define GET_GL_ACCUM_RED_BITS       45
+#define GET_GL_ACCUM_GREEN_BITS     46
+#define GET_GL_ACCUM_BLUE_BITS      47
+#define GET_GL_ACCUM_ALPHA_BITS     48
+#define GET_GL_NUM_SAMPLES          49
+
+#define GET_GL_2D_MODE              82
+#define GET_GL_SCALE                83
+
 #define SET_FIRST_SETTER            100
 
 #define SET_WINDOW_POS              100

@@ -39,6 +39,7 @@ Version 1.10.0
 - fbgfx.bi: add scancode SC_CENTER=&h4C as alias for SC_CLEAR - used for NUMPAD 5 key
 - makefile: 'DISABLE_GAS64_DEBUG=1' makefile configuration option to disable debugging comments in gas64 asm files
 - gfxlib2: add FB.GET_SCANLINE_SIZE to fbgfx.bi and ScreenControl() to get current internal scan line size multiplier
+- gfxlib2: SCREENCONTROL: add getters for GL parameters - new GET_GL_* constants in fbgfx.bi
 
 [fixed]
 - gas64: missing restoring of use of one virtual register on sqr for float (SARG)

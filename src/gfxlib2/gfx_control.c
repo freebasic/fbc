@@ -189,6 +189,68 @@ FBCALL void fb_GfxControl_i( int what, ssize_t *param1, ssize_t *param2, ssize_t
 		break;
 
 #ifndef DISABLE_OPENGL
+	case GET_GL_COLOR_BITS:
+		res1 = __fb_gl_params.color_bits;
+		break;
+
+	case GET_GL_COLOR_RED_BITS:
+		res1 = __fb_gl_params.color_red_bits;
+		break;
+
+	case GET_GL_COLOR_GREEN_BITS:
+		res1 = __fb_gl_params.color_green_bits;
+		break;
+
+	case GET_GL_COLOR_BLUE_BITS:
+		res1 = __fb_gl_params.color_blue_bits;
+		break;
+
+	case GET_GL_COLOR_ALPHA_BITS:
+		res1 = __fb_gl_params.color_alpha_bits;
+		break;
+
+	case GET_GL_DEPTH_BITS:
+		res1 = __fb_gl_params.depth_bits;
+		break;
+
+	case GET_GL_STENCIL_BITS:
+		res1 = __fb_gl_params.stencil_bits;
+		break;
+
+	case GET_GL_ACCUM_BITS:
+		res1 = __fb_gl_params.accum_bits;
+		break;
+
+	case GET_GL_ACCUM_RED_BITS:
+		res1 = __fb_gl_params.accum_red_bits;
+		break;
+
+	case GET_GL_ACCUM_GREEN_BITS:
+		res1 = __fb_gl_params.accum_green_bits;
+		break;
+
+	case GET_GL_ACCUM_BLUE_BITS:
+		res1 = __fb_gl_params.accum_blue_bits;
+		break;
+
+	case GET_GL_ACCUM_ALPHA_BITS:
+		res1 = __fb_gl_params.accum_alpha_bits;
+		break;
+
+	case GET_GL_NUM_SAMPLES:
+		res1 = __fb_gl_params.num_samples;
+		break;
+
+	case GET_GL_2D_MODE:
+		/* return the active setting (not the initializing setting) */
+		res1 = __fb_gl_params.mode_2d;
+		break;
+
+	case GET_GL_SCALE:
+		/* return the active setting (not the initializing setting) */
+		res1 = __fb_gl_params.scale;
+		break;
+
 	case SET_GL_COLOR_BITS:
 		__fb_gl_params.color_bits = *param1;
 		break;

@@ -72,7 +72,24 @@ namespace FB
 		GET_ALPHA_PRIMITIVES        = 14, _
 		GET_GL_EXTENSIONS           = 15, _
 		GET_HIGH_PRIORITY           = 16, _
-		GET_SCANLINE_SIZE           = 17
+		GET_SCANLINE_SIZE           = 17, _
+		_
+		GET_GL_COLOR_BITS           = 37, _
+		GET_GL_COLOR_RED_BITS       = 38, _
+		GET_GL_COLOR_GREEN_BITS     = 39, _
+		GET_GL_COLOR_BLUE_BITS      = 40, _
+		GET_GL_COLOR_ALPHA_BITS     = 41, _
+		GET_GL_DEPTH_BITS           = 42, _
+		GET_GL_STENCIL_BITS         = 43, _
+		GET_GL_ACCUM_BITS           = 44, _
+		GET_GL_ACCUM_RED_BITS       = 45, _
+		GET_GL_ACCUM_GREEN_BITS     = 46, _
+		GET_GL_ACCUM_BLUE_BITS      = 47, _
+		GET_GL_ACCUM_ALPHA_BITS     = 48, _
+		GET_GL_NUM_SAMPLES          = 49, _
+		_
+		GET_GL_2D_MODE              = 82, _
+		GET_GL_SCALE                = 83
 
 	'' Setters:
 	const as integer _
@@ -95,6 +112,7 @@ namespace FB
 		SET_GL_ACCUM_BLUE_BITS      = 115, _
 		SET_GL_ACCUM_ALPHA_BITS     = 116, _
 		SET_GL_NUM_SAMPLES          = 117, _
+		_
 		SET_GL_2D_MODE              = 150, _
 		SET_GL_SCALE                = 151
 
