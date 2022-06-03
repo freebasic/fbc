@@ -32,6 +32,7 @@ Version 1.10.0
 - fbc: only up-cast initializers when needed.  New behaviour is to try matching initializers without up-casting before matching with up-casting.
 - fbc: don't join operators separated by white space.  Previously, '<' + '=', '<' + '>', '=' + '>', and '-' + '>' were joined together even if separated by whitespace.
 - fbc: don't skip whitespace between decimal point and digit. Previously, '.' + '0..9' floating point literals were allowed to be separated by whitespace.
+- gfxlib2: gfx_dos drivers initialize the internal dirty array based on scanline size
 
 [added]
 - gas/gas64: '.cif_sections' and '.cif_' directives for stack unwinding (adeyblue)

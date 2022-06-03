@@ -225,7 +225,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	if (__fb_gl_params.init_scale>1){
 		__fb_gl_params.scale = __fb_gl_params.init_scale;
 		free(__fb_gfx->dirty);
-		__fb_gfx->dirty = (char *)calloc(1, __fb_gfx->h * __fb_gfx->scanline_size* __fb_gl_params.scale);
+		__fb_gfx->dirty = (char *)calloc(1, __fb_gfx->h * __fb_gfx->scanline_size * __fb_gl_params.scale);
 	}
 
 	result = fb_hX11Init(title, w * __fb_gl_params.scale, h * __fb_gl_params.scale, info->depth, refresh_rate, flags);

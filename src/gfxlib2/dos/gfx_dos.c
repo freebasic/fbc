@@ -359,7 +359,7 @@ static int fb_dos_timer_handler(unsigned irq)
 	}
 	
 	fb_dos.update();
-	fb_hMemSet(__fb_gfx->dirty, FALSE, fb_dos.h);
+	fb_hMemSet(__fb_gfx->dirty, FALSE, __fb_gfx->h * __fb_gfx->scanline_size);
 
 	if ( fb_dos.mouse_ok && fb_dos.mouse_cursor ) {
 		fb_hSoftCursorUnput(mouse_x, mouse_y);
@@ -569,7 +569,7 @@ int fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	if (!fb_dos_timer_init(TIMER_HZ))
 		return -1;
 	
-	fb_hMemSet(__fb_gfx->dirty, TRUE, __fb_gfx->h);
+	fb_hMemSet(__fb_gfx->dirty, TRUE, __fb_gfx->h * __fb_gfx->scanline_size);
 	
 	fb_dos.locked = 0;
 	
