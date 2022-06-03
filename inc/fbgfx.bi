@@ -54,44 +54,50 @@ namespace FB
 	'' Constants accepted by ScreenControl
 	''
 	'' Getters:
-	const as integer GET_WINDOW_POS				= 0		, _
-					 GET_WINDOW_TITLE			= 1		, _
-					 GET_WINDOW_HANDLE			= 2		, _
-					 GET_DESKTOP_SIZE			= 3		, _
-					 GET_SCREEN_SIZE			= 4		, _
-					 GET_SCREEN_DEPTH			= 5		, _
-					 GET_SCREEN_BPP				= 6		, _
-					 GET_SCREEN_PITCH			= 7		, _
-					 GET_SCREEN_REFRESH			= 8		, _
-					 GET_DRIVER_NAME			= 9		, _
-					 GET_TRANSPARENT_COLOR		= 10	, _
-					 GET_VIEWPORT				= 11	, _
-					 GET_PEN_POS				= 12	, _
-					 GET_COLOR					= 13	, _
-					 GET_ALPHA_PRIMITIVES		= 14	, _
-					 GET_GL_EXTENSIONS			= 15	, _
-					 GET_HIGH_PRIORITY			= 16
+	const as integer _
+		GET_WINDOW_POS              = 0, _
+		GET_WINDOW_TITLE            = 1, _
+		GET_WINDOW_HANDLE           = 2, _
+		GET_DESKTOP_SIZE            = 3, _
+		GET_SCREEN_SIZE             = 4, _
+		GET_SCREEN_DEPTH            = 5, _
+		GET_SCREEN_BPP              = 6, _
+		GET_SCREEN_PITCH            = 7, _
+		GET_SCREEN_REFRESH          = 8, _
+		GET_DRIVER_NAME             = 9, _
+		GET_TRANSPARENT_COLOR       = 10, _
+		GET_VIEWPORT                = 11, _
+		GET_PEN_POS                 = 12, _
+		GET_COLOR                   = 13, _
+		GET_ALPHA_PRIMITIVES        = 14, _
+		GET_GL_EXTENSIONS           = 15, _
+		GET_HIGH_PRIORITY           = 16, _
+		GET_SCANLINE_SIZE           = 17
+
 	'' Setters:
-	const as integer SET_WINDOW_POS				= 100	, _
-					 SET_WINDOW_TITLE			= 101	, _
-					 SET_PEN_POS				= 102	, _
-					 SET_DRIVER_NAME			= 103	, _
-					 SET_ALPHA_PRIMITIVES		= 104	, _
-					 SET_GL_COLOR_BITS			= 105	, _
-					 SET_GL_COLOR_RED_BITS		= 106	, _
-					 SET_GL_COLOR_GREEN_BITS	= 107	, _
-					 SET_GL_COLOR_BLUE_BITS		= 108	, _
-					 SET_GL_COLOR_ALPHA_BITS	= 109	, _
-					 SET_GL_DEPTH_BITS			= 110	, _
-					 SET_GL_STENCIL_BITS		= 111	, _
-					 SET_GL_ACCUM_BITS			= 112	, _
-					 SET_GL_ACCUM_RED_BITS		= 113	, _
-					 SET_GL_ACCUM_GREEN_BITS	= 114	, _
-					 SET_GL_ACCUM_BLUE_BITS		= 115	, _
-					 SET_GL_ACCUM_ALPHA_BITS	= 116	, _
-					 SET_GL_NUM_SAMPLES			= 117	, _
-					 SET_GL_2D_MODE				= 150	, _
-					 SET_GL_SCALE				= 151
+	const as integer _
+		SET_WINDOW_POS              = 100, _
+		SET_WINDOW_TITLE            = 101, _
+		SET_PEN_POS                 = 102, _
+		SET_DRIVER_NAME             = 103, _
+		SET_ALPHA_PRIMITIVES        = 104, _
+		_
+		SET_GL_COLOR_BITS           = 105, _
+		SET_GL_COLOR_RED_BITS       = 106, _
+		SET_GL_COLOR_GREEN_BITS     = 107, _
+		SET_GL_COLOR_BLUE_BITS      = 108, _
+		SET_GL_COLOR_ALPHA_BITS     = 109, _
+		SET_GL_DEPTH_BITS           = 110, _
+		SET_GL_STENCIL_BITS         = 111, _
+		SET_GL_ACCUM_BITS           = 112, _
+		SET_GL_ACCUM_RED_BITS       = 113, _
+		SET_GL_ACCUM_GREEN_BITS     = 114, _
+		SET_GL_ACCUM_BLUE_BITS      = 115, _
+		SET_GL_ACCUM_ALPHA_BITS     = 116, _
+		SET_GL_NUM_SAMPLES          = 117, _
+		SET_GL_2D_MODE              = 150, _
+		SET_GL_SCALE                = 151
+
 	'' Commands:
 	const as integer POLL_EVENTS				= 200
 	

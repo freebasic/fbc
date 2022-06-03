@@ -92,87 +92,91 @@
 
 #define WINDOW_TITLE_SIZE	128
 
-#define GET_WINDOW_POS				0
-#define GET_WINDOW_TITLE			1
-#define GET_WINDOW_HANDLE			2
-#define GET_DESKTOP_SIZE			3
-#define GET_SCREEN_SIZE				4
-#define GET_SCREEN_DEPTH			5
-#define GET_SCREEN_BPP				6
-#define GET_SCREEN_PITCH			7
-#define GET_SCREEN_REFRESH			8
-#define GET_DRIVER_NAME				9
-#define GET_TRANSPARENT_COLOR		10
-#define GET_VIEWPORT				11
-#define GET_PEN_POS					12
-#define GET_COLOR					13
-#define GET_ALPHA_PRIMITIVES		14
-#define GET_GL_EXTENSIONS			15
-#define GET_HIGH_PRIORITY			16
+#define GET_WINDOW_POS              0
+#define GET_WINDOW_TITLE            1
+#define GET_WINDOW_HANDLE           2
+#define GET_DESKTOP_SIZE            3
+#define GET_SCREEN_SIZE             4
+#define GET_SCREEN_DEPTH            5
+#define GET_SCREEN_BPP              6
+#define GET_SCREEN_PITCH            7
+#define GET_SCREEN_REFRESH          8
+#define GET_DRIVER_NAME             9
+#define GET_TRANSPARENT_COLOR       10
+#define GET_VIEWPORT                11
+#define GET_PEN_POS                 12
+#define GET_COLOR                   13
+#define GET_ALPHA_PRIMITIVES        14
+#define GET_GL_EXTENSIONS           15
+#define GET_HIGH_PRIORITY           16
+#define GET_SCANLINE_SIZE           17
 
-#define SET_FIRST_SETTER			100
-#define SET_WINDOW_POS				100
-#define SET_WINDOW_TITLE			101
-#define SET_PEN_POS					102
-#define SET_DRIVER_NAME				103
-#define SET_ALPHA_PRIMITIVES		104
-#define SET_GL_COLOR_BITS			105
-#define SET_GL_COLOR_RED_BITS		106
-#define SET_GL_COLOR_GREEN_BITS		107
-#define SET_GL_COLOR_BLUE_BITS		108
-#define SET_GL_COLOR_ALPHA_BITS		109
-#define SET_GL_DEPTH_BITS			110
-#define SET_GL_STENCIL_BITS			111
-#define SET_GL_ACCUM_BITS			112
-#define SET_GL_ACCUM_RED_BITS		113
-#define SET_GL_ACCUM_GREEN_BITS		114
-#define SET_GL_ACCUM_BLUE_BITS		115
-#define SET_GL_ACCUM_ALPHA_BITS		116
-#define SET_GL_NUM_SAMPLES			117
-#define SET_GL_2D_MODE				150
-#define SET_GL_SCALE				151
+#define SET_FIRST_SETTER            100
 
-#define POLL_EVENTS					200
+#define SET_WINDOW_POS              100
+#define SET_WINDOW_TITLE            101
+#define SET_PEN_POS                 102
+#define SET_DRIVER_NAME             103
+#define SET_ALPHA_PRIMITIVES        104
+
+#define SET_GL_COLOR_BITS           105
+#define SET_GL_COLOR_RED_BITS       106
+#define SET_GL_COLOR_GREEN_BITS     107
+#define SET_GL_COLOR_BLUE_BITS      108
+#define SET_GL_COLOR_ALPHA_BITS     109
+#define SET_GL_DEPTH_BITS           110
+#define SET_GL_STENCIL_BITS         111
+#define SET_GL_ACCUM_BITS           112
+#define SET_GL_ACCUM_RED_BITS       113
+#define SET_GL_ACCUM_GREEN_BITS     114
+#define SET_GL_ACCUM_BLUE_BITS      115
+#define SET_GL_ACCUM_ALPHA_BITS     116
+#define SET_GL_NUM_SAMPLES          117
+
+#define SET_GL_2D_MODE              150
+#define SET_GL_SCALE                151
+
+#define POLL_EVENTS                 200
 
 typedef void (BLITTER)(unsigned char *, int);
 
 typedef struct _GFX_CHAR_CELL {
-    FB_WCHAR ch;
-    unsigned fg, bg;
+	FB_WCHAR ch;
+	unsigned fg, bg;
 } GFX_CHAR_CELL;
 
 typedef struct FBGFX
 {
-	int id;									/**< Mode id number for contexts identification */
-    int mode_num;							/**< Current mode number */
-    unsigned char **page;					/**< Pages memory */
-    int num_pages;							/**< Number of requested pages */
-    int visible_page;						/**< Current visible page number */
-    unsigned char *framebuffer;				/**< Our current visible framebuffer */
-    int w, h;								/**< Current mode width and height */
-    int depth;								/**< Current mode depth in bits per pixel */
-    int bpp;								/**< Bytes per pixel */
-    int pitch;								/**< Width of a framebuffer line in bytes */
-    unsigned int *palette;					/**< Current RGB color values for each palette index */
-    unsigned int *device_palette;			/**< Current RGB color values of visible device palette */
-    unsigned char *color_association;		/**< Palette color index associations for CGA/EGA emulation */
-    char *dirty;							/**< Dirty lines buffer */
-    const struct GFXDRIVER *driver;			/**< Gfx driver in use */
-    int color_mask;							/**< Color bit mask for colordepth emulation */
-    const struct PALETTE *default_palette;	/**< Default palette for current mode */
-    int scanline_size;						/**< Vertical size of a single scanline in pixels */
-    int cursor_x, cursor_y;					/**< Current graphical text cursor position (in chars, 0 based) */
-    const struct FONT *font;				/**< Current font */
-    int text_w, text_h;						/**< Graphical text console size in characters */
-    float aspect;							/**< Aspect ratio (used in CIRCLE) */
-    char *key;								/**< Keyboard states */
-	int refresh_rate;						/**< Driver refresh rate */
-	GFX_CHAR_CELL **con_pages;				/**< Character information for all pages */
-    EVENT *event_queue;						/**< The OS events queue array */
-    int event_head, event_tail;				/**< Indices for the head and tail event in the array */
-	FBMUTEX *event_mutex;			/**< Mutex lock for accessing the events queue */
-	volatile int flags;						/**< Status flags */
-	int lock_count;							/**<Reference count for SCREENLOCK/UNLOCK */
+	int id;                                 /**< Mode id number for contexts identification */
+	int mode_num;                           /**< Current mode number */
+	unsigned char **page;                   /**< Pages memory */
+	int num_pages;                          /**< Number of requested pages */
+	int visible_page;                       /**< Current visible page number */
+	unsigned char *framebuffer;             /**< Our current visible framebuffer */
+	int w, h;                               /**< Current mode width and height */
+	int depth;                              /**< Current mode depth in bits per pixel */
+	int bpp;                                /**< Bytes per pixel */
+	int pitch;                              /**< Width of a framebuffer line in bytes */
+	unsigned int *palette;                  /**< Current RGB color values for each palette index */
+	unsigned int *device_palette;           /**< Current RGB color values of visible device palette */
+	unsigned char *color_association;       /**< Palette color index associations for CGA/EGA emulation */
+	char *dirty;                            /**< Dirty lines buffer */
+	const struct GFXDRIVER *driver;         /**< Gfx driver in use */
+	int color_mask;                         /**< Color bit mask for colordepth emulation */
+	const struct PALETTE *default_palette;  /**< Default palette for current mode */
+	int scanline_size;                      /**< Vertical size of a single scanline in pixels */
+	int cursor_x, cursor_y;                 /**< Current graphical text cursor position (in chars, 0 based) */
+	const struct FONT *font;                /**< Current font */
+	int text_w, text_h;                     /**< Graphical text console size in characters */
+	float aspect;                           /**< Aspect ratio (used in CIRCLE) */
+	char *key;                              /**< Keyboard states */
+	int refresh_rate;                       /**< Driver refresh rate */
+	GFX_CHAR_CELL **con_pages;              /**< Character information for all pages */
+	EVENT *event_queue;                     /**< The OS events queue array */
+	int event_head, event_tail;             /**< Indices for the head and tail event in the array */
+	FBMUTEX *event_mutex;                   /**< Mutex lock for accessing the events queue */
+	volatile int flags;                     /**< Status flags */
+	int lock_count;                         /**<Reference count for SCREENLOCK/UNLOCK */
 } FBGFX;
 
 typedef struct GFXDRIVER
@@ -336,8 +340,8 @@ typedef struct PALETTE
 
 typedef struct FONT
 {
-    const int w;
-    const int h;
+	const int w;
+	const int h;
 	const unsigned char *data;
 } FONT;
 

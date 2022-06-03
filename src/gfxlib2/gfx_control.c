@@ -160,6 +160,11 @@ FBCALL void fb_GfxControl_i( int what, ssize_t *param1, ssize_t *param2, ssize_t
 			res1 = (__fb_gfx->flags & HIGH_PRIORITY) ? FB_TRUE : FB_FALSE;
 		break;
 
+	case GET_SCANLINE_SIZE:
+		if (__fb_gfx)
+			res1 = __fb_gfx->scanline_size;
+		break;
+
 	case SET_WINDOW_POS:
 		if ((__fb_gfx) && (__fb_gfx->driver->set_window_pos))
 			__fb_gfx->driver->set_window_pos(*param1, *param2);
