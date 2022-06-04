@@ -31,8 +31,25 @@ FBCONSOLE __fb_con;
 typedef void (*SIGHANDLER)(int);
 static SIGHANDLER old_sighandler[NSIG];
 static volatile sig_atomic_t __fb_console_resized;
-static const char *seq[] = { "cm", "ho", "cs", "cl", "ce", "WS", "bl", "AF", "AB",
-							 "me", "md", "SF", "ve", "vi", "dc", "ks", "ke" };
+static const char *seq[] = {
+	"cm", /* SEQ_LOCATE        */
+	"ho", /* SEQ_HOME          */
+	"cs", /* SEQ_SCROLL_REGION */
+	"cl", /* SEQ_CLS           */
+	"ce", /* SEQ_CLEOL         */
+	"WS", /* SEQ_WINDOW_SIZE   */
+	"bl", /* SEQ_BEEP          */
+	"AF", /* SEQ_FG_COLOR      */
+	"AB", /* SEQ_BG_COLOR      */
+	"me", /* SEQ_RESET_COLOR   */
+	"md", /* SEQ_BRIGHT_COLOR  */
+	"SF", /* SEQ_SCROLL        */
+	"ve", /* SEQ_SHOW_CURSOR   */
+	"vi", /* SEQ_HIDE_CURSOR   */
+	"dc", /* SEQ_DEL_CHAR      */
+	"ks", /* SEQ_INIT_KEYPAD   */
+	"ke", /* SEQ_EXIT_KEYPAD   */
+};
 
 static pthread_t __fb_bg_thread;
 static int bgthread_inited = FALSE;
@@ -263,8 +280,15 @@ int fb_hTermOut( int code, int param1, int param2 )
 
 	   Thus, we provide the __fb_enable_vt100_escapes global variable, which
 	   FB programs can set to TRUE or FALSE as needed at runtime. */
-	const char *extra_seq[] = { "\e(U", "\e(B", "\e[6n", "\e[18t",
-		"\e[?1000h\e[?1003h", "\e[?1003l\e[?1000l", "\e[H\e[J\e[0m" };
+	const char *extra_seq[] = {
+		"\e(U",               /* SEQ_INIT_CHARSET */
+		"\e(B",               /* SEQ_EXIT_CHARSET */
+		"\e[6n",              /* SEQ_QUERY_CURSOR */
+		"\e[18t",             /* SEQ_QUERY_WINDOW */
+		"\e[?1000h\e[?1003h", /* SEQ_INIT_XMOUSE */
+		"\e[?1003l\e[?1000l", /* SEQ_EXIT_XMOUSE */
+		"\e[H\e[J\e[0m",      /* SEQ_EXIT_GFX_MODE */
+	};
 
 	char *str;
 
