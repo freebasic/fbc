@@ -86,6 +86,11 @@ namespace cpp_mangle
 	declare function cpp_variadic_list_ptr( byval n as long, byval args as cva_list ptr ) as long
 	declare function cpp_variadic_list_ptr_ptr( byval n as long, byval args as cva_list ptr ptr ) as long
 
+	declare function cpp__byval_int__byref_int__byref_int(byval a as long, byref b as long, byref c as long) as long
+	declare function cpp__byval_const_int__byref_int__byref_int(byval a as const long, byref b as long, byref c as long) as long
+	declare function cpp__byval_const_int_ptr__byref_int__byref_int(byval a as const long ptr, byref b as long, byref c as long) as long
+	declare function cpp__byval_const_int_const_ptr__byref_int__byref_int(byval a as const long const ptr, byref b as long, byref c as long) as long
+
 end namespace
 
 end extern
@@ -316,3 +321,10 @@ scope
 	variadic_list_ptr_ptr( 3, 1, 2, 3 )
 end scope
 
+scope
+	dim i as long = 123
+	ASSERT( cpp__byval_int__byref_int__byref_int( 123, 0, 0 ) = 123 )
+	ASSERT( cpp__byval_const_int__byref_int__byref_int( 123, 0, 0 ) = 123 )
+	ASSERT( cpp__byval_const_int_ptr__byref_int__byref_int( @i, 0, 0 ) = 123 )
+	ASSERT( cpp__byval_const_int_const_ptr__byref_int__byref_int( @i, 0, 0 ) = 123 )
+end scope

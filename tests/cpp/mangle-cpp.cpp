@@ -271,4 +271,26 @@ namespace cpp_mangle
 	{
 		return n;
 	}
+
+	// multiple non-trivial parameters, triggering the use of abbreviations
+
+	// These 2 functions should have the same mangling (for parameters, not the name of course),
+	// the CONST on the BYVAL parameter "a" should not make a difference.
+	int cpp__byval_int__byref_int__byref_int(int a, int &b, int &c)
+	{
+		return a;
+	}
+	int cpp__byval_const_int__byref_int__byref_int(const int a, int &b, int &c)
+	{
+		return a;
+	}
+
+	int cpp__byval_const_int_ptr__byref_int__byref_int(const int *a, int &b, int &c)
+	{
+		return *a;
+	}
+	int cpp__byval_const_int_const_ptr__byref_int__byref_int(const int *const a, int &b, int &c)
+	{
+		return *a;
+	}
 }
