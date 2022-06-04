@@ -475,24 +475,23 @@ sub symbMangleType _
 
 	'' const?
 	if( typeIsConst( dtype ) ) then
-
-		'' The type has some CONST bits. For C++ mangling we remove the
-		'' toplevel one and recursively mangle the rest of the type.
+		'' If mangling a pointed-to type of a reference or pointer,
+		'' the CONST is included in the mangling (FB_MANGLEOPT_KEEPTOPCONST).
 		''
-		'' It could be a BYVAL x as CONST foo type. In this case the
-		'' CONST is not encoded in the C++ mangling, because it makes no
-		'' difference. It's not allowed to have overloads that differ
-		'' only in BYVAL CONSTness. The CONST only matters if it's a
-		'' pointer or BYREF type.
+		'' But, if the CONST is at toplevel, it's not included,
+		'' because "byval x as const type" is effectively the same as a "byval x as type".
+		'' C++ and FB do not allow overloads that differ only in BYVAL CONSTness.
 
 		if( (options and FB_MANGLEOPT_KEEPTOPCONST) <> 0 ) then
 			mangled += "K"
 		end if
 
-		symbMangleType( mangled, typeUnsetIsConst( dtype ), subtype, _
-			options and not FB_MANGLEOPT_KEEPTOPCONST )
+		symbMangleType( mangled, typeUnsetIsConst( dtype ), subtype, options )
 
-		hAbbrevAdd( dtype, subtype )
+		'' Skipped toplevel CONSTs are not considered for abbreviation.
+		if( (options and FB_MANGLEOPT_KEEPTOPCONST) <> 0 ) then
+			hAbbrevAdd( dtype, subtype )
+		end if
 		exit sub
 	end if
 
