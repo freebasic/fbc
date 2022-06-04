@@ -35,6 +35,7 @@ Version 1.10.0
 - gfxlib2: ./inc/fbc-int/gfx.bi - to expose FB_GFXCTX structure and some typedefs from gfx lib (useful for some tests in the test-suite)
 - fbc: basic-macros: add __FB_IIF__( compare-expr, true-expr, false-expr ) macro
 - github #357: fbc: add '-buildprefix <name>' command line option to specify tool name prefix in both fbc standalone and normal set-ups.  Overrides default 'target-' prefix on tool names in normal fbc set-up
+- fbgfx.bi: add scancode SC_CENTER=&h4C as alias for SC_CLEAR - used for NUMPAD 5 key
 
 [fixed]
 - gas64: missing restoring of use of one virtual register on sqr for float (SARG)
@@ -58,6 +59,7 @@ Version 1.10.0
 - fbc: dos: invoke dxe3gen when cross compiling to dos - previously only executed on DOS host
 - fbc: dos: when invoking dxe3gen on cross compiler, don't write to ldopt.tmp, dxe3gen doesn't seem to be able to handle the ldopt.tmp argument
 - fbc: remove double path separator characters '/', '\' when setting the fbc path prefix
+- rtlib: multikey was missing VK_NUMPAD5 and SC_CLEAR scancodes in the key table, causing NUMPAD-5 to be handled as escape in the windows D2D gfx driver
 
 
 Version 1.09.0
