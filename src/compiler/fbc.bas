@@ -740,7 +740,7 @@ private function hLinkFiles( ) as integer
 	'' Set executable name
 	ldcline += "-o " + QUOTE + fbc.outname + QUOTE
 
-#ifdef __FB_DOS__
+	'' dll dos targets need to run DXE3GEN
 	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) and _
 	(fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB) then
 		ldcline += " -I """ + hStripExt( fbc.outname ) + "_il.a"""
@@ -762,14 +762,17 @@ private function hLinkFiles( ) as integer
 				libfile = listGetNext(libfile)
 			wend
 		end scope
-		if( hPutLdArgsIntoFile( ldcline ) = FALSE ) then
-			exit function
-		end if
-
+		#ifdef __FB_DOS__
+			'' windows (maybe others) version of DXE3GEN doesn't seem to be able
+			'' to handle @ldopt.tmp argument when cross compiling - only write to
+			'' lpopt.tmp if we are hosted on DOS 
+			if( hPutLdArgsIntoFile( ldcline ) = FALSE ) then
+				exit function
+			end if
+		#endif
 		function = fbcRunBin( "making DXE", FBCTOOL_DXEGEN, ldcline )
 		exit function
 	end if
-#endif
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32

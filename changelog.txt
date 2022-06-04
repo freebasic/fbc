@@ -54,6 +54,8 @@ Version 1.10.0
 - fbc: don't allow '-lang' option to override '-forcelang' option on command line
 - github #199: Gfxlib Different Pixel Output Between C & MMX - change MMX Alpha blenders to match C blenders
 - github #368: Fix mangling involving toplevel CONST and abbreviations (dkl)
+- fbc: dos: invoke dxe3gen when cross compiling to dos - previously only executed on DOS host
+- fbc: dos: when invoking dxe3gen on cross compiler, don't write to ldopt.tmp, dxe3gen doesn't seem to be able to handle the ldopt.tmp argument
 
 
 Version 1.09.0
