@@ -65,9 +65,6 @@ typedef struct FBCONSOLE
 
 extern FBCONSOLE __fb_con;
 
-#ifdef HOST_LINUX
-int fb_hTermQuery( int code, int *val1, int *val2 );
-#endif
 void fb_hRecheckCursorPos( void );
 void fb_hRecheckConsoleSize( int requery_cursorpos );
 int fb_hTermOut(int code, int param1, int param2);

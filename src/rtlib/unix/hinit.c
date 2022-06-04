@@ -119,7 +119,7 @@ static void signal_handler(int sig)
    read from stdin returns EOF).
    Used with SEQ_QUERY_WINDOW and SEQ_QUERY_CURSOR only (but could easily be
    extended to support more). */
-int fb_hTermQuery( int code, int *val1, int *val2 )
+static int fb_hTermQuery( int code, int *val1, int *val2 )
 {
 	if( fb_hTermOut( code, 0, 0 ) == FALSE )
 		return FALSE;
