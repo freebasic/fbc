@@ -53,6 +53,7 @@ Version 1.10.0
 - gas64: initialize debug structure even if not emitting debug info to prevent errors due to setup changes by #cmdline inside the parser
 - fbc: don't allow '-lang' option to override '-forcelang' option on command line
 - github #199: Gfxlib Different Pixel Output Between C & MMX - change MMX Alpha blenders to match C blenders
+- github #368: Fix mangling involving toplevel CONST and abbreviations (dkl)
 
 
 Version 1.09.0
