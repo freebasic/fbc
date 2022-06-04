@@ -1279,9 +1279,14 @@ function hStr2long( byref txt as string, byref value as long ) as integer
 
 	dim nvalue as long = 0
 	dim nsign as long = 1
+
+	if( len( txt ) = 0 ) then
+		return FALSE
+	end if
+
 	dim s as ubyte ptr = strptr(txt)
 
-	if( *s = CHAR_NULL ) then
+	if( s = NULL orelse *s = CHAR_NULL ) then
 		return FALSE
 	end if
 
