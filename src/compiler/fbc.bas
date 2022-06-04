@@ -2836,7 +2836,7 @@ private sub fbcDeterminePrefix( )
 			#endif
 		#endif
 	else
-		fbc.prefix += FB_HOST_PATHDIV
+		fbc.prefix = pathStripDiv( fbc.prefix ) + FB_HOST_PATHDIV
 	end if
 end sub
 
