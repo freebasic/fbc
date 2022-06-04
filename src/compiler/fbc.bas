@@ -743,7 +743,7 @@ private function hLinkFiles( ) as integer
 	'' dll dos targets need to run DXE3GEN
 	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) and _
 	(fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB) then
-		ldcline += " -I """ + hStripExt( fbc.outname ) + "_il.a"""
+		ldcline += " -I ""lib" + hStripExt( fbc.outname ) + "_il.a"""
 		ldcline += " -U"
 		scope
 			dim as string ptr objfile = listGetHead( @fbc.objlist )
@@ -768,6 +768,15 @@ private function hLinkFiles( ) as integer
 			'' lpopt.tmp if we are hosted on DOS 
 			if( hPutLdArgsIntoFile( ldcline ) = FALSE ) then
 				exit function
+			end if
+		#endif
+		#ifdef ENABLE_STANDALONE
+			dim as string dxepath = environ( "DXE_LD_LIBRARY_PATH" )
+			if( dxepath = "" ) then
+				setenviron "DXE_LD_LIBRARY_PATH=" + fbc.libpath + FB_HOST_PATHDIV
+				if( fbc.verbose ) then
+					print "DXE_LD_LIBRARY_PATH=" + fbc.libpath + FB_HOST_PATHDIV
+				end if
 			end if
 		#endif
 		function = fbcRunBin( "making DXE", FBCTOOL_DXEGEN, ldcline )
