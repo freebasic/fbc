@@ -5183,12 +5183,79 @@ private sub hEmitFloatFunc( byval func as integer )
 	end if
 end sub
 
+private sub hEmitFloat_Int_686( byval dvreg as IRVREG ptr )
+	if dvreg->dtype = FB_DATATYPE_SINGLE then
+		outp( "sub esp, 4" )
+		outp( "fist dword ptr [esp]" )
+		outp( "fild dword ptr [esp]" )
+	else
+		outp( "sub esp, 8" )
+		outp( "fld st(0)" )
+		outp( "fistp qword ptr [esp]" )
+		outp( "fild  qword ptr [esp]" )
+	end if
+	outp( "fld1" )
+	outp( "fsubr st(0), st(1)" )
+	outp( "fxch st(2)" )
+	outp( "fcomip" )
+	outp( "fcmovb st(0), st(1)" )
+	outp( "fstp st(1)" )
+	if dvreg->dtype = FB_DATATYPE_SINGLE then
+		outp( "add esp, 4" )
+	else
+		outp( "add esp, 8" )
+	end if
+end sub
+
+private sub hEmitFloat_fix_686( byval dvreg as IRVREG ptr )
+	if dvreg->dtype = FB_DATATYPE_SINGLE then
+		outp( "sub esp, 4" )
+		outp( "fld st(0)" )
+		outp( "fabs" )
+		outp( "fist dword ptr [esp]" )
+		outp( "fild dword ptr [esp]" )
+	else
+		outp( "sub esp, 8" )
+		outp( "fld st(0)" )
+		outp( "fabs" )
+		outp( "fld st(0)" )
+		outp( "fistp qword ptr [esp]" )
+		outp( "fild  qword ptr [esp]" )
+	end if
+		outp( "fld1" )
+		outp( "fsubr st(1)" )
+		outp( "fxch st(2)" )
+		outp( "fcomip" )
+		outp( "fcmovb st(0), st(1)" )
+		outp( "fstp st(1)" )
+		outp( "fldz" )
+		outp( "fcomip st(2)" )
+		outp( "fst st(1)" )
+		outp( "fchs" )
+		outp( "fcmovb st(0), st(1)" )
+		outp( "fstp st(1)" )
+	if dvreg->dtype = FB_DATATYPE_SINGLE then
+		outp( "add esp, 4" )
+	else
+		outp( "add esp, 8" )
+	end if
+
+end sub
+
 private sub _emitFLOOR( byval dvreg as IRVREG ptr )
-	hEmitFloatFunc( 1 )
+	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
+		hEmitFloat_Int_686(dvreg)
+	else
+		hEmitFloatFunc( 1 )
+	end if
 end sub
 
 private sub _emitFIX( byval dvreg as IRVREG ptr )
-	hEmitFloatFunc( 2 )
+	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
+		hEmitFloat_fix_686( dvreg )
+	else
+		hEmitFloatFunc( 2 )
+	end if
 end sub
 
 private sub _emitFRAC( byval dvreg as IRVREG ptr )
