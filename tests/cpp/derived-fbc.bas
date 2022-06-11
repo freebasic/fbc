@@ -3,9 +3,13 @@
 '' test mapping of mangling between c++ derived class and fbc type
 
 #ifdef __FB_FREEBSD__
-#inclib "c++"
+	#inclib "c++"
 #else
-#inclib "stdc++"
+	#ifdef __FB_DOS__
+		#inclib "stdcx"
+	#else
+		#inclib "stdc++"
+	#endif
 #endif
 
 '' helper macro to track progress
@@ -55,7 +59,7 @@ extern "c++"
 		declare constructor thiscall ( byref rhs as const UDT_BASE )
 		declare constructor thiscall ( byref rhs as const long )
 		declare virtual destructor thiscall ()
-		declare virtual sub method thiscall ( byref rhs as const long ) 
+		declare virtual sub method thiscall ( byref rhs as const long )
 		declare operator let thiscall ( byref rhs as const UDT_BASE )
 
 	end type

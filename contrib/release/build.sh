@@ -517,9 +517,9 @@ dos)
 	}
 
 	djver=205
-	gccver=710
-	djgppgccversiondir=7
-	bnuver=229
+	gccver=930
+	djgppgccversiondir=9
+	bnuver=230
 	gdbver=771
 	djpkg=current
 
@@ -718,6 +718,7 @@ EOF
 	mkdir -p fbc/bin/dos
 	cp bin/ar.exe bin/as.exe bin/gdb.exe bin/gprof.exe bin/ld.exe fbc/bin/dos/
 	cp bin/dxe3gen.exe fbc/bin/dos/
+	cp lib/dxe.ld fbc/lib/dos/dxe.ld 
 	cp lib/crt0.o lib/gcrt0.o lib/libdbg.a lib/libemu.a lib/libm.a fbc/lib/dos/
 	cp lib/libstdcxx.a fbc/lib/dos/libstdcx.a
 	cp lib/libsupcxx.a fbc/lib/dos/libsupcx.a

@@ -4,7 +4,7 @@
 dim as string s1 = chr(&hC4 , &hEE)
 
 '' previously, this would crash in fbc 1.08.1 on linux due to unhandled error
-'' of the conversion in the rtlib 
+'' of the conversion in the rtlib
 dim as string s2 = lcase(Wstr(s1))
 
 '' Under the hood, mbstowcs() which is used for the conversion behaves differently
@@ -14,6 +14,11 @@ dim as string s2 = lcase(Wstr(s1))
 	assert( asc(s2, 1) = 228 )
 	assert( asc(s2, 2) = 238 )
 #else
+
+'' Disable on DOS - it fails, and we don't really have a sensible wstring anyway
+#if not defined( __FB_DOS__ )
 	assert( asc(s2, 1) = asc("?") )
 	assert( asc(s2, 2) = asc("?") )
+#endif
+
 #endif

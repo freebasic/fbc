@@ -743,8 +743,26 @@ private function hLinkFiles( ) as integer
 	'' dll dos targets need to run DXE3GEN
 	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) and _
 	(fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB) then
+		'' Building an import library is usable but need to watch
+		'' the initialization order.  libfb exports need to be
+		'' initialized before trying to load the DXE.  FYI, if this
+		'' is handled at load time by the loader code (global
+		'' constructor) user may have issues with the ctor order.
+		'' Which means that user is expected to have called
+		'' defined a call to DyLibLoad("") in a global ctor and
+		'' no other global ctors that depend on libfb functions
+		''
 		ldcline += " -I ""lib" + hStripExt( fbc.outname ) + "_il.a"""
+		''
+		'' the -U switch allows the DXE to be created with unresolved
+		'' symbols.  FYI, we won't know which symbols are needed until
+		'' the loader tries to load the DXE.  This seems to be the only
+		'' kind we can make (i.e. not possible to build a fully resolved DXE
+		'' because dxe3gen seems to only resolve with in the current DXE and
+		'' not any statically linked library)
+		''
 		ldcline += " -U"
+		''
 		scope
 			dim as string ptr objfile = listGetHead( @fbc.objlist )
 			while( objfile )
@@ -765,7 +783,7 @@ private function hLinkFiles( ) as integer
 		#ifdef __FB_DOS__
 			'' windows (maybe others) version of DXE3GEN doesn't seem to be able
 			'' to handle @ldopt.tmp argument when cross compiling - only write to
-			'' lpopt.tmp if we are hosted on DOS 
+			'' lpopt.tmp if we are hosted on DOS
 			if( hPutLdArgsIntoFile( ldcline ) = FALSE ) then
 				exit function
 			end if
