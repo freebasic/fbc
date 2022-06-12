@@ -130,7 +130,23 @@ rbp-y -->  local vars
 declare sub cfi_windows_asm_code(byval statement as string)
 declare sub hwriteasm64( byref ln as string,byval opt as integer=KDOALL)
 
-#if __FB_DEBUG__ <> 0
+'' Define __GAS64_DEBUG__ if it wasn't explicitly disabled
+'' by '-d DISABLE_GAS64_DEBUG' passed as compiler option when
+'' compiling fbc itself (or in the makefile).
+'' Defining __GAS64_DEBUG__ will enable debug information to 
+'' be written to the asm file.  Disabling __GAS64_DEBUG__ but still
+'' allowing __FB_DEBUG__ allows building a debug version of fbc but
+'' not have asm files grow to very large sizes.
+'' 
+#ifndef DISABLE_GAS64_DEBUG
+	'' not disabled? OK turn on debugging information in asm
+	'' files by default if this is a debug version of fbc
+	#if __FB_DEBUG__ <> 0
+		#define __GAS64_DEBUG__
+	#endif
+#endif
+
+#ifdef __GAS64_DEBUG__
 #include once "crt/string.bi"
 
 	private sub asm_info( byval s as string )
@@ -146,7 +162,9 @@ declare sub hwriteasm64( byref ln as string,byval opt as integer=KDOALL)
 
 #else
 	#define asm_info(s) rem
-	#define typeDumpToStr(a,b) " "+str(a)
+	#ifndef typeDumpToStr
+		#define typeDumpToStr(a,b) " "+str(a)
+	#endif
 #endif
 
 #macro asm_error(s)
@@ -817,7 +835,7 @@ sub dbg_filename(byref filename as string)
 end sub
 private sub hwriteasm64( byref ln2 as string,byval opt as integer=KDOALL)
 dim as string ln,lname
-#if __FB_DEBUG__ <> 0
+#ifdef __GAS64_DEBUG__
 	if ln2[0]=asc("#") then
 		ln="           "+ln2
 	else
@@ -856,7 +874,7 @@ dim as string ln,lname
 			check_optim(ln)
 		end if
 		ln = string( ctx.indent*3, 32 ) + ln
-#if __FB_DEBUG__ <> 0
+#ifdef __GAS64_DEBUG__
 	end if
 #endif
 	''print ln ''used to display every line when compiler crashes....
@@ -1383,7 +1401,7 @@ private sub _emitdbg(byval op as integer,byval proc as FBSYMBOL ptr,byval lnum a
 
 end sub
 ''================= end of proc for debugging =====================
-#if __FB_DEBUG__ <> 0
+#ifdef __GAS64_DEBUG__
 private function vregdumpfull( byval v as IRVREG ptr ) as string
 	return vregDumpToStr(v)+iif(v<>0," symbdump="+symbdumpToStr(v->sym),"")
 end function
@@ -1953,7 +1971,7 @@ private sub _end( )
 	flistEnd( @ctx.spillvregs )
 end sub
 
-#if __FB_DEBUG__ <> 0
+#ifdef __GAS64_DEBUG__
 	private function hemitprocheader(byval proc as FBSYMBOL ptr) as string
 
 		dim as string ln
@@ -3779,7 +3797,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 end sub
 private sub _emitbop(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVREG ptr,byval vr as IRVREG ptr,byval label as FBSYMBOL ptr)
 	dim as FB_DATATYPE dtype
-	#if __FB_DEBUG__ <> 0
+	#ifdef __GAS64_DEBUG__
 		var bopdump = vregPretty( v1 ) + " " + astdumpopToStr( op ) + " " + vregPretty( v2 )
 	#endif
 
@@ -3820,7 +3838,7 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 	dim as long vrreg,tempo
 	dim as FB_DATATYPE tempodtype
 
-	#if __FB_DEBUG__ <> 0
+	#ifdef __GAS64_DEBUG__
 		var uopdump = astdumpopToStr( op ) + " " + vregPretty( v1 )
 	#endif
 

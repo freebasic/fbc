@@ -104,6 +104,7 @@
 #   DISABLE_DOCS  bindist: Don't package readme/changelog/manpage/examples
 #   BUILD_PREFIX     automatically set depending on the target but can override for special builds where the
 #                    build tools have different file naming than the target to build (i.e. cross compiling)
+#   DISABLE_GAS64_DEBUG    use "-d DISABLE_GAS64_DEBUG" (see below)
 # compiler source code configuration (FBCFLAGS, FBLFLAGS):
 #   -d ENABLE_STANDALONE     build for a self-contained installation
 #   -d ENABLE_SUFFIX=-0.24   assume FB's lib dir uses the given suffix (non-standalone only)
@@ -111,6 +112,7 @@
 #   -d ENABLE_LIB64          use prefix/lib64/ instead of prefix/lib/ for 64bit libs (non-standalone only)
 #   -d ENABLE_STRIPALL       configure fbc to pass down '--strip-all' to linker by default
 #   -d FBSHA1=some-sha-1     store 'some-sha-1' in the compiler for version information
+#   -d DISABLE_GAS64_DEBUG   disable gas64 debugging comments in asm files even if __FB_DEBUG__ is defined (-g)
 #
 # internal makefile configuration (but can override):
 #   libsubdir       override the library directory - default is set depending on TARGET
@@ -564,6 +566,9 @@ else
   ifneq ($(filter dos win32,$(TARGET_OS)),)
     ALLFBCFLAGS += -d ENABLE_STRIPALL
   endif
+endif
+ifdef DISABLE_GAS64_DEBUG
+  ALLFBCFLAGS += -d DISABLE_GAS64_DEBUG
 endif
 
 ALLFBCFLAGS += $(FBCFLAGS) $(FBFLAGS)
