@@ -115,6 +115,7 @@
 # internal makefile configuration (but can override):
 #   libsubdir       override the library directory - default is set depending on TARGET
 #   objsubdir       override object file directory - default is set depending on TARGET
+#   fbcobjdir       override copiler object directory - default is set depending on TARGET
 #
 # fbrt source code configuration (FBRTCFLAGS, FBRTLFLAGS)
 #
@@ -441,7 +442,9 @@ else
   prefixincdir   := $(prefix)/include/$(FBNAME)
   prefixlibdir   := $(prefix)/$(libdir)
 endif
+ifeq ($(fbcobjdir),)
 fbcobjdir           := src/compiler/obj/$(FBTARGET)
+endif
 libfbobjdir         := src/rtlib/obj/$(objsubdir)
 libfbpicobjdir      := src/rtlib/obj/$(objsubdir)/pic
 libfbmtobjdir       := src/rtlib/obj/$(objsubdir)/mt
