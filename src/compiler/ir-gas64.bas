@@ -3190,7 +3190,10 @@ private sub bop_float( _
 				case AST_OP_DIV
 					asm_code(divreg+"xmm0, xmm1")
 			end select
-			if v1dtype=FB_DATATYPE_DOUBLE then
+			if vr->dtype=FB_DATATYPE_DOUBLE then
+				if v1dtype=FB_DATATYPE_SINGLE then
+					asm_code("cvtss2sd xmm0, xmm0")
+				end if
 				asm_code("movq "+*regstrq(vrreg)+", xmm0")
 			else
 				asm_code("movd "+*regstrd(vrreg)+", xmm0")
@@ -3790,8 +3793,12 @@ private sub _emitbop(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVR
 		asm_info("v1 type="+str(v1->dtype)+" "+"v1 sym type="+str(v1->sym->typ))
 		asm_info("size v1="+str(typeGetSize( v1->dtype ))+" size sym="+str( typeGetSize( v1->sym->typ ) ) )
 		dtype=v1->dtype
-		v1->dtype=v1->sym->typ
-		_setvregdatatype(v1,dtype,0)
+		if typeisptr(v1->dtype) then
+			asm_info("STRANGE CASE but as ptr type do nothing")
+		else
+			v1->dtype=v1->sym->typ
+			_setvregdatatype(v1,dtype,0)
+		end if
 	end if
 	hLoadOperandsAndWriteBop( op, v1, v2, vr,label )
 
