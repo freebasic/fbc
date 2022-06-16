@@ -3438,9 +3438,29 @@ end sub
 '' -asm att: FB asm blocks are expected to be in the GCC format already,
 ''           i.e. quoted and including constraints if needed.
 ''
+private function hFindLabelInSeenList( _
+	byref labellist as TLIST, _
+	byval labelsym as FBSYMBOL ptr _
+) as long
+	dim as FBSYMBOL ptr ptr symnode = listGetHead( @labellist )
+	dim as long index = -1, curindex = 0
+	do
+		if symnode = NULL then exit do
+		if *symnode = labelsym then
+			index = curindex
+			exit do
+		end if
+		symnode = listGetNext( symnode )
+		curindex += 1
+	loop
+	return index
+end function
+
 private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 	'' 1st pass to count some stats (no emitting yet)
-	dim as integer uses_label, labelindex
+	dim as integer uses_label, labelindex, labelindexbase
+	dim as TLIST seenlabellist
+	listInit( @seenlabellist, 8, sizeof( FBSYMBOL ptr ) )
 	var n = asmtokenhead
 	while( n )
 		if( n->type = AST_ASMTOK_SYMB ) then
@@ -3458,6 +3478,7 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 		n = n->next
 	wend
 
+	labelindexbase = labelindex
 	dim as string ln = "__asm__"
 
 	'' Only when inside normal procedures
@@ -3521,13 +3542,27 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 						'' Referencing a label: insert %lN place-holder
 						'' (N refers to N'th operand written in whole
 						'' asm goto(outputs... inputs... labels...) statement)
-						asmcode += "%l" & labelindex
-						labelindex += 1
 
-						if( len( labellist ) > 0 ) then
-							labellist += ", "
+						'' GCC only allows a label to be in the label list once
+						'' no matter how many times it appears in the code, so we keep track
+						'' of what we've seen to make sure we only emit labels into the list once
+						'' and subsequent access use the previous index
+						dim as integer labelnum = any
+						dim as FBSYMBOL ptr labelsym = n->sym
+						dim as long seenlabelindex = hFindLabelInSeenList( seenlabellist, labelsym )
+						if seenlabelindex <> -1 then
+							labelnum = seenlabelindex + labelindexbase
+						else
+							labelnum = labelindex
+							labelindex += 1
+							*CPtr(FBSYMBOL ptr ptr, listNewNode( @seenlabellist ) ) = labelsym
+							if( len( labellist ) > 0 ) then
+								labellist += ", "
+							end if
+							labellist += *symbGetMangledName( labelsym )
 						end if
-						labellist += *symbGetMangledName( n->sym )
+
+						asmcode += "%l" & labelnum
 
 					case else
 						'' Referencing a procedure: no gcc constraints needed;
@@ -3552,6 +3587,7 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 
 		n = n->next
 	wend
+	listEnd( @seenlabellist )
 
 	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
 		''
