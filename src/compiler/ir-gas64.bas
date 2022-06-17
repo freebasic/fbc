@@ -128,9 +128,22 @@ rbp-y -->  local vars
 	end if
 #endmacro
 declare sub cfi_windows_asm_code(byval statement as string)
+declare sub hwriteasm64( byref ln as string,byval opt as integer=KDOALL)
 
 #if __FB_DEBUG__ <> 0
-	#define asm_info(s) hWriteasm64("# "+s)
+#include once "crt/string.bi"
+
+	private sub asm_info( byval s as string )
+		dim as zstring ptr sdata = strptr( s )
+		dim as const zstring ptr newlines = @!"\r\n"
+		dim as zstring ptr iter =  strpbrk( sdata, newlines )
+		while iter
+			*iter = asc("#")
+			iter = strpbrk( iter + 1, newlines )
+		wend
+		hWriteasm64("# "+s)
+	end sub
+
 #else
 	#define asm_info(s) rem
 	#define typeDumpToStr(a,b) " "+str(a)
@@ -322,7 +335,6 @@ declare sub _emitdbg(byval op as integer,byval proc as FBSYMBOL ptr,byval lnum a
 declare sub check_optim(byref code as string)
 declare sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 declare function hgetdatatype_asm64 (byval sym as FBSYMBOL ptr,byval arraydimensions as integer = 0) as string
-declare sub hwriteasm64( byref ln as string,byval opt as integer=KDOALL)
 declare sub _emitvariniend( byval sym as FBSYMBOL ptr )
 declare sub _emitvarinipad( byval bytes as longint )
 declare sub _emitvariniwstr(byval varlength as longint,byval literal as wstring ptr,byval litlength as longint)
