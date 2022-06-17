@@ -38,8 +38,8 @@ static int data_locked = FALSE;
 static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rate, int flags)
 {
 	int depth = MAX(8, depth_arg);
-	int is_rgb, bpp;
-	int red_pos, blue_pos;
+	int is_rgb; /* int bpp;  never used - see below */
+	int red_pos; /* int blue_pos never used because bpp never used */
 	
 	fb_dos_detect();
 	fb_dos_vesa_detect();
@@ -66,23 +66,25 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	if( fb_dos.vesa_mode_info.LinRedFieldPosition == 0 && fb_dos.vesa_mode_info.LinBlueFieldPosition == 0)
 	{
 		red_pos = fb_dos.vesa_mode_info.RedFieldPosition;
-		blue_pos = fb_dos.vesa_mode_info.BlueFieldPosition;
+		/* blue_pos = fb_dos.vesa_mode_info.BlueFieldPosition; - not used, comment to quiet warning */
 	}
 	else
 	{
 		red_pos = fb_dos.vesa_mode_info.LinRedFieldPosition;
-		blue_pos = fb_dos.vesa_mode_info.LinBlueFieldPosition;
+		/* blue_pos = fb_dos.vesa_mode_info.LinBlueFieldPosition; - not used, comment to quiet warning */
 	}
 	
 	is_rgb = (depth > 8) && (red_pos == 0);
-	
+
+	/* bpp is never used - comment is here to quiet warning
 	if (blue_pos == 10 || red_pos == 10)
 		bpp = 15;
 	else if (blue_pos == 11 || red_pos == 11)
 		bpp = 16;
 	else
 		bpp = fb_dos.vesa_mode_info.BitsPerPixel;
-	
+	*/
+
 	blitter = fb_hGetBlitter(fb_dos.vesa_mode_info.BitsPerPixel, is_rgb);
 	if (!blitter)
 		return -1;
