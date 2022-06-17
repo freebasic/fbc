@@ -169,7 +169,7 @@
 
 	ID( function fb_Color )
 	scope
-		dim chk as function fbcall ( byval as const long, byval as const long, byval as const long ) as long
+		dim chk as function fbcall ( byval as const ulong, byval as const ulong, byval as const long ) as ulong
 		chk = procptr( fb_Color )
 	end scope
 

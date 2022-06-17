@@ -64,6 +64,7 @@ Version 1.10.0
 - fbc: dos: when invoking dxe3gen on cross compiler, don't write to ldopt.tmp, dxe3gen doesn't seem to be able to handle the ldopt.tmp argument
 - fbc: remove double path separator characters '/', '\' when setting the fbc path prefix
 - rtlib: multikey was missing VK_NUMPAD5 and SC_CLEAR scancodes in the key table, causing NUMPAD-5 to be handled as escape in the windows D2D gfx driver
+- sf.net: #961: rtlib/gfxlib: COLOR() function returns LONG but should be ULONG
 
 
 Version 1.09.0

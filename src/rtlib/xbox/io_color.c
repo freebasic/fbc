@@ -2,12 +2,12 @@
 
 #include "../fb.h"
 
-int fb_ConsoleColor( int fc, int bc, int flags )
+unsigned int fb_ConsoleColor( unsigned int fc, unsigned int bc, int flags )
 {
 	return 0;
 }
 
-int fb_ConsoleGetColorAtt( void )
+unsigned int fb_ConsoleGetColorAtt( void )
 {
 	return 0;
 }

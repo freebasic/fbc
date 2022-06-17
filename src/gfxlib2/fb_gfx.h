@@ -512,7 +512,7 @@ extern FBCALL int fb_GfxStrigQB( int n );
 int fb_GfxGetkey(void);
 FBSTRING *fb_GfxInkey(void);
 int fb_GfxKeyHit(void);
-int fb_GfxColor(int fg_color, int bg_color, int flags);
+unsigned int fb_GfxColor(unsigned int fg_color, unsigned int bg_color, int flags);
 void fb_GfxClear(int mode);
 int fb_GfxWidth(int w, int h);
 int fb_GfxLocateRaw(int y, int x, int cursor);

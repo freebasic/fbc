@@ -4,11 +4,11 @@
 #include "fb_private_console.h"
 #include <pc.h>
 
-static int last_bc = FB_COLOR_BLACK, last_fc = FB_COLOR_WHITE;
+static unsigned int last_bc = FB_COLOR_BLACK, last_fc = FB_COLOR_WHITE;
 
-int fb_ConsoleColor( int fc, int bc, int flags )
+unsigned int fb_ConsoleColor( unsigned int fc, unsigned int bc, int flags )
 {
-	int cur = last_fc | (last_bc << 16);
+	unsigned int cur = last_fc | (last_bc << 16);
 
 	if( !( flags & FB_COLOR_FG_DEFAULT ) )
 		last_fc = fc & 15;
@@ -21,7 +21,7 @@ int fb_ConsoleColor( int fc, int bc, int flags )
 	return cur;
 }
 
-int fb_ConsoleGetColorAtt( void )
+unsigned int fb_ConsoleGetColorAtt( void )
 {
 	/* !!!FIXME!!! there must be an attribute for each page */
 	return ScreenAttrib;
