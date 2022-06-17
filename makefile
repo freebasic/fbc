@@ -117,7 +117,7 @@
 # internal makefile configuration (but can override):
 #   libsubdir       override the library directory - default is set depending on TARGET
 #   objsubdir       override object file directory - default is set depending on TARGET
-#   fbcobjdir       override copiler object directory - default is set depending on TARGET
+#   fbcobjdir       override compiler object directory - default is set depending on TARGET
 #
 # fbrt source code configuration (FBRTCFLAGS, FBRTLFLAGS)
 #
