@@ -1092,6 +1092,9 @@ private sub hCreateFrame _
 
 	dim as integer bytestoalloc, bytestoclear, bytespushed
 	dim as zstring ptr lprof
+	dim as integer hasunwind = any
+	hasunwind = ( env.clopt.target = FB_COMPTARGET_LINUX ) andalso _
+		fbGetOption( FB_COMPOPT_UNWINDINFO )
 
 	' No frame for naked functions
 	if( symbIsNaked( proc ) = FALSE ) then
@@ -1106,7 +1109,16 @@ private sub hCreateFrame _
 			env.clopt.profile ) then
 
 			hPUSH( "ebp" )
+			if( hasunwind ) then
+				'' stack frame now start at esp + 8
+				outp( ".cfi_def_cfa_offset 8" )
+				'' and that's where old ebp is
+				outp( ".cfi_offset 5, -8" )
+			end if
+
 			outp( "mov ebp, esp" )
+			'' we're using ebp to access stack variables
+			if( hasunwind ) then outp( ".cfi_def_cfa_register 5" )
 
 			'' esp is now at -EMIT_ARGSTART modulo alignment if the caller correctly
 			'' aligned the stack; but don't make that assumption for main()
@@ -1163,10 +1175,15 @@ private sub hDestroyFrame _
 		byval bytestopop as integer _
 	) static
 
+	dim as integer islinux = any
+	islinux = ( env.clopt.target = FB_COMPTARGET_LINUX )
 	' don't do anything for naked functions, except the .size at the end
 	if( symbIsNaked( proc ) = FALSE ) then
 
 		dim as integer bytestoalloc
+		dim as integer hasunwind = any
+
+		hasunwind = islinux andalso fbGetOption( FB_COMPOPT_UNWINDINFO )
 
 		bytestoalloc = hFrameBytesToAlloc( proc )
 
@@ -1187,6 +1204,12 @@ private sub hDestroyFrame _
 			env.clopt.profile ) then
 			outp( "mov esp, ebp" )
 			hPOP( "ebp" )
+			if hasunwind then
+				'' ebp is restored
+				outp( ".cfi_restore 5" )
+				'' stack frame is back to esp + 4
+				outp( ".cfi_def_cfa 4, 4" )
+			end if
 		end if
 
 		if( bytestopop > 0 ) then
@@ -1197,7 +1220,7 @@ private sub hDestroyFrame _
 
 	end if
 
-	if( env.clopt.target = FB_COMPTARGET_LINUX ) then
+	if( islinux ) then
 		outEx( ".size " + *symbGetMangledName( proc ) + ", .-" + *symbGetMangledName( proc ) + NEWLINE )
 	end if
 
@@ -7209,6 +7232,12 @@ private sub _procFooter _
 	)
 
 	dim as integer oldpos = any, ispublic = any
+	dim as zstring ptr mangledname = symbGetMangledName( proc )
+	dim as FB_PROCEXT ptr procext = proc->proc.ext
+	dim as integer islinux = any
+	dim as integer hasunwind = any
+	islinux = ( env.clopt.target = FB_COMPTARGET_LINUX )
+	hasunwind = islinux andalso fbGetOption( FB_COMPOPT_UNWINDINFO )
 
 	ispublic = symbIsPublic( proc )
 
@@ -7221,25 +7250,34 @@ private sub _procFooter _
 	hALIGN( 16 )
 
 	if( ispublic ) then
-		hPUBLIC( symbGetMangledName( proc ), symbIsExport( proc ) )
+		hPUBLIC( mangledName, symbIsExport( proc ) )
 	end if
 
-	hLABEL( symbGetMangledName( proc ) )
+	hLABEL( mangledName )
 
-	if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-		outEx( ".type " + *symbGetMangledName( proc ) + ", @function" + NEWLINE )
+	if( islinux ) then
+		outEx( ".type " + *mangledName + ", @function" + NEWLINE )
+		if hasunwind then
+			'' cfi statements are required to be able to tag this frame
+			'' as having an exception/cleanup handler
+			outEx( ".cfi_startproc" + NEWLINE)
+		end if
 	end if
 
 	'' frame
 	hCreateFrame( proc )
 
-	edbgEmitLineFlush( proc, proc->proc.ext->dbg.iniline, proc )
+	edbgEmitLineFlush( proc, procext->dbg.iniline, proc )
 
 	''
 	emitFlush( )
 
 	''
 	hDestroyFrame( proc, bytestopop )
+
+	if islinux andalso hasunwind then
+		outEx( ".cfi_endproc" + NEWLINE )
+	end if
 
 	edbgEmitLineFlush( proc, proc->proc.ext->dbg.endline, exitlabel )
 
