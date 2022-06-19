@@ -1051,6 +1051,9 @@ bindist:
 	mkdir -p $(FBPACKAGE)/bin/$(FBTARGET)
 	cp bin/$(FBTARGET)/* $(FBPACKAGE)/bin/$(FBTARGET)
 	cp lib/$(FBTARGET)/*.a lib/$(FBTARGET)/*.o lib/$(FBTARGET)/*.x $(packlib)
+	if [ -f lib/$(FBTARGET)/dxe.ld ]; then \
+		cp lib/$(FBTARGET)/dxe.ld $(packlib); \
+	fi
 	if [ -d bin/libexec ]; then \
 		cp -R bin/libexec $(FBPACKAGE)/bin; \
 	fi
