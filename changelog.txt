@@ -23,8 +23,8 @@ Version 1.10.0
 - release: target DOS gcc 9.3.0 and bin utils 2.30 for next release
 
 [added]
-- gas64: '.cif_sections' and '.cif_' directives for stack unwinding (adeyblue)
-- gas64: '.seh_' directives for stack unwinding (adeyblue)
+- gas/gas64: '.cif_sections' and '.cif_' directives for stack unwinding (adeyblue)
+- gas/gas64: '.seh_' directives for stack unwinding (adeyblue)
 - fbc: '-eunwind' command line option to enable stack unwind information, implied by '-e', '-ex', '-exx'
 - fbc: set bit value '__FB_ERR__' = &h200 if '-eunwind' is enabled
 - gas64 : stack overflow check (total of all local variables) at compile time --> warning - stack size for linux = 8MB, for Windows = default or defined by user (SARG)
