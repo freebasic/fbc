@@ -33,8 +33,8 @@ Returns the address of a function or variable in a dll
 	See the dynamic loading example on the [[ProPgSharedLibraries|Shared Libraries]] page.
 
 {{fbdoc item="target"}}
-	- Dynamic link libraries are not available in DOS ,as the OS doesn't support them.
 	- Ordinals are not supported on Linux, 0 is always returned.
+	- Ordinals are not supported on DOS, 0 is always returned.
 	- Windows does not support ##**Dylibsymbol**## use with variables (only with procedures).
 
 {{fbdoc item="lang"}}

@@ -64,5 +64,7 @@ End Type
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreenevent|ScreenEvent]]##
 	- [[ProPgEventHandling|Event Handling]]
+	- [[GfxScancodes|Keyboard scancodes]]
+	- [[DevRtlInkey|Keyboard Input]]
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

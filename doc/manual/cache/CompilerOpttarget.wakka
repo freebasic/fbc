@@ -7,7 +7,6 @@ Set the target platform for cross compilation
 {{fbdoc item="param"}}
 	##//platform//##
 		The target platform. Recognized values:
-		
 			- ##dos##
 			- ##win32##
 			- ##win64##
@@ -57,32 +56,28 @@ Set the target platform for cross compilation
 	If ##-target <platform>## is given, the compiler will compile programs more or less as if they were compiled on the given platform. This affects which ##""__FB_*__""## operating-system-specific symbol will be pre-defined, the default calling convention, the object and executable file format (e.g. ELF/COFF), the available runtime libraries and functions, etc.
 	
 	With a standalone FB setup such as the FB-dos or FB-win32 releases:
-	
 		- Specifying ##-target <platform>## causes the compiler to use the compiler tools in the ##bin/<platform>/## directory, and target-specific libraries in the ##lib/<platform>/## directory. For example, ##-target win32## causes the compiler to compile for ""Win32"" and use tools from ##bin/win32/## and libraries from ##lib/win32/##.
-		
 		- It is unnecessary (but safe) to specify a ##-target## option that matches the host (for example ##-target win32## on ##win32##). It does not make a difference to the compilation process.
-		
 		- If ##-target## is not specified, the compiler defaults to compiling for the native system. It will then use the compiler tools and libraries from the ##bin/## and ##lib/## directories corresponding to the native system.
-		
-		- ##-target## may be specified as a gnu triplet as an alternate method for specifying the platform target and architecture.  For example, ##-target i586-pc-mdosdjgpp## will identify as ##-arch 586 -target dos## and will look for binaries in bin/dos/ and libraries in lib/dos/.  The platform string is not prefixed to names of binary tools. 
-		
+		- ##-target## may be specified as a gnu triplet as an alternate method for specifying the platform target and architecture.  For example, ##-target i586-pc-mdosdjgpp## will identify as ##-arch 586 -target dos## and will look for binaries in bin/dos/ and libraries in lib/dos/.  The platform string is not prefixed to names of binary tools.
 
+		
 	With a normal FB setup such as the FB-linux release:
-	
 		- Specifying ##-target <platform>## causes the compiler to prefix the ##<platform>-## string to the executable names of binutils and gcc. For example, specifying ##-target i686-w64-mingw32## causes the compiler to invoke ##i686-w64-mingw32-ld## instead of ##ld## (same for other tools besides the linker). This allows fbc to integrate with binutils/gcc cross-compiler toolchains and matches how cross-compiling tools are typically installed on Linux distributions.
-		
 		- Note that specifying something like ##-target win32## does not usually make sense here. It causes the compiler to try to use ##win32-ld## which usually does not exist, because binutils/gcc toolchains for cross-compilation to Windows typically have names such as ##i686-pc-mingw32##, not just ##win32##. Thus, it is necessary to specify something like ##-target i686-pc-mingw32## instead of ##-target win32##.
-		
 		- For backwards compatibility, if the given //platform// string describes the host and is an FB target name (the values accepted by the ##-target## option with a standalone FB setup) instead of a GNU triplet, then the ##-target## option will be ignored, and the ##<platform>-## string will not be prefixed to compiler tools. For example, this allows ##-target linux## to work with the FB-linux release. It will be ignored instead of causing the compiler to try to use ##linux-ld## instead of ##ld##.
-		
 		- If ##-target## is not specified, the compiler defaults to compiling for the native system, and it will invoke binutils/gcc without a target-specific prefix. This allows fbc to integrate with usual Linux (and similar) systems where binutils/gcc for native compilation are installed without any target-specific prefix.
-		
 		- Libraries besides FB's own runtime libraries are located by running ##gcc -print-file-name=...## (or ##<platform>-gcc -print-file-name=...##). This allows fbc to use the system and gcc libraries installed on Linux and similar systems without knowing the exact installation directories.
+
+		
+	For more details, see on page ##[[CompilerOptbuildprefix|-buildprefix]]##, the paragraph: "Detailed behavior if using ##-buildprefix##, ##-prefix##, ##-target## command line options".
 
 {{fbdoc item="ver"}}
 	- Before fbc 1.10.0, gnu triplets were not allowed in standalone builds, and '-target i386-pc-msdosdjgpp' and similar were not allowed.
 
 {{fbdoc item="see"}}
+	- [[CompilerOptbuildprefix|-buildprefix]]
+	- [[CompilerOptprefix|-prefix]]
 	- [[CompilerCmdLine|Using the Command Line]]
 	- [[DevCrossCompiling|FB and cross-compiling]]
 

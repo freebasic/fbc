@@ -10,6 +10,8 @@ Command line compiler options for the fbc compiler:
 		- Sets the assembler format for Asm block
 	{{fbdoc item="keyword" value="CompilerOptb|-b < name >"}}
 		- Add a source file to compilation
+	{{fbdoc item="keyword" value="CompilerOptbuildprefix|-buildprefix < name >"}}
+		- Set the internal buildprefix option
 	{{fbdoc item="keyword" value="CompilerOptc|-c"}}
 		- Compile only, do not link
 	{{fbdoc item="keyword" value="CompilerOptcupp|-C"}}

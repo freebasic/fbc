@@ -82,6 +82,8 @@ SC_HOME         &h47
 SC_UP           &h48
 SC_PAGEUP       &h49
 SC_LEFT         &h4B
+SC_CLEAR        &h4C
+SC_CENTER       &h4C
 SC_RIGHT        &h4D
 SC_PLUS         &h4E
 SC_END          &h4F

@@ -11,7 +11,7 @@ Preprocessor directive
 {{fbdoc item="desc"}}
 	##**#cmdline**## is a pre-processor directive that allows specifying ##[[CatPgCompOpt|compiler options]]## from inside the first specified fb source file.  The first source file is the first specified '.bas' file given on the shell or IDE command line invoking the fbc compiler.  ##**#cmdline**## directives specified in the first source file affect all source files subsequently compiled.  ##**#cmdline**## directives inside source files other than the first source file are ignored.
 	
-	##**#cmdline**## is only allowed at module scope and can be conditionally processed with ##[[KeyPgPpif|#if]]## pre-processor statements .
+	##**#cmdline**## is only allowed at module scope and can be conditionally processed with ##[[KeyPgPpif|#if]]## pre-processor statements.  ##**#cmdline**## statements must appear before any declarative or executable statements.  Any ##**#cmdline**## statements after the first declarative or executable statement are ignored.
 	
 	##**#cmdline**## directives are processed on the first pass of the the first '.bas' source file when they appear in the source file.  If an invalid command line option is given in the ##**#cmdline**## statment, compilation immediately aborts. ##**#cmdline**## directives are ignored on the second pass of the source file even if a conditional ##[[KeyPgPpif|#if]]## would add something different on the second pass.
 	

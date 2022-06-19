@@ -131,6 +131,8 @@ Using the **fbc** command-line.
 {{fbdoc item="section" value="Behaviour"}}
 	=={{fbdoc item="keyword" value="CompilerOptprefix|-prefix < path >"}}==
 		Set the compiler prefix path
+	=={{fbdoc item="keyword" value="CompilerOptbuildprefix|-buildprefix < name >"}}==
+		Set the internal buildprefix option
 	=={{fbdoc item="keyword" value="CompilerOptversion|-version"}}==
 		Show compiler version on the command line, do not compile or link
 	=={{fbdoc item="keyword" value="CompilerOptv|-v"}}==

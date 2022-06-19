@@ -17,9 +17,6 @@ Unloads a dynamic link library from memory
 {{fbdoc item="ex"}}
 	See the dynamic loading example on the [[ProPgSharedLibraries|Shared Libraries]] page.
 
-{{fbdoc item="target"}}
-	- Dynamic link libraries are not available in DOS, as the OS doesn't support them.
-
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Dylibfree""**##.
 

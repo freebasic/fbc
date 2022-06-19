@@ -82,7 +82,7 @@
 {{fbdoc item="section" value="Procedures"}}
 	{{fbdoc item="keyword" value="ProPgProcedures|Procedures Overview"}}
 	{{fbdoc item="keyword" value="ProPgPassingArguments|Passing Arguments to Procedures"}}
-	{{fbdoc item="keyword" value="ProPgReturnValue|Returning a Value"}}
+	{{fbdoc item="keyword" value="ProPgReturnValue|Returning Values"}}
 	{{fbdoc item="keyword" value="ProPgProcedureScopes|Procedure Scopes"}}
 	{{fbdoc item="keyword" value="ProPgCallingConventions|Calling Conventions"}}
 	{{fbdoc item="keyword" value="ProPgRecursion|Recursion"}}

@@ -155,6 +155,8 @@ Preprocessor symbols defined by the compiler.
 		Returns right token based on separator.
 	=={{fbdoc item="keyword" value="KeyPgDdfbeval|__FB_EVAL__"}}==
 		Evaluates an argument (expression) at compile time.
+	=={{fbdoc item="keyword" value="KeyPgDdfbiif|__FB_IIF__"}}==
+		Returns an expression depending on the result of a comparison expression evaluated at compile time.
 	=={{fbdoc item="keyword" value="KeyPgDdfbjoin|__FB_JOIN__"}}==
 		Joins two token arguments together as one.
 	=={{fbdoc item="keyword" value="KeyPgDdfbquote|__FB_QUOTE__"}}==

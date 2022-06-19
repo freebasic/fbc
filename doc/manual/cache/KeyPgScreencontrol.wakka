@@ -86,6 +86,41 @@ Sets or gets internal graphics library settings
 		[OUT] ##//param//## supported GL extensions
 	- ##GET_HIGH_PRIORITY## Returns if ##GFX_HIGH_PRIORITY## was specified in the flags passed to ##[[KeyPgScreengraphics|Screen]]## or ##[[KeyPgScreenres|Screenres]]##.
 		[OUT] ##//param1//## higher priority graphics processing enabled
+	- ##GET_SCANLINE_SIZE## Returns how currently many scan lines each row of fbgfx video memory should occupy on the screen
+		[OUT] ##//param1//## scan line size multiplier
+	- ##GET_GL_COLOR_BITS## Returns the current number of bits dedicated to the ""OpenGL"" color buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_COLOR_RED_BITS## Returns the current number of bits dedicated to the red component of the ""OpenGL"" color buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_COLOR_GREEN_BITS## Returns the current number of bits dedicated to the green component of the ""OpenGL"" color buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_COLOR_BLUE_BITS## Returns the current number of bits dedicated to the blue component of the ""OpenGL"" color buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_COLOR_ALPHA_BITS## Returns the current number of bits dedicated to the alpha component of the ""OpenGL"" color buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_DEPTH_BITS## Returns the current number of bits dedicated to the ""OpenGL"" depth buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_STENCIL_BITS## Returns the current number of bits dedicated to the ""OpenGL"" stencil buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_ACCUM_BITS## Returns the current number of bits dedicated to the ""OpenGL"" accumulation buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_ACCUM_RED_BITS## Returns the current number of bits dedicated to the red component of the ""OpenGL"" accumulation buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_ACCUM_GREEN_BITS## Returns the current number of bits dedicated to the green component of the ""OpenGL"" accumulation buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_ACCUM_BLUE_BITS## Returns the current number of bits dedicated to the blue component of the ""OpenGL"" accumulation buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_ACCUM_ALPHA_BITS## Returns the current number of bits dedicated to the alpha component of the ""OpenGL"" accumulation buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_NUM_SAMPLES## Returns the current number of samples to be used for ""OpenGL"" multisampling
+		[OUT] ##//param1//## samples
+	- ##GET_GL_2D_MODE## Returns the current OpenGL 2D render
+		[OUT] ##//param1//##:
+			##OGL_2D_NONE## No rendering
+			##OGL_2D_MANUAL_SYNC## Manual rendering (when ##[[KeyPgFlip|Flip]]## is called)
+			##OGL_2D_AUTO_SYNC## Automatic rendering
+	- ##GET_GL_SCALE## Returns the current zoom factor on OpenGL 2D render (only allowed if OpenGL 2D render mode has yet been activated via ##SET_GL_2D_MODE##)
+		[OUT] ##//param1//## zoom factor (0: no rendering)
 		
 		**Set operations**
 	- ##SET_WINDOW_POS## Sets the current program window position, in desktop coordinates.
@@ -229,6 +264,7 @@ print "Graphics driver name: " & driver
 sleep
 	%%
 {{fbdoc item="ver"}}
+	- Since fbc 1.10.0: 16 getters from ##GET_SCANLINE_SIZE## to ##GET_GL_SCALE## added.
 	- Before fbc 1.08.0:
 			Syntax:
 				##[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param1 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param2 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param3 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param4 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0 )

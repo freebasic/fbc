@@ -91,7 +91,7 @@ print i
 
 {{fbdoc item="see"}}
 	- [[ProPgProcedures|Procedures Overview]]
-	- [[ProPgReturnValue|Returning a Value]]
+	- [[ProPgReturnValue|Returning Values]]
 	- ##[[KeyPgDeclare|Declare]]##
 	- ##[[KeyPgSub|Sub]]##
 	- ##[[KeyPgFunction|Function]]##

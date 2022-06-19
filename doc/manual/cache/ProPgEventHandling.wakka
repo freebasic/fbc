@@ -308,5 +308,6 @@ Loop
 	- ##[[KeyPgInkey|InKey]]##
 	- ##[[KeyPgMultikey|MultiKey]]##
 	- ##[[KeyPgGetmouse|GetMouse]]##
+	- [[GfxScancodes|Keyboard scancodes]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

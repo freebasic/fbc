@@ -13,20 +13,23 @@ Returns a string representing the first key waiting in the keyboard buffer
 {{fbdoc item="desc"}}
 	Peeks into the keyboard buffer and returns a ##[[KeyPgString|String]]## representation of the first character, if any, found. The key is then removed from the buffer, and is not echoed to the screen. If the keyboard buffer is empty, an empty string (##"####"##) is immediately returned without waiting for keys.
 	
-	If the key is in the ASCII character set, a one-character ##[[KeyPgString|String]]## consisting of that character is returned. If the key is an "extended" one (numeric pad, cursors, functions) a two-character ##[[KeyPgString|String]]## is returned, the first of which is the extended character  (//See dialect differences below//)
+	If the key is in the ASCII character set, a one-character ##[[KeyPgString|String]]## consisting of that character is returned.
+	If the key is an "extended" one (numeric pad, cursors, functions) a two-character ##[[KeyPgString|String]]## is returned, the first of which is the extended character  (//See dialect differences below//), and the second is the raw scancode for the keyboard.
+	
+	For FB's built-in functionality of getting keyboard input, see ##[[DevRtlInkey|Keyboard Input]] (Basics)##.
 	
 	The ""Shift"", ""Ctrl"", ""Alt"", and ""AltGr"" keys can't be read independently by this function as they never enter the keyboard buffer (although, perhaps obviously, Shift-A will be reported by ##**Inkey**## differently than Control-A et cetera; Alt-A is an extended key a la the above).
 	
 	See also ##[[KeyPgInputnum|Input()]]## or ##[[KeyPgGetkey|Getkey]]##, or ##[[KeyPgSleep|Sleep]]## to wait for a key press if the keyboard buffer is empty.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/input/inkey.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/input/inkey.bas"}}%%(freebasic)
 print "press q to quit"
 do
 	sleep 1, 1
 loop until inkey = "q"
 %%
-{{fbdoc item="filename" value="examples/manual/input/inkeyext.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/input/inkeyext.bas"}}%%(freebasic)
 '' Compile with -lang fblite or qb
 
 #lang "fblite"
@@ -99,7 +102,6 @@ Do
 
 Loop
 %%
-
 {{fbdoc item="lang"}}
 	- The extended character is ##[[KeyPgChr|Chr]](255)## in the //[[CompilerOptlang|-lang fb]]// and //[[CompilerOptlang|-lang fblite]]// dialects.
 		- In the //[[CompilerOptlang|-lang qb]]// dialect, the extended character depends on how the keyword is written. If the QB form ##**Inkey$**## is used, the extended character is ##[[KeyPgChr|Chr]](0)##.  If it is referenced as ##**""__Inkey""**##, the extended char is ##[[KeyPgChr|Chr]](255)##.
@@ -117,5 +119,7 @@ Loop
 	- ##[[KeyPgGetkey|Getkey]]##
 	- ##[[KeyPgInputnum|Input()]]##
 	- ##[[KeyPgMultikey|Multikey]]##
+	- [[GfxScancodes|Keyboard scancodes]]
+	- [[DevRtlInkey|Keyboard Input]]
 
 {{fbdoc item="back" value="CatPgInput|User Input"}}
