@@ -2257,7 +2257,7 @@ private function _emitbegin( ) as integer
 	end if
 
 	asm_code( ".intel_syntax noprefix")
-	cfi_asm_code( ".cfi_sections .debug_frame")
+	cfi_windows_asm_code( ".cfi_sections .debug_frame")
 	asm_section(".text")
 	if env.clopt.nullptrchk=true then
 		asm_code("mov qword ptr $totalstacksize[rip], 0")
@@ -6496,10 +6496,10 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 	if symbisprivate(proc)=FALSE then
 		asm_code(".globl "+*symbGetMangledName( proc ))
 	end if
-	cfi_asm_code(".cfi_startproc")
 	cfi_windows_asm_code(".seh_proc "+*symbGetMangledName( proc ))
 	ctx.indent-=1
 	asm_code(*symbGetMangledName( proc )+":")
+	cfi_asm_code(".cfi_startproc")
 	ctx.indent+=1
 
 	asm_info("stk4="+Str(ctx.stk)+" reserved space for saving registers when proc calls")
