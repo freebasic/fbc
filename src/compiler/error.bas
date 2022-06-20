@@ -421,7 +421,9 @@ declare function hMakeParamDesc _
 		/'FB_ERRMSG_BYREFFIXSTR                        '/ @"Fixed-length string combined with BYREF (not supported)", _
 		/'FB_ERRMSG_ILLEGALUSEOFRESERVEDSYMBOL         '/ @"Illegal use of reserved symbol", _
 		/'FB_ERRMSG_EXPECTEDCOMMAORSEMICOLON           '/ @"Expected ',' or ';'", _
-		/'FB_ERRMSG_EXPECTEDFILENUMBEREXPRESSION       '/ @"Expected file number expression" _
+		/'FB_ERRMSG_EXPECTEDFILENUMBEREXPRESSION       '/ @"Expected file number expression", _
+		/'FB_ERRMSG_UNWINDGOTOBEFOREONERROR            '/ @"The goto label cannot precede the On Error Goto statement", _
+		/'FB_ERRMSG_OBJUNWINDBADTARGET                 '/ @"-z objunwind option given, but not supported for this target (only x86 or x86_64 Windows or Linux)" _
 	}
 
 

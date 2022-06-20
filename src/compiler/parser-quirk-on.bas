@@ -8,6 +8,7 @@
 #include once "parser.bi"
 #include once "rtl.bi"
 #include once "ast.bi"
+#include once "unwind.bi"
 
 private function cGOTBStmt _
 	( _
@@ -127,7 +128,7 @@ function cOnStmt _
 	) as integer
 
 	dim as ASTNODE ptr expr = any
-	dim as integer isgoto = any, islocal = any, isrestore = any
+	dim as integer isgoto = any, islocal = any, isrestore = any, labelbeforestmt = any
 	dim as FBSYMBOL ptr label = any
 	dim as FBSYMCHAIN ptr chain_ = any
 	dim as FBSYMBOL ptr base_parent = any
@@ -211,16 +212,27 @@ function cOnStmt _
 			chain_ = cIdentifier( base_parent )
 
 			label = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
+			labelbeforestmt = ( label <> NULL )
 			if( label = NULL ) then
 				label = symbAddLabel( lexGetText( ), FB_SYMBOPT_CREATEALIAS )
 			end if
 
 			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
-			expr = astNewADDROF( astNewVAR( label ) )
-			rtlErrorSetHandler( expr, (islocal = TRUE) )
+			if( fbGetOption( FB_COMPOPT_OBJUNWIND ) ) then
+				expr = unwindCreateCatchStartLabel( label, labelbeforestmt )
+				astAdd( expr )
+			else
+				expr = astNewADDROF( astNewVAR( label ) )
+				rtlErrorSetHandler( expr, (islocal = TRUE) )
+			end if 
 		else
-			rtlErrorSetHandler( astNewCONSTi( NULL, FB_DATATYPE_UINT ), (islocal = TRUE) )
+			if( fbGetOption( FB_COMPOPT_OBJUNWIND ) ) then
+				expr = unwindMarkEndOfCatchRange( )
+				if expr then astAdd( expr )
+			else
+				rtlErrorSetHandler( astNewCONSTi( NULL, FB_DATATYPE_UINT ), (islocal = TRUE) )
+			end if
 		end if
 
 		function = TRUE

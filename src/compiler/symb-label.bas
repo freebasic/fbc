@@ -118,6 +118,7 @@ function symbAddLabel _
 	end if
 	''for gas64
 	l->lbl.gosub = false
+	l->lbl.unwindtarget = false
 
 	function = l
 

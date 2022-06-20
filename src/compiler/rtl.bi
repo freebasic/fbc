@@ -411,6 +411,8 @@
 
 #define FB_RTL_THREADCALL               "fb_ThreadCall"
 
+#define FB_RTL_EX_THROWERROR		"fb_ThrowError"
+
 
 '' the order doesn't matter but it makes more sense to follow the same
 '' order as the FB_RTL_* defines above
@@ -822,6 +824,8 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_DTOUL
 
 	FB_RTL_IDX_THREADCALL
+
+	FB_RTL_IDX_EX_THROWERROR
 
 	FB_RTL_INDEXES
 end enum

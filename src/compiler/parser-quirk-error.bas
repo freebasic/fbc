@@ -8,6 +8,7 @@
 #include once "parser.bi"
 #include once "rtl.bi"
 #include once "ast.bi"
+#include once "unwind.bi"
 
 '' ERROR Expression
 function cErrorStmt() as integer
@@ -20,7 +21,14 @@ function cErrorStmt() as integer
 	dim as ASTNODE ptr expr
 	hMatchExpressionEx(expr, FB_DATATYPE_INTEGER)
 
-	rtlErrorThrow(expr, lexLineNum(), env.inf.name)
+	if fbGetOption( FB_COMPOPT_OBJUNWIND ) then
+		'' first set error number
+		rtlErrorSetNum( expr )
+		''then start the throw procedure
+		unwindThrowException( NULL )
+	else
+		rtlErrorThrow(expr, lexLineNum(), env.inf.name)
+	end if
 
 	function = TRUE
 end function

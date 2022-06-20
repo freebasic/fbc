@@ -16,6 +16,7 @@
 #include once "ir.bi"
 #include once "rtl.bi"
 #include once "ast.bi"
+#include once "unwind.bi"
 
 type FB_GLOBINSTANCE
 	sym				as FBSYMBOL_ ptr			'' for symbol
@@ -669,6 +670,15 @@ function astProcEnd( byval callrtexit as integer ) as integer
    	''
    	astAdd( astNewLABEL( n->block.exitlabel ) )
 
+	'' if we have any unwind data, add the support if it is required
+	'' (SEH struct, label references etc)
+	if enable_implicit_code then
+		dim as ASTNODE ptr prolog, epilog
+		prolog = unwindGenProcSupportCode( sym, n->block.initlabel, n->block.exitlabel, @epilog )
+		if prolog <> NULL then astAddAfter( prolog, NULL )
+		if epilog <> NULL then astAdd( epilog )
+	end if
+
 	'' Check for any undefined labels (labels can be forward references)
 	res = (symbCheckLabels(symbGetProcSymbTbHead(parser.currproc)) = 0)
 
@@ -929,10 +939,18 @@ private function hCallCtorList _
 	end if
 	tree = astBuildVarAssign( iter, astNewADDROF( fldexpr ), AST_OPOPT_ISINI )
 
+	'' hGenDtorLoop in unwind.bas relies on this loop being a for loop
+	'' from 0 to elements, if this changes, that needs updating too
 	'' for cnt = 0 to symbGetArrayElements( fld )-1
 	tree = astBuildForBegin( tree, cnt, label, 0 )
 
 	if( is_ctor ) then
+		if( elements > 1 ) then
+			'' insert an unwind checkpoint label in case any of these
+			'' calls cause an error
+			'' this only needs to happen when there's more than 1
+			tree = astNewLINK( tree, unwindPushManualArrayCleanup( cnt, iter ), AST_LINK_RETURN_NONE )
+		end if
 		'' ctor( *iter )
 		tree = astNewLINK( tree, astBuildCtorCall( subtype, astBuildVarDeref( iter ) ), AST_LINK_RETURN_NONE )
 	else

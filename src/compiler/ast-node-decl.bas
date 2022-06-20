@@ -7,6 +7,7 @@
 #include once "fbint.bi"
 #include once "ir.bi"
 #include once "ast.bi"
+#include once "unwind.bi"
 
 '':::::
 private function hCtorList _
@@ -28,6 +29,9 @@ private function hCtorList _
 
 	'' for cnt = 0 to symbGetArrayElements( sym )-1
 	tree = astBuildForBegin( tree, cnt, label, 0 )
+
+	'' unwind checkpoint label
+	tree = astNewLINK( tree, unwindPushManualArrayCleanup( cnt, this_ ), AST_LINK_RETURN_NONE )
 
 	'' sym.constructor( )
 	tree = astNewLINK( tree, astBuildCtorCall( symbGetSubtype( sym ), astBuildVarDeref( this_ ) ), AST_LINK_RETURN_NONE )
@@ -68,7 +72,8 @@ private function hDefaultInit( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 		'' scalar?
 		if( symbGetArrayDimensions( sym ) = 0 ) then
 			'' sym.constructor( )
-			function = astBuildCtorCall( symbGetSubtype( sym ), astNewVAR( sym ) )
+			dim as ASTNODE ptr ctorcall = astBuildCtorCall( symbGetSubtype( sym ), astNewVAR( sym ) )
+			function = astNewLINK( ctorCall, unwindCreateCheckpointLabel( ), AST_LINK_RETURN_NONE )
 		'' array..
 		else
 			assert( symbIsDynamic( sym ) = FALSE )
@@ -78,8 +83,14 @@ private function hDefaultInit( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 		exit function
 	end if
 
-	function = astNewMEM( AST_OP_MEMCLEAR, astNewVAR( sym ), _
+	dim as ASTNODE ptr n = astNewMEM( AST_OP_MEMCLEAR, astNewVAR( sym ), _
 	                      astNewCONSTi( symbGetLen( sym ) * symbGetArrayElements( sym ) ) )
+	'' strings need cleaning up too. It doesn't matter if this is one or an array
+	'' since array cleanup is handled by an rtlib function, rather than a generated loop like above
+	if ( symbGetType( sym ) = FB_DATATYPE_STRING ) then
+		n = astNewLINK( n, unwindCreateCheckpointLabel( ), AST_LINK_RETURN_NONE )
+	end if
+	function = n
 end function
 
 function astNewDECL _

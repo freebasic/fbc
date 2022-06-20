@@ -11,6 +11,7 @@
 #include once "parser.bi"
 #include once "ir.bi"
 #include once "ast.bi"
+#include once "unwind.bi"
 
 '':::::
 function astTypeIniBegin _
@@ -374,6 +375,7 @@ private function hCallCtorList _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr fldexpr = any
+	dim as integer needsunwind = symbIsLocal( n->sym ) OrElse symbIsField( n->sym )
 
 	'' iter = *cast( subtype ptr, cast( byte ptr, @array(0) ) + ofs) )
 	fldexpr = astBuildDerefAddrOf( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype, n->sym )
@@ -390,6 +392,10 @@ private function hCallCtorList _
 		'' for cnt = 0 to elements-1
 		t = astBuildForBegin( t, cnt, label, 0 )
 
+		if( needsunwind ) then
+			t = astNewLINK( t, unwindPushManualArrayCleanup( cnt, iter ), AST_LINK_RETURN_NONE )
+		end if
+
 		'' ctor( *iter )
 		t = astNewLINK( t, astBuildCtorCall( n->subtype, astBuildVarDeref( iter ) ), AST_LINK_RETURN_NONE )
 
@@ -401,6 +407,9 @@ private function hCallCtorList _
 	else
 		'' ctor( this )
 		t = astNewLINK( t, astBuildCtorCall( n->subtype, fldexpr ), AST_LINK_RETURN_NONE )
+		if( needsunwind ) then
+			t = astNewLINK( t, unwindCreateCheckpointLabel( ), AST_LINK_RETURN_NONE )
+		end if
 	end if
 
 	function = t
@@ -482,6 +491,9 @@ function astTypeIniFlush overload _
 
 			l = astPatchCtorCall( n->l, l )
 			t = astNewLINK( t, l, AST_LINK_RETURN_NONE )
+			if( symbIsLocal( n->sym ) OrElse symbIsField( n->sym ) ) then
+				t = astNewLINK( t, unwindCreateCheckpointLabel(), AST_LINK_RETURN_NONE )
+			end if
 
 		'' Build constructor calls for an array of elements
 		case AST_NODECLASS_TYPEINI_CTORLIST

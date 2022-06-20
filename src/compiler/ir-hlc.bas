@@ -104,6 +104,7 @@
 #include once "flist.bi"
 #include once "lex.bi"
 #include once "ir-private.bi"
+#include once "unwind.bi"
 
 '' The stack of nested sections allows us to go back and emit text to
 '' the headers of parent sections, while already working on emitting
@@ -459,7 +460,9 @@ end sub
 '' Helper function to add underscore prefix or @N stdcall suffix to mangled
 '' procedure names (because symb-mangling doesn't do it for -gen gcc), for use
 '' in inline ASM and such.
-private function hGetMangledNameForASM _
+''
+'' This is also needed by the unwind-asmgen.bas
+function hlcGetMangledNameForASM _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval underscore_prefix as integer _
@@ -635,7 +638,7 @@ private function hEmitProcHeader _
 		'' Add asm("mangledname") alias if needed.
 		'' asm() can only be be used on prototypes.
 		if( hNeedAlias( proc ) ) then
-			ln += " asm(""" + hGetMangledNameForASM( proc, TRUE ) + """)"
+			ln += " asm(""" + hlcGetMangledNameForASM( proc, TRUE ) + """)"
 		end if
 
 		'' ctor/dtor flags on prototypes
@@ -1271,7 +1274,7 @@ private sub hMaybeEmitProcExport( byval proc as FBSYMBOL ptr )
 	ctx.exports += !"\t"""
 	ctx.exports += $"\t.ascii "
 	ctx.exports += $"\"" -export:\\\"""
-	ctx.exports += hGetMangledNameForASM( proc, FALSE )
+	ctx.exports += hlcGetMangledNameForASM( proc, FALSE )
 	ctx.exports += $"\\\""\"""
 	ctx.exports += $"\n"
 	ctx.exports += !"""\n"
@@ -3567,12 +3570,12 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 					case else
 						'' Referencing a procedure: no gcc constraints needed;
 						'' instead emit the symbol directly with its ASM name.
-						asmcode += hGetMangledNameForASM( n->sym, TRUE )
+						asmcode += hlcGetMangledNameForASM( n->sym, TRUE )
 					end select
 				else
 					'' Inside NAKED procedure: Currently emitted as pure inline asm,
 					'' so constraints are (hopefully!?) not needed.
-					asmcode += hGetMangledNameForASM( n->sym, TRUE )
+					asmcode += hlcGetMangledNameForASM( n->sym, TRUE )
 				end if
 			else
 				'' -asm att: Since the FB inline asm is in gcc's format already,
@@ -3895,7 +3898,10 @@ private sub _emitProcBegin _
 
 	irhlEmitProcBegin( )
 
-	dim as string mangled
+	dim as string mangled = hlcGetMangledNameForASM( proc, TRUE )
+	dim as integer nakedproc = symbIsNaked( proc )
+	dim as integer hasunwind = fbGetOption( FB_COMPOPT_OBJUNWIND ) andalso ( nakedproc = 0 ) andalso ( unwindProcHasActions( proc ) )
+	dim as string procheader
 
 	assert( listGetHead( @ctx.exprcache ) = NULL )
 	assert( listGetHead( @ctx.exprnodes ) = NULL )
@@ -3908,8 +3914,7 @@ private sub _emitProcBegin _
 
 	'' NAKED procedure? Use inline asm, since gcc doesn't support
 	'' __attribute__((naked)) on x86
-	if( symbIsNaked( proc ) ) then
-		mangled = hGetMangledNameForASM( proc, TRUE )
+	if( nakedproc ) then
 		hWriteLine( "__asm__( "".text"" );" )
 		hWriteLine( "__asm__( "".globl " + mangled + """ );" )
 		hWriteLine( "__asm__( """ + mangled + ":"" );" )
@@ -3925,7 +3930,17 @@ private sub _emitProcBegin _
 		hWriteLine( hEmitProcHeader( proc, EMITPROC_ISPROTO ) + ";" )
 	end if
 
-	hWriteLine( hEmitProcHeader( proc, 0 ) )
+	'' we get mucho problems with our table and label based approach if:
+	'' - the proc is inlined (duplicate label errors)
+	'' - the code in the proc is rearranged from bas order (coverage table misses half the procs code)
+	'' - duplicate procs are created (duplicate labels again)
+	'' so we output GCC proc attributes to stop those things from happening
+	if hasunwind then
+		procheader = unwindGenProcGCCAttributes( proc ) + NEWLINE
+	end if
+
+	procheader += hEmitProcHeader( proc, 0 )
+	hWriteLine( procheader )
 
 	hWriteLine( "{" )
 	sectionIndent( )
@@ -3947,7 +3962,7 @@ private sub _emitProcEnd _
 	if( symbIsNaked( proc ) ) then
 		'' Emit .size like ASM backend, for Linux
 		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-			mangled = hGetMangledNameForASM( proc, TRUE )
+			mangled = hlcGetMangledNameForASM( proc, TRUE )
 			hWriteLine( "__asm__( "".size " + mangled + ", .-" + mangled + """ );", TRUE )
 		end if
 		exit sub

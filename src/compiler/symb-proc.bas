@@ -10,6 +10,7 @@
 #include once "hash.bi"
 #include once "list.bi"
 #include once "ast.bi"
+#include once "unwind.bi"
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' init
@@ -49,6 +50,7 @@ end sub
 
 sub symbProcFreeExt( byval proc as FBSYMBOL ptr )
 	if( proc->proc.ext ) then
+		unwindDeleteProcExt( proc->proc.ext )
 		deallocate( proc->proc.ext )
 		proc->proc.ext = NULL
 	end if

@@ -122,12 +122,9 @@ rbp-y -->  local vars
 #define KNOOPTIM 3
 
 #define asm_code(s,opt...) hWriteasm64(s,opt)
-#macro cfi_asm_code(s, opt...)
-	if( env.clopt.unwindinfo = true ) then
-		hWriteasm64(s,opt)
-	end if
-#endmacro
+declare sub cfi_asm_code(byval statement as string)
 declare sub cfi_windows_asm_code(byval statement as string)
+declare sub hwriteasm64( byref ln as string,byval opt as integer=KDOALL)
 
 '' Define __GAS64_DEBUG__ if it wasn't explicitly disabled
 '' by '-d DISABLE_GAS64_DEBUG' passed as compiler option when
@@ -146,7 +143,18 @@ declare sub cfi_windows_asm_code(byval statement as string)
 #endif
 
 #ifdef __GAS64_DEBUG__
-	#define asm_info(s) hWriteasm64("# "+s)
+#include once "crt/string.bi"
+
+	private sub asm_info( byval s as string )
+		dim as zstring ptr sdata = strptr( s )
+		dim as const zstring ptr newlines = @!"\r\n"
+		dim as zstring ptr iter =  strpbrk( sdata, newlines )
+		while iter
+			*iter = asc("#")
+			iter = strpbrk( iter + 1, newlines )
+		wend
+		hWriteasm64("# "+s)
+	end sub
 #else
 	#define asm_info(s) rem
 	#ifndef typeDumpToStr
@@ -340,7 +348,6 @@ declare sub _emitdbg(byval op as integer,byval proc as FBSYMBOL ptr,byval lnum a
 declare sub check_optim(byref code as string)
 declare sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 declare function hgetdatatype_asm64 (byval sym as FBSYMBOL ptr,byval arraydimensions as integer = 0) as string
-declare sub hwriteasm64( byref ln as string,byval opt as integer=KDOALL)
 declare sub _emitvariniend( byval sym as FBSYMBOL ptr )
 declare sub _emitvarinipad( byval bytes as longint )
 declare sub _emitvariniwstr(byval varlength as longint,byval literal as wstring ptr,byval litlength as longint)
@@ -7048,10 +7055,13 @@ private sub _emitlabelnf(byval label as FBSYMBOL Ptr)
 	'_emit( AST_OP_LABEL, NULL, NULL, NULL, label )
 	asm_error("emitlabelINF used ???? = "+ *symbGetMangledName( label ) )
 end sub
-private sub cfi_windows_asm_code(byval statement as string)
-	if( env.clopt.unwindinfo = true ) then
-		if ctx.target = FB_COMPTARGET_WIN32 then
-			hWriteasm64(statement)
-		end if
+private sub cfi_asm_code( byval statement as string )
+	if( fbgetoption( FB_COMPOPT_UNWINDINFO ) ) then
+		hWriteasm64( statement )
+	end if
+end sub
+private sub cfi_windows_asm_code( byval statement as string )
+	if( ctx.target=FB_COMPTARGET_WIN32 ) then
+		cfi_asm_code( statement )
 	end if
 end sub

@@ -469,6 +469,7 @@ type FBS_LABEL
 	stmtnum         as integer                  '' can't use colnum as it's unreliable
 
 	gosub           as boolean                  '' if label is used for gosub with gas64
+	unwindtarget    as boolean                  '' label is an error goto or unwind cleanup label - used to add gcc attributes
 end type
 
 '' structure
@@ -611,6 +612,9 @@ type FB_PROCGSB
 	ctx             as FBSYMBOL_ ptr            '' local pointer for gosub stack
 end type
 
+type FB_UNWINDREGION_ as FB_UNWINDREGION
+type FB_SCOPEUNWIND_ as FB_SCOPEUNWIND
+
 type FB_PROCEXT
 	res             as FBSYMBOL_ ptr            '' result, if any
 	stk             as FB_PROCSTK               '' to keep track of the stack frame
@@ -637,6 +641,17 @@ type FB_PROCEXT
 	'' For methods that override a virtual method: the method that's
 	'' overridden (if any); or else NULL.
 	overridden      as FBSYMBOL_ ptr
+
+	'' the unwind region lists for this proc
+	cleanupregionshead      as FB_UNWINDREGION_ ptr
+	cleanupregionstail      as FB_UNWINDREGION_ ptr
+	catchregionshead        as FB_UNWINDREGION_ ptr
+	catchregionstail        as FB_UNWINDREGION_ ptr
+	
+	'' the scope unwind data for the proc scope
+	scopeunwind             as FB_SCOPEUNWIND_ ptr
+	'' the label for the start of the unwind data for this proc
+	coveragetablelocation   as FBSYMBOL_ ptr
 end type
 
 type FB_PROCRTL
@@ -680,11 +695,30 @@ type FB_SCOPEEMIT
 	baseofs         as integer
 end type
 
+type FB_UNWINDREGION
+	next          as FB_UNWINDREGION ptr
+	startlabel    as FBSYMBOL_ ptr
+	endlabel      as FBSYMBOL_ ptr
+	actionlabel   as FBSYMBOL_ ptr
+end type
+
+type FB_SCOPEUNWIND
+	ctorlistcounters   as TLIST
+	hasarraycleanup    as integer
+	numcheckpoints     as integer
+	numcleanpoints     as integer
+	cleanupregionshead as FB_UNWINDREGION ptr
+	cleanupregionstail as FB_UNWINDREGION ptr
+	catchregionshead   as FB_UNWINDREGION ptr
+	catchregionstail   as FB_UNWINDREGION ptr
+end type
+
 type FBS_SCOPE
 	backnode        as ASTNODE_ ptr
 	symtb           as FBSYMBOLTB
 	dbg             as FB_SCOPEDBG
 	emit            as FB_SCOPEEMIT
+	unwind          as FB_SCOPEUNWIND ptr
 end type
 
 enum FBARRAY_FLAGS
@@ -912,7 +946,9 @@ type SYMBCTX
 	fbarraydim_lbound   as integer              '' offsetof( FBARRAYDIM, lbound )
 	fbarraydim_ubound   as integer              '' offsetof( FBARRAYDIM, ubound )
 
-	rtti            as FB_RTTICTX
+	rtti             as FB_RTTICTX
+	sehtype          as FBSYMBOL ptr            '' seh stack data struct
+	unwindpool       as TPOOL                   '' unwind data pool
 end type
 
 type SYMB_DATATYPE
