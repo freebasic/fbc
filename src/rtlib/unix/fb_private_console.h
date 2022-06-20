@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 #define INIT_CONSOLE 1
 #define INIT_X11     2
 
@@ -43,6 +45,9 @@ typedef struct FBCONSOLE
 	FILE *f_in;
 	struct termios old_term_out, old_term_in;
 	int old_in_flags;
+	bool saved_old_term_out;
+	bool saved_old_term_in;
+	bool saved_old_in_flags;
 	unsigned int fg_color, bg_color;
 	int cur_x, cur_y;
 	int w, h;

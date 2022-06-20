@@ -326,6 +326,48 @@ int fb_hTermOut( int code, int param1, int param2 )
 	return TRUE;
 }
 
+/**
+ * (Re-)configure the I/O tty as required for FB runtime functionality
+ *
+ * fb_hInitConsole() and fb_hExitConsole() are not only used at start/exit of
+ * an FB process, but also to temporarily undo the configuration when running
+ * sub-processes in shell()/exec()/chain()/run() or loading or unloading shared
+ * libraries in dylibload()/dylibfree().
+ *
+ * On the one hand this is needed if the sub-process is a program which
+ * requires normal terminal behaviour to work properly. run() is a particularly
+ * good example, because it exec()s another program without fork()ing, so we
+ * do not have a chance to clean-up anymore and must do it before that.
+ * Another reason is to allow the sub-process or shared library to see the
+ * original terminal state as we saw it, so in case it contains an FB runtime,
+ * it can capture the original terminal state and restore it properly if its
+ * cleanup runs after ours (with shared libraries that can happen because their
+ * global dtor responsible for calling fb_hEnd() may run after ours, and with
+ * sub-processes it can happen if they outlive us). We want correct terminal
+ * clean-up either way, for example to not leave echoing disabled on exit of
+ * the last process.
+ *
+ * On the other hand, temporarily disabling the custom tty configuration could
+ * be problematic especially in a multi-threaded program, because for example
+ * INKEY() may not work properly anymore in parallel to SHELL().
+ * Even though the callers of fb_hExitConsole()/fb_hInitConsole() ensure basic
+ * thread-safety by wrapping each call in FB_LOCK()/FB_UNLOCK(), they only lock
+ * the lock for the duration of the single call, not both calls together.
+ * Otherwise the lock would be held for the entire duration of the
+ * shell()/exec() call, which would not be desirable for long-running
+ * sub-processes and a multi-threaded FB program.
+ *
+ * Because of the "incomplete" locking, it's easily possible for calls to
+ * fb_hInitConsole()/fb_hExitConsole() to be unbalanced. fb_hInitConsole() may
+ * be called multiple times in a row; fb_hExitConsole() is not guaranteed to be
+ * called in between.
+ *
+ * Similar problems can probably happen with multiple processes "fighting" over
+ * the terminal.
+ * Naturally, the problems also exist and cannot be avoided if FB programs use
+ * the libc functions such as dlopen() and fork()/exec() directly, instead of
+ * the FB keywords.
+ */
 int fb_hInitConsole( )
 {
 	struct termios term_out, term_in;
@@ -336,26 +378,43 @@ int fb_hInitConsole( )
 	/* Init terminal I/O */
 	if( !isatty( STDOUT_FILENO ) || !isatty( STDIN_FILENO ) )
 		return -1;
-	__fb_con.f_in = fopen("/dev/tty", "r+b");
-	if (!__fb_con.f_in)
-		return -1;
-	__fb_con.h_in = fileno(__fb_con.f_in);
+	if (!__fb_con.f_in) {
+		__fb_con.f_in = fopen("/dev/tty", "r+b");
+		if (!__fb_con.f_in)
+			return -1;
+		__fb_con.h_in = fileno(__fb_con.f_in);
+	}
 	
 	/* Cannot control console if process was started in background */
 	if( tcgetpgrp( STDOUT_FILENO ) != getpgid( 0 ) )
 		return -1;
 
+	/* On first run in this process, capture the original in/out tty states
+	   before modifying them, so we can restore them on process exit.
+	   On subsequent invocations, it's not necessary to capture it again,
+	   since we already have it.
+	   We can only be sure to see the original state during the first run
+	   from fb_hInit(). Subsequent invocations may see our own state in
+	   case of improperly balanced fb_hExitConsole()/fb_hInitConsole()
+	   calls from multi-threaded uses of fb_hShell() etc. */
+
 	/* Output setup */
-	if( tcgetattr( STDOUT_FILENO, &__fb_con.old_term_out ) )
-		return -1;
+	if (!__fb_con.saved_old_term_out) {
+		if (tcgetattr(STDOUT_FILENO, &__fb_con.old_term_out))
+			return -1;
+		__fb_con.saved_old_term_out = true;
+	}
 	memcpy(&term_out, &__fb_con.old_term_out, sizeof(term_out));
 	term_out.c_oflag |= OPOST;
 	if( tcsetattr( STDOUT_FILENO, TCSANOW, &term_out ) )
 		return -1;
 
 	/* Input setup */
-	if (tcgetattr(__fb_con.h_in, &__fb_con.old_term_in))
-		return -1;
+	if (!__fb_con.saved_old_term_in) {
+		if (tcgetattr(__fb_con.h_in, &__fb_con.old_term_in))
+			return -1;
+		__fb_con.saved_old_term_in = true;
+	}
 	memcpy(&term_in, &__fb_con.old_term_in, sizeof(term_in));
 	/* Send SIGINT on control-C */
 	term_in.c_iflag |= BRKINT;
@@ -370,7 +429,10 @@ int fb_hInitConsole( )
 		return -1;
 
 	/* Don't block */
-	__fb_con.old_in_flags = fcntl(__fb_con.h_in, F_GETFL, 0);
+	if (!__fb_con.saved_old_in_flags) {
+		__fb_con.old_in_flags = fcntl(__fb_con.h_in, F_GETFL, 0);
+		__fb_con.saved_old_in_flags = true;
+	}
 	fcntl(__fb_con.h_in, F_SETFL, __fb_con.old_in_flags | O_NONBLOCK);
 
 #ifdef HOST_LINUX
@@ -390,6 +452,7 @@ int fb_hInitConsole( )
 	return 0;
 }
 
+/* Undo I/O tty configuration - restore it to the original state. See also fb_hInitConsole(). */
 void fb_hExitConsole( void )
 {
 	int bottom;
@@ -444,6 +507,12 @@ void fb_hExitConsole( void )
 			__fb_con.scroll_region_changed = FALSE;
 		}
 
+		/* Restore in/out tty to the saved state, if we have any.
+		   The saved state is kept around even after this,
+		   in case this is not the final fb_hExitConsole() call.
+		   This is OK because it does not involve leaking anything.
+		   We have to fclose() the f_in FILE* though to avoid a leak. */
+
 		/* Cleanup terminal */
 #ifdef HOST_LINUX
 		if (__fb_con.inited == INIT_CONSOLE)
@@ -452,11 +521,17 @@ void fb_hExitConsole( void )
 		fb_hTermOut(SEQ_RESET_COLOR, 0, 0);
 		fb_hTermOut(SEQ_SHOW_CURSOR, 0, 0);
 		fb_hTermOut(SEQ_EXIT_KEYPAD, 0, 0);
-		tcsetattr( STDOUT_FILENO, TCSANOW, &__fb_con.old_term_out );
+		if (__fb_con.saved_old_term_out) {
+			tcsetattr(STDOUT_FILENO, TCSANOW, &__fb_con.old_term_out);
+		}
 
 		/* Restore old console keyboard state */
-		fcntl(__fb_con.h_in, F_SETFL, __fb_con.old_in_flags);
-		tcsetattr(__fb_con.h_in, TCSANOW, &__fb_con.old_term_in);
+		if (__fb_con.saved_old_in_flags) {
+			fcntl(__fb_con.h_in, F_SETFL, __fb_con.old_in_flags);
+		}
+		if (__fb_con.saved_old_term_in) {
+			tcsetattr(__fb_con.h_in, TCSANOW, &__fb_con.old_term_in);
+		}
 
 		if (__fb_con.f_in) {
 			fclose(__fb_con.f_in);
