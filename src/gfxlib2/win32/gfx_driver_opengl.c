@@ -410,7 +410,7 @@ static DWORD WINAPI opengl_thread( LPVOID param )
 
 static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rate, int flags)
 {
-	const char *wgl_funcs[] = { "wglCreateContext", "wglMakeCurrent", "wglDeleteContext", NULL };
+	const char *const wgl_funcs[] = { "wglCreateContext", "wglMakeCurrent", "wglDeleteContext", NULL };
 	int depth = MAX(8, depth_arg);
 
 	fb_hMemSet(&fb_win32, 0, sizeof(fb_win32));

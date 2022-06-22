@@ -139,7 +139,7 @@ static void opengl_window_update(void)
 
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
-	const char *glx_funcs[] = {
+	const char *const glx_funcs[] = {
 		"glXChooseVisual", "glXCreateContext", "glXDestroyContext",
 		"glXMakeCurrent", "glXSwapBuffers", NULL
 	};
