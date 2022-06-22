@@ -87,6 +87,8 @@
 
 #define SWAP(a,b)		((a) ^= (b), (b) ^= (a), (a) ^= (b))
 
+#define ARRAY_SIZE(a) ((sizeof (a)) / sizeof ((a)[0]))
+
 #if defined HOST_DOS
 	#include "dos/fb_dos.h"
 #elif defined HOST_UNIX
