@@ -11,10 +11,19 @@ int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons, int *clip )
 
 #else
 
-#include "../unix/fb_private_console.h"
 #include "../fb_private_hdynload.h"
-#include <sys/select.h>
+#include "../unix/fb_private_console.h"
 #include <gpm.h>
+#include <stddef.h>
+#include <sys/select.h>
+
+/* Reject compiling against Debian's libgpm 1.19.6-12 - 1.19.6-25 (2002 - 2007),
+   which had a custom patch adding the wdx/wdy fields in the middle of struct Gpm_Event,
+   instead of at the end like in later versions.
+   Only gpm 1.20.4 (2008) or later is supported, see comment below.
+   Unfortunately gpm.h does not seem to provide a GPM_VERSION macro or similar to check this. */
+STATIC_ASSERT(offsetof(Gpm_Event, wdx) == offsetof(Gpm_Event, margin) + sizeof(enum Gpm_Margin));
+STATIC_ASSERT(offsetof(Gpm_Event, wdy) == offsetof(Gpm_Event, wdx) + 2);
 
 typedef int (*GPM_OPEN)(Gpm_Connect *, int);
 typedef int (*GPM_CLOSE)(void);
@@ -111,30 +120,18 @@ static int mouse_init(void)
 {
 	if (__fb_con.inited == INIT_CONSOLE) {
 		/**
-		 * There are/were multiple versions of libgpm by upstream and Debian (I didn't check other distros),
-		 * which are not fully ABI-compatible.
-		 * ABI issue review:
-		 * - The wdx/wdy fields in struct Gpm_Event did not always exist,
-		 *   or existed at different offsets depending on the libgpm version & distro patches.
-		 * - I found no changes regarding the signatures of the Gpm_Open, Gpm_Close, Gpm_GetEvent functions,
-		 *   the gpm_fd global variable, and the Gpm_Connect struct.
+		 * Only gpm 1.20.4 (2008) or later (after soname bump from 1 to 2) is supported,
+		 * to avoid ABI compatibility issues with older versions.
 		 *
-		 * libgpm.so.1 could be:
-		 * - upstream from before 2005 or earlier *without* wdx/wdy (we may have undefined behaviour/potential crash in that case :/)
-		 * - Debian libgpm from 1.19.6-12 (2002) until 1.19.6-25 (2007), with wdx/wdy in the *middle* of struct Gpm_Event
-		 *   https://salsa.debian.org/debian/gpm/-/blob/debian/1.19.6-12/debian/patches/003_wheel_000
-		 *   https://salsa.debian.org/debian/gpm/-/blob/debian/1.19.6-12/debian/patches/006_version_000
-		 * - upstream version <= 1.20.3 (at least from 2005, up to 2008), with the wdx/wdy fields at the *end* of struct Gpm_Event
-		 * - Debian libgpm from 1.20.3~pre3-1 (2008) until 1.20.3~pre3-3.1 (2008), with wdx/wdy at the *end* of struct Gpm_Event
-		 *   (patch 003_wheel_000 was dropped), but soname bump yet.
+		 * libgpm.so.2 (from gpm version 1.20.4 or later) always has wdx/wdy at the *end* of struct Gpm_Event,
+		 * both in upstream and Debian versions.
+		 * Older versions before the soname bump (i.e. libgpm.so.1) may have them at different offsets,
+		 * due to a custom patch in Debian's libgpm 1.19.6-12 - 1.19.6-25 (2002 - 2007), or not at all.
 		 *
-		 * libgpm.so.2 could be:
-		 * - upstream or Debian 1.20.4 (2008) or later, with wdx/wdy at the *end* of struct Gpm_Event
+		 * I found no relevant changes regarding the other parts of the API we use:
+		 * The signatures of the Gpm_Open, Gpm_Close, Gpm_GetEvent functions,
+		 * the gpm_fd global variable, and the Gpm_Connect struct, are apparently unchanged.
 		 */
-		const char *const libnames[] = {
-			"libgpm.so.1",
-			"libgpm.so.2",
-		};
 		const char *const funcs[] = {
 			"Gpm_Open", /* functions */
 			"Gpm_Close",
@@ -142,9 +139,7 @@ static int mouse_init(void)
 			"gpm_fd", /* global variable */
 			NULL
 		};
-		for (size_t i = 0; i < ARRAY_SIZE(libnames) && !gpm_lib; ++i) {
-			gpm_lib = fb_hDynLoad(libnames[i], funcs, (void **)&gpm);
-		}
+		gpm_lib = fb_hDynLoad("libgpm.so.2", funcs, (void **)&gpm);
 		if (!gpm_lib) {
 			return -1;
 		}
