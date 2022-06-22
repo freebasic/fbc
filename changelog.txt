@@ -65,6 +65,7 @@ Version 1.10.0
 - fbc: remove double path separator characters '/', '\' when setting the fbc path prefix
 - rtlib: multikey was missing VK_NUMPAD5 and SC_CLEAR scancodes in the key table, causing NUMPAD-5 to be handled as escape in the windows D2D gfx driver
 - sf.net: #961: rtlib/gfxlib: COLOR() function returns LONG but should be ULONG
+- Unix GETMOUSE() now works with libgpm.so.2 too, not only libgpm.so.1, for mouse support in the TERM=linux case (for compatibility with Debian/Ubuntu versions, and probably other distros, since 2008)
 
 
 Version 1.09.0

@@ -109,12 +109,45 @@ static void mouse_handler(void)
 
 static int mouse_init(void)
 {
-	const char *const funcs[] = { "Gpm_Open", "Gpm_Close", "Gpm_GetEvent", "gpm_fd", NULL };
-
 	if (__fb_con.inited == INIT_CONSOLE) {
-		gpm_lib = fb_hDynLoad("libgpm.so.1", funcs, (void **)&gpm);
-		if (!gpm_lib)
+		/**
+		 * There are/were multiple versions of libgpm by upstream and Debian (I didn't check other distros),
+		 * which are not fully ABI-compatible.
+		 * ABI issue review:
+		 * - The wdx/wdy fields in struct Gpm_Event did not always exist,
+		 *   or existed at different offsets depending on the libgpm version & distro patches.
+		 * - I found no changes regarding the signatures of the Gpm_Open, Gpm_Close, Gpm_GetEvent functions,
+		 *   the gpm_fd global variable, and the Gpm_Connect struct.
+		 *
+		 * libgpm.so.1 could be:
+		 * - upstream from before 2005 or earlier *without* wdx/wdy (we may have undefined behaviour/potential crash in that case :/)
+		 * - Debian libgpm from 1.19.6-12 (2002) until 1.19.6-25 (2007), with wdx/wdy in the *middle* of struct Gpm_Event
+		 *   https://salsa.debian.org/debian/gpm/-/blob/debian/1.19.6-12/debian/patches/003_wheel_000
+		 *   https://salsa.debian.org/debian/gpm/-/blob/debian/1.19.6-12/debian/patches/006_version_000
+		 * - upstream version <= 1.20.3 (at least from 2005, up to 2008), with the wdx/wdy fields at the *end* of struct Gpm_Event
+		 * - Debian libgpm from 1.20.3~pre3-1 (2008) until 1.20.3~pre3-3.1 (2008), with wdx/wdy at the *end* of struct Gpm_Event
+		 *   (patch 003_wheel_000 was dropped), but soname bump yet.
+		 *
+		 * libgpm.so.2 could be:
+		 * - upstream or Debian 1.20.4 (2008) or later, with wdx/wdy at the *end* of struct Gpm_Event
+		 */
+		const char *const libnames[] = {
+			"libgpm.so.1",
+			"libgpm.so.2",
+		};
+		const char *const funcs[] = {
+			"Gpm_Open", /* functions */
+			"Gpm_Close",
+			"Gpm_GetEvent",
+			"gpm_fd", /* global variable */
+			NULL
+		};
+		for (size_t i = 0; i < ARRAY_SIZE(libnames) && !gpm_lib; ++i) {
+			gpm_lib = fb_hDynLoad(libnames[i], funcs, (void **)&gpm);
+		}
+		if (!gpm_lib) {
 			return -1;
+		}
 
 		conn.eventMask = ~0;
 		conn.defaultMask = ~GPM_HARD;
