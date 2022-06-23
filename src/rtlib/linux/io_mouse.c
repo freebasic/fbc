@@ -2,17 +2,11 @@
 
 #include "../fb.h"
 
-#ifdef DISABLE_GPM
+#include "../unix/fb_private_console.h"
 
-int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons, int *clip )
-{
-	return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-}
-
-#else
+#ifndef DISABLE_GPM
 
 #include "../fb_private_hdynload.h"
-#include "../unix/fb_private_console.h"
 #include <gpm.h>
 #include <stddef.h>
 #include <sys/select.h>
@@ -39,6 +33,9 @@ typedef struct {
 static FB_DYLIB gpm_lib = NULL;
 static GPM_FUNCS gpm = { NULL, NULL, NULL, NULL };
 static Gpm_Connect conn;
+
+#endif /* #ifndef DISABLE_GPM */
+
 static int has_focus = TRUE;
 static int mouse_x = 0, mouse_y = 0, mouse_z = 0, mouse_buttons = 0;
 
@@ -68,11 +65,6 @@ static void mouse_update(int cb, int cx, int cy)
 
 static void mouse_handler(void)
 {
-	Gpm_Event event;
-	fd_set set;
-	struct timeval tv = { 0, 0 };
-	int count = 0;
-
 #ifndef DISABLE_X11
 	if (__fb_con.inited == INIT_X11) {
 		if (fb_hXTermHasFocus()) {
@@ -90,6 +82,12 @@ static void mouse_handler(void)
 		return;
 	}
 #endif
+
+#ifndef DISABLE_GPM
+	Gpm_Event event;
+	fd_set set;
+	struct timeval tv = { 0, 0 };
+	int count = 0;
 
 	FD_ZERO(&set);
 	FD_SET(*gpm.fd, &set);
@@ -114,11 +112,15 @@ static void mouse_handler(void)
 		}
 		count++;
 	}
+#endif /* #ifndef DISABLE_GPM */
 }
 
 static int mouse_init(void)
 {
 	if (__fb_con.inited == INIT_CONSOLE) {
+#ifdef DISABLE_GPM
+		return -1;
+#else
 		/**
 		 * Only gpm 1.20.4 (2008) or later (after soname bump from 1 to 2) is supported,
 		 * to avoid ABI compatibility issues with older versions.
@@ -152,6 +154,7 @@ static int mouse_init(void)
 			fb_hDynUnload(&gpm_lib);
 			return -1;
 		}
+#endif
 	}
 	else {
 		fb_hTermOut(SEQ_INIT_XMOUSE, 0, 0);
@@ -166,8 +169,10 @@ static int mouse_init(void)
 static void mouse_exit(void)
 {
 	if (__fb_con.inited == INIT_CONSOLE) {
+#ifndef DISABLE_GPM
 		gpm.Close();
 		fb_hDynUnload(&gpm_lib);
+#endif
 	}
 	else {
 		fb_hTermOut(SEQ_EXIT_XMOUSE, 0, 0);
@@ -221,8 +226,6 @@ int fb_ConsoleGetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 
 	return FB_RTERROR_OK;
 }
-
-#endif /* ndef DISABLE_GPM */
 
 int fb_ConsoleSetMouse( int x, int y, int cursor, int clip )
 {
