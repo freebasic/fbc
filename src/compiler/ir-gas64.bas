@@ -5264,6 +5264,11 @@ sub save_call(byref func as string,byval vr as IRVREG ptr,byval vrreg as integer
 	''saving registers if needed
 	reg_save
 
+	''proceeding different but need to count the argument otherwise could generate problem if no at least one standard call.
+	if ctx.argcptmax=0 then
+		ctx.argcptmax=1
+	end if
+
 	if ctx.target=FB_COMPTARGET_LINUX andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 		asm_code("call "+func+"@PLT")
 	else
