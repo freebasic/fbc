@@ -212,7 +212,7 @@ void fb_hGL_NormalizeParameters(int gl_options)
 
 int fb_hGL_Init(FB_DYLIB lib, char *os_extensions)
 {
-	const char *gl_funcs[] = { "glEnable", "glDisable", "glEnableClientState", "glDisableClientState",
+	const char *const gl_funcs[] = { "glEnable", "glDisable", "glEnableClientState", "glDisableClientState",
 							   "glGetString", "glViewport", "glMatrixMode",
 							   "glLoadIdentity", "glOrtho", "glShadeModel", "glDepthMask", "glClearColor",
 							   "glClear", "glGenTextures", "glDeleteTextures", "glBindTexture", 
@@ -227,7 +227,7 @@ int fb_hGL_Init(FB_DYLIB lib, char *os_extensions)
 
 	fb_hMemSet(&__fb_gl, 0, sizeof(FB_GL));
 
-	if (fb_hDynLoadAlso(lib, gl_funcs, funcs_ptr, sizeof(gl_funcs) / sizeof(const char *)))
+	if (fb_hDynLoadAlso(lib, gl_funcs, funcs_ptr, ARRAY_SIZE(gl_funcs)))
 		return -1;
 
 	strncpy(__fb_gl.extensions, (char *)__fb_gl.GetString(GL_EXTENSIONS), size);

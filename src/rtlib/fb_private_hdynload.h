@@ -7,8 +7,8 @@
 	typedef void *FB_DYLIB;
 #endif
 
-FB_DYLIB fb_hDynLoad    (const char *libname, const char **funcname, void **funcptr);
-int      fb_hDynLoadAlso(FB_DYLIB lib, const char **funcname, void **funcptr, ssize_t count);
+FB_DYLIB fb_hDynLoad    (const char *libname, const char *const *funcname, void **funcptr);
+int      fb_hDynLoadAlso(FB_DYLIB lib, const char *const *funcname, void **funcptr, ssize_t count);
 void     fb_hDynUnload  (FB_DYLIB *lib);
 
 #endif

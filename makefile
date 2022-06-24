@@ -123,7 +123,8 @@
 #
 # rtlib/gfxlib2 source code configuration (CFLAGS):
 #   -DDISABLE_X11    build without X11 headers (disables X11 gfx driver)
-#   -DDISABLE_GPM    build without gpm.h (disables Linux GetMouse)
+#   -DDISABLE_GPM    build without gpm.h (disables GetMouse in the Linux terminal (TERM=linux),
+#                    although the TERM=xterm variant keeps working)
 #   -DDISABLE_FFI    build without ffi.h (disables ThreadCall)
 #   -DDISABLE_OPENGL build without OpenGL headers (disables OpenGL gfx drivers)
 #   -DDISABLE_FBDEV  build without Linux framebuffer device headers (disables Linux fbdev gfx driver)

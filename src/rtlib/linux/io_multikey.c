@@ -235,11 +235,6 @@ static void keyboard_x11_handler(void)
 
 static int keyboard_init(void)
 {
-#ifndef DISABLE_X11
-	const char *funcs[] = {
-		"XOpenDisplay", "XCloseDisplay", "XQueryKeymap", "XDisplayKeycodes", "XGetKeyboardMapping", "XFree", NULL
-	};
-#endif
 	struct termios term;
 	memset( &term, 0, sizeof( term ) );
 
@@ -269,6 +264,10 @@ static int keyboard_init(void)
 
 #ifndef DISABLE_X11
 	else {
+		const char *const funcs[] = {
+			"XOpenDisplay", "XCloseDisplay", "XQueryKeymap", "XDisplayKeycodes", "XGetKeyboardMapping", "XFree", NULL
+		};
+
 		xlib = fb_hDynLoad("libX11.so", funcs, (void **)&X);
 		if (!xlib)
 			return -1;
