@@ -4057,13 +4057,12 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 			asm_code("je "+lname)
 			asm_code("mov eax, 1")
 			asm_code("jg "+lname)
-			asm_code("mov eax, -1")
+			asm_code("mov rax, -1")
 			asm_code(lname+":")
 			if vr=0 then
-				''not used
-				asm_code("mov "+op1+", eax")
+				asm_code("mov "+op1+", rax")
 			else
-				asm_code("mov "+*regstrd(vrreg)+", eax")
+				asm_code("mov "+*regstrq(vrreg)+", rax")
 			end if
 		end if
 		return
