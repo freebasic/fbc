@@ -225,7 +225,11 @@ function astNewUOP _
 	'' with SGN(int) and [u]integer negation the result is always a signed integer
 	case AST_OP_SGN
 		if( typeGetClass( o->dtype ) = FB_DATACLASS_INTEGER ) then
-			dtype = typeToSigned( dtype )
+			if env.clopt.backend = FB_BACKEND_GAS64 then
+				dtype = FB_DATATYPE_LONG
+			else
+				dtype = typeToSigned( dtype )
+			end if
 		end if
 
 	case AST_OP_NEG
@@ -304,7 +308,6 @@ function astNewUOP _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_UOP, dtype, subtype )
-
 	n->l = o
 	n->r = NULL
 	n->op.op = op
@@ -342,6 +345,9 @@ function astLoadUOP _
 			vr = irAllocVREG( astGetFullType( o ), o->subtype )
 			v1->vector = n->vector
 			vr->vector = n->vector
+			if(( op = AST_OP_SGN ) and ( env.clopt.backend = FB_BACKEND_GAS64 ) ) then
+				 vr->dtype = FB_DATATYPE_LONG
+			EndIf
 		else
 			vr = NULL
 			v1->vector = n->vector
