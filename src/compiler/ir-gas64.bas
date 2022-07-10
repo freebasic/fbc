@@ -716,6 +716,15 @@ private sub check_optim(byref code as string)
 				writepos=len(ctx.proc_txt)+len(code)+9
 				code="#O6"+code+newline+string( ctx.indent*3, 32 )+previnstruc+" "+part1+", "+prevpart2+" #Optim 6"
 				part2=prevpart2
+
+			elseif ( prevpart2[0]=asc("r") or prevpart2[0]=asc("e") ) and prevpart1=part2 then 'and instr(part1,"[")=0 
+				'asm_info("OPTIMIZATION 16")
+				mid(ctx.proc_txt,prevwpos)="#16"
+				asm_info("part1="+part1+" part2="+part2+" prevpart1="+prevpart1+" prevpart2="+prevpart2)
+				writepos=len(ctx.proc_txt)+len(code)+9
+				code="#16"+code+newline+string( ctx.indent*3, 32 )+previnstruc+" "+part1+", "+prevpart2+" #Optim 16"
+				part2=prevpart2
+
 			end if
 		end if
 	end if
