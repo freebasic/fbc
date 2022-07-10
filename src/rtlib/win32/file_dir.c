@@ -14,7 +14,7 @@ typedef struct {
 	HANDLE handle;
 #else
 	struct _finddata_t data;
-	long handle;
+	intptr_t handle;
 #endif
 } FB_DIRCTX;
 
