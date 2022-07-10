@@ -699,6 +699,8 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		env.clopt.modeview = value
 	case FB_COMPOPT_NOCMDLINE
 		env.clopt.nocmdline = value
+	case FB_COMPOPT_OBJUNWIND
+		env.clopt.objunwind = value
 	end select
 end sub
 
@@ -795,6 +797,8 @@ function fbGetOption( byval opt as integer ) as integer
 		function = env.clopt.modeview
 	case FB_COMPOPT_NOCMDLINE
 		function = env.clopt.nocmdline
+	case FB_COMPOPT_OBJUNWIND
+		function = env.clopt.objunwind
 
 	case else
 		function = 0

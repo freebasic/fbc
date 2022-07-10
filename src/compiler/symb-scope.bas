@@ -9,6 +9,7 @@
 #include once "list.bi"
 #include once "ast.bi"
 #include once "rtl.bi"
+#include once "unwind.bi"
 
 '':::::
 function symbAddScope _
@@ -27,6 +28,7 @@ function symbAddScope _
 
 	symbSymbTbInit( s->scp.symtb, s )
     s->scp.backnode = backnode
+    s->scp.unwind = NULL
 
 	function = s
 
@@ -53,6 +55,9 @@ sub symbDelScope _
 
 		symbDelSymbol( s, TRUE )
 	loop
+
+	'' del any unwind data
+	unwindDeleteScopeData( scp->scp.unwind )
 
 	'' del the scope node
 	symbFreeSymbol( scp )

@@ -42,6 +42,10 @@ declare sub         symbCompRTTIInit    ( )
 
 declare sub         symbCompRTTIEnd     ( )
 
+declare sub         symbCompSEHInit    ( )
+
+declare sub         symbCompSEHEnd     ( )
+
 declare sub         symbKeywordConstsInit ( )
 
 declare sub         symbKeywordTypeInit ( )
@@ -110,6 +114,8 @@ sub symbInitSymbols static
 	'' import (USING) shared hash/list
 	hashInit( @symb.imphashtb, FB_INITSYMBOLNODES )
 	listInit( @symb.imphashlist, FB_INITSYMBOLNODES \ 2, len( FBSYMCHAIN ), LIST_FLAGS_NOCLEAR )
+	'' unwind data
+	poolInit( @symb.unwindpool, 128, sizeof( FB_UNWINDREGION ), sizeof( FB_SCOPEUNWIND ) )
 
 	''
 	symb.lastlbl = NULL
@@ -177,6 +183,9 @@ sub symbInit _
 	symbCompRTTIInit( )
 
 	''
+	symbCompSEHInit( )
+
+	''
 	symbKeywordConstsInit( )
 
 	''
@@ -211,6 +220,9 @@ sub symbEnd
 	symbCompRTTIEnd( )
 
 	''
+	symbCompSEHEnd( )
+
+	''
 	symbProcEnd( )
 
 	symbVarEnd( )
@@ -229,9 +241,11 @@ sub symbEnd
 	''
 	listEnd( @symb.nsextlist )
 
-	poolEnd( @symb.namepool )
-
 	listEnd( @symb.symlist )
+	
+	poolEnd( @symb.namepool )
+	
+	poolEnd( @symb.unwindpool )
 
 	''
 	symb.inited = FALSE

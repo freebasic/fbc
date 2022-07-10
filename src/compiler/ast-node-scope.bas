@@ -11,6 +11,7 @@
 #include once "parser.bi"
 #include once "ast.bi"
 #include once "ir.bi"
+#include once "unwind.bi"
 
 declare function hCheckBranch _
 	( _
@@ -376,7 +377,7 @@ private sub hDestroyBlockLocals _
 		byval base_expr as ASTNODE ptr _	'' the node before the branch, not itself!
 	)
 
-	dim as FBSYMBOL ptr s = any
+	dim as FBSYMBOL ptr s = any, sym_tail = any
 	dim as ASTNODE ptr expr = any
 	dim as integer stmt = any
 
@@ -386,6 +387,7 @@ private sub hDestroyBlockLocals _
     else
     	s = symbGetProcSymbTb( blk ).tail
     end if
+    sym_tail = s
 
     do while( s <> NULL )
     	if( symbIsVar( s ) ) then
@@ -612,6 +614,8 @@ sub astScopeDestroyVars( byval symtbtail as FBSYMBOL ptr )
 		end if
 		s = s->prev
 	wend
+
+	unwindCreateCleanupBlock( symtbtail )
 end sub
 
 sub astScopeAllocLocals( byval symtbhead as FBSYMBOL ptr )

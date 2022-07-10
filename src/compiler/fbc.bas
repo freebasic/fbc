@@ -9,7 +9,7 @@
 #include once "hash.bi"
 #include once "list.bi"
 #include once "objinfo.bi"
-
+#include once "crt/stdio.bi"
 #include once "file.bi"
 
 #if defined( ENABLE_STANDALONE ) and defined( __FB_WIN32__ )
@@ -701,8 +701,126 @@ private function fbcIsUsingGoldLinker( ) as integer
 	return FALSE
 end function
 
+'' checksum algorithm here
+'' http://bytepointer.com/resources/microsoft_pe_checksum_algo_distilled.htm
+private function hRecalcExeChecksum( byval filedata as ubyte ptr, byval filesize as ulong, byval origchecksum as ulong ptr ) as ulong
+	dim as ulong numwords = ( filesize + 1 ) shr 1
+	dim as ushort ptr fileiter = cptr( ushort ptr, filedata )
+	dim as ushort ptr origcsumparts = cptr( ushort ptr, origchecksum )
+	dim as ulong partialsum1
+	dim as ushort partialsum2
+
+	while numwords
+		partialsum1 += *fileiter
+		partialsum1 = ( partialsum1 shr 16 ) + ( partialsum1 and &hffff )
+		fileiter += 1
+		numwords -= 1
+	wend
+	partialsum2 = ( ( ( partialsum1 shr 16 ) + partialsum1 ) and &hffff )
+	partialsum2 -= iif( partialsum2 < origcsumparts[0], 1, 0 )
+	partialsum2 -= origcsumparts[0]
+	partialsum2 -= iif( partialsum2 < origcsumparts[1], 1, 0 )
+	partialsum2 -= origcsumparts[1]
+	return filesize + partialsum2
+end function
+
+private sub hModifyExeLoadConfig( byref exe as string, byval loadconfigaddr as ulongint )
+	dim as integer fnum = freefile
+	dim as ulong headeriter = any, entrysize = any, entryoffset = any, magic = any
+	dim as ulong optheaderoffset = any
+	dim as ulong baseaddress = any
+	dim as ulong newchecksum = any
+	dim as longint filesize = any
+	dim as ushort shortvalue = any
+	dim as integer is64exe = any
+	dim as ubyte ptr filedata = any
+	dim as ulong ptr checksumptr = any
+	const as ulong lfanewoffset = &h3c '' offset of IMAGE_DOS_HEADER.e_lfaNew
+	const as ulong ntsignature = &h4550  '' IMAGE_NT_HEADERS.Signature - 0xPE
+	const as ulong sizeoffileheader = 20 '' IMAGE_SIZEOF_FILE_HEADER
+	const as ushort pe64magic = &h20b '' IMAGE_NT_OPTIONAL_HDR64_MAGIC
+	const as ulong baseaddressoffset = &h1c '' IMAGE_OPTIONAL_HEADER32.ImageBase
+	const as ulong checksumoffset = &h40 '' IMAGE_OPTIONAL_HEADER32.Checksum
+	const as ulong optheader64size = &h70 '' SizeOf(IMAGE_OPTIONAL_HEADER64)
+	const as ulong optheader32size = &h60 '' SizeOf(IMAGE_OPTIONAL_HEADER32)
+	const as ulong loadconfigdirentry = 10 '' IMAGE_DIRECTORY_ENTRY_LOAD_CONFIG
+	const as ulong direntrysize = 8 '' SizeOf(IMAGE_DATA_DIRECTORY)
+
+	'' this can easily error due to anti-virus software holding 
+	'' the file open to scan the newly created exe
+	if open( exe for binary access read write as #fnum ) <> 0 then
+		exit sub
+	end if
+	filesize = lof(fnum)
+	filedata = xallocate(filesize)
+	get #fnum, 1, *filedata, filesize
+	headeriter = *cptr( ulong ptr, filedata + lfanewoffset )
+	assert( headeriter > lfanewoffset )
+	magic = *cptr( ulong ptr, filedata + headeriter )
+	if( magic <> ntsignature ) then
+		goto closefile
+	end if
+
+	headeriter += ( sizeof( ntsignature ) + sizeoffileheader )
+	optheaderoffset = headeriter
+	magic = *cptr( ushort ptr, filedata + headeriter )
+	is64exe = ( magic = pe64magic )
+	if is64exe then
+		goto closefile
+	else
+		baseaddress = *cptr( ulong ptr, filedata + headeriter + baseaddressoffset )
+	end if
+	assert( ( loadconfigaddr shr 32 ) = 0 )
+	headeriter += optheader32size + ( loadconfigdirentry * direntrysize )
+	entryoffset = *cptr( ulong ptr, filedata + headeriter )
+	entrysize = *cptr( ulong ptr, filedata + headeriter + 4 )
+	'' maybe mingw was patched? don't update if these already have a value
+	if entryoffset = 0 orelse entrysize = 0 then
+		entryoffset = ( loadconfigaddr - baseaddress )
+		'' the actual struct is bigger than this, but this is the size written to the header by Visual Studio
+		entrysize = &h48
+		*cptr( ulong ptr, filedata + headeriter ) = entryoffset
+		*cptr( ulong ptr, filedata + headeriter + 4 ) = entrysize
+		'' modifying the header invalidates the checksum
+		'' fix it
+		checksumptr = cptr( ulong ptr, filedata + optheaderoffset + checksumoffset )
+		newchecksum = hRecalcExeChecksum( filedata, filesize, checksumptr )
+		*checksumptr = newchecksum
+		put #fnum, 1, *filedata, filesize
+	end if
+closefile:
+	deallocate( filedata )
+	close #fnum
+end sub
+
+private sub hAddLoadConfigToExe( byref exe as string, byref mapfile as string )
+	dim as integer fnum = freefile
+	dim as string linetext
+	dim as string needle = "_load_config_used"
+	dim as ULongInt loadconfigaddr
+	open mapfile for input as #fnum
+	do
+		line input #fnum, linetext
+		if eof(fnum) then exit do
+		if( instr( linetext, needle ) > 0 ) then
+#ifdef __FB_WIN32__
+			dim as zstring ptr format64 = @" 0x%I64x"
+#else
+			dim as zstring ptr format64 = @" 0x%llx"
+#endif
+			sscanf( strptr( linetext ), format64, @loadconfigaddr )
+			if loadconfigaddr <> 0 then
+				hModifyExeLoadConfig( exe, loadconfigaddr )
+				exit do
+			end if
+		end if
+	loop
+	close #fnum
+end sub
+
 private function hLinkFiles( ) as integer
 	dim as string ldcline, dllname, deffile
+	dim as integer addsafeseh
 
 	function = FALSE
 
@@ -966,6 +1084,25 @@ private function hLinkFiles( ) as integer
 		ldcline += " -Bstatic"
 	end if
 
+	'' on 32-bit Windows, we need to generate a map file so we 
+	'' can get the address of the loadconfig struct in fbexcept 
+	'' and then add it to the exe/dll header. This enables SafeSEH
+	if( _
+		fbGetOption( FB_COMPOPT_OBJUNWIND ) andalso _
+		( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_WIN32 ) andalso _
+		( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) andalso _
+		( _
+			( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) orelse _
+			( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE ) _
+		) _
+	) then
+		addsafeseh = 1
+		if( len( fbc.mapfile ) = 0) then
+			fbc.mapfile = hStripExt( fbc.outname ) + ".tempmap.txt"
+			'' flag so we can delete it after
+			addsafeseh or= 2
+		end if
+	end if
 	if( len( fbc.mapfile ) > 0) then
 		ldcline += " -Map " + fbc.mapfile
 	end if
@@ -1172,8 +1309,13 @@ private function hLinkFiles( ) as integer
 		dim as long outtype = fbGetOption( FB_COMPOPT_OUTTYPE )
 		if outtype = FB_OUTTYPE_EXECUTABLE OrElse outtype = FB_OUTTYPE_DYNAMICLIB Then
 			dim as long cpufamily = fbGetCpuFamily( )
-			if cpufamily = FB_CPUFAMILY_X86_64 OrElse cpufamily = FB_CPUFAMILY_AARCH64 OrElse _
-				cpuFamily = FB_CPUFAMILY_PPC64 OrElse cpufamily = FB_CPUFAMILY_PPC64LE Then
+			'' This is needed on 32-bit too if we have unwind data
+			if cpufamily = FB_CPUFAMILY_X86_64 OrElse _
+			   cpufamily = FB_CPUFAMILY_AARCH64 OrElse _
+			   cpuFamily = FB_CPUFAMILY_PPC64 OrElse _ 
+			   cpufamily = FB_CPUFAMILY_PPC64LE OrElse _
+			   fbGetOption( FB_COMPOPT_OBJUNWIND ) _
+			then
 				ldcline += " --eh-frame-hdr"
 			end if
 		end if
@@ -1241,6 +1383,11 @@ private function hLinkFiles( ) as integer
 	end if
 
 	if( fbcRunBin( "linking", ld, ldcline ) = FALSE ) then
+		'' ld might have created a map file before it failed
+		'' kill it if its one we created
+		if addsafeseh and 2 then
+			kill fbc.mapfile
+		end if
 		exit function
 	end if
 
@@ -1264,6 +1411,13 @@ private function hLinkFiles( ) as integer
 				exit function
 			end if
 		end if
+
+		if addsafeseh then
+			hAddLoadConfigToExe( fbc.outname, fbc.mapfile )
+			if addsafeseh and 2 then
+				kill fbc.mapfile
+			end if
+		endif
 
 	case FB_COMPTARGET_XBOX
 		'' Turn .exe into .xbe
@@ -2302,6 +2456,9 @@ private sub handleOpt _
 			fbSetOption( FB_COMPOPT_FBRT, TRUE )
 		case "nocmdline"
 			fbSetOption( FB_COMPOPT_NOCMDLINE, TRUE )
+		case "objunwind"
+			fbSetOption( FB_COMPOPT_OBJUNWIND, TRUE )
+			fbSetOption( FB_COMPOPT_UNWINDINFO, TRUE )
 		case else
 			hFatalInvalidOption( arg, is_source )
 		end select
@@ -2835,6 +2992,27 @@ private sub hCheckArgs()
 			errReportEx( FB_ERRMSG_PICNOTSUPPORTEDFOREXE, "", -1 )
 		elseif( hTargetNeedsPIC( ) = FALSE ) then
 			errReportEx( FB_ERRMSG_PICNOTSUPPORTEDFORTARGET, "", -1 )
+		end if
+	end if
+
+	'' Check whether the target supports object unwinding
+	if( fbGetOption( FB_COMPOPT_OBJUNWIND ) ) then
+		dim doerror as integer
+		select case as const fbGetOption( FB_COMPOPT_TARGET )
+			case FB_COMPTARGET_WIN32, FB_COMPTARGET_LINUX
+				'' this is fine
+			case else
+				doerror = 1
+		end select
+		select case as const fbGetCpuFamily( )
+			case FB_CPUFAMILY_X86, FB_CPUFAMILY_X86_64
+				'' this is fine
+			case else
+				doerror = 1
+		end select
+		if doerror then 
+			errReportEx( FB_ERRMSG_OBJUNWINDBADTARGET, fbGetTargetId( ), -1 )
+			fbcEnd( 1 )
 		end if
 	end if
 
@@ -3469,6 +3647,11 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			end if
 		end select
 
+		'' object unwind relies on base pointers being present
+		if( fbGetOption( FB_COMPOPT_OBJUNWIND ) ) then
+			ln += "-fno-omit-frame-pointer "
+		end if
+
 	case FB_BACKEND_LLVM
 		select case( fbGetCpuFamily( ) )
 		case FB_CPUFAMILY_X86
@@ -3925,6 +4108,18 @@ private sub hAddDefaultLibs( )
 			fbcAddDefLib( "ncurses" )
 		end if
 
+		'' obj unwinding requires libfbexcept
+		if( fbGetOption( FB_COMPOPT_OBJUNWIND ) ) then
+			fbcAddDefLib( "fbexcept" )
+			'' prefer libunwind over libgcc_eh, the latter won't
+			'' work if gcc is built with SJLJ exceptions
+			if( len( fbcFindLibFile( "libunwind.a"  ) ) > 0 ) orelse _
+			    len( fbcFindLibFile( "libunwind.so"  ) ) > 0 _
+			then
+				fbcAddDefLib( "unwind" )
+			end if
+		end if
+
 		fbcAddDefLib( "m" )
 		fbcAddDefLib( "dl" )
 		fbcAddDefLib( "pthread" )
@@ -3958,6 +4153,11 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "mingw32" )
 		fbcAddDefLib( "mingwex" )
 		fbcAddDefLib( "moldname" )
+
+		'' obj unwinding requires libfbexcept
+		if( fbGetOption( FB_COMPOPT_OBJUNWIND ) ) then
+			fbcAddDefLib( "fbexcept" )
+		end if
 
 		'' Link libgcc_eh if it exists
 		if( (len( fbcFindLibFile( "libgcc_eh.a"     ) ) > 0) or _

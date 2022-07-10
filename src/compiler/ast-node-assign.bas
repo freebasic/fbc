@@ -8,6 +8,7 @@
 #include once "ir.bi"
 #include once "rtl.bi"
 #include once "ast.bi"
+#include once "unwind.bi"
 
 private function hCheckStringOps _
 	( _
@@ -578,14 +579,18 @@ function astNewASSIGN _
 			if( hCheckStringOps( l, ldclass, r, rdclass ) = FALSE ) then
 				exit function
 			end if
-
-			return rtlStrAssign( l, r, (options and AST_OPOPT_ISINI) <> 0 )
+			dim as integer is_init = options and AST_OPOPT_ISINI
+			dim as ASTNODE ptr assign = rtlStrAssign( l, r, is_init <> 0 )
+			if is_init <> 0 then
+				assign = astNewLINK( assign, unwindCreateCheckpointLabel( ), AST_LINK_RETURN_NONE )
+			end if
+			return assign
 		end if
 
 		'' otherwise, don't do any assignment by now to allow optimizations..
 		if( (options and AST_OPOPT_ISINI) <> 0 ) then
 			'' unless it's an initialization
-			return rtlStrAssign( l, r, TRUE	)
+			return astNewLINK( rtlStrAssign( l, r, TRUE ), unwindCreateCheckpointLabel( ), AST_LINK_RETURN_NONE )
 		end if
 
 	'' UDT's?

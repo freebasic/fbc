@@ -7,6 +7,7 @@
 #include once "fbint.bi"
 #include once "parser.bi"
 #include once "ast.bi"
+#include once "unwind.bi"
 
 '':::::
 ''Label           =   NUM_LIT
@@ -80,6 +81,7 @@ function cLabel as integer
 
 	if( l <> NULL ) then
 		astAdd( astNewLABEL( l ) )
+		unwindCheckForErrorGotoLabel( l )
 
 		symbSetLastLabel( l )
 

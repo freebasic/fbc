@@ -208,6 +208,18 @@
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_WCHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
+		/' in libfbexcept '/ _
+		/' sub fb_ThrowError cdecl( byval exType as any ptr, byval exObj as any ptr) '/ _
+		( _
+			@FB_RTL_EX_THROWERROR, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+			{ _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 	 	/' EOL '/ _
 	 	( _
 	 		NULL _

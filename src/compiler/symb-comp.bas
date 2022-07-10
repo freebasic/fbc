@@ -1419,3 +1419,36 @@ end sub
 
 sub symbCompRTTIEnd()
 end sub
+
+sub symbCompSEHInit( )
+	dim as FBSYMBOL ptr sehtype = any
+
+	static as FBARRAYDIM dTB(0)
+
+	'' type fb_SEHData$
+	'' (using fb_SEHData$ instead of $fb_SEHData to prevent gdb/stabs confusion,
+	'' where leading $ has special meaning)
+	sehtype = symbStructBegin( NULL, NULL, NULL, "fb_SEHData$", "fb_SEHData$", FALSE, 0, FALSE, 0, 0 )
+	symb.sehtype = sehtype
+
+	'' prev as any ptr
+	symbAddField( sehtype, "prev", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
+
+	'' handler as any ptr
+	symbAddField( sehtype, "handler", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
+
+	'' espval as any ptr
+	symbAddField( sehtype, "espval", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
+
+	'' ebpval as any ptr
+	symbAddField( sehtype, "ebpval", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
+
+	'' scratch as any ptr
+	symbAddField( sehtype, "scratch", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
+
+	'' end type
+	symbStructEnd( sehtype )
+end sub
+
+sub symbCompSEHEnd()
+end sub
