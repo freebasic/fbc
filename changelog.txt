@@ -67,6 +67,7 @@ Version 1.10.0
 - rtlib: multikey was missing VK_NUMPAD5 and SC_CLEAR scancodes in the key table, causing NUMPAD-5 to be handled as escape in the windows D2D gfx driver
 - sf.net: #961: rtlib/gfxlib: COLOR() function returns LONG but should be ULONG
 - The DISABLE_GPM build option for the Unix rtlib now only disables GETMOUSE() for TERM=linux, which is the case that uses GPM, however GETMOUSE() for TERM=xterm now keeps working under DISABLE_GPM, since that case does not use GPM.
+- Unix rtlib: Multi-threaded use of shell()/exec()/dylibload()/dylibfree() can no longer cause input/output terminal configuration cleanup at program exit to fail
 
 
 Version 1.09.0
