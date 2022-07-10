@@ -304,7 +304,6 @@ function astNewUOP _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_UOP, dtype, subtype )
-
 	n->l = o
 	n->r = NULL
 	n->op.op = op

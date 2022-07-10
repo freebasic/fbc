@@ -716,6 +716,15 @@ private sub check_optim(byref code as string)
 				writepos=len(ctx.proc_txt)+len(code)+9
 				code="#O6"+code+newline+string( ctx.indent*3, 32 )+previnstruc+" "+part1+", "+prevpart2+" #Optim 6"
 				part2=prevpart2
+
+			elseif ( prevpart2[0]=asc("r") or prevpart2[0]=asc("e") ) and prevpart1=part2 then 'and instr(part1,"[")=0 
+				'asm_info("OPTIMIZATION 16")
+				mid(ctx.proc_txt,prevwpos)="#16"
+				asm_info("part1="+part1+" part2="+part2+" prevpart1="+prevpart1+" prevpart2="+prevpart2)
+				writepos=len(ctx.proc_txt)+len(code)+9
+				code="#16"+code+newline+string( ctx.indent*3, 32 )+previnstruc+" "+part1+", "+prevpart2+" #Optim 16"
+				part2=prevpart2
+
 			end if
 		end if
 	end if
@@ -2404,7 +2413,14 @@ private function _supportsop(byval op as integer,byval dtype as Integer) as inte
 	select case as const( op )
 		'case AST_OP_SGN, AST_OP_FIX, AST_OP_FRAC, _
 		'    AST_OP_ASIN, AST_OP_ACOS, AST_OP_TAN, AST_OP_ATAN, _
-		case AST_OP_SGN,AST_OP_RSQRT, AST_OP_RCP
+		case AST_OP_SGN
+			if typeGetClass( dtype ) = FB_DATACLASS_FPOINT then
+				return false
+			else
+				''sgn available only for integer
+				return true
+			end if
+		case AST_OP_RSQRT, AST_OP_RCP
 			return FALSE
 		case AST_OP_ABS,AST_OP_NEG,AST_OP_NOT,AST_OP_SQRT
 
@@ -4033,32 +4049,33 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 	end if
 
 	if op=AST_OP_SGN And tempodtype <> FB_DATATYPE_DOUBLE then
-
-		if op1<>*regstrq(KREG_RCX) then
-			if reghandle(KREG_RCX)<>KREGFREE then ''as rcx is used need to transfer its contain to another register
-				tempo=reghandle(KREG_RCX)
-				reg_findfree(tempo)
-				reghandle(KREG_RCX)=KREGFREE
-				asm_info("rcx used so transfer to other register="+*regstrq(reg_findreal(tempo)))
-				asm_code("mov "+*regstrq(reg_findreal(tempo))+", "+*regstrq(KREG_RCX))
-				op1=*regstrq(reg_findreal(tempo))
-				if vrreg=KREG_RCX then vrreg=reg_findreal(tempo)
-			else
-				ctx.usedreg Or=(1 Shl KREG_RCX)
-			end if
-			asm_code("mov rcx, "+op1)
-		end if
-
-		save_call("fb_SGNl",vr,vrreg) ''letter L
-		asm_code("movsxd rax, eax")
-		if vr=0 then
-			asm_code("mov "+op1+", rax")
+		var lname = *symbUniqueLabel( )
+		if v1->typ=IR_VREGTYPE_REG then
+			asm_code("cmp "+op1+", 0")
+			asm_code("je "+lname)
+			asm_code("mov "+op1+", 1")
+			asm_code("jg "+lname)
+			asm_code("mov "+op1+", -1")
+			asm_code(lname+":")
+			''as same register used need to forced
+			restore_vrreg(vr,vrreg)
+			''result in a 64bit register but doesn't matter
 		else
-			asm_code("mov "+*regstrq(vrreg)+", rax")
+			asm_code("mov rax, "+op1)
+			asm_code("cmp rax, 0")
+			asm_code("je "+lname)
+			asm_code("mov eax, 1")
+			asm_code("jg "+lname)
+			asm_code("mov rax, -1")
+			asm_code(lname+":")
+			if vr=0 then
+				asm_code("mov "+op1+", rax")
+			else
+				asm_code("mov "+*regstrq(vrreg)+", rax")
+			end if
 		end if
 		return
 	end if
-
 	''for double , integer must have been converted before
 	if v1->typ=IR_VREGTYPE_REG then
 		asm_code("movq xmm0, "+op1)
