@@ -164,10 +164,8 @@ function astNewUOP _
 
 	'' pointer?
 	case FB_DATATYPE_POINTER
-		'' only NOT allowed
-		if( op <> AST_OP_NOT ) then
-			exit function
-		end if
+		'' no UOP's allowed with pointers
+		exit function
 
 	end select
 
