@@ -69,6 +69,7 @@ Version 1.10.0
 - The DISABLE_GPM build option for the Unix rtlib now only disables GETMOUSE() for TERM=linux, which is the case that uses GPM, however GETMOUSE() for TERM=xterm now keeps working under DISABLE_GPM, since that case does not use GPM.
 - Unix rtlib: Multi-threaded use of shell()/exec()/dylibload()/dylibfree() can no longer cause input/output terminal configuration cleanup at program exit to fail
 - sf.net #965: fbc: Bad code generation in gcc backend for NOT PTR_EXPR - don't allow unary ops on pointers
+- Internal (unit tests): Stack corruption in mid() tests (regression from 1.07.0)
 
 
 Version 1.09.0
