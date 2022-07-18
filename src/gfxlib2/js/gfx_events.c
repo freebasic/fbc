@@ -1,7 +1,11 @@
 #include "../fb_gfx.h"
 #include "fb_gfx_js.h"
 
+/*
+Comment out unused variable, see tatic void fb_js_sleep(int msecs), below.
+
 static int sleep_called = 0;
+*/
 
 void fb_js_events_check(void)
 {
@@ -77,10 +81,11 @@ void fb_js_events_init(void)
 
     // don't let SDL capture the keyboard
     __fb_js_ctx.doNotCaptureKeyboard = emscripten_run_script_int("Module['doNotCaptureKeyboard']? 1: 0;");
-    if(!__fb_js_ctx.doNotCaptureKeyboard)
+    if(!__fb_js_ctx.doNotCaptureKeyboard) {
         emscripten_run_script("Module['doNotCaptureKeyboard']=1;");
+	}
 
-	return;
+    return;
 }
 
 void fb_js_events_exit(void)

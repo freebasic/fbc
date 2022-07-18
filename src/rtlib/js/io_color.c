@@ -5,7 +5,7 @@
 
 static unsigned int last_bc = FB_COLOR_BLACK, last_fc = FB_COLOR_WHITE;
 
-int fb_ConsoleColor( unsigned int fc, unsigned int bc, int flags )
+unsigned int fb_ConsoleColor( unsigned int fc, unsigned int bc, int flags )
 {
 	unsigned int cur = last_fc | (last_bc << 16);
 
