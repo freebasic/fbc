@@ -545,7 +545,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-				( typeSetIsConst( FB_DATATYPE_STRING ),FB_PARAMMODE_BYREF, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 	 	), _
 	 	/' EOL '/ _

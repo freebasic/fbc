@@ -45,8 +45,8 @@
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( typeAddrOf( FB_DATATYPE_WCHAR ),FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_INTEGER ),FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
 		/' sub fb_DataReadBool( byref dst as boolean ) '/ _

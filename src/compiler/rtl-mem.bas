@@ -21,9 +21,9 @@
 			NULL, FB_RTL_OPT_CANBECLONED, _
 			3, _
 			{ _
-				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ),FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ),FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
 		/' sub fb_MemSwap( byref dst as any, byref src as any, byval bytes as const integer ) '/ _
@@ -52,7 +52,7 @@
 			4, _
 			{ _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE, 0 ), _
-				( typeSetIsConst( FB_DATATYPE_UINT ),FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, FALSE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
@@ -95,8 +95,8 @@
 			NULL, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
-				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ),FB_PARAMMODE_BYVAL, FALSE, 0 ), _
-				( typeSetIsConst( FB_DATATYPE_UINT ),FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
 		/' sub deallocate cdecl( byval p as const any ptr ) '/ _
@@ -106,7 +106,7 @@
 			NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
-				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ),FB_PARAMMODE_BYVAL, FALSE, 0 ) _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE, 0 ) _
 			} _
 		), _
 		/' function clear cdecl _
@@ -121,7 +121,7 @@
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, 0 ), _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
