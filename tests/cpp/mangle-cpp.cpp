@@ -12,7 +12,7 @@ namespace cpp_mangle
 		return a;
 	} 
 
-    // float
+	// float
 
 	float cpp_byval_float( float a )
 	{
@@ -24,7 +24,7 @@ namespace cpp_mangle
 		return a;
 	} 
 
-   	// double
+	// double
 
 	double cpp_byval_double( double a )
 	{
@@ -38,6 +38,38 @@ namespace cpp_mangle
 
 	// char = 8 bit
 
+	char cpp_byval_char_b( char a )
+	{
+		return a;
+	}
+
+	char cpp_byval_char_u( char a )
+	{
+		return a;
+	}
+
+	char cpp_byval_char_ub( char a )
+	{
+		return a;
+	}
+
+	char cpp_byref_char_b( char &a )
+	{
+		return a;
+	} 
+
+	char cpp_byref_char_u( char &a )
+	{
+		return a;
+	} 
+
+	char cpp_byref_char_ub( char &a )
+	{
+		return a;
+	} 
+
+	// signed | unsigned char = 8 bit
+
 	unsigned char cpp_byval_uchar( unsigned char a )
 	{
 		return a;
@@ -47,13 +79,13 @@ namespace cpp_mangle
 	{
 		return a;
 	}
-	
+
 	unsigned char cpp_byref_uchar( unsigned char &a )
 	{
 		return a;
 	} 
 
-   	signed char cpp_byref_schar( signed char &a )
+	signed char cpp_byref_schar( signed char &a )
 	{
 		return a;
 	} 

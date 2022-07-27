@@ -33,7 +33,15 @@ namespace cpp_mangle
 
 	declare function cpp_byval_double( byval a as double ) as double
 	declare function cpp_byref_double( byref a as double ) as double
-	
+
+	declare function cpp_byval_char_b( byval a as byte alias "char" ) as byte alias "char"
+	declare function cpp_byval_char_u( byval a as ubyte alias "char" ) as ubyte alias "char"
+	declare function cpp_byval_char_ub( byval a as unsigned byte alias "char" ) as unsigned byte alias "char"
+
+	declare function cpp_byref_char_b( byref a as byte alias "char" ) as byte alias "char"
+	declare function cpp_byref_char_u( byref a as ubyte alias "char" ) as ubyte alias "char"
+	declare function cpp_byref_char_ub( byref a as unsigned byte alias "char" ) as unsigned byte alias "char"
+
 	declare function cpp_byval_uchar( byval a as unsigned byte ) as unsigned byte
 	declare function cpp_byval_schar( byval a as byte ) as byte
 	declare function cpp_byref_uchar( byref a as unsigned byte ) as unsigned byte
@@ -138,20 +146,32 @@ end scope
 
 scope
 				 
-	''  c = signed|unsigned char
+	''  c = [signed|unsigned] char
 	'' fb = [unsigned] byte
 
+	ASSERT( cpp_byval_char_b(0) = 0 )
+	ASSERT( cpp_byval_char_u(0) = 0 )
+	ASSERT( cpp_byval_char_ub(0) = 0 )
 	ASSERT( cpp_byval_uchar(0) = 0 )
 	ASSERT( cpp_byval_schar(0) = 0 )
+	ASSERT( cpp_byval_char_b(&h7f) = &h7f )
+	ASSERT( cpp_byval_char_u(&h7f) = &h7f )
+	ASSERT( cpp_byval_char_ub(&h7f) = &h7f )
 	ASSERT( cpp_byval_uchar(&h7f) = &h7f )
 	ASSERT( cpp_byval_schar(&h7f) = &h7f )
 
 	dim ub as unsigned byte = 0
 	dim sb as byte = 0
+	ASSERT( cpp_byref_char_b(ub) = 0 )
+	ASSERT( cpp_byref_char_u(ub) = 0 )
+	ASSERT( cpp_byref_char_ub(ub) = 0 )
 	ASSERT( cpp_byref_uchar(ub) = 0 )
 	ASSERT( cpp_byref_schar(sb) = 0 )
 	ub = &h7f
 	sb = &h7f
+	ASSERT( cpp_byref_char_b(ub) = &h7f )
+	ASSERT( cpp_byref_char_u(ub) = &h7f )
+	ASSERT( cpp_byref_char_ub(ub) = &h7f )
 	ASSERT( cpp_byref_uchar(ub) = &h7f )
 	ASSERT( cpp_byref_schar(sb) = &h7f )
 
