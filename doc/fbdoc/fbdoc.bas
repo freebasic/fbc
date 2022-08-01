@@ -75,6 +75,7 @@ end sub
 	dim as string sCacheDir = default_CacheDir
 	dim as string sOutputDir = ""
 	dim as string sConnFile, sLangFile, sTocTitle, sDocToc, sTemplateDir
+	dim as string sCertificateFile = default_ca_file
 	dim as integer i = 1, h
 	dim as integer bMakeTitles = FALSE
 	dim as COptions ptr connopts = NULL
@@ -234,6 +235,12 @@ end sub
 				if( command(i) > "" ) then
 					sTocPage = command(i)
 				end if
+			case "-certificate"
+				i += 1
+				if( command(i) > "" ) then
+					sCertificateFile = command(i)
+				end if
+
 			case else
 				print "Unrecognized option '" + command(i) + "'"
 				end 1
@@ -293,6 +300,9 @@ end sub
 
 	'' if 'manual_dir' exists in the options, let it override any default set
 	sManualDir = connopts->Get( "manual_dir", sManualDir )
+	
+	'' if 'certificate' exists in the options, let it override any default set
+	sCertificateFile =  connopts->Get( "certificate", sCertificateFile ) 
 
 	'' Load language options
 	sLangFile = sManualDir + "templates/default/lang/en/common.ini"
@@ -314,7 +324,7 @@ end sub
 	end if
 
 	'' Initialize the wiki connection - in case its needed
-	Connection_SetUrl( connopts->Get( "wiki_url", default_wiki_url ), connopts->Get( "certificate", default_ca_file ) )
+	Connection_SetUrl( connopts->Get( "wiki_url", default_wiki_url ), sCertificateFile )
 
 #if defined(HAVE_MYSQL)
 	'' If using SQL, get all the pages in to the cache now.
