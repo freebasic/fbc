@@ -23,6 +23,14 @@
 ''
 
 #include once "CRegex.bi"
+
+'' from make file, if USE_PCRE_STATIC was defined then define PCRE_STATIC here  
+#ifdef USE_PCRE_STATIC
+	#ifndef PCRE_STATIC 
+		#define PCRE_STATIC 1
+	#endif
+#endif
+
 #include once "pcre.bi"
 
 namespace fb

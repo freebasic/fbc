@@ -1,14 +1,48 @@
+#!/usr/bin/make -f
+#
+# makes the documentation maintenance tools
+#
+# define's that can override build options
+#
+#   'HAVE_ASPELL=1' to indicate that spell check library is available
+#   'FBC=d:/path/fbc to' to override path to execute fbc compiler 
+#
+# exported options
+#
+#   'HAVE_MYSQL=1' to indicate that mysql library is available
+#   'USE_PCRE_STATIC=1' to indicate we should link with static version of libpcre
+#
+
 OS := $(shell uname)
 ifeq ($(OS),Linux)
-	EXEEXT :=
+    EXEEXT :=
 else
-	EXEEXT := .exe
+    EXEEXT := .exe
 endif
+
+ifndef MAKE
+    MAKE := make
+else
+    export MAKE
+endif
+
+# when we build in sub directories, make sure we pass on the options
+MAKEOPTS :=
+ifdef HAVE_MYSQL
+    MAKEOPTS += HAVE_MYSQL=1
+endif 
+ifdef USE_PCRE_STATIC
+    MAKEOPTS += USE_PCRE_STATIC=1
+endif 
+
+# if we have to build libfbdoc, make sure we export options
+export HAVE_MYSQL
+export USE_PCRE_STATIC
 
 FBC := fbc
 
 LIBFUNCS_SRC := \
-	cmd_opts.bas \
+    cmd_opts.bas \
     funcs.bas \
     funcsdir.bas \
     fmtcode.bas \
@@ -28,11 +62,14 @@ APPS := \
     delextra$(EXEEXT) \
     mkimglst$(EXEEXT) \
     getimage$(EXEEXT) \
-    spellit$(EXEEXT) \
-    spell$(EXEEXT) \
     samps$(EXEEXT) \
-	pretty$(EXEEXT) \
-	insert$(EXEEXT)
+    pretty$(EXEEXT) \
+    insert$(EXEEXT)
+
+ifdef HAVE_ASPELL
+    APPS += spellit$(EXEEXT)
+    APPS += spell$(EXEEXT)
+endif
 
 SAMPS_SRCS := \
     samps.bas \
@@ -52,7 +89,7 @@ TEMP_FILES := \
     mkerrtxt.bas \
     imagelist.txt \
     imagepages.txt \
-	delete.html
+    delete.html
 
 HEADERS := $(wildcard *.bi)
 DEPS = ../libfbdoc/libfbdoc.a $(HEADERS)
@@ -62,7 +99,7 @@ FBLFLAGS += -exx -g -p ../libfbdoc -l fbdoc
 
 ifdef HAVE_MYSQL
     FBCFLAGS += -d HAVE_MYSQL
-	FBLFLAGS += -l mysql
+    FBLFLAGS += -l mysql
 endif
 
 ifeq ($(EXEEXT),.exe)
@@ -124,7 +161,7 @@ $(LIBFUNCS): $(LIBFUNCS_SRC) $(HEADERS)
 	$(FBC) -lib -x $@ $(LIBFUNCS_SRC) $(FBCFLAGS)
 
 ../libfbdoc/libfbdoc.a:
-	cd ../libfbdoc && make
+	cd ../libfbdoc && $(MAKE) FBC="$(FBC)" $(MAKEOPTS)
 
 .PHONY: clean
 clean:
