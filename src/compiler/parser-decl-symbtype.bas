@@ -464,6 +464,8 @@ private function cMangleModifier _
 				select case dtype
 				case FB_DATATYPE_VOID
 					dtype = typeSetMangleDt( dtype, FB_DATATYPE_CHAR )
+				case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE
+					dtype = typeSetMangleDt( dtype, FB_DATATYPE_CHAR )
 				case else
 					errReport( FB_ERRMSG_SYNTAXERROR )	
 				end select
@@ -581,10 +583,12 @@ function cSymbolType _
 		case FB_TK_BYTE
 			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			dtype = FB_DATATYPE_BYTE
+			cMangleModifier( dtype, subtype )
 
 		case FB_TK_UBYTE
 			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			dtype = FB_DATATYPE_UBYTE
+			cMangleModifier( dtype, subtype )
 
 		case FB_TK_SHORT
 			lexSkipToken( LEXCHECK_POST_SUFFIX )
@@ -794,7 +798,11 @@ function cSymbolType _
 			'' remap type, if valid
 			select case as const typeGet( dtype )
 			case FB_DATATYPE_BYTE
-				dtype = FB_DATATYPE_UBYTE
+				if( typeHasMangleDt( dtype ) ) then
+					dtype = typeSetMangleDt( FB_DATATYPE_UBYTE, FB_DATATYPE_CHAR )
+				else
+					dtype = FB_DATATYPE_UBYTE
+				end if
 
 			case FB_DATATYPE_SHORT
 				dtype = FB_DATATYPE_USHORT
