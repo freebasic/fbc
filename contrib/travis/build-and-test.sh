@@ -81,8 +81,8 @@ fi
 
 # Build fbdoc tools
 cd doc/libfbdoc
-make FBC="$FBC_FOR_TESTS" HAVE_MYSQL=1 HAVE_ASPELL=1 </dev/null
+make FBC="$FBC_FOR_TESTS" HAVE_ASPELL=1 </dev/null
 cd ../fbdoc
-make FBC="$FBC_FOR_TESTS" HAVE_MYSQL=1 HAVE_ASPELL=1 </dev/null
+make FBC="$FBC_FOR_TESTS" HAVE_ASPELL=1 </dev/null
 cd ../fbchkdoc
-make FBC="$FBC_FOR_TESTS" HAVE_MYSQL=1 HAVE_ASPELL=1 </dev/null
+make FBC="$FBC_FOR_TESTS" HAVE_ASPELL=1 </dev/null
