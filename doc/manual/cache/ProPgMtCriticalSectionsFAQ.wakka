@@ -2073,127 +2073,127 @@ end of threads
 							
 						Full code with the ""'ThreadInitThenMultiStart'"" Type:
 							{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq13.bas"}}%%(freebasic)
-		Type ThreadInitThenMultiStart
-			Public:
-				Declare Constructor()
-				Declare Sub ThreadInit(Byval pThread As Function(Byval As Any Ptr) As String, Byval p As Any Ptr = 0)
-				Declare Sub ThreadStart()
-				Declare Sub ThreadStart(Byval p As Any Ptr)
-				Declare Function ThreadWait() As String
-				Declare Property ThreadState() As Ubyte
-				Declare Destructor()
-			Private:
-				Dim As Function(Byval p As Any Ptr) As String _pThread
-				Dim As Any Ptr _p
-				Dim As Any Ptr _mutex1
-				Dim As Any Ptr _mutex2
-				Dim As Any Ptr _mutex3
-				Dim As Any Ptr _pt
-				Dim As Byte _end
-				Dim As String _returnF
-				Dim As Ubyte _state
-				Declare Static Sub _Thread(Byval p As Any Ptr)
-		End Type
-		
-		Constructor ThreadInitThenMultiStart()
-			This._mutex1 = Mutexcreate()
-			Mutexlock(This._mutex1)
-			This._mutex2 = Mutexcreate()
-			Mutexlock(This._mutex2)
-			This._mutex3 = Mutexcreate()
-			Mutexlock(This._mutex3)
-		End Constructor
-		
-		Sub ThreadInitThenMultiStart.ThreadInit(Byval pThread As Function(Byval As Any Ptr) As String, Byval p As Any Ptr = 0)
-			This._pThread = pThread
-			This._p = p
-			If This._pt = 0 Then
-				This._pt= Threadcreate(@ThreadInitThenMultiStart._Thread, @This)
-				Mutexunlock(This._mutex3)
-				This._state = 1
-			End If
-		End Sub
-		
-		Sub ThreadInitThenMultiStart.ThreadStart()
-			Mutexlock(This._mutex3)
-			Mutexunlock(This._mutex1)
-		End Sub
-		
-		Sub ThreadInitThenMultiStart.ThreadStart(Byval p As Any Ptr)
-			Mutexlock(This._mutex3)
-			This._p = p
-			Mutexunlock(This._mutex1)
-		End Sub
-		
-		Function ThreadInitThenMultiStart.ThreadWait() As String
-			Mutexlock(This._mutex2)
-			Mutexunlock(This._mutex3)
-			This._state = 1
-			Return This._returnF
-		End Function
-		
-		Property ThreadInitThenMultiStart.ThreadState() As Ubyte
-			Return This._state
-		End Property
-		
-		Sub ThreadInitThenMultiStart._Thread(Byval p As Any Ptr)
-			Dim As ThreadInitThenMultiStart Ptr pThis = p
-			Do
-				Mutexlock(pThis->_mutex1)
-				If pThis->_end = 1 Then Exit Sub
-				pThis->_state = 2
-				pThis->_returnF = pThis->_pThread(pThis->_p)
-				pThis->_state = 4
-				Mutexunlock(pThis->_mutex2)
-			Loop
-		End Sub
-		
-		Destructor ThreadInitThenMultiStart()
-			If This._pt > 0 Then
-				This._end = 1
-				Mutexunlock(This._mutex1)
-				.ThreadWait(This._pt)
-			End If
-			Mutexdestroy(This._mutex1)
-			Mutexdestroy(This._mutex2)
-			Mutexdestroy(This._mutex3)
-		End Destructor
-		
-		'---------------------------------------------------
-		
-		Function UserThreadS(Byval p As Any Ptr) As String
-			Dim As Uinteger Ptr pui = p
-			Print *pui * *pui
-			Return ""
-		End Function
-		
-		Function UserThreadF(Byval p As Any Ptr) As String
-			Dim As Uinteger Ptr pui = p
-			Dim As Uinteger c = (*pui) * (*pui)
-			Return Str(c)
-		End Function
-		
-		Dim As ThreadInitThenMultiStart t
-		
-		Print "First user function executed like a thread subroutine:"
-		t.ThreadInit(@UserThreadS)  '' initializes the user thread function (used as subroutine)
-		For I As Uinteger = 1 To 9
-			Print I & "^2 = ";
-			t.ThreadStart(@I)       '' starts the user thread procedure code body
-			t.Threadwait()          '' waits for the user thread procedure code end
-		Next I
-		Print
-		
-		Print "Second user function executed like a thread function:"
-		t.ThreadInit(@UserThreadF)  '' initializes the user thread function (used as function)
-		For I As Uinteger = 1 To 9
-			Print I & "^2 = ";
-			t.ThreadStart(@I)       '' starts the user thread procedure code body
-			Print t.Threadwait()    '' waits for the user thread procedure code end and prints result
-		Next I
-		Print
-		
-		Sleep
+Type ThreadInitThenMultiStart
+	Public:
+		Declare Constructor()
+		Declare Sub ThreadInit(Byval pThread As Function(Byval As Any Ptr) As String, Byval p As Any Ptr = 0)
+		Declare Sub ThreadStart()
+		Declare Sub ThreadStart(Byval p As Any Ptr)
+		Declare Function ThreadWait() As String
+		Declare Property ThreadState() As Ubyte
+		Declare Destructor()
+	Private:
+		Dim As Function(Byval p As Any Ptr) As String _pThread
+		Dim As Any Ptr _p
+		Dim As Any Ptr _mutex1
+		Dim As Any Ptr _mutex2
+		Dim As Any Ptr _mutex3
+		Dim As Any Ptr _pt
+		Dim As Byte _end
+		Dim As String _returnF
+		Dim As Ubyte _state
+		Declare Static Sub _Thread(Byval p As Any Ptr)
+End Type
+
+Constructor ThreadInitThenMultiStart()
+	This._mutex1 = Mutexcreate()
+	Mutexlock(This._mutex1)
+	This._mutex2 = Mutexcreate()
+	Mutexlock(This._mutex2)
+	This._mutex3 = Mutexcreate()
+	Mutexlock(This._mutex3)
+End Constructor
+
+Sub ThreadInitThenMultiStart.ThreadInit(Byval pThread As Function(Byval As Any Ptr) As String, Byval p As Any Ptr = 0)
+	This._pThread = pThread
+	This._p = p
+	If This._pt = 0 Then
+		This._pt= Threadcreate(@ThreadInitThenMultiStart._Thread, @This)
+		Mutexunlock(This._mutex3)
+		This._state = 1
+	End If
+End Sub
+
+Sub ThreadInitThenMultiStart.ThreadStart()
+	Mutexlock(This._mutex3)
+	Mutexunlock(This._mutex1)
+End Sub
+
+Sub ThreadInitThenMultiStart.ThreadStart(Byval p As Any Ptr)
+	Mutexlock(This._mutex3)
+	This._p = p
+	Mutexunlock(This._mutex1)
+End Sub
+
+Function ThreadInitThenMultiStart.ThreadWait() As String
+	Mutexlock(This._mutex2)
+	Mutexunlock(This._mutex3)
+	This._state = 1
+	Return This._returnF
+End Function
+
+Property ThreadInitThenMultiStart.ThreadState() As Ubyte
+	Return This._state
+End Property
+
+Sub ThreadInitThenMultiStart._Thread(Byval p As Any Ptr)
+	Dim As ThreadInitThenMultiStart Ptr pThis = p
+	Do
+		Mutexlock(pThis->_mutex1)
+		If pThis->_end = 1 Then Exit Sub
+		pThis->_state = 2
+		pThis->_returnF = pThis->_pThread(pThis->_p)
+		pThis->_state = 4
+		Mutexunlock(pThis->_mutex2)
+	Loop
+End Sub
+
+Destructor ThreadInitThenMultiStart()
+	If This._pt > 0 Then
+		This._end = 1
+		Mutexunlock(This._mutex1)
+		.ThreadWait(This._pt)
+	End If
+	Mutexdestroy(This._mutex1)
+	Mutexdestroy(This._mutex2)
+	Mutexdestroy(This._mutex3)
+End Destructor
+
+'---------------------------------------------------
+
+Function UserThreadS(Byval p As Any Ptr) As String
+	Dim As Uinteger Ptr pui = p
+	Print *pui * *pui
+	Return ""
+End Function
+
+Function UserThreadF(Byval p As Any Ptr) As String
+	Dim As Uinteger Ptr pui = p
+	Dim As Uinteger c = (*pui) * (*pui)
+	Return Str(c)
+End Function
+
+Dim As ThreadInitThenMultiStart t
+
+Print "First user function executed like a thread subroutine:"
+t.ThreadInit(@UserThreadS)  '' initializes the user thread function (used as subroutine)
+For I As Uinteger = 1 To 9
+	Print I & "^2 = ";
+	t.ThreadStart(@I)       '' starts the user thread procedure code body
+	t.Threadwait()          '' waits for the user thread procedure code end
+Next I
+Print
+
+Print "Second user function executed like a thread function:"
+t.ThreadInit(@UserThreadF)  '' initializes the user thread function (used as function)
+For I As Uinteger = 1 To 9
+	Print I & "^2 = ";
+	t.ThreadStart(@I)       '' starts the user thread procedure code body
+	Print t.Threadwait()    '' waits for the user thread procedure code end and prints result
+Next I
+Print
+
+Sleep
 							%%Output:
 								%%
 First user function executed like a thread subroutine:
@@ -3179,7 +3179,7 @@ For I As Integer = Lbound(s) To Ubound(s)
 Next I
 
 Sleep
-							%%Output:
+							%%Output example:
 								%%
  Sequence #a of 6 user thread functions dispatched over 1 secondary thread:
   Sequence #a: 111111111122222222223333333333444444444455555555556666666666

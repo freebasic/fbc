@@ -72,8 +72,10 @@ end namespace
 {{fbdoc item="desc"}}
 	At compile time, fbc allocates an array descriptor to store and track information about the array.
 	
-	If the number of dimensions is unknown at compile time, then the full ##FB_MAXDIMENSIONS## is allocated in the ##dimTb()## field.  Otherwise, if the number dimensions is known at compile time, then only the number of dimensions needed are allocated.  Therefore the allocated ##FBARRAY## data may be smaller than the declared ##FBARRAY## structure.
-	
+	If the number of dimensions is unknown at compile time, then the full ##FB_MAXDIMENSIONS## is allocated in the ##dimTb()## field.  Otherwise, if the number dimensions is known at compile time, then only the number of dimensions needed are allocated.
+	Therefore the allocated ##FBARRAY## data may be smaller than the declared ##FBARRAY## structure:
+		allocated ##FBARRAY## data size (in bytes) = ##Sizeof(FBARRAY) - (FB_MAXDIMENSIONS - (FBARRAY.flags And FBARRAY_FLAGS_DIMENSIONS)) * Sizeof(FBARRAYDIM)##
+		
 	If an array is passed as argument to a procedure, an array descriptor is allocated.  However, if the array is static, fixed length, and never passed as an argument, then all information about the array is known at compile time, including memory locations, and the allocation of a descriptor is optimized out, since all expressions involving the array are compile time constant.
 	
 	The array descriptor may also be allocated at run time, as would be in the case of allocating a new UDT containing a variable-length array field member.

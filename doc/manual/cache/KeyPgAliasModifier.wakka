@@ -24,7 +24,10 @@ Modifies the data type name mangling (decoration) of a public symbol
 	The same rules for mapping data types is used regardless of which backend (gas or gcc) code emitter is used,  And the intent is that FB's compiled code can link consistently with it's own object modules and object modules (or libraries) compiled from other languages.
 	
 	__Supported Modifiers__
-	
+		##[[KeyPgByte|byte]] alias "char"##
+		##[[KeyPgUbyte|ubyte]] alias "char"##
+			Used to map FB's 8-bit byte types to ""c/c++""'s 8-bit ##char## type.
+			
 		##[[KeyPgLong|long]] alias "long"##
 		##[[KeyPgUlong|ulong]] alias "long"##
 			On Win 64-bit targets, used to map FB's 32-bit ##[[KeyPgLong|long]]## and ##[[KeyPgUlong|ulong]]## types to ""c/c++""'s 32-bit ##long [int]## type, instead of the 32-bit ##int## type.
@@ -99,6 +102,7 @@ Modifies the data type name mangling (decoration) of a public symbol
 	See example at ##[[KeyPgAlias|Alias (Name)]]##.
 
 {{fbdoc item="ver"}}
+	- Before fbc 1.10.0, the ##[u]byte alias "char"## modifier was not supported.
 	- Since fbc 1.06.0
 
 {{fbdoc item="diff"}}

@@ -19,12 +19,11 @@ Closes all open files and ends the program
 	For this reason, it is discouraged to use ##**System**## simply to mark the end of a program; the program will come to an end automatically, and in a cleaner fashion, when the last line of module-level code has executed.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/system/system.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/system/system.bas"}}%%(freebasic)
 print "this text is shown"
 system
 print "this text will never be shown"
 %%
-
 {{fbdoc item="diff"}}
 	- None
 

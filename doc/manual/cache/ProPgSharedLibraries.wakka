@@ -10,6 +10,7 @@ Once the library is made, we can then use the code that it contains just as if w
 **{{anchor name="EXAMPLE1|Shared Library Example"}}**
 **{{anchor name="WINDOWS|Using Shared Libraries on Windows"}}**
 **{{anchor name="LINUX|Using Shared Libraries on Linux"}}**
+Using Shared Libraries on DOS => see its own page:**[[ProPgSharedLibrariesDOS|Shared Libraries - DOS]]**
 **{{anchor name="EXPORT|Executables that export symbols"}}**
 **{{anchor name="DYNAMIC|Loading Shared Libraries Dynamically"}}**
 **{{anchor name="VARIABLES|Exchanging/Sharing variables with shared library on Windows"}}**
@@ -370,6 +371,7 @@ Sleep
 			name of the lib and def file
 
 {{fbdoc item="see"}}
+	- [[ProPgSharedLibrariesDOS|Shared Libraries - DOS]]
 	- [[ProPgStaticLibraries|Static Libraries]]
 	- ##[[KeyPgInclib|#inclib]]##
 	- ##[[KeyPgInclude|#include]]##

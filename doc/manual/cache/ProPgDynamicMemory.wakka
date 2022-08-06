@@ -33,7 +33,7 @@ Managing **Dynamic Memory** (Allocation / Deallocation) with **""FreeBASIC""**
 	For each keyword, see the detailed syntax, precise description and examples in the individual documentation pages.
 	
 	Additional functionalities and tips for use:
-		**""-""** ##**Allocate**## / ##**Callocate**## / ##**Reallocate**## allows to know if memory allocation is successful (otherwise a nul pointer is returned).
+		**""-""** ##**Allocate**## / ##**Callocate**## / ##**Reallocate**## allows to know if memory allocation is successful (otherwise a null pointer is returned).
 		**""-""** Even if the allocated memory size is requested for 0 Byte, a non null pointer is returned and its value should be used to then release the allocation (except for ##**Reallocate(pointer, 0)**## which behaves similar to ##**Deallocate**##).
 		**""-""** For memory deallocation, ##**Deallocate**## can be called on any type of pointer (with the right value anyway).
 		**""-""** If the user absolutely wants to use this type of allocation for an object (for example to be able to do reallocation), it's up to him to manually call if necessary the constructor and the destructor (by using member access operator) at the right way.
