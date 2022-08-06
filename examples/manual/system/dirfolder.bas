@@ -22,4 +22,3 @@ While( f > "" )
 	End If
 	f = Dir( attrib )
 Wend
-	

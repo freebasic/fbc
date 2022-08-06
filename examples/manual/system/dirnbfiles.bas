@@ -20,4 +20,3 @@ End If
 Print FileCount & " files in the current directory."
 
 Sleep
-	
