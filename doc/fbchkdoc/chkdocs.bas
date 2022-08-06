@@ -2204,7 +2204,7 @@ if( app_opt.help ) then
 	print "   f       check duplicate file names"
 	print "   i       check image file names"
 	print
-	print "   t       perform all token checks ( h n )"
+	print "   t       perform all token checks ( h n cc html)"
 	print "   h       check page headers"
 	print "   n       check name case in links"
 	print "   tc      report token counts"
