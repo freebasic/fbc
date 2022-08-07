@@ -1135,6 +1135,12 @@ namespace fb.fbdoc
 					end if
 			end if
 			res += token->text
+			'' !!! TODO : we should be converting text to HTML, but that will
+			'' currently break pages that have HTML directly on them.  HTML
+			'' injection has been used to try and work around the fact that
+			'' fbdoc doesn't handle unicode properly and fbc is missing a
+			'' var-len w-string
+			'' res += Text2Html( token->text )
 			return res
 
 		case WIKI_TOKEN_ACTION:
@@ -1196,6 +1202,12 @@ namespace fb.fbdoc
 		
 		case WIKI_TOKEN_PRE:
 			res += "<pre " + cssclass + ">" + token->text + "</pre>"
+			'' !!! TODO : we should be converting text to HTML, but that will
+			'' currently break pages that have HTML directly on them.  HTML
+			'' injection has been used to try and work around the fact that
+			'' fbdoc doesn't handle unicode properly and fbc is missing a
+			'' var-len w-string
+			'' res += "<pre " + cssclass + ">" + Text2Html( token->text ) + "</pre>"
 			return res
 		
 		case WIKI_TOKEN_CODE:
