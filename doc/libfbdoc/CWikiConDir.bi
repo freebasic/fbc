@@ -46,7 +46,8 @@ namespace fb.fbdoc
 		declare function LoadIndex _
 			( _
 				byval page as zstring ptr, _
-				byref body as string _
+				byref body as string, _
+				byval format as CWikiCon.IndexFormat _
 			) as boolean
 
 		declare function StorePage _

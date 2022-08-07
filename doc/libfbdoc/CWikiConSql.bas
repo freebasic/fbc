@@ -319,7 +319,8 @@ namespace fb.fbdoc
 	function CWikiConSql.LoadIndex _
 		( _
 			byval page as zstring ptr, _
-			byref body as string _
+			byref body as string, _
+			byval format as CWikiCon.IndexFormat _
 		) as boolean
 
 		function = FALSE
@@ -345,6 +346,8 @@ namespace fb.fbdoc
 			if( Connect() = FALSE ) then
 				return FALSE
 			end if
+
+			'' !!! TODO : add revision number for tracking
 
 			sql = "SELECT tag FROM wikka_pages WHERE ( latest = 'Y' ) ORDER BY tag"
 

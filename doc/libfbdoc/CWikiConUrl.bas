@@ -559,7 +559,8 @@ namespace fb.fbdoc
 	function CWikiConUrl.LoadIndex _
 		( _
 			byval page as zstring ptr, _
-			byref body as string _
+			byref body as string, _
+			byval format as CWikiCon.IndexFormat _
 		) as boolean
 
 		dim isHTML as boolean = false
@@ -583,16 +584,33 @@ namespace fb.fbdoc
 
 		dim URL as string
 
-		'' cheap trick to use the rawlist format for PageIndex and RecentChanges"
-		'' !!!TODO!!! maybe should choose the method based on an option in the INI file?
-		if( *page = "PageIndex" ) then
-			URL = build_url( ctx, NULL, wakka_rawlist )
-		elseif( *page = "RecentChanges" ) then
-			URL = build_url( ctx, NULL, wakka_rawlist_index )
-		else
+		select case format
+		case CWikiCon.IndexFormat.INDEX_FORMAT_LEGACY
+			'' cheap trick to use the rawlist format for PageIndex and RecentChanges"
+			if( *page = "PageIndex" ) then
+				URL = build_url( ctx, NULL, wakka_rawlist )
+			elseif( *page = "RecentChanges" ) then
+				URL = build_url( ctx, NULL, wakka_rawlist_index )
+			else
+				URL = build_url( ctx, NULL, NULL )
+				isHTML = true
+			end if
+
+		case CWikiCon.IndexFormat.INDEX_FORMAT_HTML
 			URL = build_url( ctx, NULL, NULL )
 			isHTML = true
-		end if
+
+		case CWikiCon.IndexFormat.INDEX_FORMAT_LIST
+			URL = build_url( ctx, NULL, wakka_rawlist )
+
+		case CWikiCon.IndexFormat.INDEX_FORMAT_INDEX
+			URL = build_url( ctx, NULL, wakka_rawlist_index )
+
+		case else
+			delete stream
+			exit function
+
+		end select
 
 		if( stream->Receive( URL, TRUE, ctx->ca_file ) ) then
 			body = stream->Read()

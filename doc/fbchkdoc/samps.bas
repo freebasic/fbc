@@ -903,6 +903,7 @@ if( (opt and opt_get_pages) <> 0 ) then
 	pageCount = 0
 	redim pageList(1 to 1) as string
 	dim as string cmt
+	dim as long rev
 	i = 2
 	while command(i) > ""
 		if left( command(i), 1) = "@" then
@@ -914,7 +915,7 @@ if( (opt and opt_get_pages) <> 0 ) then
 				else
 					while eof(h) = 0
 						line input #h, x
-						x = ParsePageName( x, cmt )
+						x = ParsePageName( x, cmt, rev )
 						if( x > "" ) then 
 							pageCount += 1
 							if( pageCount > ubound(pageList) ) then
