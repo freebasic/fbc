@@ -43,6 +43,7 @@ Version 1.10.0
 - gfxlib2: add FB.GET_SCANLINE_SIZE to fbgfx.bi and ScreenControl() to get current internal scan line size multiplier
 - gfxlib2: SCREENCONTROL: add getters for GL parameters - new GET_GL_* constants in fbgfx.bi
 - Name mangling for c++ 'char' through BYTE/UBYTE parameters using the form "[unsigned] byte alias "char".  Data type size is still 8 byte signed/unsigned from fbc side, but will mangled as 'char'; neither signed nor unsigned for the c++ side.
+- Support 'SOURCE_DATE_EPOCH' environment variable for controlling the instrinsic __DATE__, __DATE_ISO__, __TIME__ macros.  This in turn controls __FB_BUILD_DATE__ and __FB_BUILD_DATE_ISO__ macros when building the compiler
 
 [fixed]
 - gas64: missing restoring of use of one virtual register on sqr for float (SARG)

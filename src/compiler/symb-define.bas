@@ -45,16 +45,37 @@ private function hDefLine_cb() as string static
 	function = str( lexLineNum( ) )
 end function
 
+private function UnixTimeToDateSerial( byval dat as longint ) as double
+	return 25569# + (cdbl(dat) / 86400#)
+end function
+
+/'
+'' for reference, reverse of UnixTimeToDateSerial()
+private function DateSerialToUnixTime( byval dat as double ) as longint
+	return (dat - 25569#) * 86400#
+end function
+'/
+
+private function hGetCompileTime() as double
+	dim ret as string
+	ret = environ( "SOURCE_DATE_EPOCH" )
+	if( len(ret) > 0 ) then
+		function = UnixTimeToDateSerial( val(ret) )
+	else
+		function = now()
+	end if
+end function
+
 private function hDefDate_cb() as string static
-	function = date
+	function = format( hGetCompileTime(), "mm-dd-yyyy" )
 end function
 
 private function hDefDateISO_cb() as string static
-	function = format( now( ), "yyyy-mm-dd" )
+	function = format( hGetCompileTime(), "yyyy-mm-dd" )
 end function
 
 private function hDefTime_cb() as string static
-	function = time
+	function = format( hGetCompileTime(), "hh:nn:ss" )
 end function
 
 private function hDefMultithread_cb() as string static
