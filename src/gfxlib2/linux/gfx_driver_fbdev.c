@@ -226,6 +226,10 @@ static void *driver_thread(void *arg)
 							mouse_y += e.dy;
 							e.x = mouse_x = MID(0, mouse_x, __fb_gfx->w - 1);
 							e.y = mouse_y = MID(0, mouse_y, __fb_gfx->h - 1);
+							if( __fb_gfx->scanline_size != 1 ) {
+								e.y /= __fb_gfx->scanline_size;
+								e.dy /= __fb_gfx->scanline_size;
+							}
 							if (e.dx || e.dy) {
 								e.type = EVENT_MOUSE_MOVE;
 								fb_hPostEvent(&e);

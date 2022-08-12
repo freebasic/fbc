@@ -181,11 +181,15 @@ static void *window_thread(void *arg)
 					mouse_y_root = event.xmotion.y_root;
 					mouse_x = event.xmotion.x;
 					mouse_y = event.xmotion.y - fb_x11.display_offset;
-                    mouse_on = ((mouse_x >= 0) && (mouse_x < fb_x11.w) && (mouse_y >= 0) && (mouse_y < fb_x11.h));
+					mouse_on = ((mouse_x >= 0) && (mouse_x < fb_x11.w) && (mouse_y >= 0) && (mouse_y < fb_x11.h));
 					if (has_focus) {
 						e.type = EVENT_MOUSE_MOVE;
 						e.x = mouse_x;
 						e.y = mouse_y;
+						if( __fb_gfx->scanline_size != 1 ) {
+							e.y /= __fb_gfx->scanline_size;
+							e.dy /= __fb_gfx->scanline_size;
+						}
 					}
 					break;
 

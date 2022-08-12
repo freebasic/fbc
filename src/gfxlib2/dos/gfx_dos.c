@@ -354,6 +354,13 @@ static int fb_dos_timer_handler(unsigned irq)
 	
 	mouse_x = fb_dos_mouse_x;
 	mouse_y = fb_dos_mouse_y;
+
+	if ( fb_dos.mouse_ok ) {
+		if( __fb_gfx->scanline_size != 1 ) {
+			mouse_y /= __fb_gfx->scanline_size;
+		}
+	}
+
 	if ( fb_dos.mouse_ok && fb_dos.mouse_cursor ) {
 		fb_hSoftCursorPut(mouse_x, mouse_y);
 	}
@@ -367,7 +374,7 @@ static int fb_dos_timer_handler(unsigned irq)
 	
 	e.type = 0;
 
-	if ( fb_dos.mouse_ok ) {	
+	if ( fb_dos.mouse_ok ) {
 	
 		if ( (fb_dos.mouse_x_old != mouse_x) || (fb_dos.mouse_y_old != mouse_y) ) {
 			e.type = EVENT_MOUSE_MOVE;

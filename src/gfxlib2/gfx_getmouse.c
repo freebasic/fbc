@@ -11,6 +11,9 @@ int fb_GfxGetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 	if ((__fb_gfx) && (__fb_gfx->driver->get_mouse)) {
 		DRIVER_LOCK();
 		failure = __fb_gfx->driver->get_mouse(x, y, z, buttons, clip);
+		if( y && !failure && (__fb_gfx->scanline_size != 1) ) {
+			*y /= __fb_gfx->scanline_size;
+		}
 		DRIVER_UNLOCK();
 	}
 

@@ -231,9 +231,14 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 				e.dx = mouse_pos.x - last_mouse_pos.x;
 				e.dy = mouse_pos.y - last_mouse_pos.y;
 			}
+			if( __fb_gfx->scanline_size != 1 ) {
+				e.y /= __fb_gfx->scanline_size;
+				e.dy /= __fb_gfx->scanline_size;
+			}
 			last_mouse_pos = mouse_pos;
-			if (((!e.dx) && (!e.dy)) || (!fb_win32.is_active))
+			if (((!e.dx) && (!e.dy)) || (!fb_win32.is_active)) {
 				e.type = 0;
+			}
 			break;
 
 		case WM_MOUSELEAVE:
