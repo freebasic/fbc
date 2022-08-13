@@ -6557,10 +6557,19 @@ private sub _emitprocend _
 
 	if symbIsNaked(proc)=false then
 
+		asm_code("push rbp")
+		'' the locations of the cfi/seh statements are important
+		'' so they do have to split the two prologue instructions
+		cfi_windows_asm_code(".seh_pushreg rbp")
+		cfi_asm_code(".cfi_def_cfa_offset 16") '' 16 = return address + this push
+		cfi_asm_code(".cfi_offset 6, -16") '' register 6 = rbp
+		asm_code("mov  rbp,rsp")
+		cfi_windows_asm_code(".seh_setframe rbp, 0") '' 0 = offset into this function's stack alloocation
+		cfi_asm_code(".cfi_def_cfa_register 6")
+
 		if env.clopt.nullptrchk=true then
 			asm_code("add qword ptr $totalstacksize[rip], "+str(ctx.stk))
 			asm_code("cmp qword ptr $totalstacksize[rip], "+str(ctx.maxstack))
-
 
 			asm_code(".section .data")
 			asm_code(".align 8")
@@ -6598,15 +6607,7 @@ private sub _emitprocend _
 			asm_code(lname+":")
 		end if
 
-		asm_code("push rbp")
-		'' the locations of the cfi/seh statements are important
-		'' so they do have to split the two prologue instructions
-		cfi_windows_asm_code(".seh_pushreg rbp")
-		cfi_asm_code(".cfi_def_cfa_offset 16") '' 16 = return address + this push
-		cfi_asm_code(".cfi_offset 6, -16") '' register 6 = rbp
-		asm_code("mov  rbp,rsp")
-		cfi_windows_asm_code(".seh_setframe rbp, 0") '' 0 = offset into this function's stack alloocation
-		cfi_asm_code(".cfi_def_cfa_register 6")
+
 		if ctx.stk>=2147483648 then
 			asm_code("mov rax, "+Str(ctx.stk))
 			asm_code("sub rsp, rax")
