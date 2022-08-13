@@ -38,6 +38,7 @@ declare sub cmd_opts_init( byval opts_flags as const CMD_OPTS_ENABLE_FLAGS )
 declare sub cmd_opts_die( byref msg as const string )
 declare sub cmd_opts_unrecognized_die( byval i as const integer )
 declare sub cmd_opts_unexpected_die( byval i as const integer )
+declare sub cmd_opts_missingarg_die( byval i as const integer )
 declare function cmd_opts_read( byref i as integer ) as boolean
 declare function cmd_opts_resolve() as boolean
 declare function cmd_opts_check_cache() as boolean
@@ -70,6 +71,7 @@ type CMD_OPTS_GLOBAL
 	pageCount as integer
 	pageList(any) as string
 	pageComments(any) as string
+	pageRevision(any) as long
 
 end type
 

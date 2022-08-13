@@ -80,6 +80,8 @@ SAMPS_SRCS := \
 TEMP_FILES := \
     results.txt \
     PageIndex.txt \
+    RecentChanges.txt \
+    CacheIndex.txt \
     linklist.csv \
     samplist.log \
     fixlist.txt \

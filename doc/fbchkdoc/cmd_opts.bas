@@ -203,6 +203,7 @@ sub cmd_opts_init( byval opts_flags as const CMD_OPTS_ENABLE_FLAGS )
 	app_opt.pageCount = 0
 	redim app_opt.pageList(1 to 1) as string
 	redim app_opt.pageComments(1 to 1) as string
+	redim app_opt.pageRevision(1 to 1) as long
 
 	if( command(1) = "" ) then
 		app_opt.help = true
@@ -232,15 +233,22 @@ sub cmd_opts_unexpected_die( byval i as const integer )
 end sub
 
 ''
-sub cmd_opts_add_page( byref pagename as const string, byref cmt as const string )
+sub cmd_opts_missingarg_die( byval i as const integer )
+	cmd_opts_die( "Missing argument after '" + command(i) + "'" )
+end sub
+
+''
+sub cmd_opts_add_page( byref pagename as const string, byref cmt as const string, byval revision as long )
 	with app_opt
 		.pageCount += 1
 		if( .pageCount > ubound(.pageList) ) then
 			redim preserve .pageList(1 to Ubound(.pageList) * 2)
 			redim preserve .pageComments(1 to Ubound(.pageComments) * 2)
+			redim preserve .pageRevision(1 to Ubound(.pageRevision) * 2)
 		end if
 		.pageList(.pageCount) = pagename
 		.pageComments(.pageCount) = cmt
+		.pageRevision(.pageCount) = revision
 	end with
 end sub
 
@@ -493,23 +501,23 @@ function cmd_opts_read( byref i as integer ) as boolean
 		if( cmd_opt.enable_pagelist ) then
 			if left( command(i), 1) = "@" then
 				scope
-					dim h as integer, x as string, cmt as string
+					dim h as integer, x as string, cmt as string, rev as long
 					h = freefile
 					if open( mid(command(i),2) for input access read as #h ) <> 0 then
 						print "Error reading '" + command(i) + "'"
 					else
 						while eof(h) = 0
 							line input #h, x
-							x = ParsePageName( x, cmt )
+							x = ParsePageName( x, cmt, rev )
 							if( x > "" ) then 
-								cmd_opts_add_page( x, cmt )
+								cmd_opts_add_page( x, cmt, rev )
 							end if
 						wend
 						close #h
 					end if
 				end scope
 			else
-				cmd_opts_add_page( command(i), "" )
+				cmd_opts_add_page( command(i), "", 0 )
 			end if
 
 		else

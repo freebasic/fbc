@@ -47,6 +47,9 @@ using fbdoc
 '' private options
 dim allow_retry as boolean = true
 dim as boolean bUseSql = false '' -usesql given on command line
+dim as boolean bUseDiff = false '' -diff given on command line
+dim as string diff_file         '' file name to diff with
+dim as long diff_revision       '' highest revision number in the diff flie
 
 '' enable url and cache
 #if defined(HAVE_MYSQL)
@@ -63,6 +66,14 @@ while( command(i) > "" )
 		select case lcase(command(i))
 		case "-auto"
 			allow_retry = false
+		case "-diff"
+			if( command(i+1) = "" ) then
+				cmd_opts_missingarg_die( i )
+			end if
+			i += 1
+			diff_file = command(i)
+			diff_revision = 0
+			bUseDiff = true
 #if defined(HAVE_MYSQL)
 		case "-usesql"
 			bUseSql = true
@@ -86,10 +97,13 @@ if( app_opt.help ) then
 	print "   -dev+            get pages from the development server in to dev_cache_dir"
 	print
 	cmd_opts_show_help( "get page from", false )
+	print "   -diff pagelist   name an index file with last changes only pages with"
+	print "                        a revision number greater than the largest revision"
+	print "                        in the diff file will be fetched from the server"
+	print
 #if defined(HAVE_MYSQL)
 	print "   -usesql          use MySQL connection to read index"
 #endif
-	print
 	end 1
 end if
 
@@ -108,6 +122,33 @@ end if
 if( app_opt.pageCount = 0 ) then
 	print "no pages specified."
 	end 1
+end if
+
+'' --------------------------------------------------------
+
+'' Get last revision from diff file
+if( bUseDiff ) then
+	dim h as integer, x as string, cmt as string, rev as long
+	h = freefile
+	if open( diff_file for input access read as #h ) <> 0 then
+		print "Error reading '" + diff_file + "'"
+	else
+		while eof(h) = 0
+			line input #h, x
+			x = ParsePageName( x, cmt, rev )
+			if( x > "" ) then 
+				if( rev > diff_revision ) then
+					diff_revision = rev
+				end if
+			end if
+		wend
+		close #h
+	end if
+	if( diff_revision > 0 ) then
+		print "Checking last revision: " & diff_revision
+	else
+		print "No revision found in diff file '" & diff_file & "'"
+	end if
 end if
 
 '' --------------------------------------------------------
@@ -166,18 +207,26 @@ do
 		dim as integer i, j
 		dim as string ret
 		for i = 1 to app_opt.pageCount
-			dim sBody as string = ""
-			print "Loading '" + app_opt.pageList(i) + "'"
-			if( wikicon->LoadPage( app_opt.pageList(i), sBody ) = FALSE ) then
-				print "Failed to load '" & app_opt.pageList(i) & "'"
-				nfailedpages += 1
-				redim preserve failedpages( 1 to nfailedpages )
-				failedpages(nfailedpages) = app_opt.pageList(i)
-			else
-				if( wikicon->GetPageID() > 0 ) then
-					if( len(sBody) > 0 ) then
-						dim as CWikiCache ptr wikicache = LocalCache_Get()
-						wikicache->SavePage( app_opt.pageList(i), sBody )
+			'' get the page only if the revision number is greater than the
+			'' last known revision, or if it is zero.  If the revision number
+			'' is zero, then we don't know the revision number and anything
+			'' could be changed, so read everything.  If the specified revision
+			'' number is zero, then we don't know the revision of the page we
+			'' want so go ahead and get it anyway.
+			if( (app_opt.pageRevision(i) > diff_revision) or (app_opt.pageRevision(i) = 0) or (diff_revision = 0) ) then
+				dim sBody as string = ""
+				print "Loading '" + app_opt.pageList(i) + "'"
+				if( wikicon->LoadPage( app_opt.pageList(i), sBody ) = FALSE ) then
+					print "Failed to load '" & app_opt.pageList(i) & "'"
+					nfailedpages += 1
+					redim preserve failedpages( 1 to nfailedpages )
+					failedpages(nfailedpages) = app_opt.pageList(i)
+				else
+					if( wikicon->GetPageID() > 0 ) then
+						if( len(sBody) > 0 ) then
+							dim as CWikiCache ptr wikicache = LocalCache_Get()
+							wikicache->SavePage( app_opt.pageList(i), sBody )
+						end if
 					end if
 				end if
 			end if

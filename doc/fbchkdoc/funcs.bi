@@ -29,7 +29,7 @@ const TRUE = NOT FALSE
 #endif
 
 '' funcs.bas
-declare function ParsePageName( byref x as string, byref comment as string ) as string
+declare function ParsePageName( byref x as string, byref comment as string, byref revision as long ) as string
 declare function ReplacePathChar( byref a as string, byval ch as integer ) as string
 declare function GetUrlFileName( byref url as string ) as string
 

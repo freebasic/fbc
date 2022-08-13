@@ -16,6 +16,7 @@
 ''	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301 USA.
 
 '' getindex.bas - gets "PageIndex" from wiki and saves as "PageIndex.txt"
+''              - or gets "RecentChanges" from wiki and saves as "RecentChanges.txt"
 
 '' chng: written [jeffm]
 
@@ -41,6 +42,7 @@ using fbdoc
 
 
 const def_index_file = hardcoded.default_index_file
+const def_recent_file = hardcoded.default_recent_file
 
 '' --------------------------------------------------------
 '' MAIN
@@ -49,6 +51,28 @@ const def_index_file = hardcoded.default_index_file
 '' private options
 dim as boolean bLocal = false  '' -local given on command line
 dim as boolean bUseSql = false '' -usesql given on command line
+dim as boolean bUseRecent = false '' -recent given on command line
+dim as boolean bUseListFormat = false 
+dim as string index_file '' index file to write PageIndex.txt or RecentChanges.txt
+dim as CWikiCon.IndexFormat index_format = CWikiCon.IndexFormat.INDEX_FORMAT_LEGACY
+
+dim sPage as string 
+dim sBody as string
+
+sPage = "PageIndex"
+index_file = def_index_file
+
+'' Example command line options:
+'' '-web'                 PageIndex.txt, list format
+'' '-web -recent'         RecentChanges.txt, index format
+'' '-web -recent -list'   RecentChanges.txt, list format
+
+'' Ideally, we would probably like to default to the index format always
+'' but if any programs expect plain old text by default, we will try not
+'' to break them by writing plain old text for the default PageIndex.txt.
+'' Anyway, RecentChanges index works perfect for a full index and can be
+'' used anywhere that PageIndex would have been used with these tools.
+
 
 '' enable url and cache
 #if defined(HAVE_MYSQL)
@@ -65,6 +89,15 @@ while( command(i) > "" )
 		select case lcase(command(i))
 		case "-local"
 			bLocal = TRUE
+		case "-list"
+			index_format = CWikiCon.IndexFormat.INDEX_FORMAT_LIST
+		case "-recent"
+			bUseRecent = TRUE
+			if( index_format = CWikiCon.IndexFormat.INDEX_FORMAT_LEGACY ) then
+				index_format = CWikiCon.IndexFormat.INDEX_FORMAT_INDEX
+			end if
+			index_file = def_recent_file
+			sPage = "RecentChanges"
 #if defined(HAVE_MYSQL)
 		case "-usesql"
 			bUseSql = TRUE
@@ -90,6 +123,10 @@ if( app_opt.help ) then
 	print "options:"
 	print "   -local           use local cache only, don't query server, just"
 	print "                        read the cache dir to get the list of page names"
+	print "   -recent          retrieve recent changes index and write to"
+	print "                        RecentChanges.txt.  Default is to retrieve"
+	print "                        PageIndex and write the index to PageIndex.txt"
+	print "   -list            write index in list format, no revision numbers"
 #if defined(HAVE_MYSQL)
 	print "   -usesql          use MySQL connection to read index"
 #endif
@@ -108,11 +145,6 @@ end if
 cmd_opts_resolve()
 
 '' --------------------------------------------------------
-
-dim sPage as string 
-dim sBody as string
-
-sPage = "PageIndex"
 
 dim as CWikiCon ptr wikicon = NULL
 
@@ -173,14 +205,14 @@ else
 end if
 
 print "Loading '" + sPage + "': ";
-if( wikicon->LoadIndex( sPage, sBody ) = FALSE ) then
+if( wikicon->LoadIndex( sPage, sBody, index_format ) = FALSE ) then
 	print "Error"
 else
 	print "OK"
-	print "Writing '" & def_index_file & "'"
+	print "Writing '" & index_file & "'" & iif( index_format = CWikiCon.IndexFormat.INDEX_FORMAT_INDEX, " (index format)", " (list format)" )
 
 	dim as integer h = freefile
-	open def_index_file for output as #h
+	open index_file for output as #h
 	print #h, sBody;
 	close #h
 
