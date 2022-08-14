@@ -418,19 +418,19 @@ static int UART_set_data_format( unsigned int baseaddr,
 
 #ifndef FB_MANAGED_IRQ	
 
-static void comm_handler_irq_3( void ) { comm_isr( 3 ); } void end_comm_handler_irq_3( void ) { }
-static void comm_handler_irq_4( void ) { comm_isr( 4 ); } void end_comm_handler_irq_4( void ) { }
-static void comm_handler_irq_5( void ) { comm_isr( 5 ); } void end_comm_handler_irq_5( void ) { }
-static void comm_handler_irq_6( void ) { comm_isr( 6 ); } void end_comm_handler_irq_6( void ) { }
-static void comm_handler_irq_7( void ) { comm_isr( 7 ); } void end_comm_handler_irq_7( void ) { }
-static void comm_handler_irq_8( void ) { comm_isr( 8 ); } void end_comm_handler_irq_8( void ) { }
-static void comm_handler_irq_9( void ) { comm_isr( 9 ); } void end_comm_handler_irq_9( void ) { }
-static void comm_handler_irq_10( void ) { comm_isr( 10 ); } void end_comm_handler_irq_10( void ) { }
-static void comm_handler_irq_11( void ) { comm_isr( 11 ); } void end_comm_handler_irq_11( void ) { }
-static void comm_handler_irq_12( void ) { comm_isr( 12 ); } void end_comm_handler_irq_12( void ) { }
-static void comm_handler_irq_13( void ) { comm_isr( 13 ); } void end_comm_handler_irq_13( void ) { }
-static void comm_handler_irq_14( void ) { comm_isr( 14 ); } void end_comm_handler_irq_14( void ) { }
-static void comm_handler_irq_15( void ) { comm_isr( 15 ); } void end_comm_handler_irq_15( void ) { }
+static void comm_handler_irq_3( void ) { comm_isr( 3 ); } static void end_comm_handler_irq_3( void ) { }
+static void comm_handler_irq_4( void ) { comm_isr( 4 ); } static void end_comm_handler_irq_4( void ) { }
+static void comm_handler_irq_5( void ) { comm_isr( 5 ); } static void end_comm_handler_irq_5( void ) { }
+static void comm_handler_irq_6( void ) { comm_isr( 6 ); } static void end_comm_handler_irq_6( void ) { }
+static void comm_handler_irq_7( void ) { comm_isr( 7 ); } static void end_comm_handler_irq_7( void ) { }
+static void comm_handler_irq_8( void ) { comm_isr( 8 ); } static void end_comm_handler_irq_8( void ) { }
+static void comm_handler_irq_9( void ) { comm_isr( 9 ); } static void end_comm_handler_irq_9( void ) { }
+static void comm_handler_irq_10( void ) { comm_isr( 10 ); } static void end_comm_handler_irq_10( void ) { }
+static void comm_handler_irq_11( void ) { comm_isr( 11 ); } static void end_comm_handler_irq_11( void ) { }
+static void comm_handler_irq_12( void ) { comm_isr( 12 ); } static void end_comm_handler_irq_12( void ) { }
+static void comm_handler_irq_13( void ) { comm_isr( 13 ); } static void end_comm_handler_irq_13( void ) { }
+static void comm_handler_irq_14( void ) { comm_isr( 14 ); } static void end_comm_handler_irq_14( void ) { }
+static void comm_handler_irq_15( void ) { comm_isr( 15 ); } static void end_comm_handler_irq_15( void ) { }
 
 #endif /* #ifndef FB_MANAGED_IRQ */
 
@@ -1012,7 +1012,7 @@ int fb_SerialOpen
 
 	if( options->SuppressRTS )
 		flags |= FLAG_SUPPRESS_RTS;
-	
+
 	ret = comm_open( 
 		iPort, 
 		options->uiSpeed, 
