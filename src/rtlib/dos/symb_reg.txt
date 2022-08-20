@@ -467,6 +467,7 @@ extern_asm(_fb_Now);
 extern_asm(_fb_ConsoleGetTopRow);
 extern_asm(_fb_OCTEx_b);
 extern_asm(_fb_SetDate);
+extern_asm(___fb_dos_no_dpmi_yield);
 extern_asm(_fb_WstrHexEx_l);
 extern_asm(_fb_DatePart);
 extern_asm(_fb_InputDouble);
@@ -1304,6 +1305,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_ConsoleGetTopRow)
     DXE_EXPORT_ASM (_fb_OCTEx_b)
     DXE_EXPORT_ASM (_fb_SetDate)
+    DXE_EXPORT_ASM (___fb_dos_no_dpmi_yield)
     DXE_EXPORT_ASM (_fb_WstrHexEx_l)
     DXE_EXPORT_ASM (_fb_DatePart)
     DXE_EXPORT_ASM (_fb_InputDouble)
