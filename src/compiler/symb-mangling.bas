@@ -550,10 +550,14 @@ sub symbMangleType _
 		if( ns = @symbGetGlobalNamespc( ) ) then
 			hMangleUdtId( mangled, subtype )
 		else
-			mangled += "N"
-			symbMangleType( mangled, symbGetFullType( ns ), ns )
+			if( (options and FB_MANGLEOPT_NESTED) = 0 ) then
+				mangled += "N"
+			end if
+			symbMangleType( mangled, symbGetFullType( ns ), ns, FB_MANGLEOPT_NESTED )
 			hMangleUdtId( mangled, subtype )
-			mangled += "E"
+			if( (options and FB_MANGLEOPT_NESTED) = 0 ) then
+				mangled += "E"
+			end if
 		end if
 
 		hAbbrevAdd( dtype, subtype )

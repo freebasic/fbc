@@ -268,9 +268,10 @@ private function hMemberId( byval parent as FBSYMBOL ptr ) as FBSYMBOL ptr
 		do
 			if( symbGetScope( sym ) = symbGetScope( parent ) ) then
 				select case as const symbGetClass( sym )
-				'' field or static members?
+				'' field, static members, or inner types?
 				case FB_SYMBCLASS_FIELD, FB_SYMBCLASS_VAR, _
-					FB_SYMBCLASS_CONST, FB_SYMBCLASS_ENUM
+					FB_SYMBCLASS_CONST, FB_SYMBCLASS_ENUM, _
+					FB_SYMBCLASS_STRUCT
 					'' check visibility
 					if( symbCheckAccess( sym ) = FALSE ) then
 						errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
@@ -433,7 +434,7 @@ sub cUdtTypeMember _
 			'' ID
 			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			dtype = symbGetFullType( sym )
-			subtype = symbGetSubType( sym )
+			subtype = sym
 			lgt = symbGetLen( sym )
 			is_fixlenstr = symbGetIsFixLenStr( sym )
 

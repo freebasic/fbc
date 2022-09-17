@@ -727,7 +727,7 @@ function cSymbolType _
 			if( chain_ ) then
 				'' cTypeOrExpression() will expect that the namespace prefix
 				'' will be preserved if we abort and retry as an expression.
-				'' Eventually namespace prefix it gets used in cIdentifier()
+				'' Eventually namespace prefix gets used in cIdentifier()
 				if( options and FB_SYMBTYPEOPT_SAVENSPREFIX ) then
 					assert( parser.nsprefix = NULL )
 					select case symbGetClass( chain_->sym )

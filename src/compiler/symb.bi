@@ -273,10 +273,11 @@ end enum
 
 ''
 enum FB_MANGLEOPT
-	FB_MANGLEOPT_NONE         = 0  '' no special options
-	FB_MANGLEOPT_KEEPTOPCONST = 1  '' keep the top-level const when mangling
-	FB_MANGLEOPT_HASPTR       = 2  '' mangled type has is a pointer type
-	FB_MANGLEOPT_HASREF       = 4  '' mangled type has is reference type
+	FB_MANGLEOPT_NONE         =   0  '' no special options
+	FB_MANGLEOPT_KEEPTOPCONST =   1  '' keep the top-level const when mangling
+	FB_MANGLEOPT_HASPTR       =   2  '' mangled type has is a pointer type
+	FB_MANGLEOPT_HASREF       =   4  '' mangled type has is reference type
+	FB_MANGLEOPT_NESTED       =   8  '' mangled type is nested in another type
 end enum
 
 enum FB_STRUCT_INREG

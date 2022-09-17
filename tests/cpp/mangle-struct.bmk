@@ -1,0 +1,10 @@
+# TEST_MODE : MULTI_MODULE_OK
+
+MAIN := mangle-struct-fbc.bas
+SRCS := 
+
+EXTRA_OBJS := mangle-struct-cpp.o
+
+$(SRCDIR)mangle-struct-cpp.o : $(SRCDIR)mangle-struct-cpp.cpp
+	# Pass $(CFLAGS) to get -m32 or -m64 as required
+	$(CXX) -c $(CFLAGS) -o $@ $^

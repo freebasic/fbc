@@ -853,9 +853,18 @@ decl_inner:
 				'' bitfield..
 				hTypeElementDecl( FB_TK_DIM, s, attrib )
 
-			'' it's a field, parse it
-			case else
+			'' it's a field, parse it, 'AS' is a reserved word
+			'' so it's probably OK we don't allow 'TYPE AS' to start
+			'' an inner type declaration and instead expect this is
+			'' going to be 'TYPE AS <datatype>'
+			case FB_TK_AS
 				hTypeElementDecl( FB_TK_DIM, s, attrib )
+
+			'' Otherwise TYPE|UNION starts an inner declaration
+			case else
+				'' allow named UNION|TYPE to be nested in another UNION|TYPE
+				hBeginNesting( s )
+				cTypeDecl( attrib )
 
 			end select
 
@@ -1101,6 +1110,10 @@ sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
 	dim as integer scope_depth = parser.scope
 
 	sym = hTypeAdd( NULL, id, palias, isunion, align, baseDType, baseSubtype, stringType )
+
+	'' set visibility flags
+	sym->attrib or= (attrib and FB_SYMBATTRIB_VIS_PRIVATE)
+	sym->attrib or= (attrib and FB_SYMBATTRIB_VIS_PROTECTED)
 
 	'' restore the context
 	ast.proc.curr = currproc
