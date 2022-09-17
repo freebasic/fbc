@@ -28,7 +28,7 @@ function cConstIntExpr _
 		expr = astNewCONSTi( 0, dtype )
 	end if
 
-	'' flush the expr to the specified dtype.  
+	'' flush the expr to the specified dtype.
 	'' default is FB_DATATYPE_INTEGER, if not specified in call to cConstIntExpr()
 	function = astConstFlushToInt( expr, dtype )
 end function
@@ -232,8 +232,8 @@ sub AmbigiousSizeofInfo.maybeWarn( byval tk as integer, byval refers_to_type as 
 	'' Don't warn if it's a type and a var of that type, because then the
 	'' len() or sizeof() would return the same value in either case.
 	if( symbIsVar( nontype ) and _
-	    (symbGetType( nontype ) = FB_DATATYPE_STRUCT) and _
-	    (nontype->subtype = typ) ) then
+		(symbGetType( nontype ) = FB_DATATYPE_STRUCT) and _
+		(nontype->subtype = typ) ) then
 		exit sub
 	end if
 
@@ -294,8 +294,8 @@ function cTypeOrExpression _
 
 	'' Token followed by an operator except '*' / '<'?
 	if( (lexGetLookAheadClass( 1 ) = FB_TKCLASS_OPERATOR) andalso _
-	    (lexGetLookAhead( 1 ) <> CHAR_TIMES) andalso _
-	    (lexGetLookAhead( 1 ) <> FB_TK_LT) ) then
+		(lexGetLookAhead( 1 ) <> CHAR_TIMES) andalso _
+		(lexGetLookAhead( 1 ) <> FB_TK_LT) ) then
 		maybe_type = FALSE
 	else
 		'' Check for some non-operator tokens
@@ -449,17 +449,17 @@ private function cMangleModifier _
 						dtype = typeSetMangleDt( dtype, FB_DATATYPE_UINT )
 						function = TRUE
 					case else
-						errReport( FB_ERRMSG_SYNTAXERROR )	
+						errReport( FB_ERRMSG_SYNTAXERROR )
 					end select
 				else
 					select case dtype
 					case FB_DATATYPE_LONG
 					case FB_DATATYPE_ULONG
 					case else
-						errReport( FB_ERRMSG_SYNTAXERROR )	
+						errReport( FB_ERRMSG_SYNTAXERROR )
 					end select
 				end if
-				
+
 			case "char"
 				select case dtype
 				case FB_DATATYPE_VOID
@@ -467,7 +467,7 @@ private function cMangleModifier _
 				case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE
 					dtype = typeSetMangleDt( dtype, FB_DATATYPE_CHAR )
 				case else
-					errReport( FB_ERRMSG_SYNTAXERROR )	
+					errReport( FB_ERRMSG_SYNTAXERROR )
 				end select
 
 			case "__builtin_va_list", "__builtin_va_list[]"
@@ -484,14 +484,14 @@ private function cMangleModifier _
 					'' subtype = symbCloneSymbol( subtype )
 					symbSetUdtValistType( subtype, fbGetBackendValistType() )
 				case else
-					errReport( FB_ERRMSG_SYNTAXERROR )	
+					errReport( FB_ERRMSG_SYNTAXERROR )
 				end select
 
 			case ""
 				errReport( FB_ERRMSG_EMPTYALIASSTRING )
 
 			case else
-				errReport( FB_ERRMSG_SYNTAXERROR )	
+				errReport( FB_ERRMSG_SYNTAXERROR )
 			end select
 
 			'' "literal"
@@ -506,17 +506,17 @@ end function
 
 '':::::
 ''SymbolType      =   CONST? UNSIGNED? (
-''				      ANY
-''				  |   BOOLEAN (BYTE|INTEGER)?
-''				  |   CHAR|BYTE
-''				  |	  SHORT|WORD
-''				  |	  INTEGER|LONG|DWORD
-''				  |   SINGLE
-''				  |   DOUBLE
+''                    ANY
+''                |   BOOLEAN (BYTE|INTEGER)?
+''                |   CHAR|BYTE
+''                |   SHORT|WORD
+''                |   INTEGER|LONG|DWORD
+''                |   SINGLE
+''                |   DOUBLE
 ''                |   STRING ('*' NUM_LIT)?
 ''                |   USERDEFTYPE
-''				  |   (FUNCTION|SUB) ('(' args ')') (AS SymbolType)?
-''				      (CONST? (PTR|POINTER))* .
+''                |   (FUNCTION|SUB) ('(' args ')') (AS SymbolType)?
+''                    (CONST? (PTR|POINTER))* .
 ''
 function cSymbolType _
 	( _
@@ -858,9 +858,9 @@ function cSymbolType _
 			end if
 
 			'' note: len of "wstring * expr" symbols will be actually
-			''		 the number of chars times sizeof(wstring), so
-			''		 always use symbGetWstrLen( ) to retrieve the
-			''		 len in characters, not the bytes
+			''       the number of chars times sizeof(wstring), so
+			''       always use symbGetWstrLen( ) to retrieve the
+			''       len in characters, not the bytes
 			if( typeGet( dtype ) = FB_DATATYPE_WCHAR ) then
 				lgt *= typeGetSize( FB_DATATYPE_WCHAR )
 			end if

@@ -270,7 +270,7 @@ private function hMemberId( byval parent as FBSYMBOL ptr ) as FBSYMBOL ptr
 				select case as const symbGetClass( sym )
 				'' field or static members?
 				case FB_SYMBCLASS_FIELD, FB_SYMBCLASS_VAR, _
-				     FB_SYMBCLASS_CONST, FB_SYMBCLASS_ENUM
+					FB_SYMBCLASS_CONST, FB_SYMBCLASS_ENUM
 					'' check visibility
 					if( symbCheckAccess( sym ) = FALSE ) then
 						errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
@@ -359,8 +359,8 @@ function cUdtMember _
 
 			'' Only continue if the field was an UDT and there's a '.' following
 			if( (typeGetDtAndPtrOnly( dtype ) <> FB_DATATYPE_STRUCT) or _
-			    (lexGetToken( ) <> CHAR_DOT) or _
-			    astIsNIDXARRAY( varexpr ) ) then
+				(lexGetToken( ) <> CHAR_DOT) or _
+				astIsNIDXARRAY( varexpr ) ) then
 				return varexpr
 			end if
 
@@ -664,7 +664,7 @@ function cMemberDeref _
 			select case( typeGetDtAndPtrOnly( dtype ) )
 			'' string, fixstr, w|zstring? In that case '[]' means string indexing, not MemberDeref.
 			case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-				 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+				FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 				varexpr = hStrIndexing( dtype, varexpr, hCheckIntegerIndex( idxexpr ) )
 				idxexpr = NULL
 
@@ -920,9 +920,10 @@ private function hVarAddUndecl _
 		if( symbIsGlobalNamespc( ) = FALSE ) then
 			if( fbIsModLevel( ) ) then
 				if( (attrib and (FB_SYMBATTRIB_SHARED or _
-								 FB_SYMBATTRIB_COMMON or _
-								 FB_SYMBATTRIB_PUBLIC or _
-								 FB_SYMBATTRIB_EXTERN)) = 0 ) then
+					FB_SYMBATTRIB_COMMON or _
+					FB_SYMBATTRIB_PUBLIC or _
+					FB_SYMBATTRIB_EXTERN)) = 0 ) then
+
 					'' they are never allocated on stack..
 					attrib or= FB_SYMBATTRIB_STATIC
 				end if
@@ -1409,7 +1410,7 @@ function cVarOrDeref _
 
 		select case as const astGetClass( t )
 		case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
-		     AST_NODECLASS_FIELD, AST_NODECLASS_DEREF
+			AST_NODECLASS_FIELD, AST_NODECLASS_DEREF
 			complain = FALSE
 
 		case AST_NODECLASS_CALL, AST_NODECLASS_NIDXARRAY

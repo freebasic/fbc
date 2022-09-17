@@ -106,7 +106,7 @@ function symbGetDBGName( byval sym as FBSYMBOL ptr ) as zstring ptr
 		select case as const symbGetClass( sym )
 		'' but UDT's, they shouldn't include any mangling at all..
 		case FB_SYMBCLASS_ENUM, FB_SYMBCLASS_STRUCT, _
-			 FB_SYMBCLASS_CLASS, FB_SYMBCLASS_NAMESPACE
+			FB_SYMBCLASS_CLASS, FB_SYMBCLASS_NAMESPACE
 
 			'' check if an alias wasn't given
 			dim as zstring ptr res = sym->id.alias
@@ -204,7 +204,7 @@ function symbGetMangledName( byval sym as FBSYMBOL ptr ) as zstring ptr
 	case FB_SYMBCLASS_PROC
 		hMangleProc( sym )
 	case FB_SYMBCLASS_ENUM, FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_FWDREF, _
-	     FB_SYMBCLASS_CLASS, FB_SYMBCLASS_NAMESPACE
+		FB_SYMBCLASS_CLASS, FB_SYMBCLASS_NAMESPACE
 		dim as string mangled
 		hMangleNamespace( mangled, symbGetNamespace( sym ), TRUE, FALSE )
 		hMangleUdtId( mangled, sym )
@@ -741,8 +741,9 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 	'' prefix
 	'' public global/static?
 	if( sym->attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN or _
-	                     FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_COMMON or _
-	                     FB_SYMBATTRIB_STATIC) ) then
+		FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_COMMON or _
+		FB_SYMBATTRIB_STATIC) ) then
+
 		'' LLVM: @ prefix for global symbols
 		if( env.clopt.backend = FB_BACKEND_LLVM ) then
 			mangled += "@"
@@ -798,7 +799,7 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 	else
 		'' shared, public, extern or inside a ns?
 		isglobal = ((sym->attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN or _
-		                              FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_COMMON)) <> 0)
+			FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_COMMON)) <> 0)
 
 		if( isglobal or docpp ) then
 			'' BASIC? use the upper-cased name
