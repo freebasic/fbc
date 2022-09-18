@@ -1666,8 +1666,13 @@ end sub
 private function hGetConvOpCode( byval ldtype as integer, byval rdtype as integer ) as zstring ptr
 	if( typeGetClass( ldtype ) = FB_DATACLASS_FPOINT ) then
 		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
+			
+			'' same size? i.e. due to const -> non-const, then no convert
+			if( typeGetSize( ldtype ) = typeGetSize( rdtype ) ) then
+				return NULL
+			end if
+
 			'' float to float (i.e. single <-> double)
-			assert( typeGetSize( ldtype ) <> typeGetSize( rdtype ) )
 			return iif( typeGetSize( ldtype ) < typeGetSize( rdtype ), @"fptrunc", @"fpext" )
 		end if
 
