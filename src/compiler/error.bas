@@ -421,7 +421,8 @@ declare function hMakeParamDesc _
 		/'FB_ERRMSG_BYREFFIXSTR                        '/ @"Fixed-length string combined with BYREF (not supported)", _
 		/'FB_ERRMSG_ILLEGALUSEOFRESERVEDSYMBOL         '/ @"Illegal use of reserved symbol", _
 		/'FB_ERRMSG_EXPECTEDCOMMAORSEMICOLON           '/ @"Expected ',' or ';'", _
-		/'FB_ERRMSG_EXPECTEDFILENUMBEREXPRESSION       '/ @"Expected file number expression" _
+		/'FB_ERRMSG_EXPECTEDFILENUMBEREXPRESSION       '/ @"Expected file number expression", _
+		/'FB_ERRMSG_MALFORMEDSOURCEDATEEPOCH           '/ @"Malformed SOURCE_DATE_EPOCH environment variable" _
 	}
 
 
