@@ -277,7 +277,7 @@
     }
 
 	#define RORW(num, bits) __asm__ __volatile__("rorw %1, %0" : "=m"(num) : "c"(bits) : "memory")
-	#define RORW1(num)      __asm__ __volatile__("rorw $1, %0" : "=m"(bit) : : "memory");
+	#define RORW1(num)      __asm__ __volatile__("rorw $1, %0" : "=m"(num) : : "memory");
 #else
 	/* We use memcmp from C because the compiler might replace this by a built-in
 	 * function which will definately be faster than our own implementation in C. */
@@ -303,7 +303,7 @@
 		return 0;
 	}
 
-	#define RORW(num, bits) num = ( (num) >> (bits) ) | (num << (16 - bits) )
+	#define RORW(num, bits) num = (( (num) >> (bits) ) | (num << (16 - bits) )) & 0xffff
 	#define RORW1(num)      RORW(num, 1)
 #endif
 
