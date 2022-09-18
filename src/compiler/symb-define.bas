@@ -45,16 +45,89 @@ private function hDefLine_cb() as string static
 	function = str( lexLineNum( ) )
 end function
 
+private function UnixTimeToDateSerial( byval dat as longint ) as double
+	return 25569# + (cdbl(dat) / 86400#)
+end function
+
+/'
+'' for reference, reverse of UnixTimeToDateSerial()
+private function DateSerialToUnixTime( byval dat as double ) as longint
+	return (dat - 25569#) * 86400#
+end function
+'/
+
+private function hCheckSourceDateEpoch( byref s as string ) as boolean
+	dim tmp as string
+	dim value as double
+
+	'' ignore trailing/leading spaces
+	tmp = trim( s )
+
+	'' don't allow if it was only spaces
+	if( len(tmp) = 0 ) then
+		return FALSE
+	end if
+
+	'' Any invalid characters? (only allow characters 0123456789)
+	for i as integer = 0 to len(tmp)-1
+		if( (s[i] < CHAR_0) or (s[i] > CHAR_9) ) then
+			return FALSE
+		end if
+	next
+
+	'' don't allow if greater than 9999-12-31 23:59:59
+	value = culngint(s)
+	if( culngint(value) > 253402300799ull ) then
+		return FALSE
+	end if
+
+	return TRUE
+end function
+
+private function hGetCompileTime() as double
+
+	'' usage = 0 - first time called - do checks
+	''         1 - use current date/time
+	''         2 - SOURCE_DATE_EPOCH set and valid
+	''
+	'' source_date_epoch = cached value of SOURCE_DATE_EPOCH
+
+	static usage as integer = 0
+	static source_date_epoch as double = 0
+
+	if( usage = 0 ) then
+		dim ret as string
+
+		usage = 1
+		ret = environ( "SOURCE_DATE_EPOCH" )
+
+		if( len(ret) > 0 ) then
+			if( hCheckSourceDateEpoch( ret ) ) then
+				source_date_epoch = UnixTimeToDateSerial( culngint(ret) )
+				usage = 2
+			else
+				errReportEx( FB_ERRMSG_MALFORMEDSOURCEDATEEPOCH, NULL )
+			end if
+		end if
+	end if
+
+	if( usage = 2 ) then
+		function = source_date_epoch
+	else
+		function = now()
+	end if
+end function
+
 private function hDefDate_cb() as string static
-	function = date
+	function = format( hGetCompileTime(), "mm-dd-yyyy" )
 end function
 
 private function hDefDateISO_cb() as string static
-	function = format( now( ), "yyyy-mm-dd" )
+	function = format( hGetCompileTime(), "yyyy-mm-dd" )
 end function
 
 private function hDefTime_cb() as string static
-	function = time
+	function = format( hGetCompileTime(), "hh:nn:ss" )
 end function
 
 private function hDefMultithread_cb() as string static
