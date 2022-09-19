@@ -1027,10 +1027,11 @@ sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
 	if( lexGetToken( ) = FB_TK_EXTENDS ) then
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
-		'' SymbolType
+		'' SymbolType 
+		'' - on error hSymbolType() will return [integer] in baseDType
 		hSymbolType( baseDType, baseSubtype, 0, FALSE, TRUE )
 
-		'' is the base type a struct?
+		'' is the base type a zstring, wstring, or something else (error)?
 		if( baseDType <> FB_DATATYPE_STRUCT ) then
 
 			'' allow extending WSTRING and ZSTRING, the UDT
@@ -1065,6 +1066,23 @@ sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
 					baseSubtype = NULL
 				end if
 			end if
+		end if
+
+		'' check that the base type is not a parent of the current type
+		if( baseDType = FB_DATATYPE_STRUCT ) then
+			'' is this an inner type? don't allow extending any undeclared parent UDT
+			dim context as FBSYMBOL ptr = any
+			context = symbGetCurrentNamespc( )
+			while( context <> @symbGetGlobalNamespc( ) )
+				if( symbGetClass( context ) = FB_SYMBCLASS_STRUCT ) then
+					if( context = baseSubtype ) then
+						baseSubtype = NULL
+						errReport( FB_ERRMSG_INVALIDDATATYPES )
+						exit while
+					end if
+				end if
+				context = symbGetParent( context )
+			wend
 		end if
 
 		'' base type? check if z|wstring was already extended
