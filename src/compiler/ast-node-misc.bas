@@ -962,8 +962,14 @@ private function hAstNodeToStr _
 	case AST_NODECLASS_SCOPEBEGIN
 		return "SCOPEBEGIN: " & hSymbToStr( n->sym )
 
+	case AST_NODECLASS_TYPEINI
+		return "TYPEINI( offset=" & n->typeini.ofs & ", bytes=" & n->typeini.bytes & " ) " & NODE_TYPE
+
 	case AST_NODECLASS_TYPEINI_ASSIGN
-		return "TYPEINI_ASSIGN( offset=" & n->typeini.ofs & " )"
+		return "TYPEINI_ASSIGN( offset=" & n->typeini.ofs & ", bytes=" & n->typeini.bytes & " )"
+
+	case AST_NODECLASS_TYPEINI_PAD
+		return "TYPEINI_PAD( offset=" & n->typeini.ofs & ", bytes=" & n->typeini.bytes & " ) " & NODE_TYPE
 
 	case AST_NODECLASS_MACRO
 		return "MACRO: " & astDumpOpToStr( n->op.op ) & " " & NODE_TYPE
