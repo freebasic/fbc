@@ -151,6 +151,8 @@ int fb_DevFileOpenEncod
 		}
 		else
 		{
+			fb_hSetFileBufSize( fp );
+
 			if( !hCheckBOM( fp, handle->encod ) )
 			{
 				fclose( fp );
@@ -180,17 +182,27 @@ int fb_DevFileOpenEncod
 	if ( handle->access == FB_FILE_ACCESS_ANY)
 		handle->access = FB_FILE_ACCESS_READWRITE;
 
-	/*
-	write the BOM if file was just newly created
-	*/
-	if( effective_mode == FB_FILE_MODE_OUTPUT )
+	switch( effective_mode )
 	{
+	case FB_FILE_MODE_INPUT:
+		/* check the BOM if reading only */
+		if( !hCheckBOM( fp, handle->encod ) )
+		{
+			fclose( fp );
+			FB_UNLOCK();
+			return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+		}
+		break;
+
+	case FB_FILE_MODE_OUTPUT:
+		/* write the BOM if file was just newly created */
 		if( !hWriteBOM( fp, handle->encod ) )
 		{
 			fclose( fp );
 			FB_UNLOCK();
 			return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 		}
+		break;
 	}
 
 	/* calc file size */
