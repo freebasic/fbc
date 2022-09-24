@@ -505,18 +505,40 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 			end if
 		end if
 
-		lgt += symbGetRealSize( fld )
-
-		'' next
-		fld = symbUdtGetNextInitableField( fld )
+		'' next field to initialize
+		'' if it's a bitfield only add the field size if the bit
+		'' position is zero.  multiple bitfields share the same 
+		'' offset so we should only add the size of the field once.
+		if( symbFieldIsBitField( fld ) ) then
+			if( symbGetFieldBitOffset( fld ) = 0 ) then
+				lgt += symbGetRealSize( fld )
+			end if
+			fld = symbUdtGetNextInitableField( fld )
+		else
+			'' loop through next initializable fields until we
+			'' get to an offset that hasn't been initialized
+			do
+				lgt += symbGetRealSize( fld )
+				fld = symbUdtGetNextInitableField( fld )
+				if( fld = NULL ) then
+					exit do
+				end if
+				if( symbGetOfs( fld ) >= astTypeIniGetOfs( ctx.tree ) - baseofs ) then
+					exit do
+				end if
+			loop
+		end if
 
 		'' if we're not top level,
 		if( rec_cnt > 1 ) then
 			'' if there's a comma at the end, we have to leave it for
 			'' the parent UDT initializer, to signal that we completed
 			'' initializing this UDT, and the next field should be assigned.
-			if( comma ) then
-				if( fld = NULL ) then
+			if( fld = NULL ) then
+				if( lexGetToken( ) = CHAR_COMMA ) then
+					exit do
+				end if
+				if( comma ) then
 					exit do
 				end if
 			end if
