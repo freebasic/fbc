@@ -140,6 +140,14 @@ private function hAddNode _
 		subtype = symbGetSubtype( sym )
 	end if
 
+	''      tree
+	''      / \
+	''     l   r
+	''
+	''  tree    = AST_NODE_TYPEINI AST_NODECLASS_TYPEINI
+	''  tree->l = list of items in TREE
+	''  tree->r = last node of list
+
 	n = astNewNode( class_, dtype, subtype )
 
 	if( tree->r <> NULL ) then
