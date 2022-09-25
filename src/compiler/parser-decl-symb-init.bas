@@ -497,13 +497,13 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 		end if
 
 		'' next field to initialize
-		'' if it's a bitfield only add the field size if the bit
-		'' position is zero.  multiple bitfields share the same
-		'' offset so we should only add the size of the field once.
 		if( symbFieldIsBitField( fld ) ) then
-			if( symbGetFieldBitOffset( fld ) = 0 ) then
-				lgt += symbGetRealSize( fld )
-			end if
+			'' !!! TODO !!! - this logic is a carry over from previous
+			'' versions of fbc, but it doesn't seem correct
+			'' multiple bitfields share the same offset so seems like
+			'' we should only add the size of the field once.
+			'' more tests are required for bitfields
+			lgt += symbGetRealSize( fld )
 			fld = symbUdtGetNextInitableField( fld )
 		else
 			'' loop through next initializable fields until we
