@@ -29,7 +29,16 @@ function astTypeIniBegin _
 					subtype )
 	function = n
 
+	'' n is a newly allocated INITREE
+
+	'' ofs will be zero unless the symbol passed in to cInitializer()
+	'' had an offset due to a field initializers
+	'' however, bytes initialized by this tree should start at zero.  Only
+	'' when(if) this tree is merged to another tree do the bytes contribute
+	'' to the parent.
+
 	n->typeini.ofs = ofs
+	n->typeini.bytes = 0
 
 	dim as integer add_scope = FALSE
 	if( is_local = FALSE ) then
@@ -60,7 +69,7 @@ sub astTypeIniEnd _
 	)
 
 	dim as ASTNODE ptr n = any, p = any, l = any, r = any
-	dim as longint ofs = any
+	dim as longint ofs = any, bytes = any
 	dim as FBSYMBOL ptr sym = any
 
 	'' can't leave r pointing to the any node as the
@@ -88,6 +97,7 @@ sub astTypeIniEnd _
 				ast.typeinicount -= 1
 
 				ofs = n->typeini.ofs
+				bytes = n->typeini.bytes
 
 				r = n->r
 				astDelNode( n )
@@ -104,9 +114,11 @@ sub astTypeIniEnd _
 				'' update the offset, using the parent's
 				do while( n->r <> NULL )
 					n->typeini.ofs += ofs
+					n->typeini.bytes += bytes
 					n = n->r
 				loop
 				n->typeini.ofs += ofs
+				n->typeini.bytes += bytes
 
 				n->r = r
 			end if
@@ -203,6 +215,9 @@ function astTypeIniAddPad _
 	n->typeini.bytes = bytes
 	n->typeini.ofs = tree->typeini.ofs
 
+	'' accumulate total bytes in this tree
+	tree->typeini.bytes += n->typeini.bytes
+
 	function = n
 end function
 
@@ -222,11 +237,22 @@ function astTypeIniAddAssign _
 	n->l = expr
 	n->sym = sym
 	n->typeini.ofs = tree->typeini.ofs
+	n->typeini.bytes = 0
 
-	if( sym ) then
-		tree->typeini.ofs += symbGetLen( sym )
+	'' sym only tells us the first field
+	'' but the tree might actually be larger
+
+	if( astGetClass( expr ) = AST_NODECLASS_TYPEINI ) then
+		tree->typeini.ofs +=expr->typeini.bytes
+		tree->typeini.bytes += expr->typeini.bytes
+	else
+		if( sym ) then
+			n->typeini.bytes = symbGetLen( sym )
+		end if
+
+		tree->typeini.ofs += n->typeini.bytes
+		tree->typeini.bytes += n->typeini.bytes
 	end if
-
 	function = n
 end function
 
@@ -245,9 +271,12 @@ function astTypeIniAddCtorCall _
 
 	n->sym = sym
 	n->typeini.ofs = tree->typeini.ofs
+	n->typeini.bytes = tree->typeini.bytes
+
 	n->l = procexpr
 
 	tree->typeini.ofs += symbGetLen( sym )
+	tree->typeini.bytes += symbGetLen( sym )
 
 	function = n
 end function
@@ -267,9 +296,12 @@ function astTypeIniAddCtorList _
 
 	n->sym = sym
 	n->typeini.ofs = tree->typeini.ofs
+	n->typeini.bytes = tree->typeini.bytes
+
 	n->typeini.elements = elements
 
 	tree->typeini.ofs += symbGetLen( sym ) * elements
+	tree->typeini.bytes += symbGetLen( sym ) * elements
 
 	function = n
 end function
