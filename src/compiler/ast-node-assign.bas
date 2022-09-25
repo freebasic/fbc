@@ -75,8 +75,16 @@ private function hCheckUDTOps _
 			exit function
 		End If
 
-		'' cast to the base type
-		if( checkOnly = FALSE ) then
+		if( checkOnly ) then
+			'' if checking only, assume we meant checking without conversion
+			'' we need this from astCheckASSIGNToType() -> astCheckASSIGN()
+			'' to fail initializers that cannot be precisely assigned but
+			'' could be assigned with a conversion.  This allows passing
+			'' an initializer that could be assigned to a base by conversion
+			'' to a parent that could be assigned exactly.
+			exit function
+		else
+			'' cast to the base type
 			r = astNewCONV( astGetDataType( l ), l->subtype, r )
 		end if
 	end if
