@@ -514,7 +514,7 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 				if( fld = NULL ) then
 					exit do
 				end if
-				if( baseofs + symbGetOfs( fld ) >= astTypeIniGetOfs( ctx.tree ) ) then
+				if( baseofs + symbGetOfs( fld ) >= ctx.tree->typeini.bytes ) then
 					exit do
 				end if
 			loop
