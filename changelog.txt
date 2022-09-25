@@ -75,6 +75,7 @@ Version 1.10.0
 - Internal (unit tests): Stack corruption in mid() tests (regression from 1.07.0)
 - gfxlib2: LINE statement computing an incorrect line style pattern on any non-X86 (i.e. 64-bit, etc)
 - github #393: rtlib: OPEN fails when opening an encoded file for append.  Check the BOM on existing files for INPUT/APPEND, write the BOM for new files for OUTPUT/APPEND.
+- sf.net #968: fbc: major changes how initializers are handled and pairing of a UDT's (internal) structure and the initializer list given by the user.
 
 
 Version 1.09.0
