@@ -11,13 +11,14 @@
 #include once "symb.bi"
 
 type FB_INITCTX
-	sym			as FBSYMBOL ptr
-	dtype			as integer
-	subtype			as FBSYMBOL ptr
-	dimension 		as integer
-	tree		as ASTNODE ptr
-	options		as FB_INIOPT
+	sym         as FBSYMBOL ptr
+	dtype       as integer
+	subtype     as FBSYMBOL ptr
+	dimension   as integer
+	tree        as ASTNODE ptr
+	options     as FB_INIOPT
 	init_expr   as ASTNODE ptr
+	rec_cnt     as integer
 end type
 
 declare function hUDTInit _
@@ -51,7 +52,14 @@ private function hDoAssign _
 
 	if( astCheckASSIGNToType( ctx.dtype, ctx.subtype, expr ) = FALSE ) then
 		'' check if it's a cast
-		expr = astNewCONV( ctx.dtype, ctx.subtype, expr )
+
+		'' pass the initializing expression back to parent if it fails here
+		ctx.init_expr = expr
+
+		'' fail initializers that could be assigned with a cast to a base type.
+		'' This allows passing an initializer back to an exact matched parent.
+
+		expr = astNewCONV( ctx.dtype, ctx.subtype, expr, AST_CONVOPT_NOCONVTOBASE ) '' asdf
 		if( expr = NULL ) then
 			'' hand it back...
 			'' (used with UDTs; if an UDT var is given in an UDT initializer,
@@ -80,11 +88,11 @@ private function hElmInit _
 		byval no_fake as integer = FALSE _
 	) as integer
 
-    dim as ASTNODE ptr expr = any
-    dim as FBSYMBOL ptr oldsym = any
-    dim as integer old_dtype = any
+	dim as ASTNODE ptr expr = any
+	dim as FBSYMBOL ptr oldsym = any
+	dim as integer old_dtype = any
 
-    function = FALSE
+	function = FALSE
 
 	'' set the context symbol to allow taking the address of overloaded
 	'' procs and also to allow anonymous UDT's
@@ -93,7 +101,7 @@ private function hElmInit _
 	parser.ctxsym    = symbGetSubType( ctx.sym )
 	parser.ctx_dtype = symbGetType( ctx.sym )
 
-    '' parse expression
+	'' parse expression
 	expr = cExpression( )
 
 	'' invalid expression
@@ -109,7 +117,7 @@ private function hElmInit _
 	'' to hand it back if necessary
 	ctx.init_expr = expr
 
-    '' restore context if needed
+	'' restore context if needed
 	parser.ctxsym    = oldsym
 	parser.ctx_dtype = old_dtype
 
@@ -177,8 +185,8 @@ private function hArrayInit _
 		'' too many dimensions?
 		if( ctx.dimension >= symbGetArrayDimensions( ctx.sym ) ) then
 			errReport( iif( symbGetArrayDimensions( ctx.sym ) > 0, _
-			                FB_ERRMSG_TOOMANYEXPRESSIONS, _
-			                FB_ERRMSG_EXPECTEDARRAY ) )
+							FB_ERRMSG_TOOMANYEXPRESSIONS, _
+							FB_ERRMSG_EXPECTEDARRAY ) )
 			'' error recovery: skip until next '}'
 			hSkipUntil( CHAR_RBRACE, TRUE )
 			ctx.dimension -= 1
@@ -334,15 +342,13 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 	dim as FBSYMBOL ptr fld = any, first = any
 	dim as FBSYMBOL ptr oldsubtype = any
 	dim as integer olddtype = any
-    dim as FB_INITCTX old_ctx = any
+	dim as FB_INITCTX old_ctx = any
 
-    function = FALSE
+	function = FALSE
 
-    rec_cnt += 1
-
-    '' ctor?
-    if( (ctx.options and FB_INIOPT_ISOBJ) <> 0 ) then
-    	dim as ASTNODE ptr expr = any
+	'' ctor?
+	if( (ctx.options and FB_INIOPT_ISOBJ) <> 0 ) then
+		dim as ASTNODE ptr expr = any
 
 		'' Set the context data type, to allow anonymous type()'s to
 		'' work for UDTs with constructors here
@@ -351,18 +357,18 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 		parser.ctx_dtype = ctx.dtype
 		parser.ctxsym    = ctx.subtype
 
-	    '' Expression
-	    expr = cExpression( )
+		'' Expression
+		expr = cExpression( )
 
 		'' Restore context data type
 		parser.ctx_dtype = olddtype
 		parser.ctxsym    = oldsubtype
 
-	    if( expr = NULL ) then
+		if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			'' error recovery: fake an expr
 			expr = astNewCONSTi( 0 )
-	    end if
+		end if
 
 		'' When initializing a BYREF parameter, an expression of the
 		'' same type should be used as-is instead of causing a copy
@@ -373,8 +379,7 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 		if( symbGetClass( ctx.sym ) = FB_SYMBCLASS_PARAM ) then
 			if( symbGetParamMode( ctx.sym ) = FB_PARAMMODE_BYREF ) then
 				if( (astGetDataType( expr ) = typeGetDtAndPtrOnly( ctx.dtype )) and _
-				    (astGetSubtype( expr ) = ctx.subtype) ) then
-					rec_cnt -= 1
+					(astGetSubtype( expr ) = ctx.subtype) ) then
 					return hDoAssign( ctx, expr )
 				end if
 			end if
@@ -383,16 +388,13 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 		dim as integer is_ctorcall = any
 		expr = astBuildImplicitCtorCallEx( ctx.sym, expr, cBydescArrayArgParens( expr ), is_ctorcall )
 		if( expr = NULL ) then
-			rec_cnt -= 1
 			exit function
 		end if
 
 		if( is_ctorcall ) then
-			rec_cnt -= 1
 			return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr, ctx.dtype, ctx.subtype ) <> NULL
 		else
 			'' try to assign it (do a shallow copy)
-			rec_cnt -= 1
 			return hDoAssign( ctx, expr )
 		end if
 	end if
@@ -401,8 +403,7 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 
 	'' '('
 	if( lexGetToken( ) <> CHAR_LPRNT ) then
-		if( rec_cnt <= 1 ) then
-			rec_cnt -= 1
+		if( ctx.rec_cnt = 0 ) then
 			return hElmInit( ctx )
 		end if
 
@@ -424,6 +425,7 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 	old_ctx = ctx
 
 	ctx.dimension = -1
+	ctx.rec_cnt += 1
 
 	'' for each initializable UDT field...
 	'' (for unions, only the first field can be initialized)
@@ -463,7 +465,6 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 			'' not first or nothing passed back?
 			if( (fld <> first) or (ctx.init_expr = NULL) ) then
 				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-				rec_cnt -= 1
 				exit function
 			end if
 
@@ -475,7 +476,6 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 
 			expr = astBuildImplicitCtorCallEx( ctx.sym, expr, INVALID, is_ctorcall )
 			if( expr = NULL ) then
-				rec_cnt -= 1
 				exit function
 			end if
 
@@ -495,28 +495,48 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 				astTypeIniRemoveLastNode( ctx.tree )
 			end if
 
-			rec_cnt -= 1
-
 			if( is_ctorcall ) then
 				return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr, ctx.dtype, ctx.subtype ) <> NULL
 			else
 				'' try to assign it (do a shallow copy)
-				return hDoAssign( ctx, expr )
+				return hDoAssign( ctx, expr, TRUE )
 			end if
 		end if
 
-		lgt += symbGetRealSize( fld )
-
-		'' next
-		fld = symbUdtGetNextInitableField( fld )
+		'' next field to initialize
+		if( symbFieldIsBitField( fld ) ) then
+			'' !!! TODO !!! - this logic is a carry over from previous
+			'' versions of fbc, but it doesn't seem correct
+			'' multiple bitfields share the same offset so seems like
+			'' we should only add the size of the field once.
+			'' more tests are required for bitfields
+			lgt += symbGetRealSize( fld )
+			fld = symbUdtGetNextInitableField( fld )
+		else
+			'' loop through next initializable fields until we
+			'' get to an offset that hasn't been initialized
+			do
+				lgt += symbGetRealSize( fld )
+				fld = symbUdtGetNextInitableField( fld )
+				if( fld = NULL ) then
+					exit do
+				end if
+				if( baseofs + symbGetOfs( fld ) >= ctx.tree->typeini.bytes ) then
+					exit do
+				end if
+			loop
+		end if
 
 		'' if we're not top level,
-		if( rec_cnt > 1 ) then
+		if( ctx.rec_cnt > 1 ) then
 			'' if there's a comma at the end, we have to leave it for
 			'' the parent UDT initializer, to signal that we completed
 			'' initializing this UDT, and the next field should be assigned.
-			if( comma ) then
-				if( fld = NULL ) then
+			if( fld = NULL ) then
+				if( lexGetToken( ) = CHAR_COMMA ) then
+					exit do
+				end if
+				if( comma ) then
 					exit do
 				end if
 			end if
@@ -552,8 +572,6 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 	end if
 	astTypeIniGetOfs( ctx.tree ) = baseofs + sym_len
 
-	rec_cnt -= 1
-
 	function = TRUE
 end function
 
@@ -566,7 +584,7 @@ function cInitializer _
 	) as ASTNODE ptr
 
 	dim as integer is_local = any, ok = any
-    dim as FB_INITCTX ctx = any
+	dim as FB_INITCTX ctx = any
 
 	function = NULL
 
@@ -587,6 +605,7 @@ function cInitializer _
 	ctx.sym = sym
 	ctx.dimension = -1
 	ctx.init_expr = NULL
+	ctx.rec_cnt = 0
 	hUpdateContextDtype( ctx, dtype, subtype )
 
 	ctx.tree = astTypeIniBegin( ctx.dtype, ctx.subtype, is_local, symbGetOfs( sym ) )

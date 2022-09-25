@@ -451,6 +451,12 @@ function astNewCONV _
 			exit function
 		end if
 
+		'' don't allow cast to base types?
+		if( (options and AST_CONVOPT_NOCONVTOBASE) <> 0 ) then
+			exit function
+		end if
+
+		'' no valid cast to base type?
 		if( symbGetUDTBaseLevel( l->subtype, to_subtype ) = 0 ) then
 			exit function
 		end if

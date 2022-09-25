@@ -1,5 +1,5 @@
 '' AST type initializer nodes
-'' tree	    : l = head; r = (when constructing: tail, when updating: base var)
+'' tree     : l = head; r = (when constructing: tail, when updating: base var)
 '' expr node: l = expr; r = next
 '' pad node : l = NULL; r = next
 ''
@@ -21,7 +21,7 @@ function astTypeIniBegin _
 		byval ofs as longint _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
+	dim as ASTNODE ptr n = any
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_TYPEINI, _
@@ -29,7 +29,16 @@ function astTypeIniBegin _
 					subtype )
 	function = n
 
+	'' n is a newly allocated INITREE
+
+	'' ofs will be zero unless the symbol passed in to cInitializer()
+	'' had an offset due to a field initializers
+	'' however, bytes initialized by this tree should start at zero.  Only
+	'' when(if) this tree is merged to another tree do the bytes contribute
+	'' to the parent.
+
 	n->typeini.ofs = ofs
+	n->typeini.bytes = 0
 
 	dim as integer add_scope = FALSE
 	if( is_local = FALSE ) then
@@ -38,7 +47,7 @@ function astTypeIniBegin _
 			'' (from a parent TYPEINI)
 			add_scope = not astIsTYPEINI( parser.currblock->scp.backnode )
 		else
-		    add_scope = TRUE
+			add_scope = TRUE
 		end if
 	end if
 
@@ -59,8 +68,8 @@ sub astTypeIniEnd _
 		byval is_initializer as integer _
 	)
 
-    dim as ASTNODE ptr n = any, p = any, l = any, r = any
-	dim as longint ofs = any
+	dim as ASTNODE ptr n = any, p = any, l = any, r = any
+	dim as longint ofs = any, bytes = any
 	dim as FBSYMBOL ptr sym = any
 
 	'' can't leave r pointing to the any node as the
@@ -77,38 +86,41 @@ sub astTypeIniEnd _
 	'' registered for astTypeIniUpdate() later.
 
 	'' merge nested type ini trees
-    p = NULL
-    n = tree->l
-    do while( n <> NULL )
-    	'' expression node?
-    	if( n->class = AST_NODECLASS_TYPEINI_ASSIGN ) then
+	p = NULL
+	n = tree->l
+	do while( n <> NULL )
+		'' expression node?
+		if( n->class = AST_NODECLASS_TYPEINI_ASSIGN ) then
 			l = n->l
 			'' is it an ini tree too?
 			if( astIsTYPEINI( l ) ) then
 				ast.typeinicount -= 1
 
-    			ofs = n->typeini.ofs
+				ofs = n->typeini.ofs
+				bytes = n->typeini.bytes
 
-    			r = n->r
-    			astDelNode( n )
-    			n = l->l
-    			astDelNode( l )
+				r = n->r
+				astDelNode( n )
+				n = l->l
+				astDelNode( l )
 
-    			'' relink
-    			if( p <> NULL ) then
-    				p->r = n
-    			else
-    				tree->l = n
-    			end if
+				'' relink
+				if( p <> NULL ) then
+					p->r = n
+				else
+					tree->l = n
+				end if
 
-    			'' update the offset, using the parent's
-    			do while( n->r <> NULL )
-    				n->typeini.ofs += ofs
-    				n = n->r
-    			loop
-    			n->typeini.ofs += ofs
+				'' update the offset, using the parent's
+				do while( n->r <> NULL )
+					n->typeini.ofs += ofs
+					n->typeini.bytes += bytes
+					n = n->r
+				loop
+				n->typeini.ofs += ofs
+				n->typeini.bytes += bytes
 
-    			n->r = r
+				n->r = r
 			end if
 		end if
 
@@ -139,6 +151,14 @@ private function hAddNode _
 		dtype = symbGetFullType( sym )
 		subtype = symbGetSubtype( sym )
 	end if
+
+	''      tree
+	''      / \
+	''     l   r
+	''
+	''  tree    = AST_NODE_TYPEINI AST_NODECLASS_TYPEINI
+	''  tree->l = list of items in TREE
+	''  tree->r = last node of list
 
 	n = astNewNode( class_, dtype, subtype )
 
@@ -195,6 +215,9 @@ function astTypeIniAddPad _
 	n->typeini.bytes = bytes
 	n->typeini.ofs = tree->typeini.ofs
 
+	'' accumulate total bytes in this tree
+	tree->typeini.bytes += n->typeini.bytes
+
 	function = n
 end function
 
@@ -214,11 +237,22 @@ function astTypeIniAddAssign _
 	n->l = expr
 	n->sym = sym
 	n->typeini.ofs = tree->typeini.ofs
+	n->typeini.bytes = 0
 
-	if( sym ) then
-		tree->typeini.ofs += symbGetLen( sym )
+	'' sym only tells us the first field
+	'' but the tree might actually be larger
+
+	if( astGetClass( expr ) = AST_NODECLASS_TYPEINI ) then
+		tree->typeini.ofs +=expr->typeini.bytes
+		tree->typeini.bytes += expr->typeini.bytes
+	else
+		if( sym ) then
+			n->typeini.bytes = symbGetLen( sym )
+		end if
+
+		tree->typeini.ofs += n->typeini.bytes
+		tree->typeini.bytes += n->typeini.bytes
 	end if
-
 	function = n
 end function
 
@@ -237,9 +271,12 @@ function astTypeIniAddCtorCall _
 
 	n->sym = sym
 	n->typeini.ofs = tree->typeini.ofs
+	n->typeini.bytes = tree->typeini.bytes
+
 	n->l = procexpr
 
 	tree->typeini.ofs += symbGetLen( sym )
+	tree->typeini.bytes += symbGetLen( sym )
 
 	function = n
 end function
@@ -259,9 +296,12 @@ function astTypeIniAddCtorList _
 
 	n->sym = sym
 	n->typeini.ofs = tree->typeini.ofs
+	n->typeini.bytes = tree->typeini.bytes
+
 	n->typeini.elements = elements
 
 	tree->typeini.ofs += symbGetLen( sym ) * elements
+	tree->typeini.bytes += symbGetLen( sym ) * elements
 
 	function = n
 end function
@@ -420,7 +460,7 @@ function astTypeIniFlush overload _
 
 	assert( astIsTYPEINI( initree ) )
 	assert( astIsVAR( target ) or astIsDEREF( target ) or _
-	        astIsFIELD( target ) or astIsIDX( target ) )
+			astIsFIELD( target ) or astIsIDX( target ) )
 
 	if( update_typeinicount ) then
 		'' Unregister the TYPEINI - we're emitting it right now, no need
@@ -588,13 +628,13 @@ private sub hFlushExprStatic( byval n as ASTNODE ptr, byval basesym as FBSYMBOL 
 			if( edtype <> FB_DATATYPE_WCHAR ) then
 				'' less the null-char
 				irEmitVARINISTR( symbGetStrLen( sym ) - 1, _
-						 	 	 symbGetVarLitText( litsym ), _
-						 	 	 symbGetStrLen( litsym ) - 1 )
+								symbGetVarLitText( litsym ), _
+								symbGetStrLen( litsym ) - 1 )
 			else
 				'' ditto
 				irEmitVARINISTR( symbGetStrLen( sym ) - 1, _
-						 	 	 str( *symbGetVarLitTextW( litsym ) ), _
-						 	 	 symbGetWstrLen( litsym ) - 1 )
+								str( *symbGetVarLitTextW( litsym ) ), _
+								symbGetWstrLen( litsym ) - 1 )
 			end if
 		'' wstring..
 		else
@@ -602,13 +642,13 @@ private sub hFlushExprStatic( byval n as ASTNODE ptr, byval basesym as FBSYMBOL 
 			if( edtype <> FB_DATATYPE_WCHAR ) then
 				'' less the null-char
 				irEmitVARINIWSTR( symbGetWstrLen( sym ) - 1, _
-						 	  	  wstr( *symbGetVarLitText( litsym ) ), _
-						 	  	  symbGetStrLen( litsym ) - 1 )
+								wstr( *symbGetVarLitText( litsym ) ), _
+								symbGetStrLen( litsym ) - 1 )
 			else
 				'' ditto
 				irEmitVARINIWSTR( symbGetWstrLen( sym ) - 1, _
-						 	  	  symbGetVarLitTextW( litsym ), _
-						 	  	  symbGetWstrLen( litsym ) - 1 )
+								symbGetVarLitTextW( litsym ), _
+								symbGetWstrLen( litsym ) - 1 )
 			end if
 		end if
 	end if
@@ -623,31 +663,31 @@ sub astLoadStaticInitializer _
 		byval basesym as FBSYMBOL ptr _
 	)
 
-    dim as ASTNODE ptr n = any, nxt = any
+	dim as ASTNODE ptr n = any, nxt = any
 
 	irEmitVARINIBEGIN( basesym )
 
-    n = tree->l
-    do while( n <> NULL )
-        nxt = n->r
+	n = tree->l
+	do while( n <> NULL )
+		nxt = n->r
 
-    	select case as const n->class
-    	case AST_NODECLASS_TYPEINI_PAD
-    		irEmitVARINIPAD( n->typeini.bytes )
+		select case as const n->class
+		case AST_NODECLASS_TYPEINI_PAD
+			irEmitVARINIPAD( n->typeini.bytes )
 
-    	case AST_NODECLASS_TYPEINI_SCOPEINI
+		case AST_NODECLASS_TYPEINI_SCOPEINI
 			irEmitVARINISCOPEBEGIN( n->sym, n->typeiniscope.is_array )
 
-    	case AST_NODECLASS_TYPEINI_SCOPEEND
+		case AST_NODECLASS_TYPEINI_SCOPEEND
 			irEmitVARINISCOPEEND( )
 
-    	case else
+		case else
 			hFlushExprStatic( n, basesym )
-    	end select
+		end select
 
-        astDelNode( n )
-    	n = nxt
-    loop
+		astDelNode( n )
+		n = nxt
+	loop
 
 	irEmitVARINIEND( basesym )
 
@@ -667,7 +707,7 @@ private function hExprIsConst( byval n as ASTNODE ptr ) as integer
 	var expr = n->l
 
 	'' Expression must be:
-	'' - constant, or 
+	'' - constant, or
 	'' - address-of global, or
 	'' - conversion of address of global
 	'' to be usable in global initializer.
@@ -759,7 +799,7 @@ function astTypeIniUsesLocals _
 		'' a LOCAL here, we only report it back to the caller if it
 		'' has none of these attributes.
 		if( symbIsLocal( n->sym ) and _
-		    ((symbGetAttrib( n->sym ) and ignoreattrib) = 0) ) then
+			((symbGetAttrib( n->sym ) and ignoreattrib) = 0) ) then
 			return TRUE
 		end if
 	end if
@@ -770,7 +810,7 @@ function astTypeIniUsesLocals _
 
 	'' walk
 	function = astTypeIniUsesLocals( n->l, ignoreattrib ) or _
-	           astTypeIniUsesLocals( n->r, ignoreattrib )
+			astTypeIniUsesLocals( n->r, ignoreattrib )
 
 	#if __FB_DEBUG__
 		reclevel -= 1
@@ -909,7 +949,7 @@ function astTypeIniTryRemove( byval tree as ASTNODE ptr ) as ASTNODE ptr
 	'' Not the same type (detects the case when the TYPEINI is for an UDT,
 	'' and the first TYPEINI_ASSIGN is for the first field)
 	if( (astGetDataType( tree ) <> astGetDataType( tree->l )) or _
-	    (tree->subtype <> tree->l->subtype) ) then
+		(tree->subtype <> tree->l->subtype) ) then
 		exit function
 	end if
 

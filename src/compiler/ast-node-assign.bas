@@ -46,7 +46,7 @@ private function hCheckUDTOps _
 		byval ldclass as FB_DATACLASS, _
 		byref r as ASTNODE ptr, _
 		byval rdclass as FB_DATACLASS, _
-		byval checkOnly as integer = TRUE _ 
+		byval checkOnly as integer = TRUE _
 	) as integer
 
 	dim as FBSYMBOL ptr proc = any
@@ -63,20 +63,28 @@ private function hCheckUDTOps _
 		end if
 	end if
 
-    '' is r an UDT?
+	'' is r an UDT?
 	if( astGetDataType( r ) <> FB_DATATYPE_STRUCT ) then
 		exit function
 	end if
 
-   	'' different subtypes?
+	'' different subtypes?
 	if( l->subtype <> r->subtype ) then
 		'' check if lhs is a base type of rhs
 		if( symbGetUDTBaseLevel( r->subtype, l->subtype ) = 0 ) then
 			exit function
 		End If
-		
-		'' cast to the base type
-		if( checkOnly = FALSE ) then
+
+		if( checkOnly ) then
+			'' if checking only, assume we meant checking without conversion
+			'' we need this from astCheckASSIGNToType() -> astCheckASSIGN()
+			'' to fail initializers that cannot be precisely assigned but
+			'' could be assigned with a conversion.  This allows passing
+			'' an initializer that could be assigned to a base by conversion
+			'' to a parent that could be assigned exactly.
+			exit function
+		else
+			'' cast to the base type
 			r = astNewCONV( astGetDataType( l ), l->subtype, r )
 		end if
 	end if
@@ -102,7 +110,7 @@ private function hCheckWstringOps _
 	ldtype = typeGet( ldfull )
 	rdtype = typeGet( rdfull )
 
-    '' left?
+	'' left?
 	if( ldtype = FB_DATATYPE_WCHAR ) then
 		'' is right a zstring? (fixed- or
 		'' var-len strings won't reach here)
@@ -179,13 +187,13 @@ private sub hCheckEnumOps _
 		byval rdclass as FB_DATACLASS _
 	)
 
-    '' not the same?
-    if( astGetDataType( l ) <> astGetDataType( r ) ) then
-    	if( (ldclass <> FB_DATACLASS_INTEGER) or _
-    		(rdclass <> FB_DATACLASS_INTEGER) ) then
-    		errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
-    	end if
-    end if
+	'' not the same?
+	if( astGetDataType( l ) <> astGetDataType( r ) ) then
+		if( (ldclass <> FB_DATACLASS_INTEGER) or _
+			(rdclass <> FB_DATACLASS_INTEGER) ) then
+			errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
+		end if
+	end if
 
 end sub
 
@@ -245,9 +253,9 @@ function astCheckASSIGN _
 		byval r as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr n = any
-    dim as FB_DATATYPE ldtype = any, rdtype = any, ldfull = any, rdfull = any
-    dim as FB_DATACLASS ldclass = any, rdclass = any
+	dim as ASTNODE ptr n = any
+	dim as FB_DATATYPE ldtype = any, rdtype = any, ldfull = any, rdfull = any
+	dim as FB_DATACLASS ldclass = any, rdclass = any
 
 	function = FALSE
 
@@ -258,9 +266,9 @@ function astCheckASSIGN _
 	ldclass = typeGetClass( ldtype )
 	rdclass = typeGetClass( rdtype )
 
-    '' strings?
-    if( (ldclass = FB_DATACLASS_STRING) or _
-    	(rdclass = FB_DATACLASS_STRING) ) then
+	'' strings?
+	if( (ldclass = FB_DATACLASS_STRING) or _
+		(rdclass = FB_DATACLASS_STRING) ) then
 
 		'' both not strings?
 		if( ldclass <> rdclass ) then
@@ -281,13 +289,13 @@ function astCheckASSIGN _
 
 		return TRUE
 
-    '' wstrings?
-    elseif( (ldtype = FB_DATATYPE_WCHAR) or _
-    		(rdtype = FB_DATATYPE_WCHAR) ) then
+	'' wstrings?
+	elseif( (ldtype = FB_DATATYPE_WCHAR) or _
+			(rdtype = FB_DATATYPE_WCHAR) ) then
 
 		'' both = wstrings?
 		if( ldtype <> rdtype ) then
-    		dim as integer is_zstr
+			dim as integer is_zstr
 			if( hCheckWstringOps( l, ldfull, r, rdfull, is_zstr ) = FALSE ) then
 				exit function
 			end if
@@ -303,9 +311,9 @@ function astCheckASSIGN _
 			rdtype = typeGet( rdfull )
 		end if
 
-    '' zstrings?
-    elseif( (ldtype = FB_DATATYPE_CHAR) or _
-    		(rdtype = FB_DATATYPE_CHAR) ) then
+	'' zstrings?
+	elseif( (ldtype = FB_DATATYPE_CHAR) or _
+			(rdtype = FB_DATATYPE_CHAR) ) then
 
 		'' both zstrings?
 		if( ldtype = rdtype ) then
@@ -322,13 +330,13 @@ function astCheckASSIGN _
 		ldtype = typeGet( ldfull )
 		rdtype = typeGet( rdfull )
 
-    '' enums?
-    elseif( (ldtype = FB_DATATYPE_ENUM) or _
-    		(rdtype = FB_DATATYPE_ENUM) ) then
+	'' enums?
+	elseif( (ldtype = FB_DATATYPE_ENUM) or _
+			(rdtype = FB_DATATYPE_ENUM) ) then
 		hCheckEnumOps( l, ldclass, r, rdclass )
 	end if
 
-    '' check pointers
+	'' check pointers
 	if( hCheckConstAndPointerOps( l, ldfull, r, rdfull ) = FALSE ) then
 		exit function
 	end if
@@ -527,8 +535,8 @@ function astNewASSIGN _
 						result = astBuildCtorCall( l->subtype, astCloneTree( l ) )
 					else
 						result = astNewMEM( AST_OP_MEMCLEAR, _
-						                    astCloneTree( l ), _
-						                    astNewCONSTi( symbGetLen( l->subtype ) ) )
+							astCloneTree( l ), _
+							astNewCONSTi( symbGetLen( l->subtype ) ) )
 					end if
 				else
 					result = NULL
@@ -569,9 +577,9 @@ function astNewASSIGN _
 	rdtype = typeGet( rdfull )
 	rdclass = typeGetClass( rdtype )
 
-    '' strings?
-    if( (ldclass = FB_DATACLASS_STRING) or _
-    	(rdclass = FB_DATACLASS_STRING) ) then
+	'' strings?
+	if( (ldclass = FB_DATACLASS_STRING) or _
+		(rdclass = FB_DATACLASS_STRING) ) then
 
 		'' both not strings?
 		if( ldclass <> rdclass ) then
@@ -585,7 +593,7 @@ function astNewASSIGN _
 		'' otherwise, don't do any assignment by now to allow optimizations..
 		if( (options and AST_OPOPT_ISINI) <> 0 ) then
 			'' unless it's an initialization
-			return rtlStrAssign( l, r, TRUE	)
+			return rtlStrAssign( l, r, TRUE )
 		end if
 
 	'' UDT's?
@@ -641,9 +649,9 @@ function astNewASSIGN _
 		rdclass = ldclass
 		astSetType( r, rdfull, lsubtype )
 
-    '' wstrings?
-    elseif( (ldtype = FB_DATATYPE_WCHAR) or _
-    		(rdtype = FB_DATATYPE_WCHAR) ) then
+	'' wstrings?
+	elseif( (ldtype = FB_DATATYPE_WCHAR) or _
+			(rdtype = FB_DATATYPE_WCHAR) ) then
 
 		'' If both are wstrings, delay assignment until astOptimizeTree(),
 		'' unless it's an initialization, then we can't do optimizations anyways.
@@ -670,9 +678,9 @@ function astNewASSIGN _
 			rdtype = typeGet( rdfull )
 		end if
 
-    '' zstrings?
-    elseif( (ldtype = FB_DATATYPE_CHAR) or _
-    		(rdtype = FB_DATATYPE_CHAR) ) then
+	'' zstrings?
+	elseif( (ldtype = FB_DATATYPE_CHAR) or _
+			(rdtype = FB_DATATYPE_CHAR) ) then
 
 		'' both the same? assign as string..
 		if( ldtype = rdtype ) then
@@ -689,18 +697,18 @@ function astNewASSIGN _
 		ldtype = typeGet( ldfull )
 		rdtype = typeGet( rdfull )
 
-    '' enums?
-    elseif( (ldtype = FB_DATATYPE_ENUM) or _
-    		(rdtype = FB_DATATYPE_ENUM) ) then
+	'' enums?
+	elseif( (ldtype = FB_DATATYPE_ENUM) or _
+			(rdtype = FB_DATATYPE_ENUM) ) then
 		hCheckEnumOps( l, ldclass, r, rdclass )
 	end if
 
-    '' check pointers
-    if( (options and AST_OPOPT_DONTCHKPTR) = 0 ) then
+	'' check pointers
+	if( (options and AST_OPOPT_DONTCHKPTR) = 0 ) then
 		if( hCheckConstAndPointerOps( l, ldfull, r, rdfull ) = FALSE ) then
 			exit function
 		end if
-    end if
+	end if
 
 	'' convert types if needed
 	if( (ldtype <> rdtype) or (l->subtype <> r->subtype) ) then
@@ -747,8 +755,8 @@ function astNewASSIGN _
 end function
 
 function astLoadASSIGN( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as ASTNODE ptr l = any, r = any
-    dim as IRVREG ptr vs = any, vr = any
+	dim as ASTNODE ptr l = any, r = any
+	dim as IRVREG ptr vs = any, vr = any
 
 	l = n->l
 	r = n->r
