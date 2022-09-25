@@ -52,7 +52,14 @@ private function hDoAssign _
 
 	if( astCheckASSIGNToType( ctx.dtype, ctx.subtype, expr ) = FALSE ) then
 		'' check if it's a cast
-		expr = astNewCONV( ctx.dtype, ctx.subtype, expr )
+
+		'' pass the initializing expression back to parent if it fails here
+		ctx.init_expr = expr
+
+		'' fail initializers that could be assigned with a cast to a base type.
+		'' This allows passing an initializer back to an exact matched parent.
+
+		expr = astNewCONV( ctx.dtype, ctx.subtype, expr, AST_CONVOPT_NOCONVTOBASE ) '' asdf
 		if( expr = NULL ) then
 			'' hand it back...
 			'' (used with UDTs; if an UDT var is given in an UDT initializer,
@@ -492,7 +499,7 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 				return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr, ctx.dtype, ctx.subtype ) <> NULL
 			else
 				'' try to assign it (do a shallow copy)
-				return hDoAssign( ctx, expr )
+				return hDoAssign( ctx, expr, TRUE )
 			end if
 		end if
 

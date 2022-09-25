@@ -542,6 +542,7 @@ enum AST_CONVOPT
 	AST_CONVOPT_DONTWARNCONST   = &h10
 	AST_CONVOPT_DONTWARNFUNCPTR = &h20
 	AST_CONVOPT_EXACT_CAST      = &h40
+	AST_CONVOPT_NOCONVTOBASE    = &h80
 end enum
 
 declare function astTryOvlStringCONV( byref expr as ASTNODE ptr ) as integer
