@@ -18,6 +18,7 @@ type FB_INITCTX
 	tree        as ASTNODE ptr
 	options     as FB_INIOPT
 	init_expr   as ASTNODE ptr
+	rec_cnt     as integer
 end type
 
 declare function hUDTInit _
@@ -338,8 +339,6 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 
 	function = FALSE
 
-	rec_cnt += 1
-
 	'' ctor?
 	if( (ctx.options and FB_INIOPT_ISOBJ) <> 0 ) then
 		dim as ASTNODE ptr expr = any
@@ -374,7 +373,6 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 			if( symbGetParamMode( ctx.sym ) = FB_PARAMMODE_BYREF ) then
 				if( (astGetDataType( expr ) = typeGetDtAndPtrOnly( ctx.dtype )) and _
 					(astGetSubtype( expr ) = ctx.subtype) ) then
-					rec_cnt -= 1
 					return hDoAssign( ctx, expr )
 				end if
 			end if
@@ -383,16 +381,13 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 		dim as integer is_ctorcall = any
 		expr = astBuildImplicitCtorCallEx( ctx.sym, expr, cBydescArrayArgParens( expr ), is_ctorcall )
 		if( expr = NULL ) then
-			rec_cnt -= 1
 			exit function
 		end if
 
 		if( is_ctorcall ) then
-			rec_cnt -= 1
 			return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr, ctx.dtype, ctx.subtype ) <> NULL
 		else
 			'' try to assign it (do a shallow copy)
-			rec_cnt -= 1
 			return hDoAssign( ctx, expr )
 		end if
 	end if
@@ -401,8 +396,7 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 
 	'' '('
 	if( lexGetToken( ) <> CHAR_LPRNT ) then
-		if( rec_cnt <= 1 ) then
-			rec_cnt -= 1
+		if( ctx.rec_cnt = 0 ) then
 			return hElmInit( ctx )
 		end if
 
@@ -424,6 +418,7 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 	old_ctx = ctx
 
 	ctx.dimension = -1
+	ctx.rec_cnt += 1
 
 	'' for each initializable UDT field...
 	'' (for unions, only the first field can be initialized)
@@ -463,7 +458,6 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 			'' not first or nothing passed back?
 			if( (fld <> first) or (ctx.init_expr = NULL) ) then
 				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-				rec_cnt -= 1
 				exit function
 			end if
 
@@ -475,7 +469,6 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 
 			expr = astBuildImplicitCtorCallEx( ctx.sym, expr, INVALID, is_ctorcall )
 			if( expr = NULL ) then
-				rec_cnt -= 1
 				exit function
 			end if
 
@@ -495,8 +488,6 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 				astTypeIniRemoveLastNode( ctx.tree )
 			end if
 
-			rec_cnt -= 1
-
 			if( is_ctorcall ) then
 				return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr, ctx.dtype, ctx.subtype ) <> NULL
 			else
@@ -507,7 +498,7 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 
 		'' next field to initialize
 		'' if it's a bitfield only add the field size if the bit
-		'' position is zero.  multiple bitfields share the same 
+		'' position is zero.  multiple bitfields share the same
 		'' offset so we should only add the size of the field once.
 		if( symbFieldIsBitField( fld ) ) then
 			if( symbGetFieldBitOffset( fld ) = 0 ) then
@@ -523,14 +514,14 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 				if( fld = NULL ) then
 					exit do
 				end if
-				if( symbGetOfs( fld ) >= astTypeIniGetOfs( ctx.tree ) - baseofs ) then
+				if( baseofs + symbGetOfs( fld ) >= astTypeIniGetOfs( ctx.tree ) ) then
 					exit do
 				end if
 			loop
 		end if
 
 		'' if we're not top level,
-		if( rec_cnt > 1 ) then
+		if( ctx.rec_cnt > 1 ) then
 			'' if there's a comma at the end, we have to leave it for
 			'' the parent UDT initializer, to signal that we completed
 			'' initializing this UDT, and the next field should be assigned.
@@ -574,8 +565,6 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 	end if
 	astTypeIniGetOfs( ctx.tree ) = baseofs + sym_len
 
-	rec_cnt -= 1
-
 	function = TRUE
 end function
 
@@ -609,6 +598,7 @@ function cInitializer _
 	ctx.sym = sym
 	ctx.dimension = -1
 	ctx.init_expr = NULL
+	ctx.rec_cnt = 0
 	hUpdateContextDtype( ctx, dtype, subtype )
 
 	ctx.tree = astTypeIniBegin( ctx.dtype, ctx.subtype, is_local, symbGetOfs( sym ) )
