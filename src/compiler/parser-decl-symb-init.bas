@@ -11,12 +11,12 @@
 #include once "symb.bi"
 
 type FB_INITCTX
-	sym			as FBSYMBOL ptr
-	dtype			as integer
-	subtype			as FBSYMBOL ptr
-	dimension 		as integer
-	tree		as ASTNODE ptr
-	options		as FB_INIOPT
+	sym         as FBSYMBOL ptr
+	dtype       as integer
+	subtype     as FBSYMBOL ptr
+	dimension   as integer
+	tree        as ASTNODE ptr
+	options     as FB_INIOPT
 	init_expr   as ASTNODE ptr
 end type
 
@@ -80,11 +80,11 @@ private function hElmInit _
 		byval no_fake as integer = FALSE _
 	) as integer
 
-    dim as ASTNODE ptr expr = any
-    dim as FBSYMBOL ptr oldsym = any
-    dim as integer old_dtype = any
+	dim as ASTNODE ptr expr = any
+	dim as FBSYMBOL ptr oldsym = any
+	dim as integer old_dtype = any
 
-    function = FALSE
+	function = FALSE
 
 	'' set the context symbol to allow taking the address of overloaded
 	'' procs and also to allow anonymous UDT's
@@ -93,7 +93,7 @@ private function hElmInit _
 	parser.ctxsym    = symbGetSubType( ctx.sym )
 	parser.ctx_dtype = symbGetType( ctx.sym )
 
-    '' parse expression
+	'' parse expression
 	expr = cExpression( )
 
 	'' invalid expression
@@ -109,7 +109,7 @@ private function hElmInit _
 	'' to hand it back if necessary
 	ctx.init_expr = expr
 
-    '' restore context if needed
+	'' restore context if needed
 	parser.ctxsym    = oldsym
 	parser.ctx_dtype = old_dtype
 
@@ -177,8 +177,8 @@ private function hArrayInit _
 		'' too many dimensions?
 		if( ctx.dimension >= symbGetArrayDimensions( ctx.sym ) ) then
 			errReport( iif( symbGetArrayDimensions( ctx.sym ) > 0, _
-			                FB_ERRMSG_TOOMANYEXPRESSIONS, _
-			                FB_ERRMSG_EXPECTEDARRAY ) )
+							FB_ERRMSG_TOOMANYEXPRESSIONS, _
+							FB_ERRMSG_EXPECTEDARRAY ) )
 			'' error recovery: skip until next '}'
 			hSkipUntil( CHAR_RBRACE, TRUE )
 			ctx.dimension -= 1
@@ -334,15 +334,15 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 	dim as FBSYMBOL ptr fld = any, first = any
 	dim as FBSYMBOL ptr oldsubtype = any
 	dim as integer olddtype = any
-    dim as FB_INITCTX old_ctx = any
+	dim as FB_INITCTX old_ctx = any
 
-    function = FALSE
+	function = FALSE
 
-    rec_cnt += 1
+	rec_cnt += 1
 
-    '' ctor?
-    if( (ctx.options and FB_INIOPT_ISOBJ) <> 0 ) then
-    	dim as ASTNODE ptr expr = any
+	'' ctor?
+	if( (ctx.options and FB_INIOPT_ISOBJ) <> 0 ) then
+		dim as ASTNODE ptr expr = any
 
 		'' Set the context data type, to allow anonymous type()'s to
 		'' work for UDTs with constructors here
@@ -351,18 +351,18 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 		parser.ctx_dtype = ctx.dtype
 		parser.ctxsym    = ctx.subtype
 
-	    '' Expression
-	    expr = cExpression( )
+		'' Expression
+		expr = cExpression( )
 
 		'' Restore context data type
 		parser.ctx_dtype = olddtype
 		parser.ctxsym    = oldsubtype
 
-	    if( expr = NULL ) then
+		if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			'' error recovery: fake an expr
 			expr = astNewCONSTi( 0 )
-	    end if
+		end if
 
 		'' When initializing a BYREF parameter, an expression of the
 		'' same type should be used as-is instead of causing a copy
@@ -373,7 +373,7 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 		if( symbGetClass( ctx.sym ) = FB_SYMBCLASS_PARAM ) then
 			if( symbGetParamMode( ctx.sym ) = FB_PARAMMODE_BYREF ) then
 				if( (astGetDataType( expr ) = typeGetDtAndPtrOnly( ctx.dtype )) and _
-				    (astGetSubtype( expr ) = ctx.subtype) ) then
+					(astGetSubtype( expr ) = ctx.subtype) ) then
 					rec_cnt -= 1
 					return hDoAssign( ctx, expr )
 				end if
@@ -566,7 +566,7 @@ function cInitializer _
 	) as ASTNODE ptr
 
 	dim as integer is_local = any, ok = any
-    dim as FB_INITCTX ctx = any
+	dim as FB_INITCTX ctx = any
 
 	function = NULL
 
