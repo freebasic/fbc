@@ -1,0 +1,32 @@
+no warnings for passing constants:
+---
+no warnings for proper BYREF AS ANY usage:
+---
+no warnings for explicit BYVAL passed to BYREF AS ANY:
+---
+3 warnings (suspicious BYREF AS ANY argument):
+	Suspicious address expression passed to BYREF parameter, at parameter 1 of CLEAR()
+	Suspicious address expression passed to BYREF parameter, at parameter 1 of CLEAR()
+	Suspicious address expression passed to BYREF parameter, at parameter 1 of CLEAR()
+3 warnings (suspicious BYREF AS ANY argument):
+	Suspicious address expression passed to BYREF parameter, at parameter 1 of USER_DEFINED_NONCONST()
+	Suspicious address expression passed to BYREF parameter, at parameter 1 of USER_DEFINED_NONCONST()
+	Suspicious address expression passed to BYREF parameter, at parameter 1 of USER_DEFINED_NONCONST()
+3 warnings (suspicious BYREF AS ANY argument):
+	Suspicious address expression passed to BYREF parameter, at parameter 1 of USER_DEFINED_CONST()
+	Suspicious address expression passed to BYREF parameter, at parameter 1 of USER_DEFINED_CONST()
+	Suspicious address expression passed to BYREF parameter, at parameter 1 of USER_DEFINED_CONST()
+no warnings for passing global var addrof (OFFSET nodes):
+---
+other warnings for similar situations with other parameter types:
+no warning (correct usage):
+4 warnings (passing pointer to scalar):
+	Passing pointer to scalar, at parameter 1 (i) of F1()
+	Passing pointer to scalar, at parameter 1 (i) of F1()
+	Passing pointer to scalar, at parameter 1 (i) of F1()
+	Passing pointer to scalar, at parameter 1 (i) of F1()
+no warning (explicit BYVAL passes value as address, even though it's not a pointer type):
+no warning (correct usage):
+1 warning (mismatching pointer types):
+	Passing different pointer types, at parameter 1 (p) of F2()
+no warning (explicit BYVAL passes ptr value as address, even if it's a different pointer type):

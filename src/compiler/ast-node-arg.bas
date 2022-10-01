@@ -283,8 +283,10 @@ end sub
 
 private sub hCheckByrefParam _
 	( _
+		byval proc as FBSYMBOL ptr, _
 		byval param as FBSYMBOL ptr, _
-		byval n as ASTNODE ptr _
+		byval n as ASTNODE ptr, _
+		byval is_byref_void as boolean _
 	)
 
 	dim as ASTNODE ptr t = any
@@ -314,6 +316,34 @@ private sub hCheckByrefParam _
 	'' BOPs, CONSTs, etc.) we have to create a temp var to hold the arg's
 	'' value and then pass the temp var byref.
 	if( astCanTakeAddrOf( t ) = FALSE ) then
+		assert( param->class = FB_SYMBCLASS_PARAM )
+		assert( symbIsProc( proc ) )
+
+		''
+		'' Show warning for suspicious cases where using the temp var was probably not intended.
+		''
+		'' For example, passing ADDROF(VAR()) to a BYREF param seems likely to be a typo,
+		'' especially for functions like CLEAR (memset() but with BYREF AS ANY params).
+		'' The user probably meant to pass just the VAR(), instead of having CLEAR operate on a temp var.
+		'' This check seems like it would also apply to other cases,
+		'' i.e. built-in GET#/PUT#/INPUT/etc. functions, user-defined functions,
+		'' and also BYREF AS CONST ANY parameters (in which case
+		'' it's about potentially reading from the wrong memory location).
+		''
+		'' For BYREF AS <CONCRETE_TYPE>, there typically already are warnings for such typos,
+		'' such as "passing pointer to scalar" or "passing different pointer types",
+		'' but not for BYREF AS ANY.
+		''
+		'' Don't warn about passing constants though, they are allowed here just like for normal BYREF parameters.
+		'' An arbitrary constant is probably not meant to be passed as pointer,
+		'' so using the temp var should be fine. NULL might be an exception,
+		'' but should we warn specifically about passing 0? At least for CLEAR,
+		'' this doesn't seem like a common typo.
+		''
+		if( is_byref_void and not astIsCONST( t ) ) then
+			errReportWarn( FB_WARNINGMSG_BYREFTEMPVAR )
+		end if
+
 		n->l = astNewASSIGN( _
 			astNewVAR( symbAddTempVar( n->l->dtype, n->l->subtype ) ), _
 			n->l, _
@@ -541,7 +571,7 @@ private sub hCheckVoidParam _
 	end if
 
 	'' pass BYREF, check if a temp param isn't needed
-	hCheckByrefParam( param, n )
+	hCheckByrefParam( parent->sym, param, n, TRUE )
 end sub
 
 private function hCheckStrParam _
@@ -1003,7 +1033,7 @@ private function hCheckParam _
 
 	'' byref arg? check if a temp param isn't needed
 	if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
-		hCheckByrefParam( param, n )
+		hCheckByrefParam( parent->sym, param, n, FALSE )
 		'' it's an implicit pointer
 	end if
 
