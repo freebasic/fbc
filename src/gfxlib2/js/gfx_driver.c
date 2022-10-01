@@ -219,10 +219,10 @@ static int driver_get_mouse(int *x, int *y, int *z, int *buttons, int *clip)
 {
 	SDL_PumpEvents();
 
-	*buttons = fb_js_sdl_buttons_to_fb_buttons(SDL_GetMouseState(x, y));
-
-	*z = 0;
-	*clip = 0;
+	uint32_t state = SDL_GetMouseState(x, y);
+	if (buttons) *buttons = fb_js_sdl_buttons_to_fb_buttons(state);
+	if (z) *z = 0;
+	if (clip) *clip = 0;
 
 	return 0;
 }

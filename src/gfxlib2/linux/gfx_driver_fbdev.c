@@ -641,11 +641,11 @@ static int driver_get_mouse(int *x, int *y, int *z, int *buttons, int *clip)
 {
 	if (mouse_fd < 0)
 		return -1;
-	*x = mouse_x;
-	*y = mouse_y;
-	*z = mouse_z;
-	*buttons = mouse_buttons;
-	*clip = mouse_clip;
+	if (x) *x = mouse_x;
+	if (y) *y = mouse_y;
+	if (z) *z = mouse_z;
+	if (buttons) *buttons = mouse_buttons;
+	if (clip) *clip = mouse_clip;
 	return 0;
 }
 

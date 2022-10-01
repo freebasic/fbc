@@ -31,7 +31,11 @@ int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons, int *clip )
 	}
 
 	if( inited == 0 ) {
-		*x = *y = *z = *buttons = -1;
+		if (x) *x = -1;
+		if (y) *y = -1;
+		if (z) *z = -1;
+		if (buttons) *buttons = -1;
+		if (clip) *clip = -1;
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
@@ -49,11 +53,11 @@ int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons, int *clip )
 
 	fb_ConsoleProcessEvents( );
 
-	*x = last_x - 1;
-	*y = last_y - 1;
-	*z = last_z;
-	*buttons = last_buttons;
-	*clip = 0;
+	if (x) *x = last_x - 1;
+	if (y) *y = last_y - 1;
+	if (z) *z = last_z;
+	if (buttons) *buttons = last_buttons;
+	if (clip) *clip = 0;
 
 	fb_hConvertFromConsole( x, y, NULL, NULL );
 

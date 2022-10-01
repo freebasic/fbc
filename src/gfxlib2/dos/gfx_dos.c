@@ -267,11 +267,11 @@ int fb_dos_get_mouse(int *x, int *y, int *z, int *buttons, int *clip)
 {
 	if (!fb_dos.mouse_ok) return -1;
 	
-	*x = fb_dos_mouse_x;
-	*y = fb_dos_mouse_y;
-	*z = (fb_dos.mouse_wheel_ok ? fb_dos_mouse_z : 0);
-	*buttons = fb_dos_mouse_buttons;
-	*clip = fb_dos.mouse_clip;
+	if (x) *x = fb_dos_mouse_x;
+	if (y) *y = fb_dos_mouse_y;
+	if (z) *z = (fb_dos.mouse_wheel_ok ? fb_dos_mouse_z : 0);
+	if (buttons) *buttons = fb_dos_mouse_buttons;
+	if (clip) *clip = fb_dos.mouse_clip;
 	
 	return 0;
 }

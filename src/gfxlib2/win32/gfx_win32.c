@@ -712,11 +712,11 @@ int fb_hWin32GetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 	if ((!fb_win32.is_active) || (!mouse_on))
 		return -1;
 
-	*x = mouse_x;
-	*y = mouse_y;
-	*z = mouse_wheel;
-	*buttons = mouse_buttons;
-	*clip = fb_win32.mouse_clip;
+	if (x) *x = mouse_x;
+	if (y) *y = mouse_y;
+	if (z) *z = mouse_wheel;
+	if (buttons) *buttons = mouse_buttons;
+	if (clip) *clip = fb_win32.mouse_clip;
 
 	return 0;
 }
