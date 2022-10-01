@@ -307,6 +307,7 @@ sub strsetAdd _
 	i = listNewNode( @set->list )
 	i->s = s
 	i->userdata = userdata
+	i->hashitem = NULL
 
 	'' Don't bother with empty strings
 	'' (ditto, but won't happen here as long as not out of memory)
@@ -314,7 +315,45 @@ sub strsetAdd _
 		exit sub
 	end if
 
-	hashAdd(@set->hash, strptr(i->s), i, hashHash(strptr(i->s)))
+	i->hashitem = hashAdd( @set->hash, i->s, i, hashHash( i->s ))
+end sub
+
+sub strsetDel(byval set as TSTRSET ptr, byref s as const string)
+	if len(s) = 0 then
+		return
+	end if
+
+	'' Remove from hash table
+	var index = hashHash(s)
+	dim as TSTRSETITEM ptr setitem = hashLookupEx(@set->hash, s, index)
+	if setitem then
+		hashDel(@set->hash, setitem->hashitem, index)
+		setitem->hashitem = NULL
+
+		'' Remove corresponding entry from list
+		dim as TSTRSETITEM ptr i = listGetHead(@set->list)
+		while i
+			if i = setitem then
+				i->s = ""
+				listDelNode(@set->list, i)
+				exit while
+			end if
+			i = listGetNext(i)
+		wend
+	end if
+
+	'' Remove any other entries from list
+	'' (usually there shouldn't be any, but strsetAdd() has a code path
+	'' which adds entries to the list only...)
+	dim as TSTRSETITEM ptr i = listGetHead(@set->list)
+	while i
+		if i->s = s then
+			i->s = ""
+			listDelNode(@set->list, i)
+			exit while
+		end if
+		i = listGetNext(i)
+	wend
 end sub
 
 sub strsetCopy(byval target as TSTRSET ptr, byval source as TSTRSET ptr)

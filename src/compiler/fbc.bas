@@ -79,6 +79,7 @@ type FBCCTX
 	libfiles            as TLIST
 	libs                as TSTRSET
 	libpaths            as TSTRSET
+	excludedlibs        as TSTRSET '' lib names explicitly excluded via -nodeflib option(s)
 
 	'' Final list of libs and paths for linking
 	'' (each module can have #inclibs and #libpaths and add more, and for
@@ -204,6 +205,7 @@ private sub fbcInit( )
 	strlistInit( @fbc.libfiles, FBC_INITFILES\4 )
 	strsetInit( @fbc.libs, FBC_INITFILES\4 )
 	strsetInit( @fbc.libpaths, FBC_INITFILES\4 )
+	strsetInit( @fbc.excludedlibs, FBC_INITFILES\4 )
 
 	strsetInit(@fbc.finallibs, FBC_INITFILES\2)
 	strsetInit(@fbc.finallibpaths, FBC_INITFILES\2)
@@ -1723,6 +1725,7 @@ enum
 	OPT_MT
 	OPT_NODEFLIBS
 	OPT_NOERRLINE
+	OPT_NOLIB
 	OPT_NOOBJINFO
 	OPT_NOSTRIP
 	OPT_O
@@ -1804,6 +1807,7 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_MT           affects link, __FB_MT__
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_NODEFLIBS    affects link
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_NOERRLINE    affects compiler output display
+	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_NOLIB        affects link
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_NOOBJINFO    affects post compile process
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_NOSTRIP      affects link
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_O            affects input file naming
@@ -2060,6 +2064,15 @@ private sub handleOpt _
 
 	case OPT_NOERRLINE
 		fbSetOption( FB_COMPOPT_SHOWERROR, FALSE )
+
+	case OPT_NOLIB
+		dim libs() as string
+		hSplitStr(arg, ",", libs())
+		for i as integer = lbound(libs) to ubound(libs)
+			if len(libs(i)) > 0 then
+				strsetAdd(@fbc.excludedlibs, libs(i), 0 /'unused userdata'/)
+			end if
+		next
 
 	case OPT_NOOBJINFO
 		fbSetOption( FB_COMPOPT_OBJINFO, FALSE )
@@ -2387,6 +2400,7 @@ private function parseOption(byval opt as zstring ptr) as integer
 	case asc("n")
 		CHECK("noerrline", OPT_NOERRLINE)
 		CHECK("nodeflibs", OPT_NODEFLIBS)
+		CHECK("nolib", OPT_NOLIB)
 		CHECK("noobjinfo", OPT_NOOBJINFO)
 		CHECK("nostrip", OPT_NOSTRIP)
 
@@ -3990,6 +4004,15 @@ private sub hAddDefaultLibs( )
 
 end sub
 
+private sub hExcludeLibsFromLink( )
+	'' Remove any excluded libs from fbc.finallibs list
+	dim as TSTRSETITEM ptr i = listGetHead(@fbc.excludedlibs.list)
+	while i
+		strsetDel(@fbc.finallibs, i->s)
+		i = listGetNext(i)
+	wend
+end sub
+
 private sub hPrintOptions( byval verbose as integer )
 	'' Note: must print each line separately to let the rtlib print the
 	'' proper line endings even if redirected to file/pipe, hard-coding \n
@@ -4056,8 +4079,9 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -map <file>      Save linking map to file"
 	print "  -maxerr <n>      Only show <n> errors"
 	print "  -mt              Use thread-safe FB runtime"
-	print "  -nodeflibs       Do not include the default libraries"
+	print "  -nodeflibs       Do not include the default libraries when linking"
 	print "  -noerrline       Do not show source context in error messages"
+	print "  -nolib <a,b,c>   Do not include the specified libraries when linking"
 	print "  -noobjinfo       Do not read/write compile-time info from/to .o and .a files"
 	print "  -nostrip         Do not strip symbol information from the output file"
 	print "  -o <file>        Set .o (or -pp .bas) file name for prev/next input file"
@@ -4309,6 +4333,8 @@ end sub
 	if( fbc.nodeflibs = FALSE ) then
 		hAddDefaultLibs( )
 	end if
+
+	hExcludeLibsFromLink( )
 
 	if( hLinkFiles( ) = FALSE ) then
 		fbcEnd( 1 )
