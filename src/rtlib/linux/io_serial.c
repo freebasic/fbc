@@ -18,9 +18,10 @@
 #define SERIAL_TIMEOUT	3	/* seconds  for write on open*/
 #define SREAD_TIMEOUT	70	/* if not receive any character in less 50 millisecs finish read process */
 
-static void alrm()
+static void alrm(int signal_number)
 {
 	/* signal callback, do nothing */
+	(void)signal_number;
 }
 
 static speed_t get_speed( int speed )
