@@ -201,7 +201,7 @@
         rtlib & gfxlib2 fixes and improvements
         documentation and examples
         forum administrator and moderator since forever
-    - Ruben Rodriguez (rubentbstk[at]gmail.com)
+    - Ruben Rodriguez (fbc[at]cha0s.io)
         Var keyword, const specifier, placement new, operator overloading and
         other OOP-related work, C BFD wrapper, many fixes and improvements.
     - Simon Nash
