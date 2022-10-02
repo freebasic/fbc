@@ -66,6 +66,7 @@ declare sub hashDel _
 type TSTRSETITEM
 	as string s
 	as integer userdata
+	as HASHITEM ptr hashitem
 end type
 
 type TSTRSET
@@ -79,6 +80,7 @@ declare sub strsetAdd _
 		byref s as string, _
 		byval userdata as integer _
 	)
+declare sub strsetDel(byval set as TSTRSET ptr, byref s as const string)
 declare sub strsetCopy(byval target as TSTRSET ptr, byval source as TSTRSET ptr)
 declare sub strsetInit(byval set as TSTRSET ptr, byval nodes as integer)
 declare sub strsetEnd(byval set as TSTRSET ptr)
