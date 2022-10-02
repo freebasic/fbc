@@ -59,7 +59,7 @@ private function hDoAssign _
 		'' fail initializers that could be assigned with a cast to a base type.
 		'' This allows passing an initializer back to an exact matched parent.
 
-		expr = astNewCONV( ctx.dtype, ctx.subtype, expr, AST_CONVOPT_NOCONVTOBASE ) '' asdf
+		expr = astNewCONV( ctx.dtype, ctx.subtype, expr, AST_CONVOPT_NOCONVTOBASE )
 		if( expr = NULL ) then
 			'' hand it back...
 			'' (used with UDTs; if an UDT var is given in an UDT initializer,

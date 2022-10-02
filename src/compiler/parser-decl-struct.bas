@@ -1027,7 +1027,7 @@ sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
 	if( lexGetToken( ) = FB_TK_EXTENDS ) then
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
-		'' SymbolType 
+		'' SymbolType
 		'' - on error hSymbolType() will return [integer] in baseDType
 		hSymbolType( baseDType, baseSubtype, 0, FALSE, TRUE )
 
@@ -1076,6 +1076,7 @@ sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
 			while( context <> @symbGetGlobalNamespc( ) )
 				if( symbGetClass( context ) = FB_SYMBCLASS_STRUCT ) then
 					if( context = baseSubtype ) then
+						baseDType = 0
 						baseSubtype = NULL
 						errReport( FB_ERRMSG_INVALIDDATATYPES )
 						exit while
