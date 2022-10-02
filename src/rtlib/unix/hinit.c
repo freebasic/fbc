@@ -368,7 +368,7 @@ int fb_hTermOut( int code, int param1, int param2 )
  * the libc functions such as dlopen() and fork()/exec() directly, instead of
  * the FB keywords.
  */
-int fb_hInitConsole( )
+int fb_hInitConsole(void)
 {
 	struct termios term_out, term_in;
 
