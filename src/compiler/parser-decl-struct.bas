@@ -945,7 +945,7 @@ end sub
 ''  END (TYPE|UNION) .
 sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
 
-	static as zstring * FB_MAXNAMELEN+1 id
+	dim as zstring * FB_MAXNAMELEN+1 id
 	dim as integer isunion = any, checkid = any
 	dim as FBSYMBOL ptr sym = any
 	dim as FB_CMPSTMTSTK ptr stk = any
