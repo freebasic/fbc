@@ -51,7 +51,7 @@ const unsigned char __fb_keytable[][3] = {
 	{ 0,            0,          0           }
 };
 
-static HWND find_window()
+static HWND find_window(void)
 {
 	TCHAR old_title[MAX_PATH];
 	TCHAR title[MAX_PATH];

@@ -98,7 +98,7 @@ static void add_key(NODE **node, char *key, short code)
 		n->code = code;
 }
 
-static void init_keys()
+static void init_keys(void)
 {
 	KEY_DATA *data;
 	char *key;
@@ -143,7 +143,7 @@ static void init_keys()
 	add_key(&root_node, "[M", KEY_MOUSE);
 }
 
-static int get_input()
+static int get_input(void)
 {
 	NODE *node;
 	int k, cb, cx, cy;

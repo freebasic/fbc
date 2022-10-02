@@ -88,6 +88,12 @@ static void driver_wait_vsync(void)
 static int driver_get_mouse(int *x, int *y, int *z, int *buttons)
 {
 	/* !!!WRITEME!!! */
+	if (x) *x = -1;
+	if (y) *y = -1;
+	if (z) *z = -1;
+	if (buttons) *buttons = -1;
+	if (clip) *clip = -1;
+	return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 }
 
 static void driver_set_mouse(int x, int y, int cursor)

@@ -5,16 +5,9 @@
 int fb_GfxGetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 {
 	int failure = TRUE;
-	int temp_z, temp_buttons, temp_clip;
 
 	FB_GRAPHICS_LOCK( );
 
-	if (!z)
-		z = &temp_z;
-	if (!buttons)
-		buttons = &temp_buttons;
-	if (!clip)
-		clip = &temp_clip;
 	if ((__fb_gfx) && (__fb_gfx->driver->get_mouse)) {
 		DRIVER_LOCK();
 		failure = __fb_gfx->driver->get_mouse(x, y, z, buttons, clip);
@@ -24,7 +17,11 @@ int fb_GfxGetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 	FB_GRAPHICS_UNLOCK( );
 
 	if (failure) {
-		*x = *y = *z = *buttons = *clip = -1;
+		if (x) *x = -1;
+		if (y) *y = -1;
+		if (z) *z = -1;
+		if (buttons) *buttons = -1;
+		if (clip) *clip = -1;
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	}
 	return fb_ErrorSetNum( FB_RTERROR_OK );

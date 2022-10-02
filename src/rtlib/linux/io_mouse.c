@@ -187,15 +187,14 @@ static void mouse_exit(void)
 
 int fb_ConsoleGetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 {
-	int temp_z, temp_buttons;
-
-	if (!__fb_con.inited)
+	if (!__fb_con.inited) {
+		if (x) *x = -1;
+		if (y) *y = -1;
+		if (z) *z = -1;
+		if (buttons) *buttons = -1;
+		if (clip) *clip = -1;
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
-
-	if (!z)
-		z = &temp_z;
-	if (!buttons)
-		buttons = &temp_buttons;
+	}
 
 	BG_LOCK();
 
@@ -207,7 +206,11 @@ int fb_ConsoleGetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 			__fb_con.mouse_exit = mouse_exit;
 			__fb_con.mouse_handler = mouse_handler;
 		} else {
-			*x = *y = *z = *buttons = -1;
+			if (x) *x = -1;
+			if (y) *y = -1;
+			if (z) *z = -1;
+			if (buttons) *buttons = -1;
+			if (clip) *clip = -1;
 			BG_UNLOCK();
 			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 		}
@@ -216,11 +219,11 @@ int fb_ConsoleGetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 	if (__fb_con.inited != INIT_CONSOLE)
 		fb_hGetCh(FALSE);
 
-	*x = mouse_x;
-	*y = mouse_y;
-	*z = mouse_z;
-	*buttons = mouse_buttons;
-	*clip = 0;
+	if (x) *x = mouse_x;
+	if (y) *y = mouse_y;
+	if (z) *z = mouse_z;
+	if (buttons) *buttons = mouse_buttons;
+	if (clip) *clip = 0;
 
 	BG_UNLOCK();
 
