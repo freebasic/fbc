@@ -505,8 +505,8 @@ function cParentId _
 
 		'' check visibility
 		if( parent <> NULL ) then
-			if( symbCheckAccess( sym ) = FALSE ) then
-				if( (options and FB_IDOPT_ISDEFN) = 0 ) then
+			if( (options and FB_IDOPT_ISDEFN) = 0 ) then
+				if( symbCheckAccess( sym ) = FALSE ) then
 					errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 				end if
 			end if
