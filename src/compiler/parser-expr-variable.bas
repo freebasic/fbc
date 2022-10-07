@@ -221,7 +221,7 @@ end function
 '':::::
 '' MemberId       =   ID ArrayIdx?
 ''
-private function hMemberId( byval parent as FBSYMBOL ptr ) as FBSYMBOL ptr
+private function hMemberId( byval parent as FBSYMBOL ptr, byval allow_inner as integer ) as FBSYMBOL ptr
 	dim as FBSYMBOL ptr res = any
 
 	if( parent = NULL ) then
@@ -270,11 +270,16 @@ private function hMemberId( byval parent as FBSYMBOL ptr ) as FBSYMBOL ptr
 				select case as const symbGetClass( sym )
 				'' field, static members, or inner types?
 				case FB_SYMBCLASS_FIELD, FB_SYMBCLASS_VAR, _
-					FB_SYMBCLASS_CONST, FB_SYMBCLASS_ENUM, _
-					FB_SYMBCLASS_STRUCT
+				     FB_SYMBCLASS_CONST, FB_SYMBCLASS_ENUM
+					
 					'' check visibility
 					if( symbCheckAccess( sym ) = FALSE ) then
 						errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
+					end if
+
+				case FB_SYMBCLASS_STRUCT
+					if( allow_inner = FALSE ) then
+						exit do, do
 					end if
 
 				'' method?
@@ -319,7 +324,7 @@ function cUdtMember _
 	dim as integer is_ptr = TRUE, mask = typeGetConstMask( dtype )
 
 	do
-		dim as FBSYMBOL ptr fld = hMemberId( subtype )
+		dim as FBSYMBOL ptr fld = hMemberId( subtype, FALSE )
 		if( fld = NULL ) then
 			return NULL
 		end if
@@ -428,13 +433,20 @@ sub cUdtTypeMember _
 		lexSkipToken( LEXCHECK_NOPERIOD )
 
 		'' check member field, See also hLenSizeof()
-		dim sym as FBSYMBOL ptr = hMemberId( subtype )
+		dim sym as FBSYMBOL ptr = hMemberId( subtype, TRUE )
 
 		if( sym ) then
 			'' ID
 			lexSkipToken( LEXCHECK_POST_SUFFIX )
-			dtype = symbGetFullType( sym )
-			subtype = sym
+
+			'' Struct? must be a type and could be followed by '.' member access
+			if( symbGetClass( sym ) = FB_SYMBCLASS_STRUCT ) then
+				subtype = sym
+			else
+				dtype = symbGetFullType( sym )
+				subtype = symbGetSubType( sym )
+			end if
+
 			lgt = symbGetLen( sym )
 			is_fixlenstr = symbGetIsFixLenStr( sym )
 
