@@ -254,15 +254,15 @@ function symbCanDuplicate _
 	select case as const s->class
 	'' adding a define, keyword, namespace, class or field?
 	case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_KEYWORD, _
-		FB_SYMBCLASS_NAMESPACE, FB_SYMBCLASS_CLASS, _
-		FB_SYMBCLASS_FIELD
+	     FB_SYMBCLASS_NAMESPACE, FB_SYMBCLASS_CLASS, _
+	     FB_SYMBCLASS_FIELD
 
 		'' no dups allowed
 		exit function
 
 	'' struct, enum or typedef?
 	case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_ENUM, _
-		FB_SYMBCLASS_TYPEDEF
+	     FB_SYMBCLASS_TYPEDEF
 
 		'' note: if it's a struct, we don't have to check if it's unique,
 		'' because that will be only set after the symbol is added
@@ -272,9 +272,9 @@ function symbCanDuplicate _
 			'' anything but a define or themselves is allowed (keywords
 			'' (but quirk-keywords) are refused when parsing)
 			case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_NAMESPACE, _
-				FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_ENUM, _
-				FB_SYMBCLASS_TYPEDEF, FB_SYMBCLASS_CLASS, _
-				FB_SYMBCLASS_FIELD
+			     FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_ENUM, _
+			     FB_SYMBCLASS_TYPEDEF, FB_SYMBCLASS_CLASS, _
+			     FB_SYMBCLASS_FIELD
 
 				exit function
 			end select
@@ -290,7 +290,7 @@ function symbCanDuplicate _
 			'' anything but a define or another forward ref is allowed (keywords
 			'' (but quirk-keywords) are refused when parsing)
 			case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_NAMESPACE, _
-				FB_SYMBCLASS_FWDREF, FB_SYMBCLASS_CLASS
+			     FB_SYMBCLASS_FWDREF, FB_SYMBCLASS_CLASS
 
 				exit function
 
@@ -311,7 +311,7 @@ function symbCanDuplicate _
 			select case as const head_sym->class
 			'' only dup allowed are labels and UDTs
 			case FB_SYMBCLASS_LABEL, FB_SYMBCLASS_ENUM, _
-				FB_SYMBCLASS_TYPEDEF, FB_SYMBCLASS_FWDREF
+			     FB_SYMBCLASS_TYPEDEF, FB_SYMBCLASS_FWDREF
 
 			'' struct? only it's not unique
 			case FB_SYMBCLASS_STRUCT
@@ -363,7 +363,7 @@ function symbCanDuplicate _
 			select case as const head_sym->class
 			'' allow labels or UDTs as dups
 			case FB_SYMBCLASS_LABEL, FB_SYMBCLASS_ENUM, _
-				FB_SYMBCLASS_TYPEDEF, FB_SYMBCLASS_FWDREF
+			     FB_SYMBCLASS_TYPEDEF, FB_SYMBCLASS_FWDREF
 
 			'' struct? only it's not unique
 			case FB_SYMBCLASS_STRUCT
@@ -437,8 +437,8 @@ function symbCanDuplicate _
 			select case as const head_sym->class
 			'' anything but a define, keyword or another label is allowed
 			case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_NAMESPACE, _
-				FB_SYMBCLASS_KEYWORD, FB_SYMBCLASS_LABEL, _
-				FB_SYMBCLASS_CLASS
+			     FB_SYMBCLASS_KEYWORD, FB_SYMBCLASS_LABEL, _
+			     FB_SYMBCLASS_CLASS
 
 				exit function
 
@@ -464,8 +464,8 @@ function symbCanDuplicate _
 			select case as const head_sym->class
 			'' only allow if it's in a different scope or namespace
 			case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_NAMESPACE, _
-				FB_SYMBCLASS_VAR, FB_SYMBCLASS_CONST, _
-				FB_SYMBCLASS_RESERVED
+			     FB_SYMBCLASS_VAR, FB_SYMBCLASS_CONST, _
+			     FB_SYMBCLASS_RESERVED
 				if( (s->scope = head_sym->scope) and (symbGetNamespace(s) = symbGetNamespace(head_sym)) ) then
 					exit function
 				end if
@@ -552,7 +552,7 @@ function symbNewSymbol _
 	'' QB quirks
 	if( (options and FB_SYMBOPT_UNSCOPE) <> 0 ) then
 		if( (parser.currproc->stats and (FB_SYMBSTATS_MAINPROC or _
-										FB_SYMBSTATS_MODLEVELPROC)) <> 0 ) then
+		                                 FB_SYMBSTATS_MODLEVELPROC)) <> 0 ) then
 			s->scope = FB_MAINSCOPE
 		else
 			s->scope = parser.currproc->scope + 1
@@ -778,15 +778,16 @@ sub symbHashListInsertNamespace _
 				chain_->prev = NULL
 				chain_->isimport = TRUE
 
-				dim as FBSYMCHAIN ptr head = hashLookupEx( @symb.imphashtb, _
-														s->id.name, _
-														s->hash.index )
+				dim as FBSYMCHAIN ptr head = _
+					hashLookupEx( @symb.imphashtb, _
+					              s->id.name, _
+					              s->hash.index )
 				'' not defined yet? create a new hash node
 				if( head = NULL ) then
 					chain_->item = hashAdd( @symb.imphashtb, _
-											s->id.name, _
-											chain_, _
-											s->hash.index )
+					                        s->id.name, _
+					                        chain_, _
+					                        s->hash.index )
 					chain_->next = NULL
 
 				'' already defined..
@@ -1482,7 +1483,7 @@ function symbLookupAt _
 		'' Are we in a type's namespace?  Only search for inherited members
 		select case symbGetClass( ns )
 		case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_CLASS
-			return hLookupImportListByParents( ns, id, index )	
+			return hLookupImportListByParents( ns, id, index )
 		end select
 	end if
 
@@ -2554,8 +2555,8 @@ private function hSymbCheckConstAssignFuncPtr _
 
 	'' check for identical return type
 	var match = typeCalcMatch( lsubtype->typ, lsubtype->subtype, _
-			iif( symbIsReturnByRef( lsubtype ), FB_PARAMMODE_BYREF, FB_PARAMMODE_BYVAL ), _
-			rsubtype->typ, rsubtype->subtype )
+	                           iif( symbIsReturnByRef( lsubtype ), FB_PARAMMODE_BYREF, FB_PARAMMODE_BYVAL ), _
+	                           rsubtype->typ, rsubtype->subtype )
 	if( match = FB_OVLPROC_NO_MATCH ) then
 		wrnmsg = FB_WARNINGMSG_RETURNTYPEMISMATCH
 		exit function
@@ -2832,8 +2833,8 @@ function typeDumpToStr _
 		else
 			select case( typeGetDtOnly( dtype ) )
 			case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM, _
-				FB_DATATYPE_NAMESPC, _
-				FB_DATATYPE_FUNCTION, FB_DATATYPE_FWDREF
+			     FB_DATATYPE_NAMESPC, _
+			     FB_DATATYPE_FUNCTION, FB_DATATYPE_FWDREF
 				ok = FALSE
 			case else
 				ok = TRUE
@@ -2845,7 +2846,7 @@ function typeDumpToStr _
 		dump += ", "
 		if( subtype ) then
 			if( (subtype->class >= FB_SYMBCLASS_VAR) and _
-				(subtype->class <  FB_SYMBCLASS_NSIMPORT) ) then
+			    (subtype->class <  FB_SYMBCLASS_NSIMPORT) ) then
 				dump += *classnames(subtype->class)
 			else
 				dump += str( subtype->class )

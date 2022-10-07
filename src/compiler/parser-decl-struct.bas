@@ -86,12 +86,13 @@ private sub hTypeProtoDecl _
 
 	select case( tk )
 	case FB_TK_SUB, FB_TK_FUNCTION, _
-		FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR, _
-		FB_TK_OPERATOR, FB_TK_PROPERTY
+	     FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR, _
+	     FB_TK_OPERATOR, FB_TK_PROPERTY
+
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		cProcHeader( attrib, pattrib, is_nested, _
-				FB_PROCOPT_ISPROTO or FB_PROCOPT_HASPARENT, tk )
+		             FB_PROCOPT_ISPROTO or FB_PROCOPT_HASPARENT, tk )
 
 	case else
 		errReport( FB_ERRMSG_SYNTAXERROR )
@@ -624,8 +625,8 @@ sub hTypeStaticVarDecl _
 	'' at its declaration in the TYPE compound, only at the DIM later.
 
 	attrib or= FB_SYMBATTRIB_EXTERN or _
-			FB_SYMBATTRIB_SHARED or _
-			FB_SYMBATTRIB_STATIC
+	           FB_SYMBATTRIB_SHARED or _
+	           FB_SYMBATTRIB_STATIC
 
 	cVarDecl( attrib, FALSE, FB_TK_EXTERN, FALSE )
 
@@ -814,7 +815,7 @@ private sub hTypeBody( byval s as FBSYMBOL ptr )
 			'' isn't it a field called TYPE|UNION?
 			select case as const lexGetLookAhead( 1 )
 			case FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENT, FB_TK_REM, _
-				FB_TK_FIELD
+			     FB_TK_FIELD
 
 decl_inner:
 				'' it's an anonymous inner UDT
@@ -1116,8 +1117,8 @@ sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
 	'' start a new compound, or any EXTERN..END EXTERN used around this struct
 	'' would turn-off function mangling depending on the mode passed
 	cCompStmtPush( FB_TK_TYPE, _
-		FB_CMPSTMT_MASK_ALL and (not FB_CMPSTMT_MASK_CODE) _
-		and (not FB_CMPSTMT_MASK_DATA) )
+	               FB_CMPSTMT_MASK_ALL and (not FB_CMPSTMT_MASK_CODE) _
+	               and (not FB_CMPSTMT_MASK_DATA) )
 
 	'' we have to store some contextual information,
 	'' while there's no proper scope stack
@@ -1151,10 +1152,13 @@ sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
 	'' has methods? must be unique..
 	if( symbGetIsUnique( sym ) ) then
 		'' any preview declaration than itself?
-		dim as FBSYMCHAIN ptr chain_ = symbLookupAt( symbGetCurrentNamespc( ), _
-			id, _
-			FALSE, _
-			FALSE )
+		dim as FBSYMCHAIN ptr chain_ = _
+			symbLookupAt( _
+				symbGetCurrentNamespc( ), _
+				id, _
+				FALSE, _
+				FALSE _
+			)
 		'' could be NULL, because error recovery
 		if( chain_ <> NULL ) then
 			if( chain_->sym <> sym ) then

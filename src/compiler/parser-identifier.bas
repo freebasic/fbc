@@ -73,9 +73,9 @@ private function hGlobalId _
 	base_parent = @symbGetGlobalNamespc( )
 
 	function = symbLookupAt( base_parent, _
-							 lexGetText( ), _
-							 FALSE, _
-							 TRUE )
+	                         lexGetText( ), _
+	                         FALSE, _
+	                         TRUE )
 
 end function
 

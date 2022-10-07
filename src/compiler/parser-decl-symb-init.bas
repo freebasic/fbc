@@ -185,8 +185,8 @@ private function hArrayInit _
 		'' too many dimensions?
 		if( ctx.dimension >= symbGetArrayDimensions( ctx.sym ) ) then
 			errReport( iif( symbGetArrayDimensions( ctx.sym ) > 0, _
-							FB_ERRMSG_TOOMANYEXPRESSIONS, _
-							FB_ERRMSG_EXPECTEDARRAY ) )
+			                FB_ERRMSG_TOOMANYEXPRESSIONS, _
+			                FB_ERRMSG_EXPECTEDARRAY ) )
 			'' error recovery: skip until next '}'
 			hSkipUntil( CHAR_RBRACE, TRUE )
 			ctx.dimension -= 1
@@ -266,7 +266,7 @@ private function hArrayInit _
 		'' symbCheckArraySize() handles this special case. (The check will be incomplete,
 		'' but ultimately
 		if( symbCheckArraySize( symbGetArrayDimensions( ctx.sym ), @symbGetArrayDim( ctx.sym, 0 ), ctx.sym->lgt, _
-					((ctx.sym->attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0) ) = FALSE ) then
+		                        ((ctx.sym->attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0) ) = FALSE ) then
 			errReport( FB_ERRMSG_ARRAYTOOBIG )
 			'' error recovery: set this dimension to 1 element
 			symbSetFixedSizeArrayDimensionElements( ctx.sym, ctx.dimension, 1 )
@@ -379,7 +379,7 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 		if( symbGetClass( ctx.sym ) = FB_SYMBCLASS_PARAM ) then
 			if( symbGetParamMode( ctx.sym ) = FB_PARAMMODE_BYREF ) then
 				if( (astGetDataType( expr ) = typeGetDtAndPtrOnly( ctx.dtype )) and _
-					(astGetSubtype( expr ) = ctx.subtype) ) then
+				    (astGetSubtype( expr ) = ctx.subtype) ) then
 					return hDoAssign( ctx, expr )
 				end if
 			end if
