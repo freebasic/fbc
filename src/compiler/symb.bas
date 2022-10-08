@@ -2309,6 +2309,45 @@ function symbCalcDerefLen _
 	function = length
 end function
 
+function symbIsParentNamespace _
+	( _
+		byval dtype as FB_DATATYPE, _
+		byval subtype as FBSYMBOL ptr,  _
+		byval ns as FBSYMBOL ptr = NULL _
+	) as integer
+
+	'' Check if dtype/subtype is a parent of namespace (ns)
+	'' if namespace (ns) not given, then default to the current namespace
+	'' This check is used in some places to determine if a symbol
+	'' can be used without causing a circular reference.
+	'' For example, fields of struct can't be typed as a parent
+	'' (though pointer types of the parent can).
+	''
+
+	dim context as FBSYMBOL ptr = any
+
+	if( typeGetDtAndPtrOnly( dtype ) <> FB_DATATYPE_STRUCT ) then
+		return FALSE
+	end if
+
+	if( ns ) then
+		context = ns
+	else
+		context = symbGetCurrentNamespc( )
+	end if
+	while( context <> @symbGetGlobalNamespc( ) )
+		if( symbGetClass( context ) = FB_SYMBCLASS_STRUCT ) then
+			if( context = subtype ) then
+				return TRUE
+			end if
+		end if
+		context = symbGetParent( context )
+	wend
+
+	return FALSE
+
+end function
+
 function symbCheckAccess( byval sym as FBSYMBOL ptr ) as integer
 	dim as FBSYMBOL ptr parent = any, context = any
 

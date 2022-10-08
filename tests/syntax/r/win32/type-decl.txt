@@ -1,0 +1,4 @@
+member1 as T1
+type-decl.bas(16) error 24: Invalid data types in 't( 1, member1 as T1 )'
+as T1 member2
+type-decl.bas(17) error 24: Invalid data types, found 'member2' in 't( 1, as T1 member2 )'

@@ -1950,6 +1950,13 @@ declare function symbCloneLabel _
 		byval sym as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
+declare function symbIsParentNamespace _
+	( _
+		byval dtype as FB_DATATYPE, _
+		byval subtype as FBSYMBOL ptr,  _
+		byval ns as FBSYMBOL ptr = NULL _
+	) as integer
+
 declare function symbCheckAccess( byval sym as FBSYMBOL ptr ) as integer
 
 declare function symbGetFullProcName _

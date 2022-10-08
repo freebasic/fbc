@@ -260,6 +260,15 @@ private sub hFieldType _
 	'' SymbolType
 	hSymbolType( dtype, subtype, lgt )
 
+	'' check that field type is not a parent struct namespace
+	if( symbIsParentNamespace( dtype, subtype ) ) then
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
+		'' error recovery: fake a type
+		dtype = FB_DATATYPE_INTEGER
+		subtype = NULL
+		lgt = typeGetSize( dtype )
+	end if
+
 	'' Disallow creating objects of abstract classes
 	hComplainIfAbstractClass( dtype, subtype )
 
@@ -1068,22 +1077,11 @@ sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
 			end if
 		end if
 
-		'' check that the base type is not a parent of the current type
-		if( baseDType = FB_DATATYPE_STRUCT ) then
-			'' is this an inner type? don't allow extending any undeclared parent UDT
-			dim context as FBSYMBOL ptr = any
-			context = symbGetCurrentNamespc( )
-			while( context <> @symbGetGlobalNamespc( ) )
-				if( symbGetClass( context ) = FB_SYMBCLASS_STRUCT ) then
-					if( context = baseSubtype ) then
-						baseDType = 0
-						baseSubtype = NULL
-						errReport( FB_ERRMSG_INVALIDDATATYPES )
-						exit while
-					end if
-				end if
-				context = symbGetParent( context )
-			wend
+		'' check that the base type is not a parent struct namespace
+		if( symbIsParentNamespace( baseDType, baseSubtype ) ) then
+			baseDType = 0
+			baseSubtype = NULL
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
 		end if
 
 		'' base type? check if z|wstring was already extended
