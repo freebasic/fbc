@@ -77,6 +77,7 @@ Version 1.10.0
 - gfxlib2: LINE statement computing an incorrect line style pattern on any non-X86 (i.e. 64-bit, etc)
 - github #393: rtlib: OPEN fails when opening an encoded file for append.  Check the BOM on existing files for INPUT/APPEND, write the BOM for new files for OUTPUT/APPEND.
 - sf.net #968: fbc: major changes how initializers are handled and pairing of a UDT's (internal) structure and the initializer list given by the user.
+- fbc: show an error on byref initializers that can't take address of.  Previously this was checked by fbc debug assertion only.
 
 
 Version 1.09.0
