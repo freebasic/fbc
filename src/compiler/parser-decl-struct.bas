@@ -870,11 +870,18 @@ decl_inner:
 			case FB_TK_AS
 				hTypeElementDecl( FB_TK_DIM, s, attrib )
 
-			'' Otherwise TYPE|UNION starts an inner declaration
+			'' Otherwise TYPE|UNION maybe starts an inner declaration
 			case else
+				'' Inside an anonymous type|union?  Don't allow named types
+				if( symbIsStruct( s ) andalso symbGetUDTIsAnon( s ) ) then
+					hTypeElementDecl( FB_TK_DIM, s, attrib )
+
 				'' allow named UNION|TYPE to be nested in another UNION|TYPE
-				hBeginNesting( s )
-				cTypeDecl( attrib )
+				else
+					hBeginNesting( s )
+					cTypeDecl( attrib )
+
+				end if
 
 			end select
 

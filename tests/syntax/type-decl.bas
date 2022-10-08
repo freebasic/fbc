@@ -11,3 +11,24 @@ namespace n1
 		end type
 	end type
 end namespace
+
+'' ------------------------------------
+#print "---"
+#print "2 errors for named type/union in an anonymous type/union"
+
+namespace n2
+	type T1
+		a as integer
+		union
+			b as integer
+			type NAMED1
+		end union
+	end type
+	union U1
+		a as integer
+		type
+			b as integer
+			union NAMED2
+		end type
+	end union
+end namespace
