@@ -1193,7 +1193,7 @@ private sub hPatchByvalParamsToSelf( byval parent as FBSYMBOL ptr )
 			while( param )
 				'' BYVAL AS ParentUDT?
 				if( (symbGetType( param ) = FB_DATATYPE_STRUCT) and _
-					(symbGetSubtype( param ) = parent) ) then
+				    (symbIsParentNamespace( symbGetType( sym ), symbGetSubtype( sym ), parent)) ) then
 
 					if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
 						symbRecalcLen( param )
@@ -1207,16 +1207,27 @@ private sub hPatchByvalParamsToSelf( byval parent as FBSYMBOL ptr )
 		sym = sym->next
 	wend
 
+	'' recurse in to nested types
+	sym = symbGetUDTSymbtb( parent ).head
+	while( sym )
+		if( symbIsStruct( sym ) ) then
+			hPatchByvalParamsToSelf( sym )
+		end if
+		sym = sym->next
+	wend
+
 end sub
 
 private sub hPatchByvalResultToSelf( byval parent as FBSYMBOL ptr )
-	var sym = symbGetUDTSymbtb( parent ).head
+	dim as FBSYMBOL ptr sym = any
+
+	sym = symbGetUDTSymbtb( parent ).head
 	while( sym )
 
 		'' Function or static variable? Using parent UDT as Byval (result) data type?
 		if( (symbGetType( sym ) = FB_DATATYPE_STRUCT) and _
-			(symbGetSubtype( sym ) = parent) and _
-			(not symbIsRef( sym )) ) then
+		    (symbIsParentNamespace( symbGetType( sym ), symbGetSubtype( sym ), parent)) and _
+		    (not symbIsRef( sym )) ) then
 
 			if( symbIsProc( sym ) ) then
 				symbProcRecalcRealType( sym )
@@ -1228,4 +1239,14 @@ private sub hPatchByvalResultToSelf( byval parent as FBSYMBOL ptr )
 
 		sym = sym->next
 	wend
+
+	'' recurse in to nested types
+	sym = symbGetUDTSymbtb( parent ).head
+	while( sym )
+		if( symbIsStruct( sym ) ) then
+			hPatchByvalResultToSelf( sym )
+		end if
+		sym = sym->next
+	wend
+
 end sub

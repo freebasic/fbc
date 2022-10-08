@@ -623,8 +623,7 @@ function symbAddVar _
 
 	'' Static member var using parent UDT as dtype? Length must be
 	'' recalculated later, when UDT was fully parsed...
-	if( (symbGetType( s ) = FB_DATATYPE_STRUCT) and _
-	    (s->subtype = symbGetCurrentNamespc( )) ) then
+	if( symbIsParentNamespace( symbGetType( s ), s->subtype ) ) then
 		symbSetUdtHasRecByvalRes( subtype )
 	end if
 

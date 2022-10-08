@@ -232,8 +232,8 @@ sub AmbigiousSizeofInfo.maybeWarn( byval tk as integer, byval refers_to_type as 
 	'' Don't warn if it's a type and a var of that type, because then the
 	'' len() or sizeof() would return the same value in either case.
 	if( symbIsVar( nontype ) and _
-		(symbGetType( nontype ) = FB_DATATYPE_STRUCT) and _
-		(nontype->subtype = typ) ) then
+	    (symbGetType( nontype ) = FB_DATATYPE_STRUCT) and _
+	    (nontype->subtype = typ) ) then
 		exit sub
 	end if
 
@@ -294,8 +294,8 @@ function cTypeOrExpression _
 
 	'' Token followed by an operator except '*' / '<'?
 	if( (lexGetLookAheadClass( 1 ) = FB_TKCLASS_OPERATOR) andalso _
-		(lexGetLookAhead( 1 ) <> CHAR_TIMES) andalso _
-		(lexGetLookAhead( 1 ) <> FB_TK_LT) ) then
+	    (lexGetLookAhead( 1 ) <> CHAR_TIMES) andalso _
+	    (lexGetLookAhead( 1 ) <> FB_TK_LT) ) then
 		maybe_type = FALSE
 	else
 		'' Check for some non-operator tokens
@@ -720,8 +720,8 @@ function cSymbolType _
 
 			if( check_id ) then
 				chain_ = cIdentifier( base_parent, _
-					iif( options and FB_SYMBTYPEOPT_SAVENSPREFIX, FB_IDOPT_NONE, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT ) _
-					)
+				                      iif( options and FB_SYMBTYPEOPT_SAVENSPREFIX, FB_IDOPT_NONE, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT ) _
+				                    )
 			end if
 
 			if( chain_ ) then

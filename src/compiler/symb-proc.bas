@@ -246,7 +246,7 @@ function symbAddProcParam _
 	'' for UDTs, check if not including a byval param to self
 	if( typeGet( dtype ) = FB_DATATYPE_STRUCT ) then
 		if( mode = FB_PARAMMODE_BYVAL ) then
-			if( subtype = symbGetCurrentNamespc( ) ) then
+			if( symbIsParentNamespace( dtype, subtype ) ) then
 				symbSetUdtHasRecByvalParam( subtype )
 			end if
 		end if
@@ -335,8 +335,8 @@ sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 
 	'' UDT? follow GCC 3.x's ABI
 	case FB_DATATYPE_STRUCT
-		'' still parsing the struct? patch it later..
-		if( subtype = symbGetCurrentNamespc( ) ) then
+		'' still parsing the struct or any inner type? patch it later..
+		if( symbIsParentNamespace( dtype, subtype ) ) then
 			symbSetUdtHasRecByvalRes( subtype )
 		else
 			dtype = symbGetUDTRetType( subtype )
