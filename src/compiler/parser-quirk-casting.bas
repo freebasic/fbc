@@ -197,6 +197,12 @@ function cAnonType( ) as ASTNODE ptr
 
 	'' UDT?
 	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_STRUCT ) then
+		'' if it's a UDT and the next token is a 
+		'' left parenthesis, don't handle parentheses as optional
+		if( lexGetToken() = CHAR_LPRNT ) then
+			fbSetPrntOptional( FALSE )
+		end if
+
 		'' Has a ctor?
 		if( symbGetCompCtorHead( subtype ) ) then
 			return cCtorCall( subtype )

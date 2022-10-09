@@ -78,6 +78,8 @@ Version 1.10.0
 - github #393: rtlib: OPEN fails when opening an encoded file for append.  Check the BOM on existing files for INPUT/APPEND, write the BOM for new files for OUTPUT/APPEND.
 - sf.net #968: fbc: major changes how initializers are handled and pairing of a UDT's (internal) structure and the initializer list given by the user.
 - fbc: show an error on byref initializers that can't take address of.  Previously this was checked by fbc debug assertion only.
+- sf.net #894: Can't initialise a UDT as copy of another if the first element is a UNION, fixed by sf.net #968
+- sf.net #922: Sometimes can't use extra backets inside TYPE UDT initialiser - now, don't allow optional parentheses when parsing type<UDT>(...) if left parenthesis is found
 
 
 Version 1.09.0
