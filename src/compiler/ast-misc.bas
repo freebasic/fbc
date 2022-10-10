@@ -47,14 +47,14 @@ function astIsTreeEqual _
 		byval r as ASTNODE ptr _
 	) as integer
 
-    function = FALSE
+	function = FALSE
 
-    if( (l = NULL) or (r = NULL) ) then
-    	if( l = r ) then
-    		function = TRUE
-    	end if
-    	exit function
-    end if
+	if( (l = NULL) or (r = NULL) ) then
+		if( l = r ) then
+			function = TRUE
+		end if
+		exit function
+	end if
 
 	if( l->class <> r->class ) then
 		exit function
@@ -162,7 +162,7 @@ function astIsTreeEqual _
 
 	end select
 
-    '' check childs
+	'' check childs
 	if( astIsTreeEqual( l->l, r->l ) = FALSE ) then
 		exit function
 	end if
@@ -171,7 +171,7 @@ function astIsTreeEqual _
 		exit function
 	end if
 
-    ''
+	''
 	function = TRUE
 
 end function
@@ -516,9 +516,9 @@ function astGetStrLitSymbol _
 
 	dim as FBSYMBOL ptr s = any
 
-    function = NULL
+	function = NULL
 
-   	if( astIsVAR( n ) ) then
+	if( astIsVAR( n ) ) then
 		s = astGetSymbol( n )
 		if( s <> NULL ) then
 			if( symbGetIsLiteral( s ) ) then
@@ -579,10 +579,10 @@ sub astCheckConst _
 		case 0.0, 2e-45 to 3e+38 '' definitely no overflow: comfortably within SINGLE bounds
 			result = TRUE
 		case else '' might overflow - slower/more thorough test
-			
+
 			sval = csng( dval )
 
-		  	#define IS_INFINITY_OR_ZERO(x) ( (x) + (x) = (x) )
+			#define IS_INFINITY_OR_ZERO(x) ( (x) + (x) = (x) )
 			'' if sval is infinity or 0, then dval must also have been otherwise there was an overflow/underflow
 			if IS_INFINITY_OR_ZERO( sval ) then
 				result = IS_INFINITY_OR_ZERO( dval )
@@ -746,9 +746,9 @@ function astBuildBranch _
 		return NULL
 	end if
 
-    '' CHAR and WCHAR literals are also from the INTEGER class
-    select case as const dtype
-    case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+	'' CHAR and WCHAR literals are also from the INTEGER class
+	select case as const dtype
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		'' don't allow, unless it's a deref pointer
 		if( astIsDEREF( expr ) = FALSE ) then
 			return NULL
@@ -996,7 +996,7 @@ sub astDtorListDump( )
 		if( i->cookie = -1 ) then
 			print "    "; "*deleted*"; " cookie: ";i->cookie;" refcount: ";i->refcount
 		else
-			print "    ";symbDumpToStr( i->sym );" cookie: ";i->cookie;" refcount: ";i->refcount;" has dtor? ";hHasDtor( i->sym )			
+			print "    ";symbDumpToStr( i->sym );" cookie: ";i->cookie;" refcount: ";i->refcount;" has dtor? ";hHasDtor( i->sym )
 		end if
 		i = listGetPrev( i )
 	wend
@@ -1073,7 +1073,7 @@ sub astDtorListRemoveRef( byval sym as FBSYMBOL ptr )
 end sub
 
 function astDtorListFlush( byval cookie as integer ) as ASTNODE ptr
-    dim as AST_DTORLIST_ITEM ptr n = any, p = any
+	dim as AST_DTORLIST_ITEM ptr n = any, p = any
 	dim as ASTNODE ptr t = any
 
 	'' call the dtors in the reverse order
@@ -1175,7 +1175,7 @@ end function
 ''
 '' if cookie = -1 then delete the dtor at next astDtorListFlush(0)
 ''    This is useful if an expression was at first parsed with a,
-''    dtor list scope, but then it turns out that it's not needed, 
+''    dtor list scope, but then it turns out that it's not needed,
 ''    and can be undone using this function
 ''
 private sub hastDtorListRescope( byval cookie as integer, byval newcookie as integer )
@@ -1224,8 +1224,8 @@ sub astSetType _
 	end if
 #endif
 
-    astGetFullType( n ) = dtype
-    n->subtype = subtype
+	astGetFullType( n ) = dtype
+	n->subtype = subtype
 
 	select case n->class
 	case AST_NODECLASS_LINK
