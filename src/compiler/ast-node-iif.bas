@@ -185,10 +185,12 @@ function astNewIIF _
 		'' treated as a var-len string, and there is no temp var...
 		if( astConstEqZero( condexpr ) ) then
 			astDelTree( truexpr )
+			astDtorListScopeDelete( truecookie )
 			function = falsexpr
 			astDtorListUnscope( falsecookie )
 		else
 			astDelTree( falsexpr )
+			astDtorListScopeDelete( falsecookie )
 			function = truexpr
 			astDtorListUnscope( truecookie )
 		end if

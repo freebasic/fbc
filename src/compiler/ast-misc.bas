@@ -993,7 +993,11 @@ sub astDtorListDump( )
 	print "-------------- dtorlist: ------------------"
 	i = listGetTail( @ast.dtorlist )
 	while( i )
-		print "    ";symbDumpToStr( i->sym );" cookie: ";i->cookie;" refcount: ";i->refcount;" has dtor? ";hHasDtor( i->sym )
+		if( i->cookie = -1 ) then
+			print "    "; "*deleted*"; " cookie: ";i->cookie;" refcount: ";i->refcount
+		else
+			print "    ";symbDumpToStr( i->sym );" cookie: ";i->cookie;" refcount: ";i->refcount;" has dtor? ";hHasDtor( i->sym )			
+		end if
 		i = listGetPrev( i )
 	wend
 end sub
@@ -1078,14 +1082,24 @@ function astDtorListFlush( byval cookie as integer ) as ASTNODE ptr
 	while( n )
 		p = listGetPrev( n )
 
-		'' astDtorListFlush() shouldn't be called without cookie
-		'' while there still are entries registered with cookies,
-		'' they probably should have been flushed first.
-		assert( iif( cookie = 0, n->cookie = 0, TRUE ) )
+		'' astDtorListFlush(0) shouldn't be called without a cookie
+		'' while there still are entries registered with cookies.
+		'' Any scopes should have either called:
+		''    - astDtorListScopeDelete(cookie) to delete the dtors
+		''    - astDtorListUnscope(cookie) to move the dtors to after the
+		''      expression
+		'' Or if a cookie was given (>0) then only flush dtors for
+		'' the cookie number given
 
-		'' Only call dtors for the given cookie number
+		assert( iif( cookie = 0, (n->cookie = 0) or (n->cookie = -1), TRUE ) )
+
+		'' Only flush dtors for the given cookie number
 		if( n->cookie = cookie ) then
 			t = astNewLINK( t, astBuildVarDtorCall( n->sym ), AST_LINK_RETURN_NONE )
+			listDelNode( @ast.dtorlist, n )
+
+		'' or delete the cookie was marked for delete
+		elseif( n->cookie = -1 ) then
 			listDelNode( @ast.dtorlist, n )
 		end if
 
@@ -1151,20 +1165,39 @@ function astDtorListScopeEnd( ) as integer
 end function
 
 '' Remove cookie markers from the dtor list entries for the given scope,
-'' indicating that they should be destroyed by the next toplevel
+'' indicating that they should be handled by the next toplevel
 '' astDtorListFlush(0).
-'' This is useful if an expression was at first parsed with a dtor list scope,
-'' but then it turns out that that's not needed, and can be undone using this
-'' function.
-sub astDtorListUnscope( byval cookie as integer )
+''
+'' if cookie = 0 then emit the dtor at the next astDtorListFlush(0)
+''    This is useful if an expression was at first parsed with a,
+''    dtor list scope, but then it turns out that it's needed but
+''    only after the expression is fully composed.
+''
+'' if cookie = -1 then delete the dtor at next astDtorListFlush(0)
+''    This is useful if an expression was at first parsed with a,
+''    dtor list scope, but then it turns out that it's not needed, 
+''    and can be undone using this function
+''
+private sub hastDtorListRescope( byval cookie as integer, byval newcookie as integer )
 	dim as AST_DTORLIST_ITEM ptr i = any
 	i = listGetTail( @ast.dtorlist )
 	while( i )
 		if( i->cookie = cookie ) then
-			i->cookie = 0
+			i->cookie = newcookie
 		end if
 		i = listGetPrev( i )
 	wend
+end sub
+
+sub astDtorListUnscope( byval cookie as integer )
+	'' Unscope dtors and emit after the expression
+	hastDtorListRescope( cookie, 0 )
+end sub
+
+sub astDtorListScopeDelete( byval cookie as integer )
+	'' Delete dtors
+	'' use a cookie of '-1' to indicate delete
+	hastDtorListRescope( cookie, -1 )
 end sub
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

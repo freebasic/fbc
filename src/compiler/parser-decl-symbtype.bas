@@ -353,9 +353,16 @@ sub cTypeOf _
 	)
 
 	dim as ASTNODE ptr expr = any
+	dim as integer dtorlistcookie = any
+
+	astDtorListScopeBegin( )
 
 	'' Type or an Expression
 	expr = cTypeOrExpression( FB_TK_TYPEOF, dtype, subtype, lgt, is_fixlenstr )
+
+	'' discard all dtors that may have been generated
+	dtorlistcookie = astDtorListScopeEnd( )
+	astDtorListScopeDelete( dtorlistcookie )
 
 	'' Was it a type?
 	if( expr = NULL ) then

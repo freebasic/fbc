@@ -80,6 +80,8 @@ Version 1.10.0
 - fbc: show an error on byref initializers that can't take address of.  Previously this was checked by fbc debug assertion only.
 - sf.net #894: Can't initialise a UDT as copy of another if the first element is a UNION, fixed by sf.net #968
 - sf.net #922: Sometimes can't use extra backets inside TYPE UDT initialiser - now, don't allow optional parentheses when parsing type<UDT>(...) if left parenthesis is found
+- sf.net #824: Illegal destructor call after '#print typeof( f() )' when f() is a function returning an object by value
+- fbc: delete destructor calls of discarded expressions in IIF(), previously, unscoped dtors (to be called after the expression) and deleted dtors (to be never called) were being handled the same
 
 
 Version 1.09.0
