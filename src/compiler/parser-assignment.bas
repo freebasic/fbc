@@ -278,7 +278,7 @@ private function hAssignFromField _
 		return astNewNOP( )
 	end if
 
-	'' check visibility
+	'' Check visibility of the field
 	if( symbCheckAccess( fld ) = FALSE ) then
 		hReportLetError( FB_ERRMSG_ILLEGALMEMBERACCESS, num )
 		'' error recovery

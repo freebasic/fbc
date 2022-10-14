@@ -309,6 +309,7 @@ function rtlMemNewOp _
 		assert( (astGetOpSelfVer( op ) = AST_OP_NEW_SELF) or (astGetOpSelfVer( op ) = AST_OP_NEW_VEC_SELF) )
 		sym = symbGetCompOpOvlHead( subtype, astGetOpSelfVer( op ) )
 		if( sym ) then
+			'' Check visibility of the new operator
 			if( symbCheckAccess( sym ) = FALSE ) then
 				errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 			end if
@@ -355,6 +356,7 @@ function rtlMemDeleteOp _
 		assert( (astGetOpSelfVer( op ) = AST_OP_DEL_SELF) or (astGetOpSelfVer( op ) = AST_OP_DEL_VEC_SELF) )
 		sym = symbGetCompOpOvlHead( subtype, astGetOpSelfVer( op ) )
 		if( sym ) then
+			'' Check visibility of the delete operator
 			if( symbCheckAccess( sym ) = FALSE ) then
 				errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 			end if

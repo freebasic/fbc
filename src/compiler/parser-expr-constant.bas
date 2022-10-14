@@ -8,7 +8,7 @@
 #include once "ast.bi"
 
 function cConstant( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
-	'' check visibility
+	'' Check visibility of constant
 	if( symbCheckAccess( sym ) = FALSE ) then
 		errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 	end if

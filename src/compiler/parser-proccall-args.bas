@@ -367,7 +367,7 @@ private function hOvlProcArgList _
 
 	proc = ovlproc
 
-	'' check visibility
+	'' Check visibility of the procedure (to be called)
 	if( symbCheckAccess( proc ) = FALSE ) then
 		errReportEx( iif( symbIsConstructor( proc ), _
 		                  FB_ERRMSG_NOACCESSTOCTOR, _
@@ -477,7 +477,7 @@ function cProcArgList _
 	function = NULL
 	have_eq_outside_parens = FALSE
 
-	'' check visibility
+	'' Check visibility of the procedure (to be called)
 	if( symbCheckAccess( proc ) = FALSE ) then
 		errReportEx( iif( symbIsConstructor( proc ), _
 		                  FB_ERRMSG_NOACCESSTOCTOR, _

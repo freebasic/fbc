@@ -794,7 +794,7 @@ private function hVarInitDefault _
 	if( has_defctor ) then
 		'' not already declared nor dynamic array?
 		if( (not is_declared) and ((symbGetAttrib( sym ) and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_COMMON)) = 0) ) then
-			'' Check visibility
+			'' Check visibility to the default constructor
 			if( symbCheckAccess( symbGetCompDefCtor( symbGetSubtype( sym ) ) ) = FALSE ) then
 				errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
 			end if
@@ -1203,7 +1203,7 @@ private function hFlushInitializer _
 
 	'' object?
 	if( has_dtor and (not symbIsRef( sym )) ) then
-		'' check visibility
+		'' Check visibility of the destructor
 		if( symbCheckAccess( symbGetCompDtor1( symbGetSubtype( sym ) ) ) = FALSE ) then
 			errReport( FB_ERRMSG_NOACCESSTODTOR )
 		end if

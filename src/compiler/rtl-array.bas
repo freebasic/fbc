@@ -303,6 +303,7 @@ private sub hCheckDefCtor _
 	assert( symbIsConstructor( ctor ) )
 
 	if( check_access ) then
+		'' Check visibility of the default constructor
 		if( symbCheckAccess( ctor ) = FALSE ) then
 			errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
 		end if
@@ -334,6 +335,7 @@ private sub hCheckDtor _
 	assert( symbIsDestructor1( dtor ) )
 
 	if( check_access ) then
+		'' Check visibility of the default destructor
 		if( symbCheckAccess( dtor ) = FALSE ) then
 			errReport( FB_ERRMSG_NOACCESSTODTOR )
 		end if

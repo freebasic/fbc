@@ -1154,6 +1154,7 @@ private function hCallBaseCtor _
 	if( defctor ) then
 		'' Check access here, because (unlike fields) it's not done
 		'' during the TYPE compound parsing
+		'' Check visibility of the default construtor
 		if( symbCheckAccess( defctor ) = FALSE ) then
 			errReport( FB_ERRMSG_NOACCESSTOBASEDEFCTOR )
 		end if
@@ -1329,6 +1330,7 @@ private sub hCallBaseDtor _
 
 	'' Check access here, because (unlike fields) it's not done
 	'' during the TYPE compound parsing
+	'' Check visibility of the default destructor
 	if( symbCheckAccess( dtor ) = FALSE ) then
 		errReport( FB_ERRMSG_NOACCESSTOBASEDTOR )
 	end if

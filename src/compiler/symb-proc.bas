@@ -2395,7 +2395,7 @@ function symbFindSelfBopOvlProc _
 			errReport( *err_num, TRUE )
 		end if
 	else
-		'' check visibility
+		'' Check visibility of the operator
 		if( symbCheckAccess( proc ) = FALSE ) then
 			*err_num = FB_ERRMSG_ILLEGALMEMBERACCESS
 			errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, _
@@ -2490,7 +2490,7 @@ function symbFindSelfUopOvlProc _
 		end if
 
 	else
-		'' check visibility
+		'' Check visibility of the operator
 		if( symbCheckAccess( proc ) = FALSE ) then
 			*err_num = FB_ERRMSG_ILLEGALMEMBERACCESS
 			errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, _
@@ -2665,7 +2665,7 @@ function symbFindCastOvlProc _
 		closest_proc = NULL
 	else
 		if( closest_proc <> NULL ) then
-			'' check visibility
+			'' Check visibility of cast operator
 			if( symbCheckAccess( closest_proc ) = FALSE ) then
 				*err_num = FB_ERRMSG_ILLEGALMEMBERACCESS
 				errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, _

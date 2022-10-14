@@ -173,7 +173,7 @@ private sub hFieldInit _
 					'' Does it have a default constructor?
 					defctor = symbGetCompDefCtor( subtype )
 					if( defctor ) then
-						'' Check whether we have access
+						'' Check visibility of the default constructor
 						if( symbCheckAccess( defctor ) = FALSE ) then
 							errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
 						end if
@@ -186,7 +186,7 @@ private sub hFieldInit _
 				'' Does it have a destructor?
 				defctor = symbGetCompDtor1( subtype )
 				if( defctor ) then
-					'' Check whether we have access
+					'' Check visibility of the default constructor
 					if( symbCheckAccess( defctor ) = FALSE ) then
 						errReport( FB_ERRMSG_NOACCESSTODTOR )
 					end if

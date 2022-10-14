@@ -272,7 +272,7 @@ private function hMemberId( byval parent as FBSYMBOL ptr, byval allow_inner as i
 				case FB_SYMBCLASS_FIELD, FB_SYMBCLASS_VAR, _
 				     FB_SYMBCLASS_CONST, FB_SYMBCLASS_ENUM
 
-					'' check visibility
+					'' Check visibility of member
 					if( symbCheckAccess( sym ) = FALSE ) then
 						errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 					end if
@@ -1022,7 +1022,7 @@ function cVariableEx overload _
 
 	assert( symbIsVar( sym ) )
 
-	'' check visibility
+	'' Check visibility of the variable
 	if( symbCheckAccess( sym ) = FALSE ) then
 		errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 	end if

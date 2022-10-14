@@ -978,7 +978,7 @@ private function hUdtCallOpOvl _
 		end if
 		return NULL
 	else
-		'' check visibility / access
+		'' Check visibility of the operator
 		if( symbCheckAccess( sym ) = FALSE ) then
 			errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS , *symbGetFullProcName( sym ) )
 			return NULL

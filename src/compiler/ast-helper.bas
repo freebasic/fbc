@@ -153,6 +153,7 @@ function astBuildVarDtorCall overload _
 			'' UDT var with dtor?
 			if( symbHasDtor( s ) ) then
 				if( check_access ) then
+					'' Check visibility of the destructor
 					if( symbCheckAccess( symbGetCompDtor1( symbGetSubtype( s ) ) ) = FALSE ) then
 						errReport( FB_ERRMSG_NOACCESSTODTOR )
 					end if
@@ -638,7 +639,7 @@ function astBuildImplicitCtorCall _
         return expr
 	end if
 
-	'' check visibility
+	'' Check visibility of the constructor
 	if( symbCheckAccess( proc ) = FALSE ) then
 		errReport( FB_ERRMSG_NOACCESSTOCTOR )
 	end if

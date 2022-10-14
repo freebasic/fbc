@@ -151,7 +151,7 @@ function cOperatorNew( ) as ASTNODE ptr
 				if( op <> AST_OP_NEW_VEC ) then
 					initexpr = cCtorCall( subtype )
 				else
-					'' check visibility
+					'' Check visibility of the default constructor
 					if( symbCheckAccess( ctor ) = FALSE ) then
 						errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
 					end if
@@ -258,8 +258,9 @@ sub cOperatorDelete( )
 		errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE )
 	end select
 
-	'' check visibility
+	'' Check visibility
 	if( typeHasDtor( typeDeref( dtype ), subtype ) ) then
+		'' Check visibility of the destructor
 		if( symbCheckAccess( symbGetCompDtor1( subtype ) ) = FALSE ) then
 			errReport( FB_ERRMSG_NOACCESSTODTOR )
 		end if

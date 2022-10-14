@@ -287,7 +287,7 @@ private function hArrayInit _
 			if( ctor = NULL ) then
 				errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
 			else
-				'' check visibility
+				'' Check visibility of the default ctor
 				if( symbCheckAccess( ctor ) = FALSE ) then
 					errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
 				end if
@@ -448,6 +448,7 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 
 		astTypeIniGetOfs( ctx.tree ) = baseofs + fld->ofs
 
+		'' Check visibility of the field
 		if( symbCheckAccess( fld ) = FALSE ) then
 			errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 		end if

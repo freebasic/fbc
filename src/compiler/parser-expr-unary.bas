@@ -465,6 +465,7 @@ private function hProcPtrBody _
 		return astNewCONSTi( 0 )
 	end if
 
+	'' Check visibility of the proc
 	if( symbCheckAccess( proc ) = FALSE ) then
 		errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, symbGetFullProcName( proc ) )
 	end if

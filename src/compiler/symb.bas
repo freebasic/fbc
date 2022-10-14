@@ -2314,7 +2314,7 @@ function symbIsParentNamespace _
 	( _
 		byval dtype as FB_DATATYPE, _
 		byval subtype as FBSYMBOL ptr,  _
-		byval ns as FBSYMBOL ptr = NULL _
+		byval start_ns as FBSYMBOL ptr = NULL _
 	) as integer
 
 	'' Check if dtype/subtype is a parent of namespace (ns)
@@ -2331,8 +2331,8 @@ function symbIsParentNamespace _
 		return FALSE
 	end if
 
-	if( ns ) then
-		context = ns
+	if( start_ns ) then
+		context = start_ns
 	else
 		context = symbGetCurrentNamespc( )
 	end if
@@ -2349,7 +2349,11 @@ function symbIsParentNamespace _
 
 end function
 
-function symbCheckAccess( byval sym as FBSYMBOL ptr ) as integer
+function symbCheckAccess _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer
+
 	dim as FBSYMBOL ptr parent = any, context = any
 
 	'' Neither private nor protected? Always ok.
