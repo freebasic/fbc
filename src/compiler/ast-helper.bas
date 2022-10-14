@@ -62,13 +62,13 @@ function astBuildFakeWstringAssign _
 
 	'' wcharptr = WstrAlloc( WstrLen( expr ) )
 	t = astNewLINK( t, _
-		astBuildVarAssign( sym, rtlWstrAlloc( rtlWstrLen( astCloneTree( expr ) ) ), options ), _
-		AST_LINK_RETURN_NONE )
+	                astBuildVarAssign( sym, rtlWstrAlloc( rtlWstrLen( astCloneTree( expr ) ) ), options ), _
+	                AST_LINK_RETURN_NONE )
 
 	'' *wcharptr = expr
 	t = astNewLINK( t, _
-		astNewASSIGN( astBuildFakeWstringAccess( sym ), expr, options ), _
-		AST_LINK_RETURN_RIGHT )
+	                astNewASSIGN( astBuildFakeWstringAccess( sym ), expr, options ), _
+	                AST_LINK_RETURN_RIGHT )
 
 	function = t
 end function
@@ -96,7 +96,7 @@ function astBuildVarInc _
 	end if
 
 	function = astNewSelfBOP( op, astNewVAR( lhs ), _
-		astNewCONSTi( rhs ), NULL, options )
+	                          astNewCONSTi( rhs ), NULL, options )
 
 end function
 
@@ -278,7 +278,7 @@ function astBuildTempVarClear( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 
 	'' Clear variable's memory
 	function = astNewMEM( AST_OP_MEMCLEAR, astNewVAR( sym ), _
-			astNewCONSTi( symbGetLen( sym ) ) )
+	                      astNewCONSTi( symbGetLen( sym ) ) )
 end function
 
 ''
@@ -883,8 +883,8 @@ function astBuildArrayDescIniTree _
 
     '' .size = len( array ) * elements( array )
 	astTypeIniAddAssign( tree, _
-		astNewCONSTi( iif( symbIsDynamic( array ), 0ll, symbGetRealSize( array ) ) ), _
-		elm )
+	                     astNewCONSTi( iif( symbIsDynamic( array ), 0ll, symbGetRealSize( array ) ) ), _
+	                     elm )
 
     elm = symbGetNext( elm )
 

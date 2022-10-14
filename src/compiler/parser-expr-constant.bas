@@ -46,8 +46,8 @@ function cStrLiteral( byval skiptoken as integer ) as ASTNODE ptr
 						if( lexGetToken( ) <> FB_TK_STRLIT_NOESC ) then
 							if( hHasEscape( zs ) ) then
 								errReportWarn( FB_WARNINGMSG_POSSIBLEESCSEQ, _
-										   	   zs, _
-										   	   FB_ERRMSGOPT_ADDCOLON or FB_ERRMSGOPT_ADDQUOTES )
+								               zs, _
+								               FB_ERRMSGOPT_ADDCOLON or FB_ERRMSGOPT_ADDQUOTES )
 							end if
 						end if
 					end if

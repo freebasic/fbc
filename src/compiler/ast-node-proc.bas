@@ -538,10 +538,10 @@ private function hCheckErrHnd _
 	'' or constructor's field would be initialized and break ctor chaining)
 	if( env.clopt.errlocation ) then
 		head_node = astAddAfter( rtlErrorSetModName( sym, _
-			astNewCONSTstr( @env.inf.name ) ), head_node )
+		                         astNewCONSTstr( @env.inf.name ) ), head_node )
 
 		head_node = astAddAfter( rtlErrorSetFuncName( sym, _
-			astNewCONSTstr( symbGetName( sym ) ) ), head_node )
+		                         astNewCONSTstr( symbGetName( sym ) ) ), head_node )
 	end if
 
 	with sym->proc.ext->err
@@ -843,8 +843,8 @@ private sub hLoadProcResult( byval proc as FBSYMBOL ptr )
 	else
 		'' Use the real type, in case it's BYREF return or a UDT result
 		n = astNewLOAD( astNewVAR( s, 0, symbGetProcRealType( proc ), _
-					symbGetProcRealSubtype( proc ) ), _
-				symbGetProcRealType( proc ), TRUE )
+		                symbGetProcRealSubtype( proc ) ), _
+		                symbGetProcRealType( proc ), TRUE )
 	end if
 
 	astAdd( n )
@@ -1108,9 +1108,9 @@ private function hCallFieldCtors _
 						'' Note: flushing the field's TYPEINI against the whole "THIS" instance,
 						'' not against "THIS.thefield", because the TYPEINI contains absolute offsets.
 						tree = astNewLINK( tree, _
-							astTypeIniFlush( astBuildVarField( this_ ), _
-								astTypeIniClone( symbGetTypeIniTree( fld ) ), _
-								FALSE, AST_OPOPT_ISINI ), AST_LINK_RETURN_NONE )
+						                   astTypeIniFlush( astBuildVarField( this_ ), _
+						                   astTypeIniClone( symbGetTypeIniTree( fld ) ), _
+						                   FALSE, AST_OPOPT_ISINI ), AST_LINK_RETURN_NONE )
 					end if
 				end if
 			end if
@@ -1187,8 +1187,8 @@ private function hInitVptr _
 	'' assuming that everything with a vptr extends fb_Object
 	function = astNewASSIGN( _ 
 		astBuildVarField( this_, symbUdtGetFirstField( symb.rtti.fb_object ) ), _
-		astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-			astNewADDROF( astNewVAR( parent->udt.ext->vtable, env.pointersize * 2 ) ) ), _
+		                  astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
+		                  astNewADDROF( astNewVAR( parent->udt.ext->vtable, env.pointersize * 2 ) ) ), _
 		AST_OPOPT_ISINI )
 end function
 
@@ -1343,8 +1343,8 @@ private sub hCallBaseDtor _
 
 	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
 	astAdd( astBuildDtorCall( symbGetSubtype( base_ ), _
-				astBuildVarField( this_, base_ ), _
-				TRUE ) )
+	        astBuildVarField( this_, base_ ), _
+	        TRUE ) )
 end sub
 
 private sub hCallDtors( byval proc as FBSYMBOL ptr )

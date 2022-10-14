@@ -727,8 +727,8 @@ function rtlArrayBound _
 	function = NULL
 
 	proc = astNewCALL( iif( islbound, _
-				PROCLOOKUP( ARRAYLBOUND ), _
-				PROCLOOKUP( ARRAYUBOUND ) ) )
+	                   PROCLOOKUP( ARRAYLBOUND ), _
+	                   PROCLOOKUP( ARRAYUBOUND ) ) )
 
 	'' array() as ANY
 	if( astNewARG( proc, arrayexpr ) = NULL ) then

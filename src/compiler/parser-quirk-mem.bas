@@ -199,7 +199,7 @@ function cOperatorNew( ) as ASTNODE ptr
 	end if
 
 	expr = astBuildNewOp( op, tmp, elementsexpr, initexpr, _
-			dtype, subtype, do_clear, placementexpr )
+	                      dtype, subtype, do_clear, placementexpr )
 
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES )

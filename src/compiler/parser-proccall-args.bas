@@ -346,12 +346,12 @@ private function hOvlProcArgList _
 	end if
 
 	ovlproc = symbFindClosestOvlProc( proc, _
-									  args, _
-									  iif( (options and FB_PARSEROPT_HASINSTPTR) <> 0, _
-									  	   arg_list->head->next, _
-									  	   arg_list->head ), _
-									  @err_num, _
-									  lkup_options )
+	                                  args, _
+	                                  iif( (options and FB_PARSEROPT_HASINSTPTR) <> 0, _
+	                                       arg_list->head->next, _
+	                                       arg_list->head ), _
+	                                  @err_num, _
+	                                  lkup_options )
 
 	if( ovlproc = NULL ) then
 		symbFreeOvlCallArgs( @parser.ovlarglist, arg_list )

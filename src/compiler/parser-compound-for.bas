@@ -80,9 +80,9 @@ private sub hUdtFor _
 	end if
 
 	proc = hUdtCallOpOvl( symbGetSubtype( stk->for.cnt.sym ), _
-						  AST_OP_FOR, _
-					  	  hElmToExpr( @stk->for.cnt ), _
-					  	  step_expr )
+	                      AST_OP_FOR, _
+	                      hElmToExpr( @stk->for.cnt ), _
+	                      step_expr )
 
 	if( proc <> NULL ) then
 		astAdd( proc )
@@ -104,9 +104,9 @@ private sub hUdtStep _
 	end if
 
 	proc = hUdtCallOpOvl( symbGetSubtype( stk->for.cnt.sym ), _
-						  AST_OP_STEP, _
-						  hElmToExpr( @stk->for.cnt ), _
-						  step_expr )
+	                      AST_OP_STEP, _
+	                      hElmToExpr( @stk->for.cnt ), _
+	                      step_expr )
 
 	if( proc <> NULL ) then
 		astAdd( proc )
@@ -128,18 +128,18 @@ private sub hUdtNext _
 	end if
 
 	proc = hUdtCallOpOvl( symbGetSubtype( stk->for.cnt.sym ), _
-						  AST_OP_NEXT, _
-						  hElmToExpr( @stk->for.cnt ), _
-						  hElmToExpr( @stk->for.end ), _
-						  step_expr )
+	                      AST_OP_NEXT, _
+	                      hElmToExpr( @stk->for.cnt ), _
+	                      hElmToExpr( @stk->for.end ), _
+	                      step_expr )
 
 	if( proc <> NULL ) then
 		'' if proc(...) <> 0 then goto init
 		astAdd( astNewBOP( AST_OP_NE, _
-						proc, _
-						astNewCONSTi( 0 ), _
-						stk->for.inilabel, _
-						AST_OPOPT_NONE ) )
+		                   proc, _
+		                   astNewCONSTi( 0 ), _
+		                   stk->for.inilabel, _
+		                   AST_OPOPT_NONE ) )
 	end if
 
 end sub
@@ -172,11 +172,11 @@ private sub hScalarNext _
 		dim as FBSYMBOL ptr cl = symbAddLabel( NULL )
 
 		'' if ispositive = FALSE then
-		astAdd( astNewBOP( AST_OP_NE, _
-					   	   hElmToExpr( @stk->for.ispos ), _
-					   	   astNewCONSTi( 0 ), _
-					   	   cl, _
-					   	   AST_OPOPT_NONE ) )
+				astAdd( astNewBOP( AST_OP_NE, _
+				        hElmToExpr( @stk->for.ispos ), _
+				        astNewCONSTi( 0 ), _
+				        cl, _
+				        AST_OPOPT_NONE ) )
 
 			'' if counter >= end_condition then
 				'' goto top_of_FOR
@@ -880,8 +880,8 @@ sub cForStmtBegin( )
 	'' check if this branch is needed
 	if( isconst = 3 ) then
 		expr = astNewBOP( iif( stk->for.ispos.value.i, AST_OP_LE, AST_OP_GE ), _
-					astNewCONST( @stk->for.cnt.value, stk->for.cnt.dtype ), _
-					astNewCONST( @stk->for.end.value, stk->for.end.dtype ) )
+		                  astNewCONST( @stk->for.cnt.value, stk->for.cnt.dtype ), _
+		                  astNewCONST( @stk->for.end.value, stk->for.end.dtype ) )
 
 		if( astConstFlushToInt( expr ) = 0 ) then
 			astAdd( astNewBRANCH( AST_OP_JMP, el ) )
@@ -919,8 +919,8 @@ private function hUdtCallOpOvl _
 
 	if( sym = NULL ) then
 		errReport( FB_ERRMSG_UDTINFORNEEDSOPERATORS, _
-				   TRUE, _
-				   astGetOpId( op ) )
+		           TRUE, _
+		           astGetOpId( op ) )
 		return NULL
 	end if
 
