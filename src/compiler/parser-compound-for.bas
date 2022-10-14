@@ -10,9 +10,9 @@
 #include once "symb.bi"
 
 enum FOR_FLAGS
-	FOR_ISUDT			= &h0001
-	FOR_HASCTOR			= &h0002
-	FOR_ISLOCAL			= &h0004
+	FOR_ISUDT           = &h0001
+	FOR_HASCTOR         = &h0002
+	FOR_ISLOCAL         = &h0004
 end enum
 
 #define CREATEFAKEID( ) _
@@ -38,14 +38,14 @@ declare sub hFlushBOP _
 declare sub hFlushSelfBOP _
 	( _
 		byval op as integer, _
-	 	byval lhs as FB_CMPSTMT_FORELM ptr, _
+		byval lhs as FB_CMPSTMT_FORELM ptr, _
 		byval rhs as FB_CMPSTMT_FORELM ptr _
 	)
 
 ''::::
 private function hElmToExpr _
 	( _
-	 	byval v as FB_CMPSTMT_FORELM ptr _
+		byval v as FB_CMPSTMT_FORELM ptr _
 	) as ASTNODE ptr
 
 	'' This function creates an AST node using the value
@@ -281,7 +281,7 @@ end function
 private sub hFlushBOP _
 	( _
 		byval op as integer, _
-	 	byval lhs as FB_CMPSTMT_FORELM ptr, _
+		byval lhs as FB_CMPSTMT_FORELM ptr, _
 		byval rhs as FB_CMPSTMT_FORELM ptr, _
 		byval ex as FBSYMBOL ptr _
 	)
@@ -328,7 +328,7 @@ end sub
 private function hStepExpression _
 	( _
 		byval lhs_dtype as integer, _
-	 	byval lhs_subtype as FBSYMBOL ptr, _
+		byval lhs_subtype as FBSYMBOL ptr, _
 		byval rhs as FB_CMPSTMT_FORELM ptr _
 	) as ASTNODE ptr
 
@@ -377,7 +377,7 @@ end function
 private sub hFlushSelfBOP _
 	( _
 		byval op as integer, _
-	 	byval lhs as FB_CMPSTMT_FORELM ptr, _
+		byval lhs as FB_CMPSTMT_FORELM ptr, _
 		byval rhs as FB_CMPSTMT_FORELM ptr _
 	)
 
@@ -1006,8 +1006,8 @@ private sub hForStmtClose(byval stk as FB_CMPSTMTSTK ptr)
 		'' emit test label
 		astAdd( astNewLABEL( stk->for.testlabel ) )
 
-        '' check
-        hUdtNext( stk )
+		'' check
+		hUdtNext( stk )
 
 	case else
 		'' update

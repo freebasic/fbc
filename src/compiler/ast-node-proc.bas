@@ -3,8 +3,8 @@
 '' l = head node; r = tail node
 ''
 '' note: an implicit scope block isn't created, because the
-''		 implicit main() function (inside scope blocks only
-''		 non-decl statements are allowed)
+''       implicit main() function (inside scope blocks only
+''       non-decl statements are allowed)
 ''
 
 
@@ -18,9 +18,9 @@
 #include once "ast.bi"
 
 type FB_GLOBINSTANCE
-	sym				as FBSYMBOL_ ptr			'' for symbol
-	initree			as ASTNODE ptr				'' can't store in sym, or emit will use it
-	call_dtor		as integer
+	sym             as FBSYMBOL_ ptr            '' for symbol
+	initree         as ASTNODE ptr              '' can't store in sym, or emit will use it
+	call_dtor       as integer
 end type
 
 declare function hModLevelIsEmpty( byval p as ASTNODE ptr ) as integer
@@ -666,14 +666,14 @@ function astProcEnd( byval callrtexit as integer ) as integer
 		astScopeDestroyVars(symbGetProcSymbTb(sym).tail)
 	end if
 
-   	''
-   	astAdd( astNewLABEL( n->block.exitlabel ) )
+	''
+	astAdd( astNewLABEL( n->block.exitlabel ) )
 
 	'' Check for any undefined labels (labels can be forward references)
 	res = (symbCheckLabels(symbGetProcSymbTbHead(parser.currproc)) = 0)
 
 	if( res ) then
-		'' Complete Destructor? (D1) 
+		'' Complete Destructor? (D1)
 		if( symbIsDestructor1( sym ) and enable_implicit_code ) then
 			'' Call destructors, behind the exit label, so they'll
 			'' always be called, even with early returns.
@@ -1185,7 +1185,7 @@ private function hInitVptr _
 
 	'' this.vptr = cast( any ptr, (cast(byte ptr, @vtable) + sizeof(void *) * 2) )
 	'' assuming that everything with a vptr extends fb_Object
-	function = astNewASSIGN( _ 
+	function = astNewASSIGN( _
 		astBuildVarField( this_, symbUdtGetFirstField( symb.rtti.fb_object ) ), _
 		                  astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
 		                  astNewADDROF( astNewVAR( parent->udt.ext->vtable, env.pointersize * 2 ) ) ), _
