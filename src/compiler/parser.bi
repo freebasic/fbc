@@ -278,8 +278,8 @@ declare function cDeclaration _
 
 declare sub cConstDecl( byval attrib as FB_SYMBATTRIB )
 declare sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
-declare sub cTypedefMultDecl( )
-declare sub cTypedefSingleDecl( byval pid as zstring ptr )
+declare sub cTypedefMultDecl( byval attrib as FB_SYMBATTRIB )
+declare sub cTypedefSingleDecl( byval attrib as FB_SYMBATTRIB, byval pid as zstring ptr )
 declare sub cEnumDecl( byval attrib as FB_SYMBATTRIB )
 declare function hCheckScope() as integer
 

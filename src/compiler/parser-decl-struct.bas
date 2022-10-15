@@ -983,7 +983,7 @@ sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
 			'' AS?
 			if( lexGetToken( ) = FB_TK_AS ) then
 				'' (Note: the typedef parser will skip the AS)
-				cTypedefMultDecl( )
+				cTypedefMultDecl( attrib )
 				exit sub
 			end if
 		end if
@@ -1025,7 +1025,7 @@ sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
 		end if
 
 		'' (Note: the typedef parser will skip the AS)
-		cTypedefSingleDecl( id )
+		cTypedefSingleDecl( attrib, id )
 		exit sub
 	end if
 

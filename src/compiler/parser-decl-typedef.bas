@@ -97,7 +97,8 @@ private sub hAddForwardRef _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as longint, _
-		byref is_fixlenstr as integer _
+		byref is_fixlenstr as integer, _
+		byval attrib as FB_SYMBATTRIB _
 	)
 
 	dim as integer ptrcount = typeGetPtrCnt( dtype )
@@ -143,6 +144,12 @@ private sub hAddForwardRef _
 		subtype = symbAddFwdRef( pfwdname )
 		lgt = -1
 
+		if( subtype ) then
+			'' set visibility flags
+			subtype->attrib or= (attrib and FB_SYMBATTRIB_VIS_PRIVATE)
+			subtype->attrib or= (attrib and FB_SYMBATTRIB_VIS_PROTECTED)
+		end if
+
 		'' Already exists? (happens e.g. with the multiple declaration syntax)
 		if( subtype = NULL ) then
 			'' Lookup the existing one
@@ -156,6 +163,7 @@ private sub hAddForwardRef _
 				errReport( FB_ERRMSG_DUPDEFINITION )
 				'' error recovery: fake a symbol
 				subtype = symbAddFwdRef( symbUniqueLabel( ) )
+
 			end if
 		end if
 	end if
@@ -171,12 +179,13 @@ private sub hAddTypedef _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as longint, _
-		byval is_fixlenstr as integer _
+		byval is_fixlenstr as integer, _
+		byval attrib as FB_SYMBATTRIB _
 	)
 
 	'' Forward ref? Note: may update dtype & co
 	if( pfwdname <> NULL ) then
-		hAddForwardRef( pid, pfwdname, dtype, subtype, lgt, is_fixlenstr )
+		hAddForwardRef( pid, pfwdname, dtype, subtype, lgt, is_fixlenstr, attrib )
 	end if
 
 	dim as FBSYMBOL ptr typedef = symbAddTypedef( pid, dtype, subtype, lgt )
@@ -184,6 +193,10 @@ private sub hAddTypedef _
 		if( is_fixlenstr ) then
 			symbSetIsFixLenStr( typedef )
 		end if
+
+		'' set visibility flags
+		typedef->attrib or= (attrib and FB_SYMBATTRIB_VIS_PRIVATE)
+		typedef->attrib or= (attrib and FB_SYMBATTRIB_VIS_PROTECTED)
 	else
 		'' check if the dup definition is different
 		dim as integer isdup = TRUE
@@ -242,7 +255,7 @@ private function hReadId( ) as zstring ptr
 end function
 
 '' MultipleTypedef  =  TYPE AS SymbolType symbol (',' symbol)*
-sub cTypedefMultDecl( )
+sub cTypedefMultDecl( byval attrib as FB_SYMBATTRIB )
 	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
 		hSkipStmt( )
 		exit sub
@@ -261,14 +274,14 @@ sub cTypedefMultDecl( )
 		'' Parse the ID
 		var pid = hReadId( )
 
-		hAddTypedef( pid, pfwdname, dtype, subtype, lgt, is_fixlenstr )
+		hAddTypedef( pid, pfwdname, dtype, subtype, lgt, is_fixlenstr, attrib )
 
 		'' ','?
 	loop while( hMatch( CHAR_COMMA ) )
 end sub
 
 '' SingleTypedef  =  TYPE symbol AS SymbolType (',' symbol AS SymbolType)*
-sub cTypedefSingleDecl( byval pid as zstring ptr )
+sub cTypedefSingleDecl( byval attrib as FB_SYMBATTRIB, byval pid as zstring ptr )
 	'' note: given id can be Ucase()'d
 
 	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
@@ -288,7 +301,7 @@ sub cTypedefSingleDecl( byval pid as zstring ptr )
 		dim as FBSYMBOL ptr subtype
 		var pfwdname = hReadType( dtype, subtype, lgt, is_fixlenstr )
 
-		hAddTypedef( pid, pfwdname, dtype, subtype, lgt, is_fixlenstr )
+		hAddTypedef( pid, pfwdname, dtype, subtype, lgt, is_fixlenstr, attrib )
 
 		'' ','?
 		if( hMatch( CHAR_COMMA ) = FALSE ) then

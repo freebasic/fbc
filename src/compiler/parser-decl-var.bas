@@ -35,7 +35,9 @@ sub hMaybeComplainTypeUsage _
 	'' check access to structs and if the check fails, fake a
 	'' a type for error recovery
 
-	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_STRUCT ) then
+	select case typeGetDtAndPtrOnly( dtype )
+	case FB_DATATYPE_STRUCT, FB_DATATYPE_FWDREF
+
 		'' Check visibility of the symbol type
 		if( symbCheckAccessStruct( subtype ) = FALSE ) then
 			errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
@@ -44,7 +46,8 @@ sub hMaybeComplainTypeUsage _
 			subtype = NULL
 			lgt = typeGetSize( dtype )
 		end if
-	end if
+
+	end select
 
 end sub
 
@@ -1455,7 +1458,8 @@ function cVarDecl _
 		is_redim = (token = FB_TK_REDIM) and ((attrib and FB_SYMBATTRIB_SHARED) = 0)
 
 		parent = cParentId( FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT or FB_IDOPT_ISVAR or _
-		                    iif( is_redim, 0, FB_IDOPT_ISDECL ) )
+		                    iif( is_redim, 0, FB_IDOPT_ISDECL ) or _
+		                    FB_IDOPT_ISDEFN )
 
 		''
 		'' Ambiguity: If this is a REDIM, it can either redim an existing
@@ -2203,7 +2207,8 @@ private sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 
 		'' id.id? if not, NULL
 		parent = cParentId( FB_IDOPT_DEFAULT or FB_IDOPT_ISDECL or _
-		                    FB_IDOPT_ALLOWSTRUCT or FB_IDOPT_ISVAR )
+		                    FB_IDOPT_ALLOWSTRUCT or FB_IDOPT_ISVAR or _
+		                    FB_IDOPT_ISDEFN)
 
 		'' get id
 		dim as integer suffix = any

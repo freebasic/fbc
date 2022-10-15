@@ -763,6 +763,12 @@ function cSymbolType _
 							exit do, do
 
 						case FB_SYMBCLASS_TYPEDEF
+							'' check access on the typedef only, the
+							'' final type will be checked for access
+							'' after it is returned.
+							if( symbCheckAccess( sym ) = FALSE ) then
+								errReport( FB_ERRMSG_SYNTAXERROR )
+							end if
 							lexSkipToken( LEXCHECK_POST_SUFFIX )
 							dtype = symbGetFullType( sym )
 							subtype = symbGetSubtype( sym )
