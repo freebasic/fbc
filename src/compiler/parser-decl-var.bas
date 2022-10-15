@@ -937,6 +937,9 @@ private function hCheckAndBuildByrefInitializer( byval sym as FBSYMBOL ptr, byre
 	'' permitted) that aren't already disallowed in cVarOrDeref()
 	ok and= (not astIsCALL( expr ))
 
+	'' Disallow AST nodes that can't take address of
+	ok and= astCanTakeAddrOf( expr )
+
 	if( ok = FALSE ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
 		astDelTree( expr )

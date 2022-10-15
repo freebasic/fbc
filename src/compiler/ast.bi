@@ -1333,6 +1333,7 @@ declare sub astDtorListDel( byval sym as FBSYMBOL ptr )
 declare sub astDtorListScopeBegin( byval cookie as integer = 0 )
 declare function astDtorListScopeEnd( ) as integer
 declare sub astDtorListUnscope( byval cookie as integer )
+declare sub astDtorListScopeDelete( byval cookie as integer )
 
 declare sub astSetType _
 	( _

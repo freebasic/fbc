@@ -28,7 +28,7 @@ function cConstIntExpr _
 		expr = astNewCONSTi( 0, dtype )
 	end if
 
-	'' flush the expr to the specified dtype.  
+	'' flush the expr to the specified dtype.
 	'' default is FB_DATATYPE_INTEGER, if not specified in call to cConstIntExpr()
 	function = astConstFlushToInt( expr, dtype )
 end function
@@ -353,9 +353,16 @@ sub cTypeOf _
 	)
 
 	dim as ASTNODE ptr expr = any
+	dim as integer dtorlistcookie = any
+
+	astDtorListScopeBegin( )
 
 	'' Type or an Expression
 	expr = cTypeOrExpression( FB_TK_TYPEOF, dtype, subtype, lgt, is_fixlenstr )
+
+	'' discard all dtors that may have been generated
+	dtorlistcookie = astDtorListScopeEnd( )
+	astDtorListScopeDelete( dtorlistcookie )
 
 	'' Was it a type?
 	if( expr = NULL ) then
@@ -449,17 +456,17 @@ private function cMangleModifier _
 						dtype = typeSetMangleDt( dtype, FB_DATATYPE_UINT )
 						function = TRUE
 					case else
-						errReport( FB_ERRMSG_SYNTAXERROR )	
+						errReport( FB_ERRMSG_SYNTAXERROR )
 					end select
 				else
 					select case dtype
 					case FB_DATATYPE_LONG
 					case FB_DATATYPE_ULONG
 					case else
-						errReport( FB_ERRMSG_SYNTAXERROR )	
+						errReport( FB_ERRMSG_SYNTAXERROR )
 					end select
 				end if
-				
+
 			case "char"
 				select case dtype
 				case FB_DATATYPE_VOID
@@ -467,7 +474,7 @@ private function cMangleModifier _
 				case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE
 					dtype = typeSetMangleDt( dtype, FB_DATATYPE_CHAR )
 				case else
-					errReport( FB_ERRMSG_SYNTAXERROR )	
+					errReport( FB_ERRMSG_SYNTAXERROR )
 				end select
 
 			case "__builtin_va_list", "__builtin_va_list[]"
@@ -484,14 +491,14 @@ private function cMangleModifier _
 					'' subtype = symbCloneSymbol( subtype )
 					symbSetUdtValistType( subtype, fbGetBackendValistType() )
 				case else
-					errReport( FB_ERRMSG_SYNTAXERROR )	
+					errReport( FB_ERRMSG_SYNTAXERROR )
 				end select
 
 			case ""
 				errReport( FB_ERRMSG_EMPTYALIASSTRING )
 
 			case else
-				errReport( FB_ERRMSG_SYNTAXERROR )	
+				errReport( FB_ERRMSG_SYNTAXERROR )
 			end select
 
 			'' "literal"
@@ -506,17 +513,17 @@ end function
 
 '':::::
 ''SymbolType      =   CONST? UNSIGNED? (
-''				      ANY
-''				  |   BOOLEAN (BYTE|INTEGER)?
-''				  |   CHAR|BYTE
-''				  |	  SHORT|WORD
-''				  |	  INTEGER|LONG|DWORD
-''				  |   SINGLE
-''				  |   DOUBLE
+''                    ANY
+''                |   BOOLEAN (BYTE|INTEGER)?
+''                |   CHAR|BYTE
+''                |   SHORT|WORD
+''                |   INTEGER|LONG|DWORD
+''                |   SINGLE
+''                |   DOUBLE
 ''                |   STRING ('*' NUM_LIT)?
 ''                |   USERDEFTYPE
-''				  |   (FUNCTION|SUB) ('(' args ')') (AS SymbolType)?
-''				      (CONST? (PTR|POINTER))* .
+''                |   (FUNCTION|SUB) ('(' args ')') (AS SymbolType)?
+''                    (CONST? (PTR|POINTER))* .
 ''
 function cSymbolType _
 	( _
@@ -858,9 +865,9 @@ function cSymbolType _
 			end if
 
 			'' note: len of "wstring * expr" symbols will be actually
-			''		 the number of chars times sizeof(wstring), so
-			''		 always use symbGetWstrLen( ) to retrieve the
-			''		 len in characters, not the bytes
+			''       the number of chars times sizeof(wstring), so
+			''       always use symbGetWstrLen( ) to retrieve the
+			''       len in characters, not the bytes
 			if( typeGet( dtype ) = FB_DATATYPE_WCHAR ) then
 				lgt *= typeGetSize( FB_DATATYPE_WCHAR )
 			end if
