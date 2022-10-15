@@ -2416,6 +2416,84 @@ function symbCheckAccess _
 	function = FALSE
 end function
 
+function symbCheckAccessStruct _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer
+
+	'' !!! TODO !!! - combine with symbCheckAccess()?
+	'' this procedure was created based on symbCheckAccess()
+	'' but differs by the following:
+	'' - this check is only called from hMaybeComplainTypeUsage()
+	'' - no early exit and we check all the parents
+	'' Neither of symbCheckAccess() nor symbCheckAccessStruct() are
+	'' fully correct for every context of access check, so more
+	'' work is still needed to get correct access checks.
+
+	dim as FBSYMBOL ptr parent = any, context = any
+
+	'' Symbol and all parents have no protected or private?
+	parent = sym
+	do
+		'' symbol (or parents) have private or protected?, do a full check below
+		if( (parent->attrib and (FB_SYMBATTRIB_VIS_PRIVATE or FB_SYMBATTRIB_VIS_PROTECTED)) <> 0 ) then
+			exit do
+		end if
+
+		'' move to parent namespace
+		parent = symbGetNamespace( parent )
+
+		'' symbols must have a namespace
+		assert( parent <> NULL )
+
+		'' are we at the top namespace that needs to be checked?
+		'' then no need to search additional parents
+		if( parent = @symbGetGlobalNamespc() ) then
+			return TRUE
+		end if
+	loop
+
+	parent = sym
+
+	do
+		assert( parent <> @symbGetGlobalNamespc( ) )
+		parent = symbGetNamespace( parent )
+	loop while( not symbIsStruct( parent ) )
+
+	'' Find the common ancenstor between the symbol to be checked and the
+	'' current namespace context.
+	do
+		'' For all nested namespaces in the current parsing context,
+		'' from the current namespace up to the toplevel one...
+		context = symbGetCurrentNamespc( )
+		while( context <> @symbGetGlobalNamespc( ) )
+
+			'' Is it an UDT namespace? (i.e. a method or UDT body?)
+			if( symbIsStruct( context ) ) then
+				'' Ok if same namespace for private/protected
+				if( context = parent ) then
+					'' We're inside the parent
+					return TRUE
+				end if
+
+				'' Protected additionally allows derived UDTs
+				if( sym->attrib and FB_SYMBATTRIB_VIS_PROTECTED ) then
+					if( symbGetUDTBaseLevel( context, parent ) > 0 ) then
+						'' We're inside an UDT derived from the parent
+						return TRUE
+					end if
+				end if
+			end if
+
+			context = symbGetNamespace( context )
+		wend
+
+		parent = symbGetNamespace( parent )
+	loop while( parent <> @symbGetGlobalNamespc( ) )
+
+	function = FALSE
+end function
+
 function symbCheckConstAssignTopLevel _
 	( _
 		byval ldtype as FB_DATATYPE, _

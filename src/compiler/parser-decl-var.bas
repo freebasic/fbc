@@ -25,6 +25,29 @@ sub hComplainIfAbstractClass _
 
 end sub
 
+sub hMaybeComplainTypeUsage _
+	( _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as longint _
+	)
+
+	'' check access to structs and if the check fails, fake a
+	'' a type for error recovery
+
+	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_STRUCT ) then
+		'' Check visibility of the symbol type
+		if( symbCheckAccessStruct( subtype ) = FALSE ) then
+			errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
+			'' error recovery: fake a type
+			dtype = FB_DATATYPE_INTEGER
+			subtype = NULL
+			lgt = typeGetSize( dtype )
+		end if
+	end if
+
+end sub
+
 sub hComplainAboutConstDynamicArray( byval sym as FBSYMBOL ptr )
 	'' Disallow const dynamic arrays, they could never be assigned,
 	'' since dynamic arrays aren't allowed to have initializers.
@@ -1398,6 +1421,8 @@ function cVarDecl _
 			hComplainIfAbstractClass( dtype, subtype )
 		end if
 
+		hMaybeComplainTypeUsage( dtype, subtype, lgt )
+
 		addsuffix = FALSE
 		is_multdecl = TRUE
 		if( has_byref_at_start ) then
@@ -1595,6 +1620,8 @@ function cVarDecl _
 					'' Disallow creating objects of abstract classes
 					hComplainIfAbstractClass( dtype, subtype )
 				end if
+
+				hMaybeComplainTypeUsage( dtype, subtype, lgt )
 
 				addsuffix = FALSE
 

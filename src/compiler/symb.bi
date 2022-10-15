@@ -1962,6 +1962,11 @@ declare function symbCheckAccess _
 		byval sym as FBSYMBOL ptr _
 	) as integer
 
+declare function symbCheckAccessStruct _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer
+
 declare function symbGetFullProcName _
 	( _
 		byval proc as FBSYMBOL ptr _
