@@ -28,7 +28,7 @@ end extern
 extern "c++"
 
 type UDT_DEFAULT
-	
+
 	value as long
 
 	declare constructor thiscall ()
@@ -44,7 +44,7 @@ end type
 '' on the cpp side, we are explicitly specifying __atribute__((thiscall))
 '' for all member procs.  We do the same here with __thiscall
 type UDT_THISCALL
-	
+
 	value as long
 
 	declare constructor __thiscall ()
@@ -60,7 +60,7 @@ end type
 '' on the cpp side, we are explicitly specifying __atribute__((cdecl))
 '' for all member procs.  We do the same here with cdecl
 type UDT_CDECL
-	
+
 	value as long
 
 	declare constructor cdecl ()
@@ -76,7 +76,7 @@ end type
 '' on the cpp side, we are explicitly specifying __atribute__((stdcall))
 '' for all member procs.  We do the same here with stdcall
 type UDT_STDCALL
-	
+
 	value as long
 
 	declare constructor stdcall ()

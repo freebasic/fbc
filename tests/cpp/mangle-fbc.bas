@@ -3,13 +3,13 @@
 '' test mapping of basic data types between fbc and g++
 '' with c++ name mangling
 
-'' by default, fbc's Long/ULong data type maps to c's int type, and since 
+'' by default, fbc's Long/ULong data type maps to c's int type, and since
 '' Integer/Uinteger are meant to be (consistently) 64bits in fbc-64bit,
-'' there is no other type that (by default) that can map to c's long int, 
+'' there is no other type that (by default) that can map to c's long int,
 '' which is 32bit even on Win64.
 
-'' So, in Win64, to allow calling an external library that needs a 'long int' 
-'' parameter there is the following, non-portable mangling modifier.  It is 
+'' So, in Win64, to allow calling an external library that needs a 'long int'
+'' parameter there is the following, non-portable mangling modifier.  It is
 '' ignored for all targets except for Win64
 
 #if defined(__FB_64BIT__) and not defined(__FB_UNIX__)
@@ -19,12 +19,12 @@
 	'' otherwise, integer is used on 32bit and Unix-64bit consistently to map
 	'' fbc's 32/64bit 'INTEGER' type to the target 32/64bit 'long int' type
 	type cxxlongint as integer
-#endif 
+#endif
 
 extern "c++"
 
 namespace cpp_mangle
-	
+
 	declare function cpp_byval_bool( byval a as boolean ) as boolean
 	declare function cpp_byref_bool( byref a as boolean ) as boolean
 
@@ -47,24 +47,24 @@ namespace cpp_mangle
 	declare function cpp_byref_uchar( byref a as unsigned byte ) as unsigned byte
 	declare function cpp_byref_schar( byref a as byte ) as byte
 
-   	declare function cpp_byval_ushort( byval a as unsigned short ) as unsigned short
+	declare function cpp_byval_ushort( byval a as unsigned short ) as unsigned short
 	declare function cpp_byval_sshort( byval a as short ) as short
 	declare function cpp_byref_ushort( byref a as unsigned short ) as unsigned short
 	declare function cpp_byref_sshort( byref a as short ) as short
 
-   	declare function cpp_byval_uint( byval a as unsigned long ) as unsigned long
+	declare function cpp_byval_uint( byval a as unsigned long ) as unsigned long
 	declare function cpp_byval_sint( byval a as long ) as long
 	declare function cpp_byref_uint( byref a as unsigned long ) as unsigned long
 	declare function cpp_byref_sint( byref a as long ) as long
 
-   	declare function cpp_byval_ulongint( byval a as unsigned cxxlongint ) as unsigned cxxlongint
+	declare function cpp_byval_ulongint( byval a as unsigned cxxlongint ) as unsigned cxxlongint
 	declare function cpp_byval_slongint( byval a as cxxlongint ) as cxxlongint
 	declare function cpp_byref_ulongint( byref a as unsigned cxxlongint ) as unsigned cxxlongint
 	declare function cpp_byref_slongint( byref a as cxxlongint ) as cxxlongint
 
-   	declare function cpp_byval_ulonglongint( byval a as unsigned longint ) as unsigned longint
+	declare function cpp_byval_ulonglongint( byval a as unsigned longint ) as unsigned longint
 	declare function cpp_byval_slonglongint( byval a as longint ) as longint
-	declare function cpp_byref_ulonglongint( byref a as unsigned longint ) as unsigned longint 
+	declare function cpp_byref_ulonglongint( byref a as unsigned longint ) as unsigned longint
 	declare function cpp_byref_slonglongint( byref a as longint ) as longint
 
 	declare function cpp_byval_const_double( byval a as const double ) as double
@@ -145,7 +145,7 @@ scope
 end scope
 
 scope
-				 
+
 	''  c = [signed|unsigned] char
 	'' fb = [unsigned] byte
 

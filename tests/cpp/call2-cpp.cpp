@@ -24,15 +24,15 @@ void resetChecks() {
 	setMsg( "" );
 }
 
-const void* getPtr1() { 
+const void* getPtr1() {
 	return ptr1;
 }
 
-const void* getPtr2() { 
+const void* getPtr2() {
 	return ptr2;
 }
 
-const void* getPtr3() { 
+const void* getPtr3() {
 	return ptr3;
 }
 

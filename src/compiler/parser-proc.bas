@@ -1096,6 +1096,11 @@ function cProcHeader _
 		case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
 			idopt or= FB_IDOPT_DONTCHKPERIOD
 		end select
+		'' don't check access if we are defining the procedure
+		'' (which must be done outside of the TYPE declaration)
+		if( (options and FB_PROCOPT_ISPROTO) = 0 ) then
+			idopt or= idopt or FB_IDOPT_ISDEFN
+		end if
 		parent = cParentId( idopt )
 	end if
 

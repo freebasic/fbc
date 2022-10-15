@@ -73,9 +73,9 @@ private function hGlobalId _
 	base_parent = @symbGetGlobalNamespc( )
 
 	function = symbLookupAt( base_parent, _
-							 lexGetText( ), _
-							 FALSE, _
-							 TRUE )
+	                         lexGetText( ), _
+	                         FALSE, _
+	                         TRUE )
 
 end function
 
@@ -304,12 +304,12 @@ function cIdentifier _
 			exit do
 		end select
 
-		'' check visibility (of the UDT only, because symbols can be
+		'' Check visibility of the UDT only, because symbols can be
 		'' overloaded or the names duplicated, so that check can only
 		'' be done by specific functions)
 		if( parent <> NULL ) then
-			if( symbCheckAccess( sym ) = FALSE ) then
-				if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
+			if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
+				if( symbCheckAccess( sym ) = FALSE ) then
 					errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 				end if
 			end if
@@ -503,10 +503,14 @@ function cParentId _
 			exit do
 		end select
 
-		'' check visibility
+		'' Check visibility of the UDT only, because symbols can be
+		'' overloaded or the names duplicated, so that check can only
+		'' be done by specific functions)
 		if( parent <> NULL ) then
-			if( symbCheckAccess( sym ) = FALSE ) then
-				errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
+			if( (options and FB_IDOPT_ISDEFN) = 0 ) then
+				if( symbCheckAccess( sym ) = FALSE ) then
+					errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
+				end if
 			end if
 		end if
 

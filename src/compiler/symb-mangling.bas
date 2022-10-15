@@ -106,7 +106,7 @@ function symbGetDBGName( byval sym as FBSYMBOL ptr ) as zstring ptr
 		select case as const symbGetClass( sym )
 		'' but UDT's, they shouldn't include any mangling at all..
 		case FB_SYMBCLASS_ENUM, FB_SYMBCLASS_STRUCT, _
-			 FB_SYMBCLASS_CLASS, FB_SYMBCLASS_NAMESPACE
+		     FB_SYMBCLASS_CLASS, FB_SYMBCLASS_NAMESPACE
 
 			'' check if an alias wasn't given
 			dim as zstring ptr res = sym->id.alias
@@ -467,7 +467,7 @@ sub symbMangleType _
 		mangled += "R"
 
 		symbMangleType( mangled, typeUnsetIsRef( dtype ), subtype, _
-			options or FB_MANGLEOPT_HASREF or FB_MANGLEOPT_KEEPTOPCONST)
+		                options or FB_MANGLEOPT_HASREF or FB_MANGLEOPT_KEEPTOPCONST)
 
 		hAbbrevAdd( dtype, subtype )
 		exit sub
@@ -500,7 +500,7 @@ sub symbMangleType _
 		mangled += "P"
 
 		symbMangleType( mangled, typeDeref( dtype ), subtype, _
-			options or FB_MANGLEOPT_HASPTR or FB_MANGLEOPT_KEEPTOPCONST )
+		                options or FB_MANGLEOPT_HASPTR or FB_MANGLEOPT_KEEPTOPCONST )
 
 		hAbbrevAdd( dtype, subtype )
 		exit sub
@@ -550,10 +550,14 @@ sub symbMangleType _
 		if( ns = @symbGetGlobalNamespc( ) ) then
 			hMangleUdtId( mangled, subtype )
 		else
-			mangled += "N"
-			symbMangleType( mangled, symbGetFullType( ns ), ns )
+			if( (options and FB_MANGLEOPT_NESTED) = 0 ) then
+				mangled += "N"
+			end if
+			symbMangleType( mangled, symbGetFullType( ns ), ns, FB_MANGLEOPT_NESTED )
 			hMangleUdtId( mangled, subtype )
-			mangled += "E"
+			if( (options and FB_MANGLEOPT_NESTED) = 0 ) then
+				mangled += "E"
+			end if
 		end if
 
 		hAbbrevAdd( dtype, subtype )
@@ -743,6 +747,7 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 	if( sym->attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN or _
 	                     FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_COMMON or _
 	                     FB_SYMBATTRIB_STATIC) ) then
+
 		'' LLVM: @ prefix for global symbols
 		if( env.clopt.backend = FB_BACKEND_LLVM ) then
 			mangled += "@"
@@ -1226,8 +1231,8 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 	'' * only for ASM/LLVM backends, but not for the C backend, because gcc
 	''   will do it already
 	add_stdcall_suffix = (sym->proc.mode = FB_FUNCMODE_STDCALL) and _
-				(fbGetCpuFamily( ) = FB_CPUFAMILY_X86) and _
-				(env.clopt.backend <> FB_BACKEND_GCC)
+	                     (fbGetCpuFamily( ) = FB_CPUFAMILY_X86) and _
+	                     (env.clopt.backend <> FB_BACKEND_GCC)
 
 	'' LLVM: @ prefix for global symbols
 	if( env.clopt.backend = FB_BACKEND_LLVM ) then

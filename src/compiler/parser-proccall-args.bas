@@ -279,10 +279,10 @@ private function hOvlProcArgList _
 	) as ASTNODE ptr
 
 	dim as integer i = any, params = any, args = any, have_eq_outside_parens = any
-    dim as ASTNODE ptr procexpr = any
-    dim as FBSYMBOL ptr param = any, ovlproc = any
-    dim as FB_CALL_ARG ptr arg = any, nxt = any
-    dim as FB_ERRMSG err_num = any
+	dim as ASTNODE ptr procexpr = any
+	dim as FBSYMBOL ptr param = any, ovlproc = any
+	dim as FB_CALL_ARG ptr arg = any, nxt = any
+	dim as FB_ERRMSG err_num = any
 
 	function = NULL
 	have_eq_outside_parens = FALSE
@@ -346,12 +346,12 @@ private function hOvlProcArgList _
 	end if
 
 	ovlproc = symbFindClosestOvlProc( proc, _
-									  args, _
-									  iif( (options and FB_PARSEROPT_HASINSTPTR) <> 0, _
-									  	   arg_list->head->next, _
-									  	   arg_list->head ), _
-									  @err_num, _
-									  lkup_options )
+	                                  args, _
+	                                  iif( (options and FB_PARSEROPT_HASINSTPTR) <> 0, _
+	                                       arg_list->head->next, _
+	                                       arg_list->head ), _
+	                                  @err_num, _
+	                                  lkup_options )
 
 	if( ovlproc = NULL ) then
 		symbFreeOvlCallArgs( @parser.ovlarglist, arg_list )
@@ -367,7 +367,7 @@ private function hOvlProcArgList _
 
 	proc = ovlproc
 
-	'' check visibility
+	'' Check visibility of the procedure (to be called)
 	if( symbCheckAccess( proc ) = FALSE ) then
 		errReportEx( iif( symbIsConstructor( proc ), _
 		                  FB_ERRMSG_NOACCESSTOCTOR, _
@@ -377,7 +377,7 @@ private function hOvlProcArgList _
 		return astBuildFakeCall( proc )
 	end if
 
-    '' method?
+	'' method?
 	if( symbIsMethod( proc ) ) then
 		'' calling a method without the instance ptr?
 		if( (options and FB_PARSEROPT_HASINSTPTR) = 0 ) then
@@ -412,11 +412,11 @@ private function hOvlProcArgList _
 
 	procexpr = astNewCALL( proc, procexpr )
 
-    '' add to tree
+	'' add to tree
 	param = symbGetProcHeadParam( proc )
 	arg = arg_list->head
 	for i = 0 to args-1
-        nxt = arg->next
+		nxt = arg->next
 
 		if( astNewARG( procexpr, arg->expr, , arg->mode ) = NULL ) then
 			errReport( FB_ERRMSG_PARAMTYPEMISMATCH )
@@ -435,7 +435,7 @@ private function hOvlProcArgList _
 
 	'' add the end-of-list optional args, if any
 	params = symbGetProcParams( proc )
-    do while( args < params )
+	do while( args < params )
 		astNewARG( procexpr, NULL )
 
 		'' next
@@ -462,9 +462,9 @@ function cProcArgList _
 	) as ASTNODE ptr
 
 	dim as integer args = any, params = any, mode = any, have_eq_outside_parens = any
-    dim as FBSYMBOL ptr param = any
-    dim as ASTNODE ptr procexpr = any, expr = any
-    dim as FB_CALL_ARG ptr arg = any
+	dim as FBSYMBOL ptr param = any
+	dim as ASTNODE ptr procexpr = any, expr = any
+	dim as FB_CALL_ARG ptr arg = any
 
 	'' overloaded?
 	if( symbGetProcIsOverloaded( proc ) ) then
@@ -477,7 +477,7 @@ function cProcArgList _
 	function = NULL
 	have_eq_outside_parens = FALSE
 
-	'' check visibility
+	'' Check visibility of the procedure (to be called)
 	if( symbCheckAccess( proc ) = FALSE ) then
 		errReportEx( iif( symbIsConstructor( proc ), _
 		                  FB_ERRMSG_NOACCESSTOCTOR, _
@@ -487,7 +487,7 @@ function cProcArgList _
 		return astBuildFakeCall( proc )
 	end if
 
-    '' method?
+	'' method?
 	if( symbIsMethod( proc ) ) then
 		'' calling a method without the instance ptr?
 		if( (options and FB_PARSEROPT_HASINSTPTR) = 0 ) then

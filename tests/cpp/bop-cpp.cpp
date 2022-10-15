@@ -25,11 +25,11 @@ void resetChecks() {
 	setMsg( "" );
 }
 
-const void* getPtr1() { 
+const void* getPtr1() {
 	return ptr1;
 }
 
-const void* getPtr2() { 
+const void* getPtr2() {
 	return ptr2;
 }
 
@@ -41,11 +41,11 @@ int getVal1() {
 	return val1;
 }
 
-int getVal2() { 
+int getVal2() {
 	return val2;
 }
 
-int getVal3() { 
+int getVal3() {
 	return val3;
 }
 

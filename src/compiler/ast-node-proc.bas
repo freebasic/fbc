@@ -3,8 +3,8 @@
 '' l = head node; r = tail node
 ''
 '' note: an implicit scope block isn't created, because the
-''		 implicit main() function (inside scope blocks only
-''		 non-decl statements are allowed)
+''       implicit main() function (inside scope blocks only
+''       non-decl statements are allowed)
 ''
 
 
@@ -18,9 +18,9 @@
 #include once "ast.bi"
 
 type FB_GLOBINSTANCE
-	sym				as FBSYMBOL_ ptr			'' for symbol
-	initree			as ASTNODE ptr				'' can't store in sym, or emit will use it
-	call_dtor		as integer
+	sym             as FBSYMBOL_ ptr            '' for symbol
+	initree         as ASTNODE ptr              '' can't store in sym, or emit will use it
+	call_dtor       as integer
 end type
 
 declare function hModLevelIsEmpty( byval p as ASTNODE ptr ) as integer
@@ -538,10 +538,10 @@ private function hCheckErrHnd _
 	'' or constructor's field would be initialized and break ctor chaining)
 	if( env.clopt.errlocation ) then
 		head_node = astAddAfter( rtlErrorSetModName( sym, _
-			astNewCONSTstr( @env.inf.name ) ), head_node )
+		                         astNewCONSTstr( @env.inf.name ) ), head_node )
 
 		head_node = astAddAfter( rtlErrorSetFuncName( sym, _
-			astNewCONSTstr( symbGetName( sym ) ) ), head_node )
+		                         astNewCONSTstr( symbGetName( sym ) ) ), head_node )
 	end if
 
 	with sym->proc.ext->err
@@ -666,14 +666,14 @@ function astProcEnd( byval callrtexit as integer ) as integer
 		astScopeDestroyVars(symbGetProcSymbTb(sym).tail)
 	end if
 
-   	''
-   	astAdd( astNewLABEL( n->block.exitlabel ) )
+	''
+	astAdd( astNewLABEL( n->block.exitlabel ) )
 
 	'' Check for any undefined labels (labels can be forward references)
 	res = (symbCheckLabels(symbGetProcSymbTbHead(parser.currproc)) = 0)
 
 	if( res ) then
-		'' Complete Destructor? (D1) 
+		'' Complete Destructor? (D1)
 		if( symbIsDestructor1( sym ) and enable_implicit_code ) then
 			'' Call destructors, behind the exit label, so they'll
 			'' always be called, even with early returns.
@@ -843,8 +843,8 @@ private sub hLoadProcResult( byval proc as FBSYMBOL ptr )
 	else
 		'' Use the real type, in case it's BYREF return or a UDT result
 		n = astNewLOAD( astNewVAR( s, 0, symbGetProcRealType( proc ), _
-					symbGetProcRealSubtype( proc ) ), _
-				symbGetProcRealType( proc ), TRUE )
+		                symbGetProcRealSubtype( proc ) ), _
+		                symbGetProcRealType( proc ), TRUE )
 	end if
 
 	astAdd( n )
@@ -1108,9 +1108,9 @@ private function hCallFieldCtors _
 						'' Note: flushing the field's TYPEINI against the whole "THIS" instance,
 						'' not against "THIS.thefield", because the TYPEINI contains absolute offsets.
 						tree = astNewLINK( tree, _
-							astTypeIniFlush( astBuildVarField( this_ ), _
-								astTypeIniClone( symbGetTypeIniTree( fld ) ), _
-								FALSE, AST_OPOPT_ISINI ), AST_LINK_RETURN_NONE )
+						                   astTypeIniFlush( astBuildVarField( this_ ), _
+						                   astTypeIniClone( symbGetTypeIniTree( fld ) ), _
+						                   FALSE, AST_OPOPT_ISINI ), AST_LINK_RETURN_NONE )
 					end if
 				end if
 			end if
@@ -1154,6 +1154,7 @@ private function hCallBaseCtor _
 	if( defctor ) then
 		'' Check access here, because (unlike fields) it's not done
 		'' during the TYPE compound parsing
+		'' Check visibility of the default construtor
 		if( symbCheckAccess( defctor ) = FALSE ) then
 			errReport( FB_ERRMSG_NOACCESSTOBASEDEFCTOR )
 		end if
@@ -1184,10 +1185,10 @@ private function hInitVptr _
 
 	'' this.vptr = cast( any ptr, (cast(byte ptr, @vtable) + sizeof(void *) * 2) )
 	'' assuming that everything with a vptr extends fb_Object
-	function = astNewASSIGN( _ 
+	function = astNewASSIGN( _
 		astBuildVarField( this_, symbUdtGetFirstField( symb.rtti.fb_object ) ), _
-		astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-			astNewADDROF( astNewVAR( parent->udt.ext->vtable, env.pointersize * 2 ) ) ), _
+		                  astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
+		                  astNewADDROF( astNewVAR( parent->udt.ext->vtable, env.pointersize * 2 ) ) ), _
 		AST_OPOPT_ISINI )
 end function
 
@@ -1329,6 +1330,7 @@ private sub hCallBaseDtor _
 
 	'' Check access here, because (unlike fields) it's not done
 	'' during the TYPE compound parsing
+	'' Check visibility of the default destructor
 	if( symbCheckAccess( dtor ) = FALSE ) then
 		errReport( FB_ERRMSG_NOACCESSTOBASEDTOR )
 	end if
@@ -1341,8 +1343,8 @@ private sub hCallBaseDtor _
 
 	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
 	astAdd( astBuildDtorCall( symbGetSubtype( base_ ), _
-				astBuildVarField( this_, base_ ), _
-				TRUE ) )
+	        astBuildVarField( this_, base_ ), _
+	        TRUE ) )
 end sub
 
 private sub hCallDtors( byval proc as FBSYMBOL ptr )

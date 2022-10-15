@@ -1,6 +1,6 @@
 ' TEST_MODE : MULTI_MODULE_TEST
 
-'' test mapping of mangling and calling convention 
+'' test mapping of mangling and calling convention
 '' between fbc extern "rtlib" and c
 
 '' helper macro to track progress

@@ -547,9 +547,9 @@ function symbAddVar _
 
 	''
 	isglobal = (attrib and (FB_SYMBATTRIB_PUBLIC or _
-		FB_SYMBATTRIB_EXTERN or _
-		FB_SYMBATTRIB_SHARED or _
-		FB_SYMBATTRIB_COMMON)) <> 0
+	                        FB_SYMBATTRIB_EXTERN or _
+	                        FB_SYMBATTRIB_SHARED or _
+	                        FB_SYMBATTRIB_COMMON)) <> 0
 
 	''
 	if( lgt <= 0 ) then
@@ -623,8 +623,7 @@ function symbAddVar _
 
 	'' Static member var using parent UDT as dtype? Length must be
 	'' recalculated later, when UDT was fully parsed...
-	if( (symbGetType( s ) = FB_DATATYPE_STRUCT) and _
-	    (s->subtype = symbGetCurrentNamespc( )) ) then
+	if( symbIsParentNamespace( symbGetType( s ), s->subtype ) ) then
 		symbSetUdtHasRecByvalRes( subtype )
 	end if
 
@@ -914,8 +913,8 @@ function symbCloneVar( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 		end if
 
 		function = symbAddVar( symbGetName( sym ), NULL, _
-				symbGetType( sym ), symbGetSubType( sym ), 0, _
-				symbGetArrayDimensions( sym ), dTB(), symbGetAttrib( sym ), 0 )
+		                       symbGetType( sym ), symbGetSubType( sym ), 0, _
+		                       symbGetArrayDimensions( sym ), dTB(), symbGetAttrib( sym ), 0 )
 	end if
 end function
 

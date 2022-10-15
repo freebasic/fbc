@@ -1,4 +1,4 @@
-namespace cpp_mangle 
+namespace cpp_mangle
 {
 	// bool
 
@@ -6,11 +6,11 @@ namespace cpp_mangle
 	{
 		return a;
 	}
-	
+
 	bool cpp_byref_bool( bool &a )
 	{
 		return a;
-	} 
+	}
 
 	// float
 
@@ -18,11 +18,11 @@ namespace cpp_mangle
 	{
 		return a;
 	}
-	
+
 	float cpp_byref_float( float &a )
 	{
 		return a;
-	} 
+	}
 
 	// double
 
@@ -30,11 +30,11 @@ namespace cpp_mangle
 	{
 		return a;
 	}
-	
+
 	double cpp_byref_double( double &a )
 	{
 		return a;
-	} 
+	}
 
 	// char = 8 bit
 
@@ -56,17 +56,17 @@ namespace cpp_mangle
 	char cpp_byref_char_b( char &a )
 	{
 		return a;
-	} 
+	}
 
 	char cpp_byref_char_u( char &a )
 	{
 		return a;
-	} 
+	}
 
 	char cpp_byref_char_ub( char &a )
 	{
 		return a;
-	} 
+	}
 
 	// signed | unsigned char = 8 bit
 
@@ -83,12 +83,12 @@ namespace cpp_mangle
 	unsigned char cpp_byref_uchar( unsigned char &a )
 	{
 		return a;
-	} 
+	}
 
 	signed char cpp_byref_schar( signed char &a )
 	{
 		return a;
-	} 
+	}
 
 	// short int = 16 bit
 
@@ -96,21 +96,21 @@ namespace cpp_mangle
 	{
 		return a;
 	}
-	
+
 	signed short cpp_byval_sshort( signed short int a )
 	{
 		return a;
 	}
-	
+
 	unsigned short cpp_byref_ushort( unsigned short int &a )
 	{
 		return a;
-	} 
+	}
 
 	signed short cpp_byref_sshort( signed short int &a )
 	{
 		return a;
-	} 
+	}
 
 	// int
 
@@ -118,21 +118,21 @@ namespace cpp_mangle
 	{
 		return a;
 	}
-	
+
 	signed int cpp_byval_sint( signed int a )
 	{
 		return a;
 	}
-	
+
 	unsigned int cpp_byref_uint( unsigned int &a )
 	{
 		return a;
-	} 
+	}
 
 	signed int cpp_byref_sint( signed int &a )
 	{
 		return a;
-	} 
+	}
 
 	// long int
 
@@ -140,21 +140,21 @@ namespace cpp_mangle
 	{
 		return a;
 	}
-	
+
 	signed long int cpp_byval_slongint( signed long int a )
 	{
 		return a;
 	}
-	
+
 	unsigned long int cpp_byref_ulongint( unsigned long int &a )
 	{
 		return a;
-	} 
+	}
 
 	signed long int cpp_byref_slongint( signed long int &a )
 	{
 		return a;
-	} 
+	}
 
 	// long long int = 64 bit
 
@@ -162,21 +162,21 @@ namespace cpp_mangle
 	{
 		return a;
 	}
-	
+
 	signed long long int cpp_byval_slonglongint( signed long long int a )
 	{
 		return a;
 	}
-	
+
 	unsigned long long int cpp_byref_ulonglongint( unsigned long long int &a )
 	{
 		return a;
-	} 
+	}
 
 	signed long long int cpp_byref_slonglongint( signed long long int &a )
 	{
 		return a;
-	} 
+	}
 
 	/* byval const, pointer, reference */
 

@@ -326,9 +326,9 @@ private function hCast( byval options as AST_CONVOPT ) as ASTNODE ptr
 		subtype = NULL
 
 	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, _
-		FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
-		FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT, _
-		FB_DATATYPE_ENUM
+	     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
+	     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT, _
+	     FB_DATATYPE_ENUM
 
 		if( options and AST_CONVOPT_PTRONLY ) then
 			if( fbPdCheckIsSet( FB_PDCHECK_CASTTONONPTR ) ) then
@@ -365,7 +365,7 @@ private function hCast( byval options as AST_CONVOPT ) as ASTNODE ptr
 
 	'' -w constness implies -w funcptr
 	if( (fbPdCheckIsSet( FB_PDCHECK_CASTFUNCPTR ) = FALSE) _
-		and (fbPdCheckIsSet( FB_PDCHECK_CONSTNESS ) = FALSE) ) then
+	    and (fbPdCheckIsSet( FB_PDCHECK_CONSTNESS ) = FALSE) ) then
 		options or= AST_CONVOPT_DONTWARNFUNCPTR
 	end if
 
@@ -465,6 +465,7 @@ private function hProcPtrBody _
 		return astNewCONSTi( 0 )
 	end if
 
+	'' Check visibility of the proc
 	if( symbCheckAccess( proc ) = FALSE ) then
 		errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, symbGetFullProcName( proc ) )
 	end if
@@ -502,7 +503,7 @@ private function hVarPtrBody _
 
 	select case as const astGetClass( t )
 	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_DEREF, _
-		AST_NODECLASS_TYPEINI, AST_NODECLASS_CALLCTOR
+	     AST_NODECLASS_TYPEINI, AST_NODECLASS_CALLCTOR
 
 	case AST_NODECLASS_FIELD
 		'' can't take address of bitfields..
@@ -623,7 +624,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 		dim as FBSYMBOL ptr sym = any, base_parent = any
 
 		chain_ = cIdentifier( base_parent, _
-			FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
+		                      FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
 		sym = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
 		if( sym = NULL ) then
 			errReport( FB_ERRMSG_UNDEFINEDSYMBOL )
@@ -717,8 +718,8 @@ function cAddrOfExpression( ) as ASTNODE ptr
 
 		select case as const astGetClass( t )
 		case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
-			AST_NODECLASS_DEREF, AST_NODECLASS_TYPEINI, _
-			AST_NODECLASS_FIELD
+		     AST_NODECLASS_DEREF, AST_NODECLASS_TYPEINI, _
+		     AST_NODECLASS_FIELD
 
 		case else
 			errReportEx( FB_ERRMSG_INVALIDDATATYPES, "for STRPTR" )
@@ -731,14 +732,14 @@ function cAddrOfExpression( ) as ASTNODE ptr
 
 		case FB_DATATYPE_WCHAR
 			expr = astNewCONV( typeAddrOf( FB_DATATYPE_WCHAR ), _
-				NULL, _
-				astNewADDROF( expr ) )
+			                   NULL, _
+			                   astNewADDROF( expr ) )
 
 		'' anything else: do cast( zstring ptr, @expr )
 		case else
 			expr = astNewCONV( typeAddrOf( FB_DATATYPE_CHAR ), _
-				NULL, _
-				astNewADDROF( expr ) )
+			                   NULL, _
+			                   astNewADDROF( expr ) )
 		end select
 
 		'' ')'

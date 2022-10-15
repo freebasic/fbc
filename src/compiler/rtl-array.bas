@@ -303,6 +303,7 @@ private sub hCheckDefCtor _
 	assert( symbIsConstructor( ctor ) )
 
 	if( check_access ) then
+		'' Check visibility of the default constructor
 		if( symbCheckAccess( ctor ) = FALSE ) then
 			errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
 		end if
@@ -334,6 +335,7 @@ private sub hCheckDtor _
 	assert( symbIsDestructor1( dtor ) )
 
 	if( check_access ) then
+		'' Check visibility of the default destructor
 		if( symbCheckAccess( dtor ) = FALSE ) then
 			errReport( FB_ERRMSG_NOACCESSTODTOR )
 		end if
@@ -349,7 +351,7 @@ private sub hCheckDtor _
 
 end sub
 
-'' fb_ArrayClear* 
+'' fb_ArrayClear*
 '' destruct elements if needed and then re-initialize
 ''
 '' fb_ArrayClear* rtlib functions are called when it is known at
@@ -405,7 +407,7 @@ function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
 		end if
 
 	elseif( dtype = FB_DATATYPE_STRING ) then
-		'' fb_ArrayDestructStr() to clear the string array 
+		'' fb_ArrayDestructStr() to clear the string array
 		'' - there is no fb_ArrayClearStr() in rtlib
 		proc = astNewCALL( PROCLOOKUP( ARRAYDESTRUCTSTR ) )
 
@@ -555,13 +557,13 @@ function rtlArrayRedim _
 		byval dopreserve as integer, _
 		byval doclear as integer _
 	) as ASTNODE ptr
-	
+
 	'' no const filtering needed... dynamic arrays can't be const
-	
-    dim as ASTNODE ptr proc = any, expr = any
+
+	dim as ASTNODE ptr proc = any, expr = any
 	dim as FBSYMBOL ptr f = any, sym = any, subtype = any
 	dim as FBSYMBOL ptr ctor = any, dtor = any
-    dim as integer dtype = any
+	dim as integer dtype = any
 	dim as longint elementlen = any
 
 	sym = astGetSymbol( arrayexpr )
@@ -570,7 +572,7 @@ function rtlArrayRedim _
 
 	hGetCtorDtorForRedim( dtype, symbGetSubtype( sym ), ctor, dtor )
 
-    if( (ctor = NULL) and (dtor = NULL) ) then
+	if( (ctor = NULL) and (dtor = NULL) ) then
 		if( dopreserve = FALSE ) then
 			f = PROCLOOKUP( ARRAYREDIM )
 		else
@@ -584,7 +586,7 @@ function rtlArrayRedim _
 		end if
 	end if
 
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
 	'' array() as ANY
 	if( astNewARG( proc, arrayexpr ) = NULL ) then
@@ -725,8 +727,8 @@ function rtlArrayBound _
 	function = NULL
 
 	proc = astNewCALL( iif( islbound, _
-				PROCLOOKUP( ARRAYLBOUND ), _
-				PROCLOOKUP( ARRAYUBOUND ) ) )
+	                   PROCLOOKUP( ARRAYLBOUND ), _
+	                   PROCLOOKUP( ARRAYUBOUND ) ) )
 
 	'' array() as ANY
 	if( astNewARG( proc, arrayexpr ) = NULL ) then
@@ -751,19 +753,19 @@ function rtlArrayBoundsCheck _
 		byval module as zstring ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
 
-   	function = NULL
+	function = NULL
 
-   	'' lbound 0? do a single check
-   	if( lb = NULL ) then
+	'' lbound 0? do a single check
+	if( lb = NULL ) then
 		f = PROCLOOKUP( ARRAYSNGBOUNDCHK )
 	else
-    	f = PROCLOOKUP( ARRAYBOUNDCHK )
+		f = PROCLOOKUP( ARRAYBOUNDCHK )
 	end if
 
-   	proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
 	'' idx
 	if( astNewARG( proc, astNewCONV( FB_DATATYPE_INTEGER, NULL, idx, AST_CONVOPT_DONTWARNCONST ) ) = NULL ) then
@@ -787,11 +789,11 @@ function rtlArrayBoundsCheck _
 		exit function
 	end if
 
-    '' module
+	'' module
 	if( astNewARG( proc, astNewCONSTstr( module ) ) = NULL ) then
-    	exit function
-    end if
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function

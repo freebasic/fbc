@@ -216,6 +216,7 @@ enum FB_IDOPT
 	FB_IDOPT_CHECKSTATIC        = &h00000020
 	FB_IDOPT_ISVAR              = &h00000040  '' parsing namespace prefix for variable declaration?
 	FB_IDOPT_NOSKIP             = &h00000080  '' don't skip unused token, caller will do it
+	FB_IDOPT_ISDEFN             = &h00000100  '' is definition (i,e, procedure definition), ignore some access checks
 
 	FB_IDOPT_DEFAULT            = FB_IDOPT_SHOWERROR or FB_IDOPT_CHECKSTATIC
 end enum

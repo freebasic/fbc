@@ -10,7 +10,7 @@
 
 '':::::
 ''cOperatorNew =     NEW DataType|Constructor()
-''			   |	 NEW DataType[Expr] .
+''             |     NEW DataType[Expr] .
 ''
 function cOperatorNew( ) as ASTNODE ptr
 	dim as integer dtype = any
@@ -59,8 +59,8 @@ function cOperatorNew( ) as ASTNODE ptr
 	has_defctor = typeHasDefCtor( dtype, subtype )
 
 	'' '['?
-    if( lexGetToken( ) = CHAR_LBRACKET ) then
-        lexSkipToken( )
+	if( lexGetToken( ) = CHAR_LBRACKET ) then
+		lexSkipToken( )
 
 		elementsexpr = cExpression(  )
 		if( elementsexpr = NULL ) then
@@ -69,13 +69,13 @@ function cOperatorNew( ) as ASTNODE ptr
 			op = AST_OP_NEW_VEC
 		end if
 
-        '' ']'
-        if( lexGetToken( ) <> CHAR_RBRACKET ) then
+		'' ']'
+		if( lexGetToken( ) <> CHAR_RBRACKET ) then
 			errReport( FB_ERRMSG_EXPECTEDRBRACKET )
 			hSkipUntil( CHAR_RBRACKET )
-        else
-        	lexSkipToken( )
-        end if
+		else
+			lexSkipToken( )
+		end if
 
 		'' '{'?
 		if( lexGetToken( ) = CHAR_LBRACE ) then
@@ -151,7 +151,7 @@ function cOperatorNew( ) as ASTNODE ptr
 				if( op <> AST_OP_NEW_VEC ) then
 					initexpr = cCtorCall( subtype )
 				else
-					'' check visibility
+					'' Check visibility of the default constructor
 					if( symbCheckAccess( ctor ) = FALSE ) then
 						errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
 					end if
@@ -199,7 +199,7 @@ function cOperatorNew( ) as ASTNODE ptr
 	end if
 
 	expr = astBuildNewOp( op, tmp, elementsexpr, initexpr, _
-			dtype, subtype, do_clear, placementexpr )
+	                      dtype, subtype, do_clear, placementexpr )
 
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
@@ -258,8 +258,9 @@ sub cOperatorDelete( )
 		errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE )
 	end select
 
-	'' check visibility
+	'' Check visibility
 	if( typeHasDtor( typeDeref( dtype ), subtype ) ) then
+		'' Check visibility of the destructor
 		if( symbCheckAccess( symbGetCompDtor1( subtype ) ) = FALSE ) then
 			errReport( FB_ERRMSG_NOACCESSTODTOR )
 		end if

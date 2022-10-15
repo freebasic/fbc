@@ -59,7 +59,7 @@ private function hDoAssign _
 		'' fail initializers that could be assigned with a cast to a base type.
 		'' This allows passing an initializer back to an exact matched parent.
 
-		expr = astNewCONV( ctx.dtype, ctx.subtype, expr, AST_CONVOPT_NOCONVTOBASE ) '' asdf
+		expr = astNewCONV( ctx.dtype, ctx.subtype, expr, AST_CONVOPT_NOCONVTOBASE )
 		if( expr = NULL ) then
 			'' hand it back...
 			'' (used with UDTs; if an UDT var is given in an UDT initializer,
@@ -185,8 +185,8 @@ private function hArrayInit _
 		'' too many dimensions?
 		if( ctx.dimension >= symbGetArrayDimensions( ctx.sym ) ) then
 			errReport( iif( symbGetArrayDimensions( ctx.sym ) > 0, _
-							FB_ERRMSG_TOOMANYEXPRESSIONS, _
-							FB_ERRMSG_EXPECTEDARRAY ) )
+			                FB_ERRMSG_TOOMANYEXPRESSIONS, _
+			                FB_ERRMSG_EXPECTEDARRAY ) )
 			'' error recovery: skip until next '}'
 			hSkipUntil( CHAR_RBRACE, TRUE )
 			ctx.dimension -= 1
@@ -266,7 +266,7 @@ private function hArrayInit _
 		'' symbCheckArraySize() handles this special case. (The check will be incomplete,
 		'' but ultimately
 		if( symbCheckArraySize( symbGetArrayDimensions( ctx.sym ), @symbGetArrayDim( ctx.sym, 0 ), ctx.sym->lgt, _
-					((ctx.sym->attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0) ) = FALSE ) then
+		                        ((ctx.sym->attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0) ) = FALSE ) then
 			errReport( FB_ERRMSG_ARRAYTOOBIG )
 			'' error recovery: set this dimension to 1 element
 			symbSetFixedSizeArrayDimensionElements( ctx.sym, ctx.dimension, 1 )
@@ -287,7 +287,7 @@ private function hArrayInit _
 			if( ctor = NULL ) then
 				errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
 			else
-				'' check visibility
+				'' Check visibility of the default ctor
 				if( symbCheckAccess( ctor ) = FALSE ) then
 					errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
 				end if
@@ -379,7 +379,7 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 		if( symbGetClass( ctx.sym ) = FB_SYMBCLASS_PARAM ) then
 			if( symbGetParamMode( ctx.sym ) = FB_PARAMMODE_BYREF ) then
 				if( (astGetDataType( expr ) = typeGetDtAndPtrOnly( ctx.dtype )) and _
-					(astGetSubtype( expr ) = ctx.subtype) ) then
+				    (astGetSubtype( expr ) = ctx.subtype) ) then
 					return hDoAssign( ctx, expr )
 				end if
 			end if
@@ -448,6 +448,7 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 
 		astTypeIniGetOfs( ctx.tree ) = baseofs + fld->ofs
 
+		'' Check visibility of the field
 		if( symbCheckAccess( fld ) = FALSE ) then
 			errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 		end if

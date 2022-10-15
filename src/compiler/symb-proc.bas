@@ -246,7 +246,7 @@ function symbAddProcParam _
 	'' for UDTs, check if not including a byval param to self
 	if( typeGet( dtype ) = FB_DATATYPE_STRUCT ) then
 		if( mode = FB_PARAMMODE_BYVAL ) then
-			if( subtype = symbGetCurrentNamespc( ) ) then
+			if( symbIsParentNamespace( dtype, subtype ) ) then
 				symbSetUdtHasRecByvalParam( subtype )
 			end if
 		end if
@@ -335,8 +335,8 @@ sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 
 	'' UDT? follow GCC 3.x's ABI
 	case FB_DATATYPE_STRUCT
-		'' still parsing the struct? patch it later..
-		if( subtype = symbGetCurrentNamespc( ) ) then
+		'' still parsing the struct or any inner type? patch it later..
+		if( symbIsParentNamespace( dtype, subtype ) ) then
 			symbSetUdtHasRecByvalRes( subtype )
 		else
 			dtype = symbGetUDTRetType( subtype )
@@ -535,14 +535,14 @@ private function hAddOvlProc _
 
 				'' check the const qualifier
 				if( (typeGetConstMask( pdtype ) or _
-					typeGetConstMask( odtype )) <> 0 ) then
+				     typeGetConstMask( odtype )) <> 0 ) then
 
 					'' both byref?
 					if( (param->param.mode = FB_PARAMMODE_BYREF ) _
-						and (ovl_param->param.mode = FB_PARAMMODE_BYREF )) then
+					    and (ovl_param->param.mode = FB_PARAMMODE_BYREF )) then
 
 						if( typeGetConstMask( pdtype ) <> _
-							typeGetConstMask( odtype ) ) then
+						    typeGetConstMask( odtype ) ) then
 							exit do
 						end if
 
@@ -550,7 +550,7 @@ private function hAddOvlProc _
 
 					'' else only matters if it's a 'const ptr' (as in C++)
 					if( typeGetPtrConstMask( pdtype ) <> _
-						typeGetPtrConstMask( odtype ) ) then
+					    typeGetPtrConstMask( odtype ) ) then
 						exit do
 					end if
 
@@ -719,7 +719,7 @@ private function hSetupProc _
 
 	'' ctor/dtor?
 	if( (pattrib and (FB_PROCATTRIB_CONSTRUCTOR or _
-					 FB_PROCATTRIB_DESTRUCTOR1 or FB_PROCATTRIB_DESTRUCTOR0)) <> 0 ) then
+	                  FB_PROCATTRIB_DESTRUCTOR1 or FB_PROCATTRIB_DESTRUCTOR0)) <> 0 ) then
 
 		assert( pattrib and FB_PROCATTRIB_METHOD )
 
@@ -1277,7 +1277,7 @@ function symbAddProcPtrFromFunction _
 	var param = symbGetProcHeadParam( base_proc )
 	do while( param <> NULL )
 		var p = symbAddProcParam( proc, NULL, param->typ, param->subtype, _
-				param->param.bydescdimensions, param->param.mode, param->attrib, param->pattrib )
+		                          param->param.bydescdimensions, param->param.mode, param->attrib, param->pattrib )
 
 		if( symbGetDontInit( param ) ) then
 			symbSetDontInit( p )
@@ -1296,7 +1296,8 @@ function symbAddProcPtrFromFunction _
 	var pattribmask = FB_PROCATTRIB_RETURNBYREF '' return byref
 	pattribmask or = FB_PROCATTRIB_NOTHISCONSTNESS '' method call THIS CONSTness checking
 
-	function = symbAddProcPtr( proc, _
+	function = _
+		symbAddProcPtr( proc, _
 			symbGetFullType( base_proc ), symbGetSubtype( base_proc ), _
 			base_proc->attrib and attribmask, base_proc->pattrib and pattribmask, _
 			symbGetProcMode( base_proc ) )
@@ -1549,7 +1550,7 @@ function symbFindOverloadProc _
 
 	'' procs?
 	if( (symbGetClass( ovl_head_proc ) <> FB_SYMBCLASS_PROC) or _
-		(symbGetClass( proc ) <> FB_SYMBCLASS_PROC) ) then
+	    (symbGetClass( proc ) <> FB_SYMBCLASS_PROC) ) then
 		return NULL
 	end if
 
@@ -2394,11 +2395,11 @@ function symbFindSelfBopOvlProc _
 			errReport( *err_num, TRUE )
 		end if
 	else
-		'' check visibility
+		'' Check visibility of the operator
 		if( symbCheckAccess( proc ) = FALSE ) then
 			*err_num = FB_ERRMSG_ILLEGALMEMBERACCESS
 			errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, _
-						 symbGetFullProcName( proc ) )
+			             symbGetFullProcName( proc ) )
 
 			proc = NULL
 		end if
@@ -2489,11 +2490,11 @@ function symbFindSelfUopOvlProc _
 		end if
 
 	else
-		'' check visibility
+		'' Check visibility of the operator
 		if( symbCheckAccess( proc ) = FALSE ) then
 			*err_num = FB_ERRMSG_ILLEGALMEMBERACCESS
 			errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, _
-						 symbGetFullProcName( proc ) )
+			             symbGetFullProcName( proc ) )
 
 			proc = NULL
 		end if
@@ -2664,11 +2665,11 @@ function symbFindCastOvlProc _
 		closest_proc = NULL
 	else
 		if( closest_proc <> NULL ) then
-			'' check visibility
+			'' Check visibility of cast operator
 			if( symbCheckAccess( closest_proc ) = FALSE ) then
 				*err_num = FB_ERRMSG_ILLEGALMEMBERACCESS
 				errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, _
-							 symbGetFullProcName( closest_proc ) )
+				             symbGetFullProcName( closest_proc ) )
 				closest_proc = NULL
 			end if
 		end if
@@ -2866,8 +2867,8 @@ function symbCalcProcMatch _
 	''   which doesn't take result type into account.
 	'' - SUBs have VOID result type and will be handled here too
 	var match = typeCalcMatch( l->typ, l->subtype, _
-			iif( symbIsReturnByRef( l ), FB_PARAMMODE_BYREF, FB_PARAMMODE_BYVAL ), _
-			r->typ, r->subtype )
+	                           iif( symbIsReturnByRef( l ), FB_PARAMMODE_BYREF, FB_PARAMMODE_BYVAL ), _
+	                           r->typ, r->subtype )
 	if( match = FB_OVLPROC_NO_MATCH ) then
 		errmsg = FB_ERRMSG_OVERRIDERETTYPEDIFFERS
 		return FB_OVLPROC_NO_MATCH

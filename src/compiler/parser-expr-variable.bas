@@ -221,7 +221,7 @@ end function
 '':::::
 '' MemberId       =   ID ArrayIdx?
 ''
-private function hMemberId( byval parent as FBSYMBOL ptr ) as FBSYMBOL ptr
+private function hMemberId( byval parent as FBSYMBOL ptr, byval allow_inner as integer ) as FBSYMBOL ptr
 	dim as FBSYMBOL ptr res = any
 
 	if( parent = NULL ) then
@@ -268,12 +268,18 @@ private function hMemberId( byval parent as FBSYMBOL ptr ) as FBSYMBOL ptr
 		do
 			if( symbGetScope( sym ) = symbGetScope( parent ) ) then
 				select case as const symbGetClass( sym )
-				'' field or static members?
+				'' field, static members, or inner types?
 				case FB_SYMBCLASS_FIELD, FB_SYMBCLASS_VAR, _
 				     FB_SYMBCLASS_CONST, FB_SYMBCLASS_ENUM
-					'' check visibility
+
+					'' Check visibility of member
 					if( symbCheckAccess( sym ) = FALSE ) then
 						errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
+					end if
+
+				case FB_SYMBCLASS_STRUCT
+					if( allow_inner = FALSE ) then
+						exit do, do
 					end if
 
 				'' method?
@@ -318,7 +324,7 @@ function cUdtMember _
 	dim as integer is_ptr = TRUE, mask = typeGetConstMask( dtype )
 
 	do
-		dim as FBSYMBOL ptr fld = hMemberId( subtype )
+		dim as FBSYMBOL ptr fld = hMemberId( subtype, FALSE )
 		if( fld = NULL ) then
 			return NULL
 		end if
@@ -427,13 +433,20 @@ sub cUdtTypeMember _
 		lexSkipToken( LEXCHECK_NOPERIOD )
 
 		'' check member field, See also hLenSizeof()
-		dim sym as FBSYMBOL ptr = hMemberId( subtype )
+		dim sym as FBSYMBOL ptr = hMemberId( subtype, TRUE )
 
 		if( sym ) then
 			'' ID
 			lexSkipToken( LEXCHECK_POST_SUFFIX )
-			dtype = symbGetFullType( sym )
-			subtype = symbGetSubType( sym )
+
+			'' Struct? must be a type and could be followed by '.' member access
+			if( symbGetClass( sym ) = FB_SYMBCLASS_STRUCT ) then
+				subtype = sym
+			else
+				dtype = symbGetFullType( sym )
+				subtype = symbGetSubType( sym )
+			end if
+
 			lgt = symbGetLen( sym )
 			is_fixlenstr = symbGetIsFixLenStr( sym )
 
@@ -500,7 +513,7 @@ private function hStrIndexing _
 	if( typeGet( dtype ) = FB_DATATYPE_WCHAR ) then
 		'' times sizeof( wchar ) if it's wstring
 		idxexpr = astNewBOP( AST_OP_MUL, idxexpr, _
-			astNewCONSTi( typeGetSize( FB_DATATYPE_WCHAR ) ) )
+		                     astNewCONSTi( typeGetSize( FB_DATATYPE_WCHAR ) ) )
 	end if
 
 	'' null pointer checking
@@ -616,7 +629,7 @@ function cMemberDeref _
 
 				'' MemberAccess
 				varexpr = cMemberAccess( astGetFullType( varexpr ), _
-						astGetSubType( varexpr ), varexpr )
+				                         astGetSubType( varexpr ), varexpr )
 			end if
 
 			if( varexpr = NULL ) then
@@ -664,7 +677,7 @@ function cMemberDeref _
 			select case( typeGetDtAndPtrOnly( dtype ) )
 			'' string, fixstr, w|zstring? In that case '[]' means string indexing, not MemberDeref.
 			case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-				 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			     FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 				varexpr = hStrIndexing( dtype, varexpr, hCheckIntegerIndex( idxexpr ) )
 				idxexpr = NULL
 
@@ -689,7 +702,7 @@ function cMemberDeref _
 
 					'' MemberAccess
 					varexpr = cMemberAccess( astGetFullType( varexpr ), _
-							astGetSubType( varexpr ), varexpr )
+					                         astGetSubType( varexpr ), varexpr )
 					if( varexpr = NULL ) then
 						exit function
 					end if
@@ -739,7 +752,7 @@ function cMemberDeref _
 				'' ptr[index]  =>  ptr + (index * sizeof(*ptr))
 				'' (DEREF added later below, so we can pass the pointer to cUdtMember() first if needed)
 				varexpr = astNewBOP( AST_OP_ADD, varexpr, _
-					astNewBOP( AST_OP_MUL, idxexpr, astNewCONSTi( lgt ) ) )
+				                     astNewBOP( AST_OP_MUL, idxexpr, astNewCONSTi( lgt ) ) )
 
 				'' '.'?
 				if( lexGetToken( ) = CHAR_DOT ) then
@@ -868,8 +881,8 @@ private function cDynamicArrayIndex _
 		'' bounds checking
 		if( env.clopt.arrayboundchk ) then
 			dimexpr = astBuildBOUNDCHK( dimexpr, _
-					astBuildDerefAddrOf( astCloneTree( descexpr ), dimoffset + symb.fbarraydim_lbound, FB_DATATYPE_INTEGER, NULL ), _
-					astBuildDerefAddrOf( astCloneTree( descexpr ), dimoffset + symb.fbarraydim_ubound, FB_DATATYPE_INTEGER, NULL ) )
+			                            astBuildDerefAddrOf( astCloneTree( descexpr ), dimoffset + symb.fbarraydim_lbound, FB_DATATYPE_INTEGER, NULL ), _
+			                            astBuildDerefAddrOf( astCloneTree( descexpr ), dimoffset + symb.fbarraydim_ubound, FB_DATATYPE_INTEGER, NULL ) )
 			assert( dimexpr )
 		end if
 
@@ -920,9 +933,10 @@ private function hVarAddUndecl _
 		if( symbIsGlobalNamespc( ) = FALSE ) then
 			if( fbIsModLevel( ) ) then
 				if( (attrib and (FB_SYMBATTRIB_SHARED or _
-								 FB_SYMBATTRIB_COMMON or _
-								 FB_SYMBATTRIB_PUBLIC or _
-								 FB_SYMBATTRIB_EXTERN)) = 0 ) then
+				                 FB_SYMBATTRIB_COMMON or _
+				                 FB_SYMBATTRIB_PUBLIC or _
+				                 FB_SYMBATTRIB_EXTERN)) = 0 ) then
+
 					'' they are never allocated on stack..
 					attrib or= FB_SYMBATTRIB_STATIC
 				end if
@@ -977,14 +991,14 @@ private function hMakeArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 	if( symbIsParamVarByDesc( sym ) ) then
 		'' return descriptor->data
 		return astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
-				FB_DATATYPE_INTEGER, NULL, symb.fbarray_data )
+		                    FB_DATATYPE_INTEGER, NULL, symb.fbarray_data )
 	end if
 
 	'' dynamic array? (this will handle common's too)
 	if( symbIsDynamic( sym ) ) then
 		'' return descriptor.data
 		return astNewVAR( symbGetArrayDescriptor( sym ), _
-				symb.fbarray_data, FB_DATATYPE_INTEGER )
+		                  symb.fbarray_data, FB_DATATYPE_INTEGER )
 	end if
 
 	'' static array, return lbound( array )
@@ -1008,7 +1022,7 @@ function cVariableEx overload _
 
 	assert( symbIsVar( sym ) )
 
-	'' check visibility
+	'' Check visibility of the variable
 	if( symbCheckAccess( sym ) = FALSE ) then
 		errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 	end if
@@ -1051,7 +1065,7 @@ function cVariableEx overload _
 
 					'' plus desc.data (= ptr + diff)
 					idxexpr = astNewBOP( AST_OP_ADD, idxexpr, _
-						astBuildDerefAddrOf( descexpr, symb.fbarray_data, FB_DATATYPE_INTEGER, NULL ) )
+					                     astBuildDerefAddrOf( descexpr, symb.fbarray_data, FB_DATATYPE_INTEGER, NULL ) )
 				else
 					idxexpr = cFixedSizeArrayIndex( sym )
 				end if
@@ -1287,11 +1301,8 @@ private function hImpField _
 	end if
 
 	'' FuncPtrOrMemberDeref?
-	function = cFuncPtrOrMemberDeref( dtype, _
-		subtype, _
-		varexpr, _
-		is_funcptr, _
-		check_array )
+	function = cFuncPtrOrMemberDeref( dtype, subtype, varexpr, is_funcptr, check_array )
+
 end function
 
 ''  WithVariable  = '.' UdtMember FuncPtrOrMemberDeref? .
@@ -1309,7 +1320,7 @@ function cWithVariable( byval check_array as integer ) as ASTNODE ptr
 	end if
 
 	function = hImpField( sym, dtype, symbGetSubtype( sym ), check_array, _
-				parser.stmt.with->with.is_ptr, 0 )
+	                      parser.stmt.with->with.is_ptr, 0 )
 end function
 
 '':::::
@@ -1369,7 +1380,7 @@ function cImplicitDataMember _
 	End If
 
 	function = hImpField( this_, symbGetFullType( this_ ), base_parent, _
-				check_array, TRUE, options )
+	                      check_array, TRUE, options )
 
 end function
 

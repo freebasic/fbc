@@ -12,15 +12,15 @@ void resetChecks() {
 	ptr1 = ptr2 = ptr3 = 0;
 }
 
-void* getPtr1() { 
+void* getPtr1() {
 	return ptr1;
 }
 
-void* getPtr2() { 
+void* getPtr2() {
 	return ptr2;
 }
 
-void* getPtr3() { 
+void* getPtr3() {
 	return ptr3;
 }
 
@@ -30,7 +30,7 @@ class UDT_DEFAULT {
 	public:
 	int value;
 	UDT_DEFAULT();
-	~UDT_DEFAULT();	
+	~UDT_DEFAULT();
 	void loadpointer1 ( void );
 	void loadpointer2 ( void* arg );
 	void loadpointer3 ( void* arg1, void* arg2 );
@@ -77,7 +77,7 @@ class UDT_THISCALL {
 	public:
 	int value;
 	UDT_THISCALL() __attribute__((thiscall));
-	~UDT_THISCALL() __attribute__((thiscall));	
+	~UDT_THISCALL() __attribute__((thiscall));
 	void loadpointer1 ( void ) __attribute__((thiscall));
 	void loadpointer2 ( void* arg ) __attribute__((thiscall));
 	void loadpointer3 ( void* arg1, void* arg2 ) __attribute__((thiscall));
@@ -120,7 +120,7 @@ class UDT_CDECL {
 	public:
 	int value;
 	UDT_CDECL() __attribute__((cdecl));
-	~UDT_CDECL() __attribute__((cdecl));	
+	~UDT_CDECL() __attribute__((cdecl));
 	void loadpointer1 ( void ) __attribute__((cdecl));
 	void loadpointer2 ( void* arg ) __attribute__((cdecl));
 	void loadpointer3 ( void* arg1, void* arg2 ) __attribute__((cdecl));
@@ -167,7 +167,7 @@ class UDT_STDCALL {
 	// mingw/gcc appears to have a bug that generates wrong
 	// mangling "__ZN11UDT_STDCALLD1Ev@8" so just use cdecl
 	// here instead
-	~UDT_STDCALL() __attribute__((cdecl));	
+	~UDT_STDCALL() __attribute__((cdecl));
 
 	void loadpointer1 ( void ) __attribute__((stdcall));
 	void loadpointer2 ( void* arg ) __attribute__((stdcall));

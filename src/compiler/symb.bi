@@ -273,10 +273,11 @@ end enum
 
 ''
 enum FB_MANGLEOPT
-	FB_MANGLEOPT_NONE         = 0  '' no special options
-	FB_MANGLEOPT_KEEPTOPCONST = 1  '' keep the top-level const when mangling
-	FB_MANGLEOPT_HASPTR       = 2  '' mangled type has is a pointer type
-	FB_MANGLEOPT_HASREF       = 4  '' mangled type has is reference type
+	FB_MANGLEOPT_NONE         =   0  '' no special options
+	FB_MANGLEOPT_KEEPTOPCONST =   1  '' keep the top-level const when mangling
+	FB_MANGLEOPT_HASPTR       =   2  '' mangled type has is a pointer type
+	FB_MANGLEOPT_HASREF       =   4  '' mangled type has is reference type
+	FB_MANGLEOPT_NESTED       =   8  '' mangled type is nested in another type
 end enum
 
 enum FB_STRUCT_INREG
@@ -1949,7 +1950,22 @@ declare function symbCloneLabel _
 		byval sym as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
-declare function symbCheckAccess( byval sym as FBSYMBOL ptr ) as integer
+declare function symbIsParentNamespace _
+	( _
+		byval dtype as FB_DATATYPE, _
+		byval subtype as FBSYMBOL ptr,  _
+		byval start_ns as FBSYMBOL ptr = NULL _
+	) as integer
+
+declare function symbCheckAccess _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer
+
+declare function symbCheckAccessStruct _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer
 
 declare function symbGetFullProcName _
 	( _
