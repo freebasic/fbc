@@ -1899,7 +1899,8 @@ declare sub symbUdtAllocExt( byval udt as FBSYMBOL ptr )
 declare sub symbUdtDeclareDefaultMembers _
 	( _
 		byref default as SYMBDEFAULTMEMBERS, _
-		byval udt as FBSYMBOL ptr _
+		byval udt as FBSYMBOL ptr, _
+		byval mode as FB_FUNCMODE _
 	)
 
 declare sub symbUdtImplementDefaultMembers _

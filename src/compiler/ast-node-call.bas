@@ -153,14 +153,15 @@ private function hMaybePassArgInReg _
 
 	function = FALSE
 
-	'' only allow thiscall in 32-bit x86 and ignore for other targets
-	'' !!!TODO!!! - It would be better if the parser removed the thiscall calling
-	'' convention in all combinations of target/arch before here and we only have
-	'' asserts() here in the debug version with a simple check on FB_FUNCMODE_THISCALL
 	if( symbGetProcMode( proc ) = FB_FUNCMODE_THISCALL ) then
+		assert( env.clopt.nothiscall = FALSE )
+
+		'' gas backend / extern "c++" / win32 / x86 ? then 
+
 		if( env.clopt.backend = FB_BACKEND_GAS ) then
 			if( fbIs64bit( ) = FALSE ) then
 				if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
+					'' pass arg in ECX
 					if( argnum = 1 ) then
 						function = TRUE
 					end if
@@ -270,11 +271,13 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	'' Hidden param for functions returning big structs on stack
 	if( symbProcReturnsOnStack( proc ) ) then
 		'' Pop hidden ptr if cdecl and target doesn't want the callee
-		'' to do it, despite it being cdecl.
-		if( ((symbGetProcMode( proc ) = FB_FUNCMODE_CDECL) or (symbGetProcMode( proc ) = FB_FUNCMODE_THISCALL)) and _
-		    ((env.target.options and FB_TARGETOPT_CALLEEPOPSHIDDENPTR) = 0) ) then
-			bytestopop += env.pointersize
-		end if
+		'' to do it, despite it being cdecl/thiscall.
+		select case symbGetProcMode( proc )
+		case FB_FUNCMODE_CDECL, FB_FUNCMODE_THISCALL
+			if( (env.target.options and FB_TARGETOPT_CALLEEPOPSHIDDENPTR) = 0) then
+				bytestopop += env.pointersize
+			end if
+		end select
 		if( ast.doemit ) then
 			'' Clear the temp struct (so the function can safely
 			'' do assignments to it in case it includes STRINGs),

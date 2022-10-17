@@ -44,7 +44,8 @@ private function hDeclareProc _
 		byval op as AST_OP, _
 		byval rhsdtype as integer, _
 		byval attrib as FB_SYMBATTRIB, _
-		byval pattrib as FB_PROCATTRIB _
+		byval pattrib as FB_PROCATTRIB, _
+		byval mode as FB_FUNCMODE _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr proc = any
@@ -72,11 +73,11 @@ private function hDeclareProc _
 	'' cons|destructor?
 	if( op = INVALID ) then
 		proc = symbAddCtor( proc, NULL, attrib, pattrib, _
-		                    FB_FUNCMODE_CDECL, FB_SYMBOPT_DECLARING )
+		                    mode, FB_SYMBOPT_DECLARING )
 	'' op..
 	else
 		proc = symbAddOperator( proc, op, NULL, FB_DATATYPE_VOID, NULL, attrib, pattrib, _
-		                        FB_FUNCMODE_CDECL, FB_SYMBOPT_DECLARING )
+		                        mode, FB_SYMBOPT_DECLARING )
 	end if
 
 	'' Close the namespace again
@@ -509,7 +510,8 @@ end sub
 sub symbUdtDeclareDefaultMembers _
 	( _
 		byref default as SYMBDEFAULTMEMBERS, _
-		byval udt as FBSYMBOL ptr _
+		byval udt as FBSYMBOL ptr, _
+		byval mode as FB_FUNCMODE _
 	)
 
 	dim as integer missing_base_defctor = any
@@ -573,7 +575,15 @@ sub symbUdtDeclareDefaultMembers _
 			errReport( FB_ERRMSG_NEEDEXPLICITDEFCTOR )
 		else
 			'' Add default ctor
-			default.defctor = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_INTERNAL, FB_PROCATTRIB_OVERLOADED or FB_PROCATTRIB_CONSTRUCTOR )
+			default.defctor = hDeclareProc _
+				( _
+					udt, _
+					INVALID, _
+					FB_DATATYPE_INVALID, _
+					FB_SYMBATTRIB_INTERNAL, _
+					FB_PROCATTRIB_OVERLOADED or FB_PROCATTRIB_CONSTRUCTOR, _
+					mode _
+				)
 		end if
 	end if
 
@@ -585,7 +595,15 @@ sub symbUdtDeclareDefaultMembers _
 
 		if( udt->udt.ext->copyletopconst = NULL ) then
 			'' declare operator let( byref rhs as const UDT )
-			default.copyletopconst = hDeclareProc( udt, AST_OP_ASSIGN, typeSetIsConst( FB_DATATYPE_STRUCT ), FB_SYMBATTRIB_INTERNAL, FB_PROCATTRIB_OVERLOADED or FB_PROCATTRIB_OPERATOR )
+			default.copyletopconst = hDeclareProc _
+				( _
+					udt, _
+					AST_OP_ASSIGN, _
+					typeSetIsConst( FB_DATATYPE_STRUCT ), _
+					FB_SYMBATTRIB_INTERNAL, _
+					FB_PROCATTRIB_OVERLOADED or FB_PROCATTRIB_OPERATOR, _
+					mode _
+				)
 			symbProcCheckOverridden( default.copyletopconst, TRUE )
 		end if
 
@@ -596,7 +614,15 @@ sub symbUdtDeclareDefaultMembers _
 				'' same as with default ctor above.
 				errReport( FB_ERRMSG_NEEDEXPLICITCOPYCTORCONST )
 			else
-				default.copyctorconst = hDeclareProc( udt, INVALID, typeSetIsConst( FB_DATATYPE_STRUCT ), FB_SYMBATTRIB_INTERNAL, FB_PROCATTRIB_OVERLOADED or FB_PROCATTRIB_CONSTRUCTOR )
+				default.copyctorconst = hDeclareProc _
+					( _
+						udt, _
+						INVALID, _
+						typeSetIsConst( FB_DATATYPE_STRUCT ), _
+						FB_SYMBATTRIB_INTERNAL, _
+						FB_PROCATTRIB_OVERLOADED or FB_PROCATTRIB_CONSTRUCTOR, _
+						mode _
+					)
 			end if
 		end if
 
@@ -609,7 +635,15 @@ sub symbUdtDeclareDefaultMembers _
 				'' same as with default ctor above.
 				errReport( FB_ERRMSG_NEEDEXPLICITCOPYCTOR )
 			else
-				default.copyctor = hDeclareProc( udt, INVALID, FB_DATATYPE_STRUCT, FB_SYMBATTRIB_INTERNAL, FB_PROCATTRIB_OVERLOADED or FB_PROCATTRIB_CONSTRUCTOR )
+				default.copyctor = hDeclareProc _
+					( _
+						udt, _
+						INVALID, _
+						FB_DATATYPE_STRUCT, _
+						FB_SYMBATTRIB_INTERNAL, _
+						FB_PROCATTRIB_OVERLOADED or FB_PROCATTRIB_CONSTRUCTOR, _
+						mode _
+					)
 			end if
 		end if
 	end if
@@ -626,12 +660,28 @@ sub symbUdtDeclareDefaultMembers _
 			assert( udt->udt.ext->dtor0 = NULL )
 
 			'' Complete dtor
-			default.dtor1 = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_INTERNAL, FB_PROCATTRIB_DESTRUCTOR1 )
+			default.dtor1 = hDeclareProc _
+				( _
+					udt, _
+					INVALID, _
+					FB_DATATYPE_INVALID, _
+					FB_SYMBATTRIB_INTERNAL, _
+					FB_PROCATTRIB_DESTRUCTOR1, _
+					mode _
+				)
 
 			'' c++? we may need other dtors too...
 			if( symbGetMangling( udt ) = FB_MANGLING_CPP ) then
 				'' Deleting dtor
-				default.dtor0 = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_INTERNAL, FB_PROCATTRIB_DESTRUCTOR0 )
+				default.dtor0 = hDeclareProc _
+					( _
+						udt, _
+						INVALID, _
+						FB_DATATYPE_INVALID, _
+						FB_SYMBATTRIB_INTERNAL, _
+						FB_PROCATTRIB_DESTRUCTOR0, _
+						mode _
+					)
 			end if
 
 			'' Don't allow the implicit dtor to override a FINAL dtor from the base
@@ -1388,12 +1438,25 @@ sub symbCompRTTIInit( )
 	'' (using vptr$ instead of $vptr - ditto)
 	symbAddField( objtype, "vptr$", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
 
+	dim mode as FB_FUNCMODE = FB_FUNCMODE_CDECL
+
+	'' !!!TODO!!! is this required for OBJECT and RTTI?
+	''if( parser.mangling = FB_MANGLING_CPP ) then
+	''  if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+	''      if( fbIs64bit( ) = FALSE ) then
+	''          if( env.clopt.nothiscall = FALSE ) then
+	''              mode = FB_FUNCMODE_THISCALL
+	''          end if
+	''      end if
+	''  end if
+	''end if
+
 	'' declare constructor( )
 	ctor = symbPreAddProc( NULL )
 	symbAddProcInstanceParam( objtype, ctor )
 	symbAddCtor( ctor, NULL, FB_SYMBATTRIB_NONE, _
 	                         FB_PROCATTRIB_METHOD or FB_PROCATTRIB_CONSTRUCTOR or FB_PROCATTRIB_OVERLOADED, _
-	                         FB_FUNCMODE_CDECL )
+	                         mode )
 
 	'' declare constructor( byref __FB_RHS__ as const object )
 	'' (must have a BYREF AS CONST parameter so it can copy from CONST objects too)
@@ -1403,7 +1466,7 @@ sub symbCompRTTIInit( )
 			0, FB_PARAMMODE_BYREF, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
 	symbAddCtor( ctor, NULL, FB_SYMBATTRIB_NONE, _
 	                         FB_PROCATTRIB_METHOD or FB_PROCATTRIB_CONSTRUCTOR or FB_PROCATTRIB_OVERLOADED, _
-	                         FB_FUNCMODE_CDECL )
+	                         mode )
 
 	'' end type
 	symbStructEnd( objtype, TRUE )

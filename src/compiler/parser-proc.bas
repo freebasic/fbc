@@ -541,7 +541,11 @@ function cProcCallingConv( byval default as FB_FUNCMODE ) as FB_FUNCMODE
 			function = default
 
 		case FB_MANGLING_CDECL, FB_MANGLING_CPP
-			function = FB_FUNCMODE_CDECL
+			if( default = FB_FUNCMODE_THISCALL ) then
+				function = default
+			else
+				function = FB_FUNCMODE_CDECL
+			end if
 
 		case FB_MANGLING_STDCALL
 			'' FB_FUNCMODE_STDCALL may be remapped to FB_FUNCMODE_STDCALL_MS
@@ -1261,6 +1265,22 @@ function cProcHeader _
 	case else
 		mode = FB_FUNCMODE_FBCALL
 	end select
+
+	'' extern "c++" / win32 / x86 / non-static member ? then default to THISCALL
+	if( is_memberproc ) then
+		if( (attrib and FB_SYMBATTRIB_STATIC) = 0 ) then
+			if( parser.mangling = FB_MANGLING_CPP ) then
+				if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+					if( fbIs64bit( ) = FALSE ) then
+						if( env.clopt.nothiscall = FALSE ) then
+							mode = FB_FUNCMODE_THISCALL
+						end if
+					end if
+				end if
+			end if
+		end if
+	end if
+
 	mode = cProcCallingConv( mode )
 
 	'' OVERLOAD?

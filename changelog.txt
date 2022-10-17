@@ -23,6 +23,7 @@ Version 1.10.0
 - release: target DOS gcc 9.3.0 and bin utils 2.30 for next release
 - Unix GETMOUSE() under TERM=linux now requires libgpm 1.20.4 or higher (libgpm.so.2), instead of the older libgpm.so.1 versions. (for compatibility with modern Debian/Ubuntu versions, and probably other distros, since 2008)
 - gas64 : SGN type is INTEGER for whole numbers instead LONG
+- fbc: thiscall calling convention default for extern "c++" / win32 / x86 / non-static member procedures
 
 [added]
 - gas/gas64: '.cif_sections' and '.cif_' directives for stack unwinding (adeyblue)

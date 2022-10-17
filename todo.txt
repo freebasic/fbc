@@ -67,12 +67,21 @@ o ABI
   - MinGW GCC 4.7 C++ defaults to __thiscall for methods like MSVC,
     instead of __cdecl as on Linux, even though GCC doesn't use MSVC's name
     mangling [yet].
+    [ ] refactor cProcCallingConv() usage and target specific checks
+    - FB can probably support __fastcall with C/LLVM backends pretty easily
+    [ ] add the __fastcall keyword
+    [ ] add '-z no-fastcall' to ignore "fastcall" calling convention
+    [ ] allow defining and calling __fastcall procedures in gas 32
+    [ ] only allow integral data types
+    [ ] testing on other arch / targets (arm, freebsd, dos, etc)
     - FB can probably support __thiscall with C/LLVM backends pretty easily
-    [ ] use __thiscall calling by default for mingw gcc 32-bit, currently
+    [x] use __thiscall calling by default for mingw gcc 32-bit,
         currently, users must manage this explicitly, recommend using a 
         #define thiscall __thiscall depending on target platform
+    [ ] only allow integral data types
     [ ] more tests and documentation for mangling/calling conventions, not every
         calling convention is tested or documented completely - also hard to test
+    [x] allow defining and calling __thiscall procedures in gas 32
     [x] silently ignore on 64-bit, but warn if declare & procedure is different
     [x] implement in -gen gas 32-bit. Hard to do, AST/IR/EMIT currently doesn't
         have enough information or implementation for passing arguments in registers.

@@ -162,9 +162,19 @@ function symbProcCalcBytesToPop( byval proc as FBSYMBOL ptr ) as longint
 	dim as longint bytestopop = 0
 	dim callee_cleanup as integer = FALSE
 
+	assert( iif( (symbGetProcMode( proc ) = FB_FUNCMODE_THISCALL), _
+		(env.clopt.backend = FB_BACKEND_GAS) and _
+		(fbIs64bit( ) = FALSE) and _
+		(fbGetCpuFamily( ) = FB_CPUFAMILY_X86), _
+		TRUE ) )
+
 	'' Need to pop parameters in case of thiscall on win32, but not any other target
 	if( symbGetProcMode( proc ) = FB_FUNCMODE_THISCALL ) then
-		if( fbIs64bit() = FALSE ) then
+
+		'' should never get here if "-z no-thiscall" is active
+		assert( env.clopt.nothiscall = FALSE )
+
+		if( fbIs64bit( ) = FALSE ) then
 			if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
 				callee_cleanup = TRUE
 			end if

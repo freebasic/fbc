@@ -1,7 +1,7 @@
 '' symbol table module for user defined types (structures and unions)
 ''
 '' chng: sep/2004 written [v1ctor]
-''		 jan/2005 updated to use real linked-lists [v1ctor]
+''       jan/2005 updated to use real linked-lists [v1ctor]
 
 
 #include once "fb.bi"
@@ -83,7 +83,7 @@ function symbStructBegin _
 	s->udt.align = align
 	s->udt.natalign = 1
 	s->udt.bitpos = 0
-	s->udt.unpadlgt	= 0
+	s->udt.unpadlgt = 0
 	s->udt.retdtype = FB_DATATYPE_INVALID
 	s->udt.dbg.typenum = INVALID
 	s->udt.ext = NULL
@@ -285,7 +285,7 @@ function symbAddField _
 
 	'' calc length if it wasn't given
 	if( lgt <= 0 ) then
-		lgt	= symbCalcLen( dtype, subtype )
+		lgt = symbCalcLen( dtype, subtype )
 	end if
 
 	'' Dynamic array field? Recursively add the corresponding descriptor field.
@@ -649,7 +649,7 @@ end sub
 '' (the structure contains only an array of simple datatype) and the result is forced to KSTRUCT_XX or KSTRUCT_RR
 ''================================================
 private sub struct_analyze( byval fld as FBSYMBOL ptr, byref part1 as integer, byref part2 as integer, byref range as integer )
-	
+
 	dim as integer lgt=fld->lgt
 	fld = symbUdtGetFirstField(fld)
 	while fld
@@ -696,12 +696,12 @@ private function hGetReturnTypeGas64Linux( byval sym as FBSYMBOL ptr ) as intege
 	assert( env.clopt.backend = FB_BACKEND_GAS64 )
 	assert( env.clopt.target = FB_COMPTARGET_LINUX )
 
-	'' Linux gas64 could use 2 registers	
+	'' Linux gas64 could use 2 registers
 
 	if( sym->lgt <= typeGetSize( FB_DATATYPE_LONGINT ) * 2 ) then
 		select case as const hGetMagicStructNumber( sym )
 			case KSTRUCT_R ''only integers in RAX
-				'' don't set retin2regs, it's handled by datatype only 
+				'' don't set retin2regs, it's handled by datatype only
 				'' sym->udt.retin2regs = FB_STRUCT_R
 				return FB_DATATYPE_LONGINT
 			case KSTRUCT_X ''only floats in XMM0
@@ -881,6 +881,7 @@ sub symbStructEnd _
 
 	dim as SYMBDEFAULTMEMBERS defaultmembers = any
 	dim as integer pad = any
+	dim mode as FB_FUNCMODE = any
 
 	'' end nesting?
 	if( isnested ) then
@@ -897,8 +898,23 @@ sub symbStructEnd _
 		sym->lgt += pad
 	end if
 
+	'' default mode for default non-static members
+	mode = FB_FUNCMODE_CDECL
+
+	'' extern "c++" / win32 / x86 ? then 
+	'' default to THISCALL for default non-static members
+	if( parser.mangling = FB_MANGLING_CPP ) then
+		if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+			if( fbIs64bit( ) = FALSE ) then
+				if( env.clopt.nothiscall = FALSE ) then
+					mode = FB_FUNCMODE_THISCALL
+				end if
+			end if
+		end if
+	end if
+
 	'' Declare implicit members (but don't implement them yet)
-	symbUdtDeclareDefaultMembers( defaultmembers, sym )
+	symbUdtDeclareDefaultMembers( defaultmembers, sym, mode )
 
 	'' Determine how to return this structure from procedures
 	'' (must be done after declaring default members because it depends on
@@ -1071,7 +1087,7 @@ function symbGetUDTBaseLevel _
 		byval s as FBSYMBOL ptr, _
 		byval baseSym as FBSYMBOL ptr _
 	) as integer
-	
+
 	if( s = NULL or baseSym = NULL ) then
 		return 0
 	end if
@@ -1084,13 +1100,13 @@ function symbGetUDTBaseLevel _
 		if( s->udt.base->subtype = baseSym ) then
 			return level
 		End If
-		
+
 		s = s->udt.base->subtype
-		level += 1 
+		level += 1
 	Loop
-	
+
 	return 0
-	
+
 End Function
 
 function symbCloneSimpleStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
@@ -1104,7 +1120,7 @@ function symbCloneSimpleStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 	'' used for __builtin_va_list mangle modifier, we only ever refer to this struct
 	'' through the typedef, so it doesn't need a visible name
-	
+
 	s = symbStructBegin( NULL, NULL, NULL, symbUniqueLabel( ), sym->id.alias, FALSE, 0, FALSE, 0, 0 )
 
 	fld = symbUdtGetFirstField( sym )

@@ -13,15 +13,9 @@
 	'' strutures returned by value from c++
 	'' needs some work on arm targets (bugs!)
 	#if not defined( __FB_ARM__ )
+		#define DOTEST
 		#define DOFUNCS
 	#endif
-#endif
-
-'' !!! TODO !!! this default should be handled in fbc
-#if defined(__FB_WIN32__) and not defined(__FB_64BIT__)
-	#define thiscall __thiscall
-#else
-	#define thiscall
 #endif
 
 #ifndef NULL
@@ -39,10 +33,10 @@ extern "c++"
 
 type UDT
 	value as long
-	declare constructor thiscall ()
-	declare constructor thiscall ( byval rhs as long )
-	declare constructor thiscall ( byref rhs as const UDT )
-	declare destructor thiscall ()
+	declare constructor ()
+	declare constructor ( byval rhs as long )
+	declare constructor ( byref rhs as const UDT )
+	declare destructor ()
 end type
 
 end extern

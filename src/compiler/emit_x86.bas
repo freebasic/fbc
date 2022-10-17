@@ -1044,7 +1044,7 @@ private function hFrameBytesToAlloc _
 
 	dim as integer bytestoalloc, bytespushed = any
 
-		bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
+	bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
 
 	if( (env.target.options and FB_TARGETOPT_STACKALIGN16) <> 0 ) then
 
@@ -1069,6 +1069,42 @@ private function hFrameBytesToAlloc _
 
 	return bytestoalloc
 end function
+
+'':::::
+private sub hMaybeStoreRegisterArguments _
+	(  _
+		byval proc as FBSYMBOL ptr _
+	)
+
+	'' hCreateFrame() will be called after all
+	'' procAllocArgs were called, so we should
+	'' expect that offset for param variable
+	'' has been set-up and ready to be stored
+	'' with the register containing the argument
+
+	select case symbGetProcMode( proc )
+	case FB_FUNCMODE_THISCALL
+
+		'' store ECX to local var
+		var param = symbGetProcHeadParam( proc )
+		if( param ) then
+			var operand = ""
+			var ofs = param->param.var->ofs
+
+			operand = "dword ptr [ebp"
+			if( ofs > 0 ) then
+				operand += "+"
+			end if
+			if( ofs <> 0 ) then
+				operand += str(ofs)
+			end if
+			operand += "]"
+
+			outp( "mov " + operand + ", ecx" )
+		end if
+	end select
+
+end sub
 
 '':::::
 '' Stack frames are skipped if possible (and not debug/profile build) or naked.
@@ -1156,6 +1192,8 @@ private sub hCreateFrame _
 		if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
 			hPUSH( "edi" )
 		end if
+
+		hMaybeStoreRegisterArguments( proc )
 
 	end if
 
@@ -7200,6 +7238,34 @@ private sub _procAllocArg _
 	else
 		'' Bydesc/byref
 		lgt = env.pointersize
+	end if
+
+	'' Maybe allocate local variable for THIS argument?
+	if( symbGetProcMode( proc ) = FB_FUNCMODE_THISCALL ) then
+
+		'' should never get here if "-z no-thiscall" is active
+		assert( env.clopt.nothiscall = FALSE )
+
+		'' for thiscall calling convention, we only need
+		'' to check the first parameter.  If we were to
+		'' pass many arguments in registers, then it would
+		'' probably be more efficient to add add a backlink
+		'' to FBS_VAR and initialize in symbVarInitFields()
+		'' and set it in symbAddVarForParam() instead of
+		'' comparing all parameters with all argument
+		'' variables
+
+
+		'' is first param linked to local variable for agument?
+		'' then we expect that the first argument will be passed
+		'' in ECX and we need to allocate a local variable to
+		'' store it since it won't be available on the stack
+		''
+		var param = symbGetProcHeadParam( proc )
+		if( param->param.var = sym ) then
+			_procAllocLocal( proc, sym )
+			exit sub
+		end if
 	end if
 
 	sym->ofs = proc->proc.ext->stk.argofs
