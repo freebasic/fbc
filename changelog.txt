@@ -83,6 +83,7 @@ Version 1.10.0
 - sf.net #922: Sometimes can't use extra backets inside TYPE UDT initialiser - now, don't allow optional parentheses when parsing type<UDT>(...) if left parenthesis is found
 - sf.net #824: Illegal destructor call after '#print typeof( f() )' when f() is a function returning an object by value
 - fbc: delete destructor calls of discarded expressions in IIF(), previously, unscoped dtors (to be called after the expression) and deleted dtors (to be never called) were being handled the same
+- gas backend: fix spill registers when all reused registers are within the same emit operation
 
 
 Version 1.09.0

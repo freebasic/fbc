@@ -209,7 +209,7 @@ private sub regClear _
 	for n = 0 to this_->regs - 1
 		this_->vregTB(n) = NULL
 		this_->vauxparent(n) = NULL
-		this_->regctx.nextTB(n) = 0
+		this_->regctx.nextTB(n) = IR_INVALIDDIST
 
 		r = @this_->regctx.regTB(n)
 
@@ -237,7 +237,7 @@ private function regFindFarest _
 		if( i <> reservedreg ) then
 			'' valid bits?
 			if( this_->regctx.sizeTB(i) and size ) then
-				if( maxdist < this_->regctx.nextTB(i) ) then
+				if( maxdist <= this_->regctx.nextTB(i) ) then
 					maxdist = this_->regctx.nextTB(i)
 					r = i
 				end if
@@ -361,7 +361,7 @@ private sub regFree _
 		REG_SETFREE( this_->regctx.freeTB, r )
 		this_->vregTB(r) = NULL
 		this_->vauxparent(r) = NULL
-		this_->regctx.nextTB(r) = 0
+		this_->regctx.nextTB(r) = IR_INVALIDDIST
 		regPush( this_, r )
 	end if
 

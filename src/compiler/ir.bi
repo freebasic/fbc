@@ -7,6 +7,7 @@ const IR_INITADDRNODES      = 2048
 const IR_INITVREGNODES      = IR_INITADDRNODES*3
 
 const IR_MAXDIST            = 2147483647
+const IR_INVALIDDIST        = -1
 
 '' when changing, update vregDumpToStr():vregtypes()
 enum IRVREGTYPE_ENUM

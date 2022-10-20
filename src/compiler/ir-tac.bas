@@ -1131,7 +1131,7 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 #if __FB_DEBUG__
-private sub hDumpFreeIntRegs( )
+sub hDumpFreeIntRegs( )
 	dim as string free, used
 	dim as integer reg = any
 
@@ -1383,6 +1383,7 @@ private sub _flush static
 
 		''
 		'hDump( op, v1, v2, vr )
+		'hDumpFreeIntRegs()
 
 		''
 		select case as const astGetOpClass( op )
