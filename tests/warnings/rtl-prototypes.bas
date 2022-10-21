@@ -2085,7 +2085,7 @@
 
 	ID( function fb_UIntToWstr )
 	scope
-		dim chk as function fbcall ( byval as ulong ) as wchar_ret
+		dim chk as function fbcall ( byval as const ulong ) as wchar_ret
 		chk = procptr( fb_UIntToWstr )
 	end scope
 

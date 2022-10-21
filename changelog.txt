@@ -60,6 +60,7 @@ Version 1.10.0
 - sf.net #916: fbc: 'LINE INPUT [#1 | prompt,] variable [, maxchars]' requires length parameter for ZSTRING/WSTRING PTR variable
 - sf.net #916: fbc: Error on LINE INPUT [#1] if either missing or irrelevant max length argument
 - sf.net #892: fbc: Bug when default calling via a pointer to a 'Sub' defined with the only 'Any Ptr' optional parameter
+- sf.net #944: fbc: regression - local static arrays shouldn't have the array descriptor moved to global scope - partially revert #944 and add test
 - fbc: parser skips extra token on error recovery for #if/#ifndef/defined() statements
 - sf.net #455: fbc: Number lexing allows much bad input - a show a warning message "Expected digit" where '&o', '&h', '&b' has no digits following
 - gas64: initialize debug structure even if not emitting debug info to prevent errors due to setup changes by #cmdline inside the parser

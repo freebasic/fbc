@@ -380,7 +380,7 @@
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
  		), _
 		/' function fb_LongintToStr( byval num as const longint ) as string '/ _
