@@ -2331,11 +2331,21 @@ function symbIsParentNamespace _
 		return FALSE
 	end if
 
+	if( subtype = NULL ) then
+		return FALSE
+	end if
+
 	if( start_ns ) then
 		context = start_ns
 	else
 		context = symbGetCurrentNamespc( )
 	end if
+
+	'' no nested types? check current namespace / context only
+	if( symbGetUdtHasNested( subtype ) = FALSE ) then
+		return ( context = subtype )
+	end if
+
 	while( context <> @symbGetGlobalNamespc( ) )
 		if( symbGetClass( context ) = FB_SYMBCLASS_STRUCT ) then
 			if( context = subtype ) then

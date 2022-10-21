@@ -174,6 +174,12 @@ private function hIsStructAllowed _
 		return FALSE
 	end if
 
+	'' if the struct has nested types, don't do any other checks
+	'' since the type name could be used as a namespace prefix
+	if( symbGetUdtHasNested( sym ) ) then
+		return TRUE
+	end if
+
 	'' Ordinary/non-class struct? Won't ever be used as namespace prefix,
 	'' since it doesn't have any methods/static member vars
 	if( symbGetIsUnique( sym ) = FALSE ) then

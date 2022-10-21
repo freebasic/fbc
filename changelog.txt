@@ -42,7 +42,7 @@ Version 1.10.0
 - makefile: 'DISABLE_GAS64_DEBUG=1' makefile configuration option to disable debugging comments in gas64 asm files
 - gfxlib2: add FB.GET_SCANLINE_SIZE to fbgfx.bi and ScreenControl() to get current internal scan line size multiplier
 - gfxlib2: SCREENCONTROL: add getters for GL parameters - new GET_GL_* constants in fbgfx.bi
-- fbc: allow a TYPE or UNION to be declared inside another TYPE or UNION to allow declaration of inner named types.  Support c++ name mangling parameters of inner types.
+- fbc: allow a TYPE or UNION to be declared inside another TYPE or UNION to allow declaration of nested named types.  Support c++ name mangling parameters of named nested types.  Support definition of variables declared in a named nested type.
 - Name mangling for c++ 'char' through BYTE/UBYTE parameters using the form "[unsigned] byte alias "char".  Data type size is still 8 byte signed/unsigned from fbc side, but will mangled as 'char'; neither signed nor unsigned for the c++ side.
 - Support 'SOURCE_DATE_EPOCH' environment variable for controlling the instrinsic __DATE__, __DATE_ISO__, __TIME__ macros.  This in turn controls __FB_BUILD_DATE__ and __FB_BUILD_DATE_ISO__ macros when building the compiler.  Report error message on malformed values.
 - fbc -nolib a,b,c command line option for selectively excluding specific libraries when linking (more fine-grained control than -nodeflibs, and not only for default libraries)

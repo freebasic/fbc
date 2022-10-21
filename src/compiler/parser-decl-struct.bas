@@ -879,6 +879,7 @@ decl_inner:
 				'' allow named UNION|TYPE to be nested in another UNION|TYPE
 				else
 					hBeginNesting( s )
+					symbSetUdtHasNested( s )
 					cTypeDecl( attrib )
 
 				end if
@@ -1203,10 +1204,8 @@ private sub hPatchByvalParamsToSelf( byval parent as FBSYMBOL ptr )
 			param = symbGetProcHeadParam( sym )
 			while( param )
 				'' BYVAL AS ParentUDT?
-				if( (symbGetType( param ) = FB_DATATYPE_STRUCT) and _
-				    (symbIsParentNamespace( symbGetType( sym ), symbGetSubtype( sym ), parent)) ) then
-
-					if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
+				if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
+					if( symbIsParentNamespace( symbGetType( param ), symbGetSubtype( param ), parent) ) then
 						symbRecalcLen( param )
 					end if
 				end if
@@ -1218,14 +1217,17 @@ private sub hPatchByvalParamsToSelf( byval parent as FBSYMBOL ptr )
 		sym = sym->next
 	wend
 
-	'' recurse in to nested types
-	sym = symbGetUDTSymbtb( parent ).head
-	while( sym )
-		if( symbIsStruct( sym ) ) then
-			hPatchByvalParamsToSelf( sym )
-		end if
-		sym = sym->next
-	wend
+	'' recurse in to nested types only if the type
+	'' is expected to have nested types
+	if( symbGetUdtHasNested( parent ) ) then
+		sym = symbGetUDTSymbtb( parent ).head
+		while( sym )
+			if( symbIsStruct( sym ) ) then
+				hPatchByvalParamsToSelf( sym )
+			end if
+			sym = sym->next
+		wend
+	end if
 
 end sub
 
@@ -1236,28 +1238,30 @@ private sub hPatchByvalResultToSelf( byval parent as FBSYMBOL ptr )
 	while( sym )
 
 		'' Function or static variable? Using parent UDT as Byval (result) data type?
-		if( (symbGetType( sym ) = FB_DATATYPE_STRUCT) and _
-		    (symbIsParentNamespace( symbGetType( sym ), symbGetSubtype( sym ), parent)) and _
-		    (not symbIsRef( sym )) ) then
-
-			if( symbIsProc( sym ) ) then
-				symbProcRecalcRealType( sym )
-				'' (FBSYMBOL->lgt is 0 for procedures anyways, no need to update)
-			elseif( symbIsVar( sym ) ) then
-				symbRecalcLen( sym )
+		if( not symbIsRef( sym ) ) then
+			if( symbIsParentNamespace( symbGetType( sym ), symbGetSubtype( sym ), parent ) ) then
+				if( symbIsProc( sym ) ) then
+					symbProcRecalcRealType( sym )
+					'' (FBSYMBOL->lgt is 0 for procedures anyways, no need to update)
+				elseif( symbIsVar( sym ) ) then
+					symbRecalcLen( sym )
+				end if
 			end if
 		end if
 
 		sym = sym->next
 	wend
 
-	'' recurse in to nested types
-	sym = symbGetUDTSymbtb( parent ).head
-	while( sym )
-		if( symbIsStruct( sym ) ) then
-			hPatchByvalResultToSelf( sym )
-		end if
-		sym = sym->next
-	wend
+	'' recurse in to nested types only if the type
+	'' is expected to have nested types
+	if( symbGetUdtHasNested( parent ) ) then
+		sym = symbGetUDTSymbtb( parent ).head
+		while( sym )
+			if( symbIsStruct( sym ) ) then
+				hPatchByvalResultToSelf( sym )
+			end if
+			sym = sym->next
+		wend
+	end if
 
 end sub
