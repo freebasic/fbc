@@ -1,0 +1,163 @@
+---------- public/public/public
+---------- public/public/protected
+Expect error to follow @ 60,3
+vis-nested-3.bas(60) error 202: Illegal member access, found 'UDT02D3' in 'test_X( UDT02, 0, 0, 1 )'
+---------- public/public/private
+Expect error to follow @ 66,3
+vis-nested-3.bas(66) error 202: Illegal member access, found 'UDT03D3' in 'test_X( UDT03, 0, 0, 1 )'
+---------- public/protected/public
+Expect error to follow @ 72,2
+vis-nested-3.bas(72) error 202: Illegal member access, found 'UDT04D2' in 'test_X( UDT04, 0, 1, 1 )'
+Expect error to follow @ 72,3
+vis-nested-3.bas(72) error 202: Illegal member access, found 'UDT042' in 'test_X( UDT04, 0, 1, 1 )'
+---------- public/protected/protected
+Expect error to follow @ 78,2
+vis-nested-3.bas(78) error 202: Illegal member access, found 'UDT05D2' in 'test_X( UDT05, 0, 1, 1 )'
+Expect error to follow @ 78,3
+vis-nested-3.bas(78) error 202: Illegal member access, found 'UDT052' in 'test_X( UDT05, 0, 1, 1 )'
+---------- public/protected/private
+Expect error to follow @ 84,2
+vis-nested-3.bas(84) error 202: Illegal member access, found 'UDT06D2' in 'test_X( UDT06, 0, 1, 1 )'
+Expect error to follow @ 84,3
+vis-nested-3.bas(84) error 202: Illegal member access, found 'UDT062' in 'test_X( UDT06, 0, 1, 1 )'
+---------- public/private/public
+Expect error to follow @ 90,2
+vis-nested-3.bas(90) error 202: Illegal member access, found 'UDT07D2' in 'test_X( UDT07, 0, 1, 1 )'
+Expect error to follow @ 90,3
+vis-nested-3.bas(90) error 202: Illegal member access, found 'UDT072' in 'test_X( UDT07, 0, 1, 1 )'
+---------- public/private/protected
+Expect error to follow @ 96,2
+vis-nested-3.bas(96) error 202: Illegal member access, found 'UDT08D2' in 'test_X( UDT08, 0, 1, 1 )'
+Expect error to follow @ 96,3
+vis-nested-3.bas(96) error 202: Illegal member access, found 'UDT082' in 'test_X( UDT08, 0, 1, 1 )'
+---------- public/private/private
+Expect error to follow @ 102,2
+vis-nested-3.bas(102) error 202: Illegal member access, found 'UDT09D2' in 'test_X( UDT09, 0, 1, 1 )'
+Expect error to follow @ 102,3
+vis-nested-3.bas(102) error 202: Illegal member access, found 'UDT092' in 'test_X( UDT09, 0, 1, 1 )'
+---------- protected/public/public
+Expect error to follow @ 108,1
+vis-nested-3.bas(108) error 202: Illegal member access, found 'UDT10D1' in 'test_X( UDT10, 1, 1, 1 )'
+Expect error to follow @ 108,2
+vis-nested-3.bas(108) error 202: Illegal member access, found 'UDT101' in 'test_X( UDT10, 1, 1, 1 )'
+Expect error to follow @ 108,3
+vis-nested-3.bas(108) error 202: Illegal member access, found 'UDT101' in 'test_X( UDT10, 1, 1, 1 )'
+---------- protected/public/protected
+Expect error to follow @ 114,1
+vis-nested-3.bas(114) error 202: Illegal member access, found 'UDT11D1' in 'test_X( UDT11, 1, 1, 1 )'
+Expect error to follow @ 114,2
+vis-nested-3.bas(114) error 202: Illegal member access, found 'UDT111' in 'test_X( UDT11, 1, 1, 1 )'
+Expect error to follow @ 114,3
+vis-nested-3.bas(114) error 202: Illegal member access, found 'UDT111' in 'test_X( UDT11, 1, 1, 1 )'
+---------- protected/public/private
+Expect error to follow @ 120,1
+vis-nested-3.bas(120) error 202: Illegal member access, found 'UDT12D1' in 'test_X( UDT12, 1, 1, 1 )'
+Expect error to follow @ 120,2
+vis-nested-3.bas(120) error 202: Illegal member access, found 'UDT121' in 'test_X( UDT12, 1, 1, 1 )'
+Expect error to follow @ 120,3
+vis-nested-3.bas(120) error 202: Illegal member access, found 'UDT121' in 'test_X( UDT12, 1, 1, 1 )'
+---------- protected/protected/public
+Expect error to follow @ 126,1
+vis-nested-3.bas(126) error 202: Illegal member access, found 'UDT13D1' in 'test_X( UDT13, 1, 1, 1 )'
+Expect error to follow @ 126,2
+vis-nested-3.bas(126) error 202: Illegal member access, found 'UDT131' in 'test_X( UDT13, 1, 1, 1 )'
+Expect error to follow @ 126,3
+vis-nested-3.bas(126) error 202: Illegal member access, found 'UDT131' in 'test_X( UDT13, 1, 1, 1 )'
+---------- protected/protected/protected
+Expect error to follow @ 132,1
+vis-nested-3.bas(132) error 202: Illegal member access, found 'UDT14D1' in 'test_X( UDT14, 1, 1, 1 )'
+Expect error to follow @ 132,2
+vis-nested-3.bas(132) error 202: Illegal member access, found 'UDT141' in 'test_X( UDT14, 1, 1, 1 )'
+Expect error to follow @ 132,3
+vis-nested-3.bas(132) error 202: Illegal member access, found 'UDT141' in 'test_X( UDT14, 1, 1, 1 )'
+---------- protected/protected/private
+Expect error to follow @ 138,1
+vis-nested-3.bas(138) error 202: Illegal member access, found 'UDT15D1' in 'test_X( UDT15, 1, 1, 1 )'
+Expect error to follow @ 138,2
+vis-nested-3.bas(138) error 202: Illegal member access, found 'UDT151' in 'test_X( UDT15, 1, 1, 1 )'
+Expect error to follow @ 138,3
+vis-nested-3.bas(138) error 202: Illegal member access, found 'UDT151' in 'test_X( UDT15, 1, 1, 1 )'
+---------- protected/private/public
+Expect error to follow @ 144,1
+vis-nested-3.bas(144) error 202: Illegal member access, found 'UDT16D1' in 'test_X( UDT16, 1, 1, 1 )'
+Expect error to follow @ 144,2
+vis-nested-3.bas(144) error 202: Illegal member access, found 'UDT161' in 'test_X( UDT16, 1, 1, 1 )'
+Expect error to follow @ 144,3
+vis-nested-3.bas(144) error 202: Illegal member access, found 'UDT161' in 'test_X( UDT16, 1, 1, 1 )'
+---------- protected/private/protected
+Expect error to follow @ 150,1
+vis-nested-3.bas(150) error 202: Illegal member access, found 'UDT17D1' in 'test_X( UDT17, 1, 1, 1 )'
+Expect error to follow @ 150,2
+vis-nested-3.bas(150) error 202: Illegal member access, found 'UDT171' in 'test_X( UDT17, 1, 1, 1 )'
+Expect error to follow @ 150,3
+vis-nested-3.bas(150) error 202: Illegal member access, found 'UDT171' in 'test_X( UDT17, 1, 1, 1 )'
+---------- protected/private/private
+Expect error to follow @ 156,1
+vis-nested-3.bas(156) error 202: Illegal member access, found 'UDT18D1' in 'test_X( UDT18, 1, 1, 1 )'
+Expect error to follow @ 156,2
+vis-nested-3.bas(156) error 202: Illegal member access, found 'UDT181' in 'test_X( UDT18, 1, 1, 1 )'
+Expect error to follow @ 156,3
+vis-nested-3.bas(156) error 202: Illegal member access, found 'UDT181' in 'test_X( UDT18, 1, 1, 1 )'
+---------- private/public/public
+Expect error to follow @ 162,1
+vis-nested-3.bas(162) error 202: Illegal member access, found 'UDT19D1' in 'test_X( UDT19, 1, 1, 1 )'
+Expect error to follow @ 162,2
+vis-nested-3.bas(162) error 202: Illegal member access, found 'UDT191' in 'test_X( UDT19, 1, 1, 1 )'
+Expect error to follow @ 162,3
+vis-nested-3.bas(162) error 202: Illegal member access, found 'UDT191' in 'test_X( UDT19, 1, 1, 1 )'
+---------- private/public/protected
+Expect error to follow @ 168,1
+vis-nested-3.bas(168) error 202: Illegal member access, found 'UDT20D1' in 'test_X( UDT20, 1, 1, 1 )'
+Expect error to follow @ 168,2
+vis-nested-3.bas(168) error 202: Illegal member access, found 'UDT201' in 'test_X( UDT20, 1, 1, 1 )'
+Expect error to follow @ 168,3
+vis-nested-3.bas(168) error 202: Illegal member access, found 'UDT201' in 'test_X( UDT20, 1, 1, 1 )'
+---------- private/public/private
+Expect error to follow @ 174,1
+vis-nested-3.bas(174) error 202: Illegal member access, found 'UDT21D1' in 'test_X( UDT21, 1, 1, 1 )'
+Expect error to follow @ 174,2
+vis-nested-3.bas(174) error 202: Illegal member access, found 'UDT211' in 'test_X( UDT21, 1, 1, 1 )'
+Expect error to follow @ 174,3
+vis-nested-3.bas(174) error 202: Illegal member access, found 'UDT211' in 'test_X( UDT21, 1, 1, 1 )'
+---------- private/protected/public
+Expect error to follow @ 180,1
+vis-nested-3.bas(180) error 202: Illegal member access, found 'UDT22D1' in 'test_X( UDT22, 1, 1, 1 )'
+Expect error to follow @ 180,2
+vis-nested-3.bas(180) error 202: Illegal member access, found 'UDT221' in 'test_X( UDT22, 1, 1, 1 )'
+Expect error to follow @ 180,3
+vis-nested-3.bas(180) error 202: Illegal member access, found 'UDT221' in 'test_X( UDT22, 1, 1, 1 )'
+---------- private/protected/protected
+Expect error to follow @ 186,1
+vis-nested-3.bas(186) error 202: Illegal member access, found 'UDT23D1' in 'test_X( UDT23, 1, 1, 1 )'
+Expect error to follow @ 186,2
+vis-nested-3.bas(186) error 202: Illegal member access, found 'UDT231' in 'test_X( UDT23, 1, 1, 1 )'
+Expect error to follow @ 186,3
+vis-nested-3.bas(186) error 202: Illegal member access, found 'UDT231' in 'test_X( UDT23, 1, 1, 1 )'
+---------- private/protected/private
+Expect error to follow @ 192,1
+vis-nested-3.bas(192) error 202: Illegal member access, found 'UDT24D1' in 'test_X( UDT24, 1, 1, 1 )'
+Expect error to follow @ 192,2
+vis-nested-3.bas(192) error 202: Illegal member access, found 'UDT241' in 'test_X( UDT24, 1, 1, 1 )'
+Expect error to follow @ 192,3
+vis-nested-3.bas(192) error 202: Illegal member access, found 'UDT241' in 'test_X( UDT24, 1, 1, 1 )'
+---------- private/private/public
+Expect error to follow @ 198,1
+vis-nested-3.bas(198) error 202: Illegal member access, found 'UDT25D1' in 'test_X( UDT25, 1, 1, 1 )'
+Expect error to follow @ 198,2
+vis-nested-3.bas(198) error 202: Illegal member access, found 'UDT251' in 'test_X( UDT25, 1, 1, 1 )'
+Expect error to follow @ 198,3
+vis-nested-3.bas(198) error 202: Illegal member access, found 'UDT251' in 'test_X( UDT25, 1, 1, 1 )'
+---------- private/private/protected
+Expect error to follow @ 204,1
+vis-nested-3.bas(204) error 202: Illegal member access, found 'UDT26D1' in 'test_X( UDT26, 1, 1, 1 )'
+Expect error to follow @ 204,2
+vis-nested-3.bas(204) error 202: Illegal member access, found 'UDT261' in 'test_X( UDT26, 1, 1, 1 )'
+Expect error to follow @ 204,3
+vis-nested-3.bas(204) error 202: Illegal member access, found 'UDT261' in 'test_X( UDT26, 1, 1, 1 )'
+---------- private/private/private
+Expect error to follow @ 210,1
+vis-nested-3.bas(210) error 202: Illegal member access, found 'UDT27D1' in 'test_X( UDT27, 1, 1, 1 )'
+Expect error to follow @ 210,2
+vis-nested-3.bas(210) error 202: Illegal member access, found 'UDT271' in 'test_X( UDT27, 1, 1, 1 )'
+Expect error to follow @ 210,3
+vis-nested-3.bas(210) error 202: Illegal member access, found 'UDT271' in 'test_X( UDT27, 1, 1, 1 )'

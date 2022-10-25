@@ -36,7 +36,7 @@ sub hMaybeComplainTypeUsage _
 	'' a type for error recovery
 
 	select case typeGetDtAndPtrOnly( dtype )
-	case FB_DATATYPE_STRUCT, FB_DATATYPE_FWDREF
+	case FB_DATATYPE_STRUCT
 
 		'' Check visibility of the symbol type
 		if( symbCheckAccessStruct( subtype ) = FALSE ) then

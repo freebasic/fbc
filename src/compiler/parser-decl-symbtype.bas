@@ -767,7 +767,7 @@ function cSymbolType _
 							'' final type will be checked for access
 							'' after it is returned.
 							if( symbCheckAccess( sym ) = FALSE ) then
-								errReport( FB_ERRMSG_SYNTAXERROR )
+								errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 							end if
 							lexSkipToken( LEXCHECK_POST_SUFFIX )
 							dtype = symbGetFullType( sym )
