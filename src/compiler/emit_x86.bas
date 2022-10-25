@@ -1070,6 +1070,28 @@ private function hFrameBytesToAlloc _
 	return bytestoalloc
 end function
 
+private sub hStoreRegisterArgument _
+	( _
+		byval param as FBSYMBOL ptr, _
+		byref src as string _
+	)
+
+	var operand = ""
+	var ofs = param->param.var->ofs
+
+	operand = "dword ptr [ebp"
+	if( ofs > 0 ) then
+		operand += "+"
+	end if
+	if( ofs <> 0 ) then
+		operand += str(ofs)
+	end if
+	operand += "]"
+
+	outp( "mov " + operand + ", " + src )
+
+end sub
+
 '':::::
 private sub hMaybeStoreRegisterArguments _
 	(  _
@@ -1088,20 +1110,9 @@ private sub hMaybeStoreRegisterArguments _
 		'' store ECX to local var
 		var param = symbGetProcHeadParam( proc )
 		if( param ) then
-			var operand = ""
-			var ofs = param->param.var->ofs
-
-			operand = "dword ptr [ebp"
-			if( ofs > 0 ) then
-				operand += "+"
-			end if
-			if( ofs <> 0 ) then
-				operand += str(ofs)
-			end if
-			operand += "]"
-
-			outp( "mov " + operand + ", ecx" )
+			hStoreRegisterArgument( param, "ecx" )
 		end if
+
 	end select
 
 end sub
@@ -7241,8 +7252,8 @@ private sub _procAllocArg _
 	end if
 
 	'' Maybe allocate local variable for THIS argument?
-	if( symbGetProcMode( proc ) = FB_FUNCMODE_THISCALL ) then
-
+	select case symbGetProcMode( proc )
+	case FB_FUNCMODE_THISCALL
 		'' should never get here if "-z no-thiscall" is active
 		assert( env.clopt.nothiscall = FALSE )
 
@@ -7262,11 +7273,14 @@ private sub _procAllocArg _
 		'' store it since it won't be available on the stack
 		''
 		var param = symbGetProcHeadParam( proc )
-		if( param->param.var = sym ) then
-			_procAllocLocal( proc, sym )
-			exit sub
+		if( param ) then
+			if( param->param.var = sym ) then
+				_procAllocLocal( proc, sym )
+				exit sub
+			end if
 		end if
-	end if
+
+	end select
 
 	sym->ofs = proc->proc.ext->stk.argofs
 	proc->proc.ext->stk.argofs += ((lgt + 3) and not 3)

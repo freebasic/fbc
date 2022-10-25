@@ -168,8 +168,11 @@ function symbProcCalcBytesToPop( byval proc as FBSYMBOL ptr ) as longint
 		(fbGetCpuFamily( ) = FB_CPUFAMILY_X86), _
 		TRUE ) )
 
+	var param = symbGetProcHeadParam( proc )
+
 	'' Need to pop parameters in case of thiscall on win32, but not any other target
-	if( symbGetProcMode( proc ) = FB_FUNCMODE_THISCALL ) then
+	select case symbGetProcMode( proc )
+	case FB_FUNCMODE_THISCALL
 
 		'' should never get here if "-z no-thiscall" is active
 		assert( env.clopt.nothiscall = FALSE )
@@ -180,13 +183,17 @@ function symbProcCalcBytesToPop( byval proc as FBSYMBOL ptr ) as longint
 			end if
 		end if
 
+		if( param ) then
+			param = symbGetParamNext( param )
+		end if
+
 	'' Need to pop parameters in case of stdcall/pascal, but not for cdecl
-	else
+	case else
 		callee_cleanup = (symbGetProcMode( proc ) <> FB_FUNCMODE_CDECL)
-	end if
+
+	end select
 
 	if( callee_cleanup ) then
-		var param = symbGetProcHeadParam( proc )
 		while( param )
 
 			'' Param symbols store their size on stack as their length.

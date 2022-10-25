@@ -153,11 +153,11 @@ private function hMaybePassArgInReg _
 
 	function = FALSE
 
-	if( symbGetProcMode( proc ) = FB_FUNCMODE_THISCALL ) then
+	select case symbGetProcMode( proc )
+	case FB_FUNCMODE_THISCALL
 		assert( env.clopt.nothiscall = FALSE )
 
-		'' gas backend / extern "c++" / win32 / x86 ? then 
-
+		'' gas backend / x86 ? then
 		if( env.clopt.backend = FB_BACKEND_GAS ) then
 			if( fbIs64bit( ) = FALSE ) then
 				if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
@@ -168,7 +168,7 @@ private function hMaybePassArgInReg _
 				end if
 			end if
 		end if
-	end if
+	end select
 
 end function
 
