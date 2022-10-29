@@ -1154,7 +1154,7 @@ function symbLookupInternallyMangledSubtype _
 				lookup_param = symbGetProcHeadParam( sym )
 				proc_param = symbGetProcHeadParam( proc )
 				while( (lookup_param <> NULL) and (proc_param <> NULL) )
-					if( (symbGetParamOptExpr( lookup_param ) <> NULL) <> (symbGetParamOptExpr( proc_param ) <> NULL) ) then
+					if astIsEqualParamInit( symbGetParamOptExpr( lookup_param ), symbGetParamOptExpr( proc_param ) ) = FALSE then
 						exit while
 					end if
 					lookup_param = symbGetParamNext( lookup_param )
