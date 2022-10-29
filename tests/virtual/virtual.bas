@@ -1245,7 +1245,9 @@ SUITE( fbc_tests.virtual_.virtual_ )
 
 	'' overriding an EXTERN C method
 	TEST_GROUP( externC )
-		extern "c" '' cdecl + case-preserving alias
+		'' cdecl + case-preserving alias
+		'' declare a type inside an extern "c" block and extend it outside
+		extern "c"
 			type A extends object
 				declare virtual function foo( byval i as integer ) as integer
 			end type
@@ -1272,12 +1274,68 @@ SUITE( fbc_tests.virtual_.virtual_ )
 
 	'' overriding an EXTERN C++ method
 	TEST_GROUP( externCxx )
-		extern "c++" '' cdecl + C++ mangling (member procedures have that already anyways though)
+		'' cdecl + C++ mangling (member procedures have that already anyways though)
+		'' declare a type inside an extern "c++" block and extend it outside
+		'' on win32 / x86 non-static member procedures have a default of
+		'' __thiscall calling convention inside the extern "c++" block but will
+		'' default to fbcall outside, so the declaration needs an explicit
+		'' matching calling convention in the declaration.  The definition
+		'' will automatically get the calling convention from the declaration.
+		extern "c++"
 			type A extends object
-				declare virtual function foo( byval i as integer ) as integer
+				declare virtual function foo1( byval i as integer ) as integer
+				declare virtual function foo2( byval i as integer ) as integer
 			end type
 
-			function A.foo( byval i as integer ) as integer
+			function A.foo1( byval i as integer ) as integer
+				function = &hA1
+			end function
+
+			function A.foo2( byval i as integer ) as integer
+				function = &hA2
+			end function
+		end extern
+
+		#if defined( __FB_WIN32__ ) and not defined (__FB_64BIT__)
+			#define NonStaticCallConv __thiscall
+		#else
+			#define NonStaticCallConv cdecl
+		#endif
+
+		type B extends A
+			declare function foo1 NonStaticCallConv( byval i as integer ) as integer override
+			declare function foo2 NonStaticCallConv( byval i as integer ) as integer override
+		end type
+
+		'' explicit calling convention
+		function B.foo1 NonStaticCallConv( byval i as integer ) as integer
+			function = &hB1
+		end function
+
+		'' implicit calling convention based on declaration
+		function B.foo2( byval i as integer ) as integer
+			function = &hB2
+		end function
+
+		TEST( default )
+			dim p as A ptr = new B
+			CU_ASSERT( p->foo1( 123 ) = &hB1 )
+			CU_ASSERT( p->foo2( 123 ) = &hB2 )
+			delete p
+		END_TEST
+	END_TEST_GROUP
+
+	'' overriding an EXTERN C++ method with explicit calling convention
+	TEST_GROUP( externCxxExplicit )
+		'' cdecl + C++ mangling (member procedures have that already anyways though)
+		'' declare a type inside an extern "c++" block with an explicit cdecl
+		'' calling convention and extend it outside using an explicit cdecl
+		extern "c++"
+			type A extends object
+				declare virtual function foo cdecl( byval i as integer ) as integer
+			end type
+
+			function A.foo cdecl( byval i as integer ) as integer
 				function = &hA
 			end function
 		end extern

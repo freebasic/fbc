@@ -504,7 +504,14 @@ function cProcReturnMethod( byval dtype as FB_DATATYPE ) as FB_PROC_RETURN_METHO
 	end if
 end function
 
-function cProcCallingConv( byval default as FB_FUNCMODE ) as FB_FUNCMODE
+function cProcCallingConv _
+	( _
+		byval default as FB_FUNCMODE, _
+		byref is_explicit as integer _
+	) as FB_FUNCMODE
+
+	is_explicit = FALSE
+
 	'' Use the default FBCALL?
 	if( default = FB_FUNCMODE_FBCALL ) then
 		default = env.target.fbcall
@@ -513,17 +520,20 @@ function cProcCallingConv( byval default as FB_FUNCMODE ) as FB_FUNCMODE
 	'' (CDECL|STDCALL|PASCAL|THISCALL)?
 	select case as const lexGetToken( )
 	case FB_TK_CDECL
+		is_explicit = TRUE
 		function = FB_FUNCMODE_CDECL
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	case FB_TK_STDCALL
 		'' FB_FUNCMODE_STDCALL may be remapped to FB_FUNCMODE_STDCALL_MS
 		'' for targets that do not support the @N suffix
+		is_explicit = TRUE
 		function = env.target.stdcall
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	case FB_TK_PASCAL
 		function = FB_FUNCMODE_PASCAL
+		is_explicit = TRUE
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	case FB_TK_THISCALL
@@ -532,11 +542,15 @@ function cProcCallingConv( byval default as FB_FUNCMODE ) as FB_FUNCMODE
 			'' keep the thiscall call convention even if the target/archictecture wont't support it
 			'' this will allow us to check that the declaration matches the definition.  Also,
 			'' gcc supports extensions for using thiscall even with normal procedures
+			is_explicit = TRUE
 			function = FB_FUNCMODE_THISCALL
 		end if
 		lexSkipToken( )
 
-	case else
+	end select
+
+	'' no explicit calling convention given? then, calculate a default
+	if( is_explicit = FALSE ) then
 		select case as const parser.mangling
 		case FB_MANGLING_BASIC, FB_MANGLING_RTLIB
 			function = default
@@ -556,7 +570,7 @@ function cProcCallingConv( byval default as FB_FUNCMODE ) as FB_FUNCMODE
 		case FB_MANGLING_STDCALL_MS
 			function = FB_FUNCMODE_STDCALL_MS
 		end select
-	end select
+	end if
 end function
 
 private sub cNakedAttribute( byref pattrib as FB_PROCATTRIB )
@@ -1050,6 +1064,7 @@ function cProcHeader _
 	dim as integer dtype = any, is_outside = any, is_memberproc = any
 	dim as integer mode = any, stats = any, op = any, is_get = any, is_indexed = any
 	dim as integer priority = any, idopt = any
+	dim as integer mode_is_explicit = any
 
 	is_nested = FALSE
 	is_outside = FALSE
@@ -1060,6 +1075,7 @@ function cProcHeader _
 	subtype = NULL
 	stats = 0
 	priority = 0
+	mode_is_explicit = FALSE
 
 	select case( tk )
 	case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
@@ -1282,7 +1298,7 @@ function cProcHeader _
 		end if
 	end if
 
-	mode = cProcCallingConv( mode )
+	mode = cProcCallingConv( mode, mode_is_explicit )
 
 	'' OVERLOAD?
 	if( lexGetToken( ) = FB_TK_OVERLOAD ) then
@@ -1698,6 +1714,13 @@ function cProcHeader _
 			if( symbGetIsDeclared( head_proc ) ) then
 				errReport( FB_ERRMSG_DUPDEFINITION, TRUE )
 				return CREATEFAKE( )
+			end if
+
+			'' no explicit calling convention? then use the proc declaration
+			if( mode_is_explicit = FALSE ) then
+				'' patch the proc with the declaration's calling convention
+				mode = symbGetProcMode( head_proc )
+				proc->proc.mode = mode
 			end if
 
 			'' There already is a prototype for this proc, check for

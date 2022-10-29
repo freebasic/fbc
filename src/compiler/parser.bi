@@ -645,7 +645,8 @@ declare function cProcReturnMethod _
 
 declare function cProcCallingConv _
 	( _
-		byval default as FB_FUNCMODE = FB_FUNCMODE_FBCALL _
+		byval default as FB_FUNCMODE = FB_FUNCMODE_FBCALL, _
+		byref is_explicit as integer = FALSE _
 	) as FB_FUNCMODE
 
 declare sub cByrefAttribute( byref pattrib as FB_PROCATTRIB, byval is_func as integer )

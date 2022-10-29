@@ -25,6 +25,7 @@ Version 1.10.0
 - gas64 : SGN type is INTEGER for whole numbers instead LONG
 - fbc: thiscall calling convention default for extern "c++" / win32 / x86 / non-static member procedures
 - fbc: disable byval cva_list returns on ARM targets
+- fbc: If a procedure definition has a declaration and the definition does not explicitly specify a calling convention, then the calling convention is implied by the declaration.
 
 [added]
 - gas/gas64: '.cif_sections' and '.cif_' directives for stack unwinding (adeyblue)
