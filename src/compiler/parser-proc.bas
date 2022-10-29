@@ -450,9 +450,10 @@ sub cProcRetType _
 
 		case FB_DATATYPE_STRUCT
 			'' __builtin_va_list[] not allowed as a byval return type
+			'' __builtin_va_list on ARM fails translation in C backend
 			if( subtype ) then
 				select case symbGetUdtValistType( subtype )
-				case FB_CVA_LIST_BUILTIN_C_STD
+				case FB_CVA_LIST_BUILTIN_C_STD, FB_CVA_LIST_BUILTIN_ARM
 					if( ((pattrib and FB_PROCATTRIB_RETURNBYREF) = 0) and _
 						typeIsPtr( dtype ) = FALSE ) then
 						errReport( FB_ERRMSG_INVALIDDATATYPES )
