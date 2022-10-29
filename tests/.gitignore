@@ -23,6 +23,8 @@
 /cpp/derived-fbc
 /cpp/fbcall-fbc
 /cpp/mangle-fbc
+/cpp/mangle-enum-fbc
+/cpp/mangle-struct-fbc
 /cpp/this-fbc
 /deprecated/implicit_explicit
 /deprecated/innerdup
@@ -44,6 +46,7 @@
 /namespace/cpp/fbmod
 /namespace/mangling-nested-namespace-abbreviation
 /namespace/submod/submod_a
+/pp/typeof-no-dtors
 /pretest/compile_and_run_fail
 /pretest/compile_and_run_ok
 /pretest/multi_module_fail
