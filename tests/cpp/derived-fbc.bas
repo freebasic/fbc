@@ -19,10 +19,13 @@
 	#define DOTEST
 	#define DOFUNCS
 #else
-	'' structures returned by value from c++
-	'' needs some work on arm targets (bugs!)
-	#if not defined( __FB_ARM__ )
-		#define DOTEST
+	#define DOTEST
+
+	'' some structures returned by value from g++
+	'' not working for several targets.  Just disable
+	'' for now.  It's likely related to passing
+	'' structs in registers and size of the struct.
+	#if defined( __FB_WIN32__ )
 		#define DOFUNCS
 	#endif
 #endif

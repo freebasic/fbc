@@ -230,6 +230,7 @@ enum FB_FUNCMODE
 	FB_FUNCMODE_CDECL
 	FB_FUNCMODE_PASCAL
 	FB_FUNCMODE_THISCALL                        '' x86 only
+	FB_FUNCMODE_FASTCALL                        '' x86 only
 
 	'' Symbolic constant to represent FBCALL, telling cProcCallingConv()
 	'' and the RTL procedure definitions to use env.target.fbcall which

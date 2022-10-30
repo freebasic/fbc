@@ -198,6 +198,24 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	'' Count up the size for the caller's stack clean up (after the call)
 	bytestopop = bytestoalign
 
+	'' FB_BACKEND_GAS: THISCALL & FASTCALL
+	'' ECX is always loaded last before the function call
+	'' so we don't need to worry about preserving it
+	'' EDX might get trashed if we have nested function calls
+	'' !!!FIXME!!! we maybe need to preserve EDX before we
+	'' start pushing arguments to the function call and restore
+	'' EDX after the call completes.
+	'' if( (env.clopt.backend = FB_BACKEND_GAS) then
+	''     arg = n->r
+	''     while( arg )
+	''         if( arg->sym->param.regnum = 2 ) then
+	''             save_edx = TRUE
+	''             exit while
+	''          end if
+	''         arg = arg->r
+	''     wend
+	'' end if
+
 	'' Push each argument
 	arg = n->r
 	while( arg )
@@ -207,6 +225,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		'' cdecl: pushed arguments must be popped by caller
 		'' pascal/stdcall: callee does it instead
 		'' thiscall: callee does it in gcc 32-bit win32
+		'' fastcall: callee does it in gcc 32-bit win32
 		'' don't add bytes if argument is passed in a register
 		if( arg->sym->param.regnum <> 0 ) then
 			argbytes = 0
@@ -228,7 +247,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		if( ast.doemit ) then
 			if( arg->sym->param.regnum <> 0 ) then
 				lreg = irAllocVREG( typeGetDtAndPtrOnly( l->dtype ), l->subtype )
-				'' regFamily should be irrelevent for thiscall
+				'' regFamily should be irrelevent for thiscall/fastcall
 				'' lreg->regFamily = IR_REG_FPU_STACK | IR_REG_SSE
 				lreg->dtype = l->dtype
 			else
@@ -244,10 +263,10 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	'' Hidden param for functions returning big structs on stack
 	if( symbProcReturnsOnStack( proc ) ) then
-		'' Pop hidden ptr if cdecl and target doesn't want the callee
-		'' to do it, despite it being cdecl/thiscall.
+		'' Pop hidden ptr if cdecl/thiscall/fastcall and target doesn't
+		'' want the callee to do it, despite it being cdecl/thiscall/fastcall.
 		select case symbGetProcMode( proc )
-		case FB_FUNCMODE_CDECL, FB_FUNCMODE_THISCALL
+		case FB_FUNCMODE_CDECL, FB_FUNCMODE_THISCALL, FB_FUNCMODE_FASTCALL
 			if( (env.target.options and FB_TARGETOPT_CALLEEPOPSHIDDENPTR) = 0) then
 				bytestopop += env.pointersize
 			end if

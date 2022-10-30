@@ -64,21 +64,28 @@ o LLVM backend
   - va_*() macros can't be implemented, so must be disallowed just like with -gen gcc
 
 o ABI
-  - MinGW GCC 4.7 C++ defaults to __thiscall for methods like MSVC,
+  - review passing of short structs in registers or though hidden pointer
+    parameter on the stack.  fbc appears to be consistent with it-self
+    for calling and returning but not when different backends are mixed
+    for example, gas/gcc32 or gas64/gcc64.  Appears that windows only
+    passes structs through hidden parameter, regardless of the size.
+  - MinGW GCC 4.7 C++ defaults to __thiscall for methods like MSVC,  - MinGW GCC 4.7 C++ defaults to __thiscall for methods like MSVC,
     instead of __cdecl as on Linux, even though GCC doesn't use MSVC's name
     mangling [yet].
     [ ] refactor cProcCallingConv() usage and target specific checks
     - FB can probably support __fastcall with C/LLVM backends pretty easily
-    [ ] add the __fastcall keyword
-    [ ] add '-z no-fastcall' to ignore "fastcall" calling convention
-    [ ] allow defining and calling __fastcall procedures in gas 32
-    [ ] only allow integral data types
+    [x] add the __fastcall keyword
+    [x] add '-z no-fastcall' to ignore "fastcall" calling convention
+    [x] allow defining and calling __fastcall procedures in gas 32
+    [x] only allow integral data types
     [ ] testing on other arch / targets (arm, freebsd, dos, etc)
+    [ ] preserve EDX in nested calls - it could get trashed and currently
+        we don't have a defined way to preserve
     - FB can probably support __thiscall with C/LLVM backends pretty easily
     [x] use __thiscall calling by default for mingw gcc 32-bit,
         currently, users must manage this explicitly, recommend using a 
         #define thiscall __thiscall depending on target platform
-    [ ] only allow integral data types
+    [x] only allow integral data types
     [ ] more tests and documentation for mangling/calling conventions, not every
         calling convention is tested or documented completely - also hard to test
     [x] allow defining and calling __thiscall procedures in gas 32

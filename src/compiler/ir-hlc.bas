@@ -496,6 +496,10 @@ private function hNeedAlias( byval proc as FBSYMBOL ptr ) as integer
 	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, _
 	     FB_COMPTARGET_XBOX
 
+		if( symbGetProcMode( proc ) = FB_FUNCMODE_FASTCALL ) then
+			exit function
+		end if
+
 	case else
 		exit function
 	end select
@@ -561,6 +565,13 @@ private function hEmitProcHeader _
 				ln += " __thiscall"
 			case else
 				ln += " __attribute__((thiscall))"
+			end select
+		case FB_FUNCMODE_FASTCALL
+			select case( env.clopt.target )
+			case FB_COMPTARGET_WIN32, FB_COMPTARGET_XBOX
+				ln += " __fastcall"
+			case else
+				ln += " __attribute__((fastcall))"
 			end select
 		end select
 	end if

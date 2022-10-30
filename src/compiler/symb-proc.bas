@@ -68,6 +68,10 @@ function symbProcReturnsOnStack( byval proc as FBSYMBOL ptr ) as integer
 		'' Real type is an UDT pointer (instead of INTEGER/LONGINT)?
 		'' Then it's returned on stack (instead of in registers)
 
+		'' !!!TODO!!! we should probably fix this
+		'' to return structs in registers for  64-bit gcc
+		'' and some 32-bit targets
+ 
 		if( (proc->subtype <> NULL) andalso (proc->subtype->udt.retin2regs <> FB_STRUCT_NONE) ) then ''for gas64
 			exit function
 		else
@@ -168,12 +172,14 @@ function symbProcCalcBytesToPop( byval proc as FBSYMBOL ptr ) as longint
 		(fbGetCpuFamily( ) = FB_CPUFAMILY_X86), _
 		TRUE ) )
 
-	'' Need to pop parameters in case of thiscall on win32, but not any other target
+	'' Need to pop parameters in case of thiscall/fastcall on win32, but not any other target
 	select case symbGetProcMode( proc )
-	case FB_FUNCMODE_THISCALL
+	case FB_FUNCMODE_THISCALL, FB_FUNCMODE_FASTCALL
 
 		'' should never get here if "-z no-thiscall" is active
-		assert( env.clopt.nothiscall = FALSE )
+		assert( iif( symbGetProcMode( proc ) = FB_FUNCMODE_THISCALL, env.clopt.nothiscall = FALSE, TRUE ) )
+		'' should never get here if "-z no-fastcall" is active
+		assert( iif( symbGetProcMode( proc ) = FB_FUNCMODE_FASTCALL, env.clopt.nofastcall = FALSE, TRUE ) )
 
 		if( fbIs64bit( ) = FALSE ) then
 			if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
@@ -680,40 +686,54 @@ private sub hSetupProcRegisterParameters _
 	)
 
 	assert( proc <> NULL )
+	dim regnum as integer = 1
+	dim maxregnum as integer = 0
 
 	select case proc->proc.mode
 	case FB_FUNCMODE_THISCALL
-
 		'' should never get here if "-z no-thiscall" is active
 		assert( env.clopt.nothiscall = FALSE )
+		maxregnum = 1
+	case FB_FUNCMODE_FASTCALL
+		'' should never get here if "-z no-thiscall" is active
+		assert( env.clopt.nofastcall = FALSE )
+		maxregnum = 2
+	end select
 
+	if( maxregnum > 0 ) then
 		'' pass the first integer sized argument in ECX
+		'' pass the second integer size argument in EDX
+
+		'' Allow:
+		''   - instance params
+		''   - pointers
+		''   - integers where (symbGetLen() <= env.pointersize)
+		''   - byref parameters
 
 		var param = symbGetProcHeadParam( proc )
-		while( param )
-			'' Allow:
-			'' - instance params
-			'' - pointers
-			'' - integers where (symbGetLen() <= env.pointersize)
 
-			if( symbIsInstanceParam( param ) ) then
-				'' pass argument in ECX register
-				param->param.regnum = 1
-				exit while
-			end if
+		if( symbIsInstanceParam( param ) ) then
+			'' pass argument in ECX register
+			param->param.regnum = regnum
+			regnum += 1
+			param = symbGetParamNext( param )
+		end if
 
-			if( typeGetClass( symbGetType( param ) ) = FB_DATACLASS_INTEGER ) then
+		while( (param <> NULL) and (regnum <= maxregnum) )
+			if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
+				param->param.regnum = regnum
+				regnum += 1
+			elseif( typeGetClass( symbGetType( param ) ) = FB_DATACLASS_INTEGER ) then
 				if( symbGetLen( param ) <= env.pointersize ) then
-					'' pass argument in ECX register
-					param->param.regnum = 1
-					exit while
+					'' pass argument in ECX/EDX register
+					param->param.regnum = regnum
+					regnum += 1
 				end if
 			end if
-
 			param = symbGetParamNext( param )
 		wend
 
-	end select
+	end if
 
 end sub
 
@@ -3173,6 +3193,8 @@ private sub hProcModeToStr( byref s as string, byval proc as FBSYMBOL ptr )
 			s += " stdcall"
 		case FB_FUNCMODE_THISCALL
 			s += " thiscall"
+		case FB_FUNCMODE_FASTCALL
+			s += " fastcall"
 		case FB_FUNCMODE_PASCAL
 			s += " pascal"
 		end select
@@ -3188,6 +3210,8 @@ private sub hProcModeToStr( byref s as string, byval proc as FBSYMBOL ptr )
 			end select
 		case FB_FUNCMODE_THISCALL
 			s += " thiscall"
+		case FB_FUNCMODE_FASTCALL
+			s += " fastcall"
 		case FB_FUNCMODE_PASCAL
 			if( env.target.fbcall <> FB_FUNCMODE_PASCAL ) then
 				s += " pascal"

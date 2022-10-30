@@ -2,7 +2,23 @@
 
 set -e
 
-# TODO: select gas or gas64 based on host
+FBCEXE=${FBC:="fbc"}
+
+CHECKGCC="y"
+
+# select gas or gas64 based on host
+CHECKGAS="n"
+CHECKGAS64="n"
+
+mname="`uname -m`"
+case "$mname" in
+i686*)
+	CHECKGAS="y"
+	;;
+x86_64*)
+	CHECKGAS64="y"
+	;;
+esac
 
 # determine make or gmake
 
@@ -25,8 +41,8 @@ function chk() {
 	fi
 	genopt="-gen $2"
 	rm -f $testname-cpp.o
-	$MAKECMD -f $testname.bmk CFLAGS="-O0 -gstabs"
-	fbc -g $genopt -exx $testname-fbc.bas $testname-cpp.o -x $testname-fbc.exe
+	$MAKECMD -f $testname.bmk CFLAGS="-O0 -g"
+	$FBCEXE -g $genopt -exx $testname-fbc.bas $testname-cpp.o -x $testname-fbc.exe
 	echo "Testing: $testname $genopt"
 	./$testname-fbc.exe
 }
@@ -46,6 +62,8 @@ function do_clean_all() {
 	do_clean "bop"
 	do_clean "fbcall"
 	do_clean "derived"
+	do_clean "thiscall"
+	do_clean "fastcall"
 }
 
 function chk_all() {
@@ -58,18 +76,32 @@ function chk_all() {
 	chk "bop" "$gen"
 	chk "fbcall" "$gen"
 	chk "derived" "$gen"
+	chk "thiscall" "$gen"
+	chk "fastcall" "$gen"
 }
 
 case "$1" in
 all)
-	chk_all "gas"
-#	chk_all "gas64"
-	chk_all "gcc"
+	if [ "$CHECKGAS" = "y" ]; then
+		chk_all "gas"
+	fi
+	if [ "$CHECKGAS64" = "y" ]; then
+		chk_all "gas64"
+	fi
+	if [ "$CHECKGCC" = "y" ]; then
+		chk_all "gcc"
+	fi
 	;;
-mangle|call|call2|this|class|bop|fbcall|derived)
-	chk "$1" "gas"
-#	chk "$1" "gas64"
-	chk "$1" "gcc"
+mangle|call|call2|this|class|bop|fbcall|derived|thiscall|fastcall)
+	if [ "$CHECKGAS" = "y" ]; then
+		chk "$1" "gas"
+	fi
+	if [ "$CHECKGAS64" = "y" ]; then
+		chk "$1" "gas64"
+	fi
+	if [ "$CHECKGCC" = "y" ]; then
+		chk "$1" "gcc"
+	fi
 	;;
 clean)
 	do_clean_all
@@ -77,6 +109,7 @@ clean)
 *)
 	echo "expected all|clean"
 	echo "         mangle|call|call2|this|class|bop|fbcall|derived"
+	echo "         thiscall|fastcall"
 	;;
 esac
 

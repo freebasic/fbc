@@ -99,6 +99,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_GOSUBSETJMP          '' boolean: implement GOSUB using setjmp/longjump?
 	FB_COMPOPT_VALISTASPTR          '' boolean: implement CVA_* using pointer expressions only?
 	FB_COMPOPT_NOTHISCALL           '' boolean: don't use 'thiscall' calling convention?
+	FB_COMPOPT_NOFASTCALL           '' boolean: don't use 'fastcall' calling convention?
 	FB_COMPOPT_FBRT                 '' boolean: we are building or linking the fbrt library
 	FB_COMPOPT_EXPORT               '' boolean: export all symbols declared as EXPORT?
 	FB_COMPOPT_MSBITFIELDS          '' boolean: use M$'s bitfields packing?
@@ -304,6 +305,7 @@ type FBCMMLINEOPT
 	gosubsetjmp     as integer              '' implement GOSUB using setjmp/longjump? (default = false)
 	valistasptr     as integer              '' implement CVA_* using pointer expressions only?
 	nothiscall      as integer              '' do not use thiscall calling convention (default = false)
+	nofastcall      as integer              '' do not use fastcall calling convention (default = false)
 	fbrt            as integer              '' we are building or linking fbrt (default = false)
 	export          as integer              '' export all symbols declared as EXPORT (default = true)
 	msbitfields     as integer              '' use M$'s bitfields packing

@@ -517,7 +517,7 @@ function cProcCallingConv _
 		default = env.target.fbcall
 	end if
 
-	'' (CDECL|STDCALL|PASCAL|THISCALL)?
+	'' (CDECL|STDCALL|PASCAL|THISCALL|FASTCALL)?
 	select case as const lexGetToken( )
 	case FB_TK_CDECL
 		is_explicit = TRUE
@@ -544,6 +544,16 @@ function cProcCallingConv _
 			'' gcc supports extensions for using thiscall even with normal procedures
 			is_explicit = TRUE
 			function = FB_FUNCMODE_THISCALL
+		end if
+		lexSkipToken( )
+
+	case FB_TK_FASTCALL
+		'' ignore fastcall if '-z no-fastcall' was given
+		if( env.clopt.nofastcall = FALSE ) then
+			'' keep the fastcall call convention even if the target/archictecture wont't support it
+			'' this will allow us to check that the declaration matches the definition.
+			is_explicit = TRUE
+			function = FB_FUNCMODE_FASTCALL
 		end if
 		lexSkipToken( )
 

@@ -2311,6 +2311,8 @@ private sub handleOpt _
 			fbSetOption( FB_COMPOPT_VALISTASPTR, TRUE )
 		case "no-thiscall"
 			fbSetOption( FB_COMPOPT_NOTHISCALL, TRUE )
+		case "no-fastcall"
+			fbSetOption( FB_COMPOPT_NOFASTCALL, TRUE )
 		case "fbrt"
 			fbSetOption( FB_COMPOPT_FBRT, TRUE )
 		case "nocmdline"
@@ -4137,6 +4139,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -z gosub-setjmp  Use setjmp/longjmp to implement GOSUB"
 	print "  -z valist-as-ptr Use pointer expressions to implement CVA_*() macros"
 	print "  -z no-thiscall   Don't use '__thiscall' calling convention"
+	print "  -z no-fastcall   Don't use '__fastcall' calling convention"
 	print "  -z fbrt          Link with 'fbrt' instead of 'fb' runtime library"
 	print "  -z nocmdline     Disable #cmdline source directives"
 	end if

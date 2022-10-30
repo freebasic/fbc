@@ -1,0 +1,10 @@
+# TEST_MODE : MULTI_MODULE_OK
+
+MAIN := fastcall-fbc.bas
+SRCS := 
+
+EXTRA_OBJS := fastcall-cpp.o
+
+$(SRCDIR)fastcall-cpp.o : $(SRCDIR)fastcall-cpp.cpp
+	# Pass $(CFLAGS) to get -m32 or -m64 as required
+	$(CXX) -c $(CFLAGS) -Wall -Wno-attributes -o $@ $^

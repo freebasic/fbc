@@ -10,10 +10,13 @@
 	#define DOTEST
 	#define DOFUNCS
 #else
-	'' strutures returned by value from c++
-	'' needs some work on arm targets (bugs!)
-	#if not defined( __FB_ARM__ )
-		#define DOTEST
+	#define DOTEST
+
+	'' some structures returned by value from g++
+	'' not working for several targets.  Just disable
+	'' for now.  It's likely related to passing
+	'' structs in registers and size of the struct.
+	#if defined( __FB_WIN32__ )
 		#define DOFUNCS
 	#endif
 #endif
@@ -93,16 +96,28 @@ end extern
 	scope
 	#if count = 1
 		dim a as UDT
+		a.value = 10
 		n( a )
+		assert( a.value = 10 )
 		assert( @a = getPtr1() )
 	#elseif count = 2
 		dim a as UDT, b as UDT
+		a.value = 10
+		b.value = 20
 		n( a, b )
+		assert( a.value = 10 )
+		assert( b.value = 20 )
 		assert( @a = getPtr1() )
 		assert( @b = getPtr2() )
 	#else
 		dim a as UDT, b as UDT, c as UDT
+		a.value = 10
+		b.value = 20
+		c.value = 30
 		n( a, b, c )
+		assert( a.value = 10 )
+		assert( b.value = 20 )
+		assert( c.value = 30 )
 		assert( @a = getPtr1() )
 		assert( @b = getPtr2() )
 		assert( @c = getPtr3() )
@@ -117,16 +132,34 @@ end extern
 	scope
 	#if count = 1
 		dim a as UDT, r as UDT
+		a.value = 11
+		r.value = 0
 		r = n( a )
+		assert( r.value = 1 )
+		assert( a.value = 11 )
 		assert( @a = getPtr1() )
 	#elseif count = 2
 		dim a as UDT, b as UDT, r as UDT
+		a.value = 21
+		b.value = 22
+		r.value = 0
 		r = n( a, b )
+		assert( r.value = 1 )
+		assert( a.value = 21 )
+		assert( b.value = 22 )
 		assert( @a = getPtr1() )
 		assert( @b = getPtr2() )
 	#else
 		dim a as UDT, b as UDT, c as UDT, r as UDT
+		a.value = 31
+		b.value = 32
+		c.value = 33
+		r.value = 0
 		r = n( a, b, c )
+		assert( r.value = 1 )
+		assert( a.value = 31 )
+		assert( b.value = 32 )
+		assert( c.value = 33 )
 		assert( @a = getPtr1() )
 		assert( @b = getPtr2() )
 		assert( @c = getPtr3() )

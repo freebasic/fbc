@@ -1109,6 +1109,8 @@ private sub hStoreRegisterArguments _
 		select case param->param.regnum
 		case 1 '' ECX
 			hStoreRegisterArgument( param, "ecx" )
+		case 2 '' EDX
+			hStoreRegisterArgument( param, "edx" )
 		end select
 		param = symbGetParamNext( param )
 	wend
@@ -7251,12 +7253,15 @@ private sub _procAllocArg _
 
 	'' Maybe allocate local variable for THIS argument?
 	select case symbGetProcMode( proc )
-	case FB_FUNCMODE_THISCALL
+	case FB_FUNCMODE_THISCALL, FB_FUNCMODE_FASTCALL
+
 		'' should never get here if "-z no-thiscall" is active
-		assert( env.clopt.nothiscall = FALSE )
+		assert( iif( (symbGetProcMode( proc ) = FB_FUNCMODE_THISCALL), env.clopt.nothiscall = FALSE, TRUE ) )
+		'' should never get here if "-z no-fastcall" is active
+		assert( iif( (symbGetProcMode( proc ) = FB_FUNCMODE_FASTCALL), env.clopt.nofastcall = FALSE, TRUE ) )
 
 		'' Only check for arguments passed in registers
-		'' for the thiscall calling convention.  But in
+		'' for the this/fast calling convention.  But in
 		'' theory we should be able to do this for any
 		'' call convention since param.regnum should only
 		'' be set if we in fact expect that argument is

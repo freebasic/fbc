@@ -1225,12 +1225,17 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 	docpp = hDoCppMangling( sym )
 
 	'' Should the @N win32 stdcall suffix be added for this procedure?
-	'' * only for stdcall, not stdcallms/cdecl/pascal/thiscall
+	'' * only for stdcall/fastcall, not stdcallms/cdecl/pascal/thiscall
 	''   (that also makes it win32-only)
+	'' * 
 	'' * only on x86, since these calling conventions matter there only
 	'' * only for ASM/LLVM backends, but not for the C backend, because gcc
 	''   will do it already
-	add_stdcall_suffix = (sym->proc.mode = FB_FUNCMODE_STDCALL) and _
+	add_stdcall_suffix = ((sym->proc.mode = FB_FUNCMODE_STDCALL) or _
+	                     ((sym->proc.mode = FB_FUNCMODE_FASTCALL) and _
+	                     ((env.clopt.target = FB_COMPTARGET_WIN32) or _
+	                      (env.clopt.target = FB_COMPTARGET_CYGWIN) or _
+	                      (env.clopt.target = FB_COMPTARGET_XBOX)))) and _
 	                     (fbGetCpuFamily( ) = FB_CPUFAMILY_X86) and _
 	                     (env.clopt.backend <> FB_BACKEND_GCC)
 
@@ -1269,7 +1274,16 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 
 	'' Win32 underscore prefix
 	if( hAddUnderscore( ) ) then
-		mangled += "_"
+		if( sym->proc.mode = FB_FUNCMODE_FASTCALL ) then
+			select case( env.clopt.target )
+			case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
+				mangled += "@"
+			case else
+				mangled += "_"
+			end select
+		else
+			mangled += "_"
+		end if
 	end if
 
 	'' C++ prefix

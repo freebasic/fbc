@@ -663,6 +663,8 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		env.clopt.valistasptr = value
 	case FB_COMPOPT_NOTHISCALL
 		env.clopt.nothiscall = value
+	case FB_COMPOPT_NOFASTCALL
+		env.clopt.nofastcall = value
 	case FB_COMPOPT_FBRT
 		env.clopt.fbrt = value
 	case FB_COMPOPT_EXPORT
@@ -771,6 +773,8 @@ function fbGetOption( byval opt as integer ) as integer
 		function = env.clopt.valistasptr
 	case FB_COMPOPT_NOTHISCALL
 		function = env.clopt.nothiscall
+	case FB_COMPOPT_NOFASTCALL
+		function = env.clopt.nofastcall
 	case FB_COMPOPT_FBRT
 		function = env.clopt.fbrt
 	case FB_COMPOPT_EXPORT

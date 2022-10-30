@@ -370,6 +370,8 @@ private function hEmitProcCallConv( byval proc as FBSYMBOL ptr ) as string
 		function = "x86_stdcallcc "
 	case FB_FUNCMODE_THISCALL
 		function = "x86_thiscall "
+	case FB_FUNCMODE_FASTCALL
+		function = "x86_fastcall "
 	end select
 end function
 
