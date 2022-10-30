@@ -132,7 +132,7 @@ Version 1.09.0
 - fbc: internal add big endian information to the CPUFAMILYINFO() internal table
 - fbc: defined __FB_BIGENDIAN__ if cpu type is bigendian
 - objinfo: check ELF files for little endian or big endian signature
-- fbc: __thiscall declaration support for gcc/gas 32-bit x86 calling g++ classes from fbc passing first argument in ECX register, caller cleans up stack except on win32 x86
+- fbc: __thiscall declaration support for gcc/gas 32-bit x86.  Pass first instance/integer/pointer parameter in ECX, caller cleans up stack except on win32 x86.
 - fbc: add __FB_OPTIMIZE__ intrinisic define - always defined and will have a value from 0 to 3 to indicate the optimization level passed to the backend compiler
 - github #341: fbc: #cmdline "args..." directive to specify command line arguments within source files, restarting the parser for some options, and restarting fbc for others.  Don't allow '-print', '-help' options
 - github #341: fbc: #cmdline "-end" will trigger a parser or fbc restart if needed.  fbc can't detect the end of reading all the #cmdlines to do this automatically

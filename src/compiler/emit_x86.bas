@@ -1093,7 +1093,7 @@ private sub hStoreRegisterArgument _
 end sub
 
 '':::::
-private sub hMaybeStoreRegisterArguments _
+private sub hStoreRegisterArguments _
 	(  _
 		byval proc as FBSYMBOL ptr _
 	)
@@ -1104,16 +1104,14 @@ private sub hMaybeStoreRegisterArguments _
 	'' has been set-up and ready to be stored
 	'' with the register containing the argument
 
-	select case symbGetProcMode( proc )
-	case FB_FUNCMODE_THISCALL
-
-		'' store ECX to local var
-		var param = symbGetProcHeadParam( proc )
-		if( param ) then
+	var param = symbGetProcHeadParam( proc )
+	while( param )
+		select case param->param.regnum
+		case 1 '' ECX
 			hStoreRegisterArgument( param, "ecx" )
-		end if
-
-	end select
+		end select
+		param = symbGetParamNext( param )
+	wend
 
 end sub
 
@@ -1204,7 +1202,7 @@ private sub hCreateFrame _
 			hPUSH( "edi" )
 		end if
 
-		hMaybeStoreRegisterArguments( proc )
+		hStoreRegisterArguments( proc )
 
 	end if
 
@@ -7085,7 +7083,7 @@ private sub _getArgReg _
 	( _
 		byval dtype as integer, _
 		byval dclass as integer, _
-		byval argnum as integer, _
+		byval regnum as integer, _
 		byref r1 as integer _
 	)
 
@@ -7093,7 +7091,7 @@ private sub _getArgReg _
 	'' thiscall ECX
 	'' fastcall ECX, EDX
 
-	select case argnum
+	select case regnum
 	case 1
 		r1 = EMIT_REG_ECX
 	case 2
@@ -7257,28 +7255,37 @@ private sub _procAllocArg _
 		'' should never get here if "-z no-thiscall" is active
 		assert( env.clopt.nothiscall = FALSE )
 
-		'' for thiscall calling convention, we only need
-		'' to check the first parameter.  If we were to
-		'' pass many arguments in registers, then it would
-		'' probably be more efficient to add add a backlink
-		'' to FBS_VAR and initialize in symbVarInitFields()
-		'' and set it in symbAddVarForParam() instead of
-		'' comparing all parameters with all argument
-		'' variables
+		'' Only check for arguments passed in registers
+		'' for the thiscall calling convention.  But in
+		'' theory we should be able to do this for any
+		'' call convention since param.regnum should only
+		'' be set if we in fact expect that argument is
+		'' passed in a register.  Also, it would probably
+		'' be more efficient to add add a backlink to
+		'' FBS_VAR and initialize in symbVarInitFields()
+		'' (and set it in symbAddVarForParam()) instead of
+		'' looping through all parameters to compare with
+		'' the argument variable.
 
+		'' We expect to use param.regnum to determine
+		'' the register that the argument was passed in.
+		'' Allocate a local variable to store the register.
+		'' Since it won't be available on the stack and
+		'' gas backend won't know to always load from the
+		'' register we need to store the register to a
+		'' local variable.
 
-		'' is first param linked to local variable for agument?
-		'' then we expect that the first argument will be passed
-		'' in ECX and we need to allocate a local variable to
-		'' store it since it won't be available on the stack
-		''
+		'' Is param linked to local variable for argument?
 		var param = symbGetProcHeadParam( proc )
-		if( param ) then
-			if( param->param.var = sym ) then
-				_procAllocLocal( proc, sym )
-				exit sub
+		while( param )
+			if( param->param.regnum <> 0 ) then
+				if( param->param.var = sym ) then
+					_procAllocLocal( proc, sym )
+					exit sub
+				end if
 			end if
-		end if
+			param = symbGetParamNext( param )
+		wend
 
 	end select
 

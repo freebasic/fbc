@@ -145,33 +145,6 @@ private sub hCopyStringsBack( byval f as ASTNODE ptr )
 	loop
 end sub
 
-private function hMaybePassArgInReg _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval argnum as integer _
-	) as integer
-
-	function = FALSE
-
-	select case symbGetProcMode( proc )
-	case FB_FUNCMODE_THISCALL
-		assert( env.clopt.nothiscall = FALSE )
-
-		'' gas backend / x86 ? then
-		if( env.clopt.backend = FB_BACKEND_GAS ) then
-			if( fbIs64bit( ) = FALSE ) then
-				if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
-					'' pass arg in ECX
-					if( argnum = 1 ) then
-						function = TRUE
-					end if
-				end if
-			end if
-		end if
-	end select
-
-end function
-
 function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	static as integer reclevel = 0
 	'' totalstackbytes is the sum of all args and padding currently on the stack
@@ -199,7 +172,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		arg = n->r
 		while( arg )
 			l = arg->l
-			if( hMaybePassArgInReg( proc, arg->sym->param.argnum ) = FALSE ) then
+			if( arg->sym->param.regnum = 0 ) then
 				argbytes += symbCalcArgLen( l->dtype, l->subtype, arg->arg.mode )
 			end if
 			arg = arg->r
@@ -234,7 +207,8 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		'' cdecl: pushed arguments must be popped by caller
 		'' pascal/stdcall: callee does it instead
 		'' thiscall: callee does it in gcc 32-bit win32
-		if( hMaybePassArgInReg( proc, arg->sym->param.argnum ) ) then
+		'' don't add bytes if argument is passed in a register
+		if( arg->sym->param.regnum <> 0 ) then
 			argbytes = 0
 		else
 			argbytes = symbCalcArgLen( l->dtype, l->subtype, arg->arg.mode )
@@ -252,7 +226,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		astDelNode( l )
 
 		if( ast.doemit ) then
-			if( hMaybePassArgInReg( proc, arg->sym->param.argnum ) ) then
+			if( arg->sym->param.regnum <> 0 ) then
 				lreg = irAllocVREG( typeGetDtAndPtrOnly( l->dtype ), l->subtype )
 				'' regFamily should be irrelevent for thiscall
 				'' lreg->regFamily = IR_REG_FPU_STACK | IR_REG_SSE

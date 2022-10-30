@@ -577,7 +577,7 @@ private sub _emitPushArg _
 		dim as integer reg1 = INVALID
 
 		hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
-		emitGetArgReg( vr_dclass, vr_typ, param->param.argnum, reg1 )
+		emitGetArgReg( vr_dclass, vr_typ, param->param.regnum, reg1 )
 
 		if( reg1 <> INVALID ) then
 			lreg->reg = reg1

@@ -563,7 +563,7 @@ type FBS_PARAM
 	optexpr         as ASTNODE_ ptr             '' default value
 	bydescdimensions    as integer
 	bydescrealsubtype   as FBSYMBOL_ ptr        '' bydesc array descriptor type
-	argnum          as integer                  '' argument number (1 is first)
+	regnum          as integer                  '' register number (1 is first, 0 is not in register)
 end type
 
 '' function

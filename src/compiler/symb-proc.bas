@@ -168,8 +168,6 @@ function symbProcCalcBytesToPop( byval proc as FBSYMBOL ptr ) as longint
 		(fbGetCpuFamily( ) = FB_CPUFAMILY_X86), _
 		TRUE ) )
 
-	var param = symbGetProcHeadParam( proc )
-
 	'' Need to pop parameters in case of thiscall on win32, but not any other target
 	select case symbGetProcMode( proc )
 	case FB_FUNCMODE_THISCALL
@@ -183,10 +181,6 @@ function symbProcCalcBytesToPop( byval proc as FBSYMBOL ptr ) as longint
 			end if
 		end if
 
-		if( param ) then
-			param = symbGetParamNext( param )
-		end if
-
 	'' Need to pop parameters in case of stdcall/pascal, but not for cdecl
 	case else
 		callee_cleanup = (symbGetProcMode( proc ) <> FB_FUNCMODE_CDECL)
@@ -194,12 +188,14 @@ function symbProcCalcBytesToPop( byval proc as FBSYMBOL ptr ) as longint
 	end select
 
 	if( callee_cleanup ) then
+		var param = symbGetProcHeadParam( proc )
 		while( param )
-
-			'' Param symbols store their size on stack as their length.
-			'' VARARG params have 0 (unknown) length; they do not affect the sum.
-			bytestopop += symbGetLen( param )
-
+			'' not in a register? then accumulate bytes passed on stack.
+			if( param->param.regnum = 0 ) then
+				'' Param symbols store their size on stack as their length.
+				'' VARARG params have 0 (unknown) length; they do not affect the sum.
+				bytestopop += symbGetLen( param )
+			end if
 			param = param->next
 		wend
 	end if
@@ -246,10 +242,9 @@ function symbAddProcParam _
 
 	param->lgt = symbCalcParamLen( dtype, subtype, mode )
 
-	'' Store the argument number in the param symbol.  We could calculate it later
-	'' but it will remain constant throughout the lifetime of the parameter so
-	'' it is very convenient to cache it now
-	param->param.argnum = proc->proc.params
+	'' assume that we won't pass parameter in a register
+	'' this will be set later by hSetupProcRegisterParameters()
+	param->param.regnum = 0
 
 	param->param.mode = mode
 	param->param.optexpr = NULL
@@ -679,6 +674,49 @@ private function hAddOpOvlProc _
 
 end function
 
+private sub hSetupProcRegisterParameters _
+	( _
+		byval proc as FBSYMBOL ptr _
+	)
+
+	assert( proc <> NULL )
+
+	select case proc->proc.mode
+	case FB_FUNCMODE_THISCALL
+
+		'' should never get here if "-z no-thiscall" is active
+		assert( env.clopt.nothiscall = FALSE )
+
+		'' pass the first integer sized argument in ECX
+
+		var param = symbGetProcHeadParam( proc )
+		while( param )
+			'' Allow:
+			'' - instance params
+			'' - pointers
+			'' - integers where (symbGetLen() <= env.pointersize)
+
+			if( symbIsInstanceParam( param ) ) then
+				'' pass argument in ECX register
+				param->param.regnum = 1
+				exit while
+			end if
+
+			if( typeGetClass( symbGetType( param ) ) = FB_DATACLASS_INTEGER ) then
+				if( symbGetLen( param ) <= env.pointersize ) then
+					'' pass argument in ECX register
+					param->param.regnum = 1
+					exit while
+				end if
+			end if
+
+			param = symbGetParamNext( param )
+		wend
+
+	end select
+
+end sub
+
 private function hSetupProc _
 	( _
 		byval sym as FBSYMBOL ptr, _
@@ -1016,6 +1054,8 @@ add_proc:
 			end if
 		end if
 	end if
+
+	hSetupProcRegisterParameters( proc )
 
 	function = proc
 end function
