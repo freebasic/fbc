@@ -277,7 +277,8 @@ private function hMemberId( byval parent as FBSYMBOL ptr, byval allow_inner as i
 						errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 					end if
 
-				case FB_SYMBCLASS_STRUCT
+				case FB_SYMBCLASS_STRUCT, _
+				     FB_SYMBCLASS_TYPEDEF, FB_SYMBCLASS_FWDREF
 					if( allow_inner = FALSE ) then
 						exit do, do
 					end if
