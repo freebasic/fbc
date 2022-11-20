@@ -7,7 +7,7 @@
 '' --------
 
 ' Getting a single color, form 2.
-Dim As Integer r, g, b
+Dim As ULong r, g, b
 Screen 13
 Palette Get 32, r, g, b
 Print "Color 32 hues:"

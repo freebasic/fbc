@@ -7,7 +7,7 @@
 '' --------
 
 ' Getting whole palette, form 3.
-Dim pal(0 To 255) As Integer
+Dim pal(0 To 255) As ULong
 Screen 13
 Palette Get Using pal
 For i As Integer = 0 To 15

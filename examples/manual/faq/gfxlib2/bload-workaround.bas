@@ -8,7 +8,7 @@
 
 Sub _bsave( file As String, p As Any Ptr, sz As Integer ) 
 
-  Dim As Integer ff 
+  Dim As Long ff 
   ff = FreeFile 
   
   Open file For Binary As ff 
@@ -20,7 +20,7 @@ End Sub
 
 Sub _bload( file As String, p As Any Ptr ) 
 
-  Dim As Integer ff 
+  Dim As Long ff 
   ff = FreeFile 
   
   Open file For Binary As ff 
