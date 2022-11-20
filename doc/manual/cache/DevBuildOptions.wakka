@@ -1,0 +1,99 @@
+{{fbdoc item="title" value="FreeBASIC Build Options"}}----
+Building FreeBASIC from sources uses a ##makefile## that is intended to be used on a host to build the run time library, graphics library, and the FreeBASIC compiler itself.  The ##makefile## accepts a number of configuration options or variables.
+
+{{fbdoc item="section" value="Environment Variables"}}
+	##SOURCE_DATE_EPOCH##
+		Set the build date for the compilation.  See [[https://reproducible-builds.org/specs/source-date-epoch/|SOURCE_DATE_EPOCH Specification]].  The ##SOURCE_DATE_EPOCH## environment variable specifies a build time constant (a decimal unsigned integer in unix time format) to be used during the build process.  Setting this variable sets the values to be returned by ##[[KeyPgDddate|__DATE__]]##, ##[[KeyPgDdtime|__TIME__]]##, and ##[[KeyPgDddateiso|__DATE_ISO__]]## built-in macros when a source is compiled.  This in turn affects the values returned by ##[[KeyPgDdFBBuildDate|__FB_BUILD_DATE__]]## and ##[[KeyPgDdfbbuilddateiso|__FB_BUILD_DATE_ISO__]]## when fbc compiler itself is built.
+
+{{fbdoc item="section" value="Build Options"}}
+	##FB[C|L]FLAGS##
+		to set -g -exx etc. for the compiler build and/or link
+	##CFLAGS##
+		same for the rtlib and gfxlib2 build
+	##prefix##
+		install/uninstall directory, default: /usr/local
+	##TARGET##
+		GNU triplet for cross-compiling
+	##MULTILIB##
+		"32", "64" or empty for cross-compiling using a gcc multilib toolchain
+	##FBC, CC, AR##
+		fbc, gcc, ar programs (TARGET may be prefixed to CC/AR)
+	##V=1##
+		to see full command lines
+	##ENABLE_STANDALONE=1##
+		build source tree into self-contained FB installation
+	##ENABLE_PREFIX=1##
+		use "-d ENABLE_PREFIX=$(prefix)" to hard-code the prefix into fbc
+	##ENABLE_SUFFIX=-0.24##
+		append a string like "-0.24" to fbc/FB dir names, and use "-d ENABLE_SUFFIX=$(ENABLE_SUFFIX)" (non-standalone only)
+	##ENABLE_LIB64=1##
+		use prefix/lib64/ instead of prefix/lib/ for 64bit libs (non-standalone only)
+	##ENABLE_STRIPALL=1##
+		use "-d ENABLE_STRIPALL" with all targets
+	##ENABLE_STRIPALL=0##
+		disable "-d ENABLE_STRIPALL" with all targets
+	##FBSHA1=1##
+		determine the sha-1 of the current commit in repo and store it in the compiler
+	##FBSHA1=some-sha-1##
+		explicitly indicate the sha-1 to store in the compiler
+	##FBPACKAGE##
+		bindist: The package/archive file name without path or extension
+	##FBPACKSUFFIX##
+		bindist: Allows adding a custom suffix to the normal package name (and the toplevel dir in the archive)
+	##FBMANIFEST##
+		bindist: The manifest file name without path or extension
+	##FBVERSION##
+		bindist/gitdist: FB version number
+	##DISABLE_DOCS##
+		bindist: Don't package readme/changelog/manpage/examples
+	##BUILD_PREFIX##
+		automatically set depending on the target but can override for special builds where the build tools have different file naming than the target to build (i.e. cross compiling)
+	##DISABLE_GAS64_DEBUG##
+		use "-d DISABLE_GAS64_DEBUG" (see below)
+
+{{fbdoc item="section" value="compiler source code configuration (FBCFLAGS, FBLFLAGS)"}}
+	##-d ENABLE_STANDALONE##
+		build for a self-contained installation
+	##-d ENABLE_SUFFIX=-0.24##
+		assume FB's lib dir uses the given suffix (non-standalone only)
+	##-d ENABLE_PREFIX=/some/path##
+		hard-code specific $(prefix) into fbc
+	##-d ENABLE_LIB64##
+		use prefix/lib64/ instead of prefix/lib/ for 64bit libs (non-standalone only)
+	##-d ENABLE_STRIPALL##
+		configure fbc to pass down '--strip-all' to linker by default
+	##-d FBSHA1=some-sha-1##
+		store 'some-sha-1' in the compiler for version information
+	##-d DISABLE_GAS64_DEBUG##
+		disable gas64 debugging comments in asm files even if __FB_DEBUG__ is defined (-g)
+
+{{fbdoc item="section" value="internal makefile configuration (but can override)"}}
+	##libsubdir##
+		override the library directory - default is set depending on TARGET
+	##objsubdir##
+		override object file directory - default is set depending on TARGET
+	##fbcobjdir##
+		override compiler object directory - default is set depending on TARGET
+
+{{fbdoc item="section" value="fbrt source code configuration (FBRTCFLAGS, FBRTLFLAGS)"}}
+	##FBRTCFLAGS##
+		override the compiler flags when building fbrt library
+	##FBRTLFLAGS##
+		override the linker flags then building fbrt library
+
+{{fbdoc item="section" value="rtlib/gfxlib2 source code configuration (CFLAGS)"}}
+	##-DDISABLE_X11##
+		build without X11 headers (disables X11 gfx driver)
+	##-DDISABLE_GPM##
+		build without gpm.h (disables ##[[KeyPgGetmouse|GetMouse]]## in the Linux terminal (TERM=linux), although the TERM=xterm variant keeps working)
+	##-DDISABLE_FFI##
+		build without ffi.h (disables ##[[KeyPgThreadCall|ThreadCall]]##)
+	##-DDISABLE_OPENGL##
+		build without OpenGL headers (disables OpenGL gfx drivers)
+	##-DDISABLE_FBDEV##
+		build without Linux framebuffer device headers (disables Linux fbdev gfx driver)
+	##-DDISABLE_D3D10##
+		build without DirectX 10 driver (disable D2D driver in windows)
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

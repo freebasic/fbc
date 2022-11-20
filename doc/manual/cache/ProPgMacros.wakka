@@ -165,8 +165,8 @@ test2:
 	So, it is possible to pass any number of arguments through the ##//variadic_parameter//##, which can be used in the body as if it was a normal macro parameter.
 	During macro expansion each occurrence of the ##//variadic_parameter//## in the macro replacement list is replaced by the passed arguments. The ##//variadic_parameter//## will expand to the full list of arguments passed to it, including commas, and can also be completely empty.
 	
-	No direct means is provided to access individual arguments in the variable argument list, nor to find out how many were passed.
-	To distinguish between the different arguments passed by the ##//variadic_parameter//##, one can first convert the ##//variadic_parameter//## to a string literal using the ##[[KeyPgOpPpStringize|# stringize]]## operator, then differentiate in this string literal (##//#variadic_parameter//##) each passed argument by locating the separators (usually a comma).
+	No direct means is provided to recursively access individual arguments in the variable argument list.
+	To distinguish between the different arguments passed by the ##//variadic_parameter//##, one can first convert the ##//variadic_parameter//## to a string literal using the ##[[KeyPgOpPpStringize|# stringize]]## operator, then differentiate in this string literal (##//#variadic_parameter//##) each passed argument by locating the separators (a comma).
 
 {{fbdoc item="section" value="Examples"}}
 	Example with one-line and multi-line macros:

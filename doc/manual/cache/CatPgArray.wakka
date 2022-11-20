@@ -19,6 +19,8 @@ Statements and procedures for working with arrays.
 		Reverts a previous [[KeyPgOptiondynamic|OPTION DYNAMIC]] command.
 	=={{fbdoc item="keyword" value="KeyPgMetaStatic|'$STATIC"}}==
 		Alternate form of the [[KeyPgOptionstatic|OPTION STATIC]] statement.
+	=={{fbdoc item="keyword" value="KeyPgDim|DIM"}}==
+		Defines any type of array.
 	=={{fbdoc item="keyword" value="KeyPgRedim|REDIM"}}==
 		Defines and resizes variable-length arrays.
 	=={{fbdoc item="keyword" value="KeyPgPreserve|PRESERVE"}}==

@@ -225,6 +225,8 @@ Multiplication of v1: 'v1 * 5'
 			
 			In addition to the explicit syntax for calling the copy-constructor, this one is also called when an object is passed by value to a procedure, and when a function returns an object by value by using the //'Return'// keyword.
 			
+			A copy constructor can not take into account its argument (the object to clone) by value,  because "byval arg" itself generally calls the copy-constructor, and this would induce an infinite loop.
+			
 			For the '""ZstringChain""' Type defined above, the user needs a copy constructor:
 				{{fbdoc item="filename" value="examples/manual/proguide/udt/ctordtor-zstringchain2.bas"}}%%(freebasic)
 Type ZstringChain                                   '' implement a zstring chain
@@ -399,6 +401,8 @@ Parent.Destructor()
 		If the user implements a copy-assignment operator, it is recommend to also implement a copy-constructor so that the meaning of the code is clear.
 		
 		In addition to the explicit syntax for calling the copy-assignment operator, this one is also called when a function returns an object by value by using the //'Function ='// keyword.
+		
+		A copy-assignment operator can not take into account its argument (the object to clone) by value, because there are cases where "byval arg" is coded as default-construction + copy-assignment (when for example the UDT has no copy-constructor but has an object field with a default-constructor or a Base with default-constructor), and this would induce an infinite loop.
 		
 		For the '""ZstringChain""' Type defined above, the user needs also a copy-assignment operator (see the 'rule of three' in 'advanced #2' page):
 			{{fbdoc item="filename" value="examples/manual/proguide/udt/ctordtor-zstringchain3.bas"}}%%(freebasic)

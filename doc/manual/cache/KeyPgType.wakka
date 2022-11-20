@@ -35,6 +35,11 @@ Declares a user-defined type.
 			...
 		[[KeyPgUnion|End Union]]
 		
+				
+		**Type** //typename2// ...
+			...
+		**End Type**
+		
 		...
 	**End Type**
 ##
@@ -49,10 +54,18 @@ Declares a user-defined type.
 		- Member visibility specifiers: ##[[KeyPgVisPublic|Public:]]##, ##[[KeyPgVisPrivate|Private:]]##, ##[[KeyPgVisProtected|Protected:]]##.
 		
 
-	A ##**Type**## can also contain nested types or unions, allowing data members to be grouped as desired.
-	##**Type**## and ##[[KeyPgUnion|Union]]## can be directly nested on condition of alternating their nesting.
-	Only the main structure (Type or Union) can be named, the others (nested) must be unnamed.
-	Nested unnamed ##**Type**## or ##[[KeyPgUnion|Union]]## can not have procedure members or static data members (same restriction for local scope named Type/Union).
+	A ##**Type**## can also contain nested Types or Unions, of different kinds:
+		- Nested Anonymous Type/Union:
+				**""-""** Nested Anonymous Type/Union allows data members to be grouped as desired.
+				**""-""** Anonymous Type or Anonymous Union can be nested on condition of alternating their nesting.
+				**""-""** Nested Anonymous Type/Union can not have procedure members or static data members (same restriction than for a local scope named Type/Union).
+		- Nested Named Type/Union:
+				**""-""** Nested Named Type/Union allows declaration of an inner structure inside a (named) Type/Union namespace and according to the access right of the place
+				**""-""** Mostly everything it can be done in a Named Type/Union can also be done in a Nested Named Type/Union.
+				**""-""** When there are circular dependencies between Types/Unions, Nested Named Type/Union usage can avoid using type aliases and forward referencing.
+		- Nested Type-Def:
+				**""-""** Nested Type-Def allows declaration of an inner Type (Alias) inside a Type/Union and according to the access right of the place.
+	The main structure (Type/Union) must be always named, the other (nested) structures can be anonymous or named.
 	
 	##[[KeyPgAlias|Alias]] "alternatename"## specifies that if ##//typename//## must be encoded (mangled) in to a public symbol (as in an object module or library), then specifically use ##//alternate//## name instead of the usual encoding (mangling) of ##//typename//##.
 	
@@ -166,6 +179,57 @@ Print
 
 Sleep
 %%
+	This is an example with Nested Named Type:
+		{{fbdoc item="filename" value="examples/manual/udt/type4.bas"}}%%(freebasic)
+Type Parent
+	Private:
+		Dim As String nameParent
+		Declare Constructor()
+		Declare Constructor(Byref As Parent)
+		Type Child
+			Dim As String nameChild
+			Dim As Parent Ptr ptrParent
+			Declare Sub kinship()
+		End Type
+		Dim As Child listChild(Any)
+	Public:
+		Declare Constructor(Byref _nameParent As String)
+		Declare Sub addChild(Byref _nameChild As String)
+		Declare Sub kinship()
+End Type
+
+Constructor Parent(Byref _nameParent As String)
+	This.nameParent = _nameParent
+End Constructor
+
+Sub Parent.addChild(Byref _nameChild As String)
+	Redim Preserve This.listChild(Ubound(This.listChild) + 1)
+	This.listChild(Ubound(This.listChild)).nameChild = _nameChild
+	This.listChild(Ubound(This.listChild)).ptrParent = @This
+End Sub
+
+Sub Parent.Child.kinship()
+	Print "'" & This.nameChild & "'" & " is child of " & "'" & This.ptrParent->nameParent & "'"
+End Sub
+
+Sub Parent.kinship()
+	For i As Integer = 0 To Ubound(This.listChild)
+		This.listChild(i).kinship()
+	Next i
+End Sub
+
+
+Dim As Parent p = Parent("Kennedy")
+p.addChild("John Jr.")
+p.addChild("Caroline")
+p.addChild("Patrick")
+p.kinship()
+
+Sleep
+%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.10.0: Nested Named Type/Union capability added.
+
 {{fbdoc item="target"}}
 	- The default ##**Field**## alignment parameter is 4 bytes for DOS and Linux targets.
 	- The default ##**Field**## alignment parameter is 8 bytes for Windows targets (this difference with regard to 4 bytes applies only to Longint and Double members).
@@ -192,6 +256,7 @@ Sleep
 	- ##[[KeyPgExtendsZstring|Extends Zstring]]##
 	- ##[[KeyPgExtendsWstring|Extends Wstring]]##
 	- ##[[KeyPgWith|With]]##
+	- ##[[TblVarTypes|Standard Data Type Limits]]##
 	- [[ProPgDataConversion|Coercion and Conversion]]
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

@@ -59,7 +59,7 @@ sleep
 
 {{fbdoc item="filename" value="examples/manual/gfx/palette2.bas"}}%%(freebasic)
 ' Getting a single color, form 2.
-dim as integer r, g, b
+dim as ulong r, g, b
 screen 13
 palette get 32, r, g, b
 print "Color 32 hues:"
@@ -69,7 +69,7 @@ sleep
 
 {{fbdoc item="filename" value="examples/manual/gfx/palette3.bas"}}%%(freebasic)
 ' Getting whole palette, form 3.
-dim pal(0 to 255) as integer
+dim pal(0 to 255) as ulong
 screen 13
 palette get using pal
 for i as integer = 0 to 15

@@ -76,6 +76,8 @@ Command line compiler options for the fbc compiler:
 		- Link with thread-safe runtime library
 	{{fbdoc item="keyword" value="CompilerOptnodeflibs|-nodeflibs"}}
 		- Do not include the default libraries
+	{{fbdoc item="keyword" value="CompilerOptnolib|-nolib < name(s) >"}}
+		- Do not include specific library(s)
 	{{fbdoc item="keyword" value="CompilerOptnoerrline|-noerrline"}}
 		- Do not show source line where error occurred
 	{{fbdoc item="keyword" value="CompilerOptnoobjinfo|-noobjinfo"}}
