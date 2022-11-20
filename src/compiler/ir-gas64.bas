@@ -2985,7 +2985,7 @@ private sub _emitlabel( byval label as FBSYMBOL ptr )
 	end if
 
 	if label->lbl.gosub then
-		asm_code("push rax #dummy push for gosub")
+		asm_code("sub rsp, 88 #stack for gosub") ''8 parameters max and need to be 16byte aligned
 	end if
 end sub
 private sub prepare_idx(byval v1 as IRVREG ptr, byref op1 as string, byref op3 as string)
@@ -6089,7 +6089,7 @@ private sub _emitbranch( byval op as integer, byval label as FBSYMBOL ptr )
 end sub
 private sub _emitreturn( byval bytestopop as integer )
 	asm_info("return for gosub="+str(bytestopop))
-	asm_code("pop rax # dummy pop for gosub")
+	asm_code("add rsp, 88 # restore stack for gosub")
 	asm_code("ret")
 end sub
 private sub _emitjmptb _
