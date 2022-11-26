@@ -30,7 +30,7 @@ function cDeclaration _
 	select case as const lexGetToken( )
 	case FB_TK_PUBLIC
 		 if( hCheckScope( ) ) then
-		 	attrib = FB_SYMBATTRIB_PUBLIC
+			attrib = FB_SYMBATTRIB_PUBLIC
 		 end if
 
 		lexSkipToken( LEXCHECK_POST_SUFFIX )

@@ -7,7 +7,7 @@
 #include once "parser.bi"
 #include once "ast.bi"
 
-declare function hParamDecl	_
+declare function hParamDecl _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval procmode as integer, _
@@ -69,9 +69,9 @@ sub cParameters _
 		end if
 
 		'' ','
-	   	if( lexGetToken( ) <> CHAR_COMMA ) then
-	   		exit do
-	   	end if
+		if( lexGetToken( ) <> CHAR_COMMA ) then
+			exit do
+		end if
 
 		lexSkipToken( )
 	loop
@@ -129,10 +129,10 @@ private function hOptionalExpr _
 		byval param as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr expr = any
+	dim as ASTNODE ptr expr = any
 	dim as integer inioptions = any
 
-    function = NULL
+	function = NULL
 
 	'' Must be BYVAL/BYREF in order to allow an optional expression
 	'' (not BYDESC nor VARARG)
@@ -219,7 +219,7 @@ private function hParamDecl _
 
 	function = NULL
 
-    attrib = 0
+	attrib = 0
 
 	'' '...'?
 	if( lexGetToken( ) = CHAR_DOT ) then
@@ -370,9 +370,9 @@ private function hParamDecl _
 	if( mode = INVALID ) then
 		mode = env.opt.parammode
 		use_default = TRUE
-    	if( fbPdCheckIsSet( FB_PDCHECK_PARAMMODE ) ) then
-    		hParamWarning( proc, id, FB_WARNINGMSG_NOEXPLICITPARAMMODE )
-    	end if
+		if( fbPdCheckIsSet( FB_PDCHECK_PARAMMODE ) ) then
+			hParamWarning( proc, id, FB_WARNINGMSG_NOEXPLICITPARAMMODE )
+		end if
 	end if
 
 	'' (AS SymbolType)?
@@ -435,18 +435,18 @@ private function hParamDecl _
 		end if
 	end if
 
-    '' QB def-by-letter hax
-    if( dtype = FB_DATATYPE_INVALID ) then
-        dtype = symbGetDefType( id )
-    end if
+	'' QB def-by-letter hax
+	if( dtype = FB_DATATYPE_INVALID ) then
+		dtype = symbGetDefType( id )
+	end if
 
 	if( doskip ) then
 		hSkipUntil( CHAR_COMMA )
 	end if
 
-    '' check for invalid args
-    select case as const typeGet( dtype )
-    '' can't be a fixed-len string
+	'' check for invalid args
+	select case as const typeGet( dtype )
+	'' can't be a fixed-len string
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		if( mode = FB_PARAMMODE_BYVAL or typeGet( dtype ) = FB_DATATYPE_FIXSTR ) then
 			hParamError( proc, id )
@@ -455,28 +455,28 @@ private function hParamDecl _
 		end if
 
 	'' can't be as ANY on non-prototypes
-    case FB_DATATYPE_VOID
-    	if( isproto = FALSE ) then
+	case FB_DATATYPE_VOID
+		if( isproto = FALSE ) then
 			hParamError( proc, id )
 			'' error recovery: fake correct type
 			dtype = typeAddrOf( dtype )
-    	else
-    		if( mode = FB_PARAMMODE_BYVAL ) then
+		else
+			if( mode = FB_PARAMMODE_BYVAL ) then
 				hParamError( proc, id )
 				'' error recovery: fake correct param
 				dtype = typeAddrOf( dtype )
-    		end if
-    	end if
+			end if
+		end if
 
-    case FB_DATATYPE_STRUCT
-    	if( isproto = FALSE ) then
-    		'' contains a period?
-    		if( dotpos > 0 ) then
+	case FB_DATATYPE_STRUCT
+		if( isproto = FALSE ) then
+			'' contains a period?
+			if( dotpos > 0 ) then
 				hParamError( proc, id )
-    		end if
-    	end if
+			end if
+		end if
 
-    end select
+	end select
 
 	'' Add new param
 	param = symbAddProcParam( proc, iif( isproto, cptr( zstring ptr, NULL ), id ), _

@@ -11,7 +11,7 @@
 const FB_MAXJUMPTBSLOTS = 8192
 
 type SELECTCTX
-	base		as integer
+	base        as integer
 	casevalues(0 to FB_MAXJUMPTBSLOTS-1) as ulongint
 	caselabels(0 to FB_MAXJUMPTBSLOTS-1) as FBSYMBOL ptr
 end type
@@ -29,7 +29,7 @@ end sub
 ''SelConstStmtBegin =   SELECT CASE AS CONST Expression{int} .
 ''
 sub cSelConstStmtBegin()
-    dim as ASTNODE ptr expr
+	dim as ASTNODE ptr expr
 	dim as FBSYMBOL ptr sym, el, cl
 	dim as FB_CMPSTMTSTK ptr stk
 	dim as integer options = any
@@ -60,16 +60,16 @@ sub cSelConstStmtBegin()
 		astDelTree( expr )
 		expr = NULL
 
-    '' CHAR and WCHAR literals are also from the INTEGER class
-    else
-    	select case astGetDataType( expr )
-    	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    		'' don't allow, unless it's a deref pointer
-    		if( astIsDEREF( expr ) = FALSE ) then
+	'' CHAR and WCHAR literals are also from the INTEGER class
+	else
+		select case astGetDataType( expr )
+		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			'' don't allow, unless it's a deref pointer
+			if( astIsDEREF( expr ) = FALSE ) then
 				astDelTree( expr )
 				expr = NULL
-    		end if
-    	end select
+			end if
+		end select
 	end if
 
 	if( expr = NULL ) then
@@ -126,7 +126,7 @@ sub cSelConstStmtBegin()
 
 	'' push to stmt stack
 	stk = cCompStmtPush( FB_TK_SELECT, _
-						 FB_CMPSTMT_MASK_NOTHING )	'' nothing allowed but CASE's
+	                     FB_CMPSTMT_MASK_NOTHING )  '' nothing allowed but CASE's
 	stk->select.isconst = TRUE
 	stk->select.sym = sym
 	stk->select.casecnt = 0
@@ -194,7 +194,7 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 	if( stk->select.casecnt > 0 ) then
 		'' break from block
 		astAdd( astNewBRANCH( AST_OP_JMP, stk->select.endlabel ) )
-    end if
+	end if
 
 	'' ELSE?
 	if( lexGetToken( ) = FB_TK_ELSE ) then
@@ -223,10 +223,10 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 
 		'' first case?
 		if( swtbase = ctx.base ) then
-			'' we initially set the bias to the first value minus 
-			'' FB_MAXJUMPTBSLOTS.  This allows us to compare range values 
-			'' (fromvalue <= tovalue ) and check if ranges are too 
-			'' large.  Later, in cSelConstStmtEnd() we will adjust the 
+			'' we initially set the bias to the first value minus
+			'' FB_MAXJUMPTBSLOTS.  This allows us to compare range values
+			'' (fromvalue <= tovalue ) and check if ranges are too
+			'' large.  Later, in cSelConstStmtEnd() we will adjust the
 			'' bias to the lowest valid range value seen.
 
 			'' In terms of values used by the user:
@@ -239,7 +239,7 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 
 		'' bias the value
 		value -= stk->select.const_.bias
-			
+
 		'' TO?
 		dim as ulongint tovalue
 		if( lexGetToken( ) = FB_TK_TO ) then
@@ -266,8 +266,8 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 
 		assert( tovalue >= value )
 
-		'' check if emitted jump table would be too large. Even without this check, 
-		'' emitter can still build a valid jump table, as it will fill in gaps 
+		'' check if emitted jump table would be too large. Even without this check,
+		'' emitter can still build a valid jump table, as it will fill in gaps
 		'' between ranges, however we limit the size here, as it might end up
 		''  unreasonably large.
 		if( (value >= FB_MAXJUMPTBSLOTS*2) or (tovalue >= FB_MAXJUMPTBSLOTS*2) ) then
@@ -312,10 +312,10 @@ sub cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr )
 	lexSkipToken( LEXCHECK_POST_SUFFIX )
 	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
-    deflabel = stk->select.const_.deflabel
-    if( deflabel = NULL ) then
-    	deflabel = stk->select.endlabel
-    end if
+	deflabel = stk->select.const_.deflabel
+	if( deflabel = NULL ) then
+		deflabel = stk->select.endlabel
+	end if
 
 	'' end scope
 	if( stk->scopenode <> NULL ) then
@@ -325,8 +325,8 @@ sub cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr )
 	'' break from block
 	astAdd( astNewBRANCH( AST_OP_JMP, stk->select.endlabel ) )
 
-    '' emit comp label
-    astAdd( astNewLABEL( stk->select.cmplabel ) )
+	'' emit comp label
+	astAdd( astNewLABEL( stk->select.cmplabel ) )
 
 	'' re-bias case values and set max value
 	dim as ulongint span = 0
@@ -355,10 +355,10 @@ sub cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr )
 	                       deflabel, _
 	                       stk->select.const_.bias, span ) )
 
-    ctx.base = stk->select.const_.base
+	ctx.base = stk->select.const_.base
 
-    '' emit exit label
-    astAdd( astNewLABEL( stk->select.endlabel ) )
+	'' emit exit label
+	astAdd( astNewLABEL( stk->select.endlabel ) )
 
 	'' Close the outer scope block
 	if( stk->select.outerscopenode <> NULL ) then

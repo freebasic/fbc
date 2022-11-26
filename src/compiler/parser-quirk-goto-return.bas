@@ -142,10 +142,10 @@ private function hGosubReturn _
 end function
 
 '':::::
-''GotoStmt		  =   GOTO LABEL
-''				  |   GOSUB LABEL
-''				  |   RETURN LABEL?
-''				  |   RESUME NEXT? .
+''GotoStmt        =   GOTO LABEL
+''                |   GOSUB LABEL
+''                |   RETURN LABEL?
+''                |   RESUME NEXT? .
 ''
 function cGotoStmt _
 	( _

@@ -155,7 +155,7 @@ function cPeekFunct( ) as ASTNODE ptr
 	'' ('.' UdtMember)?
 	if( lexGetToken( ) = CHAR_DOT ) then
 		select case dtype
-		case FB_DATATYPE_STRUCT	', FB_DATATYPE_CLASS
+		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 
 		case else
 			errReport( FB_ERRMSG_EXPECTEDUDT, TRUE )

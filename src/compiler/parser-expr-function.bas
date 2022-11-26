@@ -34,13 +34,13 @@ function cFunctionCall _
 
 	function = NULL
 
-    if( sym = NULL ) then
-    	exit function
-    end if
+	if( sym = NULL ) then
+		exit function
+	end if
 
 	options or= FB_PARSEROPT_ISFUNC
 
-    hMethodCallAddInstPtrOvlArg( sym, thisexpr, @arg_list, @options )
+	hMethodCallAddInstPtrOvlArg( sym, thisexpr, @arg_list, @options )
 
 	'' property?
 	if( symbIsProperty( sym ) ) then
@@ -121,7 +121,7 @@ function cFunctionEx _
 			iif( symbGetIsRTL(sym), LEXCHECK_POST_STRING_SUFFIX, LEXCHECK_POST_LANG_SUFFIX ), _
 			LEXCHECK_POST_SUFFIX _
 		) )
-	
+
 	function = cFunctionCall( base_parent, sym, NULL, NULL, options )
 
 end function
@@ -179,7 +179,7 @@ function cCtorCall _
 		isprnt = FALSE
 	end if
 
-    '' pass the instance ptr
+	'' pass the instance ptr
 	dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, @arg_list, FALSE )
 	arg->expr = astNewVAR( tmp )
 	arg->mode = INVALID
