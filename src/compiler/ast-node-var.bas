@@ -12,7 +12,7 @@ function astNewVAR _
 		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
+	dim as ASTNODE ptr n = any
 
 	assert( iif( sym, symbIsField( sym ) = FALSE, TRUE ) )
 
@@ -60,7 +60,7 @@ function astNewVAR _
 end function
 
 function astLoadVAR( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as FBSYMBOL ptr s = any
+	dim as FBSYMBOL ptr s = any
 	dim as longint ofs = any
 	dim as IRVREG ptr vr = NULL
 

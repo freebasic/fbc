@@ -40,7 +40,7 @@ function astNewMACRO _
 	'' AST_OP_VA_END    va_end( arg1 )
 	'' AST_OP_VA_ARG    expr = va_arg(arg1,typeof(arg2))
 	'' AST_OP_VA_COPY   va_copy( arg1, arg2 )
-		
+
 	n->op.op = op
 	n->l = arg1
 	n->r = arg2
@@ -73,7 +73,7 @@ function astLoadMACRO _
 	) as IRVREG ptr
 
 	dim op as AST_OP
-    dim as IRVREG ptr v1 = any, v2 = any, vr = any
+	dim as IRVREG ptr v1 = any, v2 = any, vr = any
 
 	op = n->op.op
 

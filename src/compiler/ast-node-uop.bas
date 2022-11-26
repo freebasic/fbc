@@ -174,7 +174,7 @@ function astNewUOP _
 	'' see also astNewBOP()
 	''
 	'' - do nothing if operand is boolean with NOT operator
-	
+
 	do_promote = (env.clopt.lang <> FB_LANG_QB) and (typeGetClass( o->dtype ) = FB_DATACLASS_INTEGER)
 
 	if( typeGetDtAndPtrOnly( o->dtype ) = FB_DATATYPE_BOOLEAN ) then
@@ -317,9 +317,9 @@ function astLoadUOP _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-    dim as ASTNODE ptr o = any
-    dim as integer op = any
-    dim as IRVREG ptr v1 = any, vr = any
+	dim as ASTNODE ptr o = any
+	dim as integer op = any
+	dim as IRVREG ptr v1 = any, vr = any
 
 	o = n->l
 	op = n->op.op

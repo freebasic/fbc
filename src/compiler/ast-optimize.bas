@@ -75,7 +75,7 @@ private function hConstAccumADDSUB _
 		return n
 	end if
 
-    o = n->op.op
+	o = n->op.op
 
 	select case o
 	case AST_OP_ADD, AST_OP_SUB
@@ -629,7 +629,7 @@ private function hOptAssocADD _
 		return NULL
 	end if
 
-    '' convert a+(b+c) to a+b+c and a-(b-c) to a-b+c
+	'' convert a+(b+c) to a+b+c and a-(b-c) to a-b+c
 	if( n->class = AST_NODECLASS_BOP ) then
 		op = n->op.op
 		select case op
@@ -1491,7 +1491,7 @@ private function hOptStrAssignment _
 			'' check if we can optimize to fb_StrConcatByref()
 			'' looking specifically for a = a + b
 			'' where both a & b are STRINGS but we possibly
-			'' don't know until run time if a and b could 
+			'' don't know until run time if a and b could
 			'' be the same descriptor.
 			if( astIsTreeEqual( l, r->l ) ) then
 				sym = astGetSymbol( l->l )
@@ -1535,7 +1535,7 @@ private function hOptStrAssignment _
 		if( hIsMultStrConcat( l, r ) ) then
 			function = hOptStrMultConcat( l, l, r, is_wstr )
 		else
-			''	=            f() -- concatassign | concatbyref
+			''  =            f() -- concatassign | concatbyref
 			'' / \           / \
 			''a   +    =>   a   expr
 			''   / \
@@ -1551,7 +1551,7 @@ private function hOptStrAssignment _
 		if( hIsMultStrConcat( l, r ) ) then
 			function = hOptStrMultConcat( NULL, l, r, is_wstr )
 		else
-			''	=            f() -- assign
+			''  =            f() -- assign
 			'' / \           / \
 			''a   +    =>   a   f() -- concat (done by UpdStrConcat)
 			''   / \           / \
@@ -1613,8 +1613,8 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr
 	else
 		if( irGetOption( IR_OPT_FPUSELFBOPS ) = FALSE ) then
 			'' try to optimize if a constant is being assigned to a float var
-  			if( astIsCONST( r ) ) then
-  				if( dclass = FB_DATACLASS_FPOINT ) then
+			if( astIsCONST( r ) ) then
+				if( dclass = FB_DATACLASS_FPOINT ) then
 					if( typeGetClass( astGetDataType( r ) ) <> FB_DATACLASS_FPOINT ) then
 						n->r = astNewCONV( dtype, NULL, r )
 					end if
@@ -1689,13 +1689,13 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr
 	'' delete assign node and alert UOP/BOP to not allocate a result (IR is aware)
 	rnocast->op.options and= not AST_OPOPT_ALLOCRES
 
-	''	=             o
+	''  =             o
 	'' / \           / \
 	''d   o     =>  d   expr
 	''   / \
 	''  d   expr
 
-    astDelNode( n )
+	astDelNode( n )
 	astDelTree( l )
 	if( r <> rnocast ) then
 		'' If r had a noconv cast, delete that too, so the UOP/BOP ends up at toplevel
@@ -1703,7 +1703,7 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr
 		r = rnocast
 	end if
 
-    function = r
+	function = r
 
 end function
 

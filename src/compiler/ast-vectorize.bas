@@ -7,8 +7,8 @@
 #include once "fbint.bi"
 #include once "ast.bi"
 
-dim shared as integer			vectorWidth
-dim shared as integer			maxVectorWidth			'' 2 if doubles are found anywhere, otherwise 4
+dim shared as integer           vectorWidth
+dim shared as integer           maxVectorWidth          '' 2 if doubles are found anywhere, otherwise 4
 
 private function hNodesMatch _
 	( _
@@ -71,7 +71,7 @@ private function hAllowedInVectorize _
 	case AST_NODECLASS_ASSIGN, AST_NODECLASS_LOAD
 		return TRUE
 
-	case	AST_NODECLASS_CONV, AST_NODECLASS_CONST
+	case AST_NODECLASS_CONV, AST_NODECLASS_CONST
 		dtype = ( n->dtype And FB_DT_TYPEMASK )
 		if( dtype = FB_DATATYPE_SINGLE ) then return TRUE
 		if( dtype = FB_DATATYPE_DOUBLE ) then
@@ -181,10 +181,11 @@ private function hCheckLoad _
 		byval deref as integer _
 	) as integer
 
+	'' it's okay if they're both done
+	if( ( vn = NULL ) and ( n = NULL ) ) then return TRUE
 
-	if( ( vn = NULL ) and ( n = NULL ) ) then return TRUE		'' it's okay if they're both done
-
-	if( ( vn = NULL ) or ( n = NULL ) ) then return FALSE		'' not okay if only one is done
+	'' not okay if only one is done
+	if( ( vn = NULL ) or ( n = NULL ) ) then return FALSE
 
 	vn = hSkipNewNodes( vn, FALSE )
 
@@ -239,7 +240,6 @@ private function hVectorizeNode _
 		byval n as ASTNODE ptr, _
 		byval dist as integer _
 	) as ASTNODE ptr
-
 
 	if( n = NULL ) then return n
 
@@ -344,7 +344,9 @@ private function hCheckMemOffset _
 	if( ( dtype = FB_DATATYPE_SINGLE ) or ( dtype = FB_DATATYPE_DOUBLE ) ) then
 
 		'' if node has already been vectorized, offset must be greater than 0.
-		if( ( vectorNode->vector ) and ( offset = 0 ) ) then	'' advanced swizzling not supported yet
+
+		'' advanced swizzling not supported yet
+		if( ( vectorNode->vector ) and ( offset = 0 ) ) then
 			return FALSE
 		end if
 
@@ -582,7 +584,7 @@ private function astIntraTreeVectorize _
 			if( hMergeNode( n->l, n->r, FALSE ) ) then
 
 				'' go ahead and do the merge / vectorize
-				'' 
+				''
 				maxVectorWidth = 4
 				vectorWidth = 0
 				hMergeNode( n->l, n->r, TRUE )
