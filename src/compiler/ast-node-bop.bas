@@ -18,7 +18,7 @@ private function hStrLiteralConcat _
 		byval r as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr s = any, ls = any, rs = any
+	dim as FBSYMBOL ptr s = any, ls = any, rs = any
 
 	ls = astGetSymbol( l )
 	rs = astGetSymbol( r )
@@ -41,7 +41,7 @@ private function hWstrLiteralConcat _
 		byval r as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr s = any, ls = any, rs = any
+	dim as FBSYMBOL ptr s = any, ls = any, rs = any
 
 	ls = astGetSymbol( l )
 	rs = astGetSymbol( r )
@@ -49,16 +49,16 @@ private function hWstrLiteralConcat _
 	if( symbGetType( ls ) <> FB_DATATYPE_WCHAR ) then
 		'' new len = both strings' len less the 2 null-chars
 		s = symbAllocWstrConst( wstr( *symbGetVarLitText( ls ) ) + *symbGetVarLitTextW( rs ), _
-						    	symbGetStrLen( ls ) - 1 + symbGetWstrLen( rs ) - 1 )
+		                        symbGetStrLen( ls ) - 1 + symbGetWstrLen( rs ) - 1 )
 
 	elseif( symbGetType( rs ) <> FB_DATATYPE_WCHAR ) then
 		s = symbAllocWstrConst( *symbGetVarLitTextW( ls ) + wstr( *symbGetVarLitText( rs ) ), _
-						    	symbGetWstrLen( ls ) - 1 + symbGetStrLen( rs ) - 1 )
+		                        symbGetWstrLen( ls ) - 1 + symbGetStrLen( rs ) - 1 )
 
 	else
 		s = symbAllocWstrConst( *symbGetVarLitTextW( ls ) + *symbGetVarLitTextW( rs ), _
-						    	symbGetWstrLen( ls ) - 1 + symbGetWstrLen( rs ) - 1 )
-    end if
+		                        symbGetWstrLen( ls ) - 1 + symbGetWstrLen( rs ) - 1 )
+	end if
 
 	function = astNewVAR( s )
 
@@ -75,29 +75,29 @@ private function hStrLiteralCompare _
 		byval r as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    static as DZSTRING ltext, rtext
-    dim as integer res = any
+	static as DZSTRING ltext, rtext
+	dim as integer res = any
 
 	'' !!!FIXME!!! - embedded NUL CHARs incorrectly end the string
 	'' !!!TODO!!! - use textlen returned from hUnescape() to get proper comparison length
 
-   	DZstrAssign( ltext, hUnescape( symbGetVarLitText( astGetSymbol( l ) ) ) )
-   	DZstrAssign( rtext, hUnescape( symbGetVarLitText( astGetSymbol( r ) ) ) )
+	DZstrAssign( ltext, hUnescape( symbGetVarLitText( astGetSymbol( l ) ) ) )
+	DZstrAssign( rtext, hUnescape( symbGetVarLitText( astGetSymbol( r ) ) ) )
 
-   	select case as const op
-   	case AST_OP_EQ
-   		res = (*ltext.data = *rtext.data)
-   	case AST_OP_GT
-   		res = (*ltext.data > *rtext.data)
-   	case AST_OP_LT
-   		res = (*ltext.data < *rtext.data)
-   	case AST_OP_NE
-   		res = (*ltext.data <> *rtext.data)
-   	case AST_OP_LE
-   		res = (*ltext.data <= *rtext.data)
-   	case AST_OP_GE
-   		res = (*ltext.data >= *rtext.data)
-   	end select
+	select case as const op
+	case AST_OP_EQ
+		res = (*ltext.data = *rtext.data)
+	case AST_OP_GT
+		res = (*ltext.data > *rtext.data)
+	case AST_OP_LT
+		res = (*ltext.data < *rtext.data)
+	case AST_OP_NE
+		res = (*ltext.data <> *rtext.data)
+	case AST_OP_LE
+		res = (*ltext.data <= *rtext.data)
+	case AST_OP_GE
+		res = (*ltext.data >= *rtext.data)
+	end select
 
 	function = astNewCONSTi( res )
 
@@ -114,10 +114,10 @@ private function hWStrLiteralCompare _
 		byval r as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr ls = any, rs = any
-    static as DZSTRING textz
-    static as DWSTRING ltextw, rtextw
-    dim as integer res = any
+	dim as FBSYMBOL ptr ls = any, rs = any
+	static as DZSTRING textz
+	static as DWSTRING ltextw, rtextw
+	dim as integer res = any
 
 	ls = astGetSymbol( l )
 	rs = astGetSymbol( r )
@@ -127,65 +127,65 @@ private function hWStrLiteralCompare _
 
 	'' left operand not a wstring?
 	if( symbGetType( ls ) <> FB_DATATYPE_WCHAR ) then
-   		DZstrAssign( textz, hUnescape( symbGetVarLitText( ls ) ) )
-   		DWstrAssign( rtextw, hUnescapeW( symbGetVarLitTextW( rs ) ) )
+		DZstrAssign( textz, hUnescape( symbGetVarLitText( ls ) ) )
+		DWstrAssign( rtextw, hUnescapeW( symbGetVarLitTextW( rs ) ) )
 
-   		select case as const op
-   		case AST_OP_EQ
-   			res = (*textz.data = *rtextw.data)
-   		case AST_OP_GT
-   			res = (*textz.data > *rtextw.data)
-   		case AST_OP_LT
-   			res = (*textz.data < *rtextw.data)
-   		case AST_OP_NE
-   			res = (*textz.data <> *rtextw.data)
-   		case AST_OP_LE
-   			res = (*textz.data <= *rtextw.data)
-   		case AST_OP_GE
-   			res = (*textz.data >= *rtextw.data)
-   		end select
+		select case as const op
+		case AST_OP_EQ
+			res = (*textz.data = *rtextw.data)
+		case AST_OP_GT
+			res = (*textz.data > *rtextw.data)
+		case AST_OP_LT
+			res = (*textz.data < *rtextw.data)
+		case AST_OP_NE
+			res = (*textz.data <> *rtextw.data)
+		case AST_OP_LE
+			res = (*textz.data <= *rtextw.data)
+		case AST_OP_GE
+			res = (*textz.data >= *rtextw.data)
+		end select
 
-   	'' right operand?
-   	elseif( symbGetType( rs ) <> FB_DATATYPE_WCHAR ) then
-   		DWstrAssign( ltextw, hUnescapeW( symbGetVarLitTextW( ls ) ) )
-   		DZstrAssign( textz, hUnescape( symbGetVarLitText( rs ) ) )
+	'' right operand?
+	elseif( symbGetType( rs ) <> FB_DATATYPE_WCHAR ) then
+		DWstrAssign( ltextw, hUnescapeW( symbGetVarLitTextW( ls ) ) )
+		DZstrAssign( textz, hUnescape( symbGetVarLitText( rs ) ) )
 
-   		select case as const op
-   		case AST_OP_EQ
-   			res = (*ltextw.data = *textz.data)
-   		case AST_OP_GT
-   			res = (*ltextw.data > *textz.data)
-   		case AST_OP_LT
-   			res = (*ltextw.data < *textz.data)
-   		case AST_OP_NE
-   			res = (*ltextw.data <> *textz.data)
-   		case AST_OP_LE
-   			res = (*ltextw.data <= *textz.data)
-   		case AST_OP_GE
-   			res = (*ltextw.data >= *textz.data)
-   		end select
+		select case as const op
+		case AST_OP_EQ
+			res = (*ltextw.data = *textz.data)
+		case AST_OP_GT
+			res = (*ltextw.data > *textz.data)
+		case AST_OP_LT
+			res = (*ltextw.data < *textz.data)
+		case AST_OP_NE
+			res = (*ltextw.data <> *textz.data)
+		case AST_OP_LE
+			res = (*ltextw.data <= *textz.data)
+		case AST_OP_GE
+			res = (*ltextw.data >= *textz.data)
+		end select
 
-   	'' both wstrings..
-   	else
-   		DWstrAssign( ltextw, hUnescapeW( symbGetVarLitTextW( ls ) ) )
-   		DWstrAssign( rtextw, hUnescapeW( symbGetVarLitTextW( rs ) ) )
+	'' both wstrings..
+	else
+		DWstrAssign( ltextw, hUnescapeW( symbGetVarLitTextW( ls ) ) )
+		DWstrAssign( rtextw, hUnescapeW( symbGetVarLitTextW( rs ) ) )
 
-   		select case as const op
-   		case AST_OP_EQ
-   			res = (*ltextw.data = *rtextw.data)
-   		case AST_OP_GT
-   			res = (*ltextw.data > *rtextw.data)
-   		case AST_OP_LT
-   			res = (*ltextw.data < *rtextw.data)
-   		case AST_OP_NE
-   			res = (*ltextw.data <> *rtextw.data)
-   		case AST_OP_LE
-   			res = (*ltextw.data <= *rtextw.data)
-   		case AST_OP_GE
-   			res = (*ltextw.data >= *rtextw.data)
-   		end select
+		select case as const op
+		case AST_OP_EQ
+			res = (*ltextw.data = *rtextw.data)
+		case AST_OP_GT
+			res = (*ltextw.data > *rtextw.data)
+		case AST_OP_LT
+			res = (*ltextw.data < *rtextw.data)
+		case AST_OP_NE
+			res = (*ltextw.data <> *rtextw.data)
+		case AST_OP_LE
+			res = (*ltextw.data <= *rtextw.data)
+		case AST_OP_GE
+			res = (*ltextw.data >= *rtextw.data)
+		end select
 
-   	end if
+	end if
 
 	function = astNewCONSTi( res )
 
@@ -200,42 +200,42 @@ private sub hToStr(byref l as ASTNODE ptr, byref r as ASTNODE ptr)
 	ldtype = astGetDataType( l )
 	rdtype = astGetDataType( r )
 
-    '' convert left operand to string if needed
-    select case as const ldtype
-    case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-    	 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+	'' convert left operand to string if needed
+	select case as const ldtype
+	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
-    '' not a string..
-    case else
+	'' not a string..
+	case else
 		l = rtlToStr( l, FALSE )
 		if( l = NULL ) then
 				errReport( FB_ERRMSG_TYPEMISMATCH )
 				'' error recovery: fake a new node
 				l = astNewCONSTstr( NULL )
 		end if
-    end select
+	end select
 
 
 	'' convert the right operand to string if needed
-   	select case as const rdtype
-   	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-   		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+	select case as const rdtype
+	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
-   	'' not a string..
-   	case else
-   		'' expression is not a wstring?
-   		if( ldtype <> FB_DATATYPE_WCHAR ) then
-   			r = rtlToStr( r, FALSE )
-   		else
-   			r = rtlToWstr( r )
-   		end if
+	'' not a string..
+	case else
+		'' expression is not a wstring?
+		if( ldtype <> FB_DATATYPE_WCHAR ) then
+			r = rtlToStr( r, FALSE )
+		else
+			r = rtlToWstr( r )
+		end if
 
-   		if( r = NULL ) then
+		if( r = NULL ) then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a new node
 			r = astNewCONSTstr( NULL )
-   		end if
-   	end select
+		end if
+	end select
 end sub
 
 private function hConstBop _
@@ -402,22 +402,22 @@ private function hCheckPointer _
 		byval dclass as integer _
 	) as integer
 
-    '' not int?
-    if( dclass <> FB_DATACLASS_INTEGER ) then
-    	return FALSE
+	'' not int?
+	if( dclass <> FB_DATACLASS_INTEGER ) then
+		return FALSE
 
-    '' CHAR and WCHAR literals are also from the INTEGER class
-    else
-    	select case typeGet( dtype )
-    	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    		return FALSE
-        end select
-    end if
+	'' CHAR and WCHAR literals are also from the INTEGER class
+	else
+		select case typeGet( dtype )
+		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			return FALSE
+		end select
+	end if
 
-    select case op
-    '' add op?
-    case AST_OP_ADD, AST_OP_SUB
-    	'' another pointer?
+	select case op
+	'' add op?
+	case AST_OP_ADD, AST_OP_SUB
+		'' another pointer?
 		function = not typeIsPtr( dtype )
 
 	'' short-circuit ops?  operands will be checked against zero, so allow.
@@ -427,7 +427,7 @@ private function hCheckPointer _
 	'' relational op?
 	case else
 		function = astOpIsRelational( op )
-    end select
+	end select
 
 end function
 
@@ -440,24 +440,24 @@ private function hDoPointerArith _
 		byval swapped as integer = FALSE _
 	) as ASTNODE ptr
 
-    dim as integer edtype = any
+	dim as integer edtype = any
 	dim as longint lgt = any
 
-    function = NULL
+	function = NULL
 
-    edtype = astGetDataType( e )
+	edtype = astGetDataType( e )
 
-    '' not integer class?
-    if( typeGetClass( edtype ) <> FB_DATACLASS_INTEGER ) then
-    	exit function
+	'' not integer class?
+	if( typeGetClass( edtype ) <> FB_DATACLASS_INTEGER ) then
+		exit function
 
-    '' CHAR and WCHAR literals are also from the INTEGER class (to allow *p = 0 etc)
-    else
-    	select case edtype
-    	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    		exit function
-    	end select
-    end if
+	'' CHAR and WCHAR literals are also from the INTEGER class (to allow *p = 0 etc)
+	else
+		select case edtype
+		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			exit function
+		end select
+	end if
 
 	'' calc len( *p )
 	lgt = symbCalcDerefLen( astGetDataType( p ), astGetSubType( p ) )
@@ -466,38 +466,38 @@ private function hDoPointerArith _
 		exit function
 	end if
 
-    '' another pointer?
-    if( typeIsPtr( edtype ) ) then
-    	'' only allow if it's a subtraction
-    	if( op = AST_OP_SUB ) then
-    		'' types can't be different..
-    		if( (edtype <> astGetDataType( p )) or _
-    			(astGetSubType( e ) <> astGetSubType( p )) ) then
-    			exit function
-    		end if
+	'' another pointer?
+	if( typeIsPtr( edtype ) ) then
+		'' only allow if it's a subtraction
+		if( op = AST_OP_SUB ) then
+			'' types can't be different..
+			if( (edtype <> astGetDataType( p )) or _
+				(astGetSubType( e ) <> astGetSubType( p )) ) then
+				exit function
+			end if
 
-    		'' convert to int or BOP will complain..
-    		p = astNewCONV( FB_DATATYPE_INTEGER, NULL, p )
-    		e = astNewCONV( FB_DATATYPE_INTEGER, NULL, e )
+			'' convert to int or BOP will complain..
+			p = astNewCONV( FB_DATATYPE_INTEGER, NULL, p )
+			e = astNewCONV( FB_DATATYPE_INTEGER, NULL, e )
 
- 			'' subtract..
- 			e = astNewBOP( AST_OP_SUB, p, e )
+			'' subtract..
+			e = astNewBOP( AST_OP_SUB, p, e )
 
- 			'' and divide by length
+			'' and divide by length
 			function = astNewBOP( AST_OP_INTDIV, e, astNewCONSTi( lgt ) )
-    	end if
+		end if
 
-    	exit function
-    end if
+		exit function
+	end if
 
-    '' not integer? convert
-    if( edtype <> FB_DATATYPE_INTEGER ) then
-    	e = astNewCONV( FB_DATATYPE_INTEGER, NULL, e )
-    end if
+	'' not integer? convert
+	if( edtype <> FB_DATATYPE_INTEGER ) then
+		e = astNewCONV( FB_DATATYPE_INTEGER, NULL, e )
+	end if
 
-    '' any op but +|-?
-    select case op
-    case AST_OP_ADD, AST_OP_SUB
+	'' any op but +|-?
+	select case op
+	case AST_OP_ADD, AST_OP_SUB
 
 		if( (op = AST_OP_SUB) andalso swapped ) then
 			exit function
@@ -509,10 +509,10 @@ private function hDoPointerArith _
 		'' do op
 		function = astNewBOP( op, p, e )
 
-    case else
-    	'' allow AND and OR??
-    	exit function
-    end select
+	case else
+		'' allow AND and OR??
+		exit function
+	end select
 
 end function
 
@@ -530,27 +530,27 @@ private function hConvertUDT_l _
 
 	'' try to convert to l type
 	t = astNewCONV( astGetFullType( l ), l->subtype, r )
-    if( t <> NULL ) then
-    	t = astNewBOP( op, l, t, ex, options or AST_OPOPT_NOCOERCION )
-    	if( t <> NULL ) then
-    		return t
-    	end if
+	if( t <> NULL ) then
+		t = astNewBOP( op, l, t, ex, options or AST_OPOPT_NOCOERCION )
+		if( t <> NULL ) then
+			return t
+		end if
 	end if
 
-    '' try convert to r type
+	'' try convert to r type
 	t = astNewCONV( astGetFullType( r ), r->subtype, l )
-    if( t <> NULL ) then
-    	t = astNewBOP( op, t, r, ex, options or AST_OPOPT_NOCOERCION )
-    	if( t <> NULL ) then
-    		return t
-    	end if
+	if( t <> NULL ) then
+		t = astNewBOP( op, t, r, ex, options or AST_OPOPT_NOCOERCION )
+		if( t <> NULL ) then
+			return t
+		end if
 	end if
 
-    '' try convert to the most precise type
+	'' try convert to the most precise type
 	t = astNewCONV( FB_DATATYPE_VOID, NULL, l )
-    if( t <> NULL ) then
-    	'' coercion allowed, so hConvertUDT_r() can be called if r is an UDT too
-    	return astNewBOP( op, t, r, ex, options )
+	if( t <> NULL ) then
+		'' coercion allowed, so hConvertUDT_r() can be called if r is an UDT too
+		return astNewBOP( op, t, r, ex, options )
 	end if
 
 	function = NULL
@@ -572,25 +572,25 @@ private function hConvertUDT_r _
 	'' try to convert to r type
 	t = astNewCONV( astGetFullType( r ), r->subtype, l )
 	if( t <> NULL ) then
-    	t = astNewBOP( op, t, r, ex, options or AST_OPOPT_NOCOERCION )
-    	if( t <> NULL ) then
-    		return t
-    	end if
+		t = astNewBOP( op, t, r, ex, options or AST_OPOPT_NOCOERCION )
+		if( t <> NULL ) then
+			return t
+		end if
 	end if
 
-    '' try convert to l type
+	'' try convert to l type
 	t = astNewCONV( astGetFullType( l ), l->subtype, r )
-    if( t <> NULL ) then
-    	t = astNewBOP( op, l, t, ex, options or AST_OPOPT_NOCOERCION )
-    	if( t <> NULL ) then
-    		return t
-    	end if
+	if( t <> NULL ) then
+		t = astNewBOP( op, l, t, ex, options or AST_OPOPT_NOCOERCION )
+		if( t <> NULL ) then
+			return t
+		end if
 	end if
 
-    '' try convert to the most precise type
+	'' try convert to the most precise type
 	t = astNewCONV( FB_DATATYPE_VOID, NULL, r )
-    if( t <> NULL ) then
-    	return astNewBOP( op, l, t, ex, options or AST_OPOPT_NOCOERCION )
+	if( t <> NULL ) then
+		return astNewBOP( op, l, t, ex, options or AST_OPOPT_NOCOERCION )
 	end if
 
 	function = NULL
@@ -730,13 +730,13 @@ function astNewBOP _
 		byval options as AST_OPOPT _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
-    dim as integer ldtype0 = any, rdtype0 = any
-    dim as integer ldtype = any, rdtype = any, dtype = any
-    dim as integer ldclass = any, rdclass = any
+	dim as ASTNODE ptr n = any
+	dim as integer ldtype0 = any, rdtype0 = any
+	dim as integer ldtype = any, rdtype = any, dtype = any
+	dim as integer ldclass = any, rdclass = any
 	dim as integer lrank = any, rrank = any, intrank = any, uintrank = any
-    dim as integer is_str = any
-    dim as FBSYMBOL ptr litsym = any, subtype = any
+	dim as integer is_str = any
+	dim as FBSYMBOL ptr litsym = any, subtype = any
 	dim as integer do_promote = any
 
 	function = NULL
@@ -779,30 +779,30 @@ function astNewBOP _
 		else
 			return hConvertUDT_r( op, l, r, ex, options )
 		end if
-    end if
+	end if
 
 	''::::::
-    '' pointers?
-    if( typeIsPtr( ldtype ) ) then
+	'' pointers?
+	if( typeIsPtr( ldtype ) ) then
 		'' do arithmetics?
 		if( (options and AST_OPOPT_LPTRARITH) <> 0 ) then
-    		return hDoPointerArith( op, l, r )
+			return hDoPointerArith( op, l, r )
 		else
-    		if( hCheckPointer( op, rdtype, rdclass ) = FALSE ) then
-    			exit function
-    		end if
+			if( hCheckPointer( op, rdtype, rdclass ) = FALSE ) then
+				exit function
+			end if
 		end if
 
-    elseif( typeIsPtr( rdtype ) ) then
+	elseif( typeIsPtr( rdtype ) ) then
 		'' do arithmetics?
 		if( (options and AST_OPOPT_RPTRARITH) <> 0 ) then
 			return hDoPointerArith( op, r, l, TRUE )
 		else
-    		if( hCheckPointer( op, ldtype, ldclass ) = FALSE ) then
-    			exit function
-    		end if
+			if( hCheckPointer( op, ldtype, ldclass ) = FALSE ) then
+				exit function
+			end if
 		end if
-    end if
+	end if
 
 	''
 	'' Enum operands? Convert them to integer (but preserve CONSTs).
@@ -822,16 +822,16 @@ function astNewBOP _
 		hConvOperand( FB_DATATYPE_INTEGER, rdtype, rdclass, r )
 	end if
 
-    '' both zstrings? treat as string..
-    if( (typeGet( ldtype ) = FB_DATATYPE_CHAR) and _
-    	(typeGet( rdtype ) = FB_DATATYPE_CHAR) ) then
-    	ldclass = FB_DATACLASS_STRING
-    	rdclass = ldclass
-    end if
+	'' both zstrings? treat as string..
+	if( (typeGet( ldtype ) = FB_DATATYPE_CHAR) and _
+		(typeGet( rdtype ) = FB_DATATYPE_CHAR) ) then
+		ldclass = FB_DATACLASS_STRING
+		rdclass = ldclass
+	end if
 
-    '' wstrings?
-    if( (typeGet( ldtype ) = FB_DATATYPE_WCHAR) or _
-    	(typeGet( rdtype ) = FB_DATATYPE_WCHAR) ) then
+	'' wstrings?
+	if( (typeGet( ldtype ) = FB_DATATYPE_WCHAR) or _
+		(typeGet( rdtype ) = FB_DATATYPE_WCHAR) ) then
 
 		'' not both wstrings?
 		if( typeGetDtAndPtrOnly( ldtype ) <> typeGetDtAndPtrOnly( rdtype ) ) then
@@ -994,12 +994,12 @@ function astNewBOP _
 			exit function
 		end if
 
-    '' zstrings?
-    elseif( (typeGet( ldtype ) = FB_DATATYPE_CHAR) or _
-    	    (typeGet( rdtype ) = FB_DATATYPE_CHAR) ) then
+	'' zstrings?
+	elseif( (typeGet( ldtype ) = FB_DATATYPE_CHAR) or _
+		    (typeGet( rdtype ) = FB_DATATYPE_CHAR) ) then
 
-   		'' one is not a string (not fixed, var-len, z- or w-string,
-   		'' or the tests above would catch them)
+		'' one is not a string (not fixed, var-len, z- or w-string,
+		'' or the tests above would catch them)
 		if( typeGet( ldtype ) = FB_DATATYPE_CHAR ) then
 			'' don't allow, unless it's a deref pointer
 			if( l->class <> AST_NODECLASS_DEREF ) then
@@ -1017,7 +1017,7 @@ function astNewBOP _
 			rdtype = typeJoin( rdtype, FB_DATATYPE_UBYTE )
 		end if
 
-    end if
+	end if
 
 	dim as integer is_boolean = FALSE
 
@@ -1046,7 +1046,7 @@ function astNewBOP _
 		end if
 	end if
 
-    ''::::::
+	''::::::
 
 	''
 	'' Promote smaller integer types to [U]INTEGER before the operation
@@ -1123,7 +1123,7 @@ function astNewBOP _
 		end if
 	end if
 
-    '' convert types
+	'' convert types
 	select case as const op
 	'' flt div (/) can only operate on floats
 	case AST_OP_DIV
@@ -1179,7 +1179,7 @@ function astNewBOP _
 
 	end select
 
-    ''::::::
+	''::::::
 
 	if( (ldtype <> rdtype) or (l->subtype <> r->subtype) ) then
 		'' Pointer arithmetic (but not handled above by hDoPointerArith())?
@@ -1658,9 +1658,9 @@ function astNewSelfBOP _
 end function
 
 function astLoadBOP( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as ASTNODE ptr l = any, r = any
-    dim as integer op = any
-    dim as IRVREG ptr v1 = any, v2 = any, vr = any
+	dim as ASTNODE ptr l = any, r = any
+	dim as integer op = any
+	dim as IRVREG ptr v1 = any, v2 = any, vr = any
 
 	op = n->op.op
 	l  = n->l
