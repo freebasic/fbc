@@ -90,6 +90,7 @@ Version 1.10.0
 - fbc: delete destructor calls of discarded expressions in IIF(), previously, unscoped dtors (to be called after the expression) and deleted dtors (to be never called) were being handled the same
 - gas backend: fix spill registers when all reused registers are within the same emit operation
 - github #404: gas64: fix stack size and alignment for GOSUB usage (SARG)
+fbc: #macro definition parsing incorrectly handles single line comments ending with line continuation character and incorrectly joins the following line to the comment
 
 
 Version 1.09.0

@@ -582,7 +582,7 @@ function ppReadLiteral _
 			end if
 
 			do
-				lexSkipToken( LEX_FLAGS )
+				lexSkipToken( LEX_FLAGS or LEXCHECK_NOLINECONT )
 
 				select case lexGetToken( LEX_FLAGS )
 				case FB_TK_EOL, FB_TK_EOF
@@ -737,7 +737,7 @@ function ppReadLiteralW _
 			end if
 
 			do
-				lexSkipToken( LEX_FLAGS )
+				lexSkipToken( LEX_FLAGS or LEXCHECK_NOLINECONT )
 
 				select case lexGetToken( LEX_FLAGS )
 				case FB_TK_EOL, FB_TK_EOF
