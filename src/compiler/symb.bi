@@ -256,8 +256,17 @@ end enum
 enum FB_SYMBLOOKUPOPT
 	FB_SYMBLOOKUPOPT_NONE    = &h00000000
 
-	FB_SYMBLOOKUPOPT_PROPGET = &h00000001
-	FB_SYMBLOOKUPOPT_BOP_OVL = &h00000002
+	FB_SYMBLOOKUPOPT_PROPGET    = &h00000001  '' match property get and not property set
+	FB_SYMBLOOKUPOPT_BOP_OVL    = &h00000002  '' exact match at least one parameter
+
+	'' symbFindCastOvlProc(), hCheckCastOvl()
+	FB_SYMBLOOKUPOPT_EXPLICIT   = &h00000004  '' require explicit exact match
+
+	'' symbFindCastOvlProc(), symbFindCtorOvlProc()
+	'' symbFindClosestOvlProc(), hCheckOvlParam()
+	FB_SYMBLOOKUPOPT_NO_ERROR   = &h00000008  '' don't report errors, return to caller
+	FB_SYMBLOOKUPOPT_NO_CTOR    = &h00000010  '' don't find matching constructors
+	FB_SYMBLOOKUPOPT_NO_CAST    = &h00000020  '' don't find matching cast operators
 end enum
 
 ''
@@ -1069,7 +1078,7 @@ declare function symbFindCastOvlProc _
 		byval to_subtype as FBSYMBOL ptr, _
 		byval expr as ASTNODE ptr, _
 		byval err_num as FB_ERRMSG ptr, _
-		byval is_explicit as integer = FALSE _
+		byval options as FB_SYMBLOOKUPOPT = FB_SYMBLOOKUPOPT_NONE _
 	) as FBSYMBOL ptr
 
 declare function symbFindCtorOvlProc _
@@ -1077,7 +1086,8 @@ declare function symbFindCtorOvlProc _
 		byval sym as FBSYMBOL ptr, _
 		byval expr as ASTNODE ptr, _
 		byval arg_mode as FB_PARAMMODE, _
-		byval err_num as FB_ERRMSG ptr _
+		byval err_num as FB_ERRMSG ptr, _
+		byval options as FB_SYMBLOOKUPOPT = FB_SYMBLOOKUPOPT_NONE _
 	) as FBSYMBOL ptr
 
 declare function symbFindCtorProc _
