@@ -2219,6 +2219,113 @@ private function hCheckOvlParam _
 end function
 
 '':::::
+private function hCheckOvlProc _
+	( _
+		byval ovl_head_proc as FBSYMBOL ptr, _
+		byval args as integer, _
+		byval arg_head as FB_CALL_ARG ptr, _
+		byval err_num as FB_ERRMSG ptr, _
+		byval options as FB_SYMBLOOKUPOPT, _
+		byval ovl as FBSYMBOL ptr, _
+		byref exact_matches as integer, _
+		byref is_match as integer _
+	) as integer
+
+	dim as FBSYMBOL ptr param = any
+	dim as FB_OVLPROC_MATCH_SCORE arg_matchscore = any, matchscore = any
+	dim as integer matchcount = any
+	dim as FB_CALL_ARG ptr arg = any
+
+	dim as integer is_property = symbIsProperty( ovl_head_proc )
+
+	is_match = FALSE
+
+	dim as integer params = symbGetProcParams( ovl )
+	if( symbIsMethod( ovl ) ) then
+		params -= 1
+	end if
+
+	'' property? handle get/set accessors dups
+	if( is_property ) then
+		'' get?
+		if( (options and FB_SYMBLOOKUPOPT_PROPGET) <> 0 ) then
+			'' don't check if it's set
+			if( symbGetType( ovl ) = FB_DATATYPE_VOID ) then
+				params = -1
+			end if
+		'' set..
+		else
+			'' don't check if it's get
+			if( symbGetType( ovl ) <> FB_DATATYPE_VOID ) then
+				params = -1
+			end if
+		end if
+	end if
+
+	'' Only consider overloads with enough params
+	if( args <= params ) then
+		param = symbGetProcHeadParam( ovl )
+		if( symbIsMethod( ovl ) ) then
+			param = param->next
+		end if
+
+		matchscore = FB_OVLPROC_NO_MATCH
+		exact_matches = 0
+
+		'' for each arg..
+		arg = arg_head
+		for i as integer = 0 to args-1
+
+			'' Check for matching parameter.
+			arg_matchscore = hCheckOvlParam( _
+				ovl, _
+				param, _
+				arg->expr, _
+				arg->mode, _
+				err_num, _
+				options )
+
+			if( arg_matchscore = FB_OVLPROC_NO_MATCH ) then
+				matchscore = FB_OVLPROC_NO_MATCH
+				exit for
+			end if
+
+			'' exact checks are required for operator overload candidates
+			if( arg_matchscore >= FB_OVLPROC_TYPEMATCH ) then
+				exact_matches += 1
+			end if
+
+			matchscore += arg_matchscore
+
+			'' next param
+			param = param->next
+			arg = arg->next
+		next
+
+		'' If there were no args, then assume it's a match and
+		'' then check the remaining params, if any.
+		is_match = (args = 0) or (matchscore > FB_OVLPROC_NO_MATCH)
+
+		'' Fewer args than params? Check whether the missing ones are optional.
+		for i as integer = args to params-1
+			'' not optional? exit
+			if( symbParamIsOptional( param ) = FALSE ) then
+				'' Missing arg for this param - not a match afterall.
+				is_match = FALSE
+				exit for
+			end if
+
+			'' next param
+			param = param->next
+		next
+
+	end if
+
+	return matchscore
+
+end function
+
+'':::::
 function symbFindClosestOvlProc _
 	( _
 		byval ovl_head_proc as FBSYMBOL ptr, _
@@ -2228,10 +2335,9 @@ function symbFindClosestOvlProc _
 		byval options as FB_SYMBLOOKUPOPT _
 	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr ovl = any, closest_proc = any, param = any
-	dim as FB_OVLPROC_MATCH_SCORE arg_matchscore = any, matchscore = any, max_matchscore = any
-	dim as integer exact_matches = any, matchcount = any
-	dim as FB_CALL_ARG ptr arg = any
+	dim as FBSYMBOL ptr ovl = any, closest_proc = any
+	dim as FB_OVLPROC_MATCH_SCORE matchscore = any, max_matchscore = any
+	dim as integer exact_matches = any, matchcount = any, is_match = any
 
 	*err_num = FB_ERRMSG_OK
 
@@ -2240,114 +2346,43 @@ function symbFindClosestOvlProc _
 	end if
 
 	closest_proc = NULL
+	matchcount = 0       '' number of matching procedures found
+	is_match = FALSE
 	max_matchscore = FB_OVLPROC_NO_MATCH
-	matchcount = 0  '' number of matching procedures found
-
-	dim as integer is_property = symbIsProperty( ovl_head_proc )
 
 	'' for each proc..
 	ovl = ovl_head_proc
 	do
-		dim as integer params = symbGetProcParams( ovl )
-		if( symbIsMethod( ovl ) ) then
-			params -= 1
-		end if
+		matchscore = hCheckOvlProc( _
+			ovl_head_proc, _
+			args, _
+			arg_head, _
+			err_num, _
+			options /' !!!WIP!!! or FB_SYMBLOOKUPOPT_NO_ERROR '/, _
+			ovl, _
+			exact_matches, _
+			is_match )
 
-		'' property? handle get/set accessors dups
-		if( is_property ) then
-			'' get?
-			if( (options and FB_SYMBLOOKUPOPT_PROPGET) <> 0 ) then
-				'' don't check if it's set
-				if( symbGetType( ovl ) = FB_DATATYPE_VOID ) then
-					params = -1
-				end if
-			'' set..
-			else
-				'' don't check if it's get
-				if( symbGetType( ovl ) <> FB_DATATYPE_VOID ) then
-					params = -1
-				end if
-			end if
-		end if
-
-		'' Only consider overloads with enough params
-		if( args <= params ) then
-			param = symbGetProcHeadParam( ovl )
-			if( symbIsMethod( ovl ) ) then
-				param = param->next
-			end if
-
-			matchscore = FB_OVLPROC_NO_MATCH
-			exact_matches = 0
-
-			'' for each arg..
-			arg = arg_head
-			for i as integer = 0 to args-1
-
-				'' Check for matching parameter.
-				arg_matchscore = hCheckOvlParam( _
-					ovl, _
-					param, _
-					arg->expr, _
-					arg->mode, _
-					err_num, _
-					options )
-
-				if( arg_matchscore = FB_OVLPROC_NO_MATCH ) then
-					matchscore = FB_OVLPROC_NO_MATCH
-					exit for
+		if( is_match ) then
+			'' First match, or better match than any previous overload?
+			if( (matchcount = 0) or (matchscore > max_matchscore) ) then
+				dim as integer eligible = TRUE
+				'' an operator overload candidate is only eligible if
+				'' there is at least one exact arg match
+				if( options and FB_SYMBLOOKUPOPT_BOP_OVL ) then
+					eligible = (exact_matches >= 1)
 				end if
 
-				'' exact checks are required for operator overload candidates
-				if( arg_matchscore >= FB_OVLPROC_TYPEMATCH ) then
-					exact_matches += 1
+				'' it's eligible, update
+				if( eligible ) then
+					closest_proc = ovl
+					max_matchscore = matchscore
+					matchcount = 1
 				end if
 
-				matchscore += arg_matchscore
-
-				'' next param
-				param = param->next
-				arg = arg->next
-			next
-
-			'' If there were no args, then assume it's a match and
-			'' then check the remaining params, if any.
-			var is_match = (args = 0) or (matchscore > FB_OVLPROC_NO_MATCH)
-
-			'' Fewer args than params? Check whether the missing ones are optional.
-			for i as integer = args to params-1
-				'' not optional? exit
-				if( symbParamIsOptional( param ) = FALSE ) then
-					'' Missing arg for this param - not a match afterall.
-					is_match = FALSE
-					exit for
-				end if
-
-				'' next param
-				param = param->next
-			next
-
-			if( is_match ) then
-				'' First match, or better match than any previous overload?
-				if( (matchcount = 0) or (matchscore > max_matchscore) ) then
-					dim as integer eligible = TRUE
-					'' an operator overload candidate is only eligible if
-					'' there is at least one exact arg match
-					if( options and FB_SYMBLOOKUPOPT_BOP_OVL ) then
-						eligible = (exact_matches >= 1)
-					end if
-
-					'' it's eligible, update
-					if( eligible ) then
-						closest_proc = ovl
-						max_matchscore = matchscore
-						matchcount = 1
-					end if
-
-				'' Same score as best previous overload?
-				elseif( matchscore = max_matchscore ) then
-					matchcount += 1
-				end if
+			'' Same score as best previous overload?
+			elseif( matchscore = max_matchscore ) then
+				matchcount += 1
 			end if
 		end if
 
@@ -2361,6 +2396,21 @@ function symbFindClosestOvlProc _
 		function = NULL
 	else
 		function = closest_proc
+		/' !!!WIP!!!
+		if( closest_proc ) then
+			matchscore = hCheckOvlProc( _
+				ovl_head_proc, _
+				args, _
+				arg_head, _
+				err_num, options, _
+				closest_proc, _
+				exact_matches, _
+				is_match )
+			if( is_match = FALSE ) then
+				function = NULL
+			end if
+		end if
+		'/
 	end if
 
 end function
@@ -2770,7 +2820,6 @@ function symbFindCtorOvlProc _
 			err_num, _
 			options _
 		)
-
 end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
