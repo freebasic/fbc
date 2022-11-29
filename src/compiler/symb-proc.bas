@@ -2358,7 +2358,7 @@ function symbFindClosestOvlProc _
 			args, _
 			arg_head, _
 			err_num, _
-			options /' !!!WIP!!! or FB_SYMBLOOKUPOPT_NO_ERROR '/, _
+			options or FB_SYMBLOOKUPOPT_NO_ERROR, _
 			ovl, _
 			exact_matches, _
 			is_match )
@@ -2395,22 +2395,25 @@ function symbFindClosestOvlProc _
 		*err_num = FB_ERRMSG_AMBIGUOUSCALLTOPROC
 		function = NULL
 	else
-		function = closest_proc
-		/' !!!WIP!!!
 		if( closest_proc ) then
 			matchscore = hCheckOvlProc( _
 				ovl_head_proc, _
 				args, _
 				arg_head, _
-				err_num, options, _
+				err_num, _
+				options, _
 				closest_proc, _
 				exact_matches, _
 				is_match )
+
 			if( is_match = FALSE ) then
 				function = NULL
+			else
+				function = closest_proc
 			end if
+		else
+			function = NULL
 		end if
-		'/
 	end if
 
 end function
@@ -2777,15 +2780,19 @@ function symbFindCastOvlProc _
 	'' more than one possibility?
 	if( matchcount > 1 ) then
 		*err_num = FB_ERRMSG_AMBIGUOUSCALLTOPROC
-		errReportParam( proc_head, 0, NULL, FB_ERRMSG_AMBIGUOUSCALLTOPROC )
+		if( (options and FB_SYMBLOOKUPOPT_NO_ERROR) = 0 ) then
+			errReportParam( proc_head, 0, NULL, FB_ERRMSG_AMBIGUOUSCALLTOPROC )
+		end if
 		closest_proc = NULL
 	else
 		if( closest_proc <> NULL ) then
 			'' Check visibility of cast operator
 			if( symbCheckAccess( closest_proc ) = FALSE ) then
 				*err_num = FB_ERRMSG_ILLEGALMEMBERACCESS
-				errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, _
-				             symbGetFullProcName( closest_proc ) )
+				if( (options and FB_SYMBLOOKUPOPT_NO_ERROR) = 0 ) then
+					errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, _
+					             symbGetFullProcName( closest_proc ) )
+				end if
 				closest_proc = NULL
 			end if
 		end if
