@@ -136,13 +136,13 @@ static int fb_MultikeyHandler(unsigned irq_number)
 
 					if( got_extended_key )
 					{
-						got_extended_key = FALSE;
 						flags |= KB_EXTENDED;
 					}
 
 					__fb_dos_multikey_hook(code, flags);
 				}
 			}
+			got_extended_key = FALSE;
 		}
 	}
 
