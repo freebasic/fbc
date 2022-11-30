@@ -16,17 +16,17 @@ enum FB_CASETYPE
 	FB_CASETYPE_ELSE
 end enum
 
-const FB_MAXCASEEXPR 	= 1024
+const FB_MAXCASEEXPR    = 1024
 
 type FBCASECTX
-	typ 		as FB_CASETYPE
-	op 			as integer
-	expr1		as ASTNODE ptr
-	expr2		as ASTNODE ptr
+	typ         as FB_CASETYPE
+	op          as integer
+	expr1       as ASTNODE ptr
+	expr2       as ASTNODE ptr
 end type
 
 type FBCTX
-	base		as integer
+	base        as integer
 	caseTB(0 to FB_MAXCASEEXPR-1) as FBCASECTX
 end type
 
@@ -42,7 +42,7 @@ end sub
 
 '' SelectStatement  =  SELECT CASE (AS CONST)? Expression .
 sub cSelectStmtBegin( )
-    dim as ASTNODE ptr expr = any
+	dim as ASTNODE ptr expr = any
 	dim as integer dtype = any, options = any
 	dim as FBSYMBOL ptr sym = any, el = any, subtype = any
 	dim as FB_CMPSTMTSTK ptr stk = any
@@ -197,7 +197,7 @@ end sub
 
 '':::::
 ''CaseExpression  =   (Expression (TO Expression)?)?
-''				  |   (IS REL_OP Expression)? .
+''                |   (IS REL_OP Expression)? .
 ''
 private sub hCaseExpression _
 	( _
@@ -320,14 +320,14 @@ sub cSelectStmtNext( )
 		errReport( FB_ERRMSG_EXPECTEDENDSELECT )
 	end if
 
-    '' default mask now allowed
-    cCompSetAllowmask( stk, FB_CMPSTMT_MASK_DEFAULT )
+	'' default mask now allowed
+	cCompSetAllowmask( stk, FB_CMPSTMT_MASK_DEFAULT )
 
-    '' AS CONST?
-    if( stk->select.isconst ) then
+	'' AS CONST?
+	if( stk->select.isconst ) then
 		cSelConstStmtNext( stk )
 		exit sub
-    end if
+	end if
 
 	'' CASE
 	lexSkipToken( LEXCHECK_POST_SUFFIX )
@@ -399,7 +399,7 @@ sub cSelectStmtNext( )
 		end if
 	next
 
- 	ctx.base -= cnt
+	ctx.base -= cnt
 
 	'' emit init block label
 	astAdd( astNewLABEL( il ) )
@@ -420,16 +420,16 @@ sub cSelectStmtEnd( )
 		exit sub
 	end if
 
-    '' no CASE's?
-    if( stk->select.casecnt = 0 ) then
+	'' no CASE's?
+	if( stk->select.casecnt = 0 ) then
 		errReport( FB_ERRMSG_EXPECTEDCASE )
-    end if
+	end if
 
-    '' AS CONST?
-    if( stk->select.isconst ) then
+	'' AS CONST?
+	if( stk->select.isconst ) then
 		cSelConstStmtEnd( stk )
 		exit sub
-    end if
+	end if
 
 	'' END SELECT
 	lexSkipToken( LEXCHECK_POST_SUFFIX )
@@ -440,9 +440,9 @@ sub cSelectStmtEnd( )
 		astScopeEnd( stk->scopenode )
 	end if
 
-    '' emit end label
-    astAdd( astNewLABEL( stk->select.cmplabel ) )
-    astAdd( astNewLABEL( stk->select.endlabel ) )
+	'' emit end label
+	astAdd( astNewLABEL( stk->select.cmplabel ) )
+	astAdd( astNewLABEL( stk->select.endlabel ) )
 
 	'' Close the outer scope block
 	if( stk->select.outerscopenode <> NULL ) then

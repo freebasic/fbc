@@ -1,7 +1,7 @@
 '' symbol table module for constants
 ''
 '' chng: sep/2004 written [v1ctor]
-''		 jan/2005 updated to use real linked-lists [v1ctor]
+''       jan/2005 updated to use real linked-lists [v1ctor]
 
 
 #include once "fb.bi"
@@ -21,17 +21,17 @@ function symbAddConst _
 		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr sym = any
+	dim as FBSYMBOL ptr sym = any
 
-    function = NULL
+	function = NULL
 
-    sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-    					 NULL, _
-    					 NULL, NULL, _
-    					 FB_SYMBCLASS_CONST, _
-    				   	 symbol, NULL, _
-    				   	 dtype, subtype, _
-    				   	 attrib, FB_PROCATTRIB_NONE )
+	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+	                     NULL, _
+	                     NULL, NULL, _
+	                     FB_SYMBCLASS_CONST, _
+	                     symbol, NULL, _
+	                     dtype, subtype, _
+	                     attrib, FB_PROCATTRIB_NONE )
 	if( sym = NULL ) then
 		exit function
 	end if
@@ -54,12 +54,12 @@ function symbReuseOrAddConst _
 	function = NULL
 
 	var sym = symbAddConst( id, dtype, subtype, value, attrib )
-	
+
 	if( sym = NULL ) then
 
-		'' Duplicate definition; allow it if the existing symbol is 
+		'' Duplicate definition; allow it if the existing symbol is
 		'' also a CONST and has the same dtype and value.  If it does
-		'' not have same dtype and value, allow it anyway if it is a 
+		'' not have same dtype and value, allow it anyway if it is a
 		'' symbol that may be redefined.
 		sym = symbLookupByNameAndClass( symbGetCurrentNamespc( ), id, FB_SYMBCLASS_CONST, FALSE, FALSE )
 		if( sym = NULL ) then
@@ -188,7 +188,7 @@ function symbAllocStrConst _
 		byval strlength as integer _
 	) as FBSYMBOL ptr
 
-    static as zstring * FB_MAXINTNAMELEN+1 id, id_alias
+	static as zstring * FB_MAXINTNAMELEN+1 id, id_alias
 	static as FBARRAYDIM dTB(0)
 	dim as FBSYMBOL ptr s = any
 
@@ -235,7 +235,7 @@ function symbAllocWStrConst _
 		byval strlength as integer _
 	) as FBSYMBOL ptr
 
-    static as zstring * FB_MAXINTNAMELEN+1 id, id_alias
+	static as zstring * FB_MAXINTNAMELEN+1 id, id_alias
 	static as FBARRAYDIM dTB(0)
 	dim as FBSYMBOL ptr s = any
 
@@ -277,11 +277,11 @@ function symbAllocWStrConst _
 end function
 
 sub symbDelConst( byval s as FBSYMBOL ptr )
-    if( s = NULL ) then
-    	exit sub
-    end if
+	if( s = NULL ) then
+		exit sub
+	end if
 
-    '' if it's a string, the symbol attached will be deleted be delVar()
+	'' if it's a string, the symbol attached will be deleted be delVar()
 	symbFreeSymbol( s )
 end sub
 
@@ -349,7 +349,7 @@ function symbGetConstStrAsStr( byval s as FBSYMBOL ptr ) as zstring ptr
 	end if
 
 	return res.data
-	
+
 end function
 
 function symbGetConstStrAsWstr( byval s as FBSYMBOL ptr ) as wstring ptr
@@ -377,7 +377,7 @@ function symbGetConstStrAsWstr( byval s as FBSYMBOL ptr ) as wstring ptr
 		end if
 		DWStrConcatAssign( res, QUOTE )
 
-	'' ASCII to WSTRING? escape everything, it's easier.	
+	'' ASCII to WSTRING? escape everything, it's easier.
 	else
 		dim textlen as integer
 		dim text as zstring ptr = hUnescape( symbGetVarLitText( s ), textlen )

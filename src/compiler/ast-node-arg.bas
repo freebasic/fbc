@@ -818,7 +818,7 @@ private function hCheckParam _
 		dim as FBSYMBOL ptr proc = any
 
 		proc = symbFindCastOvlProc( symbGetFullType( param ), symbGetSubtype( param ), _
-						n->l, @err_num )
+		                            n->l, @err_num )
 
 		if( proc <> NULL ) then
 			static as integer rec_cnt = 0

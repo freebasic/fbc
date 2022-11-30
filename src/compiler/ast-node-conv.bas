@@ -288,8 +288,14 @@ private function astTryOvlOpCastCONV _
 
 	dim as FBSYMBOL ptr proc = any
 	dim as FB_ERRMSG err_num = any
+	dim as FB_SYMBLOOKUPOPT lkup_options = FB_SYMBLOOKUPOPT_NONE
 
-	proc = symbFindCastOvlProc( to_dtype, to_subtype, node, @err_num, ((options and AST_CONVOPT_EXACT_CAST)<>0) )
+	if( (options and AST_CONVOPT_EXACT_CAST)<>0 ) then
+		lkup_options = FB_SYMBLOOKUPOPT_EXPLICIT
+	end if
+
+	proc = symbFindCastOvlProc( to_dtype, to_subtype, node, @err_num, lkup_options )
+
 	if( proc <> NULL ) then
 		'' build a proc call
 		n = astBuildCall( proc, node )
@@ -406,7 +412,15 @@ function astNewCONV _
 			dim as FB_ERRMSG err_num = any
 
 			'' check exact casts
-			proc = symbFindCastOvlProc( to_dtype, to_subtype, l, @err_num, TRUE )
+			proc = symbFindCastOvlProc _
+				( _
+					to_dtype, _
+					to_subtype, _
+					l, _
+					@err_num, _
+					FB_SYMBLOOKUPOPT_EXPLICIT _
+				)
+
 			if( proc <> NULL ) then
 				'' build a proc call
 				return astBuildCall( proc, l )
@@ -414,9 +428,23 @@ function astNewCONV _
 
 			'' check exact string pointer casts
 			if( symbGetUdtIsZstring( subtype ) ) then
-				proc = symbFindCastOvlProc( typeAddrof( FB_DATATYPE_CHAR ), NULL, l, @err_num, TRUE )
+				proc = symbFindCastOvlProc _
+					( _
+						typeAddrof( FB_DATATYPE_CHAR ), _
+						NULL, _
+						l, _
+						@err_num, _
+						FB_SYMBLOOKUPOPT_EXPLICIT _
+					)
 			elseif( symbGetUdtIsWstring( subtype ) ) then
-				proc = symbFindCastOvlProc( typeAddrof( FB_DATATYPE_WCHAR ), NULL, l, @err_num, TRUE )
+				proc = symbFindCastOvlProc _
+					( _
+						typeAddrof( FB_DATATYPE_WCHAR ), _
+						NULL, _
+						l, _
+						@err_num, _
+						FB_SYMBLOOKUPOPT_EXPLICIT _
+					)
 			end if
 			if( proc <> NULL ) then
 				'' build a proc call

@@ -9,8 +9,8 @@
 
 '' ScopeStmtBegin  =  SCOPE .
 sub cScopeStmtBegin( )
-    dim as ASTNODE ptr n = any
-    dim as FB_CMPSTMTSTK ptr stk = any
+	dim as ASTNODE ptr n = any
+	dim as FB_CMPSTMTSTK ptr stk = any
 
 	if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
 		errReportNotAllowed( FB_LANG_OPT_SCOPE )

@@ -270,11 +270,11 @@ private sub hCreateDataDesc( )
 	'' Using FIELD = 1, to pack it as done by the rtlib
 	ast.data.desc = symbStructBegin( NULL, NULL, NULL, "__FB_DATADESC$", NULL, FALSE, 1, FALSE, 0, 0 )
 
-	'' type	as short
+	'' type as short
 	symbAddField( ast.data.desc, "type", 0, dTB(), _
 	              FB_DATATYPE_SHORT, NULL, 0, 0, 0 )
 
-	'' node	as FB_DATASTMT_NODE (no need to create an UNION, all fields are pointers)
+	'' node as FB_DATASTMT_NODE (no need to create an UNION, all fields are pointers)
 	symbAddField( ast.data.desc, "node", 0, dTB(), _
 	              typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
 

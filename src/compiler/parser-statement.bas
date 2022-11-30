@@ -9,11 +9,11 @@
 
 '':::::
 ''Statement       =   STT_SEPARATOR? ( Declaration
-''									 | ProcCallOrAssign
-''								     | CompoundStmt
-''									 | QuirkStmt
-''									 | AsmBlock
-''									 | AssignmentOrPtrCall )?
+''                                   | ProcCallOrAssign
+''                                   | CompoundStmt
+''                                   | QuirkStmt
+''                                   | AsmBlock
+''                                   | AssignmentOrPtrCall )?
 ''                    (STT_SEPARATOR Statement)* .
 ''
 sub cStatement()

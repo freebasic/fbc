@@ -9,14 +9,14 @@
 #include once "rtl.bi"
 
 declare sub parserSelectStmtInit ( )
-declare sub parserSelectStmtEnd	( )
+declare sub parserSelectStmtEnd ( )
 declare sub parserSelConstStmtInit ( )
 declare sub parserSelConstStmtEnd ( )
 declare sub cCompoundEnd( )
 
 sub parserCompoundStmtSetCtx( )
 	parser.stmt.for = NULL
-	parser.stmt.do	= NULL
+	parser.stmt.do  = NULL
 	parser.stmt.while = NULL
 	parser.stmt.select = NULL
 	parser.stmt.proc = NULL
@@ -41,7 +41,7 @@ end sub
 #endmacro
 
 '':::::
-''CompoundStmt	  =   IfStatement
+''CompoundStmt    =   IfStatement
 ''                |   ForStatement
 ''                |   DoStatement
 ''                |   WhileStatement
@@ -143,14 +143,14 @@ sub cEndStatement( )
 	'' END
 	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
-  	'' Expression?
-  	select case as const lexGetToken( )
-  	case FB_TK_STMTSEP, FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENT, FB_TK_REM, _
-  		 FB_TK_ELSE, FB_TK_END, FB_TK_ENDIF
+	'' Expression?
+	select case as const lexGetToken( )
+	case FB_TK_STMTSEP, FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENT, FB_TK_REM, _
+		 FB_TK_ELSE, FB_TK_END, FB_TK_ENDIF
 		errlevel = NULL
-  	case else
-  		errlevel = cExpression( )
-  	end select
+	case else
+		errlevel = cExpression( )
+	end select
 
 	rtlExitApp( errlevel )
 end sub

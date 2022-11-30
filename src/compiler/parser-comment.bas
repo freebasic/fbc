@@ -13,7 +13,7 @@ declare sub cDirective( )
 
 '':::::
 ''Comment         =   (COMMENT_CHAR | REM) ((DIRECTIVE_CHAR Directive)
-''				                              |   (any_char_but_EOL*)) .
+''                                            |   (any_char_but_EOL*)) .
 ''
 function cComment _
 	( _
@@ -26,8 +26,8 @@ function cComment _
 		'' lang qb quirks
 		if( lexGetToken( lexflags ) = FB_TK_REM ) then
 			if( fbLangIsSet( FB_LANG_QB ) ) then
-				'' suffix? 
-				'' in QB only '$' was allowed, fbc allows REM[$ % ! & #] 
+				'' suffix?
+				'' in QB only '$' was allowed, fbc allows REM[$ % ! & #]
 				'' for a variable in qb mode.  To restrict to '$' only
 				'' as in QB, then would need to check FB_TK_STRTYPECHAR
 				'' below, plus update the parser code that deals with
@@ -67,8 +67,8 @@ end function
 ''                |   LANG ':' '\"' STR_LIT '\"'
 ''
 private sub cDirective( ) static
-    static as zstring * FB_MAXPATHLEN+1 incfile
-    dim as integer isonce
+	static as zstring * FB_MAXPATHLEN+1 incfile
+	dim as integer isonce
 
 	select case as const lexGetToken( )
 	case FB_TK_DYNAMIC
@@ -146,7 +146,7 @@ private sub cDirective( ) static
 			if( fbLangOptIsSet( FB_LANG_OPT_METACMD ) ) then
 				errReport( FB_ERRMSG_SYNTAXERROR )
 			end if
-		
+
 		case else
 			'' Special case, allow $LANG metacommand in all dialects
 			if( hMatchIdOrKw( "LANG" ) ) then

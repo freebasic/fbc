@@ -43,15 +43,15 @@ private function hCtorList _
 end function
 
 private function hDefaultInit( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
-    '' static, shared (includes extern/public) or common? do nothing..
-    if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
-       	 						   FB_SYMBATTRIB_SHARED or _
-       	 						   FB_SYMBATTRIB_COMMON or _
-       	 						   FB_SYMBATTRIB_DYNAMIC)) <> 0 ) then
-    	exit function
-    end if
+	'' static, shared (includes extern/public) or common? do nothing..
+	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
+		                           FB_SYMBATTRIB_SHARED or _
+		                           FB_SYMBATTRIB_COMMON or _
+		                           FB_SYMBATTRIB_DYNAMIC)) <> 0 ) then
+		exit function
+	end if
 
-    '' local..
+	'' local..
 
 	'' Do not initialize?
 	if( symbGetDontInit( sym ) ) then
@@ -88,7 +88,7 @@ function astNewDECL _
 		byval do_defaultinit as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
+	dim as ASTNODE ptr n = any
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_DECL, FB_DATATYPE_INVALID )

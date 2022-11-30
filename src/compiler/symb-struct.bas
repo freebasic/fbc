@@ -901,7 +901,7 @@ sub symbStructEnd _
 	'' default mode for default non-static members
 	mode = FB_FUNCMODE_CDECL
 
-	'' extern "c++" / win32 / x86 ? then 
+	'' extern "c++" / win32 / x86 ? then
 	'' default to THISCALL for default non-static members
 	if( parser.mangling = FB_MANGLING_CPP ) then
 		if( env.clopt.target = FB_COMPTARGET_WIN32 ) then

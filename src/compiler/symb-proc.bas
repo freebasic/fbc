@@ -1724,19 +1724,21 @@ end function
 '':::::
 #macro hCheckCtorOvl _
 	( _
-		rec_cnt, _
 		param_subtype, _
 		arg_expr, _
-		arg_mode _
+		arg_mode, _
+		options _
 	)
 
-	if( rec_cnt = 0 ) then
+	if( (options and FB_SYMBLOOKUPOPT_NO_CTOR) = 0 ) then
 		dim as integer err_num = any
 		dim as FBSYMBOL ptr proc = any
 
-		rec_cnt += 1
-		proc = symbFindCtorOvlProc( param_subtype, arg_expr, arg_mode, @err_num )
-		rec_cnt -= 1
+		proc = symbFindCtorOvlProc( param_subtype, _
+		                            arg_expr, _
+		                            arg_mode, _
+		                            @err_num, _
+		                            options or FB_SYMBLOOKUPOPT_NO_CTOR )
 
 		if( proc <> NULL ) then
 			return FB_OVLPROC_HALFMATCH - OvlMatchScore( FB_DATATYPE_STRUCT, 0 )
@@ -1746,23 +1748,22 @@ end function
 
 #macro hCheckCastOvlEx _
 	( _
-		rec_cnt, _
 		param_mode, _
 		param_dtype, _
 		param_subtype, _
-		arg_expr _
+		arg_expr, _
+		options _
 	)
 
-	if( rec_cnt = 0 ) then
+	if( (options and FB_SYMBLOOKUPOPT_NO_CAST) = 0 ) then
 		dim as integer err_num = any
 		dim as FBSYMBOL ptr proc = any
 
-		rec_cnt += 1
 		proc = symbFindCastOvlProc( param_dtype, _
 		                            param_subtype, _
 		                            arg_expr, _
-		                            @err_num )
-		                            rec_cnt -= 1
+		                            @err_num, _
+		                            options or FB_SYMBLOOKUPOPT_NO_CAST )
 
 		if( proc <> NULL ) then
 			'' calculate a new match score based on the CAST() return type rank
@@ -2035,12 +2036,15 @@ private function hCheckOvlParam _
 		byval parent as FBSYMBOL ptr, _
 		byval param as FBSYMBOL ptr, _
 		byval arg_expr as ASTNODE ptr, _
-		byval arg_mode as integer _
+		byval arg_mode as integer, _
+		byval err_num as FB_ERRMSG ptr, _
+		byval options as FB_SYMBLOOKUPOPT _
 	) as FB_OVLPROC_MATCH_SCORE
 
 	dim as integer param_dtype = any, arg_dtype = any, param_ptrcnt = any
 	dim as integer const_matches = any
 	dim as FBSYMBOL ptr param_subtype = any, arg_subtype = any, array = any
+	dim as FB_PARAMMODE param_mode = any
 
 	'' arg not passed?
 	if( arg_expr = NULL ) then
@@ -2055,11 +2059,12 @@ private function hCheckOvlParam _
 	param_dtype = symbGetFullType( param )
 	param_subtype = symbGetSubType( param )
 	param_ptrcnt = symbGetPtrCnt( param )
+	param_mode = symbGetParamMode( param )
 
 	arg_dtype = astGetFullType( arg_expr )
 	arg_subtype = astGetSubType( arg_expr )
 
-	select case symbGetParamMode( param )
+	select case param_mode
 	'' by descriptor param?
 	case FB_PARAMMODE_BYDESC
 		'' but arg isn't?
@@ -2067,7 +2072,7 @@ private function hCheckOvlParam _
 			return FB_OVLPROC_NO_MATCH
 		end if
 
-		var match = typeCalcMatch( param_dtype, param_subtype, symbGetParamMode( param ), arg_dtype, arg_subtype )
+		var match = typeCalcMatch( param_dtype, param_subtype, param_mode, arg_dtype, arg_subtype )
 
 		'' not same type?
 		if( match < FB_OVLPROC_TYPEMATCH ) then
@@ -2111,8 +2116,6 @@ private function hCheckOvlParam _
 		return FB_OVLPROC_NO_MATCH
 	end if
 
-	static as integer cast_rec_cnt = 0, ctor_rec_cnt = 0
-
 	'' same types?
 	if( typeGetDtAndPtrOnly( param_dtype ) = typeGetDtAndPtrOnly( arg_dtype ) ) then
 		''
@@ -2151,7 +2154,7 @@ private function hCheckOvlParam _
 			end if
 
 			'' Check whether CONSTness allows passing the arg to the param.
-			if( symbCheckConstAssignTopLevel( param_dtype, arg_dtype, param_subtype, arg_subtype, symbGetParamMode( param ), const_matches ) ) then
+			if( symbCheckConstAssignTopLevel( param_dtype, arg_dtype, param_subtype, arg_subtype, param_mode, const_matches ) ) then
 				'' They're compatible despite having different CONSTs -- e.g. "non-const Foo" passed to "Byref As Const Foo".
 				'' Treat it as lower score match than an exact match.
 				if( match > FB_OVLPROC_TYPEMATCH ) then
@@ -2171,10 +2174,18 @@ private function hCheckOvlParam _
 	select case param_dtype
 	'' UDT? try to find a ctor
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		hCheckCtorOvl( ctor_rec_cnt, param_subtype, arg_expr, arg_mode )
+		hCheckCtorOvl( param_subtype, _
+		               arg_expr, _
+		               arg_mode, _
+		               options )
 
 		'' and at last, try implicit casting..
-		hCheckCastOvlEx( cast_rec_cnt, symbGetParamMode( param ), param_dtype, param_subtype, arg_expr )
+		hCheckCastOvlEx( param_mode, _
+		                 param_dtype, _
+		                 param_subtype, _
+		                 arg_expr, _
+		                 options )
+
 		return FB_OVLPROC_NO_MATCH
 
 	'' enum param? refuse any other argument type, even integers,
@@ -2186,19 +2197,131 @@ private function hCheckOvlParam _
 		select case arg_dtype
 		'' UDT arg? try implicit casting..
 		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			hCheckCastOvlEx( cast_rec_cnt, symbGetParamMode( param ), symbGetFullType( param ), param_subtype, arg_expr )
+			hCheckCastOvlEx( param_mode, _
+			                 param_dtype, _
+			                 param_subtype, _
+			                 arg_expr, _
+			                 options )
+
 			return FB_OVLPROC_NO_MATCH
 		end select
 	end select
 
 	'' last resource, calc the differences
-	function = hCalcTypesDiff( symbGetFullType( param ), _
+	function = hCalcTypesDiff( param_dtype, _
 	                           param_subtype, _
 	                           param_ptrcnt, _
-	                           astGetFullType( arg_expr ), _
+	                           arg_dtype, _
 	                           arg_subtype, _
 	                           arg_expr, _
-	                           symbGetParamMode( param ) )
+	                           param_mode )
+
+end function
+
+'':::::
+private function hCheckOvlProc _
+	( _
+		byval ovl_head_proc as FBSYMBOL ptr, _
+		byval args as integer, _
+		byval arg_head as FB_CALL_ARG ptr, _
+		byval err_num as FB_ERRMSG ptr, _
+		byval options as FB_SYMBLOOKUPOPT, _
+		byval ovl as FBSYMBOL ptr, _
+		byref exact_matches as integer, _
+		byref is_match as integer _
+	) as integer
+
+	dim as FBSYMBOL ptr param = any
+	dim as FB_OVLPROC_MATCH_SCORE arg_matchscore = any, matchscore = any
+	dim as integer matchcount = any
+	dim as FB_CALL_ARG ptr arg = any
+
+	dim as integer is_property = symbIsProperty( ovl_head_proc )
+
+	is_match = FALSE
+
+	dim as integer params = symbGetProcParams( ovl )
+	if( symbIsMethod( ovl ) ) then
+		params -= 1
+	end if
+
+	'' property? handle get/set accessors dups
+	if( is_property ) then
+		'' get?
+		if( (options and FB_SYMBLOOKUPOPT_PROPGET) <> 0 ) then
+			'' don't check if it's set
+			if( symbGetType( ovl ) = FB_DATATYPE_VOID ) then
+				params = -1
+			end if
+		'' set..
+		else
+			'' don't check if it's get
+			if( symbGetType( ovl ) <> FB_DATATYPE_VOID ) then
+				params = -1
+			end if
+		end if
+	end if
+
+	'' Only consider overloads with enough params
+	if( args <= params ) then
+		param = symbGetProcHeadParam( ovl )
+		if( symbIsMethod( ovl ) ) then
+			param = param->next
+		end if
+
+		matchscore = FB_OVLPROC_NO_MATCH
+		exact_matches = 0
+
+		'' for each arg..
+		arg = arg_head
+		for i as integer = 0 to args-1
+
+			'' Check for matching parameter.
+			arg_matchscore = hCheckOvlParam( _
+				ovl, _
+				param, _
+				arg->expr, _
+				arg->mode, _
+				err_num, _
+				options )
+
+			if( arg_matchscore = FB_OVLPROC_NO_MATCH ) then
+				matchscore = FB_OVLPROC_NO_MATCH
+				exit for
+			end if
+
+			'' exact checks are required for operator overload candidates
+			if( arg_matchscore >= FB_OVLPROC_TYPEMATCH ) then
+				exact_matches += 1
+			end if
+
+			matchscore += arg_matchscore
+
+			'' next param
+			param = param->next
+			arg = arg->next
+		next
+
+		'' If there were no args, then assume it's a match and
+		'' then check the remaining params, if any.
+		is_match = (args = 0) or (matchscore > FB_OVLPROC_NO_MATCH)
+
+		'' Fewer args than params? Check whether the missing ones are optional.
+		for i as integer = args to params-1
+			'' not optional? exit
+			if( symbParamIsOptional( param ) = FALSE ) then
+				'' Missing arg for this param - not a match afterall.
+				is_match = FALSE
+				exit for
+			end if
+
+			'' next param
+			param = param->next
+		next
+
+	end if
+
+	return matchscore
 
 end function
 
@@ -2212,10 +2335,9 @@ function symbFindClosestOvlProc _
 		byval options as FB_SYMBLOOKUPOPT _
 	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr ovl = any, closest_proc = any, param = any
-	dim as FB_OVLPROC_MATCH_SCORE arg_matchscore = any, matchscore = any, max_matchscore = any
-	dim as integer exact_matches = any, matchcount = any
-	dim as FB_CALL_ARG ptr arg = any
+	dim as FBSYMBOL ptr ovl = any, closest_proc = any
+	dim as FB_OVLPROC_MATCH_SCORE matchscore = any, max_matchscore = any
+	dim as integer exact_matches = any, matchcount = any, is_match = any
 
 	*err_num = FB_ERRMSG_OK
 
@@ -2224,105 +2346,43 @@ function symbFindClosestOvlProc _
 	end if
 
 	closest_proc = NULL
+	matchcount = 0       '' number of matching procedures found
+	is_match = FALSE
 	max_matchscore = FB_OVLPROC_NO_MATCH
-	matchcount = 0  '' number of matching procedures found
-
-	dim as integer is_property = symbIsProperty( ovl_head_proc )
 
 	'' for each proc..
 	ovl = ovl_head_proc
 	do
-		dim as integer params = symbGetProcParams( ovl )
-		if( symbIsMethod( ovl ) ) then
-			params -= 1
-		end if
+		matchscore = hCheckOvlProc( _
+			ovl_head_proc, _
+			args, _
+			arg_head, _
+			err_num, _
+			options or FB_SYMBLOOKUPOPT_NO_ERROR, _
+			ovl, _
+			exact_matches, _
+			is_match )
 
-		'' property? handle get/set accessors dups
-		if( is_property ) then
-			'' get?
-			if( (options and FB_SYMBLOOKUPOPT_PROPGET) <> 0 ) then
-				'' don't check if it's set
-				if( symbGetType( ovl ) = FB_DATATYPE_VOID ) then
-					params = -1
-				end if
-			'' set..
-			else
-				'' don't check if it's get
-				if( symbGetType( ovl ) <> FB_DATATYPE_VOID ) then
-					params = -1
-				end if
-			end if
-		end if
-
-		'' Only consider overloads with enough params
-		if( args <= params ) then
-			param = symbGetProcHeadParam( ovl )
-			if( symbIsMethod( ovl ) ) then
-				param = param->next
-			end if
-
-			matchscore = FB_OVLPROC_NO_MATCH
-			exact_matches = 0
-
-			'' for each arg..
-			arg = arg_head
-			for i as integer = 0 to args-1
-				arg_matchscore = hCheckOvlParam( ovl, param, arg->expr, arg->mode )
-				if( arg_matchscore = FB_OVLPROC_NO_MATCH ) then
-					matchscore = FB_OVLPROC_NO_MATCH
-					exit for
+		if( is_match ) then
+			'' First match, or better match than any previous overload?
+			if( (matchcount = 0) or (matchscore > max_matchscore) ) then
+				dim as integer eligible = TRUE
+				'' an operator overload candidate is only eligible if
+				'' there is at least one exact arg match
+				if( options and FB_SYMBLOOKUPOPT_BOP_OVL ) then
+					eligible = (exact_matches >= 1)
 				end if
 
-				'' exact checks are required for operator overload candidates
-				if( arg_matchscore >= FB_OVLPROC_TYPEMATCH ) then
-					exact_matches += 1
+				'' it's eligible, update
+				if( eligible ) then
+					closest_proc = ovl
+					max_matchscore = matchscore
+					matchcount = 1
 				end if
 
-				matchscore += arg_matchscore
-
-				'' next param
-				param = param->next
-				arg = arg->next
-			next
-
-			'' If there were no args, then assume it's a match and
-			'' then check the remaining params, if any.
-			var is_match = (args = 0) or (matchscore > FB_OVLPROC_NO_MATCH)
-
-			'' Fewer args than params? Check whether the missing ones are optional.
-			for i as integer = args to params-1
-				'' not optional? exit
-				if( symbParamIsOptional( param ) = FALSE ) then
-					'' Missing arg for this param - not a match afterall.
-					is_match = FALSE
-					exit for
-				end if
-
-				'' next param
-				param = param->next
-			next
-
-			if( is_match ) then
-				'' First match, or better match than any previous overload?
-				if( (matchcount = 0) or (matchscore > max_matchscore) ) then
-					dim as integer eligible = TRUE
-					'' an operator overload candidate is only eligible if
-					'' there is at least one exact arg match
-					if( options and FB_SYMBLOOKUPOPT_BOP_OVL ) then
-						eligible = (exact_matches >= 1)
-					end if
-
-					'' it's eligible, update
-					if( eligible ) then
-						closest_proc = ovl
-						max_matchscore = matchscore
-						matchcount = 1
-					end if
-
-				'' Same score as best previous overload?
-				elseif( matchscore = max_matchscore ) then
-					matchcount += 1
-				end if
+			'' Same score as best previous overload?
+			elseif( matchscore = max_matchscore ) then
+				matchcount += 1
 			end if
 		end if
 
@@ -2335,7 +2395,25 @@ function symbFindClosestOvlProc _
 		*err_num = FB_ERRMSG_AMBIGUOUSCALLTOPROC
 		function = NULL
 	else
-		function = closest_proc
+		if( closest_proc ) then
+			matchscore = hCheckOvlProc( _
+				ovl_head_proc, _
+				args, _
+				arg_head, _
+				err_num, _
+				options, _
+				closest_proc, _
+				exact_matches, _
+				is_match )
+
+			if( is_match = FALSE ) then
+				function = NULL
+			else
+				function = closest_proc
+			end if
+		else
+			function = NULL
+		end if
 	end if
 
 end function
@@ -2551,7 +2629,7 @@ private function hCheckCastOvl _
 		byval proc as FBSYMBOL ptr, _
 		byval to_dtype as integer, _
 		byval to_subtype as FBSYMBOL ptr, _
-		byval is_explicit as integer = FALSE _
+		byval options as FB_SYMBLOOKUPOPT = FB_SYMBLOOKUPOPT_NONE _
 	) as FB_OVLPROC_MATCH_SCORE
 
 	dim as integer proc_dtype = any
@@ -2580,7 +2658,7 @@ private function hCheckCastOvl _
 	end if
 
 	'' different types..
-	if( is_explicit ) then
+	if( (options and FB_SYMBLOOKUPOPT_EXPLICIT) <> 0 ) then
 		return FB_OVLPROC_NO_MATCH
 	end if
 
@@ -2616,7 +2694,7 @@ function symbFindCastOvlProc _
 		byval to_subtype as FBSYMBOL ptr, _
 		byval l as ASTNODE ptr, _
 		byval err_num as FB_ERRMSG ptr, _
-		byval is_explicit as integer = FALSE _
+		byval options as FB_SYMBLOOKUPOPT = FB_SYMBLOOKUPOPT_NONE _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr proc_head = any
@@ -2659,7 +2737,7 @@ function symbFindCastOvlProc _
 		proc = proc_head
 		do while( proc <> NULL )
 
-			matchscore = hCheckCastOvl( proc, to_dtype, to_subtype, is_explicit )
+			matchscore = hCheckCastOvl( proc, to_dtype, to_subtype, options )
 			if( matchscore > max_matchscore ) then
 				closest_proc = proc
 				max_matchscore = matchscore
@@ -2702,15 +2780,19 @@ function symbFindCastOvlProc _
 	'' more than one possibility?
 	if( matchcount > 1 ) then
 		*err_num = FB_ERRMSG_AMBIGUOUSCALLTOPROC
-		errReportParam( proc_head, 0, NULL, FB_ERRMSG_AMBIGUOUSCALLTOPROC )
+		if( (options and FB_SYMBLOOKUPOPT_NO_ERROR) = 0 ) then
+			errReportParam( proc_head, 0, NULL, FB_ERRMSG_AMBIGUOUSCALLTOPROC )
+		end if
 		closest_proc = NULL
 	else
 		if( closest_proc <> NULL ) then
 			'' Check visibility of cast operator
 			if( symbCheckAccess( closest_proc ) = FALSE ) then
 				*err_num = FB_ERRMSG_ILLEGALMEMBERACCESS
-				errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, _
-				             symbGetFullProcName( closest_proc ) )
+				if( (options and FB_SYMBLOOKUPOPT_NO_ERROR) = 0 ) then
+					errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, _
+					             symbGetFullProcName( closest_proc ) )
+				end if
 				closest_proc = NULL
 			end if
 		end if
@@ -2726,7 +2808,8 @@ function symbFindCtorOvlProc _
 		byval sym as FBSYMBOL ptr, _
 		byval expr as ASTNODE ptr, _
 		byval arg_mode as FB_PARAMMODE, _
-		byval err_num as FB_ERRMSG ptr _
+		byval err_num as FB_ERRMSG ptr, _
+		byval options as FB_SYMBLOOKUPOPT = FB_SYMBLOOKUPOPT_NONE _
 	) as FBSYMBOL ptr
 
 	dim as FB_CALL_ARG arg1 = any
@@ -2741,9 +2824,9 @@ function symbFindCtorOvlProc _
 			symbGetCompCtorHead( sym ), _
 			1, _
 			@arg1, _
-			err_num _
+			err_num, _
+			options _
 		)
-
 end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

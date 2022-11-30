@@ -18,7 +18,7 @@ function astNewMEM _
 		byval bytes as longint _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
+	dim as ASTNODE ptr n = any
 
 	dim as uinteger blkmaxlen = irGetOptionValue( IR_OPTIONVALUE_MAXMEMBLOCKLEN )
 
@@ -61,8 +61,8 @@ private function hCallCtorList _
 		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr cnt = any, label = any, exitlabel = any, iter = any
-    dim as ASTNODE ptr tree = any
+	dim as FBSYMBOL ptr cnt = any, label = any, exitlabel = any, iter = any
+	dim as ASTNODE ptr tree = any
 
 	cnt = symbAddTempVar( FB_DATATYPE_UINT )
 	label = symbAddLabel( NULL )
@@ -220,7 +220,7 @@ function astBuildNewOp _
 
 	'' if( tempptr <> NULL ) then
 	exitlabel = symbAddLabel( NULL )
-	
+
 	'' handle like IIF, we don't want dtors called if tempptr was never allocated
 	tree = astNewLINK( tree, _
 		astBuildBranch( astNewBOP( AST_OP_NE, astNewVAR( tmp ), astNewCONSTi( 0 ) ), exitlabel, FALSE, TRUE ), _
@@ -286,8 +286,8 @@ function astBuildNewOp _
 end function
 
 private function hCallDtorList( byval ptrexpr as ASTNODE ptr ) as ASTNODE ptr
-    dim as FBSYMBOL ptr cnt = any, label = any, exitlabel = any, iter = any, elmts = any
-    dim as ASTNODE ptr tree = any, expr = any
+	dim as FBSYMBOL ptr cnt = any, label = any, exitlabel = any, iter = any, elmts = any
+	dim as ASTNODE ptr tree = any, expr = any
 
 	cnt = symbAddTempVar( FB_DATATYPE_INTEGER )
 	label = symbAddLabel( NULL )
@@ -382,8 +382,8 @@ function astBuildDeleteOp _
 end function
 
 function astLoadMEM( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as ASTNODE ptr l = any, r = any
-    dim as IRVREG ptr v1 = any, v2 = any
+	dim as ASTNODE ptr l = any, r = any
+	dim as IRVREG ptr v1 = any, v2 = any
 
 	l = n->l
 	r = n->r

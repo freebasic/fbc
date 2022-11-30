@@ -135,8 +135,8 @@ private sub hSolveValistType _
 	'' the value of the pointer expression.
 	''
 	'' if using FB_DATATYPE_STRUCT, it must be a struct in fbc to
-	'' give it the proper size, but fbc does not support array 
-	'' typedefs as in C.  gcc expects a pointer to the struct as 
+	'' give it the proper size, but fbc does not support array
+	'' typedefs as in C.  gcc expects a pointer to the struct as
 	'' if it were an array so we need to replace with array or non-array
 	'' __builtin_va_list type here and let the backend handle it.
 
@@ -160,12 +160,12 @@ private sub hSolveValistType _
 					'' the address of this symbol actually gives
 					'' us the address of the passed-by-value-pointer
 					'' to the the array instead and we don't want that.
-					'' We also can't, deref the symbol directly, 
+					'' We also can't, deref the symbol directly,
 					'' because C won't allow deref on an array.
-					''					
+					''
 					'' Give up and let gcc backend use the param var
 					'' symbol name as-is.  The mangle modifier will
-					'' let C backend know it's the va_list type, 
+					'' let C backend know it's the va_list type,
 					'' and exprNewVREG() won't try to deref it.
 
 					exit select
@@ -303,14 +303,14 @@ function cVALISTFunct _
 		dim tree as ASTNODE ptr = NULL
 
 		'' cva_list expr is a pointer to the next argument:
-		'' 		*expr - the value of the next argument
-		'' 		expr  - memory location of the next argument
-		'' 		@expr - the address of the cva_list (typically a variable)
+		''      *expr - the value of the next argument
+		''      expr  - memory location of the next argument
+		''      @expr - the address of the cva_list (typically a variable)
 		'' for the cva_arg( expr, type ) expression, we want an expr that
 		'' we can also update, so it must have an address we can write to.
 		'' The intended side effect of the cva_arg expression itself is
 		'' we are updating a variable (memory location) with a new
-		'' pointer value.  The undesired side effect occurs when the 
+		'' pointer value.  The undesired side effect occurs when the
 		'' expression to aquire the memory location has side effects;
 		'' we need to duplicate that part of the expression.
 
@@ -333,10 +333,10 @@ function cVALISTFunct _
 				tree = astMakeRef( expr )
 
 			else
-				'' we can't take the address of the expression, but we 
+				'' we can't take the address of the expression, but we
 				'' need one.  And the expression itself also has side
 				'' effects.  Evaluate the expression to a temporary
-				'' variable, and because cva_list type is actually a 
+				'' variable, and because cva_list type is actually a
 				'' a pointer, it should contain a pointer to the next
 				'' argument to read.
 				''
@@ -356,12 +356,12 @@ function cVALISTFunct _
 		'' size of parameter on the stack depends on stack alignment
 		dim lgt as longint = (symbCalcLen( dtype, subtype ) + env.pointersize - 1 and -env.pointersize)
 
-		'' expr1 = cptr( any ptr, expr ) + lgt	
+		'' expr1 = cptr( any ptr, expr ) + lgt
 		var expr1 = astNewBOP( AST_OP_ADD, astCloneTree( expr ), astNewCONSTi(lgt, FB_DATATYPE_UINT ) )
 
 		'' expr = expr1
 		tree = astNewLink( tree, astNewASSIGN( astCloneTree( expr ), expr1, AST_OPOPT_DONTCHKPTR ), AST_LINK_RETURN_NONE )
-		
+
 		'' expr2 = cptr( any ptr, expr ) - lgt
 		var expr2 = astNewBOP( AST_OP_SUB, expr, astNewCONSTi(lgt, FB_DATATYPE_UINT ) )
 
@@ -457,7 +457,7 @@ function cVALISTStmt _
 		function = TRUE
 
 	case FB_TK_CVA_END
-		
+
 		'' CVA_END
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
@@ -489,7 +489,7 @@ function cVALISTStmt _
 		else
 			'' pointer expression: no-op
 			'' based on:
-			'' #define va_end(ap)	((void)0)
+			'' #define va_end(ap)   ((void)0)
 			astDelTree( expr1 )
 
 		end if

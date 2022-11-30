@@ -12,9 +12,9 @@
 ''WhileStmtBegin  =   WHILE Expression .
 ''
 sub cWhileStmtBegin( )
-    dim as ASTNODE ptr expr = any
-    dim as FBSYMBOL ptr il = any, el = any
-    dim as FB_CMPSTMTSTK ptr stk = any
+	dim as ASTNODE ptr expr = any
+	dim as FBSYMBOL ptr il = any, el = any
+	dim as FB_CMPSTMTSTK ptr stk = any
 
 	'' WHILE
 	lexSkipToken( LEXCHECK_POST_SUFFIX )
@@ -66,10 +66,10 @@ sub cWhileStmtEnd( )
 		astScopeEnd( stk->scopenode )
 	end if
 
-    astAdd( astNewBRANCH( AST_OP_JMP, stk->while.cmplabel ) )
+	astAdd( astNewBRANCH( AST_OP_JMP, stk->while.cmplabel ) )
 
-    '' end label (loop exit)
-    astAdd( astNewLABEL( stk->while.endlabel ) )
+	'' end label (loop exit)
+	astAdd( astNewLABEL( stk->while.endlabel ) )
 
 	'' pop from stmt stack
 	cCompStmtPop( stk )

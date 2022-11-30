@@ -11,7 +11,7 @@
 
 '' EraseStmt = ERASE ID (',' ID)*
 function cEraseStmt() as integer
-	
+
 	'' ERASE
 	lexSkipToken( LEXCHECK_POST_SUFFIX )
 

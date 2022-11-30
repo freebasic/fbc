@@ -622,7 +622,7 @@ private function hDefArgExtract_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum
 				end if
 			else
 				'' expected positive
-				*errnum = FB_ERRMSG_SYNTAXERROR	
+				*errnum = FB_ERRMSG_SYNTAXERROR
 			end if
 		else
 			'' NUMARG isn't a number
@@ -938,9 +938,9 @@ private function hDefIifZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as in
 	ZstrFree(fexpr)
 	ZstrFree(texpr)
 	ZstrFree(cexpr)
-	
+
 	function =  res
-	
+
 end function
 
 private function hDefIifW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as wstring ptr
@@ -962,9 +962,9 @@ private function hDefIifW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as in
 	else
 		*errnum = FB_ERRMSG_ARGCNTMISMATCH
 	end if
-	
+
 	function = res.data
-	
+
 end function
 
 '' Intrinsic #defines which are always defined

@@ -1,7 +1,7 @@
 '' symbol table module for enumerations
 ''
 '' chng: sep/2004 written [v1ctor]
-''		 jan/2005 updated to use real linked-lists [v1ctor]
+''       jan/2005 updated to use real linked-lists [v1ctor]
 
 
 #include once "fb.bi"
@@ -19,22 +19,22 @@ function symbAddEnum _
 		byval use_hashtb as integer _
 	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr e = any
+	dim as FBSYMBOL ptr e = any
 
 	'' no explict alias given?
-    if( id_alias = NULL ) then
-    	'' only preserve a case-sensitive version if in BASIC mangling
-    	if( parser.mangling <> FB_MANGLING_BASIC ) then
-    		id_alias = id
-    	end if
-    end if
+	if( id_alias = NULL ) then
+		'' only preserve a case-sensitive version if in BASIC mangling
+		if( parser.mangling <> FB_MANGLING_BASIC ) then
+			id_alias = id
+		end if
+	end if
 
-    e = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-    				   NULL, _
-    				   NULL, NULL, _
-    				   FB_SYMBCLASS_ENUM, _
-    				   id, id_alias, _
-    				   FB_DATATYPE_ENUM, NULL, attrib, FB_PROCATTRIB_NONE )
+	e = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+	                   NULL, _
+	                   NULL, NULL, _
+	                   FB_SYMBCLASS_ENUM, _
+	                   id, id_alias, _
+	                   FB_DATATYPE_ENUM, NULL, attrib, FB_PROCATTRIB_NONE )
 	if( e = NULL ) then
 		return NULL
 	end if
@@ -51,8 +51,8 @@ function symbAddEnum _
 		symbHashTbInit( e->enum_.ns.hashtb, e, 0 )
 	end if
 
-    '' unused (while mixins aren't supported)
-    e->enum_.ns.ext = NULL
+	'' unused (while mixins aren't supported)
+	e->enum_.ns.ext = NULL
 
 	e->enum_.elements = 0
 	e->enum_.dbg.typenum = INVALID

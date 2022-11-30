@@ -48,8 +48,8 @@ private function astNewOFFSET( byval l as ASTNODE ptr ) as ASTNODE ptr
 end function
 
 function astLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as IRVREG ptr vr = any
-    dim as FBSYMBOL ptr sym = any
+	dim as IRVREG ptr vr = any
+	dim as FBSYMBOL ptr sym = any
 	dim as ASTNODE ptr l = any
 
 	sym = n->sym
@@ -174,8 +174,8 @@ function astNewADDROF( byval l as ASTNODE ptr ) as ASTNODE ptr
 		if( s <> NULL ) then
 			if( (symbIsLocal( s ) = FALSE) or _
 				 ((symbGetAttrib( s ) and (FB_SYMBATTRIB_SHARED or _
-				 						   FB_SYMBATTRIB_COMMON or _
-				 						   FB_SYMBATTRIB_STATIC)) <> 0) ) then
+				                           FB_SYMBATTRIB_COMMON or _
+				                           FB_SYMBATTRIB_STATIC)) <> 0) ) then
 				n = astNewOFFSET( t )
 			end if
 		end if
@@ -197,8 +197,8 @@ function astNewADDROF( byval l as ASTNODE ptr ) as ASTNODE ptr
 			'' module-level or local static scalar? use offset instead
 			if( (symbIsLocal( s ) = FALSE) or _
 				 ((symbGetAttrib( s ) and (FB_SYMBATTRIB_SHARED or _
-				 						   FB_SYMBATTRIB_COMMON or _
-				 						   FB_SYMBATTRIB_STATIC)) <> 0) ) then
+				                           FB_SYMBATTRIB_COMMON or _
+				                           FB_SYMBATTRIB_STATIC)) <> 0) ) then
 				'' can't be dynamic either
 				if( symbGetIsDynamic( s ) = FALSE ) then
 					n = astNewOFFSET( t )
@@ -230,8 +230,8 @@ function astNewADDROF( byval l as ASTNODE ptr ) as ASTNODE ptr
 end function
 
 function astLoadADDROF( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as ASTNODE ptr p = any
-    dim as IRVREG ptr v1 = any, vr = any
+	dim as ASTNODE ptr p = any
+	dim as IRVREG ptr v1 = any, vr = any
 
 	p  = n->l
 	if( p = NULL ) then

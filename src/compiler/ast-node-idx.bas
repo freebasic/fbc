@@ -18,7 +18,7 @@ function astNewIDX( byval var_ as ASTNODE ptr, byval idx as ASTNODE ptr ) as AST
 	n->l = idx
 	n->r = var_
 	n->sym = var_->sym
-	n->idx.mult	= 1
+	n->idx.mult = 1
 	n->idx.ofs = 0
 
 	function = n

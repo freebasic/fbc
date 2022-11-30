@@ -186,11 +186,11 @@ private function hLenSizeof( byval tk as integer, byval isasm as integer ) as AS
 end function
 
 '':::::
-'' cMathFunct	=	ABS( Expression )
-'' 				|   SGN( Expression )
-''				|   FIX( Expression )
-''				|   INT( Expression )
-''				|	LEN( data type | Expression ) .
+'' cMathFunct   =   ABS( Expression )
+''              |   SGN( Expression )
+''              |   FIX( Expression )
+''              |   INT( Expression )
+''              |   LEN( data type | Expression ) .
 ''
 function cMathFunct _
 	( _
