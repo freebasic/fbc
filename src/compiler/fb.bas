@@ -1099,7 +1099,7 @@ sub fbAddLib(byval libname as zstring ptr)
 
 		exit sub
 	end if
-	
+
 	strsetAdd(@env.libs, *libname, FALSE)
 end sub
 

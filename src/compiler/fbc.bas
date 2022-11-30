@@ -3817,9 +3817,6 @@ private sub hSetDefaultLibPaths( )
 end sub
 
 private sub fbcAddDefLib(byval libname as zstring ptr)
-	'' special handling for "fbgfx":
-	'' don't add it 
-
 	strsetAdd(@fbc.finallibs, *libname, TRUE)
 end sub
 
