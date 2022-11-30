@@ -49,6 +49,7 @@ Version 1.10.0
 - Name mangling for c++ 'char' through BYTE/UBYTE parameters using the form "[unsigned] byte alias "char".  Data type size is still 8 byte signed/unsigned from fbc side, but will mangled as 'char'; neither signed nor unsigned for the c++ side.
 - Support 'SOURCE_DATE_EPOCH' environment variable for controlling the instrinsic __DATE__, __DATE_ISO__, __TIME__ macros.  This in turn controls __FB_BUILD_DATE__ and __FB_BUILD_DATE_ISO__ macros when building the compiler.  Report error message on malformed values.
 - fbc -nolib a,b,c command line option for selectively excluding specific libraries when linking (more fine-grained control than -nodeflibs, and not only for default libraries)
+- fbc will restart the parser when #cmdline "-mt" is used or usage of any threaded functions automatically enable -mt.  This allows the compiler to parse the current module from the beginning and process any __FB_MT__ checks.
 
 [fixed]
 - gas64: missing restoring of use of one virtual register on sqr for float (SARG)
@@ -90,7 +91,8 @@ Version 1.10.0
 - fbc: delete destructor calls of discarded expressions in IIF(), previously, unscoped dtors (to be called after the expression) and deleted dtors (to be never called) were being handled the same
 - gas backend: fix spill registers when all reused registers are within the same emit operation
 - github #404: gas64: fix stack size and alignment for GOSUB usage (SARG)
-fbc: #macro definition parsing incorrectly handles single line comments ending with line continuation character and incorrectly joins the following line to the comment
+- fbc: #macro definition parsing incorrectly handles single line comments ending with line continuation character and incorrectly joins the following line to the comment
+- fbc: add special handling for #inclib "fbgfx?" to fix incorrect linking to non-threaded gfx library.  #include "fbgfx.bi" was causing the libfbgfx library to always be linked even when thread safe version was expected (causing deadlocks in user programs)
 
 
 Version 1.09.0

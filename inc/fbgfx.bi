@@ -4,7 +4,15 @@
 #ifndef __fbgfx_bi__
 #define __fbgfx_bi__
 
-#inclib "fbgfx"
+'' #inclib "fbgfx?" is handled as a special case by the compiler
+'' and will be replaced one of the following libraries later.
+''   fbgfx
+''   fbgfxmt      thread-safe
+''   fbgfxpic     position independent code
+''   fbgfxmtpic   thread-safe & PIC
+
+#inclib "fbgfx?"
+
 #ifdef __FB_WIN32__
 	#inclib "gdi32"
 	#inclib "winmm"

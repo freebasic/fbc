@@ -724,6 +724,13 @@ private function hMultithread_cb _
 		byval sym as FBSYMBOL ptr _
 	) as integer
 
+	if( env.clopt.multithreaded = FALSE ) then
+		'' restart the parser so __FB_MT__ can be checked on the next pass
+		if( ( env.restart_status and FB_RESTART_PARSER_MT ) = 0 ) then
+			fbRestartBeginRequest( FB_RESTART_PARSER_MT )
+		end if
+	end if
+
 	env.clopt.multithreaded = TRUE
 
 	return TRUE

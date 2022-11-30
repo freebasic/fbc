@@ -455,10 +455,14 @@ enum FB_RESTART_FLAGS
 	FB_RESTART_NONE               '' no restart required
 	FB_RESTART_PARSER_LANG    = 1 '' parser restart needed due to #lang directive
 	FB_RESTART_PARSER_CMDLINE = 2 '' parser restart needed due to #cmdline directive
-	FB_RESTART_FBC_CMDLINE    = 4 '' main fbc entry restart needed due to #cmdline directive
+	FB_RESTART_PARSER_MT      = 4 '' parser restart needed due to threading functions (mt)
+	FB_RESTART_FBC_CMDLINE    = 8 '' main fbc entry restart needed due to #cmdline directive
 
 	FB_RESTART_CMDLINE = FB_RESTART_PARSER_CMDLINE or FB_RESTART_FBC_CMDLINE
-	FB_RESTART_PARSER  = FB_RESTART_PARSER_LANG or FB_RESTART_PARSER_CMDLINE
+
+	FB_RESTART_PARSER  = FB_RESTART_PARSER_LANG _
+	                     or FB_RESTART_PARSER_CMDLINE _
+	                     or FB_RESTART_PARSER_MT
 end enum
 
 declare sub fbInit _

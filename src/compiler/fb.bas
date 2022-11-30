@@ -394,7 +394,7 @@ sub fbInit _
 	''    re-initialize it here.
 	env.restart_request = FB_RESTART_NONE
 	env.restart_action = FB_RESTART_NONE
-	env.restart_status and= not FB_RESTART_PARSER_LANG
+	env.restart_status and= not (FB_RESTART_PARSER_LANG or FB_RESTART_PARSER_MT)
 
 	redim infileTb( 0 to FB_MAXINCRECLEVEL-1 )
 
@@ -1081,6 +1081,25 @@ end function
 
 '' Used to add libs found during parsing (#inclib, Lib "...", rtl-* callbacks)
 sub fbAddLib(byval libname as zstring ptr)
+
+	'' gfx library?
+	if( *libname = "fbgfx?" ) then
+		'' Special handling for "fbgfx" and "fbgfxmt" because
+		'' depending on order of modules given on the cmd line
+		'' multithreading may have been set after fbgfx.bi was
+		'' included, and we can't have both libs passed to the
+		'' linker. We can end up linking to the non-threaded
+		'' version of fbgfx when we would expect the mt versoin
+		'' and the linker won't complain even when both versions
+		'' are passed.
+
+		'' Set the -gfx option to link to the gfx library
+		'' and the lib will be added in hAddDefaultLibs()
+		fbSetOption( FB_COMPOPT_GFX, TRUE )
+
+		exit sub
+	end if
+	
 	strsetAdd(@env.libs, *libname, FALSE)
 end sub
 

@@ -1804,7 +1804,7 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_M            affects major initialization for all modules
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_MAP          affects output files
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_MAXERR       affects compile process
-	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_MT           affects link, __FB_MT__
+	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_MT           affects link, __FB_MT__
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_NODEFLIBS    affects link
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_NOERRLINE    affects compiler output display
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_NOLIB        affects link
@@ -3817,6 +3817,9 @@ private sub hSetDefaultLibPaths( )
 end sub
 
 private sub fbcAddDefLib(byval libname as zstring ptr)
+	'' special handling for "fbgfx":
+	'' don't add it 
+
 	strsetAdd(@fbc.finallibs, *libname, TRUE)
 end sub
 
