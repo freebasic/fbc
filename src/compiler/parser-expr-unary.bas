@@ -181,6 +181,11 @@ function cStrIdxOrMemberDeref _
 		'' ptr ('->' | '[') ?
 		case FB_TK_FIELDDEREF, CHAR_LBRACKET
 			isfield = TRUE
+
+		'' '.'?
+		case CHAR_DOT
+			errReport( FB_ERRMSG_EXPECTEDUDT, TRUE )
+
 		end select
 
 		if( isfield ) then

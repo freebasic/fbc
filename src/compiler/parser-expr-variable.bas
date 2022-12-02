@@ -782,6 +782,14 @@ function cMemberDeref _
 
 			end select
 
+		'' '.'?
+		case CHAR_DOT
+			if( typeIsPtr( dtype ) ) then
+				errReport( FB_ERRMSG_EXPECTEDUDT, TRUE )
+			end if
+
+			exit do
+
 		'' Only processing -> and [] here...
 		case else
 			exit do
