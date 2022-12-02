@@ -1,0 +1,12 @@
+---
+-- no errors expected
+-- 1 error expected
+optional-parens.bas(35) error 58: Type mismatch, at parameter 1 of S1() in 's1 (x).i'
+-- no errors expected
+-- 1 error expected
+optional-parens.bas(52) error 58: Type mismatch, at parameter 1 of F1() in 'f1 (x).i'
+-- no errors expected
+-- 2 errors expected
+optional-parens.bas(67) error 58: Type mismatch, at parameter 1 of S1() in 's1    (x).i'
+optional-parens.bas(68) error 58: Type mismatch, at parameter 1 of F1() in 'f1    (x).i'
+-- no errors expected

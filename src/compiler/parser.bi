@@ -152,7 +152,7 @@ end type
 
 enum FB_PARSEROPT
 	FB_PARSEROPT_NONE             = &h00000000
-	FB_PARSEROPT_PRNTOPT          = &h00000001
+	FB_PARSEROPT_PRNTOPT          = &h00000001  '' Used to determine if parenthesis are optional and if the next ')' should end the expression for highest precedence operators 
 	FB_PARSEROPT_CHKARRAY         = &h00000002  '' used by LEN() to handle expr's and ()-less arrays (while set, there will be "array access, index expected" errors, unsetting allows to have no-index arrays, e.g. as bydesc arguments, or in l/ubound())
 	FB_PARSEROPT_ISEXPR           = &h00000004  '' parsing an expression?
 	FB_PARSEROPT_ISSCOPE          = &h00000008
@@ -160,8 +160,8 @@ enum FB_PARSEROPT
 	FB_PARSEROPT_OPTONLY          = &h00000020
 	FB_PARSEROPT_HASINSTPTR       = &h00000040
 	FB_PARSEROPT_ISPROPGET        = &h00000080
-	FB_PARSEROPT_EQINPARENSONLY   = &h00000100    '' only check for '=' if inside parentheses
-	FB_PARSEROPT_GTINPARENSONLY   = &h00000200    '' only check for '>' if inside parentheses
+	FB_PARSEROPT_EQINPARENSONLY   = &h00000100  '' only check for '=' if inside parentheses
+	FB_PARSEROPT_GTINPARENSONLY   = &h00000200  '' only check for '>' if inside parentheses
 	FB_PARSEROPT_ISPP             = &h00000400  '' PP expression? (e.g. #if condition)
 	FB_PARSEROPT_EXPLICITBASE     = &h00000800  '' Used to tell cProcArgList() & co about explicit BASE accesses from hBaseMemberAccess() functions
 	FB_PARSEROPT_IDXINPARENSONLY  = &h00001000  '' Only parse array index if inside parentheses (used by REDIM, so it can handle 'expr(1 to 2)', where the expression parser should parse 'expr' but not the '(1 to 2)' part)

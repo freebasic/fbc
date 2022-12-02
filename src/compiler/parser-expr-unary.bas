@@ -222,11 +222,19 @@ function cHighestPrecExpr _
 	select case lexGetToken( )
 	'' AddrOfExpression
 	case FB_TK_ADDROFCHAR
+		'' '@' starts an expression and any `()` seen next is handled
+		'' as not optional and the closing ')' should not end the expression
+		fbSetPrntOptional( FALSE )
+
 		return cAddrOfExpression( )
 
 	'' DerefExpr
 	case FB_TK_DEREFCHAR
-		expr = cDerefExpression( )
+		'' '*' starts an expression and any `()` seen next is handled
+		'' as not optional and the closing ')' should not end the expression
+		fbSetPrntOptional( FALSE )
+
+		return cDerefExpression( )
 
 	'' ParentExpression
 	case CHAR_LPRNT
@@ -279,6 +287,13 @@ function cHighestPrecExpr _
 
 				end select
 			end if
+
+			'' We are at the highest precedence level for expressions so we
+			'' must be in an expression, any `()` seen next is handled
+			'' as not optional and the closing ')' should not end the expression
+			'' Optional parentheses will be enabled again on the next call in
+			'' to cProcCall().
+			fbSetPrntOptional( FALSE )
 
 			return cAtom( base_parent, chain_ )
 
