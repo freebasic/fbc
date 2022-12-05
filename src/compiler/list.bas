@@ -45,11 +45,11 @@ sub listInit _
 	'' fill ctrl struct
 	list->tbhead = NULL
 	list->tbtail = NULL
-	list->nodes	= 0
+	list->nodes = 0
 	list->nodelen = nodelen + len( TLISTNODE )
 	list->head = NULL
 	list->tail = NULL
-	list->flags	= flags
+	list->flags = flags
 
 	'' allocate the initial pool
 	listAllocTB( list, nodes )
@@ -70,7 +70,7 @@ sub listEnd(byval list as TLIST ptr)
 
 	list->tbhead = NULL
 	list->tbtail = NULL
-	list->nodes	= 0
+	list->nodes = 0
 end sub
 
 sub listAllocTB _
@@ -118,8 +118,8 @@ sub listAllocTB _
 		node = list->fhead
 
 		for i = 1 to nodes-1
-			node->prev	= prv
-			node->next	= cast( TLISTNODE ptr, cast( byte ptr, node ) + list->nodelen )
+			node->prev  = prv
+			node->next  = cast( TLISTNODE ptr, cast( byte ptr, node ) + list->nodelen )
 
 			prv = node
 			node = node->next
@@ -253,7 +253,7 @@ function listGetPrev _
 		byval node as any ptr _
 	) as any ptr
 
-    dim as TLISTNODE ptr prev = any
+	dim as TLISTNODE ptr prev = any
 
 	assert( node <> NULL )
 
@@ -274,7 +274,7 @@ function listGetNext _
 		byval node as any ptr _
 	) as any ptr
 
-    dim as TLISTNODE ptr nxt = any
+	dim as TLISTNODE ptr nxt = any
 
 	assert( node <> NULL )
 

@@ -152,7 +152,7 @@ end type
 
 enum FB_PARSEROPT
 	FB_PARSEROPT_NONE             = &h00000000
-	FB_PARSEROPT_PRNTOPT          = &h00000001  '' Used to determine if parenthesis are optional and if the next ')' should end the expression for highest precedence operators 
+	FB_PARSEROPT_PRNTOPT          = &h00000001  '' Used to determine if parenthesis are optional and if the next ')' should end the expression for highest precedence operators
 	FB_PARSEROPT_CHKARRAY         = &h00000002  '' used by LEN() to handle expr's and ()-less arrays (while set, there will be "array access, index expected" errors, unsetting allows to have no-index arrays, e.g. as bydesc arguments, or in l/ubound())
 	FB_PARSEROPT_ISEXPR           = &h00000004  '' parsing an expression?
 	FB_PARSEROPT_ISSCOPE          = &h00000008

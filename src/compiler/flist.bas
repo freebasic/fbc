@@ -13,23 +13,23 @@ sub flistInit _
 		byval itemlen as integer _
 	)
 
-	flist->totitems	= items
-	flist->items 	= items
+	flist->totitems = items
+	flist->items    = items
 
 	listInit( @flist->list, items, itemlen + len( TFLISTITEM ), LIST_FLAGS_NONE )
 
-	flist->listtb 	= flist->list.tbtail
-	flist->index 	= 0
-	flist->itemtb	= flist->listtb->nodetb
-	flist->lastitem	= NULL
+	flist->listtb   = flist->list.tbtail
+	flist->index    = 0
+	flist->itemtb   = flist->listtb->nodetb
+	flist->lastitem = NULL
 
 end sub
 
 sub flistEnd(byval flist as TFLIST ptr)
-	flist->totitems	= 0
-	flist->items	= 0
-	flist->index	= 0
-	flist->lastitem	= NULL
+	flist->totitems = 0
+	flist->items    = 0
+	flist->index    = 0
+	flist->lastitem = NULL
 	listEnd( @flist->list )
 end sub
 
@@ -39,7 +39,7 @@ function flistNewItem _
 		byval flist as TFLIST ptr _
 	) as any ptr static
 
-    dim as TFLISTITEM ptr item
+	dim as TFLISTITEM ptr item
 
 	'' alloc new item flist if there are no free items
 	if( flist->items <= 0 ) Then
@@ -66,11 +66,11 @@ function flistNewItem _
 	flist->items -= 1
 
 	''
-	if( flist->lastitem	<> NULL ) then
+	if( flist->lastitem <> NULL ) then
 		flist->lastitem->next = item
 	end if
 
-	flist->lastitem	= item
+	flist->lastitem = item
 	item->next = NULL
 
 	''
@@ -84,11 +84,11 @@ sub flistReset _
 		byval flist as TFLIST ptr _
 	) static
 
-	flist->listtb 	= flist->list.tbhead
-	flist->items	= flist->listtb->nodes
-	flist->itemtb	= flist->listtb->nodetb
-	flist->index	= 0
-	flist->lastitem	= NULL
+	flist->listtb   = flist->list.tbhead
+	flist->items    = flist->listtb->nodes
+	flist->itemtb   = flist->listtb->nodetb
+	flist->index    = 0
+	flist->lastitem = NULL
 
 end sub
 
@@ -98,7 +98,7 @@ function flistGetHead _
 		byval flist as TFLIST ptr _
 	) as any ptr static
 
-    dim as TFLISTITEM ptr item
+	dim as TFLISTITEM ptr item
 
 	item = flist->list.tbhead->nodetb
 	if( item = NULL ) then
@@ -115,7 +115,7 @@ function flistGetNext _
 		byval node as any ptr _
 	) as any ptr static
 
-    dim as TFLISTITEM ptr nxt
+	dim as TFLISTITEM ptr nxt
 
 #ifdef DEBUG
 	if( node = NULL ) then

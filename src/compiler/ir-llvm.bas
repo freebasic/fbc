@@ -154,25 +154,25 @@ end type
 const MAXVARINISCOPES = 128
 
 type IRLLVMCONTEXT
-	indent				as integer  '' current indentation used by hWriteLine()
-	linenum				as integer
+	indent              as integer  '' current indentation used by hWriteLine()
+	linenum             as integer
 
-	varini				as string
-	variniscopelevel		as integer
+	varini              as string
+	variniscopelevel    as integer
 	variniscopes(0 to MAXVARINISCOPES-1) as IRLLVMVARINISCOPE
 
-	ctors				as string
-	dtors				as string
-	ctorcount			as integer
-	dtorcount			as integer
+	ctors               as string
+	dtors               as string
+	ctorcount           as integer
+	dtorcount           as integer
 
-	fbctinf				as string
-	fbctinf_len			as integer
+	fbctinf             as string
+	fbctinf_len         as integer
 
-	section				as integer  '' current section to write to
-	head_txt			as string
-	body_txt			as string
-	foot_txt			as string
+	section             as integer  '' current section to write to
+	head_txt            as string
+	body_txt            as string
+	foot_txt            as string
 end type
 
 declare function hEmitType _
@@ -1668,7 +1668,7 @@ end sub
 private function hGetConvOpCode( byval ldtype as integer, byval rdtype as integer ) as zstring ptr
 	if( typeGetClass( ldtype ) = FB_DATACLASS_FPOINT ) then
 		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
-			
+
 			'' same size? i.e. due to const -> non-const, then no convert
 			if( typeGetSize( ldtype ) = typeGetSize( rdtype ) ) then
 				return NULL

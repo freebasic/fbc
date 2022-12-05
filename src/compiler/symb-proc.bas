@@ -71,7 +71,7 @@ function symbProcReturnsOnStack( byval proc as FBSYMBOL ptr ) as integer
 		'' !!!TODO!!! we should probably fix this
 		'' to return structs in registers for  64-bit gcc
 		'' and some 32-bit targets
- 
+
 		if( (proc->subtype <> NULL) andalso (proc->subtype->udt.retin2regs <> FB_STRUCT_NONE) ) then ''for gas64
 			exit function
 		else

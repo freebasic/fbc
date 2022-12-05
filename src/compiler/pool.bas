@@ -46,14 +46,14 @@ function poolNewItem _
 		byval len_ as integer _
 	) as any ptr static
 
-    dim as TPOOLITEM ptr item
-    dim as integer idx
+	dim as TPOOLITEM ptr item
+	dim as integer idx
 
-    if( len_ <= 0 ) then
-    	return NULL
-    end if
+	if( len_ <= 0 ) then
+		return NULL
+	end if
 
-    idx = (len_ - 1) \ pool->chunksize
+	idx = (len_ - 1) \ pool->chunksize
 
 	if( idx >= pool->chunks ) then
 	    item = xallocate( len_ + len( TPOOLITEM ) )

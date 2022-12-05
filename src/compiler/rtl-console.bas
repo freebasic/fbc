@@ -8,8 +8,8 @@
 #include once "lex.bi"
 #include once "rtl.bi"
 
-#define FB_COLOR_FG_DEFAULT		&h00000001
-#define FB_COLOR_BG_DEFAULT		&h00000002
+#define FB_COLOR_FG_DEFAULT     &h00000001
+#define FB_COLOR_BG_DEFAULT     &h00000002
 
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _

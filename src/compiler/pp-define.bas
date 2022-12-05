@@ -83,7 +83,7 @@ private function hLoadMacro _
 	if (isMacroAllowed(s) = FALSE) then
 		exit function
 	end if
-	
+
 	pp.invoking += 1
 
 	if( hasParens ) then
@@ -103,7 +103,7 @@ private function hLoadMacro _
 
 	'' Variadic macro?
 	is_variadic = ((s->def.flags and FB_DEFINE_FLAGS_VARIADIC) <> 0)
-	
+
 	var readdchar = -1
 
 	'' for each arg
@@ -170,7 +170,7 @@ private function hLoadMacro _
 					prntcnt = 0
 					exit do
 				end if
-			
+
 			case FB_TK_EOL, FB_TK_EOF
 				if( hasParens ) then
 					hReportMacroError( s, FB_ERRMSG_EXPECTEDRPRNT )
@@ -188,11 +188,11 @@ private function hLoadMacro _
 						argtb->count = 1
 					end if
 				endif
-			
+
 			end select
-			
+
 			if( argtb <> NULL ) then
-	   			if( t.dtype <> FB_DATATYPE_WCHAR ) then
+				if( t.dtype <> FB_DATATYPE_WCHAR ) then
 					DZstrConcatAssign( argtb->tb(num).text, t.text )
 				else
 					DZstrConcatAssignW( argtb->tb(num).text, t.textw )
@@ -317,13 +317,13 @@ private function hLoadMacro _
 
 			listDelNode( @pp.argtblist, argtb )
 		end if
-		
+
 		if( readdchar <> -1 ) then
 			text += chr(readdchar)
 		end if
 
 	end if
-	
+
 	if( lex.ctx->deflen = 0 ) then
 		DZstrAssign( lex.ctx->deftext, text )
 	else
@@ -331,7 +331,7 @@ private function hLoadMacro _
 	end if
 
 	pp.invoking -= 1
-	
+
 	function = len( text )
 
 end function
@@ -390,7 +390,7 @@ private function hLoadDefine _
 						exit function
 					end if
 				end if
-				
+
 				if( hasParens ) then
 					lexEatChar( )
 
@@ -491,9 +491,9 @@ private function hLoadMacroW _
 	is_variadic = ((s->def.flags and FB_DEFINE_FLAGS_VARIADIC) <> 0)
 
 	var readdchar = -1
-	
+
 	'' for each arg
-	num = 0	'' num represents the current last cleared/used entry in the argtb
+	num = 0 '' num represents the current last cleared/used entry in the argtb
 	if( argtb ) then
 		argtb->count = 0
 	end if
@@ -556,7 +556,7 @@ private function hLoadMacroW _
 					prntcnt = 0
 					exit do
 				end if
-			
+
 			case FB_TK_EOL, FB_TK_EOF
 				if( hasParens ) then
 					hReportMacroError( s, FB_ERRMSG_EXPECTEDRPRNT )
@@ -727,7 +727,7 @@ private function hLoadMacroW _
 	end if
 
 	pp.invoking -= 1
-	
+
 	function = len( *text.data )
 
 end function
@@ -785,7 +785,7 @@ private function hLoadDefineW _
 						exit function
 					end if
 				end if
-				
+
 				if( hasParens ) then
 					lexEatChar( )
 
@@ -953,7 +953,7 @@ private function hReadMacroText _
 
 		case CHAR_SHARP
 			select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
-									 		(not LEXCHECK_NOWHITESPC) )
+			                                (not LEXCHECK_NOWHITESPC) )
 			'' '##'?
 			case CHAR_SHARP
 				lexSkipToken( LEX_FLAGS )
@@ -1275,7 +1275,7 @@ sub ppDefine( byval ismultiline as integer )
 			'' (variadic macros)
 			if( hMatchParamEllipsis( ) ) then
 				define_flags or= FB_DEFINE_FLAGS_VARIADIC
-			end if 
+			end if
 		else
 			isargless = TRUE
 		end if

@@ -3,7 +3,7 @@
 '' obs: 1) each AST only stores a single expression and its atoms (inc. arrays and functions)
 ''      2) after the AST is optimized (constants folding, arithmetic associations, etc),
 ''         its sent to IR, where the expression becomes three-address-codes
-''		3) AST optimizations don't include common-sub-expression/dead-code elimination,
+''      3) AST optimizations don't include common-sub-expression/dead-code elimination,
 ''         that must be done by the DAG module
 ''
 '' chng: sep/2004 written [v1ctor]
@@ -194,18 +194,18 @@ dim shared ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPINFO => _
 }
 
 sub astInit( )
-    listInit( @ast.astTB, AST_INITNODES, len( ASTNODE ), LIST_FLAGS_NOCLEAR )
+	listInit( @ast.astTB, AST_INITNODES, len( ASTNODE ), LIST_FLAGS_NOCLEAR )
 
-    ast.doemit = TRUE
+	ast.doemit = TRUE
 	ast.typeinicount = 0
 	ast.bitfieldcount = 0
-    ast.currblock = NULL
+	ast.currblock = NULL
 	ast.hidewarningslevel = 0
 
-    astCallInit( )
-    astProcListInit( )
-    astDataStmtInit( )
-    astMiscInit( )
+	astCallInit( )
+	astProcListInit( )
+	astDataStmtInit( )
+	astMiscInit( )
 
 	listInit( @ast.asmtoklist, 16, sizeof( ASTASMTOK ), LIST_FLAGS_NOCLEAR )
 end sub
@@ -215,7 +215,7 @@ sub astEnd( )
 
 	astMiscEnd( )
 	astProcListEnd( )
-    astCallEnd( )
+	astCallEnd( )
 
 	listEnd( @ast.astTB )
 end sub

@@ -13,7 +13,7 @@ params : rcx,rdx,r8,r9 + xmm0 to xmm3
 Space for these registers also reserved on the stack to store them at the beginning of proc.
 
 However if the first arg is an integer number (not a float) it is put in rcx and if the second one is a float it is put in xmm0. But if the third
- one is an integer, r8 (not rdx) is used. And so on. So only four registers (rNN or xmmN) are used. Other parameters are put on the stack.
+one is an integer, r8 (not rdx) is used. And so on. So only four registers (rNN or xmmN) are used. Other parameters are put on the stack.
 
 ex : integer, float,integer, float  ->  rcx,xmm1,r8,xmm3
 
@@ -116,8 +116,8 @@ rbp-y -->  local vars
 '' comment to not get basic data
 '#define basicdata
 
-#define KDOALL	 0
-#define KNOALL	 1
+#define KDOALL   0
+#define KNOALL   1
 #define KNOFREE  2
 #define KNOOPTIM 3
 
@@ -132,11 +132,11 @@ declare sub cfi_windows_asm_code(byval statement as string)
 '' Define __GAS64_DEBUG__ if it wasn't explicitly disabled
 '' by '-d DISABLE_GAS64_DEBUG' passed as compiler option when
 '' compiling fbc itself (or in the makefile).
-'' Defining __GAS64_DEBUG__ will enable debug information to 
+'' Defining __GAS64_DEBUG__ will enable debug information to
 '' be written to the asm file.  Disabling __GAS64_DEBUG__ but still
 '' allowing __FB_DEBUG__ allows building a debug version of fbc but
 '' not have asm files grow to very large sizes.
-'' 
+''
 #ifndef DISABLE_GAS64_DEBUG
 	'' not disabled? OK turn on debugging information in asm
 	'' files by default if this is a debug version of fbc
@@ -255,9 +255,9 @@ end type
 
 type ASM64_CONTEXT
 	'' current indentation used by hWriteam64()
-	indent		 as integer
+	indent       as integer
 	'' current section to write to
-	section	     as integer
+	section      as integer
 	head_txt     as string
 	body_txt     as string
 	foot_txt     as string
@@ -377,7 +377,7 @@ redim shared as tdbgstab dbgstab()
 '' Mapping dtype => stabs type tag (t*) as declared in the strings in the stabsTb()
 dim shared remapTB(0 to FB_DATATYPES-1) as integer = _
 { _
-7, _									'' void
+7, _                                    '' void
 16, _                                   '' boolean
 2, _                                   '' byte
 3, _                                   '' ubyte
@@ -717,7 +717,7 @@ private sub check_optim(byref code as string)
 				code="#O6"+code+newline+string( ctx.indent*3, 32 )+previnstruc+" "+part1+", "+prevpart2+" #Optim 6"
 				part2=prevpart2
 
-			elseif ( prevpart2[0]=asc("r") or prevpart2[0]=asc("e") ) and prevpart1=part2 then 'and instr(part1,"[")=0 
+			elseif ( prevpart2[0]=asc("r") or prevpart2[0]=asc("e") ) and prevpart1=part2 then 'and instr(part1,"[")=0
 				'asm_info("OPTIMIZATION 16")
 				mid(ctx.proc_txt,prevwpos)="#16"
 				asm_info("part1="+part1+" part2="+part2+" prevpart1="+prevpart1+" prevpart2="+prevpart2)
@@ -987,7 +987,7 @@ end sub
 private sub edbgemitheader_asm64( byval filename as zstring ptr )
 	dim as string lname
 
-	ctxdbg.typecnt 	= 1
+	ctxdbg.typecnt  = 1
 	ctxdbg.strnb=-1
 	ctxdbg.strmax=1000
 	redim dbgstr(ctxdbg.strmax)
@@ -1956,7 +1956,7 @@ private sub _init( )
 	'' IR_OPT_CPUSELFBOPS disabled, to prevent AST from producing self-ops.
 	irSetOption(IR_OPT_CPUBOPFLAGS or IR_OPT_MISSINGOPS or IR_OPT_CPUSELFBOPS)'  or IR_OPT_ADDRCISC)'
 
-   ' dtypeName(FB_DATATYPE_INTEGER) = dtypeName(FB_DATATYPE_LONGINT)
+' dtypeName(FB_DATATYPE_INTEGER) = dtypeName(FB_DATATYPE_LONGINT)
 	'dtypeName(FB_DATATYPE_UINT   ) = dtypeName(FB_DATATYPE_ULONGINT)
 
 end sub
@@ -2254,7 +2254,7 @@ private function _emitbegin( ) as integer
 	else
 		'' just in case we get a #cmdline that affects debug info code gen
 		'' go ahead and ctxdbg / dbgstr / dbgstab
-		ctxdbg.typecnt 	= 1
+		ctxdbg.typecnt  = 1
 		ctxdbg.strnb=-1
 		ctxdbg.strmax=4
 		redim dbgstr(ctxdbg.strmax)
@@ -2508,7 +2508,7 @@ private function param_analyze(byval dtype as FB_DATATYPE,byval struc as FBSYMBO
 			return KPARAMSK0 ''copy structure on stack
 		end if
 	else
-  ''WDS ========================================================================
+''WDS ========================================================================
 		cptarg+=1
 		''to have the same code for WDS/LNX
 		cptint=cptarg:cptfloat=cptarg
@@ -3977,7 +3977,7 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 			case AST_OP_ATAN
 				save_call("atanf",vr,vrreg)
 			case AST_OP_SQRT
-				asm_code("sqrtss	xmm0, xmm0") ''todo could do directly with op1
+				asm_code("sqrtss    xmm0, xmm0") ''todo could do directly with op1
 				restore_vrreg(vr,vrreg)
 			case AST_OP_ABS
 				asm_code("mov eax, 0x7FFFFFFF")
@@ -4106,7 +4106,7 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 			asm_code("movq xmm0, xmm1") ''just to keep a standard way after
 			restore_vrreg(vr,vrreg)
 		case AST_OP_SQRT
-			asm_code("sqrtsd	xmm0, xmm0") ''todo could do directly with op1
+			asm_code("sqrtsd    xmm0, xmm0") ''todo could do directly with op1
 			restore_vrreg(vr,vrreg)
 		case AST_OP_SGN
 			save_call("fb_SGNDouble",vr,vrreg)
@@ -4377,7 +4377,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 				case FB_DATATYPE_ULONGINT
 					if v1dtype=FB_DATATYPE_DOUBLE then
 						asm_code("mov rax, "+op2)
-						asm_code("test	rax, rax")
+						asm_code("test  rax, rax")
 						lname1 = *symbUniqueLabel( )
 						asm_code("js "+lname1)
 						asm_code("cvtsi2sd xmm0, rax")
@@ -4402,7 +4402,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 						asm_code("test rax, rax")
 						lname1 = *symbUniqueLabel( )
 						asm_code("js "+lname1)
-						asm_code("cvtsi2ss	xmm0, rax")
+						asm_code("cvtsi2ss  xmm0, rax")
 						lname2 = *symbUniqueLabel( )
 						asm_code("jmp "+lname2)
 						asm_code(lname1+":")
@@ -4546,7 +4546,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 				asm_code("jmp "+lname2)
 				asm_code(lname1+":")
 				asm_code("movss xmm1, xmm2")
-				asm_code("subss	xmm0, xmm1")
+				asm_code("subss xmm0, xmm1")
 				asm_code("cvttss2si rax, xmm0")
 
 				reg=reg_findfree(999999)
@@ -6807,10 +6807,10 @@ private sub _emitMacro( byval op as integer,byval v1 as IRVREG ptr, byval v2 as 
 	select case op
 		case AST_OP_VA_START
 
-   '# Info --> Macro op=VA_START
-   '# Info --> v1=var ARGS ofs=-144 [va_list alias "va_list"] symbdump=var local accessed declared ARGS [any alias "va_list" ptr]
-   '# Info --> v2=var PAD4 ofs=48 [integer] symbdump=var local parambyval accessed declared PAD4 [integer]
-   '# Info --> vr=<NULL>
+'# Info --> Macro op=VA_START
+'# Info --> v1=var ARGS ofs=-144 [va_list alias "va_list"] symbdump=var local accessed declared ARGS [any alias "va_list" ptr]
+'# Info --> v2=var PAD4 ofs=48 [integer] symbdump=var local parambyval accessed declared PAD4 [integer]
+'# Info --> vr=<NULL>
 			tempo1 = irhlAllocVreg( FB_DATATYPE_INTEGER, 0 )
 			reg_findfree(tempo1->reg)
 			''gp_offset
@@ -6848,13 +6848,13 @@ private sub _emitMacro( byval op as integer,byval v1 as IRVREG ptr, byval v2 as 
 
 		case AST_OP_VA_ARG
 
-   '# -----------------------------------------
-   '# basic --> sum += Cva_Arg(args,byte)
-   '# -----------------------------------------
-   '# Info --> Macro op=VA_ARG
-   '# Info --> v1=var ARGS ofs=-144 [va_list alias "va_list"] symbdump=var local accessed declared ARGS [any alias "va_list" ptr]
-   '# Info --> v2=<NULL>
-   '# Info --> vr=reg 3 [integer] or double if single/double
+'# -----------------------------------------
+'# basic --> sum += Cva_Arg(args,byte)
+'# -----------------------------------------
+'# Info --> Macro op=VA_ARG
+'# Info --> v1=var ARGS ofs=-144 [va_list alias "va_list"] symbdump=var local accessed declared ARGS [any alias "va_list" ptr]
+'# Info --> v2=<NULL>
+'# Info --> vr=reg 3 [integer] or double if single/double
 
 
 			if ctx.target=FB_COMPTARGET_LINUX then
@@ -6950,7 +6950,7 @@ private sub _emitMacro( byval op as integer,byval v1 as IRVREG ptr, byval v2 as 
 				_emitstore(v1,v2)
 			end if
 	end select
- end sub
+end sub
 
 ''===============================
 ''keep it otherwise bad behaviour
