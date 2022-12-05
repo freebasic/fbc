@@ -888,88 +888,13 @@ end function
 /'
 !!!TODO!!! - clean up code for lookups
 refactor the duplicated code in:
-	- symbLookup108()
 	- symbLookupNS()
 	- symbLookupTypeNS()
 	- symbLookup()
 	- symbLookupAt()
 	- hLookupImportList()
 	- hLookupImportListByParents()
-	- remove env.clopt.lookup108 and #pragma lookup108 before the next release
 '/
-
-'':::::
-function symbLookup108 _
-	( _
-		byval id as zstring ptr, _
-		byref tk as FB_TOKEN, _
-		byref tk_class as FB_TKCLASS _
-	) as FBSYMCHAIN ptr
-
-	static as zstring * FB_MAXNAMELEN+1 sname
-
-	'' assume it's an unknown identifier
-	tk = FB_TK_ID
-	tk_class = FB_TKCLASS_IDENTIFIER
-
-	hUcase( *id, sname )
-	id = @sname
-
-	dim as uinteger index = hashHash( id )
-	dim as FBSYMCHAIN ptr chain_ = NULL
-
-	'' for each nested hash tb, starting from last
-	dim as FBHASHTB ptr hashtb = symb.hashlist.tail
-
-	do
-		dim as FBSYMBOL ptr sym = hashLookupEx( @hashtb->tb, id, index )
-		if( sym <> NULL ) then
-			chain_ = chainpoolNext()
-
-			chain_->sym = sym
-			chain_->next = NULL
-			chain_->isimport = FALSE
-
-			if( sym->class = FB_SYMBCLASS_KEYWORD ) then
-				tk = sym->key.id
-				tk_class = sym->key.tkclass
-				'' return if it's a KEYWORD or a OPERATOR token, they
-				'' can't never be redefined, even inside namespaces
-				if( tk_class <> FB_TKCLASS_QUIRKWD ) then
-					return chain_
-				end if
-			end if
-
-			'' return if it's not the global ns (as in C++, any nested
-			'' symbol has precedence over any imported one, even if the
-			'' latter was imported in the current ns)
-			if( hashtb->owner <> @symbGetGlobalNamespc( ) ) then
-				return chain_
-			else
-				'' also if we are at the global ns, no need to check the imports
-				if( symbGetCurrentNamespc( ) = @symbGetGlobalNamespc( ) ) then
-					return chain_
-				end if
-
-				'' check (and add) the imports..
-				exit do
-			end if
-		end if
-
-		hashtb = hashtb->prev
-	loop while( hashtb <> NULL )
-
-	'' now try the imported namespaces..
-	dim as FBSYMCHAIN ptr imp_chain = hashLookupEx( @symb.imphashtb, id, index )
-	if( chain_ = NULL ) then
-		return imp_chain
-	end if
-
-	chain_->next = imp_chain
-
-	return chain_
-
-end function
 
 '':::::
 function symbLookupNS _
@@ -1236,11 +1161,6 @@ function symbLookup _
 		byref tk_class as FB_TKCLASS _
 	) as FBSYMCHAIN ptr
 
-	'' use old lookup method from fbc 1.08.x and earlier?
-	if( env.clopt.lookup108 ) then
-		return symbLookup108( id, tk, tk_class )
-	end if
-
 	'' In a TYPE's namespace?
 	if( symbGetCurrentNamespc( ) <> NULL ) then
 		select case symbGetClass( symbGetCurrentNamespc( ) )
@@ -1479,13 +1399,11 @@ function symbLookupAt _
 		return hLookupImportHash( ns, id, index )
 	end if
 
-	if( env.clopt.lookup108 = FALSE ) then
-		'' Are we in a type's namespace?  Only search for inherited members
-		select case symbGetClass( ns )
-		case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_CLASS
-			return hLookupImportListByParents( ns, id, index )
-		end select
-	end if
+	'' Are we in a type's namespace?  Only search for inherited members
+	select case symbGetClass( ns )
+	case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_CLASS
+		return hLookupImportListByParents( ns, id, index )
+	end select
 
 	return hLookupImportList( ns, id, index )
 
