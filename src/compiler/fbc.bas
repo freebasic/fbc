@@ -2317,6 +2317,8 @@ private sub handleOpt _
 			fbSetOption( FB_COMPOPT_FBRT, TRUE )
 		case "nocmdline"
 			fbSetOption( FB_COMPOPT_NOCMDLINE, TRUE )
+		case "no-retinflts"
+			fbSetOption( FB_COMPOPT_NORETURNINFLTS, TRUE )
 		case else
 			hFatalInvalidOption( arg, is_source )
 		end select
@@ -4142,6 +4144,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -z no-fastcall   Don't use '__fastcall' calling convention"
 	print "  -z fbrt          Link with 'fbrt' instead of 'fb' runtime library"
 	print "  -z nocmdline     Disable #cmdline source directives"
+	print "  -z no-retinflts  Disable returning some types in floating point registers"
 	end if
 
 end sub

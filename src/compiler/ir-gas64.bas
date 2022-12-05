@@ -719,8 +719,17 @@ private sub check_optim(byref code as string)
 
 			elseif ( prevpart2[0]=asc("r") or prevpart2[0]=asc("e") ) and prevpart1=part2 then 'and instr(part1,"[")=0
 				'asm_info("OPTIMIZATION 16")
-				mid(ctx.proc_txt,prevwpos)="#16"
-				asm_info("part1="+part1+" part2="+part2+" prevpart1="+prevpart1+" prevpart2="+prevpart2)
+				if instr(prevpart1,"[")=0 then
+					mid(ctx.proc_txt,prevwpos)="#16"
+				end if
+				'asm_info("part1="+part1+" part2="+part2+" prevpart1="+prevpart1+" prevpart2="+prevpart2)
+				if part1[0]=asc("x") then
+					if prevpart2[0]=asc("e") then '32bit -->xmmN
+						instruc="movd"
+					else
+						instruc="movq"
+					EndIf
+				End If
 				writepos=len(ctx.proc_txt)+len(code)+9
 				code="#16"+code+newline+string( ctx.indent*3, 32 )+previnstruc+" "+part1+", "+prevpart2+" #Optim 16"
 				part2=prevpart2
@@ -4711,6 +4720,9 @@ private sub emitStoreStruct(byval v1 as IRVREG ptr, byval v2 as IRVREG ptr,byref
 	''moving 8 first bytes
 	if retin2regs=FB_STRUCT_RR or retin2regs=FB_STRUCT_RX then
 		asm_code("mov "+op1+", rax")
+		if retin2regs=FB_STRUCT_RX then
+			asm_code("movq rdx, xmm0")
+		end if
 	else
 		asm_code("movq "+op1+", xmm0")
 		asm_code("movq rdx, xmm1")
@@ -5164,9 +5176,25 @@ private sub _emitloadres(byval v1 as IRVREG ptr,byval vr as IRVREG Ptr)
 		if op3<>"" then emitop3_op4(op3)
 		select case dtype
 			case FB_DATATYPE_DOUBLE
-				asm_code("movq xmm0, "+op1)
+				if( (env.target.options and FB_TARGETOPT_RETURNINFLTS) = 0 ) then
+					asm_code("movq xmm0, "+op1)
+				else
+					if symbGetType( v1->sym)<>FB_DATATYPE_STRUCT then
+						asm_code("movq xmm0, "+op1)
+					else
+						asm_code("mov rax, "+op1)
+					end if
+				endif
 			case FB_DATATYPE_SINGLE
-				asm_code("movd xmm0, "+op1)
+				if( (env.target.options and FB_TARGETOPT_RETURNINFLTS) = 0 ) then
+					asm_code("movd xmm0, "+op1)
+				else
+					if symbGetType( v1->sym)<>FB_DATATYPE_STRUCT then
+						asm_code("movd xmm0, "+op1)
+					else
+						asm_code("mov eax, "+op1)
+					end if
+				endif
 			case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_ENUM
 				asm_code("mov "+*regstrq(KREG_RAX)+", "+op1)
 			case FB_DATATYPE_LONG,FB_DATATYPE_ULONG
@@ -5927,9 +5955,21 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 			dtype=typeGetDtAndPtrOnly(vr->dtype)
 			if typeget(dtype)=FB_DATATYPE_POINTER then dtype=FB_DATATYPE_INTEGER
 			if dtype=FB_DATATYPE_DOUBLE then
-				asm_code("movq rax, xmm0")
+				if( (env.target.options and FB_TARGETOPT_RETURNINFLTS) = 0 ) then
+					asm_code("movq rax, xmm0")
+				else
+					if symbGetType( proc )<>FB_DATATYPE_STRUCT then
+						asm_code("movq rax, xmm0")
+					end if
+				endif
 			elseif dtype=FB_DATATYPE_SINGLE then
-				asm_code("movd eax, xmm0")
+				if( (env.target.options and FB_TARGETOPT_RETURNINFLTS) = 0 ) then
+					asm_code("movd eax, xmm0")
+				else
+					if symbGetType( proc )<>FB_DATATYPE_STRUCT then
+						asm_code("movd eax, xmm0")
+					end if
+				endif
 			end if
 			op3=""
 			reg_findfree(vr->reg)

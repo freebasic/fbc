@@ -15,10 +15,6 @@
 	#if not defined( __FB_ARM__ )
 		#define DOTEST
 	#endif
-
-	#if( __FB_BACKEND__ <> "gas64" )
-		#define DOFUNCS
-	#endif
 #endif
 
 extern "c++"

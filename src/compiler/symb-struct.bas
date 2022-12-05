@@ -799,7 +799,7 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 		if( fld->lgt = 2 ) then
 			'' and if the struct is not packed
 			if( sym->lgt >= 4 ) then
-				res = FB_DATATYPE_INTEGER
+				res = FB_DATATYPE_LONG
 			end if
 		end if
 
@@ -825,13 +825,13 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 		loop
 
 		if( res = FB_DATATYPE_VOID ) then
-			res = FB_DATATYPE_INTEGER
+			res = FB_DATATYPE_LONG
 		end if
 
 	case 5, 6, 7
-		'' return as longint only if first is a int
+		'' return as longint only if first is a small int
 		fld = symbUdtGetFirstField( sym )
-		if( fld->lgt = 4 ) then
+		if( fld->lgt <= 4 ) then
 			'' and if the struct is not packed
 			if( sym->lgt >= 8 ) then
 				res = FB_DATATYPE_LONGINT
