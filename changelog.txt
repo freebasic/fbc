@@ -100,6 +100,7 @@ Version 1.10.0
 - sf.net #970: Illicit "error 202: Illegal member access, UDT.operator.cast" compiler error message - suppress bogus error message when checking procedure overloads for possible candidate
 - sf.net #811: *(ptr).field should give an error
 - sf.net #972: A local Type cannot access members of an inherited Type external to its scope but normally accessible
+- sf.net #834: Line continuation not handled during #if 0 skipping - fixed by ignoring line continuation characters and invalid directives - continue to preserve multiline comment parsing
 
 
 Version 1.09.0

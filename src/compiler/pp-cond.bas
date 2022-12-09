@@ -197,6 +197,10 @@ private sub ppSkip( )
 	iflevel = pp.level
 
 	'' skip lines until a #ENDIF or #ELSE at same level is found
+	'' we only care about lines that would affect the level of 
+	'' PP processing, like multiline comments and #if* pp tokens.
+	'' we don't care about invalid directives or line continuation
+	'' characters.
 	do
 		select case lexGetToken( )
 		case CHAR_SHARP
@@ -228,15 +232,6 @@ private sub ppSkip( )
 					iflevel -= 1
 				end select
 
-			case FB_TK_PP_DEFINE, FB_TK_PP_UNDEF, FB_TK_PP_PRINT, FB_TK_PP_ERROR, _
-				FB_TK_PP_INCLUDE, FB_TK_PP_INCLIB, FB_TK_PP_LIBPATH, FB_TK_PP_PRAGMA, _
-				FB_TK_PP_MACRO, FB_TK_PP_ENDMACRO, FB_TK_PP_LINE, FB_TK_PP_LANG, _
-				FB_TK_PP_ASSERT, FB_TK_PP_CMDLINE
-
-			case FB_TK_PP_DUMP, FB_TK_PP_ODUMP, FB_TK_PP_LOOKUP
-
-			case else
-				errReport( FB_ERRMSG_SYNTAXERROR )
 			end select
 
 		case FB_TK_EOF
