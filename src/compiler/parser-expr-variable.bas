@@ -261,51 +261,42 @@ private function hMemberId( byval parent as FBSYMBOL ptr, byval allow_inner as i
 		return NULL
 	end if
 
-	'' since methods don't start a new hash, params and local
-	'' symbol dups will also be found
-	do
-		dim as FBSYMBOL ptr sym = chain_->sym
-		do
-			if( symbGetScope( sym ) = symbGetScope( parent ) ) then
-				select case as const symbGetClass( sym )
-				'' field, static members, or inner types?
-				case FB_SYMBCLASS_FIELD, FB_SYMBCLASS_VAR, _
-				     FB_SYMBCLASS_CONST, FB_SYMBCLASS_ENUM
+	'' symbLookupCompField()) which calls symbLookupAt() was
+	'' called with an explicit parent, so we should expect
+	'' that locals and params and any other symbols that shouldn't
+	'' be access through parent are already filtered out.  So
+	'' we can just return the first symbol found without searching
+	'' through any extra symbols or chains.
 
-					'' Check visibility of member
-					if( symbCheckAccess( sym ) = FALSE ) then
-						errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
-					end if
+	dim as FBSYMBOL ptr sym = chain_->sym
 
-				case FB_SYMBCLASS_STRUCT, _
-				     FB_SYMBCLASS_TYPEDEF, FB_SYMBCLASS_FWDREF
-					if( allow_inner = FALSE ) then
-						exit do, do
-					end if
+	select case as const symbGetClass( sym )
+	'' field, static members, or inner types?
+	case FB_SYMBCLASS_FIELD, FB_SYMBCLASS_VAR, _
+	     FB_SYMBCLASS_CONST, FB_SYMBCLASS_ENUM
 
-				'' method?
-				case FB_SYMBCLASS_PROC
+		'' Check visibility of member
+		if( symbCheckAccess( sym ) = FALSE ) then
+			errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
+		end if
 
-				case else
-					errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-					return NULL
-				end select
+	case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_TYPEDEF, FB_SYMBCLASS_FWDREF
+		if( allow_inner = FALSE ) then
+			errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) )
+			'' no error recovery: caller will take care
+			lexSkipToken( )
+			return NULL
+		end if
 
-				return sym
-			end if
+	'' method?
+	case FB_SYMBCLASS_PROC
 
-			sym = sym->hash.next
-		loop while( sym <> NULL )
+	case else
+		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+		return NULL
+	end select
 
-		chain_ = chain_->next
-	loop while( chain_ <> NULL )
-
-	'' nothing found..
-	errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) )
-	'' no error recovery: caller will take care
-	lexSkipToken( )
-
-	function = NULL
+	return sym
 
 end function
 
