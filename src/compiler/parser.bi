@@ -317,7 +317,8 @@ declare sub cTypeOf _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as longint, _
-		byref is_fixlenstr as integer _
+		byref is_fixlenstr as integer, _
+		byref ret_sym as FBSYMBOL ptr = NULL _
 	)
 
 declare function cSymbolType _
@@ -706,7 +707,8 @@ declare sub cUdtTypeMember _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as longint, _
-		byref is_fixlenstr as integer _
+		byref is_fixlenstr as integer, _
+		byref ret_sym as FBSYMBOL ptr = NULL _
 	)
 
 declare function cMemberAccess _

@@ -53,6 +53,7 @@ Version 1.10.0
 - fbc -nolib a,b,c command line option for selectively excluding specific libraries when linking (more fine-grained control than -nodeflibs, and not only for default libraries)
 - fbc will restart the parser when #cmdline "-mt" is used or usage of any threaded functions automatically enable -mt.  This allows the compiler to parse the current module from the beginning and process any __FB_MT__ checks.
 - fbc: __fastcall support for gcc/gas 32-bit x86 - fbc passes first and second integer arguments in ECX and EDX registers respectively, caller cleans up stack.
+- fbc: __FB_QUERY_SYMBOL__( what, sym ) built-in macro for querying fbc symbol internals.  Added fbc-int/symbol.bi (Work in progress).
 
 [fixed]
 - gas64: missing restoring of use of one virtual register on sqr for float (SARG)
@@ -101,6 +102,7 @@ Version 1.10.0
 - sf.net #811: *(ptr).field should give an error
 - sf.net #972: A local Type cannot access members of an inherited Type external to its scope but normally accessible
 - sf.net #834: Line continuation not handled during #if 0 skipping - fixed by ignoring line continuation characters and invalid directives - continue to preserve multiline comment parsing
+- fbc: internal: throw an error if __FB_EVAL__ would cause the parser to nest too deeply
 
 
 Version 1.09.0

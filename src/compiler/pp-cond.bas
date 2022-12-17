@@ -197,7 +197,7 @@ private sub ppSkip( )
 	iflevel = pp.level
 
 	'' skip lines until a #ENDIF or #ELSE at same level is found
-	'' we only care about lines that would affect the level of 
+	'' we only care about lines that would affect the level of
 	'' PP processing, like multiline comments and #if* pp tokens.
 	'' we don't care about invalid directives or line continuation
 	'' characters.

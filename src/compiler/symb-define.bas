@@ -317,13 +317,18 @@ private function hMacro_getArgW( byval argtb as LEXPP_ARGTB ptr, byval num as in
 
 end function
 
-private function hMacro_EvalZ( byval arg as zstring ptr ) as string
+private function hMacro_EvalZ( byval arg as zstring ptr, byval errnum as integer ptr ) as string
 
 	'' the expression should have already been handled in hLoadMacro|hLoadMacroW
 	'' so, if we do get here, just pass the argument back as-is
 	'' !!!TODO!!! - DZSTRING can be replaced by STRING
 	dim as DZSTRING res
 	DZStrAssign( res, NULL )
+
+	if( env.includerec >= FB_MAXINCRECLEVEL ) then
+		*errnum = FB_ERRMSG_RECLEVELTOODEEP
+		return *res.data
+	end if
 
 	if( arg ) then
 
@@ -332,8 +337,6 @@ private function hMacro_EvalZ( byval arg as zstring ptr ) as string
 		'' - text to expand is to be loaded in LEX.CTX->DEFTEXT[W]
 		'' - use the parser to build an AST for the literal result
 
-		'' !!!FIXME!!! : check if env.includerec is too deep
-		'' if( env.includerec >= FB_MAXINCRECLEVEL ) then
 		lexPushCtx()
 		lexInit( FALSE, TRUE )
 
@@ -399,7 +402,7 @@ private function hMacro_EvalZ( byval arg as zstring ptr ) as string
 
 end function
 
-private function hMacro_EvalW( byval arg as wstring ptr ) as wstring ptr
+private function hMacro_EvalW( byval arg as wstring ptr, byval errnum as integer ptr ) as wstring ptr
 
 	'' the expression should have already been handled in hLoadMacro|hLoadMacroW
 	'' so, if we do get here, just pass the argument back as-is
@@ -409,6 +412,11 @@ private function hMacro_EvalW( byval arg as wstring ptr ) as wstring ptr
 	static as DWSTRING res
 	DWStrAssign( res, NULL )
 
+	if( env.includerec >= FB_MAXINCRECLEVEL ) then
+		*errnum = FB_ERRMSG_RECLEVELTOODEEP
+		return res.data
+	end if
+
 	if( arg ) then
 
 		'' create a lightweight context push for the lexer
@@ -416,8 +424,6 @@ private function hMacro_EvalW( byval arg as wstring ptr ) as wstring ptr
 		'' - text to expand is to be loaded in LEX.CTX->DEFTEXT[W]
 		'' - use the parser to build an AST for the literal result
 
-		'' !!!FIXME!!! : check if env.includerec is too deep
-		'' if( env.includerec >= FB_MAXINCRECLEVEL ) then
 		lexPushCtx()
 		lexInit( FALSE, TRUE )
 
@@ -604,7 +610,7 @@ private function hDefArgExtract_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum
 		'' Val returns 0 on failure which we can't detect from a valid 0
 		'' so check and construct the number manually
 
-		dim as string varstr = hMacro_EvalZ(numStr)
+		dim as string varstr = hMacro_EvalZ( numStr, errnum )
 		dim as long index
 
 		if( hStr2long( varstr, index ) ) then
@@ -895,7 +901,7 @@ private function hDefEvalZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as i
 	'' so, if we do get here, just pass the argument back as-is
 
 	var arg = hMacro_getArgZ( argtb, 0 )
-	var res = hMacro_EvalZ( arg )
+	var res = hMacro_EvalZ( arg, errnum )
 
 	ZstrFree(arg)
 
@@ -912,7 +918,7 @@ private function hDefEvalW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as i
 
 	var arg = hMacro_getArgW( argtb, 0 )
 	static as DWSTRING res
-	DWstrAssign( res, hMacro_EvalW( arg ) )
+	DWstrAssign( res, hMacro_EvalW( arg, errnum ) )
 
 	function = res.data
 
@@ -928,7 +934,7 @@ private function hDefIifZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as in
 	var fexpr = hMacro_getArgZ( argtb, 2 )  '' false-expression
 
 	if( (cexpr <> NULL) and (texpr <> NULL) and (fexpr <> NULL) ) then
-		dim as string varstr = hMacro_EvalZ( cexpr )
+		dim as string varstr = hMacro_EvalZ( cexpr, errnum )
 		dim as boolean value = cbool( varstr )
 		res = iif( cbool( varstr ), *texpr, *fexpr )
 	else
@@ -956,7 +962,7 @@ private function hDefIifW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as in
 	if( (cexpr <> NULL) and (texpr <> NULL) and (fexpr <> NULL) ) then
 		dim as long value = 0
 		dim as string varstr
-		DWstrAssign( wvarstr, hMacro_EvalW( cexpr ) )
+		DWstrAssign( wvarstr, hMacro_EvalW( cexpr, errnum ) )
 		varstr = str( wvarstr.data )
 		DWstrAssign( res, iif( cbool( varstr ), *texpr, *fexpr ) )
 	else
@@ -964,6 +970,83 @@ private function hDefIifW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as in
 	end if
 
 	function = res.data
+
+end function
+
+private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
+
+	'' __FB_QUERY_SYMBOL__( WHAT, SYM )
+
+	var res = ""
+
+	if( env.includerec >= FB_MAXINCRECLEVEL ) then
+		*errnum = FB_ERRMSG_RECLEVELTOODEEP
+		return res
+	end if
+
+	var wexpr = hMacro_getArgZ( argtb, 0 )  '' what to look for
+	var sexpr = hMacro_getArgZ( argtb, 1 )  '' symbol to look up
+
+	if( (wexpr <> NULL) and (sexpr <> NULL) ) then
+
+		dim as string whatstr = hMacro_EvalZ( wexpr, errnum )
+		dim as long whatvalue = clng( whatstr )
+
+		if( hStr2long( whatstr, whatvalue ) ) then
+			dim as integer dtype, is_fixlenstr
+			dim as longint lgt
+			dim as FBSYMBOL ptr subtype
+			dim as FBSYMBOL ptr sym
+			var errmsg = FB_ERRMSG_OK
+
+			'' create a lightweight context push
+			lexPushCtx()
+			lexInit( FALSE, TRUE )
+
+			'' prevent cExpression from writing to .pp.bas file
+			lex.ctx->reclevel += 1
+
+			DZstrAssign( lex.ctx->deftext, *sexpr )
+			lex.ctx->defptr = lex.ctx->deftext.data
+			lex.ctx->deflen += len( *sexpr )
+
+			cTypeOf( dtype, subtype, lgt, is_fixlenstr, sym )
+
+			select case whatvalue
+			case 0 '' dtype
+				res = str( dtype )
+			case 1 '' data class
+				res = str( typeGetClass( dtype ) )
+			case 2 '' symb class
+				if( sym ) then
+					res = str( symbGetClass( sym ) )
+				elseif( subtype ) then
+					res = str( symbGetClass( subtype ) )
+				else
+					res = str( 0 )
+				end if
+			case else
+				*errnum = FB_ERRMSG_SYNTAXERROR
+				res = str( 0 )
+			end select
+
+			lex.ctx->reclevel -= 1
+
+			lexPopCtx()
+
+		else
+			'' NUMARG isn't a number
+			*errnum = FB_ERRMSG_SYNTAXERROR
+		end if
+
+	else
+		*errnum = FB_ERRMSG_ARGCNTMISMATCH
+	end if
+
+	ZstrFree(wexpr)
+	ZstrFree(sexpr)
+
+	function =  res
 
 end function
 
@@ -1033,7 +1116,8 @@ dim shared macroTb(0 to ...) as SYMBMACRO => _
 	(@"__FB_QUOTE__"          , 0                       , @hDefQuoteZ_cb      , @hDefQuoteW_cb       , 1, { (@"ARG") } ), _
 	(@"__FB_UNQUOTE__"        , 0                       , @hDefUnquoteZ_cb    , @hDefUnquoteW_cb     , 1, { (@"ARG") } ), _
 	(@"__FB_EVAL__"           , 0                       , @hDefEvalZ_cb       , @hDefEvalW_cb        , 1, { (@"ARG") } ), _
-	(@"__FB_IIF__"            , 0                       , @hDefIifZ_cb        , @hDefIifW_cb         , 3, { (@"CMPEXPR"), (@"TEXPR"), (@"FEXPR") } ) _
+	(@"__FB_IIF__"            , 0                       , @hDefIifZ_cb        , @hDefIifW_cb         , 3, { (@"CMPEXPR"), (@"TEXPR"), (@"FEXPR") } ), _
+	(@"__FB_QUERY_SYMBOL__"   , 0                       , @hDefQuerySymZ_cb   , NULL                 , 2, { (@"WHAT"), (@"SYM") } ) _
 }
 
 sub symbDefineInit _

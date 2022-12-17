@@ -349,11 +349,14 @@ sub cTypeOf _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as longint, _
-		byref is_fixlenstr as integer _
+		byref is_fixlenstr as integer, _
+		byref ret_sym as FBSYMBOL ptr _
 	)
 
 	dim as ASTNODE ptr expr = any
 	dim as integer dtorlistcookie = any
+
+	ret_sym = NULL
 
 	astDtorListScopeBegin( )
 
@@ -367,7 +370,7 @@ sub cTypeOf _
 	'' Was it a type?
 	if( expr = NULL ) then
 		'' check for member field
-		cUdtTypeMember( dtype, subtype, lgt, is_fixlenstr )
+		cUdtTypeMember( dtype, subtype, lgt, is_fixlenstr, ret_sym )
 		exit sub
 	end if
 
@@ -376,6 +379,7 @@ sub cTypeOf _
 	dtype   = astGetFullType( expr )
 	subtype = astGetSubtype( expr )
 	lgt     = astSizeOf( expr, is_fixlenstr )
+	ret_sym = astGetSymbol( expr )
 
 	astDelTree( expr )
 end sub

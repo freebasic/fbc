@@ -412,7 +412,8 @@ sub cUdtTypeMember _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as longint, _
-		byref is_fixlenstr as integer _
+		byref is_fixlenstr as integer, _
+		byref ret_sym as FBSYMBOL ptr = NULL _
 	)
 
 	'' UDT type followed by '.'?
@@ -430,6 +431,8 @@ sub cUdtTypeMember _
 		if( sym ) then
 			'' ID
 			lexSkipToken( LEXCHECK_POST_SUFFIX )
+
+			ret_sym = sym
 
 			'' Struct? must be a type and could be followed by '.' member access
 			if( symbGetClass( sym ) = FB_SYMBCLASS_STRUCT ) then
