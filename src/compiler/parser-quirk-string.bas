@@ -59,14 +59,14 @@ end function
 	astNewVAR( symbAddTempVar( FB_DATATYPE_STRING ) )
 
 '':::::
-'' LRsetStmt		=	LSET|RSET String|UDT (','|'=') Expression|UDT
+'' LRsetStmt        =   LSET|RSET String|UDT (','|'=') Expression|UDT
 function cLRSetStmt(byval tk as FB_TOKEN) as integer
-    dim as ASTNODE ptr dstexpr = any, srcexpr = any
-    dim as integer dtype1 = any, dtype2 = any
-    dim as FBSYMBOL ptr dst = any, src = any
-    dim as integer is_rset = any
+	dim as ASTNODE ptr dstexpr = any, srcexpr = any
+	dim as integer dtype1 = any, dtype2 = any
+	dim as FBSYMBOL ptr dst = any, src = any
+	dim as integer is_rset = any
 
-    function = FALSE
+	function = FALSE
 
 	'' (LSET|RSET)
 	is_rset = (tk = FB_TK_RSET)
@@ -97,7 +97,7 @@ function cLRSetStmt(byval tk as FB_TOKEN) as integer
 		dim as FBSYMBOL ptr sym = astGetSymbol( dstexpr )
 
 		if( sym = NULL ) then
-			'' deref... 
+			'' deref...
 			if (astGetClass( dstexpr ) = AST_NODECLASS_DEREF) then
 				sym = iif( astGetLeft( dstexpr ), astGetSymbol( astGetLeft( dstexpr ) ), NULL )
 			end if
@@ -168,7 +168,7 @@ function cLRSetStmt(byval tk as FB_TOKEN) as integer
 		assert( symbGetLen( src->subtype ) > 0 )
 
 		function = rtlMemCopyClear( dstexpr, symbGetLen( dst->subtype ), _
-		                            srcexpr, symbGetLen( src->subtype ) )
+									srcexpr, symbGetLen( src->subtype ) )
 	else
 		'' !!!TODO!!! - if udt extends z|wstring, check if operator len()
 		'' was overloaded and pass the length parameters to a separate
@@ -179,7 +179,7 @@ function cLRSetStmt(byval tk as FB_TOKEN) as integer
 end function
 
 private function cStrCHR(byval is_wstr as integer) as ASTNODE ptr
-        '' Max length of a single octal code is 11 digits for &hffffffffU
+		'' Max length of a single octal code is 11 digits for &hffffffffU
 	static as zstring * 11+1 o
 	static as zstring * 32*(2+11)+1 zs
 	static as wstring * 32*(2+11)+1 ws
@@ -288,7 +288,7 @@ private function cStrASC() as ASTNODE ptr
 	if( litsym <> NULL ) then
 		'' if wstring, check if compile-time conversion can be done
 		if( (astGetDataType( expr1 ) = FB_DATATYPE_WCHAR) and _
-		    (env.wchar_doconv = FALSE) ) then
+			(env.wchar_doconv = FALSE) ) then
 			p = -1
 		else
 			'' pos is an constant too?
@@ -339,7 +339,7 @@ private function cStrASC() as ASTNODE ptr
 			else
 				'' remove internal escape format
 				dim as wstring ptr ws = hUnescapeW( symbGetVarLitTextW( litsym ), textlen )
-				
+
 				'' use the textlen returned from hUnescapeW() to check the range on position
 				if( (ws = NULL) orelse (textlen = 0) orelse  (p <= 0) orelse (p > textlen) ) then
 					function = astNewCONSTi( clngint( 0 ), FB_DATATYPE_UINT )
@@ -358,12 +358,12 @@ private function cStrASC() as ASTNODE ptr
 end function
 
 '':::::
-'' cCVXFunct	=	CVD       '(' Expression{str} ')'
-'' 				|   CVS       '(' Expression{str} ')'
-'' 				|   CVI       '(' Expression{str} ')'
-'' 				|   CVL       '(' Expression{str} ')'
-'' 				|   CVSHORT   '(' Expression{str} ')'
-'' 				|   CVLONGINT '(' Expression{str} ')'
+'' cCVXFunct    =   CVD       '(' Expression{str} ')'
+''              |   CVS       '(' Expression{str} ')'
+''              |   CVI       '(' Expression{str} ')'
+''              |   CVL       '(' Expression{str} ')'
+''              |   CVSHORT   '(' Expression{str} ')'
+''              |   CVLONGINT '(' Expression{str} ')'
 ''
 function cCVXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	'' CVD | CVS | CVI | CVL | CVSHORT | CVLONGINT
@@ -524,12 +524,12 @@ function cCVXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 end function
 
 '':::::
-'' cMKXFunct	=	MKD       '(' Expression{double}  ')'
-'' 				|   MKS       '(' Expression{float}   ')'
-'' 				|   MKI       '(' Expression{int}     ')'
-'' 				|   MKL       '(' Expression{long}    ')'
-'' 				|   MKSHORT   '(' Expression{short}   ')'
-'' 				|   MKLONGINT '(' Expression{longint} ')'
+'' cMKXFunct    =   MKD       '(' Expression{double}  ')'
+''              |   MKS       '(' Expression{float}   ')'
+''              |   MKI       '(' Expression{int}     ')'
+''              |   MKL       '(' Expression{long}    ')'
+''              |   MKSHORT   '(' Expression{short}   ')'
+''              |   MKLONGINT '(' Expression{longint} ')'
 ''
 function cMKXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	'' MKD | MKS | MKI | MKL | MKSHORT | MKLONGINT
@@ -581,26 +581,26 @@ function cMKXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		end select
 	#endmacro
 
-'	'' I don't know how to do this properly, the NULLs ruin it.
-'	'' constant? eval at compile-time
-'	if( astIsCONST( expr1 ) ) then
-'		select case as const tk
-'		case FB_TK_MKD
-'			doMKX( mkd )
-'		case FB_TK_MKS
-'			doMKX( mks )
-'		case FB_TK_MKI
-'			doMKX( mki )
-'		case FB_TK_MKL
-'			doMKX( mkl )
-'		case FB_TK_MKSHORT
-'			doMKX( mkshort )
-'		case FB_TK_MKLONGINT
-'			doMKX( mklongint )
-'		end select
-'		astDelNode( expr1 )
-'		expr1 = NULL
-'	end if
+'   '' I don't know how to do this properly, the NULLs ruin it.
+'   '' constant? eval at compile-time
+'   if( astIsCONST( expr1 ) ) then
+'       select case as const tk
+'       case FB_TK_MKD
+'           doMKX( mkd )
+'       case FB_TK_MKS
+'           doMKX( mks )
+'       case FB_TK_MKI
+'           doMKX( mki )
+'       case FB_TK_MKL
+'           doMKX( mkl )
+'       case FB_TK_MKSHORT
+'           doMKX( mkshort )
+'       case FB_TK_MKLONGINT
+'           doMKX( mklongint )
+'       end select
+'       astDelNode( expr1 )
+'       expr1 = NULL
+'   end if
 
 	if( expr1 <> NULL ) then
 		select case as const tk
@@ -652,9 +652,9 @@ end function
 
 
 '':::::
-'' cStringFunct	=	W|STR$ '(' Expression{bool|int|float|double} ')'
-'' 				|   MID$ '(' Expression ',' Expression (',' Expression)? ')'
-'' 				|   W|STRING$ '(' Expression ',' Expression{int|str} ')' .
+'' cStringFunct =   W|STR$ '(' Expression{bool|int|float|double} ')'
+''              |   MID$ '(' Expression ',' Expression (',' Expression)? ')'
+''              |   W|STRING$ '(' Expression ',' Expression{int|str} ')' .
 ''              |   INSTR '(' (Expression{int} ',')? Expression{str}, "ANY"? Expression{str} ')'
 ''              |   INSTRREV '(' Expression{str}, "ANY"? Expression{str} (',' Expression{int})? ')'
 ''              |   RTRIM$ '(' Expression{str} (, "ANY" Expression{str} )? ')'

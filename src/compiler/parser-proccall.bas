@@ -69,7 +69,7 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 
 	'' set the context symbol to allow taking the address of overloaded
 	'' procs and also to allow anonymous UDT's
-	parser.ctxsym    = symbGetSubType( parser.currproc )
+	parser.ctxsym = symbGetSubType( parser.currproc )
 	parser.ctx_dtype = symbGetType( parser.currproc )
 
 	'' Expression
@@ -116,7 +116,7 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 		rhs = cExpression( )
 	end if
 
-	parser.ctxsym    = NULL
+	parser.ctxsym = NULL
 	parser.ctx_dtype = FB_DATATYPE_INVALID
 
 	if( rhs = NULL ) then
@@ -165,35 +165,35 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 end function
 
 sub hMethodCallAddInstPtrOvlArg _
-    ( _
-        byval proc as FBSYMBOL ptr, _
-        byval thisexpr as ASTNODE ptr, _
-        byval arg_list as FB_CALL_ARG_LIST ptr, _
-        byval options as FB_PARSEROPT ptr _
-    )
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval thisexpr as ASTNODE ptr, _
+		byval arg_list as FB_CALL_ARG_LIST ptr, _
+		byval options as FB_PARSEROPT ptr _
+	)
 
-    '' Only for method calls
-    if( thisexpr = NULL ) then
-        return
-    end if
+	'' Only for method calls
+	if( thisexpr = NULL ) then
+		return
+	end if
 
-    '' The proc given here can be a method with THIS pointer or a static
-    '' member proc, depending on which was declared/found first, but it's
-    '' not known yet whether the exact overload that's going to be called
-    '' will be static or not. So the thisexpr needs to be preserved here,
-    '' the rest is done after the args were parsed.
+	'' The proc given here can be a method with THIS pointer or a static
+	'' member proc, depending on which was declared/found first, but it's
+	'' not known yet whether the exact overload that's going to be called
+	'' will be static or not. So the thisexpr needs to be preserved here,
+	'' the rest is done after the args were parsed.
 
-    dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, FALSE )
-    
-    dim as FBSYMBOL ptr parent = symbGetParent( proc )
-    if( astGetSubtype( thisexpr ) <> parent ) then
-        thisexpr = astNewCONV( symbGetType( parent ), parent, thisexpr )
-    end if
-    
-    arg->expr = thisexpr
-    arg->mode = hGetInstPtrMode( thisexpr )
+	dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, FALSE )
 
-    *options or= FB_PARSEROPT_HASINSTPTR
+	dim as FBSYMBOL ptr parent = symbGetParent( proc )
+	if( astGetSubtype( thisexpr ) <> parent ) then
+		thisexpr = astNewCONV( symbGetType( parent ), parent, thisexpr )
+	end if
+
+	arg->expr = thisexpr
+	arg->mode = hGetInstPtrMode( thisexpr )
+
+	*options or= FB_PARSEROPT_HASINSTPTR
 
 end sub
 
@@ -248,7 +248,7 @@ function cProcCall _
 
 	function = NULL
 
-    hMethodCallAddInstPtrOvlArg( sym, thisexpr, @arg_list, @options )
+	hMethodCallAddInstPtrOvlArg( sym, thisexpr, @arg_list, @options )
 
 	'' property?
 	if( symbIsProperty( sym ) ) then
@@ -416,15 +416,15 @@ private function hProcSymbol _
 
 	if( do_call = FALSE ) then
 		'' special case: property
-	    if( symbIsProperty( sym ) ) then
-	      	do_call = TRUE
+			if( symbIsProperty( sym ) ) then
+			do_call = TRUE
 
-	    	'' unless it's inside a PROPERTY GET block
-	        if( symbIsProperty( parser.currproc ) ) then
-	        	if( symbGetProcParams( parser.currproc ) = 1 ) then
-	            	if( symbIsProcOverloadOf( parser.currproc, sym ) ) then
-	                	do_call = FALSE
-	                end if
+			'' unless it's inside a PROPERTY GET block
+			if( symbIsProperty( parser.currproc ) ) then
+				if( symbGetProcParams( parser.currproc ) = 1 ) then
+					if( symbIsProcOverloadOf( parser.currproc, sym ) ) then
+						do_call = FALSE
+					end if
 				end if
 			end if
 		end if
@@ -654,13 +654,13 @@ private function hAssignOrCall _
 
 	function = FALSE
 
-    do while( chain_ <> NULL )
+	do while( chain_ <> NULL )
 
-    	dim as FBSYMBOL ptr sym = chain_->sym
-    	do
-	    	select case as const symbGetClass( sym )
-	    	'' proc?
-	    	case FB_SYMBCLASS_PROC
+		dim as FBSYMBOL ptr sym = chain_->sym
+		do
+			select case as const symbGetClass( sym )
+			'' proc?
+			case FB_SYMBCLASS_PROC
 				return hProcSymbol( base_parent, sym, iscall, options )
 
 			case FB_SYMBCLASS_VAR
@@ -681,9 +681,9 @@ private function hAssignOrCall _
 				'' then let cAssignment() show & handle the error.
 				return hAssignOrPtrCall( cConstant( sym ), iscall )
 
-	  		'' quirk-keyword?
-	  		case FB_SYMBCLASS_KEYWORD
-	  			return cQuirkStmt( sym->key.id )
+			'' quirk-keyword?
+			case FB_SYMBCLASS_KEYWORD
+				return cQuirkStmt( sym->key.id )
 
 			end select
 
@@ -698,12 +698,12 @@ end function
 private function hProcCallOrAssign_QB( ) as integer
 	function = FALSE
 
- 	select case as const lexGetClass( )
-    case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD, FB_TKCLASS_OPERATOR
+	select case as const lexGetClass( )
+	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD, FB_TKCLASS_OPERATOR
 
 		return hAssignOrCall_QB( lexGetSymChain( ), FALSE )
 
-  	case FB_TKCLASS_KEYWORD
+	case FB_TKCLASS_KEYWORD
 
 		if( lexGetToken( ) <> FB_TK_CALL ) then
 			return hAssignOrCall_QB( lexGetSymChain( ), FALSE )
@@ -716,20 +716,20 @@ private function hProcCallOrAssign_QB( ) as integer
 
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
-  		if( lexGetSymChain( ) = NULL ) then
+		if( lexGetSymChain( ) = NULL ) then
 			return hForwardCall( )
 		else
 			return hAssignOrCall_QB( lexGetSymChain( ), TRUE )
 		end if
 
-  	end select
+	end select
 
 end function
 
 '':::::
 ''ProcCallOrAssign=   CALL ID ('(' ProcParamList ')')?
 ''                |   ID ProcParamList?
-''				  |	  (ID | FUNCTION | OPERATOR | PROPERTY) '=' Expression .
+''                |   (ID | FUNCTION | OPERATOR | PROPERTY) '=' Expression .
 ''
 function cProcCallOrAssign _
 	( _
@@ -741,19 +741,19 @@ function cProcCallOrAssign _
 
 	function = FALSE
 
-    '' QB mode?
-    if( env.clopt.lang = FB_LANG_QB ) then
-    	return hProcCallOrAssign_QB( )
-    end if
+	'' QB mode?
+	if( env.clopt.lang = FB_LANG_QB ) then
+		return hProcCallOrAssign_QB( )
+	end if
 
-  	select case as const lexGetClass( )
-    case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
+	select case as const lexGetClass( )
+	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
 
 		chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
 
 		return hAssignOrCall( base_parent, chain_, FALSE )
 
-  	case FB_TKCLASS_KEYWORD
+	case FB_TKCLASS_KEYWORD
 
 		select case as const lexGetToken( )
 		'' FUNCTION?
@@ -845,7 +845,7 @@ function cProcCallOrAssign _
 		'' CALL?
 		case FB_TK_CALL
 
-    		if( fbLangOptIsSet( FB_LANG_OPT_CALL ) = FALSE ) then
+			if( fbLangOptIsSet( FB_LANG_OPT_CALL ) = FALSE ) then
 				errReportNotAllowed( FB_LANG_OPT_CALL )
 				'' error recovery: skip stmt
 				hSkipStmt( )
@@ -860,8 +860,8 @@ function cProcCallOrAssign _
 			'' CALL
 			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
- 			chain_ = cIdentifier( base_parent )
-  			if( chain_ <> NULL ) then
+			chain_ = cIdentifier( base_parent )
+			if( chain_ <> NULL ) then
 				return hAssignOrCall( base_parent, chain_, TRUE )
 			end if
 
@@ -870,7 +870,7 @@ function cProcCallOrAssign _
 
 		end select
 
-  	case FB_TKCLASS_OPERATOR
+	case FB_TKCLASS_OPERATOR
 		if( lexGetToken( ) = FB_TK_DELETE ) then
 			cOperatorDelete( )
 			return TRUE
@@ -880,25 +880,25 @@ function cProcCallOrAssign _
 
 		'' '.'?
 		if( lexGetToken( ) = CHAR_DOT ) then
-  			'' inside a WITH block?
+			'' inside a WITH block?
 			if( parser.stmt.with ) then
 				'' not '..'?
 				if( lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) <> CHAR_DOT ) then
 					expr = cWithVariable( fbGetCheckArray( ) )
-  					if( expr = NULL ) then
-  						exit function
-  					end if
+					if( expr = NULL ) then
+						exit function
+					end if
 
-  					return cAssignmentOrPtrCallEx( expr )
-  				end if
-  			end if
+					return cAssignmentOrPtrCallEx( expr )
+				end if
+			end if
 
-  			'' global namespace access..
- 			chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
-  			if( chain_ <> NULL ) then
-  				return hAssignOrCall( base_parent, chain_, FALSE )
-  			end if
-  		end if
+			'' global namespace access..
+			chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
+			if( chain_ <> NULL ) then
+				return hAssignOrCall( base_parent, chain_, FALSE )
+			end if
+		end if
 
 	end select
 
@@ -1014,7 +1014,7 @@ private function hBaseMemberAccess( ) as integer
 	end if
 
 	var parent = symbGetNamespace( proc )
-	
+
 	'' is class derived?
 	var base_ = parent->udt.base
 
@@ -1031,7 +1031,7 @@ private function hBaseMemberAccess( ) as integer
 
 		'' skip '.'
 		lexSkipToken( )
-	
+
 		'' (BASE '.')?
 		if( lexGetToken() <> FB_TK_BASE ) then
 			exit do
@@ -1060,7 +1060,7 @@ function hForwardCall( ) as integer
 		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
 			'' if inside a namespace, symbols can't contain periods (.)'s
 			if( symbIsGlobalNamespc( ) = FALSE ) then
-  				if( lexGetPeriodPos( ) > 0 ) then
+				if( lexGetPeriodPos( ) > 0 ) then
 					errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
 				end if
 			end if
@@ -1080,9 +1080,9 @@ function hForwardCall( ) as integer
 	end if
 
 	'' don't report on suffix, was already checked above
-    lexSkipToken( )
+	lexSkipToken( )
 
-    dim as FBSYMBOL ptr proc = symbPreAddProc( id )
+	dim as FBSYMBOL ptr proc = symbPreAddProc( id )
 
 	'' '('?
 	dim as integer check_prnt = FALSE
@@ -1127,9 +1127,9 @@ function hForwardCall( ) as integer
 		arg->mode = INVALID
 
 		'' ','
-	   	if( lexGetToken( ) <> CHAR_COMMA ) then
-	   		exit do
-	   	end if
+		if( lexGetToken( ) <> CHAR_COMMA ) then
+			exit do
+		end if
 
 		lexSkipToken( )
 	loop
@@ -1146,10 +1146,10 @@ function hForwardCall( ) as integer
 	end if
 
 	proc = symbAddProc( proc, id, NULL, FB_DATATYPE_VOID, NULL, 0, 0, env.target.fbcall, FB_SYMBOPT_NONE )
-    if( proc = NULL ) then
+	if( proc = NULL ) then
 		errReport( FB_ERRMSG_DUPDEFINITION, TRUE )
 		exit function
-    end if
+	end if
 
 	astAdd( cProcArgList( NULL, proc, NULL, @arg_list, FB_PARSEROPT_OPTONLY ) )
 	function = TRUE

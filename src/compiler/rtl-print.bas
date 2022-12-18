@@ -19,7 +19,7 @@
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_PrintBool( byval fnum as const long = 0, byval x as const boolean, byval mask as const long ) '/ _
 		( _
@@ -31,7 +31,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_BOOLEAN ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_PrintByte( byval fnum as const long = 0, byval x as const byte, byval mask as const long ) '/ _
 		( _
@@ -43,7 +43,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_BYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_PrintUByte( byval fnum as const long = 0, byval x as const ubyte, byval mask as const long ) '/ _
 		( _
@@ -55,7 +55,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_PrintShort( byval fnum as const long = 0, byval x as const short, byval mask as const long ) '/ _
 		( _
@@ -67,7 +67,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_SHORT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_PrintUShort( byval fnum as const long = 0, byval x as const ushort, byval mask as const long ) '/ _
 		( _
@@ -79,7 +79,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_USHORT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_PrintInt( byval fnum as const long = 0, byval x as const long, byval mask as const long ) '/ _
 		( _
@@ -91,7 +91,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_PrintUInt( byval fnum as const long = 0, byval x as const ulong, byval mask as const long ) '/ _
 		( _
@@ -103,7 +103,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_PrintLongint( byval fnum as const integer = 0, byval x as const longint, byval mask as const long ) '/ _
 		( _
@@ -115,7 +115,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_PrintULongint( byval fnum as const long = 0, byval x as const ulongint, byval mask as const long ) '/ _
 		( _
@@ -127,7 +127,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_ULONGINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_PrintSingle( byval fnum as const long = 0, byval x as const single, byval mask as const long ) '/ _
 		( _
@@ -139,7 +139,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_PrintDouble( byval fnum as const long = 0, byval x as const double, byval mask as const long ) '/ _
 		( _
@@ -151,7 +151,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_DOUBLE ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_PrintString( byval fnum as const long = 0, byref x as const string, byval mask as const long ) '/ _
 		( _
@@ -163,7 +163,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_PrintWstr( byval fnum as const long = 0, byval x as const wstring ptr, byval mask as const long ) '/ _
 		( _
@@ -175,174 +175,174 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_WCHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_LPrintVoid( byval fnum as const long = 0, byval mask as const long ) '/ _
 		( _
 			@FB_RTL_LPRINTVOID, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
+			@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_LPrintBool( byval fnum as const long = 0, byval x as const boolean, byval mask as const long ) '/ _
 		( _
 			@FB_RTL_LPRINTBOOL, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@rtlPrinter_cb, FB_RTL_OPT_NOQB, _
+			@rtlPrinter_cb, FB_RTL_OPT_NOQB, _
 			3, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_BOOLEAN ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_LPrintByte( byval fnum as const long = 0, byval x as const byte, byval const mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTBYTE, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
+			@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_BYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_LPrintUByte( byval fnum as const long = 0, byval x as const ubyte, byval mask as const long ) '/ _
 		( _
 			@FB_RTL_LPRINTUBYTE, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
+			@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_LPrintShort( byval fnum as const long = 0, byval x as const short, byval mask as const long ) '/ _
 		( _
 			@FB_RTL_LPRINTSHORT, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
+			@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_SHORT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_LPrintUShort( byval fnum as const long = 0, byval x as const ushort, byval mask as const long ) '/ _
 		( _
 			@FB_RTL_LPRINTUSHORT, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
+			@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_USHORT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_LPrintInt( byval fnum as const long = 0, byval x as const long, byval mask as const long ) '/ _
 		( _
 			@FB_RTL_LPRINTINT, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
+			@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_LPrintUInt( byval fnum as const long = 0, byval x as const ulong, byval mask as const long ) '/ _
 		( _
 			@FB_RTL_LPRINTUINT, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
+			@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_LPrintLongint( byval fnum as const long = 0, byval x as const longint, byval mask as const long ) '/ _
 		( _
 			@FB_RTL_LPRINTLONGINT, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
+			@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_LPrintULongint( byval fnum as const long = 0, byval x as const ulongint, byval mask as const long ) '/ _
 		( _
 			@FB_RTL_LPRINTULONGINT, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
+			@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_ULONGINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_LPrintSingle( byval fnum as const long = 0, byval x as const single, byval mask as const long ) '/ _
 		( _
 			@FB_RTL_LPRINTSINGLE, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
+			@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_LPrintDouble( byval fnum as const long = 0, byval x as const double, byval mask as const long ) '/ _
 		( _
 			@FB_RTL_LPRINTDOUBLE, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
+			@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_DOUBLE ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_LPrintString( byval fnum as const long = 0, byref x as const string, byval mask as const long ) '/ _
 		( _
 			@FB_RTL_LPRINTSTR, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
+			@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_LPrintWstr( byval fnum as const long = 0, byval x as const wstring ptr, byval mask as const long ) '/ _
 		( _
 			@FB_RTL_LPRINTWSTR, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
+			@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_WCHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_PrintSPC( byval fnum as const long = 0, byval n as const integer ) '/ _
 		( _
@@ -353,7 +353,7 @@
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_PrintTab( byval fnum as const long = 0, byval newcol as const long ) '/ _
 		( _
@@ -364,7 +364,7 @@
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_WriteVoid( byval fnum as const long = 0, byval mask as const long ) '/ _
 		( _
@@ -375,7 +375,7 @@
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_WriteBool( byval fnum as const long = 0, byval x as const boolean, byval mask as const long ) '/ _
 		( _
@@ -387,7 +387,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_BOOLEAN ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_WriteByte( byval fnum as const long = 0, byval x as const byte, byval mask as const long ) '/ _
 		( _
@@ -399,7 +399,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_BYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_WriteUByte( byval fnum as const long = 0, byval x as const ubyte, byval mask as const long ) '/ _
 		( _
@@ -411,7 +411,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_WriteShort( byval fnum as const long = 0, byval x as const short, byval mask as const long ) '/ _
 		( _
@@ -423,7 +423,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_SHORT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_WriteUShort( byval fnum as const long = 0, byval x as const ushort, byval mask as const long ) '/ _
 		( _
@@ -435,7 +435,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_USHORT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_WriteInt( byval fnum as const long = 0, byval x as const long, byval mask as const long ) '/ _
 		( _
@@ -447,7 +447,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_WriteUInt( byval fnum as const long = 0, byval x as const ulong, byval mask as const long ) '/ _
 		( _
@@ -459,7 +459,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_WriteLongint( byval fnum as const long = 0, byval x as const longint, byval mask as const long ) '/ _
 		( _
@@ -471,7 +471,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_WriteULongint( byval fnum as const long = 0, byval x as const ulongint, byval mask as const long ) '/ _
 		( _
@@ -483,7 +483,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_ULONGINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_WriteSingle( byval fnum as const long = 0, byval x as const single, byval mask as const long ) '/ _
 		( _
@@ -495,7 +495,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_WriteDouble( byval fnum as const long = 0, byval x as const double, byval mask as const long ) '/ _
 		( _
@@ -507,7 +507,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_DOUBLE ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_WriteString( byval fnum as const long = 0, byref x as const string, byval mask as const long ) '/ _
 		( _
@@ -519,7 +519,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_WriteWstr( byval fnum as const long = 0, byval x as const wstring ptr, byval mask as const long ) '/ _
 		( _
@@ -531,7 +531,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_WCHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' function fb_PrintUsingInit( byref fmtstr as const string ) as long '/ _
 		( _
@@ -541,7 +541,7 @@
 			1, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' function fb_PrintUsingStr( byval fnum as const long, byref s as const string, byval const mask as long ) as long '/ _
 		( _
@@ -553,7 +553,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' function fb_PrintUsingWstr( byval fnum as const long, byval s as const wstring ptr, byval mask as const long ) as long '/ _
 		( _
@@ -565,7 +565,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_WCHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' function fb_PrintUsingSingle( byval fnum as const long, byval v as const single, byval mask as const long ) as long '/ _
 		( _
@@ -577,7 +577,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' function fb_PrintUsingDouble( byval fnum as const long, byval v as const double, byval mask as const long ) as long '/ _
 		( _
@@ -589,7 +589,7 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_DOUBLE ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' function fb_PrintUsingLongint( byval fnum as const long, byval v as const longint, byval mask as const long ) as long '/ _
 		( _
@@ -635,22 +635,22 @@
 			1, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' function fb_LPrintUsingInit( byref fmtstr as const string ) as long '/ _
 		( _
 			@FB_RTL_LPRINTUSGINIT, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
+			@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
-	 		} _
-	 	), _
-	 	/' EOL '/ _
-	 	( _
-	 		NULL _
-	 	) _
+			} _
+		), _
+		/' EOL '/ _
+		( _
+			NULL _
+		) _
 	 }
 
 '':::::
@@ -674,14 +674,14 @@ function rtlPrint _
 		byval iscomma as integer, _
 		byval issemicolon as integer, _
 		byval expr as ASTNODE ptr, _
-        byval islprint as integer = FALSE _
+		byval islprint as integer = FALSE _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
-    dim as integer mask = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
+	dim as integer mask = any
 
-    function = FALSE
+	function = FALSE
 
 	if( expr = NULL ) then
 		if( islprint ) then
@@ -811,20 +811,20 @@ function rtlPrint _
 		end select
 	end if
 
-    ''
+	''
 	proc = astNewCALL( f )
 
-    '' byval filenum as integer
-    if( astNewARG( proc, fileexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval filenum as integer
+	if( astNewARG( proc, fileexpr ) = NULL ) then
+		exit function
+	end if
 
-    if( expr <> NULL ) then
-    	'' byval? x as ???
-    	if( astNewARG( proc, expr ) = NULL ) then
- 			exit function
- 		end if
-    end if
+	if( expr <> NULL ) then
+		'' byval? x as ???
+		if( astNewARG( proc, expr ) = NULL ) then
+			exit function
+		end if
+	end if
 
 	'' byval mask as integer
 	mask = 0
@@ -839,10 +839,10 @@ function rtlPrint _
 		exit function
 	end if
 
-    ''
-    astAdd( proc )
+	''
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -855,13 +855,13 @@ function rtlPrintSPCTab _
 		byval islprint as integer = FALSE _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
-    if islprint then
-    	rtlPrinter_cb( NULL )
-    end if
+	if islprint then
+		rtlPrinter_cb( NULL )
+	end if
 
 	''
 	if( istab ) then
@@ -870,19 +870,19 @@ function rtlPrintSPCTab _
 		proc = astNewCALL( PROCLOOKUP( PRINTSPC ) )
 	end if
 
-    '' byval filenum as integer
-    if( astNewARG( proc, fileexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval filenum as integer
+	if( astNewARG( proc, fileexpr ) = NULL ) then
+		exit function
+	end if
 
-    '' byval n as integer
-    if( astNewARG( proc, expr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval n as integer
+	if( astNewARG( proc, expr ) = NULL ) then
+		exit function
+	end if
 
-    astAdd( proc )
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -894,9 +894,9 @@ function rtlWrite _
 		byval expr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
-    dim as integer mask = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
+	dim as integer mask = any
 
 	function = FALSE
 
@@ -957,22 +957,22 @@ function rtlWrite _
 		end select
 	end if
 
-    ''
+	''
 	proc = astNewCALL( f )
 
-    '' byval filenum as integer
-    if( astNewARG( proc, fileexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval filenum as integer
+	if( astNewARG( proc, fileexpr ) = NULL ) then
+		exit function
+	end if
 
-    if( expr <> NULL ) then
-    	'' byval? x as ???
-    	if( astNewARG( proc, expr ) = NULL ) then
- 			exit function
- 		end if
-    end if
+	if( expr <> NULL ) then
+		'' byval? x as ???
+		if( astNewARG( proc, expr ) = NULL ) then
+			exit function
+		end if
+	end if
 
-    '' byval mask as integer
+	'' byval mask as integer
 	mask = 0
 	if( iscomma ) then
 		mask or= FB_PRINTMASK_PAD
@@ -984,10 +984,10 @@ function rtlWrite _
 		exit function
 	end if
 
-    ''
-    astAdd( proc )
+	''
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -995,11 +995,11 @@ end function
 function rtlPrintUsingInit _
 	( _
 		byval usingexpr as ASTNODE ptr, _
-        byval islprint as integer = FALSE _
-	) as integer 
+		byval islprint as integer = FALSE _
+	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
 
 	function = FALSE
 
@@ -1009,16 +1009,16 @@ function rtlPrintUsingInit _
 	else
 		f = PROCLOOKUP( PRINTUSGINIT )
 	end if
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
-    '' fmtstr as string
-    if( astNewARG( proc, usingexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' fmtstr as string
+	if( astNewARG( proc, usingexpr ) = NULL ) then
+		exit function
+	end if
 
-    astAdd( proc )
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -1026,28 +1026,28 @@ end function
 function rtlPrintUsingEnd _
 	( _
 		byval fileexpr as ASTNODE ptr, _
-        byval islprint as integer = FALSE _
+		byval islprint as integer = FALSE _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
-    if islprint then
-    	rtlPrinter_cb( NULL )
-    end if
+	if islprint then
+		rtlPrinter_cb( NULL )
+	end if
 
 	''
-    proc = astNewCALL( PROCLOOKUP( PRINTUSGEND ) )
+	proc = astNewCALL( PROCLOOKUP( PRINTUSGEND ) )
 
-    '' byval filenum as integer
-    if( astNewARG( proc, fileexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval filenum as integer
+	if( astNewARG( proc, fileexpr ) = NULL ) then
+		exit function
+	end if
 
-    astAdd( proc )
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -1058,22 +1058,22 @@ function rtlPrintUsing _
 		byval expr as ASTNODE ptr, _
 		byval iscomma as integer, _
 		byval issemicolon as integer, _
-        byval islprint as integer = FALSE _
-    ) as integer
+		byval islprint as integer = FALSE _
+	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
-    dim as integer mask = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
+	dim as integer mask = any
 
 	function = FALSE
 
-    if( islprint ) then
-    	rtlPrinter_cb( NULL )
-    end if
+	if( islprint ) then
+		rtlPrinter_cb( NULL )
+	end if
 
-    if( expr = NULL ) then
-    	exit function
-    end if
+	if( expr = NULL ) then
+		exit function
+	end if
 
 	astTryOvlStringCONV( expr )
 
@@ -1122,17 +1122,17 @@ function rtlPrintUsing _
 
 	proc = astNewCALL( f )
 
-    '' byval filenum as integer
-    if( astNewARG( proc, fileexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval filenum as integer
+	if( astNewARG( proc, fileexpr ) = NULL ) then
+		exit function
+	end if
 
-    '' s as string or byval v as double
-    if( astNewARG( proc, expr ) = NULL ) then
- 		exit function
- 	end if
+	'' s as string or byval v as double
+	if( astNewARG( proc, expr ) = NULL ) then
+		exit function
+	end if
 
-    '' byval mask as integer
+	'' byval mask as integer
 	if( iscomma or issemicolon ) then
 		mask = 0
 
@@ -1152,10 +1152,10 @@ function rtlPrintUsing _
 		exit function
 	end if
 
-    ''
-    astAdd( proc )
+	''
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -1164,28 +1164,28 @@ function rtlWidthDev _
 	( _
 		byval device as ASTNODE ptr, _
 		byval width_arg as ASTNODE ptr, _
-        byval isfunc as integer _
+		byval isfunc as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
-    '' printer libraries are always required for width on devices
+	'' printer libraries are always required for width on devices
 	rtlPrinter_cb( NULL )
 
 	''
-    proc = astNewCALL( PROCLOOKUP( WIDTHDEV ) )
+	proc = astNewCALL( PROCLOOKUP( WIDTHDEV ) )
 
-    '' device as string
-    if( astNewARG( proc, device ) = NULL ) then
-    	exit function
-    end if
+	'' device as string
+	if( astNewARG( proc, device ) = NULL ) then
+		exit function
+	end if
 
-    '' byval width_arg as integer
-    if( astNewARG( proc, width_arg ) = NULL ) then
-    	exit function
-    end if
+	'' byval width_arg as integer
+	if( astNewARG( proc, width_arg ) = NULL ) then
+		exit function
+	end if
 
 	if( isfunc = FALSE ) then
 		astAdd( rtlErrorCheck( proc ) )

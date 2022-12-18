@@ -55,26 +55,26 @@ end function
 ''
 function cBoolExpression( ) as ASTNODE ptr
 	dim as integer op = any, dtorlistcookie = any
-    dim as ASTNODE ptr expr = any, logexpr = any
+	dim as ASTNODE ptr expr = any, logexpr = any
 
-    '' LogExpression
+	'' LogExpression
 	'' The first operand expression will always be executed
-    logexpr = cLogExpression( )
-    if( logexpr = NULL ) then
-	   	return NULL
-    end if
+	logexpr = cLogExpression( )
+	if( logexpr = NULL ) then
+		return NULL
+	end if
 
-    '' ( ... )*
-    do
-    	'' Logical operator
-    	select case as const lexGetToken( )
-    	case FB_TK_ANDALSO
-    		op = AST_OP_ANDALSO
-    	case FB_TK_ORELSE
-    		op = AST_OP_ORELSE
-    	case else
-      		exit do
-    	end select
+	'' ( ... )*
+	do
+		'' Logical operator
+		select case as const lexGetToken( )
+		case FB_TK_ANDALSO
+			op = AST_OP_ANDALSO
+		case FB_TK_ORELSE
+			op = AST_OP_ORELSE
+		case else
+			exit do
+		end select
 
 		'' Self-assignment? Then don't parse a BOP
 		if( hIsAssignToken( lexGetLookAhead( 1 ) ) ) then
@@ -99,7 +99,7 @@ function cBoolExpression( ) as ASTNODE ptr
 			'' error recovery: fake a node
 			logexpr = astNewCONSTi( 0 )
 		end if
-    loop
+	loop
 
 	function = logexpr
 end function
@@ -112,28 +112,28 @@ function cLogExpression _
 		_
 	) as ASTNODE ptr
 
-    dim as integer op = any
-    dim as ASTNODE ptr expr = any, logexpr = any
+	dim as integer op = any
+	dim as ASTNODE ptr expr = any, logexpr = any
 
-    '' LogOrExpression
-    logexpr = cLogOrExpression( )
-    if( logexpr = NULL ) then
-	   	return NULL
-    end if
+	'' LogOrExpression
+	logexpr = cLogOrExpression( )
+	if( logexpr = NULL ) then
+		return NULL
+	end if
 
-    '' ( ... )*
-    do
-    	'' Logical operator
-    	select case as const lexGetToken( )
-    	case FB_TK_XOR
-    		op = AST_OP_XOR
-    	case FB_TK_EQV
-    		op = AST_OP_EQV
-    	case FB_TK_IMP
- 			op = AST_OP_IMP
-    	case else
-      		exit do
-    	end select
+	'' ( ... )*
+	do
+		'' Logical operator
+		select case as const lexGetToken( )
+		case FB_TK_XOR
+			op = AST_OP_XOR
+		case FB_TK_EQV
+			op = AST_OP_EQV
+		case FB_TK_IMP
+			op = AST_OP_IMP
+		case else
+			exit do
+		end select
 
 		'' Self-assignment? Then don't parse a BOP
 		if( hIsAssignToken( lexGetLookAhead( 1 ) ) ) then
@@ -142,23 +142,23 @@ function cLogExpression _
 
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
-    	'' LogOrExpression
-    	expr = cLogOrExpression( )
-    	if( expr = NULL ) then
+		'' LogOrExpression
+		expr = cLogOrExpression( )
+		if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit do
-    	end if
+		end if
 
-    	'' do operation
-    	logexpr = astNewBOP( op, logexpr, expr )
+		'' do operation
+		logexpr = astNewBOP( op, logexpr, expr )
 
-        if( logexpr = NULL ) then
+		if( logexpr = NULL ) then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
 			logexpr = astNewCONSTi( 0 )
-        end if
+		end if
 
-    loop
+	loop
 
 	function = logexpr
 
@@ -172,20 +172,20 @@ function cLogOrExpression _
 		_
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr expr = any, logexpr = any
+	dim as ASTNODE ptr expr = any, logexpr = any
 
-    '' LogAndExpression
-    logexpr = cLogAndExpression( )
-    if( logexpr = NULL ) then
-	   	return NULL
-    end if
+	'' LogAndExpression
+	logexpr = cLogAndExpression( )
+	if( logexpr = NULL ) then
+		return NULL
+	end if
 
-    '' ( ... )*
-    do
-    	'' OR?
-    	if( lexGetToken( ) <> FB_TK_OR ) then
-    		exit do
-    	end if
+	'' ( ... )*
+	do
+		'' OR?
+		if( lexGetToken( ) <> FB_TK_OR ) then
+			exit do
+		end if
 
 		'' Self-assignment? Then don't parse a BOP
 		if( hIsAssignToken( lexGetLookAhead( 1 ) ) ) then
@@ -194,23 +194,23 @@ function cLogOrExpression _
 
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
-    	'' LogAndExpression
-    	expr = cLogAndExpression(  )
-    	if( expr = NULL ) then
+		'' LogAndExpression
+		expr = cLogAndExpression(  )
+		if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit do
-    	end if
+		end if
 
-    	'' do operation
-    	logexpr = astNewBOP( AST_OP_OR, logexpr, expr )
+		'' do operation
+		logexpr = astNewBOP( AST_OP_OR, logexpr, expr )
 
-        if( logexpr = NULL ) then
+		if( logexpr = NULL ) then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
 			logexpr = astNewCONSTi( 0 )
-        end if
+		end if
 
-    loop
+	loop
 
 	function = logexpr
 
@@ -224,20 +224,20 @@ function cLogAndExpression _
 		_
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr expr = any, logexpr = any
+	dim as ASTNODE ptr expr = any, logexpr = any
 
-    '' RelExpression
-    logexpr = cRelExpression( )
-    if( logexpr = NULL ) then
-	   	return NULL
-    end if
+	'' RelExpression
+	logexpr = cRelExpression( )
+	if( logexpr = NULL ) then
+		return NULL
+	end if
 
-    '' ( ... )*
-    do
-    	'' AND?
-    	if( lexGetToken( ) <> FB_TK_AND ) then
-    		exit do
-    	end if
+	'' ( ... )*
+	do
+		'' AND?
+		if( lexGetToken( ) <> FB_TK_AND ) then
+			exit do
+		end if
 
 		'' Self-assignment? Then don't parse a BOP
 		if( hIsAssignToken( lexGetLookAhead( 1 ) ) ) then
@@ -246,23 +246,23 @@ function cLogAndExpression _
 
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
-    	'' RelExpression
-    	expr = cRelExpression( )
-    	if( expr = NULL ) then
+		'' RelExpression
+		expr = cRelExpression( )
+		if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit do
-    	end if
+		end if
 
-    	'' do operation
-    	logexpr = astNewBOP( AST_OP_AND, logexpr, expr )
+		'' do operation
+		logexpr = astNewBOP( AST_OP_AND, logexpr, expr )
 
-        if( logexpr = NULL ) then
+		if( logexpr = NULL ) then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
 			logexpr = astNewCONSTi( 0 )
-        end if
+		end if
 
-    loop
+	loop
 
 	function = logexpr
 
@@ -276,20 +276,20 @@ function cRelExpression _
 		_
 	) as ASTNODE ptr
 
-    dim as integer op = any
-    dim as ASTNODE ptr expr = any, relexpr = any
+	dim as integer op = any
+	dim as ASTNODE ptr expr = any, relexpr = any
 
-   	'' IsExpression
-   	relexpr = cIsExpression(  )
-   	if( relexpr = NULL ) then
-   		return NULL
-   	end if
+	'' IsExpression
+	relexpr = cIsExpression(  )
+	if( relexpr = NULL ) then
+		return NULL
+	end if
 
-    '' ( ... )*
-    do
-    	'' Relational operator
-    	select case as const lexGetToken( )
-    	case FB_TK_EQ
+	'' ( ... )*
+	do
+		'' Relational operator
+		select case as const lexGetToken( )
+		case FB_TK_EQ
 			parser.have_eq_outside_parens = (parser.prntcnt = 0)
 
 			'' outside parentheses? (cParentExpression() would have
@@ -297,45 +297,45 @@ function cRelExpression _
 			if( fbGetEqInParensOnly( ) ) then
 				exit do
 			end if
-    		op = AST_OP_EQ
-    	case FB_TK_GT
+			op = AST_OP_EQ
+		case FB_TK_GT
 			if( fbGetGtInParensOnly( ) ) then
 				exit do
 			end if
-    		op = AST_OP_GT
-    	case FB_TK_LT
-    		op = AST_OP_LT
-    	case FB_TK_NE
-    		op = AST_OP_NE
-    	case FB_TK_LE
-    		op = AST_OP_LE
-    	case FB_TK_GE
- 			op = AST_OP_GE
- 			assert( fbGetGtInParensOnly( ) = FALSE )
-    	case else
-      		exit do
-    	end select
+			op = AST_OP_GT
+		case FB_TK_LT
+			op = AST_OP_LT
+		case FB_TK_NE
+			op = AST_OP_NE
+		case FB_TK_LE
+			op = AST_OP_LE
+		case FB_TK_GE
+			op = AST_OP_GE
+			assert( fbGetGtInParensOnly( ) = FALSE )
+		case else
+			exit do
+		end select
 
-    	lexSkipToken( )
+		lexSkipToken( )
 
-    	'' IsExpression
-    	expr = cIsExpression(  )
-    	if( expr = NULL ) then
+		'' IsExpression
+		expr = cIsExpression(  )
+		if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit do
-    	end if
+		end if
 
-   		'' do operation
-   		relexpr = astNewBOP( op, relexpr, expr )
+		'' do operation
+		relexpr = astNewBOP( op, relexpr, expr )
 
-    	if( relexpr = NULL ) Then
+		if( relexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
 			relexpr = astNewCONSTi( 0 )
-    	end if
-    loop
+		end if
+	loop
 
-    function = relexpr
+	function = relexpr
 
 end function
 
@@ -347,15 +347,15 @@ function cIsExpression _
 		_
 	) as ASTNODE ptr
 
-   	'' CatExpression
-   	dim as ASTNODE ptr isexpr = cCatExpression(  )
-   	if( isexpr = NULL ) then
-   		return NULL
-   	end if
+	'' CatExpression
+	dim as ASTNODE ptr isexpr = cCatExpression(  )
+	if( isexpr = NULL ) then
+		return NULL
+	end if
 
-    '' IS?
-    if( lexGetToken( ) <> FB_TK_IS ) then
-    	return isexpr
+	'' IS?
+	if( lexGetToken( ) <> FB_TK_IS ) then
+		return isexpr
 	end if
 
 	'' must be a struct with RTTI info
@@ -387,7 +387,7 @@ function cIsExpression _
 			errReport( FB_ERRMSG_TYPEHASNORTTI )
 			'' error recovery: fake a node
 			return astNewCONSTi( 0 )
-		
+
 		elseif( symbGetUDTBaseLevel( subtype, astGetSubtype( isexpr ) ) = 0 ) then
 			errReport( FB_ERRMSG_TYPESARENOTRELATED )
 			'' error recovery: fake a node
@@ -398,10 +398,10 @@ function cIsExpression _
 		'' error recovery: fake a node
 		return astNewCONSTi( 0 )
 	end if
-	
+
 	'' point to the RTTI table
 	var expr = astNewVAR( subtype->udt.ext->rtti )
-	
+
 	'' do operation
 	isexpr = astNewBOP( AST_OP_IS, isexpr, expr )
 
@@ -411,7 +411,7 @@ function cIsExpression _
 		isexpr = astNewCONSTi( 0 )
 	end if
 
-    function = isexpr
+	function = isexpr
 
 end function
 
@@ -446,20 +446,20 @@ function cCatExpression _
 		lexSkipToken( )
 
 		'' AddExpression
-    	expr = cAddExpression(  )
-    	if( expr = NULL ) then
+		expr = cAddExpression(  )
+		if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit do
-    	end if
+		end if
 
-    	'' concatenate
-    	catexpr = astNewBOP( AST_OP_CONCAT, catexpr, expr )
+		'' concatenate
+		catexpr = astNewBOP( AST_OP_CONCAT, catexpr, expr )
 
-        if( catexpr = NULL ) then
+		if( catexpr = NULL ) then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a new node
 			catexpr = astNewCONSTstr( NULL )
-        end if
+		end if
 
 	loop
 
@@ -475,55 +475,55 @@ function cAddExpression _
 		_
 	) as ASTNODE ptr
 
-    dim as integer op = any
-    dim as ASTNODE ptr expr = any, addexpr = any
+	dim as integer op = any
+	dim as ASTNODE ptr expr = any, addexpr = any
 
- 	'' ShiftExpression
-   	addexpr = cShiftExpression(  )
-   	if( addexpr = NULL ) then
-   		return NULL
-   	end if
+	'' ShiftExpression
+	addexpr = cShiftExpression(  )
+	if( addexpr = NULL ) then
+		return NULL
+	end if
 
-    '' ( ... )*
-    do
-    	'' Add operator
-    	select case lexGetToken( )
-    	case CHAR_PLUS
-    		op = AST_OP_ADD
-    	case CHAR_MINUS
- 			op = AST_OP_SUB
-    	case else
-      		exit do
-    	end select
+	'' ( ... )*
+	do
+		'' Add operator
+		select case lexGetToken( )
+		case CHAR_PLUS
+			op = AST_OP_ADD
+		case CHAR_MINUS
+			op = AST_OP_SUB
+		case else
+			exit do
+		end select
 
 		'' Self-assignment? Then don't parse a BOP
 		if( hIsAssignToken( lexGetLookAhead( 1 ) ) ) then
 			exit do
 		end if
 
-    	lexSkipToken( )
+		lexSkipToken( )
 
-    	'' ShiftExpression
-    	expr = cShiftExpression( )
-    	if( expr = NULL ) then
+		'' ShiftExpression
+		expr = cShiftExpression( )
+		if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit do
-    	end if
+		end if
 
-    	addexpr = astNewBOP( op, _
-    						 addexpr, _
-    						 expr, _
-    						 NULL, _
-    						 AST_OPOPT_DEFAULT or AST_OPOPT_DOPTRARITH )
+		addexpr = astNewBOP( op, _
+		                     addexpr, _
+		                     expr, _
+		                     NULL, _
+		                     AST_OPOPT_DEFAULT or AST_OPOPT_DOPTRARITH )
 
-    	if( addexpr = NULL ) Then
+		if( addexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
 			addexpr = astNewCONSTi( 0 )
-    	end if
-    loop
+		end if
+	loop
 
-    function = addexpr
+	function = addexpr
 
 end function
 
@@ -535,26 +535,26 @@ function cShiftExpression _
 		_
 	) as ASTNODE ptr
 
-    dim as integer op = any
-    dim as ASTNODE ptr expr = any, shiftexpr = any
+	dim as integer op = any
+	dim as ASTNODE ptr expr = any, shiftexpr = any
 
-   	'' ModExpression
-   	shiftexpr = cModExpression(  )
-   	if( shiftexpr = NULL ) then
-   		return NULL
-   	end if
+	'' ModExpression
+	shiftexpr = cModExpression(  )
+	if( shiftexpr = NULL ) then
+		return NULL
+	end if
 
-    '' ( ... )*
-    do
-    	'' Shift operator
-    	select case lexGetToken( )
-    	case FB_TK_SHL
-    		op = AST_OP_SHL
-    	case FB_TK_SHR
- 			op = AST_OP_SHR
-    	case else
-      		exit do
-    	end select
+	'' ( ... )*
+	do
+		'' Shift operator
+		select case lexGetToken( )
+		case FB_TK_SHL
+			op = AST_OP_SHL
+		case FB_TK_SHR
+			op = AST_OP_SHR
+		case else
+			exit do
+		end select
 
 		'' Self-assignment? Then don't parse a BOP
 		if( hIsAssignToken( lexGetLookAhead( 1 ) ) ) then
@@ -563,24 +563,24 @@ function cShiftExpression _
 
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
-    	'' ModExpression
-    	expr = cModExpression(  )
-    	if( expr = NULL ) then
+		'' ModExpression
+		expr = cModExpression(  )
+		if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit do
-    	end if
+		end if
 
-    	'' do operation
-    	shiftexpr = astNewBOP( op, shiftexpr, expr )
+		'' do operation
+		shiftexpr = astNewBOP( op, shiftexpr, expr )
 
-    	if( shiftexpr = NULL ) Then
+		if( shiftexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
 			shiftexpr = astNewCONSTi( 0 )
-    	end if
-    loop
+		end if
+	loop
 
-    function = shiftexpr
+	function = shiftexpr
 
 end function
 
@@ -592,16 +592,16 @@ function cModExpression _
 		_
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr expr = any, modexpr = any
+	dim as ASTNODE ptr expr = any, modexpr = any
 
-   	'' IntDivExpression
-   	modexpr = cIntDivExpression( )
-   	if( modexpr = NULL ) then
-   		return NULL
-   	end if
+	'' IntDivExpression
+	modexpr = cIntDivExpression( )
+	if( modexpr = NULL ) then
+		return NULL
+	end if
 
-    '' ( ... )*
-    do
+	'' ( ... )*
+	do
 		'' MOD
 		if( lexGetToken( ) <> FB_TK_MOD ) then
 			exit do
@@ -614,24 +614,24 @@ function cModExpression _
 
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
-    	'' IntDivExpression
-    	expr = cIntDivExpression( )
-    	if( expr = NULL ) then
+		'' IntDivExpression
+		expr = cIntDivExpression( )
+		if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit do
-    	end if
+		end if
 
-    	'' do operation
-    	modexpr = astNewBOP( AST_OP_MOD, modexpr, expr )
+		'' do operation
+		modexpr = astNewBOP( AST_OP_MOD, modexpr, expr )
 
-    	if( modexpr = NULL ) Then
+		if( modexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
 			modexpr = astNewCONSTi( 0 )
-    	end if
-    loop
+		end if
+	loop
 
-    function = modexpr
+	function = modexpr
 
 end function
 
@@ -645,14 +645,14 @@ function cIntDivExpression _
 
 	dim as ASTNODE ptr expr = any, idivexpr = any
 
-   	'' MultExpression
-   	idivexpr = cMultExpression( )
-   	if( idivexpr = NULL ) then
-   		return NULL
-   	end if
+	'' MultExpression
+	idivexpr = cMultExpression( )
+	if( idivexpr = NULL ) then
+		return NULL
+	end if
 
-    '' ( ... )*
-    do
+	'' ( ... )*
+	do
 		'' '\'
 		if( lexGetToken( ) <> CHAR_RSLASH ) then
 			exit do
@@ -663,26 +663,26 @@ function cIntDivExpression _
 			exit do
 		end if
 
- 		lexSkipToken( )
+		lexSkipToken( )
 
-    	'' MultExpression
-    	expr = cMultExpression( )
-    	if( expr = NULL ) then
+		'' MultExpression
+		expr = cMultExpression( )
+		if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit do
-    	end if
+		end if
 
-    	'' do operation
-    	idivexpr = astNewBOP( AST_OP_INTDIV, idivexpr, expr )
+		'' do operation
+		idivexpr = astNewBOP( AST_OP_INTDIV, idivexpr, expr )
 
-    	if( idivexpr = NULL ) Then
+		if( idivexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
 			idivexpr = astNewCONSTi( 0 )
-    	end if
-    loop
+		end if
+	loop
 
-    function = idivexpr
+	function = idivexpr
 
 end function
 
@@ -694,52 +694,52 @@ function cMultExpression _
 		_
 	) as ASTNODE ptr
 
-    dim as integer op = any
-    dim as ASTNODE ptr expr = any, mulexpr = any
+	dim as integer op = any
+	dim as ASTNODE ptr expr = any, mulexpr = any
 
-   	'' ExpExpression
-   	mulexpr = cExpExpression( )
-   	if( mulexpr = NULL ) then
-   		return NULL
-   	end if
+	'' ExpExpression
+	mulexpr = cExpExpression( )
+	if( mulexpr = NULL ) then
+		return NULL
+	end if
 
-    '' ( ... )*
-    do
-    	'' Mult operator
-    	select case lexGetToken( )
-    	case CHAR_TIMES
-    		op = AST_OP_MUL
-    	case CHAR_SLASH
- 			op = AST_OP_DIV
-    	case else
-      		exit do
-    	end select
+	'' ( ... )*
+	do
+		'' Mult operator
+		select case lexGetToken( )
+		case CHAR_TIMES
+			op = AST_OP_MUL
+		case CHAR_SLASH
+			op = AST_OP_DIV
+		case else
+			exit do
+		end select
 
 		'' Self-assignment? Then don't parse a BOP
 		if( hIsAssignToken( lexGetLookAhead( 1 ) ) ) then
 			exit do
 		end if
 
-    	lexSkipToken( )
+		lexSkipToken( )
 
-    	'' ExpExpression
-    	expr = cExpExpression(  )
-    	if( expr = NULL ) then
+		'' ExpExpression
+		expr = cExpExpression(  )
+		if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit do
-    	end if
+		end if
 
-    	'' do operation
-    	mulexpr = astNewBOP( op, mulexpr, expr )
+		'' do operation
+		mulexpr = astNewBOP( op, mulexpr, expr )
 
-    	if( mulexpr = NULL ) Then
+		if( mulexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
 			mulexpr = astNewCONSTi( 0 )
-    	end if
-    loop
+		end if
+	loop
 
-    function = mulexpr
+	function = mulexpr
 
 end function
 
@@ -753,14 +753,14 @@ function cExpExpression _
 
 	dim as ASTNODE ptr expr = any, expexpr = any
 
-   	'' NegNotExpression
-   	expexpr = cNegNotExpression( )
-   	if( expexpr = NULL ) then
-   		return NULL
-   	end if
+	'' NegNotExpression
+	expexpr = cNegNotExpression( )
+	if( expexpr = NULL ) then
+		return NULL
+	end if
 
-    '' ( '^' NegNotExpression )*
-    do
+	'' ( '^' NegNotExpression )*
+	do
 		if( lexGetToken( ) <> CHAR_CART ) then
 			exit do
 		end if
@@ -772,23 +772,23 @@ function cExpExpression _
 
 		lexSkipToken( )
 
-    	'' NegNotExpression
-    	expr = cNegNotExpression(  )
-    	if( expr = NULL ) then
+		'' NegNotExpression
+		expr = cNegNotExpression(  )
+		if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit do
-    	end if
+		end if
 
-    	'' do operation
-    	expexpr = astNewBOP( AST_OP_POW, expexpr, expr )
+		'' do operation
+		expexpr = astNewBOP( AST_OP_POW, expexpr, expr )
 
-    	if( expexpr = NULL ) Then
+		if( expexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
 			expexpr = astNewCONSTf( 0, FB_DATATYPE_DOUBLE )
-    	end if
-    loop
+		end if
+	loop
 
-    function = expexpr
+	function = expexpr
 
 end function

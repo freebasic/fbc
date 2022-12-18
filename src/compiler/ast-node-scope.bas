@@ -25,8 +25,8 @@ declare sub hDelLocals _
 	)
 
 function astScopeBegin( ) as ASTNODE ptr
-    dim as ASTNODE ptr n = any
-    dim as FBSYMBOL ptr s = any
+	dim as ASTNODE ptr n = any
+	dim as FBSYMBOL ptr s = any
 
 	if( parser.scope >= FB_MAXSCOPEDEPTH ) then
 		return NULL
@@ -42,9 +42,9 @@ function astScopeBegin( ) as ASTNODE ptr
 
 	s = symbAddScope( n )
 
-    '' change to scope's symbol tb
-    n->sym = s
-    n->block.parent = ast.currblock
+	'' change to scope's symbol tb
+	n->sym = s
+	n->block.parent = ast.currblock
 	n->block.inistmt = parser.stmt.cnt
 
 	'' must update the stmt count or any internal label
@@ -54,7 +54,7 @@ function astScopeBegin( ) as ASTNODE ptr
 	''
 	parser.scope += 1
 	parser.currblock = s
-    ast.currblock = n
+	ast.currblock = n
 
 	symbSetCurrentSymTb( @s->scp.symtb )
 
@@ -144,20 +144,20 @@ sub astScopeEnd( byval n as ASTNODE ptr )
 end sub
 
 function astScopeUpdBreakList( byval proc as ASTNODE ptr ) as integer
-    dim as ASTNODE ptr n = any
+	dim as ASTNODE ptr n = any
 
-    function = FALSE
+	function = FALSE
 
-    '' for each break in this proc..
-    n = proc->block.breaklist.head
-    do while( n <> NULL )
+	'' for each break in this proc..
+	n = proc->block.breaklist.head
+	do while( n <> NULL )
 
-    	'' EXIT SUB | FUNCTION?
-    	if( n->sym = proc->block.exitlabel ) then
-    		'' special case due the non implicit scope block, that
-    		'' can't be created for procs because the implicit
-    		'' main() function
-    		hDelLocals( n, FALSE )
+		'' EXIT SUB | FUNCTION?
+		if( n->sym = proc->block.exitlabel ) then
+			'' special case due the non implicit scope block, that
+			'' can't be created for procs because the implicit
+			'' main() function
+			hDelLocals( n, FALSE )
 
 		else
 			if( hCheckBranch( proc, n ) = FALSE ) then
@@ -165,11 +165,11 @@ function astScopeUpdBreakList( byval proc as ASTNODE ptr ) as integer
 			end if
 		end if
 
-        '' next
-    	n = n->next
-    loop
+		'' next
+		n = n->next
+	loop
 
-    function = TRUE
+	function = TRUE
 end function
 
 '':::::
@@ -289,41 +289,41 @@ private sub hCheckCrossing _
 	dim as integer stmt = any
 
 	'' search for:
-	'' 		goto label
-	'' 		redim array(...) as type | dim obj as object() | dim str as string
-	'' 		label:
+	''      goto label
+	''      redim array(...) as type | dim obj as object() | dim str as string
+	''      label:
 
-    if( symbIsScope( blk ) ) then
-    	s = symbGetScopeSymbtb( blk ).head
-    else
-    	s = symbGetProcSymbtb( blk ).head
-    end if
+	if( symbIsScope( blk ) ) then
+		s = symbGetScopeSymbtb( blk ).head
+	else
+		s = symbGetProcSymbtb( blk ).head
+	end if
 
-    do while( s <> NULL )
-    	if( symbIsVar( s ) ) then
-    		stmt = symbGetVarStmt( s )
-    		if( stmt > top_stmt ) then
-    			if( stmt < bot_stmt ) then
-    				if( symbGetVarHasCtor( s ) ) then
+	do while( s <> NULL )
+		if( symbIsVar( s ) ) then
+			stmt = symbGetVarStmt( s )
+			if( stmt > top_stmt ) then
+				if( stmt < bot_stmt ) then
+					if( symbGetVarHasCtor( s ) ) then
 						hBranchError( FB_ERRMSG_BRANCHCROSSINGDYNDATADEF, n, s )
 
-    				else
-    					'' not static, shared or temp?
-    					if( (s->attrib and (FB_SYMBATTRIB_STATIC or _
-    										FB_SYMBATTRIB_SHARED or _
-    										FB_SYMBATTRIB_TEMP)) = 0 ) then
-    						'' must be cleaned?
-    						if( symbGetDontInit( s ) = FALSE ) then
-    							hBranchWarning( FB_WARNINGMSG_BRANCHCROSSINGLOCALVAR, n, s )
-    						end if
-    					end if
-    				end if
-    			end if
-    		end if
-    	end if
+					else
+						'' not static, shared or temp?
+						if( (s->attrib and (FB_SYMBATTRIB_STATIC or _
+						                    FB_SYMBATTRIB_SHARED or _
+						                    FB_SYMBATTRIB_TEMP)) = 0 ) then
+							'' must be cleaned?
+							if( symbGetDontInit( s ) = FALSE ) then
+								hBranchWarning( FB_WARNINGMSG_BRANCHCROSSINGLOCALVAR, n, s )
+							end if
+						end if
+					end if
+				end if
+			end if
+		end if
 
-    	s = s->next
-    loop
+		s = s->next
+	loop
 end sub
 
 private sub hCheckScopeLocals _
@@ -332,20 +332,20 @@ private sub hCheckScopeLocals _
 		byval top_parent as FBSYMBOL ptr = NULL _
 	)
 
-    dim as FBSYMBOL ptr label = any, blk = any
-    dim as integer label_stmt = any, branch_stmt = any
+	dim as FBSYMBOL ptr label = any, blk = any
+	dim as integer label_stmt = any, branch_stmt = any
 
-    if( top_parent = NULL ) then
-    	top_parent = n->break.parent->sym
-    end if
+	if( top_parent = NULL ) then
+		top_parent = n->break.parent->sym
+	end if
 
-    branch_stmt = n->break.stmtnum
+	branch_stmt = n->break.stmtnum
 
-    label = n->sym
-    label_stmt = symbGetLabelStmt( label )
+	label = n->sym
+	label_stmt = symbGetLabelStmt( label )
 
-    blk = symbGetLabelParent( label )
-    do
+	blk = symbGetLabelParent( label )
+	do
 		'' check for any var allocated between the block's
 		'' beginning and the branch
 		hCheckCrossing( n, blk, 0, label_stmt )
@@ -373,39 +373,39 @@ private sub hDestroyBlockLocals _
 		byval blk as FBSYMBOL ptr, _
 		byval top_stmt as integer, _
 		byval bot_stmt as integer, _
-		byval base_expr as ASTNODE ptr _	'' the node before the branch, not itself!
+		byval base_expr as ASTNODE ptr _    '' the node before the branch, not itself!
 	)
 
 	dim as FBSYMBOL ptr s = any
 	dim as ASTNODE ptr expr = any
 	dim as integer stmt = any
 
-    '' for each now (in reverse order)
-    if( symbIsScope( blk ) ) then
-    	s = symbGetScopeSymbTb( blk ).tail
-    else
-    	s = symbGetProcSymbTb( blk ).tail
-    end if
+	'' for each now (in reverse order)
+	if( symbIsScope( blk ) ) then
+		s = symbGetScopeSymbTb( blk ).tail
+	else
+		s = symbGetProcSymbTb( blk ).tail
+	end if
 
-    do while( s <> NULL )
-    	if( symbIsVar( s ) ) then
-    		stmt = symbGetVarStmt( s )
-    		if( stmt > top_stmt ) then
-    			if( stmt < bot_stmt ) then
-                    '' has a dtor?
-                    if( symbGetVarHasDtor( s ) ) then
-                    	'' call it..
-                    	expr = astBuildVarDtorCall( s, TRUE )
-                    	if( expr <> NULL ) then
-                    		base_expr = astAddAfter( expr, base_expr )
-                    	end if
-                    end if
-    			end if
-    		end if
-    	end if
+	do while( s <> NULL )
+		if( symbIsVar( s ) ) then
+			stmt = symbGetVarStmt( s )
+			if( stmt > top_stmt ) then
+				if( stmt < bot_stmt ) then
+					'' has a dtor?
+					if( symbGetVarHasDtor( s ) ) then
+						'' call it..
+						expr = astBuildVarDtorCall( s, TRUE )
+						if( expr <> NULL ) then
+							base_expr = astAddAfter( expr, base_expr )
+						end if
+					end if
+				end if
+			end if
+		end if
 
-    	s = s->prev
-    loop
+		s = s->prev
+	loop
 
 end sub
 
@@ -415,12 +415,12 @@ private sub hDelBackwardLocals _
 		byval n as ASTNODE ptr _
 	)
 
-    '' free any dyn var allocated between the block's
-    '' beginning and the branch
-    hDestroyBlockLocals( n->break.parent->sym, _
-    				 	 symbGetLabelStmt( n->sym ), _
-    				 	 n->break.stmtnum, _
-    				 	 astGetPrev( n->l ) )
+	'' free any dyn var allocated between the block's
+	'' beginning and the branch
+	hDestroyBlockLocals( n->break.parent->sym, _
+	                     symbGetLabelStmt( n->sym ), _
+	                     n->break.stmtnum, _
+	                     astGetPrev( n->l ) )
 
 end sub
 
@@ -443,37 +443,37 @@ private sub hDelLocals _
 	label_stmt = symbGetLabelStmt( n->sym )
 	branch_stmt = n->break.stmtnum
 
-    '' for each parent (starting from the branch ones)
-    blk = n->break.parent
-    do
-    	'' destroy any var created between the beginning of
-    	'' the block and the branch
-    	hDestroyBlockLocals( blk->sym, _
-    						 0, _
-    						 branch_stmt, _
-    						 astGetPrev( n->l ) ) '' prev node will change
+	'' for each parent (starting from the branch ones)
+	blk = n->break.parent
+	do
+		'' destroy any var created between the beginning of
+		'' the block and the branch
+		hDestroyBlockLocals( blk->sym, _
+		                     0, _
+		                     branch_stmt, _
+		                     astGetPrev( n->l ) ) '' prev node will change
 
-    	blk = blk->block.parent
-    	if( blk = NULL ) then
-    		exit do
-    	end if
+		blk = blk->block.parent
+		if( blk = NULL ) then
+			exit do
+		end if
 
-    	'' target label found?
-    	if( hIsInside( blk, label_stmt ) ) then
-    		if( check_backward ) then
-    			'' if backward, free any dyn var allocated
-    			'' between the target label and the branch
+		'' target label found?
+		if( hIsInside( blk, label_stmt ) ) then
+			if( check_backward ) then
+				'' if backward, free any dyn var allocated
+				'' between the target label and the branch
 				if( label_stmt <= branch_stmt ) then
-    				hDestroyBlockLocals( blk->sym, _
-    									 label_stmt, _
-    									 branch_stmt, _
-    									 astGetPrev( n->l ) )
-    			end if
-    		end if
+					hDestroyBlockLocals( blk->sym, _
+					                     label_stmt, _
+					                     branch_stmt, _
+					                     astGetPrev( n->l ) )
+				end if
+			end if
 
-    		exit do
-    	end if
-    loop
+			exit do
+		end if
+	loop
 
 end sub
 
@@ -503,95 +503,95 @@ private function hCheckBranch _
 		byval n as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr branch_parent = any
-    dim as FBSYMBOL ptr label = any, label_parent = any
-    dim as integer branch_scope = any, label_scope = any
-    dim as integer branch_stmt = any, label_stmt = any, isparent = any
+	dim as ASTNODE ptr branch_parent = any
+	dim as FBSYMBOL ptr label = any, label_parent = any
+	dim as integer branch_scope = any, label_scope = any
+	dim as integer branch_stmt = any, label_stmt = any, isparent = any
 
 	function = FALSE
 
-    label = n->sym
+	label = n->sym
 
-    '' not declared?
-    if( symbGetLabelIsDeclared( label ) = FALSE ) then
-    	hBranchError( FB_ERRMSG_BRANCHTARGETOUTSIDECURRPROC, n )
-    	exit function
-    end if
+	'' not declared?
+	if( symbGetLabelIsDeclared( label ) = FALSE ) then
+		hBranchError( FB_ERRMSG_BRANCHTARGETOUTSIDECURRPROC, n )
+		exit function
+	end if
 
 	'' branching to other procs or mod-level?
-    if( hIsTargetOutside( proc->sym, label ) ) then
-    	hBranchError( FB_ERRMSG_BRANCHTARGETOUTSIDECURRPROC, n )
-        exit function
-    end if
+	if( hIsTargetOutside( proc->sym, label ) ) then
+		hBranchError( FB_ERRMSG_BRANCHTARGETOUTSIDECURRPROC, n )
+		exit function
+	end if
 
-    ''
-    label_scope = symbGetScope( label )
-    label_parent = symbGetLabelParent( label )
-    label_stmt = symbGetLabelStmt( label )
+	''
+	label_scope = symbGetScope( label )
+	label_parent = symbGetLabelParent( label )
+	label_stmt = symbGetLabelStmt( label )
 
-    branch_scope = n->break.scope
-    branch_parent = n->break.parent
-    branch_stmt = n->break.stmtnum
+	branch_scope = n->break.scope
+	branch_parent = n->break.parent
+	branch_stmt = n->break.stmtnum
 
-    '' inside parent?
-    if( hIsInside( branch_parent, label_stmt ) ) then
-    	'' jumping to a child block?
-    	if( label_scope > branch_scope ) then
-           	'' any locals?
+	'' inside parent?
+	if( hIsInside( branch_parent, label_stmt ) ) then
+		'' jumping to a child block?
+		if( label_scope > branch_scope ) then
+			'' any locals?
 			hCheckScopeLocals( n )
 
-    		'' backward?
-    		if( label_stmt <= branch_stmt ) then
-    			hDelBackwardLocals( n )
-    		end if
+			'' backward?
+			if( label_stmt <= branch_stmt ) then
+				hDelBackwardLocals( n )
+			end if
 
-    	'' same level..
-    	else
-    		'' backward?
-    		if( label_stmt <= branch_stmt ) then
-    			hDelBackwardLocals( n )
+		'' same level..
+		else
+			'' backward?
+			if( label_stmt <= branch_stmt ) then
+				hDelBackwardLocals( n )
 
-    		'' forward..
-    		else
-    			'' crossing any declaration?
+			'' forward..
+			else
+				'' crossing any declaration?
 				hCheckCrossing( n, label_parent, branch_stmt, label_stmt )
-    		end if
-    	end if
+			end if
+		end if
 
-    	return TRUE
-    end if
+		return TRUE
+	end if
 
-    '' outside..
+	'' outside..
 
-   	'' jumping to a scope block?
+	'' jumping to a scope block?
 	if( symbIsScope( label_parent ) ) then
 		isparent = (label_parent->scp.backnode->block.inistmt <= _
-					branch_parent->block.inistmt) and _
-  	    		   (label_parent->scp.backnode->block.endstmt >= _
-  	    		    branch_parent->block.endstmt)
+		           branch_parent->block.inistmt) and _
+		           (label_parent->scp.backnode->block.endstmt >= _
+		           branch_parent->block.endstmt)
 
 		'' not a parent block?
-        if( isparent = FALSE ) then
+		if( isparent = FALSE ) then
 			'' any locals?
 			hCheckScopeLocals( n, hFindCommonParent( branch_parent, label_parent ) )
-       	end if
+		end if
 
-   	'' proc level..
-   	else
-   		isparent = TRUE
-   	end if
+	'' proc level..
+	else
+		isparent = TRUE
+	end if
 
-   	if( isparent ) then
-   	   	'' forward?
-   		if( label_stmt > branch_stmt ) then
-   			'' crossing any declaration?
+	if( isparent ) then
+		'' forward?
+		if( label_stmt > branch_stmt ) then
+			'' crossing any declaration?
 				hCheckCrossing( n, label_parent, branch_stmt, label_stmt )
-   		end if
-   	end if
+		end if
+	end if
 
-   	'' jumping out, free any dyn var already allocated
-   	'' until the target block if reached
-   	hDelLocals( n, TRUE )
+	'' jumping out, free any dyn var already allocated
+	'' until the target block if reached
+	hDelLocals( n, TRUE )
 
 	function = TRUE
 
@@ -673,7 +673,7 @@ sub astScopeAllocLocals( byval symtbhead as FBSYMBOL ptr )
 end sub
 
 function astLoadSCOPEBEGIN( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as FBSYMBOL ptr s = any
+	dim as FBSYMBOL ptr s = any
 
 	s = n->sym
 
@@ -688,17 +688,17 @@ function astLoadSCOPEBEGIN( byval n as ASTNODE ptr ) as IRVREG ptr
 end function
 
 function astLoadSCOPEEND( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as FBSYMBOL ptr s = any
+	dim as FBSYMBOL ptr s = any
 
-    s = n->sym
+	s = n->sym
 
 	if( ast.doemit ) then
 		irEmitSCOPEEND( s )
 	end if
 
-    symbSetProcLocalOfs( parser.currproc, s->scp.emit.baseofs )
+	symbSetProcLocalOfs( parser.currproc, s->scp.emit.baseofs )
 
-    function = NULL
+	function = NULL
 end function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''

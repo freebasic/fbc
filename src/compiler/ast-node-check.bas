@@ -23,7 +23,7 @@ function astNewBOUNDCHK _
 		byval filename as zstring ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
+	dim as ASTNODE ptr n = any
 
 	'' If one of lbound/ubound is CONST, the other should be too -- either
 	'' both are known at compile-time, or neither is.
@@ -62,9 +62,9 @@ function astNewBOUNDCHK _
 
 	n->sym = symbAddTempVar( l->dtype, l->subtype )
 
-    '' check must be done using a function because calling ErrorThrow
-    '' would spill used regs only if it was called, causing wrong
-    '' assumptions after the branches
+	'' check must be done using a function because calling ErrorThrow
+	'' would spill used regs only if it was called, causing wrong
+	'' assumptions after the branches
 	n->r = rtlArrayBoundsCheck( astNewVAR( n->sym ), lb, ub, linenum, filename )
 
 end function
@@ -75,9 +75,9 @@ function astLoadBOUNDCHK _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-    dim as ASTNODE ptr l = any, r = any, t = any
-    dim as FBSYMBOL ptr label = any
-    dim as IRVREG ptr vr = any
+	dim as ASTNODE ptr l = any, r = any, t = any
+	dim as FBSYMBOL ptr label = any
+	dim as IRVREG ptr vr = any
 
 	l = n->l
 	r = n->r
@@ -92,20 +92,20 @@ function astLoadBOUNDCHK _
 	astLoad( t )
 	astDelNode( t )
 
-    vr = astLoad( r )
-    astDelNode( r )
+	vr = astLoad( r )
+	astDelNode( r )
 
-    if( ast.doemit ) then
-    	'' handler = boundchk( ... ): if handler <> NULL then handler( )
-    	label = symbAddLabel( NULL )
-    	irEmitBOP( AST_OP_EQ, _
-    				 vr, _
-    				 irAllocVRIMM( FB_DATATYPE_INTEGER, NULL, 0 ), _
-    				 NULL, _
-    				 label )
-    	irEmitJUMPPTR( vr )
-    	irEmitLABELNF( label )
-    end if
+	if( ast.doemit ) then
+		'' handler = boundchk( ... ): if handler <> NULL then handler( )
+		label = symbAddLabel( NULL )
+		irEmitBOP( AST_OP_EQ, _
+		           vr, _
+		           irAllocVRIMM( FB_DATATYPE_INTEGER, NULL, 0 ), _
+		           NULL, _
+		           label )
+		irEmitJUMPPTR( vr )
+		irEmitLABELNF( label )
+	end if
 
 	''
 	'' re-load, see above
@@ -135,9 +135,9 @@ function astNewPTRCHK _
 		byval filename as zstring ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
-    dim as integer dtype = any
-    dim as FBSYMBOL ptr subtype = any
+	dim as ASTNODE ptr n = any
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
 
 	'' constant? don't break OffsetOf() when used with Const's..
 	if( l->class = AST_NODECLASS_CONST ) then
@@ -165,9 +165,9 @@ function astLoadPTRCHK _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-    dim as ASTNODE ptr l = any, r = any, t = any
-    dim as FBSYMBOL ptr label = any
-    dim as IRVREG ptr vr = any
+	dim as ASTNODE ptr l = any, r = any, t = any
+	dim as FBSYMBOL ptr label = any
+	dim as IRVREG ptr vr = any
 
 	l = n->l
 	r = n->r
@@ -184,21 +184,21 @@ function astLoadPTRCHK _
 	astLoad( t )
 	astDelNode( t )
 
-    ''
-    vr = astLoad( r )
-    astDelNode( r )
+	''
+	vr = astLoad( r )
+	astDelNode( r )
 
-    if( ast.doemit ) then
-    	'' handler = ptrchk( ... ): if handler <> NULL then handler( )
-    	label = symbAddLabel( NULL )
-    	irEmitBOP( AST_OP_EQ, _
-    				 vr, _
-    				 irAllocVRIMM( FB_DATATYPE_INTEGER, NULL, 0 ), _
-    				 NULL, _
-    				 label )
-    	irEmitJUMPPTR( vr )
-    	irEmitLABELNF( label )
-    end if
+	if( ast.doemit ) then
+		'' handler = ptrchk( ... ): if handler <> NULL then handler( )
+		label = symbAddLabel( NULL )
+		irEmitBOP( AST_OP_EQ, _
+		           vr, _
+		           irAllocVRIMM( FB_DATATYPE_INTEGER, NULL, 0 ), _
+		           NULL, _
+		           label )
+		irEmitJUMPPTR( vr )
+		irEmitLABELNF( label )
+	end if
 
 	'' re-load, see above
 	t = astNewVAR( n->sym )
