@@ -731,7 +731,7 @@ private sub check_optim(byref code as string)
 					EndIf
 				End If
 				writepos=len(ctx.proc_txt)+len(code)+9
-				code="#16"+code+newline+string( ctx.indent*3, 32 )+previnstruc+" "+part1+", "+prevpart2+" #Optim 16"
+				code="#16"+code+newline+string( ctx.indent*3, 32 )+instruc+" "+part1+", "+prevpart2+" #Optim 16"
 				part2=prevpart2
 
 			end if
@@ -1965,7 +1965,7 @@ private sub _init( )
 	'' IR_OPT_CPUSELFBOPS disabled, to prevent AST from producing self-ops.
 	irSetOption(IR_OPT_CPUBOPFLAGS or IR_OPT_MISSINGOPS or IR_OPT_CPUSELFBOPS)'  or IR_OPT_ADDRCISC)'
 
-' dtypeName(FB_DATATYPE_INTEGER) = dtypeName(FB_DATATYPE_LONGINT)
+	' dtypeName(FB_DATATYPE_INTEGER) = dtypeName(FB_DATATYPE_LONGINT)
 	'dtypeName(FB_DATATYPE_UINT   ) = dtypeName(FB_DATATYPE_ULONGINT)
 
 end sub
@@ -4328,7 +4328,11 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 		case IR_VREGTYPE_VAR ''format varname ofs1   local/static  ofs1 could be zero
 			if symbIsStatic(v2->sym) Or symbisshared(v2->sym) then
-				op2=*symbGetMangledName(v2->sym)+"[rip+"+Str(v2->ofs)+"]"
+				if ctx.target=FB_COMPTARGET_LINUX andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
+					op2=*symbGetMangledName(v2->sym)+"@GOTPCREL[rip]" '[rip+"+Str(v2->ofs)+"]"
+				else
+					op2=*symbGetMangledName(v2->sym)+"[rip+"+Str(v2->ofs)+"]"
+				end if
 			else
 				op2=Str(v2->ofs)+"[rbp]"
 			end if
@@ -4725,7 +4729,11 @@ private sub emitStoreStruct(byval v1 as IRVREG ptr, byval v2 as IRVREG ptr,byref
 		end if
 	else
 		asm_code("movq "+op1+", xmm0")
-		asm_code("movq rdx, xmm1")
+		if retin2regs=FB_STRUCT_XX then
+			asm_code("movq rdx, xmm0")
+		else
+			asm_code("movq rdx, rax")
+		end if
 	end if
 
 	''moving the rest (1 to 8 bytes), assuming rdx not already used

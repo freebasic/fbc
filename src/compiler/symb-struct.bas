@@ -716,7 +716,7 @@ private function hGetReturnTypeGas64Linux( byval sym as FBSYMBOL ptr ) as intege
 				 return FB_DATATYPE_STRUCT
 			case KSTRUCT_XR ''first part in XMMO then in RAX
 				sym->udt.retin2regs = FB_STRUCT_XR
-				return typeAddrOf( FB_DATATYPE_STRUCT )
+				return FB_DATATYPE_STRUCT
 			case KSTRUCT_XX ''only floats in XMM0/XMM1
 				sym->udt.retin2regs = FB_STRUCT_XX
 				return FB_DATATYPE_STRUCT
