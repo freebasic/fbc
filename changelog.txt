@@ -55,6 +55,7 @@ Version 1.10.0
 - fbc: __fastcall support for gcc/gas 32-bit x86 - fbc passes first and second integer arguments in ECX and EDX registers respectively, caller cleans up stack.
 - fbc: __FB_QUERY_SYMBOL__( what, sym ) built-in macro for querying fbc symbol internals.  Added fbc-int/symbol.bi (Work in progress).
 - add '-z no-retinflts' command line option for code generation.  This option disables returning some structures (types) in floating point registers.  This is a work-around for different handling of structs returned by value on different tool chains / targets.
+- fbgfx.bi: add private function fb.__pixels() to return a pointer to the image data (paul doe)
 
 [fixed]
 - gas64: missing restoring of use of one virtual register on sqr for float (SARG)
@@ -105,7 +106,8 @@ Version 1.10.0
 - sf.net #834: Line continuation not handled during #if 0 skipping - fixed by ignoring line continuation characters and invalid directives - continue to preserve multiline comment parsing
 - fbc: internal: throw an error if __FB_EVAL__ would cause the parser to nest too deeply
 - fbc: improve code generation for structs returned by value and structs returned in registers - some structs where not handled correctly and had mismatched code generation when mixing modules with different fbc backends or linking again c libraries (e.g. gas+gcc or gas64+gcc) resulting in stack corruption or wrong values returned in structs
-- gas64: improve code generation for structs returned by value, fix optimization no 16, fix relocations for static / shared in shared libraries 
+- gas64: improve code generation for structs returned by value, fix optimization no 16, fix relocations for static / shared in shared libraries
+- fbgfx.bi: fix structures and declarations for #lang "qb" (paul doe)
 
 
 Version 1.09.0

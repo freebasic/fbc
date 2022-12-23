@@ -38,7 +38,7 @@ namespace FB
 	''  SCREEN 14, 16,, GFX_FULLSCREEN
 	''  SCREEN 18, 32,, GFX_OPENGL OR GFX_STENCIL_BUFFER
 	''
-	const as integer _
+	const as long _
 		GFX_NULL                    = -1        , _
 		GFX_WINDOWED                = &h00000000, _
 		GFX_FULLSCREEN              = &h00000001, _
@@ -52,7 +52,7 @@ namespace FB
 		GFX_SCREEN_EXIT             = &h80000000l
 
 	'' OpenGL options
-	const as integer _
+	const as long _
 		GFX_STENCIL_BUFFER          = &h00010000, _
 		GFX_ACCUMULATION_BUFFER     = &h00020000, _
 		GFX_MULTISAMPLE             = &h00040000
@@ -135,9 +135,15 @@ namespace FB
 
 	'' Color values for transparency
 	''
-	const as integer _
-		MASK_COLOR_INDEX            = 0, _
-		MASK_COLOR                  = &hFF00FF
+	#if __FB_LANG__ = "qb"
+		const as __ulong _
+			MASK_COLOR_INDEX        = 0, _
+			MASK_COLOR              = &hFF00FF
+	#else
+		const as ulong _
+			MASK_COLOR_INDEX        = 0, _
+			MASK_COLOR              = &hFF00FF
+	#endif
 
 
 	'' Event type IDs
@@ -163,7 +169,11 @@ namespace FB
 	''
 	type EVENT field = 1
 		type as long
+	#if __FB_LANG__ = "qb"
+		__union
+	#else
 		union
+	#endif
 			type
 				scancode as long
 				ascii as long
@@ -177,41 +187,65 @@ namespace FB
 			button as long
 			z as long
 			w as long
+	#if __FB_LANG__ = "qb"
+		end __union
+	#else
 		end union
+	#endif
 	end type
-
 
 	'' Image buffer header, old style
-	''
 	type _OLD_HEADER field = 1
-		bpp : 3 as ushort
-		width : 13 as ushort
-		height as ushort
+		#if __FB_LANG__ = "qb"
+			bpp : 3 as __ushort
+			width : 13 as __ushort
+			height as __ushort
+		#else
+			bpp : 3 as ushort
+			width : 13 as ushort
+			height as ushort
+		#endif
 	end type
 
-
 	'' Image buffer header, new style (incorporates old header)
-	''
 	type IMAGE field = 1
-		union
-			old as _OLD_HEADER
-			type as ulong
-		end union
-		bpp as long
-		width as ulong
-		height as ulong
-		pitch as ulong
-		_reserved(1 to 12) as ubyte
+		#if __FB_LANG__ = "qb"
+			__union
+				old as _OLD_HEADER
+				type as __ulong
+			end __union
+		#else
+			union
+				old as _OLD_HEADER
+				type as ulong
+			end union
+		#endif
 
-'       '' properties
-'       declare property pixels() as ubyte ptr
+		bpp as long
+
+		#if __FB_LANG__ = "qb"
+			width as __ulong
+			height as __ulong
+			pitch as __ulong
+			_reserved(1 to 12) as __ubyte
+		#else
+			width as ulong
+			height as ulong
+			pitch as ulong
+			_reserved(1 to 12) as ubyte
+		#endif
 	end type
 
 	'' This is a trick to obtain a pointer to the pixels data area
-	''
-'   property IMAGE.pixels() as ubyte ptr
-'       return cast(ubyte ptr, @this) + sizeof(IMAGE)
-'   end property
+	#if __FB_LANG__ = "qb"
+		__private function __pixels( byval anImage as Image __ptr ) as __ubyte __ptr
+			__pixels = __cast( __ubyte __ptr, anImage ) + __sizeOf( Image )
+		end function
+	#else
+		private function __pixels( byval anImage as Image ptr ) as ubyte ptr
+			return( cast( ubyte ptr, anImage ) + sizeOf( Image ) )
+		end function
+	#endif
 
 	type PUT_HEADER as IMAGE
 
