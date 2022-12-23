@@ -12,7 +12,7 @@
 const CHAR_TAB = 9
 const CHAR_SPACE = 32
 
-const TAB_SIZE = 4
+const DEFAULT_TAB_SIZE = 4
 
 type CODELINE
 	original as string
@@ -85,7 +85,12 @@ end type
 
 '' fix leading whitespace by counting up the groups of tabs or spaces
 '' before the first non-whitespace character on the line
-function FixMixedLeadingWhiteSpace( byref s as const string ) as string
+function FixMixedLeadingWhiteSpace _
+	( _
+		byref s as const string, _
+		byval opt_tab_size as integer, _
+		byval opt_old_tab_size as integer _
+	) as string
 	dim info(1 to 50) as WHITESPACEINFO
 	dim index as integer = 0
 
@@ -138,7 +143,7 @@ function FixMixedLeadingWhiteSpace( byref s as const string ) as string
 		case CHAR_TAB
 			ws &= string( info(i).count, CHAR_TAB )
 		case CHAR_SPACE
-			ws &= string( (info(i).count) \ TAB_SIZE, CHAR_TAB )
+			ws &= string( (info(i).count) \ opt_old_tab_size, CHAR_TAB )
 		end select
 	next
 
@@ -146,7 +151,11 @@ function FixMixedLeadingWhiteSpace( byref s as const string ) as string
 
 end function
 
-function FixInteriorTabs( byref s as const string ) as string
+function FixInteriorTabs _
+	( _
+		byref s as const string, _
+		byval opt_tab_size as integer _
+	) as string
 	dim ret as string
 	dim chars as integer = 0
 
@@ -163,12 +172,12 @@ function FixInteriorTabs( byref s as const string ) as string
 	while( i <= len(s) )
 		select case mid( s, i , 1 )
 		case chr(CHAR_TAB)
-			ret &= string( TAB_SIZE - (chars mod TAB_SIZE), CHAR_SPACE )
+			ret &= string( opt_tab_size - (chars mod opt_tab_size), CHAR_SPACE )
 			chars = 0
 		case else
 			ret &= mid( s, i , 1 )
 			chars += 1
-			chars mod= TAB_SIZE
+			chars mod= opt_tab_size
 		end select
 		i += 1
 	wend
@@ -177,12 +186,18 @@ function FixInteriorTabs( byref s as const string ) as string
 
 end function
 
-sub CheckWhiteSpace( source() as CODELINE, byval nlines as integer )
+sub CheckWhiteSpace _
+	( _
+		source() as CODELINE, _
+		byval nlines as integer, _
+		byval opt_tab_size as integer, _
+		byval opt_old_tab_size as integer _
+		)
 	for i as integer = 1 to nlines
 		dim s as string = source( i ).original
 		s = RemoveTrailingWhiteSpace( s )
-		s = FixMixedLeadingWhiteSpace( s )
-		s = FixInteriorTabs( s )
+		s = FixMixedLeadingWhiteSpace( s, opt_tab_size, opt_old_tab_size )
+		s = FixInteriorTabs( s, opt_tab_size )
 		source( i ).text = s
 	next
 end sub
@@ -203,6 +218,8 @@ dim opt_help as boolean = false
 dim opt_check_only as boolean = false
 dim opt_force_write as boolean = false
 dim opt_verbose as boolean = false
+dim opt_tab_size as integer = DEFAULT_TAB_SIZE
+dim opt_old_tab_size as integer = DEFAULT_TAB_SIZE
 
 redim files(1 to 100) as string
 dim nfiles as integer = 0
@@ -211,7 +228,7 @@ redim source(1 to 1024) as CODELINE
 dim nlines as integer
 
 dim i as integer = 1
-while command(i) > ""
+while i < __FB_ARGC__
 
 	select case command(i)
 	case "--help"
@@ -222,6 +239,20 @@ while command(i) > ""
 		opt_force_write = true
 	case "-v", "--verbose"
 		opt_verbose = true
+	case "-t", "--tab-size"
+		i += 1
+		opt_tab_size = valint( command(i) )
+		if( opt_tab_size < 1 or opt_tab_size > 8 ) then
+			print "invalid tab size " & opt_tab_size
+			opt_tab_size = DEFAULT_TAB_SIZE
+		end if
+	case "--old-tab-size"
+		i += 1
+		opt_old_tab_size = valint( command(i) )
+		if( opt_old_tab_size < 1 or opt_old_tab_size > 8 ) then
+			print "invalid tab size " & opt_tab_size
+			opt_old_tab_size = DEFAULT_TAB_SIZE
+		end if
 	case else
 		addFile files(), nfiles, command(i)
 	end select
@@ -240,6 +271,8 @@ if( opt_help ) then
 	print "   -c, --check-only     check only, do not write"
 	print "   -f, --force-write    always write (ignored with -c, --check-only)"
 	print "   -v, --verbose        verbose output"
+	print "   -t N, --tab-size N   tab size (default " & DEFAULT_TAB_SIZE & ")"
+	print "   --old-tab-size N     old tab size (default " & DEFAULT_TAB_SIZE & ")"
 	print
 	print "Example:"
 	print "   check-whitespace src/compiler/*.bi src/compiler/*.bas"
@@ -257,7 +290,7 @@ for i as integer = 1 to nfiles
 
 	if( LoadFile( source(), nlines, filename ) ) then
 
-		CheckWhitespace( source(), nlines )
+		CheckWhitespace( source(), nlines, opt_tab_size, opt_old_tab_size )
 		dim n as integer = CountChanges( source(), nlines )
 
 		if( (n > 0) orelse (opt_verbose = true) or (opt_force_write = true) ) then
