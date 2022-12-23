@@ -28,36 +28,40 @@
 #endif
 
 
-# if __FB_LANG__ = "fb"
+#if __FB_LANG__ = "fb"
 namespace FB
-# endif
+#endif
 
 	'' Flags accepted by Screen and ScreenRes
 	''
 	'' Usage examples:
-	''	SCREEN 14, 16,, GFX_FULLSCREEN
-	''	SCREEN 18, 32,, GFX_OPENGL OR GFX_STENCIL_BUFFER
+	''  SCREEN 14, 16,, GFX_FULLSCREEN
+	''  SCREEN 18, 32,, GFX_OPENGL OR GFX_STENCIL_BUFFER
 	''
-	const as integer GFX_NULL 					= -1		, _
-					 GFX_WINDOWED				= &h00		, _
-					 GFX_FULLSCREEN				= &h01		, _
-					 GFX_OPENGL					= &h02		, _
-					 GFX_NO_SWITCH				= &h04		, _
-					 GFX_NO_FRAME				= &h08		, _
-					 GFX_SHAPED_WINDOW			= &h10		, _
-					 GFX_ALWAYS_ON_TOP			= &h20		, _
-					 GFX_ALPHA_PRIMITIVES		= &h40		, _
-					 GFX_HIGH_PRIORITY			= &h80		,_
-					 GFX_SCREEN_EXIT			= &h80000000l
-	'' OpenGL options
-	const as integer GFX_STENCIL_BUFFER			= &h10000	, _
-					 GFX_ACCUMULATION_BUFFER	= &h20000	, _
-					 GFX_MULTISAMPLE			= &h40000
+	const as integer _
+		GFX_NULL                    = -1        , _
+		GFX_WINDOWED                = &h00000000, _
+		GFX_FULLSCREEN              = &h00000001, _
+		GFX_OPENGL                  = &h00000002, _
+		GFX_NO_SWITCH               = &h00000004, _
+		GFX_NO_FRAME                = &h00000008, _
+		GFX_SHAPED_WINDOW           = &h00000010, _
+		GFX_ALWAYS_ON_TOP           = &h00000020, _
+		GFX_ALPHA_PRIMITIVES        = &h00000040, _
+		GFX_HIGH_PRIORITY           = &h00000080,_
+		GFX_SCREEN_EXIT             = &h80000000l
 
-	'Constants for OpenGL 2D render
-	const as integer OGL_2D_NONE        		= 0, _
-					 OGL_2D_MANUAL_SYNC			= 1, _
-					 OGL_2D_AUTO_SYNC			= 2
+	'' OpenGL options
+	const as integer _
+		GFX_STENCIL_BUFFER          = &h00010000, _
+		GFX_ACCUMULATION_BUFFER     = &h00020000, _
+		GFX_MULTISAMPLE             = &h00040000
+
+	'' Constants for OpenGL 2D render
+	const as integer _
+		OGL_2D_NONE                 = 0, _
+		OGL_2D_MANUAL_SYNC          = 1, _
+		OGL_2D_AUTO_SYNC            = 2
 
 	'' Constants accepted by ScreenControl
 	''
@@ -125,31 +129,34 @@ namespace FB
 		SET_GL_SCALE                = 151
 
 	'' Commands:
-	const as integer POLL_EVENTS				= 200
-	
+	const as integer _
+		POLL_EVENTS                 = 200
+
 
 	'' Color values for transparency
 	''
-	const as integer MASK_COLOR_INDEX			= 0, _
-					 MASK_COLOR					= &hFF00FF
+	const as integer _
+		MASK_COLOR_INDEX            = 0, _
+		MASK_COLOR                  = &hFF00FF
 
 
 	'' Event type IDs
 	''
-	const as integer EVENT_KEY_PRESS			= 1		, _
-					 EVENT_KEY_RELEASE			= 2		, _
-					 EVENT_KEY_REPEAT			= 3		, _
-					 EVENT_MOUSE_MOVE			= 4		, _
-					 EVENT_MOUSE_BUTTON_PRESS	= 5		, _
-					 EVENT_MOUSE_BUTTON_RELEASE	= 6		, _
-					 EVENT_MOUSE_DOUBLE_CLICK	= 7		, _
-					 EVENT_MOUSE_WHEEL			= 8		, _
-					 EVENT_MOUSE_ENTER			= 9		, _
-					 EVENT_MOUSE_EXIT			= 10	, _
-					 EVENT_WINDOW_GOT_FOCUS		= 11	, _
-					 EVENT_WINDOW_LOST_FOCUS	= 12	, _
-					 EVENT_WINDOW_CLOSE			= 13	, _
-					 EVENT_MOUSE_HWHEEL			= 14
+	const as integer _
+		EVENT_KEY_PRESS             = 1, _
+		EVENT_KEY_RELEASE           = 2, _
+		EVENT_KEY_REPEAT            = 3, _
+		EVENT_MOUSE_MOVE            = 4, _
+		EVENT_MOUSE_BUTTON_PRESS    = 5, _
+		EVENT_MOUSE_BUTTON_RELEASE  = 6, _
+		EVENT_MOUSE_DOUBLE_CLICK    = 7, _
+		EVENT_MOUSE_WHEEL           = 8, _
+		EVENT_MOUSE_ENTER           = 9, _
+		EVENT_MOUSE_EXIT            = 10, _
+		EVENT_WINDOW_GOT_FOCUS      = 11, _
+		EVENT_WINDOW_LOST_FOCUS     = 12, _
+		EVENT_WINDOW_CLOSE          = 13, _
+		EVENT_MOUSE_HWHEEL          = 14
 
 
 	'' Event structure, to be used with ScreenEvent
@@ -195,33 +202,34 @@ namespace FB
 		height as ulong
 		pitch as ulong
 		_reserved(1 to 12) as ubyte
-		
-'		'' properties
-'		declare property pixels() as ubyte ptr
+
+'       '' properties
+'       declare property pixels() as ubyte ptr
 	end type
-	
+
 	'' This is a trick to obtain a pointer to the pixels data area
 	''
-'	property IMAGE.pixels() as ubyte ptr
-'		return cast(ubyte ptr, @this) + sizeof(IMAGE)
-'	end property
-	
+'   property IMAGE.pixels() as ubyte ptr
+'       return cast(ubyte ptr, @this) + sizeof(IMAGE)
+'   end property
+
 	type PUT_HEADER as IMAGE
-	
+
 
 	'' Constant identifying new style headers
 	'' (image.type must be equal to this value in new style headers)
 	''
-	const as integer PUT_HEADER_NEW				= &h7
+	const as integer PUT_HEADER_NEW = &h7
 
 
 	'' Mouse button constants to be used with GETMOUSE/ScreenEvent
 	''
-	const as integer BUTTON_LEFT				= &h1	, _
-					 BUTTON_RIGHT				= &h2	, _
-					 BUTTON_MIDDLE				= &h4	, _
-					 BUTTON_X1					= &h8	, _
-					 BUTTON_X2					= &h10
+	const as integer _
+		BUTTON_LEFT                 = &h01, _
+		BUTTON_RIGHT                = &h02, _
+		BUTTON_MIDDLE               = &h04, _
+		BUTTON_X1                   = &h08, _
+		BUTTON_X2                   = &h10
 
 
 	'' Keyboard scancodes returned by MULTIKEY
@@ -330,8 +338,8 @@ namespace FB
 		SC_ALTGR      = &h64
 	end enum
 
-# if __FB_LANG__ = "fb"
+#if __FB_LANG__ = "fb"
 end namespace
-# endif
+#endif
 
 #endif
