@@ -4722,20 +4722,27 @@ private sub emitStoreStruct(byval v1 as IRVREG ptr, byval v2 as IRVREG ptr,byref
 
 	''the data is already in either rax/rdx or xmm0/xmm1 or the 2 other combinations
 	''moving 8 first bytes
-	if retin2regs=FB_STRUCT_RR or retin2regs=FB_STRUCT_RX then
+	select case retin2regs
+	case FB_STRUCT_RR
 		asm_code("mov "+op1+", rax")
-		if retin2regs=FB_STRUCT_RX then
-			asm_code("movq rdx, xmm0")
-		end if
-	else
+	case FB_STRUCT_RX
+		asm_code("mov "+op1+", rax")
+		asm_code("movq rdx, xmm0")
+	case FB_STRUCT_XX
 		asm_code("movq "+op1+", xmm0")
-		if retin2regs=FB_STRUCT_XX then
-			asm_code("movq rdx, xmm0")
-		else
-			asm_code("movq rdx, rax")
-		end if
-	end if
-
+		asm_code("movq rdx, xmm1")
+	case FB_STRUCT_XR
+		asm_code("movq "+op1+", xmm0")
+		asm_code("movq rdx, rax")
+	case else
+		'' should never happen because hGetReturnTypeGas64Linux() shouldn't
+		'' return FB_DATATYPE_STRUCT unless struct is actually returned in
+		'' 2 registers and _emitstore() checks hIsStructIn2Regs() before
+		'' calling emitStoreStruct() even though udt.retin2regs may contain
+		'' FB_STRUCT_X or FB_STRUCT_R.
+		assert( 0 )
+	end select
+ 
 	''moving the rest (1 to 8 bytes), assuming rdx not already used
 	if op1[0]=asc("-") and (lgtv1=9 or lgtv1= 10 or lgtv1=12 or lgtv1=16) then
 		''shortcut for move at address -xxx[rbp] + 8
