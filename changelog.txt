@@ -108,8 +108,8 @@ Version 1.10.0
 - fbc: improve code generation for structs returned by value and structs returned in registers - some structs where not handled correctly and had mismatched code generation when mixing modules with different fbc backends or linking again c libraries (e.g. gas+gcc or gas64+gcc) resulting in stack corruption or wrong values returned in structs
 - gas64: improve code generation for structs returned by value, fix optimization no 16, fix relocations for static / shared in shared libraries
 - fbgfx.bi: fix structures and declarations for #lang "qb" (paul doe)
-- gas64: fix structures passed by upcasting
-- fbc: initializers (typeini) - discard assignments and construtor calls that would write outside of the target when emitting initializer lists - previously, up-casted initializers were writing beyond the limits of the target and trashing memory
+- gas64: fix structures passed by upcasting (SARG)
+- fbc: discard assignments and constructor calls in initializers that would write outside of the target when emitting initializer lists - previously, up-casted initializers were writing beyond the limits of the target and trashing memory
 
 
 Version 1.09.0

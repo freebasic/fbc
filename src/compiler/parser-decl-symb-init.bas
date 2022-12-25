@@ -23,7 +23,11 @@ type FB_INITCTX
 	options     as FB_INIOPT        '' behaviour / control options
 	init_expr   as ASTNODE ptr      '' initializing expression to hand back to parent
 	rec_cnt     as integer          '' current UDT recursion count in to hUDTInit()
+	last_ctx    as FB_INITCTX ptr   '' pointer to the last ctx to track global recursion
 end type
+
+'' track all FB_INITCTX in a stack
+dim shared top_ctx as FB_INITCTX ptr = NULL
 
 declare function hUDTInit _
 	( _
@@ -54,7 +58,10 @@ private function hDoAssign _
 		byval no_fake as integer = FALSE _
 	) as integer
 
-	if( astCheckASSIGNToType( ctx.dtype, ctx.subtype, expr, TRUE ) = FALSE ) then
+	dim as integer no_upcast = any
+	no_upcast = ((ctx.options and FB_INIOPT_NOUPCAST) <> 0)
+
+	if( astCheckASSIGNToType( ctx.dtype, ctx.subtype, expr, no_upcast ) = FALSE ) then
 		'' check if it's a cast
 
 		'' pass the initializing expression back to parent if it fails here
@@ -489,14 +496,15 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 					errReport( FB_ERRMSG_EXPECTEDRPRNT )
 					'' error recovery: skip until next ')'
 					hSkipUntil( CHAR_RPRNT, TRUE )
-				end if
-				lexSkipToken( )
+				else
+					lexSkipToken( )
 
-				'' Undo the astTypeIniScopeBegin() done above.
-				'' We're assigning to the UDT, not to a field,
-				'' so there should be no typeini scope.
-				assert( ctx.tree->r->class = AST_NODECLASS_TYPEINI_SCOPEINI )
-				astTypeIniRemoveLastNode( ctx.tree )
+					'' Undo the astTypeIniScopeBegin() done above.
+					'' We're assigning to the UDT, not to a field,
+					'' so there should be no typeini scope.
+					assert( ctx.tree->r->class = AST_NODECLASS_TYPEINI_SCOPEINI )
+					astTypeIniRemoveLastNode( ctx.tree )
+				end if
 			end if
 
 			if( is_ctorcall ) then
@@ -606,12 +614,39 @@ function cInitializer _
 		is_local = FALSE
 	end if
 
+	'' track recursion in to cInitializer() using a stack
+	'' we need to know here if we should allow upcasting or not
+
+	ctx.last_ctx = top_ctx
+	top_ctx = @ctx
+
+	'' set-up our current ctx
+
 	ctx.options = options
 	ctx.sym = sym
 	ctx.dimension = -1
 	ctx.init_expr = NULL
 	ctx.rec_cnt = 0
 	hUpdateContextDtype( ctx, dtype, subtype )
+
+	'' When to allow up-casting?
+	'' [x] top level -> allow upcasting
+	'' [x] nested UDT initialization -> do not allow upcasting
+	'' [ ] array element initialization -> allow upcasting
+
+	'' No override in options?
+	if( (options and FB_INIOPT_NOUPCAST) = 0 ) then
+
+		'' top-level initialization? allow upcasting
+		if( ctx.last_ctx = NULL ) then
+			ctx.options and= not FB_INIOPT_NOUPCAST
+
+		'' anything else, assume no upcasting
+		else
+			ctx.options or= FB_INIOPT_NOUPCAST
+
+		end if
+	end if
 
 	ctx.tree = astTypeIniBegin( ctx.dtype, ctx.subtype, is_local, symbGetOfs( sym ) )
 
@@ -631,6 +666,8 @@ function cInitializer _
 			ok = hElmInit( ctx )
 		end if
 	end if
+
+	top_ctx = ctx.last_ctx
 
 	astTypeIniEnd( ctx.tree, (options and FB_INIOPT_ISINI) <> 0 )
 

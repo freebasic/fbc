@@ -27,4 +27,12 @@ SUITE( fbc_tests.structs.udt_upcast_1 )
 
 	END_TEST
 
+	TEST( init_upcast )
+		dim as child c = (1234, 5678)
+
+		dim as parent p = c
+		CU_ASSERT_EQUAL( p.i, 1234 )
+
+	END_TEST
+
 END_SUITE
