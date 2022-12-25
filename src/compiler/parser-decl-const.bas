@@ -173,7 +173,7 @@ private sub cConstAssign _
 		'' Type explicitly specified?
 		if( dtype <> FB_DATATYPE_INVALID ) then
 			'' Check for type mismatch & warn about suspicious pointer assignments etc.
-			if( astCheckASSIGNToType( dtype, subtype, expr ) = FALSE ) then
+			if( astCheckASSIGNToType( dtype, subtype, expr, FALSE ) = FALSE ) then
 				errReportEx( FB_ERRMSG_TYPEMISMATCH, id )
 				'' error recovery: create a fake node
 				astDelTree( expr )

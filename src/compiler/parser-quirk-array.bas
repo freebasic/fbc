@@ -142,8 +142,8 @@ private function hScopedSwap( ) as integer
 	'' Must check both l = r and r = l due to inheritance with UDTs which
 	'' can allow one but not the other (and perhaps there even are other
 	'' cases with similar effect).
-	if( (astCheckASSIGN( l, r ) = FALSE) or _
-	    (astCheckASSIGN( r, l ) = FALSE) ) then
+	if( (astCheckASSIGN( l, r, TRUE ) = FALSE) or _
+	    (astCheckASSIGN( r, l, TRUE ) = FALSE) ) then
 		errReport( FB_ERRMSG_TYPEMISMATCH )
 		exit function
 	end if

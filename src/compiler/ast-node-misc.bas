@@ -971,6 +971,9 @@ private function hAstNodeToStr _
 	case AST_NODECLASS_TYPEINI_PAD
 		return "TYPEINI_PAD( offset=" & n->typeini.ofs & ", bytes=" & n->typeini.bytes & " ) " & NODE_TYPE
 
+	case AST_NODECLASS_TYPEINI_CTORCALL
+		return "TYPEINI_CTORCALL( offset=" & n->typeini.ofs & ", bytes=" & n->typeini.bytes & " ) " & NODE_TYPE
+
 	case AST_NODECLASS_MACRO
 		return "MACRO: " & astDumpOpToStr( n->op.op ) & " " & NODE_TYPE
 

@@ -10,15 +10,19 @@
 #include once "ir.bi"
 #include once "symb.bi"
 
+'' purpose of FB_INITCTX is to track state information for the
+'' current level of initialization and allow passing of necessary information
+'' byref to the parser funtions instead of pushing everything on the stack.
+
 type FB_INITCTX
-	sym         as FBSYMBOL ptr
-	dtype       as integer
-	subtype     as FBSYMBOL ptr
-	dimension   as integer
-	tree        as ASTNODE ptr
-	options     as FB_INIOPT
-	init_expr   as ASTNODE ptr
-	rec_cnt     as integer
+	sym         as FBSYMBOL ptr     '' symbol to initialize
+	dtype       as integer          '' dtype of symbol to initialize
+	subtype     as FBSYMBOL ptr     '' subtype of symbol to initialize
+	dimension   as integer          '' recursion in to array dimenstions
+	tree        as ASTNODE ptr      '' initree for this context (cInitializer())
+	options     as FB_INIOPT        '' behaviour / control options
+	init_expr   as ASTNODE ptr      '' initializing expression to hand back to parent
+	rec_cnt     as integer          '' current UDT recursion count in to hUDTInit()
 end type
 
 declare function hUDTInit _
@@ -50,7 +54,7 @@ private function hDoAssign _
 		byval no_fake as integer = FALSE _
 	) as integer
 
-	if( astCheckASSIGNToType( ctx.dtype, ctx.subtype, expr ) = FALSE ) then
+	if( astCheckASSIGNToType( ctx.dtype, ctx.subtype, expr, TRUE ) = FALSE ) then
 		'' check if it's a cast
 
 		'' pass the initializing expression back to parent if it fails here
@@ -335,7 +339,6 @@ private function hArrayInit _
 end function
 
 private function hUDTInit( byref ctx as FB_INITCTX ) as integer
-	static as integer rec_cnt = 0
 
 	dim as integer elm_cnt = any
 	dim as longint lgt = any, baseofs = any, pad_lgt = any
@@ -498,10 +501,11 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 
 			if( is_ctorcall ) then
 				return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr, ctx.dtype, ctx.subtype ) <> NULL
-			else
-				'' try to assign it (do a shallow copy)
-				return hDoAssign( ctx, expr, TRUE )
-			end if
+			endif
+
+			'' try to assign it (do a shallow copy)
+			return hDoAssign( ctx, expr, TRUE )
+
 		end if
 
 		'' next field to initialize

@@ -46,7 +46,7 @@ private function hCheckUDTOps _
 		byval ldclass as FB_DATACLASS, _
 		byref r as ASTNODE ptr, _
 		byval rdclass as FB_DATACLASS, _
-		byval checkOnly as integer = TRUE _
+		byval no_upcast as integer _
 	) as integer
 
 	dim as FBSYMBOL ptr proc = any
@@ -75,11 +75,11 @@ private function hCheckUDTOps _
 			exit function
 		End If
 
-		if( checkOnly ) then
+		if( no_upcast ) then
 			'' if checking only, assume we meant checking without conversion
-			'' we need this from astCheckASSIGNToType() -> astCheckASSIGN()
-			'' to fail initializers that cannot be precisely assigned but
-			'' could be assigned with a conversion.  This allows passing
+			'' we need this so astCheckASSIGNToType() -> astCheckASSIGN()
+			'' will fail initializers that cannot be precisely assigned but
+			'' could be assigned with a upcasting.  This allows passing
 			'' an initializer that could be assigned to a base by conversion
 			'' to a parent that could be assigned exactly.
 			exit function
@@ -250,7 +250,8 @@ end function
 function astCheckASSIGN _
 	( _
 		byval l as ASTNODE ptr, _
-		byval r as ASTNODE ptr _
+		byval r as ASTNODE ptr, _
+		byval no_upcast as integer _
 	) as integer
 
 	dim as ASTNODE ptr n = any
@@ -283,7 +284,7 @@ function astCheckASSIGN _
 	elseif( (ldtype = FB_DATATYPE_STRUCT) or _
 			(rdtype = FB_DATATYPE_STRUCT) ) then
 
-		if( hCheckUDTOps( l, ldclass, r, rdclass, TRUE ) = FALSE ) then
+		if( hCheckUDTOps( l, ldclass, r, rdclass, no_upcast ) = FALSE ) then
 			exit function
 		end if
 
@@ -366,14 +367,15 @@ function astCheckASSIGNToType _
 	( _
 		byval ldtype as integer, _
 		byval lsubtype as FBSYMBOL ptr, _
-		byval r as ASTNODE ptr _
+		byval r as ASTNODE ptr, _
+		byval no_upcast as integer _
 	) as integer
 
 	dim as ASTNODE ptr l = any
 
 	l = astNewVAR( NULL, 0, ldtype, lsubtype )
 
-	function = astCheckASSIGN( l, r )
+	function = astCheckASSIGN( l, r, no_upcast )
 
 	astDelTree( l )
 end function

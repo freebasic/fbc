@@ -191,7 +191,7 @@ type AST_NODE_TYPEINI
 	ofs             as longint
 	union
 		bytes       as longint
-		elements    as longint
+		elements    as longint            '' TYPEINI_CTORLIST only
 	end union
 	scp             as FBSYMBOL ptr
 	lastscp         as FBSYMBOL ptr
@@ -918,14 +918,16 @@ declare sub astCheckConst _
 declare function astCheckASSIGN _
 	( _
 		byval l as ASTNODE ptr, _
-		byval r as ASTNODE ptr _
+		byval r as ASTNODE ptr, _
+		byval no_upcast as integer _
 	) as integer
 
 declare function astCheckASSIGNToType _
 	( _
 		byval ldtype as integer, _
 		byval lsubtype as FBSYMBOL ptr, _
-		byval r as ASTNODE ptr _
+		byval r as ASTNODE ptr, _
+		byval no_upcast as integer _
 	) as integer
 
 declare function astCheckByrefAssign _

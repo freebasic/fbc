@@ -296,7 +296,9 @@ function astTypeIniAddCtorList _
 
 	n->sym = sym
 	n->typeini.ofs = tree->typeini.ofs
-	n->typeini.bytes = tree->typeini.bytes
+
+	'' AST_NODECLASS_TYPEINI_CTORLIST node uses typeini.elements
+	'' instead of typeini.elements to track position in the typeini tree
 
 	n->typeini.elements = elements
 
