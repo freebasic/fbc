@@ -4253,8 +4253,11 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	end if
 
 	if (v1dtype=FB_DATATYPE_STRUCT and v2dtype=FB_DATATYPE_STRUCT) then
-		asm_info("no convert as STRUCT -> STRUCT")
+		asm_info("converting STRUCT -> STRUCT")
+		dim as FBSYMBOL ptr v1subtype=v1->subtype
 		*v1=*v2
+		v1->subtype=v1subtype ''forcing the subtype of the desired structure
+		asm_info("v1="+vregdumpfull(v1)+" xx "+Str(v1->reg))
 		exit sub
 	end if
 
@@ -4742,7 +4745,7 @@ private sub emitStoreStruct(byval v1 as IRVREG ptr, byval v2 as IRVREG ptr,byref
 		'' FB_STRUCT_X or FB_STRUCT_R.
 		assert( 0 )
 	end select
- 
+
 	''moving the rest (1 to 8 bytes), assuming rdx not already used
 	if op1[0]=asc("-") and (lgtv1=9 or lgtv1= 10 or lgtv1=12 or lgtv1=16) then
 		''shortcut for move at address -xxx[rbp] + 8

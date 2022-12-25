@@ -108,6 +108,7 @@ Version 1.10.0
 - fbc: improve code generation for structs returned by value and structs returned in registers - some structs where not handled correctly and had mismatched code generation when mixing modules with different fbc backends or linking again c libraries (e.g. gas+gcc or gas64+gcc) resulting in stack corruption or wrong values returned in structs
 - gas64: improve code generation for structs returned by value, fix optimization no 16, fix relocations for static / shared in shared libraries
 - fbgfx.bi: fix structures and declarations for #lang "qb" (paul doe)
+- gas64: fix structures passed by upcasting
 
 
 Version 1.09.0
