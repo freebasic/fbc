@@ -246,8 +246,14 @@ function astTypeIniAddAssign _
 		tree->typeini.ofs +=expr->typeini.bytes
 		tree->typeini.bytes += expr->typeini.bytes
 	else
+		'' vars and fields could be byref / array / etc
+		'' and boundstypeini may pass a NULL sym
 		if( sym ) then
-			n->typeini.bytes = symbGetLen( sym )
+			if( symbIsRef( sym ) ) then
+				n->typeini.bytes = env.pointersize
+			else
+				n->typeini.bytes = symbGetLen( sym )
+			end if
 		end if
 
 		tree->typeini.ofs += n->typeini.bytes
@@ -271,12 +277,12 @@ function astTypeIniAddCtorCall _
 
 	n->sym = sym
 	n->typeini.ofs = tree->typeini.ofs
-	n->typeini.bytes = tree->typeini.bytes
+	n->typeini.bytes = symbGetLen( sym )
 
 	n->l = procexpr
 
-	tree->typeini.ofs += symbGetLen( sym )
-	tree->typeini.bytes += symbGetLen( sym )
+	tree->typeini.ofs += n->typeini.bytes
+	tree->typeini.bytes += n->typeini.bytes
 
 	function = n
 end function
@@ -459,6 +465,7 @@ function astTypeIniFlush overload _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any, nxt = any, t = any, l = any
+	dim as longint maxsize = any
 
 	assert( astIsTYPEINI( initree ) )
 	assert( astIsVAR( target ) or astIsDEREF( target ) or _
@@ -469,6 +476,13 @@ function astTypeIniFlush overload _
 		'' for astTypeIniUpdate() later. This only makes sense for TYPEINIs
 		'' that were previously registered via astTypeIniEnd(..., FALSE).
 		ast.typeinicount -= 1
+	end if
+
+	'' maxsize of 0 indicates no checking for target size
+	maxsize = 0
+
+	if( astIsVAR( target ) or astIsField( target ) ) then
+		maxsize = symbGetRealSize( target->sym )
 	end if
 
 	t = NULL
@@ -488,42 +502,48 @@ function astTypeIniFlush overload _
 		select case( n->class )
 		'' Write the given initializer expression to the given offset in the target
 		case AST_NODECLASS_TYPEINI_ASSIGN
-			if( n->sym ) then
-				'' Field?
-				if( symbIsField( n->sym ) ) then
-					'' If it's a bitfield, clear the whole field containing this bitfield,
-					'' otherwise the bitfield assignment(s) would leave unused bits
-					'' uninitialized.
-					if( symbFieldIsBitfield( n->sym ) ) then
-						'' Beginning of a field containing one or more bitfields?
-						if( n->sym->var_.bitpos = 0 ) then
-							l = astBuildDerefAddrOf( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype )
-							l = astNewMEM( AST_OP_MEMCLEAR, l, astNewCONSTi( typeGetSize( symbGetFullType( n->sym ) ) ) )
-							t = astNewLINK( t, l, AST_LINK_RETURN_NONE )
+			if( (maxsize = 0) or (n->typeini.ofs + n->typeini.bytes <= maxsize) ) then
+				if( n->sym ) then
+					'' Field?
+					if( symbIsField( n->sym ) ) then
+						'' If it's a bitfield, clear the whole field containing this bitfield,
+						'' otherwise the bitfield assignment(s) would leave unused bits
+						'' uninitialized.
+						if( symbFieldIsBitfield( n->sym ) ) then
+							'' Beginning of a field containing one or more bitfields?
+							if( n->sym->var_.bitpos = 0 ) then
+								l = astBuildDerefAddrOf( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype )
+								l = astNewMEM( AST_OP_MEMCLEAR, l, astNewCONSTi( typeGetSize( symbGetFullType( n->sym ) ) ) )
+								t = astNewLINK( t, l, AST_LINK_RETURN_NONE )
+							end if
 						end if
 					end if
 				end if
+
+				l = astBuildDerefAddrOf( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype, n->sym )
+
+				l = astNewASSIGN( l, n->l, assignoptions or AST_OPOPT_DONTCHKPTR )
+				assert( l )
+				t = astNewLINK( t, l, AST_LINK_RETURN_NONE )
 			end if
-
-			l = astBuildDerefAddrOf( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype, n->sym )
-
-			l = astNewASSIGN( l, n->l, assignoptions or AST_OPOPT_DONTCHKPTR )
-			assert( l )
-			t = astNewLINK( t, l, AST_LINK_RETURN_NONE )
 
 		'' Clear the given amount of bytes at the given offset in the target
 		case AST_NODECLASS_TYPEINI_PAD
-			l = astBuildDerefAddrOf( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype )
-			l = astNewMEM( AST_OP_MEMCLEAR, l, astNewCONSTi( n->typeini.bytes ) )
-			t = astNewLINK( t, l, AST_LINK_RETURN_NONE )
+			if( (maxsize = 0) or (n->typeini.ofs + n->typeini.bytes <= maxsize) ) then
+				l = astBuildDerefAddrOf( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype )
+				l = astNewMEM( AST_OP_MEMCLEAR, l, astNewCONSTi( n->typeini.bytes ) )
+				t = astNewLINK( t, l, AST_LINK_RETURN_NONE )
+			end if
 
 		'' Use the given CALL (and its ARGs) as-is, but insert the byref instance argument,
 		'' pointing to the given offset in the target
 		case AST_NODECLASS_TYPEINI_CTORCALL
-			l = astBuildDerefAddrOf( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype, n->sym )
+			if( (maxsize = 0) or (n->typeini.ofs + n->typeini.bytes <= maxsize) ) then
+				l = astBuildDerefAddrOf( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype, n->sym )
 
-			l = astPatchCtorCall( n->l, l )
-			t = astNewLINK( t, l, AST_LINK_RETURN_NONE )
+				l = astPatchCtorCall( n->l, l )
+				t = astNewLINK( t, l, AST_LINK_RETURN_NONE )
+			end if
 
 		'' Build constructor calls for an array of elements
 		case AST_NODECLASS_TYPEINI_CTORLIST
