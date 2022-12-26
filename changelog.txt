@@ -56,6 +56,7 @@ Version 1.10.0
 - fbc: __FB_QUERY_SYMBOL__( what, sym ) built-in macro for querying fbc symbol internals.  Added fbc-int/symbol.bi (Work in progress).
 - add '-z no-retinflts' command line option for code generation.  This option disables returning some structures (types) in floating point registers.  This is a work-around for different handling of structs returned by value on different tool chains / targets.
 - fbgfx.bi: add private function fb.__pixels() to return a pointer to the image data (paul doe)
+- fbc: add command line option and warning '-w upcast' to warn when up-casting would discard initializers
 
 [fixed]
 - gas64: missing restoring of use of one virtual register on sqr for float (SARG)

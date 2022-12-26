@@ -232,10 +232,13 @@ Enable type signedness warnings
 Enable const type warnings
 .TP
 \fB\-w\fR \fBsuffix\fR
-Enable invalid suffix warnings
+Enable warning when up-casting discards initializers
 .TP
 \fB\-w\fR \fBerror\fR
 Report warnings as errors
+.TP
+\fB\-w\fR \fBupcast\fR
+Warn when up-casting discards initializers
 .TP
 \fB\-Wa\fR \fIa,b,c\fR
 Pass options to GAS
@@ -258,11 +261,17 @@ Use pointer expressions to implement CVA_*() macros
 \fB\-z no-thiscall\fR
 Don't use '__thiscall' calling convention
 .TP
+\fB\-z no-fastcall\fR
+Don't use '__fastcall' calling convention
+.TP
 \fB\-z fbrt\fR
 Link with 'fbrt' instead of 'fb' runtime library
 .TP
-\fB\-z nocmdline\fR
+\fB\-z no-retinflts\fR
 Disable #cmdline source directives
+.TP
+\fB\-z nocmdline\fR
+Disable returning some types in floating point registers
 
 .SH ENVIRONMENT
 .IP AS

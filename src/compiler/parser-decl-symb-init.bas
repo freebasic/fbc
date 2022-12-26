@@ -630,9 +630,9 @@ function cInitializer _
 	hUpdateContextDtype( ctx, dtype, subtype )
 
 	'' When to allow up-casting?
-	'' [x] top level -> allow upcasting
-	'' [x] nested UDT initialization -> do not allow upcasting
-	'' [ ] array element initialization -> allow upcasting
+	'' [x] top level -> allow up-casting
+	'' [x] nested UDT initialization -> do not allow up-casting
+	'' [ ] array element initialization -> allow up-casting
 
 	'' No override in options?
 	if( (options and FB_INIOPT_NOUPCAST) = 0 ) then

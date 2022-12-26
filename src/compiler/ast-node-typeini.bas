@@ -454,6 +454,30 @@ private function hCallCtorList _
 	function = t
 end function
 
+private function hastCheckTypeIniAssignment _
+	( _
+		byval n as ASTNODE ptr, _
+		byval maxsize as longint, _
+		byval scoped as integer _
+	) as integer
+
+	if( (maxsize > 0) ) then
+		if ( scoped > 0 ) then
+			if( n->typeini.ofs + n->typeini.bytes > maxsize ) then	
+				if( n->class <> AST_NODECLASS_TYPEINI_PAD ) then
+					if( fbPdCheckIsSet( FB_PDCHECK_UPCAST ) ) then
+						errReportWarn( FB_WARNINGMSG_UPCASTDISCARDSINITIALIZER )
+					end if
+				end if
+				return FALSE
+			end if
+		end if
+	end if
+
+	return TRUE
+end function
+
+
 '' Builds up code to write a TYPEINI tree into a target variable/deref,
 '' and deletes the TYPEINI tree.
 function astTypeIniFlush overload _
@@ -466,6 +490,7 @@ function astTypeIniFlush overload _
 
 	dim as ASTNODE ptr n = any, nxt = any, t = any, l = any
 	dim as longint maxsize = any
+	dim as integer scoped = 0
 
 	assert( astIsTYPEINI( initree ) )
 	assert( astIsVAR( target ) or astIsDEREF( target ) or _
@@ -502,7 +527,7 @@ function astTypeIniFlush overload _
 		select case( n->class )
 		'' Write the given initializer expression to the given offset in the target
 		case AST_NODECLASS_TYPEINI_ASSIGN
-			if( (maxsize = 0) or (n->typeini.ofs + n->typeini.bytes <= maxsize) ) then
+			if( hastCheckTypeIniAssignment( n, maxsize, scoped ) ) then
 				if( n->sym ) then
 					'' Field?
 					if( symbIsField( n->sym ) ) then
@@ -529,7 +554,7 @@ function astTypeIniFlush overload _
 
 		'' Clear the given amount of bytes at the given offset in the target
 		case AST_NODECLASS_TYPEINI_PAD
-			if( (maxsize = 0) or (n->typeini.ofs + n->typeini.bytes <= maxsize) ) then
+			if( hastCheckTypeIniAssignment( n, maxsize, scoped ) ) then
 				l = astBuildDerefAddrOf( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype )
 				l = astNewMEM( AST_OP_MEMCLEAR, l, astNewCONSTi( n->typeini.bytes ) )
 				t = astNewLINK( t, l, AST_LINK_RETURN_NONE )
@@ -538,7 +563,7 @@ function astTypeIniFlush overload _
 		'' Use the given CALL (and its ARGs) as-is, but insert the byref instance argument,
 		'' pointing to the given offset in the target
 		case AST_NODECLASS_TYPEINI_CTORCALL
-			if( (maxsize = 0) or (n->typeini.ofs + n->typeini.bytes <= maxsize) ) then
+			if( hastCheckTypeIniAssignment( n, maxsize, scoped ) ) then
 				l = astBuildDerefAddrOf( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype, n->sym )
 
 				l = astPatchCtorCall( n->l, l )
@@ -549,7 +574,11 @@ function astTypeIniFlush overload _
 		case AST_NODECLASS_TYPEINI_CTORLIST
 			t = hCallCtorList( t, n, target )
 
-		case AST_NODECLASS_TYPEINI_SCOPEINI, AST_NODECLASS_TYPEINI_SCOPEEND
+		case AST_NODECLASS_TYPEINI_SCOPEINI
+			scoped += 1
+
+		case AST_NODECLASS_TYPEINI_SCOPEEND
+			scoped -= 1
 
 		case else
 			assert( FALSE )

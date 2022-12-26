@@ -2283,6 +2283,10 @@ private sub handleOpt _
 			fbSetOption( FB_COMPOPT_PEDANTICCHK, _
 				fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_ERROR )
 
+		case "upcast"
+			fbSetOption( FB_COMPOPT_PEDANTICCHK, _
+				fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_UPCAST )
+
 		case else
 			value = clng( arg )
 		end select
@@ -4131,6 +4135,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -w constness     Enable const type warnings"
 	print "  -w suffix        Enable invalid suffix warnings"
 	print "  -w error         Report warnings as errors"
+	print "  -w upcast        Enable warning when up-casting discards initializers"
 	end if
 	print "  -Wa <a,b,c>      Pass options to 'as'"
 	print "  -Wc <a,b,c>      Pass options to 'gcc' (-gen gcc) or 'llc' (-gen llvm)"
