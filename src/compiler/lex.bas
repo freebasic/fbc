@@ -101,6 +101,8 @@ sub lexInit _
 	lex.ctx->lahdchar1 = UINVALID
 	lex.ctx->lahdchar2 = UINVALID
 
+	lex.ctx->is_fb_eval = is_fb_eval
+
 	if( is_fb_eval ) then
 		lex.ctx->linenum = (lex.ctx-1)->linenum
 		lex.ctx->reclevel = (lex.ctx-1)->reclevel
@@ -2433,7 +2435,13 @@ function lexPeekCurrentLine _
 
 	'' get file contents around current token
 	old_p = seek( env.inf.num )
-	p = lex.ctx->lastfilepos - 512
+
+	if( lex.ctx->is_fb_eval ) then
+		p = (lex.ctx-1)->lastfilepos - 512
+	else
+		p = lex.ctx->lastfilepos - 512
+	end if
+
 	start = 512
 	if( p < 0 ) then
 		start += p

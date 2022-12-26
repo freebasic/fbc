@@ -95,6 +95,7 @@ type LEX_TKCTX
 	currmacro       as FBSYMBOL ptr             '' used to check macro recursion
 
 	kwdns           as FBSYMBOL ptr             '' used by the PP
+	is_fb_eval      as integer                  '' TRUE if inside an FB_EVAL
 
 	'' last #define's text
 	deflen          as integer

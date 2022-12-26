@@ -8,7 +8,7 @@
 '' Constants are mostly copied as-is from src/compiler/symb.bi
 '' Except:
 '' - fbc namespace added
-'' - maros prefixed with fbc
+'' - macros prefixed with fbc
 ''
 '' Use symbol names and fully qualified symbols in user code for hopefully
 '' the least number of breakages in future.
@@ -61,7 +61,7 @@ end enum
 
 const FB_DATATYPES = (FB_DATATYPE_XMMWORD - FB_DATATYPE_VOID) + 1
 
-const FB_DT_TYPEMASK        = &b00000000000000000000000000011111 '' max 32 built-in dts
+const FB_DT_TYPEMASK        = &b00000000000000000000000000011111 '' max 32 built-in datatypes
 const FB_DT_PTRMASK         = &b00000000000000000000000111100000 '' level of pointer indirection
 const FB_DT_CONSTMASK       = &b00000000000000111111111000000000 '' PTRLEVELS + 1 bit-masks
 const FB_DATATYPE_REFERENCE = &b00000000000010000000000000000000 '' used for mangling BYREF parameters
@@ -93,6 +93,7 @@ enum FB_SYMBCLASS
 	FB_SYMBCLASS_NSIMPORT                   '' namespace import (an USING)
 end enum
 
+'' !!!TODO!!! - explain these ...
 #define fbcTypeGet( dt ) iif( dt and fbc.FB_DT_PTRMASK, fbc.FB_DATATYPE_POINTER, dt and fbc.FB_DT_TYPEMASK )
 #define fbcTypeGetDtOnly( dt ) (dt and fbc.FB_DT_TYPEMASK)
 #define fbcTypeGetDtAndPtrOnly( dt ) (dt and (fbc.FB_DT_TYPEMASK or fbc.B_DT_PTRMASK))
@@ -101,22 +102,41 @@ end enum
 #define fbcTypeIsPtr( dt ) (((dt and fbc.FB_DT_PTRMASK) <> 0))
 #define fbcTypeGetPtrCnt( dt ) ((dt and fbc.FB_DT_PTRMASK) shr fbc.FB_DT_PTRPOS)
 
+'' FB_QUERY_SYMBOL must follow src/compiler/symb-define.bas
+''
 enum FB_QUERY_SYMBOL explicit
-	datatype   = 0           '' return symbol's type as FB_DATATYPE
-	dataclass  = 1           '' return the symbol's data class as FB_DATACLASS
-	symbclass  = 2           '' return the symbol's class as FB_SYMBCLASS
+
+	'' query type
+	symbclass  = &h0000     '' return the symbol's class as FB_SYMBCLASS
+	datatype   = &h0001     '' return symbol's type as FB_DATATYPE
+	dataclass  = &h0002     '' return the symbol's data class as FB_DATACLASS
+
+	querymask  = &h00ff     '' mask for query values
+
+	'' filters
+	typeinfo   = &h0100     '' use TYPEOF/expression only when parsing the symbol/expression
+
+	filtermask = &hff00     '' mask for filter values
+
 end enum
 
 '' Convenience MACROS
-'' waring: naming is subject to change
+'' warning: naming is subject to change
 ''
 
+'' FB_SYMBCLASS
+#define isVariable( sym )  ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.symbclass, sym ) = fbc.FB_SYMBCLASS_VAR )
+#define isConst( sym )     ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.symbclass, sym ) = fbc.FB_SYMBCLASS_CONST )
+#define isProcedure( sym ) ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.symbclass, sym ) = fbc.FB_SYMBCLASS_PROC )
+#define isNamespace( sym ) ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.symbclass, sym ) = fbc.FB_SYMBCLASS_NAMESPACE )
+#define isUDT( sym )       ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.symbclass, sym ) = fbc.FB_SYMBCLASS_STRUCT )
+
 '' FB_DATACLASS
-#define isTypeOfInteger( sym ) ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.dataclass, sym ) = fbc.FB_DATACLASS_INTEGER )
-#define isTypeOfFloat( sym )   ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.dataclass, sym ) = fbc.FB_DATACLASS_FLOAT )
-#define isTypeOfString( sym )  ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.dataclass, sym ) = fbc.FB_DATACLASS_STRING )
-#define isTypeOfUDT( sym )     ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.dataclass, sym ) = fbc.FB_DATACLASS_UDT )
-#define isTypeOfProc( sym )    ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.dataclass, sym ) = fbc.FB_DATACLASS_PROC )
+#define isDataClassInteger( sym ) ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.dataclass, sym ) = fbc.FB_DATACLASS_INTEGER )
+#define isDataClassFloat( sym )   ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.dataclass, sym ) = fbc.FB_DATACLASS_FLOAT )
+#define isDataClassString( sym )  ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.dataclass, sym ) = fbc.FB_DATACLASS_STRING )
+#define isDataClassUDT( sym )     ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.dataclass, sym ) = fbc.FB_DATACLASS_UDT )
+#define isDataClassProc( sym )    ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.dataclass, sym ) = fbc.FB_DATACLASS_PROC )
 
 '' FB_DATATYPE
 #define isTypeBoolean( sym )  ( fbcTypeGetDtOnly( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.datatype, sym ) ) = fbc.FB_DATATYPE_BOOLEAN )
@@ -135,12 +155,6 @@ end enum
 #define isTypeUDT( sym )      ( fbcTypeGetDtOnly( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.datatype, sym ) ) = fbc.FB_DATATYPE_STRUCT )
 #define isTypePointer( sym )  ( fbcTypeGet      ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.datatype, sym ) ) = fbc.FB_DATATYPE_POINTER )
 
-'' FB_SYMBCLASS
-#define isVariable( sym )  ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.symbclass, sym ) = fbc.FB_SYMBCLASS_VAR )
-#define isConst( sym )     ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.symbclass, sym ) = fbc.FB_SYMBCLASS_CONST )
-#define isParameter( sym ) ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.symbclass, sym ) = fbc.FB_SYMBCLASS_PARAM )
-#define isNamespace( sym ) ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.symbclass, sym ) = fbc.FB_SYMBCLASS_NAMESPACE )
-#define isUDT( sym )       ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.symbclass, sym ) = fbc.FB_SYMBCLASS_STRUCT )
 
 end namespace
 
