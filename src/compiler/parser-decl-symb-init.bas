@@ -633,6 +633,7 @@ function cInitializer _
 	'' [x] top level -> allow up-casting
 	'' [x] nested UDT initialization -> do not allow up-casting
 	'' [ ] array element initialization -> allow up-casting
+	'' [x] NEW() -> allow up-casting
 
 	'' No override in options?
 	if( (options and FB_INIOPT_NOUPCAST) = 0 ) then
@@ -641,8 +642,10 @@ function cInitializer _
 		if( ctx.last_ctx = NULL ) then
 			ctx.options and= not FB_INIOPT_NOUPCAST
 
-		'' anything else, assume no upcasting
-		else
+		'' up-casting not explicitly enabled?
+		elseif( (options and FB_INIOPT_UPCAST) = 0 ) then
+
+			'' then anything else, assume no up-casting
 			ctx.options or= FB_INIOPT_NOUPCAST
 
 		end if
