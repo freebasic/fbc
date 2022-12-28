@@ -1,6 +1,6 @@
 # include "fbcunit.bi"
 
-SUITE( fbc_tests.compound.scope_type_1 )
+SUITE( fbc_tests.structs.scope_type_1 )
 
 	type P1
 		a as integer
