@@ -2117,8 +2117,11 @@ private function hCheckOvlParam _
 
 	'' byref param?
 	case FB_PARAMMODE_BYREF
-		'' arg being passed by value?
-		if( arg_mode = FB_PARAMMODE_BYVAL ) then
+		'' arg being passed by value? and not a UDT?
+		'' - fall through for UDTs because they will be handled below by
+		''   trying to find a ctor / cast operation that satisfies the call
+		if( (arg_mode = FB_PARAMMODE_BYVAL) and (typeGetClass( arg_dtype ) <> FB_DATACLASS_UDT) ) then
+
 			'' invalid type? refuse..
 			if( (typeGetClass( arg_dtype ) <> FB_DATACLASS_INTEGER) or _
 				(typeGetSize( arg_dtype ) <> env.pointersize) ) then
@@ -2128,6 +2131,7 @@ private function hCheckOvlParam _
 			'' pretend param is a pointer
 			param_dtype = typeAddrOf( param_dtype )
 			param_ptrcnt += 1
+
 		end if
 	end select
 

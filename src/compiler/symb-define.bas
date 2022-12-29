@@ -1029,8 +1029,6 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 			lex.ctx->defptr = lex.ctx->deftext.data
 			lex.ctx->deflen += len( *sexpr )
 
-			'' asdf
-
 			if( (whatvalue and FB_QUERY_SYMBOL.typeinfo) = 0 ) then
 
 				'' Try a lookup of the symbol and ideally suppressing all errors.  We
