@@ -463,7 +463,7 @@ private function hastCheckTypeIniAssignment _
 
 	if( (maxsize > 0) ) then
 		if ( scoped > 0 ) then
-			if( n->typeini.ofs + n->typeini.bytes > maxsize ) then	
+			if( n->typeini.ofs + n->typeini.bytes > maxsize ) then
 				if( n->class <> AST_NODECLASS_TYPEINI_PAD ) then
 					if( fbPdCheckIsSet( FB_PDCHECK_UPCAST ) ) then
 						errReportWarn( FB_WARNINGMSG_UPCASTDISCARDSINITIALIZER )

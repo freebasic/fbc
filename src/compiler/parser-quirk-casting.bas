@@ -212,7 +212,7 @@ function cAnonType( ) as ASTNODE ptr
 	'' Use temp var so the rest can be parsed as var initializer,
 	'' then delete the temp var again, similar to astCALLCTORToCALL()
 	sym = symbAddTempVar( dtype, subtype )
-	initree = cInitializer( sym, FB_INIOPT_NONE or FB_INIOPT_NOUPCAST )
+	initree = cInitializer( sym, FB_INIOPT_NONE )
 	astReplaceSymbolOnTree( initree, sym, NULL )
 	symbDelSymbol( sym )
 

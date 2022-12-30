@@ -155,11 +155,11 @@ SUITE( fbc_tests.structs.udt_init_ops_2 )
 		dim shared as TX x0
 		dim shared as TU u0
 		dim shared as TV v
-		dim shared as TW w0, w1
+		dim shared as TW w0
 
 		constructor TU()
 			i = 1
-			If (@This <> @u0) And (@This <> @w0) AND (@This <> @w1) Then
+			If (@This <> @u0) And (@This <> @w0) Then
 				dprint #ns; " ";
 				dprint "constructor TU()"
 				id_TU_ctor = get_id_count()

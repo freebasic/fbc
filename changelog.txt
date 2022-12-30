@@ -29,6 +29,7 @@ Version 1.10.0
 - fbc: Improve handling of closing parenthesis in first argument of a procedure call for some expressions (sf.net # 468). If there is no leading parenthesis, then there should be no ambiguity that the procedure is being invoked without the parentheses
 - fbc: remove #pragma push( lookup108 ) to use symbol lookup method from fbc-1.08.x and earlier on unqualified symbol names - it was crutch for fb 1.09.0 to help with testing and transition to better lookups
 - fbc: passing byval constructor preference: prefer A.constructor( B ) instead of of B.operator CAST() as A + A.constructor() when passing UDT by value - this is to fix some inconsistencies in the rules when converting by construction one type to another
+- fbc: only up-cast initializers when needed.  New behaviour is to try matching initializers without up-casting before matching with up-casting.
 
 [added]
 - gas/gas64: '.cif_sections' and '.cif_' directives for stack unwinding (adeyblue)

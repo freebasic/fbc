@@ -995,7 +995,7 @@ private sub hBaseInit( )
 		astTypeIniEnd( initree, TRUE )
 	else
 		'' Initializer
-		initree = cInitializer( base_, FB_INIOPT_ISINI or FB_INIOPT_NOUPCAST )
+		initree = cInitializer( base_, FB_INIOPT_ISINI )
 	end if
 
 	parser.currproc->proc.ext->base_initree = initree

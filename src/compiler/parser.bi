@@ -227,7 +227,6 @@ enum FB_INIOPT
 	FB_INIOPT_ISINI             = &h00000001  '' initializer (not an expression)
 	FB_INIOPT_ISOBJ             = &h00000002  '' object with constructor
 	FB_INIOPT_NOUPCAST          = &h00000004  '' don't allow upcasting (base types initialized from derived types)
-	FB_INIOPT_UPCAST            = &h00000008  '' allow upcasting (as used by NEW() to reset the recursion checks)
 end enum
 
 '' cProcHeader() flags
