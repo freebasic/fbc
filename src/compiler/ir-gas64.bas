@@ -5969,79 +5969,54 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 					asm_code("movq "+str(vr->ofs)+  "[rbp], xmm0")
 					asm_code("movq "+str(vr->ofs+8)+"[rbp], xmm1")
 			end select
-		else
-			dtype=typeGetDtAndPtrOnly(vr->dtype)
-			if typeget(dtype)=FB_DATATYPE_POINTER then dtype=FB_DATATYPE_INTEGER
-			if dtype=FB_DATATYPE_DOUBLE then
-				if( (env.target.options and FB_TARGETOPT_RETURNINFLTS) = 0 ) then
-					asm_code("movq rax, xmm0")
-				else
-					if symbGetType( proc )<>FB_DATATYPE_STRUCT then
-						asm_code("movq rax, xmm0")
-					end if
-				endif
-			elseif dtype=FB_DATATYPE_SINGLE then
-				if( (env.target.options and FB_TARGETOPT_RETURNINFLTS) = 0 ) then
-					asm_code("movd eax, xmm0")
-				else
-					if symbGetType( proc )<>FB_DATATYPE_STRUCT then
-						asm_code("movd eax, xmm0")
-					end if
-				endif
-			end if
-			op3=""
-			reg_findfree(vr->reg)
-			select case vr->typ ''destination
-
-				case IR_VREGTYPE_IDX
-					prepare_idx(vr,op1,op3)
-
-				case IR_VREGTYPE_REG
-					select case dtype
-						case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE,FB_DATATYPE_ENUM
-							op1=*regstrq(reg_findreal(vr->reg))
-						case FB_DATATYPE_LONG,FB_DATATYPE_ULONG,FB_DATATYPE_SINGLE
-							op1=*regstrd(reg_findreal(vr->reg))
-						case FB_DATATYPE_SHORT,FB_DATATYPE_USHORT
-							op1=*regstrw(reg_findreal(vr->reg))
-						case FB_DATATYPE_BYTE,FB_DATATYPE_UBYTE,FB_DATATYPE_BOOLEAN,FB_DATATYPE_CHAR
-							op1=*regstrb(reg_findreal(vr->reg))
-						case else
-							asm_error("in hdocall datatype not handled 04 ="+typedumpToStr(dtype,0))
-							op1=*regstrq(KREG_XXX)
-					end select
-
-				case IR_VREGTYPE_VAR ''format varname ofs1   local/static  ofs1 could be zero
-					if symbIsStatic(vr->sym) Or symbisshared(vr->sym) then
-						op1=*symbGetMangledName(vr->sym)+"[rip+"+Str(vr->ofs)+"]"
-					else
-						op1=Str(vr->ofs)+"[rbp]"
-					end if
-
-				case IR_VREGTYPE_PTR ''format ofs1 <vidx=reg>
-					op1=Str(vr->ofs)+"["+*regstrq(reg_findreal(vr->vidx->reg))+"]"
-
-				case IR_VREGTYPE_OFS ''format varname ofs1   static  ofs1 could be zero
-					op1=*symbGetMangledName(vr->sym)+"[rip+"+str(vr->ofs)+"]"
-					asm_error("in hdocall OFS not handled")
-				case else
-					asm_error("in hdocall typ not handled ="+Str(vr->typ))
-			end select
-
-			if op3<>"" then emitop3_op4(op3)
-			select case dtype
-				case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE,FB_DATATYPE_ENUM
-					asm_code("mov "+op1+", "+*regstrq(KREG_RAX))
-				case FB_DATATYPE_LONG,FB_DATATYPE_ULONG,FB_DATATYPE_SINGLE
-					asm_code("mov "+op1+", "+*regstrd(KREG_RAX))
-				case FB_DATATYPE_SHORT,FB_DATATYPE_USHORT
-					asm_code("mov "+op1+", "+*regstrw(KREG_RAX))
-				case FB_DATATYPE_BYTE,FB_DATATYPE_UBYTE,FB_DATATYPE_BOOLEAN,FB_DATATYPE_CHAR
-					asm_code("mov "+op1+", "+*regstrb(KREG_RAX))
-				case else
-					asm_error("in hdocall datatype not handled 05 ="+typedumpToStr(dtype,0))
-			end select
+			exit sub
 		end if
+
+		dtype=typeGetDtAndPtrOnly(vr->dtype)
+		if typeget(dtype)=FB_DATATYPE_POINTER then dtype=FB_DATATYPE_INTEGER
+		if dtype=FB_DATATYPE_DOUBLE then
+			if( (env.target.options and FB_TARGETOPT_RETURNINFLTS) = 0 ) then
+				asm_code("movq rax, xmm0")
+			else
+				if symbGetType( proc )<>FB_DATATYPE_STRUCT then
+					asm_code("movq rax, xmm0")
+				end if
+			endif
+		elseif dtype=FB_DATATYPE_SINGLE then
+			if( (env.target.options and FB_TARGETOPT_RETURNINFLTS) = 0 ) then
+				asm_code("movd eax, xmm0")
+			else
+				if symbGetType( proc )<>FB_DATATYPE_STRUCT then
+					asm_code("movd eax, xmm0")
+				end if
+			endif
+		end if
+
+		reg_findfree(vr->reg)
+
+		select case vr->typ ''destination
+			case IR_VREGTYPE_REG
+				asm_info("in hdocall vr->type limited to IR_VREGTYPE_REG")
+				select case dtype
+					case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_DOUBLE,FB_DATATYPE_ENUM
+						op1=*regstrq(reg_findreal(vr->reg))
+						asm_code("mov "+op1+", "+*regstrq(KREG_RAX))
+					case FB_DATATYPE_LONG,FB_DATATYPE_ULONG,FB_DATATYPE_SINGLE
+						op1=*regstrd(reg_findreal(vr->reg))
+						asm_code("mov "+op1+", "+*regstrd(KREG_RAX))
+					case FB_DATATYPE_SHORT,FB_DATATYPE_USHORT
+						op1=*regstrw(reg_findreal(vr->reg))
+						asm_code("mov "+op1+", "+*regstrw(KREG_RAX))
+					case FB_DATATYPE_BYTE,FB_DATATYPE_UBYTE,FB_DATATYPE_BOOLEAN,FB_DATATYPE_CHAR
+						op1=*regstrb(reg_findreal(vr->reg))
+						asm_code("mov "+op1+", "+*regstrb(KREG_RAX))
+					case else
+						asm_error("in hdocall datatype not handled 04 ="+typedumpToStr(dtype,0))
+						op1=*regstrq(KREG_XXX)
+				end select
+			case else
+				asm_error("in hdocall vr->type not handled (test optim)")
+		end select
 	end if
 end sub
 private sub _emitcall _
