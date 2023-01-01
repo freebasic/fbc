@@ -18,7 +18,7 @@
 	#define max_int(T) cast(T, iif(is_signed(T), max_signed(T), max_unsigned(T)))
 	#define max_single(T) cast(T, iif(is_single(T), 3.402823466e+38, 0))
 	#define min_single(T) cast(T, -max_single(T))
-	#define max_double(T) cast(T, iif(is_double(T), 1.7976931348623158D+308#, 0#))
+	#define max_double(T) cast(T, iif(is_double(T), 1.7976931348623157D+308#, 0#))
 	#define min_double(T) cast(T, -max_double(T))
 	#define max_float(T) cast(T, iif(is_single(T), max_single(T), max_double(T)))
 	#define min_float(T) cast(T, iif(is_single(T), min_single(T), min_double(T)))
