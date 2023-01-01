@@ -60,6 +60,7 @@ Version 1.10.0
 - fbgfx.bi: add private function fb.__pixels() to return a pointer to the image data (paul doe)
 - fbc: add command line option and warning '-w upcast' to warn when up-casting would discard initializers
 - fbc headers: add ./inc/fblimits.bi for minimum and maximum value constants - for example fb.MIN_VALUE_INTEGER and fb.MAX_VALUE_INTEGER
+- In normal build of fbc, try to automatically add the search path for a std c++ library.  This will help with dependency for tests/cpp and for some users that want to interop with c++
 
 [fixed]
 - gas64: missing restoring of use of one virtual register on sqr for float (SARG)

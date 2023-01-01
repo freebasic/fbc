@@ -3807,8 +3807,29 @@ private sub hSetDefaultLibPaths( )
 	'' standalone, which has libgcc in the main lib/.
 	if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
 		fbcAddLibPathFor( "libgcc.a" )
+
+		'' we don't specifically need c++, but for some users that do want to
+		'' interop with c++ and to allow some of the tests/cpp tests to pass
+		'' it's helpful to also query for a c++ library.
+		select case fbGetOption( FB_COMPOPT_TARGET )
+		case FB_COMPTARGET_FREEBSD
+			fbcAddLibPathFor( "libc++.so" )
+		case FB_COMPTARGET_DOS
+			fbcAddLibPathFor( "libstdcx.a" )
+		case else
+			fbcAddLibPathFor( "libstdc++.so" )
+		end select
 	end if
 
+#ifdef __FB_FREEBSD__
+	#inclib "c++"
+#else
+	#ifdef __FB_DOS__
+		#inclib "stdcx"
+	#else
+		#inclib "stdc++"
+	#endif
+#endif
 	select case( fbGetOption( FB_COMPOPT_TARGET ) )
 	case FB_COMPTARGET_DOS
 		'' Help out the DJGPP linker to find DJGPP's lib/ dir.
