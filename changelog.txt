@@ -20,7 +20,7 @@ Version 1.10.0
 - gfxlib2: store alpha from source to destination when blending alpha primitives in MMX blender to match C blender
 - makefile: internal rename (TARGET_PRFEX => BUILD_PREFIX) and conditionally set the library and object directories (default is still based on TARGET)
 - fbc: dos: set DXE_LD_LIBRARY_PATH environment variable when calling DXE3GEN
-- release: target DOS gcc 9.3.0 and bin utils 2.30 for next release
+- release: target DOS gcc 9.3.0 and binutils 2.35.1 for next release
 - Unix GETMOUSE() under TERM=linux now requires libgpm 1.20.4 or higher (libgpm.so.2), instead of the older libgpm.so.1 versions. (for compatibility with modern Debian/Ubuntu versions, and probably other distros, since 2008)
 - gas64 : SGN type is INTEGER for whole numbers instead LONG
 - fbc: thiscall calling convention default for extern "c++" / win32 / x86 / non-static member procedures

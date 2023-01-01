@@ -519,7 +519,7 @@ dos)
 	djver=205
 	gccver=930
 	djgppgccversiondir=9
-	bnuver=230
+	bnuver=2351
 	gdbver=771
 	djpkg=current
 
@@ -532,9 +532,9 @@ dos)
 	# rest to complete the DJGPP install (usually no changes needed)
 	download_djgpp ${djpkg}/v2/ djdev${djver}
 
-	download_djgpp ${djpkg}/v2gnu/ fil41br2
-	download_djgpp ${djpkg}/v2gnu/ mak421b
-	download_djgpp ${djpkg}/v2gnu/ shl2011br2
+	download_djgpp ${djpkg}/v2gnu/ fil41br3
+	download_djgpp ${djpkg}/v2gnu/ mak43br2
+	download_djgpp ${djpkg}/v2gnu/ shl2011br3
 	download_djgpp ${djpkg}/v2gnu/ pth207b 
 
 	download_djgpp ${djpkg}/v2tk/ ls080b 
@@ -547,9 +547,9 @@ dos)
 
 	unzip -qo ../input/DJGPP/djdev${djver}.zip
 	
-	unzip -qo ../input/DJGPP/shl2011br2.zip
-	unzip -qo ../input/DJGPP/fil41br2.zip
-	unzip -qo ../input/DJGPP/mak421b.zip
+	unzip -qo ../input/DJGPP/shl2011br3.zip
+	unzip -qo ../input/DJGPP/fil41br3.zip
+	unzip -qo ../input/DJGPP/mak43br2.zip
 	unzip -qo ../input/DJGPP/pth207b.zip
 
 	unzip -qo ../input/DJGPP/ls080b.zip
@@ -559,7 +559,7 @@ dos)
 	unzip -qo ../input/DJGPP/gcc${gccver}b.zip
 	unzip -qo ../input/DJGPP/gpp${gccver}b.zip
 	
-	patch -p0 < ../djgpp-fix-pthread.patch
+	patch -p0 < ../djgpp-pthread-types.patch
 	;;
 win32)
 	get_windows_toolchain 32 i686
