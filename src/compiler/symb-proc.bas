@@ -68,15 +68,15 @@ function symbProcReturnsOnStack( byval proc as FBSYMBOL ptr ) as integer
 		'' Real type is an UDT pointer (instead of INTEGER/LONGINT)?
 		'' Then it's returned on stack (instead of in registers)
 
-		'' !!!TODO!!! we should probably fix this
-		'' to return structs in registers for  64-bit gcc
-		'' and some 32-bit targets
-
-		if( (proc->subtype <> NULL) andalso (proc->subtype->udt.retin2regs <> FB_STRUCT_NONE) ) then ''for gas64
+		'' was structure calculated to return in registers?
+		'' - (gas64, calculated in hGetReturnTypeGas64Linux() )
+		'' !!!TODO!!! - we probably need to check other ABI's too
+		'' since they aren't all the same depending on target platform
+		if( (proc->subtype <> NULL) andalso (proc->subtype->udt.retin2regs <> FB_STRUCT_NONE) ) then
 			exit function
-		else
-			function = (typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( FB_DATATYPE_STRUCT ))
 		end if
+
+		function = (typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( FB_DATATYPE_STRUCT ))
 	end if
 end function
 

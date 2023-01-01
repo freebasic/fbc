@@ -403,9 +403,6 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 
 		if( is_ctorcall ) then
 			return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr, ctx.dtype, ctx.subtype ) <> NULL
-		else
-			'' try to assign it (do a shallow copy)
-			return hDoAssign( ctx, expr )
 		end if
 
 		'' try to assign it (do a shallow copy)

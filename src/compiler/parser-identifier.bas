@@ -80,7 +80,6 @@ private function hGlobalId _
 end function
 
 '':::::
-'' !!!TODO!!! combine with or re-use symb.bas:hGetNamespacePrefix
 private function hGetChainNames( byval chain_ as FBSYMCHAIN ptr ) as string
 	dim as FBSYMBOL ptr ns = any
 	dim as string names
@@ -258,9 +257,7 @@ function cIdentifier _
 		'' If we later find out that is not the case, then we will need to add
 		'' a new symbol attribute that decides if symbols can be accessed
 		'' through an explicit namespace or not.
-		'' !!!TODO!!! - we should be able to rewrite this logic more
-		'' efficiently.  In theory, if an explicit namespace is not given,
-		'' symbLookup() should have returned an appropriate symbol chain.
+
 		if( base_parent ) then
 			while( sym )
 				if( symbIsLocal( sym ) and symbIsVar( sym ) ) then
