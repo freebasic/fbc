@@ -48,20 +48,11 @@ declare sub         symbKeywordTypeInit ( )
 
 declare function hGetNamespacePrefix( byval sym as FBSYMBOL ptr ) as string
 
-declare function hLookupImportList _
-	( _
-		byval ns as FBSYMBOL ptr, _
-		byval id as const zstring ptr, _
-		byval index as uinteger _
-	) as FBSYMCHAIN ptr
-
-declare function hLookupImportListByParents _
-	( _
-		byval ns as FBSYMBOL ptr, _
-		byval id as const zstring ptr, _
-		byval index as uinteger _
-	) as FBSYMCHAIN ptr
-
+'' options when looking up symbols
+enum FB_SYMBLOOKUPOPT
+	FB_SYMBLOOKUPOPT_NONE          = &h00000000
+	FB_SYMBLOOKUPOPT_PARENTS       = &h00000001  '' only search in parents and return inherited symbols
+end enum
 
 ''globals
 	dim shared as SYMBCTX symb
@@ -892,9 +883,79 @@ refactor the duplicated code in:
 	- symbLookupTypeNS()
 	- symbLookup()
 	- symbLookupAt()
-	- hLookupImportList()
-	- hLookupImportListByParents()
 '/
+
+'':::::
+private function hLookupImportList _
+	( _
+		byval ns as FBSYMBOL ptr, _
+		byval id as const zstring ptr, _
+		byval index as uinteger, _
+		byval options as FB_SYMBLOOKUPOPT = FB_SYMBLOOKUPOPT_NONE _
+	) as FBSYMCHAIN ptr
+
+	dim as FBSYMCHAIN ptr chain_ = any
+	dim as FBSYMBOL ptr parent = any
+	dim as FBSYMCHAIN ptr head = NULL, tail = NULL
+	dim add as integer = FALSE
+
+	'' for each namespace imported by this ns..
+	dim as FBSYMBOL ptr imp_ = symbGetCompImportHead( ns )
+	do while( imp_ <> NULL )
+		dim as FBSYMBOL ptr sym = _
+			hashLookupEx _
+			( _
+				@symbGetCompHashTb( _
+				symbGetImportNamespc( imp_ ) ).tb, _
+				id, _
+				index _
+			)
+
+		if( sym <> NULL ) then
+			chain_ = chainpoolNext()
+			add = FALSE
+
+			if( (options and FB_SYMBLOOKUPOPT_PARENTS) <> 0 ) then
+				'' only add the symbol if the symbol is imported from
+				'' a parent namespace that is a base of the given
+				'' namespace
+				parent = symbGetParent( sym )
+				select case symbGetType( parent )
+				case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+					if( symbGetUDTBaseLevel( ns, parent ) > 0 ) then
+						add = TRUE
+					end if
+				case FB_DATATYPE_ENUM
+					add = TRUE
+				end select
+			else
+				add = TRUE
+			end if
+
+			if( add = TRUE ) then
+				chain_->sym = sym
+				chain_->next = NULL
+				chain_->isimport = TRUE
+
+				if( head = NULL ) then
+					head = chain_
+				else
+					tail->next = chain_
+					'' it's ambiguous, instead of returning just the current head
+					'' which would indicate that access is ambiguous, keep going
+					'' and return all of the matches so we can show a better error
+					'' message
+				end if
+
+				tail = chain_
+			end if
+		end if
+
+		imp_ = symbGetImportNext( imp_ )
+	loop
+
+	return head
+end function
 
 '':::::
 function symbLookupNS _
@@ -1225,118 +1286,6 @@ private function hLookupImportHash _
 end function
 
 '':::::
-private function hLookupImportList _
-	( _
-		byval ns as FBSYMBOL ptr, _
-		byval id as const zstring ptr, _
-		byval index as uinteger _
-	) as FBSYMCHAIN ptr
-
-	dim as FBSYMCHAIN ptr head = NULL, tail = NULL
-
-	'' for each namespace imported by this ns..
-	dim as FBSYMBOL ptr imp_ = symbGetCompImportHead( ns )
-	do while( imp_ <> NULL )
-		dim as FBSYMBOL ptr sym = _
-			hashLookupEx _
-			( _
-				@symbGetCompHashTb( _
-				symbGetImportNamespc( imp_ ) ).tb, _
-				id, _
-				index _
-			)
-
-		if( sym <> NULL ) then
-			dim as FBSYMCHAIN ptr chain_ = chainpoolNext()
-
-			chain_->sym = sym
-			chain_->next = NULL
-			chain_->isimport = TRUE
-
-			if( head = NULL ) then
-				head = chain_
-			else
-				tail->next = chain_
-				'' it's ambiguous, instead of returning just the current head
-				'' which would indicate that access is ambiguous, keep going
-				'' and return all of the matches so we can show a better error
-				'' message
-			end if
-
-			tail = chain_
-		end if
-
-		imp_ = symbGetImportNext( imp_ )
-	loop
-
-	return head
-
-end function
-
-'':::::
-private function hLookupImportListByParents _
-	( _
-		byval ns as FBSYMBOL ptr, _
-		byval id as const zstring ptr, _
-		byval index as uinteger _
-	) as FBSYMCHAIN ptr
-
-	dim as FBSYMCHAIN ptr head = NULL, tail = NULL
-
-	'' for each namespace imported by this ns..
-	dim as FBSYMBOL ptr imp_ = symbGetCompImportHead( ns )
-	do while( imp_ <> NULL )
-		dim as FBSYMBOL ptr sym = _
-			hashLookupEx _
-			( _
-				@symbGetCompHashTb( _
-				symbGetImportNamespc( imp_ ) ).tb, _
-				id, _
-				index _
-			)
-
-		if( sym <> NULL ) then
-			dim as FBSYMCHAIN ptr chain_ = chainpoolNext()
-			dim add as integer = FALSE
-
-			dim as FBSYMBOL ptr parent = symbGetParent( sym )
-			select case symbGetType( parent )
-			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-				if( symbGetUDTBaseLevel( ns, parent ) > 0 ) then
-					add = true
-				end if
-			case FB_DATATYPE_ENUM
-				add = true
-			end select
-
-			if( add = TRUE ) then
-
-				chain_->sym = sym
-				chain_->next = NULL
-				chain_->isimport = TRUE
-
-				if( head = NULL ) then
-					head = chain_
-				else
-					tail->next = chain_
-					'' it's ambiguous, instead of returning just the current head
-					'' which would indicate that access is ambiguous, keep going
-					'' and return all of the matches so we can show a better error
-					'' message
-				end if
-
-				tail = chain_
-			end if
-		end if
-
-		imp_ = symbGetImportNext( imp_ )
-	loop
-
-	return head
-
-end function
-
-'':::::
 function symbLookupAt _
 	( _
 		byval ns as FBSYMBOL ptr, _
@@ -1402,7 +1351,7 @@ function symbLookupAt _
 	'' Are we in a type's namespace?  Only search for inherited members
 	select case symbGetClass( ns )
 	case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_CLASS
-		return hLookupImportListByParents( ns, id, index )
+		return hLookupImportList( ns, id, index, FB_SYMBLOOKUPOPT_PARENTS )
 	end select
 
 	return hLookupImportList( ns, id, index )
