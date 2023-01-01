@@ -253,21 +253,15 @@ enum FB_SYMBOPT
 	FB_SYMBOPT_NODUPCHECK       = &h00000080
 end enum
 
-'' options when looking up symbols
-enum FB_SYMBLOOKUPOPT
-	FB_SYMBLOOKUPOPT_NONE    = &h00000000
-
-	FB_SYMBLOOKUPOPT_PROPGET    = &h00000001  '' match property get and not property set
-	FB_SYMBLOOKUPOPT_BOP_OVL    = &h00000002  '' exact match at least one parameter
-
-	'' symbFindCastOvlProc(), hCheckCastOvl()
-	FB_SYMBLOOKUPOPT_EXPLICIT   = &h00000004  '' require explicit exact match
-
-	'' symbFindCastOvlProc(), symbFindCtorOvlProc()
-	'' symbFindClosestOvlProc(), hCheckOvlParam()
-	FB_SYMBLOOKUPOPT_NO_ERROR   = &h00000008  '' don't report errors, return to caller
-	FB_SYMBLOOKUPOPT_NO_CTOR    = &h00000010  '' don't find matching constructors
-	FB_SYMBLOOKUPOPT_NO_CAST    = &h00000020  '' don't find matching cast operators
+'' options when finding symbols
+enum FB_SYMBFINDOPT
+	FB_SYMBFINDOPT_NONE         = &h00000000
+	FB_SYMBFINDOPT_PROPGET      = &h00000001  '' match property get and not property set
+	FB_SYMBFINDOPT_BOP_OVL      = &h00000002  '' exact match at least one parameter
+	FB_SYMBFINDOPT_EXPLICIT     = &h00000004  '' require explicit exact match
+	FB_SYMBFINDOPT_NO_ERROR     = &h00000008  '' don't report errors, return to caller
+	FB_SYMBFINDOPT_NO_CTOR      = &h00000010  '' don't find matching constructors
+	FB_SYMBFINDOPT_NO_CAST      = &h00000020  '' don't find matching cast operators
 end enum
 
 ''
@@ -285,8 +279,8 @@ end enum
 enum FB_MANGLEOPT
 	FB_MANGLEOPT_NONE         =   0  '' no special options
 	FB_MANGLEOPT_KEEPTOPCONST =   1  '' keep the top-level const when mangling
-	FB_MANGLEOPT_HASPTR       =   2  '' mangled type has is a pointer type
-	FB_MANGLEOPT_HASREF       =   4  '' mangled type has is reference type
+	FB_MANGLEOPT_HASPTR       =   2  '' mangled type has/is a pointer type
+	FB_MANGLEOPT_HASREF       =   4  '' mangled type has/is reference type
 	FB_MANGLEOPT_NESTED       =   8  '' mangled type is nested in another type
 end enum
 
@@ -1024,7 +1018,7 @@ declare function symbFindOverloadProc _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr, _
-		byval options as FB_SYMBLOOKUPOPT = FB_SYMBLOOKUPOPT_NONE _
+		byval options as FB_SYMBFINDOPT = FB_SYMBFINDOPT_NONE _
 	) as FBSYMBOL ptr
 
 declare function symbFindOpOvlProc _
@@ -1040,7 +1034,7 @@ declare function symbFindClosestOvlProc _
 		byval params as integer, _
 		byval arg_head as FB_CALL_ARG ptr, _
 		byval err_num as FB_ERRMSG ptr, _
-		byval options as FB_SYMBLOOKUPOPT = FB_SYMBLOOKUPOPT_NONE _
+		byval options as FB_SYMBFINDOPT = FB_SYMBFINDOPT_NONE _
 	) as FBSYMBOL ptr
 
 declare function symbFindBopOvlProc _
@@ -1079,7 +1073,7 @@ declare function symbFindCastOvlProc _
 		byval to_subtype as FBSYMBOL ptr, _
 		byval expr as ASTNODE ptr, _
 		byval err_num as FB_ERRMSG ptr, _
-		byval options as FB_SYMBLOOKUPOPT = FB_SYMBLOOKUPOPT_NONE _
+		byval options as FB_SYMBFINDOPT = FB_SYMBFINDOPT_NONE _
 	) as FBSYMBOL ptr
 
 declare function symbFindCtorOvlProc _
@@ -1088,7 +1082,7 @@ declare function symbFindCtorOvlProc _
 		byval expr as ASTNODE ptr, _
 		byval arg_mode as FB_PARAMMODE, _
 		byval err_num as FB_ERRMSG ptr, _
-		byval options as FB_SYMBLOOKUPOPT = FB_SYMBLOOKUPOPT_NONE _
+		byval options as FB_SYMBFINDOPT = FB_SYMBFINDOPT_NONE _
 	) as FBSYMBOL ptr
 
 declare function symbFindCtorProc _

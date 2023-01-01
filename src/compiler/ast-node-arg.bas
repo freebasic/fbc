@@ -820,7 +820,7 @@ private function hCheckParam _
 		'' try constructor first - but only if byval parameter
 		if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
 			proc = symbFindCtorOvlProc( symbGetSubtype( param ), n->l, symbGetParamMode( param ), _
-			                            @err_num, FB_SYMBLOOKUPOPT_NO_CAST )
+			                            @err_num, FB_SYMBFINDOPT_NO_CAST )
 
 			if( proc <> NULL ) then
 				return hCheckUDTParam( param, n )

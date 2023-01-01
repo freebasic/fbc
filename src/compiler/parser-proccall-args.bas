@@ -338,10 +338,10 @@ private function hOvlProcArgList _
 	hMaybeWarnAboutEqOutsideParens( args, have_eq_outside_parens, proc )
 
 	'' try finding the closest overloaded proc (don't pass the instance ptr, if any)
-	dim as FB_SYMBLOOKUPOPT lkup_options = FB_SYMBLOOKUPOPT_NONE
+	dim as FB_SYMBFINDOPT find_options = FB_SYMBFINDOPT_NONE
 	if( symbIsProperty( proc ) ) then
 		if( (options and FB_PARSEROPT_ISPROPGET) <> 0 ) then
-			lkup_options = FB_SYMBLOOKUPOPT_PROPGET
+			find_options = FB_SYMBFINDOPT_PROPGET
 		end if
 	end if
 
@@ -351,7 +351,7 @@ private function hOvlProcArgList _
 	                                       arg_list->head->next, _
 	                                       arg_list->head ), _
 	                                  @err_num, _
-	                                  lkup_options )
+	                                  find_options )
 
 	if( ovlproc = NULL ) then
 		symbFreeOvlCallArgs( @parser.ovlarglist, arg_list )

@@ -1689,7 +1689,7 @@ function cProcHeader _
 				head_proc = symbFindOpOvlProc( op, head_proc, proc )
 			case else
 				head_proc = symbFindOverloadProc( head_proc, proc, _
-						iif( is_get, FB_SYMBLOOKUPOPT_PROPGET, FB_SYMBLOOKUPOPT_NONE ) )
+						iif( is_get, FB_SYMBFINDOPT_PROPGET, FB_SYMBFINDOPT_NONE ) )
 			end select
 			pattrib or= FB_PROCATTRIB_OVERLOADED
 		end if

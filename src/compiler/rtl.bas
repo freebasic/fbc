@@ -341,7 +341,7 @@ function rtlOvlProcCall _
 		args += 1
 	end if
 
-	var proc = symbFindClosestOvlProc( sym, args, arg_list.head, @err_num, FB_SYMBLOOKUPOPT_NONE )
+	var proc = symbFindClosestOvlProc( sym, args, arg_list.head, @err_num, FB_SYMBFINDOPT_NONE )
 
 	if( proc = NULL ) then
 		symbFreeOvlCallArgs( @ctx.arglist, @arg_list )

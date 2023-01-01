@@ -288,13 +288,13 @@ private function astTryOvlOpCastCONV _
 
 	dim as FBSYMBOL ptr proc = any
 	dim as FB_ERRMSG err_num = any
-	dim as FB_SYMBLOOKUPOPT lkup_options = FB_SYMBLOOKUPOPT_NONE
+	dim as FB_SYMBFINDOPT find_options = FB_SYMBFINDOPT_NONE
 
 	if( (options and AST_CONVOPT_EXACT_CAST)<>0 ) then
-		lkup_options = FB_SYMBLOOKUPOPT_EXPLICIT
+		find_options = FB_SYMBFINDOPT_EXPLICIT
 	end if
 
-	proc = symbFindCastOvlProc( to_dtype, to_subtype, node, @err_num, lkup_options )
+	proc = symbFindCastOvlProc( to_dtype, to_subtype, node, @err_num, find_options )
 
 	if( proc <> NULL ) then
 		'' build a proc call
@@ -418,7 +418,7 @@ function astNewCONV _
 					to_subtype, _
 					l, _
 					@err_num, _
-					FB_SYMBLOOKUPOPT_EXPLICIT _
+					FB_SYMBFINDOPT_EXPLICIT _
 				)
 
 			if( proc <> NULL ) then
@@ -434,7 +434,7 @@ function astNewCONV _
 						NULL, _
 						l, _
 						@err_num, _
-						FB_SYMBLOOKUPOPT_EXPLICIT _
+						FB_SYMBFINDOPT_EXPLICIT _
 					)
 			elseif( symbGetUdtIsWstring( subtype ) ) then
 				proc = symbFindCastOvlProc _
@@ -443,7 +443,7 @@ function astNewCONV _
 						NULL, _
 						l, _
 						@err_num, _
-						FB_SYMBLOOKUPOPT_EXPLICIT _
+						FB_SYMBFINDOPT_EXPLICIT _
 					)
 			end if
 			if( proc <> NULL ) then

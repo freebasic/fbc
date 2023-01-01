@@ -1040,7 +1040,7 @@ add_proc:
 					'' Not a sub?
 					if( symbGetType( proc ) <> FB_DATATYPE_VOID ) then
 						'' then it's a getter
-						lookupoptions = FB_SYMBLOOKUPOPT_PROPGET
+						lookupoptions = FB_SYMBFINDOPT_PROPGET
 					end if
 				end if
 
@@ -1597,7 +1597,7 @@ function symbFindOverloadProc _
 	( _
 		byval ovl_head_proc as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr, _
-		byval options as FB_SYMBLOOKUPOPT _
+		byval options as FB_SYMBFINDOPT _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr ovl = any, ovl_param = any, param = any
@@ -1634,7 +1634,7 @@ function symbFindOverloadProc _
 		'' property? handle get/set accessors dups
 		if( is_property ) then
 			'' get?
-			if( (options and FB_SYMBLOOKUPOPT_PROPGET) <> 0 ) then
+			if( (options and FB_SYMBFINDOPT_PROPGET) <> 0 ) then
 				'' don't check if it's set
 				if( symbGetType( ovl ) = FB_DATATYPE_VOID ) then
 					ovl_params = -1
@@ -1750,7 +1750,7 @@ end function
 		options _
 	)
 
-	if( (options and FB_SYMBLOOKUPOPT_NO_CTOR) = 0 ) then
+	if( (options and FB_SYMBFINDOPT_NO_CTOR) = 0 ) then
 		dim as integer err_num = any
 		dim as FBSYMBOL ptr proc = any
 
@@ -1758,7 +1758,7 @@ end function
 		                            arg_expr, _
 		                            arg_mode, _
 		                            @err_num, _
-		                            options or FB_SYMBLOOKUPOPT_NO_CTOR )
+		                            options or FB_SYMBFINDOPT_NO_CTOR )
 
 		if( proc <> NULL ) then
 			return FB_OVLPROC_HALFMATCH - OvlMatchScore( FB_DATATYPE_STRUCT, 0 )
@@ -1775,7 +1775,7 @@ end function
 		options _
 	)
 
-	if( (options and FB_SYMBLOOKUPOPT_NO_CAST) = 0 ) then
+	if( (options and FB_SYMBFINDOPT_NO_CAST) = 0 ) then
 		dim as integer err_num = any
 		dim as FBSYMBOL ptr proc = any
 
@@ -1783,7 +1783,7 @@ end function
 		                            param_subtype, _
 		                            arg_expr, _
 		                            @err_num, _
-		                            options or FB_SYMBLOOKUPOPT_NO_CAST )
+		                            options or FB_SYMBFINDOPT_NO_CAST )
 
 		if( proc <> NULL ) then
 			'' calculate a new match score based on the CAST() return type rank
@@ -2058,7 +2058,7 @@ private function hCheckOvlParam _
 		byval arg_expr as ASTNODE ptr, _
 		byval arg_mode as integer, _
 		byval err_num as FB_ERRMSG ptr, _
-		byval options as FB_SYMBLOOKUPOPT _
+		byval options as FB_SYMBFINDOPT _
 	) as FB_OVLPROC_MATCH_SCORE
 
 	dim as integer param_dtype = any, arg_dtype = any, param_ptrcnt = any
@@ -2249,7 +2249,7 @@ private function hCheckOvlProc _
 		byval args as integer, _
 		byval arg_head as FB_CALL_ARG ptr, _
 		byval err_num as FB_ERRMSG ptr, _
-		byval options as FB_SYMBLOOKUPOPT, _
+		byval options as FB_SYMBFINDOPT, _
 		byval ovl as FBSYMBOL ptr, _
 		byref exact_matches as integer, _
 		byref is_match as integer _
@@ -2272,7 +2272,7 @@ private function hCheckOvlProc _
 	'' property? handle get/set accessors dups
 	if( is_property ) then
 		'' get?
-		if( (options and FB_SYMBLOOKUPOPT_PROPGET) <> 0 ) then
+		if( (options and FB_SYMBFINDOPT_PROPGET) <> 0 ) then
 			'' don't check if it's set
 			if( symbGetType( ovl ) = FB_DATATYPE_VOID ) then
 				params = -1
@@ -2356,7 +2356,7 @@ function symbFindClosestOvlProc _
 		byval args as integer, _
 		byval arg_head as FB_CALL_ARG ptr, _
 		byval err_num as FB_ERRMSG ptr, _
-		byval options as FB_SYMBLOOKUPOPT _
+		byval options as FB_SYMBFINDOPT _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr ovl = any, closest_proc = any
@@ -2382,7 +2382,7 @@ function symbFindClosestOvlProc _
 			args, _
 			arg_head, _
 			err_num, _
-			options or FB_SYMBLOOKUPOPT_NO_ERROR, _
+			options or FB_SYMBFINDOPT_NO_ERROR, _
 			ovl, _
 			exact_matches, _
 			is_match )
@@ -2393,7 +2393,7 @@ function symbFindClosestOvlProc _
 				dim as integer eligible = TRUE
 				'' an operator overload candidate is only eligible if
 				'' there is at least one exact arg match
-				if( options and FB_SYMBLOOKUPOPT_BOP_OVL ) then
+				if( options and FB_SYMBFINDOPT_BOP_OVL ) then
 					eligible = (exact_matches >= 1)
 				end if
 
@@ -2479,7 +2479,7 @@ function symbFindBopOvlProc _
 	arg2.mode = INVALID
 	arg2.next = NULL
 
-	proc = symbFindClosestOvlProc( symb.globOpOvlTb(op).head, 2, @arg1, err_num, FB_SYMBLOOKUPOPT_BOP_OVL )
+	proc = symbFindClosestOvlProc( symb.globOpOvlTb(op).head, 2, @arg1, err_num, FB_SYMBFINDOPT_BOP_OVL )
 
 	if( proc = NULL ) then
 		if( *err_num <> FB_ERRMSG_OK ) then
@@ -2653,7 +2653,7 @@ private function hCheckCastOvl _
 		byval proc as FBSYMBOL ptr, _
 		byval to_dtype as integer, _
 		byval to_subtype as FBSYMBOL ptr, _
-		byval options as FB_SYMBLOOKUPOPT = FB_SYMBLOOKUPOPT_NONE _
+		byval options as FB_SYMBFINDOPT = FB_SYMBFINDOPT_NONE _
 	) as FB_OVLPROC_MATCH_SCORE
 
 	dim as integer proc_dtype = any
@@ -2682,7 +2682,7 @@ private function hCheckCastOvl _
 	end if
 
 	'' different types..
-	if( (options and FB_SYMBLOOKUPOPT_EXPLICIT) <> 0 ) then
+	if( (options and FB_SYMBFINDOPT_EXPLICIT) <> 0 ) then
 		return FB_OVLPROC_NO_MATCH
 	end if
 
@@ -2718,7 +2718,7 @@ function symbFindCastOvlProc _
 		byval to_subtype as FBSYMBOL ptr, _
 		byval l as ASTNODE ptr, _
 		byval err_num as FB_ERRMSG ptr, _
-		byval options as FB_SYMBLOOKUPOPT = FB_SYMBLOOKUPOPT_NONE _
+		byval options as FB_SYMBFINDOPT = FB_SYMBFINDOPT_NONE _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr proc_head = any
@@ -2804,7 +2804,7 @@ function symbFindCastOvlProc _
 	'' more than one possibility?
 	if( matchcount > 1 ) then
 		*err_num = FB_ERRMSG_AMBIGUOUSCALLTOPROC
-		if( (options and FB_SYMBLOOKUPOPT_NO_ERROR) = 0 ) then
+		if( (options and FB_SYMBFINDOPT_NO_ERROR) = 0 ) then
 			errReportParam( proc_head, 0, NULL, FB_ERRMSG_AMBIGUOUSCALLTOPROC )
 		end if
 		closest_proc = NULL
@@ -2813,7 +2813,7 @@ function symbFindCastOvlProc _
 			'' Check visibility of cast operator
 			if( symbCheckAccess( closest_proc ) = FALSE ) then
 				*err_num = FB_ERRMSG_ILLEGALMEMBERACCESS
-				if( (options and FB_SYMBLOOKUPOPT_NO_ERROR) = 0 ) then
+				if( (options and FB_SYMBFINDOPT_NO_ERROR) = 0 ) then
 					errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, _
 					             symbGetFullProcName( closest_proc ) )
 				end if
@@ -2833,7 +2833,7 @@ function symbFindCtorOvlProc _
 		byval expr as ASTNODE ptr, _
 		byval arg_mode as FB_PARAMMODE, _
 		byval err_num as FB_ERRMSG ptr, _
-		byval options as FB_SYMBLOOKUPOPT = FB_SYMBLOOKUPOPT_NONE _
+		byval options as FB_SYMBFINDOPT = FB_SYMBFINDOPT_NONE _
 	) as FBSYMBOL ptr
 
 	dim as FB_CALL_ARG arg1 = any
