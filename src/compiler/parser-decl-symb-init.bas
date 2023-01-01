@@ -625,19 +625,17 @@ function cInitializer _
 
 	if( symbIsVar( sym ) ) then
 		is_local = symbIsLocal( sym )
+
 	'' param, struct/class field or anon-udt
 	else
 		is_local = FALSE
 	end if
 
 	'' track recursion in to cInitializer() using a stack
-	'' we need to know here if we should allow upcasting or not
-
 	ctx.last_ctx = top_ctx
 	top_ctx = @ctx
 
 	'' set-up our current ctx
-
 	ctx.options = options
 	ctx.sym = sym
 	ctx.dimension = -1
