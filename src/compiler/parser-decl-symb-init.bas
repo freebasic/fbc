@@ -61,11 +61,11 @@ private function hDoAssign _
 	dim as integer no_upcast = any
 	no_upcast = ((ctx.options and FB_INIOPT_NOUPCAST) <> 0)
 
-	if( astCheckASSIGNToType( ctx.dtype, ctx.subtype, expr, no_upcast ) = FALSE ) then
-		'' check if it's a cast
+	'' pass the initializing expression back to parent if it fails here
+	ctx.init_expr = expr
 
-		'' pass the initializing expression back to parent if it fails here
-		ctx.init_expr = expr
+	if( astCheckASSIGNToTypeCONV( ctx.dtype, ctx.subtype, expr, no_upcast ) = FALSE ) then
+		'' check if it's a cast
 
 		'' fail initializers that could be assigned with a cast to a base type.
 		'' This allows passing an initializer back to an exact matched parent.
