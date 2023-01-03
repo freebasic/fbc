@@ -136,7 +136,35 @@ SUITE( fbc_tests.numbers.limits )
 			CU_ASSERT_EQUAL( chk_dbl_max , fb.MAX_VALUE_DOUBLE )
 		end scope
 
+	END_TEST
 
+	TEST( sizes )
+		'' constants are typed so we should expect sizeof() to match
+
+		CU_ASSERT_EQUAL( sizeof( fb.MIN_VALUE_BYTE )    , sizeof(byte)     )
+		CU_ASSERT_EQUAL( sizeof( fb.MAX_VALUE_BYTE )    , sizeof(byte)     )
+		CU_ASSERT_EQUAL( sizeof( fb.MIN_VALUE_UBYTE )   , sizeof(ubyte)    )
+		CU_ASSERT_EQUAL( sizeof( fb.MAX_VALUE_UBYTE )   , sizeof(ubyte)    )
+
+		CU_ASSERT_EQUAL( sizeof( fb.MIN_VALUE_SHORT )   , sizeof(short)    )
+		CU_ASSERT_EQUAL( sizeof( fb.MAX_VALUE_SHORT )   , sizeof(short)    )
+		CU_ASSERT_EQUAL( sizeof( fb.MIN_VALUE_USHORT )  , sizeof(ushort)   )
+		CU_ASSERT_EQUAL( sizeof( fb.MAX_VALUE_USHORT )  , sizeof(ushort)   )
+
+		CU_ASSERT_EQUAL( sizeof( fb.MIN_VALUE_LONG )    , sizeof(long)     )
+		CU_ASSERT_EQUAL( sizeof( fb.MAX_VALUE_LONG )    , sizeof(long)     )
+		CU_ASSERT_EQUAL( sizeof( fb.MIN_VALUE_ULONG )   , sizeof(ulong)    )
+		CU_ASSERT_EQUAL( sizeof( fb.MAX_VALUE_ULONG )   , sizeof(ulong)    )
+
+		CU_ASSERT_EQUAL( sizeof( fb.MIN_VALUE_INTEGER ) , sizeof(integer)  )
+		CU_ASSERT_EQUAL( sizeof( fb.MAX_VALUE_INTEGER ) , sizeof(integer)  )
+		CU_ASSERT_EQUAL( sizeof( fb.MIN_VALUE_UINTEGER ), sizeof(uinteger) )
+		CU_ASSERT_EQUAL( sizeof( fb.MAX_VALUE_UINTEGER ), sizeof(uinteger) )
+
+		CU_ASSERT_EQUAL( sizeof( fb.MIN_VALUE_LONGINT ) , sizeof(longint)  )
+		CU_ASSERT_EQUAL( sizeof( fb.MAX_VALUE_LONGINT ) , sizeof(longint)  )
+		CU_ASSERT_EQUAL( sizeof( fb.MIN_VALUE_ULONGINT ), sizeof(ulongint) )
+		CU_ASSERT_EQUAL( sizeof( fb.MAX_VALUE_ULONGINT ), sizeof(ulongint) )
 
 	END_TEST
 
