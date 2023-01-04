@@ -115,6 +115,7 @@ Version 1.10.0
 - fbgfx.bi: fix structures and declarations for #lang "qb" (paul doe)
 - gas64: fix structures passed by upcasting (SARG)
 - fbc: discard assignments and constructor calls in initializers that would write outside of the target when emitting initializer lists - previously, up-casted initializers were writing beyond the limits of the target and trashing memory
+- fix regression due to previous change on sf.net #917: optimization of 'm += s'.  The optimization failed to consider 's = s + expr' where expr might contain 's'.  In such a case, the optimization cannot be applied.
 
 
 Version 1.09.0

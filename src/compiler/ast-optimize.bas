@@ -1489,15 +1489,16 @@ private function hOptStrAssignment _
 
 		case AST_NODECLASS_DEREF
 			'' check if we can optimize to fb_StrConcatByref()
-			'' looking specifically for a = a + b
-			'' where both a & b are STRINGS but we possibly
-			'' don't know until run time if a and b could
-			'' be the same descriptor.
+			'' - look specifically for a = a + b where both a & b are STRINGS where we
+			''   won't necessarily know until run time if a & b could be the same descriptorknow until run time if a and b could be the same descriptor.
+			'' - but don't optimize a = a + a since we must make a copy anyway
+			''
+			''
 			if( astIsTreeEqual( l, r->l ) ) then
 				sym = astGetSymbol( l->l )
 				if( sym <> NULL ) then
 					if( astGetDataType( l ) = FB_DATATYPE_STRING ) then
-						optimize = TRUE
+						optimize = astIsSymbolOnTree( sym, r->r ) = FALSE
 						is_byref = TRUE
 					end if
 				end if
@@ -1511,11 +1512,9 @@ private function hOptStrAssignment _
 					sym = astGetSymbol( l )
 					if( sym <> NULL ) then
 						if( astGetDataType( l ) = FB_DATATYPE_STRING ) then
-							optimize = TRUE
 							is_byref = TRUE
-						else
-							optimize = astIsSymbolOnTree( sym, r->r ) = FALSE
 						end if
+						optimize = astIsSymbolOnTree( sym, r->r ) = FALSE
 					end if
 				end if
 
