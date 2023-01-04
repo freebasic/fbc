@@ -163,6 +163,85 @@ SUITE( fbc_tests.optimizations.self_concat )
 		concat_self2_4( a, b )
 		CU_ASSERT_EQUAL( a, sts )
 
+		'' byref variables
+
+		dim byref ra as string = a
+		dim byref rb as string = b
+		dim byref rm as string = m
+
+		m = t
+		a = s
+		rm = rm + ra
+		CU_ASSERT_EQUAL( a, s )
+		CU_ASSERT_EQUAL( m, ts )
+
+		m = t
+		a = s
+		rm += ra
+		CU_ASSERT_EQUAL( a, s )
+		CU_ASSERT_EQUAL( m, ts )
+
+		m = t
+		a = s
+		rm = rm & ra
+		CU_ASSERT_EQUAL( a, s )
+		CU_ASSERT_EQUAL( m, ts )
+
+		m = t
+		a = s
+		rm &= ra
+		CU_ASSERT_EQUAL( a, s )
+		CU_ASSERT_EQUAL( m, ts )
+
+		m = t
+		a = s
+		ra = ra + ra
+		CU_ASSERT_EQUAL( a, ss )
+		CU_ASSERT_EQUAL( m, t )
+
+		m = t
+		a = s
+		ra += ra
+		CU_ASSERT_EQUAL( a, ss )
+		CU_ASSERT_EQUAL( m, t )
+
+		m = t
+		a = s
+		ra = ra & ra
+		CU_ASSERT_EQUAL( a, ss )
+		CU_ASSERT_EQUAL( m, t )
+
+		m = t
+		a = s
+		ra &= ra
+		CU_ASSERT_EQUAL( a, ss )
+		CU_ASSERT_EQUAL( m, t )
+
+		a = s
+		b = t
+		ra = ra + rb + ra
+		CU_ASSERT_EQUAL( a, sts )
+		CU_ASSERT_EQUAL( b, t )
+
+		a = s
+		b = t
+		ra += rb + ra
+		CU_ASSERT_EQUAL( a, sts )
+		CU_ASSERT_EQUAL( b, t )
+
+		a = s
+		b = t
+		ra = ra & rb & ra
+		CU_ASSERT_EQUAL( a, sts )
+		CU_ASSERT_EQUAL( b, t )
+
+		a = s
+		b = t
+		ra &= rb & ra
+		CU_ASSERT_EQUAL( a, sts )
+		CU_ASSERT_EQUAL( b, t )
+
+
 	END_TEST
 
 END_SUITE
