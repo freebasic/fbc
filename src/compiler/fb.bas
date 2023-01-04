@@ -113,7 +113,6 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_FUNCMODE_STDCALL, _  '' stdcall
 		0   or FB_TARGETOPT_EXPORT _
 			or FB_TARGETOPT_RETURNINREGS _
-			or FB_TARGETOPT_RETURNINFLTS _
 			or FB_TARGETOPT_COFF _
 	), _
 	( _
@@ -124,7 +123,6 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		0   or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_EXPORT _
 			or FB_TARGETOPT_RETURNINREGS _
-			or FB_TARGETOPT_RETURNINFLTS _
 			or FB_TARGETOPT_COFF _
 	), _
 	( _
@@ -151,7 +149,6 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_FUNCMODE_STDCALL, _
 		FB_FUNCMODE_STDCALL, _
 		0   or FB_TARGETOPT_RETURNINREGS _
-			or FB_TARGETOPT_RETURNINFLTS _
 			or FB_TARGETOPT_COFF _
 	), _
 	( _
@@ -162,7 +159,6 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		0   or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
-			or FB_TARGETOPT_RETURNINFLTS _
 			or FB_TARGETOPT_ELF _
 	), _
 	( _
@@ -173,7 +169,6 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		0   or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
-			or FB_TARGETOPT_RETURNINFLTS _
 			or FB_TARGETOPT_ELF _
 	), _
 	( _
@@ -184,7 +179,6 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		0   or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
-			or FB_TARGETOPT_RETURNINFLTS _
 			or FB_TARGETOPT_ELF _
 	), _
 	( _
@@ -195,7 +189,6 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		0   or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
-			or FB_TARGETOPT_RETURNINFLTS _
 			or FB_TARGETOPT_ELF _
 	), _
 	( _
@@ -217,7 +210,6 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		0   or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
-			or FB_TARGETOPT_RETURNINFLTS _
 			or FB_TARGETOPT_ELF _
 	), _
 	( _
@@ -228,7 +220,6 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		0   or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
-			or FB_TARGETOPT_RETURNINFLTS _
 	) _
 }
 
@@ -524,8 +515,8 @@ end sub
 
 private sub hUpdateTargetOptions( )
 	env.target = targetinfo(env.clopt.target)
-	if( env.clopt.noreturninflts ) then
-		env.target.options and= not FB_TARGETOPT_RETURNINFLTS
+	if( env.clopt.returninflts ) then
+		env.target.options or= FB_TARGETOPT_RETURNINFLTS
 	end if
 end sub
 
@@ -578,7 +569,7 @@ sub fbGlobalInit()
 	env.clopt.showincludes  = FALSE
 	env.clopt.modeview      = FB_DEFAULT_MODEVIEW
 	env.clopt.nocmdline     = FALSE
-	env.clopt.noreturninflts= FALSE
+	env.clopt.returninflts  = FALSE
 
 	env.restart_request     = FB_RESTART_NONE
 	env.restart_action      = FB_RESTART_NONE
@@ -711,8 +702,8 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		env.clopt.modeview = value
 	case FB_COMPOPT_NOCMDLINE
 		env.clopt.nocmdline = value
-	case FB_COMPOPT_NORETURNINFLTS
-		env.clopt.noreturninflts = value
+	case FB_COMPOPT_RETURNINFLTS
+		env.clopt.returninflts = value
 	end select
 end sub
 
@@ -809,8 +800,8 @@ function fbGetOption( byval opt as integer ) as integer
 		function = env.clopt.modeview
 	case FB_COMPOPT_NOCMDLINE
 		function = env.clopt.nocmdline
-	case FB_COMPOPT_NORETURNINFLTS
-		function = env.clopt.noreturninflts
+	case FB_COMPOPT_RETURNINFLTS
+		function = env.clopt.returninflts
 
 	case else
 		function = 0

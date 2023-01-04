@@ -111,7 +111,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_SHOWINCLUDES         '' boolean: -showincludes
 	FB_COMPOPT_MODEVIEW             ''__FB_GUI__
 	FB_COMPOPT_NOCMDLINE            '' boolean: -z nocmdline, disable #cmdline directives
-	FB_COMPOPT_NORETURNINFLTS       '' boolean: -z no-returninflts, disable returning some structs in floating point registers
+	FB_COMPOPT_RETURNINFLTS         '' boolean: -z returninflts, enable returning some structs in floating point registers
 
 	FB_COMPOPTIONS
 end enum
@@ -320,7 +320,7 @@ type FBCMMLINEOPT
 	showincludes    as integer
 	modeview        as FB_MODEVIEW
 	nocmdline       as integer              '' dissallow #cmdline directive? (default = false)
-	noreturninflts  as integer              '' disable returning some structs in floating point registers
+	returninflts  as integer                '' disable returning some structs in floating point registers
 end type
 
 '' features allowed in the selected language

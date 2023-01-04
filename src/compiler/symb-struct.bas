@@ -768,7 +768,7 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 	end if
 
 	'' Otherwise, 32-bit gas (linux / dos) &  64-bit (gas64 windows)
-	'' compute a usable return type
+	'' and BSD's etc, compute a usable return type
 
 	res = FB_DATATYPE_VOID
 

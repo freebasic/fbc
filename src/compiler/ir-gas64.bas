@@ -5194,25 +5194,41 @@ private sub _emitloadres(byval v1 as IRVREG ptr,byval vr as IRVREG Ptr)
 		if op3<>"" then emitop3_op4(op3)
 		select case dtype
 			case FB_DATATYPE_DOUBLE
-				if( (env.target.options and FB_TARGETOPT_RETURNINFLTS) = 0 ) then
+				''
+				''                                    return   return
+				''                                      in       in
+				''            struct    not-struct     regs    floats
+				'' winlibs     rax        xmm0           1       0
+				'' mingw-w64   xmm0       xmm0           1       1
+				'' linux       xmm0       xmm0           0       0
+				''
+				if symbGetType( v1->sym)<>FB_DATATYPE_STRUCT then
 					asm_code("movq xmm0, "+op1)
 				else
-					if symbGetType( v1->sym)<>FB_DATATYPE_STRUCT then
-						asm_code("movq xmm0, "+op1)
+					if( (env.target.options and FB_TARGETOPT_RETURNINREGS) <> 0 ) then
+						if( (env.target.options and FB_TARGETOPT_RETURNINFLTS) <> 0 ) then
+							asm_code("movq xmm0, "+op1)
+						else
+							asm_code("mov rax, "+op1)
+						end if
 					else
-						asm_code("mov rax, "+op1)
+						asm_code("movq xmm0, "+op1)
 					end if
-				endif
+				end if
 			case FB_DATATYPE_SINGLE
-				if( (env.target.options and FB_TARGETOPT_RETURNINFLTS) = 0 ) then
+				if symbGetType( v1->sym)<>FB_DATATYPE_STRUCT then
 					asm_code("movd xmm0, "+op1)
 				else
-					if symbGetType( v1->sym)<>FB_DATATYPE_STRUCT then
-						asm_code("movd xmm0, "+op1)
+					if( (env.target.options and FB_TARGETOPT_RETURNINREGS) <> 0 ) then
+						if( (env.target.options and FB_TARGETOPT_RETURNINFLTS) <> 0 ) then
+							asm_code("movd xmm0, "+op1)
+						else
+							asm_code("mov eax, "+op1)
+						end if
 					else
-						asm_code("mov eax, "+op1)
+						asm_code("movd xmm0, "+op1)
 					end if
-				endif
+				end if
 			case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_ENUM
 				asm_code("mov "+*regstrq(KREG_RAX)+", "+op1)
 			case FB_DATATYPE_LONG,FB_DATATYPE_ULONG
@@ -5975,21 +5991,37 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 		dtype=typeGetDtAndPtrOnly(vr->dtype)
 		if typeget(dtype)=FB_DATATYPE_POINTER then dtype=FB_DATATYPE_INTEGER
 		if dtype=FB_DATATYPE_DOUBLE then
-			if( (env.target.options and FB_TARGETOPT_RETURNINFLTS) = 0 ) then
+			''
+			''                                    return   return
+			''                                      in       in
+			''            struct    not-struct     regs    floats
+			'' winlibs     n/a        xmm0           1       0
+			'' mingw-w64   xmm0       xmm0           1       1
+			'' linux       xmm0       xmm0           0       0
+			''
+			if symbGetType( proc )<>FB_DATATYPE_STRUCT then
 				asm_code("movq rax, xmm0")
 			else
-				if symbGetType( proc )<>FB_DATATYPE_STRUCT then
+				if( (env.target.options and FB_TARGETOPT_RETURNINREGS) <> 0 ) then
+					if( (env.target.options and FB_TARGETOPT_RETURNINFLTS) <> 0 ) then
+						asm_code("movq rax, xmm0")
+					end if
+				else
 					asm_code("movq rax, xmm0")
 				end if
-			endif
+			end if
 		elseif dtype=FB_DATATYPE_SINGLE then
-			if( (env.target.options and FB_TARGETOPT_RETURNINFLTS) = 0 ) then
+			if symbGetType( proc )<>FB_DATATYPE_STRUCT then
 				asm_code("movd eax, xmm0")
 			else
-				if symbGetType( proc )<>FB_DATATYPE_STRUCT then
+				if( (env.target.options and FB_TARGETOPT_RETURNINREGS) <> 0 ) then
+					if( (env.target.options and FB_TARGETOPT_RETURNINFLTS) <> 0 ) then
+						asm_code("movd eax, xmm0")
+					end if
+				else
 					asm_code("movd eax, xmm0")
 				end if
-			endif
+			end if
 		end if
 
 		reg_findfree(vr->reg)
