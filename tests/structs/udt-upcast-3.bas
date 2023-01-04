@@ -12,17 +12,20 @@ SUITE( fbc_tests.structs.udt_upcast_3 )
 
 		scope
 			dim as t3 w3 = type<t4>(x4)
-			print w3.i, w3.j, w3.k
+			CU_ASSERT_EQUAL( w3.i, 1 )
+			CU_ASSERT_EQUAL( w3.j, 2 )
+			CU_ASSERT_EQUAL( w3.k, 3 )
 		end scope
 
 		scope
 			dim as t2 w2 = type<t4>(x4)
-			print w2.i, w2.j
+			CU_ASSERT_EQUAL( w2.i, 1 )
+			CU_ASSERT_EQUAL( w2.j, 2 )
 		end scope
 
 		scope
 			dim as t1 w1 = type<t4>(x4)
-			print w1.i
+			CU_ASSERT_EQUAL( w1.i, 1 )
 		end scope
 	END_TEST
 
@@ -116,6 +119,55 @@ SUITE( fbc_tests.structs.udt_upcast_3 )
 		CU_ASSERT_EQUAL( u22(0).j, 2 )
 		CU_ASSERT_EQUAL( u22(1).i, 0 )
 		CU_ASSERT_EQUAL( u22(1).j, 0 )
+
+	END_TEST
+
+	dim shared func_count as integer = 0
+
+	sub reset_count
+		func_count = 0
+	end sub
+
+	function f() as integer
+		func_count += 1
+		return func_count
+	end function
+
+	TEST( init_func )
+
+		scope
+			reset_count
+			dim as t4 x4 = type<t4>(f(), f(), f(), f())
+			CU_ASSERT_EQUAL( x4.i, 1 )
+			CU_ASSERT_EQUAL( x4.j, 2 )
+			CU_ASSERT_EQUAL( x4.k, 3 )
+			CU_ASSERT_EQUAL( x4.l, 4 )
+			CU_ASSERT_EQUAL( func_count, 4 )
+		end scope
+
+		scope
+			reset_count
+			dim as t3 x3 = type<t4>(f(), f(), f(), f())
+			CU_ASSERT_EQUAL( x3.i, 1 )
+			CU_ASSERT_EQUAL( x3.j, 2 )
+			CU_ASSERT_EQUAL( x3.k, 3 )
+			CU_ASSERT_EQUAL( func_count, 4 )
+		end scope
+
+		scope
+			reset_count
+			dim as t2 x2 = type<t4>(f(), f(), f(), f())
+			CU_ASSERT_EQUAL( x2.i, 1 )
+			CU_ASSERT_EQUAL( x2.j, 2 )
+			CU_ASSERT_EQUAL( func_count, 4 )
+		end scope
+
+		scope
+			reset_count
+			dim as t1 x1 = type<t4>(f(), f(), f(), f())
+			CU_ASSERT_EQUAL( x1.i, 1 )
+			CU_ASSERT_EQUAL( func_count, 4 )
+		end scope
 
 	END_TEST
 
