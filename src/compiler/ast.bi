@@ -995,7 +995,8 @@ declare function astTypeIniAddAssign _
 		byval expr as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr, _
 		byval dtype as integer = FB_DATATYPE_INVALID, _
-		byval subtype as FBSYMBOL ptr = NULL _
+		byval subtype as FBSYMBOL ptr = NULL, _
+		byval check_upcast as integer = FALSE _
 	) as ASTNODE ptr
 
 declare function astTypeIniAddCtorCall _

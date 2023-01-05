@@ -61,6 +61,63 @@ function astTypeIniBegin _
 
 end function
 
+private sub hAstTypeIniMaybeConvertUpcast _
+	( _
+		byval n as ASTNODE ptr, _
+		byval l as ASTNODE ptr _
+	)
+
+	dim as FBSYMBOL ptr sym = any
+	dim as longint maxsize = any
+
+	sym = n->sym
+
+	'' we want the size of the elements (type) not the whole array
+	'' !!!TODO!!! byrefs? with symbGetRealSize( sym )?
+
+	maxsize = symbGetLen( sym )
+
+	'' This should only be true if astTypeIniAddAssign()
+	'' determined that the initree was constant
+
+	'' !!!TODO!!! there is a few places where we use the same
+	'' pattern of if statements to check if one ast node is a type
+	'' derived from another.  Maybe make a common function?
+
+	if( typeGet( astGetDataType( n ) ) = FB_DATATYPE_STRUCT ) then
+		if( typeGet( astGetDataType( l ) ) = FB_DATATYPE_STRUCT ) then
+			if( astGetSubtype( n ) <> astGetSubtype( l ) ) then
+				if( symbGetUDTBaseLevel( astGetSubtype( l ), astGetSubtype( n ) ) > 0 ) then
+
+					'' patch the subtype (up-cast)
+					l->subtype = n->subtype
+					l->typeini.bytes = maxsize
+
+					'' patch the next node too
+					l->l->typeini.ofs = n->typeini.ofs
+					l->l->typeini.bytes = maxsize
+					l->l->subtype = n->subtype
+
+					'' !!!TODO!!! confirm ast class? - it only makes sense if it
+					'' is another TYPEINI node that tracks offset/bytes/type
+					'' do we need this, or can it be assumed that everywhere handled
+					'' this correctly?
+
+					#ifdef __FB_DEBUG__
+					select case astGetClass( l->l )
+					case AST_NODECLASS_TYPEINI
+					case AST_NODECLASS_TYPEINI_ASSIGN
+					case AST_NODECLASS_TYPEINI_SCOPEINI
+					case else
+						assert( FALSE )
+					end select
+					#endif
+				end if
+			end if
+		end if
+	end if
+end sub
+
 '':::::
 sub astTypeIniEnd _
 	( _
@@ -70,7 +127,6 @@ sub astTypeIniEnd _
 
 	dim as ASTNODE ptr n = any, p = any, l = any, r = any
 	dim as longint ofs = any, bytes = any
-	dim as FBSYMBOL ptr sym = any
 
 	assert( astIsTYPEINI( tree ) )
 
@@ -93,13 +149,22 @@ sub astTypeIniEnd _
 	do while( n <> NULL )
 		'' expression node?
 		if( n->class = AST_NODECLASS_TYPEINI_ASSIGN ) then
+
+			'' n    = the typeini tree we want to update (what we are assigning)
+			'' n->l = what we want to assign
+			'' n->r = next item in the list
+
 			l = n->l
 			'' is it an ini tree too?
 			if( astIsTYPEINI( l ) ) then
 				ast.typeinicount -= 1
 
+				'' current offset and size from the tree we are updating
 				ofs = n->typeini.ofs
 				bytes = n->typeini.bytes
+
+				'' up-cast?
+				hAstTypeIniMaybeConvertUpcast( n, l )
 
 				r = n->r
 				astDelNode( n )
@@ -235,13 +300,144 @@ function astTypeIniAddPad _
 	function = n
 end function
 
+private function hAstIniTreeIsConstant _
+	( _
+		byval tree as ASTNODE ptr _
+	) as integer
+
+	if( tree = NULL ) then
+		return TRUE
+	end if
+
+	'' determine if the tree only contains constants and
+	'' references and nothing that would need a temporary
+	'' variable when upcasting.
+
+	select case astGetClass( tree )
+	case AST_NODECLASS_TYPEINI
+	case AST_NODECLASS_TYPEINI_PAD
+	case AST_NODECLASS_TYPEINI_ASSIGN
+	case AST_NODECLASS_TYPEINI_CTORCALL
+		return FALSE
+	case AST_NODECLASS_TYPEINI_CTORLIST
+		return FALSE
+	case AST_NODECLASS_TYPEINI_SCOPEINI
+	case AST_NODECLASS_TYPEINI_SCOPEEND
+	case AST_NODECLASS_CALL
+		return FALSE
+	case AST_NODECLASS_CALLCTOR
+		return FALSE
+	case AST_NODECLASS_VAR
+		return TRUE
+	case AST_NODECLASS_CONST
+		return TRUE
+
+	'' assume anything else is not constant
+	case else
+		return FALSE
+
+	end select
+
+	if( tree->l ) then
+		if( hAstIniTreeIsConstant( tree->l ) = FALSE ) then
+			return FALSE
+		end if
+	end if
+
+	if( tree->r ) then
+		if( hAstIniTreeIsConstant( tree->r ) = FALSE ) then
+			return FALSE
+		end if
+	end if
+
+	return TRUE
+end function
+
+
+private sub hAstTypeIniTreeMergeUpcast _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval n as ASTNODE ptr, _
+		byref expr as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr _
+	)
+
+	assert( astGetClass( n ) = AST_NODECLASS_TYPEINI_ASSIGN )
+	assert( astGetClass( expr ) = AST_NODECLASS_TYPEINI )
+	assert( n->l = expr )
+	assert( typeGet( astGetDataType( n ) ) = FB_DATATYPE_STRUCT )
+
+	''
+	''              n (TYPEINI_ASSIGN)  base
+	''             /
+	''          expr (TYPEINI)          derived
+	''
+	'' if we got to here, then hDoAssign() would have identified this
+	'' as an up-cast and we should take care when merging the trees
+	'' our goal is that any assignment should not write outside the
+	'' size of the target. hAstCheckTypeIniAssignment() called
+	'' by astTypeIniFlush() will also check for initializers that
+	'' write outside of the target and generate a warning with
+	'' -w upcast.  This allows us to preserve the original typeini
+	'' here for now.  What we don't want to do is lose information
+	'' about the size of the original, lose any intitialers
+	'' that are calls, or lose the size of the target.
+
+	dim as integer maxsize = any
+
+	'' maxsize = symbGetRealSize( sym )
+	maxsize = symbGetLen( sym )
+
+	'' too big for target?
+	if( tree->typeini.ofs + expr->typeini.bytes > maxsize ) then
+
+		'' If the struct we are initializing has no ctor/dtor and,
+		'' if expr is all constant with no function calls, then we
+		'' don't need the conversion and astTypeIniFlush() will warn
+		'' us on discarded initializers.
+		'' otherwise, assignment of expr to the tree would cause us
+		'' to write outside of the target, so we need to add a
+		'' conversion to force the use of a temprary variable
+
+		var isconst = (hAstIniTreeIsConstant( expr ) = TRUE )
+		var hasdtor = (symbGetCompDtor1( astGetSubtype( tree ) ) <> NULL)
+
+		if( (isconst = FALSE) or (hasdtor = TRUE) ) then
+
+			dim as ASTNODE ptr l = any
+
+			'' hDoAssign() and astCheckASSIGNToType() should have ensured that
+			'' this conversion should always work...
+			l = astNewCONV( symbGetType( sym ), symbGetSubtype( sym ), expr )
+			assert( l <> NULL )
+
+			if( l <> NULL ) then
+				n->l = l
+			end if
+
+		end if
+
+		'' either way, don't exceed the maximum size
+		tree->typeini.ofs += maxsize
+		tree->typeini.bytes += maxsize
+
+	'' otherwise, we are still writing within the
+	'' limits of the target
+	else
+		tree->typeini.ofs += expr->typeini.bytes
+		tree->typeini.bytes += expr->typeini.bytes
+	end if
+
+end sub
+
 function astTypeIniAddAssign _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval expr as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr, _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval subtype as FBSYMBOL ptr, _
+		byval check_upcast as integer = FALSE _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
@@ -259,8 +455,36 @@ function astTypeIniAddAssign _
 	'' but the tree might actually be larger
 
 	if( astGetClass( expr ) = AST_NODECLASS_TYPEINI ) then
-		tree->typeini.ofs +=expr->typeini.bytes
-		tree->typeini.bytes += expr->typeini.bytes
+		'' Check for up-casting but only if the caller requested it.
+		'' Maybe we can always check for up-casting but until every caller
+		'' is analyzed, it seems safer to only check if requested.
+		dim as integer upcast = FALSE
+
+		if( check_upcast ) then
+			'' We need to preserve the size of the target even after the
+			'' expression is merged with the initializer tree.  The merge is
+			'' a kind of of assignment that won't be handled properly
+			'' anywhere else if type or size information is lost or replaced
+			'' by a larger type.  We need to avoid writing beyond the limits
+			'' of the target.
+
+			if( typeGet( dtype ) = FB_DATATYPE_STRUCT ) then
+				if( typeGet( astGetDataType( expr ) ) = FB_DATATYPE_STRUCT ) then
+					if( subtype <> astGetSubtype( expr ) ) then
+						if( symbGetUDTBaseLevel( astGetSubtype( expr ), subtype ) > 0 ) then
+							upcast = TRUE
+						end if
+					end if
+				end if
+			end if
+		end if
+
+		if( upcast ) then
+			hAstTypeIniTreeMergeUpcast( tree, n, expr, sym )
+		else
+			tree->typeini.ofs += expr->typeini.bytes
+			tree->typeini.bytes += expr->typeini.bytes
+		end if
 	else
 		'' vars and fields could be byref / array / etc
 		'' and boundstypeini may pass a NULL sym

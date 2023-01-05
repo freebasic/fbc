@@ -58,7 +58,7 @@ private function hDoAssign _
 		byval no_fake as integer = FALSE _
 	) as integer
 
-	dim as integer no_upcast = any
+	dim as integer no_upcast = any, check_upcast = FALSE
 	no_upcast = ((ctx.options and FB_INIOPT_NOUPCAST) <> 0)
 
 	'' pass the initializing expression back to parent if it fails here
@@ -88,38 +88,13 @@ private function hDoAssign _
 
 	else
 		'' astCheckASSIGNToType() succeeded so we should expect the
-		'' assignment of the expression to be successful
+		'' assignment of the expression to be successful, but we need
+		'' to tell astTypeIniAddAssign() to check for up-casting.
 
-		'' !!!TODO!!! we need to protect the size of the target from
-		'' getting lost when TYPEINI trees are merged when the expression
-		'' is added to the tree.  The merging of TYPEINI trees is a kind
-		'' of assignment, so we probably need to move or add some logic to
-		'' astTypeIniAddAssign()
-		''
-		'' For now, check for up-casting...
-		'' - if it is an upcast then we need to protect the typeini tree
-		''   from getting merged to the parent typeini tree and losing
-		''   the type size information or exceeding the size of the target
-		''   we can do that by adding a conversion to the expression,
-
-		if( typeGet( ctx.dtype ) = FB_DATATYPE_STRUCT ) then
-			if( typeGet( astGetDataType( expr ) ) = FB_DATATYPE_STRUCT ) then
-				if( ctx.subtype <> astGetSubtype( expr ) ) then
-					if( symbGetUDTBaseLevel( astGetSubtype( expr ), ctx.subtype ) > 0 ) then
-						dim as ASTNODE ptr r = any
-						r = astNewCONV( ctx.dtype, ctx.subtype, expr )
-						assert( r <> NULL )
-						if( r <> NULL ) then
-							expr = r
-						end if
-					end if
-				end if
-			end if
-		end if
-
+		check_upcast = TRUE
 	end if
 
-	astTypeIniAddAssign( ctx.tree, expr, ctx.sym, ctx.dtype, ctx.subtype )
+	astTypeIniAddAssign( ctx.tree, expr, ctx.sym, ctx.dtype, ctx.subtype, check_upcast )
 
 	function = TRUE
 end function
