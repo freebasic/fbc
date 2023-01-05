@@ -915,21 +915,6 @@ declare sub astCheckConst _
 		byval n as ASTNODE ptr _
 	)
 
-declare function astCheckASSIGNCONV _
-	( _
-		byval l as ASTNODE ptr, _
-		byref r as ASTNODE ptr, _
-		byval no_upcast as integer _
-	) as integer
-
-declare function astCheckASSIGNToTypeCONV _
-	( _
-		byval ldtype as integer, _
-		byval lsubtype as FBSYMBOL ptr, _
-		byref r as ASTNODE ptr, _
-		byval no_upcast as integer _
-	) as integer
-
 declare function astCheckASSIGN _
 	( _
 		byval l as ASTNODE ptr, _

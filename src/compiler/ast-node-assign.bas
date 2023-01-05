@@ -247,10 +247,10 @@ private function hCheckConstAndPointerOps _
 end function
 
 '':::::
-function astCheckASSIGNCONV _
+function astCheckASSIGN _
 	( _
 		byval l as ASTNODE ptr, _
-		byref r as ASTNODE ptr, _
+		byval r as ASTNODE ptr, _
 		byval no_upcast as integer _
 	) as integer
 
@@ -363,32 +363,6 @@ function astCheckASSIGNCONV _
 	function = TRUE
 end function
 
-function astCheckASSIGNToTypeCONV _
-	( _
-		byval ldtype as integer, _
-		byval lsubtype as FBSYMBOL ptr, _
-		byref r as ASTNODE ptr, _
-		byval no_upcast as integer _
-	) as integer
-
-	dim as ASTNODE ptr l = any
-
-	l = astNewVAR( NULL, 0, ldtype, lsubtype )
-
-	function = astCheckASSIGNCONV( l, r, no_upcast )
-
-	astDelTree( l )
-end function
-
-function astCheckASSIGN _
-	( _
-		byval l as ASTNODE ptr, _
-		byval r as ASTNODE ptr, _
-		byval no_upcast as integer _
-	) as integer
-	return astCheckASSIGNCONV( l, r, no_upcast )
-end function
-
 function astCheckASSIGNToType _
 	( _
 		byval ldtype as integer, _
@@ -401,7 +375,7 @@ function astCheckASSIGNToType _
 
 	l = astNewVAR( NULL, 0, ldtype, lsubtype )
 
-	function = astCheckASSIGNCONV( l, r, no_upcast )
+	function = astCheckASSIGN( l, r, no_upcast )
 
 	astDelTree( l )
 end function

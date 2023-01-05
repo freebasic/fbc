@@ -64,7 +64,7 @@ private function hDoAssign _
 	'' pass the initializing expression back to parent if it fails here
 	ctx.init_expr = expr
 
-	if( astCheckASSIGNToTypeCONV( ctx.dtype, ctx.subtype, expr, no_upcast ) = FALSE ) then
+	if( astCheckASSIGNToType( ctx.dtype, ctx.subtype, expr, no_upcast ) = FALSE ) then
 		'' check if it's a cast
 
 		'' fail initializers that could be assigned with a cast to a base type.
