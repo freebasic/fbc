@@ -962,17 +962,12 @@ private function hAstNodeToStr _
 	case AST_NODECLASS_SCOPEBEGIN
 		return "SCOPEBEGIN: " & hSymbToStr( n->sym )
 
-	case AST_NODECLASS_TYPEINI
-		return "TYPEINI( offset=" & n->typeini.ofs & ", bytes=" & n->typeini.bytes & " ) " & NODE_TYPE
+	case AST_NODECLASS_TYPEINI, AST_NODECLASS_TYPEINI_ASSIGN, _
+	     AST_NODECLASS_TYPEINI_PAD, _
+	     AST_NODECLASS_TYPEINI_CTORCALL, AST_NODECLASS_TYPEINI_CTORLIST, _
+	     AST_NODECLASS_TYPEINI_SCOPEINI, AST_NODECLASS_TYPEINI_SCOPEEND
 
-	case AST_NODECLASS_TYPEINI_ASSIGN
-		return "TYPEINI_ASSIGN( offset=" & n->typeini.ofs & ", bytes=" & n->typeini.bytes & " )"
-
-	case AST_NODECLASS_TYPEINI_PAD
-		return "TYPEINI_PAD( offset=" & n->typeini.ofs & ", bytes=" & n->typeini.bytes & " ) " & NODE_TYPE
-
-	case AST_NODECLASS_TYPEINI_CTORCALL
-		return "TYPEINI_CTORCALL( offset=" & n->typeini.ofs & ", bytes=" & n->typeini.bytes & " ) " & NODE_TYPE
+		return hAstNodeClassToStr( n->class ) & "( offset=" & n->typeini.ofs & ", bytes=" & n->typeini.bytes & " ) " & NODE_TYPE
 
 	case AST_NODECLASS_MACRO
 		return "MACRO: " & astDumpOpToStr( n->op.op ) & " " & NODE_TYPE

@@ -72,6 +72,8 @@ sub astTypeIniEnd _
 	dim as longint ofs = any, bytes = any
 	dim as FBSYMBOL ptr sym = any
 
+	assert( astIsTYPEINI( tree ) )
+
 	'' can't leave r pointing to the any node as the
 	'' tail node is linked already
 	tree->r = NULL
@@ -147,18 +149,26 @@ private function hAddNode _
 
 	dim as ASTNODE ptr n = any
 
+	assert( astIsTYPEINI( tree ) )
+
 	if( (dtype = FB_DATATYPE_INVALID) and (sym <> NULL) ) then
 		dtype = symbGetFullType( sym )
 		subtype = symbGetSubtype( sym )
 	end if
 
-	''      tree
-	''      / \
-	''     l   r
+	''      tree      =>     tree
+	''                       / \
+	''                      n   n
 	''
-	''  tree    = AST_NODE_TYPEINI AST_NODECLASS_TYPEINI
-	''  tree->l = list of items in TREE
-	''  tree->r = last node of list
+	''      tree      =>     tree     =>    tree
+	''      / \              / \            / \
+	''     l   r            l   r          l   n
+	''                       \   \          \
+	''                        n   n          n
+	''
+	''  tree       = AST_NODE_TYPEINI AST_NODECLASS_TYPEINI
+	''  tree->l... = list of items in TREE
+	''  tree->r    = last node of list
 
 	n = astNewNode( class_, dtype, subtype )
 
@@ -174,6 +184,8 @@ end function
 
 sub astTypeIniRemoveLastNode( byval tree as ASTNODE ptr )
 	dim as ASTNODE ptr prev = any, n = any
+
+	assert( astIsTYPEINI( tree ) )
 
 	'' Find the last node, and the previous one
 	prev = NULL
@@ -211,6 +223,8 @@ function astTypeIniAddPad _
 
 	dim as ASTNODE ptr n = any
 
+	assert( astIsTYPEINI( tree ) )
+
 	n = hAddNode( tree, AST_NODECLASS_TYPEINI_PAD )
 	n->typeini.bytes = bytes
 	n->typeini.ofs = tree->typeini.ofs
@@ -231,6 +245,8 @@ function astTypeIniAddAssign _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
+
+	assert( astIsTYPEINI( tree ) )
 
 	n = hAddNode( tree, AST_NODECLASS_TYPEINI_ASSIGN, sym, dtype, subtype )
 
@@ -273,6 +289,8 @@ function astTypeIniAddCtorCall _
 
 	dim as ASTNODE ptr n = any
 
+	assert( astIsTYPEINI( tree ) )
+
 	n = hAddNode( tree, AST_NODECLASS_TYPEINI_CTORCALL, sym, dtype, subtype )
 
 	n->sym = sym
@@ -297,6 +315,8 @@ function astTypeIniAddCtorList _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
+
+	assert( astIsTYPEINI( tree ) )
 
 	n = hAddNode( tree, AST_NODECLASS_TYPEINI_CTORLIST, sym, dtype, subtype )
 
@@ -324,6 +344,8 @@ function astTypeIniScopeBegin _
 
 	dim as ASTNODE ptr n = any
 
+	assert( astIsTYPEINI( tree ) )
+
 	n = hAddNode( tree, AST_NODECLASS_TYPEINI_SCOPEINI )
 	n->sym = sym
 	n->typeiniscope.is_array = is_array
@@ -338,6 +360,8 @@ function astTypeIniScopeEnd _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
+
+	assert( astIsTYPEINI( tree ) )
 
 	n = hAddNode( tree, AST_NODECLASS_TYPEINI_SCOPEEND )
 	n->sym = sym
@@ -359,6 +383,8 @@ sub astTypeIniCopyElements _
 	)
 
 	dim as integer i = any
+
+	assert( astIsTYPEINI( tree ) )
 
 	assert( astIsTYPEINI( source ) )
 	source = source->l
@@ -606,6 +632,7 @@ function astTypeIniFlush overload _
 		byval update_typeinicount as integer, _
 		byval assignoptions as integer _
 	) as ASTNODE ptr
+	assert( astIsTYPEINI( initree ) )
 	assert( symbIsVar( target ) )
 	function = astTypeIniFlush( astNewVAR( target ), initree, update_typeinicount, assignoptions )
 end function
@@ -720,6 +747,8 @@ sub astLoadStaticInitializer _
 
 	dim as ASTNODE ptr n = any, nxt = any
 
+	assert( astIsTYPEINI( tree ) )
+
 	irEmitVARINIBEGIN( basesym )
 
 	n = tree->l
@@ -799,6 +828,8 @@ private function hExprIsConst( byval n as ASTNODE ptr ) as integer
 end function
 
 function astTypeIniIsConst( byval tree as ASTNODE ptr ) as integer
+	assert( astIsTYPEINI( tree ) )
+
 	var n = tree->l
 	while( n )
 		select case( n->class )
@@ -938,6 +969,8 @@ end function
 function astTypeIniUpdate( byval tree as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr tempvarinitcode = any
 	dim as ASTNODE treeparent = any
+
+	'' tree passed in here can be any kind of tree, not just TYPEINI
 
 	'' Shouldn't miss any TYPEINIs
 	assert( astCountTypeinis( tree ) <= ast.typeinicount )
