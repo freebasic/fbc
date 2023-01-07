@@ -248,8 +248,18 @@ private function hArrayInit _
 			end if
 		else
 			if( typeGetDtAndPtrOnly( ctx.dtype ) = FB_DATATYPE_STRUCT ) then
-				if( hUDTInit( ctx ) = FALSE ) then
-					exit function
+				if( isArray ) then
+					var options = ctx.options
+					ctx.options and= not FB_INIOPT_NOUPCAST
+					var ok = hUDTInit( ctx )
+					ctx.options = options
+					if( ok = FALSE ) then
+						exit function
+					end if
+				else
+					if( hUDTInit( ctx ) = FALSE ) then
+						exit function
+					end if
 				end if
 			else
 				if( hElmInit( ctx, no_fake ) = FALSE ) then
