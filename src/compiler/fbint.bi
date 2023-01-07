@@ -559,8 +559,8 @@ enum FB_TARGETOPT
 	'' - neither Linux GCC (following the i386 SysV ABI),
 	'' - nor DJGPP
 	'' do it. TODO: what about the BSDs?
-	FB_TARGETOPT_RETURNINREGS        = &h00000010   '' mingw-w64 & winlibs
-	FB_TARGETOPT_RETURNINFLTS        = &h00000020   '' mingw-w64 only, but not win-libs
+	FB_TARGETOPT_RETURNINREGS        = &h00000010   '' mingw-w64 & winlibs / BSD's
+	FB_TARGETOPT_RETURNINFLTS        = &h00000020   '' mingw-w64 / BSD, but not win-libs
 
 	'' Whether the stack needs to be aligned to 16 bytes before any
 	'' call to external code (x86/x86_64 GNU/Linux and Darwin)

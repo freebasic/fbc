@@ -691,10 +691,10 @@ function hGetMagicStructNumber( byval sym as FBSYMBOL ptr ) as integer
 	return part1 + part2
 end function
 
-private function hGetReturnTypeGas64Linux( byval sym as FBSYMBOL ptr ) as integer
+private function hGetReturnTypeGas64SystemV( byval sym as FBSYMBOL ptr ) as integer
 
 	assert( env.clopt.backend = FB_BACKEND_GAS64 )
-	assert( env.clopt.target = FB_COMPTARGET_LINUX )
+	assert( (env.clopt.target = FB_COMPTARGET_LINUX) or  (env.clopt.target = FB_COMPTARGET_FREEBSD))
 
 	'' Linux gas64 could use 2 registers
 
@@ -756,8 +756,9 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 	if( fbIs64Bit() ) then
 		if( env.clopt.backend = FB_BACKEND_GAS64 ) then
 			'' linux 64bit allows structure returned in registers
-			if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-				return hGetReturnTypeGas64Linux( sym )
+			'' !!!TODO!!! add to target options
+			if( (env.clopt.target = FB_COMPTARGET_LINUX) or (env.clopt.target = FB_COMPTARGET_FREEBSD)) then
+				return hGetReturnTypeGas64SystemV( sym )
 			end if
 		end if
 	end if
@@ -767,8 +768,8 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 		return typeAddrOf( FB_DATATYPE_STRUCT )
 	end if
 
-	'' Otherwise, 32-bit gas (linux / dos) &  64-bit (gas64 windows)
-	'' and BSD's etc, compute a usable return type
+	'' Otherwise, 32-bit gas (linux / dos) &  64-bit BSD's, etc
+	'' compute a usable return type
 
 	res = FB_DATATYPE_VOID
 

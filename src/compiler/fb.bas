@@ -159,6 +159,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		0   or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
+			or FB_TARGETOPT_RETURNINFLTS _
 			or FB_TARGETOPT_ELF _
 	), _
 	( _
@@ -189,6 +190,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		0   or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
+			or FB_TARGETOPT_RETURNINFLTS _
 			or FB_TARGETOPT_ELF _
 	), _
 	( _
@@ -210,6 +212,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		0   or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
+			or FB_TARGETOPT_RETURNINFLTS _
 			or FB_TARGETOPT_ELF _
 	), _
 	( _
@@ -704,6 +707,7 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		env.clopt.nocmdline = value
 	case FB_COMPOPT_RETURNINFLTS
 		env.clopt.returninflts = value
+		hUpdateTargetOptions( )
 	end select
 end sub
 
