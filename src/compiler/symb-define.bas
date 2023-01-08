@@ -981,7 +981,9 @@ enum FB_QUERY_SYMBOL explicit
 	symbclass  = &h0000     '' return the symbol's class as FB_SYMBCLASS
 	datatype   = &h0001     '' return symbol's type as FB_DATATYPE
 	dataclass  = &h0002     '' return the symbol's data class as FB_DATACLASS
-
+	typename   = &h0003     '' return the typename as text
+	typenameid = &h0004     '' return the typename as text with specical characters replaced with '_'
+	mangleid   = &h0005     '' return the decorated (mangled) type name (WIP)
 	querymask  = &h00ff     '' mask for query values
 
 	'' filters
@@ -1031,7 +1033,7 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 
 			if( (whatvalue and FB_QUERY_SYMBOL.typeinfo) = 0 ) then
 
-				'' Try a lookup of the symbol and ideally suppressing all errors.  We
+				'' Try a lookup of the symbol and ideally suppress all errors.  These
 				'' will never be used as for any access or expression in emitted code
 				'' so we should try to be as persmissive as possible.
 
@@ -1075,9 +1077,14 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 						lexSkipToken( )
 						dtype = symbGetFullType( sym )
 						subtype = sym
-						cUdtTypeMember( dtype, subtype, lgt, is_fixlenstr, sym )
+						'' '.'?
+						if( lexGetToken( ) = CHAR_DOT ) then
+							cUdtTypeMember( dtype, subtype, lgt, is_fixlenstr, sym )
+						end if
 					case else
 						lexSkipToken( )
+						dtype = symbGetFullType( sym )
+						subtype = symbGetSubtype( sym )
 					end select
 				end if
 
@@ -1103,11 +1110,6 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 					lex.ctx->deflen += len( *sexpr )
 				end if
 
-				if( sym ) then
-					dtype = symbGetFullType( sym )
-					subtype = symbGetSubtype( sym )
-				end if
-
 			end if
 
 			'' no sym? try TYPEOF( sym ) ...
@@ -1129,6 +1131,25 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 				res = str( dtype )
 			case FB_QUERY_SYMBOL.dataclass
 				res = str( typeGetClass( dtype ) )
+			case FB_QUERY_SYMBOL.typename, FB_QUERY_SYMBOL.typenameid
+				res = ucase( symbTypeToStr( dtype, subtype, lgt, is_fixlenstr ) )
+				if( (whatvalue and FB_QUERY_SYMBOL.querymask) = FB_QUERY_SYMBOL.typenameid ) then
+					hReplaceChar( res, asc(" "), asc("_") )
+					hReplaceChar( res, asc("."), asc("_") )
+					hReplaceChar( res, asc("("), asc("_") )
+					hReplaceChar( res, asc(")"), asc("_") )
+					hReplaceChar( res, asc("*"), asc("_") )
+				end if
+			case FB_QUERY_SYMBOL.mangleid
+				if( sym ) then
+					symbMangleType( res, dtype, sym )
+					symbMangleResetAbbrev( )
+				elseif( subtype ) then
+					symbMangleType( res, dtype, subtype )
+					symbMangleResetAbbrev( )
+				else
+					res = str(0)
+				end if
 			case else
 				*errnum = FB_ERRMSG_SYNTAXERROR
 				res = str( -1 )
