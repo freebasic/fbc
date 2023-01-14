@@ -49,9 +49,9 @@ SUITE( fbc_tests.structs.udt_upcast_4 )
 			dim as t4 x4 = (1, 2, 3, 4)
 		end scope
 		check_dtor_count( 1, 1, 1, 1 )
-		
+
 		reset_count
-		scope 
+		scope
 			dim as t3 u3 = type<t3>(1,2,3)
 			CU_ASSERT_EQUAL( u3.i, 1 )
 			CU_ASSERT_EQUAL( u3.j, 2 )
@@ -60,7 +60,7 @@ SUITE( fbc_tests.structs.udt_upcast_4 )
 		check_dtor_count( 1, 1, 1, 0 )
 
 		reset_count
-		scope 
+		scope
 			dim as t3 u3 = type<t3>(type<t3>(1,2,3))
 			CU_ASSERT_EQUAL( u3.i, 1 )
 			CU_ASSERT_EQUAL( u3.j, 2 )
@@ -69,7 +69,7 @@ SUITE( fbc_tests.structs.udt_upcast_4 )
 		check_dtor_count( 1, 1, 1, 0 )
 
 		reset_count
-		scope 
+		scope
 			dim as t3 u3 = type<t3>(type<t3>(type<t3>(1,2,3)))
 			CU_ASSERT_EQUAL( u3.i, 1 )
 			CU_ASSERT_EQUAL( u3.j, 2 )
@@ -83,7 +83,7 @@ SUITE( fbc_tests.structs.udt_upcast_4 )
 			CU_ASSERT_EQUAL( u1.i, 1 )
 		end scope
 		check_dtor_count( 4, 3, 2, 1 )
-			
+
 	END_TEST
 
 END_SUITE

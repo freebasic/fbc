@@ -16,4 +16,4 @@ end sub
 dim x(1 to 10) as UDT2
 
 proc( x() )
- 
+

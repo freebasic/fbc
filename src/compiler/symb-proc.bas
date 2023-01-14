@@ -1758,7 +1758,7 @@ end function
 		                            arg_expr, _
 		                            arg_mode, _
 		                            @err_num, _
-		                            options or FB_SYMBFINDOPT_NO_CTOR )
+		                            FB_SYMBFINDOPT_NO_CTOR )
 
 		if( proc <> NULL ) then
 			return FB_OVLPROC_HALFMATCH - OvlMatchScore( FB_DATATYPE_STRUCT, 0 )
