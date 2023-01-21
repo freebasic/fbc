@@ -3327,7 +3327,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 			prefix1=""
 		case IR_VREGTYPE_VAR ''format varname ofs1   local/static  ofs1 could be zero
 
-			if ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB andalso v1->sym<>0 andalso (symbIsCommon(v1->sym)) then ''linux dll common shared
+			if ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB andalso (symbIsCommon(v1->sym)) then ''linux dll common shared
 				tempo=reg_findfree(999994)
 				regtempo=*regstrq(tempo)
 				op3="mov "+regtempo+", "+*symbGetMangledName(v1->sym)+"@GOTPCREL[rip]"
@@ -3386,7 +3386,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 
 		case IR_VREGTYPE_VAR ''format varname ofs1   local/static  ofs1 could be zero
 
-			if ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB andalso v1->sym<>0 andalso (symbIsCommon(v1->sym)) then
+			if ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB andalso (symbIsCommon(v1->sym)) then
 
 				tempo=reg_findfree(999993)
 				regtempo=*regstrq(tempo)
@@ -4899,7 +4899,13 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 	if( hIsStructIn2Regs( v2 ) ) then
 		'' for Linux structures can be returned in 2 registers so needs a special handling
-		emitStoreStruct(v1,v2,op1,op3)
+		if ( v1->sym->stats and FB_SYMBSTATS_IMPLICIT ) then
+			asm_info("Replacing  "+str(v1->sym->ofs)+" by "+str(v2->ofs))
+			v1->sym->ofs=v2->ofs
+			asm_info("v1="+vregdumpfull(v1))
+		else
+			emitStoreStruct(v1,v2,op1,op3)
+		end if
 		exit sub
 	end if
 
@@ -4995,7 +5001,7 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	if v1->typ=IR_VREGTYPE_VAR And v2->typ=IR_VREGTYPE_VAR then
 
 		if ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
-			if v1->sym<>0 andalso (symbIsCommon(v1->sym)) then
+			if symbIsCommon(v1->sym) then
 
 				tempo=reg_findfree(999998)
 				regtempo=*regstrq(tempo)
@@ -5009,7 +5015,7 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 				'~ 'else
 					'~ 'asm_code("mov [rax],"+prefix+op2)
 			end if
-			if v2->sym<>0 andalso (symbIsCommon(v2->sym)) then
+			if symbIsCommon(v2->sym) then
 				asm_code("mov rax, "+*symbGetMangledName(v2->sym)+"@GOTPCREL[rip]")
 				'asm_code("mov rax, [rax]")
 				'asm_code(code1+prefix+"[rax]")
