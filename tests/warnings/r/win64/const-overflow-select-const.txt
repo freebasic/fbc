@@ -1,4 +1,4 @@
-----BOOLEAN ----
+---- BOOLEAN ----
 SELECT CASE AS CONST BOOLEAN
 CASE cbool ( -1 )
 CASE cbool ( 0 )
@@ -446,7 +446,7 @@ warning in CASE expected: Overflow in constant conversion
 CASE culngint ( 18446744073709551615ull )
 warning in CASE expected: Overflow in constant conversion
 	Overflow in constant conversion
-----BYTE ----
+---- BYTE ----
 SELECT CASE AS CONST BYTE
 CASE cbool ( -1 )
 CASE cbool ( 0 )
@@ -844,7 +844,7 @@ warning in CASE expected: Overflow in constant conversion
 CASE culngint ( 18446744073709551615ull )
 warning in CASE expected: Overflow in constant conversion
 	Overflow in constant conversion
-----UBYTE ----
+---- UBYTE ----
 SELECT CASE AS CONST UBYTE
 CASE cbool ( -1 )
 warning in CASE expected: Overflow in constant conversion
@@ -1228,7 +1228,7 @@ warning in CASE expected: Overflow in constant conversion
 CASE culngint ( 18446744073709551615ull )
 warning in CASE expected: Overflow in constant conversion
 	Overflow in constant conversion
-----SHORT ----
+---- SHORT ----
 SELECT CASE AS CONST SHORT
 CASE cbool ( -1 )
 CASE cbool ( 0 )
@@ -1526,7 +1526,7 @@ warning in CASE expected: Overflow in constant conversion
 CASE culngint ( 18446744073709551615ull )
 warning in CASE expected: Overflow in constant conversion
 	Overflow in constant conversion
-----USHORT ----
+---- USHORT ----
 SELECT CASE AS CONST USHORT
 CASE cbool ( -1 )
 warning in CASE expected: Overflow in constant conversion
@@ -1850,7 +1850,7 @@ warning in CASE expected: Overflow in constant conversion
 CASE culngint ( 18446744073709551615ull )
 warning in CASE expected: Overflow in constant conversion
 	Overflow in constant conversion
-----LONG ----
+---- LONG ----
 SELECT CASE AS CONST LONG
 CASE cbool ( -1 )
 CASE cbool ( 0 )
@@ -2072,7 +2072,7 @@ warning in CASE expected: Overflow in constant conversion
 CASE culngint ( 18446744073709551615ull )
 warning in CASE expected: Overflow in constant conversion
 	Overflow in constant conversion
-----ULONG ----
+---- ULONG ----
 SELECT CASE AS CONST ULONG
 CASE cbool ( -1 )
 warning in CASE expected: Overflow in constant conversion
@@ -2352,11 +2352,11 @@ warning in CASE expected: Overflow in constant conversion
 CASE culngint ( 18446744073709551615ull )
 warning in CASE expected: Overflow in constant conversion
 	Overflow in constant conversion
-----INTEGER ----
+---- INTEGER ----
 SELECT CASE AS CONST INTEGER
-----UINTEGER ----
+---- UINTEGER ----
 SELECT CASE AS CONST UINTEGER
-----INTEGER ----
+---- INTEGER ----
 SELECT CASE AS CONST INTEGER
 CASE cbool ( -1 )
 CASE cbool ( 0 )
@@ -2526,7 +2526,7 @@ warning in CASE expected: Overflow in constant conversion
 CASE culngint ( 18446744073709551615ull )
 warning in CASE expected: Overflow in constant conversion
 	Overflow in constant conversion
-----UINTEGER ----
+---- UINTEGER ----
 SELECT CASE AS CONST UINTEGER
 CASE cbool ( -1 )
 warning in CASE expected: Overflow in constant conversion
@@ -2782,7 +2782,7 @@ CASE culngint ( 4294967296ull )
 CASE culngint ( 9223372036854775807ull )
 CASE culngint ( 9223372036854775808ull )
 CASE culngint ( 18446744073709551615ull )
-----LONGINT ----
+---- LONGINT ----
 SELECT CASE AS CONST LONGINT
 CASE cbool ( -1 )
 CASE cbool ( 0 )
@@ -2952,7 +2952,7 @@ warning in CASE expected: Overflow in constant conversion
 CASE culngint ( 18446744073709551615ull )
 warning in CASE expected: Overflow in constant conversion
 	Overflow in constant conversion
-----ULONGINT ----
+---- ULONGINT ----
 SELECT CASE AS CONST ULONGINT
 CASE cbool ( -1 )
 warning in CASE expected: Overflow in constant conversion

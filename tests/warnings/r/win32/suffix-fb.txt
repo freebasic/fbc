@@ -1,12 +1,12 @@
-----parser-comment.bas ----
-----parser-assignment.bas ----
+---- parser-comment.bas ----
+---- parser-assignment.bas ----
 warning expected
 	Suffix ignored in 'and%'
 warning expected
 	Suffix ignored in 'not%'
 warning expected
 	Suffix ignored in 'let%'
-----parser-compound-do.bas ----
+---- parser-compound-do.bas ----
 2 warnings expected
 	Suffix ignored in 'do%'
 	Suffix ignored in 'while%'
@@ -15,20 +15,20 @@ warning expected
 2 warnings expected
 	Suffix ignored in 'loop%'
 	Suffix ignored in 'until%'
-----parser-compound-extern.bas ----
+---- parser-compound-extern.bas ----
 warning expected
 	Suffix ignored in 'extern%'
 2 warnings expected
 	Suffix ignored in 'end%'
 	Suffix ignored in 'extern%'
-----parser-compound-for.bas ----
+---- parser-compound-for.bas ----
 3 warnings expected
 	Suffix ignored in 'for%'
 	Suffix ignored in 'to%'
 	Suffix ignored in 'step%'
 warning expected
 	Suffix ignored in 'next%'
-----parser-compound-if.bas ----
+---- parser-compound-if.bas ----
 5 warnings expected
 	Suffix ignored in 'if%'
 	Suffix ignored in 'then%'
@@ -50,7 +50,7 @@ warning expected
 	Suffix ignored in 'if%'
 warning expected
 	Suffix ignored in 'endif%'
-----parser-compound-namespace.bas ----
+---- parser-compound-namespace.bas ----
 2 warnings expected
 	Suffix ignored in 'namespace%'
 	Suffix ignored in 'parser_compound_namespace%'
@@ -62,13 +62,13 @@ warning expected
 	Suffix ignored in 'namespace%'
 warning expected
 	Suffix ignored in 'using%'
-----parser-compound-scope.bas ----
+---- parser-compound-scope.bas ----
 warning expected
 	Suffix ignored in 'scope%'
 2 warnings expected
 	Suffix ignored in 'end%'
 	Suffix ignored in 'scope%'
-----parser-compound-select-const.bas ----
+---- parser-compound-select-const.bas ----
 4 warnings expected
 	Suffix ignored in 'select%'
 	Suffix ignored in 'case%'
@@ -83,7 +83,7 @@ warning expected
 2 warnings expected
 	Suffix ignored in 'end%'
 	Suffix ignored in 'select%'
-----parser-compound-select.bas ----
+---- parser-compound-select.bas ----
 2 warnings expected
 	Suffix ignored in 'select%'
 	Suffix ignored in 'case%'
@@ -97,12 +97,12 @@ warning expected
 2 warnings expected
 	Suffix ignored in 'end%'
 	Suffix ignored in 'select%'
-----parser-compound-while.bas ----
+---- parser-compound-while.bas ----
 warning expected
 	Suffix ignored in 'while%'
 warning expected
 	Suffix ignored in 'wend%'
-----parser-compound-with.bas ----
+---- parser-compound-with.bas ----
 2 warnings expected
 	Suffix ignored in 'dim%'
 	Suffix ignored in 'as%'
@@ -111,7 +111,7 @@ warning expected
 2 warnings expected
 	Suffix ignored in 'end%'
 	Suffix ignored in 'with%'
-----parser-compound.bas ----
+---- parser-compound.bas ----
 warning expected
 	Suffix ignored in 'end%'
 3 warnings expected
@@ -143,11 +143,11 @@ warning expected
 	Suffix ignored in 'sub%'
 warning expected
 	Suffix ignored in 'function%'
-----parser-decl-const.bas ----
+---- parser-decl-const.bas ----
 2 warnings expected
 	Suffix ignored in 'const%'
 	Suffix ignored in 'as%'
-----parser-decl-enum.bas ----
+---- parser-decl-enum.bas ----
 3 warnings expected
 	Suffix ignored in 'enum%'
 	Suffix ignored in 'E%'
@@ -160,13 +160,13 @@ warning expected
 2 warnings expected
 	Suffix ignored in 'end%'
 	Suffix ignored in 'enum%'
-----parser-decl-proc-params.bas ----
+---- parser-decl-proc-params.bas ----
 4 warnings expected
 	Suffix ignored in 'byval%'
 	Suffix ignored in 'as%'
 	Suffix ignored in 'byref%'
 	Suffix ignored in 'any%'
-----parser-decl-proc.bas ----
+---- parser-decl-proc.bas ----
 2 warnings expected
 	Suffix ignored in 'declare%'
 	Suffix ignored in 'sub%'
@@ -175,7 +175,7 @@ warning expected
 	Suffix ignored in 'function%'
 warning expected
 	Suffix ignored in 'operator%'
-----parser-decl-struct.bas ----
+---- parser-decl-struct.bas ----
 2 warnings expected
 	Suffix ignored in 'type%'
 	Suffix ignored in 'field%'
@@ -218,7 +218,7 @@ warning expected
 	Suffix ignored in 'union%'
 warning expected
 	Suffix ignored in 'extends%'
-----parser-decl-symbtype.bas ----
+---- parser-decl-symbtype.bas ----
 none expected
 warning expected
 	Suffix ignored in 'alias%'
@@ -278,7 +278,7 @@ warning expected
 	Suffix ignored in 'INNER_E%'
 warning expected
 	Suffix ignored in 'INNER_DEF%'
-----parser-decl-typedef.bas ----
+---- parser-decl-typedef.bas ----
 warning expected
 	Suffix ignored in 'FWD0%'
 warning expected
@@ -293,7 +293,7 @@ warning expected
 2 warnings expected
 	Suffix ignored in 'const%'
 	Suffix ignored in 'ptr%'
-----parser-decl-var.bas ----
+---- parser-decl-var.bas ----
 warning expected
 	Suffix ignored in 'common%'
 warning expected
@@ -331,12 +331,12 @@ warning expected
 	Suffix ignored in 'any%'
 warning expected
 	Suffix ignored in 'byref%'
-----parser-decl.bas ----
+---- parser-decl.bas ----
 warning expected
 	Suffix ignored in 'public%'
 warning expected
 	Suffix ignored in 'private%'
-----parser-expr-atom.bas ----
+---- parser-expr-atom.bas ----
 warning expected
 	Suffix ignored in 'base%'
 warning expected
@@ -345,7 +345,7 @@ warning expected
 	Suffix ignored in 'T%'
 warning expected
 	Suffix ignored in 'T2%'
-----parser-expr-binary.bas ----
+---- parser-expr-binary.bas ----
 3 warnings expected
 	Suffix ignored in 'if%'
 	Suffix ignored in 'andalso%'
@@ -364,10 +364,10 @@ warning expected
 	Suffix ignored in 'shr%'
 warning expected
 	Suffix ignored in 'is%'
-----parser-expr-function.bas ----
+---- parser-expr-function.bas ----
 warning expected
 	Suffix ignored in 'proc%'
-----parser-expr-unary.bas ----
+---- parser-expr-unary.bas ----
 warning expected
 	Suffix ignored in 'defined%'
 warning expected
@@ -385,7 +385,7 @@ warning expected
 	Suffix ignored in 'PEU%'
 warning expected
 	Suffix ignored in 'strptr%'
-----parser-expr-variable.bas ----
+---- parser-expr-variable.bas ----
 warning expected
 	Suffix ignored in 'C%'
 warning expected
@@ -398,13 +398,13 @@ warning expected
 2 warnings expected
 	Suffix ignored in 'TT%'
 	Suffix ignored in 'n%'
-----parser-inlineasm.bas ----
+---- parser-inlineasm.bas ----
 warning expected
 	Suffix ignored in 'asm%'
 2 warnings expected
 	Suffix ignored in 'end%'
 	Suffix ignored in 'asm%'
-----parser-proc.bas ----
+---- parser-proc.bas ----
 5 warnings expected
 	Suffix ignored in 'declare%'
 	Suffix ignored in 'sub%'
@@ -453,7 +453,7 @@ warning expected
 	Suffix ignored in 'constructor%'
 warning expected
 	Suffix ignored in 'destructor%'
-----parser-proccall-args.bas ----
+---- parser-proccall-args.bas ----
 warning expected
 	Suffix ignored in 'byval%'
 warning expected
@@ -462,7 +462,7 @@ warning expected
 	Suffix ignored in 'byval%'
 warning expected
 	Suffix ignored in 'byval%'
-----parser-proccall.bas ----
+---- parser-proccall.bas ----
 warning expected
 	Suffix ignored in 'constructor%'
 warning expected
@@ -478,7 +478,7 @@ warning expected
 	Suffix ignored in 'function%'
 warning expected
 	Suffix ignored in 'operator%'
-----parser-quirk-array.bas ----
+---- parser-quirk-array.bas ----
 warning expected
 	Suffix ignored in 'swap%'
 warning expected
@@ -487,7 +487,7 @@ warning expected
 	Suffix ignored in 'ubound%'
 warning expected
 	Suffix ignored in 'erase%'
-----parser-quirk-casting.bas ----
+---- parser-quirk-casting.bas ----
 warning expected
 	Suffix ignored in 'cbool%'
 warning expected
@@ -520,7 +520,7 @@ warning expected
 	Suffix ignored in 'cunsg%'
 warning expected
 	Suffix ignored in 'type%'
-----parser-quirk-console.bas ----
+---- parser-quirk-console.bas ----
 3 warnings expected
 	Suffix ignored in 'view%'
 	Suffix ignored in 'print%'
@@ -531,7 +531,7 @@ warning expected
 	Suffix ignored in 'color%'
 warning expected
 	Suffix ignored in 'screen%'
-----parser-quirk-data.bas ----
+---- parser-quirk-data.bas ----
 warning expected
 	Suffix ignored in 'data%'
 2 warnings expected
@@ -539,14 +539,14 @@ warning expected
 	Suffix ignored in 'startdata%'
 warning expected
 	Suffix ignored in 'read%'
-----parser-quirk-error.bas ----
+---- parser-quirk-error.bas ----
 warning expected
 	Suffix ignored in 'error%'
 warning expected
 	Suffix ignored in 'err%'
 warning expected
 	Suffix ignored in 'err%'
-----parser-quirk-file.bas ----
+---- parser-quirk-file.bas ----
 warning expected
 	Suffix ignored in 'close%'
 warning expected
@@ -665,7 +665,7 @@ warning expected
 2 warnings expected
 	Suffix ignored in 'name%'
 	Suffix ignored in 'as%'
-----parser-quirk-gfx
+---- parser-quirk-gfx
 2 warnings expected
 	Suffix ignored in 'pset%'
 	Suffix ignored in 'step%'
@@ -753,13 +753,13 @@ warning expected
 	Suffix ignored in 'imagecreate%'
 warning expected
 	Suffix ignored in 'point%'
-----parser-quirk-goto-return.bas ----
+---- parser-quirk-goto-return.bas ----
 warning expected
 	Suffix ignored in 'return%'
-----parser-quite-iif.bas ----
+---- parser-quite-iif.bas ----
 warning expected
 	Suffix ignored in 'iif%'
-----parser-quirk-math.bas ----
+---- parser-quirk-math.bas ----
 warning expected
 	Suffix ignored in 'ABS%'
 warning expected
@@ -794,7 +794,7 @@ warning expected
 	Suffix ignored in 'sizeof%'
 warning expected
 	Suffix ignored in 'len%'
-----parser-quirk-mem.bas ----
+---- parser-quirk-mem.bas ----
 2 warnings expected
 	Suffix ignored in 'new%'
 	Suffix ignored in 'any%'
@@ -802,13 +802,13 @@ warning expected
 	Suffix ignored in 'delete%'
 warning expected
 	Suffix ignored in 'any%'
-----parser-quirk-on.bas ----
-----parser-quirk-peekpoke.bas ----
+---- parser-quirk-on.bas ----
+---- parser-quirk-peekpoke.bas ----
 warning expected
 	Suffix ignored in 'poke%'
 warning expected
 	Suffix ignored in 'peek%'
-----parser-quirk-string.bas ----
+---- parser-quirk-string.bas ----
 warning expected
 	Suffix ignored in 'mid%'
 warning expected
@@ -875,12 +875,12 @@ warning expected
 	Suffix ignored in 'lset%'
 warning expected
 	Suffix ignored in 'rset%'
-----parser-quirk-thread.bas ----
+---- parser-quirk-thread.bas ----
 none expected
 2 warnings expected
 	Suffix ignored in 'threadcall%'
 	Suffix ignored in 'thread%'
-----parser-quirk-vafirst.bas ----
+---- parser-quirk-vafirst.bas ----
 warning expected
 	Suffix ignored in 'cva_start%'
 warning expected
@@ -890,8 +890,8 @@ warning expected
 2 warnings expected
 	Suffix ignored in 'cva_end%'
 	Suffix ignored in 'cva_end%'
-----pp-cond.bas ----
-----pp-pragma.bas ----
+---- pp-cond.bas ----
+---- pp-pragma.bas ----
 3 warnings expected
 	Suffix ignored in 'pragma%'
 	Suffix ignored in 'push%'
@@ -906,7 +906,7 @@ warning expected
 2 warnings expected
 	Suffix ignored in 'pragma%'
 	Suffix ignored in 'once%'
-----pp.bas ----
+---- pp.bas ----
 warning expected
 	Suffix ignored in 'define%'
 warning expected
@@ -942,7 +942,7 @@ warning expected
 	Suffix ignored in 'lang%'
 warning expected
 	Suffix ignored in 'line%'
-----Intrinsics ----
+---- Intrinsics ----
 warning expected
 	Suffix ignored in 'false%'
 warning expected

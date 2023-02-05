@@ -1,584 +1,584 @@
-pb =pub, no warning:
-pub =pb, no warning:
-pb =pz, no warning:
-pz =pb, no warning:
-pub =pz, no warning:
-pz =pub, no warning:
-psh =push, no warning:
-push =psh, no warning:
-pl =pul, no warning:
-pul =pl, no warning:
-pll =pull, no warning:
-pull =pll, no warning:
-pi =pui, no warning:
-pui =pi, no warning:
-pl =pi, no warning:
-pi =pl, no warning:
-pl =pui, no warning:
-pui =pl, no warning:
-pul =pi, no warning:
-pi =pul, no warning:
-pul =pui, no warning:
-pui =pul, no warning:
-pb =pw, no warning:
-pw =pb, no warning:
-pub =pw, no warning:
-pw =pub, no warning:
-pz =pw, no warning:
-pw =pz, no warning:
-pb =psh, 1 warning:
+pb = pub, no warning:
+pub = pb, no warning:
+pb = pz, no warning:
+pz = pb, no warning:
+pub = pz, no warning:
+pz = pub, no warning:
+psh = push, no warning:
+push = psh, no warning:
+pl = pul, no warning:
+pul = pl, no warning:
+pll = pull, no warning:
+pull = pll, no warning:
+pi = pui, no warning:
+pui = pi, no warning:
+pl = pi, no warning:
+pi = pl, no warning:
+pl = pui, no warning:
+pui = pl, no warning:
+pul = pi, no warning:
+pi = pul, no warning:
+pul = pui, no warning:
+pui = pul, no warning:
+pb = pw, no warning:
+pw = pb, no warning:
+pub = pw, no warning:
+pw = pub, no warning:
+pz = pw, no warning:
+pw = pz, no warning:
+pb = psh, 1 warning:
 	Suspicious pointer assignment
-pb =push, 1 warning:
+pb = push, 1 warning:
 	Suspicious pointer assignment
-pb =pl, 1 warning:
+pb = pl, 1 warning:
 	Suspicious pointer assignment
-pb =pul, 1 warning:
+pb = pul, 1 warning:
 	Suspicious pointer assignment
-pb =pll, 1 warning:
+pb = pll, 1 warning:
 	Suspicious pointer assignment
-pb =pull, 1 warning:
+pb = pull, 1 warning:
 	Suspicious pointer assignment
-pb =pi, 1 warning:
+pb = pi, 1 warning:
 	Suspicious pointer assignment
-pb =pui, 1 warning:
+pb = pui, 1 warning:
 	Suspicious pointer assignment
-pb =pf, 1 warning:
+pb = pf, 1 warning:
 	Suspicious pointer assignment
-pb =pd, 1 warning:
+pb = pd, 1 warning:
 	Suspicious pointer assignment
-pb =ps, 1 warning:
+pb = ps, 1 warning:
 	Suspicious pointer assignment
-pb =ppod1, 1 warning:
+pb = ppod1, 1 warning:
 	Suspicious pointer assignment
-pb =ppod2, 1 warning:
+pb = ppod2, 1 warning:
 	Suspicious pointer assignment
-pb =psub, 1 warning:
+pb = psub, 1 warning:
 	Suspicious pointer assignment
-pub =psh, 1 warning:
+pub = psh, 1 warning:
 	Suspicious pointer assignment
-pub =push, 1 warning:
+pub = push, 1 warning:
 	Suspicious pointer assignment
-pub =pl, 1 warning:
+pub = pl, 1 warning:
 	Suspicious pointer assignment
-pub =pul, 1 warning:
+pub = pul, 1 warning:
 	Suspicious pointer assignment
-pub =pll, 1 warning:
+pub = pll, 1 warning:
 	Suspicious pointer assignment
-pub =pull, 1 warning:
+pub = pull, 1 warning:
 	Suspicious pointer assignment
-pub =pi, 1 warning:
+pub = pi, 1 warning:
 	Suspicious pointer assignment
-pub =pui, 1 warning:
+pub = pui, 1 warning:
 	Suspicious pointer assignment
-pub =pf, 1 warning:
+pub = pf, 1 warning:
 	Suspicious pointer assignment
-pub =pd, 1 warning:
+pub = pd, 1 warning:
 	Suspicious pointer assignment
-pub =ps, 1 warning:
+pub = ps, 1 warning:
 	Suspicious pointer assignment
-pub =ppod1, 1 warning:
+pub = ppod1, 1 warning:
 	Suspicious pointer assignment
-pub =ppod2, 1 warning:
+pub = ppod2, 1 warning:
 	Suspicious pointer assignment
-pub =psub, 1 warning:
+pub = psub, 1 warning:
 	Suspicious pointer assignment
-psh =pb, 1 warning:
+psh = pb, 1 warning:
 	Suspicious pointer assignment
-psh =pub, 1 warning:
+psh = pub, 1 warning:
 	Suspicious pointer assignment
-psh =pl, 1 warning:
+psh = pl, 1 warning:
 	Suspicious pointer assignment
-psh =pul, 1 warning:
+psh = pul, 1 warning:
 	Suspicious pointer assignment
-psh =pll, 1 warning:
+psh = pll, 1 warning:
 	Suspicious pointer assignment
-psh =pull, 1 warning:
+psh = pull, 1 warning:
 	Suspicious pointer assignment
-psh =pi, 1 warning:
+psh = pi, 1 warning:
 	Suspicious pointer assignment
-psh =pui, 1 warning:
+psh = pui, 1 warning:
 	Suspicious pointer assignment
-psh =pf, 1 warning:
+psh = pf, 1 warning:
 	Suspicious pointer assignment
-psh =pd, 1 warning:
+psh = pd, 1 warning:
 	Suspicious pointer assignment
-psh =ps, 1 warning:
+psh = ps, 1 warning:
 	Suspicious pointer assignment
-psh =pz, 1 warning:
+psh = pz, 1 warning:
 	Suspicious pointer assignment
-psh =pw, 1 warning:
+psh = pw, 1 warning:
 	Suspicious pointer assignment
-psh =ppod1, 1 warning:
+psh = ppod1, 1 warning:
 	Suspicious pointer assignment
-psh =ppod2, 1 warning:
+psh = ppod2, 1 warning:
 	Suspicious pointer assignment
-psh =psub, 1 warning:
+psh = psub, 1 warning:
 	Suspicious pointer assignment
-push =pb, 1 warning:
+push = pb, 1 warning:
 	Suspicious pointer assignment
-push =pub, 1 warning:
+push = pub, 1 warning:
 	Suspicious pointer assignment
-push =pl, 1 warning:
+push = pl, 1 warning:
 	Suspicious pointer assignment
-push =pul, 1 warning:
+push = pul, 1 warning:
 	Suspicious pointer assignment
-push =pll, 1 warning:
+push = pll, 1 warning:
 	Suspicious pointer assignment
-push =pull, 1 warning:
+push = pull, 1 warning:
 	Suspicious pointer assignment
-push =pi, 1 warning:
+push = pi, 1 warning:
 	Suspicious pointer assignment
-push =pui, 1 warning:
+push = pui, 1 warning:
 	Suspicious pointer assignment
-push =pf, 1 warning:
+push = pf, 1 warning:
 	Suspicious pointer assignment
-push =pd, 1 warning:
+push = pd, 1 warning:
 	Suspicious pointer assignment
-push =ps, 1 warning:
+push = ps, 1 warning:
 	Suspicious pointer assignment
-push =pz, 1 warning:
+push = pz, 1 warning:
 	Suspicious pointer assignment
-push =pw, 1 warning:
+push = pw, 1 warning:
 	Suspicious pointer assignment
-push =ppod1, 1 warning:
+push = ppod1, 1 warning:
 	Suspicious pointer assignment
-push =ppod2, 1 warning:
+push = ppod2, 1 warning:
 	Suspicious pointer assignment
-push =psub, 1 warning:
+push = psub, 1 warning:
 	Suspicious pointer assignment
-pl =pb, 1 warning:
+pl = pb, 1 warning:
 	Suspicious pointer assignment
-pl =pub, 1 warning:
+pl = pub, 1 warning:
 	Suspicious pointer assignment
-pl =psh, 1 warning:
+pl = psh, 1 warning:
 	Suspicious pointer assignment
-pl =push, 1 warning:
+pl = push, 1 warning:
 	Suspicious pointer assignment
-pl =pll, 1 warning:
+pl = pll, 1 warning:
 	Suspicious pointer assignment
-pl =pull, 1 warning:
+pl = pull, 1 warning:
 	Suspicious pointer assignment
-pl =pf, 1 warning:
+pl = pf, 1 warning:
 	Suspicious pointer assignment
-pl =pd, 1 warning:
+pl = pd, 1 warning:
 	Suspicious pointer assignment
-pl =ps, 1 warning:
+pl = ps, 1 warning:
 	Suspicious pointer assignment
-pl =pz, 1 warning:
+pl = pz, 1 warning:
 	Suspicious pointer assignment
-pl =pw, 1 warning:
+pl = pw, 1 warning:
 	Suspicious pointer assignment
-pl =ppod1, 1 warning:
+pl = ppod1, 1 warning:
 	Suspicious pointer assignment
-pl =ppod2, 1 warning:
+pl = ppod2, 1 warning:
 	Suspicious pointer assignment
-pl =psub, 1 warning:
+pl = psub, 1 warning:
 	Suspicious pointer assignment
-pul =pb, 1 warning:
+pul = pb, 1 warning:
 	Suspicious pointer assignment
-pul =pub, 1 warning:
+pul = pub, 1 warning:
 	Suspicious pointer assignment
-pul =psh, 1 warning:
+pul = psh, 1 warning:
 	Suspicious pointer assignment
-pul =push, 1 warning:
+pul = push, 1 warning:
 	Suspicious pointer assignment
-pul =pll, 1 warning:
+pul = pll, 1 warning:
 	Suspicious pointer assignment
-pul =pull, 1 warning:
+pul = pull, 1 warning:
 	Suspicious pointer assignment
-pul =pf, 1 warning:
+pul = pf, 1 warning:
 	Suspicious pointer assignment
-pul =pd, 1 warning:
+pul = pd, 1 warning:
 	Suspicious pointer assignment
-pul =ps, 1 warning:
+pul = ps, 1 warning:
 	Suspicious pointer assignment
-pul =pz, 1 warning:
+pul = pz, 1 warning:
 	Suspicious pointer assignment
-pul =pw, 1 warning:
+pul = pw, 1 warning:
 	Suspicious pointer assignment
-pul =ppod1, 1 warning:
+pul = ppod1, 1 warning:
 	Suspicious pointer assignment
-pul =ppod2, 1 warning:
+pul = ppod2, 1 warning:
 	Suspicious pointer assignment
-pul =psub, 1 warning:
+pul = psub, 1 warning:
 	Suspicious pointer assignment
-pll =pb, 1 warning:
+pll = pb, 1 warning:
 	Suspicious pointer assignment
-pll =pub, 1 warning:
+pll = pub, 1 warning:
 	Suspicious pointer assignment
-pll =psh, 1 warning:
+pll = psh, 1 warning:
 	Suspicious pointer assignment
-pll =push, 1 warning:
+pll = push, 1 warning:
 	Suspicious pointer assignment
-pll =pl, 1 warning:
+pll = pl, 1 warning:
 	Suspicious pointer assignment
-pll =pul, 1 warning:
+pll = pul, 1 warning:
 	Suspicious pointer assignment
-pll =pi, 1 warning:
+pll = pi, 1 warning:
 	Suspicious pointer assignment
-pll =pui, 1 warning:
+pll = pui, 1 warning:
 	Suspicious pointer assignment
-pll =pf, 1 warning:
+pll = pf, 1 warning:
 	Suspicious pointer assignment
-pll =pd, 1 warning:
+pll = pd, 1 warning:
 	Suspicious pointer assignment
-pll =ps, 1 warning:
+pll = ps, 1 warning:
 	Suspicious pointer assignment
-pll =pz, 1 warning:
+pll = pz, 1 warning:
 	Suspicious pointer assignment
-pll =pw, 1 warning:
+pll = pw, 1 warning:
 	Suspicious pointer assignment
-pll =ppod1, 1 warning:
+pll = ppod1, 1 warning:
 	Suspicious pointer assignment
-pll =ppod2, 1 warning:
+pll = ppod2, 1 warning:
 	Suspicious pointer assignment
-pll =psub, 1 warning:
+pll = psub, 1 warning:
 	Suspicious pointer assignment
-pull =pb, 1 warning:
+pull = pb, 1 warning:
 	Suspicious pointer assignment
-pull =pub, 1 warning:
+pull = pub, 1 warning:
 	Suspicious pointer assignment
-pull =psh, 1 warning:
+pull = psh, 1 warning:
 	Suspicious pointer assignment
-pull =push, 1 warning:
+pull = push, 1 warning:
 	Suspicious pointer assignment
-pull =pl, 1 warning:
+pull = pl, 1 warning:
 	Suspicious pointer assignment
-pull =pul, 1 warning:
+pull = pul, 1 warning:
 	Suspicious pointer assignment
-pull =pi, 1 warning:
+pull = pi, 1 warning:
 	Suspicious pointer assignment
-pull =pui, 1 warning:
+pull = pui, 1 warning:
 	Suspicious pointer assignment
-pull =pf, 1 warning:
+pull = pf, 1 warning:
 	Suspicious pointer assignment
-pull =pd, 1 warning:
+pull = pd, 1 warning:
 	Suspicious pointer assignment
-pull =ps, 1 warning:
+pull = ps, 1 warning:
 	Suspicious pointer assignment
-pull =pz, 1 warning:
+pull = pz, 1 warning:
 	Suspicious pointer assignment
-pull =pw, 1 warning:
+pull = pw, 1 warning:
 	Suspicious pointer assignment
-pull =ppod1, 1 warning:
+pull = ppod1, 1 warning:
 	Suspicious pointer assignment
-pull =ppod2, 1 warning:
+pull = ppod2, 1 warning:
 	Suspicious pointer assignment
-pull =psub, 1 warning:
+pull = psub, 1 warning:
 	Suspicious pointer assignment
-pi =pb, 1 warning:
+pi = pb, 1 warning:
 	Suspicious pointer assignment
-pi =pub, 1 warning:
+pi = pub, 1 warning:
 	Suspicious pointer assignment
-pi =psh, 1 warning:
+pi = psh, 1 warning:
 	Suspicious pointer assignment
-pi =push, 1 warning:
+pi = push, 1 warning:
 	Suspicious pointer assignment
-pi =pll, 1 warning:
+pi = pll, 1 warning:
 	Suspicious pointer assignment
-pi =pull, 1 warning:
+pi = pull, 1 warning:
 	Suspicious pointer assignment
-pi =pf, 1 warning:
+pi = pf, 1 warning:
 	Suspicious pointer assignment
-pi =pd, 1 warning:
+pi = pd, 1 warning:
 	Suspicious pointer assignment
-pi =ps, 1 warning:
+pi = ps, 1 warning:
 	Suspicious pointer assignment
-pi =pz, 1 warning:
+pi = pz, 1 warning:
 	Suspicious pointer assignment
-pi =pw, 1 warning:
+pi = pw, 1 warning:
 	Suspicious pointer assignment
-pi =ppod1, 1 warning:
+pi = ppod1, 1 warning:
 	Suspicious pointer assignment
-pi =ppod2, 1 warning:
+pi = ppod2, 1 warning:
 	Suspicious pointer assignment
-pi =psub, 1 warning:
+pi = psub, 1 warning:
 	Suspicious pointer assignment
-pui =pb, 1 warning:
+pui = pb, 1 warning:
 	Suspicious pointer assignment
-pui =pub, 1 warning:
+pui = pub, 1 warning:
 	Suspicious pointer assignment
-pui =psh, 1 warning:
+pui = psh, 1 warning:
 	Suspicious pointer assignment
-pui =push, 1 warning:
+pui = push, 1 warning:
 	Suspicious pointer assignment
-pui =pll, 1 warning:
+pui = pll, 1 warning:
 	Suspicious pointer assignment
-pui =pull, 1 warning:
+pui = pull, 1 warning:
 	Suspicious pointer assignment
-pui =pf, 1 warning:
+pui = pf, 1 warning:
 	Suspicious pointer assignment
-pui =pd, 1 warning:
+pui = pd, 1 warning:
 	Suspicious pointer assignment
-pui =ps, 1 warning:
+pui = ps, 1 warning:
 	Suspicious pointer assignment
-pui =pz, 1 warning:
+pui = pz, 1 warning:
 	Suspicious pointer assignment
-pui =pw, 1 warning:
+pui = pw, 1 warning:
 	Suspicious pointer assignment
-pui =ppod1, 1 warning:
+pui = ppod1, 1 warning:
 	Suspicious pointer assignment
-pui =ppod2, 1 warning:
+pui = ppod2, 1 warning:
 	Suspicious pointer assignment
-pui =psub, 1 warning:
+pui = psub, 1 warning:
 	Suspicious pointer assignment
-pf =pb, 1 warning:
+pf = pb, 1 warning:
 	Suspicious pointer assignment
-pf =pub, 1 warning:
+pf = pub, 1 warning:
 	Suspicious pointer assignment
-pf =psh, 1 warning:
+pf = psh, 1 warning:
 	Suspicious pointer assignment
-pf =push, 1 warning:
+pf = push, 1 warning:
 	Suspicious pointer assignment
-pf =pl, 1 warning:
+pf = pl, 1 warning:
 	Suspicious pointer assignment
-pf =pul, 1 warning:
+pf = pul, 1 warning:
 	Suspicious pointer assignment
-pf =pll, 1 warning:
+pf = pll, 1 warning:
 	Suspicious pointer assignment
-pf =pull, 1 warning:
+pf = pull, 1 warning:
 	Suspicious pointer assignment
-pf =pi, 1 warning:
+pf = pi, 1 warning:
 	Suspicious pointer assignment
-pf =pui, 1 warning:
+pf = pui, 1 warning:
 	Suspicious pointer assignment
-pf =pd, 1 warning:
+pf = pd, 1 warning:
 	Suspicious pointer assignment
-pf =ps, 1 warning:
+pf = ps, 1 warning:
 	Suspicious pointer assignment
-pf =pz, 1 warning:
+pf = pz, 1 warning:
 	Suspicious pointer assignment
-pf =pw, 1 warning:
+pf = pw, 1 warning:
 	Suspicious pointer assignment
-pf =ppod1, 1 warning:
+pf = ppod1, 1 warning:
 	Suspicious pointer assignment
-pf =ppod2, 1 warning:
+pf = ppod2, 1 warning:
 	Suspicious pointer assignment
-pf =psub, 1 warning:
+pf = psub, 1 warning:
 	Suspicious pointer assignment
-pd =pb, 1 warning:
+pd = pb, 1 warning:
 	Suspicious pointer assignment
-pd =pub, 1 warning:
+pd = pub, 1 warning:
 	Suspicious pointer assignment
-pd =psh, 1 warning:
+pd = psh, 1 warning:
 	Suspicious pointer assignment
-pd =push, 1 warning:
+pd = push, 1 warning:
 	Suspicious pointer assignment
-pd =pl, 1 warning:
+pd = pl, 1 warning:
 	Suspicious pointer assignment
-pd =pul, 1 warning:
+pd = pul, 1 warning:
 	Suspicious pointer assignment
-pd =pll, 1 warning:
+pd = pll, 1 warning:
 	Suspicious pointer assignment
-pd =pull, 1 warning:
+pd = pull, 1 warning:
 	Suspicious pointer assignment
-pd =pi, 1 warning:
+pd = pi, 1 warning:
 	Suspicious pointer assignment
-pd =pui, 1 warning:
+pd = pui, 1 warning:
 	Suspicious pointer assignment
-pd =pf, 1 warning:
+pd = pf, 1 warning:
 	Suspicious pointer assignment
-pd =ps, 1 warning:
+pd = ps, 1 warning:
 	Suspicious pointer assignment
-pd =pz, 1 warning:
+pd = pz, 1 warning:
 	Suspicious pointer assignment
-pd =pw, 1 warning:
+pd = pw, 1 warning:
 	Suspicious pointer assignment
-pd =ppod1, 1 warning:
+pd = ppod1, 1 warning:
 	Suspicious pointer assignment
-pd =ppod2, 1 warning:
+pd = ppod2, 1 warning:
 	Suspicious pointer assignment
-pd =psub, 1 warning:
+pd = psub, 1 warning:
 	Suspicious pointer assignment
-ps =pb, 1 warning:
+ps = pb, 1 warning:
 	Suspicious pointer assignment
-ps =pub, 1 warning:
+ps = pub, 1 warning:
 	Suspicious pointer assignment
-ps =psh, 1 warning:
+ps = psh, 1 warning:
 	Suspicious pointer assignment
-ps =push, 1 warning:
+ps = push, 1 warning:
 	Suspicious pointer assignment
-ps =pl, 1 warning:
+ps = pl, 1 warning:
 	Suspicious pointer assignment
-ps =pul, 1 warning:
+ps = pul, 1 warning:
 	Suspicious pointer assignment
-ps =pll, 1 warning:
+ps = pll, 1 warning:
 	Suspicious pointer assignment
-ps =pull, 1 warning:
+ps = pull, 1 warning:
 	Suspicious pointer assignment
-ps =pi, 1 warning:
+ps = pi, 1 warning:
 	Suspicious pointer assignment
-ps =pui, 1 warning:
+ps = pui, 1 warning:
 	Suspicious pointer assignment
-ps =pf, 1 warning:
+ps = pf, 1 warning:
 	Suspicious pointer assignment
-ps =pd, 1 warning:
+ps = pd, 1 warning:
 	Suspicious pointer assignment
-ps =pz, 1 warning:
+ps = pz, 1 warning:
 	Suspicious pointer assignment
-ps =pw, 1 warning:
+ps = pw, 1 warning:
 	Suspicious pointer assignment
-ps =ppod1, 1 warning:
+ps = ppod1, 1 warning:
 	Suspicious pointer assignment
-ps =ppod2, 1 warning:
+ps = ppod2, 1 warning:
 	Suspicious pointer assignment
-ps =psub, 1 warning:
+ps = psub, 1 warning:
 	Suspicious pointer assignment
-pz =psh, 1 warning:
+pz = psh, 1 warning:
 	Suspicious pointer assignment
-pz =push, 1 warning:
+pz = push, 1 warning:
 	Suspicious pointer assignment
-pz =pl, 1 warning:
+pz = pl, 1 warning:
 	Suspicious pointer assignment
-pz =pul, 1 warning:
+pz = pul, 1 warning:
 	Suspicious pointer assignment
-pz =pll, 1 warning:
+pz = pll, 1 warning:
 	Suspicious pointer assignment
-pz =pull, 1 warning:
+pz = pull, 1 warning:
 	Suspicious pointer assignment
-pz =pi, 1 warning:
+pz = pi, 1 warning:
 	Suspicious pointer assignment
-pz =pui, 1 warning:
+pz = pui, 1 warning:
 	Suspicious pointer assignment
-pz =pf, 1 warning:
+pz = pf, 1 warning:
 	Suspicious pointer assignment
-pz =pd, 1 warning:
+pz = pd, 1 warning:
 	Suspicious pointer assignment
-pz =ps, 1 warning:
+pz = ps, 1 warning:
 	Suspicious pointer assignment
-pz =ppod1, 1 warning:
+pz = ppod1, 1 warning:
 	Suspicious pointer assignment
-pz =ppod2, 1 warning:
+pz = ppod2, 1 warning:
 	Suspicious pointer assignment
-pz =psub, 1 warning:
+pz = psub, 1 warning:
 	Suspicious pointer assignment
-pw =psh, 1 warning:
+pw = psh, 1 warning:
 	Suspicious pointer assignment
-pw =push, 1 warning:
+pw = push, 1 warning:
 	Suspicious pointer assignment
-pw =pl, 1 warning:
+pw = pl, 1 warning:
 	Suspicious pointer assignment
-pw =pul, 1 warning:
+pw = pul, 1 warning:
 	Suspicious pointer assignment
-pw =pll, 1 warning:
+pw = pll, 1 warning:
 	Suspicious pointer assignment
-pw =pull, 1 warning:
+pw = pull, 1 warning:
 	Suspicious pointer assignment
-pw =pi, 1 warning:
+pw = pi, 1 warning:
 	Suspicious pointer assignment
-pw =pui, 1 warning:
+pw = pui, 1 warning:
 	Suspicious pointer assignment
-pw =pf, 1 warning:
+pw = pf, 1 warning:
 	Suspicious pointer assignment
-pw =pd, 1 warning:
+pw = pd, 1 warning:
 	Suspicious pointer assignment
-pw =ps, 1 warning:
+pw = ps, 1 warning:
 	Suspicious pointer assignment
-pw =ppod1, 1 warning:
+pw = ppod1, 1 warning:
 	Suspicious pointer assignment
-pw =ppod2, 1 warning:
+pw = ppod2, 1 warning:
 	Suspicious pointer assignment
-pw =psub, 1 warning:
+pw = psub, 1 warning:
 	Suspicious pointer assignment
-ppod1 =pb, 1 warning:
+ppod1 = pb, 1 warning:
 	Suspicious pointer assignment
-ppod1 =pub, 1 warning:
+ppod1 = pub, 1 warning:
 	Suspicious pointer assignment
-ppod1 =psh, 1 warning:
+ppod1 = psh, 1 warning:
 	Suspicious pointer assignment
-ppod1 =push, 1 warning:
+ppod1 = push, 1 warning:
 	Suspicious pointer assignment
-ppod1 =pl, 1 warning:
+ppod1 = pl, 1 warning:
 	Suspicious pointer assignment
-ppod1 =pul, 1 warning:
+ppod1 = pul, 1 warning:
 	Suspicious pointer assignment
-ppod1 =pll, 1 warning:
+ppod1 = pll, 1 warning:
 	Suspicious pointer assignment
-ppod1 =pull, 1 warning:
+ppod1 = pull, 1 warning:
 	Suspicious pointer assignment
-ppod1 =pi, 1 warning:
+ppod1 = pi, 1 warning:
 	Suspicious pointer assignment
-ppod1 =pui, 1 warning:
+ppod1 = pui, 1 warning:
 	Suspicious pointer assignment
-ppod1 =pf, 1 warning:
+ppod1 = pf, 1 warning:
 	Suspicious pointer assignment
-ppod1 =pd, 1 warning:
+ppod1 = pd, 1 warning:
 	Suspicious pointer assignment
-ppod1 =ps, 1 warning:
+ppod1 = ps, 1 warning:
 	Suspicious pointer assignment
-ppod1 =pz, 1 warning:
+ppod1 = pz, 1 warning:
 	Suspicious pointer assignment
-ppod1 =pw, 1 warning:
+ppod1 = pw, 1 warning:
 	Suspicious pointer assignment
-ppod1 =ppod2, 1 warning:
+ppod1 = ppod2, 1 warning:
 	Suspicious pointer assignment
-ppod1 =psub, 1 warning:
+ppod1 = psub, 1 warning:
 	Suspicious pointer assignment
-ppod2 =pb, 1 warning:
+ppod2 = pb, 1 warning:
 	Suspicious pointer assignment
-ppod2 =pub, 1 warning:
+ppod2 = pub, 1 warning:
 	Suspicious pointer assignment
-ppod2 =psh, 1 warning:
+ppod2 = psh, 1 warning:
 	Suspicious pointer assignment
-ppod2 =push, 1 warning:
+ppod2 = push, 1 warning:
 	Suspicious pointer assignment
-ppod2 =pl, 1 warning:
+ppod2 = pl, 1 warning:
 	Suspicious pointer assignment
-ppod2 =pul, 1 warning:
+ppod2 = pul, 1 warning:
 	Suspicious pointer assignment
-ppod2 =pll, 1 warning:
+ppod2 = pll, 1 warning:
 	Suspicious pointer assignment
-ppod2 =pull, 1 warning:
+ppod2 = pull, 1 warning:
 	Suspicious pointer assignment
-ppod2 =pi, 1 warning:
+ppod2 = pi, 1 warning:
 	Suspicious pointer assignment
-ppod2 =pui, 1 warning:
+ppod2 = pui, 1 warning:
 	Suspicious pointer assignment
-ppod2 =pf, 1 warning:
+ppod2 = pf, 1 warning:
 	Suspicious pointer assignment
-ppod2 =pd, 1 warning:
+ppod2 = pd, 1 warning:
 	Suspicious pointer assignment
-ppod2 =ps, 1 warning:
+ppod2 = ps, 1 warning:
 	Suspicious pointer assignment
-ppod2 =pz, 1 warning:
+ppod2 = pz, 1 warning:
 	Suspicious pointer assignment
-ppod2 =pw, 1 warning:
+ppod2 = pw, 1 warning:
 	Suspicious pointer assignment
-ppod2 =ppod1, 1 warning:
+ppod2 = ppod1, 1 warning:
 	Suspicious pointer assignment
-ppod2 =psub, 1 warning:
+ppod2 = psub, 1 warning:
 	Suspicious pointer assignment
-psub =pb, 1 warning:
+psub = pb, 1 warning:
 	Suspicious pointer assignment
-psub =pub, 1 warning:
+psub = pub, 1 warning:
 	Suspicious pointer assignment
-psub =psh, 1 warning:
+psub = psh, 1 warning:
 	Suspicious pointer assignment
-psub =push, 1 warning:
+psub = push, 1 warning:
 	Suspicious pointer assignment
-psub =pl, 1 warning:
+psub = pl, 1 warning:
 	Suspicious pointer assignment
-psub =pul, 1 warning:
+psub = pul, 1 warning:
 	Suspicious pointer assignment
-psub =pll, 1 warning:
+psub = pll, 1 warning:
 	Suspicious pointer assignment
-psub =pull, 1 warning:
+psub = pull, 1 warning:
 	Suspicious pointer assignment
-psub =pi, 1 warning:
+psub = pi, 1 warning:
 	Suspicious pointer assignment
-psub =pui, 1 warning:
+psub = pui, 1 warning:
 	Suspicious pointer assignment
-psub =pf, 1 warning:
+psub = pf, 1 warning:
 	Suspicious pointer assignment
-psub =pd, 1 warning:
+psub = pd, 1 warning:
 	Suspicious pointer assignment
-psub =ps, 1 warning:
+psub = ps, 1 warning:
 	Suspicious pointer assignment
-psub =pz, 1 warning:
+psub = pz, 1 warning:
 	Suspicious pointer assignment
-psub =pw, 1 warning:
+psub = pw, 1 warning:
 	Suspicious pointer assignment
-psub =ppod1, 1 warning:
+psub = ppod1, 1 warning:
 	Suspicious pointer assignment
-psub =ppod2, 1 warning:
+psub = ppod2, 1 warning:
 	Suspicious pointer assignment
