@@ -66,19 +66,22 @@ private function hLoadMacro _
 	function = -1
 
 	var hasParens = FALSE
-
-	'' TODO: we don't know if this paren is the start of the argument list
-	'' or is part of the expression for the first argument.
 	var hasWhitespace = lexEatWhitespace( )
 
 	'' '('?
 	if( lexCurrentChar( ) = CHAR_LPRNT ) then
-		hasParens = true
-	else
-		if( (pp.invoking > 0) or ((symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_NEEDPARENS) <> 0 ) ) then
+		hasParens = TRUE
+	end if
+
+	if( (symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_NEEDPARENS) <> 0 ) then
+		if( hasParens = FALSE ) then
 			'' not an error, macro can be passed as param to other macros
 			exit function
 		end if
+	else
+		'' parens optional? then whitespace before '(' will determine that the '('
+		'' is part of the first argument instead of starting the argument list
+		hasParens and= not hasWhitespace
 	end if
 
 	if (isMacroAllowed(s) = FALSE) then
@@ -141,8 +144,23 @@ private function hLoadMacro _
 			case CHAR_RPRNT
 				if( prntcnt > 0 ) then
 					prntcnt -= 1
-					'' Closing ')'?
+
+					'' determine if we need to add back the right paren ')'
+					'' if parens were optional and we didn't have any parens
+					'' for this macro to start with, we need to add back the
+					'' right paren ')' since it will be needed by the caller.
 					if( prntcnt = 0 ) then
+						if( (symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_NEEDPARENS) = 0 ) then
+							if( hasParens = FALSE ) then
+								if( argtb->count >= symbGetDefineParams( s ) ) then
+									if( pp.invoking > 1 ) then
+										readdchar = CHAR_RPRNT
+									end if
+								end if
+							end if
+						end if
+
+						'' Closing ')'
 						exit do
 					end if
 				end if
@@ -154,6 +172,27 @@ private function hLoadMacro _
 				'' "..." vararg, which just "absorbs" everything
 				'' until the closing ')'.
 				if( prntcnt = 1 ) then
+
+					'' Check if comma is ending the macro list of arguments:
+					'' if parens are optional and we didn't have any parens
+					'' for this macro to start with, and we now have enough
+					'' arguments to satisfy the macro, then we can consider
+					'' the macro call complete.  Add back the comma for the
+					'' caller.
+					if( (symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_NEEDPARENS) = 0 ) then
+						if( is_variadic = FALSE ) then
+							if( hasParens = FALSE ) then
+								if( argtb->count >= symbGetDefineParams( s ) ) then
+									if( pp.invoking > 1 ) then
+										readdchar = CHAR_COMMA
+									end if
+									prntcnt = 0
+									exit do
+								end if
+							end if
+						end if
+					end if
+
 					if( argtb ) then
 						if( argtb->count = 0 ) then
 							argtb->count = 1
@@ -192,6 +231,8 @@ private function hLoadMacro _
 
 			end select
 
+			'' we are still in an argument, so just join the current
+			'' token to the current argument
 			if( argtb <> NULL ) then
 				if( t.dtype <> FB_DATATYPE_WCHAR ) then
 					DZstrConcatAssign( argtb->tb(num).text, t.text )
@@ -386,12 +427,18 @@ private function hLoadDefine _
 
 				'' '('?
 				if( lexCurrentChar( ) = CHAR_LPRNT ) then
-					hasParens = true
-				else
-					'' not an error, macro can be passed as param to other macros
-					if( (pp.invoking > 0) or ((symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_NEEDPARENS) <> 0 ) ) then
+					hasParens = TRUE
+				end if
+
+				if( (symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_NEEDPARENS) <> 0 ) then
+					if( hasParens = FALSE ) then
+						'' not an error, macro can be passed as param to other macros
 						exit function
 					end if
+				else
+					'' parens optional? then whitespace before '(' will determine that the '('
+					'' is part of the first argument instead of starting the argument list
+					hasParens and= not hasWhitespace
 				end if
 
 				if( hasParens ) then
@@ -456,19 +503,22 @@ private function hLoadMacroW _
 	function = -1
 
 	var hasParens = FALSE
-
-	'' TODO: we don't know if this paren is the start of the argument list
-	'' or is part of the expression for the first argument.
 	var hasWhitespace = lexEatWhitespace( )
 
 	'' '('?
 	if( lexCurrentChar( ) = CHAR_LPRNT ) then
-		hasParens = true
-	else
-		if( (pp.invoking > 0) or ((symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_NEEDPARENS) <> 0 ) ) then
+		hasParens = TRUE
+	end if
+
+	if( (symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_NEEDPARENS) <> 0 ) then
+		if( hasParens = FALSE ) then
 			'' not an error, macro can be passed as param to other macros
 			exit function
 		end if
+	else
+		'' parens optional? then whitespace before '(' will determine that the '('
+		'' is part of the first argument instead of starting the argument list
+		hasParens and= not hasWhitespace
 	end if
 
 	if (isMacroAllowed(s) = FALSE) then
@@ -531,8 +581,23 @@ private function hLoadMacroW _
 			case CHAR_RPRNT
 				if( prntcnt > 0 ) then
 					prntcnt -= 1
-					'' Closing ')'?
+
+					'' determine if we need to add back the right paren ')'
+					'' if parens were optional and we didn't have any parens
+					'' for this macro to start with, we need to add back the
+					'' right paren ')' since it will be needed by the caller.
 					if( prntcnt = 0 ) then
+						if( (symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_NEEDPARENS) = 0 ) then
+							if( hasParens = FALSE ) then
+								if( argtb->count >= symbGetDefineParams( s ) ) then
+									if( pp.invoking > 1 ) then
+										readdchar = CHAR_RPRNT
+									end if
+								end if
+							end if
+						end if
+
+						'' Closing ')'
 						exit do
 					end if
 				end if
@@ -544,6 +609,27 @@ private function hLoadMacroW _
 				'' "..." vararg, which just "absorbs" everything
 				'' until the closing ')'.
 				if( prntcnt = 1 ) then
+
+					'' Check if comma is ending the macro list of arguments:
+					'' if parens are optional and we didn't have any parens
+					'' for this macro to start with, and we now have enough
+					'' arguments to satisfy the macro, then we can consider
+					'' the macro call complete.  Add back the comma for the
+					'' caller.
+					if( (symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_NEEDPARENS) = 0 ) then
+						if( is_variadic = FALSE ) then
+							if( hasParens = FALSE ) then
+								if( argtb->count >= symbGetDefineParams( s ) ) then
+									if( pp.invoking > 1 ) then
+										readdchar = CHAR_COMMA
+									end if
+									prntcnt = 0
+									exit do
+								end if
+							end if
+						end if
+					end if
+
 					if( argtb ) then
 						if( argtb->count = 0 ) then
 							argtb->count = 1
@@ -582,6 +668,8 @@ private function hLoadMacroW _
 
 			end select
 
+			'' we are still in an argument, so just join the current
+			'' token to the current argument
 			if( argtb <> NULL ) then
 				if( t.dtype <> FB_DATATYPE_WCHAR ) then
 					DWstrConcatAssignA( argtb->tb(num).textw, t.text )
@@ -778,6 +866,7 @@ private function hLoadDefineW _
 
 		'' just load text as-is
 		else
+
 			'' arg-less macro?
 			if( symbGetDefineIsArgless( s ) ) then
 				var hasParens = FALSE
@@ -785,12 +874,18 @@ private function hLoadDefineW _
 
 				'' '('?
 				if( lexCurrentChar( ) = CHAR_LPRNT ) then
-					hasParens = true
-				else
-					'' not an error, macro can be passed as param to other macros
-					if( (pp.invoking > 0) or ((symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_NEEDPARENS) <> 0 ) ) then
+					hasParens = TRUE
+				end if
+
+				if( (symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_NEEDPARENS) <> 0 ) then
+					if( hasParens = FALSE ) then
+						'' not an error, macro can be passed as param to other macros
 						exit function
 					end if
+				else
+					'' parens optional? then whitespace before '(' will determine that the '('
+					'' is part of the first argument instead of starting the argument list
+					hasParens and= not hasWhitespace
 				end if
 
 				if( hasParens ) then
