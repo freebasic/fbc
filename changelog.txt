@@ -30,6 +30,8 @@ Version 1.10.0
 - fbc: remove #pragma push( lookup108 ) to use symbol lookup method from fbc-1.08.x and earlier on unqualified symbol names - it was crutch for fb 1.09.0 to help with testing and transition to better lookups
 - fbc: passing byval constructor preference: prefer A.constructor( B ) instead of of B.operator CAST() as A + A.constructor() when passing UDT by value - this is to fix some inconsistencies in the rules when converting by construction one type to another
 - fbc: only up-cast initializers when needed.  New behaviour is to try matching initializers without up-casting before matching with up-casting.
+- fbc: don't join operators separated by white space.  Previously, '<' + '=', '<' + '>', '=' + '>', and '-' + '>' were joined together even if separated by whitespace.
+- fbc: don't skip whitespace between decimal point and digit. Previously, '.' + '0..9' floating point literals were allowed to be separated by whitespace.
 
 [added]
 - gas/gas64: '.cif_sections' and '.cif_' directives for stack unwinding (adeyblue)

@@ -14,7 +14,7 @@ SUITE( fbc_tests.pp.quote )
 		res += """"
 		function = res
 	end function
-	
+
 	TEST( direct )
 
 		CU_ASSERT_EQUAL( __FB_QUOTE__( freebasic ), "freebasic" )

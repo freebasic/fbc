@@ -229,12 +229,10 @@ declare sub lexNextToken _
 
 declare function lexCurrentChar _
 	( _
-		byval skipwhitespc as integer = FALSE _
 	) as uinteger
 
 declare function lexGetLookAheadChar _
 	( _
-		byval skipwhitespc as integer = FALSE _
 	) as uinteger
 
 declare function lexGetLookAheadChar2 _
@@ -242,6 +240,8 @@ declare function lexGetLookAheadChar2 _
 	) as uinteger
 
 declare sub lexEatChar( )
+
+declare function lexEatWhitespace( ) as integer
 
 declare function lexPeekCurrentLine _
 	( _

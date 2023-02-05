@@ -65,13 +65,14 @@ private function hLoadMacro _
 
 	function = -1
 
-	var hasParens = false
+	var hasParens = FALSE
 
 	'' TODO: we don't know if this paren is the start of the argument list
 	'' or is part of the expression for the first argument.
+	var hasWhitespace = lexEatWhitespace( )
 
 	'' '('?
-	if( lexCurrentChar( TRUE ) = CHAR_LPRNT ) then
+	if( lexCurrentChar( ) = CHAR_LPRNT ) then
 		hasParens = true
 	else
 		if( (pp.invoking > 0) or ((symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_NEEDPARENS) <> 0 ) ) then
@@ -380,9 +381,11 @@ private function hLoadDefine _
 
 			'' arg-less macro?
 			if( symbGetDefineIsArgless( s ) ) then
-				var hasParens = false
+				var hasParens = FALSE
+				var hasWhitespace = lexEatWhitespace( )
+
 				'' '('?
-				if( lexCurrentChar( TRUE ) = CHAR_LPRNT ) then
+				if( lexCurrentChar( ) = CHAR_LPRNT ) then
 					hasParens = true
 				else
 					'' not an error, macro can be passed as param to other macros
@@ -393,9 +396,10 @@ private function hLoadDefine _
 
 				if( hasParens ) then
 					lexEatChar( )
+					lexEatWhitespace( )
 
 					'' ')'
-					if( lexCurrentChar( TRUE ) <> CHAR_RPRNT ) then
+					if( lexCurrentChar( ) <> CHAR_RPRNT ) then
 						errReport( FB_ERRMSG_EXPECTEDRPRNT )
 					else
 						lexEatChar( )
@@ -451,13 +455,14 @@ private function hLoadMacroW _
 
 	function = -1
 
-	var hasParens = false
+	var hasParens = FALSE
 
 	'' TODO: we don't know if this paren is the start of the argument list
 	'' or is part of the expression for the first argument.
+	var hasWhitespace = lexEatWhitespace( )
 
 	'' '('?
-	if( lexCurrentChar( TRUE ) = CHAR_LPRNT ) then
+	if( lexCurrentChar( ) = CHAR_LPRNT ) then
 		hasParens = true
 	else
 		if( (pp.invoking > 0) or ((symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_NEEDPARENS) <> 0 ) ) then
@@ -775,9 +780,11 @@ private function hLoadDefineW _
 		else
 			'' arg-less macro?
 			if( symbGetDefineIsArgless( s ) ) then
-				var hasParens = false
+				var hasParens = FALSE
+				var hasWhitespace = lexEatWhitespace( )
+
 				'' '('?
-				if( lexCurrentChar( TRUE ) = CHAR_LPRNT ) then
+				if( lexCurrentChar( ) = CHAR_LPRNT ) then
 					hasParens = true
 				else
 					'' not an error, macro can be passed as param to other macros
@@ -788,9 +795,10 @@ private function hLoadDefineW _
 
 				if( hasParens ) then
 					lexEatChar( )
+					lexEatWhitespace( )
 
 					'' ')'
-					if( lexCurrentChar( TRUE ) <> CHAR_RPRNT ) then
+					if( lexCurrentChar( ) <> CHAR_RPRNT ) then
 						errReport( FB_ERRMSG_EXPECTEDRPRNT )
 					else
 						lexEatChar( )
