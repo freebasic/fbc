@@ -24,7 +24,7 @@ Draw String ( 0.1, 0.8 ), "Y"
 
 Dim As Single x, y, s
 
-'' compute step size
+'' compute step size (corresponds to a step of 1 pixel on x coordinate)
 s = 2 / PMap( 1, 0 )
 
 '' plot the function
