@@ -55,7 +55,7 @@ end constructor
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCdecl|Cdecl]]##, ##[[KeyPgStdcall|Stdcall]]##
+	- ##[[KeyPgCdecl|Cdecl]]##, ##[[KeyPgStdcall|Stdcall]]##, ##[[KeyPgFastcall|Fastcall]]##
 	- ##[[KeyPgDeclare|Declare]]##
 	- ##[[KeyPgSub|Sub]]##, ##[[KeyPgFunction|Function]]##
 

@@ -10,54 +10,55 @@ Although many headers can be used on any of the platforms supported by ""FreeBAS
 
 {{fbdoc item="section" value="FreeBASIC headers"}}
 	There are a few headers that are specific to ""FreeBASIC"" and expose some functions that are otherwise not available:
-	- ##array.bi## - Declaration for ##[[KeyPgFBArray|FbArray (array descriptor structure and access)]]##, ##[[KeyPgArrayLen|ArrayLen]]##, ##[[KeyPgArraySize|ArraySize]]##.
-	- ##datetime.bi## - Declarations for ##[[KeyPgDateSerial|DateSerial]]##, ##[[KeyPgDateValue|DateValue]]##, ##[[KeyPgIsDate|IsDate]]##, ##[[KeyPgYear|Year]]##, ##[[KeyPgMonth|Month]]##, ##[[KeyPgDay|Day]]##, ##[[KeyPgWeekday|Weekday]]##, ##[[KeyPgTimeserial|TimeSerial]]##, ##[[KeyPgTimeValue|TimeValue]]##, ##[[KeyPgHour|Hour]]##, ##[[KeyPgMinute|Minute]]##, ##[[KeyPgSecond|Second]]##, ##[[KeyPgNow|Now]]##, ##[[KeyPgDateAdd|DateAdd]]##, ##[[KeyPgDatePart|DatePart]]##, ##[[KeyPgDateDiff|DateDiff]]##, ##[[KeyPgMonthname|MonthName]]##, ##[[KeyPgWeekdayname|WeekdayName]]##.
-	- ##dir.bi## - Constants to be used with ##[[KeyPgDir|Dir]]##.
-	- ##fbgfx.bi## - Additional constants and structures to be used with graphics commands such as ##[[KeyPgMultikey|Multikey]]##,  ##[[KeyPgScreencontrol|Screencontrol]]##, and ##[[KeyPgScreenevent|Screenevent]]##, ##[[KeyPgImagecreate|Imagecreate]]##.
-	- ##fbio.bi## - Declaration for ##[[KeyPgIsredirected|IsRedirected]]##.
-	- ##fbprng.bi## - Constants to be used with ##[[KeyPgRandomize|Randomize]]##, and also unfinished structures for other random number generators.
-	- ##fbthread.bi## - Declaration for ##[[KeyPgThreadDetach|ThreadDetach]]## and ##[[KeyPgThreadSelf|ThreadSelf]]##.
-	- ##file.bi## - Declarations for ##[[KeyPgFilecopy|FileCopy]]##, ##[[KeyPgFileattr|FileAttr]]##, ##[[KeyPgFilelen|FileLen]]##, ##[[KeyPgFileexists|Fileexists]]##, ##[[KeyPgFiledatetime|FileDateTime]]##.
-	- ##string.bi## - Declarations for ##[[KeyPgFormat|format]]##.
-	- ##vbcompat.bi## - Includes datetime.bi, dir.bi, file.bi, and string.bi plus additional constants compatible with Microsoft Visual Basic.
+	- ##inc/fbc-int/array.bi## - Declaration for ##[[KeyPgFBArray|FbArray (array descriptor structure and access)]]##, ##[[KeyPgArrayLen|ArrayLen]]##, ##[[KeyPgArraySize|ArraySize]]##.
+	- ##inc/datetime.bi## - Declarations for ##[[KeyPgDateSerial|DateSerial]]##, ##[[KeyPgDateValue|DateValue]]##, ##[[KeyPgIsDate|IsDate]]##, ##[[KeyPgYear|Year]]##, ##[[KeyPgMonth|Month]]##, ##[[KeyPgDay|Day]]##, ##[[KeyPgWeekday|Weekday]]##, ##[[KeyPgTimeserial|TimeSerial]]##, ##[[KeyPgTimeValue|TimeValue]]##, ##[[KeyPgHour|Hour]]##, ##[[KeyPgMinute|Minute]]##, ##[[KeyPgSecond|Second]]##, ##[[KeyPgNow|Now]]##, ##[[KeyPgDateAdd|DateAdd]]##, ##[[KeyPgDatePart|DatePart]]##, ##[[KeyPgDateDiff|DateDiff]]##, ##[[KeyPgMonthname|MonthName]]##, ##[[KeyPgWeekdayname|WeekdayName]]##.
+	- ##inc/dir.bi## - Constants to be used with ##[[KeyPgDir|Dir]]##.
+	- ##inc/fbgfx.bi## - Additional constants and structures to be used with graphics commands such as ##[[KeyPgMultikey|Multikey]]##,  ##[[KeyPgScreencontrol|Screencontrol]]##, and ##[[KeyPgScreenevent|Screenevent]]##, ##[[KeyPgImagecreate|Imagecreate]]##.
+	- ##inc/fbio.bi## - Declaration for ##[[KeyPgIsredirected|IsRedirected]]##.
+	- ##inc/fblimits.bi## - Constants for minimum and maximum values of built-in number.
+	- ##inc/fbprng.bi## - Constants to be used with ##[[KeyPgRandomize|Randomize]]##, and also unfinished structures for other random number generators.
+	- ##inc/fbthread.bi## - Declaration for ##[[KeyPgThreadDetach|ThreadDetach]]## and ##[[KeyPgThreadSelf|ThreadSelf]]##.
+	- ##inc/file.bi## - Declarations for ##[[KeyPgFilecopy|FileCopy]]##, ##[[KeyPgFileattr|FileAttr]]##, ##[[KeyPgFilelen|FileLen]]##, ##[[KeyPgFileexists|Fileexists]]##, ##[[KeyPgFiledatetime|FileDateTime]]##.
+	- ##inc/fbc-int/symbol.bi## - Declaration for ##[[KeyPgDdfbquerysymbol|__FB_QUERY_SYMBOL__]]## and its associated sub-macros.
+	- ##inc/crt/string.bi## - Declarations for ##[[KeyPgFormat|format]]##.
+	- ##inc/vbcompat.bi## - Includes datetime.bi, dir.bi, file.bi, and string.bi plus additional constants compatible with Microsoft Visual Basic.
 
 {{fbdoc item="section" value="C Runtime (CRT)"}}
 	Where possible cross-platform compatible headers have been provided for the C runtime (CRT).  For example,
-{{fbdoc item="filename" value="examples/manual/proguide/libs/libs1.bas"}}%%(freebasic)
+		{{fbdoc item="filename" value="examples/manual/proguide/libs/libs1.bas"}}%%(freebasic)
 #include once "crt.bi"
 printf( !"Hello World\n" )
 %%
 	To include a specific CRT header, prefix the name of the header file with ##"crt/"##.  For example:
-{{fbdoc item="filename" value="examples/manual/proguide/libs/libs2.bas"}}%%(freebasic)
+		{{fbdoc item="filename" value="examples/manual/proguide/libs/libs2.bas"}}%%(freebasic)
 #include once "crt/stdio.bi"
 Dim f As FILE Ptr
 f = fopen("somefile.txt", "w")
 fprintf( f, "Hello File\n")
 fclose( f )
 %%
-
 {{fbdoc item="section" value="Windows API"}}
 	Many (many) headers for the Windows API are available for inclusion in ""FreeBASIC"" source code.  In most cases the only include file needed is "windows.bi".  For example,
-{{fbdoc item="filename" value="examples/manual/proguide/libs/libs3.bas"}}%%(freebasic)
+		{{fbdoc item="filename" value="examples/manual/proguide/libs/libs3.bas"}}%%(freebasic)
 #include once "windows.bi"
 MessageBox( null, "Hello World", "FreeBASIC", MB_OK )
 %%
 	To include a specific Windows API header, prefix the name of the header with "win/" for example:
-{{fbdoc item="filename" value="examples/manual/proguide/libs/libs4.bas"}}%%(freebasic)
+		{{fbdoc item="filename" value="examples/manual/proguide/libs/libs4.bas"}}%%(freebasic)
 #include once "win/ddraw.bi"
 %%
 	Browse the "inc/win/" directory where ""FreeBASIC"" was installed to see all of the available Windows API headers.
 
 {{fbdoc item="section" value="Other Headers Provided"}}
-	See the [[ExtLibTOC|External Libraries Index]] for an overview of the additional headers shipped with ""FreeBASIC"".  The page also describes the file(s) that need to be included to use the library.  Alternatively one can browse the "inc/" directory located where ""FreeBASIC"" was installed to find other headers.  It is possible that headers might be available for a library you need to use.  Some headers are located in "inc/" and others might be located in a sub-directory.  To include headers located in a subdirectory of "inc/", prefix the name of the header with the name of the directory where it is located.  For example:
-{{fbdoc item="filename" value="examples/manual/proguide/libs/libs5.bas"}}%%(freebasic)
+	See the [[ExtLibTOC|External Libraries Index]] for an overview of the additional headers shipped with ""FreeBASIC"".  The page also describes the file(s) that need to be included to use the library.  Alternatively one can browse the "inc/" directory located where ""FreeBASIC"" was installed to find other headers.  It is possible that headers might be available for a library you need to use.  Some headers are located in "inc/" and others might be located in a sub-directory.  To include headers located in a subdirectory of "inc/", prefix the name of the header with the name of the directory where it is located.
+	For example:
+		{{fbdoc item="filename" value="examples/manual/proguide/libs/libs5.bas"}}%%(freebasic)
 '' located at inc/curl.bi
 #include once "curl.bi"
 
 '' located at inc/GL/gl.bi
 #include once "GL/gl.bi"
 %%
-
 {{fbdoc item="section" value="Requirements for Using Prebuilt Static Libraries"}}
 	- The source code must include the appropriate headers using ##[[KeyPgInclude|#include]]##.
 	- The static library must be linked at compile time by using either ##[[KeyPgInclib|#inclib]]## in the source code or by using the ##[[CompilerOptl|-l]]## option on the command line to specify the name of the library.
@@ -67,8 +68,10 @@ MessageBox( null, "Hello World", "FreeBASIC", MB_OK )
 	- The shared library (.DLL) must be present on the host computer where the compiled program will run.
 
 {{fbdoc item="ver"}}
-	- Before fbc 1.10.0 (for fbc 1.08.0 and fbc 1.09.0), "fbprng.bi" was named "fbmath.bi".
-	- Before fbc 1.08.0, the standard "fbmath.bi" header did not exist.
+	- Since fbc 1.10.0, ##symbol.bi## and ##fblimits.bi## are added.
+	- Before fbc 1.10.0 (for fbc 1.08.0 and fbc 1.09.0), ##fbprng.bi## was named ##fbmath.bi##.
+	- Since fbc 1.08.0, ##array.bi## is added.
+	- Before fbc 1.08.0, the standard ##fbmath.bi## header did not exist.
 
 {{fbdoc item="see"}}
 	- [[ProPgStaticLibraries|Static Libraries]]

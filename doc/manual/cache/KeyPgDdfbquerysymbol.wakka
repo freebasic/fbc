@@ -1,0 +1,129 @@
+{{fbdoc item="title" value="__FB_QUERY_SYMBOL__"}}----
+Intrinsic define (macro) performed by the compiler, and its associated sub-macros.
+
+{{fbdoc item="syntax"}}##
+	""__FB_QUERY_SYMBOL__( what, sym )""
+##
+{{fbdoc item="usage"}}
+	The ##./inc/fbc-int/symbol.bi## header exposes internals of the fbc compiler through the built-in macro **##""__FB_QUERY_SYMBOL__""##**.
+	In addition, many convenient sub-macros with **##'is'##** as name prefix (also defined in the file ##./inc/fbc-int/symbol.bi##) help the user to indirectly call the generic built-in macro **##""__FB_QUERY_SYMBOL__""##**:
+		##
+		#include once "fbc-int/symbol.bi"
+		using **FBC**
+		
+		' then:
+			[[KeyPgDim|Dim]] //b// [[KeyPgAs|As]] [[KeyPgBoolean|Boolean]]
+			...
+			//b// = **""isXXXXX""**( //sym// )
+##
+{{fbdoc item="param"}}
+	##//sym//##
+		symbol name to query
+	##//b//##
+		boolean to store the return value from the macro
+	**##XXXXX##**
+		body of the sub-macro name standing the kind of query
+
+{{fbdoc item="desc"}}
+	**##""__FB_QUERY_SYMBOL__""##** is a generic built-in macro for querying fbc symbol internals.
+	
+	In the file ##./inc/fbc-int/symbol.bi##, many convenient and specialized sub-macros with **##'is'##** as name prefix (**##'isXXXXX'##**) are also defined (where **##'XXXXX'##** stands for the kind of query).
+	They help the user to indirectly call the generic built-in macro **##""__FB_QUERY_SYMBOL__""##** without knowing the encoding of its first parameter and its return value, but passing the only ##//sym//## parameter to those sub-macros which only return ##-1## (for ##True##) or ##0## (for ##False##).
+	
+	For three of the query types, convenient and specialized sub-macros are available:
+		""-"" 'class of symbols' (like variable, constant, procedure, namespace, ...),
+		""-"" 'class of data' (like integer, float, string, UDT, ...),
+		""-"" 'type of data' (like boolean, byte, ubyte, short, ...).
+	in order to test whether a symbol matches an element of the considered family.
+
+{{fbdoc item="ex"}}
+	Using convenient sub-macros from the ##./inc/fbc-int/symbol.bi## file (indirectly calling **##""__FB_QUERY_SYMBOL__""##**)
+		{{fbdoc item="filename" value="examples/manual/defines/fbquerysymbol.bas"}}%%(freebasic)
+#include once "fbc-int/symbol.bi"
+Using FBC
+
+Type T
+	i As Integer
+End Type
+Dim x As T
+
+Print isUDT( T )       '' returns -1 (true)
+Print isVariable( T )  '' returns 0 (false)
+Print isUDT( x )       '' returns 0 (false)
+Print isVariable( x )  '' returns -1 (true)
+
+Sleep
+%%
+	Using directly **##""__FB_QUERY_SYMBOL__""##** and some declarations from the ##./inc/fbc-int/symbol.bi## file to output the data class of a symbol:
+		{{fbdoc item="filename" value="examples/manual/defines/fbquerysymbol2.bas"}}%%(freebasic)
+#include once "fbc-int/symbol.bi"
+Using FBC
+
+Function dataclassToStr( ByVal classid As fbc.FB_DATACLASS ) As String
+	Static As ZString Ptr classnames _
+		( FB_DATACLASS.FB_DATACLASS_INTEGER To FB_DATACLASS.FB_DATACLASS_UDT ) _
+		= { @"integer", @"float", @"string", @"udt" }
+	   
+	Select Case classid
+	Case LBound(classnames) To UBound(classnames)
+		Return *classnames(classid)
+	Case Else
+		Return "*invalid*"
+	End Select
+End Function
+
+#macro show_dataclass( sym )
+	Scope
+		Var classid = __FB_QUERY_SYMBOL__( FB_QUERY_SYMBOL.dataclass, sym )
+		Print Left( "   [" & classid & "] " & dataclassToStr(classid) + Space(16), 16 ) & ": ";
+		Print #sym  
+	End Scope
+#endmacro
+
+Dim As Byte b
+Dim As Double d
+Dim As String s
+
+Type T
+	Dim As Long l
+End Type
+Dim As T t1
+
+Print "EXAMPLES OF '__FB_QUERY_SYMBOL__( FB_QUERY_SYMBOL.dataclass, sym )':"
+
+show_dataclass( b )
+show_dataclass( d )
+show_dataclass( s )
+show_dataclass( T )
+show_dataclass( T.l )
+show_dataclass( t1 )
+show_dataclass( t1.l )
+
+Sleep
+%%
+	Using directly **##""__FB_QUERY_SYMBOL__""##** and some declarations from the ##./inc/fbc-int/symbol.bi## file to output the typename as text, the typename as text with special characters replaced with '_', and the decorated (mangled) type name (WIP), of a symbol:
+		{{fbdoc item="filename" value="examples/manual/defines/fbquerysymbol3.bas"}}%%(freebasic)
+#include once "fbc-int/symbol.bi"
+Using FBC
+
+Namespace NS
+	Type T
+		Dim As Const String Const Ptr Ptr pps
+	End Type
+End Namespace
+
+#print typeof(NS.T.pps)
+
+Print "type name    : " & __FB_QUOTE__( __FB_QUERY_SYMBOL__( FB_QUERY_SYMBOL.typename, NS.T.pps ) )
+Print "type name id : " & __FB_QUOTE__( __FB_QUERY_SYMBOL__( FB_QUERY_SYMBOL.typenameid, NS.T.pps ) )
+Print "mangled id   : " & __FB_QUOTE__( __FB_QUERY_SYMBOL__( FB_QUERY_SYMBOL.mangleid, NS.T.pps ) )
+
+Sleep
+%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.10.0
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

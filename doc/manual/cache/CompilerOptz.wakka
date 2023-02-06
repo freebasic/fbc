@@ -17,15 +17,27 @@ Sets miscellaneous or experimental compiler options.
 	{{fbdoc item="subsect" value="-z valist-as-ptr"}}
 		Specifies that the implementation of ##[[KeyPgCvaList|cva_list]]## variable argument lists and macros for variadic procedures should use a normal pointer type if the target supports it.  By default, ##[[KeyPgCvaList|cva_list]]## data types are mapped to gcc's ##""__builtin_va_list""## data type when using //[[CompilerOptgen|-gen gcc]]//.
 		
+	{{fbdoc item="subsect" value="-z no-thiscall"}}
+		Instructs fbc to ignore ##[[KeyPgThiscall|__thiscall]]## directives in source file and take control from the real compiler command line only.
+		
+	{{fbdoc item="subsect" value="-z no-fastcall"}}
+		Instructs fbc to ignore ##[[KeyPgFastcall|__fastcall]]## directives in source file and take control from the real compiler command line only.
+		
 	{{fbdoc item="subsect" value="-z fbrt"}}
 		Instructs fbc to link with the ##libfbrt[mt].a## library instead of the ##libfb[mt].a## library rather than having to copy or move files around or have multiple development directories.
 		
 	{{fbdoc item="subsect" value="-z nocmdline"}}
 		Instructs fbc to ignore all ##[[KeyPgPpcmdline|cmdline]]## directives in source file and take control from the real compiler command line only.
+		
+	{{fbdoc item="subsect" value="-z retinflts"}}
+		Instructs fbc to enable returning some structures (types) in floating point registers.
 
 {{fbdoc item="ver"}}
+	- Since fbc 1.10.0: ##retinflts## compiler option
+	- Since fbc 1.10.0: ##no-fastcall## compiler option.
 	- Since fbc 1.09.0: ##nocmdline## compiler option
 	- Since fbc 1.09.0: ##fbrt## compiler option.
+	- Since fbc 1.09.0: ##no-thiscall## compiler option.
 	- Since fbc 1.08.1: ##valist-as-ptr## compiler option.
 	- Since fbc 0.20.0: ##gosub-setjmp## compiler option.
 

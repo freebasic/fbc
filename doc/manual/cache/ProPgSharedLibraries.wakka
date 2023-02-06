@@ -351,7 +351,7 @@ Sleep
 			**""-""** 32-bit:
 				##//drive:\""FreeBASIC""\bin\win32\dlltool -k -d XXX.dll -l libXXX.dll.a//##
 			**""-""** 64-bit:
-				##//drive:\""FreeBASIC""\bin\win32\dlltool -k -d XXX.dll -l libXXX.dll.a//##
+				##//drive:\""FreeBASIC""\bin\win64\dlltool -k -d XXX.dll -l libXXX.dll.a//##
 				
 	Syntax to create the def file ##//(*.def)//## for Windows, from an existing DLL ##//(*.dll)//##:
 			**""-""** 32-bit:

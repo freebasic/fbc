@@ -159,6 +159,8 @@ Preprocessor symbols defined by the compiler.
 		Returns an expression depending on the result of a comparison expression evaluated at compile time.
 	=={{fbdoc item="keyword" value="KeyPgDdfbjoin|__FB_JOIN__"}}==
 		Joins two token arguments together as one.
+	=={{fbdoc item="keyword" value="KeyPgDdfbquerysymbol|__FB_QUERY_SYMBOL__"}}==
+		Queries a ##**fbc**##'s symbol internals.
 	=={{fbdoc item="keyword" value="KeyPgDdfbquote|__FB_QUOTE__"}}==
 		Converts the argument to a string.
 	=={{fbdoc item="keyword" value="KeyPgDdfbuniqueid|__FB_UNIQUEID__"}}==

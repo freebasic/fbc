@@ -48,34 +48,48 @@ Transfer the data of a given type variable to a variable of another type require
 		- Type-cast operator: allow conversion to a particular type.
 		
 
-	For a construction with implicit initialization ('Dim As UDT u = v'), the compiler searches:
+	For a construction with implicit initialization ('Dim As UDT u = v'), the compiler searches by priority:
 		- Firstly a matched constructor (for u type from v type).
-		- Secondly a cast operator (for v type) and its matching conversion-constructor (for u type from cast return type).
+		- Secondly a cast operator (for v type to special type (*)) and its matching conversion-constructor (for u type from special type (*)).
 		- Thirdly finally a matched cast operator (for v type to u type).
 		(a matched let operator (for u type from v type) is not searched by compiler on a construction with implicit initialization)
 		
-	For an implicit copy-construction ('Byval As u_type') when passing a v type parameter, the compiler searches:
-		- Firstly a matched cast operator (for v type to u type).
-		- Secondly a matched constructor (for u type from v type).
-		- Thirdly finally a cast operator (for v type) and its matching conversion-constructor (for u type from cast return type).
+	For an implicit copy-construction ('Byval As u_type') when passing a v type parameter, the compiler searches by priority:
+		- Firstly a matched constructor (for u type from v type).
+		- Secondly a cast operator (for v type to special type (*)) and its matching conversion-constructor (for u type from special type (*)).
+		- Thirdly finally a matched cast operator (for v type to u type).
 		(a matched let operator (for u type from v type) is not searched by compiler on a construction with implicit initialization)
 		
-	For an implicit assignment ('u = v'), or an implicit return from function by assigning ('Function = v') with function returning u type, the compiler searches:
+	For an implicit reference-passing ('Byref As u_type') when passing a v type parameter, the compiler searches by priority:
+		- Firstly a matched cast operator (for v type to u type).
+		- Secondly a matched constructor (for u type from v type).
+		- Thirdly finally a cast operator (for v type to special type (*)) and its matching conversion-constructor (for u type from special type (*)).
+		(a matched let operator (for u type from v type) is not searched by compiler on an implicit reference-passing)
+		
+	For an implicit assignment ('u = v'), or an implicit return from function by assigning ('Function = v') with function returning u type, the compiler searches by priority:
 		- Firstly a matched let operator (for u type from v type).
-		- Secondly a cast operator (for v type) and its matching let operator (for u type from cast return type).
+		- Secondly a cast operator (for v type to special type (*)) and its matching let operator (for u type from special type (*)).
 		- Thirdly a matched cast operator (for v type to u type).
 		- Fourthly finally a matched constructor (for u type from v type) and an explicit copy-let operator (u type).
 		
 
-	For an implicit return from function by exiting immediately ('Return v') with function returning u type, the compiler searches:
+	For an implicit return from function by exiting immediately ('Return v') with function returning u type, the compiler searches by priority:
 		- Firstly a matched constructor (for u type from v type).
-		- Secondly a cast operator (for v type) and its matching conversion-constructor (for u type from cast return type).
+		- Secondly a cast operator (for v type to special type (*)) and its matching conversion-constructor (for u type from special type (*)).
 		If an explicit copy-constructor (u type) exists:
 		- Thirdly a matched cast operator (for v type to u type).
 		- Fourthly finally a matched let operator (for u type from v type).
 		Else (an explicit copy-constructor (u type) does not exist):
 		- Thirdly a matched let operator (for u type from v type).
 		- Fourthly finally a matched cast operator (for v type to u type).
+		
+
+	special type (*) : pointer or string, or UDT if there is no explicit copy-constructor / explicit copy-assignment operator for u type
+	
+	**Note:**
+	Only the member procedures directly impacted in the conversion process itself are cited above:
+	**""-""** the copy-constructor (u type) and the copy-let operator (u type) are not cited when only their implicit definition is sufficient and not their explicit definition,
+	**""-""** the default constructor (u type) is not cited whereas an implicit version, otherwise explicit version if another explicit constructor (u type) is defined, is always required in the 'Function = v' case, but not for the conversion process itself.
 
 {{fbdoc item="ex"}}
 	Very simple syntaxic example highlighting the conversion capabilities by using Cast operator (explicit and implicit), Constructor (explicit and implicit) and Let operator (implicit):

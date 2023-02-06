@@ -1,0 +1,896 @@
+{{fbdoc item="title" value="Use Implicit / Overload New([]) and Delete([]) Operators with Inheritance Polymorphism"}}----
+How to **use** the **implicit** or **overload New** and **Delete** operators and their **New[]** and **Delete[]** array-versions, with **inheritance polymorphism** (sub-type polymorphism), and how workaround some unexpected or unsuitable behaviors.
+{{anchor name="ProPgUseNewDeleteTop"}}
+**Preamble:**
+
+	Some definitions and introductions to start with.
+	
+	__Different operators New and Delete__ (may be confusion in the user mind despite the documentation that distinguishes them from each other through different pages)
+	
+		Implicit New/Delete operator (inaccessible by user):
+			**""-""** It is a static function/sub that only allocates/frees memory (it is not very different from Allocate/Deallocate).
+		Overload New/Delete operator (defined by user):
+			**""-""** It is a member operator (static function/sub) that can overload the 'Implicit New/Delete operator' only for user-defined types.
+			**""-""** So the user can define its own dynamic memory allocation/deallocation process part (the following/previous process part for implicit object construction/destruction can not be modified).
+			
+		New Expression operator:
+			**""-""** It starts by using the 'Implicit/Overload New operator' (the implicit, or the overload if exists) to allocate memory.
+			**""-""** Then it invokes the constructor for the right type of object. If that object contains any other objects (either embedded or as base types) those constructors as invoked as well.
+			**""-""** So the final result is memory allocated and object constructed.
+		Delete Statement operator:
+			**""-""** It starts by invoking the destructor for the right type of object. If that object contains any other objects (either embedded or as base types) those destructors as invoked as well.
+			**""-""** Then it uses the 'Implicit/Overload Delete operator' (the implicit, or the overload if exists) to deallocate memory.
+			**""-""** So the final result is object destroyed and memory freed.
+			
+		Placement New Operator:
+			**""-""** It constructs an object at a specified memory address (already allocated by another process).
+			**""-""** Consequently there is no 'Placement Delete operator'.
+			**""-""** It the object has a destructor (implicit or explicit), the user can call it with syntax as for a member method by using member access operator.
+			
+		Similar definition for 'Implicit/overload New[]/Delete[] operators', 'New[] expression operator' and 'Delete[] statement operator', 'Placement New[] operator', which are only the (one-dimensional) array-versions of the previous operators (there is construction/destruction loop on the array elements).
+		
+	__Inheritance Polymorphism__ (ability of calling from the base type the member procedures of derived-types without worrying about the real type of the processed objects)
+	
+		Thanks to the 'abstract'/'virtual' procedures, one can write a code using only the base type that will automatically call the derived-type procedures.
+		It is then possible to call the procedure of an object without worrying about its intrinsic type.
+		
+		By using the same procedure name for several different types, the polymorphism allows a much more generic programming (abstraction).
+		The coder does not have to know, when calling a base procedure, the precise type of object on which the procedure will apply. He just needs to know that this type will implement the procedure.
+		
+		Thus, a base-typed pointer (or reference), pointing to an instance of a derived-type, can be used to manipulate such an object.
+		Considering a collection of objects whose instantiate types are derived-types from a base type, then all these objects can be manipulated in an uniform way by considering them as objects of the base type.
+		
+	__Content of the following__ (6 parts and their associated examples)
+	
+		6 main parts by increasing difficulty:
+			**{{anchor name="ProPgUseNewDeleteTop|Preamble"}}**
+			**{{anchor name="ProPgUseNewDelete1|1. Use Implicit New and Delete operators with inheritance polymorphism (sub-type polymorphism)"}}**
+			**{{anchor name="ProPgUseNewDelete2|2. Use Placement New operator with inheritance polymorphism (sub-type polymorphism)"}}**
+			**{{anchor name="ProPgUseNewDelete3|3. Use Implicit New[] and Delete[] operators with inheritance polymorphism (sub-type polymorphism)"}}**
+			**{{anchor name="ProPgUseNewDelete4|4. Use Placement New[] operator with inheritance polymorphism (sub-type polymorphism)"}}**
+			**{{anchor name="ProPgUseNewDelete5|5. Use Overload New and Delete operators with inheritance polymorphism (sub-type polymorphism)"}}**
+			**{{anchor name="ProPgUseNewDelete6|6. Use Overload New[] and Delete[] operators with inheritance polymorphism (sub-type polymorphism)"}}**
+			**{{anchor name="ProPgUseNewDeleteBottom|Conclusion"}}**
+			
+		6 associated examples:
+			Starting from the same common body of polymorphism by inheritance (polymorphism by sub-type):
+				""-"" Structure hierarchy: Animal as base Type, Cat and Dog as derived Types.
+				""-"" Member data: string ('name') in Animal, string ('favorite') in Cat and in Dog.
+				""-"" Procedure fields: abstract/virtual subs 'Init()', abstract/virtual functions 'get_attributes()', virtual destructors 'Destructor()'.
+				""-"" Base constructor is protected and base copy-constructor is private, in order to disallow any construction or copy-construction for base object.
+				""-"" 4 objects constructed: 2 instances of Cat, 2 instances of Dog.
+			Then, other member procedures are added according to the part to be processed, and to the unexpected or unsuitable behaviors to be workarounded.
+
+----
+{{anchor name="ProPgUseNewDelete1"}}
+{{fbdoc item="section" value="1. Use Implicit New and Delete operators with inheritance polymorphism (sub-type polymorphism)"}}
+	A collection of base-typed pointers in an array (base-typed Ptr array), where each pointer addresses a single derived object of any derived type.
+	No New/Delete operator overload.
+	
+	This is the starting point of the study (simple case of polymorphism).
+	No unexpected or unsuitable behavior.
+	
+	__No unsuitable or unexpected behavior__
+		Although the Implicit Delete operator is static, everything works fine when calling the static Delete statement on a base-typed pointer:
+			""-"" The object is completely destroyed (derived part and base part) thanks to the virtual destructor in each derived type which overrides that of the base type.
+			""-"" Then, the total memory is well deallocated even by calling the Implicit Delete operator of the base type, because this process only uses the value of the pointer provided.
+			
+	__Example__
+		{{fbdoc item="filename" value="examples/manual/proguide/newdelete/use_implicit_operators_simple.bas"}}%%(freebasic)
+' Code for using implicit 'New'/'Delete' operators from base-typed pointer array in polymorphic inheritance context
+
+Type Animal Extends Object
+	Public:
+		Declare Abstract Sub Init(ByRef _name As String, ByRef _favorite As String)
+		Declare Abstract Function get_attributes() As String
+		Declare Virtual Destructor()
+	Protected:
+		Dim As String Name
+		Declare Constructor()
+	Private:
+		Declare Constructor(ByRef _a As Animal)
+End Type
+
+Destructor Animal ()
+	Print "Animal destructor: ", "object address: " & @This
+End Destructor
+
+Constructor Animal ()
+	Print "Animal constructor: ", "object address: " & @This
+End Constructor
+
+
+Type Cat Extends Animal
+	Public:
+		Declare Constructor()
+		Declare Virtual Sub Init(ByRef _name As String, ByRef _favorite As String)
+		Declare Virtual Function get_attributes() As String
+		Declare Virtual Destructor()
+	Private:
+		Dim As String favorite
+End Type
+
+Constructor Cat ()
+	Print "  Cat constructor: ", "  object address: " & @This
+End Constructor
+
+Sub Cat.Init(ByRef _name As String, ByRef _favorite As String = "")
+	This.Name = _name
+	This.favorite = _favorite
+End Sub
+
+Function Cat.get_attributes() As String
+	Return This.Name & ": Cat, Meow, " & This.favorite
+End Function
+
+Destructor Cat()
+	Print "  Cat destructor: ", "  object address: " & @This
+End Destructor
+
+
+Type Dog Extends Animal
+	Public:
+		Declare Constructor()
+		Declare Virtual Sub Init(ByRef _name As String, ByRef _favorite As String)
+		Declare Virtual Function get_attributes() As String
+		Declare Virtual Destructor()
+	Private:
+		Dim As String favorite
+End Type
+
+Constructor Dog()
+	Print "  Dog constructor: ", "  object address: " & @This
+End Constructor
+
+Sub Dog.Init(ByRef _name As String, ByRef _favorite As String)
+	This.Name = _name
+	This.favorite = _favorite
+End Sub
+
+Function Dog.get_attributes() As String
+	Return This.Name & ": Dog, Woof, " & This.favorite
+End Function
+
+Destructor Dog()
+	Print "  Dog destructor: ", "  object address: " & @This
+End Destructor
+
+'------------------------------------------------------------------------------
+
+Dim As Animal Ptr pa(0 To ...) = {New Cat(), New Cat(), New Dog(), New Dog()}
+
+pa(0)->Init("Tiger", "Salmon")
+pa(1)->Init("Kitty", "Sardine")
+pa(2)->Init("Buddy", "Lamb")
+pa(3)->Init("Molly", "Beef")
+
+For I As Integer = LBound(pa) To UBound(pa)
+	Print "    " & pa(I)->get_attributes()
+Next I
+
+For I As Integer = LBound(pa) To UBound(pa)
+	Delete pa(I)
+Next I
+
+Sleep
+%%			Output (64-bit):
+				%%
+Animal constructor:         object address: 16455952
+  Cat constructor:            object address: 16455952
+Animal constructor:         object address: 16473360
+  Cat constructor:            object address: 16473360
+Animal constructor:         object address: 16473424
+  Dog constructor:            object address: 16473424
+Animal constructor:         object address: 16473488
+  Dog constructor:            object address: 16473488
+	Tiger: Cat, Meow, Salmon
+	Kitty: Cat, Meow, Sardine
+	Buddy: Dog, Woof, Lamb
+	Molly: Dog, Woof, Beef
+  Cat destructor:             object address: 16455952
+Animal destructor:          object address: 16455952
+  Cat destructor:             object address: 16473360
+Animal destructor:          object address: 16473360
+  Dog destructor:             object address: 16473424
+Animal destructor:          object address: 16473424
+  Dog destructor:             object address: 16473488
+Animal destructor:          object address: 16473488
+%%
+@@{{anchor name="ProPgUseNewDeleteTop|Back to top"}}@@
+----
+{{anchor name="ProPgUseNewDelete2"}}
+{{fbdoc item="section" value="2. Use Placement New operator with inheritance polymorphism (sub-type polymorphism)"}}
+	A collection of base-typed pointers in an array (base-typed Ptr array), where each pointer addresses a single derived object of any derived type.
+	The memory allocation/deallocation is done by another process (Allocate/Deallocate).
+	
+	__From the previous example__
+		For the memory allocation and object construction:
+			replace:
+			%%(freebasic)
+Dim As Animal Ptr pa(0 To ...) = {New Cat(), New Cat(), New Dog(), New Dog()}
+%%			with:
+			%%(freebasic)
+Dim As Any Ptr pc1 = Allocate(Sizeof(Cat))
+Dim As Any Ptr pc2 = Allocate(Sizeof(Cat))
+Dim As Any Ptr pd1 = Allocate(Sizeof(Dog))
+Dim As Any Ptr pd2 = Allocate(Sizeof(Dog))
+
+Dim As Animal Ptr pa(0 To ...) = {New(pc1) Cat(), New(pc2) Cat(), New(pd1) Dog(), New(pd2) Dog()}
+%%			
+		For the object destruction and memory deallocation:
+			replace:
+			%%(freebasic)
+For I As Integer = LBound(pa) To UBound(pa)
+	Delete pa(I)
+Next I
+%%			with:
+			%%(freebasic)
+For I As Integer = LBound(pa) To UBound(pa)
+	pa(I)->Destructor()
+Next I
+
+Deallocate(pc1)
+Deallocate(pc2)
+Deallocate(pd1)
+Deallocate(pd2)
+%%
+@@{{anchor name="ProPgUseNewDeleteTop|Back to top"}}@@
+----
+{{anchor name="ProPgUseNewDelete3"}}
+{{fbdoc item="section" value="3. Use Implicit New[] and Delete[] operators with inheritance polymorphism (sub-type polymorphism)"}}
+	A collection of base-typed pointers in an array (base-typed Ptr array), where each pointer is a buffer pointer allowing to address several derived object of a same derived type.
+	No New[]/Delete[] operator overload.
+	
+	__One unsuitable behavior and one unexpected behavior are encountered__
+		The calculation of the right address of any derived object is generally false (because it takes into account as object size the one corresponding to the pointer type and not the real object type), except obviously for the first object:
+			""-"" To access to the right address of any derived object (when derived type contains one data field at least) in the array buffer constructed by the Implicit New[] operator, and from a base-typed pointer, a solution consists in overloading the '[]' operator, with a virtual '[]' operator in each derived type which overrides that (abstract) of the base type.
+			""-"" Finally, to well call the overload '[]' operator (and not the implicit '[]' operator), it must be called on a dereferenced pointer (and not on the rough pointer that would called the implicit '[]' operator).
+			""-"" If 'p' is the base-typed pointer, the right expression is ##'(*p)[n]'## and not ##'p[n]'##.
+			""-"" **Warning:** to calculate the right address of the nth derived object, the virtual '[]' operator is always called on the ##'*p'## reference corresponding to the first object of the array buffer, so a correct overriding of the operator assumes that this first object of the array buffer is always a valid derived object (not destroyed for example).
+		The static Delete[] statement does not allow to retrieve the real run-time type of the object:
+			""-"" So the calculation of the address of each object to destroy (if it is necessary) is generally false (because it takes into account as object size the one corresponding to the pointer type and not the real object type), except obviously for the first object.
+			""-"" However, the total memory would be well deallocated even by calling the Implicit Delete[] operator of the base type, because this process only uses the value of the pointer provided.
+			""-"" The safest is to use a virtual launcher for the Delete[] statement in each derived type which overrides that (abstract) of the base type, and in this case (as by calling the Delete[] statement on a derived type pointer), this is not mandatory of defining a virtual destructor but remains still recommended.
+			""-"" In the following example, the called virtual launcher is 'DeleteSB_launcher()'.
+			
+	__Example__
+		{{fbdoc item="filename" value="examples/manual/proguide/newdelete/use_implicit_operators_array.bas"}}%%(freebasic)
+' Code for using implicit 'New[]'/'Delete[]' operators from base-typed pointer array in polymorphic inheritance context
+'    Added member procedures to workaround unsuitable or unexpected behaviors:
+'       - Abstract/Virtual 'Operator []()' to access to the right address of any derived object from a base-typed pointer
+'       - Abstract/Virtual 'DeleteSB_launcher()' to destroy the right objects from a base-typed pointer
+
+Type Animal Extends Object
+	Public:
+		Declare Abstract Sub Init(ByRef _name As String, ByRef _favorite As String)
+		Declare Abstract Function get_attributes() As String
+		Declare Virtual Destructor()
+		Declare Abstract Operator [](ByVal _n As Integer) ByRef As Animal
+		Declare Abstract Sub DeleteSB_launcher()
+	Protected:
+		Dim As String Name
+		Declare Constructor()
+	Private:
+		Declare Constructor(ByRef _a As Animal)
+End Type
+
+Destructor Animal ()
+	Print "Animal destructor: ", "object address: " & @This
+End Destructor
+
+Constructor Animal ()
+	Print "Animal constructor: ", "object address: " & @This
+End Constructor
+
+
+Type Cat Extends Animal
+	Public:
+		Declare Constructor()
+		Declare Virtual Sub Init(ByRef _name As String, ByRef _favorite As String)
+		Declare Virtual Function get_attributes() As String
+		Declare Virtual Destructor()
+		Declare Virtual Operator [](ByVal _n As Integer) ByRef As Cat
+		Declare Virtual Sub DeleteSB_launcher()
+	Private:
+		Dim As String favorite
+End Type
+
+Constructor Cat()
+	Print "  Cat constructor: ", "  object address: " & @This
+End Constructor
+
+Sub Cat.Init(ByRef _name As String, ByRef _favorite As String = "")
+	This.Name = _name
+	This.favorite = _favorite
+End Sub
+
+Function Cat.get_attributes() As String
+	Return This.Name & ": Cat, Meow, " & This.favorite
+End Function
+
+Destructor Cat()
+	Print "  Cat destructor: ", "  object address: " & @This
+End Destructor
+
+Operator Cat.[](ByVal _n As Integer) ByRef As Cat
+	Return (@This)[_n]
+End Operator
+
+Sub Cat.DeleteSB_launcher()
+	Delete[] @This
+End Sub
+
+
+Type Dog Extends Animal
+	Public:
+		Declare Constructor()
+		Declare Virtual Sub Init(ByRef _name As String, ByRef _favorite As String)
+		Declare Virtual Function get_attributes() As String
+		Declare Virtual Destructor()
+		Declare Virtual Operator [](ByVal _n As Integer) ByRef As Dog
+		Declare Virtual Sub DeleteSB_launcher()
+	Private:
+		Dim As String favorite
+End Type
+
+Constructor Dog()
+	Print "  Dog constructor: ", "  object address: " & @This
+End Constructor
+
+Sub Dog.Init(ByRef _name As String, ByRef _favorite As String)
+	This.Name = _name
+	This.favorite = _favorite
+End Sub
+
+Function Dog.get_attributes() As String
+	Return This.Name & ": Dog, Woof, " & This.favorite
+End Function
+
+Destructor Dog()
+  Print "  Dog destructor: ", "  object address: " & @This
+End Destructor
+
+Operator Dog.[](ByVal _n As Integer) ByRef As Dog
+	Return (@This)[_n]
+End Operator
+
+Sub Dog.DeleteSB_launcher()
+	Delete[] @This
+End Sub
+
+'------------------------------------------------------------------------------
+
+Dim As Animal Ptr pa(0 To ...) = {New Cat[2], New Dog[2]}
+
+'pa(0)[0].Init("Tiger", "Salmon")   '' does not work
+'pa(0)[1].Init("Kitty", "Sardine")  '' does not work
+'pa(1)[0].Init("Buddy", "Lamb")     '' does not work
+'pa(1)[1].Init("Molly", "Beef")     '' does not work
+(*pa(0))[0].Init("Tiger", "Salmon")
+(*pa(0))[1].Init("Kitty", "Sardine")
+(*pa(1))[0].Init("Buddy", "Lamb")
+(*pa(1))[1].Init("Molly", "Beef")
+
+For I As Integer = LBound(pa) To UBound(pa)
+	For J As Integer = 0 To 1
+'        Print "    " & pa(I)[J].get_attributes()  '' does not work
+		Print "    " & (*pa(I))[J].get_attributes()
+	Next J
+Next I
+
+For I As Integer = LBound(pa) To UBound(pa)
+'    Delete[] pa(I)  '' does not work
+	pa(I)->DeleteSB_launcher()
+Next I
+
+Sleep
+%%			Output (64-bit):
+				%%
+Animal constructor:         object address: 7101688
+  Cat constructor:            object address: 7101688
+Animal constructor:         object address: 7101744
+  Cat constructor:            object address: 7101744
+Animal constructor:         object address: 7101816
+  Dog constructor:            object address: 7101816
+Animal constructor:         object address: 7101872
+  Dog constructor:            object address: 7101872
+	Tiger: Cat, Meow, Salmon
+	Kitty: Cat, Meow, Sardine
+	Buddy: Dog, Woof, Lamb
+	Molly: Dog, Woof, Beef
+  Cat destructor:             object address: 7101744
+Animal destructor:          object address: 7101744
+  Cat destructor:             object address: 7101688
+Animal destructor:          object address: 7101688
+  Dog destructor:             object address: 7101872
+Animal destructor:          object address: 7101872
+  Dog destructor:             object address: 7101816
+Animal destructor:          object address: 7101816
+%%
+@@{{anchor name="ProPgUseNewDeleteTop|Back to top"}}@@
+----
+{{anchor name="ProPgUseNewDelete4"}}
+{{fbdoc item="section" value="4. Use Placement New[] operator with inheritance polymorphism (sub-type polymorphism)"}}
+	A collection of base-typed pointers in an array (base-typed Ptr array), where each pointer is a buffer pointer allowing to address several derived object of a same derived type.
+	The memory allocation/deallocation is done by another process (Allocate/Deallocate).
+	
+	__From the previous example__
+		For the memory allocation and object construction:
+			replace:
+			%%(freebasic)
+Dim As Animal Ptr pa(0 To ...) = {New Cat[2], New Dog[2]}
+%%			with:
+			%%(freebasic)
+Dim As Any Ptr pc = Allocate(2 * Sizeof(Cat))
+Dim As Any Ptr pd = Allocate(2 * Sizeof(Dog))
+
+Dim As Animal Ptr pa(0 To ...) = {New(pc) Cat[2], New(pd) Dog[2]}
+%%			
+		For the object destruction and memory deallocation:
+			replace:
+			%%(freebasic)
+For I As Integer = LBound(pa) To UBound(pa)
+'    Delete[] pa(I)  '' does not work
+	pa(I)->DeleteSB_launcher()
+Next I
+%%			with:
+			%%(freebasic)
+For I As Integer = LBound(pa) To UBound(pa)
+	For J As Integer = 1 To 0 Step -1  '' reverse order for destruction is mandatory
+									   ''    (see warning on '[]' operator usage)
+'        pa(I)[J]. Destructor()   '' does not work
+		(*pa(I))[J].Destructor()
+	Next J
+Next I
+
+Deallocate(pc)
+Deallocate(pd)
+%%			**Warning** when using the virtual operator '[]' in a context of inheritance polymorphism (sub-type polymorphism):
+				**""-""** To calculate the correct address of the nth derived object in a buffer, from a base-typed pointer ##'p'##, a virtual operator '[]' can be used to return (using: ##'Return (@This)[n]'##) a reference to this nth derived object.
+				**""-""** This virtual operator '[]' is always called on the same reference (##'*p'##) corresponding to the first object of the buffer (operator called by: ##'(*p)[n]'##).
+				**""-""** So, a correct overriding of this operator (to calculate the correct address of the nth derived object) assumes that the first object in the buffer is always a valid derived object (not destroyed for example).
+				**""-""** This is why the destruction loop of the objects of the buffer (by: ##'(*p)[n].Destructor()'##), in case of 'Placement New[]' usage as above, must always be done in the reverse order (end with the first object of the buffer).
+
+@@{{anchor name="ProPgUseNewDeleteTop|Back to top"}}@@
+----
+{{anchor name="ProPgUseNewDelete5"}}
+{{fbdoc item="section" value="5. Use Overload New and Delete operators with inheritance polymorphism (sub-type polymorphism)"}}
+	A collection of base-typed pointers in an array (base-typed Ptr array), where each pointer addresses a single derived object of any derived type.
+	New/Delete operators overloaded.
+	
+	__One unexpected behavior is encountered__
+		The static Delete statement does not allow to retrieve the real run-time type of the object:
+			""-"" So, the user code of the overload Delete operator of the derived type is not executed because the Delete operator of the base type is called instead.
+			""-"" The safest is to use a virtual launcher for the Delete statement in each derived type which overrides that (abstract) of the base type, and in this case (as by calling the Delete statement on a derived type pointer), this is not mandatory of defining a virtual destructor but remains still recommended.
+			""-"" In the following example, the called virtual launcher is 'Delete_launcher()'.
+			
+	__Example__
+		{{fbdoc item="filename" value="examples/manual/proguide/newdelete/use_overload_operators_simple.bas"}}%%(freebasic)
+' Code for using overload 'New'/'Delete' operators from base-typed pointer array in polymorphic inheritance context
+'    Added member procedure to workaround unexpected behavior:
+'       - Abstract/Virtual 'Delete_launcher()' to call the overload Delete operator of the derived type from a base-typed pointer
+
+Type Animal Extends Object
+	Public:
+		Declare Abstract Sub Init(ByRef _name As String, ByRef _favorite As String)
+		Declare Abstract Function get_attributes() As String
+		Declare Virtual Destructor()
+		Declare Abstract Sub Delete_launcher()
+	Protected:
+		Dim As String Name
+		Declare Constructor()
+	Private:
+		Declare Constructor(ByRef _a As Animal)
+End Type
+
+Destructor Animal ()
+	Print "  Animal destructor: ", "  object address: " & @This
+End Destructor
+
+Constructor Animal ()
+	Print "  Animal constructor: ", "  object address: " & @This
+End Constructor
+
+
+Type Cat Extends Animal
+	Public:
+		Declare Constructor()
+		Declare Virtual Sub Init(ByRef _name As String, ByRef _favorite As String)
+		Declare Virtual Function get_attributes() As String
+		Declare Virtual Destructor()
+		Declare Operator New(ByVal size As UInteger) As Any Ptr
+		Declare Operator Delete(ByVal buf As Any Ptr)
+		Declare Virtual Sub Delete_launcher()
+	Private:
+		Dim As String favorite
+End Type
+
+Constructor Cat ()
+	Print "    Cat constructor: ", "    object address: " & @This
+End Constructor
+
+Sub Cat.Init(ByRef _name As String, ByRef _favorite As String = "")
+	This.Name = _name
+	This.favorite = _favorite
+End Sub
+
+Function Cat.get_attributes() As String
+	Return This.Name & ": Cat, Meow, " & This.favorite
+End Function
+
+Destructor Cat()
+	Print "    Cat destructor: ", "    object address: " & @This
+End Destructor
+
+Operator Cat.New(ByVal size As UInteger) As Any Ptr
+	Dim As Any Ptr p = CAllocate(size)
+	Print "Cat New operator: ", "buffer address: " & p
+	Return p
+End Operator
+
+Operator Cat.Delete(ByVal buf As Any Ptr)
+	Print "Cat Delete operator: ", "object address: " & buf
+	Deallocate(buf)
+End Operator
+
+Sub Cat.Delete_launcher()
+	Delete @This
+End Sub
+
+
+Type Dog Extends Animal
+	Public:
+		Declare Constructor()
+		Declare Virtual Sub Init(ByRef _name As String, ByRef _favorite As String)
+		Declare Virtual Function get_attributes() As String
+		Declare Virtual Destructor()
+		Declare Operator New(ByVal size As UInteger) As Any Ptr
+		Declare Operator Delete(ByVal buf As Any Ptr)
+		Declare Virtual Sub Delete_launcher()
+	Private:
+		Dim As String favorite
+End Type
+
+Constructor Dog()
+	Print "    Dog constructor: ", "    object address: " & @This
+End Constructor
+
+Sub Dog.Init(ByRef _name As String, ByRef _favorite As String)
+	This.Name = _name
+	This.favorite = _favorite
+End Sub
+
+Function Dog.get_attributes() As String
+	Return This.Name & ": Dog, Woof, " & This.favorite
+End Function
+
+Destructor Dog()
+	Print "    Dog destructor: ", "    object address: " & @This
+End Destructor
+
+Operator Dog.New(ByVal size As UInteger) As Any Ptr
+	Dim As Any Ptr p = CAllocate(size)
+	Print "Dog New operator: ", "buffer address: " & p
+	Return p
+End Operator
+
+Operator Dog.Delete(ByVal buf As Any Ptr)
+	Print "Dog Delete operator: ", "buffer address: " & buf
+	Deallocate(buf)
+End Operator
+
+Sub Dog.Delete_launcher()
+	Delete @This
+End Sub
+
+'------------------------------------------------------------------------------
+
+Dim As Animal Ptr pa(0 To ...) = {New Cat(), New Cat(), New Dog(), New Dog()}
+
+pa(0)->Init("Tiger", "Salmon")
+pa(1)->Init("Kitty", "Sardine")
+pa(2)->Init("Buddy", "Lamb")
+pa(3)->Init("Molly", "Beef")
+
+For I As Integer = LBound(pa) To UBound(pa)
+	Print "      " & pa(I)->get_attributes()
+Next I
+
+For I As Integer = LBound(pa) To UBound(pa)
+'    Delete pa(I)  '' does not work
+	pa(I)->Delete_launcher()
+Next I
+
+Sleep
+%%			Output (64-bit):
+				%%
+Cat New operator:           buffer address: 13900048
+  Animal constructor:         object address: 13900048
+	Cat constructor:            object address: 13900048
+Cat New operator:           buffer address: 13917456
+  Animal constructor:         object address: 13917456
+	Cat constructor:            object address: 13917456
+Dog New operator:           buffer address: 13917520
+  Animal constructor:         object address: 13917520
+	Dog constructor:            object address: 13917520
+Dog New operator:           buffer address: 13917584
+  Animal constructor:         object address: 13917584
+	Dog constructor:            object address: 13917584
+	  Tiger: Cat, Meow, Salmon
+	  Kitty: Cat, Meow, Sardine
+	  Buddy: Dog, Woof, Lamb
+	  Molly: Dog, Woof, Beef
+	Cat destructor:             object address: 13900048
+  Animal destructor:          object address: 13900048
+Cat Delete operator:        object address: 13900048
+	Cat destructor:             object address: 13917456
+  Animal destructor:          object address: 13917456
+Cat Delete operator:        object address: 13917456
+	Dog destructor:             object address: 13917520
+  Animal destructor:          object address: 13917520
+Dog Delete operator:        buffer address: 13917520
+	Dog destructor:             object address: 13917584
+  Animal destructor:          object address: 13917584
+Dog Delete operator:        buffer address: 13917584
+%%
+@@{{anchor name="ProPgUseNewDeleteTop|Back to top"}}@@
+----
+{{anchor name="ProPgUseNewDelete6"}}
+{{fbdoc item="section" value="6. Use Overload New[] and Delete[] operators with inheritance polymorphism (sub-type polymorphism)"}}
+	A collection of base-typed pointers in an array (base-typed Ptr array), where each pointer is a buffer pointer allowing to address several derived object of a same derived type.
+	New[]/Delete[] operators overloaded.
+	
+	__One unsuitable behavior and one unexpected behavior are encountered__
+		The calculation of the right address of any derived object is generally false (because it takes into account as object size the one corresponding to the pointer type and not the real object type), except obviously for the first object:
+			""-"" To access to the right address of any derived object (when derived type contains one data field at least) in the array buffer constructed by the Overload New[] operator, and from a base-typed pointer, a solution consists in overloading the '[]' operator, with a virtual '[]' operator in each derived type which overrides that (abstract) of the base type.
+			""-"" To well call the overload '[]' operator (and not the implicit '[]' operator), it must be called on a dereferenced pointer (and not on the rough pointer that would called the implicit '[]' operator).
+			""-"" If 'p' is the base-typed pointer, the right expression is ##'(*p)[n]'## and not ##'p[n]'##.
+			""-"" **Warning:** to calculate the right address of the nth derived object, the virtual '[]' operator is always called on the ##'*p'## reference corresponding to the first object of the array buffer, so a correct overriding of the operator assumes that this first object of the array buffer is always a valid derived object (not destroyed for example).
+		The static Delete[] statement does not allow to retrieve the real run-time type of the object:
+			""-"" So the calculation of the address of each object to destroy (if it is necessary) is generally false (because it takes into account as object size the one corresponding to the pointer type and not the real object type), except obviously for the first object.
+			""-"" Also, the user code of the overload Delete[] operator of the derived type is not executed because the Delete[] operator of the base type is called instead.
+			""-"" The safest for these two consequences is to always use a virtual launcher for the Delete[] statement in each derived type which overrides that (abstract) of the base type, and in this case (as by calling the Delete[] statement on a derived type pointer), this is not mandatory of defining a virtual destructor but remains still recommended.
+			""-"" In the following example, the called virtual launcher is 'DeleteSB_launcher()'.
+			
+	__Example__
+		{{fbdoc item="filename" value="examples/manual/proguide/newdelete/use_overload_operators_array.bas"}}%%(freebasic)
+' Code for using overload 'New[]'/'Delete[]' operators from base-typed pointer array in polymorphic inheritance context
+'    Added member procedures to workaround unsuitable or unexpected behaviors:
+'       - Abstract/Virtual 'Operator []()' to access to the right address of any derived object from a base-typed pointer
+'       - Abstract/Virtual 'DeleteSB_launcher()' to destroy the right objects from a base-typed pointer, and to call the overload Delete[] operator of the derived type from a base-typed pointer
+
+Type Animal Extends Object
+	Public:
+		Declare Abstract Sub Init(ByRef _name As String, ByRef _favorite As String)
+		Declare Abstract Function get_attributes() As String
+		Declare Virtual Destructor()
+		Declare Abstract Operator [](ByVal _n As Integer) ByRef As Animal
+		Declare Abstract Sub DeleteSB_launcher()
+	Protected:
+		Dim As String Name
+		Declare Constructor()
+	Private:
+		Declare Constructor(ByRef _a As Animal)
+End Type
+
+Destructor Animal ()
+	Print "  Animal destructor: ", "  object address: " & @This
+End Destructor
+
+Constructor Animal ()
+	Print "  Animal constructor: ", "  object address: " & @This
+End Constructor
+
+
+Type Cat Extends Animal
+	Public:
+		Declare Constructor()
+		Declare Virtual Sub Init(ByRef _name As String, ByRef _favorite As String)
+		Declare Virtual Function get_attributes() As String
+		Declare Virtual Destructor()
+		Declare Virtual Operator [](ByVal _n As Integer) ByRef As Cat
+		Declare Operator New[](ByVal size As UInteger) As Any Ptr
+		Declare Operator Delete[](ByVal buf As Any Ptr)
+		Declare Virtual Sub DeleteSB_launcher()
+	Private:
+		Dim As String favorite
+End Type
+
+Constructor Cat()
+	Print "    Cat constructor: ", "    object address: " & @This
+End Constructor
+
+Sub Cat.Init(ByRef _name As String, ByRef _favorite As String = "")
+	This.Name = _name
+	This.favorite = _favorite
+End Sub
+
+Function Cat.get_attributes() As String
+	Return This.Name & ": Cat, Meow, " & This.favorite
+End Function
+
+Destructor Cat()
+	Print "    Cat destructor: ", "    object address: " & @This
+End Destructor
+
+Operator Cat.[](ByVal _n As Integer) ByRef As Cat
+	Return (@This)[_n]
+End Operator
+
+Operator Cat.New[](ByVal size As UInteger) As Any Ptr
+	Dim As Any Ptr p = CAllocate(size)
+	Print "Cat New[] operator: ", "buffer address: " & p
+	Return p
+End Operator
+
+Operator Cat.Delete[](ByVal buf As Any Ptr)
+	Print "Cat Delete[] operator: ", "buffer address: " & buf
+	Deallocate(buf)
+End Operator
+
+Sub Cat.DeleteSB_launcher()
+	Delete[] @This
+End Sub
+
+
+Type Dog Extends Animal
+	Public:
+		Declare Constructor()
+		Declare Virtual Sub Init(ByRef _name As String, ByRef _favorite As String)
+		Declare Virtual Function get_attributes() As String
+		Declare Virtual Destructor()
+		Declare Virtual Operator [](ByVal _n As Integer) ByRef As Dog
+		Declare Operator New[](ByVal size As UInteger) As Any Ptr
+		Declare Operator Delete[](ByVal buf As Any Ptr)
+		Declare Virtual Sub DeleteSB_launcher()
+	Private:
+		Dim As String favorite
+End Type
+
+Constructor Dog()
+	Print "    Dog constructor: ", "    object address: " & @This
+End Constructor
+
+Sub Dog.Init(ByRef _name As String, ByRef _favorite As String)
+	This.Name = _name
+	This.favorite = _favorite
+End Sub
+
+Function Dog.get_attributes() As String
+	Return This.Name & ": Dog, Woof, " & This.favorite
+End Function
+
+Destructor Dog()
+  Print "    Dog destructor: ", "    object address: " & @This
+End Destructor
+
+Operator Dog.[](ByVal _n As Integer) ByRef As Dog
+	Return (@This)[_n]
+End Operator
+
+Operator Dog.New[](ByVal size As UInteger) As Any Ptr
+	Dim As Any Ptr p = CAllocate(size)
+	Print "Dog New[] operator: ", "buffer address: " & p
+	Return p
+End Operator
+
+Operator Dog.Delete[](ByVal buf As Any Ptr)
+	Print "Dog Delete[] operator: ", "buffer address: " & buf
+	Deallocate(buf)
+End Operator
+
+Sub Dog.DeleteSB_launcher()
+	Delete[] @This
+End Sub
+
+'------------------------------------------------------------------------------
+
+Dim As Animal Ptr pa(0 To ...) = {New Cat[2], New Dog[2]}
+
+'pa(0)[0].Init("Tiger", "Salmon")   '' does not work
+'pa(0)[1].Init("Kitty", "Sardine")  '' does not work
+'pa(1)[0].Init("Buddy", "Lamb")     '' does not work
+'pa(1)[1].Init("Molly", "Beef")     '' does not work
+(*pa(0))[0].Init("Tiger", "Salmon")
+(*pa(0))[1].Init("Kitty", "Sardine")
+(*pa(1))[0].Init("Buddy", "Lamb")
+(*pa(1))[1].Init("Molly", "Beef")
+
+For I As Integer = LBound(pa) To UBound(pa)
+	For J As Integer = 0 To 1
+'        Print "      " & pa(I)[J].get_attributes()  '' does not work
+		Print "      " & (*pa(I))[J].get_attributes()
+	Next J
+Next I
+
+For I As Integer = LBound(pa) To UBound(pa)
+'    Delete[] pa(I)  '' does not work
+	pa(I)->DeleteSB_launcher()
+Next I
+
+Sleep
+%%			Output (64-bit):
+				%%
+Cat New[] operator:         buffer address: 17128688
+  Animal constructor:         object address: 17128696
+	Cat constructor:            object address: 17128696
+  Animal constructor:         object address: 17128752
+	Cat constructor:            object address: 17128752
+Dog New[] operator:         buffer address: 17128816
+  Animal constructor:         object address: 17128824
+	Dog constructor:            object address: 17128824
+  Animal constructor:         object address: 17128880
+	Dog constructor:            object address: 17128880
+	  Tiger: Cat, Meow, Salmon
+	  Kitty: Cat, Meow, Sardine
+	  Buddy: Dog, Woof, Lamb
+	  Molly: Dog, Woof, Beef
+	Cat destructor:             object address: 17128752
+  Animal destructor:          object address: 17128752
+	Cat destructor:             object address: 17128696
+  Animal destructor:          object address: 17128696
+Cat Delete[] operator:      buffer address: 17128688
+	Dog destructor:             object address: 17128880
+  Animal destructor:          object address: 17128880
+	Dog destructor:             object address: 17128824
+  Animal destructor:          object address: 17128824
+Dog Delete[] operator:      buffer address: 17128816
+%%				**Note:**
+					""-"" As the derived type has a destructor, an extra uinteger is allocated by the New[] operator at the head of the memory buffer, in order to store the number of elements as part of the allocation, so that the Delete[] operator can determine the count of destructors to call.
+					""-"" This is why the memory buffer address is different from the first object address in the memory buffer.
+					
+@@{{anchor name="ProPgUseNewDeleteTop|Back to top"}}@@
+----
+{{anchor name="ProPgUseNewDeleteBottom"}}
+**Conclusion:**
+
+	To be compatible at the same time with any usage (simple/array-version, implicit/overload) of the New([])/Delete([]) operators in an inheritance polymorphism (sub-type polymorphism), 3 member procedures must be added to workaround unsuitable or unexpected behaviors:
+		**""-""** Abstract/Virtual 'Operator []()' to access to the right address of any derived object from a base-typed pointer.
+		**""-""** Abstract/Virtual 'Delete_launcher()' to call the overload Delete operator of the derived type from a base-typed pointer.
+		**""-""** Abstract/Virtual 'DeleteSB_launcher()' to destroy the objects at the right addresses from a base-typed pointer, and to call the overload Delete[] operator of the derived type from a base-typed pointer.
+		
+		'Virtual' declarations and bodies of the added member procedures in each derived type, but only 'abstract' declarations in the base type:
+			%%(freebasic)
+Type base_type Extends Object
+	Declare Abstract Operator [](ByVal n As Integer) ByRef As base_type
+	Declare Abstract Sub Delete_launcher()
+	Declare Abstract Sub DeleteSB_launcher()
+End Type
+
+'------------------------------------------------------------------------
+
+Type derived_type Extends base_type
+	Declare Virtual Operator [](ByVal n As Integer) ByRef As derived_type
+	Declare Virtual Sub Delete_launcher()
+	Declare Virtual Sub DeleteSB_launcher()
+End Type
+
+Operator derived_type.[](ByVal n As Integer) ByRef As derived_type
+	Return (@This)[n]
+End Operator
+
+Sub derived_type.Delete_launcher()
+	Delete @This
+End Sub
+
+Sub derived_type.DeleteSB_launcher()
+	Delete[] @This
+End Sub
+%%			**Note:**
+				""-"" For the virtual '[]' operator in the derived type, declaring returning by derived-typed reference is not mandatory (just for aesthetics by using the covariance). Returning by base-typed reference is sufficient.
+				""-"" The important thing is the derived operator body which uses a derived-typed pointer indexing, allowing to return a based-typed reference but rightly pointing to the derived object.
+				
+	__Abstract__
+		**""-""** The New([]) expression returns a typed pointer corresponding to the called type (a derived type in our case), but the principle of inheritance polymorphism (sub-type polymorphism) is precisely to immediately up-cast this derived type to a base type.
+		**""-""** Using a base-typed pointer to a derived object buffer does not generally allows to correctly index the different addresses of the derived objects (except if all member data fields are in the base type only).
+		**""-""** The Implicit/Overload operators New([]) or Delete([]) are all static because their only role is to allocate or free memory, and at that time the object does not exist yet or no longer exists. So this is the Implicit/Overload Delete([]) operator of the base type which is called instead of the one of the derived type.
+		**""-""** Thus, to nevertheless use all these New([])/Delete([]) functionalities correctly without derogating from the exclusive usage of base-typed pointers, it is necessary to use a solution as developed above (adding one virtual overload operator and two virtual procedures).
+		
+@@{{anchor name="ProPgUseNewDeleteTop|Back to top"}}@@
+----
+
+{{fbdoc item="see"}}
+	- [[ProPgNewDelete|New and Delete]]
+	- [[ProPgPolymorphism|Inheritance Polymorphism]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

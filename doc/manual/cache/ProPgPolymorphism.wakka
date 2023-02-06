@@ -280,5 +280,6 @@ Sleep
 	- ##[[KeyPgPtr|Pointer]]##, ##[[KeyPgByrefVariables|Reference]]##
 	- [[ProPgCompoAggregInherit|Composition, Aggregation, Inheritance]]
 	- [[ProPgObjectRtti|OBJECT built-in and RTTI info]]
+	- {{fbdoc item="keyword" value="ProPgUseNewDelete|Use Implicit / Overload New([]) and Delete([]) Operators with Inheritance Polymorphism"}}
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

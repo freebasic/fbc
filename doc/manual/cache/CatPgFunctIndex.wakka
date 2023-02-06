@@ -456,6 +456,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDdfboutobj|__FB_OUT_OBJ__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbpcos|__FB_PCOS__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbppc|__FB_PPC__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbquerysymbol|__FB_QUERY_SYMBOL__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbquote|__FB_QUOTE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbsignature|__FB_SIGNATURE__"}} 
 	- {{fbdoc item="keyword" value="KeyPgDdfbsse|__FB_SSE__"}}
@@ -524,6 +525,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDestructor|DESTRUCTOR"}}
 	- {{fbdoc item="keyword" value="KeyPgModuleDestructor|DESTRUCTOR (Module)"}}
 	- {{fbdoc item="keyword" value="KeyPgDeclare|DECLARE"}}
+	- {{fbdoc item="keyword" value="KeyPgFastcall|FASTCALL"}}
 	- {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION"}}
 	- {{fbdoc item="keyword" value="KeyPgMemberFunction|FUNCTION (Member)"}}
 	- {{fbdoc item="keyword" value="KeyPgLib|LIB"}}

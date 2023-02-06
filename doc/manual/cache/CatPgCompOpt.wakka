@@ -127,7 +127,7 @@ Command line compiler options for the fbc compiler:
 	{{fbdoc item="keyword" value="CompilerOptversion|-version"}}
 		- Show compiler version
 	{{fbdoc item="keyword" value="CompilerOptw|-w < value >"}}
-		- Set min warning level: all, none, param, escape, pedantic, next, funcptr, constness, suffix or a value
+		- Set min warning level: all, none, param, escape, pedantic, next, funcptr, constness, suffix, error, upcast or a value
 	{{fbdoc item="keyword" value="CompilerOptWa|-Wa < opt >"}}
 		- Pass options to GAS (separated by commas)
 	{{fbdoc item="keyword" value="CompilerOptWc|-Wc < opt >"}}

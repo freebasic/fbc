@@ -2,7 +2,7 @@
 Set minimum warning level.
 
 {{fbdoc item="syntax"}}##
-	**-w** //level// | **all** | **none** | **param** | **escape** | **pedantic** | **next** | **funcptr** | **constness** | **suffix**
+	**-w** //level// | **all** | **none** | **param** | **escape** | **pedantic** | **next** | **funcptr** | **constness** | **suffix** | **error** | **upcast**
 ##
 {{fbdoc item="param"}}
 	##//level//##
@@ -27,11 +27,13 @@ Set minimum warning level.
 		Warn on useless suffixes in '-lang fb'.
 	##**error**##
 		Report warnings as errors.  Warnings cause the error count to increase, warning messages are displayed as "error warning...", compilation / assembly / linking aborts, and fbc exits with an error code.
+	##**upcast**##
+		Warn when up-casting discards initializers.
 
 {{fbdoc item="desc"}}
 	The ##-w## compiler option determines which compiler warnings, if any, are output. Each possible warning is associated with a warning level, starting from zero (##0##) and increasing with the potential problems that may occur.
 	
-	The ##**param**##, ##**escape**##, ##**pedantic**##, ##**next**##, ##**funcptr**##, and ##**constness**## arguments provide additional warnings not ordinarily output, even by default.
+	The ##**param**##, ##**escape**##, ##**pedantic**##, ##**next**##, ##**funcptr**##, ##**constness**##, ##**suffix**##, ##**error**##, and ##**upcast**## arguments provide additional warnings not ordinarily output, even by default.
 	
 	The default, if the ##**-w**## option is not specified, is as if ##**-w 1**## was used. The ##**-w**## option can be specified multiple times.  Warning messages having a level of ##0## are not shown by default.
 	
@@ -40,6 +42,7 @@ Set minimum warning level.
 	##fbc## does not issue warning or error if the warning name itself is not valid.  For example ##-w flarg##, is not a recognized name for a warning.  The compiler silently ignores this to allow command lines with warnings added in new versions of ##fbc## to also be used with older versions of ##fbc## without complaint.
 
 {{fbdoc item="ver"}}
+	- Since fbc 1.10.0: '-w upcast' option
 	- Since fbc 1.09.0: '-w error' option.
 	- Before fbc 1.08.0, default warning level was 0 and some warnings had level of -1.
 

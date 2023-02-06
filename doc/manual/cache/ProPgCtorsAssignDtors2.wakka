@@ -235,7 +235,7 @@ Going out scope: 'End Scope'
 	From all the above and more specific cases (with inheritance), one can propose one 'maximizing rule' that allows a very safer operating.
 	
 		**Maximizing rule** for a very safer code (at compile-time and run-time), but sometimes maximizing the real constraints:
-			**""-""** If the user needs to explicitly defines any form of constructor procedure (including any form of copy-constructor) or any form of let-operator procedure or a destructor procedure, it is strongly recommended to define together the default-constructor and the standard copy-constructor and the standard let-operator and the destructor.
+			**""-""** If the user needs to explicitly define any form of constructor procedure (including any form of copy-constructor) or any form of let-operator procedure or a destructor procedure, it is strongly recommended to define together the default-constructor and the standard copy-constructor and the standard let-operator and the destructor.
 			(these 4 explicit procedures are explicitly defined to always overload correctly the corresponding implicit operations from compiler)
 			
 	- Example of applying rules of good manners

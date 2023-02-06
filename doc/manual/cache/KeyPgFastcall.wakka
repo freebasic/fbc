@@ -1,0 +1,36 @@
+{{fbdoc item="title" value="__FASTCALL"}}----
+Specifies the //Fastcall// calling convention in a procedure declaration
+
+{{fbdoc item="syntax"}}##
+	declare [[KeyPgSub|Sub]] //name// **""__Fastcall""** [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //"""alias"""//] ( //parameters// )
+	declare [[KeyPgFunction|Function]] //name// **""__Fastcall""** [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //"""alias"""//] ( //parameters// ) [ [[KeyPgByrefFunction|Byref]] ] [[KeyPgAs|as]] //return_type//
+	
+	[[KeyPgSub|Sub]] //name// [**""__Fastcall""**] [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //"""alias"""//] ( //parameters// )
+	[[KeyPgFunction|Function]] //name// [**""__Fastcall""**] [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //"""alias"""//] ( //parameters// ) [ [[KeyPgByrefFunction|Byref]] ] [[KeyPgAs|as]] //return_type//
+##
+{{fbdoc item="desc"}}
+	##**Fastcall**## is a calling convention for x86 targets where the first and second integer arguments are passed in the in ##ECX## and ##EDX## registers respectively instead of on the stack. All other arguments are passed right to left and callee cleans up the stack (like Stdcall).
+	
+	##**Fastcall**## can be specified at both the declaration and the definition.
+	If a procedure definition has a declaration (with calling convention explicit or by default) and the definition does not explicitly specify a calling convention, then the calling convention is implied by the declaration.
+	
+	**Note:** Default calling convention on win32 x86 inside an extern """c++""" block for non-static member procedures is [[KeyPgThiscall|Thiscall]].
+
+{{fbdoc item="ex"}}
+	%%(freebasic)
+extern "c++"
+	Declare Function Example __Fastcall (param1 As Long, param2 As Byte, param3 As Longint, param4 As String) As Integer
+end extern
+%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.10.0.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCdecl|Cdecl]]##, ##[[KeyPgStdcall|Stdcall]]##, ##[[KeyPgThiscall|Thiscall]]##
+	- ##[[KeyPgDeclare|Declare]]##
+	- ##[[KeyPgSub|Sub]]##, ##[[KeyPgFunction|Function]]##
+
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}

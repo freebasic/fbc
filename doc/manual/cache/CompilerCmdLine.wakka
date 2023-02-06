@@ -156,7 +156,7 @@ Using the **fbc** command-line.
 	=={{fbdoc item="keyword" value="CompilerOptcupp|-C"}}==
 		Do not delete the object file(s)
 	=={{fbdoc item="keyword" value="CompilerOptw|-w < value >"}}==
-		Set min warning level: ##all##, ##none##, ##param##, ##escape##, ##pedantic##, ##next##, ##funcptr##, ##constness##, ##suffix## or a value
+		Set min warning level: ##all##, ##none##, ##param##, ##escape##, ##pedantic##, ##next##, ##funcptr##, ##constness##, ##suffix##, ##error##, ##upcast## or a value
 	=={{fbdoc item="keyword" value="CompilerOptmaxerr|-maxerr < val >"}}==
 		Only stop parsing if <val> errors occurred
 	=={{fbdoc item="keyword" value="CompilerOptnoerrline|-noerrline"}}==

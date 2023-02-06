@@ -57,6 +57,7 @@
 		[[KeyPgDdfboutobj|__FB_OUT_OBJ__]]
 		[[KeyPgDdfbpcos|__FB_PCOS__]]
 		[[KeyPgDdfbppc|__FB_PPC__]]
+		[[KeyPgDdfbquerysymbol|__FB_QUERY_SYMBOL__]]
 		[[KeyPgDdfbquote|__FB_QUOTE__]]
 		[[KeyPgDdfbsignature|__FB_SIGNATURE__]]
 		[[KeyPgDdfbsse|__FB_SSE__]]
@@ -289,6 +290,7 @@
 
 	{{fbdoc item="subsect" value="F"}}
 		[[KeyPgFalse|FALSE]]
+		[[KeyPgFastcall|FASTCALL]]
 		[[KeyPgFBMemcopy|FB_MEMCOPY]]
 		[[KeyPgFBMemcopyclear|FB_MEMCOPYCLEAR]]
 		[[KeyPgFBMemmove|FB_MEMMOVE]]
@@ -907,6 +909,7 @@
 		[[ProPgRecursionIteration|Replace Recursion with Iteration]]
 		[[ProPgObjectRtti|OBJECT built-in and RTTI info]]
 		[[ProPgDataExecutable|Embed and Access binary Data in Executable]]
+		{{fbdoc item="keyword" value="ProPgUseNewDelete|Use Implicit / Overload New([]) and Delete([]) Operators with Inheritance Polymorphism"}}
 
 	{{fbdoc item="subsect" value="Other Topics"}}
 		[[CptAscii|ASCII]]

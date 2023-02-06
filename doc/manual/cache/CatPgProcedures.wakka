@@ -54,6 +54,8 @@ Keywords that work with procedures.
 		Specifies the standard calling convention in the C and C""++"" languages.
 	=={{fbdoc item="keyword" value="KeyPgPascal|Pascal"}}==
 		Specifies the standard calling convention in the Fortran, Pascal and Microsoft ""QuickBASIC""/QBasic languages.
+	=={{fbdoc item="keyword" value="KeyPgFastcall|Fastcall"}}==
+		Specifies the fastcall calling convention for 32-bit procedures.
 	=={{fbdoc item="keyword" value="KeyPgThiscall|Thiscall"}}==
 		Specifies the thiscall calling convention for 32-bit member procedures.
 <<>>{{anchor name="PARAMCONV"}}{{fbdoc item="section" value="Parameter passing conventions"}}

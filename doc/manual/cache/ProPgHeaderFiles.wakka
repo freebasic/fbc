@@ -5,16 +5,18 @@ A header file is a special kind of source file that typically only contains prep
 
 {{fbdoc item="section" value="FreeBASIC Header Files"}}
 	Some of the keywords, constants, and procedures documented in this manual are not normally available when compiling a source code unless a specific header file is included in the source first.
-	- ##array.bi##
-	- ##datetime.bi##
-	- ##dir.bi##
-	- ##fbgfx.bi##
-	- ##fbio.bi##
-	- ##fbprng.bi##
-	- ##fbthread.bi##
-	- ##file.bi##
-	- ##string.bi##
-	- ##vbcompat.bi##
+	- ##inc/fbc-int/array.bi##
+	- ##inc/datetime.bi##
+	- ##inc/dir.bi##
+	- ##inc/fbgfx.bi##
+	- ##inc/fbio.bi##
+	- ##inc/fblimits.bi##
+	- ##inc/fbprng.bi##
+	- ##inc/fbthread.bi##
+	- ##inc/file.bi##
+	- ##inc/fbc-int/symbol.bi##
+	- ##inc/crt/string.bi##
+	- ##inc/vbcompat.bi##
 
 {{fbdoc item="section" value="Case Sensitivity"}}
 	Although the FreeBASIC language itself is not case-sensitive, the file system on which it is running might be.  If a header file can not be found, check that FreeBASIC is searching for it the correct location and ensure that name of both the directory and filename of the header file specified in the ##[[KeyPgInclude|#include]]## statement is using the correct upper and lower case letters.
@@ -30,7 +32,7 @@ A header file is a special kind of source file that typically only contains prep
 
 {{fbdoc item="section" value="#ifndef guards in the header file"}}
 	The use of ##[[KeyPgPpifndef|#ifndef]]## and ##[[KeyPgPpdefine|#define]]## is a common practice in nearly any language that supports preprocessing.  The first time a file is included, a unique symbol is defined.  The next time the same header file is included, the definition of the symbol is checked, and if it is already defined, the contents of the header file are skipped.
-%%(freebasic)
+		%%(freebasic)
 '' header.bi
 #ifndef __HEADER_BI__
 #define __HEADER_BI__
@@ -41,28 +43,28 @@ A header file is a special kind of source file that typically only contains prep
 
 #endif
 %%
-
 {{fbdoc item="section" value="#include once"}}
 	At the point in the source code where the header file is included, the optional ##"once"## specifier of the ##[[KeyPgInclude|#include]]## directive can tell the compiler to only include the source file one time.
-%%(freebasic)
+		%%(freebasic)
 '' header.bi
 #include once "fbgfx.bi"
 %%
-%%(freebasic)
+		%%(freebasic)
 '' module.bas
 #include once "fbgfx.bi"
 #include once "header.bi"
 %%
-
 {{fbdoc item="section" value="#pragma once"}}
 	##[[KeyPgPpPragma|#pragma]] **once**## can be used in a header file to indicate that the header file should only be included once.  
-%%(freebasic)
+		%%(freebasic)
 '' header.bi
 #pragma once
 #print this header will only ever be included once per module
 %%
 {{fbdoc item="ver"}}
+	- Since fbc 1.10.0, ##symbol.bi## and ##fblimits.bi## are added.
 	- Before fbc 1.10.0 (for fbc 1.08.0 and fbc 1.09.0), ##fbprng.bi## was named ##fbmath.bi##.
+	- Since fbc 1.08.0, ##array.bi## is added.
 	- Before fbc 1.08.0, the standard ##fbmath.bi## header did not exist.
 
 {{fbdoc item="see"}}

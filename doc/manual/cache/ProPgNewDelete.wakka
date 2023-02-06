@@ -303,5 +303,6 @@ User Call of Destructor
 	- [[KeyPgOperator|Operator]]
 	- [[KeyPgConstructor|Constructor]]
 	- [[KeyPgDestructor|Destructor]]
+	- {{fbdoc item="keyword" value="ProPgUseNewDelete|Use Implicit / Overload New([]) and Delete([]) Operators with Inheritance Polymorphism"}}
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

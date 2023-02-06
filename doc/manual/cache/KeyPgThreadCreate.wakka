@@ -30,7 +30,7 @@ Starts a user-defined procedure in a separate execution thread
 	The sub pointed to by //procptr// is started as a thread. It will be passed the content of //param//, or 0 (zero) if not specified, in its //userdata// parameter.
 	
 	The sub that was started as a thread will execute in parallel with the main part of the program. The OS achieves this by assigning it to a different processor if it exists, or by alternating between execution threads on a single processor.
-	There is no guarantee about the order in which different threads execute, and no assumptions can be made about the order in which multiple create threads actually start executing.
+	There is no guarantee about the order in which different threads execute, and no assumptions can be made about the order in which multiple created threads actually start executing.
 	In the fastest launch cases, the thread body may start executing even before **""ThreadCreate""** returns.
 	
 	Each running thread can be identified by its handle which is unique among all running threads. See ##[[KeyPgThreadSelf|ThreadSelf]]##.
