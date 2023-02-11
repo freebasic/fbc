@@ -685,6 +685,9 @@ function cMemberDeref _
 				var proc = symbFindSelfBopOvlProc( AST_OP_PTRINDEX, varexpr, idxexpr, @err_num )
 				if( proc ) then
 					varexpr = astBuildCall( proc, varexpr, idxexpr )
+					if( varexpr = NULL ) then
+						exit function
+					end if
 				else
 					if( err_num = FB_ERRMSG_OK ) then
 						errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )

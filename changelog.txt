@@ -120,6 +120,7 @@ Version 1.10.0
 - fbc: discard assignments and constructor calls in initializers that would write outside of the target when emitting initializer lists - previously, up-casted initializers were writing beyond the limits of the target and trashing memory
 - fix regression due to previous change on sf.net #917: optimization of 'm += s'.  The optimization failed to consider 's = s + expr' where expr might contain 's'.  In such a case, the optimization cannot be applied.
 - fbc: basic-macros: improve the handling of optional parens in function like macros by ending a macro argument list on the number of arguments expected (non-variadic macros only).
+- fbc: bad error recovery after overloaded operator [] caused compiler crash, for example if overloaded operator [] is found but can't be used due to mixing const and non-const types.
 
 
 Version 1.09.0
