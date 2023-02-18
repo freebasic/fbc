@@ -631,12 +631,16 @@ private sub check_optim(byref code as string)
 					writepos=len(ctx.proc_txt)+len(code)+9
 					code="#O7"+code+newline+string( ctx.indent*3, 32 )+newcode+" #Optim 7"
 				else
-					prevpart1="":prevpart2="":previnstruc=""
-
+					prevpart1=part1
+					prevpart2=part2
+					previnstruc=instruc
+					prevwpos=writepos
+					flag=KUSE_MOV
+					exit sub
 				end if
 			end if
 		end if
-		part1="":part2=""
+		prevpart1="":prevpart2=""
 		flag=KUSE_MOV
 		exit sub
 	end if
