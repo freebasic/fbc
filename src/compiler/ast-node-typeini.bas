@@ -574,6 +574,11 @@ function astTypeIniScopeBegin _
 	n->sym = sym
 	n->typeiniscope.is_array = is_array
 
+	'' ofs and bytes (elements) should never be used for typeini scopes
+	'' zero them out anyway so debugging display is a little nicer
+	n->typeini.ofs = 0
+	n->typeini.bytes = 0
+
 	function = n
 end function
 
@@ -589,6 +594,11 @@ function astTypeIniScopeEnd _
 
 	n = hAddNode( tree, AST_NODECLASS_TYPEINI_SCOPEEND )
 	n->sym = sym
+
+	'' ofs and bytes (elements) should never be used for typeini scopes
+	'' zero them out anyway so debugging display is a little nicer
+	n->typeini.ofs = 0
+	n->typeini.bytes = 0
 
 	function = n
 end function
