@@ -1773,7 +1773,7 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( TRUE , TRUE , FALSE, TRUE  ), _ '' OPT_ASM          affects major initialization,affects second stage compile
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_B            adds files to compile
 	( TRUE , TRUE , FALSE, TRUE  ), _ '' OPT_BUILDPREFIX  affects tools executed (fbcSetupCompilerPaths(), so restart is required)
-	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_C            affects compile / assemble /link process
+	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_C            affects code generation / compile / assemble /link process
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_CKEEPOBJ     affects removal of temporary files
 	( TRUE , TRUE , FALSE, TRUE  ), _ '' OPT_D            add symbols to current source also, not just the preDefines, affects global defines
 	( FALSE, TRUE , TRUE , TRUE  ), _ '' OPT_DLL          affects major initialization, affects output format

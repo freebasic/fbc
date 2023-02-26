@@ -122,6 +122,7 @@ Version 1.10.0
 - fbc: basic-macros: improve the handling of optional parens in function like macros by ending a macro argument list on the number of arguments expected (non-variadic macros only).
 - fbc: bad error recovery after overloaded operator [] caused compiler crash, for example if overloaded operator [] is found but can't be used due to mixing const and non-const types.
 - fbc: improve error message 215 to indicate that only static members can be accessed from parameter intializers as well as static functions
+- fbc: #cmdline "-c ..." needs to restart parser since code generation is affected.  The implicit main was being emitted even when '-c' was give in #cmdline and was working differently than when '-c' given on the actual command line. 
 
 
 Version 1.09.0
