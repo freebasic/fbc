@@ -310,7 +310,7 @@ declare function hMakeParamDesc _
 		/'FB_ERRMSG_ABSTRACTDTOR                       '/ @"Destructor declared ABSTRACT", _
 		/'FB_ERRMSG_MEMBERCANTBESTATIC                 '/ @"Member cannot be static", _
 		/'FB_ERRMSG_MEMBERISNTSTATIC                   '/ @"Member isn't static", _
-		/'FB_ERRMSG_STATICMEMBERHASNOINSTANCEPTR       '/ @"Only static members can be accessed from static functions", _
+		/'FB_ERRMSG_STATICMEMBERHASNOINSTANCEPTR       '/ @"Only static members can be accessed from static functions and parameter initializers", _
 		/'FB_ERRMSG_PRIVORPUBTTRIBNOTALLOWED           '/ @"The PRIVATE and PUBLIC attributes are not allowed with REDIM, COMMON or EXTERN", _
 		/'FB_ERRMSG_PROCPROTOTYPENOTSTATIC             '/ @"STATIC used here, but not the in the DECLARE statement", _
 		/'FB_ERRMSG_PROCPROTOTYPENOTCONST              '/ @"CONST used here, but not the in the DECLARE statement", _
