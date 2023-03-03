@@ -179,6 +179,12 @@ private function hIsStructAllowed _
 		return TRUE
 	end if
 
+	'' if allowing members then no further checks are needed since we
+	'' are must also allow structs to allow members
+	if( (options and FB_IDOPT_ALLOWMEMBERS) <> 0 ) then
+		return TRUE
+	end if
+
 	'' Ordinary/non-class struct? Won't ever be used as namespace prefix,
 	'' since it doesn't have any methods/static member vars
 	if( symbGetIsUnique( sym ) = FALSE ) then
@@ -364,7 +370,7 @@ function cIdentifier _
 		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
 
 		case FB_TKCLASS_OPERATOR, FB_TKCLASS_KEYWORD
-			if( (options and FB_IDOPT_ISOPERATOR ) <> 0 ) then
+			if( (options and (FB_IDOPT_ISOPERATOR or FB_IDOPT_ALLOWMEMBERS)) <> 0 ) then
 				exit do
 			end if
 
@@ -554,7 +560,7 @@ function cParentId _
 		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
 
 		case FB_TKCLASS_OPERATOR, FB_TKCLASS_KEYWORD
-			if( (options and FB_IDOPT_ISOPERATOR ) <> 0 ) then
+			if( (options and (FB_IDOPT_ISOPERATOR or FB_IDOPT_ALLOWMEMBERS)) <> 0 ) then
 				exit do
 			end if
 
@@ -610,3 +616,87 @@ sub cCurrentParentId()
 
 	end select
 end sub
+
+'':::::
+'' ID defined   = Identifier
+''              | Identifier '.' {constructor|destructor}
+''              | Identifier '.' {new|delete}
+''              | Identifier '.' operator
+''
+function cIdentifierIfDefined _
+	( _
+	) as FBSYMBOL ptr
+
+	dim as FBSYMBOL ptr parent = NULL
+	dim as FBSYMCHAIN ptr chain_ = any
+
+	const idopts = FB_IDOPT_NOSKIP or _
+	               FB_IDOPT_ALLOWSTRUCT or _
+	               FB_IDOPT_ALLOWMEMBERS
+
+	chain_ = cIdentifier( parent, idopts )
+
+	'' not defined if symbol was not found
+	if( chain_ = NULL ) then
+		lexSkipToken( )
+		return NULL
+	end if
+
+	'' exit if parent symbol was not parsed
+	if( parent = NULL ) then
+		lexSkipToken( )
+		return chain_->sym
+	end if
+
+	'' exit if symbol parsed was not a struct
+	if( symbGetClass( parent ) <> FB_SYMBCLASS_STRUCT ) then
+		lexSkipToken( )
+		return chain_->sym
+	end if
+
+	select case as const lexGetClass( )
+	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
+		lexSkipToken( )
+		return chain_->sym
+
+	case FB_TKCLASS_OPERATOR
+		dim as integer op = INVALID
+
+		'' cOperator will handle skipping the token
+		op = cOperator( TRUE )
+
+		if( op <> INVALID ) then
+			return symbGetCompOpOvlHead( parent, op )
+		end if
+
+		return NULL
+
+	case FB_TKCLASS_KEYWORD
+		dim sym as FBSYMBOL ptr = NULL
+
+		select case as const lexGetToken( )
+		case FB_TK_CONSTRUCTOR
+			sym = symbGetCompCtorHead( parent )
+		case FB_TK_DESTRUCTOR
+			sym =symbGetCompDtor1( parent )
+
+		'' !!! TODO !!!: Add FB_TK_* to AST_OP_* function
+
+		case FB_TK_LET
+			sym = symbGetCompOpOvlHead( parent, AST_OP_ASSIGN )
+		case FB_TK_NEW
+			sym = symbGetCompOpOvlHead( parent, AST_OP_NEW )
+		case FB_TK_DELETE
+			sym = symbGetCompOpOvlHead( parent, AST_OP_DEL )
+		end select
+
+		'' keyword
+		lexSkipToken( )
+		return sym
+
+	end select
+
+	lexSkipToken( )
+	return NULL
+
+end function

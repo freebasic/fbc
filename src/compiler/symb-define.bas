@@ -1022,8 +1022,7 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 			dim as FB_DATATYPE dtype = FB_DATATYPE_INVALID
 			dim as integer is_fixlenstr, retry = FALSE
 			dim as longint lgt
-			dim as FBSYMBOL ptr base_parent = any, sym = NULL, subtype = NULL
-			dim as FBSYMCHAIN ptr chain_ = any
+			dim as FBSYMBOL ptr sym = NULL, subtype = NULL
 			dim as long queryvalue = whatvalue and FB_QUERY_SYMBOL.querymask
 			dim as long filtervalue = whatvalue and FB_QUERY_SYMBOL.filtermask
 
@@ -1068,21 +1067,10 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 				'' so we should try to be as persmissive as possible.
 
 				select case lexGetClass( )
-				case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
-					base_parent = cParentId( FB_IDOPT_DONTCHKPERIOD )
-					if( base_parent = NULL ) then
-						chain_ = cIdentifier( base_parent, FB_IDOPT_ISDEFN or FB_IDOPT_ALLOWSTRUCT )
-						if( chain_ ) then
-							sym = chain_->sym
-						end if
-					else
-						chain_ = symbLookupAt( base_parent, lexGetText( ), FALSE, FALSE )
-						if( chain_ ) then
-							sym = chain_->sym
-						else
-							sym = base_parent
-						end if
-					end if
+				case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, _
+				     FB_TKCLASS_QUIRKWD, FB_TKCLASS_OPERATOR
+
+					sym = cIdentifierIfDefined( )
 				end select
 
 				'' for some symbols, we maybe want to reset and try a TYPEOF below

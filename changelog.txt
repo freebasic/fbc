@@ -57,7 +57,7 @@ Version 1.10.0
 - fbc -nolib a,b,c command line option for selectively excluding specific libraries when linking (more fine-grained control than -nodeflibs, and not only for default libraries)
 - fbc will restart the parser when #cmdline "-mt" is used or usage of any threaded functions automatically enable -mt.  This allows the compiler to parse the current module from the beginning and process any __FB_MT__ checks.
 - fbc: __fastcall support for gcc/gas 32-bit x86 - fbc passes first and second integer arguments in ECX and EDX registers respectively, caller cleans up stack.
-- fbc: __FB_QUERY_SYMBOL__( what, sym ) built-in macro for querying fbc symbol internals.  Added fbc-int/symbol.bi (Work in progress 20230226).
+- fbc: __FB_QUERY_SYMBOL__( what, sym ) built-in macro for querying fbc symbol internals.  Added fbc-int/symbol.bi (Work in progress 20230303).
 - add '-z retinflts' command line option for code generation.  This option enables returning some structures (types) in floating point registers.  This is a work-around for different handling of structs returned by value on different tool chains / targets.
 - fbgfx.bi: add private function fb.__pixels() to return a pointer to the image data (paul doe)
 - fbc: add command line option and warning '-w upcast' to warn when up-casting would discard initializers
