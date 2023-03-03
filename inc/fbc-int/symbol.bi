@@ -113,11 +113,17 @@ enum FB_QUERY_SYMBOL explicit
 	typename   = &h0003     '' return the typename as text
 	typenameid = &h0004     '' return the typename as text with specical characters replaced with '_'
 	mangleid   = &h0005     '' return the decorated (mangled) type name (WIP)
+	exists     = &h0006     '' return if the symbol name / identifier is exists
 
 	querymask  = &h00ff     '' mask for query values
 
 	'' filters
-	typeinfo   = &h0100     '' use TYPEOF/expression only when parsing the symbol/expression
+	'' if no filter is given, and filtermask is zero, then the default methods
+	'' are used for symbol lookup.  If filtermask is non-zero, then only use
+	'' the specified methods for symbol lookup
+
+	identifier = &h0100     '' use identifier & type name symbol lookups
+	typeofexpr = &h0200     '' use TYPEOF/expression
 
 	filtermask = &hff00     '' mask for filter values
 

@@ -984,10 +984,16 @@ enum FB_QUERY_SYMBOL explicit
 	typename   = &h0003     '' return the typename as text
 	typenameid = &h0004     '' return the typename as text with specical characters replaced with '_'
 	mangleid   = &h0005     '' return the decorated (mangled) type name (WIP)
+	exists     = &h0006     '' return if the symbol name / identifier is exists
 	querymask  = &h00ff     '' mask for query values
 
 	'' filters
-	typeinfo   = &h0100     '' use TYPEOF/expression only when parsing the symbol/expression
+	'' if no filter is given, and filtermask is zero, then the default methods
+	'' are used for symbol lookup.  If filtermask is non-zero, then only use
+	'' the specified methods for symbol lookup
+
+	identifier = &h0100     '' use identifier & type name symbol lookups
+	typeofexpr = &h0200     '' use TYPEOF/expression
 
 	filtermask = &hff00     '' mask for filter values
 
@@ -1018,6 +1024,9 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 			dim as longint lgt
 			dim as FBSYMBOL ptr base_parent = any, sym = NULL, subtype = NULL
 			dim as FBSYMCHAIN ptr chain_ = any
+			dim as long queryvalue = whatvalue and FB_QUERY_SYMBOL.querymask
+			dim as long filtervalue = whatvalue and FB_QUERY_SYMBOL.filtermask
+
 			var errmsg = FB_ERRMSG_OK
 
 			'' create a lightweight context push
@@ -1031,7 +1040,28 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 			lex.ctx->defptr = lex.ctx->deftext.data
 			lex.ctx->deflen += len( *sexpr )
 
-			if( (whatvalue and FB_QUERY_SYMBOL.typeinfo) = 0 ) then
+			'' if filtervalue is zero then set the default methods to use for
+			'' look-up depending on what we are looking for
+			if( filtervalue = 0 ) then
+				select case queryvalue
+				case FB_QUERY_SYMBOL.typename, _
+				     FB_QUERY_SYMBOL.typenameid, _
+				     FB_QUERY_SYMBOL.mangleid, _
+				     FB_QUERY_SYMBOL.exists
+
+					filtervalue or= FB_QUERY_SYMBOL.identifier
+
+				'' case FB_QUERY_SYMBOL.symbclass, _
+				''      FB_QUERY_SYMBOL.dataclass, _
+				''      FB_QUERY_SYMBOL.datatype
+				case else
+					filtervalue or= FB_QUERY_SYMBOL.identifier or FB_QUERY_SYMBOL.typeofexpr
+
+				end select
+			end if
+
+			'' identifier filter?
+			if( (filtervalue and FB_QUERY_SYMBOL.identifier) <> 0 ) then
 
 				'' Try a lookup of the symbol and ideally suppress all errors.  These
 				'' will never be used as for any access or expression in emitted code
@@ -1063,8 +1093,9 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 					case FB_SYMBCLASS_KEYWORD
 						dtype = symbGetFullType( sym )
 						if( dtype = FB_DATATYPE_INVALID ) then
-							select case (whatvalue and FB_QUERY_SYMBOL.querymask)
-							case FB_QUERY_SYMBOL.symbclass
+							select case queryvalue
+							case FB_QUERY_SYMBOL.symbclass, _
+							     FB_QUERY_SYMBOL.exists
 								lexSkipToken( )
 							case else
 								sym = NULL
@@ -1112,13 +1143,18 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 
 			end if
 
-			'' no sym? try TYPEOF( sym ) ...
-			if( sym = NULL ) then
-				cTypeOf( dtype, subtype, lgt, is_fixlenstr, sym )
+			'' typeof/expression filter?
+			if( (filtervalue and FB_QUERY_SYMBOL.typeofexpr) <> 0 ) then
+
+				'' no sym? try TYPEOF( sym ) ...
+				if( sym = NULL ) then
+					cTypeOf( dtype, subtype, lgt, is_fixlenstr, sym )
+				end if
+
 			end if
 
 			'' return results
-			select case (whatvalue and FB_QUERY_SYMBOL.querymask)
+			select case queryvalue
 			case FB_QUERY_SYMBOL.symbclass
 				if( sym ) then
 					res = str( symbGetClass( sym ) )
@@ -1133,7 +1169,7 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 				res = str( typeGetClass( dtype ) )
 			case FB_QUERY_SYMBOL.typename, FB_QUERY_SYMBOL.typenameid
 				res = ucase( symbTypeToStr( dtype, subtype, lgt, is_fixlenstr ) )
-				if( (whatvalue and FB_QUERY_SYMBOL.querymask) = FB_QUERY_SYMBOL.typenameid ) then
+				if( queryvalue = FB_QUERY_SYMBOL.typenameid ) then
 					hReplaceChar( res, asc(" "), asc("_") )
 					hReplaceChar( res, asc("."), asc("_") )
 					hReplaceChar( res, asc("("), asc("_") )
@@ -1150,6 +1186,8 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 				else
 					res = str(0)
 				end if
+			case FB_QUERY_SYMBOL.exists
+				res = str( sym <> NULL )
 			case else
 				*errnum = FB_ERRMSG_SYNTAXERROR
 				res = str( -1 )
