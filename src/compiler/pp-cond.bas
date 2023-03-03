@@ -56,7 +56,6 @@ end function
 
 sub ppCondIf( )
 	dim as integer istrue = any
-	dim as FBSYMBOL ptr base_parent = any
 
 	istrue = FALSE
 
@@ -64,22 +63,12 @@ sub ppCondIf( )
 	'' IFDEF ID
 	case FB_TK_PP_IFDEF
 		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
-
-		if( cIdentifier( base_parent, FB_IDOPT_NOSKIP ) <> NULL ) then
-			'' any symbol is okay or type's wouldn't be found
-			istrue = TRUE
-		end if
-		lexSkipToken( )
+		istrue = (cIdentifierIfDefined( ) <> NULL)
 
 	'' IFNDEF ID
 	case FB_TK_PP_IFNDEF
 		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
-
-		if( cIdentifier( base_parent, FB_IDOPT_NOSKIP ) = NULL ) then
-			'' ditto
-			istrue = TRUE
-		end if
-		lexSkipToken( )
+		istrue = (cIdentifierIfDefined( ) = NULL)
 
 	'' IF Expression
 	case FB_TK_PP_IF

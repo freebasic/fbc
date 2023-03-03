@@ -12,7 +12,6 @@
 declare function hCast( byval options as AST_CONVOPT ) as ASTNODE ptr
 
 private function hPPDefinedExpr( ) as ASTNODE ptr
-	dim as FBSYMBOL ptr base_parent = any
 	dim as integer is_defined = any
 
 	'' DEFINED
@@ -26,8 +25,7 @@ private function hPPDefinedExpr( ) as ASTNODE ptr
 	end if
 
 	'' Identifier
-	is_defined = (cIdentifier( base_parent, FB_IDOPT_NOSKIP ) <> NULL)
-	lexSkipToken( )
+	is_defined = (cIdentifierIfDefined( ) <> NULL)
 
 	'' ')'
 	if( hMatch( CHAR_RPRNT ) = FALSE ) then
