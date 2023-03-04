@@ -2305,7 +2305,7 @@ private sub hAddGlobalCtorDtor( byval proc as FBSYMBOL ptr )
 			ctx.ctorcount += 1
 			'hEmitCtorDtorArrayElement( proc, ctx.ctors )
 			asm_info("Constructor name/prio="+*symbGetMangledName( proc )+" / "+str( symbGetProcPriority( proc ) ))
-			if ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
+			if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 				asm_section(".init_array")
 			else
 				asm_section(".ctors")
@@ -2318,7 +2318,7 @@ private sub hAddGlobalCtorDtor( byval proc as FBSYMBOL ptr )
 		ctx.dtorcount += 1
 		'hEmitCtorDtorArrayElement( proc, ctx.dtors )
 		asm_info("Destructor name/prio="+*symbGetMangledName( proc )+" / "+str( symbGetProcPriority( proc ) ))
-		if ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
+		if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 			asm_section(".fini_array")
 		else
 			asm_section(".dtors")
@@ -2370,7 +2370,7 @@ private sub _emitend( )
 		end if
 
 		''must be executed before the constructors and main
-		if ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
+		if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 			asm_section(".init_array")
 		else
 			asm_section(".ctors")
@@ -3331,7 +3331,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 			prefix1=""
 		case IR_VREGTYPE_VAR ''format varname ofs1   local/static  ofs1 could be zero
 
-			if ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB andalso (symbIsCommon(v1->sym)) then ''linux dll common shared
+			if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB andalso (symbIsCommon(v1->sym)) then ''linux dll common shared
 				tempo=reg_findfree(999994)
 				regtempo=*regstrq(tempo)
 				op3="mov "+regtempo+", "+*symbGetMangledName(v1->sym)+"@GOTPCREL[rip]"
@@ -3390,7 +3390,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 
 		case IR_VREGTYPE_VAR ''format varname ofs1   local/static  ofs1 could be zero
 
-			if ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB andalso (symbIsCommon(v1->sym)) then
+			if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB andalso (symbIsCommon(v1->sym)) then
 
 				tempo=reg_findfree(999993)
 				regtempo=*regstrq(tempo)
@@ -4342,7 +4342,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 		case IR_VREGTYPE_VAR ''format varname ofs1   local/static  ofs1 could be zero
 			if symbIsStatic(v2->sym) Or symbisshared(v2->sym) then
-				if ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
+				if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 					op2=*symbGetMangledName(v2->sym)+"@GOTPCREL[rip]" '[rip+"+Str(v2->ofs)+"]"
 				else
 					op2=*symbGetMangledName(v2->sym)+"[rip+"+Str(v2->ofs)+"]"
@@ -4356,7 +4356,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 		case IR_VREGTYPE_OFS ''format varname ofs1   static  ofs1 could be zero
 			op2=*symbGetMangledName(v2->sym)+"[rip+"+str(v2->ofs)+"]"
-			if typeGetDtOnly( v2->dtype )=FB_DATATYPE_FUNCTION andalso ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
+			if typeGetDtOnly( v2->dtype )=FB_DATATYPE_FUNCTION andalso ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 				asm_code("mov rax, QWORD PTR "+left(op2,instr(op2,"[")-1)+"@GOTPCREL[rip]")
 				asm_code("mov "+op1+", rax",KNOOPTIM)
 			else
@@ -5004,7 +5004,7 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 	if v1->typ=IR_VREGTYPE_VAR And v2->typ=IR_VREGTYPE_VAR then
 
-		if ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
+		if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 			if symbIsCommon(v1->sym) then
 
 				tempo=reg_findfree(999998)
@@ -5071,7 +5071,7 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 					asm_code("movNOTUSED? "+prefix+op1+", "+op2)
 				case IR_VREGTYPE_VAR,IR_VREGTYPE_IDX,IR_VREGTYPE_PTR
 
-					if ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
+					if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 						if v1->sym<>0 andalso (symbIsCommon(v1->sym)) then
 							tempo=reg_findfree(999998)
 							regtempo=*regstrq(tempo)
@@ -5106,13 +5106,13 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 		elseif v2->typ=IR_VREGTYPE_OFS then
 			'asm_info("datatype="+str(typeGetDtOnly( v2->dtype ))+" "+str(FB_DATATYPE_FUNCTION))
 			'asm_info("DLL="+str(fbGetOption( FB_COMPOPT_OUTTYPE ))+" "+str(FB_OUTTYPE_DYNAMICLIB))
-			if typeGetDtOnly( v2->dtype )=FB_DATATYPE_FUNCTION andalso ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
+			if typeGetDtOnly( v2->dtype )=FB_DATATYPE_FUNCTION andalso ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 				asm_code("mov rax, QWORD PTR "+left(op2,instr(op2,"[")-1)+"@GOTPCREL[rip]")
 			else
 				asm_code("lea rax, "+op2)
 			end if
 
-			if ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
+			if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 				if v1->sym<>0 andalso (symbIsCommon(v1->sym)) then
 					tempo=reg_findfree(999998)
 					regtempo=*regstrq(tempo)
@@ -5125,7 +5125,7 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 			asm_code("mov "+op1+", rax")
 		else
 
-			if ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
+			if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 				if v1->sym<>0 andalso (symbIsCommon(v1->sym)) then
 					'tempo=reg_findfree(999998)
 					'regtempo=*regstrq(tempo)
@@ -5323,7 +5323,7 @@ private sub _emitaddr(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRV
 
 				case IR_VREGTYPE_VAR ''format varname ofs1   local/static  ofs1 could be zero
 					if symbIsStatic(v1->sym) Or symbisshared(v1->sym) then
-						if (symbIsCommon(v1->sym)) andalso ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
+						if (symbIsCommon(v1->sym)) andalso ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 							asm_code("mov rax, "+*symbGetMangledName(v1->sym)+"@GOTPCREL[rip]")
 							op1="[rax]"
 						else
@@ -5366,7 +5366,7 @@ sub save_call(byref func as string,byval vr as IRVREG ptr,byval vrreg as integer
 		ctx.argcptmax=1
 	end if
 
-	if ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
+	if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 		asm_code("call "+func+"@PLT")
 	else
 		asm_code("call "+func)
@@ -5714,7 +5714,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 							end if
 						else
 							if v2->typ=IR_VREGTYPE_OFS or (dtype=FB_DATATYPE_STRUCT) then
-								if typeGetDtOnly( v2->dtype )=FB_DATATYPE_FUNCTION andalso ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
+								if typeGetDtOnly( v2->dtype )=FB_DATATYPE_FUNCTION andalso ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 									asm_code("mov rax, QWORD PTR "+left(op1,instr(op1,"[")-1)+"@GOTPCREL[rip]")
 								else
 									asm_code("lea rax, "+op1)
@@ -5856,7 +5856,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 			else
 				if v2->typ=IR_VREGTYPE_OFS then
 					reg_transfer(listreg(cptint),reg2)''is the reg free ?
-					if typeGetDtOnly( v2->dtype )=FB_DATATYPE_FUNCTION andalso ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
+					if typeGetDtOnly( v2->dtype )=FB_DATATYPE_FUNCTION andalso ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 						asm_code("mov "+*regstrq(listreg(cptint))+", QWORD PTR "+left(op1,instr(op1,"[")-1)+"@GOTPCREL[rip]")
 					else
 						asm_code("lea "+*regstrq(listreg(cptint))+", "+op1)
@@ -5894,7 +5894,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 							end if
 						end if
 
-						if ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
+						if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 							if v2->sym<>0 andalso (symbIsCommon(v2->sym)) then
 								asm_code("mov rax, "+*symbGetMangledName(v2->sym)+"@GOTPCREL[rip]")
 								op1="[rax]"
@@ -5962,7 +5962,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 		end if
 	end if
 
-	if ctx.systemv andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
+	if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 		asm_code("call " +pname+"@PLT",KNOALL)
 	else
 		asm_code("call " +pname,KNOALL)
