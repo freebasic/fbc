@@ -138,3 +138,95 @@ check_Y( T.prop )
 check_Y( T.constructor )
 check_Y( T.destructor )
 check_Y( T.let )
+
+'' ----------------
+
+'' type without member procedures can have fields with same name as keywords
+#macro kwd_field_check( id )
+	check_Y( id )
+	check_N( TRIVIAL.id )
+	id as integer
+	check_Y( TRIVIAL.id )
+#endmacro
+
+'' declare fields having same name as keywords
+type TRIVIAL
+	kwd_field_check( constructor )
+	kwd_field_check( destructor )
+	kwd_field_check( let )
+	kwd_field_check( cast )
+	kwd_field_check( for )
+	kwd_field_check( next )
+	kwd_field_check( step )
+end type
+
+'' ----------------
+
+#macro self_op_check( parent, op )
+	check_N( parent.op )
+	declare operator op( byref as parent )
+	check_Y( parent.op )
+#endmacro
+
+type UDT extends object
+
+	check_Y( constructor ) '' keyword
+	check_N( UDT.constructor )
+	declare constructor()
+	check_Y( constructor )
+	check_Y( UDT.constructor )
+
+	check_Y( destructor )  '' keyword
+	check_N( UDT.destructor )
+	declare destructor()
+	check_Y( destructor )
+	check_Y( UDT.destructor )
+
+	check_Y( let ) '' keyword
+	check_N( UDT.let )
+	declare operator let( byref x as integer )
+	check_Y( let )
+	check_Y( UDT.let )
+
+	self_op_check( UDT, += )
+	self_op_check( UDT, -= )
+	self_op_check( UDT, *= )
+
+	self_op_check( UDT, /= )
+	self_op_check( UDT, \= )
+	self_op_check( UDT, mod= )
+
+	self_op_check( UDT, and= )
+	self_op_check( UDT, or= )
+
+	self_op_check( UDT, xor= )
+	self_op_check( UDT, eqv= )
+	self_op_check( UDT, imp= )
+	self_op_check( UDT, shl= )
+	self_op_check( UDT, shr= )
+
+	self_op_check( UDT, ^= )
+
+	check_Y( new ) '' keyword
+	check_N( UDT.new )
+	declare operator new( byval size as uinteger ) as any ptr
+	check_Y( new )
+	check_Y( UDT.new )
+
+	check_Y( delete ) '' keyword
+	check_N( UDT.delete )
+	declare operator delete( byval p as any ptr )
+	check_Y( delete )
+	check_Y( UDT.delete )
+
+	check_N( UDT.new[] )
+	declare operator new[]( byval size as uinteger ) as any ptr
+	check_Y( UDT.new[] )
+
+	check_N( UDT.delete[] )
+	declare operator delete[]( byval p as any ptr )
+	check_Y( UDT.delete[] )
+
+end type
+
+

@@ -672,22 +672,33 @@ function cIdentifierIfDefined _
 		return NULL
 
 	case FB_TKCLASS_KEYWORD
-		dim sym as FBSYMBOL ptr = NULL
+		dim as FBSYMBOL ptr sym = NULL
+
+		'' no member procs? fields can be named same as keywords
+		if( symbGetIsUnique( parent ) = FALSE ) then
+			chain_ = symbLookupAt( parent, lexGetText( ), FALSE )
+
+			'' keyword
+			lexSkipToken( )
+			
+			if( chain_ ) then
+				return chain_->sym
+			end if
+
+			return NULL
+		end if
+
+		'' else there are member procs, so search for keywords as members
 
 		select case as const lexGetToken( )
 		case FB_TK_CONSTRUCTOR
 			sym = symbGetCompCtorHead( parent )
 		case FB_TK_DESTRUCTOR
-			sym =symbGetCompDtor1( parent )
-
-		'' !!! TODO !!!: Add FB_TK_* to AST_OP_* function
+			sym = symbGetCompDtor1( parent )
 
 		case FB_TK_LET
 			sym = symbGetCompOpOvlHead( parent, AST_OP_ASSIGN )
-		case FB_TK_NEW
-			sym = symbGetCompOpOvlHead( parent, AST_OP_NEW )
-		case FB_TK_DELETE
-			sym = symbGetCompOpOvlHead( parent, AST_OP_DEL )
+
 		end select
 
 		'' keyword
