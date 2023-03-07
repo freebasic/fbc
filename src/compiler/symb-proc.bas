@@ -695,7 +695,7 @@ private sub hSetupProcRegisterParameters _
 		assert( env.clopt.nothiscall = FALSE )
 		maxregnum = 1
 	case FB_FUNCMODE_FASTCALL
-		'' should never get here if "-z no-thiscall" is active
+		'' should never get here if "-z no-fastcall" is active
 		assert( env.clopt.nofastcall = FALSE )
 		maxregnum = 2
 	end select

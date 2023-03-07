@@ -548,7 +548,7 @@ function astTypeIniAddCtorList _
 	n->typeini.ofs = tree->typeini.ofs
 
 	'' AST_NODECLASS_TYPEINI_CTORLIST node uses typeini.elements
-	'' instead of typeini.elements to track position in the typeini tree
+	'' instead of typeini.bytes to track position in the typeini tree
 
 	n->typeini.elements = elements
 
@@ -944,13 +944,13 @@ private sub hFlushExprStatic( byval n as ASTNODE ptr, byval basesym as FBSYMBOL 
 			if( edtype <> FB_DATATYPE_WCHAR ) then
 				'' less the null-char
 				irEmitVARINISTR( symbGetStrLen( sym ) - 1, _
-								symbGetVarLitText( litsym ), _
-								symbGetStrLen( litsym ) - 1 )
+				                 symbGetVarLitText( litsym ), _
+				                 symbGetStrLen( litsym ) - 1 )
 			else
 				'' ditto
 				irEmitVARINISTR( symbGetStrLen( sym ) - 1, _
-								str( *symbGetVarLitTextW( litsym ) ), _
-								symbGetWstrLen( litsym ) - 1 )
+				                 str( *symbGetVarLitTextW( litsym ) ), _
+				                 symbGetWstrLen( litsym ) - 1 )
 			end if
 		'' wstring..
 		else
@@ -958,13 +958,13 @@ private sub hFlushExprStatic( byval n as ASTNODE ptr, byval basesym as FBSYMBOL 
 			if( edtype <> FB_DATATYPE_WCHAR ) then
 				'' less the null-char
 				irEmitVARINIWSTR( symbGetWstrLen( sym ) - 1, _
-								wstr( *symbGetVarLitText( litsym ) ), _
-								symbGetStrLen( litsym ) - 1 )
+				                  wstr( *symbGetVarLitText( litsym ) ), _
+				                  symbGetStrLen( litsym ) - 1 )
 			else
 				'' ditto
 				irEmitVARINIWSTR( symbGetWstrLen( sym ) - 1, _
-								symbGetVarLitTextW( litsym ), _
-								symbGetWstrLen( litsym ) - 1 )
+				                  symbGetVarLitTextW( litsym ), _
+				                  symbGetWstrLen( litsym ) - 1 )
 			end if
 		end if
 	end if
