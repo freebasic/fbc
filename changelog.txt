@@ -125,6 +125,7 @@ Version 1.10.0
 - fbc: improve error message 215 to indicate that only static members can be accessed from parameter intializers as well as static functions
 - fbc: #cmdline "-c ..." needs to restart parser since code generation is affected.  The implicit main was being emitted even when '-c' was give in #cmdline and was working differently than when '-c' given on the actual command line. 
 - fbc: extend lifetime of temporary variables in WITH TYPE(...) expressions to the END WITH statement
+- fbc: #cmdline "-r -rr -R -RR -o objfile ..." needs to restart the parser and handle changes in keeping the ASM file.  In the case of '-o objfile' a major restart is needed since some initialization of filenames is done before parsing starts.  By default the temporary ASM file was being kept even if #cmdline options indicate to keep it.
 
 
 Version 1.09.0

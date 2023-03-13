@@ -52,34 +52,34 @@ end type
 
 type FBCCTX
 	'' For command line parsing
-	optid               as integer    '' Current option
+	optid               as integer     '' Current option
 	lastmodule          as FBCIOFILE ptr '' module for last input file, so the default .o name can be overwritten with a following -o filename
-	objfile             as string '' -o filename waiting for next input file
-	backend             as integer  '' FB_BACKEND_* given via -gen, or -1 if -gen wasn't given
-	cputype             as integer  '' FB_CPUTYPE_* (-arch's argument), or -1
-	cputype_is_native   as integer  '' Whether -arch native was used
-	asmsyntax           as integer  '' FB_ASMSYNTAX_* from -asm, or -1 if not given
+	objfile             as string      '' -o filename waiting for next input file
+	backend             as integer     '' FB_BACKEND_* given via -gen, or -1 if -gen wasn't given
+	cputype             as integer     '' FB_CPUTYPE_* (-arch's argument), or -1
+	cputype_is_native   as integer     '' Whether -arch native was used
+	asmsyntax           as integer     '' FB_ASMSYNTAX_* from -asm, or -1 if not given
 
-	emitasmonly         as integer  '' write out FB backend output file only (.asm/.c)
-	keepasm             as integer  '' preserve FB backend output file (.asm/.c)
-	emitfinalasmonly    as integer  '' write out final .asm file only
-	keepfinalasm        as integer  '' preserve final .asm
+	emitasmonly         as integer     '' write out FB backend output file only (.asm/.c)
+	keepasm             as integer     '' preserve FB backend output file (.asm/.c)
+	emitfinalasmonly    as integer     '' write out final .asm file only
+	keepfinalasm        as integer     '' preserve final .asm
 	keepobj             as integer
 	verbose             as integer
 	showversion         as integer
 	showhelp            as integer
-	print               as integer  '' PRINT_* (-print option)
+	print               as integer     '' PRINT_* (-print option)
 
 	'' Command line input
-	modules             as TLIST '' FBCIOFILE's for input .bas files
-	rcs                 as TLIST '' FBCIOFILE's for input .rc/.res files
+	modules             as TLIST    '' FBCIOFILE's for input .bas files
+	rcs                 as TLIST    '' FBCIOFILE's for input .rc/.res files
 	xpm                 as FBCIOFILE '' .xpm input file
-	temps               as TLIST '' Temporary files to delete at shutdown
-	objlist             as TLIST '' Objects from command line and from compilation
+	temps               as TSTRSET  '' Temporary files to delete at shutdown
+	objlist             as TLIST    '' Objects from command line and from compilation
 	libfiles            as TLIST
 	libs                as TSTRSET
 	libpaths            as TSTRSET
-	excludedlibs        as TSTRSET '' lib names explicitly excluded via -nodeflib option(s)
+	excludedlibs        as TSTRSET  '' lib names explicitly excluded via -nodeflib option(s)
 
 	'' Final list of libs and paths for linking
 	'' (each module can have #inclibs and #libpaths and add more, and for
@@ -200,7 +200,7 @@ private sub fbcInit( )
 
 	listInit( @fbc.modules, FBC_INITFILES, sizeof(FBCIOFILE) )
 	listInit( @fbc.rcs, FBC_INITFILES\4, sizeof(FBCIOFILE) )
-	strlistInit( @fbc.temps, FBC_INITFILES\4 )
+	strsetInit( @fbc.temps, FBC_INITFILES\4 )
 	strlistInit( @fbc.objlist, FBC_INITFILES )
 	strlistInit( @fbc.libfiles, FBC_INITFILES\4 )
 	strsetInit( @fbc.libs, FBC_INITFILES\4 )
@@ -265,9 +265,9 @@ end sub
 
 private sub fbcEnd( byval errnum as integer )
 	'' Clean up temporary files
-	dim as string ptr file = listGetHead( @fbc.temps )
+	dim as TSTRSETITEM ptr file = listGetHead(@fbc.temps.list)
 	while( file )
-		safeKill( *file )
+		safeKill( file->s )
 		file = listGetNext( file )
 	wend
 
@@ -275,7 +275,11 @@ private sub fbcEnd( byval errnum as integer )
 end sub
 
 private sub fbcAddTemp(byref file as string)
-	strlistAppend(@fbc.temps, file)
+	strsetAdd(@fbc.temps, file, 0)
+end sub
+
+private sub fbcRemoveTemp(byref file as string)
+	strsetDel(@fbc.temps, file)
 end sub
 
 private function fbcAddObj( byref file as string ) as string ptr
@@ -1810,7 +1814,7 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_NOLIB        affects link
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_NOOBJINFO    affects post compile process
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_NOSTRIP      affects link
-	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_O            affects input file naming
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_O            affects output file naming with initialization before compile
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_OPTIMIZE     affects link
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_P            affects link, same as #libpath
 	( FALSE, TRUE , FALSE, TRUE  ), _ '' OPT_PIC          affects major initialization, affects link
@@ -1818,10 +1822,10 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( TRUE , TRUE , FALSE, TRUE  ), _ '' OPT_PREFIX       affects major initialization
 	( TRUE , FALSE, FALSE, FALSE ), _ '' OPT_PRINT        never allow, makes no sense to have in source
 	( FALSE, TRUE , TRUE , TRUE  ), _ '' OPT_PROFILE      affects major initialization, affects initialization, affects code generation, affects link
-	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_R            affects compile / assmble /link process
-	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_RKEEPASM     affects removal of temporary files
-	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_RR           affects compile / assmble /link process
-	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_RRKEEPASM    affects removal of temporary files
+	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_R            affects compile / assemble / link process, removal of temporary files
+	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_RKEEPASM     affects removal of temporary files
+	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_RR           affects compile / assemble / link process, removal of temporary files
+	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_RRKEEPASM    affects removal of temporary files
 	( TRUE , TRUE , FALSE, FALSE ), _ '' OPT_S            affects link
 	( FALSE, TRUE , FALSE, TRUE  ), _ '' OPT_SHOWINCLUDES affects compiler output display
 	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_STATIC       affects link
@@ -3056,16 +3060,6 @@ private sub hCompileBas _
 
 	asmfile = hGetAsmName( module, 1 )
 
-	'' Clean up stage 1 output (FB backend's output, *.asm/*.c/*.ll),
-	'' unless -R was given, and additionally in case of -gen gas, unless -RR
-	'' was given (because for -gen gas, the FB backend's .asm output is also
-	'' the final .asm which -RR is supposed to preserve).
-	if( (not fbc.keepasm) and _
-		(((fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS) and (fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS64) ) or _
-		(not fbc.keepfinalasm)) ) then
-		fbcAddTemp( asmfile )
-	end if
-
 	'' -pp?
 	if( fbGetOption( FB_COMPOPT_PPONLY ) ) then
 		'' Re-use the full -o path/filename for the -pp output file,
@@ -3108,6 +3102,27 @@ private sub hCompileBas _
 	end if
 
 	do
+		'' Clean up stage 1 output (FB backend's output, *.asm/*.c/*.ll),
+		'' unless -R was given, and additionally in case of -gen gas, unless -RR
+		'' was given (because for -gen gas, the FB backend's .asm output is also
+		'' the final .asm which -RR is supposed to preserve).
+		if( (not fbc.keepasm) and _
+			(((fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS) and (fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS64) ) or _
+			(not fbc.keepfinalasm)) ) then
+			fbcAddTemp( asmfile )
+
+		'' first module? handle side effects of #cmdline
+		elseif( module_count = 1 ) then
+			'' Keep the asm file.  If the keep option was in a #cmdline then
+			'' the temporary file probably was already added to the fbc.temps
+			'' list on the first pass in to the parser (unless real command
+			'' line also had an option to keep the asm file).
+
+			if( fbRestartGetCount() > 0 ) then
+				fbcRemoveTemp( asmfile )
+			end if
+		end if
+
 		'' init the parser (note: initializes env)
 		fbInit( is_main, fbc.entry, module_count )
 
