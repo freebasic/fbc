@@ -14,7 +14,8 @@ static void driver_update_bpp4(void);
 static void end_of_driver_update(void);
 static int *driver_fetch_modes(int depth, int *size);
 
-GFXDRIVER fb_gfxDriverBIOS =
+/* GFXDRIVER */
+const GFXDRIVER fb_gfxDriverBIOS =
 {
 	"BIOS",                  /* char *name; */
 	driver_init,             /* int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags); */

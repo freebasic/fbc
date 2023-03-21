@@ -129,6 +129,7 @@ static void driver_poll_events(void)
 	/* !!!WRITEME!!! */
 }
 
+/* GFXDRIVER */
 static const GFXDRIVER fb_gfxDriverXbox =
 {
 	"xbox",                  /* char *name; */

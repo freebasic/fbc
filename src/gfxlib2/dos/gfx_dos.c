@@ -9,11 +9,11 @@
 #define TIMER_HZ 1000
 
 /* driver list */
-extern GFXDRIVER fb_gfxDriverVESAlinear;
-extern GFXDRIVER fb_gfxDriverVESA;
-extern GFXDRIVER fb_gfxDriverBIOS;
-extern GFXDRIVER fb_gfxDriverVGA;
-extern GFXDRIVER fb_gfxDriverModeX;
+extern const GFXDRIVER fb_gfxDriverVESAlinear;
+extern const GFXDRIVER fb_gfxDriverVESA;
+extern const GFXDRIVER fb_gfxDriverBIOS;
+extern const GFXDRIVER fb_gfxDriverVGA;
+extern const GFXDRIVER fb_gfxDriverModeX;
 
 const GFXDRIVER *__fb_gfx_drivers_list[] = {
 	&fb_gfxDriverVESAlinear,

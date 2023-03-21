@@ -11,7 +11,8 @@ static void driver_exit(void);
 static void driver_update(void);
 static void end_of_driver_update(void);
 
-GFXDRIVER fb_gfxDriverVESAlinear =
+/* GFXDRIVER */
+const GFXDRIVER fb_gfxDriverVESAlinear =
 {
 	"VESA linear",           /* char *name; */
 	driver_init,             /* int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags); */

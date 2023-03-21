@@ -42,22 +42,23 @@ static int driver_get_mouse(int *x, int *y, int *z, int *buttons, int *clip);
 static void driver_set_mouse(int x, int y, int cursor, int clip);
 static int *driver_fetch_modes(int depth, int *size);
 
-GFXDRIVER fb_gfxDriverFBDev =
+/* GFXDRIVER */
+const GFXDRIVER fb_gfxDriverFBDev =
 {
-	"FBDev",		/* char *name; */
-	driver_init,		/* int (*init)(int w, int h, char *title, int fullscreen); */
-	driver_exit,		/* void (*exit)(void); */
-	driver_lock,		/* void (*lock)(void); */
-	driver_unlock,		/* void (*unlock)(void); */
-	driver_set_palette,	/* void (*set_palette)(int index, int r, int g, int b); */
-	driver_wait_vsync,	/* void (*wait_vsync)(void); */
-	driver_get_mouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons, int *clip); */
-	driver_set_mouse,	/* void (*set_mouse)(int x, int y, int cursor, int clip); */
-	NULL,			/* void (*set_window_title)(char *title); */
-	NULL,			/* int (*set_window_pos)(int x, int y); */
-	driver_fetch_modes,	/* int *(*fetch_modes)(void); */
-	NULL,			/* void (*flip)(void); */
-	NULL			/* void (*poll_events)(void); */
+	"FBDev",            /* char *name; */
+	driver_init,        /* int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags); */
+	driver_exit,        /* void (*exit)(void); */
+	driver_lock,        /* void (*lock)(void); */
+	driver_unlock,      /* void (*unlock)(void); */
+	driver_set_palette, /* void (*set_palette)(int index, int r, int g, int b); */
+	driver_wait_vsync,  /* void (*wait_vsync)(void); */
+	driver_get_mouse,   /* int (*get_mouse)(int *x, int *y, int *z, int *buttons, int *clip); */
+	driver_set_mouse,   /* void (*set_mouse)(int x, int y, int cursor, int clip); */
+	NULL,               /* void (*set_window_title)(char *title); */
+	NULL,               /* int (*set_window_pos)(int x, int y); */
+	driver_fetch_modes, /* int *(*fetch_modes)(void); */
+	NULL,               /* void (*flip)(void); */
+	NULL                /* void (*poll_events)(void); */
 };
 
 

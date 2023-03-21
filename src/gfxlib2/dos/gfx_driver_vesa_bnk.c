@@ -12,7 +12,8 @@ static void fb_dos_vesa_set_bank_int_end(void);
 extern void fb_dos_vesa_set_bank_pm(void);
 extern void fb_dos_vesa_set_bank_pm_end(void);
 
-GFXDRIVER fb_gfxDriverVESA =
+/* GFXDRIVER */
+const GFXDRIVER fb_gfxDriverVESA =
 {
 	"VESA banked",           /* char *name; */
 	driver_init,             /* int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags); */

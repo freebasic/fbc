@@ -36,8 +36,8 @@ typedef struct X11DRIVER
 
 
 extern X11DRIVER fb_x11;
-extern GFXDRIVER fb_gfxDriverX11;
-extern GFXDRIVER fb_gfxDriverOpenGL;
+extern const GFXDRIVER fb_gfxDriverX11;
+extern const GFXDRIVER fb_gfxDriverOpenGL;
 
 extern char **fb_program_icon;
 

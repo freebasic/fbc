@@ -259,6 +259,7 @@ static void driver_set_window_title(char *title)
     SDL_WM_SetCaption(title, NULL);
 }
 
+/* GFXDRIVER */
 static const GFXDRIVER fb_gfxDriverJS =
 {
 	"asmjs",                 /* char *name; */
@@ -277,11 +278,12 @@ static const GFXDRIVER fb_gfxDriverJS =
 	driver_poll_events       /* void (*poll_events)(void); */
 };
 
+/* GFXDRIVER */
 static const GFXDRIVER fb_gfxWebGL =
 {
 	"WebGL",                 /* char *name; */
-	WGL_init,             /* int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags); */
-	WGL_exit,             /* void (*exit)(void); */
+	WGL_init,                /* int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags); */
+	WGL_exit,                /* void (*exit)(void); */
 	driver_lock,             /* void (*lock)(void); */
 	driver_unlock,           /* void (*unlock)(void); */
 	NULL,                    /* void (*set_palette)(int index, int r, int g, int b); */
@@ -291,7 +293,7 @@ static const GFXDRIVER fb_gfxWebGL =
 	driver_set_window_title, /* void (*set_window_title)(char *title); */
 	NULL,                    /* int (*set_window_pos)(int x, int y); */
 	driver_fetch_modes,      /* int *(*fetch_modes)(int depth, int *size); */
-	WGL_Flip,                    /* void (*flip)(void); */
+	WGL_Flip,                /* void (*flip)(void); */
 	driver_poll_events       /* void (*poll_events)(void); */
 };
 
