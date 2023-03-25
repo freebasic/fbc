@@ -58,7 +58,8 @@ const GFXDRIVER fb_gfxDriverFBDev =
 	NULL,               /* int (*set_window_pos)(int x, int y); */
 	driver_fetch_modes, /* int *(*fetch_modes)(void); */
 	NULL,               /* void (*flip)(void); */
-	NULL                /* void (*poll_events)(void); */
+	NULL,               /* void (*poll_events)(void); */
+	NULL                /* void (*update)(void); */
 };
 
 

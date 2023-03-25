@@ -24,7 +24,8 @@ const GFXDRIVER fb_gfxDriverX11 =
 	fb_hX11SetWindowPos,    /* int (*set_window_pos)(int x, int y); */
 	fb_hX11FetchModes,      /* int *(*fetch_modes)(void); */
 	NULL,                   /* void (*flip)(void); */
-	NULL                    /* void (*poll_events)(void); */
+	NULL,                   /* void (*poll_events)(void); */
+	NULL                    /* void (*update)(void); */
 };
 
 static XImage *image, *shape_image;

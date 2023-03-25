@@ -28,7 +28,8 @@ const GFXDRIVER fb_gfxDriverVESA =
 	NULL,                    /* int (*set_window_pos)(int x, int y); */
 	fb_dos_vesa_fetch_modes, /* int *(*fetch_modes)(int depth, int *size); */
 	NULL,                    /* void (*flip)(void); */
-	NULL                     /* void (*poll_events)(void); */
+	NULL,                    /* void (*poll_events)(void); */
+	NULL                     /* void (*update)(void); */
 };
 
 static int data_locked = FALSE;

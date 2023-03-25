@@ -87,7 +87,8 @@ const GFXDRIVER fb_gfxDriverD2D = {
 	&fb_hWin32SetWindowPos,  /* int (*set_window_pos)(int x, int y); */
 	&D2DFetchModes,          /* int *(*fetch_modes)(int depth, int *size); */
 	NULL,                    /* void (*flip)(void); */
-	NULL                     /* void (*poll_events)(void); */
+	NULL,                    /* void (*poll_events)(void); */
+	NULL                     /* void (*update)(void); */
 };
 
 #define DX_GUID(id,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) static const GUID id = {l,w1,w2,{b1,b2,b3,b4,b5,b6,b7,b8}}

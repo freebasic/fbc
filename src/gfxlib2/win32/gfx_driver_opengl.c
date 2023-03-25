@@ -90,7 +90,8 @@ const GFXDRIVER fb_gfxDriverOpenGL =
 	fb_hWin32SetWindowPos,  /* int (*set_window_pos)(int x, int y); */
 	driver_fetch_modes,     /* int *(*fetch_modes)(int depth, int *size); */
 	driver_flip,            /* void (*flip)(void); */
-	driver_poll_events      /* void (*poll_events)(void); */
+	driver_poll_events,     /* void (*poll_events)(void); */
+	NULL                    /* void (*update)(void); */
 };
 
 

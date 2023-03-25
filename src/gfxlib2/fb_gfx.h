@@ -347,6 +347,12 @@ typedef struct GFXDRIVER
 	 * It is only needed for OpenGL drivers and can be NULL otherwise.
 	 */
 	void (*poll_events)(void);
+
+	/** Driver page update function pointer.
+	 *
+	 * Manually refresh the screen by copying from gfxlib2 memory to video memory
+	 */
+	void (*update)(void);
 } GFXDRIVER;
 
 typedef struct PALETTE

@@ -20,7 +20,8 @@ const GFXDRIVER __fb_gfxDriverNull =
 	NULL,           /* int (*set_window_pos)(int x, int y); */
 	NULL,           /* int *(*fetch_modes)(int depth, int *size); */
 	NULL,           /* void (*flip)(void); */
-	NULL            /* void (*poll_events)(void); */
+	NULL,           /* void (*poll_events)(void); */
+	NULL            /* void (*update)(void); */
 };
 
 static void driver_dummy(void)

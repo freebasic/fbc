@@ -275,7 +275,8 @@ static const GFXDRIVER fb_gfxDriverJS =
 	NULL,                    /* int (*set_window_pos)(int x, int y); */
 	driver_fetch_modes,      /* int *(*fetch_modes)(int depth, int *size); */
 	NULL,                    /* void (*flip)(void); */
-	driver_poll_events       /* void (*poll_events)(void); */
+	driver_poll_events,      /* void (*poll_events)(void); */
+	NULL                     /* void (*update)(void); */
 };
 
 /* GFXDRIVER */
@@ -294,7 +295,8 @@ static const GFXDRIVER fb_gfxWebGL =
 	NULL,                    /* int (*set_window_pos)(int x, int y); */
 	driver_fetch_modes,      /* int *(*fetch_modes)(int depth, int *size); */
 	WGL_Flip,                /* void (*flip)(void); */
-	driver_poll_events       /* void (*poll_events)(void); */
+	driver_poll_events,      /* void (*poll_events)(void); */
+	NULL                     /* void (*update)(void); */
 };
 
 const GFXDRIVER *__fb_gfx_drivers_list[] = {
