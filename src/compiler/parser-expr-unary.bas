@@ -444,14 +444,44 @@ function cDerefExpression( ) as ASTNODE ptr
 	function = astBuildMultiDeref( derefcnt, expr, astGetFullType( expr ), astGetSubType( expr ) )
 end function
 
+private function hProcPtrResolveOverload _
+	( _
+		byval ovl_head_proc as FBSYMBOL ptr, _
+		byval proc as FBSYMBOL ptr, _
+		byval check_exact as boolean = FALSE _
+	) as FBSYMBOL ptr
+
+	dim as FBSYMBOL ptr sym = ovl_head_proc
+
+	if( symbIsOperator( ovl_head_proc ) ) then
+		dim as AST_OP op = any
+		op = symbGetProcOpOvl( ovl_head_proc )
+		sym = symbFindOpOvlProc( op, ovl_head_proc, proc )
+
+	elseif( symbIsProc( proc ) ) then
+		dim findopts as FB_SYMBFINDOPT = FB_SYMBFINDOPT_NONE
+
+		'' if it is a property then let the function pointer decide
+		'' if we are looking for the set or get procedure where
+		'' get is expected to have a return type
+		if( symbIsProperty( ovl_head_proc ) ) then
+			if( symbGetType( proc ) <> FB_DATATYPE_VOID ) then
+				findopts = FB_SYMBFINDOPT_PROPGET
+			end if
+		end if
+		sym = symbFindOverloadProc( ovl_head_proc, proc, findopts )
+
+	end if
+
+	return sym
+end function
+
 private function hProcPtrBody _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr, _
 		byval check_exact as boolean = FALSE _
 	) as ASTNODE ptr
-
-	dim as FBSYMBOL ptr sym = any
 
 	'' '('')'?
 	if( lexGetToken( ) = CHAR_LPRNT ) then
@@ -463,24 +493,19 @@ private function hProcPtrBody _
 	end if
 
 	'' resolve overloaded procs
-	if( (symbIsOverloaded( proc ) <> 0) or (check_exact <> FALSE) ) then
-		if( parser.ctxsym <> NULL ) then
-			if( symbIsProc( parser.ctxsym ) ) then
-				sym = symbFindOverloadProc( proc, parser.ctxsym )
-				if( sym <> NULL ) then
-					proc = sym
-				elseif( check_exact ) then
-					errReport( FB_ERRMSG_NOMATCHINGPROC, TRUE )
-					return astNewCONSTi( 0 )
-				end if
+	if( parser.ctxsym <> NULL ) then
+		if( symbIsOverloaded( proc ) or check_exact ) then
+			dim as FBSYMBOL ptr sym = any
+			sym = hProcPtrResolveOverload( proc, parser.ctxsym )
+
+			if( sym ) then
+				proc = sym
+			elseif( check_exact ) then
+				errReport( FB_ERRMSG_NOMATCHINGPROC, TRUE )
+				return astNewCONSTi( 0 )
 			end if
 		end if
-	end if
 
-	'' taking the address of an method? pointer to methods not supported yet..
-	if( symbIsMethod( proc ) ) then
-		errReportEx( FB_ERRMSG_ACCESSTONONSTATICMEMBER, symbGetFullProcName( proc ) )
-		return astNewCONSTi( 0 )
 	end if
 
 	'' Check visibility of the proc
@@ -642,15 +667,17 @@ function cAddrOfExpression( ) as ASTNODE ptr
 		dim as FBSYMBOL ptr sym = any, base_parent = any
 
 		chain_ = cIdentifier( base_parent, _
-		                      FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
-		sym = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
+		                      FB_IDOPT_CHECKSTATIC or _
+		                      FB_IDOPT_ALLOWSTRUCT or _
+		                      FB_IDOPT_ALLOWOPERATOR )
+
+		sym = cIdentifierIfDefined( base_parent, chain_ )
+
 		if( sym = NULL ) then
 			errReport( FB_ERRMSG_UNDEFINEDSYMBOL )
 			'' error recovery: skip until ')' and fake a node
 			hSkipUntil( CHAR_RPRNT, TRUE )
 			return astNewCONSTi( 0 )
-		else
-			lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
 		end if
 
 		'' ',' ?
