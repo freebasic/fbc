@@ -56,6 +56,12 @@ check_N( T )
 '' check_N( T.constructor )
 '' check_N( T.destructor )
 '' check_N( T.let )
+'' check_N( T.+= )
+'' check_N( T.[] )
+'' check_N( T.new )
+'' check_N( T.new[] )
+'' check_N( T.delete )
+'' check_N( T.delete[] )
 
 type T
 	check_N( datafield )
@@ -69,17 +75,6 @@ type T
 
 	check_Y( T )
 
-	'' these will cause error because it is not yet known that T has members
-	'' check_N( T.datafield )
-	'' check_N( T.staticfield )
-	'' check_N( T.proc )
-	'' check_N( T.staticproc )
-	'' check_N( T.prop )
-	'' check_Y( T.constructor )
-	'' check_Y( T.destructor )
-	'' check_Y( T.let )
-
-	'' errors? because T is not yet fully parsed
 	check_N( T.member )
 	check_N( T.datafield )
 	check_N( T.staticfield )
@@ -89,6 +84,13 @@ type T
 	check_N( T.constructor )
 	check_N( T.destructor )
 	check_N( T.let )
+	check_N( T.+= )
+	check_N( T.[] )
+	check_N( T.new )
+	check_N( T.new[] )
+	check_N( T.delete )
+	check_N( T.delete[] )
+	check_N( T.cast )
 
 	datafield as byte
 	static staticfield as short
@@ -98,6 +100,13 @@ type T
 	declare constructor()
 	declare destructor()
 	declare operator let( byref arg as const T )
+	declare operator += ( byval arg as integer )
+	declare operator [] ( byval index as integer ) as integer
+	declare operator new( byval size as uinteger ) as any ptr
+	declare operator delete( byval arg as any ptr )
+	declare operator new[]( byval size as uinteger ) as any ptr
+	declare operator delete[]( byval arg as any ptr )
+	declare operator cast() as string
 
 	check_Y( datafield )
 	check_Y( staticfield )
@@ -107,6 +116,17 @@ type T
 	check_Y( constructor )
 	check_Y( destructor )
 	check_Y( let )
+	check_Y( cast )
+
+''  errors ... because unqualified operators are expected to have global scope
+''             and it is a limitation of how fbc handles operator overloads
+''             even when encountered in a namespace
+''  check_Y( += )
+''  check_Y( [] )
+''  check_Y( new )
+''  check_Y( new[] )
+''  check_Y( delete )
+''  check_Y( delete[] )
 
 	check_Y( T )
 
@@ -118,6 +138,13 @@ type T
 	check_Y( T.constructor )
 	check_Y( T.destructor )
 	check_Y( T.let )
+	check_Y( T.+= )
+	check_Y( T.[] )
+	check_Y( T.new )
+	check_Y( T.new[] )
+	check_Y( T.delete )
+	check_Y( T.delete[] )
+	check_Y( T.cast )
 end type
 
 check_N( datafield )
@@ -128,6 +155,7 @@ check_N( prop )
 check_Y( constructor )     '' still a keyword
 check_Y( destructor )      '' still a keyword
 check_Y( let )             '' still a keyword
+check_Y( cast )             '' still a keyword
 
 check_Y( T )
 check_Y( T.datafield )
@@ -138,6 +166,13 @@ check_Y( T.prop )
 check_Y( T.constructor )
 check_Y( T.destructor )
 check_Y( T.let )
+check_Y( T.+= )
+check_Y( T.[] )
+check_Y( T.new )
+check_Y( T.new[] )
+check_Y( T.delete )
+check_Y( T.delete[] )
+check_Y( T.cast )
 
 '' ----------------
 

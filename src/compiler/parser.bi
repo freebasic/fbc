@@ -211,7 +211,7 @@ enum FB_IDOPT
 	FB_IDOPT_DONTCHKPERIOD      = &h00000001
 	FB_IDOPT_SHOWERROR          = &h00000002
 	FB_IDOPT_ISDECL             = &h00000004
-	FB_IDOPT_ISOPERATOR         = &h00000008  '' allow operators in identifier
+	FB_IDOPT_ALLOWOPERATOR      = &h00000008  '' allow operators in identifier
 	FB_IDOPT_ALLOWSTRUCT        = &h00000010
 	FB_IDOPT_CHECKSTATIC        = &h00000020
 	FB_IDOPT_ISVAR              = &h00000040  '' parsing namespace prefix for variable declaration?
@@ -347,6 +347,8 @@ declare sub cCurrentParentId( )
 
 declare function cIdentifierOrUDTMember _
 	( _
+		byref parent as FBSYMBOL ptr = NULL, _
+		byval chain_ as FBSYMCHAIN ptr = NULL _
 	) as FBSYMBOL ptr
 
 declare sub cProcDecl( )

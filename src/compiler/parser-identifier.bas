@@ -370,7 +370,7 @@ function cIdentifier _
 		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
 
 		case FB_TKCLASS_OPERATOR, FB_TKCLASS_KEYWORD
-			if( (options and (FB_IDOPT_ISOPERATOR or FB_IDOPT_ALLOWMEMBERS)) <> 0 ) then
+			if( (options and (FB_IDOPT_ALLOWOPERATOR or FB_IDOPT_ALLOWMEMBERS)) <> 0 ) then
 				exit do
 			end if
 
@@ -384,7 +384,7 @@ function cIdentifier _
 			'' Allow '[' for '[]' operator overloads, it's not part
 			'' of FB_TKCLASS_OPERATOR since it's not a real op.
 			if( lexGetToken( ) = CHAR_LBRACKET ) then
-				if( (options and FB_IDOPT_ISOPERATOR ) <> 0 ) then
+				if( (options and FB_IDOPT_ALLOWOPERATOR ) <> 0 ) then
 					exit do
 				end if
 			end if
@@ -560,7 +560,7 @@ function cParentId _
 		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
 
 		case FB_TKCLASS_OPERATOR, FB_TKCLASS_KEYWORD
-			if( (options and (FB_IDOPT_ISOPERATOR or FB_IDOPT_ALLOWMEMBERS)) <> 0 ) then
+			if( (options and (FB_IDOPT_ALLOWOPERATOR or FB_IDOPT_ALLOWMEMBERS)) <> 0 ) then
 				exit do
 			end if
 
@@ -571,13 +571,13 @@ function cParentId _
 			'' Allow '[' for '[]' operator overloads, it's not part
 			'' of FB_TKCLASS_OPERATOR since it's not a real op.
 			if( lexGetToken( ) = CHAR_LBRACKET ) then
-				if( (options and FB_IDOPT_ISOPERATOR ) <> 0 ) then
+				if( (options and FB_IDOPT_ALLOWOPERATOR ) <> 0 ) then
 					exit do
 				end if
 			end if
 
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-				exit do
+			exit do
 		end select
 
 		chain_ = symbLookupAt( sym, lexGetText( ), FALSE )
@@ -625,16 +625,18 @@ end sub
 ''
 function cIdentifierOrUDTMember _
 	( _
+		byref base_parent as FBSYMBOL ptr = NULL, _
+		byval chain_ as FBSYMCHAIN ptr = NULL _
 	) as FBSYMBOL ptr
-
-	dim as FBSYMBOL ptr parent = NULL
-	dim as FBSYMCHAIN ptr chain_ = any
 
 	const idopts = FB_IDOPT_NOSKIP or _
 	               FB_IDOPT_ALLOWSTRUCT or _
-	               FB_IDOPT_ALLOWMEMBERS
+	               FB_IDOPT_ALLOWMEMBERS or _
+	               FB_IDOPT_ALLOWOPERATOR
 
-	chain_ = cIdentifier( parent, idopts )
+	if( chain_ = NULL ) then
+		chain_ = cIdentifier( base_parent, idopts )
+	end if
 
 	'' not defined if symbol was not found
 	if( chain_ = NULL ) then
@@ -643,14 +645,14 @@ function cIdentifierOrUDTMember _
 	end if
 
 	'' exit if parent symbol was not parsed
-	if( parent = NULL ) then
+	if( base_parent = NULL ) then
 		lexSkipToken( )
 		return chain_->sym
 	end if
 
 	'' exit if symbol parsed was not a struct
-	if( symbGetClass( parent ) <> FB_SYMBCLASS_STRUCT ) then
-		lexSkipToken( )
+	if( symbGetClass( base_parent ) <> FB_SYMBCLASS_STRUCT ) then
+		lexSkipToken( LEXCHECK_POST_SUFFIX  )
 		return chain_->sym
 	end if
 
@@ -659,24 +661,12 @@ function cIdentifierOrUDTMember _
 		lexSkipToken( )
 		return chain_->sym
 
-	case FB_TKCLASS_OPERATOR
-		dim as integer op = INVALID
-
-		'' cOperator will handle skipping the token
-		op = cOperator( TRUE )
-
-		if( op <> INVALID ) then
-			return symbGetCompOpOvlHead( parent, op )
-		end if
-
-		return NULL
-
 	case FB_TKCLASS_KEYWORD
 		dim as FBSYMBOL ptr sym = NULL
 
 		'' no member procs? fields can be named same as keywords
-		if( symbGetIsUnique( parent ) = FALSE ) then
-			chain_ = symbLookupAt( parent, lexGetText( ), FALSE )
+		if( symbGetIsUnique( base_parent ) = FALSE ) then
+			chain_ = symbLookupAt( base_parent, lexGetText( ), FALSE )
 
 			'' keyword
 			lexSkipToken( )
@@ -692,12 +682,15 @@ function cIdentifierOrUDTMember _
 
 		select case as const lexGetToken( )
 		case FB_TK_CONSTRUCTOR
-			sym = symbGetCompCtorHead( parent )
+			sym = symbGetCompCtorHead( base_parent )
 		case FB_TK_DESTRUCTOR
-			sym = symbGetCompDtor1( parent )
+			sym = symbGetCompDtor1( base_parent )
 
 		case FB_TK_LET
-			sym = symbGetCompOpOvlHead( parent, AST_OP_ASSIGN )
+			sym = symbGetCompOpOvlHead( base_parent, AST_OP_ASSIGN )
+
+		case FB_TK_CAST
+			sym = symbGetUDTOpOvlTb( base_parent )(AST_OP_CAST - AST_OP_SELFBASE)
 
 		end select
 
@@ -706,6 +699,21 @@ function cIdentifierOrUDTMember _
 		return sym
 
 	end select
+
+	'' Allow '[' for '[]' operator overloads, it's not part
+	'' of FB_TKCLASS_OPERATOR since it's not a real op.
+	if( (lexGetClass( ) = FB_TKCLASS_OPERATOR) or (lexGetToken( ) = CHAR_LBRACKET) ) then
+		dim as integer op = INVALID
+
+		'' cOperator will handle skipping the token
+		op = cOperator( TRUE )
+
+		if( op <> INVALID ) then
+			return symbGetCompOpOvlHead( base_parent, op )
+		end if
+
+		return NULL
+	end if
 
 	lexSkipToken( )
 	return NULL
