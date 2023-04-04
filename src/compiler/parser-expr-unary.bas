@@ -686,6 +686,15 @@ function cAddrOfExpression( ) as ASTNODE ptr
 			return astNewCONSTi( 0 )
 		end if
 
+		select case symbGetClass( sym )
+		case FB_SYMBCLASS_PROC
+		case else
+			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+			'' error recovery: skip until ')' and fake a node
+			hSkipUntil( CHAR_RPRNT, TRUE )
+			return astNewCONSTi( 0 )
+		end select
+
 		hCheckEmptyProcParens()
 
 		'' ',' ?
