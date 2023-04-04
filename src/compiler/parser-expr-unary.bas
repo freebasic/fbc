@@ -476,13 +476,7 @@ private function hProcPtrResolveOverload _
 	return sym
 end function
 
-private function hProcPtrBody _
-	( _
-		byval base_parent as FBSYMBOL ptr, _
-		byval proc as FBSYMBOL ptr, _
-		byval check_exact as boolean = FALSE _
-	) as ASTNODE ptr
-
+private sub hCheckEmptyProcParens()
 	'' '('')'?
 	if( lexGetToken( ) = CHAR_LPRNT ) then
 		lexSkipToken( )
@@ -491,6 +485,17 @@ private function hProcPtrBody _
 			hSkipUntil( CHAR_RPRNT, TRUE )
 		end if
 	end if
+end sub
+
+private function hProcPtrBody _
+	( _
+		byval base_parent as FBSYMBOL ptr, _
+		byref proc as FBSYMBOL ptr, _
+		byval check_exact as boolean _
+	) as ASTNODE ptr
+
+	assert( proc <> NULL )
+	assert( symbIsProc( proc ) )
 
 	'' resolve overloaded procs
 	if( parser.ctxsym <> NULL ) then
@@ -621,7 +626,8 @@ function cAddrOfExpression( ) as ASTNODE ptr
 		'' proc?
 		if( sym <> NULL ) then
 			lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
-			return hProcPtrBody( base_parent, sym )
+			hCheckEmptyProcParens()
+			return hProcPtrBody( base_parent, sym, FALSE )
 		'' anything else..
 		else
 			return hVarPtrBody( base_parent, chain_ )
@@ -671,7 +677,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 		                      FB_IDOPT_ALLOWSTRUCT or _
 		                      FB_IDOPT_ALLOWOPERATOR )
 
-		sym = cIdentifierIfDefined( base_parent, chain_ )
+		sym = cIdentifierOrUDTMember( base_parent, chain_ )
 
 		if( sym = NULL ) then
 			errReport( FB_ERRMSG_UNDEFINEDSYMBOL )
@@ -680,12 +686,14 @@ function cAddrOfExpression( ) as ASTNODE ptr
 			return astNewCONSTi( 0 )
 		end if
 
+		hCheckEmptyProcParens()
+
 		'' ',' ?
 		if( hMatch( CHAR_COMMA ) ) then
 			dim dtype as integer
 			dim subtype as FBSYMBOL ptr
 			if( cSymbolType( dtype, subtype ) = FALSE ) then
-				errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
+				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 				'' error recovery: skip until ')' and fake a node
 				hSkipUntil( CHAR_RPRNT, TRUE )
 				return astNewCONSTi( 0 )
@@ -707,7 +715,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 			end if
 
 		else
-			expr = hProcPtrBody( base_parent, sym )
+			expr = hProcPtrBody( base_parent, sym, FALSE )
 		end if
 
 		'' ')'
