@@ -25,7 +25,7 @@ private function hPPDefinedExpr( ) as ASTNODE ptr
 	end if
 
 	'' Identifier
-	is_defined = (cIdentifierIfDefined( ) <> NULL)
+	is_defined = (cIdentifierOrUDTMember( ) <> NULL)
 
 	'' ')'
 	if( hMatch( CHAR_RPRNT ) = FALSE ) then

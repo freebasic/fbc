@@ -345,7 +345,7 @@ declare function cParentId _
 
 declare sub cCurrentParentId( )
 
-declare function cIdentifierIfDefined _
+declare function cIdentifierOrUDTMember _
 	( _
 	) as FBSYMBOL ptr
 

@@ -623,7 +623,7 @@ end sub
 ''              | Identifier '.' {new|delete}
 ''              | Identifier '.' operator
 ''
-function cIdentifierIfDefined _
+function cIdentifierOrUDTMember _
 	( _
 	) as FBSYMBOL ptr
 
@@ -680,7 +680,7 @@ function cIdentifierIfDefined _
 
 			'' keyword
 			lexSkipToken( )
-			
+
 			if( chain_ ) then
 				return chain_->sym
 			end if

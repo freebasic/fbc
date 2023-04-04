@@ -1070,7 +1070,7 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 				case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, _
 				     FB_TKCLASS_QUIRKWD, FB_TKCLASS_OPERATOR
 
-					sym = cIdentifierIfDefined( )
+					sym = cIdentifierOrUDTMember( )
 				end select
 
 				'' for some symbols, we maybe want to reset and try a TYPEOF below
