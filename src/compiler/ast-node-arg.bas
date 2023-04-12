@@ -1029,6 +1029,12 @@ function astNewARG _
 	'' optional/default?
 	if( arg = NULL ) then
 		arg = hCreateOptArg( param )
+
+		'' still NULL? then hCreateOptArg() failed
+		if( arg = NULL ) then
+			function = NULL
+			exit function
+		end if
 	end if
 
 	if( dtype = FB_DATATYPE_INVALID ) then
@@ -1049,6 +1055,7 @@ function astNewARG _
 			else
 				errReportParam( parent->sym, parent->call.args+1, NULL, FB_ERRMSG_ILLEGALASSIGNMENT )
 			end if
+			function = NULL
 			exit function
 		end if
 	end if

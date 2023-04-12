@@ -130,6 +130,7 @@ Version 1.10.0
 - fbc: extend lifetime of temporary variables in WITH TYPE(...) expressions to the END WITH statement
 - fbc: #cmdline "-r -rr -R -RR -o objfile ..." needs to restart the parser and handle changes in keeping the ASM file.  In the case of '-o objfile' a major restart is needed since some initialization of filenames is done before parsing starts.  By default the temporary ASM file was being kept even if #cmdline options indicate to keep it.
 - sf.net #569: gfxlib2: GetMouse/SetMouse scaling problem in QB modes Screen 2 & 8 - adjust GetMouse/SetMouse by internal scanline_size
+- fbc: fbc: fix bad error recovery on BYREF intializer.  'Dim Byref As UDT u = UDT()' would case compiler crash if UDT constructor argument optional
 
 
 Version 1.09.0
