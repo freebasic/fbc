@@ -490,7 +490,7 @@ end sub
 private function hProcPtrBody _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
-		byref proc as FBSYMBOL ptr, _
+		byval proc as FBSYMBOL ptr, _
 		byval check_exact as boolean _
 	) as ASTNODE ptr
 
@@ -527,6 +527,91 @@ private function hProcPtrBody _
 	function = astBuildProcAddrof( proc )
 end function
 
+function cProcPtrBody _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+	dim as FBSYMCHAIN ptr chain_ = any
+	dim as FBSYMBOL ptr sym = any, base_parent = any
+	dim as ASTNODE ptr expr = any
+
+	if( dtype = FB_DATATYPE_STRUCT ) then
+		base_parent = subtype
+		chain_ = NULL
+
+	else
+		chain_ = cIdentifier( base_parent, _
+		                      FB_IDOPT_CHECKSTATIC or _
+		                      FB_IDOPT_ALLOWSTRUCT or _
+		                      FB_IDOPT_ALLOWOPERATOR )
+
+	end if
+
+	sym = cIdentifierOrUDTMember( base_parent, chain_ )
+
+	if( sym = NULL ) then
+		errReport( FB_ERRMSG_UNDEFINEDSYMBOL )
+		'' error recovery: skip until ')' and fake a node
+		hSkipUntil( CHAR_RPRNT, TRUE )
+		return astNewCONSTi( 0 )
+	end if
+
+	if( symbGetClass( sym ) <> FB_SYMBCLASS_PROC ) then
+		errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+		'' error recovery: skip until ')' and fake a node
+		hSkipUntil( CHAR_RPRNT, TRUE )
+		return astNewCONSTi( 0 )
+	end if
+
+	hCheckEmptyProcParens()
+
+	'' ','?
+	if( hMatch( CHAR_COMMA ) ) then
+		dim as integer dtype = any
+		dim as FBSYMBOL ptr subtype = any
+		dim as integer is_exact = FALSE
+
+		'' only if anything but ')' follows...
+		if( lexGetToken( ) <> CHAR_RPRNT ) then
+			if( cSymbolType( dtype, subtype ) = FALSE ) then
+				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+				'' error recovery: skip until ')' and fake a node
+				hSkipUntil( CHAR_RPRNT, TRUE )
+				return astNewCONSTi( 0 )
+			end if
+
+			select case typeGetDtAndPtrOnly( dtype )
+			case FB_DATATYPE_VOID
+				'' 'ANY' matches first declaration
+			case typeAddrOf( FB_DATATYPE_FUNCTION )
+				is_exact = TRUE
+			case else
+				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+				'' error recovery: skip until ')' and fake a node
+				hSkipUntil( CHAR_RPRNT, TRUE )
+				return astNewCONSTi( 0 )
+			end select
+		end if
+
+		dim as FBSYMBOL ptr oldsym = parser.ctxsym
+		dim as integer old_dtype = parser.ctx_dtype
+		parser.ctxsym = subtype
+		parser.ctx_dtype = dtype
+
+		expr = hProcPtrBody( base_parent, sym, is_exact )
+
+		parser.ctxsym = oldsym
+		parser.ctx_dtype = old_dtype
+
+	else
+		expr = hProcPtrBody( base_parent, sym, FALSE )
+	end if
+
+	return expr
+end function
+
 private function hVarPtrBody _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
@@ -547,6 +632,7 @@ private function hVarPtrBody _
 	'' hand, we need to make sure we don't prematurely optimize
 	'' the CONST specifier away in the event that it is needed
 	'' to be known with AST type checking later.
+
 	dim as ASTNODE ptr t = astSkipConstCASTs( expr )
 
 	select case as const astGetClass( t )
@@ -628,10 +714,10 @@ function cAddrOfExpression( ) as ASTNODE ptr
 			lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
 			hCheckEmptyProcParens()
 			return hProcPtrBody( base_parent, sym, FALSE )
-		'' anything else..
-		else
-			return hVarPtrBody( base_parent, chain_ )
 		end if
+
+		'' anything else
+		return hVarPtrBody( base_parent, chain_ )
 	end if
 
 	select case as const lexGetToken( )
@@ -656,7 +742,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 			hSkipUntil( CHAR_RPRNT, TRUE )
 		end if
 
-	'' PROCPTR '(' Proc ('('')')? ')'
+	'' PROCPTR '(' Proc ('('')')? ( ',' signature )? ')'
 	case FB_TK_PROCPTR
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
@@ -668,64 +754,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 			return astNewCONSTi( 0 )
 		end if
 
-		'' proc?
-		dim as FBSYMCHAIN ptr chain_ = any
-		dim as FBSYMBOL ptr sym = any, base_parent = any
-
-		chain_ = cIdentifier( base_parent, _
-		                      FB_IDOPT_CHECKSTATIC or _
-		                      FB_IDOPT_ALLOWSTRUCT or _
-		                      FB_IDOPT_ALLOWOPERATOR )
-
-		sym = cIdentifierOrUDTMember( base_parent, chain_ )
-
-		if( sym = NULL ) then
-			errReport( FB_ERRMSG_UNDEFINEDSYMBOL )
-			'' error recovery: skip until ')' and fake a node
-			hSkipUntil( CHAR_RPRNT, TRUE )
-			return astNewCONSTi( 0 )
-		end if
-
-		select case symbGetClass( sym )
-		case FB_SYMBCLASS_PROC
-		case else
-			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-			'' error recovery: skip until ')' and fake a node
-			hSkipUntil( CHAR_RPRNT, TRUE )
-			return astNewCONSTi( 0 )
-		end select
-
-		hCheckEmptyProcParens()
-
-		'' ',' ?
-		if( hMatch( CHAR_COMMA ) ) then
-			dim dtype as integer
-			dim subtype as FBSYMBOL ptr
-			if( cSymbolType( dtype, subtype ) = FALSE ) then
-				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-				'' error recovery: skip until ')' and fake a node
-				hSkipUntil( CHAR_RPRNT, TRUE )
-				return astNewCONSTi( 0 )
-			else
-				if( typeGetDtAndPtrOnly( dtype ) = typeAddrOf( FB_DATATYPE_FUNCTION ) ) then
-					dim oldsym as FBSYMBOL ptr = parser.ctxsym
-					dim old_dtype as integer = parser.ctx_dtype
-					parser.ctxsym = subtype
-					parser.ctx_dtype = dtype
-					expr = hProcPtrBody( base_parent, sym, TRUE )
-					parser.ctxsym = oldsym
-					parser.ctx_dtype = old_dtype
-				else
-					errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
-					'' error recovery: skip until ')' and fake a node
-					hSkipUntil( CHAR_RPRNT, TRUE )
-					return astNewCONSTi( 0 )
-				end if
-			end if
-
-		else
-			expr = hProcPtrBody( base_parent, sym, FALSE )
-		end if
+		expr = cProcPtrBody( 0, NULL )
 
 		'' ')'
 		if( hMatch( CHAR_RPRNT ) = FALSE ) then

@@ -635,7 +635,17 @@ function cIdentifierOrUDTMember _
 	               FB_IDOPT_ALLOWOPERATOR
 
 	if( chain_ = NULL ) then
-		chain_ = cIdentifier( base_parent, idopts )
+		if( base_parent = NULL ) then
+			chain_ = cIdentifier( base_parent, idopts )
+
+		else
+			chain_ = symbLookupAt( base_parent, lexGetText( ), FALSE )
+			'' No symbol found in the base_parent namespace? then it must
+			'' be operator or constructor or destructor
+			if( chain_ = NULL ) then
+				chain_ = cIdentifier( NULL, idopts )
+			end if
+		end if
 	end if
 
 	'' not defined if symbol was not found
@@ -683,6 +693,7 @@ function cIdentifierOrUDTMember _
 		select case as const lexGetToken( )
 		case FB_TK_CONSTRUCTOR
 			sym = symbGetCompCtorHead( base_parent )
+
 		case FB_TK_DESTRUCTOR
 			sym = symbGetCompDtor1( base_parent )
 

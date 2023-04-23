@@ -531,6 +531,13 @@ declare function cHighestPrecExpr _
 	) as ASTNODE ptr
 
 declare function cDerefExpression( ) as ASTNODE ptr
+
+declare function cProcPtrBody _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
 declare function cAddrOfExpression( ) as ASTNODE ptr
 
 declare function cTypeConvExpr _
