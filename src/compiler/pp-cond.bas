@@ -63,12 +63,12 @@ sub ppCondIf( )
 	'' IFDEF ID
 	case FB_TK_PP_IFDEF
 		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
-		istrue = (cIdentifierIfDefined( ) <> NULL)
+		istrue = (cIdentifierOrUDTMember( ) <> NULL)
 
 	'' IFNDEF ID
 	case FB_TK_PP_IFNDEF
 		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
-		istrue = (cIdentifierIfDefined( ) = NULL)
+		istrue = (cIdentifierOrUDTMember( ) = NULL)
 
 	'' IF Expression
 	case FB_TK_PP_IF

@@ -311,14 +311,22 @@ o -exx should catch...
       - := must be a new token because the "foo bar : baz" ambiguity
 
 [ ] method pointers / delegates
-    - extend PROCPTR( id, type ) to allow pointers to methods
-    - fbc handles method pointers fairly well but the syntax is not symmetrical with
-      invoking a method on a TYPE (class)
-    - var x = procptr( T.method ) could return a method pointer but must currently be
-      invoked with x( instance, [params]... ).  This is a different syntax from other
-      languages that support method pointers.
-    - delegates would need to aggregate the instance and method pointer which will
-      likely requre a new built-in type to handle by the compiler
+  [x] extend PROCPTR( id [, signature] ) to allow pointers to methods
+  [x] fbc handles method pointers fairly well even though the syntax is not symmetrical
+      with invoking a method on a TYPE (class).  We should probably be ok with this since
+      at a low level methods are just procedures and allowing this syntax at the very
+      least avoids extra procedure calls (i.e. non-static member calls static member 
+      to call non-static member hack) and we would prefer to just call the non-static
+      member directly. 
+  [x] var x = procptr( T.method ) returns a method pointer and can be invoked with 
+      x( instance, [params]... ) - see above
+  [ ] safe-ish delegates would need to aggregate the instance and method pointer which will
+      likely requre a new built-in type to handle by the compiler.  It's possible that we
+      could build a delegate in user code, but would have to sacrifice some type safety
+      since type information about the virtual table is not exposed to the user in any way.
+      The net result is that lookups in virtual tables must be cast to the proper type and
+      we don't have a way to check in user code the function signature of the virtual table
+      in user code.
 
 *** *** *** *** ***
 [ ] All functions returning STRING should actually return the FBSTRING object

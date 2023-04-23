@@ -6462,8 +6462,7 @@ private sub _emitasmline( byval asmtokenhead as ASTASMTOK ptr )
 
 				Var ofs = symbGetOfs( n->sym )
 				if( ofs <> 0 ) then
-					asmline=left(asmline,len(asmline)-1) ''to remove the first bracket
-					asmline+= str( ofs )+"[rbp" ''the final bracket is added just after
+					asmline+= str( ofs )+"[rbp]"
 				else
 					asmline+= *symbGetMangledName( n->sym )'*symbGetMangledName( n->sym )
 				end if

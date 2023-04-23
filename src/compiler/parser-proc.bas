@@ -1123,7 +1123,7 @@ function cProcHeader _
 		idopt = FB_IDOPT_ISDECL or FB_IDOPT_SHOWERROR or FB_IDOPT_ALLOWSTRUCT
 		select case( tk )
 		case FB_TK_OPERATOR
-			idopt or= FB_IDOPT_ISOPERATOR
+			idopt or= FB_IDOPT_ALLOWOPERATOR
 		case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
 			idopt or= FB_IDOPT_DONTCHKPERIOD
 		end select
