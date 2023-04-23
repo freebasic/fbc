@@ -524,7 +524,17 @@ private function hProcPtrBody _
 		callback( proc )
 	end if
 
-	function = astBuildProcAddrof( proc )
+	if( symbIsAbstract( proc ) )then
+		'' member is abstract and is not something we can get the address of
+		'' until a virtual lookup at runtime ...
+		'' return a null pointer of the function pointer instead
+
+		var expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER, NULL )
+		expr = astNewCONV( typeAddrOf( FB_DATATYPE_FUNCTION ), symbAddProcPtrFromFunction( proc ), expr )
+		return expr
+	end if
+
+	return astBuildProcAddrof( proc )
 end function
 
 function cProcPtrBody _

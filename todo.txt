@@ -318,7 +318,7 @@ o -exx should catch...
       least avoids extra procedure calls (i.e. non-static member calls static member 
       to call non-static member hack) and we would prefer to just call the non-static
       member directly. 
-  [x] var x = procptr( T.method ) returns a method pointer can can be invoked with 
+  [x] var x = procptr( T.method ) returns a method pointer and can be invoked with 
       x( instance, [params]... ) - see above
   [ ] safe-ish delegates would need to aggregate the instance and method pointer which will
       likely requre a new built-in type to handle by the compiler.  It's possible that we
