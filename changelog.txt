@@ -68,6 +68,7 @@ Version 1.10.0
 - fbc: allow typename.member symbol checks for #ifdef / #ifndef / defined() where member can be a data field, static data field, nested type, constructor, destructor, property, operator (self-assignment, new, new[], delete, delete[], let, cast, for, step, next), or member procedure.
 - rtlib: dos: add "__fb_dos_no_dpmi_yield" variable to control calling "__dpmi_yield()" and prevent a crash under some dos extenders in dosbox
 - fbc: PROCPTR( UDT.member [, SUB|FUNCTION ...] ) to get a procedure pointer for type member procedures.  If the member is abstract, then return 0 (null function pointer of the member procedure's call signature)
+- fbc: PROCPTR( UDT.member VIRTUAL [, SUB|FUNCTION ...] ) to get the offset (in bytes) in to the virtual table.  If there is no virtual table entry (or no virtual table at all) then return the special value of -2147483648
 
 [fixed]
 - gas64: missing restoring of use of one virtual register on sqr for float (SARG)

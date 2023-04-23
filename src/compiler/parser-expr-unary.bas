@@ -491,7 +491,8 @@ private function hProcPtrBody _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr, _
-		byval check_exact as boolean _
+		byval check_exact as boolean, _
+		byval is_vtable_offset as integer _
 	) as ASTNODE ptr
 
 	assert( proc <> NULL )
@@ -524,12 +525,27 @@ private function hProcPtrBody _
 		callback( proc )
 	end if
 
+	if( is_vtable_offset ) then
+		'' if not virtual or abstract then procedure doesn't exist in
+		'' the virtual table.  Don't throw an error, just return an
+		'' invalid vtable offset.  vtable offsets are something that
+		'' the user will have to deal with anyway
+		dim as integer vtableoffset = -2147483648u
+
+		if( symbIsAbstract( proc ) or symbIsVirtual( proc ) ) then
+			vtableoffset = ( symbProcGetVtableIndex( proc ) - 2 ) * env.pointersize
+		endif
+
+		var expr = astNewCONSTi( vtableoffset )
+		return expr
+	end if
+
 	if( symbIsAbstract( proc ) )then
 		'' member is abstract and is not something we can get the address of
 		'' until a virtual lookup at runtime ...
 		'' return a null pointer of the function pointer instead
 
-		var expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER, NULL )
+		var expr = astNewCONSTi( 0 )
 		expr = astNewCONV( typeAddrOf( FB_DATATYPE_FUNCTION ), symbAddProcPtrFromFunction( proc ), expr )
 		return expr
 	end if
@@ -537,6 +553,7 @@ private function hProcPtrBody _
 	return astBuildProcAddrof( proc )
 end function
 
+'' PROCPTR '(' Proc ('('')')? VIRTUAL? ( ',' signature )? ')'
 function cProcPtrBody _
 	( _
 		byval dtype as integer, _
@@ -546,6 +563,7 @@ function cProcPtrBody _
 	dim as FBSYMCHAIN ptr chain_ = any
 	dim as FBSYMBOL ptr sym = any, base_parent = any
 	dim as ASTNODE ptr expr = any
+	dim as integer is_vtable_offset = FALSE
 
 	if( dtype = FB_DATATYPE_STRUCT ) then
 		base_parent = subtype
@@ -579,9 +597,15 @@ function cProcPtrBody _
 
 	'' ','?
 	if( hMatch( CHAR_COMMA ) ) then
-		dim as integer dtype = any
-		dim as FBSYMBOL ptr subtype = any
+		dim as integer dtype = FB_DATATYPE_VOID
+		dim as FBSYMBOL ptr subtype = NULL
 		dim as integer is_exact = FALSE
+
+		'' VIRTUAL?
+		if( lexGetToken( ) = FB_TK_VIRTUAL ) then
+			is_vtable_offset = TRUE
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
+		end if
 
 		'' only if anything but ')' follows...
 		if( lexGetToken( ) <> CHAR_RPRNT ) then
@@ -610,13 +634,13 @@ function cProcPtrBody _
 		parser.ctxsym = subtype
 		parser.ctx_dtype = dtype
 
-		expr = hProcPtrBody( base_parent, sym, is_exact )
+		expr = hProcPtrBody( base_parent, sym, is_exact, is_vtable_offset )
 
 		parser.ctxsym = oldsym
 		parser.ctx_dtype = old_dtype
 
 	else
-		expr = hProcPtrBody( base_parent, sym, FALSE )
+		expr = hProcPtrBody( base_parent, sym, FALSE, is_vtable_offset )
 	end if
 
 	return expr
@@ -723,7 +747,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 		if( sym <> NULL ) then
 			lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
 			hCheckEmptyProcParens()
-			return hProcPtrBody( base_parent, sym, FALSE )
+			return hProcPtrBody( base_parent, sym, FALSE, FALSE )
 		end if
 
 		'' anything else
@@ -752,7 +776,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 			hSkipUntil( CHAR_RPRNT, TRUE )
 		end if
 
-	'' PROCPTR '(' Proc ('('')')? ( ',' signature )? ')'
+	'' PROCPTR '(' Proc ('('')')? VIRTUAL? ( ',' signature )? ')'
 	case FB_TK_PROCPTR
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
