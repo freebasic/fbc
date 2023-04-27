@@ -492,7 +492,7 @@ private function hProcPtrBody _
 		byval base_parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr, _
 		byval check_exact as boolean, _
-		byval is_vtable_offset as integer _
+		byval is_vtable_index as integer _
 	) as ASTNODE ptr
 
 	assert( proc <> NULL )
@@ -525,18 +525,18 @@ private function hProcPtrBody _
 		callback( proc )
 	end if
 
-	if( is_vtable_offset ) then
+	if( is_vtable_index ) then
 		'' if not virtual or abstract then procedure doesn't exist in
 		'' the virtual table.  Don't throw an error, just return an
 		'' invalid vtable offset.  vtable offsets are something that
 		'' the user will have to deal with anyway
-		dim as integer vtableoffset = -2147483648u
+		dim as integer vtableindex = -1
 
 		if( symbIsAbstract( proc ) or symbIsVirtual( proc ) ) then
-			vtableoffset = ( symbProcGetVtableIndex( proc ) - 2 ) * env.pointersize
+			vtableindex = ( symbProcGetVtableIndex( proc ) - 2 )
 		endif
 
-		var expr = astNewCONSTi( vtableoffset )
+		var expr = astNewCONSTi( vtableindex )
 		return expr
 	end if
 
@@ -553,7 +553,7 @@ private function hProcPtrBody _
 	return astBuildProcAddrof( proc )
 end function
 
-'' PROCPTR '(' Proc ('('')')? VIRTUAL? ( ',' signature )? ')'
+'' PROCPTR '(' Proc ('('')')? ( ',' VIRTUAL? ( ANY|signature )? )? ')'
 function cProcPtrBody _
 	( _
 		byval dtype as integer, _
@@ -563,7 +563,7 @@ function cProcPtrBody _
 	dim as FBSYMCHAIN ptr chain_ = any
 	dim as FBSYMBOL ptr sym = any, base_parent = any
 	dim as ASTNODE ptr expr = any
-	dim as integer is_vtable_offset = FALSE
+	dim as integer is_vtable_index = FALSE
 
 	if( dtype = FB_DATATYPE_STRUCT ) then
 		base_parent = subtype
@@ -603,7 +603,7 @@ function cProcPtrBody _
 
 		'' VIRTUAL?
 		if( lexGetToken( ) = FB_TK_VIRTUAL ) then
-			is_vtable_offset = TRUE
+			is_vtable_index = TRUE
 			lexSkipToken( LEXCHECK_POST_SUFFIX )
 		end if
 
@@ -634,13 +634,13 @@ function cProcPtrBody _
 		parser.ctxsym = subtype
 		parser.ctx_dtype = dtype
 
-		expr = hProcPtrBody( base_parent, sym, is_exact, is_vtable_offset )
+		expr = hProcPtrBody( base_parent, sym, is_exact, is_vtable_index )
 
 		parser.ctxsym = oldsym
 		parser.ctx_dtype = old_dtype
 
 	else
-		expr = hProcPtrBody( base_parent, sym, FALSE, is_vtable_offset )
+		expr = hProcPtrBody( base_parent, sym, FALSE, is_vtable_index )
 	end if
 
 	return expr
@@ -776,7 +776,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 			hSkipUntil( CHAR_RPRNT, TRUE )
 		end if
 
-	'' PROCPTR '(' Proc ('('')')? VIRTUAL? ( ',' signature )? ')'
+	'' PROCPTR '(' Proc ('('')')? ( ',' VIRTUAL? ( ANY|signature )? )? ')'
 	case FB_TK_PROCPTR
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 

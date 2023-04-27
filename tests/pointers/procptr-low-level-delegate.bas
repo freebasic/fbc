@@ -6,24 +6,15 @@ SUITE( fbc_tests.pointers.procptr_low_level_delegate )
 
 	#macro decl_delegate( delegateName, typeName, procName, signature... )
 		type delegateName
-			#if __FB_ARG_COUNT__( signature ) = 0
-				proc as typeof( procptr( typeName.procName ) )
-			#else
-				proc as typeof( procptr( typeName.procName, signature ) )
-			#endif
-			ofst as integer
+			proc as typeof( procptr( typeName.procName, signature ) )
+			indx as integer
 			inst as typeName ptr
 		end type
 	#endmacro
 
 	#macro init_delegate( delegate, instance, typeName, procName, signature... )
-		#if __FB_ARG_COUNT__( signature ) = 0
-			delegate.proc = procptr( typeName.procName )
-			delegate.ofst = procptr( typeName.procName, virtual )
-		#else
-			delegate.proc = procptr( typeName.procName, signature )
-			delegate.ofst = procptr( typeName.procName, virtual signature )
-		#endif
+		delegate.proc = procptr( typeName.procName )
+		delegate.indx = procptr( typeName.procName, virtual )
 		delegate.inst = instance
 	#endmacro
 
@@ -31,13 +22,13 @@ SUITE( fbc_tests.pointers.procptr_low_level_delegate )
 		__FB_IIF__( _
 			__FB_ARG_COUNT__( args ) = 0, _
 			iif( _
-				delegate.ofst >= 0, _
-				cptr( typeof(delegate.proc), (*cast( any ptr ptr ptr, delegate.inst ))[delegate.ofst\sizeof(any ptr)] ), _
+				delegate.indx >= 0, _
+				cptr( typeof(delegate.proc), (*cast( any ptr ptr ptr, delegate.inst ))[delegate.indx] ), _
 				delegate.proc _
 			)( *(delegate.inst) ), _
 			iif( _
-				delegate.ofst >= 0, _
-				cptr( typeof(delegate.proc), (*cast( any ptr ptr ptr, delegate.inst ))[delegate.ofst\sizeof(any ptr)] ), _
+				delegate.indx >= 0, _
+				cptr( typeof(delegate.proc), (*cast( any ptr ptr ptr, delegate.inst ))[delegate.indx] ), _
 				delegate.proc _
 			)( *(delegate.inst), args ) _
 		)

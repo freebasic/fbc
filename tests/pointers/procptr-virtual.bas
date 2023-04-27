@@ -107,10 +107,10 @@ SUITE( fbc_tests.pointers.procptr_virtual )
 	#endmacro
 
 	TEST( offsets )
-		const INDEX0     = sizeof(any ptr) * 0
-		const INDEX1     = sizeof(any ptr) * 1
-		const INDEX2     = sizeof(any ptr) * 2
-		const INDEX_NONE = -2147483648
+		const INDEX0     = 0
+		const INDEX1     = 1
+		const INDEX2     = 2
+		const INDEX_NONE = -1
 
 		check_virtual_offset( T, proc1, INDEX_NONE )   '' non-virtual
 		check_virtual_offset( T, proc2, INDEX_NONE )   '' non-virtual
