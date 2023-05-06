@@ -1,124 +1,153 @@
 '' examples/manual/proguide/multithreading/criticalsectionfaq13-2.bas
 ''
 '' Example extracted from the FreeBASIC Manual
-'' from topic 'Critical Sections FAQ'
+'' from topic 'Emulate a TLS (Thread Local Storage) and a TP (Thread Pooling) feature'
 ''
-'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgMtCriticalSectionsFAQ
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgEmulateTlsTp
 '' --------
 
 #include Once "crt/string.bi"
+
+Type ThreadPoolingData
+	Dim As Function(ByVal p As Any Ptr) As String _pThread0
+	Dim As Any Ptr _p0
+	Dim As Function(ByVal p As Any Ptr) As String _pThread(Any)
+	Dim As Any Ptr _p(Any)
+	Dim As Any Ptr _mutex
+	Dim As Any Ptr _cond1
+	Dim As Any Ptr _cond2
+	Dim As Any Ptr _pt
+	Dim As Byte _end
+	Dim As String _returnF(Any)
+	Dim As UByte _state
+End Type
+
 Type ThreadPooling
 	Public:
 		Declare Constructor()
 		Declare Sub PoolingSubmit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
 		Declare Sub PoolingWait()
 		Declare Sub PoolingWait(values() As String)
+
 		Declare Property PoolingState() As UByte
+
 		Declare Destructor()
 	Private:
-		Dim As Function(ByVal p As Any Ptr) As String _pThread0
-		Dim As Any Ptr _p0
-		Dim As Function(ByVal p As Any Ptr) As String _pThread(Any)
-		Dim As Any Ptr _p(Any)
-		Dim As Any Ptr _mutex
-		Dim As Any Ptr _cond1
-		Dim As Any Ptr _cond2
-		Dim As Any Ptr _pt
-		Dim As Byte _end
-		Dim As String _returnF(Any)
-		Dim As UByte _state
+		Dim As ThreadPoolingData Ptr _pdata
 		Declare Static Sub _Thread(ByVal p As Any Ptr)
+		Declare Constructor(ByRef t As ThreadPooling)
+		Declare Operator Let(ByRef t As ThreadPooling)
 End Type
 
 Constructor ThreadPooling()
-	ReDim This._pThread(0)
-	ReDim This._p(0)
-	ReDim This._returnF(0)
-	This._mutex = MutexCreate()
-	This._cond1 = CondCreate()
-	This._cond2 = CondCreate()
-	This._pt= ThreadCreate(@ThreadPooling._Thread, @This)
+	This._pdata = New ThreadPoolingData
+	With *This._pdata
+		ReDim ._pThread(0)
+		ReDim ._p(0)
+		ReDim ._returnF(0)
+		._mutex = MutexCreate()
+		._cond1 = CondCreate()
+		._cond2 = CondCreate()
+		._pt= ThreadCreate(@ThreadPooling._Thread, This._pdata)
+	End With
 End Constructor
 
 Sub ThreadPooling.PoolingSubmit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
-	MutexLock(This._mutex)
-	ReDim Preserve This._pThread(UBound(This._pThread) + 1)
-	This._pThread(UBound(This._pThread)) = pThread
-	ReDim Preserve This._p(UBound(This._p) + 1)
-	This._p(UBound(This._p)) = p
-	CondSignal(This._cond2)
-	This._state = 1
-	MutexUnlock(This._mutex)
+	With *This._pdata
+		MutexLock(._mutex)
+		ReDim Preserve ._pThread(UBound(._pThread) + 1)
+		._pThread(UBound(._pThread)) = pThread
+		ReDim Preserve ._p(UBound(._p) + 1)
+		._p(UBound(._p)) = p
+		CondSignal(._cond2)
+		._state = 1
+		MutexUnlock(._mutex)
+	End With
 End Sub
 
 Sub ThreadPooling.PoolingWait()
-	MutexLock(This._mutex)
-	While This._state <> 4
-		CondWait(This._Cond1, This._mutex)
-	Wend
-	ReDim This._returnF(0)
-	This._state = 0
-	MutexUnlock(This._mutex)
+	With *This._pdata
+		MutexLock(._mutex)
+		While (._state And 11) > 0
+			CondWait(._Cond1, ._mutex)
+		Wend
+		ReDim ._returnF(0)
+		._state = 0
+		MutexUnlock(._mutex)
+	End With
 End Sub
 
 Sub ThreadPooling.PoolingWait(values() As String)
-	MutexLock(This._mutex)
-	While This._state <> 4
-		CondWait(This._Cond1, This._mutex)
-	Wend
-	If UBound(This._returnF) > 0 Then
-		ReDim values(1 To UBound(This._returnF))
-		For I As Integer = 1 To UBound(This._returnF)
-			values(I) = This._returnF(I)
-		Next I
-		ReDim This._returnF(0)
-	Else
-		Erase values
-	End If
-	This._state = 0
-	MutexUnlock(This._mutex)
+	With *This._pdata
+		MutexLock(._mutex)
+		While (._state And 11) > 0
+			CondWait(._Cond1, ._mutex)
+		Wend
+		If UBound(._returnF) > 0 Then
+			ReDim values(1 To UBound(._returnF))
+			For I As Integer = 1 To UBound(._returnF)
+				values(I) = ._returnF(I)
+			Next I
+			ReDim ._returnF(0)
+		Else
+			Erase values
+		End If
+		._state = 0
+		MutexUnlock(._mutex)
+	End With
 End Sub
 
 Property ThreadPooling.PoolingState() As UByte
-	Return This._state
+	With *This._pdata
+		If UBound(._p) > 0 Then
+			Return 8 + ._state
+		Else
+			Return ._state
+		End If
+	End With
 End Property
 
 Sub ThreadPooling._Thread(ByVal p As Any Ptr)
-	Dim As ThreadPooling Ptr pThis = p
-	Do
-		MutexLock(pThis->_mutex)
-		If UBound(pThis->_pThread) = 0 Then
-			pThis->_state = 4
-			CondSignal(pThis->_cond1)
-			While UBound(pThis->_pThread) = 0
-				CondWait(pThis->_cond2, pThis->_mutex)
-				If pThis->_end = 1 Then Exit Sub
-			Wend
-		End If
-		pThis->_pThread0 = pThis->_pThread(1)
-		pThis->_p0 = pThis->_p(1)
-		If UBound(pThis->_pThread) > 1 Then
-			memmove(@pThis->_pThread(1), @pThis->_pThread(2), (UBound(pThis->_pThread) - 1) * SizeOf(pThis->_pThread))
-			memmove(@pThis->_p(1), @pThis->_p(2), (UBound(pThis->_p) - 1) * SizeOf(pThis->_p))
-		End If
-		ReDim Preserve pThis->_pThread(UBound(pThis->_pThread) - 1)
-		ReDim Preserve pThis->_p(UBound(pThis->_p) - 1)
-		MutexUnlock(pThis->_mutex)
-		ReDim Preserve pThis->_ReturnF(UBound(pThis->_returnF) + 1)
-		pThis->_state = 2
-		pThis->_returnF(UBound(pThis->_returnF)) = pThis->_pThread0(pThis->_p0)
-	Loop
+	Dim As ThreadPoolingData Ptr pdata = p
+	With *pdata
+		Do
+			MutexLock(._mutex)
+			If UBound(._pThread) = 0 Then
+				._state = 4
+				CondSignal(._cond1)
+				While UBound(._pThread) = 0
+					If ._end = 1 Then Exit Sub
+					CondWait(._cond2, ._mutex)
+				Wend
+			End If
+			._pThread0 = ._pThread(1)
+			._p0 = ._p(1)
+			If UBound(._pThread) > 1 Then
+				memmove(@._pThread(1), @._pThread(2), (UBound(._pThread) - 1) * SizeOf(._pThread))
+				memmove(@._p(1), @._p(2), (UBound(._p) - 1) * SizeOf(._p))
+			End If
+			ReDim Preserve ._pThread(UBound(._pThread) - 1)
+			ReDim Preserve ._p(UBound(._p) - 1)
+			MutexUnlock(._mutex)
+			ReDim Preserve ._ReturnF(UBound(._returnF) + 1)
+			._state = 2
+			._returnF(UBound(._returnF)) = ._pThread0(._p0)
+		Loop
+	End With
 End Sub
 
 Destructor ThreadPooling()
-	MutexLock(This._mutex)
-	This._end = 1
-	CondSignal(This._cond2)
-	MutexUnlock(This._mutex)
-	.ThreadWait(This._pt)
-	MutexDestroy(This._mutex)
-	CondDestroy(This._cond1)
-	CondDestroy(This._cond2)
+	With *This._pdata
+		MutexLock(._mutex)
+		._end = 1
+		CondSignal(._cond2)
+		MutexUnlock(._mutex)
+		..ThreadWait(._pt)
+		MutexDestroy(._mutex)
+		CondDestroy(._cond1)
+		CondDestroy(._cond2)
+	End With
+	Delete This._pdata
 End Destructor
 
 '---------------------------------------------------

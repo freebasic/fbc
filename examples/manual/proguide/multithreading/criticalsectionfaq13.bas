@@ -1,10 +1,22 @@
 '' examples/manual/proguide/multithreading/criticalsectionfaq13.bas
 ''
 '' Example extracted from the FreeBASIC Manual
-'' from topic 'Critical Sections FAQ'
+'' from topic 'Emulate a TLS (Thread Local Storage) and a TP (Thread Pooling) feature'
 ''
-'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgMtCriticalSectionsFAQ
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgEmulateTlsTp
 '' --------
+
+Type ThreadInitThenMultiStartData
+	Dim As Function(ByVal p As Any Ptr) As String _pThread
+	Dim As Any Ptr _p
+	Dim As Any Ptr _mutex1
+	Dim As Any Ptr _mutex2
+	Dim As Any Ptr _mutex3
+	Dim As Any Ptr _pt
+	Dim As Byte _end
+	Dim As String _returnF
+	Dim As UByte _state
+End Type
 
 Type ThreadInitThenMultiStart
 	Public:
@@ -13,83 +25,95 @@ Type ThreadInitThenMultiStart
 		Declare Sub ThreadStart()
 		Declare Sub ThreadStart(ByVal p As Any Ptr)
 		Declare Function ThreadWait() As String
+
 		Declare Property ThreadState() As UByte
+
 		Declare Destructor()
 	Private:
-		Dim As Function(ByVal p As Any Ptr) As String _pThread
-		Dim As Any Ptr _p
-		Dim As Any Ptr _mutex1
-		Dim As Any Ptr _mutex2
-		Dim As Any Ptr _mutex3
-		Dim As Any Ptr _pt
-		Dim As Byte _end
-		Dim As String _returnF
-		Dim As UByte _state
+		Dim As ThreadInitThenMultiStartData Ptr _pdata
 		Declare Static Sub _Thread(ByVal p As Any Ptr)
+		Declare Constructor(ByRef t As ThreadInitThenMultiStart)
+		Declare Operator Let(ByRef t As ThreadInitThenMultiStart)
 End Type
 
 Constructor ThreadInitThenMultiStart()
-	This._mutex1 = MutexCreate()
-	MutexLock(This._mutex1)
-	This._mutex2 = MutexCreate()
-	MutexLock(This._mutex2)
-	This._mutex3 = MutexCreate()
-	MutexLock(This._mutex3)
+	This._pdata = New ThreadInitThenMultiStartData
+	With *This._pdata
+		._mutex1 = MutexCreate()
+		MutexLock(._mutex1)
+		._mutex2 = MutexCreate()
+		MutexLock(._mutex2)
+		._mutex3 = MutexCreate()
+		MutexLock(._mutex3)
+	End With
 End Constructor
 
 Sub ThreadInitThenMultiStart.ThreadInit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
-	This._pThread = pThread
-	This._p = p
-	If This._pt = 0 Then
-		This._pt= ThreadCreate(@ThreadInitThenMultiStart._Thread, @This)
-		MutexUnlock(This._mutex3)
-		This._state = 1
-	End If
+	With *This._pdata
+		._pThread = pThread
+		._p = p
+		If ._pt = 0 Then
+			._pt= ThreadCreate(@ThreadInitThenMultiStart._Thread, This._pdata)
+			MutexUnlock(._mutex3)
+			._state = 1
+		End If
+	End With
 End Sub
 
 Sub ThreadInitThenMultiStart.ThreadStart()
-	MutexLock(This._mutex3)
-	MutexUnlock(This._mutex1)
+	With *This._pdata
+		MutexLock(._mutex3)
+		MutexUnlock(._mutex1)
+	End With
 End Sub
 
 Sub ThreadInitThenMultiStart.ThreadStart(ByVal p As Any Ptr)
-	MutexLock(This._mutex3)
-	This._p = p
-	MutexUnlock(This._mutex1)
+	With *This._pdata
+		MutexLock(._mutex3)
+		._p = p
+		MutexUnlock(._mutex1)
+	End With
 End Sub
 
 Function ThreadInitThenMultiStart.ThreadWait() As String
-	MutexLock(This._mutex2)
-	MutexUnlock(This._mutex3)
-	This._state = 1
-	Return This._returnF
+	With *This._pdata
+		MutexLock(._mutex2)
+		MutexUnlock(._mutex3)
+		._state = 1
+		Return ._returnF
+	End With
 End Function
 
 Property ThreadInitThenMultiStart.ThreadState() As UByte
-	Return This._state
+	Return This._pdata->_state
 End Property
 
 Sub ThreadInitThenMultiStart._Thread(ByVal p As Any Ptr)
-	Dim As ThreadInitThenMultiStart Ptr pThis = p
-	Do
-		MutexLock(pThis->_mutex1)
-		If pThis->_end = 1 Then Exit Sub
-		pThis->_state = 2
-		pThis->_returnF = pThis->_pThread(pThis->_p)
-		pThis->_state = 4
-		MutexUnlock(pThis->_mutex2)
-	Loop
+	Dim As ThreadInitThenMultiStartData Ptr pdata = p
+	With *pdata
+		Do
+			MutexLock(._mutex1)
+			If ._end = 1 Then Exit Sub
+			._state = 2
+			._returnF = ._pThread(._p)
+			._state = 4
+			MutexUnlock(._mutex2)
+		Loop
+	End With
 End Sub
 
 Destructor ThreadInitThenMultiStart()
-	If This._pt > 0 Then
-		This._end = 1
-		MutexUnlock(This._mutex1)
-		.ThreadWait(This._pt)
-	End If
-	MutexDestroy(This._mutex1)
-	MutexDestroy(This._mutex2)
-	MutexDestroy(This._mutex3)
+	With *This._pdata
+		If ._pt > 0 Then
+			._end = 1
+			MutexUnlock(._mutex1)
+			..ThreadWait(._pt)
+		End If
+		MutexDestroy(._mutex1)
+		MutexDestroy(._mutex2)
+		MutexDestroy(._mutex3)
+	End With
+	Delete This._pdata
 End Destructor
 
 '---------------------------------------------------
@@ -113,7 +137,7 @@ t.ThreadInit(@UserThreadS)  '' initializes the user thread function (used as sub
 For I As UInteger = 1 To 9
 	Print I & "^2 = ";
 	t.ThreadStart(@I)       '' starts the user thread procedure code body
-	t.Threadwait()          '' waits for the user thread procedure code end
+	t.ThreadWait()          '' waits for the user thread procedure code end
 Next I
 Print
 
@@ -122,7 +146,7 @@ t.ThreadInit(@UserThreadF)  '' initializes the user thread function (used as fun
 For I As UInteger = 1 To 9
 	Print I & "^2 = ";
 	t.ThreadStart(@I)       '' starts the user thread procedure code body
-	Print t.Threadwait()    '' waits for the user thread procedure code end and prints result
+	Print t.ThreadWait()    '' waits for the user thread procedure code end and prints result
 Next I
 Print
 

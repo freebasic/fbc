@@ -19,7 +19,7 @@ Dim As Integer loopvar, temp, t
 
 For loopvar = 0 To 4
 
-  With the_rectangle[loopvar]
+  With the_rectangle[loopvar]  '' dereferenced pointer
 
 	temp = .x
 	.x = 234 * t + 48 + .y
