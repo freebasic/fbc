@@ -727,7 +727,7 @@
 	{{fbdoc item="subsect" value="Pointer operators"}}
 		[[KeyPgOpVarptr|Operator Varptr (Variable pointer)]]
 		[[KeyPgOpStrptr|Operator Strptr (String pointer)]]
-		[[KeyPgOpProcptr|Operator Procptr (Procedure pointer)]]
+		[[KeyPgOpProcptr|Operator Procptr (Procedure pointer and vtable index)]]
 		[[KeyPgOpAt|Operator @ (Address of)]]
 		[[KeyPgOpValueOf|Operator * (Value of)]]
 
@@ -901,6 +901,15 @@
 		[[ProPgConditionalCompilation|Conditional Compilation]]
 		[[ProPgMacros|Macros]]
 
+	{{fbdoc item="subsect" value="Other Topics"}}
+		[[CptAscii|ASCII]]
+		[[ProPgDates|Date Serials]]
+		[[ProPgRadians|Radians]]
+		[[ProPgErrorHandling|Error Handling]]
+		[[ProPgEventHandling|Event Handling]]
+		[[CatPgDddefines|Intrinsic Defines]]
+		[[ProPgIdentifierLookup|Identifier Look-ups in namespaces and types]]
+
 	{{fbdoc item="subsect" value="Technical Articles"}}
 		[[KeyPgAsm|Inline ASM]]
 		[[ProPgCruntime|C Standard Library Functions]]
@@ -910,16 +919,10 @@
 		[[ProPgObjectRtti|OBJECT built-in and RTTI info]]
 		[[ProPgDataExecutable|Embed and Access binary Data in Executable]]
 		{{fbdoc item="keyword" value="ProPgUseNewDelete|Use Implicit / Overload New([]) and Delete([]) Operators with Inheritance Polymorphism"}}
+		[[ProPgEmulateTlsTp|Emulate a TLS (Thread Local Storage) and a TP (Thread Pooling) feature]]
 
-	{{fbdoc item="subsect" value="Other Topics"}}
-		[[CptAscii|ASCII]]
-		[[ProPgDates|Date Serials]]
-		[[ProPgRadians|Radians]]
-		[[ProPgErrorHandling|Error Handling]]
-		[[ProPgEventHandling|Event Handling]]
-		[[CatPgDddefines|Intrinsic Defines]]
-		[[ProPgIdentifierLookup|Identifier Look-ups in namespaces and types]]
 	[[CommunityTutorials|Community Tutorials]]
+
 	[[CodeLibrary|Community Code Library]]
 
 {{fbdoc item="section" value="External Libraries Index"}}

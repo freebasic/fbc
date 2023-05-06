@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="OPEN SCRN"}}----
-Opens the console directly for input and output as a file
+Opens the screen directly for input and output as a file
 
 {{fbdoc item="syntax"}}##
 	**[[KeyPgOpen|Open]] Scrn** [for //mode//] [[KeyPgAs|as]] [#]//filenumber// [[KeyPgAs|as]] [[KeyPgLong|long]]
@@ -19,11 +19,11 @@ Opens the console directly for input and output as a file
 	A 32 bit ##[[KeyPgLong|Long]]##: a zero (##0##) is returned if ##**Open Scrn()**## completed successfully, otherwise a non-zero value is returned to indicate failure.
 
 {{fbdoc item="desc"}}
-	This command opens the console for both input and output as a file, allowing to read/write from/to it with normal file commands.
+	This command opens the screen (in text or graphics screen mode) for both input and output as a file, allowing to read/write from/to it with normal file commands.
 	
-	This command may use direct access to the console for speed in some implementations, so  it should not be used when the input / output is required to be redirected or piped with OS commands.    
+	This command may use direct access to the screen for speed in some implementations, so  it should not be used when the input / output is required to be redirected or piped with OS commands.    
 	
-	The normal console commands, such as ##[[KeyPgColor|Color]]## and ##[[KeyPgLocate|Locate]]##, do not work in this mode, because they do not accept a file number.
+	The normal screen commands, such as ##[[KeyPgColor|Color]]## and ##[[KeyPgLocate|Locate]]##, do not work in this mode, because they do not accept a file number.
 	
 	The ##[For Input|Output]## clause is allowed for compatibility, but is ignored.
 	

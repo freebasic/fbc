@@ -14,7 +14,7 @@ Starts a user-defined procedure in a separate execution thread
 ##
 {{fbdoc item="param"}}
 	##//procptr//##
-		A pointer to the ##[[KeyPgSub|Sub]]## intended to work as a thread (see ##[[KeyPgOpProcptr|Operator ProcPtr (Procedure pointer)]]## to get a pointer to a sub). The sub must have the following signature (same parameters, same calling convention) to be compatible to //procptr//:
+		A pointer to the ##[[KeyPgSub|Sub]]## intended to work as a thread (see ##[[KeyPgOpProcptr|Operator ProcPtr (Procedure pointer and vtable index)]]## to get a pointer to a sub). The sub must have the following signature (same parameters, same calling convention) to be compatible to //procptr//:
 			##[[KeyPgDeclare|Declare]] [[KeyPgSub|Sub]] myThread ( [[KeyPgByval|ByVal]] //userdata// [[KeyPgAs|As]] [[KeyPgAny|Any]] [[KeyPgPtr|Ptr]] )##
 	##//userdata//##
 		The ##Any Ptr## parameter of the ##[[KeyPgSub|Sub]]## intended to work as a thread. ""FreeBASIC"" expects this parameter to be present, it must not be omitted! 
@@ -31,6 +31,7 @@ Starts a user-defined procedure in a separate execution thread
 	
 	The sub that was started as a thread will execute in parallel with the main part of the program. The OS achieves this by assigning it to a different processor if it exists, or by alternating between execution threads on a single processor.
 	There is no guarantee about the order in which different threads execute, and no assumptions can be made about the order in which multiple created threads actually start executing.
+	The time between **""ThreadCreate""** and the actual start of execution of the thread is variable and can be longer or shorter depending on the context (so some statements following the **""ThreadCreate""** statement can be executed before the actual launch of the thread).
 	In the fastest launch cases, the thread body may start executing even before **""ThreadCreate""** returns.
 	
 	Each running thread can be identified by its handle which is unique among all running threads. See ##[[KeyPgThreadSelf|ThreadSelf]]##.
@@ -208,6 +209,6 @@ end sub
 	- ##[[KeyPgMutexLock|Mutexlock]]##
 	- ##[[KeyPgMutexUnlock|Mutexunlock]]##
 	- ##[[KeyPgMutexDestroy|Mutexdestroy]]##
-	- ##[[KeyPgOpProcptr|Operator ProcPtr (Procedure pointer)]]##
+	- ##[[KeyPgOpProcptr|Operator ProcPtr (Procedure pointer and vtable index)]]##
 
 {{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}

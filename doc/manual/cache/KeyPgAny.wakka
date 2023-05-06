@@ -16,7 +16,9 @@ The ##**Any**## keyword is used as a placeholder for a type or value in various 
 ##//or//##
 	[[KeyPgOpPlacementNew|New(address)]] [[DataType|DataType]] [//count//] **{ Any }**
 ##//or//##
-	[[KeyPgInstr|Instr]]|[[KeyPgInstrrev|InstrRev]] ( //string//, **Any** //substring// )
+	[[KeyPgInstr|Instr]]|[[KeyPgInstrrev|InstrRev]] ( //identifier//, **Any** //substring// )
+##//or//##
+	[[KeyPgOpProcptr|Procptr]] ( //identifier//, [[[KeyPgVirtual|Virtual]]] **Any** )
 ##
 {{fbdoc item="desc"}}
 	- Pointers:
@@ -47,6 +49,9 @@ The ##**Any**## keyword is used as a placeholder for a type or value in various 
 		
 	- ""Instr/InstrRev"":
 		**##Any##** can be used with ##[[KeyPgInstr|Instr]]## or ##[[KeyPgInstrrev|InstrRev]]## as a qualifier for the ##//substring//## parameter, to indicate that any individual character in it may be matched.
+		
+	- Procptr:
+		**##Any##**, ie any procedure signature, does not induce any particular selection (compared to its non-use), but just allows for writing ##[[KeyPgOpProcptr|Procptr]]## always with 2 arguments.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/misc/any.bas"}}%%(freebasic)

@@ -117,16 +117,6 @@
 	{{fbdoc item="keyword" value="ProPgConditionalCompilation|Conditional Compilation"}}
 	{{fbdoc item="keyword" value="ProPgMacros|Macros"}}
 
-{{fbdoc item="section" value="Technical Articles"}}
-	{{fbdoc item="keyword" value="KeyPgAsm|Inline ASM"}}
-	{{fbdoc item="keyword" value="ProPgCruntime|C Standard Library Functions"}}
-	{{fbdoc item="keyword" value="ProPgFileIO|File I/O with FreeBASIC"}}
-	{{fbdoc item="keyword" value="ProPgDynamicMemory|Dynamic memory management with FreeBASIC"}}
-	{{fbdoc item="keyword" value="ProPgRecursionIteration|Replace Recursion with Iteration"}}
-	{{fbdoc item="keyword" value="ProPgObjectRtti|OBJECT built-in and RTTI info"}}
-	{{fbdoc item="keyword" value="ProPgDataExecutable|Embed and Access binary Data in Executable"}}
-	{{fbdoc item="keyword" value="ProPgUseNewDelete|Use Implicit / Overload New([]) and Delete([]) Operators with Inheritance Polymorphism"}}
-
 {{fbdoc item="section" value="Other Topics"}}
 (And topics that need to get placed elsewhere)
 	{{fbdoc item="keyword" value="CptAscii|ASCII"}}
@@ -136,6 +126,17 @@
 	{{fbdoc item="keyword" value="ProPgEventHandling|Event Handling"}}
 	{{fbdoc item="keyword" value="CatPgDddefines|Intrinsic Defines"}}
 	{{fbdoc item="keyword" value="ProPgIdentifierLookup|Identifier Look-ups in namespaces and types"}}
+
+{{fbdoc item="section" value="Technical Articles"}}
+	{{fbdoc item="keyword" value="KeyPgAsm|Inline ASM"}}
+	{{fbdoc item="keyword" value="ProPgCruntime|C Standard Library Functions"}}
+	{{fbdoc item="keyword" value="ProPgFileIO|File I/O with FreeBASIC"}}
+	{{fbdoc item="keyword" value="ProPgDynamicMemory|Dynamic memory management with FreeBASIC"}}
+	{{fbdoc item="keyword" value="ProPgRecursionIteration|Replace Recursion with Iteration"}}
+	{{fbdoc item="keyword" value="ProPgObjectRtti|OBJECT built-in and RTTI info"}}
+	{{fbdoc item="keyword" value="ProPgDataExecutable|Embed and Access binary Data in Executable"}}
+	{{fbdoc item="keyword" value="ProPgUseNewDelete|Use Implicit / Overload New([]) and Delete([]) Operators with Inheritance Polymorphism"}}
+	{{fbdoc item="keyword" value="ProPgEmulateTlsTp|Emulate a TLS (Thread Local Storage) and a TP (Thread Pooling) feature"}}
 
 NOTE: Existing ""CatPg"" pages should be recreated as ""ProPg"" pages providing a general overview to the grouping of keywords.
 >>::c::

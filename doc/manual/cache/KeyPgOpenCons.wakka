@@ -27,6 +27,9 @@ Opens the console's standard input (//stdin//) or output (//stdout//) streams fo
 	
 	To open both the //stdin// and //stdout// streams for file operations, a process must use multiple //file numbers//.
 	
+	The normal screen commands, such as ##[[KeyPgColor|Color]]## and ##[[KeyPgLocate|Locate]]##, do not work in this mode, because they do not accept a file number.
+	The ##[[KeyPgTab|TAB]]## keyword, regardless of the given column number, is always interpreted as a simple comma (##,##) (next output will take place at the next 14 column boundary).
+	
 	The error code returned by ##**Open Cons**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**Open Cons**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
 	
 	**Warning:** Presently, ##**Open Cons**## does not work as described above. Without any //file mode// specifier, a runtime error 1 (illegal function call) occurs. With the ##[[KeyPgInputfilemode|Input]]## //file mode// specifier, the only input mode is well supported. But with the ##[[KeyPgOutput|Output]]## //file mode// specifier, input and output modes are simultaneously supported.

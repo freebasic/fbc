@@ -72,6 +72,10 @@ __##flags## details:__
 		
 	Depending on whether the ##GFX_FULLSCREEN## parameter is present or not, ##**Screen**## will try to set the specified video mode in fullscreen or windowed mode, respectively.  If fullscreen mode is set and the system cannot set specified mode in fullscreen, it will try in windowed mode. If windowed mode is set and the system fails to open a window for specified mode, it will try fullscreen.  If everything fails, ##**Screen**## will have no effect and execution will resume from the statement following the ##**Screen**## call.  You should take care of checking if a graphics mode has been set or not, and behave accordingly; a way to check if ##**Screen**## is successful is to test the return value of the ##[[KeyPgScreenptr|Screenptr]]## function; see its page for details.
 	
+	Note:
+		##Screen 0## closes any graphics window, but also clears the console window if it exists.
+		##Screen 0, , , GFX_SCREEN_EXIT## (with ##GFX_SCREEN_EXIT=&h80000000##) also closes any graphics window, but does not clear the console window if it exists (previous text is preserved).
+		
 __Graphics mode console__
 	Console commands (##[[KeyPgLocate|Locate]]##, ##[[KeyPgPrint|Print]]##), input can be used both with standard QB ##**Screen**## modes and with the extended ones too, provided the standard color depth is not modified by using the second argument of ##**Screen**##. Where the table says more than one text resolution is available for the text mode, the required text resolution can be requested by using ##[[KeyPgWidth|Width]]##.  Any characters ##[[KeyPgPrint|Print]]##ed will erase the background around them; it does not use a transparent background.
 

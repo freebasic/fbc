@@ -9,17 +9,20 @@ Statement block to allow implicit access to fields in a user defined type variab
 {{fbdoc item="desc"}}
 	The ##**With...End With**## block allows the omission of the name of a variable of a user-defined ##[[KeyPgType|Type]]## when referring to its fields. The fields may then be accessed with just a single period (##.##) before them, e.g. if the ##[[KeyPgType|Type]]## contains an field element called "//##element##//", then it could be accessed within the ##**With**## block as "##//.element//##".
 	
-	It can be used as a shorthand to save typing and avoid cluttering the source. ##**With**## can also be used with dereferenced pointers, as the second example shows.
+	It can be used as a shorthand to save typing and avoid cluttering the source.
+	##**With**## can also be used with dereferenced pointers as the second example shows, with temporary instances (with explicit or implicit constructor) as the third example, and even with temporary types (without any constructor), because destruction of such temporary instances/types is deferred to the end of the ##**With**## scope.
+	But returns byref of functions from temporary instances/types taken as arguments are not supported (and no error message).
 	
 	##**With**## blocks may be nested.  In this case, only the innermost ##**With**## block is active, and any outer ones are ignored until the inner one is closed again.  See the third example for an illustration of this.
 	
-	Internally, a reference to the variable is taken at the start of the ##**With**## block, and then is used to calculate any element accesses within the block.  Note that this means that ##[[KeyPgGoto|Goto]]## should not be used to jump into a ##**With**## block, otherwise the reference will not have been set, and the results of trying to access it will be undefined.
+	Internally, the address of the variable is taken at the start of the ##**With**## block, and then is used to calculate any element accesses within the block.
+	Note that this means that ##[[KeyPgGoto|Goto]]## should not be used to jump into a ##**With**## block, otherwise the address will not have been set, and the results of trying to access it will be undefined.
 	
 	//Note for ##**With**## block used inside member procedure:
 	To access duplicated symbols defined as global outside the Type, add two dots as prefix: "##..""SomeSymbol""##" (inside a ##**With...End With**## block).//
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/udt/with-1.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/udt/with-1.bas"}}%%(freebasic)
 type rect_type
 	x as single
 	y as single
@@ -35,7 +38,7 @@ with the_rectangle
 end with
 %%
 
-{{fbdoc item="filename" value="examples/manual/udt/with-2.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/udt/with-2.bas"}}%%(freebasic)
 type rect_type
 	x as single
 	y as single
@@ -49,7 +52,7 @@ dim as integer loopvar, temp, t
 
 for loopvar = 0 to 4
 
-  with the_rectangle[loopvar]
+  with the_rectangle[loopvar]  '' dereferenced pointer
 
 	temp = .x
 	.x = 234 * t + 48 + .y
@@ -60,7 +63,31 @@ for loopvar = 0 to 4
 next
 %%
 
-{{fbdoc item="filename" value="examples/manual/udt/with-3.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/udt/with-2bis.bas"}}%%(freebasic)
+Type rect_type
+	x As Single
+	y As Single
+	Declare Constructor()
+	Declare Constructor(Byval x0 As Single, Byval y0 As Single)
+End Type
+
+Constructor rect_type()
+End Constructor
+
+Constructor rect_type(Byval x0 As Single, Byval y0 As Single)
+	This.x = x0
+	This.y = y0
+End Constructor
+
+Dim the_rectangle As rect_type
+
+With rect_type(1, 2)  '' temporary instance created here held up to 'End With'
+	the_rectangle.x = .x + .y  '' 1 + 2 = 3
+	the_rectangle.y = .x - .y  '' 1 - 2 = -1
+End With
+%%
+
+	{{fbdoc item="filename" value="examples/manual/udt/with-3.bas"}}%%(freebasic)
 
 type rect_type
 	x as single
@@ -87,6 +114,8 @@ end with
 print rect1.x, rect1.y '' 1,  2
 print rect2.x, rect2.y '' 3,  4
 %%
+{{fbdoc item="ver"}}
+	- Before fbc 1.10.0, temporary types (without any constructor) were not supported (because destruction of such temporary types was called immediately after the ##**With**## statement).
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__With""**##.

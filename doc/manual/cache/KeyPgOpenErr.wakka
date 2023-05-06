@@ -24,6 +24,7 @@ Opens both the standard input (//stdin//) and standard error (//stderr//) stream
 	##stderr## is an output stream different from ##stdout## allowing error messages to be redirected separately from the main console output.
 	
 	The normal console commands, such as ##[[KeyPgColor|Color]]## and ##[[KeyPgLocate|Locate]]##, do not work in this mode, because they do not accept a file number.
+	The ##[[KeyPgTab|TAB]]## keyword, regardless of the given column number, is always interpreted as a simple comma (##,##) (next output will take place at the next 14 column boundary).
 	
 	The ##[For Input|Output]## ##//mode//## is allowed for compatibility, but is ignored.
 	
