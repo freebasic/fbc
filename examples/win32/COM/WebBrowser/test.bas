@@ -324,7 +324,7 @@ private function WinMain _
 	UpdateWindow( win )
 
 	''
-	do while( GetMessage( @msg, 0, 0, 0 ) = TRUE )
+	do while( GetMessage( @msg, 0, 0, 0 ) )
 		TranslateMessage( @msg )
 		DispatchMessage( @msg )
 	loop

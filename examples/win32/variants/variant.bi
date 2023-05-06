@@ -4,6 +4,11 @@
 #ifdef VARIANT_ISBUILDING
 	#include once "windows.bi"
 	#include once "win/ole2.bi"
+
+	'' older fbc packages (before 2015) had this forward declaration in 
+	'' inc/win/oaidl.bi - having it here allows this library to be compiled
+	'' (but has not been tested for correctness / completeness)
+	type VARIANT_ as VARIANT
 #else
 	#ifndef VARIANT_
 		type VARIANT_

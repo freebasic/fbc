@@ -270,7 +270,7 @@ private function WinMain _
 	dim as MSG msg
 	dim as HWND win
 	
-	if( len( szCmdLine ) = 0 ) then
+	if( len( *szCmdLine ) = 0 ) then
 		print "Usage: test filename.ext"
 		return 1
 	end if
@@ -285,7 +285,7 @@ private function WinMain _
 	
 	toolbar = toolbar_oncreate( win )
 
-	movie = movie_oncreate( win, szCmdLine )
+	movie = movie_oncreate( win, wstr(*szCmdLine) )
 	if( movie = NULL ) then
 		return 1
 	end if
@@ -295,7 +295,7 @@ private function WinMain _
 	UpdateWindow( win )
 
 	''
-	do while( GetMessage( @msg, 0, 0, 0 ) = TRUE )
+	do while( GetMessage( @msg, 0, 0, 0 ) )
 		TranslateMessage( @msg )
 		DispatchMessage( @msg )
 	loop
