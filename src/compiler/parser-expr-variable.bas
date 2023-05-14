@@ -698,6 +698,12 @@ function cMemberDeref _
 				if( lexGetToken( ) = CHAR_DOT ) then
 					lexSkipToken( LEXCHECK_NOPERIOD )
 
+					'' member access on overloaded []'s return type must be UDT
+					if( astGetDataType( varexpr ) <> FB_DATATYPE_STRUCT ) then
+						errReport( FB_ERRMSG_EXPECTEDUDT, TRUE )
+						exit function
+					end if
+
 					'' MemberAccess
 					varexpr = cMemberAccess( astGetFullType( varexpr ), _
 					                         astGetSubType( varexpr ), varexpr )
