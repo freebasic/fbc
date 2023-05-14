@@ -1582,7 +1582,7 @@ Sub threadUDT.condDestroy ()
 End Sub
 				%%
 		- From the example 2 on the ##[[ProPgMtCriticalSections|Critical Sections]]## page "Synchronous method example using a condwait then a condbroadcast (and a mutex) for all threads", now the user implementation is modified to be compatible with the base Class 'threadUDT':
-				{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq10-1.bas"}}%%(freebasic)
+				{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq11.bas"}}%%(freebasic)
 #include once "fbthread.bi"
 Type threadUDT Extends Object
 	Public:
@@ -1780,7 +1780,7 @@ Sleep
 	After a while of observation, one can find both small negative values and large positive values.
 	
 	Interesting to see the min time, average time, and max time, between the executing start of thread body and the returning point of ""'ThreadCreate()'"":
-		{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq14.bas"}}%%(freebasic)
+		{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq12.bas"}}%%(freebasic)
 Dim As Any Ptr ptid
 Dim As Double t0
 Dim As Any Ptr p0 = @t0

@@ -32,7 +32,7 @@ How **emulate** a kind of **TLS (Thread Local Storage)** and a kind of **TP (Thr
 		A single macro allows to define any TLS variable (except array) of any type.
 		
 		- Code with preprocessor conditional directives depending on fbc version:
-				{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq12.bas"}}%%(freebasic)
+				{{fbdoc item="filename" value="examples/manual/proguide/multithreading/emulatetls1.bas"}}%%(freebasic)
 #include once "crt/string.bi"
 
 #if __FB_VERSION__ < "1.08"
@@ -303,7 +303,7 @@ end of threads
 							**""-""** A sequence of 9 ""'ThreadStart...ThreadWait'"" is also requested for this second user thread function, used like a thread function.
 							
 						Full code with the ""'ThreadInitThenMultiStart'"" Type:
-							{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq13.bas"}}%%(freebasic)
+							{{fbdoc item="filename" value="examples/manual/proguide/multithreading/emulatetp1.bas"}}%%(freebasic)
 Type ThreadInitThenMultiStartData
 	Dim As Function(ByVal p As Any Ptr) As String _pThread
 	Dim As Any Ptr _p
@@ -557,7 +557,7 @@ Second user function executed like a thread function:
 							**""-""** A second sequence (b) of 3 ""'PoolingSubmit'"" is requested for the last three user thread functions, ended by a ""'PoolingWait'"" with a dynamic string array as argument (so, only the returns from the last three user thread functions will fill out in the dynamic string array).
 							
 						Full code with the ""'ThreadPooling'"" Type:
-							{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq13-2.bas"}}%%(freebasic)
+							{{fbdoc item="filename" value="examples/manual/proguide/multithreading/emulatetp2.bas"}}%%(freebasic)
 #include once "crt/string.bi"
 
 Type ThreadPoolingData
@@ -829,7 +829,7 @@ Sleep
 						
 				- Example:
 						Example of use of ""'ThreadDispatching'"" (whatever the allowed number of secondary threads, the submission sequence syntax is always the same):
-							{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq13-3.bas"}}%%(freebasic)
+							{{fbdoc item="filename" value="examples/manual/proguide/multithreading/emulatetp3.bas"}}%%(freebasic)
 #include once "crt/string.bi"
 
 Type ThreadPoolingData
@@ -1203,7 +1203,7 @@ Sleep
 							**""-""** For ""'ThreadDispatching'"": 32 sub-tasks are always used and the distribution of these sub-tasks over the available threads (max = 1/2/4/8/16/32) is automatic.
 							
 						Full code with the ""'ThreadInitThenMultiStart'"", ""'ThreadPooling'"", and ""'ThreadDispatching'"" Types:
-							{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq13-4.bas"}}%%(freebasic)
+							{{fbdoc item="filename" value="examples/manual/proguide/multithreading/emulatetp4.bas"}}%%(freebasic)
 Type ThreadInitThenMultiStartData
 	Dim As Function(ByVal p As Any Ptr) As String _pThread
 	Dim As Any Ptr _p
@@ -1768,7 +1768,7 @@ Sleep
 				The objective of thread pooling (""ThreadInitThenMultiStart"", ""ThreadPooling"", ""ThreadDispatching"" methods) is to pool threads in order to avoid the untimely creation or deletion of threads, and thus allow their reuse.
 				
 				Test code to evaluate the different times wasted depending on the feature used:
-					{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq13-5.bas"}}%%(freebasic)
+					{{fbdoc item="filename" value="examples/manual/proguide/multithreading/emulatetp5.bas"}}%%(freebasic)
 Type ThreadInitThenMultiStart
 	Public:
 		Declare Constructor()

@@ -131,5 +131,8 @@ make install-rtlib install-gfxlib2 TARGET=i686-w64-mingw32
 	- ##-DDISABLE_OPENGL##
 		With this, the gfxlib2 will not use ""OpenGL"" headers, disabling the ""OpenGL"" graphics drivers.
 
+{{fbdoc item="see"}}
+	- [[DevBuildOptions|FreeBASIC Build Options]]
+
 {{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

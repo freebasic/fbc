@@ -12,7 +12,7 @@
 Dim As String driver
 
 #ifdef __FB_WIN32__
-'' set graphics driver to GDI (Win32 only), before calling ScreenRes
+'' set graphics driver to GDI (Windows only), before calling ScreenRes
 ScreenControl FB.SET_DRIVER_NAME, "GDI"
 #endif
 
