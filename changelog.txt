@@ -4,7 +4,7 @@ Version 1.10.0
 - gcc: '-funwind-tables' enabled on 64-bit targets for stack unwinding (adeyblue)
 - fbc: '--eh-frame-hdr' for linking on 64-bit nix targets for stack unwinding (adeyblue)
 - x86: arch 686 by default instead of 486 (SARG)
-- x86: arch 586 by default instead of 586 on DOS
+- x86: arch 586 by default instead of 486 on DOS
 - asm backend: only with 686 arch, use of fcomi(p) to avoid slower instructions and also less code (SARG)
 - fbc: #DUMP <expr> and #ODUMP <expr> pragmas only available in debug version of fbc
 - inc/fbmath.bi renamed to inc/fbprng.bi
@@ -53,7 +53,7 @@ Version 1.10.0
 - gfxlib2: add FB.GET_SCANLINE_SIZE to fbgfx.bi and ScreenControl() to get current internal scan line size multiplier
 - gfxlib2: SCREENCONTROL: add getters for GL parameters - new GET_GL_* constants in fbgfx.bi
 - fbc: allow a TYPE or UNION to be declared inside another TYPE or UNION to allow declaration of nested named types.  Support c++ name mangling parameters of named nested types.  Support definition of variables declared in a named nested type.
-- Name mangling for c++ 'char' through BYTE/UBYTE parameters using the form "[unsigned] byte alias "char".  Data type size is still 8 byte signed/unsigned from fbc side, but will mangled as 'char'; neither signed nor unsigned for the c++ side.
+- Name mangling for c++ 'char' through BYTE/UBYTE parameters using the form "[unsigned] byte alias "char".  Data type size is still 8 byte signed/unsigned from fbc side, but will be mangled as 'char'; neither signed nor unsigned for the c++ side.
 - Support 'SOURCE_DATE_EPOCH' environment variable for controlling the instrinsic __DATE__, __DATE_ISO__, __TIME__ macros.  This in turn controls __FB_BUILD_DATE__ and __FB_BUILD_DATE_ISO__ macros when building the compiler.  Report error message on malformed values.
 - fbc -nolib a,b,c command line option for selectively excluding specific libraries when linking (more fine-grained control than -nodeflibs, and not only for default libraries)
 - fbc will restart the parser when #cmdline "-mt" is used or usage of any threaded functions automatically enable -mt.  This allows the compiler to parse the current module from the beginning and process any __FB_MT__ checks.
@@ -64,7 +64,7 @@ Version 1.10.0
 - fbc: add command line option and warning '-w upcast' to warn when up-casting would discard initializers
 - fbc headers: add ./inc/fblimits.bi for minimum and maximum value constants - for example fb.MIN_VALUE_INTEGER and fb.MAX_VALUE_INTEGER
 - In normal build of fbc, try to automatically use gcc to query the search path for a std c++ library.  This helps with dependency for tests/cpp and for some users that want to interop with c++
-- Add  makefile option DISABLE_STDCXX_PATH to disable usnig gcc to search for some c++ library path
+- Add  makefile option DISABLE_STDCXX_PATH to disable using gcc to search for some c++ library path
 - fbc: allow typename.member symbol checks for #ifdef / #ifndef / defined() where member can be a data field, static data field, nested type, constructor, destructor, property, operator (self-assignment, new, new[], delete, delete[], let, cast, for, step, next), or member procedure.
 - rtlib: dos: add "__fb_dos_no_dpmi_yield" variable to control calling "__dpmi_yield()" and prevent a crash under some dos extenders in dosbox
 - fbc: PROCPTR( UDT.member [, ANY|SUB|FUNCTION ...] ) to get a procedure pointer for type member procedures.  If the member is abstract, then return 0 (null function pointer of the member procedure's call signature)
