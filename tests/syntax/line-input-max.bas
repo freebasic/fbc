@@ -14,7 +14,7 @@ dim z as zstring ptr, pz as zstring ptr
 dim w as wstring ptr, pw as wstring ptr
 dim s as string, ps as string
 dim fz as zstring * 20, pfz as zstring * 20
-dim fw as wstring * 20, pfw as wstring * 20 
+dim fw as wstring * 20, pfw as wstring * 20
 
 t( 0, line input #1, s )
 t( 0, line input #1, fz )
@@ -73,14 +73,14 @@ t( 1, line input #1, fw, 10 )
 t( 1, line input #1, *z )
 t( 1, line input #1, *w )
 
-t( 1, line input p, s, 10 )   
+t( 1, line input p, s, 10 )
 t( 1, line input p, fz, 10 )
 t( 1, line input p, fw, 10 )
 
 t( 1, line input "", *z )
 t( 1, line input "", *w )
 
-t( 1, line input p, s, 10 )   
+t( 1, line input p, s, 10 )
 t( 1, line input p, fz, 10 )
 t( 1, line input p, fw, 10 )
 

@@ -1,8 +1,8 @@
 #print "---"
 
 type T
-    i as integer
-    k as integer ptr
+	i as integer
+	k as integer ptr
 end type
 
 declare sub      s1( a as integer = 0 )
@@ -79,13 +79,13 @@ dim a as integer
 
 '' While it does seem inconsistent that the following is accepted
 '' with the '+' operator at a lower precedence that the
-'' call (), there is a bit of an explanation below: 
+'' call (), there is a bit of an explanation below:
 
 	s1 (a) + a
 
 '' the simple reason to allow it is that without this allowance
 '' we would be forcing use of '()' on every procedure call and
-'' well established syntax of optional parantheses would fail.   
+'' well established syntax of optional parantheses would fail.
 
 	locate (a + a) \ 2, 1
 
