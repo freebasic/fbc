@@ -1,4 +1,4 @@
-'' examples/manual/proguide/multithreading/criticalsectionfaq10-1.bas
+'' examples/manual/proguide/multithreading/criticalsectionfaq11.bas
 ''
 '' Example extracted from the FreeBASIC Manual
 '' from topic 'Critical Sections FAQ'

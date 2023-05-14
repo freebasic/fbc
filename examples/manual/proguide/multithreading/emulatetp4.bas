@@ -1,4 +1,4 @@
-'' examples/manual/proguide/multithreading/criticalsectionfaq13-4.bas
+'' examples/manual/proguide/multithreading/emulatetp4.bas
 ''
 '' Example extracted from the FreeBASIC Manual
 '' from topic 'Emulate a TLS (Thread Local Storage) and a TP (Thread Pooling) feature'

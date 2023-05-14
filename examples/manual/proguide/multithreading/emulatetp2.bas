@@ -1,4 +1,4 @@
-'' examples/manual/proguide/multithreading/criticalsectionfaq13-3.bas
+'' examples/manual/proguide/multithreading/emulatetp2.bas
 ''
 '' Example extracted from the FreeBASIC Manual
 '' from topic 'Emulate a TLS (Thread Local Storage) and a TP (Thread Pooling) feature'
@@ -152,99 +152,6 @@ End Destructor
 
 '---------------------------------------------------
 
-Type ThreadDispatching
-	Public:
-		Declare Constructor(ByVal nbMaxSecondaryThread As Integer = 1, ByVal nbMinSecondaryThread As Integer = 0)
-		Declare Sub DispatchingSubmit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
-		Declare Sub DispatchingWait()
-		Declare Sub DispatchingWait(values() As String)
-
-		Declare Property DispatchingThread() As Integer
-		Declare Sub DispatchingState(state() As UByte)
-
-		Declare Destructor()
-	Private:
-		Dim As Integer _nbmst
-		Dim As Integer _dstnb
-		Dim As ThreadPooling Ptr _tp(Any)
-		Declare Constructor(ByRef t As ThreadDispatching)
-		Declare Operator Let(ByRef t As ThreadDispatching)
-End Type
-
-Constructor ThreadDispatching(ByVal nbMaxSecondaryThread As Integer = 1, ByVal nbMinSecondaryThread As Integer = 0)
-	This._nbmst = nbMaxSecondaryThread
-	If nbMinSecondaryThread > nbMaxSecondaryThread Then
-		nbMinSecondaryThread = nbMaxSecondaryThread
-	End If
-	If nbMinSecondaryThread > 0 Then
-		ReDim This._tp(nbMinSecondaryThread - 1)
-		For I As Integer = 0 To nbMinSecondaryThread - 1
-			This._tp(I) = New ThreadPooling
-		Next I
-	End If
-End Constructor
-
-Sub ThreadDispatching.DispatchingSubmit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
-	For I As Integer = 0 To UBound(This._tp)
-		If (This._tp(I)->PoolingState And 11) = 0 Then
-			This._tp(I)->PoolingSubmit(pThread, p)
-			Exit Sub
-		End If
-	Next I
-	If UBound(This._tp) < This._nbmst - 1 Then
-		ReDim Preserve This._tp(UBound(This._tp) + 1)
-		This._tp(UBound(This._tp)) = New ThreadPooling
-		This._tp(UBound(This._tp))->PoolingSubmit(pThread, p)
-	ElseIf UBound(This._tp) >= 0 Then
-		This._tp(This._dstnb)->PoolingSubmit(pThread, p)
-		This._dstnb = (This._dstnb + 1) Mod This._nbmst
-	End If
-End Sub
-
-Sub ThreadDispatching.DispatchingWait()
-	For I As Integer = 0 To UBound(This._tp)
-		This._tp(I)->PoolingWait()
-	Next I
-End Sub
-
-Sub ThreadDispatching.DispatchingWait(values() As String)
-	Dim As String s()
-	For I As Integer = 0 To UBound(This._tp)
-		This._tp(I)->PoolingWait(s())
-		If UBound(s) >= 1 Then
-			If UBound(values) = -1 Then
-				ReDim Preserve values(1 To UBound(values) + UBound(s) + 1)
-			Else
-				ReDim Preserve values(1 To UBound(values) + UBound(s))
-			End If
-			For I As Integer = 1 To UBound(s)
-				values(UBound(values) - UBound(s) + I) = s(I)
-			Next I
-		End If
-	Next I
-End Sub
-
-Property ThreadDispatching.DispatchingThread() As Integer
-	Return UBound(This._tp) + 1
-End Property
-
-Sub ThreadDispatching.DispatchingState(state() As UByte)
-	If UBound(This._tp) >= 0 Then
-		ReDim state(1 To UBound(This._tp) + 1)
-		For I As Integer = 0 To UBound(This._tp)
-			state(I + 1) = This._tp(I)->PoolingState
-		Next I
-	End If
-End Sub
-
-Destructor ThreadDispatching()
-	For I As Integer = 0 To UBound(This._tp)
-		Delete This._tp(I)
-	Next I
-End Destructor
-
-'---------------------------------------------------
-
 Sub Prnt (ByRef s As String, ByVal p As Any Ptr)
 	Dim As String Ptr ps = p
 	If ps > 0 Then Print *ps;
@@ -284,64 +191,35 @@ Function UserCode6 (ByVal p As Any Ptr) As String
 	Return "UserCode #6"
 End Function
 
-Sub SubmitSequence(ByRef t As ThreadDispatching, ByVal ps As String Ptr)
-	t.DispatchingSubmit(@UserCode1, ps)
-	t.DispatchingSubmit(@UserCode2)
-	t.DispatchingSubmit(@UserCode3)
-	t.DispatchingSubmit(@UserCode4)
-	t.DispatchingSubmit(@UserCode5)
-	t.DispatchingSubmit(@UserCode6)
-End Sub  
-
 Dim As String sa = "  Sequence #a: "
 Dim As String sb = "  Sequence #b: "
-Dim As String sc = "  Sequence #c: "
-Dim As String sd = "  Sequence #d: "
-Dim As String se = "  Sequence #e: "
-Dim As String sf = "  Sequence #f: "
 Dim As String s()
 
-Dim As ThreadDispatching t1, t2 = 2, t3 = 3, t4 = 4, t5 = 5, t6 = 6
+Dim As ThreadPooling t
 
-Print " Sequence #a of 6 user thread functions dispatched over 1 secondary thread:"
-SubmitSequence(t1, @sa)
-t1.DispatchingWait()
+t.PoolingSubmit(@UserCode1, @sa)
+t.PoolingSubmit(@UserCode2)
+t.PoolingSubmit(@UserCode3)
+Print " Sequence #a of 3 user thread functions fully submitted "
+t.PoolingWait()
 Print
-Print
-
-Print " Sequence #b of 6 user thread functions dispatched over 2 secondary threads:"
-SubmitSequence(t2, @sb)
-t2.DispatchingWait()
-Print
+Print " Sequence #a completed"
 Print
 
-Print " Sequence #c of 6 user thread functions dispatched over 3 secondary threads:"
-SubmitSequence(t3, @sc)
-t3.DispatchingWait()
+t.PoolingSubmit(@UserCode4, @sb)
+t.PoolingSubmit(@UserCode5)
+t.PoolingSubmit(@UserCode6)
+Print " Sequence #b of 3 user thread functions fully submitted "
+t.PoolingWait(s())
 Print
-Print
-
-Print " Sequence #d of 6 user thread functions dispatched over 4 secondary threads:"
-SubmitSequence(t4, @sd)
-t4.DispatchingWait()
-Print
+Print " Sequence #b completed"
 Print
 
-Print " Sequence #e of 6 user thread functions dispatched over 5 secondary threads:"
-SubmitSequence(t5, @se)
-t5.DispatchingWait()
-Print
-Print
-
-Print " Sequence #f of 6 user thread functions dispatched over 6 secondary threads:"
-SubmitSequence(t6, @sf)
-t6.DispatchingWait(s())
-Print
-
-Print "  List of returned values from sequence #f:"
+Print " List of returned values from sequence #b only"
 For I As Integer = LBound(s) To UBound(s)
-	Print "   " & I & ": " & s(I)
+	Print "  " & I & ": " & s(I)
 Next I
+Print
 
 Sleep
 							
