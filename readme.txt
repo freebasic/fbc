@@ -8,14 +8,14 @@
     fbc project page:   https://sourceforge.net/projects/fbc/
     GitHub mirror:      https://github.com/freebasic/fbc
     Discord:            https://discord.gg/286rSdK
-    IRC channel:        ##freebasic at chat.freenode.net
+    IRC channel:        ##freebasic at https://webchat.freenode.net
     Features:           https://freebasic.net/wiki/CompilerFeatures
     Requirements:       https://freebasic.net/wiki/CompilerRequirements
 
     FreeBASIC consists of fbc (the command line compiler), the runtime libraries
     (libfb and libfbgfx), and FreeBASIC header files for third-party libraries.
     In order to produce executables, fbc uses the GNU binutils (assembler,
-    linker). When compiling for architectures other than 32bit x86, fbc depends
+    linker). When compiling for architectures other than 32bit, fbc depends
     on gcc to generate assembly.
 
     Documentation of language features, compiler options and many other details
@@ -34,15 +34,15 @@
     such as makefiles. fbc itself is not a graphical code editor or IDE!
 
     Win32 (similar for Win64):
-      Separate 32-bit and 64-bit standalone packages:
-        Download and extract latest:
-           - FreeBASIC-x.xx.x-win32.zip or FreeBASIC-x.xx.x-win32.7z for 32-bit
-           - FreeBASIC-x.xx.x-win64.zip or FreeBASIC-x.xx.x-win64.7z for 64-bit
       Combined 32-bit and 64-bit standalone packages:
         Download and extract latest:
            - FreeBASIC-x.xx.x-winlibs-gcc-9.3.0.7z or
            - FreeBASIC-x.xx.x-gcc-5.2.0.7z
            - fbc32.exe and fbc64.exe are used instead of fbc.exe
+      Separate 32-bit and 64-bit standalone packages (based on winlibs-gcc-9.3.0):
+        Download and extract latest:
+           - FreeBASIC-x.xx.x-win32.zip or FreeBASIC-x.xx.x-win32.7z for 32-bit
+           - FreeBASIC-x.xx.x-win64.zip or FreeBASIC-x.xx.x-win64.7z for 64-bit
 
       Now you can use fbc.exe from the installation directory to compile FB
       programs (*.bas files) into executables (*.exe files). Open a command
@@ -66,9 +66,10 @@
 
       Optionally, you can install a text editor or IDE which will invoke fbc.exe
       for you, for example:
-        WinFBE https://github.com/PaulSquires/WinFBE
-        FBIDE: https://fbide.freebasic.net/
-        FBEdit: http://radasm.cherrytree.at/fbedit/
+        WinFBE         https://github.com/PaulSquires/WinFBE
+        VisualFBEditor https://github.com/XusinboyBekchanov/VisualFBEditor/releases
+       Or even though is older and unmaintained will work:
+        FBIDE:         https://fbide.freebasic.net/
 
     Linux (if FreeBASIC is not available through your package manager):
       Download and extract the latest FreeBASIC-x.xx.x-linux.tar.gz. Open a
@@ -153,11 +154,11 @@
     - GNU debugger  https://gnu.org/software/gdb/
     - GoRC          http://godevtool.com/
     - LibFFI        https://sourceware.org/libffi/
-    - MinGW         http://www.mingw.org/
+    - MinGW         https://osdn.net/projects/mingw/
     - MinGW-w64     https://mingw-w64.org/
     - OpenXDK       http://openxdk.sourceforge.net/
-    - TDM-GCC       http://tdm-gcc.tdragon.net/
-    - WinLibs       https://winlibs.com/
+    - TDM-GCC       https://jmeubank.github.io/tdm-gcc/
+    - WinLibs       https://www.winlibs.com/
 
   o Credits
 
