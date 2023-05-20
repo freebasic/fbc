@@ -104,11 +104,15 @@ include/freebas/dos/sys/version.bi
 include/freebas/expat.bi
 include/freebas/fbc-int/array.bi
 include/freebas/fbc-int/fbcall.bi
+include/freebas/fbc-int/gfx.bi
 include/freebas/fbc-int/math.bi
 include/freebas/fbc-int/memory.bi
+include/freebas/fbc-int/symbol.bi
+include/freebas/fbc-int/system.bi
 include/freebas/fbgfx.bi
 include/freebas/fbio.bi
-include/freebas/fbmath.bi
+include/freebas/fblimits.bi
+include/freebas/fbprng.bi
 include/freebas/fbthread.bi
 include/freebas/file.bi
 include/freebas/gd.bi

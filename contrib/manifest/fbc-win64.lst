@@ -495,11 +495,15 @@ include/freebasic/fastcgi/fcgi_stdio.bi
 include/freebasic/fastcgi/fcgiapp.bi
 include/freebasic/fbc-int/array.bi
 include/freebasic/fbc-int/fbcall.bi
+include/freebasic/fbc-int/gfx.bi
 include/freebasic/fbc-int/math.bi
 include/freebasic/fbc-int/memory.bi
+include/freebasic/fbc-int/symbol.bi
+include/freebasic/fbc-int/system.bi
 include/freebasic/fbgfx.bi
 include/freebasic/fbio.bi
-include/freebasic/fbmath.bi
+include/freebasic/fblimits.bi
+include/freebasic/fbprng.bi
 include/freebasic/fbthread.bi
 include/freebasic/ffi.bi
 include/freebasic/file.bi
