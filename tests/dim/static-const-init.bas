@@ -2,7 +2,7 @@
 
 SUITE( fbc_tests.dim_.static_const_init )
 
-	sub s() 
+	sub s()
 	end sub
 
 	function f1() as any ptr

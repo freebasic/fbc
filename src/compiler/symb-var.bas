@@ -189,6 +189,16 @@ function symbAddArrayDescriptorType _
 	'' descriptor type, e.g. in hMangleUdtId().
 	''
 	attrib or= FB_SYMBATTRIB_DESCRIPTOR
+
+	''
+	'' If it is a struct and also a simple local struct, then mark the descriptor as local too
+
+	if( (arraydtype = FB_DATATYPE_STRUCT) andalso _
+	    (symbIsStruct(arraySubType)) andalso _
+	    (symbIsLocal(arraySubType)) ) then 
+		attrib or= FB_SYMBATTRIB_LOCAL
+	end if
+
 	sym = symbStructBegin( symtb, hashtb, NULL, id, aliasid, FALSE, 0, FALSE, attrib, FB_SYMBOPT_PRESERVECASE )
 	assert( sym )
 	dTB(0).lower = 0
