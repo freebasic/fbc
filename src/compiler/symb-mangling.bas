@@ -163,12 +163,32 @@ private sub hMangleUdtId( byref mangled as string, byval sym as FBSYMBOL ptr )
 
 	'' Itanium C++ ABI: All identifiers are encoded as:
 	'' <length><id>
-	if( sym->id.alias ) then
-		mangled += str( len( *sym->id.alias ) )
-		mangled += *sym->id.alias
+
+	if symbIsLocal( sym ) then
+		'' If the symbol is local, then the internally mangled name needs to be
+		'' unique so we avoid collisions between structs that have the same name
+		'' in different scopes regardless if the types are actually the same or not
+
+		'' !!!TODO!!! should localUDTcounter reset between modules and on restarts with fbRestartableStaticVariable()?
+		static localUDTcounter as integer = 1
+		dim tmp as string
+		if( sym->id.alias ) then
+			tmp = *sym->id.alias
+		else
+			tmp = *sym->id.name
+		end if
+		tmp += "$" + str(localUDTcounter) 
+		mangled += str( len(tmp) )
+		mangled += tmp
+		localUDTcounter += 1
 	else
-		mangled += str( len( *sym->id.name ) )
-		mangled += *sym->id.name
+		if( sym->id.alias ) then
+			mangled += str( len( *sym->id.alias ) )
+			mangled += *sym->id.alias
+		else
+			mangled += str( len( *sym->id.name ) )
+			mangled += *sym->id.name
+		end if
 	end if
 
 	''

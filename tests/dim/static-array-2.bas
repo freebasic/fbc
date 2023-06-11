@@ -16,13 +16,17 @@ fbc       gas32    gas64    gcc32    gcc64
 '/
 
 function bar( a as long ) as long
-	return( 1 )
+return( 1 )
 end function
 
 function baz( a as long ) as long
-	return( 2 )
+return( 2 )
 end function
 
-sub foo()
-	static as function( as long ) as long f( ... ) = { @bar, @baz }
+sub foo1()
+static as function( as long ) as long f( ... ) = { @bar, @baz }
+end sub
+
+sub foo2()
+static as function( as long ) as long f( ... ) = { @baz, @bar }
 end sub
