@@ -617,4 +617,13 @@ declare function fbGetBackendValistType () as FB_CVA_LIST_TYPEDEF
 	#define INT_BOOL_TO_WSTR(y_) wstr(y_)
 #endif
 
+
+'' helper macro to assert at compile time that the current
+'' procedure matches a specific function pointer callback
+#if __FB_VERSION__ >= "1.09.0"
+#define ASSERT_PROC_DECL( cb_type ) #assert( typeof( procptr(__FUNCTION_NQ__) ) = typeof( cb_type ) )
+#else
+#define ASSERT_PROC_DECL( cb_type )
+#endif
+
 #endif '' __FB_BI__

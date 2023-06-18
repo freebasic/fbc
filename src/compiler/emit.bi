@@ -222,27 +222,51 @@ type EMIT_NODE
 	regFreeTB(EMIT_REGCLASSES-1)    as REG_FREETB
 end type
 
+type EMIT_NOPCB as sub _
+	( _
+	)
 
-type EMIT_BOPCB as sub( byval dvreg as IRVREG ptr, _
-						byval svreg as IRVREG ptr )
+type EMIT_BOPCB as sub _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	)
 
-type EMIT_UOPCB as sub( byval dvreg as IRVREG ptr )
+type EMIT_UOPCB as sub _
+	( _
+		byval dvreg as IRVREG ptr _
+	)
 
-type EMIT_RELCB as sub( byval rvreg as IRVREG ptr, _
-						byval label as FBSYMBOL ptr, _
-						byval dvreg as IRVREG ptr, _
-						byval svreg as IRVREG ptr )
+type EMIT_RELCB as sub _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	)
 
-type EMIT_STKCB as sub( byval vreg as IRVREG ptr, _
-						byval extra as integer )
+type EMIT_STKCB as sub _
+	( _
+		byval vreg as IRVREG ptr, _
+		byval extra as integer _
+	)
 
-type EMIT_BRCCB as sub( byval vreg as IRVREG ptr, _
-						byval sym as FBSYMBOL ptr, _
-						byval extra as integer )
+type EMIT_BRCCB as sub _
+	( _
+		byval vreg as IRVREG ptr, _
+		byval sym as FBSYMBOL ptr, _
+		byval extra as integer _
+	)
 
-type EMIT_SOPCB as sub( byval sym as FBSYMBOL ptr )
+type EMIT_SOPCB as sub _
+	( _
+		byval sym as FBSYMBOL ptr _
+	)
 
-type EMIT_LITCB as sub( byval text as zstring ptr )
+type EMIT_LITCB as sub _
+	( _
+		byval text as zstring ptr _
+	)
 
 type EMIT_JTBCB as sub _
 	( _

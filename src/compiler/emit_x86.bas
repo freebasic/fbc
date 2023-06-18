@@ -1280,6 +1280,9 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 private sub _emitLIT( byval s as zstring ptr )
+
+	ASSERT_PROC_DECL( EMIT_LITCB )
+
 	dim ostr as string
 	ostr = *s + NEWLINE
 	outEX( ostr )
@@ -1295,6 +1298,8 @@ private sub _emitJMPTB _
 		byval bias as ulongint, _
 		byval span as ulongint _
 	)
+
+	ASSERT_PROC_DECL( EMIT_JTBCB )
 
 	dim as string deflabelname, tb
 
@@ -1351,6 +1356,8 @@ private sub _emitCALL _
 		byval bytestopop as integer _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_BRCCB )
+
 	dim ostr as string
 
 	ostr = "call "
@@ -1371,6 +1378,8 @@ private sub _emitCALLPTR _
 		byval unused as FBSYMBOL ptr, _
 		byval bytestopop as integer _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BRCCB )
 
 	dim src as string
 	dim ostr as string
@@ -1425,6 +1434,8 @@ private sub _emitJUMP _
 		byval unused2 as integer _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_BRCCB )
+
 	dim ostr as string
 
 	ostr = "jmp "
@@ -1440,6 +1451,8 @@ private sub _emitJUMPPTR _
 		byval unused1 as FBSYMBOL ptr, _
 		byval unused2 as integer _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BRCCB )
 
 	dim src as string
 	dim ostr as string
@@ -1457,6 +1470,8 @@ private sub _emitRET _
 		byval vreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_UOPCB )
+
 	dim ostr as string
 
 	ostr = "ret " + str( vreg->value.i )
@@ -1469,6 +1484,8 @@ private sub _emitPUBLIC _
 	( _
 		byval label as FBSYMBOL ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_SOPCB )
 
 	dim ostr as string
 
@@ -1485,6 +1502,8 @@ private sub _emitLABEL _
 		byval label as FBSYMBOL ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_SOPCB )
+
 	dim ostr as string
 
 	ostr = *symbGetMangledName( label )
@@ -1498,6 +1517,8 @@ private sub _emitNOP _
 	( _
 		_
 	) static
+
+	ASSERT_PROC_DECL( EMIT_NOPCB )
 
 end sub
 
@@ -1538,6 +1559,8 @@ private sub _emitSTORL2L _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	dim as string dst1, dst2, src1, src2, ostr
 
 	hPrepOperand64( dvreg, dst1, dst2 )
@@ -1557,6 +1580,8 @@ private sub _emitSTORI2L _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim as string dst1, dst2, src1, ext, ostr
 	dim sdsize as integer
@@ -1627,6 +1652,8 @@ private sub _emitSTORF2L _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	dim as string dst
 	dim as string ostr
 
@@ -1641,13 +1668,14 @@ private sub _emitSTORF2L _
 
 end sub
 
-
 '':::::
 private sub _emitSTORI2I _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim as string dst, src
 	dim as integer ddsize, sdsize
@@ -1740,11 +1768,12 @@ private sub _emitSTORL2I _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	'' been too complex due the SI/DI crap, leave it to I2I
 	_emitSTORI2I( dvreg, svreg )
 
 end sub
-
 
 '':::::
 private sub _emitSTORF2I _
@@ -1752,6 +1781,8 @@ private sub _emitSTORF2I _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim as string dst, src
 	dim as integer ddsize
@@ -1830,14 +1861,14 @@ private sub _emitSTORF2I _
 
 end sub
 
-
-
 '':::::
 private sub _emitSTORL2F _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim as string dst, src, aux
 	dim as string ostr
@@ -1892,14 +1923,14 @@ private sub _emitSTORL2F _
 
 end sub
 
-
-
 '':::::
 private sub _emitSTORI2F _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim as string dst, src
 	dim as integer sdsize
@@ -2026,14 +2057,14 @@ private sub _emitSTORI2F _
 
 end sub
 
-
-
 '':::::
 private sub _emitSTORF2F _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim as string dst, src
 	dim as integer ddsize, sdsize
@@ -2095,6 +2126,8 @@ private sub _emitLOADL2L _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	dim as string dst1, dst2, src1, src2
 	dim as string ostr
 
@@ -2115,6 +2148,8 @@ private sub _emitLOADI2L _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim as string dst1, dst2, src1
 	dim as integer sdsize
@@ -2170,14 +2205,14 @@ private sub _emitLOADI2L _
 
 end sub
 
-
-
 '':::::
 private sub _emitLOADF2L _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim as string dst, src, aux
 	dim as string ostr
@@ -2267,6 +2302,8 @@ private sub _emitLOADI2I _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	dim as string dst, src
 	dim as integer ddsize, sdsize
 	dim as string ostr
@@ -2343,11 +2380,12 @@ private sub _emitLOADL2I _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	'' been too complex due the SI/DI crap, leave it to I2I
 	_emitLOADI2I( dvreg, svreg )
 
 end sub
-
 
 '':::::
 private sub _emitLOADF2I _
@@ -2355,6 +2393,8 @@ private sub _emitLOADF2I _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim as string dst, src
 	dim as integer ddsize
@@ -2450,13 +2490,14 @@ private sub _emitLOADF2I _
 
 end sub
 
-
 '':::::
 private sub _emitLOADL2F _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim as string dst, src, aux
 	dim as string ostr
@@ -2511,14 +2552,14 @@ private sub _emitLOADL2F _
 
 end sub
 
-
-
 '':::::
 private sub _emitLOADI2F _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim as string dst, src
 	dim as integer sdsize
@@ -2639,14 +2680,14 @@ private sub _emitLOADI2F _
 
 end sub
 
-
-
 '':::::
 private sub _emitLOADF2F _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim as string src
 	dim as string ostr
@@ -2669,6 +2710,8 @@ private sub _emitMOVL _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	dim as string dst1, dst2, src1, src2, ostr
 
 	hPrepOperand64( dvreg, dst1, dst2 )
@@ -2689,6 +2732,8 @@ private sub _emitMOVI _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	dim as string dst, src, ostr
 
 	'' byte? handle SI, DI used as bytes..
@@ -2706,13 +2751,14 @@ private sub _emitMOVI _
 
 end sub
 
-
 '':::::
 private sub _emitMOVF _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	'' do nothing, both are regs
 
@@ -2724,6 +2770,8 @@ private sub _emitADDL _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim dst1 as string, dst2 as string, src1 as string, src2 as string
 	dim ostr as string
@@ -2745,6 +2793,8 @@ private sub _emitADDI _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim dst as string, src as string
 	dim doinc as integer, dodec as integer
@@ -2777,14 +2827,14 @@ private sub _emitADDI _
 
 end sub
 
-
-
 '':::::
 private sub _emitADDF _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim src as string
 	dim ostr as string
@@ -2815,6 +2865,8 @@ private sub _emitSUBL _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	dim dst1 as string, dst2 as string, src1 as string, src2 as string
 	dim ostr as string
 
@@ -2835,6 +2887,8 @@ private sub _emitSUBI _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim dst as string, src as string
 	dim doinc as integer, dodec as integer
@@ -2867,14 +2921,14 @@ private sub _emitSUBI _
 
 end sub
 
-
-
 '':::::
 private sub _emitSUBF _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim src as string
 	dim doinc as integer, dodec as integer
@@ -2904,6 +2958,8 @@ private sub _emitMULL _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim dst1 as string, dst2 as string, src1 as string, src2 as string
 	dim iseaxfree as integer, isedxfree as integer
@@ -3014,6 +3070,8 @@ private sub _emitMULI _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	dim reg as integer, isfree as integer, rname as string
 	dim ostr as string
 	dim dst as string, src as string
@@ -3048,14 +3106,14 @@ private sub _emitMULI _
 
 end sub
 
-
-
 '':::::
 private sub _emitMULF _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim src as string
 	dim ostr as string
@@ -3078,14 +3136,14 @@ private sub _emitMULF _
 
 end sub
 
-
-
 '':::::
 private sub _emitDIVF _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim src as string
 	dim ostr as string
@@ -3114,6 +3172,8 @@ private sub _emitDIVI _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim as string dst, src
 	dim as integer ecxtrashed
@@ -3268,6 +3328,8 @@ private sub _emitMODI _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim as string dst, src
 	dim as integer ecxtrashed
@@ -3817,6 +3879,8 @@ private sub _emitSHLL _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	hSHIFTL( AST_OP_SHL, dvreg, svreg )
 
 end sub
@@ -3827,6 +3891,8 @@ private sub _emitSHLI _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	hSHIFTI( AST_OP_SHL, dvreg, svreg )
 
@@ -3839,6 +3905,8 @@ private sub _emitSHRL _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	hSHIFTL( AST_OP_SHR, dvreg, svreg )
 
 end sub
@@ -3850,6 +3918,8 @@ private sub _emitSHRI _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	hSHIFTI( AST_OP_SHR, dvreg, svreg )
 
 end sub
@@ -3860,6 +3930,8 @@ private sub _emitANDL _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim dst1 as string, dst2 as string, src1 as string, src2 as string
 	dim ostr as string
@@ -3882,6 +3954,8 @@ private sub _emitANDI _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	dim dst as string, src as string
 	dim ostr as string
 
@@ -3899,6 +3973,8 @@ private sub _emitORL _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim dst1 as string, dst2 as string, src1 as string, src2 as string
 	dim ostr as string
@@ -3921,6 +3997,8 @@ private sub _emitORI _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	dim dst as string, src as string
 	dim ostr as string
 
@@ -3938,6 +4016,8 @@ private sub _emitXORL _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim dst1 as string, dst2 as string, src1 as string, src2 as string
 	dim ostr as string
@@ -3960,6 +4040,8 @@ private sub _emitXORI _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	dim dst as string, src as string
 	dim ostr as string
 
@@ -3977,6 +4059,8 @@ private sub _emitEQVL _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim dst1 as string, dst2 as string, src1 as string, src2 as string
 	dim ostr as string
@@ -4005,6 +4089,8 @@ private sub _emitEQVI _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	dim dst as string, src as string
 	dim ostr as string
 
@@ -4029,6 +4115,8 @@ private sub _emitIMPL _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim dst1 as string, dst2 as string, src1 as string, src2 as string
 	dim ostr as string
@@ -4057,6 +4145,8 @@ private sub _emitIMPI _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	dim dst as string, src as string
 	dim ostr as string
 
@@ -4075,13 +4165,14 @@ private sub _emitIMPI _
 
 end sub
 
-
 '':::::
 private sub _emitATN2 _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim src as string
 	dim ostr as string
@@ -4104,6 +4195,8 @@ private sub _emitPOW _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim src as string
 	dim ostr as string
@@ -4441,6 +4534,8 @@ private sub _emitCGTL _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_RELCB )
+
 	dim jmp as string, rjmp as string
 
 	if( typeIsSigned( dvreg->dtype ) ) then
@@ -4464,6 +4559,8 @@ private sub _emitCGTI _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_RELCB )
+
 	dim jmp as string
 
 	if( typeIsSigned( dvreg->dtype ) ) then
@@ -4485,6 +4582,8 @@ private sub _emitCGTF _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_RELCB )
+
 	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
 		hCMPF( rvreg, label, "b", "", dvreg, svreg )
 	else
@@ -4500,6 +4599,8 @@ private sub _emitCLTL _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_RELCB )
 
 	dim jmp as string, rjmp as string
 
@@ -4524,6 +4625,8 @@ private sub _emitCLTI _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_RELCB )
+
 	dim jmp as string
 
 	if( typeIsSigned( dvreg->dtype ) ) then
@@ -4536,7 +4639,6 @@ private sub _emitCLTI _
 
 end sub
 
-
 '':::::
 private sub _emitCLTF _
 	( _
@@ -4545,6 +4647,8 @@ private sub _emitCLTF _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_RELCB )
 
 	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
 		hCMPF( rvreg, label, "a", "", dvreg, svreg )
@@ -4563,6 +4667,8 @@ private sub _emitCEQL _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_RELCB )
+
 	hCMPL( rvreg, label, "ne", "", "e", dvreg, svreg, TRUE )
 
 end sub
@@ -4576,10 +4682,11 @@ private sub _emitCEQI _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_RELCB )
+
 	hCMPI( rvreg, label, "e", dvreg, svreg )
 
 end sub
-
 
 '':::::
 private sub _emitCEQF _
@@ -4589,6 +4696,8 @@ private sub _emitCEQF _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_RELCB )
 
 	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
 		hCMPF( rvreg, label, "z", "", dvreg, svreg )
@@ -4607,6 +4716,8 @@ private sub _emitCNEL _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_RELCB )
+
 	hCMPL( rvreg, label, "ne", "", "ne", dvreg, svreg )
 
 end sub
@@ -4620,10 +4731,11 @@ private sub _emitCNEI _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_RELCB )
+
 	hCMPI( rvreg, label, "ne", dvreg, svreg )
 
 end sub
-
 
 '':::::
 private sub _emitCNEF _
@@ -4633,6 +4745,8 @@ private sub _emitCNEF _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_RELCB )
 
 	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
 		hCMPF( rvreg, label, "nz", "", dvreg, svreg )
@@ -4650,6 +4764,8 @@ private sub _emitCLEL _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_RELCB )
 
 	dim jmp as string, rjmp as string
 
@@ -4674,6 +4790,8 @@ private sub _emitCLEI _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_RELCB )
+
 	dim jmp as string
 
 	if( typeIsSigned( dvreg->dtype ) ) then
@@ -4686,7 +4804,6 @@ private sub _emitCLEI _
 
 end sub
 
-
 '':::::
 private sub _emitCLEF _
 	( _
@@ -4696,6 +4813,8 @@ private sub _emitCLEF _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_RELCB )
+
 	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
 		hCMPF( rvreg, label, "ae", "", dvreg, svreg )
 	else
@@ -4703,7 +4822,6 @@ private sub _emitCLEF _
 	end if
 
 end sub
-
 
 '':::::
 private sub _emitCGEL _
@@ -4713,6 +4831,8 @@ private sub _emitCGEL _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_RELCB )
 
 	dim jmp as string, rjmp as string
 
@@ -4737,6 +4857,8 @@ private sub _emitCGEI _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_RELCB )
+
 	dim jmp as string
 
 	if( typeIsSigned( dvreg->dtype ) ) then
@@ -4749,7 +4871,6 @@ private sub _emitCGEI _
 
 end sub
 
-
 '':::::
 private sub _emitCGEF _
 	( _
@@ -4758,6 +4879,8 @@ private sub _emitCGEF _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_RELCB )
 
 	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
 		hCMPF( rvreg, label, "be", "", dvreg, svreg )
@@ -4777,6 +4900,8 @@ private sub _emitNEGL _
 	( _
 		byval dvreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_UOPCB )
 
 	dim dst1 as string, dst2 as string
 	dim ostr as string
@@ -4800,6 +4925,8 @@ private sub _emitNEGI _
 		byval dvreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_UOPCB )
+
 	dim dst as string
 	dim ostr as string
 
@@ -4810,12 +4937,13 @@ private sub _emitNEGI _
 
 end sub
 
-
 '':::::
 private sub _emitNEGF _
 	( _
 		byval dvreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_UOPCB )
 
 	outp "fchs"
 
@@ -4826,6 +4954,8 @@ private sub _emitNOTL _
 	( _
 		byval dvreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_UOPCB )
 
 	dim dst1 as string, dst2 as string
 	dim ostr as string
@@ -4845,6 +4975,8 @@ private sub _emitNOTI _
 	( _
 		byval dvreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_UOPCB )
 
 	dim dst as string
 	dim ostr as string
@@ -4867,6 +4999,8 @@ private sub _emitABSL _
 	( _
 		byval dvreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_UOPCB )
 
 	dim dst1 as string, dst2 as string
 	dim reg as integer, isfree as integer, rname as string
@@ -4912,6 +5046,8 @@ private sub _emitABSI _
 		byval dvreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_UOPCB )
+
 	dim dst as string
 	dim reg as integer, isfree as integer, rname as string, bits as integer
 	dim ostr as string
@@ -4946,12 +5082,13 @@ private sub _emitABSI _
 
 end sub
 
-
 '':::::
 private sub _emitABSF _
 	( _
 		byval dvreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_UOPCB )
 
 	outp "fabs"
 
@@ -4985,6 +5122,10 @@ end sub
 '' - Should have as few jumps/assignments as possible
 ''
 private sub _emitSGNL( byval dvreg as IRVREG ptr )
+
+	ASSERT_PROC_DECL( EMIT_UOPCB )
+
+
 	dim as string low, high, exitlabel, tmp32
 	dim as integer tmpreg = any, istmpfree = any
 
@@ -5020,6 +5161,9 @@ private sub _emitSGNL( byval dvreg as IRVREG ptr )
 end sub
 
 private sub _emitSGNI( byval dvreg as IRVREG ptr )
+
+	ASSERT_PROC_DECL( EMIT_UOPCB )
+
 	dim as string dst, exitlabel
 
 	hPrepOperand( dvreg, dst )
@@ -5034,6 +5178,9 @@ private sub _emitSGNI( byval dvreg as IRVREG ptr )
 end sub
 
 private sub _emitSGNF( byval dvreg as IRVREG ptr )
+
+	ASSERT_PROC_DECL( EMIT_UOPCB )
+
 	dim as string dst, label
 	dim as integer iseaxfree = any
 
@@ -5081,6 +5228,8 @@ private sub _emitSIN _
 		byval dvreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_UOPCB )
+
 	outp "fsin"
 
 end sub
@@ -5090,6 +5239,8 @@ private sub _emitASIN _
 	( _
 		byval dvreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_UOPCB )
 
 	'' asin( x ) = atn( sqr( (x*x) / (1-x*x) ) )
 	outp "fld st(0)"
@@ -5107,6 +5258,8 @@ private sub _emitCOS _
 		byval dvreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_UOPCB )
+
 	outp "fcos"
 
 end sub
@@ -5116,6 +5269,8 @@ private sub _emitACOS _
 	( _
 		byval dvreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_UOPCB )
 
 	'' acos( x ) = atn( sqr( (1-x*x) / (x*x) ) )
 	outp "fld st(0)"
@@ -5134,6 +5289,8 @@ private sub _emitTAN _
 		byval dvreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_UOPCB )
+
 	outp "fptan"
 	outp "fstp st(0)"
 
@@ -5144,6 +5301,8 @@ private sub _emitATAN _
 	( _
 		byval dvreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_UOPCB )
 
 	outp "fld1"
 	outp "fpatan"
@@ -5156,6 +5315,8 @@ private sub _emitSQRT _
 		byval dvreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_UOPCB )
+
 	outp "fsqrt"
 
 end sub
@@ -5165,6 +5326,8 @@ private sub _emitLOG _
 	( _
 		byval dvreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_UOPCB )
 
 	'' log( x ) = log2( x ) / log2( e ).
 
@@ -5179,6 +5342,8 @@ private sub _emitEXP _
 	( _
 		byval dvreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_UOPCB )
 
 	outp "fldl2e"
 	outp "fmulp st(1), st"
@@ -5315,6 +5480,9 @@ private sub hEmitFloat_fix_686( byval dvreg as IRVREG ptr )
 end sub
 
 private sub _emitFLOOR( byval dvreg as IRVREG ptr )
+
+	ASSERT_PROC_DECL( EMIT_UOPCB )
+
 	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
 		hEmitFloat_Int_686(dvreg)
 	else
@@ -5323,6 +5491,9 @@ private sub _emitFLOOR( byval dvreg as IRVREG ptr )
 end sub
 
 private sub _emitFIX( byval dvreg as IRVREG ptr )
+
+	ASSERT_PROC_DECL( EMIT_UOPCB )
+
 	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
 		hEmitFloat_fix_686( dvreg )
 	else
@@ -5331,10 +5502,16 @@ private sub _emitFIX( byval dvreg as IRVREG ptr )
 end sub
 
 private sub _emitFRAC( byval dvreg as IRVREG ptr )
+
+	ASSERT_PROC_DECL( EMIT_UOPCB )
+
 	hEmitFloatFunc( 3 )
 end sub
 
 private sub _emitCONVFD2FS( byval dvreg as IRVREG ptr )
+
+	ASSERT_PROC_DECL( EMIT_UOPCB )
+
 	assert( dvreg->typ = IR_VREGTYPE_REG )
 	assert( dvreg->regFamily = IR_REG_FPU_STACK )
 
@@ -5353,6 +5530,8 @@ private sub _emitXchgTOS _
 		byval svreg as IRVREG ptr _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_UOPCB )
+
 	dim as string src
 	dim as string ostr
 
@@ -5368,6 +5547,9 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 private sub _emitSTACKALIGN( byval vreg as IRVREG ptr, byval unused as integer )
+
+	ASSERT_PROC_DECL( EMIT_STKCB )
+
 	if( vreg->value.i > 0 ) then
 		outp( "sub esp, " + str( vreg->value.i ) )
 	else
@@ -5381,6 +5563,8 @@ private sub _emitPUSHL _
 		byval svreg as IRVREG ptr, _
 		byval unused as integer _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_STKCB )
 
 	dim src1 as string, src2 as string
 	dim ostr as string
@@ -5396,6 +5580,9 @@ private sub _emitPUSHL _
 end sub
 
 private sub _emitPUSHI( byval svreg as IRVREG ptr, byval unused as integer )
+
+	ASSERT_PROC_DECL( EMIT_STKCB )
+
 	dim as string src, tmp32
 	dim as integer sdsize = any, tmpreg = any, istmpfree = any
 
@@ -5459,6 +5646,8 @@ private sub _emitPUSHF _
 		byval unused as integer _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_STKCB )
+
 	dim src as string, sdsize as integer
 	dim ostr as string
 
@@ -5490,6 +5679,9 @@ private sub _emitPUSHF _
 end sub
 
 private sub _emitPUSHUDT( byval svreg as IRVREG ptr, byval sdsize as integer )
+
+	ASSERT_PROC_DECL( EMIT_STKCB )
+
 	dim as string src, tmp32, tmp16
 	dim as integer ofs = any, tmpreg = any, istmpfree = any, remainder = any
 
@@ -5611,6 +5803,8 @@ private sub _emitPOPL _
 		byval unused as integer _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_STKCB )
+
 	dim dst1 as string, dst2 as string
 	dim ostr as string
 
@@ -5630,6 +5824,8 @@ private sub _emitPOPI _
 		byval dvreg as IRVREG ptr, _
 		byval unused as integer _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_STKCB )
 
 	dim as string dst, ostr
 	dim as integer dsize
@@ -5708,13 +5904,14 @@ private sub _emitPOPI _
 
 end sub
 
-
 '':::::
 private sub _emitPOPF _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval unused as integer _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_STKCB )
 
 	dim as string dst, ostr
 	dim as integer dsize
@@ -5746,7 +5943,14 @@ private sub _emitPOPF _
 
 end sub
 
-private sub _emitPOPST0( )
+private sub _emitPOPST0 _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval unused as integer _
+	)
+
+	ASSERT_PROC_DECL( EMIT_STKCB )
+
 	outp( "fstp st(0)" )
 end sub
 
@@ -5760,6 +5964,8 @@ private sub _emitADDROF _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim as string dst, src
 	dim as string ostr
@@ -5778,6 +5984,8 @@ private sub _emitDEREF _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim as string dst, src
 	dim as string ostr
@@ -5979,6 +6187,8 @@ private sub _emitMEMMOVE _
 		byval extra as integer _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_MEMCB )
+
 	'' handle the assumption done at ast-node-mem::newMEM()
 	if( culng( bytes ) > EMIT_MEMBLOCK_MAXLEN ) then
 		hMemMoveRep( dvreg, svreg, bytes )
@@ -5996,6 +6206,8 @@ private sub _emitMEMSWAP _
 		byval bytes as integer, _
 		byval extra as integer _
 	) static
+
+	ASSERT_PROC_DECL( EMIT_MEMCB )
 
 	'' implemented as function
 
@@ -6196,6 +6408,8 @@ private sub _emitMEMCLEAR _
 		byval extra as integer _
 	)
 
+	ASSERT_PROC_DECL( EMIT_MEMCB )
+
 	'' handle the assumption done at ast-node-mem::newMEM()
 	if( irIsIMM( svreg ) ) then
 		dim as ulong bytes = svreg->value.i
@@ -6220,6 +6434,8 @@ private sub _emitSTKCLEAR _
 		byval baseofs as integer _
 	) static
 
+	ASSERT_PROC_DECL( EMIT_MEMCB )
+
 	hClearLocals( bytes, baseofs )
 
 end sub
@@ -6237,6 +6453,8 @@ private sub _emitLINEINI _
 		byval filename As zstring ptr _
 	)
 
+	ASSERT_PROC_DECL( EMIT_DBGCB )
+
 	edbgLineBegin( proc, lnum, pos_, filename )
 
 end sub
@@ -6246,8 +6464,11 @@ private sub _emitLINEEND _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval lnum as integer, _
-		byval pos_ as integer _
+		byval pos_ as integer, _
+		byval filename As zstring ptr _
 	)
+
+	ASSERT_PROC_DECL( EMIT_DBGCB )
 
 	edbgLineEnd( proc, lnum, pos_ )
 
@@ -6258,8 +6479,11 @@ private sub _emitSCOPEINI _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval lnum as integer, _
-		byval pos_ as integer _
+		byval pos_ as integer, _
+		byval filename As zstring ptr _
 	)
+
+	ASSERT_PROC_DECL( EMIT_DBGCB )
 
 	edbgEmitScopeINI( sym )
 
@@ -6270,8 +6494,11 @@ private sub _emitSCOPEEND _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval lnum as integer, _
-		byval pos_ as integer _
+		byval pos_ as integer, _
+		byval filename As zstring ptr _
 	)
+
+	ASSERT_PROC_DECL( EMIT_DBGCB )
 
 	edbgEmitScopeEND( sym )
 
@@ -6289,6 +6516,9 @@ end sub
 ''
 
 private sub _emitLOADB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	'' Assumes that booleans are stored as 0|1 only, and any other value
 	'' is undefined.  Also assume src and dst are always same size.
 
@@ -6302,12 +6532,18 @@ private sub _emitLOADB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 end sub
 
 private sub _emitSTORB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	'' storing boolean to boolean same as loading to boolean.  See LOADB2B
 	'' for assumptions
 	_emitLOADB2B( dvreg, svreg )
+
 end sub
 
 private sub _emitLOADB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim as string src, dst
 
@@ -6339,12 +6575,18 @@ private sub _emitLOADB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 end sub
 
 private sub _emitSTORB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	'' storing boolean to integer same as loading to integer and LOADB2I
 	'' takes care of the zero-extension
 	_emitLOADB2I( dvreg, svreg )
+
 end sub
 
 private sub _emitLOADI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim as string src, dst, dst8
 	dim as integer ddsize = any
@@ -6416,9 +6658,13 @@ private sub _emitLOADI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 end sub
 
 private sub _emitSTORI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	'' storing integer to boolean same as loading to boolean and LOADI2B
 	'' takes care of the ESI/DSI as byte reg stuff
 	_emitLOADI2B( dvreg, svreg )
+
 end sub
 
 ''
@@ -6427,6 +6673,8 @@ end sub
 ''
 
 private sub _emitLOADF2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim as string dst, src
 	dim as integer ddsize = any
@@ -6484,10 +6732,16 @@ private sub _emitLOADF2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 end sub
 
 private sub _emitSTORF2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	_emitLOADF2B(dvreg, svreg)
+
 end sub
 
 private sub _emitLOADB2F( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim as string src, dst
 	dim as integer sdsize = any
@@ -6542,6 +6796,8 @@ private sub _emitLOADB2F( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 end sub
 
 private sub _emitSTORB2F( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim as string src, dst
 	dim as integer sdsize = any
@@ -6606,6 +6862,8 @@ end sub
 
 private sub _emitLOADB2L( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	dim as string dst1, dst2
 	hPrepOperand64( dvreg, dst1, dst2 )
 
@@ -6637,10 +6895,16 @@ private sub _emitLOADB2L( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 end sub
 
 private sub _emitSTORB2L( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	_emitLOADB2L(dvreg, svreg)
+
 end sub
 
 private sub _emitLOADL2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
 
 	dim as string dst
 	dim as integer ddsize
@@ -6730,7 +6994,11 @@ private sub _emitLOADL2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 end sub
 
 private sub _emitSTORL2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
 	_emitLOADL2B(dvreg, svreg)
+
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
