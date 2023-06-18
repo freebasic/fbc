@@ -197,7 +197,8 @@ declare sub hEmitBop _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval label as FBSYMBOL ptr _
+		byval label as FBSYMBOL ptr, _
+		byval options as IR_EMITOPT _
 	)
 
 '' globals
@@ -1085,7 +1086,7 @@ private sub hAddOffset _
 		'' can't do self-BOPs on REGs)
 		var vimmoffset = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, ofs )
 		var vnewoffset = irhlAllocVreg( FB_DATATYPE_INTEGER, NULL )
-		hEmitBop( AST_OP_ADD, voffset, vimmoffset, vnewoffset, NULL )
+		hEmitBop( AST_OP_ADD, voffset, vimmoffset, vnewoffset, NULL, IR_EMITOPT_NONE )
 		voffset = vnewoffset
 	end if
 
@@ -1463,8 +1464,11 @@ private sub hEmitBop _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval label as FBSYMBOL ptr _
+		byval label as FBSYMBOL ptr, _
+		byval options as IR_EMITOPT _
 	)
+
+	'' !!!TODO!!! handle ((options and IR_EMITOPT_REL_DOINVERSE)<>0)
 
 	'' Conditional branch?
 	if( label ) then
@@ -1538,7 +1542,8 @@ private sub _emitBop _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval label as FBSYMBOL ptr _
+		byval label as FBSYMBOL ptr, _
+		byval options as IR_EMITOPT _
 	)
 
 	var bopdump = vregPretty( v1 ) + " " + astDumpOpToStr( op ) + " " + vregPretty( v2 )
@@ -1550,7 +1555,7 @@ private sub _emitBop _
 		hAstCommand( "bop " + bopdump )
 	end if
 
-	hEmitBop( op, v1, v2, vr, label )
+	hEmitBop( op, v1, v2, vr, label, options )
 
 end sub
 
@@ -1645,7 +1650,7 @@ private sub _emitUop _
 		end if
 
 		var zero = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, 0 )
-		hEmitBop( AST_OP_SUB, zero, v1, vr, NULL )
+		hEmitBop( AST_OP_SUB, zero, v1, vr, NULL, IR_EMITOPT_NONE )
 
 		if( isself ) then
 			hEmitStore( @v1orig, vr )
@@ -1657,7 +1662,7 @@ private sub _emitUop _
 		'' Just pass on as BOP. Works even for self-UOPs, as v1 will be
 		'' the lhs of the self-BOP as expected by hEmitBop().
 		var minusone = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, -1 )
-		hEmitBop( AST_OP_XOR, v1, minusone, vr, NULL )
+		hEmitBop( AST_OP_XOR, v1, minusone, vr, NULL, IR_EMITOPT_NONE )
 
 	case else
 		hBuiltInUop( op, v1, vr )

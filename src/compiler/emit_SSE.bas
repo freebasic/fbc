@@ -1630,10 +1630,13 @@ private sub _emitCGTF_SSE _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
+
+	'' !!!TODO!!! handle ((options and IR_EMITOPT_REL_DOINVERSE)<>0)
 
 	hCMPF_SSE( rvreg, label, "a", "", dvreg, svreg )
 
@@ -1645,10 +1648,13 @@ private sub _emitCLTF_SSE _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
+
+	'' !!!TODO!!! handle ((options and IR_EMITOPT_REL_DOINVERSE)<>0)
 
 	hCMPF_SSE( rvreg, label, "b", "", dvreg, svreg )
 
@@ -1660,10 +1666,13 @@ private sub _emitCEQF_SSE _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
+
+	'' !!!TODO!!! handle ((options and IR_EMITOPT_REL_DOINVERSE)<>0)
 
 	hCMPF_SSE( rvreg, label, "e", "", dvreg, svreg )
 
@@ -1675,10 +1684,13 @@ private sub _emitCNEF_SSE _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
+
+	'' !!!TODO!!! handle ((options and IR_EMITOPT_REL_DOINVERSE)<>0)
 
 	hCMPF_SSE( rvreg, label, "ne", "", dvreg, svreg )
 
@@ -1690,10 +1702,13 @@ private sub _emitCLEF_SSE _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
+
+	'' !!!TODO!!! handle ((options and IR_EMITOPT_REL_DOINVERSE)<>0)
 
 	hCMPF_SSE( rvreg, label, "be", "", dvreg, svreg )
 
@@ -1705,10 +1720,13 @@ private sub _emitCGEF_SSE _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
+
+	'' !!!TODO!!! handle ((options and IR_EMITOPT_REL_DOINVERSE)<>0)
 
 	hCMPF_SSE( rvreg, label, "ae", "", dvreg, svreg )
 

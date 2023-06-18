@@ -206,6 +206,8 @@ end type
 type EMIT_NODE
 	class                           as EMIT_NODECLASS_ENUM
 
+	options                         as IR_EMITOPT
+
 	union
 		bop                         as EMIT_BOPNODE
 		uop                         as EMIT_UOPNODE
@@ -242,7 +244,8 @@ type EMIT_RELCB as sub _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	)
 
 type EMIT_STKCB as sub _
@@ -624,7 +627,8 @@ declare function emitGT _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) as EMIT_NODE ptr
 
 declare function emitLT _
@@ -632,7 +636,8 @@ declare function emitLT _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) as EMIT_NODE ptr
 
 declare function emitEQ _
@@ -640,7 +645,8 @@ declare function emitEQ _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) as EMIT_NODE ptr
 
 declare function emitNE _
@@ -648,7 +654,8 @@ declare function emitNE _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) as EMIT_NODE ptr
 
 declare function emitLE _
@@ -656,7 +663,8 @@ declare function emitLE _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) as EMIT_NODE ptr
 
 declare function emitGE _
@@ -664,7 +672,8 @@ declare function emitGE _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) as EMIT_NODE ptr
 
 declare function emitATN2 _

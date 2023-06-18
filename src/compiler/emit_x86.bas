@@ -4410,6 +4410,8 @@ private sub hCMPF _
 		byval svreg as IRVREG ptr _
 	) static
 
+	'' !!!TODO!!! handle ((options and IR_EMITOPT_REL_DOINVERSE)<>0)
+
 	dim as string rname, rname8, dst, src, ostr, lname
 	dim as integer iseaxfree, isedxfree
 
@@ -4531,7 +4533,8 @@ private sub _emitCGTL _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
@@ -4556,7 +4559,8 @@ private sub _emitCGTI _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
@@ -4579,10 +4583,13 @@ private sub _emitCGTF _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
+
+	'' !!!TODO!!! handle ((options and IR_EMITOPT_REL_DOINVERSE)<>0)
 
 	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
 		hCMPF( rvreg, label, "b", "", dvreg, svreg )
@@ -4597,7 +4604,8 @@ private sub _emitCLTL _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
@@ -4622,7 +4630,8 @@ private sub _emitCLTI _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
@@ -4645,10 +4654,13 @@ private sub _emitCLTF _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
+
+	'' !!!TODO!!! handle ((options and IR_EMITOPT_REL_DOINVERSE)<>0)
 
 	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
 		hCMPF( rvreg, label, "a", "", dvreg, svreg )
@@ -4664,7 +4676,8 @@ private sub _emitCEQL _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
@@ -4679,7 +4692,8 @@ private sub _emitCEQI _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
@@ -4694,10 +4708,13 @@ private sub _emitCEQF _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
+
+	'' !!!TODO!!! handle ((options and IR_EMITOPT_REL_DOINVERSE)<>0)
 
 	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
 		hCMPF( rvreg, label, "z", "", dvreg, svreg )
@@ -4713,7 +4730,8 @@ private sub _emitCNEL _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
@@ -4728,7 +4746,8 @@ private sub _emitCNEI _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
@@ -4743,10 +4762,13 @@ private sub _emitCNEF _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
+
+	'' !!!TODO!!! handle ((options and IR_EMITOPT_REL_DOINVERSE)<>0)
 
 	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
 		hCMPF( rvreg, label, "nz", "", dvreg, svreg )
@@ -4762,7 +4784,8 @@ private sub _emitCLEL _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
@@ -4787,7 +4810,8 @@ private sub _emitCLEI _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
@@ -4810,10 +4834,13 @@ private sub _emitCLEF _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
+
+	'' !!!TODO!!! handle ((options and IR_EMITOPT_REL_DOINVERSE)<>0)
 
 	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
 		hCMPF( rvreg, label, "ae", "", dvreg, svreg )
@@ -4829,7 +4856,8 @@ private sub _emitCGEL _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
@@ -4854,7 +4882,8 @@ private sub _emitCGEI _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
@@ -4877,10 +4906,13 @@ private sub _emitCGEF _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	ASSERT_PROC_DECL( EMIT_RELCB )
+
+	'' !!!TODO!!! handle ((options and IR_EMITOPT_REL_DOINVERSE)<>0)
 
 	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
 		hCMPF( rvreg, label, "be", "", dvreg, svreg )

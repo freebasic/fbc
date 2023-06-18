@@ -37,9 +37,13 @@ enum IR_REGFAMILY
 end enum
 
 enum IR_OPTIONVALUE
-	IR_OPTIONVALUE_MAXMEMBLOCKLEN               = 1
+	IR_OPTIONVALUE_MAXMEMBLOCKLEN       = 1
 end enum
 
+enum IR_EMITOPT
+	IR_EMITOPT_NONE                     = 0
+	IR_EMITOPT_REL_DOINVERSE            = 1     '' Relational, backend needs to invert the logic
+end enum
 
 ''
 type IRVREG_ as IRVREG
@@ -221,7 +225,8 @@ type IR_VTBL
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval label as FBSYMBOL ptr _
+		byval label as FBSYMBOL ptr, _
+		byval options as IR_EMITOPT _
 	)
 
 	emitUop as sub _
@@ -575,7 +580,7 @@ declare sub vregDump( byval v as IRVREG ptr )
 
 #define irXchgTOS(reg) ir.vtbl.xchgTOS( reg )
 
-#define irEmitBOP( op, v1, v2, vr, label ) ir.vtbl.emitBop( op, v1, v2, vr, label )
+#define irEmitBOP( op, v1, v2, vr, label, options ) ir.vtbl.emitBop( op, v1, v2, vr, label, options )
 
 #define irEmitUOP(op, v1, vr) ir.vtbl.emitUop( op, v1, vr )
 

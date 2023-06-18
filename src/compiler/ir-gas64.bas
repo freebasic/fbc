@@ -3844,11 +3844,21 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 	end select
 
 end sub
-private sub _emitbop(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVREG ptr,byval vr as IRVREG ptr,byval label as FBSYMBOL ptr)
+private sub _emitbop _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr, _
+		byval vr as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval options as IR_EMITOPT _
+	)
 	dim as FB_DATATYPE dtype
 	#ifdef __GAS64_DEBUG__
 		var bopdump = vregPretty( v1 ) + " " + astdumpopToStr( op ) + " " + vregPretty( v2 )
 	#endif
+
+	'' !!!TODO!!! handle ((options and IR_EMITOPT_REL_DOINVERSE)<>0)
 
 	if( label ) then
 		asm_info("branchbop " + bopdump +" "+*symbGetMangledName( label ))
@@ -7032,7 +7042,7 @@ private sub _emitMacro( byval op as integer,byval v1 as IRVREG ptr, byval v2 as 
 						reghandle(savereg)=v1->reg
 					end if
 					tempo1=irhlAllocVrImm(FB_DATATYPE_INTEGER,0,8)
-					_emitbop(AST_OP_ADD,v1,tempo1,0,0)''add 8 for next arg
+					_emitbop(AST_OP_ADD,v1,tempo1,0,0,IR_EMITOPT_NONE)''add 8 for next arg
 				else
 					vr->reg=v1->reg
 				end if

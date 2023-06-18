@@ -102,7 +102,7 @@ function astLoadBOUNDCHK _
 		           vr, _
 		           irAllocVRIMM( FB_DATATYPE_INTEGER, NULL, 0 ), _
 		           NULL, _
-		           label )
+		           label, IR_EMITOPT_NONE )
 		irEmitJUMPPTR( vr )
 		irEmitLABELNF( label )
 	end if
@@ -195,7 +195,7 @@ function astLoadPTRCHK _
 		           vr, _
 		           irAllocVRIMM( FB_DATATYPE_INTEGER, NULL, 0 ), _
 		           NULL, _
-		           label )
+		           label, IR_EMITOPT_NONE )
 		irEmitJUMPPTR( vr )
 		irEmitLABELNF( label )
 	end if

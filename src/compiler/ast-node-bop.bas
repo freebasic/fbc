@@ -1687,7 +1687,10 @@ function astLoadBOP( byval n as ASTNODE ptr ) as IRVREG ptr
 		'' ex=label? Then this is an optimized conditional branch
 		if( n->op.ex <> NULL ) then
 			vr = NULL
-			irEmitBOP( op, v1, v2, NULL, n->op.ex )
+			irEmitBOP( op, v1, v2, NULL, n->op.ex, _
+			    iif( n->op.options and AST_OPOPT_DOINVERSE, _
+				IR_EMITOPT_REL_DOINVERSE, _
+				IR_EMITOPT_NONE ) )
 		else
 			if( (n->op.options and AST_OPOPT_ALLOCRES) <> 0 ) then
 				'' Self-BOPs: Always re-use the lhs vreg to store the result,
@@ -1702,7 +1705,10 @@ function astLoadBOP( byval n as ASTNODE ptr ) as IRVREG ptr
 				v1->vector = n->vector
 			end if
 
-			irEmitBOP( op, v1, v2, vr, NULL )
+			irEmitBOP( op, v1, v2, vr, NULL, _
+			    iif( n->op.options and AST_OPOPT_DOINVERSE, _
+				IR_EMITOPT_REL_DOINVERSE, _
+				IR_EMITOPT_NONE ) )
 
 			'' Return vr to parent even for self-BOPs - this is probably useless at the moment though,
 			'' because FB self-BOPs can only be used as statements, not in expressions...

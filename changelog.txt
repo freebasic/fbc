@@ -1,6 +1,7 @@
 Version 1.20.0
 
 [changed]
+- internal: (WIP) changes to all backends gcc/llvm/gas64/gas/gas+SSE for floating point comparison handling
 
 [added]
 

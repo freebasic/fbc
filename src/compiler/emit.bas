@@ -179,7 +179,8 @@ sub emitFlush( )
 				n->rel.rvreg, _
 				n->rel.label, _
 				n->rel.dvreg, _
-				n->rel.svreg )
+				n->rel.svreg, _
+				n->options )
 
 		case EMIT_NODECLASS_STK
 			cast( EMIT_STKCB, emit.opFnTb[n->stk.op] )( _
@@ -356,7 +357,8 @@ private function hNewREL _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) as EMIT_NODE ptr static
 
 	dim as EMIT_NODE ptr n
@@ -368,6 +370,7 @@ private function hNewREL _
 	n->rel.label = label
 	n->rel.dvreg = hNewVR( dvreg )
 	n->rel.svreg = hNewVR( svreg )
+	n->options = options
 
 	function = n
 
@@ -982,20 +985,21 @@ function emitGT _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) as EMIT_NODE ptr static
 
 	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
 	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
-		function = hNewREL( EMIT_OP_CGTL, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CGTL, rvreg, label, dvreg, svreg, options )
 
 	'' float?
 	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
-		function = hNewREL( EMIT_OP_CGTF, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CGTF, rvreg, label, dvreg, svreg, options )
 
 	case else
-		function = hNewREL( EMIT_OP_CGTI, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CGTI, rvreg, label, dvreg, svreg, options )
 	end select
 
 end function
@@ -1006,20 +1010,21 @@ function emitLT _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) as EMIT_NODE ptr static
 
 	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
 	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
-		function = hNewREL( EMIT_OP_CLTL, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CLTL, rvreg, label, dvreg, svreg, options )
 
 	'' float?
 	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
-		function = hNewREL( EMIT_OP_CLTF, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CLTF, rvreg, label, dvreg, svreg, options )
 
 	case else
-		function = hNewREL( EMIT_OP_CLTI, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CLTI, rvreg, label, dvreg, svreg, options )
 	end select
 
 end function
@@ -1030,20 +1035,21 @@ function emitEQ _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) as EMIT_NODE ptr static
 
 	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
 	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
-		function = hNewREL( EMIT_OP_CEQL, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CEQL, rvreg, label, dvreg, svreg, options )
 
 	'' float?
 	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
-		function = hNewREL( EMIT_OP_CEQF, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CEQF, rvreg, label, dvreg, svreg, options )
 
 	case else
-		function = hNewREL( EMIT_OP_CEQI, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CEQI, rvreg, label, dvreg, svreg, options )
 	end select
 
 end function
@@ -1054,20 +1060,21 @@ function emitNE _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) as EMIT_NODE ptr static
 
 	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
 	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
-		function = hNewREL( EMIT_OP_CNEL, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CNEL, rvreg, label, dvreg, svreg, options )
 
 	'' float?
 	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
-		function = hNewREL( EMIT_OP_CNEF, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CNEF, rvreg, label, dvreg, svreg, options )
 
 	case else
-		function = hNewREL( EMIT_OP_CNEI, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CNEI, rvreg, label, dvreg, svreg, options )
 	end select
 
 end function
@@ -1078,20 +1085,21 @@ function emitGE _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) as EMIT_NODE ptr static
 
 	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
 	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
-		function = hNewREL( EMIT_OP_CGEL, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CGEL, rvreg, label, dvreg, svreg, options )
 
 	'' float?
 	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
-		function = hNewREL( EMIT_OP_CGEF, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CGEF, rvreg, label, dvreg, svreg, options )
 
 	case else
-		function = hNewREL( EMIT_OP_CGEI, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CGEI, rvreg, label, dvreg, svreg, options )
 	end select
 
 end function
@@ -1102,20 +1110,21 @@ function emitLE _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) as EMIT_NODE ptr static
 
 	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
 	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
-		function = hNewREL( EMIT_OP_CLEL, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CLEL, rvreg, label, dvreg, svreg, options )
 
 	'' float?
 	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
-		function = hNewREL( EMIT_OP_CLEF, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CLEF, rvreg, label, dvreg, svreg, options )
 
 	case else
-		function = hNewREL( EMIT_OP_CLEI, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CLEI, rvreg, label, dvreg, svreg, options )
 	end select
 
 end function
