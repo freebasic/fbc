@@ -1045,12 +1045,11 @@ private sub edbgemitglobalvar_asm64 _
 	)
 	dim as integer t = any, attrib = any
 	dim as string desc
-
-	'' Ignore static locals here (they are handled like other locals during
-	'' edbgEmitProcFooter() -> hDeclLocalVars())
-	if( symbIsLocal( sym ) ) then
-		exit sub
-	end if
+	'' Ignore static locals here but should not happen so useless test
+	'if( symbIsLocal( sym ) ) then
+		'asm_info("STATICS USED ?")
+		'exit sub
+	'end if
 
 	'' depends on section
 	select case section
@@ -2120,7 +2119,14 @@ private sub hemitvariable( byval sym as FBSYMBOL ptr )
 				exit sub
 			end if
 		else
-			if( env.clopt.debuginfo = true ) then edbgemitglobalvar_asm64(sym,IR_SECTION_BSS)
+			if( env.clopt.debuginfo = true ) then
+				'' only static attribute (no shared, etc)
+				if is_global = FB_SYMBATTRIB_STATIC then
+					edbgemitlocalvar_asm64( sym, symbIsStatic( sym ) )
+				else
+					edbgemitglobalvar_asm64(sym,IR_SECTION_BSS)
+				end if
+			End If
 		end if
 
 	else
@@ -2965,8 +2971,7 @@ private sub _procAllocStaticVars( byval sym as FBSYMBOL ptr )
 	while( sym )
 		select case( symbGetClass( sym ) )
 		'' scope block? recursion..
-			case FB_SYMBCLASS_SCOPE
-			 'asm_info("SCOPE var1="+*symbGetMangledName(sym))
+		case FB_SYMBCLASS_SCOPE
 			_procallocstaticvars( symbGetScopeSymbTbHead( sym ) )
 		case FB_SYMBCLASS_VAR
 			''  variable static
@@ -6499,7 +6504,16 @@ private sub _emitvarinibegin( byval sym as FBSYMBOL ptr )
 	asm_code(*symbGetMangledName( sym )+":")
 	if( symbIsExtern( sym ) or symbIsDynamic( sym ) ) then
 	else
-		if( env.clopt.debuginfo = true ) then edbgemitglobalvar_asm64(sym,IR_SECTION_DATA)
+		if( env.clopt.debuginfo = true ) then
+			if ( symbGetAttrib( sym ) and _
+		(FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or _
+		FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_SHARED)  ) then
+				edbgemitglobalvar_asm64(sym,IR_SECTION_DATA)
+			else
+				''static attrib only
+				edbgemitlocalvar_asm64( sym, symbIsStatic( sym ) )
+			end if
+		end if
 	end if
 end sub
 private sub _emitvarinii( byval sym as FBSYMBOL ptr, byval value as longint )
