@@ -435,8 +435,10 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 
 	__fb_gl_params.mode_2d = __fb_gl_params.init_mode_2d;
 
-	if (__fb_gl_params.init_scale>1){
+	if (__fb_gl_params.init_scale>=1){
 		__fb_gl_params.scale = __fb_gl_params.init_scale;
+	}
+	if (__fb_gl_params.scale>1){
 		free(__fb_gfx->dirty);
 		__fb_gfx->dirty = (char *)calloc(1, __fb_gfx->h * __fb_gfx->scanline_size * __fb_gl_params.scale);
 		w *= __fb_gl_params.scale;

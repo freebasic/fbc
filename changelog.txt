@@ -14,9 +14,10 @@ Version 1.10.1
 [added]
 
 [fixed]
-- sf.net #982: Array descriptors emitted incorrectly in gcc backend 
+- sf.net #982: Array descriptors emitted incorrectly in gcc backend
 - gas64: emit debug information for statics
 - gas64: handle #inf's and NaN's in float comparisons 
+- unable to set opengl scaling to 1 after initial screen mode - previously: logic error in the driver code prevented the scaling from being set to 1
 
 
 Version 1.10.0
