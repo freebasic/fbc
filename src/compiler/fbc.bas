@@ -3453,9 +3453,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		'' helps finding ir-hlc bugs
 		ln += "-Werror-implicit-function-declaration "
 
-		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
-			ln += "-O" + str( fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) ) + " "
-		end if
+		ln += "-O" + str( fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) ) + " "
 
 		'' Do not let gcc make assumptions about pointers; FB isn't strict about it.
 		ln += "-fno-strict-aliasing "
