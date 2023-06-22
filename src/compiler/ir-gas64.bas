@@ -3196,32 +3196,52 @@ private sub bop_float( _
 				asm_code("mov "+*regstrq(vrreg)+", -1")
 			end if
 
-			asm_code(compreg+"xmm0, xmm1")
-
-			if op=AST_OP_EQ then
-				lname2 = *symbUniqueLabel( )
-				asm_code("jp "+lname2) ''different true very big (or very small value)
-			elseif op=AST_OP_NE then
-				if label=0 then
-					asm_code("jp "+lname1)
-				else
-					asm_code("jp "+*symbGetMangledName( label ))''different true
-				end if
-			end if
-
 			select case op
 				case AST_OP_EQ
+					asm_code(compreg+"xmm0, xmm1")
+					lname2 = *symbUniqueLabel( )
+					asm_code("jp "+lname2) ''different true very big (or very small value)
 					jmpcode=@"je " ''different not true
 				case AST_OP_NE
+					asm_code(compreg+"xmm0, xmm1")
+					if label=0 then
+						asm_code("jp "+lname1)
+					else
+						asm_code("jp "+*symbGetMangledName( label ))''different true
+					end if
 					jmpcode=@"jne " ''different true
-				case AST_OP_LT ''todo optimise xmm1 if memory do directly
-					jmpcode=@"jb "''above true
+				case AST_OP_LT
+					if label<>0 then
+						asm_code(compreg+"xmm0, xmm1")
+						jmpcode=@"jb "
+					else
+						asm_code(compreg+"xmm1, xmm0")
+						jmpcode=@"ja "
+					End If
 				case AST_OP_LE
-					jmpcode=@"jbe " ''above or equal true
+					if label<>0 then
+						asm_code(compreg+"xmm0, xmm1")
+						jmpcode=@"jbe "
+					else
+						asm_code(compreg+"xmm1, xmm0")
+						jmpcode=@"jae "
+					End If
 				case AST_OP_GT
-					jmpcode=@"ja "''below true
+					if label<>0 then
+						asm_code(compreg+"xmm1, xmm0")
+						jmpcode=@"jb "
+					else
+						asm_code(compreg+"xmm0, xmm1")
+						jmpcode=@"ja "
+					End If
 				case AST_OP_GE
-					jmpcode=@"jae "''below or equal true
+					if label<>0 then
+						asm_code(compreg+"xmm1, xmm0")
+						jmpcode=@"jbe "
+					else
+						asm_code(compreg+"xmm0, xmm1")
+						jmpcode=@"jae "
+					End If
 			end select
 
 			if label=0 then
