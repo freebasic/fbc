@@ -1717,6 +1717,7 @@ enum
 	OPT_FPU
 	OPT_G
 	OPT_GEN
+	OPT_GFX
 	OPT_HELP
 	OPT_I
 	OPT_INCLUDE
@@ -1799,6 +1800,7 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_FPU          affects major initialization,affects code generation, affects second stage compile, affects link
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_G            affects code generation, affects link
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_GEN          affects major initialization
+	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_GFX          affects link
 	( FALSE, FALSE, FALSE, FALSE ), _ '' OPT_HELP         never allow, real command line only, makes no sense to have in source
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_I            add include path before the default one
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_INCLUDE      restart required to inject preInclude
@@ -2006,6 +2008,9 @@ private sub handleOpt _
 		case else
 			hFatalInvalidOption( arg, is_source )
 		end select
+
+	case OPT_GFX
+		fbSetOption( FB_COMPOPT_GFX, TRUE )
 
 	case OPT_HELP
 		fbc.showhelp = TRUE
@@ -2390,6 +2395,7 @@ private function parseOption(byval opt as zstring ptr) as integer
 	case asc("g")
 		ONECHAR(OPT_G)
 		CHECK("gen", OPT_GEN)
+		CHECK("gfx", OPT_GFX)
 
 	case asc( "h" )
 		CHECK( "help", OPT_HELP )
@@ -4094,7 +4100,7 @@ private sub hPrintOptions( byval verbose as integer )
 	if( verbose ) then
 	print "  -fpmode fast|precise  Select floating-point math accuracy/speed"
 	print "  -fpu x87|sse     Set target FPU"
-	endif
+	end if
 	print "  -g               Add debug info, enable __FB_DEBUG__, and enable assert()"
 
 	if( verbose ) then
@@ -4102,6 +4108,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -gen gas64       Select GNU gas 64-bit assembler backend"
 	print "  -gen gcc         Select GNU gcc C backend"
 	print "  -gen llvm        Select LLVM backend"
+	print "  -gfx             Link to the appropriate libfbgfx variant (normally automatic)"
 	else
 	print "  -gen gas|gas64|gcc|llvm  Select code generation backend"
 	end if

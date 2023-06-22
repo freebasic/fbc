@@ -105,7 +105,7 @@ ifneq ($(GEN),)
 	FBC_CFLAGS += -gen $(GEN)
 endif
 
-FBC_LFLAGS := $(FBCU_LIBS) -p $(FBCU_LIB) -x $(MAINEXE)
+FBC_LFLAGS := $(FBCU_LIBS) -p $(FBCU_LIB) -x $(MAINEXE) -v
 ifdef DEBUG
 	FBC_LFLAGS += -g
 endif
