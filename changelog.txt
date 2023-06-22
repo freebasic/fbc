@@ -7,6 +7,7 @@ Version 1.10.1
 
 [fixed]
 - sf.net #982: Array descriptors emitted incorrectly in gcc backend 
+- emscripten: fbc created faulty static libraries (it called ar instead of emar)
 
 
 Version 1.10.0

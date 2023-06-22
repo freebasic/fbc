@@ -3809,8 +3809,13 @@ private function hArchiveFiles( ) as integer
 		objfile = listGetNext( objfile )
 	wend
 
+	var ar = FBCTOOL_AR
+	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_JS ) then
+		ar = FBCTOOL_EMAR
+	end if
+
 	'' invoke ar
-	function = fbcRunBin( "archiving", FBCTOOL_AR, ln )
+	function = fbcRunBin( "archiving", ar, ln )
 end function
 
 private sub hSetDefaultLibPaths( )
