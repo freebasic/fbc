@@ -15,6 +15,8 @@ Version 1.10.1
 
 [fixed]
 - sf.net #982: Array descriptors emitted incorrectly in gcc backend 
+- gas64: emit debug information for statics
+- gas64: handle #inf's and NaN's in float comparisons 
 
 
 Version 1.10.0

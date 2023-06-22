@@ -177,7 +177,7 @@ private sub hMangleUdtId( byref mangled as string, byval sym as FBSYMBOL ptr )
 		else
 			tmp = *sym->id.name
 		end if
-		tmp += "$" + str(localUDTcounter) 
+		tmp += "$" + str(localUDTcounter)
 		mangled += str( len(tmp) )
 		mangled += tmp
 		localUDTcounter += 1

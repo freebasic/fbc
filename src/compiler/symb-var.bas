@@ -195,7 +195,7 @@ function symbAddArrayDescriptorType _
 
 	if( (arraydtype = FB_DATATYPE_STRUCT) andalso _
 	    (symbIsStruct(arraySubType)) andalso _
-	    (symbIsLocal(arraySubType)) ) then 
+	    (symbIsLocal(arraySubType)) ) then
 		attrib or= FB_SYMBATTRIB_LOCAL
 	end if
 

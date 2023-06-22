@@ -833,9 +833,11 @@ function astBuildBranch _
 			'' Note: a CONST expression will never use temp vars.
 			'' Although the AST may have dtors registered from other parts
 			'' of the expression if it's an iif(), iif() will (currently)
-			'' optimize out itself when the condition is CONST, so this
-			'' case never happens.
-			assert( is_iif = FALSE )
+			'' optimize out itself when the condition is CONST.  However,
+			'' iif() won't apply optimizations from astOptimize(), so this
+			'' could still be an iif() after the astOptimize() earlier in
+			'' this procedure
+
 			assert( call_dtors = FALSE )
 
 			'' If the condition is...

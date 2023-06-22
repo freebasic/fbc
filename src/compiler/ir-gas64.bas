@@ -1045,12 +1045,11 @@ private sub edbgemitglobalvar_asm64 _
 	)
 	dim as integer t = any, attrib = any
 	dim as string desc
-
-	'' Ignore static locals here (they are handled like other locals during
-	'' edbgEmitProcFooter() -> hDeclLocalVars())
-	if( symbIsLocal( sym ) ) then
-		exit sub
-	end if
+	'' Ignore static locals here but should not happen so useless test
+	'if( symbIsLocal( sym ) ) then
+		'asm_info("STATICS USED ?")
+		'exit sub
+	'end if
 
 	'' depends on section
 	select case section
@@ -2120,7 +2119,14 @@ private sub hemitvariable( byval sym as FBSYMBOL ptr )
 				exit sub
 			end if
 		else
-			if( env.clopt.debuginfo = true ) then edbgemitglobalvar_asm64(sym,IR_SECTION_BSS)
+			if( env.clopt.debuginfo = true ) then
+				'' only static attribute (no shared, etc)
+				if is_global = FB_SYMBATTRIB_STATIC then
+					edbgemitlocalvar_asm64( sym, symbIsStatic( sym ) )
+				else
+					edbgemitglobalvar_asm64(sym,IR_SECTION_BSS)
+				end if
+			End If
 		end if
 
 	else
@@ -2965,8 +2971,7 @@ private sub _procAllocStaticVars( byval sym as FBSYMBOL ptr )
 	while( sym )
 		select case( symbGetClass( sym ) )
 		'' scope block? recursion..
-			case FB_SYMBCLASS_SCOPE
-			 'asm_info("SCOPE var1="+*symbGetMangledName(sym))
+		case FB_SYMBCLASS_SCOPE
 			_procallocstaticvars( symbGetScopeSymbTbHead( sym ) )
 		case FB_SYMBCLASS_VAR
 			''  variable static
@@ -3191,32 +3196,52 @@ private sub bop_float( _
 				asm_code("mov "+*regstrq(vrreg)+", -1")
 			end if
 
-			asm_code(compreg+"xmm0, xmm1")
-
-			if op=AST_OP_EQ then
-				lname2 = *symbUniqueLabel( )
-				asm_code("jp "+lname2) ''different true very big (or very small value)
-			elseif op=AST_OP_NE then
-				if label=0 then
-					asm_code("jp "+lname1)
-				else
-					asm_code("jp "+*symbGetMangledName( label ))''different true
-				end if
-			end if
-
 			select case op
 				case AST_OP_EQ
+					asm_code(compreg+"xmm0, xmm1")
+					lname2 = *symbUniqueLabel( )
+					asm_code("jp "+lname2) ''different true very big (or very small value)
 					jmpcode=@"je " ''different not true
 				case AST_OP_NE
+					asm_code(compreg+"xmm0, xmm1")
+					if label=0 then
+						asm_code("jp "+lname1)
+					else
+						asm_code("jp "+*symbGetMangledName( label ))''different true
+					end if
 					jmpcode=@"jne " ''different true
-				case AST_OP_LT ''todo optimise xmm1 if memory do directly
-					jmpcode=@"jb "''above true
+				case AST_OP_LT
+					if label<>0 then
+						asm_code(compreg+"xmm0, xmm1")
+						jmpcode=@"jb "
+					else
+						asm_code(compreg+"xmm1, xmm0")
+						jmpcode=@"ja "
+					End If
 				case AST_OP_LE
-					jmpcode=@"jbe " ''above or equal true
+					if label<>0 then
+						asm_code(compreg+"xmm0, xmm1")
+						jmpcode=@"jbe "
+					else
+						asm_code(compreg+"xmm1, xmm0")
+						jmpcode=@"jae "
+					End If
 				case AST_OP_GT
-					jmpcode=@"ja "''below true
+					if label<>0 then
+						asm_code(compreg+"xmm1, xmm0")
+						jmpcode=@"jb "
+					else
+						asm_code(compreg+"xmm0, xmm1")
+						jmpcode=@"ja "
+					End If
 				case AST_OP_GE
-					jmpcode=@"jae "''below or equal true
+					if label<>0 then
+						asm_code(compreg+"xmm1, xmm0")
+						jmpcode=@"jbe "
+					else
+						asm_code(compreg+"xmm0, xmm1")
+						jmpcode=@"jae "
+					End If
 			end select
 
 			if label=0 then
@@ -6499,7 +6524,16 @@ private sub _emitvarinibegin( byval sym as FBSYMBOL ptr )
 	asm_code(*symbGetMangledName( sym )+":")
 	if( symbIsExtern( sym ) or symbIsDynamic( sym ) ) then
 	else
-		if( env.clopt.debuginfo = true ) then edbgemitglobalvar_asm64(sym,IR_SECTION_DATA)
+		if( env.clopt.debuginfo = true ) then
+			if ( symbGetAttrib( sym ) and _
+		(FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or _
+		FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_SHARED)  ) then
+				edbgemitglobalvar_asm64(sym,IR_SECTION_DATA)
+			else
+				''static attrib only
+				edbgemitlocalvar_asm64( sym, symbIsStatic( sym ) )
+			end if
+		end if
 	end if
 end sub
 private sub _emitvarinii( byval sym as FBSYMBOL ptr, byval value as longint )
