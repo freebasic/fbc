@@ -27,8 +27,6 @@ enum COMPARE_RESULTS
 	CR_LT = 8
 	CR_GE = 16
 	CR_LE = 32
-
-	CR_MASK = CR_EQ or CR_NE or CR_GT or CR_LT or CR_GE or CR_LE  
 end enum
 
 SUITE( fbc_tests.expressions.compare_float )
@@ -90,6 +88,7 @@ SUITE( fbc_tests.expressions.compare_float )
 		tst_branch_bop_f( a >= b, CR_GE, expected )
 		tst_branch_bop_f( a <= b, CR_LE, expected )
 
+		'' <> 0 should be optimized out, same results as above
 		tst_branch_bop_f( (a =  b)<>0, CR_EQ, expected )
 		tst_branch_bop_f( (a <> b)<>0, CR_NE, expected )
 		tst_branch_bop_f( (a >  b)<>0, CR_GT, expected )
@@ -108,6 +107,7 @@ SUITE( fbc_tests.expressions.compare_float )
 		tst_branch_bop_f( (a - c) >= (b - c), CR_GE, expected )
 		tst_branch_bop_f( (a - c) <= (b - c), CR_LE, expected )
 
+		'' <> 0 should be optimized out, same results as above
 		tst_branch_bop_f( (a - c) =  (b - c)<>0, CR_EQ, expected )
 		tst_branch_bop_f( (a - c) <> (b - c)<>0, CR_NE, expected )
 		tst_branch_bop_f( (a - c) >  (b - c)<>0, CR_GT, expected )
@@ -135,6 +135,7 @@ SUITE( fbc_tests.expressions.compare_float )
 		tst_IIF____bop_f( a >= b, CR_GE, expected )
 		tst_IIF____bop_f( a <= b, CR_LE, expected )
 
+		'' variables, the  '<> 0' should be optimized out
 		tst_IIF____bop_f( (a =  b)<>0, CR_EQ, expected )
 		tst_IIF____bop_f( (a <> b)<>0, CR_NE, expected )
 		tst_IIF____bop_f( (a >  b)<>0, CR_GT, expected )
@@ -152,6 +153,7 @@ SUITE( fbc_tests.expressions.compare_float )
 		tst_IIF____bop_f( (a - c) >= (b - c), CR_GE, expected )
 		tst_IIF____bop_f( (a - c) <= (b - c), CR_LE, expected )
 
+		'' '<> 0' should be optimized out
 		tst_IIF____bop_f( ((a - c) =  (b - c))<>0, CR_EQ, expected )
 		tst_IIF____bop_f( ((a - c) <> (b - c))<>0, CR_NE, expected )
 		tst_IIF____bop_f( ((a - c) >  (b - c))<>0, CR_GT, expected )
@@ -163,7 +165,7 @@ SUITE( fbc_tests.expressions.compare_float )
 
 	sub chk_exprXX_bop_f( byval a as single, byval b as single, byval expected as COMPARE_RESULTS )
 
-		'' variables
+		'' variables to boolean
 		tst_expr2b_bop_f( a =  b, CR_EQ, expected )
 		tst_expr2b_bop_f( a <> b, CR_NE, expected )
 		tst_expr2b_bop_f( a >  b, CR_GT, expected )
@@ -171,6 +173,7 @@ SUITE( fbc_tests.expressions.compare_float )
 		tst_expr2b_bop_f( a >= b, CR_GE, expected )
 		tst_expr2b_bop_f( a <= b, CR_LE, expected )
 
+		'' variables to integer
 		tst_expr2i_bop_f( a =  b, CR_EQ, expected )
 		tst_expr2i_bop_f( a <> b, CR_NE, expected )
 		tst_expr2i_bop_f( a >  b, CR_GT, expected )
@@ -181,6 +184,7 @@ SUITE( fbc_tests.expressions.compare_float )
 		'' registers (intermediate results)
 		dim c as single = 0
 
+		'' registers to boolean
 		tst_expr2b_bop_f( (a - c) =  (b - c), CR_EQ, expected )
 		tst_expr2b_bop_f( (a - c) <> (b - c), CR_NE, expected )
 		tst_expr2b_bop_f( (a - c) >  (b - c), CR_GT, expected )
@@ -188,6 +192,7 @@ SUITE( fbc_tests.expressions.compare_float )
 		tst_expr2b_bop_f( (a - c) >= (b - c), CR_GE, expected )
 		tst_expr2b_bop_f( (a - c) <= (b - c), CR_LE, expected )
 
+		'' registers to integer
 		tst_expr2i_bop_f( (a - c) =  (b - c), CR_EQ, expected )
 		tst_expr2i_bop_f( (a - c) <> (b - c), CR_NE, expected )
 		tst_expr2i_bop_f( (a - c) >  (b - c), CR_GT, expected )
@@ -199,7 +204,10 @@ SUITE( fbc_tests.expressions.compare_float )
 
 	sub chk_exprNZ_bop_f( byval a as single, byval b as single, byval expected as COMPARE_RESULTS )
 
-		'' variables
+		'' relational op not equal to zero
+		'' '<> 0' should be optimized out
+
+		'' variables <> 0 to boolean
 		tst_expr2b_bop_f( (a =  b)<>0, CR_EQ, expected )
 		tst_expr2b_bop_f( (a <> b)<>0, CR_NE, expected )
 		tst_expr2b_bop_f( (a >  b)<>0, CR_GT, expected )
@@ -207,6 +215,7 @@ SUITE( fbc_tests.expressions.compare_float )
 		tst_expr2b_bop_f( (a >= b)<>0, CR_GE, expected )
 		tst_expr2b_bop_f( (a <= b)<>0, CR_LE, expected )
 
+		'' variables <> 0 to integer
 		tst_expr2i_bop_f( (a =  b)<>0, CR_EQ, expected )
 		tst_expr2i_bop_f( (a <> b)<>0, CR_NE, expected )
 		tst_expr2i_bop_f( (a >  b)<>0, CR_GT, expected )
@@ -217,6 +226,7 @@ SUITE( fbc_tests.expressions.compare_float )
 		'' registers (intermediate results)
 		dim c as single = 0
 
+		'' registers <> 0 to boolean
 		tst_expr2b_bop_f( ((a - c) =  (b - c))<>0, CR_EQ, expected )
 		tst_expr2b_bop_f( ((a - c) <> (b - c))<>0, CR_NE, expected )
 		tst_expr2b_bop_f( ((a - c) >  (b - c))<>0, CR_GT, expected )
@@ -224,6 +234,7 @@ SUITE( fbc_tests.expressions.compare_float )
 		tst_expr2b_bop_f( ((a - c) >= (b - c))<>0, CR_GE, expected )
 		tst_expr2b_bop_f( ((a - c) <= (b - c))<>0, CR_LE, expected )
 
+		'' registers <> 0 to integer
 		tst_expr2i_bop_f( ((a - c) =  (b - c))<>0, CR_EQ, expected )
 		tst_expr2i_bop_f( ((a - c) <> (b - c))<>0, CR_NE, expected )
 		tst_expr2i_bop_f( ((a - c) >  (b - c))<>0, CR_GT, expected )
@@ -235,7 +246,11 @@ SUITE( fbc_tests.expressions.compare_float )
 
 	sub chk_exprEZ_bop_f( byval a as single, byval b as single, byval expected as COMPARE_RESULTS )
 
-		'' variables
+		'' '= 0' should be optimized out with an inverse relational op
+		'' For example
+		'' (a=b)=0    =>    (a!=b)
+
+		'' variables = 0 to boolean
 		tst_expr2b_bop_f( (a =  b)=0, CR_EQ, expected )
 		tst_expr2b_bop_f( (a <> b)=0, CR_NE, expected )
 		tst_expr2b_bop_f( (a >  b)=0, CR_GT, expected )
@@ -243,6 +258,7 @@ SUITE( fbc_tests.expressions.compare_float )
 		tst_expr2b_bop_f( (a >= b)=0, CR_GE, expected )
 		tst_expr2b_bop_f( (a <= b)=0, CR_LE, expected )
 
+		'' variables = 0 to integer
 		tst_expr2i_bop_f( (a =  b)=0, CR_EQ, expected )
 		tst_expr2i_bop_f( (a <> b)=0, CR_NE, expected )
 		tst_expr2i_bop_f( (a >  b)=0, CR_GT, expected )
@@ -253,6 +269,7 @@ SUITE( fbc_tests.expressions.compare_float )
 		'' registers (intermediate results)
 		dim c as single = 0
 
+		'' registers = 0 to boolean
 		tst_expr2b_bop_f( ((a - c) =  (b - c))=0, CR_EQ, expected )
 		tst_expr2b_bop_f( ((a - c) <> (b - c))=0, CR_NE, expected )
 		tst_expr2b_bop_f( ((a - c) >  (b - c))=0, CR_GT, expected )
@@ -260,44 +277,9 @@ SUITE( fbc_tests.expressions.compare_float )
 		tst_expr2b_bop_f( ((a - c) >= (b - c))=0, CR_GE, expected )
 		tst_expr2b_bop_f( ((a - c) <= (b - c))=0, CR_LE, expected )
 
+		'' registers = 0 to integer
 		tst_expr2i_bop_f( ((a - c) =  (b - c))=0, CR_EQ, expected )
 		tst_expr2i_bop_f( ((a - c) <> (b - c))=0, CR_NE, expected )
-		tst_expr2i_bop_f( ((a - c) >  (b - c))=0, CR_GT, expected )
-		tst_expr2i_bop_f( ((a - c) <  (b - c))=0, CR_LT, expected )
-		tst_expr2i_bop_f( ((a - c) >= (b - c))=0, CR_GE, expected )
-		tst_expr2i_bop_f( ((a - c) <= (b - c))=0, CR_LE, expected )
-
-	end sub
-
-	sub chk_exprEN_bop_f( byval a as single, byval b as single, byval expected as COMPARE_RESULTS )
-
-		'' variables
-		tst_expr2b_bop_f( (a =  b)=0, CR_NE, expected )
-		tst_expr2b_bop_f( (a <> b)=0, CR_EQ, expected )
-		tst_expr2b_bop_f( (a >  b)=0, CR_GT, expected )
-		tst_expr2b_bop_f( (a <  b)=0, CR_LT, expected )
-		tst_expr2b_bop_f( (a >= b)=0, CR_GE, expected )
-		tst_expr2b_bop_f( (a <= b)=0, CR_LE, expected )
-
-		tst_expr2i_bop_f( (a =  b)=0, CR_NE, expected )
-		tst_expr2i_bop_f( (a <> b)=0, CR_EQ, expected )
-		tst_expr2i_bop_f( (a >  b)=0, CR_GT, expected )
-		tst_expr2i_bop_f( (a <  b)=0, CR_LT, expected )
-		tst_expr2i_bop_f( (a >= b)=0, CR_GE, expected )
-		tst_expr2i_bop_f( (a <= b)=0, CR_LE, expected )
-
-		'' registers (intermediate results)
-		dim c as single = 0
-
-		tst_expr2b_bop_f( ((a - c) =  (b - c))=0, CR_NE, expected )
-		tst_expr2b_bop_f( ((a - c) <> (b - c))=0, CR_EQ, expected )
-		tst_expr2b_bop_f( ((a - c) >  (b - c))=0, CR_GT, expected )
-		tst_expr2b_bop_f( ((a - c) <  (b - c))=0, CR_LT, expected )
-		tst_expr2b_bop_f( ((a - c) >= (b - c))=0, CR_GE, expected )
-		tst_expr2b_bop_f( ((a - c) <= (b - c))=0, CR_LE, expected )
-
-		tst_expr2i_bop_f( ((a - c) =  (b - c))=0, CR_NE, expected )
-		tst_expr2i_bop_f( ((a - c) <> (b - c))=0, CR_EQ, expected )
 		tst_expr2i_bop_f( ((a - c) >  (b - c))=0, CR_GT, expected )
 		tst_expr2i_bop_f( ((a - c) <  (b - c))=0, CR_LT, expected )
 		tst_expr2i_bop_f( ((a - c) >= (b - c))=0, CR_GE, expected )
@@ -314,10 +296,6 @@ SUITE( fbc_tests.expressions.compare_float )
 
 	sub chk_bopEZ_f( byval a as single, byval b as single, cr as COMPARE_RESULTS )
 		chk_exprEZ_bop_f( a, b, cr )
-	end sub
-
-	sub chk_bopEN_f( byval a as single, byval b as single, cr as COMPARE_RESULTS )
-		chk_exprEN_bop_f( a, b, cr )
 	end sub
 
 	TEST( bop_single )
@@ -338,7 +316,7 @@ SUITE( fbc_tests.expressions.compare_float )
 
 		'' a < b
 		a = 0
-		b = 1  
+		b = 1
 		chk_bopXX_f( a, b, CR_NE or CR_LT or CR_LE )
 		chk_bopEZ_f( a, b, CR_EQ or CR_GE or CR_GT )
 
@@ -419,17 +397,14 @@ SUITE( fbc_tests.expressions.compare_float )
 		a = 0
 		b = ind
 		chk_bopXX_f( a, b, CR_NE )
-		chk_bopEN_f( a, b, CR_EQ or CR_GE or CR_GT )
 
 		a = ind
 		b = 0
 		chk_bopXX_f( a, b, CR_NE )
-		chk_bopEN_f( a, b, CR_EQ or CR_GE or CR_GT )
 
 		a = ind
 		b = ind
 		chk_bopXX_f( a, b, CR_NE )
-		chk_bopEN_f( a, b, CR_EQ or CR_GE or CR_GT )
 
 	END_TEST
 #endif

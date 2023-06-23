@@ -3193,73 +3193,152 @@ private sub bop_float( _
 	select case op
 		case AST_OP_EQ,AST_OP_NE,AST_OP_LT,AST_OP_LE,AST_OP_GT,AST_OP_GE
 
-			if( (options and IR_EMITOPT_REL_DOINVERSE) <> 0 ) then
-				op = astGetInverseLogOp( op )
-			end if
-
 			if label=0 then
 				lname1 = *symbUniqueLabel( )
-				asm_code("mov "+*regstrq(vrreg)+", -1")
 			end if
 
-			select case op
-				case AST_OP_EQ
-					asm_code(compreg+"xmm0, xmm1")
-					lname2 = *symbUniqueLabel( )
-					asm_code("jp "+lname2) ''different true very big (or very small value)
-					jmpcode=@"je " ''different not true
-				case AST_OP_NE
-					asm_code(compreg+"xmm0, xmm1")
-					if label=0 then
-						asm_code("jp "+lname1)
-					else
-						asm_code("jp "+*symbGetMangledName( label ))''different true
-					end if
-					jmpcode=@"jne " ''different true
-				case AST_OP_LT
-					if label<>0 then
-						asm_code(compreg+"xmm0, xmm1")
-						jmpcode=@"jb "
-					else
-						asm_code(compreg+"xmm1, xmm0")
-						jmpcode=@"ja "
-					End If
-				case AST_OP_LE
-					if label<>0 then
-						asm_code(compreg+"xmm0, xmm1")
-						jmpcode=@"jbe "
-					else
-						asm_code(compreg+"xmm1, xmm0")
-						jmpcode=@"jae "
-					End If
-				case AST_OP_GT
-					if label<>0 then
-						asm_code(compreg+"xmm1, xmm0")
-						jmpcode=@"jb "
-					else
-						asm_code(compreg+"xmm0, xmm1")
-						jmpcode=@"ja "
-					End If
-				case AST_OP_GE
-					if label<>0 then
-						asm_code(compreg+"xmm1, xmm0")
-						jmpcode=@"jbe "
-					else
-						asm_code(compreg+"xmm0, xmm1")
-						jmpcode=@"jae "
-					End If
-			end select
+			dim as integer swapregs = false
+			dim as integer swapinit = false
+			dim as string parity = ""
 
+			if( label = 0 ) then
+				if( (options and IR_EMITOPT_REL_DOINVERSE) = 0 ) then
+					'' Result = ( a op b )
+					select case op
+						case AST_OP_EQ
+							lname2 = *symbUniqueLabel( )
+							parity = "jp "+lname2
+							jmpcode=@"je "
+						case AST_OP_NE
+							parity = "jp "+lname1
+							jmpcode=@"jne "
+						case AST_OP_GT
+							jmpcode=@"ja "
+						case AST_OP_LT
+							swapregs = true
+							jmpcode=@"ja "
+						case AST_OP_GE
+							jmpcode=@"jae "
+						case AST_OP_LE
+							swapregs = true
+							jmpcode=@"jae "
+					end select
+				else
+					'' Result = !( a op b )
+					select case op
+						case AST_OP_EQ
+							parity = "jp "+lname1
+							jmpcode=@"jne "
+						case AST_OP_NE
+							lname2 = *symbUniqueLabel( )
+							parity = "jp "+lname2
+							jmpcode=@"je "
+						case AST_OP_GT
+							swapinit = true
+							jmpcode=@"ja "
+						case AST_OP_LT
+							swapregs = true
+							swapinit = true
+							jmpcode=@"ja "
+						case AST_OP_GE
+							swapinit = true
+							jmpcode=@"jae "
+						case AST_OP_LE
+							swapregs = true
+							swapinit = true
+							jmpcode=@"jae "
+					end select
+				end if
+			else
+				if( (options and IR_EMITOPT_REL_DOINVERSE) <> 0 ) then
+					'' if !( a op b ) then goto exit_label
+					select case op
+						case AST_OP_EQ
+							parity = "jp "+*symbGetMangledName( label )
+							jmpcode=@"jne "
+						case AST_OP_NE
+							lname2 = *symbUniqueLabel( )
+							parity = "jp "+lname2
+							jmpcode=@"je "
+						case AST_OP_GT
+							jmpcode=@"jbe "
+						case AST_OP_LT
+							swapregs = true
+							jmpcode=@"jbe "
+						case AST_OP_GE
+							jmpcode=@"jb "
+						case AST_OP_LE
+							swapregs = true
+							jmpcode=@"jb "
+					end select
+				else
+					'' if ( a op b ) then goto exit_label
+					select case op
+						case AST_OP_EQ
+							lname2 = *symbUniqueLabel( )
+							parity = "jp "+lname2
+							jmpcode=@"je "
+						case AST_OP_NE
+							parity = "jp "+*symbGetMangledName( label )
+							jmpcode=@"jne "
+						case AST_OP_GT
+							jmpcode=@"ja "
+						case AST_OP_LT
+							swapregs = true
+							jmpcode=@"ja "
+						case AST_OP_GE
+							jmpcode=@"jae "
+						case AST_OP_LE
+							swapregs = true
+							jmpcode=@"jae "
+					end select
+				end if
+			end if
+
+			'' Initialize default return value
+			if( label = 0 ) then
+				if( swapinit ) then
+					asm_code("mov "+*regstrq(vrreg)+", 0")
+				else
+					asm_code("mov "+*regstrq(vrreg)+", -1")
+				end if
+			end if
+
+			'' Do comparison
+			if( swapregs ) then
+				asm_code(compreg+"xmm1, xmm0")
+			else
+				asm_code(compreg+"xmm0, xmm1")
+			end if
+
+			'' Check for parity flag (if needed),
+			'' disregard if '-fpmode fast' command line option is used
+			if( env.clopt.fpmode = FB_FPMODE_PRECISE ) then
+				if( len( parity ) > 0 ) then
+					asm_code( parity )
+				end if
+			end if
+
+			'' conditionally jump to exit label
 			if label=0 then
 				asm_code(*jmpcode+lname1)
 			else
 				asm_code(*jmpcode+*symbGetMangledName( label ))
 				reg_mark(label)
 			end if
-			if op=AST_OP_EQ then asm_code(lname2+":") ''label when different
 
-			if label=0 then
-				asm_code("xor "+*regstrq(vrreg)+", "+*regstrq(vrreg))
+			'' label when different
+			if( len(lname2) > 0 ) then
+				asm_code(lname2+":")
+			end if
+
+			'' set the result if different
+			if( label = 0 ) then
+				if( swapinit ) then
+					asm_code("mov "+*regstrq(vrreg)+", -1")
+				else
+					asm_code("xor "+*regstrq(vrreg)+", "+*regstrq(vrreg))
+				end if
 				restore_vrreg(vr,vrreg)
 				asm_code(lname1+":")
 			end if
