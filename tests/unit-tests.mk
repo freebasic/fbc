@@ -80,8 +80,13 @@ ifeq ($(TARGET_OS),win32)
 endif
 
 FBC_CFLAGS := -c -w 3 -Wc -Wno-tautological-compare -i $(FBCU_INC) -m $(MAINBAS)
-ifneq ($(HOST),dos)
+ifneq ($(TARGET_OS),dos)
 	FBC_CFLAGS += -mt
+endif
+ifeq ($(TARGET_OS),js)
+# Need to do some optimisations to reduce the number of local variables,
+# or else linking fails
+	FBC_CFLAGS += -O 1
 endif
 ifdef DEBUG
 	FBC_CFLAGS += -g
@@ -105,7 +110,7 @@ ifneq ($(GEN),)
 	FBC_CFLAGS += -gen $(GEN)
 endif
 
-FBC_LFLAGS := $(FBCU_LIBS) -p $(FBCU_LIB) -x $(MAINEXE) -v
+FBC_LFLAGS := $(FBCU_LIBS) -p $(FBCU_LIB) -fbgfx -x $(MAINEXE) -v
 ifdef DEBUG
 	FBC_LFLAGS += -g
 endif
@@ -114,6 +119,9 @@ ifdef ARCH
 endif
 ifdef TARGET
 	FBC_LFLAGS += -target $(TARGET)
+endif
+ifeq ($(TARGET_OS),js)
+	FBC_LFLAGS += -Wl -sEXIT_RUNTIME
 endif
 
 ifeq ($(ENABLE_CHECK_BUGS),1)
