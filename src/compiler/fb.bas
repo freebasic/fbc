@@ -217,7 +217,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 	), _
 	( _
 		@"js", _
-		FB_DATATYPE_USHORT, _   '' wchar
+		FB_DATATYPE_ULONG, _   '' wchar
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
 		0   or FB_TARGETOPT_UNIX _
