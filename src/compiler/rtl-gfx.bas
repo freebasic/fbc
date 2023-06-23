@@ -1425,7 +1425,7 @@ private function hPorts_cb _
 end function
 
 private function hGfxlib_cb( byval sym as FBSYMBOL ptr ) as integer
-	env.clopt.gfx = TRUE
+	env.clopt.fbgfx = TRUE
 	function = TRUE
 end function
 

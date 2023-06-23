@@ -3,7 +3,7 @@ Version 1.10.1
 [changed]
 
 [added]
-- fbc: '-gfx' command line option to link against correct libfbgfx variant, for platforms (emscripten) where it's not automatic due to missing objinfo support
+- fbc: '-fbgfx' command line option to link against correct libfbgfx variant, for platforms (emscripten) where it's not automatic due to missing objinfo support
 
 [fixed]
 - sf.net #982: Array descriptors emitted incorrectly in gcc backend 

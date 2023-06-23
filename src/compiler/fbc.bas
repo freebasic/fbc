@@ -1348,7 +1348,7 @@ private sub hReadObjinfo( )
 			end if
 
 		case OBJINFO_GFX
-			fbSetOption( FB_COMPOPT_GFX, TRUE )
+			fbSetOption( FB_COMPOPT_FBGFX, TRUE )
 
 		case OBJINFO_LANG
 			lang = fbGetLangId( dat )
@@ -1712,12 +1712,12 @@ enum
 	OPT_EX
 	OPT_EXX
 	OPT_EXPORT
+	OPT_FBGFX
 	OPT_FORCELANG
 	OPT_FPMODE
 	OPT_FPU
 	OPT_G
 	OPT_GEN
-	OPT_GFX
 	OPT_HELP
 	OPT_I
 	OPT_INCLUDE
@@ -1795,12 +1795,12 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EX           affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EXX          affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EXPORT       affects code generation
+	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_FBGFX        affects link
 	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_FORCELANG    never allow, command line only
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_FPMODE       affects major initialization, affects code generation
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_FPU          affects major initialization,affects code generation, affects second stage compile, affects link
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_G            affects code generation, affects link
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_GEN          affects major initialization
-	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_GFX          affects link
 	( FALSE, FALSE, FALSE, FALSE ), _ '' OPT_HELP         never allow, real command line only, makes no sense to have in source
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_I            add include path before the default one
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_INCLUDE      restart required to inject preInclude
@@ -1940,6 +1940,9 @@ private sub handleOpt _
 	case OPT_EXPORT
 		fbSetOption( FB_COMPOPT_EXPORT, TRUE )
 
+	case OPT_FBGFX
+		fbSetOption( FB_COMPOPT_FBGFX, TRUE )
+
 	case OPT_FORCELANG
 		dim as integer value = fbGetLangId(strptr(arg))
 		if( value = FB_LANG_INVALID ) then
@@ -2008,9 +2011,6 @@ private sub handleOpt _
 		case else
 			hFatalInvalidOption( arg, is_source )
 		end select
-
-	case OPT_GFX
-		fbSetOption( FB_COMPOPT_GFX, TRUE )
 
 	case OPT_HELP
 		fbc.showhelp = TRUE
@@ -2388,6 +2388,7 @@ private function parseOption(byval opt as zstring ptr) as integer
 		CHECK("export", OPT_EXPORT)
 
 	case asc("f")
+		CHECK("fbgfx", OPT_FBGFX)
 		CHECK("forcelang", OPT_FORCELANG)
 		CHECK("fpmode", OPT_FPMODE)
 		CHECK("fpu", OPT_FPU)
@@ -2395,7 +2396,6 @@ private function parseOption(byval opt as zstring ptr) as integer
 	case asc("g")
 		ONECHAR(OPT_G)
 		CHECK("gen", OPT_GEN)
-		CHECK("gfx", OPT_GFX)
 
 	case asc( "h" )
 		CHECK( "help", OPT_HELP )
@@ -3883,7 +3883,7 @@ private sub hAddDefaultLibs( )
 	end if
 
 	'' and the gfxlib, if gfx functions were used
-	if( fbGetOption( FB_COMPOPT_GFX ) ) then
+	if( fbGetOption( FB_COMPOPT_FBGFX ) ) then
 		fbcAddDefLib( "fbgfx" + hGetFbLibNameSuffix( ) )
 
 		select case as const( fbGetOption( FB_COMPOPT_TARGET ) )
@@ -4096,6 +4096,9 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -ex              -e plus RESUME support"
 	print "  -exx             -ex plus array bounds/null-pointer checking"
 	print "  -export          Export symbols for dynamic linkage"
+	if( verbose ) then
+	print "  -fbgfx           Link to the appropriate libfbgfx variant (normally automatic)"
+	end if
 	print "  -forcelang <name>  Override #lang statements in source code"
 	if( verbose ) then
 	print "  -fpmode fast|precise  Select floating-point math accuracy/speed"
@@ -4108,7 +4111,6 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -gen gas64       Select GNU gas 64-bit assembler backend"
 	print "  -gen gcc         Select GNU gcc C backend"
 	print "  -gen llvm        Select LLVM backend"
-	print "  -gfx             Link to the appropriate libfbgfx variant (normally automatic)"
 	else
 	print "  -gen gas|gas64|gcc|llvm  Select code generation backend"
 	end if

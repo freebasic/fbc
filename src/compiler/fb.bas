@@ -564,7 +564,7 @@ sub fbGlobalInit()
 	env.clopt.gosubsetjmp   = FALSE
 	env.clopt.export        = FALSE
 	env.clopt.multithreaded = FALSE
-	env.clopt.gfx           = FALSE
+	env.clopt.fbgfx         = FALSE
 	env.clopt.pic           = FALSE
 	env.clopt.msbitfields   = FALSE
 	env.clopt.stacksize     = 0 '' default will be set by fbSetOption() called from hParseArgs()
@@ -679,8 +679,8 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		env.clopt.msbitfields = value
 	case FB_COMPOPT_MULTITHREADED
 		env.clopt.multithreaded = value
-	case FB_COMPOPT_GFX
-		env.clopt.gfx = value
+	case FB_COMPOPT_FBGFX
+		env.clopt.fbgfx = value
 	case FB_COMPOPT_PIC
 		env.clopt.pic = value
 	case FB_COMPOPT_STACKSIZE
@@ -790,8 +790,8 @@ function fbGetOption( byval opt as integer ) as integer
 		function = env.clopt.msbitfields
 	case FB_COMPOPT_MULTITHREADED
 		function = env.clopt.multithreaded
-	case FB_COMPOPT_GFX
-		function = env.clopt.gfx
+	case FB_COMPOPT_FBGFX
+		function = env.clopt.fbgfx
 	case FB_COMPOPT_PIC
 		function = env.clopt.pic
 	case FB_COMPOPT_STACKSIZE
@@ -1106,7 +1106,7 @@ sub fbAddLib(byval libname as zstring ptr)
 
 		'' Set the -gfx option to link to the gfx library
 		'' and the lib will be added in hAddDefaultLibs()
-		fbSetOption( FB_COMPOPT_GFX, TRUE )
+		fbSetOption( FB_COMPOPT_FBGFX, TRUE )
 
 		exit sub
 	end if
@@ -1195,8 +1195,8 @@ private sub hEmitObjinfo( )
 		hAppendFbctinf( objinfoEncode( OBJINFO_MT ) )
 	end if
 
-	'' -gfx
-	if( env.clopt.gfx ) then
+	'' -fbgfx
+	if( env.clopt.fbgfx ) then
 		hAppendFbctinf( objinfoEncode( OBJINFO_GFX ) )
 	end if
 
