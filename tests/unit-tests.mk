@@ -188,7 +188,11 @@ build_tests : ./$(MAINBAS).o $(OBJLIST) $(UNIT_TESTS_OBJ_LST)
 
 .PHONY: run_tests
 run_tests : build_tests
+ifneq ($(TARGET_OS),js)
 	./$(MAINEXE) $(UNITTEST_RUN_ARGS)
+else ifneq ($(NODEJS),)
+	$(NODEJS) ./$(MAINEXE) $(UNITTEST_RUN_ARGS)
+endif
 
 .PHONY: clean
 clean : clean_main_exe clean_tests clean_fbcu clean_include

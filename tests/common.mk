@@ -66,7 +66,11 @@ endif
 ifeq ($(TARGET_OS),unix)
     TARGET_EXEEXT :=
 else ifeq ($(TARGET_OS),js)
-    TARGET_EXEEXT := .html
+    ifeq ($(NODEJS),)
+       TARGET_EXEEXT := .html
+    else
+       TARGET_EXEEXT := .js
+    endif
 else
     TARGET_EXEEXT := .exe
 endif
