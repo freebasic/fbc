@@ -78,6 +78,9 @@ SUITE( fbc_tests.dim_.redim_ )
 		END_TEST
 	END_TEST_GROUP
 
+	'' Emscripten (and wasm) doesn't support common symbols
+	#ifndef __FB_JS__
+
 	'' Regression test for #3474348
 	TEST_GROUP( commonRedimRedim )
 		common array() as integer
@@ -114,6 +117,8 @@ SUITE( fbc_tests.dim_.redim_ )
 			CU_ASSERT( f( ) = 4 )
 		END_TEST
 	END_TEST_GROUP
+
+	#endif
 
 	'' Regression test for #3510684: An array using a different mangling, which
 	'' affects the array descriptor too -- should still work just the same.
