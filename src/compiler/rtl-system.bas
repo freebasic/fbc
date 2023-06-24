@@ -683,8 +683,8 @@ function rtlInitApp _
 	astNewARG( proc, astNewCONSTi( env.clopt.lang ) )
 	astAdd( proc )
 
-	'' Error checking enabled and not a DLL?
-	if( env.clopt.errorcheck and is_exe ) then
+	'' Error checking enabled and not a DLL? And emscripten doesn't have signals
+	if( env.clopt.errorcheck andalso is_exe andalso ( env.clopt.target <> FB_COMPTARGET_JS ) ) then
 		'' fb_InitSignals( )
 		astAdd( astNewCALL( PROCLOOKUP( INITSIGNALS ), NULL ) )
 
