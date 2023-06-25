@@ -1425,7 +1425,15 @@ function astNewBOP _
 					'' (a <  b) = 0  =>  (a >= b)
 					'' etc.
 					if( astIsRelationalBop( l ) ) then
-						l->op.op = astGetInverseLogOp( l->op.op )
+						'' Floating point? let backend optimize this.  We can't assume
+						'' we can invert the logic for floats.  Unless we are using
+						'' '-fpmode fast' then disregard consistency.
+						if( (astGetDataClass( l->l ) = FB_DATACLASS_FPOINT) and _
+						    (env.clopt.fpmode = FB_FPMODE_PRECISE) ) then
+							l->op.options xor= AST_OPOPT_DOINVERSE
+						else
+							l->op.op = astGetInverseLogOp( l->op.op )
+						end if
 						astDelNode( r )
 						return l
 					end if

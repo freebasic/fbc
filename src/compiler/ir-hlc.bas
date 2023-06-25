@@ -2864,8 +2864,6 @@ private sub _emitBop _
 		byval options as IR_EMITOPT _
 	)
 
-'' !!!TODO!!! handle ((options and IR_EMITOPT_REL_DOINVERSE)<>0)
-
 	dim as EXPRNODE ptr l = any, r = any
 
 	l = exprNewVREG( v1 )
@@ -2876,8 +2874,12 @@ private sub _emitBop _
 		assert( vr = NULL )
 		static as string s
 		s = "if( "
+		if( (options and IR_EMITOPT_REL_DOINVERSE) <> 0 ) then
+			s += "!"
+		end if
+		s += "("
 		s += exprFlush( exprNewBOP( op, l, r ) )
-		s += " ) goto "
+		s += ") ) goto "
 		s += *symbGetMangledName( label )
 		s += ";"
 		hWriteLine( s )
@@ -2890,6 +2892,10 @@ private sub _emitBop _
 
 	select case as const( op )
 	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
+		if( (options and IR_EMITOPT_REL_DOINVERSE) <> 0 ) then
+			op = astGetInverseLogOp( op )
+		end if
+
 		l = exprNewBOP( op, l, r )
 
 		'' comparisons returning a boolean produce 0/1,

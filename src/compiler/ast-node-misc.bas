@@ -927,7 +927,14 @@ private function hAstNodeToStr _
 
 	select case as const n->class
 	case AST_NODECLASS_BOP
-		return astDumpOpToStr( n->op.op ) & " =-= " & hSymbToStr( n->op.ex )
+		dim s as zstring * 2 = ""
+		select case n->op.op
+		case AST_OP_EQ, AST_OP_NE, AST_OP_LT, AST_OP_GT, AST_OP_LE, AST_OP_GE
+			if( (n->op.options and AST_OPOPT_DOINVERSE) <> 0 ) then
+				s = "!"
+			end if
+		end select
+		return s & astDumpOpToStr( n->op.op ) & " =-= " & hSymbToStr( n->op.ex )
 
 	case AST_NODECLASS_UOP
 		return astDumpOpToStr( n->op.op )

@@ -1769,13 +1769,32 @@ function hOptSelfCompare _
 		exit function
 	end if
 
+	'' take care, trees are equal, but if either tree has side effects
+	'' like function calls that mutate state, we optimize those calls out
+
+	'' don't optimize if we want precise math and operands are floating point
+	if( env.clopt.fpmode = FB_FPMODE_PRECISE ) then
+		if( (typeGetClass( astGetDataType( l ) ) = FB_DATACLASS_FPOINT) or _
+			(typeGetClass( astGetDataType( r ) ) = FB_DATACLASS_FPOINT) ) then
+			exit function
+		end if
+	end if
+
 	dim as integer c
 
 	select case as const n->op.op
 	case AST_OP_EQ, AST_OP_LE, AST_OP_GE
-		c = -1
+		if( (n->op.options and AST_OPOPT_DOINVERSE) <> 0 ) then
+			c = 0
+		else
+			c = -1
+		end if
 	case AST_OP_NE, AST_OP_GT, AST_OP_LT
-		c = 0
+		if( (n->op.options and AST_OPOPT_DOINVERSE) <> 0 ) then
+			c = -1
+		else
+			c = 0
+		end if
 	case else
 		exit function
 	end select

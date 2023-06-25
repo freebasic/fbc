@@ -3151,7 +3151,8 @@ private sub bop_float( _
 	byref op3 as string, _
 	byref op4 as string, _
 	byref prefix as string, _
-	byval label as FBSYMBOL ptr  _
+	byval label as FBSYMBOL ptr, _
+	byval options as IR_EMITOPT _
 	)
 
 	dim as string lname1,lname2,movreg,movmem,compreg,immreg,addreg,subreg,mulreg,divreg
@@ -3191,6 +3192,11 @@ private sub bop_float( _
 
 	select case op
 		case AST_OP_EQ,AST_OP_NE,AST_OP_LT,AST_OP_LE,AST_OP_GT,AST_OP_GE
+
+			if( (options and IR_EMITOPT_REL_DOINVERSE) <> 0 ) then
+				op = astGetInverseLogOp( op )
+			end if
+
 			if label=0 then
 				lname1 = *symbUniqueLabel( )
 				asm_code("mov "+*regstrq(vrreg)+", -1")
@@ -3291,7 +3297,7 @@ private sub bop_float( _
 	end select
 
 end sub
-private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVREG ptr,byval vr as IRVREG ptr,byval label as FBSYMBOL ptr =0)
+private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVREG ptr,byval vr as IRVREG ptr,byval label as FBSYMBOL ptr =0,byval options as IR_EMITOPT)
 
 	dim as string op1,op2,op3,op4,prefix1,prefix2,suffix,op1prev,regtempo,op1bis
 	dim as FB_DATATYPE tempodtype,tempo2dtype
@@ -3442,7 +3448,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 
 	If( typeGetClass( v1->dtype ) = FB_DATACLASS_FPOINT) Or ( typeGetClass( v2->dtype ) = FB_DATACLASS_FPOINT) then
 		asm_info("Bop with float")
-		bop_float(op,v1,v2,vr,op1,op2,op3,op4,prefix1,label)
+		bop_float(op,v1,v2,vr,op1,op2,op3,op4,prefix1,label,options)
 		exit sub
 	end if
 
@@ -3858,8 +3864,6 @@ private sub _emitbop _
 		var bopdump = vregPretty( v1 ) + " " + astdumpopToStr( op ) + " " + vregPretty( v2 )
 	#endif
 
-	'' !!!TODO!!! handle ((options and IR_EMITOPT_REL_DOINVERSE)<>0)
-
 	if( label ) then
 		asm_info("branchbop " + bopdump +" "+*symbGetMangledName( label ))
 	elseif( vr = NULL ) then
@@ -3889,7 +3893,7 @@ private sub _emitbop _
 			_setvregdatatype(v1,dtype,0)
 		end if
 	end if
-	hLoadOperandsAndWriteBop( op, v1, v2, vr,label )
+	hLoadOperandsAndWriteBop( op, v1, v2, vr,label, options )
 
 end sub
 private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVREG Ptr)
