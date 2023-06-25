@@ -4441,30 +4441,30 @@ private function hCMPF_get_recipe _
 			( CMPF_OP_EQ, @"e" , @""  , @""  , @""          , FALSE, TRUE , FALSE, FALSE ), _
 			( CMPF_OP_NE, @"ne", @""  , @""  , @""          , TRUE , FALSE, FALSE, FALSE ), _
 			( CMPF_OP_GT, @"a" , @""  , @""  , @""          , FALSE, FALSE, FALSE, FALSE ), _
-			( CMPF_OP_LT, @"b" , @""  , @""  , @""          , FALSE ,TRUE , FALSE, FALSE ), _
+			( CMPF_OP_LT, @"a" , @""  , @""  , @""          , FALSE, FALSE, TRUE , FALSE ), _
 			( CMPF_OP_GE, @"ae", @""  , @""  , @""          , FALSE, FALSE, FALSE, FALSE ), _
-			( CMPF_OP_LE, @"be", @""  , @""  , @""          , FALSE, TRUE , FALSE, FALSE ), _
+			( CMPF_OP_LE, @"ae", @""  , @""  , @""          , FALSE, FALSE, TRUE , FALSE ), _
 			/' Result = !( a op b ) '/ _
 			( CMPF_OP_EQ, @"ne", @""  , @""  , @""          , TRUE , FALSE, FALSE, FALSE ), _
 			( CMPF_OP_NE, @"e" , @""  , @""  , @""          , FALSE, TRUE , FALSE, FALSE ), _
-			( CMPF_OP_GT, @"be", @""  , @""  , @""          , FALSE, FALSE, FALSE, FALSE ), _
-			( CMPF_OP_LT, @"ae", @""  , @""  , @""          , TRUE , FALSE, FALSE, FALSE ), _
-			( CMPF_OP_GE, @"b" , @""  , @""  , @""          , FALSE, FALSE, FALSE, FALSE ), _
-			( CMPF_OP_LE, @"a" , @""  , @""  , @""          , TRUE , FALSE, FALSE, FALSE ), _
+			( CMPF_OP_GT, @"a" , @"be", @""  , @""          , FALSE, FALSE, FALSE, TRUE  ), _
+			( CMPF_OP_LT, @"a" , @"be", @""  , @""          , FALSE, FALSE, TRUE , TRUE  ), _
+			( CMPF_OP_GE, @"ae", @"b" , @""  , @""          , FALSE, FALSE, FALSE, TRUE  ), _
+			( CMPF_OP_LE, @"ae", @"b" , @""  , @""          , FALSE, FALSE, TRUE , TRUE  ), _
 			/' if !( a op b ) then goto exit label '/ _
 			( CMPF_OP_EQ, @"e" , @""  , @""  , @""          , FALSE, TRUE , FALSE, FALSE ), _
 			( CMPF_OP_NE, @"ne", @""  , @""  , @""          , TRUE , FALSE, FALSE, FALSE ), _
 			( CMPF_OP_GT, @"a" , @""  , @""  , @""          , FALSE, FALSE, FALSE, FALSE ), _
-			( CMPF_OP_LT, @"b" , @""  , @""  , @""          , FALSE, TRUE , FALSE, FALSE ), _
+			( CMPF_OP_LT, @"a" , @""  , @""  , @""          , FALSE, FALSE, TRUE , FALSE ), _
 			( CMPF_OP_GE, @"ae", @""  , @""  , @""          , FALSE, FALSE, FALSE, FALSE ), _
-			( CMPF_OP_LE, @"be", @""  , @""  , @""          , FALSE, TRUE , FALSE, FALSE ), _
+			( CMPF_OP_LE, @"ae", @""  , @""  , @""          , FALSE, FALSE, TRUE , FALSE ), _
 			/' if ( a op b ) then goto exit label '/ _
 			( CMPF_OP_EQ, @"ne", @""  , @"nz", @"0b01000000", TRUE , FALSE, FALSE, FALSE ), _
 			( CMPF_OP_NE, @"e" , @""  , @"z" , @"0b01000000", FALSE, TRUE , FALSE, FALSE ), _
 			( CMPF_OP_GT, @"be", @""  , @"z" , @"0b01000001", FALSE, FALSE, FALSE, FALSE ), _
-			( CMPF_OP_LT, @"ae", @""  , @"nz", @"0b00000001", TRUE , FALSE, FALSE, FALSE ), _
+			( CMPF_OP_LT, @"be", @""  , @"nz", @"0b00000001", FALSE, FALSE, TRUE , FALSE ), _
 			( CMPF_OP_GE, @"b" , @""  , @""  , @""          , FALSE, FALSE, FALSE, FALSE ), _
-			( CMPF_OP_LE, @"a" , @""  , @"nz", @"0b01000001", TRUE , FALSE, FALSE, FALSE ) _
+			( CMPF_OP_LE, @"b" , @""  , @"nz", @"0b01000001", FALSE, FALSE, TRUE , FALSE ) _
 		}
 
 	dim index as integer = op
