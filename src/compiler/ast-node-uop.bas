@@ -288,7 +288,13 @@ function astNewUOP _
 	'' Optimize bitwise NOT on boolean expressions (where NOT = logical negation)
 	if( op = AST_OP_NOT ) then
 		if( astIsRelationalBop( o ) ) then
-			o->op.op = astGetInverseLogOp( o->op.op )
+			'' let the backend deal with the inverse logic, unless we are in '-fpmode fast'
+			if( (typeGetClass( astGetDataType( o->l ) ) = FB_DATACLASS_FPOINT) and _
+			    (env.clopt.fpmode = FB_FPMODE_PRECISE) ) then
+				o->op.options xor= AST_OPOPT_DOINVERSE
+			else
+				o->op.op = astGetInverseLogOp( o->op.op )
+			end if
 			return o
 		end if
 	end if

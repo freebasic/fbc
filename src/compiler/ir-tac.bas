@@ -40,7 +40,8 @@ declare sub hFlushCOMP _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval label as FBSYMBOL ptr _
+		byval label as FBSYMBOL ptr, _
+		byval options as IR_EMITOPT _
 	)
 
 declare sub hFlushSTORE _
@@ -483,10 +484,11 @@ private sub _emitBop _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval label as FBSYMBOL ptr _
+		byval label as FBSYMBOL ptr, _
+		byval options as IR_EMITOPT _
 	)
 
-	_emit( op, v1, v2, vr, label )
+	_emit( op, v1, v2, vr, label, options )
 
 end sub
 
@@ -1394,7 +1396,9 @@ private sub _flush static
 			hFlushBOP( op, v1, v2, vr )
 
 		case AST_NODECLASS_COMP
-			hFlushCOMP( op, v1, v2, vr, t->ex1 )
+			'' t->ex1 = NULL or label
+			'' t->ex2 = 0 | IR_EMITOPT_REL_DOINVERSE
+			hFlushCOMP( op, v1, v2, vr, t->ex1, t->ex2 )
 
 		case AST_NODECLASS_ASSIGN
 			hFlushSTORE( op, v1, v2 )
@@ -2035,7 +2039,8 @@ private sub hFlushCOMP _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval label as FBSYMBOL ptr _
+		byval label as FBSYMBOL ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	dim as string lname
@@ -2116,17 +2121,17 @@ private sub hFlushCOMP _
 	''
 	select case as const op
 	case AST_OP_EQ
-		emitEQ( vr, label, v1, v2 )
+		emitEQ( vr, label, v1, v2, options )
 	case AST_OP_NE
-		emitNE( vr, label, v1, v2 )
+		emitNE( vr, label, v1, v2, options )
 	case AST_OP_GT
-		emitGT( vr, label, v1, v2 )
+		emitGT( vr, label, v1, v2, options )
 	case AST_OP_LT
-		emitLT( vr, label, v1, v2 )
+		emitLT( vr, label, v1, v2, options )
 	case AST_OP_LE
-		emitLE( vr, label, v1, v2 )
+		emitLE( vr, label, v1, v2, options )
 	case AST_OP_GE
-		emitGE( vr, label, v1, v2 )
+		emitGE( vr, label, v1, v2, options )
 	end select
 
 	''

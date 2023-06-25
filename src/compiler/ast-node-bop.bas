@@ -1425,7 +1425,15 @@ function astNewBOP _
 					'' (a <  b) = 0  =>  (a >= b)
 					'' etc.
 					if( astIsRelationalBop( l ) ) then
-						l->op.op = astGetInverseLogOp( l->op.op )
+						'' Floating point? let backend optimize this.  We can't assume
+						'' we can invert the logic for floats.  Unless we are using
+						'' '-fpmode fast' then disregard consistency.
+						if( (astGetDataClass( l->l ) = FB_DATACLASS_FPOINT) and _
+						    (env.clopt.fpmode = FB_FPMODE_PRECISE) ) then
+							l->op.options xor= AST_OPOPT_DOINVERSE
+						else
+							l->op.op = astGetInverseLogOp( l->op.op )
+						end if
 						astDelNode( r )
 						return l
 					end if
@@ -1687,7 +1695,10 @@ function astLoadBOP( byval n as ASTNODE ptr ) as IRVREG ptr
 		'' ex=label? Then this is an optimized conditional branch
 		if( n->op.ex <> NULL ) then
 			vr = NULL
-			irEmitBOP( op, v1, v2, NULL, n->op.ex )
+			irEmitBOP( op, v1, v2, NULL, n->op.ex, _
+			    iif( n->op.options and AST_OPOPT_DOINVERSE, _
+				IR_EMITOPT_REL_DOINVERSE, _
+				IR_EMITOPT_NONE ) )
 		else
 			if( (n->op.options and AST_OPOPT_ALLOCRES) <> 0 ) then
 				'' Self-BOPs: Always re-use the lhs vreg to store the result,
@@ -1702,7 +1713,10 @@ function astLoadBOP( byval n as ASTNODE ptr ) as IRVREG ptr
 				v1->vector = n->vector
 			end if
 
-			irEmitBOP( op, v1, v2, vr, NULL )
+			irEmitBOP( op, v1, v2, vr, NULL, _
+			    iif( n->op.options and AST_OPOPT_DOINVERSE, _
+				IR_EMITOPT_REL_DOINVERSE, _
+				IR_EMITOPT_NONE ) )
 
 			'' Return vr to parent even for self-BOPs - this is probably useless at the moment though,
 			'' because FB self-BOPs can only be used as statements, not in expressions...

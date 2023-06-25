@@ -85,6 +85,7 @@ enum AST_OPOPT
 	AST_OPOPT_DONTCHKPTR    = &h00000010
 	AST_OPOPT_DONTCHKOPOVL  = &h00000020
 	AST_OPOPT_ISINI         = &h00000040
+	AST_OPOPT_DOINVERSE     = &h00000080  '' indicates that logic needs to be inverted by the backend (i.e. branching)
 
 	AST_OPOPT_DOPTRARITH    = AST_OPOPT_LPTRARITH or AST_OPOPT_RPTRARITH
 

@@ -116,3 +116,42 @@ declare function _init_opFnTB_SSE _
 	( _
 		byval _opFnTB_SSE as any ptr ptr _
 	) as integer
+
+
+'' float comparison
+
+enum CMPF_OP
+	CMPF_OP_EQ = 0
+	CMPF_OP_NE
+	CMPF_OP_GT
+	CMPF_OP_LT
+	CMPF_OP_GE
+	CMPF_OP_LE
+
+	CMPF_OP_COUNT
+end enum
+
+type CMPF_RECIPE
+	op as CMPF_OP
+	mnemonic as zstring ptr             '' 'normal' comparison to use
+	rev_mnemonic as zstring ptr         '' swapped comparison
+	msk_mnemonic as zstring ptr
+	mask as zstring ptr
+	parity_false as integer
+	parity_true as integer
+	swapregs as integer
+	swapinit as integer
+end type
+
+declare sub hCMPF_jxx _
+	( _
+		byval recipe as CMPF_RECIPE ptr, _
+		byref lname as string _
+	)
+
+declare sub hCMPF_set _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval recipe as CMPF_RECIPE ptr, _
+		byref lname as string _
+	)

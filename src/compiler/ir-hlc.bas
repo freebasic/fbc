@@ -1932,7 +1932,7 @@ private function exprNewUOP _
 		assert( typeGetPtrCnt( dtype ) > 0 )
 		dtype = typeDeref( dtype )
 
-	case AST_OP_NEG, AST_OP_NOT
+	case AST_OP_NEG, AST_OP_NOT, AST_OP_BOOLNOT
 		'' peep-hole optimization:
 		''    -(-(foo)) -> foo
 		''    ~(~(foo)) -> foo
@@ -2273,6 +2273,7 @@ private function hUopToStr _
 	case AST_OP_DEREF  : function = @"*"
 	case AST_OP_NEG    : function = @"-"
 	case AST_OP_NOT    : function = @"~"
+	case AST_OP_BOOLNOT: function = @"!"
 
 	case AST_OP_ABS
 		is_builtin = TRUE
@@ -2860,7 +2861,8 @@ private sub _emitBop _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval label as FBSYMBOL ptr _
+		byval label as FBSYMBOL ptr, _
+		byval options as IR_EMITOPT _
 	)
 
 	dim as EXPRNODE ptr l = any, r = any
@@ -2873,8 +2875,12 @@ private sub _emitBop _
 		assert( vr = NULL )
 		static as string s
 		s = "if( "
+		if( (options and IR_EMITOPT_REL_DOINVERSE) <> 0 ) then
+			s += "!"
+		end if
+		s += "("
 		s += exprFlush( exprNewBOP( op, l, r ) )
-		s += " ) goto "
+		s += ") ) goto "
 		s += *symbGetMangledName( label )
 		s += ";"
 		hWriteLine( s )
@@ -2888,6 +2894,10 @@ private sub _emitBop _
 	select case as const( op )
 	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
 		l = exprNewBOP( op, l, r )
+
+		if( (options and IR_EMITOPT_REL_DOINVERSE) <> 0 ) then
+			l = exprNewUOP( AST_OP_BOOLNOT, l )
+		end if
 
 		'' comparisons returning a boolean produce 0/1,
 		'' comparisons returning an integer produce 0/-1.
@@ -2967,8 +2977,7 @@ private sub _emitUop _
 		'' the inverse 1/0 boolean. Thus it can't be implemented as
 		'' bitwise NOT.
 		'' Do: <expr == 0>
-		'' We could also do <!expr>, but we don't support emitting the
-		'' ! operator at the moment.
+		'' !!!TODO!!! We could also do <!expr>, see AST_OP_BOOLNOT
 		expr = exprNewBOP( AST_OP_EQ, expr, exprNewIMMi( 0 ) )
 	else
 		expr = exprNewUOP( op, expr )

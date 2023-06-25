@@ -869,7 +869,22 @@ function astBuildBranch _
 				'' Directly update this BOP to do the branch itself
 				n->op.ex = label
 				if( is_inverse = FALSE ) then
-					n->op.op = astGetInverseLogOp( n->op.op )
+					'' floating point? let the backend optimize the inverse
+					'' operation.  We can't simply swap for an inverse-op here
+					'' because of the expected handling of NaN's.
+					''   The comparison needs to occur first
+					''   Then apply logical not to do the inverse
+					'' To handle in AST we probably would need to implement
+					'' AST_OP_BOOLNOT for all backends or add inverse versions
+					'' of the relational ops - AST_OP_NEQ, NNE, NGT, etc)
+					'' if '-fpmode fast', then disregard
+
+					if( (typeGetClass( astGetDataType( expr->l )) = FB_DATACLASS_FPOINT) and _
+					    (env.clopt.fpmode = FB_FPMODE_PRECISE) ) then
+						n->op.options xor= AST_OPOPT_DOINVERSE
+					else
+						n->op.op = astGetInverseLogOp( n->op.op )
+					end if
 				end if
 
 			'' BOP that sets x86 flags?
@@ -955,11 +970,19 @@ function astBuildBranch _
 		expr = astNewVAR( temp )
 	end if
 
+	'' test floating point directly?  effectively convert to cbool(float-expression)
+	if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
+		if( env.clopt.fpmode = FB_FPMODE_PRECISE ) then
+			'' convert exrpression to boolean
+			expr = astNewCONV( FB_DATATYPE_BOOLEAN, NULL, expr )
+		end if
+	end if
+
 	'' Check expression against zero (= FALSE)
 	n = astNewLINK( n, _
-		astNewBOP( iif( is_inverse, AST_OP_NE, AST_OP_EQ ), _
-			expr, astNewCONSTz( dtype, expr->subtype ), _
-			label, AST_OPOPT_NONE ), AST_LINK_RETURN_NONE )
+	    astNewBOP( iif( is_inverse, AST_OP_NE, AST_OP_EQ ), _
+	        expr, astNewCONSTz( dtype, expr->subtype ), _
+	        label, AST_OPOPT_NONE ), AST_LINK_RETURN_NONE )
 
 	function = n
 end function

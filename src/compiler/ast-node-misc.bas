@@ -799,6 +799,7 @@ dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
 	( /' @"AST_OP_LE"              , '/ @"<="           /' , 0 '/ ), _
 	( /' @"AST_OP_IS"              , '/ @"IS"           /' , 0 '/ ), _
 	( /' @"AST_OP_NOT"             , '/ @"NOT"          /' , 0 '/ ), _
+	( /' @"AST_OP_BOOLNOT"         , '/ @"BOOLNOT"      /' , 0 '/ ), _
 	( /' @"AST_OP_PLUS"            , '/ @"+"            /' , 0 '/ ), _
 	( /' @"AST_OP_NEG"             , '/ @"NEG"          /' , 0 '/ ), _
 	( /' @"AST_OP_HADD"            , '/ @"HADD"         /' , 0 '/ ), _
@@ -927,7 +928,14 @@ private function hAstNodeToStr _
 
 	select case as const n->class
 	case AST_NODECLASS_BOP
-		return astDumpOpToStr( n->op.op ) & " =-= " & hSymbToStr( n->op.ex )
+		dim s as zstring * 2 = ""
+		select case n->op.op
+		case AST_OP_EQ, AST_OP_NE, AST_OP_LT, AST_OP_GT, AST_OP_LE, AST_OP_GE
+			if( (n->op.options and AST_OPOPT_DOINVERSE) <> 0 ) then
+				s = "!"
+			end if
+		end select
+		return s & astDumpOpToStr( n->op.op ) & " =-= " & hSymbToStr( n->op.ex )
 
 	case AST_NODECLASS_UOP
 		return astDumpOpToStr( n->op.op )

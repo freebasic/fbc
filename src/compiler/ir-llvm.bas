@@ -197,7 +197,8 @@ declare sub hEmitBop _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval label as FBSYMBOL ptr _
+		byval label as FBSYMBOL ptr, _
+		byval options as IR_EMITOPT _
 	)
 
 '' globals
@@ -1085,7 +1086,7 @@ private sub hAddOffset _
 		'' can't do self-BOPs on REGs)
 		var vimmoffset = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, ofs )
 		var vnewoffset = irhlAllocVreg( FB_DATATYPE_INTEGER, NULL )
-		hEmitBop( AST_OP_ADD, voffset, vimmoffset, vnewoffset, NULL )
+		hEmitBop( AST_OP_ADD, voffset, vimmoffset, vnewoffset, NULL, IR_EMITOPT_NONE )
 		voffset = vnewoffset
 	end if
 
@@ -1407,17 +1408,41 @@ private function hGetBopCode _
 	case AST_OP_XOR
 		function = @"xor"
 	case AST_OP_EQ
-		function = @"icmp eq"
+		if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
+			function = @"fcmp oeq"
+		else
+			function = @"icmp eq"
+		end if
 	case AST_OP_NE
-		function = @"icmp ne"
+		if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
+			function = @"fcmp one"
+		else
+			function = @"icmp ne"
+		end if
 	case AST_OP_GT
-		function = @"icmp sgt"
+		if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
+			function = @"fcmp ogt"
+		else
+			function = @"icmp sgt"
+		end if
 	case AST_OP_LT
-		function = @"icmp slt"
+		if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
+			function = @"fcmp olt"
+		else
+			function = @"icmp slt"
+		end if
 	case AST_OP_GE
-		function = @"icmp sge"
+		if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
+			function = @"fcmp oge"
+		else
+			function = @"icmp sge"
+		end if
 	case AST_OP_LE
-		function = @"icmp sle"
+		if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
+			function = @"fcmp ole"
+		else
+			function = @"icmp sle"
+		end if
 	case AST_OP_EQV
 		'' TODO: vr = not (v1 xor v2)
 		function = @"eqv"
@@ -1436,13 +1461,20 @@ private sub hLoadOperandsAndWriteBop _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval subtype as FBSYMBOL ptr, _
+		byval options as IR_EMITOPT _
 	)
 
 	hLoadVreg( v1 )
 	hLoadVreg( v2 )
 	_setVregDataType( v1, dtype, subtype )
 	_setVregDataType( v2, dtype, subtype )
+
+	'' !!!TODO!!! Comparisons with NaN not tested
+
+	if( (options and IR_EMITOPT_REL_DOINVERSE) <> 0 ) then
+		op = astGetInverseLogOp( op )
+	end if
 
 	var ln = hVregToStr( vr )
 	ln += " = "
@@ -1463,7 +1495,8 @@ private sub hEmitBop _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval label as FBSYMBOL ptr _
+		byval label as FBSYMBOL ptr, _
+		byval options as IR_EMITOPT _
 	)
 
 	'' Conditional branch?
@@ -1472,7 +1505,7 @@ private sub hEmitBop _
 		vr = irhlAllocVreg( FB_DATATYPE_INTEGER, NULL )
 
 		'' condition = comparison expression
-		hLoadOperandsAndWriteBop( op, v1, v2, vr, v1->dtype, v1->subtype )
+		hLoadOperandsAndWriteBop( op, v1, v2, vr, v1->dtype, v1->subtype, options )
 
 		'' The conditional branch in LLVM always needs both
 		'' true and false labels, to keep the proper basic
@@ -1511,7 +1544,7 @@ private sub hEmitBop _
 		v1orig = *v1
 	end if
 
-	hLoadOperandsAndWriteBop( op, v1, v2, vr, vr->dtype, vr->subtype )
+	hLoadOperandsAndWriteBop( op, v1, v2, vr, vr->dtype, vr->subtype, options )
 
 	'' LLVM comparison ops return i1, but we usually want i32,
 	'' so do an sign-extending cast (i1 -1 to i32 -1).
@@ -1538,7 +1571,8 @@ private sub _emitBop _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval label as FBSYMBOL ptr _
+		byval label as FBSYMBOL ptr, _
+		byval options as IR_EMITOPT _
 	)
 
 	var bopdump = vregPretty( v1 ) + " " + astDumpOpToStr( op ) + " " + vregPretty( v2 )
@@ -1550,7 +1584,7 @@ private sub _emitBop _
 		hAstCommand( "bop " + bopdump )
 	end if
 
-	hEmitBop( op, v1, v2, vr, label )
+	hEmitBop( op, v1, v2, vr, label, options )
 
 end sub
 
@@ -1645,7 +1679,7 @@ private sub _emitUop _
 		end if
 
 		var zero = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, 0 )
-		hEmitBop( AST_OP_SUB, zero, v1, vr, NULL )
+		hEmitBop( AST_OP_SUB, zero, v1, vr, NULL, IR_EMITOPT_NONE )
 
 		if( isself ) then
 			hEmitStore( @v1orig, vr )
@@ -1657,7 +1691,7 @@ private sub _emitUop _
 		'' Just pass on as BOP. Works even for self-UOPs, as v1 will be
 		'' the lhs of the self-BOP as expected by hEmitBop().
 		var minusone = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, -1 )
-		hEmitBop( AST_OP_XOR, v1, minusone, vr, NULL )
+		hEmitBop( AST_OP_XOR, v1, minusone, vr, NULL, IR_EMITOPT_NONE )
 
 	case else
 		hBuiltInUop( op, v1, vr )

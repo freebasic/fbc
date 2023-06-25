@@ -1,10 +1,16 @@
 Version 1.20.0
 
 [changed]
+- internal: changes to all backends gcc/llvm/gas64/gas/gas+SSE for floating point comparison handling
+- allow '-fpmode fast' command line option for any target (previously was SSE only) - this can be used augment floating point handling where some accuracy is sacrificed for smaller and faster code generation
+- CBOOL(float-expression) returns false if and only if float-expression is zero (0), otherwise returns true (including NaN's)
+- if (float-expression) then .. equivalent to if cbool(float-expression) ... 
 
 [added]
 
 [fixed]
+- github #410: give consistent floating point comparisons results involving NaNs.
+- consistent handling for float comparisons involving NaN's.  gcc/gas64/gas/gas+SSE (LLVM not-tested) - this includes IF expr then, IIF(), CBOOL, result = (a rel-op b), etc.
 
 
 Version 1.10.1
