@@ -1526,29 +1526,6 @@ end sub
 '' relational
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-enum CMPF_OP
-	CMPF_OP_EQ = 0
-	CMPF_OP_NE
-	CMPF_OP_GT
-	CMPF_OP_LT
-	CMPF_OP_GE
-	CMPF_OP_LE
-
-	CMPF_OP_COUNT
-end enum
-
-type CMPF_RECIPE
-	op as CMPF_OP
-	mnemonic as zstring ptr
-	rev_mnemonic as zstring ptr
-	msk_mnemonic as zstring ptr
-	mask as zstring ptr
-	parity_false as integer
-	parity_true as integer
-	swapregs as integer
-	swapinit as integer
-end type
-
 private function hCMPF_get_recipe _
 	( _
 		byval op as CMPF_OP, _
@@ -1679,179 +1656,14 @@ private sub hCMPF_SSE _
 		end if
 	end if
 
-	'' !!!TODO!!! refactor because from here down is a copy/paste of emit_x86.bas:hCMPF()
-
 	'' no result to be set? just branch
 	if( rvreg = NULL ) then
-		if( recipe->parity_false ) then
-			hBRANCH( "jp", lname )
-		elseif( recipe->parity_true ) then
-			isnanlabel = *symbUniqueLabel( )
-			hBRANCH( "jp", isnanlabel )
-		end if
-
-		if( len( *recipe->msk_mnemonic ) > 0 ) then
-			'' !!!TODO!!! - test use of *recipe->msk_mnemonic
-			ostr = "j" + *recipe->mnemonic
-		else
-			ostr = "j" + *recipe->mnemonic
-		end if
-		hBRANCH( ostr, lname )
-
-		if( recipe->parity_true ) then
-			hLabel( isnanlabel )
-		end if
-
+		hCMPF_jxx( recipe, lname )
 		exit sub
 	end if
-
-	hPrepOperand( rvreg, rname )
-
-	'' can it be optimized?
-	''
-	'' The parity checks are possible using SETP|NP + SETxx but we need
-	'' two free byte registers
-	''
-	'' WHEN ( env.clopt.fpmode <> FB_FPMODE_FAST )
-	''
-	''     SETNP DH                 SETP  DH
-	''     SETxx DL                 SETxx DL
-	''     AND   DL, DH             OR    DL, DH
-	''
-	if( (env.clopt.cputype >= FB_CPUTYPE_486) ) then
-		rname8 = *hGetRegName( FB_DATATYPE_BYTE, rvreg->reg )
-
-		'' handle EDI and ESI
-		if( (rvreg->reg = EMIT_REG_ESI) or (rvreg->reg = EMIT_REG_EDI) or _
-		    (recipe->parity_true or recipe->parity_false) ) then
-
-			'' !!!TODO!!! - use high register of 'rname' instead of
-			'' finding a free register (like above)
-			const rname8lo = "dl"
-			const rname8hi = "dh"
-
-			'' no implementation currently exists for parity + swapinit
-			assert( iif( recipe->parity_false, recipe->swapinit=FALSE, TRUE ) )
-			assert( iif( recipe->parity_true , recipe->swapinit=FALSE, TRUE ) )
-
-			isedxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EDX )
-			if( rvreg->reg <> EMIT_REG_EDX ) then
-				if( isedxfree = FALSE ) then
-					ostr = "xchg edx, " + rname
-					outp ostr
-				end if
-			end if
-
-			if( env.clopt.fpmode <> FB_FPMODE_FAST ) then
-				if( recipe->parity_false ) then
-					ostr = "setp" + (TABCHAR + rname8hi)
-					outp ostr
-				elseif( recipe->parity_true ) then
-					ostr = "setnp" + (TABCHAR + rname8hi)
-					outp ostr
-				end if
-			end if
-
-			ostr = "set" + *recipe->mnemonic + (TABCHAR + rname8lo)
-			outp ostr
-
-			if( env.clopt.fpmode <> FB_FPMODE_FAST ) then
-				if( recipe->parity_false ) then
-					if( recipe->swapinit ) then
-						ostr = "and " + rname8lo + ", " + rname8hi
-					else
-						ostr = "or " + rname8lo + ", " + rname8hi
-					end if
-					outp ostr
-				elseif( recipe->parity_true ) then
-					if( recipe->swapinit ) then
-						ostr = "or " + rname8lo + ", " + rname8hi
-					else
-						ostr = "and " + rname8lo + ", " + rname8hi
-					end if
-					outp ostr
-				end if
-			end if
-
-			if( rvreg->reg <> EMIT_REG_EDX ) then
-				if( isedxfree = FALSE ) then
-					ostr = "xchg edx, " + rname
-					outp ostr
-				else
-					hMOV rname, "edx"
-				end if
-			end if
-		else
-			if( recipe->swapinit ) then
-				assert( len( *recipe->rev_mnemonic ) > 0 )
-				ostr = "set" + *recipe->rev_mnemonic + (TABCHAR + rname8)
-				outp ostr
-			else
-				assert( len( *recipe->mnemonic ) > 0 )
-				ostr = "set" + *recipe->mnemonic + " " + rname8
-				outp ostr
-			end if
-		end if
-
-		if( rvreg->dtype <> FB_DATATYPE_BOOLEAN ) then
-			'' convert 1 to -1 (TRUE in QB/FB)
-			ostr = "shr " + rname + ", 1"
-			outp ostr
-
-			ostr = "sbb " + rname + COMMA + rname
-			outp ostr
-		end if
-
-	'' set boolean using conditional jump
-	else
-		'' !!!TODO!!! - optimize for env.clopt.fpmode=FB_FPUMODE_FAST
-		'' if we don't care about precision (NaN's) then we should ignore
-		'' swapinit=TRUE and instead use the reverse instruction.
-
-		if( recipe->swapinit ) then
-			ostr = "mov " + rname + ", 0"
-			outp ostr
-		else
-			if( rvreg->dtype = FB_DATATYPE_BOOLEAN ) then
-				ostr = "mov " + rname + ", 1"
-			else
-				ostr = "mov " + rname + ", -1"
-			end if
-			outp ostr
-		end if
-
-		if( env.clopt.fpmode = FB_FPMODE_PRECISE ) then
-			if( recipe->parity_false ) then
-				hBRANCH( "jp", lname )
-			elseif( recipe->parity_true ) then
-				isnanlabel = *symbUniqueLabel( )
-				hBRANCH( "jp", isnanlabel )
-			end if
-		end if
-
-		ostr = "j" + *recipe->mnemonic
-		hBRANCH( ostr, lname )
-
-		if( env.clopt.fpmode = FB_FPMODE_PRECISE ) then
-			if( recipe->parity_true ) then
-				hLabel( isnanlabel )
-			end if
-		end if
-
-		if( recipe->swapinit ) then
-			if( rvreg->dtype = FB_DATATYPE_BOOLEAN ) then
-				ostr = "mov " + rname + ", 1"
-			else
-				ostr = "mov " + rname + ", -1"
-			end if
-			outp ostr
-		else
-			ostr = "xor " + rname + COMMA + rname
-			outp ostr
-		end if
-
-		hLabel( lname )
-	end if
+	
+	'' set result
+	hCMPF_set( rvreg, recipe, lname )
 
 end sub
 

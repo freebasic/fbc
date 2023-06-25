@@ -4399,234 +4399,46 @@ private sub hCMPI _
 
 end sub
 
-enum CMPF_OP
-	CMPF_OP_EQ = 0
-	CMPF_OP_NE
-	CMPF_OP_GT
-	CMPF_OP_LT
-	CMPF_OP_GE
-	CMPF_OP_LE
+'' used by emit_SSE.bas
 
-	CMPF_OP_COUNT
-end enum
-
-type CMPF_RECIPE
-	op as CMPF_OP
-	mnemonic as zstring ptr             '' 'normal' comparison to use
-	rev_mnemonic as zstring ptr         '' swapped comparison
-	msk_mnemonic as zstring ptr
-	mask as zstring ptr
-	parity_false as integer
-	parity_true as integer
-	swapregs as integer
-	swapinit as integer
-end type
-
-private function hCMPF_get_recipe _
+sub hCMPF_jxx _
 	( _
-		byval op as CMPF_OP, _
-		byval options as IR_EMITOPT, _
-		byval label as FBSYMBOL ptr _
-	) as CMPF_RECIPE ptr
-
-	assert( op >= 0 and op <= CMPF_OP_COUNT )
-
-	'' !!!TODO!!! - mask is a carry over from older versions - not tested
-
-	static recipe( 0 to 23 ) as CMPF_RECIPE = _
-		{ _
-			/' op          x86    rev    msk                  parity parity swap   swap '/ _
-			/' op          Jcc    Jcc    Jcc    mask          false  true   regs   init '/ _
-			/' Result = ( a op b ) '/ _
-			( CMPF_OP_EQ, @"e" , @""  , @""  , @""          , FALSE, TRUE , FALSE, FALSE ), _
-			( CMPF_OP_NE, @"ne", @""  , @""  , @""          , TRUE , FALSE, FALSE, FALSE ), _
-			( CMPF_OP_GT, @"a" , @""  , @""  , @""          , FALSE, FALSE, FALSE, FALSE ), _
-			( CMPF_OP_LT, @"a" , @""  , @""  , @""          , FALSE, FALSE, TRUE , FALSE ), _
-			( CMPF_OP_GE, @"ae", @""  , @""  , @""          , FALSE, FALSE, FALSE, FALSE ), _
-			( CMPF_OP_LE, @"ae", @""  , @""  , @""          , FALSE, FALSE, TRUE , FALSE ), _
-			/' Result = !( a op b ) '/ _
-			( CMPF_OP_EQ, @"ne", @""  , @""  , @""          , TRUE , FALSE, FALSE, FALSE ), _
-			( CMPF_OP_NE, @"e" , @""  , @""  , @""          , FALSE, TRUE , FALSE, FALSE ), _
-			( CMPF_OP_GT, @"a" , @"be", @""  , @""          , FALSE, FALSE, FALSE, TRUE  ), _
-			( CMPF_OP_LT, @"a" , @"be", @""  , @""          , FALSE, FALSE, TRUE , TRUE  ), _
-			( CMPF_OP_GE, @"ae", @"b" , @""  , @""          , FALSE, FALSE, FALSE, TRUE  ), _
-			( CMPF_OP_LE, @"ae", @"b" , @""  , @""          , FALSE, FALSE, TRUE , TRUE  ), _
-			/' if !( a op b ) then goto exit label '/ _
-			( CMPF_OP_EQ, @"e" , @""  , @""  , @""          , FALSE, TRUE , FALSE, FALSE ), _
-			( CMPF_OP_NE, @"ne", @""  , @""  , @""          , TRUE , FALSE, FALSE, FALSE ), _
-			( CMPF_OP_GT, @"a" , @""  , @""  , @""          , FALSE, FALSE, FALSE, FALSE ), _
-			( CMPF_OP_LT, @"a" , @""  , @""  , @""          , FALSE, FALSE, TRUE , FALSE ), _
-			( CMPF_OP_GE, @"ae", @""  , @""  , @""          , FALSE, FALSE, FALSE, FALSE ), _
-			( CMPF_OP_LE, @"ae", @""  , @""  , @""          , FALSE, FALSE, TRUE , FALSE ), _
-			/' if ( a op b ) then goto exit label '/ _
-			( CMPF_OP_EQ, @"ne", @""  , @"nz", @"0b01000000", TRUE , FALSE, FALSE, FALSE ), _
-			( CMPF_OP_NE, @"e" , @""  , @"z" , @"0b01000000", FALSE, TRUE , FALSE, FALSE ), _
-			( CMPF_OP_GT, @"be", @""  , @"z" , @"0b01000001", FALSE, FALSE, FALSE, FALSE ), _
-			( CMPF_OP_LT, @"be", @""  , @"nz", @"0b00000001", FALSE, FALSE, TRUE , FALSE ), _
-			( CMPF_OP_GE, @"b" , @""  , @""  , @""          , FALSE, FALSE, FALSE, FALSE ), _
-			( CMPF_OP_LE, @"b" , @""  , @"nz", @"0b01000001", FALSE, FALSE, TRUE , FALSE ) _
-		}
-
-	dim index as integer = op
-	if( label ) then
-		index += 12
-	end if
-	if( (options and IR_EMITOPT_REL_DOINVERSE) <> 0 ) then
-		index += 6
-	end if
-
-	return @recipe(index)
-end function
-
-'':::::
-private sub hCMPF _
-	( _
-		byval rvreg as IRVREG ptr, _
-		byval label as FBSYMBOL ptr, _
-		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr, _
-		byval recipe as CMPF_RECIPE ptr _
+		byval recipe as CMPF_RECIPE ptr, _
+		byref lname as string _
 	) static
 
-	dim as string rname, rname8, dst, src, ostr, lname, isnanlabel
+	dim as string ostr, isnanlabel
+
+	if( recipe->parity_false ) then
+		hBRANCH( "jp", lname )
+	elseif( recipe->parity_true ) then
+		isnanlabel = *symbUniqueLabel( )
+		hBRANCH( "jp", isnanlabel )
+	end if
+
+	if( len( *recipe->msk_mnemonic ) > 0 ) then
+		'' !!!TODO!!! - test use of *recipe->msk_mnemonic
+		ostr = "j" + *recipe->mnemonic
+	else
+		ostr = "j" + *recipe->mnemonic
+	end if
+	hBRANCH( ostr, lname )
+
+	if( recipe->parity_true ) then
+		hLabel( isnanlabel )
+	end if
+
+end sub
+
+sub hCMPF_set _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval recipe as CMPF_RECIPE ptr, _
+		byref lname as string _
+	) static
+
+	dim as string rname, rname8, ostr, isnanlabel
 	dim as integer iseaxfree, isedxfree
-
-	hPrepOperand( dvreg, dst )
-	hPrepOperand( svreg, src )
-
-	if( label = NULL ) then
-		lname = *symbUniqueLabel( )
-	else
-		lname = *symbGetMangledName( label )
-	end if
-
-	/'
-		Comparison Results*     C3  C2  C0
-		----------------------------------
-		ST0 > ST(i)             0   0   0
-		ST0 < ST(i)             0   0   1
-		ST0 = ST(i)             1   0   0
-		Unordered               1   1   1
-
-		FPU STATUS:    x 3 x x x 2 1 0
-
-		Bit   Label    Desciption
-		---------------------------
-		8      C0     Condition Codes
-		9      C1     Condition Codes
-		10     C2     Condition Codes
-		14     C3     Condition Codes
-
-		EFLAGS:        x Z x x x P x C
-
-		Bit   Label    Desciption
-		---------------------------
-		0      CF      Carry flag
-		2      PF      Parity flag
-		6      ZF      Zero flag
-
-		Test           Z   C   Jcc   Notes
-		-------------------------------------------------------------------
-		ST0 < ST(i)    X   1   JB    ZF will never be set when CF = 1
-		ST0 <= ST(i)   1   1   JBE   Either ZF or CF is ok
-		ST0 == ST(i)   1   X   JE    CF will never be set in this case
-		ST0 != ST(i)   0   X   JNE   CF will never be set in this case
-		ST0 >= ST(i)   X   0   JAE   Only CF must be clear
-		ST0 > ST(i)    0   0   JA    Both CF and ZF must be clear
-	'/
-
-	'' !!!TODO!!! - optimize swapregs=TRUE and env.clopt.fpmode=FB_FPMODE_FAST
-	'' if we don't care about precision (with NaN's) then we could avoid
-	'' exchanging registers by using the inverse Jcc/Setcc instructions
-	'' But this is complicated enough, ...
-
-	'' do comp
-	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
-
-		'' use instructions to directly set CF, PF, ZF
-		if( svreg->typ = IR_VREGTYPE_REG ) then
-			if( recipe->swapregs ) then
-				outp "fxch"
-			end if
-			outp "fcomip"
-		else
-			ostr = "fld "+src
-			outp ostr
-			if( recipe->swapregs = FALSE ) then
-				outp "fxch"
-			end if
-			outp "fcomip"
-		end if
-		outp "fstp st(0)"
-
-	else
-		if( svreg->typ = IR_VREGTYPE_REG ) then
-			if( recipe->swapregs ) then
-				outp "fxch"
-			end if
-			outp "fcompp"
-		else
-			if( recipe->swapregs ) then
-				ostr = "fld " + src
-				outp ostr
-				outp "fcompp"
-			else
-				ostr = "fcomp " + src
-				outp ostr
-			end if
-		end if
-
-		iseaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
-		if( rvreg <> NULL ) then
-			iseaxfree = (rvreg->reg = EMIT_REG_EAX)
-		end if
-
-		if( iseaxfree = FALSE ) then
-			hPUSH( "eax" )
-		end if
-
-		'' load fpu flags
-		outp "fnstsw ax"
-
-'' !!!TODO!!! testing float comparison with 'mask' not tested
-#if 1
-		outp "sahf"
-#else
-		if( len( *recipe->mask ) > 0 ) then
-			ostr = "test ah, " + *recipe->mask
-			outp ostr
-		else
-			outp "sahf"
-		end if
-#endif
-		if( iseaxfree = FALSE ) then
-			hPOP( "eax" )
-		end if
-	end if
-
-	'' no result to be set? just branch
-	if( rvreg = NULL ) then
-		if( recipe->parity_false ) then
-			hBRANCH( "jp", lname )
-		elseif( recipe->parity_true ) then
-			isnanlabel = *symbUniqueLabel( )
-			hBRANCH( "jp", isnanlabel )
-		end if
-
-		if( len( *recipe->msk_mnemonic ) > 0 ) then
-			'' !!!TODO!!! - test use of *recipe->msk_mnemonic
-			ostr = "j" + *recipe->mnemonic
-		else
-			ostr = "j" + *recipe->mnemonic
-		end if
-		hBRANCH( ostr, lname )
-
-		if( recipe->parity_true ) then
-			hLabel( isnanlabel )
-		end if
-
-		exit sub
-	end if
 
 	hPrepOperand( rvreg, rname )
 
@@ -4775,6 +4587,199 @@ private sub hCMPF _
 
 		hLabel( lname )
 	end if
+
+end sub
+
+private function hCMPF_get_recipe _
+	( _
+		byval op as CMPF_OP, _
+		byval options as IR_EMITOPT, _
+		byval label as FBSYMBOL ptr _
+	) as CMPF_RECIPE ptr
+
+	assert( op >= 0 and op <= CMPF_OP_COUNT )
+
+	'' !!!TODO!!! - mask is a carry over from older versions - not tested
+
+	static recipe( 0 to 23 ) as CMPF_RECIPE = _
+		{ _
+			/' op          x86    rev    msk                  parity parity swap   swap '/ _
+			/' op          Jcc    Jcc    Jcc    mask          false  true   regs   init '/ _
+			/' Result = ( a op b ) '/ _
+			( CMPF_OP_EQ, @"e" , @""  , @""  , @""          , FALSE, TRUE , FALSE, FALSE ), _
+			( CMPF_OP_NE, @"ne", @""  , @""  , @""          , TRUE , FALSE, FALSE, FALSE ), _
+			( CMPF_OP_GT, @"a" , @""  , @""  , @""          , FALSE, FALSE, FALSE, FALSE ), _
+			( CMPF_OP_LT, @"a" , @""  , @""  , @""          , FALSE, FALSE, TRUE , FALSE ), _
+			( CMPF_OP_GE, @"ae", @""  , @""  , @""          , FALSE, FALSE, FALSE, FALSE ), _
+			( CMPF_OP_LE, @"ae", @""  , @""  , @""          , FALSE, FALSE, TRUE , FALSE ), _
+			/' Result = !( a op b ) '/ _
+			( CMPF_OP_EQ, @"ne", @""  , @""  , @""          , TRUE , FALSE, FALSE, FALSE ), _
+			( CMPF_OP_NE, @"e" , @""  , @""  , @""          , FALSE, TRUE , FALSE, FALSE ), _
+			( CMPF_OP_GT, @"a" , @"be", @""  , @""          , FALSE, FALSE, FALSE, TRUE  ), _
+			( CMPF_OP_LT, @"a" , @"be", @""  , @""          , FALSE, FALSE, TRUE , TRUE  ), _
+			( CMPF_OP_GE, @"ae", @"b" , @""  , @""          , FALSE, FALSE, FALSE, TRUE  ), _
+			( CMPF_OP_LE, @"ae", @"b" , @""  , @""          , FALSE, FALSE, TRUE , TRUE  ), _
+			/' if !( a op b ) then goto exit label '/ _
+			( CMPF_OP_EQ, @"e" , @""  , @""  , @""          , FALSE, TRUE , FALSE, FALSE ), _
+			( CMPF_OP_NE, @"ne", @""  , @""  , @""          , TRUE , FALSE, FALSE, FALSE ), _
+			( CMPF_OP_GT, @"a" , @""  , @""  , @""          , FALSE, FALSE, FALSE, FALSE ), _
+			( CMPF_OP_LT, @"a" , @""  , @""  , @""          , FALSE, FALSE, TRUE , FALSE ), _
+			( CMPF_OP_GE, @"ae", @""  , @""  , @""          , FALSE, FALSE, FALSE, FALSE ), _
+			( CMPF_OP_LE, @"ae", @""  , @""  , @""          , FALSE, FALSE, TRUE , FALSE ), _
+			/' if ( a op b ) then goto exit label '/ _
+			( CMPF_OP_EQ, @"ne", @""  , @"nz", @"0b01000000", TRUE , FALSE, FALSE, FALSE ), _
+			( CMPF_OP_NE, @"e" , @""  , @"z" , @"0b01000000", FALSE, TRUE , FALSE, FALSE ), _
+			( CMPF_OP_GT, @"be", @""  , @"z" , @"0b01000001", FALSE, FALSE, FALSE, FALSE ), _
+			( CMPF_OP_LT, @"be", @""  , @"nz", @"0b00000001", FALSE, FALSE, TRUE , FALSE ), _
+			( CMPF_OP_GE, @"b" , @""  , @""  , @""          , FALSE, FALSE, FALSE, FALSE ), _
+			( CMPF_OP_LE, @"b" , @""  , @"nz", @"0b01000001", FALSE, FALSE, TRUE , FALSE ) _
+		}
+
+	dim index as integer = op
+	if( label ) then
+		index += 12
+	end if
+	if( (options and IR_EMITOPT_REL_DOINVERSE) <> 0 ) then
+		index += 6
+	end if
+
+	return @recipe(index)
+end function
+
+'':::::
+private sub hCMPF _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr, _
+		byval recipe as CMPF_RECIPE ptr _
+	) static
+
+	dim as string dst, src, ostr, lname
+	dim as integer iseaxfree
+
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
+
+	if( label = NULL ) then
+		lname = *symbUniqueLabel( )
+	else
+		lname = *symbGetMangledName( label )
+	end if
+
+	/'
+		Comparison Results*     C3  C2  C0
+		----------------------------------
+		ST0 > ST(i)             0   0   0
+		ST0 < ST(i)             0   0   1
+		ST0 = ST(i)             1   0   0
+		Unordered               1   1   1
+
+		FPU STATUS:    x 3 x x x 2 1 0
+
+		Bit   Label    Desciption
+		---------------------------
+		8      C0     Condition Codes
+		9      C1     Condition Codes
+		10     C2     Condition Codes
+		14     C3     Condition Codes
+
+		EFLAGS:        x Z x x x P x C
+
+		Bit   Label    Desciption
+		---------------------------
+		0      CF      Carry flag
+		2      PF      Parity flag
+		6      ZF      Zero flag
+
+		Test           Z   C   Jcc   Notes
+		-------------------------------------------------------------------
+		ST0 < ST(i)    X   1   JB    ZF will never be set when CF = 1
+		ST0 <= ST(i)   1   1   JBE   Either ZF or CF is ok
+		ST0 == ST(i)   1   X   JE    CF will never be set in this case
+		ST0 != ST(i)   0   X   JNE   CF will never be set in this case
+		ST0 >= ST(i)   X   0   JAE   Only CF must be clear
+		ST0 > ST(i)    0   0   JA    Both CF and ZF must be clear
+	'/
+
+	'' !!!TODO!!! - optimize swapregs=TRUE and env.clopt.fpmode=FB_FPMODE_FAST
+	'' if we don't care about precision (with NaN's) then we could avoid
+	'' exchanging registers by using the inverse Jcc/Setcc instructions
+	'' But this is complicated enough, ...
+
+	'' do comp
+	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
+
+		'' use instructions to directly set CF, PF, ZF
+		if( svreg->typ = IR_VREGTYPE_REG ) then
+			if( recipe->swapregs ) then
+				outp "fxch"
+			end if
+			outp "fcomip"
+		else
+			ostr = "fld "+src
+			outp ostr
+			if( recipe->swapregs = FALSE ) then
+				outp "fxch"
+			end if
+			outp "fcomip"
+		end if
+		outp "fstp st(0)"
+
+	else
+		if( svreg->typ = IR_VREGTYPE_REG ) then
+			if( recipe->swapregs ) then
+				outp "fxch"
+			end if
+			outp "fcompp"
+		else
+			if( recipe->swapregs ) then
+				ostr = "fld " + src
+				outp ostr
+				outp "fcompp"
+			else
+				ostr = "fcomp " + src
+				outp ostr
+			end if
+		end if
+
+		iseaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
+		if( rvreg <> NULL ) then
+			iseaxfree = (rvreg->reg = EMIT_REG_EAX)
+		end if
+
+		if( iseaxfree = FALSE ) then
+			hPUSH( "eax" )
+		end if
+
+		'' load fpu flags
+		outp "fnstsw ax"
+
+'' !!!TODO!!! testing float comparison with 'mask' not tested
+#if 1
+		outp "sahf"
+#else
+		if( len( *recipe->mask ) > 0 ) then
+			ostr = "test ah, " + *recipe->mask
+			outp ostr
+		else
+			outp "sahf"
+		end if
+#endif
+		if( iseaxfree = FALSE ) then
+			hPOP( "eax" )
+		end if
+	end if
+
+	'' no result to be set? just branch
+	if( rvreg = NULL ) then
+		hCMPF_jxx( recipe, lname )
+		exit sub
+	end if
+	
+	'' set result
+	hCMPF_set( rvreg, recipe, lname )
 
 end sub
 
