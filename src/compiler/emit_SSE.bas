@@ -14,6 +14,7 @@
 #include once "emit-private.bi"
 
 dim shared _emitLOADB2F_x86 as sub( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+dim shared _emitLOADF2B_x86 as sub( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 
 private sub hULONG2DBL _
 	( _
@@ -68,6 +69,54 @@ private sub _emitLOADB2F_SSE( byval dvreg as IRVREG ptr, byval svreg as IRVREG p
 
 end sub
 
+private sub hMoveSSEREGToFPUSTACK _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr _
+	)
+
+	dim as string src
+	dim as integer sdsize
+
+	'' use stack to move from SSE register to FPU STACK
+	'' This is just  to get some cbool(expression) stuff
+	'' working for the test-suite.  It should probably
+	'' have it's own implementation.
+
+	'' load SSE register and push to FPU STACK
+	sdsize = typeGetSize( svreg->dtype )
+	outp "sub esp" + COMMA + str( sdsize )
+
+	hPrepOperand( svreg, src )
+
+	if( sdsize > 4 ) then
+		outp "movlpd qword ptr [esp]" + COMMA + src
+		outp "fld qword ptr [esp]"
+	else
+		outp "movss dword ptr [esp]" + COMMA + src
+		outp "fld dword ptr [esp]"
+	end if
+
+	outp "add esp" + COMMA + str( sdsize )
+
+end sub
+
+private sub _emitLOADF2B_SSE( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+
+	ASSERT_PROC_DECL( EMIT_BOPCB )
+
+	if( svreg->regFamily = IR_REG_SSE ) then
+		if( svreg->typ = IR_VREGTYPE_REG ) then
+			hMoveSSEREGToFPUSTACK( dvreg, svreg )
+		end if
+	end if
+
+	'' let x86 LOADF2B handle it from the FPU STACK to destine
+	_emitLOADF2B_x86( dvreg, svreg )
+
+end sub
+
+
 '':::::
 private sub _emitSTORF2L_SSE _
 	( _
@@ -77,37 +126,19 @@ private sub _emitSTORF2L_SSE _
 
 	ASSERT_PROC_DECL( EMIT_BOPCB )
 
-	dim as string dst, src
-	dim as integer sdsize
+	dim as string dst
 
 	'' signed?
 	if( typeIsSigned( dvreg->dtype ) = 0) then exit sub
 
 	if( svreg->regFamily = IR_REG_SSE ) then
-
-		sdsize = typeGetSize( svreg->dtype )
-		outp "sub esp" + COMMA + str( sdsize )
-
-		hPrepOperand( svreg, src )
-
-		if( sdsize > 4 ) then
-			outp "movlpd qword ptr [esp]" + COMMA + src
-			outp "fld qword ptr [esp]"
-		else
-			outp "movss dword ptr [esp]" + COMMA + src
-			outp "fld dword ptr [esp]"
-		end if
-
-		outp "add esp" + COMMA + str( sdsize )
+		hMoveSSEREGToFPUSTACK( dvreg, svreg )
 	end if
 
 	hPrepOperand( dvreg, dst )
-
 	outp "fistp " + dst
 
 end sub
-
-
 
 '':::::
 private sub _emitSTORF2I_SSE _
@@ -2971,13 +3002,19 @@ function _init_opFnTB_SSE _
 	) as integer
 
 	'' load
-	_emitLOADB2F_x86 = _opFnTB_SSE[EMIT_OP_LOADB2F]
+	if( _emitLOADB2F_x86 = NULL ) then
+		_emitLOADB2F_x86 = _opFnTB_SSE[EMIT_OP_LOADB2F]
+	end if
+	if( _emitLOADF2B_x86 = NULL ) then
+		_emitLOADF2B_x86 = _opFnTB_SSE[EMIT_OP_LOADF2B]
+	end if
 	_opFnTB_SSE[EMIT_OP_LOADF2I] = EMIT_CBENTRY(LOADF2I_SSE)
 	_opFnTB_SSE[EMIT_OP_LOADI2F] = EMIT_CBENTRY(LOADI2F_SSE)
 	_opFnTB_SSE[EMIT_OP_LOADF2L] = EMIT_CBENTRY(LOADF2L_SSE)
 	_opFnTB_SSE[EMIT_OP_LOADL2F] = EMIT_CBENTRY(LOADL2F_SSE)
 	_opFnTB_SSE[EMIT_OP_LOADF2F] = EMIT_CBENTRY(LOADF2F_SSE)
 	_opFnTB_SSE[EMIT_OP_LOADB2F] = EMIT_CBENTRY(LOADB2F_SSE)
+	_opFnTB_SSE[EMIT_OP_LOADF2B] = EMIT_CBENTRY(LOADF2B_SSE)
 
 	'' store
 	_opFnTB_SSE[EMIT_OP_STORF2I] = EMIT_CBENTRY(STORF2I_SSE)

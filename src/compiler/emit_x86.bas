@@ -6733,21 +6733,27 @@ private sub _emitLOADF2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
 		outp "fldz"
 		outp "fcomip"
-		outp "setnz al"
-
 	else
 		outp "ftst"
 		outp "fnstsw ax"
 
-		#if 1
 		outp "sahf"
+	end if
+
+	if( env.clopt.fpmode = FB_FPMODE_FAST ) then
 		outp "setnz al"
-		#else
+	else
+		outp "setp ah"
+		outp "setnz al"
+		outp "or al, ah"
+	end if
+
+	#if 0
+		'' alternate to sahf above - requires modification to above logic to use
+		'' i.e. don't use sahf
 		outp "test ah, 0b01000000"
 		outp "setz al"
-		#endif
-
-	end if
+	#endif
 
 	outp "fstp st(0)"
 

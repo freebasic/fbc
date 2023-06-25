@@ -60,7 +60,8 @@ enum AST_OP
 	AST_OP_LE
 	AST_OP_IS
 
-	AST_OP_NOT
+	AST_OP_NOT                  '' bitwise NOT
+	AST_OP_BOOLNOT              '' logical NOT, used internally in gcc backend
 	AST_OP_PLUS
 	AST_OP_NEG
 
