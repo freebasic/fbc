@@ -3156,6 +3156,7 @@ private sub bop_float( _
 	)
 
 	dim as string lname1,lname2,movreg,movmem,compreg,immreg,addreg,subreg,mulreg,divreg
+	dim as string source0,source1
 	dim as long vrreg
 	dim as FB_DATATYPE v1dtype
 	dim as zstring ptr jmpcode
@@ -3163,7 +3164,7 @@ private sub bop_float( _
 	if vr<>0 then
 		vrreg=reg_findfree(vr->reg)
 	end if
-	v1dtype=typeGetDtAndPtrOnly( v1->dtype )''2019/10/28 typeGetDtAndPtrOnly adding for const case
+	v1dtype=typeGetDtAndPtrOnly( v1->dtype )
 	if v1dtype=FB_DATATYPE_DOUBLE then
 		movreg="movq ":movmem="movsd ":compreg="ucomisd ":immreg="rax"
 		addreg="addsd ":subreg="subsd ":mulreg="mulsd ":divreg="divsd "
@@ -3174,20 +3175,24 @@ private sub bop_float( _
 
 	if v1->typ=IR_VREGTYPE_REG then
 		asm_code(movreg+"xmm0, "+op1)
+		source0="xmm0"
 	elseif v1->typ=IR_VREGTYPE_IMM then
 		asm_code("mov "+immreg+", "+op1)
 		asm_code(movreg+"xmm0, "+immreg)
+		source0="xmm0"
 	else
-		asm_code(movmem+"xmm0, "+op1)
+		source0=op1
 	end if
 
 	if v2->typ=IR_VREGTYPE_REG then
 		asm_code(movreg+"xmm1, "+op2)
+		source1="xmm1"
 	elseif v2->typ=IR_VREGTYPE_IMM then
 		asm_code("mov "+immreg+", "+op2)
 		asm_code(movreg+"xmm1, "+immreg)
+		source1="xmm1"
 	else
-		asm_code(movmem+"xmm1, "+op2)
+		source1=op2
 	end if
 
 	select case op
@@ -3304,12 +3309,17 @@ private sub bop_float( _
 				end if
 			end if
 
-			'' Do comparison
+			'' Do comparison and before swapping operands if needed
 			if( swapregs ) then
-				asm_code(compreg+"xmm1, xmm0")
-			else
-				asm_code(compreg+"xmm0, xmm1")
+				swap source0,source1
+			End If
+
+			if source0[0]<>asc("x") then
+				'' case in memory
+				asm_code(movmem+"xmm2, "+source0)
+				source0="xmm2"
 			end if
+			asm_code(compreg+source0+", "+source1)
 
 			'' Check for parity flag (if needed),
 			'' disregard if '-fpmode fast' command line option is used
@@ -3343,33 +3353,42 @@ private sub bop_float( _
 				asm_code(lname1+":")
 			end if
 
-		case AST_OP_ADD,AST_OP_SUB,AST_OP_MUL,AST_OP_DIV ''todo optimize xmm1 if memory
-			select case op
-				case AST_OP_ADD
-					asm_code(addreg+"xmm0, xmm1")
-				case AST_OP_SUB
-					asm_code(subreg+"xmm0, xmm1")
-				case AST_OP_MUL
-					asm_code(mulreg+"xmm0, xmm1")
-				case AST_OP_DIV
-					asm_code(divreg+"xmm0, xmm1")
-			end select
-			if vr->dtype=FB_DATATYPE_DOUBLE then
-				if v1dtype=FB_DATATYPE_SINGLE then
-					asm_code("cvtss2sd xmm0, xmm0")
+		case AST_OP_ADD,AST_OP_SUB,AST_OP_MUL,AST_OP_DIV,AST_OP_ATAN2
+			if source0[0]<>asc("x") then
+				asm_code(movmem+"xmm0, "+source0)
+			End If
+
+			if op = AST_OP_ATAN2 then
+				if source1[0]<>asc("x") then
+					asm_code(movmem+"xmm1, "+source1)
+				End If
+				if v1dtype=FB_DATATYPE_DOUBLE then
+					save_call("atan2",vr,vrreg)
+					asm_code("movq "+*regstrq(vrreg)+", xmm0")
+				else
+					save_call("atan2f",vr,vrreg)
+					asm_code("movd "+*regstrq(vrreg)+", xmm0")
 				end if
-				asm_code("movq "+*regstrq(vrreg)+", xmm0")
 			else
-				asm_code("movd "+*regstrd(vrreg)+", xmm0")
-			end if
-			restore_vrreg(vr,vrreg)
-		case AST_OP_ATAN2
-			if v1dtype=FB_DATATYPE_DOUBLE then
-				save_call("atan2",vr,vrreg)
-				asm_code("movq "+*regstrq(vrreg)+", xmm0")
-			else
-				save_call("atan2f",vr,vrreg)
-				asm_code("movd "+*regstrq(vrreg)+", xmm0")
+				select case op
+					case AST_OP_ADD
+						asm_code(addreg+"xmm0, "+source1)
+					case AST_OP_SUB
+						asm_code(subreg+"xmm0, "+source1)
+					case AST_OP_MUL
+						asm_code(mulreg+"xmm0, "+source1)
+					case AST_OP_DIV
+						asm_code(divreg+"xmm0, "+source1)
+				end select
+				if vr->dtype=FB_DATATYPE_DOUBLE then
+					if v1dtype=FB_DATATYPE_SINGLE then
+						asm_code("cvtss2sd xmm0, xmm0")
+					end if
+					asm_code("movq "+*regstrq(vrreg)+", xmm0")
+				else
+					asm_code("movd "+*regstrd(vrreg)+", xmm0")
+				end if
+				restore_vrreg(vr,vrreg)
 			end if
 		case else
 			asm_error("in bop float needs to be coded : "+ *hGetBopCode(op))
