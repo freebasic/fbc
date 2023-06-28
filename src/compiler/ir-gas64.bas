@@ -3211,11 +3211,15 @@ private sub bop_float( _
 					'' Result = ( a op b )
 					select case op
 						case AST_OP_EQ
-							lname2 = *symbUniqueLabel( )
-							parity = "jp "+lname2
+							if( env.clopt.fpmode <> FB_FPMODE_FAST ) then
+								lname2 = *symbUniqueLabel( )
+								parity = "jp "+lname2
+							end if
 							jmpcode=@"je "
 						case AST_OP_NE
-							parity = "jp "+lname1
+							if( env.clopt.fpmode <> FB_FPMODE_FAST ) then
+								parity = "jp "+lname1
+							end if
 							jmpcode=@"jne "
 						case AST_OP_GT
 							jmpcode=@"ja "
@@ -3232,11 +3236,15 @@ private sub bop_float( _
 					'' Result = !( a op b )
 					select case op
 						case AST_OP_EQ
-							parity = "jp "+lname1
+							if( env.clopt.fpmode <> FB_FPMODE_FAST ) then
+								parity = "jp "+lname1
+							end if
 							jmpcode=@"jne "
 						case AST_OP_NE
-							lname2 = *symbUniqueLabel( )
-							parity = "jp "+lname2
+							if( env.clopt.fpmode <> FB_FPMODE_FAST ) then
+								lname2 = *symbUniqueLabel( )
+								parity = "jp "+lname2
+							end if
 							jmpcode=@"je "
 						case AST_OP_GT
 							swapinit = true
@@ -3259,11 +3267,15 @@ private sub bop_float( _
 					'' if !( a op b ) then goto exit_label
 					select case op
 						case AST_OP_EQ
-							parity = "jp "+*symbGetMangledName( label )
+							if( env.clopt.fpmode <> FB_FPMODE_FAST ) then
+								parity = "jp "+*symbGetMangledName( label )
+							end if
 							jmpcode=@"jne "
 						case AST_OP_NE
-							lname2 = *symbUniqueLabel( )
-							parity = "jp "+lname2
+							if( env.clopt.fpmode <> FB_FPMODE_FAST ) then
+								lname2 = *symbUniqueLabel( )
+								parity = "jp "+lname2
+							end if
 							jmpcode=@"je "
 						case AST_OP_GT
 							jmpcode=@"jbe "
@@ -3280,11 +3292,15 @@ private sub bop_float( _
 					'' if ( a op b ) then goto exit_label
 					select case op
 						case AST_OP_EQ
-							lname2 = *symbUniqueLabel( )
-							parity = "jp "+lname2
+							if( env.clopt.fpmode <> FB_FPMODE_FAST ) then
+								lname2 = *symbUniqueLabel( )
+								parity = "jp "+lname2
+							end if
 							jmpcode=@"je "
 						case AST_OP_NE
-							parity = "jp "+*symbGetMangledName( label )
+							if( env.clopt.fpmode <> FB_FPMODE_FAST ) then
+								parity = "jp "+*symbGetMangledName( label )
+							end if
 							jmpcode=@"jne "
 						case AST_OP_GT
 							jmpcode=@"ja "
@@ -3323,10 +3339,8 @@ private sub bop_float( _
 
 			'' Check for parity flag (if needed),
 			'' disregard if '-fpmode fast' command line option is used
-			if( env.clopt.fpmode = FB_FPMODE_PRECISE ) then
-				if( len( parity ) > 0 ) then
-					asm_code( parity )
-				end if
+			if( env.clopt.fpmode <> FB_FPMODE_FAST ) then
+				asm_code( parity )
 			end if
 
 			'' conditionally jump to exit label
@@ -3337,7 +3351,7 @@ private sub bop_float( _
 				reg_mark(label)
 			end if
 
-			'' label when different
+			'' even in case of PRECISE lname2 can be empty
 			if( len(lname2) > 0 ) then
 				asm_code(lname2+":")
 			end if
