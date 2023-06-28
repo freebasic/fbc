@@ -3339,7 +3339,7 @@ private sub bop_float( _
 
 			'' Check for parity flag (if needed),
 			'' disregard if '-fpmode fast' command line option is used
-			if( env.clopt.fpmode <> FB_FPMODE_FAST ) then
+			if( len(parity) > 0 ) then
 				asm_code( parity )
 			end if
 
