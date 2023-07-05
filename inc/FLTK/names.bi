@@ -1,0 +1,51 @@
+dim fl_eventnames(...) as const zstring const ptr ={_
+  @"FL_NO_EVENT",_
+  @"FL_PUSH",_
+  @"FL_RELEASE",_
+  @"FL_ENTER",_
+  @"FL_LEAVE",_
+  @"FL_DRAG",_
+  @"FL_FOCUS",_
+  @"FL_UNFOCUS",_
+  @"FL_KEYDOWN",_
+  @"FL_KEYUP",_
+  @"FL_CLOSE",_
+  @"FL_MOVE",_
+  @"FL_SHORTCUT",_
+  @"FL_DEACTIVATE",_
+  @"FL_ACTIVATE",_
+  @"FL_HIDE",_
+  @"FL_SHOW",_
+  @"FL_PASTE",_
+  @"FL_SELECTIONCLEAR",_
+  @"FL_MOUSEWHEEL",_
+  @"FL_DND_ENTER",_
+  @"FL_DND_DRAG",_
+  @"FL_DND_LEAVE",_
+  @"FL_DND_RELEASE",_
+  @"FL_SCREEN_CONFIGURATION_CHANGED",_
+  @"FL_FULLSCREEN",_
+  @"FL_ZOOM_GESTURE",_
+  @"FL_EVENT_27",_  
+  @"FL_EVENT_28",_
+  @"FL_EVENT_29",_
+  @"FL_EVENT_30"}
+
+
+dim fl_fontnames(...) as const zstring const ptr ={_
+  @"FL_HELVETICA",_
+  @"FL_HELVETICA_BOLD",_
+  @"FL_HELVETICA_ITALIC",_
+  @"FL_HELVETICA_BOLD_ITALIC",_
+  @"FL_COURIER",_
+  @"FL_COURIER_BOLD",_
+  @"FL_COURIER_ITALIC",_
+  @"FL_COURIER_BOLD_ITALIC",_
+  @"FL_TIMES",_
+  @"FL_TIMES_BOLD",_
+  @"FL_TIMES_ITALIC",_
+  @"FL_TIMES_BOLD_ITALIC",_
+  @"FL_SYMBOL",_
+  @"FL_SCREEN",_
+  @"FL_SCREEN_BOLD",_
+  @"FL_ZAPF_DINGBATS"}
