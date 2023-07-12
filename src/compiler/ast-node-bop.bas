@@ -675,7 +675,6 @@ private sub hConvOperand _
 		byref dclass as integer, _
 		byref n as ASTNODE ptr _
 	)
-
 	dtype = typeJoin( dtype, newdtype )
 	dclass = typeGetClass( newdtype )
 	n = astNewCONV( dtype, NULL, n )
@@ -1089,13 +1088,29 @@ function astNewBOP _
 		intrank = typeGetIntRank( FB_DATATYPE_INTEGER )
 		uintrank = typeGetIntRank( FB_DATATYPE_UINT )
 
-		'' not for float
 		if( ldclass = FB_DATACLASS_INTEGER ) then
 			lrank = typeGetIntRank( typeGetRemapType( ldtype ) )
+		end if
+		if( rdclass = FB_DATACLASS_INTEGER ) then
+			rrank = typeGetIntRank( typeGetRemapType( rdtype ) )
+		end if
+
+
+		'' not for float
+		if( ldclass = FB_DATACLASS_INTEGER ) then
 
 			'' l < INTEGER?
 			if( lrank < intrank ) then
-				hConvOperand( FB_DATATYPE_INTEGER, ldtype, ldclass, l )
+				if( (op = AST_OP_MOD) or (op = AST_OP_INTDIV) or ( op = AST_OP_SHL ) ) then
+					if( (lrank < typeGetIntRank( FB_DATATYPE_LONG ) ) _
+					and   (rrank < typeGetIntRank( FB_DATATYPE_LONG ) ) ) then
+						hConvOperand( FB_DATATYPE_LONG, ldtype, ldclass, l )
+					elseif (rrank > typeGetIntRank( FB_DATATYPE_ULONG ) ) then
+						hConvOperand( FB_DATATYPE_INTEGER, ldtype, ldclass, l )
+					end if
+				else
+					hConvOperand( FB_DATATYPE_INTEGER, ldtype, ldclass, l )
+				end if
 			else
 				'' INTEGER < l < UINTEGER?
 				if( (intrank < lrank) and (lrank < uintrank) ) then
@@ -1110,11 +1125,21 @@ function astNewBOP _
 
 		'' not for float
 		if( rdclass = FB_DATACLASS_INTEGER ) then
-			rrank = typeGetIntRank( typeGetRemapType( rdtype ) )
 
 			'' same for r
 			if( rrank < intrank ) then
-				hConvOperand( FB_DATATYPE_INTEGER, rdtype, rdclass, r )
+				if( (op = AST_OP_MOD) or (op = AST_OP_INTDIV) or ( op = AST_OP_SHL ) ) then
+
+					if( (rrank < typeGetIntRank( FB_DATATYPE_LONG ) ) _
+					and   (lrank < typeGetIntRank( FB_DATATYPE_LONG ) ) ) then
+						hConvOperand( FB_DATATYPE_LONG, rdtype, rdclass, r )
+					elseif( (rrank > typeGetIntRank( FB_DATATYPE_ULONG ) ) _
+						or    (lrank > typeGetIntRank( FB_DATATYPE_ULONG ) ) ) then
+						hConvOperand( FB_DATATYPE_INTEGER, rdtype, rdclass, r )
+					end if
+				else
+					hConvOperand( FB_DATATYPE_INTEGER, rdtype, rdclass, r )
+				end if
 			else
 				if( (intrank < rrank) and (rrank < uintrank) ) then
 					hConvOperand( FB_DATATYPE_UINT, rdtype, rdclass, r )
@@ -1308,9 +1333,11 @@ function astNewBOP _
 
 		if( typeGetDtAndPtrOnly( rdtype ) <> FB_DATATYPE_INTEGER ) then
 			if( typeGetDtAndPtrOnly( rdtype ) <> FB_DATATYPE_UINT ) then
-				rdtype = typeJoin( rdtype, FB_DATATYPE_INTEGER )
-				r = astNewCONV( rdtype, NULL, r )
-				rdclass = FB_DATACLASS_INTEGER
+				If rdtype<>FB_DATATYPE_LONG and rdtype<>FB_DATATYPE_ULONG then
+					rdtype = typeJoin( rdtype, FB_DATATYPE_INTEGER )
+					r = astNewCONV( rdtype, NULL, r )
+					rdclass = FB_DATACLASS_INTEGER
+				end if
 			end if
 		end if
 	end select
