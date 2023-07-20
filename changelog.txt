@@ -1,6 +1,7 @@
 Version 1.10.1
 
 [changed]
+- rtlib: printf format specifier, use 'll' instead of 'I64' if building for ucrt or mingw-w64's stdio implementation (for newer gcc versions and c std)
 
 [added]
 
