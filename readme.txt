@@ -66,9 +66,9 @@
 
       Optionally, you can install a text editor or IDE which will invoke fbc.exe
       for you, for example:
-        WinFBE         https://github.com/PaulSquires/WinFBE
+        WinFBE         https://github.com/PaulSquires/WinFBE/releases
         VisualFBEditor https://github.com/XusinboyBekchanov/VisualFBEditor/releases
-       Or even though is older and unmaintained will work:
+       Or even though is older and unmaintained will work (with some effort):
         FBIDE:         https://fbide.freebasic.net/
 
     Linux (if FreeBASIC is not available through your package manager):
@@ -156,7 +156,8 @@
     - LibFFI        https://sourceware.org/libffi/
     - MinGW         https://osdn.net/projects/mingw/
     - MinGW-w64     https://mingw-w64.org/
-    - OpenXDK       http://openxdk.sourceforge.net/
+                    https://github.com/niXman/mingw-builds-binaries/
+    - OpenXDK       https://openxdk.sourceforge.net/
     - TDM-GCC       https://jmeubank.github.io/tdm-gcc/
     - WinLibs       https://www.winlibs.com/
 

@@ -65,9 +65,11 @@
 #       -gcc-7.1.0r2        (mingw-w64 project)
 #       -gcc-7.3.0          (mingw-w64 project)
 #       -gcc-8.1.0          (mingw-w64 project)
-#       -winlibs-gcc-8.4.0  (winlibs mingwrt 7.0.0r1)
+#       -gcc-11.2.0         (mingw-w64 project)
+#       -gcc-12.2.0         (mingw-w64 project)
 #       -winlibs-gcc-9.3.0  (winlibs mingwrt 7.0.0r3 - sjlj)
-#       -winlibs-gcc-9.3.0  (winlibs mingwrt 7.0.0r4)
+#       -winlibs-gcc-11.3.0 (winlibs mingwrt 10.0.0r3 - msvcrt)
+#       -winlibs-gcc-11.4.0 (winlibs mingwrt 11.0.0r1 - msvcrt)
 #       -winlibs-gcc-10.2.0 (winlibs mingwrt 8.0.0r8)
 #       -winlibs-gcc-10.3.0 (winlibs mingwrt 8.0.0r1)
 #       -equation-gcc-8.3.0 (Equation - experimental)
@@ -375,6 +377,22 @@ get_winlibs_toolchain() {
 	fi
 
 	case "$named_recipe" in
+	-winlibs-gcc-11.4.0)
+		gccversion=11.4.0
+		llvmversion=
+		mingwruntime=11.0.0
+		mingwbuildsrev=r1
+		winlibsdir=$gccversion-$mingwruntime-msvcrt-$mingwbuildsrev
+		file=winlibs-$arch-posix-$default_eh-gcc-$gccversion-mingw-w64msvcrt-$mingwruntime-$mingwbuildsrev.7z
+		;;
+	-winlibs-gcc-11.3.0)
+		gccversion=11.3.0
+		llvmversion=14.0.3
+		mingwruntime=10.0.0
+		mingwbuildsrev=r3
+		winlibsdir=$gccversion-$llvmversion-$mingwruntime-msvcrt-$mingwbuildsrev
+		file=winlibs-$arch-posix-$default_eh-gcc-$gccversion-mingw-w64msvcrt-$mingwruntime-$mingwbuildsrev.7z
+		;;
 	-winlibs-gcc-10.3.0)
 		gccversion=10.3.0
 		llvmversion=11.1.0
@@ -391,15 +409,6 @@ get_winlibs_toolchain() {
 		winlibsdir=$gccversion-$mingwruntime-$mingwbuildsrev
 		file=winlibs-$arch-posix-$default_eh-gcc-$gccversion-mingw-w64-$mingwruntime-$mingwbuildsrev.7z
 		;;
-#	-winlibs-gcc-9.3.0)
-#		gccversion=9.3.0
-#		llvmversion=10.0.0
-#		mingwruntime=7.0.0
-#		mingwbuildsrev=r3
-#		toolchain=winlibs
-#		winlibsdir=$gccversion-$llvmversion-$mingwruntime-$mingwbuildsrev
-#		file=winlibs-$arch-posix-$default_eh-gcc-$gccversion-llvm-$llvmversion-mingw-w64-$mingwruntime-$mingwbuildsrev.7z
-#		;;
 	-winlibs-gcc-9.3.0)
 		gccversion=9.3.0
 		llvmversion=
@@ -407,14 +416,6 @@ get_winlibs_toolchain() {
 		mingwbuildsrev=r3
 		winlibsdir=$gccversion-$mingwruntime-sjlj-$mingwbuildsrev
 		file=winlibs-mingw-w64-$arch-$gccversion-$mingwruntime-$mingwbuildsrev-sjlj.7z
-		;;
-	-winlibs-gcc-8.4.0)
-		gccversion=8.4.0
-		llvmversion=
-		mingwbuildsrev=r1
-		mingwruntime=7.0.0
-		winlibsdir=$gccversion-$mingwruntime-$mingwbuildsrev
-		file=mingw-w64-$arch-$gccversion-$mingwruntime.7z
 		;;
 	*)
 		echo "get_winlibs_toolchain(): invalid recipe $named_recipe"
@@ -439,27 +440,27 @@ get_mingww64_toolchain() {
 	toolchain=mingw-w64
 	
 	case "$named_recipe" in
-	-gcc-8.1.0)
+	-mingw-w64-gcc-8.1.0|-gcc-8.1.0)
 		gccversion=8.1.0
 		mingwbuildsrev=rev0
 		mingwruntime=v6
 		;;
-	-gcc-7.3.0)
+	-mingw-w64-gcc-7.3.0|-gcc-7.3.0)
 		gccversion=7.3.0
 		mingwbuildsrev=rev0
 		mingwruntime=v5
 		;;
-	-gcc-7.1.0r2)
+	-mingw-w64-gcc-7.1.0r2|-gcc-7.1.0r2)
 		gccversion=7.1.0
 		mingwbuildsrev=rev2
 		mingwruntime=v5
 		;;
-	-gcc-7.1.0|-gcc-7.1.0r0)
+	-mingw-w64-gcc-7.1.0|-mingw-w64-gcc-7.1.0r0|-gcc-7.1.0)
 		gccversion=7.1.0
 		mingwbuildsrev=rev0
 		mingwruntime=v5
 		;;
-	-gcc-5.2.0)
+	-mingw-w64-gcc-5.2.0|-gcc-5.2.0)
 		gccversion=5.2.0
 		mingwbuildsrev=rev0
 		mingwruntime=v4
@@ -484,6 +485,49 @@ get_mingww64_toolchain() {
 	7z x "../input/MinGW-w64/$file" > /dev/null
 }
 
+get_nixman_toolchain() {
+	bits="$1"
+	arch="$2"
+	toolchain=mingw-w64
+	default_eh=sjlj
+	default_rt=rt
+
+	case "$named_recipe" in
+	-mingw-w64-gcc-12.2.0|-gcc-12.2.0)
+		gccversion=12.2.0
+		mingwbuildsrev=rev2
+		mingwruntime=v10
+		if [ "$bits" = "32" ]; then
+			default_eh=dwarf
+		else
+			default_eh=seh
+		fi
+		default_rt=msvcrt-rt
+		;;
+	-mingw-w64-gcc-11.2.0|-gcc-11.2.0)
+		gccversion=11.2.0
+		mingwbuildsrev=rev1
+		mingwruntime=v9
+		;;
+	*)
+		echo "get_nixman_toolchain(): invalid toolchain version $named_recipe"
+		exit 1
+	esac
+
+	# nixman
+	dir=$gccversion-rt_$mingwruntime-$mingwbuildsrev/
+	file=$arch-$gccversion-release-win32-$default_eh-${default_rt}_$mingwruntime-$mingwbuildsrev.7z
+	binUrl=https://github.com/niXman/mingw-builds-binaries/releases/download/$dir$file
+
+	srcfile=$gccversion-rt_$mingwruntime-$mingwbuildsrev.tar.gz
+	srcUrl=https://github.com/niXman/mingw-builds-binaries/archive/refs/tags/$srcfile
+
+	mkdir -p ./packages/mingw-w64
+	download "mingw-w64/$file"    $binUrl
+	download "mingw-w64/$srcfile" $srcUrl
+	7z x "../input/MinGW-w64/$file" > /dev/null
+}
+
 get_windows_toolchain() {
 	bits="$1"
 	arch="$2"
@@ -495,7 +539,10 @@ get_windows_toolchain() {
 	-equation-*)
 		get_equation_toolchain $bits $arch
 		;;
-	-gcc-*)
+	-mingw-w64-gcc-11.2.0|-gcc-11.2.0|-mingw-w64-gcc-11.2.0|-gcc-12.2.0)
+		get_nixman_toolchain $bits $arch
+		;;
+	-mingw-w64-gcc-*|-gcc-*)
 		get_mingww64_toolchain $bits $arch
 		;;
 	*)
@@ -759,7 +806,7 @@ libffibuild() {
 
 	# on fbc 1.08.0 we changed the libffi version so
 	# don't use any cached files when building the packages
-	# commented out for future reference
+	# unless we explicitly ask to with --use-libffi-cache 
 	# do we already have the files we need?
 	if [ "$uselibfficache" = "Y" ]; then
 	if [ -f "../input/$libffi_title/$target$named_recipe/ffi.h" ]; then
@@ -909,7 +956,7 @@ windowsbuild() {
 			;;
 		esac
 		;;
-	-winlibs-gcc-8.4.0|-winlibs-gcc-9.3.0|-winlibs-gcc-10.2.0|-winlibs-gcc-10.3.0)
+	-winlibs-gcc-9.3.0|-winlibs-gcc-10.2.0|-winlibs-gcc-10.3.0|-winlibs-gcc-11.3.0|-winlibs-gcc-11.4.0)
 		# -winlibs-gcc-X.X is being built from winlibs and the binutils have a few dependencies
 		# copy these to the bin directory - they go with the executables and should
 		# not be used as general libraries
