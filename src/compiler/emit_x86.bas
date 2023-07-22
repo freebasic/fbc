@@ -4777,7 +4777,7 @@ private sub hCMPF _
 		hCMPF_jxx( recipe, lname )
 		exit sub
 	end if
-	
+
 	'' set result
 	hCMPF_set( rvreg, recipe, lname )
 
