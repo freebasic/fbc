@@ -7,6 +7,7 @@ Version 1.10.1
 
 [added]
 - release: add recipes for building fbc distros using gcc-11.2 and gcc-12.2 Mingw-w64 project toolchains
+- release: add recipe for building fbc distros using winlibs-gcc-11.2/3/4 toolchain
 
 [fixed]
 - sf.net #982: Array descriptors emitted incorrectly in gcc backend

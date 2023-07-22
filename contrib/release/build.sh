@@ -68,6 +68,7 @@
 #       -gcc-11.2.0         (mingw-w64 project)
 #       -gcc-12.2.0         (mingw-w64 project)
 #       -winlibs-gcc-9.3.0  (winlibs mingwrt 7.0.0r3 - sjlj)
+#       -winlibs-gcc-11.2.0 (winlibs mingwrt 10.0.0r1 - msvcrt)
 #       -winlibs-gcc-11.3.0 (winlibs mingwrt 10.0.0r3 - msvcrt)
 #       -winlibs-gcc-11.4.0 (winlibs mingwrt 11.0.0r1 - msvcrt)
 #       -winlibs-gcc-10.2.0 (winlibs mingwrt 8.0.0r8)
@@ -391,6 +392,14 @@ get_winlibs_toolchain() {
 		mingwruntime=10.0.0
 		mingwbuildsrev=r3
 		winlibsdir=$gccversion-$llvmversion-$mingwruntime-msvcrt-$mingwbuildsrev
+		file=winlibs-$arch-posix-$default_eh-gcc-$gccversion-mingw-w64msvcrt-$mingwruntime-$mingwbuildsrev.7z
+		;;
+	-winlibs-gcc-11.2.0)
+		gccversion=11.2.0
+		llvmversion=
+		mingwruntime=10.0.0
+		mingwbuildsrev=r1
+		winlibsdir=$gccversion-$mingwruntime-msvcrt-$mingwbuildsrev
 		file=winlibs-$arch-posix-$default_eh-gcc-$gccversion-mingw-w64msvcrt-$mingwruntime-$mingwbuildsrev.7z
 		;;
 	-winlibs-gcc-10.3.0)
@@ -966,7 +975,7 @@ windowsbuild() {
 			;;
 		esac
 		;;
-	-winlibs-gcc-9.3.0|-winlibs-gcc-10.2.0|-winlibs-gcc-10.3.0|-winlibs-gcc-11.3.0|-winlibs-gcc-11.4.0)
+	-winlibs-gcc-9.3.0|-winlibs-gcc-10.2.0|-winlibs-gcc-10.3.0|-winlibs-gcc-11.2.0|-winlibs-gcc-11.3.0|-winlibs-gcc-11.4.0)
 		# -winlibs-gcc-X.X is being built from winlibs and the binutils have a few dependencies
 		# copy these to the bin directory - they go with the executables and should
 		# not be used as general libraries
