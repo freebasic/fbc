@@ -709,12 +709,22 @@ esac
 
 case $fbtarget in
 win32|win64)
-	# libffi sources https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.3.tar.gz. 
-	libffi_title=libffi-3.3
+	# libffi sources: 
+	# - ftp://sourceware.org/pub/libffi/libffi-3.4.3.tar.gz 
+	# - https://github.com/libffi/libffi/releases/download/v3.4.4/libffi-3.4.4.tar.gz
+	libffi_version=3.4.4
+	libffi_title=libffi-${libffi_version}
 	libffi_package="${libffi_title}.tar.gz"
-	download "$libffi_package" "ftp://sourceware.org/pub/libffi/$libffi_package"
-	echo "extracting $libffi_package"
-	tar xf "../input/$libffi_package"
+
+	# sourware:
+	# libffi_dir="ftp://sourceware.org/pub/libffi/"
+
+	# github:
+	libffi_dir="https://github.com/libffi/libffi/releases/download/v${libffi_version}/"
+
+	download "$libffi_package" "${libffi_dir}${libffi_package}"
+	echo "extracting ${libffi_package}"
+	tar xf "../input/${libffi_package}"
 	;;
 esac
 
