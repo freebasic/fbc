@@ -46,7 +46,7 @@ SUITE( fbc_tests.string_.indexing )
 
 		#macro testZstr( z, x2, zfield )
 			z = !"abc\&hA0"
-			pz = @z
+			pz = cast( zstring ptr, @z )
 
 			CU_ASSERT( z[0] = asc( "a" ) )
 			CU_ASSERT( z[1] = asc( "b" ) )
