@@ -16,8 +16,11 @@ Version 1.20.0
 Version 1.10.1
 
 [changed]
+- rtlib: printf format specifier, use 'll' instead of 'I64' if building for ucrt or mingw-w64's stdio implementation (for newer gcc versions and c std)
+- gcc backend: use 'char' types for zstring instead of 'uint8' to avoid warnings in newer gcc 11+
 
 [added]
+- release: add recipes for building fbc distros using gcc-11.2 and gcc-12.2 Mingw-w64 project toolchains
 
 [fixed]
 - sf.net #982: Array descriptors emitted incorrectly in gcc backend

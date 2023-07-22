@@ -243,7 +243,7 @@ dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 	@"boolean"  , _ '' boolean
 	@"int8"     , _ '' byte
 	@"uint8"    , _ '' ubyte
-	NULL        , _ '' char
+	@"char"     , _ '' char
 	@"int16"    , _ '' short
 	@"uint16"   , _ '' ushort
 	NULL        , _ '' wchar
@@ -1591,9 +1591,8 @@ private function hEmitType _
 		hEmitUDT( subtype, (ptrcount > 0) )
 		s = *symbGetMangledName( subtype )
 
-	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-		'' Emit ubyte instead of char,
-		'' and ubyte/ushort/uinteger instead of wchar_t
+	case FB_DATATYPE_WCHAR
+		'' Emit ubyte/ushort/uinteger instead of wchar_t
 		s = *dtypeName(typeGetRemapType( dtype ))
 
 	case FB_DATATYPE_FIXSTR
@@ -1754,6 +1753,16 @@ private function exprNewCAST _
 			l->subtype = subtype
 			return l
 		end if
+	end if
+
+	'' casting zstring to some other type? Try to force unsigned char by
+	'' casting to unsigned char first.  If char is signed (in gcc) then
+	'' the sign is extended and will give negative numbers when promoted
+	'' which we probably don't want when converting ascii to integer.
+	if( typeGetDtAndPtrOnly( l->dtype ) = FB_DATATYPE_CHAR ) then
+		var n = exprNew( EXPRCLASS_CAST, FB_DATATYPE_UBYTE, NULL )
+		n->l = l
+		l = n
 	end if
 
 	var n = exprNew( EXPRCLASS_CAST, dtype, subtype )
