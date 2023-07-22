@@ -1402,18 +1402,18 @@ function cVarOrDeref _
 		byval options as FB_VAREXPROPT _
 	) as ASTNODE ptr
 
-	dim as integer last_isexpr = any, check_array = any
+	dim as integer last_isexpr = any, previous_check_array = any
 
 	if( options and FB_VAREXPROPT_ISEXPR ) then
 		last_isexpr = fbGetIsExpression( )
 		fbSetIsExpression( TRUE )
 	end if
-	check_array = fbGetCheckArray( )
+	previous_check_array = fbGetCheckArray( )
 	fbSetCheckArray( ((options and FB_VAREXPROPT_NOARRAYCHECK) = 0) )
 
 	dim as ASTNODE ptr expr = cHighestPrecExpr( NULL, NULL )
 
-	fbSetCheckArray( check_array )
+	fbSetCheckArray( previous_check_array )
 	if( options and FB_VAREXPROPT_ISEXPR ) then
 		fbSetIsExpression( last_isexpr )
 	end if

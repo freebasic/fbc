@@ -43,11 +43,11 @@ function cExpression _
 end function
 
 function cExpressionWithNIDXARRAY( byval allow_nidxarray as integer ) as ASTNODE ptr
-	dim as integer oldcheckarray = any
-	oldcheckarray = fbGetCheckArray( )
+	dim as integer previous_check_array = any
+	previous_check_array = fbGetCheckArray( )
 	fbSetCheckArray( not allow_nidxarray )
 	function = cExpression( )
-	fbSetCheckArray( oldcheckarray )
+	fbSetCheckArray( previous_check_array )
 end function
 
 '':::::
