@@ -728,6 +728,16 @@ type FBVAR_DATA
 	prev            as FBSYMBOL_ ptr
 end type
 
+type FBS_CONST
+	union                                       '' extends FBVALUE
+		value       as FBVALUE
+		s           as FBSYMBOL_ ptr
+		i           as longint
+		f           as double
+	end union
+	hassuffix       as integer
+end type
+
 type FBS_VAR
 	union
 		littext     as zstring ptr
@@ -787,11 +797,11 @@ type FBSYMBOL
 	mangling        as short                    '' FB_MANGLING
 
 	lgt         as longint
-	ofs         as longint                  '' for local vars, args, UDT's and fields
+	ofs         as longint                      '' for local vars, args, UDT's and fields
 
 	union
 		var_        as FBS_VAR
-		val         as FBVALUE  '' constants
+		val         as FBS_CONST                '' constants
 		udt         as FBS_STRUCT
 		enum_       as FBS_ENUM
 		proc        as FBS_PROC
@@ -2251,7 +2261,7 @@ declare function symbCloneSimpleStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL 
 
 #define symbIsNameSpace(s) (s->class = FB_SYMBCLASS_NAMESPACE)
 
-#define symbGetConstVal( sym )   (@((sym)->val))
+#define symbGetConstVal( sym )   (@((sym)->val.value))
 #define symbGetConstStr( sym )   ((sym)->val.s)
 #define symbGetConstInt( sym )   ((sym)->val.i)
 #define symbGetConstFloat( sym ) ((sym)->val.f)

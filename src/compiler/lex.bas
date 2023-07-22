@@ -1128,6 +1128,7 @@ private sub hReadNumber( byref t as FBTOKEN, byval flags as LEXCHECK )
 	var pnum = @t.text[0]
 	*pnum = 0
 	t.len = 0
+	t.hassuffix = false
 
 	select case as const lexCurrentChar( )
 	'' integer part
@@ -1177,6 +1178,7 @@ private sub hReadNumber( byref t as FBTOKEN, byval flags as LEXCHECK )
 			if( (flags and LEXCHECK_NOLETTERSUFFIX) = 0 ) then
 				select case lexCurrentChar( )
 				case CHAR_UUPP, CHAR_ULOW
+					t.hassuffix = TRUE
 					lexEatChar( )
 					t.dtype = typeToUnsigned( t.dtype )
 					have_u_suffix = TRUE
@@ -1187,6 +1189,7 @@ private sub hReadNumber( byref t as FBTOKEN, byval flags as LEXCHECK )
 			'' 'L' | 'l'
 			case CHAR_LUPP, CHAR_LLOW
 				if( (flags and LEXCHECK_NOLETTERSUFFIX) = 0 ) then
+					t.hassuffix = TRUE
 					lexEatChar( )
 					'' 'LL'?
 					var c = lexCurrentChar( )
@@ -1214,6 +1217,7 @@ private sub hReadNumber( byref t as FBTOKEN, byval flags as LEXCHECK )
 				if( (flags and LEXCHECK_NOLETTERSUFFIX) = 0 ) then
 					if( have_u_suffix = FALSE ) then
 						t.dtype = FB_DATATYPE_SINGLE
+						t.hassuffix = TRUE
 						lexEatChar( )
 					end if
 				end if
@@ -1224,6 +1228,7 @@ private sub hReadNumber( byref t as FBTOKEN, byval flags as LEXCHECK )
 				if( (flags and LEXCHECK_NOLETTERSUFFIX) = 0 ) then
 					if( have_u_suffix = FALSE ) then
 						t.dtype = FB_DATATYPE_DOUBLE
+						t.hassuffix = TRUE
 						lexEatChar( )
 					end if
 				end if
@@ -1259,13 +1264,14 @@ private sub hReadNumber( byref t as FBTOKEN, byval flags as LEXCHECK )
 					end if
 				end if
 				t.dtype = FB_DATATYPE_LONG
-
+				t.hassuffix = TRUE
 				lexEatChar( )
 
 			'' '!'
 			case FB_TK_SNGTYPECHAR
 				if( have_u_suffix = FALSE ) then
 					t.dtype = FB_DATATYPE_SINGLE
+					t.hassuffix = TRUE
 					lexEatChar( )
 				end if
 
@@ -1275,6 +1281,7 @@ private sub hReadNumber( byref t as FBTOKEN, byval flags as LEXCHECK )
 					'' isn't it a '##'?
 					if( lexGetLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
 						t.dtype = FB_DATATYPE_DOUBLE
+						t.hassuffix = TRUE
 						lexEatChar( )
 					end if
 				end if

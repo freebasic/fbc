@@ -65,6 +65,7 @@ type FBTOKEN
 	union
 		prdpos      as integer                  '' period '.' pos in symbol names
 		hasesc      as integer                  '' any '\' in literals
+		hassuffix   as integer                  '' numeric literal has suffix
 	end union
 	suffixchar      as integer
 
@@ -287,6 +288,8 @@ declare function hMatch _
 #define lexGetHasSlash( ) lex.ctx->head->hasesc
 
 #define lexGetSuffixChar( ) lex.ctx->head->suffixchar
+
+#define lexGetLiteralHasSuffix( ) lex.ctx->head->hassuffix
 
 #define lexGetHead( ) lex.ctx->head
 

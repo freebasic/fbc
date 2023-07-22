@@ -76,6 +76,7 @@ function astNewCONSTi _
 
 	n = astNewNode( AST_NODECLASS_CONST, FB_DATATYPE_LONGINT, NULL )
 	n->val.i = value
+	n->val.hassuffix = FALSE
 
 	n = astNewCONV( dtype, subtype, n, AST_CONVOPT_DONTCHKPTR )
 	assert( n )
@@ -94,6 +95,7 @@ function astNewCONSTf _
 
 	n = astNewNode( AST_NODECLASS_CONST, FB_DATATYPE_DOUBLE )
 	n->val.f = value
+	n->val.hassuffix = FALSE
 
 	function = astNewCONV( dtype, NULL, n )
 end function
