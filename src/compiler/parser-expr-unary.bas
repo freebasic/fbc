@@ -500,7 +500,7 @@ private function hProcPtrBody _
 
 	'' resolve overloaded procs
 	if( parser.ctxsym <> NULL ) then
-		if( symbIsOverloaded( proc ) or check_exact ) then
+		if( symbIsOverloaded( proc ) orelse check_exact ) then
 			dim as FBSYMBOL ptr sym = any
 			sym = hProcPtrResolveOverload( proc, parser.ctxsym )
 
