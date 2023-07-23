@@ -889,6 +889,191 @@ private sub hOptToShift( byval n as ASTNODE ptr )
 
 end sub
 
+private function hTryRemoveCAST( byval n as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr l = any
+	dim as integer op = any
+
+	assert( n <> NULL )
+
+	'' convert 'clng(a<long>)' -> 'a'
+	'' convert 'cint(a<long>)' -> 'a'
+	'' convert 'cint(a<any>)' -> 'clng(a)'
+
+	''   [cint()]    n
+	''     /
+	''  operand      l
+
+	'' only if there is a conversion
+	if( n->class <> AST_NODECLASS_CONV ) then
+		return n
+	end if
+
+	'' only if conversion is U|LONG or larger
+	select case astGetDataType( n )
+	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
+	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+	case else
+		return n
+	end select
+
+	l = n->l
+
+	'' if operand is already U|LONG, just remove the CONV node
+	select case astGetDataType( l )
+	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		astDelNode( n )
+		return l
+	end select
+
+	'' operand is something else .. keep the conversion but change to U|LONG
+	select case astGetDataType( n )
+	case FB_DATATYPE_INTEGER
+		n->dtype = typeJoin( n->dtype, FB_DATATYPE_LONG )
+	case FB_DATATYPE_UINT
+		n->dtype = typeJoin( n->dtype, FB_DATATYPE_ULONG )
+	end select
+
+	return n
+end function
+
+private function hOperandMayBe32bit( byval n as ASTNODE ptr ) as integer
+
+	if( n = NULL ) then
+		return FALSE
+	end if
+
+	'' already a U|LONG?
+	select case astGetDataType(n)
+	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		return TRUE
+	end select
+
+	'' otherwise only if a conversion
+	if( n->class <> AST_NODECLASS_CONV ) then
+		return FALSE
+	end if
+
+	'' and integer
+	if( astGetDataClass( n ) <> FB_DATACLASS_INTEGER ) then
+		return FALSE
+	end if
+
+	'' conversion must yeild a numeric integer
+	select case astGetDataType( n )
+	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
+	     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, _
+	     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
+	     FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, _
+	     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT _
+
+		return TRUE
+	end select
+
+	return FALSE
+end function
+
+private function hOptBOP32 _
+	( _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr l = any, r = any
+	dim as integer op = any
+
+	if( n = NULL ) then
+		return n
+	end if
+
+	'' !!!TODO!!! add to IR_OPT_* and use irGetOption() to
+	'' control optimization of 32 bit operations on 64 bit target
+	if( fbGetCpuFamily() <> FB_CPUFAMILY_X86_64 ) then
+		return n
+	end if
+
+	'' walk
+	if( n->l <> NULL ) then
+		n->l = hOptBOP32( n->l )
+	end if
+
+	if( n->r <> NULL ) then
+		n->r = hOptBOP32( n->r )
+	end if
+
+	if( n->class <> AST_NODECLASS_CONV ) then
+		return n
+	end if
+
+	l = n->l
+	r = n->r
+
+	'' convert 'clng( cint(a<long>) BOP cint(b<long>) )' to 'a<long> BOP b<long>'
+	''
+	''            [clng()]          n
+	''             /
+	''           BOP                l = BOP, r = NULL
+	''        /     \
+	''   [cint()]    [cint()]       l->l, l->r
+	''     /         /
+	''  operand     operand
+
+	if( l->class <> AST_NODECLASS_BOP ) then
+		return n
+	end if
+
+	op = l->op.op
+
+	select case op
+	case AST_OP_SHL, AST_OP_MOD, AST_OP_INTDIV
+	case else
+		return n
+	end select
+
+	'' result of CONV is U|LONG or smaller?
+	select case astGetDataType( n )
+	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE
+	case FB_DATATYPE_SHORT, FB_DATATYPE_USHORT
+	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+	case else
+		return n
+	end select
+
+	'' BOP must not yet be optimized
+	select case astGetDataType( l )
+	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+	case else
+		return n
+	end select
+
+	'' left side of BOP must be numeric integer
+	if( hOperandMayBe32bit( l->l ) = FALSE ) then
+		return n
+	end if
+
+	'' right side of BOP must be numeric integer
+	if( hOperandMayBe32bit( l->r ) = FALSE ) then
+		return n
+	end if
+
+	'' set the BOP's return type to U|LONG
+	select case astGetDataType( n )
+	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_LONG
+		l->dtype = typeJoin( l->dtype, FB_DATATYPE_LONG )
+		astDelNode( n )
+		n = l
+	case FB_DATATYPE_UBYTE, FB_DATATYPE_USHORT, FB_DATATYPE_ULONG
+		l->dtype = typeJoin( l->dtype, FB_DATATYPE_ULONG )
+		astDelNode( n )
+		n = l
+	end select
+
+	'' Remove CONV to U|LONG
+	l->l = hTryRemoveCAST( l->l )
+	l->r = hTryRemoveCAST( l->r )
+
+	return n
+end function
+
 ''::::
 private function hOptConstCONV _
 	( _
@@ -1880,6 +2065,8 @@ function astOptimizeTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 	n = hOptConstIDX( n )
 
 	hOptToShift( n )
+
+	n = hOptBOP32( n )
 
 	n = hOptLogic( n )
 
