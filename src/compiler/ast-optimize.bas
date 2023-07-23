@@ -942,32 +942,21 @@ private function hOperandMayBe32bit( byval n as ASTNODE ptr ) as integer
 		return FALSE
 	end if
 
-	'' already a U|LONG?
-	select case astGetDataType(n)
-	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-		return TRUE
-	end select
-
-	'' otherwise only if a conversion
-	if( n->class <> AST_NODECLASS_CONV ) then
-		return FALSE
-	end if
-
-	'' and integer
+	'' only integers, don't allow floats
 	if( astGetDataClass( n ) <> FB_DATACLASS_INTEGER ) then
 		return FALSE
 	end if
 
-	'' conversion must yeild a numeric integer
-	select case astGetDataType( n )
-	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
-	     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, _
-	     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
-	     FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, _
-	     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT _
-
+	'' already 32-bit?
+	select case typeGetSizeType( astGetDataType(n) )
+	case FB_SIZETYPE_INT32, FB_SIZETYPE_UINT32
 		return TRUE
 	end select
+
+	'' otherwise only if a conversion already exists
+	if( n->class = AST_NODECLASS_CONV ) then
+		return TRUE
+	end if
 
 	return FALSE
 end function
@@ -984,7 +973,7 @@ private function hOptBOP32 _
 		return n
 	end if
 
-	'' !!!TODO!!! add to IR_OPT_* and use irGetOption() to
+	'' TODO: maybe should add to IR_OPT_* and let irGetOption()
 	'' control optimization of 32 bit operations on 64 bit target
 	if( fbGetCpuFamily() <> FB_CPUFAMILY_X86_64 ) then
 		return n
@@ -1028,44 +1017,38 @@ private function hOptBOP32 _
 		return n
 	end select
 
-	'' result of CONV is U|LONG or smaller?
-	select case astGetDataType( n )
-	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE
-	case FB_DATATYPE_SHORT, FB_DATATYPE_USHORT
-	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-	case else
+	'' only integers
+	if( astGetDataClass( n ) <> FB_DATACLASS_INTEGER ) then
 		return n
-	end select
+	end if
+
+	'' can't optimize if result of CONV is larger than 32bit
+	if( typeGetSize( astGetDataType( n ) ) > typeGetSize( FB_DATATYPE_LONG ) ) then
+		return n
+	end if
 
 	'' BOP must not yet be optimized
-	select case astGetDataType( l )
-	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-	case else
+	if( typeGetSize( astGetDataType( l ) ) <= typeGetSize( FB_DATATYPE_LONG ) ) then
 		return n
-	end select
+	end if
 
-	'' left side of BOP must be numeric integer
+	'' left side of BOP must be 32 bit or be allowed to be 32 bit
 	if( hOperandMayBe32bit( l->l ) = FALSE ) then
 		return n
 	end if
 
-	'' right side of BOP must be numeric integer
+	'' right side of BOP must be 32 bit or be allowed to be 32 bit
 	if( hOperandMayBe32bit( l->r ) = FALSE ) then
 		return n
 	end if
 
-	'' set the BOP's return type to U|LONG
-	select case astGetDataType( n )
-	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_LONG
-		l->dtype = typeJoin( l->dtype, FB_DATATYPE_LONG )
+	'' Remove top CONV node
+	if( typeGetSize( astGetDataType( n ) ) <= typeGetSize( FB_DATATYPE_LONG ) ) then
+		l->dtype = typeJoin( l->dtype, iif( typeIsSigned( astGetDataType( n ) ), _
+		                                    FB_DATATYPE_LONG, FB_DATATYPE_ULONG ) )
 		astDelNode( n )
 		n = l
-	case FB_DATATYPE_UBYTE, FB_DATATYPE_USHORT, FB_DATATYPE_ULONG
-		l->dtype = typeJoin( l->dtype, FB_DATATYPE_ULONG )
-		astDelNode( n )
-		n = l
-	end select
+	end if
 
 	'' Remove CONV to U|LONG
 	l->l = hTryRemoveCAST( l->l )
