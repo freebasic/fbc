@@ -1100,11 +1100,11 @@ sub fbAddLib(byval libname as zstring ptr)
 		'' multithreading may have been set after fbgfx.bi was
 		'' included, and we can't have both libs passed to the
 		'' linker. We can end up linking to the non-threaded
-		'' version of fbgfx when we would expect the mt versoin
+		'' version of fbgfx when we would expect the mt version,
 		'' and the linker won't complain even when both versions
 		'' are passed.
 
-		'' Set the -gfx option to link to the gfx library
+		'' Set the -fbgfx option to link to the gfx library
 		'' and the lib will be added in hAddDefaultLibs()
 		fbSetOption( FB_COMPOPT_FBGFX, TRUE )
 
