@@ -122,7 +122,7 @@ ifdef TARGET
 endif
 ifeq ($(TARGET_OS),js)
 # Copy the file/ and data/ directories into the in-memory FS
-	FBC_LFLAGS += -Wl -sEXIT_RUNTIME -Wl --preload-file,file,--preload-file,data
+	FBC_LFLAGS += -Wl -sEXIT_RUNTIME -Wl --preload-file,boolean,--preload-file,data,--preload-file,file,--preload-file,wstring
 endif
 
 ifeq ($(ENABLE_CHECK_BUGS),1)
