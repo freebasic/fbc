@@ -898,7 +898,8 @@ private function hLinkFiles( ) as integer
 			"CASE_INSENSITIVE_FS=1", _
 			"TOTAL_MEMORY=67108864", _
 			"ALLOW_MEMORY_GROWTH=1", _
-			"RETAIN_COMPILER_SETTINGS=1" _
+			"RETAIN_COMPILER_SETTINGS=1", _
+			"ASYNCIFY=1" _
 		}
 			'"WARN_UNALIGNED=1", _
 
@@ -3443,7 +3444,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			'if Emscripten is used, we will skip the assembly generation and compile directly to object code
 			ln += "-c -nostdlib -nostdinc -Wall -Wno-unused-label " + _
 				"-Wno-unused-function -Wno-unused-variable "
-			ln += "-Wno-warn-absolute-paths -s ASYNCIFY=1 -s RETAIN_COMPILER_SETTINGS=1 "
+			ln += "-Wno-warn-absolute-paths "
 		end if
 
 		'' Don't warn about non-standard main() signature

@@ -11,6 +11,7 @@ Version 1.10.1
 - fbc: emscripten: wstring was broken because sizeof(wstring) was 2 rather than 4
 - emscripten: non-graphical programs will now run under node.js. Use -x output.js to produce a .js rather than an .html
 - rtlib: emscripten: CURDIR and EXEPATH always returned ""
+- emscripten/fbc: -sASYNCIFY wasn't passed to emcc at link-time as needed by recent Emscripten
 
 
 Version 1.10.0
