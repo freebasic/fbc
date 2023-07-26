@@ -66,53 +66,44 @@ public:
 	declare function input() as Fl_Input ptr
 end type
 
-/'private sub Fl_Input_Choice.menu_cb(a as Fl_Widget ptr, data_ as any ptr)
-    dim o as Fl_Input_Choice ptr=cast(Fl_Input_Choice ptr, data_)
-    Fl_Widget_Tracker wp(o)
-    dim as const Fl_Menu_Item ptr item = o->menubutton()->mvalue()
-    if (item && item->flags & (FL_SUBMENU|FL_SUBMENU_POINTER)) return;	// ignore submenus
-    if (!strcmp(o->inp_->value(), o->menu_->text()))
-    {
-      o->Fl_Widget::clear_changed();
-      if (o->when() & FL_WHEN_NOT_CHANGED)
-	o->do_callback();
-    }
-    else
-    {
-      o->inp_->value(o->menu_->text());
-      o->inp_->set_changed();
-      o->Fl_Widget::set_changed();
-      if (o->when() & (FL_WHEN_CHANGED|FL_WHEN_RELEASE))
-	o->do_callback();
-    }
+private sub Fl_Input_Choice.menu_cb(a as Fl_Widget ptr, data_ as any ptr)
+	dim o as Fl_Input_Choice ptr=cast(Fl_Input_Choice ptr, data_)
+	dim wp as Fl_Widget_Tracker=Fl_Widget_Tracker(o)
+	dim as const Fl_Menu_Item ptr item = o->menubutton()->mvalue()
+	if item andalso item->flags and (FL_SUBMENU or FL_SUBMENU_POINTER) then return	' ignore submenus
+	if o->inp_->value()<> o->menu_->text() then
+		cast(Fl_Widget ptr,o)->clear_changed()
+		if o->when() and FL_WHEN_NOT_CHANGED then o->do_callback()
+	else
+		o->inp_->value(o->menu_->text())
+		o->inp_->set_changed()
+		cast(Fl_Widget ptr,o)->set_changed()
+		if o->when() and (FL_WHEN_CHANGED or FL_WHEN_RELEASE) then o->do_callback()
+	end if
     
-    if (wp.deleted()) return;
+	if wp.deleted() then return
 
-    if (o->callback() != default_callback)
-    {
-      o->Fl_Widget::clear_changed();
-      o->inp_->clear_changed();
-    }
+	if o->callback() <> @default_callback then
+		cast(Fl_Widget ptr,o)->clear_changed()
+		o->inp_->clear_changed()
+	end if
 end sub
 
 private sub Fl_Input_Choice.inp_cb(a as Fl_Widget ptr, data_ as any ptr)
-    Fl_Input_Choice *o=(Fl_Input_Choice *)data;
-    Fl_Widget_Tracker wp(o);
-    if (o->inp_->changed()) {
-      o->Fl_Widget::set_changed();
-      if (o->when() & (FL_WHEN_CHANGED|FL_WHEN_RELEASE))
-	o->do_callback();
-    } else {
-      o->Fl_Widget::clear_changed();
-      if (o->when() & FL_WHEN_NOT_CHANGED)
-	o->do_callback();
-    }
-    
-    if (wp.deleted()) return;
+	dim o as Fl_Input_Choice ptr=cast(Fl_Input_Choice ptr, data_)
+	dim wp as Fl_Widget_Tracker=Fl_Widget_Tracker(o)
+	if o->inp_->changed() then
+		cast(Fl_Widget ptr,o)->set_changed()
+		if o->when() and (FL_WHEN_CHANGED or FL_WHEN_RELEASE) then o->do_callback()
+	else
+		cast(Fl_Widget ptr,o)->clear_changed()
+		if o->when() and FL_WHEN_NOT_CHANGED then o->do_callback()
+	end if
 
-    if (o->callback() != default_callback)
-      o->Fl_Widget::clear_changed();
-end sub'/
+	if wp.deleted() then return
+
+	if o->callback() <> @default_callback then cast(Fl_Widget ptr,o)->clear_changed()
+end sub
 
 private sub Fl_Input_Choice.InputMenuButton.draw() 
 	draw_box(FL_UP_BOX, color())
