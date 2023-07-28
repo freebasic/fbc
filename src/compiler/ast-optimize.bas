@@ -889,7 +889,7 @@ private sub hOptToShift( byval n as ASTNODE ptr )
 
 end sub
 
-private function hTryRemoveCAST( byval n as ASTNODE ptr ) as ASTNODE ptr
+private function hTryRemoveCAST( byval n as ASTNODE ptr, byval dtype as FB_DATATYPE ) as ASTNODE ptr
 	dim as ASTNODE ptr l = any
 	dim as integer op = any
 
@@ -908,7 +908,7 @@ private function hTryRemoveCAST( byval n as ASTNODE ptr ) as ASTNODE ptr
 		return n
 	end if
 
-	'' only if conversion is U|LONG or larger
+	'' only if conversion is [U]LONG or larger
 	select case astGetDataType( n )
 	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
 	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
@@ -918,47 +918,54 @@ private function hTryRemoveCAST( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 	l = n->l
 
-	'' if operand is already U|LONG, just remove the CONV node
+	'' if operand is already [U]LONG, just remove the CONV node
 	select case astGetDataType( l )
 	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
 		astDelNode( n )
 		return l
 	end select
 
-	'' operand is something else .. keep the conversion but change to U|LONG
-	select case astGetDataType( n )
-	case FB_DATATYPE_INTEGER
-		n->dtype = typeJoin( n->dtype, FB_DATATYPE_LONG )
-	case FB_DATATYPE_UINT
-		n->dtype = typeJoin( n->dtype, FB_DATATYPE_ULONG )
-	end select
+	'' operand is something else .. keep the conversion but change to [U]LONG
+	n->dtype = typeJoin( n->dtype, dtype )
 
 	return n
 end function
 
-private function hOperandMayBe32bit( byval n as ASTNODE ptr ) as integer
+private function hGetOperandAs32bit( byval n as ASTNODE ptr ) as FB_DATATYPE
 
 	if( n = NULL ) then
-		return FALSE
+		return FB_DATATYPE_VOID
 	end if
 
 	'' only integers, don't allow floats
 	if( astGetDataClass( n ) <> FB_DATACLASS_INTEGER ) then
-		return FALSE
+		return FB_DATATYPE_VOID
 	end if
 
 	'' already 32-bit?
-	select case typeGetSizeType( astGetDataType(n) )
-	case FB_SIZETYPE_INT32, FB_SIZETYPE_UINT32
-		return TRUE
-	end select
-
-	'' otherwise only if a conversion already exists
-	if( n->class = AST_NODECLASS_CONV ) then
-		return TRUE
+	if( typeGetSize( astGetDataType(n) ) = 4 ) then
+		return iif( typeIsSigned( astGetDataType(n) ), _
+		            FB_DATATYPE_LONG, FB_DATATYPE_ULONG )
 	end if
 
-	return FALSE
+	'' otherwise only if a conversion already exists
+	if( n->class <> AST_NODECLASS_CONV ) then
+		return FB_DATATYPE_VOID
+	end if
+
+	'' only if conversion from another integer type
+	if( astGetDataClass( n->l ) <> FB_DATACLASS_INTEGER ) then
+		return FB_DATATYPE_VOID
+	end if
+
+	'' only if conversion from a 32-bit or smaller integer
+	if( typeGetSize( astGetDataType( n->l ) ) > 4 ) then
+		return FB_DATATYPE_VOID
+	end if
+
+	'' return sign based on conversion operand
+	return iif( typeIsSigned( astGetDataType(n->l) ), _
+	            FB_DATATYPE_LONG, FB_DATATYPE_ULONG )
 end function
 
 private function hOptBOP32 _
@@ -966,7 +973,8 @@ private function hOptBOP32 _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr l = any, r = any
+	dim as ASTNODE ptr l = any
+	dim as FB_DATATYPE ldtype = any, rdtype = any
 	dim as integer op = any
 
 	if( n = NULL ) then
@@ -988,71 +996,109 @@ private function hOptBOP32 _
 		n->r = hOptBOP32( n->r )
 	end if
 
-	if( n->class <> AST_NODECLASS_CONV ) then
-		return n
-	end if
-
-	l = n->l
-	r = n->r
-
-	'' convert 'clng( cint(a<long>) BOP cint(b<long>) )' to 'a<long> BOP b<long>'
-	''
-	''            [clng()]          n
-	''             /
-	''           BOP                l = BOP, r = NULL
-	''        /     \
-	''   [cint()]    [cint()]       l->l, l->r
-	''     /         /
-	''  operand     operand
-
-	if( l->class <> AST_NODECLASS_BOP ) then
-		return n
-	end if
-
-	op = l->op.op
-
-	select case op
-	case AST_OP_SHL, AST_OP_MOD, AST_OP_INTDIV
-	case else
-		return n
-	end select
-
 	'' only integers
 	if( astGetDataClass( n ) <> FB_DATACLASS_INTEGER ) then
 		return n
 	end if
 
-	'' can't optimize if result of CONV is larger than 32bit
-	if( typeGetSize( astGetDataType( n ) ) > typeGetSize( FB_DATATYPE_LONG ) ) then
+	select case n->class
+	case AST_NODECLASS_BOP
+		'' check for both operands <= 32-bit and
+		'' convert 'cint(a<long>) BOP cint(b<long>)'
+		''      to 'cint(a<long> BOP32 b<long>)'
+		''
+		''           BOP                n = l = BOP
+		''        /     \
+		''   [cint()]    [cint()]       l->l, l->r
+		''     /         /
+		''  operand     operand
+
+		l = n
+
+	case AST_NODECLASS_CONV
+		'' check for both operands <= 32-bit and result <= 32-bit
+		'' convert 'clng( cint(a<long>) BOP cint(b<long>) )'
+		''      to 'a<long> BOP32 b<long>'
+		''
+		''            [clng()]          n
+		''             /
+		''           BOP                l = BOP
+		''        /     \
+		''   [cint()]    [cint()]       l->l, l->r
+		''     /         /
+		''  operand     operand
+
+		l = n->l
+
+	case else
 		return n
-	end if
+	end select
+
+	op = l->op.op
+
+	select case op
+	case AST_OP_SHL
+		select case n->class
+		case AST_NODECLASS_CONV
+			'' can't optimize if result of CONV is larger than 32bit
+			if( typeGetSize( astGetDataType( n ) ) > 4 ) then
+				return n
+			end if
+		case else
+			return n
+		end select
+	case AST_OP_MOD, AST_OP_INTDIV
+	case else
+		return n
+	end select
 
 	'' BOP must not yet be optimized
-	if( typeGetSize( astGetDataType( l ) ) <= typeGetSize( FB_DATATYPE_LONG ) ) then
+	if( typeGetSize( astGetDataType( l ) ) <= 4 ) then
 		return n
 	end if
 
 	'' left side of BOP must be 32 bit or be allowed to be 32 bit
-	if( hOperandMayBe32bit( l->l ) = FALSE ) then
+	ldtype = hGetOperandAs32bit( l->l )
+	if( ldtype = FB_DATATYPE_VOID ) then
 		return n
 	end if
 
 	'' right side of BOP must be 32 bit or be allowed to be 32 bit
-	if( hOperandMayBe32bit( l->r ) = FALSE ) then
+	rdtype = hGetOperandAs32bit( l->r )
+	if( rdtype = FB_DATATYPE_VOID ) then
 		return n
 	end if
 
-	'' Remove top CONV node
-	if( typeGetSize( astGetDataType( n ) ) <= typeGetSize( FB_DATATYPE_LONG ) ) then
-		l->dtype = typeJoin( l->dtype, iif( typeIsSigned( astGetDataType( n ) ), _
-		                                    FB_DATATYPE_LONG, FB_DATATYPE_ULONG ) )
-		astDelNode( n )
-		n = l
+	'' only if ldtype and rdtype are same signed
+	if( typeIsSigned( ldtype ) <> typeIsSigned( rdtype ) ) then
+		return n
 	end if
 
-	'' Remove CONV to U|LONG
-	l->l = hTryRemoveCAST( l->l )
-	l->r = hTryRemoveCAST( l->r )
+	select case n->class
+	case AST_NODECLASS_CONV
+		'' change BOP to return [U]LONG
+		if( typeGetSize( astGetDataType( n ) ) <= 4 ) then
+			l->dtype = typeJoin( l->dtype, ldtype )
+		end if
+
+		'' Remove top CONV node
+		astDelNode( n )
+		n = l
+
+	case AST_NODECLASS_BOP
+		'' change BOP to return [U]LONG
+		if( typeGetSize( astGetDataType( n ) ) >= 4 ) then
+			l->dtype = typeJoin( l->dtype, ldtype )
+		end if
+
+		'' Add top CONV node
+		n = astNewCONV( iif( typeIsSigned( astGetDataType( n ) ) , _
+		                FB_DATATYPE_INTEGER, FB_DATATYPE_UINT), NULL, n )
+	end select
+
+	'' Remove CONV to [U]LONG
+	l->l = hTryRemoveCAST( l->l, ldtype )
+	l->r = hTryRemoveCAST( l->r, rdtype )
 
 	return n
 end function
