@@ -889,7 +889,7 @@ private sub hOptToShift( byval n as ASTNODE ptr )
 
 end sub
 
-private function hTryRemoveCAST( byval n as ASTNODE ptr ) as ASTNODE ptr
+private function hTryRemoveCAST( byval n as ASTNODE ptr, byval dtype as FB_DATATYPE ) as ASTNODE ptr
 	dim as ASTNODE ptr l = any
 	dim as integer op = any
 
@@ -926,47 +926,45 @@ private function hTryRemoveCAST( byval n as ASTNODE ptr ) as ASTNODE ptr
 	end select
 
 	'' operand is something else .. keep the conversion but change to [U]LONG
-	select case astGetDataType( n )
-	case FB_DATATYPE_INTEGER
-		n->dtype = typeJoin( n->dtype, FB_DATATYPE_LONG )
-	case FB_DATATYPE_UINT
-		n->dtype = typeJoin( n->dtype, FB_DATATYPE_ULONG )
-	end select
+	n->dtype = typeJoin( n->dtype, dtype )
 
 	return n
 end function
 
-private function hOperandMayBe32bit( byval n as ASTNODE ptr ) as integer
+private function hGetOperandAs32bit( byval n as ASTNODE ptr ) as FB_DATATYPE
 
 	if( n = NULL ) then
-		return FALSE
+		return FB_DATATYPE_VOID
 	end if
 
 	'' only integers, don't allow floats
 	if( astGetDataClass( n ) <> FB_DATACLASS_INTEGER ) then
-		return FALSE
+		return FB_DATATYPE_VOID
 	end if
 
 	'' already 32-bit?
 	if( typeGetSize( astGetDataType(n) ) = 4 ) then
-		return TRUE
+		return iif( typeIsSigned( astGetDataType(n) ), _
+		            FB_DATATYPE_LONG, FB_DATATYPE_ULONG )  
 	end if
 
 	'' otherwise only if a conversion already exists
 	if( n->class <> AST_NODECLASS_CONV ) then
-		return FALSE
+		return FB_DATATYPE_VOID
+	end if
+
+	'' only if conversion from another integer type
+	if( astGetDataClass( n->l ) <> FB_DATACLASS_INTEGER ) then
+		return FB_DATATYPE_VOID
 	end if
 
 	'' only if conversion from a 32-bit or smaller integer
-	if( astGetDataClass( n->l ) <> FB_DATACLASS_INTEGER ) then
-		return FALSE
-	end if
-
 	if( typeGetSize( astGetDataType( n->l ) ) > 4 ) then
-		return FALSE		
+		return FB_DATATYPE_VOID		
 	end if 
 
-	return TRUE
+	return iif( typeIsSigned( astGetDataType(n) ), _
+	            FB_DATATYPE_LONG, FB_DATATYPE_ULONG )  
 end function
 
 private function hOptBOP32 _
@@ -975,6 +973,7 @@ private function hOptBOP32 _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr l = any
+	dim as FB_DATATYPE ldtype = any, rdtype = any
 	dim as integer op = any
 
 	if( n = NULL ) then
@@ -1040,26 +1039,31 @@ private function hOptBOP32 _
 	end if
 
 	'' left side of BOP must be 32 bit or be allowed to be 32 bit
-	if( hOperandMayBe32bit( l->l ) = FALSE ) then
+	ldtype = hGetOperandAs32bit( l->l )
+	if( ldtype = FB_DATATYPE_VOID ) then
 		return n
 	end if
 
 	'' right side of BOP must be 32 bit or be allowed to be 32 bit
-	if( hOperandMayBe32bit( l->r ) = FALSE ) then
+	rdtype = hGetOperandAs32bit( l->r )
+	if( rdtype = FB_DATATYPE_VOID ) then
+		return n
+	end if
+
+	'' only if ldtype and rdtype are same signed
+	if( typeIsSigned( ldtype ) <> typeIsSigned( rdtype ) ) then
 		return n
 	end if
 
 	'' Remove top CONV node
 	if( typeGetSize( astGetDataType( n ) ) <= 4 ) then
-		l->dtype = typeJoin( l->dtype, iif( typeIsSigned( astGetDataType( n ) ), _
-		                                    FB_DATATYPE_LONG, FB_DATATYPE_ULONG ) )
+		l->dtype = typeJoin( l->dtype, ldtype )
 		astDelNode( n )
 		n = l
 	end if
 
-	'' Remove CONV to U|LONG
-	l->l = hTryRemoveCAST( l->l )
-	l->r = hTryRemoveCAST( l->r )
+	l->l = hTryRemoveCAST( l->l, ldtype )
+	l->r = hTryRemoveCAST( l->r, rdtype )
 
 	return n
 end function
