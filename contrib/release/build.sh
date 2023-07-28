@@ -68,6 +68,7 @@
 #       -gcc-11.2.0         (mingw-w64 project)
 #       -gcc-12.2.0         (mingw-w64 project)
 #       -winlibs-gcc-9.3.0  (winlibs mingwrt 7.0.0r3 - sjlj)
+#       -winlibs-gcc-11.2.0 (winlibs mingwrt 10.0.0r1 - msvcrt)
 #       -winlibs-gcc-11.3.0 (winlibs mingwrt 10.0.0r3 - msvcrt)
 #       -winlibs-gcc-11.4.0 (winlibs mingwrt 11.0.0r1 - msvcrt)
 #       -winlibs-gcc-10.2.0 (winlibs mingwrt 8.0.0r8)
@@ -393,6 +394,14 @@ get_winlibs_toolchain() {
 		winlibsdir=$gccversion-$llvmversion-$mingwruntime-msvcrt-$mingwbuildsrev
 		file=winlibs-$arch-posix-$default_eh-gcc-$gccversion-mingw-w64msvcrt-$mingwruntime-$mingwbuildsrev.7z
 		;;
+	-winlibs-gcc-11.2.0)
+		gccversion=11.2.0
+		llvmversion=
+		mingwruntime=10.0.0
+		mingwbuildsrev=r1
+		winlibsdir=$gccversion-$mingwruntime-msvcrt-$mingwbuildsrev
+		file=winlibs-$arch-posix-$default_eh-gcc-$gccversion-mingw-w64msvcrt-$mingwruntime-$mingwbuildsrev.7z
+		;;
 	-winlibs-gcc-10.3.0)
 		gccversion=10.3.0
 		llvmversion=11.1.0
@@ -709,12 +718,22 @@ esac
 
 case $fbtarget in
 win32|win64)
-	# libffi sources https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.3.tar.gz. 
-	libffi_title=libffi-3.3
+	# libffi sources: 
+	# - ftp://sourceware.org/pub/libffi/libffi-3.4.3.tar.gz 
+	# - https://github.com/libffi/libffi/releases/download/v3.4.4/libffi-3.4.4.tar.gz
+	libffi_version=3.4.4
+	libffi_title=libffi-${libffi_version}
 	libffi_package="${libffi_title}.tar.gz"
-	download "$libffi_package" "ftp://sourceware.org/pub/libffi/$libffi_package"
-	echo "extracting $libffi_package"
-	tar xf "../input/$libffi_package"
+
+	# sourware:
+	# libffi_dir="ftp://sourceware.org/pub/libffi/"
+
+	# github:
+	libffi_dir="https://github.com/libffi/libffi/releases/download/v${libffi_version}/"
+
+	download "$libffi_package" "${libffi_dir}${libffi_package}"
+	echo "extracting ${libffi_package}"
+	tar xf "../input/${libffi_package}"
 	;;
 esac
 
@@ -956,7 +975,7 @@ windowsbuild() {
 			;;
 		esac
 		;;
-	-winlibs-gcc-9.3.0|-winlibs-gcc-10.2.0|-winlibs-gcc-10.3.0|-winlibs-gcc-11.3.0|-winlibs-gcc-11.4.0)
+	-winlibs-gcc-9.3.0|-winlibs-gcc-10.2.0|-winlibs-gcc-10.3.0|-winlibs-gcc-11.2.0|-winlibs-gcc-11.3.0|-winlibs-gcc-11.4.0)
 		# -winlibs-gcc-X.X is being built from winlibs and the binutils have a few dependencies
 		# copy these to the bin directory - they go with the executables and should
 		# not be used as general libraries
