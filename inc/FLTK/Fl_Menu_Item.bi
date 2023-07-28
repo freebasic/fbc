@@ -34,7 +34,7 @@ type Fl_Menu_Item
 
 	declare const function next_ alias "next" (i as long=1) as const Fl_Menu_Item ptr
 	declare const function first () as const Fl_Menu_Item ptr
-	declare function label() as const zstring ptr
+	declare const function label() as const zstring ptr
 	declare sub label(a as const zstring ptr)
 	declare sub label(a as Fl_Labeltype, b as const zstring ptr)
 	declare const function labeltype() as Fl_Labeltype

@@ -3,6 +3,7 @@
 #include once "Fl_Input.bi"
 #include once "Fl_Repeat_Button.bi"
 
+#include once "crt/stdio.bi"
 
 extern "c++"
 type Fl_Spinner extends Fl_Group
@@ -54,7 +55,7 @@ public:
 end type
 end extern
 
-/'private sub Fl_Spinner.sb_cb(w as Fl_Widget ptr, sb as Fl_Spinner ptr)
+private sub Fl_Spinner.sb_cb(w as Fl_Widget ptr, sb as Fl_Spinner ptr)
 
 	dim v as double
 
@@ -100,15 +101,15 @@ end sub
 private sub Fl_Spinner.update()
 	dim s as zstring * 255
 
-	if format_="%.*" then
+	if left(*format_,3)="%.*" then
 		dim c as integer = 0
 		dim temp as zstring * 64
 		dim sp as zstring ptr=@temp
 		sprintf(temp, "%.12f", step_)
 		do while *sp: sp+=1: loop
 		sp-=1
-		do while sp>temp andalso *sp=asc("0"): sp-=1:loop
-		do while sp>temp andalso (*sp>=asc("0") andalso *sp<=asc("9") )  sp-=1: c+=1: loop
+		do while *sp>temp andalso *sp=asc("0"): sp-=1:loop
+		do while *sp>temp andalso (*sp>=asc("0") andalso *sp<=asc("9") ):  sp-=1: c+=1: loop
 		sprintf(s, format_, c, value_)
 	else 
 		sprintf(s, format_, value_)
@@ -116,7 +117,7 @@ private sub Fl_Spinner.update()
 	input_.value(s)
 end sub
 
-'/
+
 
 private function Fl_Spinner.format() as const zstring ptr
 	return format_
@@ -127,14 +128,14 @@ private sub Fl_Spinner.format(f as const zstring ptr)
 	update()
 end sub
 
-/'
+
 private function Fl_Spinner.handle(event as long) as long
 	select case (event) 
 	case FL_KEYDOWN,  FL_SHORTCUT 
-		if Fl.event_key() = FL_Up then
+		if Fl.event_key() = _FL_Up then
 			up_button_.do_callback()
 			return 1
-		elseif Fl.event_key() = FL_Down then
+		elseif Fl.event_key() = _FL_Down then
 			down_button_.do_callback()
 			return 1
 		else
@@ -144,10 +145,10 @@ private function Fl_Spinner.handle(event as long) as long
 	case FL_FOCUS
 		if input_.take_focus() then return 1 else return 0
 	end select
-	return Fl_Group::handle(event)
+	return base.handle(event)
 
 end function
-'/
+
 
 private function Fl_Spinner.maximum() as double
 	return maximum_
