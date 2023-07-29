@@ -898,7 +898,8 @@ private function hLinkFiles( ) as integer
 			"CASE_INSENSITIVE_FS=1", _
 			"TOTAL_MEMORY=67108864", _
 			"ALLOW_MEMORY_GROWTH=1", _
-			"RETAIN_COMPILER_SETTINGS=1" _
+			"RETAIN_COMPILER_SETTINGS=1", _
+			"ASYNCIFY=1" _
 		}
 			'"WARN_UNALIGNED=1", _
 
@@ -1223,11 +1224,15 @@ private function hLinkFiles( ) as integer
 		end if
 	#elseif defined( __FB_WIN32__ )
 		#ifdef ENABLE_STANDALONE
-			if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS ) then
+			'' "cross"-compiling? djgpp cross tools and emscripten
+			'' build tools can't seem to handle the long command line
+			'' created when linking ./tests/fbc-tests
+			select case fbGetOption( FB_COMPOPT_TARGET )
+			case FB_COMPTARGET_DOS, FB_COMPTARGET_JS
 				if( hPutLdArgsIntoFile( ldcline ) = FALSE ) then
 					exit function
 				end if
-			end if
+			end select
 		#else
 			dim toolnamelen as integer = len( "ld.exe " ) + _
 				iif( len( fbc.targetprefix ) > len( fbc.buildprefix ), len( fbc.targetprefix ), len( fbc.buildprefix ) )
@@ -1348,7 +1353,7 @@ private sub hReadObjinfo( )
 			end if
 
 		case OBJINFO_GFX
-			fbSetOption( FB_COMPOPT_GFX, TRUE )
+			fbSetOption( FB_COMPOPT_FBGFX, TRUE )
 
 		case OBJINFO_LANG
 			lang = fbGetLangId( dat )
@@ -1712,6 +1717,7 @@ enum
 	OPT_EX
 	OPT_EXX
 	OPT_EXPORT
+	OPT_FBGFX
 	OPT_FORCELANG
 	OPT_FPMODE
 	OPT_FPU
@@ -1794,6 +1800,7 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EX           affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EXX          affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EXPORT       affects code generation
+	( FALSE, TRUE , FALSE, FALSE ), _ '' OPT_FBGFX        affects link
 	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_FORCELANG    never allow, command line only
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_FPMODE       affects major initialization, affects code generation
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_FPU          affects major initialization,affects code generation, affects second stage compile, affects link
@@ -1937,6 +1944,9 @@ private sub handleOpt _
 
 	case OPT_EXPORT
 		fbSetOption( FB_COMPOPT_EXPORT, TRUE )
+
+	case OPT_FBGFX
+		fbSetOption( FB_COMPOPT_FBGFX, TRUE )
 
 	case OPT_FORCELANG
 		dim as integer value = fbGetLangId(strptr(arg))
@@ -2383,6 +2393,7 @@ private function parseOption(byval opt as zstring ptr) as integer
 		CHECK("export", OPT_EXPORT)
 
 	case asc("f")
+		CHECK("fbgfx", OPT_FBGFX)
 		CHECK("forcelang", OPT_FORCELANG)
 		CHECK("fpmode", OPT_FPMODE)
 		CHECK("fpu", OPT_FPU)
@@ -3436,7 +3447,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			'if Emscripten is used, we will skip the assembly generation and compile directly to object code
 			ln += "-c -nostdlib -nostdinc -Wall -Wno-unused-label " + _
 				"-Wno-unused-function -Wno-unused-variable "
-			ln += "-Wno-warn-absolute-paths -s ASYNCIFY=1 -s RETAIN_COMPILER_SETTINGS=1 "
+			ln += "-Wno-warn-absolute-paths "
 		end if
 
 		'' Don't warn about non-standard main() signature
@@ -3446,9 +3457,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		'' helps finding ir-hlc bugs
 		ln += "-Werror-implicit-function-declaration "
 
-		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
-			ln += "-O" + str( fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) ) + " "
-		end if
+		ln += "-O" + str( fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) ) + " "
 
 		'' Do not let gcc make assumptions about pointers; FB isn't strict about it.
 		ln += "-fno-strict-aliasing "
@@ -3804,8 +3813,13 @@ private function hArchiveFiles( ) as integer
 		objfile = listGetNext( objfile )
 	wend
 
+	var ar = FBCTOOL_AR
+	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_JS ) then
+		ar = FBCTOOL_EMAR
+	end if
+
 	'' invoke ar
-	function = fbcRunBin( "archiving", FBCTOOL_AR, ln )
+	function = fbcRunBin( "archiving", ar, ln )
 end function
 
 private sub hSetDefaultLibPaths( )
@@ -3876,7 +3890,7 @@ private sub hAddDefaultLibs( )
 	end if
 
 	'' and the gfxlib, if gfx functions were used
-	if( fbGetOption( FB_COMPOPT_GFX ) ) then
+	if( fbGetOption( FB_COMPOPT_FBGFX ) ) then
 		fbcAddDefLib( "fbgfx" + hGetFbLibNameSuffix( ) )
 
 		select case as const( fbGetOption( FB_COMPOPT_TARGET ) )
@@ -4089,11 +4103,14 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -ex              -e plus RESUME support"
 	print "  -exx             -ex plus array bounds/null-pointer checking"
 	print "  -export          Export symbols for dynamic linkage"
+	if( verbose ) then
+	print "  -fbgfx           Link to the appropriate libfbgfx variant (normally automatic)"
+	end if
 	print "  -forcelang <name>  Override #lang statements in source code"
 	if( verbose ) then
 	print "  -fpmode fast|precise  Select floating-point math accuracy/speed"
 	print "  -fpu x87|sse     Set target FPU"
-	endif
+	end if
 	print "  -g               Add debug info, enable __FB_DEBUG__, and enable assert()"
 
 	if( verbose ) then

@@ -288,7 +288,7 @@ private function cStrASC() as ASTNODE ptr
 	if( litsym <> NULL ) then
 		'' if wstring, check if compile-time conversion can be done
 		if( (astGetDataType( expr1 ) = FB_DATATYPE_WCHAR) and _
-			(env.wchar_doconv = FALSE) ) then
+			(env.wcharconv = FB_WCHARCONV_NEVER) ) then
 			p = -1
 		else
 			'' pos is an constant too?

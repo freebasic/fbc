@@ -49,7 +49,7 @@
 ''   -l     followed by a library name
 ''   -p     followed by a library search path
 ''   -mt    this can be included or left out (boolean)
-''   -gfx   ditto
+''   -gfx   ditto (corresponds to -fbgfx cmdline arg)
 ''   -lang  followed by the -lang mode (fb/fblite/qb/...) used for this object
 ''
 '' Technically it's ok for all entries to appear multiple times,

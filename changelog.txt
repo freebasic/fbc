@@ -20,16 +20,23 @@ Version 1.10.1
 - rtlib: printf format specifier, use 'll' instead of 'I64' if building for ucrt or mingw-w64's stdio implementation (for newer gcc versions and c std)
 - gcc backend: use 'char' types for zstring instead of 'uint8' to avoid warnings in newer gcc 11+
 - release: update to build libffi 3.4.4 - this is needed to work with newer mingw-w64 based toolchains for gcc 11.x and up
+- emscripten/fbc: in debug version of fbc (__FB_DEBUG__<>0) allow wchar conversion on win32 host to allow building and testing of the test-suite 
 
 [added]
 - release: add recipes for building fbc distros using gcc-11.2 and gcc-12.2 Mingw-w64 project toolchains
 - release: add recipe for building fbc distros using winlibs-gcc-11.2/3/4 toolchain
+- fbc: '-fbgfx' command line option to link against correct libfbgfx variant, for platforms (emscripten) where it's not automatic due to missing objinfo support
 
 [fixed]
 - sf.net #982: Array descriptors emitted incorrectly in gcc backend
 - gas64: emit debug information for statics
 - gas64: handle #inf's and NaN's in float comparisons 
 - unable to set opengl scaling to 1 after initial screen mode - previously: logic error in the driver code prevented the scaling from being set to 1
+- emscripten: fbc created faulty static libraries (it called ar instead of emar)
+- fbc: emscripten: wstring was broken because sizeof(wstring) was 2 rather than 4
+- emscripten: non-graphical programs will now run under node.js. Use -x output.js to produce a .js rather than an .html
+- rtlib: emscripten: CURDIR and EXEPATH always returned ""
+- emscripten/fbc: -sASYNCIFY wasn't passed to emcc at link-time as needed by recent Emscripten
 
 
 Version 1.10.0

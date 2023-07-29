@@ -13,10 +13,11 @@ SUITE( fbc_tests.numbers.infnan )
 		const NEGNAND = &hFFF8000000000000ull
 
 		#macro checkD( d, x )
-			' The sign bit for NaN results is unspecified by IEEE754,
-			' and x86 and ARM differ in its selection.
+			'' The sign bit for NaN results is unspecified by IEEE754,
+			'' and x86 and ARM differ in its selection.
+			'' Appears to be ditto for emscripten
 			'' Little-endian assumption casting double ptr to ulongint ptr
-			#ifdef __FB_ARM__
+			#if defined( __FB_ARM__ ) or defined( __FB_JS__ )
 				#if( (x = NEGNAND) or (x = POSNAND) )
 					CU_ASSERT( ((*cptr( ulongint ptr, @d )) and SGNMASK) = POSNAND )
 				#else
@@ -120,10 +121,11 @@ SUITE( fbc_tests.numbers.infnan )
 		const NEGNANF = &hFFC00000u
 
 		#macro checkF( f, x )
-			' The sign bit for NaN results is unspecified by IEEE754,
-			' and x86 and ARM differ in its selection.
+			'' The sign bit for NaN results is unspecified by IEEE754,
+			'' and x86 and ARM differ in its selection.
+			'' Appears to be ditto for emscripten
 			'' Little-endian assumption casting double ptr to ulongint ptr
-			#ifdef __FB_ARM__
+			#if defined( __FB_ARM__ ) or defined( __FB_JS__ )
 				#if( (x = NEGNANF) or (x = POSNANF) )
 					CU_ASSERT( ((*cptr( ulong ptr, @f )) and SGNMASK) = POSNANF )
 				#else
