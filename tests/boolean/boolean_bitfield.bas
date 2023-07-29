@@ -1,6 +1,6 @@
 # include "fbcunit.bi"
 
-'' - don't mix false/true intrinsic constants 
+'' - don't mix false/true intrinsic constants
 ''   of the compiler in with the tests
 #undef FALSE
 #undef TRUE
@@ -203,6 +203,71 @@ SUITE( fbc_tests.boolean_.boolean_bitfield )
 			CU_ASSERT_EQUAL( x.b, 0 )
 			CU_ASSERT_EQUAL( x.c, -1 )
 		end scope
+
+	END_TEST
+
+	type T2bits
+		as boolean b0:1
+		as boolean b1:1
+		as boolean b2:1
+		as boolean b3:1
+	end type
+
+	type T2
+		union
+			bits as T2bits
+			as long x
+		end union
+	end type
+
+	TEST( WriteBits )
+
+		dim as T2 a
+		dim as T2bits ptr b = @a.bits
+		dim as integer n1, n2, n3
+
+		#macro toggle_bit( bitno, value, bvalue0, bvalue1 )
+			n2 = n1 or value
+			n3 = n1 and not value
+			a.x = n1
+
+			b->b##bitno = bvalue1
+			CU_ASSERT_EQUAL( a.x, n2 )
+			CU_ASSERT_EQUAL( b->b##bitno, cint(cbool(bvalue1)) )
+
+			b->b##bitno = bvalue0
+			CU_ASSERT_EQUAL( a.x, n3 )
+			CU_ASSERT_EQUAL( b->b##bitno, cint(cbool(bvalue0)) )
+		#endmacro
+
+		for i as long = 0 to 15
+			n1 = &h7FFFFF00L or i
+
+			toggle_bit( 0, 1, 0, 1 )
+			toggle_bit( 1, 2, 0, 1  )
+			toggle_bit( 2, 4, 0, 1  )
+			toggle_bit( 3, 8, 0, 1  )
+
+			toggle_bit( 0, 1, 0, -1 )
+			toggle_bit( 1, 2, 0, -1 )
+			toggle_bit( 2, 4, 0, -1 )
+			toggle_bit( 3, 8, 0, -1 )
+
+			toggle_bit( 0, 1, 0, 1L  )
+			toggle_bit( 1, 2, 0, 1L  )
+			toggle_bit( 2, 4, 0, 1L  )
+			toggle_bit( 3, 8, 0, 1L  )
+
+			toggle_bit( 0, 1, 0, 1U  )
+			toggle_bit( 1, 2, 0, 1U  )
+			toggle_bit( 2, 4, 0, 1U  )
+			toggle_bit( 3, 8, 0, 1U  )
+
+			toggle_bit( 0, 1, false, true )
+			toggle_bit( 1, 2, false, true )
+			toggle_bit( 2, 4, false, true )
+			toggle_bit( 3, 8, false, true )
+		next
 
 	END_TEST
 
