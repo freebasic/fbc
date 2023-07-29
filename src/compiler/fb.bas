@@ -474,7 +474,22 @@ sub fbInit _
 	irInit( )
 
 	'' After symbInit(), we can use typeGetSize()
-	env.wchar_doconv = (sizeof( wstring ) = typeGetSize( env.target.wchar ))
+	if( sizeof( wstring ) = typeGetSize( env.target.wchar ) ) then
+		env.wcharconv = FB_WCHARCONV_ALWAYS
+	else
+		env.wcharconv = FB_WCHARCONV_NEVER
+	end if
+
+#if ( __FB_DEBUG__ <> 0 ) andalso defined( __FB_WIN32__ )
+	select case( env.clopt.target )
+	case FB_COMPTARGET_JS
+		'' !!!TODO!!! - FB_WCHARCONV_WARNING needs to show warnings on conversions
+		'' !!!TODO!!! - FB_WCHARCONV_WARNING probably not correct to force a value
+		''              but setting it helps with development and testing
+		''              where sizeof(host-wstring) <> sizeof(target-wstring)
+		env.wcharconv = FB_WCHARCONV_WARNING
+	end select
+#endif
 
 	hashInit( @env.filenamehash, FB_INITINCFILES )
 	hashInit( @env.incfilehash, FB_INITINCFILES, FALSE )

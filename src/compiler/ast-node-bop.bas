@@ -869,7 +869,7 @@ function astNewBOP _
 				if( litsym <> NULL ) then
 					'' ok to convert at compile-time?
 					if( (typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( rdtype )) or _
-					    env.wchar_doconv ) then
+					    (env.wcharconv <> FB_WCHARCONV_NEVER) ) then
 						return hWstrLiteralConcat( l, r )
 					end if
 				end if
