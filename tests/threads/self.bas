@@ -5,6 +5,14 @@
 #define ENABLE_CHECK_BUGS 0
 #endif
 
+#if defined( __FB_JS__ )
+#define ENABLE_TEST ENABLE_CHECK_BUGS
+#else
+#define ENABLE_TEST 1
+#endif
+
+#if ENABLE_TEST
+
 SUITE( fbc_tests.threads.self )
 
 	'' Tests whether ThreadSelf in a created thread is equal to the 
@@ -218,3 +226,5 @@ SUITE( fbc_tests.threads.self )
 		END_TEST
 	END_TEST_GROUP
 END_SUITE
+
+#endif
