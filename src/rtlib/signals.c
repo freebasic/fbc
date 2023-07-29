@@ -1,5 +1,8 @@
 /* signal handlers */
 
+// Emscripten doesn't have signals
+#ifndef HOST_JS
+
 #include "fb.h"
 #include <signal.h>
 
@@ -80,3 +83,5 @@ FBCALL void fb_InitSignals( void )
 	old_excpfilter = SetUnhandledExceptionFilter( exception_filter );
 #endif
 }
+
+#endif

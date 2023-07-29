@@ -1,5 +1,11 @@
 #include "fbcunit.bi"
 
+'' Emscripten (and wasm) doesn't support common symbols
+#ifdef __FB_JS__
+	#undef common
+	#define common dim  '' Fixes the compile but fails tests
+#endif
+
 common shared array1() as integer
 common shared array2() as integer
 dim shared array3() as integer

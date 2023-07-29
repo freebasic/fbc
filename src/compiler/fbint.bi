@@ -571,6 +571,12 @@ enum FB_TARGETOPT
 	FB_TARGETOPT_MACHO               = &h00000200
 end enum
 
+enum FB_WCHARCONV
+	FB_WCHARCONV_NEVER                = 0
+	FB_WCHARCONV_WARNING              = 1
+	FB_WCHARCONV_ALWAYS               = 2
+end enum
+
 type FBTARGET
 	id              as zstring ptr
 	wchar           as FB_DATATYPE  '' Real wstring data type
@@ -614,7 +620,7 @@ type FBENV
 
 	clopt               as FBCMMLINEOPT    '' cmm-line options
 	target              as FBTARGET        '' target specific
-	wchar_doconv        as integer         '' ok to convert literals at compile-time?
+	wcharconv           as FB_WCHARCONV    '' ok to convert literals at compile-time?
 	underscoreprefix    as integer         '' Whether ASM symbols need a leading underscore on the current target
 	pointersize         as integer
 

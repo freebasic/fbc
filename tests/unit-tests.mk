@@ -80,8 +80,13 @@ ifeq ($(TARGET_OS),win32)
 endif
 
 FBC_CFLAGS := -c -w 3 -Wc -Wno-tautological-compare -i $(FBCU_INC) -m $(MAINBAS)
-ifneq ($(HOST),dos)
+ifneq ($(TARGET_OS),dos)
 	FBC_CFLAGS += -mt
+endif
+ifeq ($(TARGET_OS),js)
+# Need to do some optimisations to reduce the number of local variables,
+# or else linking fails
+	FBC_CFLAGS += -O 1
 endif
 ifdef DEBUG
 	FBC_CFLAGS += -g
@@ -105,7 +110,7 @@ ifneq ($(GEN),)
 	FBC_CFLAGS += -gen $(GEN)
 endif
 
-FBC_LFLAGS := $(FBCU_LIBS) -p $(FBCU_LIB) -x $(MAINEXE)
+FBC_LFLAGS := $(FBCU_LIBS) -p $(FBCU_LIB) -fbgfx -x $(MAINEXE) -v
 ifdef DEBUG
 	FBC_LFLAGS += -g
 endif
@@ -114,6 +119,10 @@ ifdef ARCH
 endif
 ifdef TARGET
 	FBC_LFLAGS += -target $(TARGET)
+endif
+ifeq ($(TARGET_OS),js)
+# Copy the file/ and data/ directories into the in-memory FS
+	FBC_LFLAGS += -Wl -sEXIT_RUNTIME -Wl --preload-file,boolean,--preload-file,data,--preload-file,file,--preload-file,wstring
 endif
 
 ifeq ($(ENABLE_CHECK_BUGS),1)
@@ -157,7 +166,7 @@ $(UNIT_TESTS_INC) : $(DIRLIST_INC)
 	@$(ECHO) "#" >> $(UNIT_TESTS_INC)
 	@$(FIND) $(DIRLIST) -type f -name '*.bas' -or -name '*.bmk' \
 | $(XARGS) $(GREP) -l -i -E \
-"(#[[:space:]]*include[[:space:]](once)*[[:space:]]*\"fbcu(nit)?\.bi\")|([[:space:]]*.[[:space:]]*TEST_MODE[[:space:]]*\:[[:space:]]*FBCUNIT_COMPATIBLE)" \
+"(#[[:space:]]*include[[:space:]](once)*[[:space:]]*\"fbcu(nit)?\.bi\")|([[:space:]]*.[[:space:]]*TEST_MODE[[:space:]]*:[[:space:]]*FBCUNIT_COMPATIBLE)" \
 | $(SED) -e 's/\(^.*\)/\SRCLIST \+\= \.\/\1/g' \
 >> $(UNIT_TESTS_INC)
 	@$(ECHO) "Done"
@@ -180,7 +189,11 @@ build_tests : ./$(MAINBAS).o $(OBJLIST) $(UNIT_TESTS_OBJ_LST)
 
 .PHONY: run_tests
 run_tests : build_tests
+ifneq ($(TARGET_OS),js)
 	./$(MAINEXE) $(UNITTEST_RUN_ARGS)
+else ifneq ($(NODEJS),)
+	$(NODEJS) ./$(MAINEXE) $(UNITTEST_RUN_ARGS)
+endif
 
 .PHONY: clean
 clean : clean_main_exe clean_tests clean_fbcu clean_include

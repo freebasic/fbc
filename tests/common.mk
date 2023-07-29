@@ -4,7 +4,7 @@
 # Guess HOST and TARGET_OS if not already set;
 # it would far cleaner and robust to reuse the detection code in root makefile,
 # but we our requirements here are much simpler.
-# HOST and TARGET_OS both take possible values dos|unix|win32.
+# HOST takes possible values dos|unix|win32, TARGET_OS may be dos|unix|win32|js.
 # OS has possible values DOS and Windows_NT.
 # 
 
@@ -38,6 +38,10 @@ ifndef TARGET_OS
 			TARGET_OS := dos
 		else ifneq ($(filter mingw%,$(triplet)),)
 			TARGET_OS := win32
+		else ifneq ($(filter emscripten%,$(triplet)),)
+			TARGET_OS := js
+		else ifneq ($(filter js%,$(triplet)),)
+			TARGET_OS := js
 		else
 			TARGET_OS := unix
 		endif
@@ -61,6 +65,12 @@ else
 endif
 ifeq ($(TARGET_OS),unix)
     TARGET_EXEEXT :=
+else ifeq ($(TARGET_OS),js)
+    ifeq ($(NODEJS),)
+       TARGET_EXEEXT := .html
+    else
+       TARGET_EXEEXT := .js
+    endif
 else
     TARGET_EXEEXT := .exe
 endif

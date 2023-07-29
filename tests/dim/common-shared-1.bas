@@ -1,5 +1,8 @@
 #include "fbcunit.bi"
 
+'' Emscripten (and wasm) doesn't support common symbols
+#ifndef __FB_JS__
+
 #include "common-shared.bi"
 
 '' COMMON SHARED in the global namespace test
@@ -73,3 +76,5 @@ SUITE( fbc_tests.dim_.common_shared_1 )
 		shadowingACommon.test_proc
 	END_TEST
 END_SUITE
+
+#endif

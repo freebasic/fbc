@@ -33,6 +33,9 @@ export ENABLE_CONSOLE_OUTPUT
 UNITTEST_RUN_ARGS :=
 export UNITTEST_RUN_ARGS
 
+NODEJS :=
+export NODEJS
+
 # verify the FB_LANG option
 #
 ifneq ($(FB_LANG),)
@@ -95,6 +98,7 @@ all :
 	@$(ECHO) "   UNITTEST_RUN_ARGS=args"
 	@$(ECHO) "   ENABLE_CHECK_BUGS=1"
 	@$(ECHO) "   ENABLE_CONSOLE_OUTPUT=1"
+	@$(ECHO) "   NODEJS=node (emscripten: run fbc-tests under node.js)"
 	@$(ECHO) ""
 	@$(ECHO) "Targets: Configuration and Checks"
 	@$(ECHO) "   check"

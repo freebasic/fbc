@@ -144,7 +144,7 @@ function typeCalcNaturalAlign _
 
 	'' LONGINT/DOUBLE are 4-byte aligned on 32bit x86 Linux/DOS/BSD,
 	'' but 8-byte aligned on other systems (Win32/Win64, 64bit Linux/BSD,
-	'' ARM Linux)
+	'' ARM Linux, JS/wasm)
 	if( (fbGetCpuFamily( ) = FB_CPUFAMILY_X86) and _
 		(env.clopt.target <> FB_COMPTARGET_WIN32) ) then
 		'' As a result, on 32bit x86 Linux/DOS/BSD, everything that is
