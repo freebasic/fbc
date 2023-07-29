@@ -1224,11 +1224,15 @@ private function hLinkFiles( ) as integer
 		end if
 	#elseif defined( __FB_WIN32__ )
 		#ifdef ENABLE_STANDALONE
-			if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS ) then
+			'' "cross"-compiling? djgpp cross tools and emscripten
+			'' build tools can't seem to handle the long command line
+			'' created when linking ./tests/fbc-tests
+			select case fbGetOption( FB_COMPOPT_TARGET )
+			case FB_COMPTARGET_DOS, FB_COMPTARGET_JS
 				if( hPutLdArgsIntoFile( ldcline ) = FALSE ) then
 					exit function
 				end if
-			end if
+			end select
 		#else
 			dim toolnamelen as integer = len( "ld.exe " ) + _
 				iif( len( fbc.targetprefix ) > len( fbc.buildprefix ), len( fbc.targetprefix ), len( fbc.buildprefix ) )
