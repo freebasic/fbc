@@ -627,7 +627,6 @@ LIBFBRT_BI  := $(sort $(foreach i,$(FBRT_DIRS),$(wildcard $(i)/*.bi)))
 LIBFBRT_BAS := $(sort $(foreach i,$(FBRT_DIRS),$(patsubst $(i)/%.bas,$(libfbrtobjdir)/%.o,$(wildcard $(i)/*.bas))))
 LIBFBRT_S   := $(sort $(foreach i,$(FBRT_DIRS),$(patsubst $(i)/%.s,$(libfbrtobjdir)/%.o,$(wildcard $(i)/*.s))))
 
-LIBFBRT_BAS := $(filter-out $(libfbrtobjdir)/signals.o, $(LIBFBRT_BAS))
 LIBFBRTPIC_BAS   := $(patsubst $(libfbrtobjdir)/%,$(libfbrtpicobjdir)/%,$(LIBFBRT_BAS))
 LIBFBRTMT_BAS    := $(patsubst $(libfbrtobjdir)/%,$(libfbrtmtobjdir)/%,$(LIBFBRT_BAS))
 LIBFBRTMT_S      := $(patsubst $(libfbrtobjdir)/%,$(libfbrtmtobjdir)/%,$(LIBFBRT_S))
@@ -823,14 +822,22 @@ ifeq ($(TARGET_OS),dos)
   # Avoid hitting the command line length limit (the libfbrt.a ar command line
   # is very long...)
 	$(QUIET)rm -f $@
+ifneq ($(LIBFBRT_C),)
 	$(QUIET)cp $(LIBFBRT_C) $(libfbrtobjdir)
+endif
 	$(QUIET_AR)$(AR) rcs $@ $(libfbrtobjdir)/*.o
 else ifneq ($(findstring MSYS_NT,$(shell uname)),)
 	$(QUIET)rm -f $@
+ifneq ($(LIBFBRT_C),)
 	$(QUIET)cp $(LIBFBRT_C) $(libfbrtobjdir)
+endif
 	$(QUIET_AR)$(AR) rcs $@ $(libfbrtobjdir)/*.o
 else
+ifneq ($(LIBFBRT_C),)
 	$(QUIET_AR)rm -f $@; cp $(LIBFBRT_C) $(libfbrtobjdir); $(AR) rcs $@ $^
+else
+	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
+endif
 endif
 $(LIBFBRT_BAS): $(libfbrtobjdir)/%.o: %.bas $(LIBFBRT_BI) | $(libfbrtobjdir)
 	$(QUIET_FBC)$(FBC) $(ALLFBRTCFLAGS) -c $< -o $@
@@ -847,14 +854,22 @@ ifeq ($(TARGET_OS),dos)
   # Avoid hitting the command line length limit (the libfbrt.a ar command line
   # is very long...)
 	$(QUIET)rm -f $@
+ifneq ($(LIBFBRTMT_C),)
 	$(QUIET)cp $(LIBFBRTMT_C) $(libfbrtmtobjdir)
+endif
 	$(QUIET_AR)$(AR) rcs $@ $(libfbrtmtobjdir)/*.o
 else ifneq ($(findstring MSYS_NT,$(shell uname)),)
 	$(QUIET)rm -f $@
+ifneq ($(LIBFBRTMT_C),)
 	$(QUIET)cp $(LIBFBRTMT_C) $(libfbrtmtobjdir)
+endif
 	$(QUIET_AR)$(AR) rcs $@ $(libfbrtmtobjdir)/*.o
 else
+ifneq ($(LIBFBRTMT_C),)
 	$(QUIET_AR)rm -f $@; cp $(LIBFBRTMT_C) $(libfbrtmtobjdir); $(AR) rcs $@ $^
+else
+	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
+endif
 endif
 $(LIBFBRTMT_BAS): $(libfbrtmtobjdir)/%.o: %.bas $(LIBFBRT_BI) | $(libfbrtmtobjdir)
 	$(QUIET_FBC)$(FBC) -mt -d ENABLE_MT $(ALLFBRTCFLAGS) -c $< -o $@
