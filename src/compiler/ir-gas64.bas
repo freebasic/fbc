@@ -457,6 +457,11 @@ private sub check_optim(byref code as string)
 			poschar1=instr(code," ")
 			instruc=left(code,poschar1-1)
 			poschar2=instr(code,",")
+			if poschar2=0 then
+				''case movsb|w|d|q
+				prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV
+				exit sub
+			End If
 			part1=trim(mid(code,poschar1+1,poschar2-poschar1-1))
 			poschar1=instr(code,"#")
 			if poschar1=0 then
