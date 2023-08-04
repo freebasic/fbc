@@ -42,7 +42,7 @@ LABEL(pset_skip_1)
 LABEL(pset_skip_2)
 	shrl $1, %ecx
 	jnc pset_skip_4
-	movsd
+	movsl
 
 LABEL(pset_skip_4)
 	shrl $1, %ecx
