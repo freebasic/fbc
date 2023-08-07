@@ -179,14 +179,14 @@ end extern
 
 private sub Fl_Window.force_position(force as long)
 	if force then
-		set_flag(FORCE_POSITION)
+		set_flag(FORCE_POSITION_)
 	else
-		clear_flag(FORCE_POSITION)
+		clear_flag(FORCE_POSITION_)
 	end if
 end sub
 
 private function Fl_Window.force_position() as long
-	return iif(flags() and FORCE_POSITION,1,0)
+	return iif(flags() and FORCE_POSITION_,1,0)
 end function
 
 private sub Fl_Window.clear_border() 
