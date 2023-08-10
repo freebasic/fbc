@@ -2,6 +2,11 @@
 
 extern "c++"
 
+#define FL_NORMAL_BUTTON	0
+#define FL_TOGGLE_BUTTON	1
+#define FL_RADIO_BUTTON		(FL_RESERVED_TYPE+2)
+#define FL_HIDDEN_BUTTON	3
+
 #ifndef fl_old_shortcut
 declare function fl_old_shortcut(as const zstring ptr) as unsigned long
 #endif
