@@ -45,7 +45,7 @@ LABEL(memcpy_skip_1)
 LABEL(memcpy_skip_2)
 	shrl $1, %ecx
 	jnc memcpy_skip_4
-	movsd
+	movsl
 
 LABEL(memcpy_skip_4)
 	orl %ecx, %ecx
