@@ -2099,7 +2099,7 @@ private function hCheckOvlParam _
 			return FB_OVLPROC_NO_MATCH
 		end if
 
-		assert( astIsVAR( arg_expr ) or astIsFIELD( arg_expr ) )
+		assert( astIsVAR( arg_expr ) or astIsFIELD( arg_expr ) or astIsNIDXARRAY( arg_expr ) )
 		array = arg_expr->sym
 		assert( symbIsArray( array ) )
 

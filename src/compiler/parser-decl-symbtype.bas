@@ -374,8 +374,6 @@ sub cTypeOf _
 		exit sub
 	end if
 
-	expr = astRemoveNIDXARRAY( expr )
-
 	dtype   = astGetFullType( expr )
 	subtype = astGetSubtype( expr )
 	lgt     = astSizeOf( expr, is_fixlenstr )

@@ -345,11 +345,10 @@ private function hCheckByDescParam _
 		byval n as ASTNODE ptr _
 	) as integer
 
-	dim as ASTNODE ptr desc_tree = any
+	dim as ASTNODE ptr desc_tree = any, l = any
 	dim as integer arg_dtype = any, sym_dtype = any
 	dim as FBSYMBOL ptr s = any, desc = any
 
-	arg_dtype = astGetDatatype( n->l )
 	function = FALSE
 
 	'' is arg a pointer?
@@ -357,7 +356,18 @@ private function hCheckByDescParam _
 		return TRUE
 	end if
 
-	s = astGetSymbol( n->l )
+	'' for a non-indexed array reference, perform the checks
+	'' on the non-indexed variable / field instead of the
+	'' non-indexed array node (AST_NODECLASS_ARRAY, indexed = FALSE)
+	if( astIsNIDXARRAY( n->l ) ) then
+		l = n->l->l
+	else
+		l = n->l
+	end if
+
+	arg_dtype = astGetDatatype( l )
+
+	s = astGetSymbol( l )
 	if( s = NULL ) then
 		exit function
 	end if
@@ -373,13 +383,13 @@ private function hCheckByDescParam _
 
 	'' both UDT?
 	if( (sym_dtype = FB_DATATYPE_STRUCT) and (arg_dtype = FB_DATATYPE_STRUCT) ) then
-		if( n->l->subtype <> symbGetSubtype( param ) ) then
+		if( l->subtype <> symbGetSubtype( param ) ) then
 			errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
 			exit function
 		end if
 	end if
 
-	if( astIsVAR( n->l ) ) then
+	if( astIsVAR( l ) ) then
 		assert( symbIsVar( s ) )
 
 		'' BYDESC param passed to BYDESC param?
@@ -391,7 +401,13 @@ private function hCheckByDescParam _
 			'' it's a pointer, but it will be seen as anything else
 			'' (ie: "array() as string"), so, remap the type
 			assert( symbIsStruct( s->var_.array.desctype ) and symbIsDescriptor( s->var_.array.desctype ) )
-			astSetType( n->l, typeAddrOf( FB_DATATYPE_STRUCT ), s->var_.array.desctype )
+			astSetType( l, typeAddrOf( FB_DATATYPE_STRUCT ), s->var_.array.desctype )
+
+			if( astIsNIDXARRAY( n->l ) ) then
+				astDelNode( n->l )
+				n->l = l
+			end if
+
 			return TRUE
 		end if
 
@@ -409,7 +425,7 @@ private function hCheckByDescParam _
 			return TRUE
 		end if
 
-	elseif( astIsFIELD( n->l ) ) then
+	elseif( astIsFIELD( l ) ) then
 		assert( symbIsField( s ) )
 
 		if( symbIsDynamic( s ) ) then
@@ -426,10 +442,15 @@ private function hCheckByDescParam _
 			'' the descriptor, so the expressions would be the same, except for the
 			'' data types, which we can fix up here though.
 			desc = symbGetArrayDescriptor( s )
-			astSetType( n->l, symbGetFullType( desc ), symbGetSubtype( desc ) )
+			astSetType( l, symbGetFullType( desc ), symbGetSubtype( desc ) )
+
+			if( astIsNIDXARRAY( n->l ) ) then
+				astDelNode( n->l )
+			end if
 
 			'' + the implicit ADDROF
-			n->l = astNewADDROF( n->l )
+			l = astNewADDROF( l )
+			n->l = l
 			return TRUE
 
 		elseif( symbGetArrayDimensions( s ) > 0 ) then
@@ -437,9 +458,16 @@ private function hCheckByDescParam _
 				exit function
 			end if
 
+			if( astIsNIDXARRAY( n->l ) = FALSE ) then
+				return FALSE
+			end if
+
+			astDelNode( n->l )
+
 			'' Static array field: Create a temp array descriptor
-			desc = hAllocTmpArrayDesc( s, n->l, desc_tree )
-			n->l = astNewLINK( astNewADDROF( astNewVAR( desc ) ), desc_tree, AST_LINK_RETURN_LEFT )
+			desc = hAllocTmpArrayDesc( s, l, desc_tree )
+			l = astNewLINK( astNewADDROF( astNewVAR( desc ) ), desc_tree, AST_LINK_RETURN_LEFT )
+			n->l = l
 			return TRUE
 		end if
 	end if

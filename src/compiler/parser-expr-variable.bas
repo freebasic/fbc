@@ -167,13 +167,17 @@ private function hFieldAccess _
 			return astNewNIDXARRAY( hBuildField( varexpr, offsetexpr, fld, dtype, subtype ) )
 		end if
 
-		'' '()'?
-		if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
-			return hBuildField( varexpr, offsetexpr, fld, dtype, subtype )
-		end if
-
 		'' '('
 		lexSkipToken( )
+
+		'' ')'?
+		if( lexGetToken() = CHAR_RPRNT ) then
+
+			'' ')'
+			lexSkipToken( )
+
+			return astNewNIDXARRAY( hBuildField( varexpr, offsetexpr, fld, dtype, subtype ) )
+		end if
 
 		if( symbIsDynamic( fld ) ) then
 			'' Dynamic array field; access the descriptor field (same offset)
@@ -1049,7 +1053,7 @@ function cVariableEx overload _
 	varexpr = NULL
 	idxexpr = NULL
 
-	dim as integer check_fields = TRUE, is_nidxarray = FALSE
+	dim as integer check_fields = TRUE, is_nidxarray = TRUE
 
 	'' check for '()', it's not an array, just passing bydesc
 	if( (lexGetToken( ) = CHAR_LPRNT) and (not fbGetIdxInParensOnly( )) ) then
@@ -1080,6 +1084,10 @@ function cVariableEx overload _
 					                     astBuildDerefAddrOf( descexpr, symb.fbarray_data, FB_DATATYPE_INTEGER, NULL ) )
 				else
 					idxexpr = cFixedSizeArrayIndex( sym )
+				end if
+
+				if( idxexpr ) then
+					is_nidxarray = FALSE
 				end if
 
 				'' ')'
@@ -1115,7 +1123,6 @@ function cVariableEx overload _
 				idxexpr = hMakeArrayIdx( sym )
 			else
 				check_fields = FALSE
-				is_nidxarray = TRUE
 			end if
 		end if
 	end if

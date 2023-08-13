@@ -127,7 +127,6 @@ private function hLenSizeof( byval tk as integer, byval isasm as integer ) as AS
 		'' Array without index makes this a SIZEOF()
 		if( astIsNIDXARRAY( expr ) ) then
 			tk = FB_TK_SIZEOF
-			expr = astRemoveNIDXARRAY( expr )
 		end if
 
 	'' then must be a type

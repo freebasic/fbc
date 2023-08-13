@@ -135,7 +135,7 @@ function astBuildVarDtorCall overload _
 	'' array? dims can be -1 with "DIM foo()" arrays..
 	if( symbGetArrayDimensions( s ) <> 0 ) then
 		'' destruct and/or free array, if needed
-		function = rtlArrayErase( astNewVAR( s ), symbIsDynamic( s ), check_access )
+		function = rtlArrayErase( astNewNIDXARRAY( astNewVAR( s ) ), symbIsDynamic( s ), check_access )
 	else
 		select case symbGetType( s )
 		'' dyn string?
@@ -982,7 +982,7 @@ private function hConstBound _
 
 	'' We must know the array symbol, it's carrying the bounds information
 	select case( arrayexpr->class )
-	case AST_NODECLASS_VAR, AST_NODECLASS_FIELD
+	case AST_NODECLASS_VAR, AST_NODECLASS_FIELD, AST_NODECLASS_NIDXARRAY
 
 	case else
 		exit function

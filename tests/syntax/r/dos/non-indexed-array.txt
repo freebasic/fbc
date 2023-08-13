@@ -1,0 +1,16 @@
+---
+-- no errors expected
+-- 4 errors expected
+non-indexed-array.bas(19) error 58: Type mismatch, at parameter 1 (array) of PROC_INT_ARRAY() in 'proc_int_array(u.array(0))  '' type mismatch'
+non-indexed-array.bas(20) error 58: Type mismatch, at parameter 1 (array) of PROC_INT_ARRAY() in 'proc_int_array(u.array(5))  '' type mismatch'
+non-indexed-array.bas(21) error 58: Type mismatch, at parameter 1 (array) of PROC_INT_ARRAY() in 'proc_int_array(array(1))    '' type mismatch'
+non-indexed-array.bas(22) error 58: Type mismatch, at parameter 1 (array) of PROC_INT_ARRAY() in 'proc_int_array(array(5))    '' type mismatch'
+-- no errors expected
+-- 2 errors expected 
+non-indexed-array.bas(47) error 58: Type mismatch, at parameter 1 (array) of PROC_FPTR_ARRAY() in 'proc_fptr_array(udtinst.fptr_array(0)) '' type mismatch'
+non-indexed-array.bas(48) error 58: Type mismatch, at parameter 1 (array) of PROC_FPTR_ARRAY() in 'proc_fptr_array(udtptr->fptr_array(0)) '' type mismatch'
+-- no errors expected
+-- no errors expected
+-- no errors expected
+-- no errors expected
+-- no errors expected

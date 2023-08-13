@@ -21,8 +21,6 @@ function cEraseStmt() as integer
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			hSkipUntil( CHAR_COMMA )
 		else
-			expr = astRemoveNIDXARRAY( expr )
-
 			'' array?
 			var s = astGetSymbol( expr )
 			if( s <> NULL ) then
@@ -256,8 +254,6 @@ function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 			hSkipUntil( CHAR_RPRNT, TRUE )
 			return astNewCONSTi( 0 )
 		end if
-
-		arrayexpr = astRemoveNIDXARRAY( arrayexpr )
 
 		'' array?
 		s = astGetSymbol( arrayexpr )

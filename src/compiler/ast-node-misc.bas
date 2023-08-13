@@ -196,25 +196,17 @@ end function
 function astNewNIDXARRAY( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr n = any
 
-	n = astNewNode( AST_NODECLASS_NIDXARRAY, FB_DATATYPE_INVALID )
-
+	n = astNewNode( AST_NODECLASS_NIDXARRAY, expr->dtype, expr->subtype )
+	n->sym  = expr->sym
 	n->l = expr
 
 	function = n
 end function
 
 function astLoadNIDXARRAY( byval n as ASTNODE ptr ) as IRVREG ptr
+	assert( FALSE )
 	astDelTree( n->l )
 	function = NULL
-end function
-
-function astRemoveNIDXARRAY( byval n as ASTNODE ptr ) as ASTNODE ptr
-	function = n
-	if( astIsNIDXARRAY( n ) ) then
-		function = n->l
-		n->l = NULL
-		astDelTree( n )
-	end if
 end function
 
 '' Links (l = statement 1; r = statement 2)
