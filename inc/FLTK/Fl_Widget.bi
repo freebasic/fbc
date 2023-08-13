@@ -561,3 +561,5 @@ end function
 private function Fl_Widget.use_accents_menu() as long
 	return this.flags_ and (1 shl 19)
 end function
+
+#define FL_RESERVED_TYPE 100
