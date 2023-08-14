@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="OPEN SCRN"}}----
-Opens the screen directly for input and output as a file
+Opens the screen directly for input and output, using it as if it were file operations.
 
 {{fbdoc item="syntax"}}##
 	**[[KeyPgOpen|Open]] Scrn** [for //mode//] [[KeyPgAs|as]] [#]//filenumber// [[KeyPgAs|as]] [[KeyPgLong|long]]

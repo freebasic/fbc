@@ -23,7 +23,9 @@ Waits until a specified time has elapsed, or a key is pressed.
 	
 	Include the second parameter, ##1##, for a "deep" sleep, which cannot be interrupted by pressing a key.
 	
-	The accuracy of ##**Sleep**## is variable depending on the OS cycle time (Windows NT/2K/XP: 15 ms, 9x/Me: 50 ms, Linux 10ms, DOS 55 ms).
+	The accuracy of ##**Sleep**## is variable depending on the OS cycle time:
+		Windows NT/2K/XP: 15 ms, 9x/Me: 50 ms, Linux: 10ms, DOS: 55 ms.
+	And using for the ##//amount//## parameter values lower than these accuracy values does not allow ##**Sleep**## to produce the corresponding wait values (always higher wait, and of the order of these values) except for the ##//amount//## value '0'.
 	
 	Call ##**Sleep**## with 25ms or less to release time-slice when waiting for user input or looping inside a thread.  This will prevent the program from unnecessarily hogging the CPU.
 	

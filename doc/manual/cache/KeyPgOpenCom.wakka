@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="OPEN COM"}}----
-Opens a serial port for input and output
+Opens a serial port for input and output, using it as if it were file operations.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Open Com** ( byref //options// [[KeyPgAs|as]] [[KeyPgString|string]], **AS** //filenumber// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]

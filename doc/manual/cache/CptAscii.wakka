@@ -305,7 +305,7 @@ Many of the standard ASCII characters cannot be ##[[KeyPgPrint|Print]]##ed in ""
 
 The acronym ASCII stands for American Standard Code for Information Interchange. For more information, see [[http://en.wikipedia.org/wiki/Ascii]].  The symbols for codes ##32## through ##127## are the same as the standard [[http://en.wikipedia.org/wiki/ISO_8859-1|Latin ISO-8859-1]] char set most Windows fonts use. Others are often very different.
 
-In console mode (i.e. ##[[KeyPgScreengraphics|Screen]] 0##/ non-graphics mode) the characters less than ##32## or greater than ##127## may display using different characters, depending on the operating system and code page of the screen / console in use.
+In console mode (i.e. ##[[KeyPgScreengraphics|Screen (Graphics)]] 0##/ non-graphics mode) the characters less than ##32## or greater than ##127## may display using different characters, depending on the operating system and code page of the screen / console in use.
 UNICODE is a newer standard of character sets involving two or more bytes per character, and may be used to print other characters to a Unicode-enabled console.
 
 In graphics modes, ##[[KeyPgDrawString|Draw String]]## does not give special meaning to control characters allowing an alternative to display all characters in the set. 

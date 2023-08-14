@@ -84,7 +84,7 @@ Sets or gets internal graphics library settings
 		[OUT] ##//param1//## ##TRUE## (##-1##) if alpha primitives is enabled, ##FALSE## (##0##) otherwise
 	- ##GET_GL_EXTENSIONS## Returns a string holding all supported GL extensions, or the empty string if not in ""OpenGL"" mode.
 		[OUT] ##//param//## supported GL extensions
-	- ##GET_HIGH_PRIORITY## Returns if ##GFX_HIGH_PRIORITY## was specified in the flags passed to ##[[KeyPgScreengraphics|Screen]]## or ##[[KeyPgScreenres|Screenres]]##.
+	- ##GET_HIGH_PRIORITY## Returns if ##GFX_HIGH_PRIORITY## was specified in the flags passed to ##[[KeyPgScreengraphics|Screen (Graphics)]]## or ##[[KeyPgScreenres|Screenres]]##.
 		[OUT] ##//param1//## higher priority graphics processing enabled
 	- ##GET_SCANLINE_SIZE## Returns how currently many scan lines each row of fbgfx video memory should occupy on the screen
 		[OUT] ##//param1//## scan line size multiplier
@@ -131,7 +131,7 @@ Sets or gets internal graphics library settings
 	- ##SET_PEN_POS## Sets the current graphical pen position, in screen coordinates. This position is used in graphics functions supporting relative coordinates using the ##[[KeyPgStep|Step]]## keyword.
 		[IN] ##//param1//## x
 		[IN] ##//param2//## y
-	- (*) ##SET_DRIVER_NAME## Sets the name of the internal graphics driver to be used in subsequent calls to ##[[KeyPgScreengraphics|Screen]]## or ##[[KeyPgScreenres|ScreenRes]]##.
+	- (*) ##SET_DRIVER_NAME## Sets the name of the internal graphics driver to be used in subsequent calls to ##[[KeyPgScreengraphics|Screen (Graphics)]]## or ##[[KeyPgScreenres|ScreenRes]]##.
 		[IN] ##//param//## driver name
 	- ##SET_ALPHA_PRIMITIVES## Sets if primitives drawing should honor alpha channel.
 		[IN] ##//param1//## enabled

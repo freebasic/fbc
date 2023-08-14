@@ -12,9 +12,9 @@ Initializes a graphics mode by specifying horizontal and vertical resolution
 	##//width//##, ##//height//##
 		The display width and height, respectively. For fullscreen mode, the user should check the availability of the resolution using ##[[KeyPgScreenlist|Screenlist]]##.
 	##//depth//##
-		The color depth in bits per pixel. Valid color depths are: ##1##, ##2##, ##4##, ##8##, ##16## and ##32##.  Values of ##15## and ##24## are also allowed as aliases for ##16## and ##32##, respectively.  If omitted, the default is 8 bits per pixel.  8 bits and below will give a palette image.  The default palette will be the first ##2 [[KeyPgOpExponentiate|^]] //depth//## colors of the 256-color palette used in ##[[KeyPgScreengraphics|Screen]] 13##.
+		The color depth in bits per pixel. Valid color depths are: ##1##, ##2##, ##4##, ##8##, ##16## and ##32##.  Values of ##15## and ##24## are also allowed as aliases for ##16## and ##32##, respectively.  If omitted, the default is 8 bits per pixel.  8 bits and below will give a palette image.  The default palette will be the first ##2 [[KeyPgOpExponentiate|^]] //depth//## colors of the 256-color palette used in ##[[KeyPgScreengraphics|Screen (Graphics)]] 13##.
 	##//num_pages//##
-		The number of video pages to create, defaults to ##1##. (see ##[[KeyPgScreengraphics|Screen]]##)
+		The number of video pages to create, defaults to ##1##. (see ##[[KeyPgScreengraphics|Screen (Graphics)]]##)
 	##//flags//##
 		Used to set various properties of the screen, including fullscreen mode and graphics driver priority. (see the standard header "fbgfx.bi" for available flags)
 	##//refresh_rate//##
@@ -107,7 +107,7 @@ sleep
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgScreengraphics|Screen]]## The QB-like way to set graphics mode
+	- ##[[KeyPgScreengraphics|Screen (Graphics)]]## The QB-like way to set graphics mode
 	- ##[[KeyPgScreenlist|Screenlist]]## Check display modes available for FB ""GfxLib"" to use
 	- ##[[KeyPgScreencontrol|Screencontrol]]## Select driver and more 
 	- ##[[KeyPgScreenlock|Screenlock]]##

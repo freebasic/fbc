@@ -54,7 +54,7 @@ Loop While Inkey = ""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgGetmouse|Getmouse]]##
-	- ##[[KeyPgScreengraphics|Screen]]##
+	- ##[[KeyPgScreengraphics|Screen (Graphics)]]##
 	- ##[[KeyPgMultikey|Multikey]]##
 	- ##[[KeyPgGetkey|Getkey]]##
 

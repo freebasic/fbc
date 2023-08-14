@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="OR"}}----
+{{fbdoc item="title" value="OR (graphics Put)"}}----
 Parameter to the ##[[KeyPgPutgraphics|Put]]## graphics statement which uses a bit-wise ##[[KeyPgOpOr|Or]]## as the blitting method
 
 {{fbdoc item="syntax"}}##

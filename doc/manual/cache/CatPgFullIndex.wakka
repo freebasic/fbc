@@ -520,7 +520,7 @@ Alphabetical listing of keywords, macros and procedures.
 {{fbdoc item="section" value="S"}}{{anchor name="s"}}
 	- {{fbdoc item="keyword" value="KeyPgSadd|SADD"}}
 	- {{fbdoc item="keyword" value="KeyPgScope|SCOPE"}}
-	- {{fbdoc item="keyword" value="KeyPgScreengraphics|SCREEN"}}
+	- {{fbdoc item="keyword" value="KeyPgScreengraphics|SCREEN (Graphics)"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenCons|SCREEN (Console)"}}
 	- {{fbdoc item="keyword" value="KeyPgScreencopy|SCREENCOPY"}}
 	- {{fbdoc item="keyword" value="KeyPgScreencontrol|SCREENCONTROL"}}

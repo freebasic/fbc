@@ -7,7 +7,7 @@ Default color values for ""FreeBASIC"" graphics and text screen modes.
 	4 colors: Black and white, and two others
 **{{anchor name="SCRN2_10_11|Screen modes 2, 10 and 11"}}**
 	Monochromatic: black and white.
-**{{anchor name="SCRN7_8_9_12_CON|Screen modes 7, 8, 9, 12, and Console"}}**
+**{{anchor name="SCRN7_8_9_12_CON|Screen modes 7, 8, 9, 12, and Console (Screen 0)"}}**
 	Two sets of 8 colors: normal and intense (bright)
 **{{anchor name="SCRN13_8BIT|Screen 13 and 8-bit modes"}}**
 	Multiple color and grayscale bands
@@ -24,7 +24,7 @@ Default color values for ""FreeBASIC"" graphics and text screen modes.
 
 	{{table columns="2" cellpadding="2" cells="Value;Name;0;black;1;white"}}
 
-{{anchor name="SCRN7_8_9_12_CON"}}{{fbdoc item="section" value="Screen modes 7, 8, 9, 12, and Console"}}
+{{anchor name="SCRN7_8_9_12_CON"}}{{fbdoc item="section" value="Screen modes 7, 8, 9, 12, and Console (Screen 0)"}}
 
 	{{image title="16 color palette" url="/images/pal16.png"}}
 

@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="TYPE"}}----
+{{fbdoc item="title" value="TYPE (UDT)"}}----
 Declares a user-defined type.
 
 {{fbdoc item="syntax"}}##

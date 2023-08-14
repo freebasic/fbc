@@ -26,7 +26,7 @@ Sets the display foreground / background color that is used with console output 
 	{{table columns="2" cellpadding="1" cells="Mode;Meaning;1;foreground is screen color (ranging 0-15). background is the emulated CGA palette to be used: 0 (green, red, and brown), 1 (cyan, magenta and white), 2 (same as 0, but with bright colors) or 3 (same as 1, but with bright colors);2, 11;foreground is a color index in current palette (ranging 0-1). background is a color index in current palette (ranging 0-1).;7, 8;foreground is a color index in current palette (ranging 0-15). background is screen color index in current palette (ranging 0-15).;9;foreground is a color index in current palette (ranging 0-63). background is screen color index in current palette (ranging 0-63).;12;foreground is a color index in current palette (ranging 0-15). background is a color index in current palette (ranging 0-15).;13 and up;foreground is a color index in current palette (ranging 0-255). background is a color index in current palette (ranging 0-255)."}}
 
 	If you are using a color depth higher than 8bpp, foreground and background are direct ##[[KeyPgRgb|RGB]]## color values in the form ##&h//AARRGGBB//##, where ##//AA//##, ##//RR//##, ##//GG//## and ##//BB//## are the alpha, red, green and blue components ranging ##&h00##-##&hFF## (##0##-##255## in decimal notation). While in hi/truecolor modes, you can use the ##[[KeyPgRgb|RGB]]## or ##[[KeyPgRgba|RGBA]]## macro to obtain a valid color value.
-	A ##[[GfxDefPalettes|Default Palette]]## is automatically set when entering a ##[[KeyPgScreengraphics|Screen]]## mode. 
+	A ##[[GfxDefPalettes|Default Palette]]## is automatically set when entering a ##[[KeyPgScreengraphics|Screen (Graphics)]]## mode. 
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/gfx/color.bas"}}%%(freebasic)
@@ -93,6 +93,6 @@ Sleep
 	- ##[[KeyPgHiword|HIWORD]]##
 	- ##[[KeyPgLocate|Locate]]##
 	- ##[[KeyPgPalette|Palette]]##
-	- ##[[KeyPgScreengraphics|Screen]]##
+	- ##[[KeyPgScreengraphics|Screen (Graphics)]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}{{fbdoc item="back" value="CatPgConsole|Console Functions"}}

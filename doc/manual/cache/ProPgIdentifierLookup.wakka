@@ -31,8 +31,8 @@ When referencing to an **identifier** is encountered in a program, a **look-up**
 		- But never the parent namespaces of this namespace nor also the global namespace can be candidates (not as in [3]).
 		=> Look-up order: [1], [4].
 		
-	If a qualified identifier with a prefix (##object-name/[[KeyPgThis|This]]## or ##[[KeyPgBase|Base]]##) referring to a type is used instead of an unqualified identifier, the previous rules for unqualified identifiers are amended as follows:
-		- The look-up begins at the level of the type or base type depending on the specified prefix ##object-name/[[KeyPgThis|This]]## or ##[[KeyPgBase|Base]]## (similarly to [1]).
+	If a qualified identifier with a prefix (##object-name/[[KeyPgThis|This]]## or ##[[KeyPgBase|Base (member access)]]##) referring to a type is used instead of an unqualified identifier, the previous rules for unqualified identifiers are amended as follows:
+		- The look-up begins at the level of the type or base type depending on the specified prefix ##object-name/[[KeyPgThis|This]]## or ##[[KeyPgBase|Base (member access)]]## (similarly to [1]).
 		- Failing that, then only higher base types from closest to furthest can be successively candidates for the look-up (as in [2]).
 		- But never any namespaces, the current also excluded, can be candidates (not as in [3] or [4]).
 		=> Look-up order: [1], [2].

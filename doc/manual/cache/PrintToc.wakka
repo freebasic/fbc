@@ -507,7 +507,7 @@
 	{{fbdoc item="subsect" value="S"}}
 		[[KeyPgSadd|SADD]]
 		[[KeyPgScope|SCOPE]]
-		[[KeyPgScreengraphics|SCREEN]]
+		[[KeyPgScreengraphics|SCREEN (Graphics)]]
 		[[KeyPgScreenCons|SCREEN (Console)]]
 		[[KeyPgScreencopy|SCREENCOPY]]
 		[[KeyPgScreencontrol|SCREENCONTROL]]
@@ -881,6 +881,7 @@
 		[[ProPgAntiFlickering|Graphics Mode Refresh and Anti-Flickering]]
 		[[GfxInternalFormats|Internal Graphics Formats]]
 		[[ProPgExternalFormats|External Graphics File Formats]]
+		[[ProPgDelayRegulate|Fine-grain procedure for waiting and in-loop procedure for fine-regulating FPS]]
 
 	{{fbdoc item="subsect" value="Multi-Threading"}}
 		[[ProPgMultiThreading|Overview]]

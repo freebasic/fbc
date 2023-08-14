@@ -31,7 +31,7 @@ Retrieves the status of the mouse pointing device
 	If in graphics mode, ##//x//## and ##//y//## will always be returned in pixel coordinates still relative to the upper left corner of the screen, which is at 0,0 in this case; custom coordinates system set via ##[[KeyPgViewgraphics|View]]## or ##[[KeyPgWindow|Window]]## do not affect the coordinates returned by ##**Getmouse**##.
 	If the mouse runs off the graphic window, all values are set to ##-1## and the return value of the function is set to ##1##. This may result in misinterpretation for the buttons and wheel if the return value of the function is not also tested.
 	
-	##//Wheel//## is the mouse wheel counter; rotating the wheel away from you makes the count to increase, rotating the wheel toward you makes it to decrease. At program startup or when a new graphics mode is set via ##[[KeyPgScreengraphics|Screen]]##, wheel position is reset to 0. ""FreeBASIC"" may not always support mouse wheels for a given platform, in which case 0 is always returned.
+	##//Wheel//## is the mouse wheel counter; rotating the wheel away from you makes the count to increase, rotating the wheel toward you makes it to decrease. At program startup or when a new graphics mode is set via ##[[KeyPgScreengraphics|Screen (Graphics)]]##, wheel position is reset to 0. ""FreeBASIC"" may not always support mouse wheels for a given platform, in which case 0 is always returned.
 	
 	##//Buttons//## stores the buttons status as a bitmask: bit 0 is set if left mouse button is down; bit 1 is set if right mouse button is down; bit 2 is set if middle mouse button / wheel is down.
 	

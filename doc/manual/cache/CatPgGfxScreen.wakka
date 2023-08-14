@@ -18,7 +18,7 @@ Statements and procedures that work with the graphics display.
 <<{{anchor name="MODES"}}{{fbdoc item="section" value="Working with screen modes"}}
 	=={{fbdoc item="keyword" value="KeyPgScreenlist|SCREENLIST"}}==
 		Gets the available fullscreen resolutions.
-	=={{fbdoc item="keyword" value="KeyPgScreengraphics|SCREEN"}} and {{fbdoc item="keyword" value="KeyPgScreenres|SCREENRES"}}==
+	=={{fbdoc item="keyword" value="KeyPgScreengraphics|SCREEN (Graphics)"}} and {{fbdoc item="keyword" value="KeyPgScreenres|SCREENRES"}}==
 		Sets a new graphics display mode.
 	=={{fbdoc item="keyword" value="KeyPgScreeninfo|SCREENINFO"}}==
 		Gets information about the system desktop or current display mode.

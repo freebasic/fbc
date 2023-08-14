@@ -100,7 +100,7 @@ Loop Until Len(Inkey$)
 	- Maximum number of text pages in Windows is 4.
 	- Maximum number of text pages in DOS is 8.
 	- Maximum number of text pages in all other targets is 1.
-	- Maximum number of graphics pages depends on what was specified when the ##[[KeyPgScreengraphics|Screen]]## or ##[[KeyPgScreenres|Screenres]]## statement was called.
+	- Maximum number of graphics pages depends on what was specified when the ##[[KeyPgScreengraphics|Screen (Graphics)]]## or ##[[KeyPgScreenres|Screenres]]## statement was called.
 
 {{fbdoc item="diff"}}
 	- None
@@ -108,7 +108,7 @@ Loop Until Len(Inkey$)
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreencopy|Screencopy]]##
 	- ##[[KeyPgFlip|Flip]]##
-	- ##[[KeyPgScreengraphics|Screen]]##
+	- ##[[KeyPgScreengraphics|Screen (Graphics)]]##
 
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

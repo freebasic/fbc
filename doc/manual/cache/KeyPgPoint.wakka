@@ -29,7 +29,7 @@ Returns the color attribute of a specified pixel coordinate
 {{fbdoc item="desc"}}
 	""GfxLib"" Function with two different uses.
 	If supplied with two coordinates it reads the color of the pixel at the coordinate ##//coord_x//##, ##//coord_y//## of the screen, or of the ##//buffer//##, if supplied.
-	The value return is a color index in a 256 or less color ##[[KeyPgScreengraphics|Screen]]##, and an ##[[KeyPgRgb|RGB]]## value in true color modes. If the coordinates are off-screen or off-buffer, ##-1## is returned
+	The value return is a color index in a 256 or less color ##[[KeyPgScreengraphics|Screen (Graphics)]]##, and an ##[[KeyPgRgb|RGB]]## value in true color modes. If the coordinates are off-screen or off-buffer, ##-1## is returned
 	
 	If supplied with a single value it returns the one of the coordinates of the graphics cursor as set by the last graphics command executed. If the last command was executed in a buffer, the values returned will be coordinates in the buffer. Arguments out of the range ##0##-##3## will return ##0##.
 	

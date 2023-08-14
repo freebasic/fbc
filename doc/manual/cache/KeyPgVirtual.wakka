@@ -31,7 +31,7 @@ Declare virtual methods
 	
 	**Caution:** In a multi-level inheritance, a same named method (same identifier and signature) can be declared ##[[KeyPgAbstract|Abstract]]##, ##**Virtual**## or normal (without specifier) at each inheritance hierarchy level. When there is mixing of  specifiers, the usual order is abstract -> virtual -> normal, from top to bottom of the inheritance hierarchy.
 	The access control (##[[KeyPgVisPublic|Public]]##/##[[KeyPgVisProtected|Protected]]##/##[[KeyPgVisPrivate|Private]]##) of an overriding method is not taken into account by the internal polymorphism process, but only for the initial call at compile-time.
-	##[[KeyPgBase|Base]].##method() calls always the base's own method, never the overriding method.
+	##[[KeyPgBase|Base (member access)]].##method() calls always the base's own method, never the overriding method.
 	
 	**Note:** ##Virtual## is also used as qualifier for ##[[KeyPgOpProcptr|Procptr]]## to request it to return the index in the vtable for a virtual/abstract member procedure or member operator.
 			##[[KeyPgOpProcptr|Procptr]] ( //identifier//, **Virtual** [ [[KeyPgAny|Any]]|//user_proctype// ] )##

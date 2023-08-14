@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="OPEN LPT"}}----
-Open a printer device
+Open a printer device, using it as if it were file operations.
 
 {{fbdoc item="syntax"}}##
 	**Open Lpt** ["[LPT[x]:][//Printer_Name//][,//TITLE=Doc_Title//][,//EMU=TTY//]"] [For Input|Output] [[KeyPgAs|as]] #//filenumber//

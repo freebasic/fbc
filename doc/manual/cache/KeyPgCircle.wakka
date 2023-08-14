@@ -39,7 +39,7 @@ Graphics statement to draw an ellipse or a circle
 	
 	##//start//## and ##//end//## are angles are in [[ProPgRadians|radians]]. These can range ##-2*PI## to ##2*PI##, where ##PI## is the constant &pi;, approximately ##3.141593##; if you specify a negative angle, its value is changed sign and a line is drawn from the center up to that point in the arc. ##//end//## angle can be less than ##//start//##. If you do not specify ##//start//## and ##//end//##, a full circle/ellipse is drawn; if you you specify ##//start//## but not ##//end//##, ##//end//## is assumed to be ##2*PI##; if you specify ##//end//## but not ##//start//##, ##//start//## is assumed to be ##0.0##.
 	
-	##//aspect//## is the aspect ratio, or the ratio of the y radius over the x radius. If omitted, the default for ##[[KeyPgScreenres|ScreenRes]]## modes is ##1.0##, while for ##[[KeyPgScreengraphics|Screen]]## modes the default value is the value required to draw a perfect circle on the screen, keeping the pixel aspect ratio in mind. This value can be calculated as follows:
+	##//aspect//## is the aspect ratio, or the ratio of the y radius over the x radius. If omitted, the default for ##[[KeyPgScreenres|ScreenRes]]## modes is ##1.0##, while for ##[[KeyPgScreengraphics|Screen (Graphics)]]## modes the default value is the value required to draw a perfect circle on the screen, keeping the pixel aspect ratio in mind. This value can be calculated as follows:
 	
 	##//ratio// = (//y_radius// / //x_radius//) * //pixel_aspect_ratio//##
 	

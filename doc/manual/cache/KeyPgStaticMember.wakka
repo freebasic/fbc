@@ -18,7 +18,7 @@ Declare a static member procedure or variable
 	- Static member procedures
 		##**Static**## methods do not have an implicit ##[[KeyPgThis|This]]## instance argument passed to them. This allows them to be used like normal non-member procedures (for example with callback procedure pointers).  An advantage of ##**Static**## methods are that they are encapsulated in the ##//typename//## namespace, and therefore have the ability to access the ##[[KeyPgVisPrivate|Private]]## or ##[[KeyPgVisProtected|Protected]]## members or methods of instances of ##//typename//##.
 		
-		##**Static**## methods can be called directly anywhere in code, like normal non-member procedures, or on objects of type ##//typename//##, similar to non-static methods, however either way there is no implicit or explicit ##[[KeyPgThis|This]]## (or explicit ##[[KeyPgBase|Base]]##) access possible from within a static method.
+		##**Static**## methods can be called directly anywhere in code, like normal non-member procedures, or on objects of type ##//typename//##, similar to non-static methods, however either way there is no implicit or explicit ##[[KeyPgThis|This]]## (or explicit ##[[KeyPgBase|Base (member access)]]##) access possible from within a static method.
 		
 		For member procedures with a ##**Static**## declaration, ##**Static**## may also be specified on the corresponding procedure bodies, for improved code readability.
 		

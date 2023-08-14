@@ -213,7 +213,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgPutgraphics|PUT (Graphics)"}}
 	- {{fbdoc item="keyword" value="KeyPgRgb|RGB"}}
 	- {{fbdoc item="keyword" value="KeyPgRgba|RGBA"}}
-	- {{fbdoc item="keyword" value="KeyPgScreengraphics|SCREEN"}}
+	- {{fbdoc item="keyword" value="KeyPgScreengraphics|SCREEN (Graphics)"}}
 	- {{fbdoc item="keyword" value="KeyPgScreencontrol|SCREENCONTROL"}}
 	- {{fbdoc item="keyword" value="KeyPgScreencopy|SCREENCOPY"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenevent|SCREENEVENT"}}

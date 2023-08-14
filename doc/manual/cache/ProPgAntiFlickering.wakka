@@ -251,5 +251,6 @@ End Sub
 	- ##[[KeyPgScreensync|Screensync]]##
 	- ##[[KeyPgScreenlock|Screenlock]]##, ##[[KeyPgScreenunlock|Screenunlock]]##
 	- ##[[KeyPgScreenset|Screenset]]##, ##[[KeyPgScreencopy|Screencopy]]##
+	- [[ProPgDelayRegulate|Fine-grain procedure for waiting and in-loop procedure for fine-regulating FPS]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

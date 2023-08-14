@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="OPEN CONS"}}----
-Opens the console's standard input (//stdin//) or output (//stdout//) streams for use in file operations.
+Opens the console's standard input (//stdin//) or output (//stdout//) streams, using it as if it were file operations.
 
 {{fbdoc item="syntax"}}##
 	**Open Cons** **As** [**#**]//filenumber//

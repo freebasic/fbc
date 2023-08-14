@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="XOR"}}----
+{{fbdoc item="title" value="XOR (graphics Put)"}}----
 Parameter to the ##[[KeyPgPutgraphics|Put]]## graphics statement which uses a bit-wise ##[[KeyPgOpXor|Xor]]## as the blitting method
 
 {{fbdoc item="syntax"}}##

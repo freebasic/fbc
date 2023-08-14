@@ -23,7 +23,7 @@ While Inkey <> "": Wend  '' loop until the keyboard input buffer is empty
 		%%
 	For FB's built-in functionality of getting keyboard input, see ##[[DevRtlInkey|Keyboard Input]] (Basics)##.
 	
-	Keeping ##[[KeyPgInkey|Inkey]]## to work while you use ##**Multikey**## allows more flexibility and can be useful to detect ##[[KeyPgChr|Chr]](255)+"k"## combo returned on window close button click, if a windowed graphics mode has been set via the ##[[KeyPgScreengraphics|Screen]]## statement. For a list of accepted scancodes, see [[GfxScancodes|DOS keyboard scancodes]]; these are guaranteed to be valid for all ""FreeBASIC"" supported platforms.
+	Keeping ##[[KeyPgInkey|Inkey]]## to work while you use ##**Multikey**## allows more flexibility and can be useful to detect ##[[KeyPgChr|Chr]](255)+"k"## combo returned on window close button click, if a windowed graphics mode has been set via the ##[[KeyPgScreengraphics|Screen (Graphics)]]## statement. For a list of accepted scancodes, see [[GfxScancodes|DOS keyboard scancodes]]; these are guaranteed to be valid for all ""FreeBASIC"" supported platforms.
 	##**Multikey**## should always work in graphics mode, as long as the screen is [[KeyPgScreenunlock|unlocked]]. Support in the console depends on the platform the program is run on though, and cannot be guaranteed.
 
 {{fbdoc item="ex"}}

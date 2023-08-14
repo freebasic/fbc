@@ -12,7 +12,7 @@ Closes all open files and ends the program
 		Error code returned to system.
 
 {{fbdoc item="desc"}}
-	Closes all open files, exits the program, and returns to the operating system. An optional return value, an integer, can be specified to return an error code to the system. If no return value is given, a value of 0 is automatically returned. This is the same as ##[[KeyPgEnd|End]]## and is here for compatibility between older BASIC dialects. It is recommended to use ##[[KeyPgEnd|End]]## instead.
+	Closes all open files, exits the program, and returns to the operating system. An optional return value, an integer, can be specified to return an error code to the system. If no return value is given, a value of 0 is automatically returned. This is the same as ##[[KeyPgEnd|End (Statement)]]## and is here for compatibility between older BASIC dialects. It is recommended to use ##[[KeyPgEnd|End (statement)]]## instead.
 	
 	Usage of this statement does not cleanly close scope. Local variables will not have their destructors called automatically, because ""FreeBASIC"" does not do stack unwinding. Only the destructors of global variables will be called in this case.
 	
@@ -28,6 +28,6 @@ print "this text will never be shown"
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgEnd|End]]##
+	- ##[[KeyPgEnd|End (statement)]]##
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}
