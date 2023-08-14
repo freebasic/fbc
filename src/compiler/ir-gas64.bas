@@ -4443,9 +4443,11 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 	if v1->typ=IR_VREGTYPE_REG and v2->typ=IR_VREGTYPE_REG and (typeGetSize( v1dtype )  = typeGetSize( v2dtype )) and _
 	   (typeGetClass( v1dtype )=typeGetClass( v2dtype ) ) then
-	   asm_info("no move as exactly same size, vreg changed"+Str(v1->reg)+" becomes "+Str(v2->reg))
-	   v1->reg=v2->reg
-	   exit sub
+		if( v2dtype <> FB_DATATYPE_BOOLEAN ) then
+			asm_info("no move as exactly same size, vreg changed"+Str(v1->reg)+" becomes "+Str(v2->reg))
+			v1->reg=v2->reg
+			exit sub
+		end if
 	end if
 
 	if (v1dtype=FB_DATATYPE_LONGINT and v2dtype=FB_DATATYPE_LONGINT) or (v1dtype=FB_DATATYPE_ULONGINT and v2dtype=FB_DATATYPE_ULONGINT) then
