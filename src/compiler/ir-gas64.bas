@@ -3944,7 +3944,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 
 					asm_code("cmp rax, 2147483647")
 					asm_code("jg "+lname_normal)
-					asm_code("cmp rax, -2147483648")
+					asm_code("cmp rax, -2147483647")
 					asm_code("jl "+lname_normal)
 
 					if op2[0]<>asc("r") then
