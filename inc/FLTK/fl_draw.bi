@@ -14,7 +14,7 @@ private sub fl_color overload(c as long)
 end sub
 
 private sub fl_color overload(r as ubyte, g as ubyte, b as ubyte)
-	fl_color(r, g, b)
+	fl_graphics_driver_->color(r, g, b)
 end sub
 
 private function fl_color overload()as Fl_Color

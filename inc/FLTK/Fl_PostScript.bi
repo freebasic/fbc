@@ -76,7 +76,7 @@ public:
 	declare sub transformed_draw(s as const zstring ptr, x as double, y as double)
 	declare function alpha_mask(data_ as const ubyte ptr, w as long, h as long, D as long, LD as long=0) as long
   
-	page_format_ as Fl_Paged_Device.Page_Format
+	page_format_ as long'Fl_Paged_Device.Page_Format
 	ps_filename_ as zstring ptr
  
 	declare sub page_policy(p as long)

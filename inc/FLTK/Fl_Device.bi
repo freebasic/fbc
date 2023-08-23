@@ -130,22 +130,22 @@ protected:
 	declare virtual sub draw(pxm as Fl_Pixmap ptr, XP as long, YP as long, WP as long, HP as long, cx as long, cy as long) 
 	declare virtual sub draw(bm as Fl_Bitmap ptr, XP as long, YP as long, WP as long, HP as long, cx as long, cy as long) 
 
-	declare virtual sub copy_offscreen(x as long, y as long, w as long, h as long, pixmap as Fl_Offscreen, srcx as long, srcy as long)
+	declare sub copy_offscreen(x as long, y as long, w as long, h as long, pixmap as Fl_Offscreen, srcx as long, srcy as long)
 public:
 	static class_id as const zstring ptr 
 	declare virtual function class_name() as const zstring ptr
 	declare virtual sub font(face as Fl_Font, fsize as Fl_Fontsize)
-	declare virtual function font() as Fl_Font
-	declare virtual function size() as Fl_Fontsize
+	declare function font() as Fl_Font
+	declare function size() as Fl_Fontsize
 	declare virtual function width(s as const zstring ptr, n as long) as double
 	declare virtual function width(c as unsigned long) as double
 	declare virtual sub text_extents(as const zstring ptr, n as long, byref dx as long, byref dy as long, byref w as long, byref h as long)
 	declare virtual function height() as long
 	declare virtual function descent() as long
-	declare virtual function color() as Fl_Color
+	declare function color() as Fl_Color
 	declare function font_descriptor() as any ptr
 	declare sub font_descriptor(d as any ptr)
-	declare virtual function draw_scaled(img as Fl_Image ptr, X as long, Y as long, W as long, H as long) as long
+	declare function draw_scaled(img as Fl_Image ptr, X as long, Y as long, W as long, H as long) as long
 	declare virtual destructor
 
 end type
@@ -160,7 +160,8 @@ end function
 
 extern "c"	'empty destructor
 extern fl_graphics_driver_ alias "fl_graphics_driver"  as Fl_Graphics_Driver ptr 
-sub _ZN9Fl_DeviceD0Ev (d as Fl_Device)
+sub _ZN9Fl_DeviceD0Ev (d as Fl_Device ptr)
+	delete d
 end sub
 end extern 
 
@@ -194,11 +195,11 @@ private virtual sub Fl_Graphics_Driver.font(face as Fl_Font, fsize as Fl_Fontsiz
 	font_ = face: size_ = fsize
 end sub
 
-private virtual function Fl_Graphics_Driver.font() as Fl_Font
+private function Fl_Graphics_Driver.font() as Fl_Font
 	return font_
 end function
 
-private virtual function Fl_Graphics_Driver.size() as Fl_Fontsize
+private function Fl_Graphics_Driver.size() as Fl_Fontsize
 	return size_
 end function
 
@@ -219,7 +220,7 @@ private virtual function Fl_Graphics_Driver.descent() as long
 	return 0
 end function
 
-private virtual function Fl_Graphics_Driver.color() as Fl_Color
+private function Fl_Graphics_Driver.color() as Fl_Color
 	return color_
 end function
 
