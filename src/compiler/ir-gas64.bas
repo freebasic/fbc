@@ -3873,7 +3873,8 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 					asm_code("shr "+op1+", "+op2)
 				end if
 			end if
-		case AST_OP_INTDIV '' idiv instruction uses rax and rdx
+
+		case AST_OP_MOD , AST_OP_INTDIV ''instructions use rax and rdx, to be checked carefully
 			if reghandle(KREG_RDX)<>KREGFREE then ''as rdx is used need to transfer its contain to another register
 				'if op1<>*regstrq(KREG_RDX) And op2<>*regstrq(KREG_RDX) then ''except when <> op1 and op2
 				if op1<>*regstrq(KREG_RDX) then ''if op1=rdx do nothing as it's transfered in rax
@@ -3894,123 +3895,154 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 			if v2->typ=IR_VREGTYPE_IMM then
 				''can't use directly immediat value so transfering in a free register but not in RDX.....
 				if reghandle(KREG_RDX)=KREGFREE then reghandle(KREG_RDX)=KREGRSVD
+				if reghandle(KREG_RBX)=KREGFREE then reghandle(KREG_RBX)=KREGRSVD
 				regtempo=*reg_tempo()
 				if reghandle(KREG_RDX)=KREGRSVD then reghandle(KREG_RDX)=KREGFREE
+				if reghandle(KREG_RBX)=KREGRSVD then reghandle(KREG_RBX)=KREGFREE
 				asm_code("mov "+regtempo+", "+op2)
 				op2=regtempo
 			end if
 
-			if tempodtype=FB_DATATYPE_LONG or tempodtype=FB_DATATYPE_ULONG then
+			if typeGetSize( tempodtype )=typeGetSize( FB_DATATYPE_LONG ) then
 				asm_code("mov eax, "+op1)
-			else
-				asm_code("mov rax, "+op1)
-			End If
 
-			tempo2dtype=v2->dtype
-			if typeisptr(tempo2dtype) then tempo2dtype=FB_DATATYPE_INTEGER
-
-			if typeGetSize( tempodtype )=typeGetSize( FB_DATATYPE_INTEGER ) then
-				if tempodtype=FB_DATATYPE_UINT or tempodtype=FB_DATATYPE_ULONGINT or tempo2dtype=FB_DATATYPE_UINT or tempo2dtype=FB_DATATYPE_ULONGINT then
-					asm_code("mov edx, 0")
-					asm_code("div "+op2)
-				else
-					asm_code("cqo")
-					asm_code("idiv "+op2)
-				end if
-			else
-
-				if tempodtype=FB_DATATYPE_uLONG then
-					asm_code("mov edx, 0")
-					asm_code("div "+op2)
-				else
-					asm_code("cdq")
-					asm_code("idiv "+op2)
-				End If
-			End If
-
-			if vr=0 then
-				if tempodtype=FB_DATATYPE_LONG or tempodtype=FB_DATATYPE_ULONG then
-					asm_code("mov "+op1+", eax")
-				Else
-					asm_code("mov "+op1+", rax")
-				End If
-			else
-				if tempodtype=FB_DATATYPE_LONG or tempodtype=FB_DATATYPE_ULONG then
-					asm_code("mov "+*regstrd(vrreg)+", eax")
-				else
-					asm_code("mov "+*regstrq(vrreg)+", rax")
-				end if
-				restore_vrreg(vr,vrreg)
-			end if
-
-		case AST_OP_MOD ''mod instruction uses rax and rdx, to be checked carefully
-			if reghandle(KREG_RDX)<>KREGFREE then ''as rdx is used need to transfer its contain to another register
-				'if op1<>*regstrq(KREG_RDX) And op2<>*regstrq(KREG_RDX) then ''except when <> op1 and op2
-				if op1<>*regstrq(KREG_RDX) then ''if op1=rdx do nothing as it's transfered in rax
-					tempo=reghandle(KREG_RDX)
-					reg_findfree(tempo)
-					reghandle(KREG_RDX)=KREGFREE
-					asm_info("rdx used so transfer to other register="+*regstrq(reg_findreal(tempo)))
-					asm_code("mov "+*regstrq(reg_findreal(tempo))+", "+*regstrq(KREG_RDX))
-					if op2=*regstrq(KREG_RDX) then
-						op2=*regstrq(reg_findreal(tempo))
-					end if
-					if vrreg=KREG_RDX then vrreg=reg_findreal(tempo)
-				end if
-			else
-				ctx.usedreg Or=(1 Shl KREG_RDX)
-			end if
-
-			if v2->typ=IR_VREGTYPE_IMM then
-				''can't use directly immediat value so transfering in a free register but not in RDX.....
-				if reghandle(KREG_RDX)=KREGFREE then reghandle(KREG_RDX)=KREGRSVD
-				regtempo=*reg_tempo()
-				if reghandle(KREG_RDX)=KREGRSVD then reghandle(KREG_RDX)=KREGFREE
-				asm_code("mov "+regtempo+", "+op2)
-				op2=regtempo
-			end if
-
-			if tempodtype=FB_DATATYPE_LONG or tempodtype=FB_DATATYPE_ULONG then
-				asm_code("mov eax, "+op1)
-			else
-				asm_code("mov rax, "+op1)
-			End If
-
-			tempo2dtype=v2->dtype
-			if typeisptr(tempo2dtype) then tempo2dtype=FB_DATATYPE_INTEGER
-
-			if typeGetSize( tempodtype )=typeGetSize( FB_DATATYPE_INTEGER ) then
-				if tempodtype=FB_DATATYPE_UINT or tempodtype=FB_DATATYPE_ULONGINT or tempo2dtype=FB_DATATYPE_UINT or tempo2dtype=FB_DATATYPE_ULONGINT then
-					asm_code("mov edx, 0")
-					asm_code("div "+op2)
-				else
-					asm_code("cqo")
-					asm_code("idiv "+op2)
-				end if
-			else
 				if tempodtype=FB_DATATYPE_ULONG then
 					asm_code("mov edx, 0")
 					asm_code("div "+op2)
 				else
 					asm_code("cdq")
 					asm_code("idiv "+op2)
-				End If
-			End If
-
-			if vr=0 then
-				if tempodtype=FB_DATATYPE_LONG or tempodtype=FB_DATATYPE_ULONG then
-					asm_code("mov "+op1+", edx")
-				Else
-					asm_code("mov "+op1+", rdx")
-				End If
-			else
-				if tempodtype=FB_DATATYPE_LONG or tempodtype=FB_DATATYPE_ULONG then
-					asm_code("mov "+*regstrd(vrreg)+", edx")
-				else
-					asm_code("mov "+*regstrq(vrreg)+", rdx")
 				end if
-				restore_vrreg(vr,vrreg)
-			end if
+
+				if vr=0 then
+					if op = AST_OP_MOD then
+						asm_code("mov "+op1+", edx")
+					else
+						asm_code("mov "+op1+", eax")
+					End If
+				else
+					if op = AST_OP_MOD then
+						asm_code("mov "+*regstrd(vrreg)+", edx")
+					else
+						asm_code("mov "+*regstrd(vrreg)+", eax")
+					end if
+					restore_vrreg(vr,vrreg)
+				end if
+
+			else
+				''longint or ulongint
+				'' if values are in 32bit range use 32bit instruction twice faster
+				var lname_normal = *symbUniqueLabel( )
+				var lname_end = *symbUniqueLabel( )
+				dim as integer rbxpushed,rsipushed
+				dim as string op2bis=op2
+
+				asm_code("mov rax, "+op1,KNOOPTIM)
+
+				'always INTEGER + INTEGER or ULONGINT + ULONGINT
+				if tempodtype=FB_DATATYPE_LONGINT or tempodtype=FB_DATATYPE_INTEGER then
+
+					asm_code("cmp rax, 2147483647")
+					asm_code("jg "+lname_normal)
+					asm_code("cmp rax, -2147483647")
+					asm_code("jl "+lname_normal)
+
+					if op2[0]<>asc("r") then
+						if reghandle(KREG_RBX)<>KREGFREE and op1<>"rbx" then
+							rbxpushed=reghandle(KREG_RBX)
+							asm_code("push rbx")
+						End If
+						asm_code("mov rbx, "+op2,KNOOPTIM)
+						op2bis="rbx"
+					End If
+
+					asm_code("cmp "+op2bis+", 2147483647")
+					asm_code("jg "+lname_normal)
+					asm_code("cmp "+op2bis+", -2147483648")
+					asm_code("jl "+lname_normal)
+
+					if op2bis[2]=asc("x") then
+						op2bis="e"+right(op2bis,2)
+					else
+						op2bis=op2bis+"d"
+					End If
+
+					asm_code("cdq")
+					asm_code("idiv "+op2bis)
+					if op = AST_OP_MOD then
+						asm_code("movsxd rdx, edx")
+					else
+						asm_code("movsxd rax, eax")
+					end if
+				else
+
+					asm_code("push rsi")
+					rsipushed=1
+					asm_code("mov rsi, 4294967295")
+					asm_code("cmp rax, rsi")
+					asm_code("ja "+lname_normal)
+
+					if op2[0]<>asc("r") then
+						if reghandle(KREG_RBX)<>KREGFREE and op1<>"rbx" then
+							rbxpushed=reghandle(KREG_RBX)
+							asm_code("push rbx")
+						End If
+						asm_code("mov rbx, "+op2,KNOOPTIM)
+						op2bis="rbx"
+					End If
+
+					asm_code("cmp "+op2bis+", rsi")
+					asm_code("ja "+lname_normal)
+
+					if op2bis[2]=asc("x") then
+						op2bis="e"+right(op2bis,2)
+					else
+						op2bis=op2bis+"d"
+					End If
+
+					asm_code("mov edx, 0")
+					asm_code("div "+op2bis)
+					asm_code("pop rsi")
+				end if
+
+				asm_code("jmp "+lname_end)
+
+				asm_code(lname_normal+":")
+				if rsipushed=1 then
+					asm_code("pop rsi")
+				end if
+
+				if tempodtype=FB_DATATYPE_LONGINT or tempodtype=FB_DATATYPE_INTEGER then
+					asm_code("cqo")
+					asm_code("idiv "+op2)
+				else
+					asm_code("mov edx, 0")
+					asm_code("div "+op2)
+				End If
+
+				asm_code(lname_end+":")
+
+				if rbxpushed then
+					asm_code("pop rbx")
+					reghandle(KREG_RBX)=rbxpushed
+				end if
+
+				if vr=0 then
+					if op = AST_OP_MOD then
+						asm_code("mov "+op1+", rdx")
+					else
+						asm_code("mov "+op1+", rax")
+					End If
+				else
+					if op = AST_OP_MOD then
+						asm_code("mov "+*regstrq(vrreg)+", rdx")
+					else
+						asm_code("mov "+*regstrq(vrreg)+", rax")
+					end if
+					restore_vrreg(vr,vrreg)
+				end if
+
+			End If
 
 		case else
 			asm_error("op int needs to be coded : "+ *hGetBopCode(op))
