@@ -18,7 +18,7 @@ private:
 
 	static current_ as Fl_Group_ ptr
 protected:
-	declare sub draw()
+	declare virtual sub draw()
 	declare const sub draw_child(byref widget as Fl_Widget)
 	declare sub draw_children()
 	declare const sub draw_outside_label(byref widget as const Fl_Widget)

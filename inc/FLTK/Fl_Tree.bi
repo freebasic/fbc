@@ -187,6 +187,6 @@ end type
 end extern
 
 private function Fl_Tree.prefs() byref as const Fl_Tree_Prefs 
-	return prefs
+	return _prefs
 end function
 

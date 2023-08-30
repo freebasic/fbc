@@ -86,7 +86,7 @@ private:
 	_last_push_x as long
 	_last_push_y as long
   
-	_selectmode as TableRowSelectMode
+	_selectmode as long'TableRowSelectMode
 
 protected:
 	declare constructor (byref b as const Fl_Table_Row)

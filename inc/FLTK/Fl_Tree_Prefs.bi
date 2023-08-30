@@ -51,7 +51,7 @@ private:
 	_labelfgcolor as Fl_Color 
 	_labelbgcolor as Fl_Color 
 	_connectorcolor as Fl_Color 
-	_connectorstyle as Fl_Tree_Connector 
+	_connectorstyle as long'Fl_Tree_Connector 
 	_openimage as Fl_Image ptr
 	_closeimage as Fl_Image ptr
 	_userimage as Fl_Image ptr
@@ -61,11 +61,11 @@ private:
 	'_userdeimage as Fl_Image ptr
 	_showcollapse as byte
 	_showroot as byte
-	_sortorder as  Fl_Tree_Sort
+	_sortorder as  long'Fl_Tree_Sort
 	_selectbox as Fl_Boxtype
-	_selectmode as Fl_Tree_Select
-	'_itemreselectmode as  Fl_Tree_Item_Reselect_Mode
-	'_itemdrawmode as Fl_Tree_Item_Draw_Mode
+	_selectmode as long'Fl_Tree_Select
+	'_itemreselectmode as  long'Fl_Tree_Item_Reselect_Mode
+	'_itemdrawmode as long'Fl_Tree_Item_Draw_Mode
 	'_itemdrawcallback as Fl_Tree_Item_Draw_Callback ptr
 	'_itemdrawuserdata as any ptr
 public:

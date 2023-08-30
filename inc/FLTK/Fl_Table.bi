@@ -29,8 +29,8 @@ private:
 	_col_header as ubyte
 	_row_resize as ubyte
 	_col_resize as ubyte
-	_row_resize_min as ubyte
-	_col_resize_min as ubyte
+	_row_resize_min as long
+	_col_resize_min as long
   
 	_redraw_toprow as long
 	_redraw_botrow as long
@@ -66,7 +66,7 @@ private:
   
 	_last_cursor as Fl_Cursor
 
-	_callback_context as TableContext
+	_callback_context as long'TableContext
 	as long _callback_row, _callback_col
   
 	_resizing_col as long
@@ -374,7 +374,7 @@ end sub
 
 private sub Fl_Table.col_width_all(width_ as long)
 	for c as long=0 to cols()-1
-		col_width(c, width)
+		col_width(c, width_)
 	next
 end sub
 
