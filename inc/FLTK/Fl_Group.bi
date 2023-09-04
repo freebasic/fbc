@@ -32,7 +32,7 @@ public:
 	declare constructor(x as long, y as long, w as long, h as long, title as const zstring ptr=0)
 	declare virtual destructor()
 
-	declare function handle(i as long) as long
+	declare virtual function handle(i as long) as long
 	declare sub begin()
 	declare sub end_ alias "end"()
 

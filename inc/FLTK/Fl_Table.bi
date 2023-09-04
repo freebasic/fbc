@@ -64,7 +64,7 @@ private:
 	_colwidths as IntVector
 	_rowheights as IntVector
   
-	_last_cursor as Fl_Cursor
+	_last_cursor as long'Fl_Cursor
 
 	_callback_context as long'TableContext
 	as long _callback_row, _callback_col
