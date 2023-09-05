@@ -108,8 +108,8 @@ private sub Fl_Spinner.update()
 		sprintf(temp, "%.12f", step_)
 		do while *sp: sp+=1: loop
 		sp-=1
-		do while *sp>temp andalso *sp=asc("0"): sp-=1:loop
-		do while *sp>temp andalso (*sp>=asc("0") andalso *sp<=asc("9") ):  sp-=1: c+=1: loop
+		do while sp>@temp andalso *sp=asc("0"): sp-=1:loop
+		do while sp>@temp andalso (*sp>=asc("0") andalso *sp<=asc("9") ):  sp-=1: c+=1: loop
 		sprintf(s, format_, c, value_)
 	else 
 		sprintf(s, format_, value_)
