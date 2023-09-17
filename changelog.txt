@@ -14,6 +14,7 @@ Version 1.20.0
 - consistent handling for float comparisons involving NaN's.  gcc/gas64/gas/gas+SSE (LLVM not-tested) - this includes IF expr then, IIF(), CBOOL, result = (a rel-op b), etc.
 - sf.net #984: Incorrect syntax for a member array passed as argument to a procedure
 - github #292: Boolean bitfields writes treated as 32/64-bit rather than 8-bit
+- sf.net #985: Default access to a member symbol is disabled by a duplicated symbol in implicit namespace (regression of behaviour when fixing #948)
 
 
 Version 1.10.1

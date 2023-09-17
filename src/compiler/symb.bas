@@ -1043,7 +1043,10 @@ private function hsymbLookupTypeNS _
 		sym = hashLookupEx( @hashtb->tb, id, index )
 		while( sym )
 			if( symbIsLocal( sym ) ) then
-				return symbNewChainpool( sym )
+				'' but only if it's not main scoped local
+				if( symbGetScope( sym ) > FB_MAINSCOPE ) then
+					return symbNewChainpool( sym )
+				end if
 			end if
 			sym = sym->hash.next
 		wend
