@@ -45,33 +45,35 @@ declare sub ppLookup _
 '' globals
 	dim shared as PP_CTX pp
 
-const SYMB_MAXKEYWORDS = 24
+const SYMB_MAXKEYWORDS = 26
 
 	dim shared kwdTb( 0 to SYMB_MAXKEYWORDS-1 ) as SYMBKWD => _
 	{ _
-		(@"IF"      , FB_TK_PP_IF       ), _
-		(@"IFDEF"   , FB_TK_PP_IFDEF    ), _
-		(@"IFNDEF"  , FB_TK_PP_IFNDEF   ), _
-		(@"ELSE"    , FB_TK_PP_ELSE     ), _
-		(@"ELSEIF"  , FB_TK_PP_ELSEIF   ), _
-		(@"ENDIF"   , FB_TK_PP_ENDIF    ), _
-		(@"DEFINE"  , FB_TK_PP_DEFINE   ), _
-		(@"UNDEF"   , FB_TK_PP_UNDEF    ), _
-		(@"MACRO"   , FB_TK_PP_MACRO    ), _
-		(@"ENDMACRO", FB_TK_PP_ENDMACRO ), _
-		(@"INCLUDE" , FB_TK_PP_INCLUDE  ), _
-		(@"LIBPATH" , FB_TK_PP_LIBPATH  ), _
-		(@"INCLIB"  , FB_TK_PP_INCLIB   ), _
-		(@"PRAGMA"  , FB_TK_PP_PRAGMA   ), _
-		(@"PRINT"   , FB_TK_PP_PRINT    ), _
-		(@"ERROR"   , FB_TK_PP_ERROR    ), _
-		(@"LINE"    , FB_TK_PP_LINE     ), _
-		(@"LANG"    , FB_TK_PP_LANG     ), _
-		(@"ASSERT"  , FB_TK_PP_ASSERT   ), _
-		(@"CMDLINE" , FB_TK_PP_CMDLINE  ), _
-		(@"DUMP"    , FB_TK_PP_DUMP     ), _
-		(@"ODUMP"   , FB_TK_PP_ODUMP    ), _
-		(@"LOOKUP"  , FB_TK_PP_LOOKUP   ), _
+		(@"IF"        , FB_TK_PP_IF         ), _
+		(@"IFDEF"     , FB_TK_PP_IFDEF      ), _
+		(@"IFNDEF"    , FB_TK_PP_IFNDEF     ), _
+		(@"ELSE"      , FB_TK_PP_ELSE       ), _
+		(@"ELSEIF"    , FB_TK_PP_ELSEIF     ), _
+		(@"ELSEIFDEF" , FB_TK_PP_ELSEIFDEF  ), _
+		(@"ELSEIFNDEF", FB_TK_PP_ELSEIFNDEF ), _
+		(@"ENDIF"     , FB_TK_PP_ENDIF      ), _
+		(@"DEFINE"    , FB_TK_PP_DEFINE     ), _
+		(@"UNDEF"     , FB_TK_PP_UNDEF      ), _
+		(@"MACRO"     , FB_TK_PP_MACRO      ), _
+		(@"ENDMACRO"  , FB_TK_PP_ENDMACRO   ), _
+		(@"INCLUDE"   , FB_TK_PP_INCLUDE    ), _
+		(@"LIBPATH"   , FB_TK_PP_LIBPATH    ), _
+		(@"INCLIB"    , FB_TK_PP_INCLIB     ), _
+		(@"PRAGMA"    , FB_TK_PP_PRAGMA     ), _
+		(@"PRINT"     , FB_TK_PP_PRINT      ), _
+		(@"ERROR"     , FB_TK_PP_ERROR      ), _
+		(@"LINE"      , FB_TK_PP_LINE       ), _
+		(@"LANG"      , FB_TK_PP_LANG       ), _
+		(@"ASSERT"    , FB_TK_PP_ASSERT     ), _
+		(@"CMDLINE"   , FB_TK_PP_CMDLINE    ), _
+		(@"DUMP"      , FB_TK_PP_DUMP       ), _
+		(@"ODUMP"     , FB_TK_PP_ODUMP      ), _
+		(@"LOOKUP"    , FB_TK_PP_LOOKUP     ), _
 		(NULL) _
 	}
 
@@ -248,7 +250,7 @@ sub ppParse( )
 		ppCondIf( )
 
 	'' ELSE
-	case FB_TK_PP_ELSE, FB_TK_PP_ELSEIF
+	case FB_TK_PP_ELSE, FB_TK_PP_ELSEIF, FB_TK_PP_ELSEIFDEF, FB_TK_PP_ELSEIFNDEF
 		ppCondElse( )
 
 	'' ENDIF

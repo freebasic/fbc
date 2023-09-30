@@ -112,11 +112,22 @@ sub ppCondElse( )
 		exit sub
 	end if
 
-	'' ELSEIF?
-	if( lexGetToken( LEXCHECK_KWDNAMESPC ) = FB_TK_PP_ELSEIF ) then
-		lexSkipToken( LEXCHECK_POST_SUFFIX )
+	select case as const lexGetToken( LEXCHECK_KWDNAMESPC )
 
-		istrue = ppExpression( )
+	'' ELSEIF | ELSEIFDEF | ELSEIFNDEF?
+	case FB_TK_PP_ELSEIF, FB_TK_PP_ELSEIFDEF, FB_TK_PP_ELSEIFNDEF
+
+		select case as const lexGetToken( LEXCHECK_KWDNAMESPC )
+		case FB_TK_PP_ELSEIF
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
+			istrue = ppExpression( )
+		case FB_TK_PP_ELSEIFDEF
+			lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
+			istrue = (cIdentifierOrUDTMember( ) <> NULL)
+		case FB_TK_PP_ELSEIFNDEF
+			lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
+			istrue = (cIdentifierOrUDTMember( ) = NULL)
+		end select
 
 		if( pptb(pp.level).istrue ) then
 			ppSkip( )
@@ -124,13 +135,15 @@ sub ppCondElse( )
 		end if
 
 		pptb(pp.level).istrue = istrue
+
 	'' ELSE
-	else
+	case else
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		pptb(pp.level).elsecnt += 1
 		pptb(pp.level).istrue = not pptb(pp.level).istrue
-	end if
+
+	end select
 
 	if( pptb(pp.level).istrue = FALSE ) then
 		ppSkip( )
@@ -199,7 +212,8 @@ private sub ppSkip( )
 			case FB_TK_PP_IF, FB_TK_PP_IFDEF, FB_TK_PP_IFNDEF
 				iflevel += 1
 
-			case FB_TK_PP_ELSE, FB_TK_PP_ELSEIF
+			case FB_TK_PP_ELSE, FB_TK_PP_ELSEIF, _
+			     FB_TK_PP_ELSEIFDEF, FB_TK_PP_ELSEIFNDEF
 				select case( iflevel )
 				case pp.level
 					pp.skipping = FALSE

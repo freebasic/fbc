@@ -2,6 +2,8 @@
 #define
 #else
 #elseif
+#elseifdef
+#elseifndef
 #endif
 #endmacro
 #error
