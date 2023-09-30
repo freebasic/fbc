@@ -15,17 +15,30 @@ enum LEXPP_PRAGMAFLAG_ENUM
 	LEXPP_PRAGMAFLAG_CAN_ASSIGN           = 2
 	LEXPP_PRAGMAFLAG_HAS_CALLBACK         = 4
 	LEXPP_PRAGMAFLAG_PRESERVE_UNDER_PP    = 8
-	LEXPP_PRAGMAFLAG_PDCHECK              = 16
+	LEXPP_PRAGMAFLAG_IS_BOOLEAN           = 16
 
 	LEXPP_PRAGMAFLAG_DEFAULT = LEXPP_PRAGMAFLAG_CAN_PUSHPOP or _
-								LEXPP_PRAGMAFLAG_CAN_ASSIGN or _
-								LEXPP_PRAGMAFLAG_PRESERVE_UNDER_PP
+	                           LEXPP_PRAGMAFLAG_CAN_ASSIGN or _
+	                           LEXPP_PRAGMAFLAG_PRESERVE_UNDER_PP or _
+	                           LEXPP_PRAGMAFLAG_IS_BOOLEAN
+end enum
+
+enum FBOPTION_ENUM
+	FBOPTION_PROCPUBLIC = 1         '' env.opt.procpublic (fbint.bi:TYPE FBOPTION)
+end enum
+
+enum LEXPP_PRAGMAGRP
+	LEXPP_PRAGMAGRP_CALLBACK = 0        '' callback
+	LEXPP_PRAGMAGRP_COMPOPT  = 1        '' env.clopt (FB_COMPOPT) fbGet|Set|ChangeOption()
+	LEXPP_PRAGMAGRP_FBOPTION = 2        '' env.opt (FBOPTION_ENUM)
+	LEXPP_PRAGMAGRP_PDCHECK  = 3        '' env.clopt.pdcheckopt (FB_PDCHECK)
 end enum
 
 type LEXPP_PRAGMAOPT
 	tk      as zstring * 16
-	opt     as integer
-	flags   as integer
+	grp     as LEXPP_PRAGMAGRP
+	opt     as integer                  '' FB_COMPOPT | FB_PDCHECK | FBOPTION_ENUM
+	flags   as LEXPP_PRAGMAFLAG_ENUM
 end type
 
 enum LEXPP_PRAGMAOPT_ENUM
@@ -33,6 +46,7 @@ enum LEXPP_PRAGMAOPT_ENUM
 	LEXPP_PRAGMAOPT_ONCE
 	LEXPP_PRAGMAOPT_WARNCONSTNESS
 	LEXPP_PRAGMAOPT_RESERVE
+	LEXPP_PRAGMAOPT_PRIVATE
 
 	LEXPP_PRAGMAS
 end enum
@@ -48,10 +62,11 @@ end type
 	'' same order as LEXPP_PRAGMAOPT_ENUM
 	dim shared pragmaOpt(0 to LEXPP_PRAGMAS-1) as LEXPP_PRAGMAOPT => _
 	{ _
-		("msbitfields", FB_COMPOPT_MSBITFIELDS, LEXPP_PRAGMAFLAG_DEFAULT         ), _
-		("once"       , 0                     , LEXPP_PRAGMAFLAG_HAS_CALLBACK    ), _
-		("constness"  , FB_PDCHECK_CONSTNESS  , LEXPP_PRAGMAFLAG_PDCHECK or LEXPP_PRAGMAFLAG_DEFAULT ), _
-		("reserve"    , 0                     , LEXPP_PRAGMAFLAG_HAS_CALLBACK    ) _
+		("msbitfields", LEXPP_PRAGMAGRP_COMPOPT , FB_COMPOPT_MSBITFIELDS, LEXPP_PRAGMAFLAG_DEFAULT      ), _
+		("once"       , LEXPP_PRAGMAGRP_CALLBACK, 0                     , LEXPP_PRAGMAFLAG_HAS_CALLBACK ), _
+		("constness"  , LEXPP_PRAGMAGRP_PDCHECK , FB_PDCHECK_CONSTNESS  , LEXPP_PRAGMAFLAG_DEFAULT      ), _
+		("reserve"    , LEXPP_PRAGMAGRP_CALLBACK, 0                     , LEXPP_PRAGMAFLAG_HAS_CALLBACK ), _
+		("private"    , LEXPP_PRAGMAGRP_FBOPTION, FBOPTION_PROCPUBLIC   , LEXPP_PRAGMAFLAG_DEFAULT      ) _
 	}
 
 sub ppPragmaInit( )
@@ -319,11 +334,18 @@ sub ppPragma( )
 		value = FALSE
 
 		if( ispush ) then
-			if( (pragmaOpt(p).flags and LEXPP_PRAGMAFLAG_PDCHECK) <> 0 ) then
+			select case pragmaOpt(p).grp
+			case LEXPP_PRAGMAGRP_PDCHECK
 				pragmaPush( p, fbPdCheckIsSet( pragmaOpt(p).opt ) )
-			else
+			case LEXPP_PRAGMAGRP_COMPOPT
 				pragmaPush( p, fbGetOption( pragmaOpt(p).opt ) )
-			end if
+			case LEXPP_PRAGMAGRP_FBOPTION
+				select case pragmaOpt(p).opt
+				case FBOPTION_PROCPUBLIC
+					'' #pragma private --> invert value for public
+					pragmaPush( p, (env.opt.procpublic = 0 ) )
+				end select
+			end select
 
 			'' ','?
 			if( lexGetToken() = CHAR_COMMA ) then
@@ -351,7 +373,7 @@ sub ppPragma( )
 		if( value = FALSE ) then
 			'' expr
 			value = cConstIntExpr( cExpression( ) )
-			if( (pragmaOpt(p).flags and LEXPP_PRAGMAFLAG_PDCHECK) <> 0 ) then
+			if( (pragmaOpt(p).flags and LEXPP_PRAGMAFLAG_IS_BOOLEAN) <> 0 ) then
 				value = (value <> 0)
 			end if
 		end if
@@ -378,12 +400,19 @@ sub ppPragma( )
 		end select
 	else
 		if( (pragmaOpt(p).flags and (LEXPP_PRAGMAFLAG_CAN_PUSHPOP or LEXPP_PRAGMAFLAG_CAN_ASSIGN)) <> 0 ) then
-			if( (pragmaOpt(p).flags and LEXPP_PRAGMAFLAG_PDCHECK) <> 0 ) then
+			select case pragmaOpt(p).grp
+			case LEXPP_PRAGMAGRP_PDCHECK
 				value = (value and pragmaOpt(p).opt) or (fbGetOption( FB_COMPOPT_PEDANTICCHK ) and not pragmaOpt(p).opt)
 				fbSetOption( FB_COMPOPT_PEDANTICCHK, value )
-			else
+			case LEXPP_PRAGMAGRP_COMPOPT
 				fbChangeOption( pragmaOpt(p).opt, value )
-			end if
+			case LEXPP_PRAGMAGRP_FBOPTION
+				select case pragmaOpt(p).opt
+				case FBOPTION_PROCPUBLIC
+					'' #pragma private --> invert value for public
+					env.opt.procpublic = ( value = 0 )
+				end select
+			end select
 		end if
 	end if
 
