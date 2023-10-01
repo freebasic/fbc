@@ -21,11 +21,27 @@ emcc.bas (emscripten / Windows)
 
     Compile with:
       fbc emcc.bas
-    Copy to ./bin/js-asmjs/
+    Copy to ../../bin/js-asmjs/
 
   fbc expects supporting tools to be executable but the emscripten
   font-end on windows uses 'emcc.bat' (plus python in the background) and fbc 
   can't directly call a .BAT file. This tool is a cheap hack to make it work.
   Compile the source and copy 'emcc.exe' to 'd:/fb.git/bin/js-asmjs/emcc.exe'.
   This should allow fbc to find emcc.exe when launching tools.
+  See https://www.freebasic.net/wiki/DevBuildEmscripten
+
+
+emar.bas (emscripten / Windows)
+-------------------------------
+  Binary to launch emscipten on Windows.
+
+    Compile with:
+      fbc emar.bas
+    Copy to ../../bin/js-asmjs/
+
+  fbc expects supporting tools to be executable but the emscripten
+  font-end on windows uses 'emar.bat' (plus python in the background) and fbc 
+  can't directly call a .BAT file. This tool is a cheap hack to make it work.
+  Compile the source and copy 'emar.exe' to 'd:/fb.git/bin/js-asmjs/emar.exe'.
+  This should allow fbc to find emar.exe when launching tools.
   See https://www.freebasic.net/wiki/DevBuildEmscripten
