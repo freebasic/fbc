@@ -2885,11 +2885,13 @@ private sub _emitBop _
 		static as string s
 		s = "if( "
 		if( (options and IR_EMITOPT_REL_DOINVERSE) <> 0 ) then
-			s += "!"
+			s += "!("
 		end if
-		s += "("
 		s += exprFlush( exprNewBOP( op, l, r ) )
-		s += ") ) goto "
+		if( (options and IR_EMITOPT_REL_DOINVERSE) <> 0 ) then
+			s += ")"
+		end if
+		s += ") goto "
 		s += *symbGetMangledName( label )
 		s += ";"
 		hWriteLine( s )
