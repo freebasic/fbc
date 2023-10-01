@@ -2708,16 +2708,21 @@ private function exprNewVREG _
 			l = exprNewUOP( AST_OP_ADDROF, l )
 		end if
 		if( have_offset ) then
-			if( is_c_array ) then
+			if( ( is_c_array ) andalso ( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) ) then
 				'' Cast to intptr_t to work around gcc out side of array bounds
-				'' warnings if we are casting from FBSTRING array to pointer
-				'' fbc uses a kind of virtual pointer for the an array's (0,..)
-				'' index; technically this is undefinded behaviour in C and is
-				'' impossible to cast away even when using pointer only casts
-				'' in the same expression.  Some gcc optimizations cause a
+				'' warnings if we are casting from FBSTRING array to pointer.
+				'' fbc uses a kind of virtual pointer for the array's @(0,..)
+				'' index ptr; technically this is undefinded behaviour in C and
+				'' is impossible to cast away even when using pointer only casts
+				'' in the same expression.  Some gcc's/compiler's cause a
 				'' a warning when setting a pointer for the array's virtual
-				'' index location.  To fix this for compliant C code, would
-				'' need to rewrite the array descriptor to contain only the
+				'' index location.
+				''
+				'' However, this also seems to cause other issuse with
+				'' emscripten target, so don't when targeting asm.js
+				''
+				'' To fix this for compliant C code, should fix the design
+				'' and rewrite the array descriptor to contain only the
 				'' offset value from actual memory pointer and compute the
 				'' array access fully on each array element access.
 				l = exprNewCAST( FB_DATATYPE_INTEGER, NULL, l )
