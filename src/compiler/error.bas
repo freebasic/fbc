@@ -91,7 +91,8 @@ declare function hMakeParamDesc _
 		( /'FB_WARNINGMSG_CMDLINEIGNORED            '/ 1, @"#cmdline ignored" ), _
 		( /'FB_WARNINGMSG_RESERVEDGLOBALSYMBOL      '/ 1, @"Use of reserved global or backend symbol" ), _
 		( /'FB_WARNINGMSG_EXPECTEDDIGIT             '/ 1, @"Expected digit" ), _
-		( /'FB_WARNINGMSG_UPCASTDISCARDSINITIALIZER '/ 1, @"Up-casting discards initializer(s)" ) _
+		( /'FB_WARNINGMSG_UPCASTDISCARDSINITIALIZER '/ 1, @"Up-casting discards initializer(s)" ), _
+		( /'FB_WARNINGMSG_BYREFTEMPVAR              '/ 2, @"Suspicious address expression passed to BYREF parameter" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as const zstring ptr => _
