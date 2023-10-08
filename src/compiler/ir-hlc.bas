@@ -2073,16 +2073,17 @@ private function hEmitInt _
 
 		'' Prevent GCC warnings for INT_MIN/LLONG_MIN:
 		'' The '-' minus sign doesn't count as part of the number
-		'' literal, and 2147483648 is too big for a 32bit integer,
-		'' so it must be marked as unsigned.
+		'' literal, and 2147483648 is too big to fit into a signed int,
+		'' so according to C99 it is an unsigned int. We must add a cast
+		'' to make it signed.
 		if( typeGetSize( dtype ) = 8 ) then
 			if( value = -9223372036854775808ull ) then
-				s += "u"
+				s = "(int64)" + s + "u"
 			end if
 			s += "ll"
 		else
 			if( value = -2147483648u ) then
-				s += "u"
+				s = "(int32)" + s + "u"
 			end if
 		end if
 	else
