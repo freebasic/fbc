@@ -43,6 +43,7 @@ Version 1.20.0
 - sf.net #997: gcc backend: handle EXTERN "rtlib": preserve the internally mangled name but emit an extra prototype to map the internal name to the external ASM name
 - gfxlib2: Incorrect alpha blending in ALPHA put method - fix C implementation to avoid overflowing int type
 - rtlib: internal fb_LeftSelf( s, 0 ) was failing to reduce the string to a length of zero.
+- fbc: 64-bit builds of fbc didn't recognise UTF32-BE encoded source files
 
 
 Version 1.10.1

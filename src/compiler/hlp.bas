@@ -391,7 +391,7 @@ function pathIsAbsolute( byval path as zstring ptr ) as integer
 end function
 
 function hCheckFileFormat( byval f as integer ) as integer
-	dim as long BOM
+	dim as ulong BOM
 	dim as FBFILE_FORMAT fmt
 
 	'' little-endian assumptions
