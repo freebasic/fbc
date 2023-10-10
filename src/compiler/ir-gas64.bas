@@ -6507,8 +6507,22 @@ private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVR
 				exit sub
 			end if
 
-			if v2->typ=IR_VREGTYPE_REG then ''todo to be replace by repsto
-				op2=*regstrq(reg_findreal(v2->reg))
+			if v2->typ=IR_VREGTYPE_REG or v2->typ=IR_VREGTYPE_VAR then ''todo to be replaced by repsto ?
+
+				if v2->typ=IR_VREGTYPE_REG then
+					op2=*regstrq(reg_findreal(v2->reg))
+				else
+					if reghandle(KREG_RCX)<>KREGFREE then
+						asm_code("push rcx")
+					end if
+					op2="rcx"
+					if symbIsStatic(v1->sym) Or symbisshared(v1->sym) then
+						asm_code("mov rcx, "+*symbGetMangledName(v2->sym)+"[rip+"+Str(v2->ofs)+"]")
+					else
+						asm_code("mov rcx, "+Str(v2->ofs)+"[rbp]")
+					end if
+				End If
+
 				asm_code("test "+op2+", "+op2)
 				lname2=*symbUniqueLabel( )
 				''zero byte to clear so skip
@@ -6520,9 +6534,17 @@ private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVR
 				asm_code("inc rax")
 				asm_code("dec "+op2)
 				asm_code("jnz "+lname1)
+
 				asm_code(lname2+":")
+
+				if v2->typ=IR_VREGTYPE_VAR and reghandle(KREG_RCX)<>KREGFREE then
+					asm_code("pop rcx")
+				end if
+
 				exit sub
 			end if
+
+
 
 			if v2->typ<>IR_VREGTYPE_IMM then
 				asm_error("Memclear without an immediat as size")
