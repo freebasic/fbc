@@ -740,6 +740,18 @@ private sub check_optim(byref code as string)
 						instruc="movq"
 					EndIf
 				End If
+
+				if part1[0]=asc("e") or right(part1,1)="d" then
+					''dest 32bit register
+					if right(prevpart2,1)>="a" then
+						''rax to rdi --> eax to edi
+						prevpart2="e"+right(prevpart2,2)
+					else
+						''r8 to R15 --> r8d to r15d
+						prevpart2=prevpart2+"d"
+					end if
+				End If
+
 				writepos=len(ctx.proc_txt)+len(code)+9
 				code="#16"+code+newline+string( ctx.indent*3, 32 )+instruc+" "+part1+", "+prevpart2+" #Optim 16"
 				part2=prevpart2
@@ -1626,9 +1638,12 @@ end function
 ''=====================================================================
 private sub reg_callptr(byref op1 as string,byref op3 as string)
 	dim as long regfree
-	dim as integer p
+	dim as integer p2=instr(op1,"["),p
+	if p2=0 then
+		p2=1
+	End If
 	for ireg as integer = 1 to ubound(listreg)-2
-		p=instr(op1,*regstrq(listreg(ireg)))
+		p=instr(p2,op1,*regstrq(listreg(ireg)))
 		if p=0 then continue for
 		asm_info("Transfering value for freeing register / case callptr")
 		regfree=reg_findfree(reghandle(listreg(ireg)))
