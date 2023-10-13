@@ -5,6 +5,7 @@ Version 1.10.1
 - gcc backend: use 'char' types for zstring instead of 'uint8' to avoid warnings in newer gcc 11+
 - release: update to build libffi 3.4.4 - this is needed to work with newer mingw-w64 based toolchains for gcc 11.x and up
 - emscripten/fbc: in debug version of fbc (__FB_DEBUG__<>0) allow wchar conversion on win32 host to allow building and testing of the test-suite 
+- github #421: fbc: win32/win64: pass '-fno-ident' to gcc to help prevent identification strings from accumulating in the final binary
 
 [added]
 - release: add recipes for building fbc distros using gcc-11.2 and gcc-12.2 Mingw-w64 project toolchains
