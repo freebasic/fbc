@@ -155,12 +155,12 @@ declare sub cfi_windows_asm_code(byval statement as string)
 #endif
 
 #macro asm_error(s)
-	hWriteasm64("")
 	asm_info(String(len(s)+10,"*"))
 	asm_info("* ERROR "+s+" *")
 	asm_info(String(len(s)+10,"*"))
-	asm_code("FOUND AN ERROR : "+s)
-	hWriteasm64("")
+	hWriteasm64("#")
+	asm_code("Report to Freebasic devs Internal Error in gas64 emitter : "+s)
+	hWriteasm64("#")
 #endmacro
 
 #define NEWLINE2 NEWLINE+string( ctx.indent*3, 32 )
@@ -740,6 +740,21 @@ private sub check_optim(byref code as string)
 						instruc="movq"
 					EndIf
 				End If
+
+				if part1[0]=asc("e") or right(part1,1)="d" then
+					''dest 32bit register
+					if prevpart2[0]<>asc("e") and right(prevpart2,1)<>"d" then
+						''source 64bit (else keep prevpart2 as it)
+						if right(prevpart2,1)>="a" then
+							''rax to rdi --> eax to edi
+							prevpart2="e"+right(prevpart2,2)
+						else
+							''r8 to R15 --> r8d to r15d
+							prevpart2=prevpart2+"d"
+						end if
+					end if
+				End If
+
 				writepos=len(ctx.proc_txt)+len(code)+9
 				code="#16"+code+newline+string( ctx.indent*3, 32 )+instruc+" "+part1+", "+prevpart2+" #Optim 16"
 				part2=prevpart2
@@ -1626,9 +1641,12 @@ end function
 ''=====================================================================
 private sub reg_callptr(byref op1 as string,byref op3 as string)
 	dim as long regfree
-	dim as integer p
+	dim as integer p2=instr(op1,"["),p
+	if p2=0 then
+		p2=1
+	End If
 	for ireg as integer = 1 to ubound(listreg)-2
-		p=instr(op1,*regstrq(listreg(ireg)))
+		p=instr(p2,op1,*regstrq(listreg(ireg)))
 		if p=0 then continue for
 		asm_info("Transfering value for freeing register / case callptr")
 		regfree=reg_findfree(reghandle(listreg(ireg)))
@@ -2314,12 +2332,15 @@ private sub hAddGlobalCtorDtor( byval proc as FBSYMBOL ptr )
 	if( symbGetIsGlobalCtor( proc ) ) then
 		if symbGetProcIsEmitted(proc) then
 			ctx.ctorcount += 1
-			'hEmitCtorDtorArrayElement( proc, ctx.ctors )
 			asm_info("Constructor name/prio="+*symbGetMangledName( proc )+" / "+str( symbGetProcPriority( proc ) ))
 			if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 				asm_section(".init_array")
 			else
-				asm_section(".ctors")
+				if symbGetProcPriority( proc )=0 then
+					asm_section(".ctors")
+				else
+					asm_section(".ctors."+str(65535-symbGetProcPriority( proc )))
+				end if
 			end if
 			asm_code(".align 8")
 			asm_code(".quad "+*symbGetMangledName( proc ))
@@ -2327,17 +2348,19 @@ private sub hAddGlobalCtorDtor( byval proc as FBSYMBOL ptr )
 		end if
 	elseif( symbGetIsGlobalDtor( proc ) ) then
 		ctx.dtorcount += 1
-		'hEmitCtorDtorArrayElement( proc, ctx.dtors )
 		asm_info("Destructor name/prio="+*symbGetMangledName( proc )+" / "+str( symbGetProcPriority( proc ) ))
 		if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 			asm_section(".fini_array")
 		else
-			asm_section(".dtors")
+			if symbGetProcPriority( proc )=0 then
+					asm_section(".dtors")
+				else
+					asm_section(".dtors."+str(65535-symbGetProcPriority( proc )))
+			end if
 		end if
 		asm_code(".align 8")
 		asm_code(".quad "+*symbGetMangledName( proc ))
 		asm_section(".text")
-
 	end if
 end sub
 private sub _emitend( )
@@ -6507,8 +6530,22 @@ private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVR
 				exit sub
 			end if
 
-			if v2->typ=IR_VREGTYPE_REG then ''todo to be replace by repsto
-				op2=*regstrq(reg_findreal(v2->reg))
+			if v2->typ=IR_VREGTYPE_REG or v2->typ=IR_VREGTYPE_VAR then ''todo to be replaced by repsto ?
+
+				if v2->typ=IR_VREGTYPE_REG then
+					op2=*regstrq(reg_findreal(v2->reg))
+				else
+					if reghandle(KREG_RCX)<>KREGFREE then
+						asm_code("push rcx")
+					end if
+					op2="rcx"
+					if symbIsStatic(v1->sym) Or symbisshared(v1->sym) then
+						asm_code("mov rcx, "+*symbGetMangledName(v2->sym)+"[rip+"+Str(v2->ofs)+"]")
+					else
+						asm_code("mov rcx, "+Str(v2->ofs)+"[rbp]")
+					end if
+				End If
+
 				asm_code("test "+op2+", "+op2)
 				lname2=*symbUniqueLabel( )
 				''zero byte to clear so skip
@@ -6520,7 +6557,13 @@ private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVR
 				asm_code("inc rax")
 				asm_code("dec "+op2)
 				asm_code("jnz "+lname1)
+
 				asm_code(lname2+":")
+
+				if v2->typ=IR_VREGTYPE_VAR and reghandle(KREG_RCX)<>KREGFREE then
+					asm_code("pop rcx")
+				end if
+
 				exit sub
 			end if
 
