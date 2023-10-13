@@ -743,12 +743,15 @@ private sub check_optim(byref code as string)
 
 				if part1[0]=asc("e") or right(part1,1)="d" then
 					''dest 32bit register
-					if right(prevpart2,1)>="a" then
-						''rax to rdi --> eax to edi
-						prevpart2="e"+right(prevpart2,2)
-					else
-						''r8 to R15 --> r8d to r15d
-						prevpart2=prevpart2+"d"
+					if prevpart2[0]<>asc("e") and right(prevpart2,1)<>"d" then
+						''source 64bit (else keep prevpart2 as it)
+						if right(prevpart2,1)>="a" then
+							''rax to rdi --> eax to edi
+							prevpart2="e"+right(prevpart2,2)
+						else
+							''r8 to R15 --> r8d to r15d
+							prevpart2=prevpart2+"d"
+						end if
 					end if
 				End If
 
