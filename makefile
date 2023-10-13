@@ -374,6 +374,14 @@ ifneq ($(filter freebsd dragonfly linux netbsd openbsd solaris,$(TARGET_OS)),)
   endif
 endif
 
+# disable .ident directive on windows targets
+# when present, identification strings are added to every object module and
+# each .ident instance adds to the resulting executable even if the strings
+# are identical
+ifneq ($(filter win32 win64,$(TARGET_OS)),)
+  CFLAGS += -fno-ident
+endif
+
 ifneq ($(filter cygwin dos win32,$(TARGET_OS)),)
   EXEEXT := .exe
   INSTALL_PROGRAM := cp
@@ -1406,7 +1414,7 @@ else
   BOOTSTRAP_CFLAGS := -nostdinc
   BOOTSTRAP_CFLAGS += -Wall -Wno-unused-label -Wno-unused-function -Wno-unused-variable
   BOOTSTRAP_CFLAGS += -Wno-unused-but-set-variable -Wno-main
-  BOOTSTRAP_CFLAGS += -fno-strict-aliasing -frounding-math -fwrapv
+  BOOTSTRAP_CFLAGS += -fno-strict-aliasing -frounding-math -fwrapv -fno-ident
   BOOTSTRAP_CFLAGS += -Wfatal-errors
   BOOTSTRAP_OBJ := $(patsubst %.c,%.o,$(sort $(wildcard bootstrap/$(FBTARGET)/*.c)))
   $(BOOTSTRAP_OBJ): %.o: %.c

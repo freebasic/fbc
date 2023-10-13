@@ -6,7 +6,7 @@ Version 1.20.0
 - CBOOL(float-expression) returns false if and only if float-expression is zero (0), otherwise returns true (including NaN's)
 - if (float-expression) then .. equivalent to if cbool(float-expression) ...
 - emscripten/fbc: don't cast to integer for array indexing (possible regression of behaviour when fixing github #217)
- 
+- github #421: fbc: win32/win64: pass '-fno-ident' to gcc to help prevent identification strings from accumulating in the final binary
 
 [added]
 - x86_64: optimize SHL MOD INTDIV to use 32-bit operation when result will be converted to long/ulong

@@ -3462,6 +3462,14 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		'' Do not let gcc make assumptions about pointers; FB isn't strict about it.
 		ln += "-fno-strict-aliasing "
 
+		'' Ignore .ident directives on win32 targets to prevent identification strings
+		'' from accumulating in the final binary (each .ident string from every object
+		'' module is added to the final binary even when strings are identical).
+		select case as const( fbGetOption( FB_COMPOPT_TARGET ) )
+		case FB_COMPTARGET_WIN32
+			ln += "-fno-ident "
+		end select
+
 		'' The rtlib sets its own rounding mode, don't let gcc make assumptions.
 		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
 			ln += "-frounding-math "
