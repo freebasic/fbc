@@ -2329,12 +2329,15 @@ private sub hAddGlobalCtorDtor( byval proc as FBSYMBOL ptr )
 	if( symbGetIsGlobalCtor( proc ) ) then
 		if symbGetProcIsEmitted(proc) then
 			ctx.ctorcount += 1
-			'hEmitCtorDtorArrayElement( proc, ctx.ctors )
 			asm_info("Constructor name/prio="+*symbGetMangledName( proc )+" / "+str( symbGetProcPriority( proc ) ))
 			if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 				asm_section(".init_array")
 			else
-				asm_section(".ctors")
+				if symbGetProcPriority( proc )=0 then
+					asm_section(".ctors")
+				else
+					asm_section(".ctors."+str(65535-symbGetProcPriority( proc )))
+				end if
 			end if
 			asm_code(".align 8")
 			asm_code(".quad "+*symbGetMangledName( proc ))
@@ -2342,17 +2345,19 @@ private sub hAddGlobalCtorDtor( byval proc as FBSYMBOL ptr )
 		end if
 	elseif( symbGetIsGlobalDtor( proc ) ) then
 		ctx.dtorcount += 1
-		'hEmitCtorDtorArrayElement( proc, ctx.dtors )
 		asm_info("Destructor name/prio="+*symbGetMangledName( proc )+" / "+str( symbGetProcPriority( proc ) ))
 		if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 			asm_section(".fini_array")
 		else
-			asm_section(".dtors")
+			if symbGetProcPriority( proc )=0 then
+					asm_section(".dtors")
+				else
+					asm_section(".dtors."+str(65535-symbGetProcPriority( proc )))
+			end if
 		end if
 		asm_code(".align 8")
 		asm_code(".quad "+*symbGetMangledName( proc ))
 		asm_section(".text")
-
 	end if
 end sub
 private sub _emitend( )
@@ -6558,8 +6563,6 @@ private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVR
 
 				exit sub
 			end if
-
-
 
 			if v2->typ<>IR_VREGTYPE_IMM then
 				asm_error("Memclear without an immediat as size")
