@@ -155,12 +155,12 @@ declare sub cfi_windows_asm_code(byval statement as string)
 #endif
 
 #macro asm_error(s)
-	hWriteasm64("")
 	asm_info(String(len(s)+10,"*"))
 	asm_info("* ERROR "+s+" *")
 	asm_info(String(len(s)+10,"*"))
-	asm_code("FOUND AN ERROR : "+s)
-	hWriteasm64("")
+	hWriteasm64("#")
+	asm_code("Report to Freebasic devs Internal Error in gas64 emitter : "+s)
+	hWriteasm64("#")
 #endmacro
 
 #define NEWLINE2 NEWLINE+string( ctx.indent*3, 32 )
