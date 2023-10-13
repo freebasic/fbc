@@ -20,6 +20,10 @@ Version 1.20.0
 - sf.net #984: Incorrect syntax for a member array passed as argument to a procedure
 - github #292: Boolean bitfields writes treated as 32/64-bit rather than 8-bit
 - sf.net #985: Default access to a member symbol is disabled by a duplicated symbol in implicit namespace (regression of behaviour when fixing #948)
+- gas64: improvement of message when internal errors arise in gas64 emitter (SARG)
+- gas64: handle priority for constructors/destructors (SARG)
+- gas64: optimization 16 modified retrieval of registers and improved to handle specific cases (SARG)
+- gas64: NEW UBYTE/BYTE[count] not handled (SARG)
 
 
 Version 1.10.1
