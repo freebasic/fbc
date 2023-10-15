@@ -573,7 +573,7 @@ end function
 #define FL_INOUT_BUTTON		5
 #define FL_RETURN_BUTTON_	6
 #define FL_HIDDEN_RET_BUTTON	7
-#define FL_PUSH_BUTTON		FL_TOGGLE_BUTTON
+#define FL_PUSH_BUTTON		FL_TOGGLE_BUTTON_
 #define FL_MENU_BUTTON_		9
 
 declare function fl_add_button(t as unsigned byte, x as long, y as long, w as long, h as long,l as const zstring ptr) as Fl_Button ptr

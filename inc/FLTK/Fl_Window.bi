@@ -91,8 +91,8 @@ protected:
 	declare sub free_icons()
 public:
 
-	declare constructor(w as long, h as long, title as const zstring ptr)
-	declare constructor(x as long, y as long, w as long, h as long, title as const zstring ptr)
+	declare constructor(w as long, h as long, title as const zstring ptr=0)
+	declare constructor(x as long, y as long, w as long, h as long, title as const zstring ptr=0)
 
 	declare virtual destructor
 
