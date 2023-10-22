@@ -19,7 +19,7 @@ public:
 
 	declare function can_do_overlay() as long
 	declare sub redraw_overlay()
-private:
+protected:
 	declare constructor(W as long, H as long, l as const zstring ptr=0)
 	declare constructor(X as long, Y as long, W as long, H as long, l as const zstring ptr=0)
 public:

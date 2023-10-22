@@ -73,7 +73,7 @@ public:
 	declare function pixel_w() as long
 	declare function pixel_h() as long
   
-	declare destructor()
+	declare virtual destructor()
 
 
 	declare constructor(W as long, H as long, l as const zstring ptr=0)
@@ -135,6 +135,10 @@ end function
 
 private function Fl_Gl_Window.as_gl_window() as Fl_Gl_Window_ ptr
 	return @this
+end function
+
+private function Fl_Gl_Window.pixels_per_unit() as single
+	return 1
 end function
 
 private function Fl_Gl_Window.pixel_w() as long

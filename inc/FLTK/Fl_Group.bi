@@ -46,7 +46,7 @@ public:
 	declare const function find(byref f as const Fl_Widget) as long
 	declare const function array() as Fl_Widget ptr const ptr
 
-	declare sub resize(x as long, y as long, x1 as long, y1 as long)
+	declare virtual sub resize(x as long, y as long, x1 as long, y1 as long)
 
 	declare sub add(byref w as Fl_Widget)
 	declare sub add(w as Fl_Widget ptr)
