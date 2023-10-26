@@ -5749,51 +5749,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 		''SOURCE
 		select case v2->typ ''source
 			case IR_VREGTYPE_IDX
-				if v2->sym=0 then
-					if v2->vidx->sym=0 then
-						if v2->vidx->reg<>-1 then
-							reg2=reg_findreal(v2->vidx->reg)
-							op1=Str(v2->ofs)+"["+*regstrq(reg2)+"]"
-						else
-							''2 levels
-							reg2=reg_findreal(v2->vidx->vidx->reg)
-							op3="mov "+*regstrq(reg2)+", "+"["+*regstrq(reg2)+"]"
-							op1=Str(v2->ofs)+"["+*regstrq(reg2)+"]"
-						end if
-					else
-						regtempo=*reg_tempo()
-						if symbIsStatic(v2->vidx->sym) Or symbisshared(v2->vidx->sym) then
-							op3="lea "+regtempo+", "+*symbGetMangledName(v2->vidx->sym)+"[rip+"+Str(v2->vidx->ofs)+"]"
-							op3+=newline2+"mov "+regtempo+", "+"["+regtempo+"]"+" #NO"
-							op1=Str(v2->ofs)+"["+regtempo+"]"
-						else
-							op3="mov "+regtempo+", "+Str(v2->vidx->ofs)+"[rbp]"
-							op1=Str(v2->ofs)+"["+regtempo+"]"
-						end if
-					end if
-				else ''format  varname ofs= [dt] vidx=<reg> /// vidx=<var varname
-					regtempo=*reg_tempo()
-					if symbIsStatic(v2->sym) Or symbisshared(v2->sym) then
-						op3="lea "+regtempo+", "+*symbGetMangledName(v2->sym)+"[rip+"+Str(v2->ofs)+"]"
-					else
-						op3="lea "+regtempo+", "+Str(v2->ofs)+"[rbp]"
-
-					end if
-
-					if v2->vidx->typ=IR_VREGTYPE_REG then
-						reg2=reg_findreal(v2->vidx->reg)
-						op1="["+regtempo+"+"+*regstrq(reg2)+"]"
-					elseif v2->vidx->typ=IR_VREGTYPE_VAR then
-						if symbIsStatic(v2->vidx->sym) Or symbisshared(v2->vidx->sym) then
-							op3+=newline2+"add "+regtempo+", "+*symbGetMangledName(v2->vidx->sym)+"[rip+"+Str(v2->vidx->ofs)+"]"
-						else
-							op3+=newline2+"add "+regtempo+","+Str(v2->vidx->ofs)+"[rbp]"
-						end if
-						op1="["+regtempo+"]"
-					else
-						asm_error("hdocall error with idx")
-					end if
-				end if
+				prepare_idx(v2,op1,op3)
 
 			case IR_VREGTYPE_REG
 				if typeget(dtype)=FB_DATATYPE_POINTER then dtype=FB_DATATYPE_INTEGER
