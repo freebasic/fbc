@@ -8,6 +8,7 @@ Version 1.20.0
 - emscripten/fbc: don't cast to integer for array indexing (possible regression of behaviour when fixing github #217)
 - github #421: fbc: win32/win64: pass '-fno-ident' to gcc to help prevent identification strings from accumulating in the final binary
 - fbc: internal: rtlMathLongintDIV() decide on signed or unsigned division based on sign instead of exact data type
+- rtlib: win32/win64: MULTIKEY() remove the 'FindWindow()' for console windows when running under Windows 10 or newer   
 
 [added]
 - x86_64: optimize SHL MOD INTDIV to use 32-bit operation when result will be converted to long/ulong

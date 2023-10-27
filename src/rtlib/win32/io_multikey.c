@@ -79,12 +79,33 @@ int fb_hVirtualToScancode(int vkey)
 	return 0;
 }
 
+static int maybeDoFindWindow()
+{
+	static int inited = FB_FALSE;
+	static int do_find = FB_FALSE;
+	if( !inited )
+	{
+		OSVERSIONINFO info;
+		info.dwOSVersionInfoSize = sizeof(info);
+		GetVersionEx(&info);
+		if( ((info.dwMajorVersion << 8) | info.dwMinorVersion) <= 0x600 ) {
+			do_find = FB_TRUE;
+		}
+		inited = FB_TRUE;
+	}
+	return do_find;
+}
+
 int fb_ConsoleMultikey( int scancode )
 {
 	int i;
 
-	if ( find_window() != GetForegroundWindow() )
-		return FB_FALSE;
+	/* don't find the window if OS limits GetAsyncKeyState() to active console anyway */
+	if( maybeDoFindWindow() )
+	{
+		if ( find_window() != GetForegroundWindow() )
+			return FB_FALSE;
+	}
 
 	for( i = 0; __fb_keytable[i][0]; i++ ) {
 		if( __fb_keytable[i][0] == scancode ) {
