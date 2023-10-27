@@ -425,7 +425,7 @@ private function hMakeUintMask overload _
 		byval bitpos as uinteger, _
 		byval dtype as integer _
 	) as ASTNODE ptr
-	return astNewBOP( AST_OP_SHL, hMakeUintMask( bits, FB_DATATYPE_UINT ), astNewCONSTi( bitpos ) )
+	return astNewBOP( AST_OP_SHL, hMakeUintMask( bits, dtype ), astNewCONSTi( bitpos ) )
 end function
 
 private function astSetBitfield _

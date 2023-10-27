@@ -383,7 +383,7 @@ function rtlMathLongintDIV _
 
 	function = NULL
 
-	if( typeGet( dtype ) = FB_DATATYPE_LONGINT ) then
+	if( typeIsSigned( dtype ) ) then
 		f = PROCLOOKUP( LONGINTDIV )
 	else
 		f = PROCLOOKUP( ULONGINTDIV )
@@ -419,7 +419,7 @@ function rtlMathLongintMOD _
 
 	function = NULL
 
-	if( typeGet( dtype ) = FB_DATATYPE_LONGINT ) then
+	if( typeIsSigned( dtype ) ) then
 		f = PROCLOOKUP( LONGINTMOD )
 	else
 		f = PROCLOOKUP( ULONGINTMOD )
