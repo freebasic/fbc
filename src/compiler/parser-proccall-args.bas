@@ -105,6 +105,14 @@ private function hProcArg _
 					lexSkipToken( )
 					amode = FB_PARAMMODE_BYDESC
 				end if
+			else
+				'' already a non-indexed array?
+				if( astIsNIDXARRAY( expr ) ) then
+					if( amode <> INVALID ) then
+						errReport( FB_ERRMSG_PARAMTYPEMISMATCH )
+					end if
+					amode = FB_PARAMMODE_BYDESC
+				end if
 			end if
 		end if
 	end if
@@ -190,6 +198,14 @@ private sub hOvlProcArg _
 				end if
 				lexSkipToken( )
 				lexSkipToken( )
+				arg->mode = FB_PARAMMODE_BYDESC
+			end if
+		else
+			'' already a non-indexed array?
+			if( astIsNIDXARRAY( arg->expr ) ) then
+				if( arg->mode <> INVALID ) then
+					errReport( FB_ERRMSG_PARAMTYPEMISMATCH )
+				end if
 				arg->mode = FB_PARAMMODE_BYDESC
 			end if
 		end if

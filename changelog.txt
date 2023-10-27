@@ -24,6 +24,7 @@ Version 1.20.0
 - gas64: handle priority for constructors/destructors (SARG)
 - gas64: optimization 16 modified retrieval of registers and improved to handle specific cases (SARG)
 - gas64: NEW UBYTE/BYTE[count] not handled (SARG)
+- sf.net #988: (regression) re-allow overloaded non-indexed array arguments - Can't pass UDT member array to an overloaded sub
 
 
 Version 1.10.1
