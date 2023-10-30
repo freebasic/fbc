@@ -367,6 +367,7 @@ dim shared as long          reghandle(KREGUPPER+2)
 type ASM64_REGROOM
 	status as long               '' KROOMFREE, KROOMMARKED, KROOMUSED
 	vreg as ASM64_SAVEDREG ptr   '' pointer to the spilled vreg
+	savvreg as INTEGER           '' save vreg for KROOMMARKED case
 end type
 
 dim shared as ASM64_REGROOM regroom(KREGUPPER+2)
@@ -1487,6 +1488,7 @@ private sub reg_mark(byval labelptr as FBSYMBOL ptr)
 	for ireg as integer= 1 to KREGUPPER
 		if reghandle(ireg)<>KREGFREE and reghandle(ireg)<>KREGRSVD then ''excluding also rbp and rsp
 			regroom(ireg).status=KROOMMARKED
+			regroom(ireg).savvreg=reghandle(ireg)
 			flagmark=true
 		end if
 	next
@@ -1697,15 +1699,14 @@ private sub reg_branch(byval label as FBSYMBOL ptr )
 		for ireg as integer = 1 to KREGUPPER
 			if( regroom(ireg).status = KROOMUSED ) then
 				''put in memory as in the branch 1
-				asm_info("spilling register to mimic branch1="+*regstrq(ireg)+" already saved vreg="+str(regroom(ireg).vreg->id)+" from room="+str(regroom(ireg).vreg->id))
+				asm_info("spilling register to mimic branch1="+*regstrq(ireg)+" already saved vreg="+str(regroom(ireg).vreg->sdvreg)+" from room="+str(regroom(ireg).vreg->id))
 				asm_code("mov QWORD PTR "+str(regroom(ireg).vreg->sdoffset)+"[rbp], "+*regstrq(ireg))
 				reghandle(ireg)=KREGFREE
 				''marked to avoid an eventual restoring
 				regroom(ireg).vreg->spilbranch1 = false
+				regroom(ireg).status=KROOMFREE
+				regroom(ireg).vreg = NULL
 			end if
-			''reset by default even if only one branch as regroom() could be = KROOMMARKED
-			regroom(ireg).status=KROOMFREE
-			regroom(ireg).vreg = NULL
 		next
 		if ctx.labeljump=0 then
 			''not a double branch so no need to do spilling below
@@ -1718,8 +1719,27 @@ private sub reg_branch(byval label as FBSYMBOL ptr )
 			v = flistGetHead( @ctx.spillvregs )
 			while( v <> NULL )
 				if( v->spilbranch1 ) then
+					for ireg as integer =0 To KREGUPPER
+						if regroom(ireg).status=KROOMUSED then
+							if v->sdvreg=regroom(ireg).savvreg then
+								if reghandle(ireg)<>KREGFREE then
+									''freeing if necessary
+									asm_info("Reg not free")
+									regfree=reg_findfree(reghandle(ireg))
+									asm_code("mov "+*regstrq(regfree)+", "+*regstrq(ireg))
+								end if
+								asm_info("SPILBRANCH 1-2 restoring saved vreg="+str(v->sdvreg)+" in register="+*regstrq(ireg))
+								asm_code("mov "+*regstrq(ireg)+", QWORD PTR "+str(v->sdoffset)+"[rbp]")
+								reghandle(ireg)=v->sdvreg
+								v->sdvreg = KREGFREE
+								regroom(ireg).status=KROOMFREE
+								v = flistGetNext( v )
+								continue while
+							End If
+						End If
+					Next
 					regfree=reg_findfree(v->sdvreg)
-					asm_info("SPILBRANCH1 restoring saved vreg="+str(v->id)+" in register="+*regstrq(regfree))
+					asm_info("SPILBRANCH1 restoring saved vreg="+str(v->sdvreg)+" in register="+*regstrq(regfree))
 					v->sdvreg = KREGFREE
 					asm_code("mov "+*regstrq(regfree)+", QWORD PTR "+str(v->sdoffset)+"[rbp]")
 				end if
