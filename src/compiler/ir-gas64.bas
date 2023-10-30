@@ -771,7 +771,7 @@ end sub
 private sub reg_freeable(byref lineasm as string)
 
 	dim as long regfound1,regfound2
-	dim as string instruc
+	dim as string instruc,lineshort
 
 	instruc=left(Trim(lineasm),3)
 	if instruc="inc" orelse instruc="dec" orelse instruc="not" orelse instruc="neg" then
@@ -783,18 +783,20 @@ private sub reg_freeable(byref lineasm as string)
 	else
 		if instr("mov lea cmp add sub imu idiv div shl shr sar and xor or call jmp push test cvt ",instruc)=0 then exit sub
 	end if
+	''remove instruc
+	lineshort=mid(lineasm,instr(lineasm," ")+1,999999)
 
 	for ireg as long =1 To KREGUPPER
 		if reghandle(ireg)=KREGRSVD then continue for ''excluding rbp and rsp
 		regfound1=KNOTFOUND:regfound2=KNOTFOUND
 
-		if instr(lineasm,*regstrq(ireg)+",") then
+		if instr(lineshort,*regstrq(ireg)+",") then
 			regfound1=ireg
-		elseif instr(lineasm,*regstrd(ireg)+",") then
+		elseif instr(lineshort,*regstrd(ireg)+",") then
 			regfound1=ireg
-		elseif instr(lineasm,*regstrw(ireg)+",") then
+		elseif instr(lineshort,*regstrw(ireg)+",") then
 			regfound1=ireg
-		elseif instr(lineasm,*regstrb(ireg)+",") then
+		elseif instr(lineshort,*regstrb(ireg)+",") then
 			regfound1=ireg
 		end if
 
@@ -810,7 +812,7 @@ private sub reg_freeable(byref lineasm as string)
 				reghandle(regfound1)=KREGFREE
 				continue for
 			else
-				if instr(lineasm,*regstrq(ireg)+", "+*regstrq(ireg)) then
+				if instr(lineshort,*regstrq(ireg)+", "+*regstrq(ireg)) then
 					''case mov rzz, rzz in hdocall
 					reghandle(regfound1)=KREGFREE
 					exit sub
@@ -819,13 +821,13 @@ private sub reg_freeable(byref lineasm as string)
 		end if
 
 		if regfound1=KNOTFOUND then
-			if instr(lineasm,*regstrq(ireg)) then
+			if instr(lineshort,*regstrq(ireg)) then
 				regfound2=ireg
-			elseif instr(lineasm,*regstrd(ireg)) then
+			elseif instr(lineshort,*regstrd(ireg)) then
 				regfound2=ireg
-			elseif instr(lineasm,*regstrw(ireg)) then
+			elseif instr(lineshort,*regstrw(ireg)) then
 				regfound2=ireg
-			elseif instr(lineasm,*regstrb(ireg)) then
+			elseif instr(lineshort,*regstrb(ireg)) then
 				regfound2=ireg
 			end if
 		end if
