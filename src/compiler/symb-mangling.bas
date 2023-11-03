@@ -829,6 +829,7 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 			'' BASIC? use the upper-cased name
 			if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
 				id = *sym->id.name
+				'' !!! TODO !!! - if backend is gas, then can't mix gcc and gas globals
 				if( ( env.clopt.backend = FB_BACKEND_GCC ) or (env.clopt.backend = FB_BACKEND_GAS64) ) then
 					id += "$"
 				end if
