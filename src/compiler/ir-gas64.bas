@@ -5409,11 +5409,12 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 							asm_code("mov rax, "+op2)
 							asm_code("mov "+prefix+op1+", rax")
 						case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_ENUM
-							if v2->value.i<-2147483648 or v2->value.i>4294967295 then
-								asm_code("mov rax, "+op2)
-								asm_code("mov "+prefix+op1+", rax")
-							elseif v2->value.i>=2147483648 then  '' And v2->value.i<=4294967295 tested in case above
-								asm_code("mov eax, "+op2)
+							if v2->value.i<-2147483648 or v2->value.i>2147483647 then
+								if v2->value.i>=0 and v2->value.i<4294967296 then
+									asm_code("mov eax, +"+op2)
+								else
+									asm_code("mov rax, "+op2)
+								end if
 								asm_code("mov "+prefix+op1+", rax")
 							else
 								asm_code("mov "+prefix+op1+", "+op2)
@@ -5962,11 +5963,12 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 							end if
 							asm_code("mov QWORD PTR "+Str((cptarg-1)*8)+"[rsp], rax")
 						else
-							if v2->value.i<-2147483648 or v2->value.i>4294967295 then
+							if v2->value.i<-2147483648 or v2->value.i>2147483647 then
+								if v2->value.i>=0 and v2->value.i<4294967296 then
+									asm_code("mov eax, "+op1)
+								else
 									asm_code("mov rax, "+op1)
-									asm_code("mov QWORD PTR "+Str((cptarg-1)*8)+"[rsp], rax")
-							elseif v2->value.i>=2147483648 then  '' And v2->value.i<=4294967295 tested in case above
-								asm_code("mov eax, "+op1)
+								end if
 								asm_code("mov QWORD PTR "+Str((cptarg-1)*8)+"[rsp], rax")
 							else
 								asm_code("mov QWORD PTR "+Str((cptarg-1)*8)+"[rsp], "+op1)
