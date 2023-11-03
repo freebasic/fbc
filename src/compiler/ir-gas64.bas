@@ -3908,7 +3908,11 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 				end select
 			end if
 
-			asm_code("cmp "+op1+", "+op2)
+			if v1->typ=IR_VREGTYPE_REG and op2="0" then
+				asm_code("test "+op1+", "+op1)
+			else
+				asm_code("cmp "+op1+", "+op2)
+			End If
 
 			if label=0 then
 				asm_code("set"+suffix+" al")
