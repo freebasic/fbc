@@ -1561,7 +1561,7 @@ function astNewBOP _
 
 		'' For ANDALSO/ORELSE, "ex" is the dtorlist cookie
 
-		assert( (dtype = FB_DATATYPE_BOOLEAN) or (dtype = FB_DATATYPE_INTEGER) )
+		assert( (typeGetDtAndPtrOnly(dtype) = FB_DATATYPE_BOOLEAN) or (typeGetDtAndPtrOnly(dtype) = FB_DATATYPE_INTEGER) )
 
 		if ldclass = FB_DATACLASS_FPOINT then
 			cmp_constl = astNewConstf(0.0, FB_DATATYPE_SINGLE)
