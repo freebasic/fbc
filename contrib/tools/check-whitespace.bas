@@ -5,14 +5,51 @@
 ''   -c, --check-only     check only, do not write
 ''   -f, --force-write    always write (ignored with -c, --check-only)
 ''   -v, --verbose        verbose output
+''   -t N, --tab-size N   tab size
+''   --old-tab-size N     old tab size
+''   -i filename          single input file
+''   -o filename          single output file (requires -i)
+''   -s, --space-only     spaces only, convert tabs to spaces
+''   -k, --keep-spaces    keep spaces when line begins with spaces
 ''
 '' Example:
 ''   check-whitespace src/compiler/*.bi src/compiler/*.bas
+''
+'' default behaviour:
+'' - remove trailing whtespace
+'' - convert interior tabs to spaces (using --tab-size)
+'' - normalize leading whitespace
+''   1) if tabs only, keep as-is
+''   2) if spaces only convert to tabs using --tab-size
+''   3) tabs+spaces, keep as-is
+''   4) spaces+tabs, convert to tabs
+''   5) more than 3 groups of leading spaces and tabs, convert to tabs
+''
+'' '-s' behaviour
+'' same as default behaviour except for leading whitespace
+''   1) convert tabs and spaces to spaces using --tab-size
+''   2) resize leading whitespace using --new-tab-size
+
 
 const CHAR_TAB = 9
 const CHAR_SPACE = 32
 
 const DEFAULT_TAB_SIZE = 4
+
+type OPTIONS
+	help as boolean = false
+	check_only as boolean = false
+	force_write as boolean = false
+	verbose as boolean = false
+	tab_size as integer = 0
+	new_tab_size as integer = 0
+	have_input as boolean = false
+	input_file as string
+	have_output as boolean = false
+	output_file as string
+	spaces_only as boolean = false
+	keep_spaces as boolean = false
+end type
 
 type CODELINE
 	original as string
@@ -27,7 +64,7 @@ end sub
 sub addSourceLine( source() as CODELINE, byref nlines as integer, byref s as string )
 	nlines += 1
 	if( nlines > ubound(source) ) then
-		redim preserve source( 1 to ubound(source)*2 )
+		redim preserve source( 1 to iif( ubound(source)>0, ubound(source)*2, 1 ))
 	end if
 	source(nlines).original = s
 	source(nlines).text = s
@@ -54,7 +91,7 @@ function LoadFile( source() as CODELINE, byref nlines as integer, byref filename
 		close #1
 		return true
 	else
-		print "Unable to read '" & filename & "'"
+		print "error: Unable to read '" & filename & "'"
 		return false
 	end if
 end function
@@ -67,7 +104,7 @@ function WriteFile( source() as const CODELINE, byval nlines as integer, byref f
 		close #1
 		return true
 	else
-		print "Unable to write '" & filename & "'"
+		print "error: Unable to write '" & filename & "'"
 		return false
 	end if
 end function
@@ -78,21 +115,93 @@ function RemoveTrailingWhitespace( byref s as const string ) as string
 end function
 
 type WHITESPACEINFO
-	kind as integer  '' 32 = space, 9 = tab
+	kind as integer  '' 32 = space, 9 = tab, 0 = anything else
 	count as integer '' number of tabs or spaces
 	start as integer '' first char index of the group in original string
 end type
+
+sub addWhiteSpaceChar _
+	( _
+		info() as WHITESPACEINFO, byref groups as integer, _
+		byval kind as integer, byval start as integer _
+	)
+
+	'' groups
+	''   0             empty line
+	''   1 to N-1      whitespace groups (tabs or spaces)
+	''   N             start of text
+
+	if( (kind <> CHAR_SPACE) and (kind <> CHAR_TAB) ) then
+		kind = 0
+	end if
+
+	if( groups = 0 orelse info(groups).kind <> kind ) then
+		groups += 1
+		if( groups > ubound(info) ) then
+			redim preserve info(1 to iif( ubound(info) > 0, ubound(info)*2, 1 ))
+		end if
+		info(groups).kind = kind
+		info(groups).count = 0
+		info(groups).start = start
+	end if
+
+	info(groups).count += 1
+
+end sub
+
+function convertToTabs _
+	( _
+		info() as WHITESPACEINFO, byval groups as integer, _
+		byref opts as const OPTIONS _
+	) as string
+	dim ws as string
+
+	'' convert to tabs
+	for i as integer = 1 to groups
+		select case info(i).kind
+		case CHAR_TAB
+			ws &= string( info(i).count, CHAR_TAB )
+		case CHAR_SPACE
+			ws &= string( (info(i).count) \ opts.tab_size, CHAR_TAB )
+		end select
+	next
+	return ws
+end function
+
+function convertToSpaces _
+	( _
+		info() as WHITESPACEINFO, byval groups as integer, _
+		byref opts as const OPTIONS _
+	) as string
+	dim ws as string
+	dim nspaces as integer
+	dim rspaces as integer
+	'' convert to spaces - resizing tabs as we go
+	for i as integer = 1 to groups
+		select case info(i).kind
+		case CHAR_TAB
+			nspaces = (nspaces \ opts.tab_size) * opts.tab_size
+			nspaces += info(i).count * opts.tab_size  
+		case CHAR_SPACE
+			nspaces += info(i).count 
+		end select
+	next
+	rspaces = nspaces mod opts.tab_size 
+	return string( (nspaces \ opts.tab_size) * opts.tab_size + rspaces, CHAR_SPACE ) 
+end function
+
 
 '' fix leading whitespace by counting up the groups of tabs or spaces
 '' before the first non-whitespace character on the line
 function FixMixedLeadingWhiteSpace _
 	( _
 		byref s as const string, _
-		byval opt_tab_size as integer, _
-		byval opt_old_tab_size as integer _
+		byref opts as const OPTIONS _
 	) as string
-	dim info(1 to 50) as WHITESPACEINFO
-	dim index as integer = 0
+
+	redim info(1 to 10) as WHITESPACEINFO
+	dim groups as integer = 0
+	dim ws as string
 
 	'' no string? then no change
 	if( len(s) = 0 ) then
@@ -102,59 +211,81 @@ function FixMixedLeadingWhiteSpace _
 	for i as integer = 1 to len( s )
 		select case mid( s, i , 1 )
 		case chr(CHAR_SPACE)
-			if( index = 0 orelse info(index).kind <> CHAR_SPACE ) then
-				index += 1
-				info(index).kind = CHAR_SPACE
-				info(index).start = i
-			end if
-			info(index).count += 1
+			addWhiteSpaceChar( info(), groups, CHAR_SPACE, i )
 		case chr(CHAR_TAB)
-			if( index = 0 orelse info(index).kind <> CHAR_TAB ) then
-				index += 1
-				info(index).kind = CHAR_TAB
-				info(index).start = i
-			end if
-			info(index).count += 1
+			addWhiteSpaceChar( info(), groups, CHAR_TAB, i )
 		case else
-			info(index + 1).start = i
+			addWhiteSpaceChar( info(), groups, 0, i )
 			exit for
 		end select
 	next
 
-	select case index
-	case 0
-		'' ok, no leading whitespace
-	case 1
-		'' it's only spaces or only tabs, just process it
-		'' we shouldn't have leading spaces only (unless it is a
-		'' multi-line comment)
-	case else
-		'' it's mixed
-		'' if the last group is spaces, don't convert it
-		if(info(index).kind = CHAR_SPACE ) then
-			index -= 1
+	'' no groups? then it was an empty line
+	if( groups = 0 ) then 
+		return ""
+	end if
+
+	'' no text following whitespace? remove the empty line
+	'' RemoveTrailingWhitespace() should have removed empty lines, but
+	'' in case that was disabled, remove empty line here.
+	if( info(groups).kind <> 0 ) then
+		return ""
+	end if
+
+	'' no leading whitespace? return as-is
+	if( groups = 1 ) then
+		return s
+	end if
+
+	'' if groups = 2 then it's only spaces or only tabs
+	'' (i.e. one kind of whitespace)
+	'' 
+	'' default: always convert to tabs
+	'' '-s'   : convert all to spaces (and resize based on [new-]tab-size)
+	'' '-k'   : keep tabs or spaces as-is
+	''
+	'' Note: In fbc sources we shouldn't have leading spaces
+	''       only, unless it is a multi-line comment
+	''
+	'' no adjustments needed, see below.
+
+	'' more than 2 groups? it's mixed leading whitespace
+	if( groups > 2 ) then
+		'' default: convert to tabs, (except the last group of spaces)
+		'' '-s'   : convert all to spaces (and resize based on [new-]tab-size)
+		'' '-k'   : convert to tabs or spaces depending on first group
+
+		if( (opts.spaces_only = false) andalso (opts.keep_spaces = false) ) then
+			if(info(groups-1).kind = CHAR_SPACE ) then
+				'' do not include last group and treat spaces as start of 'text'
+				groups -= 1
+			end if
 		end if
-	end select
 
-	dim ws as string
+	end if
 
-	for i as integer = 1 to index
-		select case info(i).kind
+	if( opts.spaces_only ) then
+		ws = convertToSpaces( info(), groups-1, opts )
+	elseif( opts.keep_spaces ) then
+		select case info(1).kind
 		case CHAR_TAB
-			ws &= string( info(i).count, CHAR_TAB )
-		case CHAR_SPACE
-			ws &= string( (info(i).count) \ opt_old_tab_size, CHAR_TAB )
+			ws = convertToTabs( info(), groups-1, opts )
+		case else
+			ws = convertToSpaces( info(), groups-1, opts )
 		end select
-	next
+	else
+		ws = convertToTabs( info(), groups-1, opts )
+	end if
 
-	return ws & mid( s, info(index + 1).start )
+	'' last group is text - return all of it
+	return ws & mid( s, info(groups).start )
 
 end function
 
 function FixInteriorTabs _
 	( _
 		byref s as const string, _
-		byval opt_tab_size as integer _
+		opts as const OPTIONS _
 	) as string
 	dim ret as string
 	dim chars as integer = 0
@@ -172,12 +303,12 @@ function FixInteriorTabs _
 	while( i <= len(s) )
 		select case mid( s, i , 1 )
 		case chr(CHAR_TAB)
-			ret &= string( opt_tab_size - (chars mod opt_tab_size), CHAR_SPACE )
+			ret &= string( opts.tab_size - (chars mod opts.tab_size), CHAR_SPACE )
 			chars = 0
 		case else
 			ret &= mid( s, i , 1 )
 			chars += 1
-			chars mod= opt_tab_size
+			chars mod= opts.tab_size
 		end select
 		i += 1
 	wend
@@ -190,81 +321,142 @@ sub CheckWhiteSpace _
 	( _
 		source() as CODELINE, _
 		byval nlines as integer, _
-		byval opt_tab_size as integer, _
-		byval opt_old_tab_size as integer _
-		)
+		byref opts as const OPTIONS _
+	)
 	for i as integer = 1 to nlines
 		dim s as string = source( i ).original
 		s = RemoveTrailingWhiteSpace( s )
-		s = FixMixedLeadingWhiteSpace( s, opt_tab_size, opt_old_tab_size )
-		s = FixInteriorTabs( s, opt_tab_size )
+		s = FixMixedLeadingWhiteSpace( s, opts )
+		s = FixInteriorTabs( s, opts )
 		source( i ).text = s
 	next
 end sub
 
 sub addFile( files() as string, byref nfiles as integer, byref f as const string )
 	if( nfiles = ubound(files) ) then
-		redim preserve files( 1 to ubound(files)*2 )
+		redim preserve files( 1 to iif( ubound(files) > 0, ubound(files)*2, 1 ))
 	end if
 	nfiles += 1
 	files( nfiles ) = f
+end sub
+
+sub processFile _
+	( _
+		byref src_filename as string, _
+		byref dst_filename as string, _
+		byref opts as const OPTIONS _
+	)
+
+	redim source(1 to 1024) as CODELINE
+	dim nlines as integer
+
+	if( LoadFile( source(), nlines, src_filename ) ) then
+
+		CheckWhitespace( source(), nlines, opts )
+		dim n as integer = CountChanges( source(), nlines )
+
+		if( (n > 0) orelse (opts.verbose = true) or (opts.force_write = true) ) then
+			print src_filename & ": " & n
+		end if
+
+		if( opts.check_only = false ) then
+			if( (cbool(n > 0) = true) orelse (opts.force_write = true) orelse (opts.have_output = true) ) then
+				WriteFile( source(), nlines, dst_filename )
+			end if
+		end if
+
+	end if
+
 end sub
 
 '' ------------------------------------
 '' MAIN
 '' ------------------------------------
 
-dim opt_help as boolean = false
-dim opt_check_only as boolean = false
-dim opt_force_write as boolean = false
-dim opt_verbose as boolean = false
-dim opt_tab_size as integer = DEFAULT_TAB_SIZE
-dim opt_old_tab_size as integer = DEFAULT_TAB_SIZE
+dim opts as OPTIONS
 
 redim files(1 to 100) as string
 dim nfiles as integer = 0
-
-redim source(1 to 1024) as CODELINE
-dim nlines as integer
 
 dim i as integer = 1
 while i < __FB_ARGC__
 
 	select case command(i)
 	case "--help"
-		opt_help = true
+		opts.help = true
 	case "-c", "--check-only"
-		opt_check_only = true
+		opts.check_only = true
 	case "-f", "--force-write"
-		opt_force_write = true
+		opts.force_write = true
 	case "-v", "--verbose"
-		opt_verbose = true
+		opts.verbose = true
 	case "-t", "--tab-size"
 		i += 1
-		opt_tab_size = valint( command(i) )
-		if( opt_tab_size < 1 or opt_tab_size > 8 ) then
-			print "invalid tab size " & opt_tab_size
-			opt_tab_size = DEFAULT_TAB_SIZE
+		opts.tab_size = valint( command(i) )
+		if( opts.tab_size < 1 or opts.tab_size > 8 ) then
+			print "error: invalid tab size " & opts.tab_size
+			end 1
 		end if
-	case "--old-tab-size"
+	case "--new-tab-size"
 		i += 1
-		opt_old_tab_size = valint( command(i) )
-		if( opt_old_tab_size < 1 or opt_old_tab_size > 8 ) then
-			print "invalid tab size " & opt_tab_size
-			opt_old_tab_size = DEFAULT_TAB_SIZE
+		opts.new_tab_size = valint( command(i) )
+		if( opts.new_tab_size < 1 or opts.new_tab_size > 8 ) then
+			print "error: invalid new tab size " & opts.new_tab_size
+			end 1
 		end if
+	case "-i"
+		i += 1
+		if command(i) > "" then
+			opts.input_file = command(i)
+			opts.have_input = true
+		else
+			print "error: expected filename after '-i'"
+		end if
+	case "-o"
+		i += 1
+		if command(i) > "" then
+			opts.output_file = command(i)
+			opts.have_output = true
+		else
+			print "error: expected filename after '-o'"
+		end if
+	case "-s", "--space-only"
+		opts.spaces_only = true
+	case "-k", "--keep-spaces"
+		opts.keep_spaces = true
 	case else
-		addFile files(), nfiles, command(i)
+		if opts.have_input then
+			print "error: unexpected multiple input files used with -i option"
+		else
+			addFile files(), nfiles, command(i)
+		end if
 	end select
 
 	i += 1
 wend
 
-if( command(1) = "" ) then
-	opt_help = true
+if( opts.tab_size = 0 ) then
+	opts.tab_size = DEFAULT_TAB_SIZE
 end if
 
-if( opt_help ) then
+if( opts.new_tab_size = 0 ) then
+	opts.new_tab_size = opts.tab_size
+end if
+
+if( opts.have_output = true and opts.have_input = false ) then
+	print "error: output file was given without also giving an input file"
+	end 1
+end if
+
+if( opts.have_input = true and opts.have_output = false ) then
+	opts.output_file = opts.input_file
+end if
+
+if( command(1) = "" ) then
+	opts.help = true
+end if
+
+if( opts.help ) then
 	print "Usage: check-whitespace [options] [files...]"
 	print "options:"
 	print "   --help               show help screen"
@@ -272,37 +464,26 @@ if( opt_help ) then
 	print "   -f, --force-write    always write (ignored with -c, --check-only)"
 	print "   -v, --verbose        verbose output"
 	print "   -t N, --tab-size N   tab size (default " & DEFAULT_TAB_SIZE & ")"
-	print "   --old-tab-size N     old tab size (default " & DEFAULT_TAB_SIZE & ")"
+	print "   --new-tab-size N     new tab size (default " & DEFAULT_TAB_SIZE & ")"
+	print "   -i filename          single input file"
+	print "   -o filename          single output file (requires -i)"
+	print "   -s, --space-only     spaces only, convert tabs to spaces"
+	print "   -k, --keep-spaces    keep spaces when line begins with spaces"
 	print
 	print "Example:"
 	print "   check-whitespace src/compiler/*.bi src/compiler/*.bas"
 	end
 end if
 
-if( nfiles = 0 ) then
-	print "error: no files specified"
-	end
-end if
-
-for i as integer = 1 to nfiles
-
-	dim filename as string = files(i)
-
-	if( LoadFile( source(), nlines, filename ) ) then
-
-		CheckWhitespace( source(), nlines, opt_tab_size, opt_old_tab_size )
-		dim n as integer = CountChanges( source(), nlines )
-
-		if( (n > 0) orelse (opt_verbose = true) or (opt_force_write = true) ) then
-			print filename & ": " & n
-		end if
-
-		if( opt_check_only = false ) then
-			if( (n > 0) orelse (opt_force_write = true) ) then
-				WriteFile( source(), nlines, filename )
-			end if
-		end if
-
+if( opts.have_input ) then
+	processFile( opts.input_file, opts.output_file, opts )
+else
+	if( nfiles = 0 ) then
+		print "error: no files specified"
+		end 1
 	end if
 
-next
+	for i as integer = 1 to nfiles
+		processFile( files(i), files(i), opts )
+	next
+end if
