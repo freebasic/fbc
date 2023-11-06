@@ -555,8 +555,20 @@ private sub check_optim(byref code as string)
 					''cmp r10, r11  --> cmp r10, xx[rbp]
 					if part1[0]=asc("r") then
 						if part1=prevpart1 and prevpart2[0]=asc("r") then
-							mid(ctx.proc_txt,prevwpos)="#13"
-							code="#13"+code+newline+string( ctx.indent*3, 32 )+"cmp "+prevpart2+", "+part2+" #Optim 13"
+
+							if prevpart2="rax" and ctx.jmpreg<>KREG_RAX then
+								asm_info(" Rax assigned to ctx.jmpreg instead "+*regstrq(ctx.jmpreg))
+								ctx.jmpreg=KREG_RAX
+							end if
+
+							if part1[0]=asc("r") and part2="0" then
+								''cmp reg, 0 --> test reg, reg
+								mid(ctx.proc_txt,prevwpos)="#17"
+								code="#17"+code+newline+string( ctx.indent*3, 32 )+"test "+prevpart2+", "+prevpart2+" #Optim 17"
+							else
+								mid(ctx.proc_txt,prevwpos)="#13"
+								code="#13"+code+newline+string( ctx.indent*3, 32 )+"cmp "+prevpart2+", "+part2+" #Optim 13"
+							End If
 						elseif part2=prevpart1 and instr(prevpart2,"[") then
 							mid(ctx.proc_txt,prevwpos)="#14"
 							code="#14"+code+newline+string( ctx.indent*3, 32 )+"cmp "+part1+", "+prevpart2+" #Optim 14"
@@ -564,6 +576,23 @@ private sub check_optim(byref code as string)
 					end if
 				end if
 				prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV ''reinit
+			else
+				poschar1=instr(code," ")
+				instruc=left(code,poschar1-1)
+				poschar2=instr(code,",")
+				part1=trim(mid(code,poschar1+1,poschar2-poschar1-1))
+				poschar1=instr(code,"#")
+				if poschar1=0 then
+					poschar1=len(code) ''Add 1 as after removing 2
+				else
+					poschar1-=2
+				end if
+				''cmp reg, 0 --> test reg, reg
+				part2=trim(Mid(code,poschar2+1,poschar1-poschar2))
+				if part1[0]=asc("r") and part2="0" then
+					code="test "+part1+", "+part1+" #Optim 18"
+					prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV ''reinit
+				end if
 			end if
 			exit sub
 		case else
@@ -809,6 +838,7 @@ private sub reg_freeable(byref lineasm as string)
 				''already inuse but not to be used later except one case (at least) when null-pointer checking
 				ctx.jmpreg=regfound1 ''see their defines
 				ctx.jmpvreg=reghandle(regfound1)
+
 				ctx.jmppass=2
 				reghandle(regfound1)=KREGFREE
 				continue for
@@ -3908,11 +3938,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 				end select
 			end if
 
-			if v1->typ=IR_VREGTYPE_REG and op2="0" then
-				asm_code("test "+op1+", "+op1)
-			else
-				asm_code("cmp "+op1+", "+op2)
-			End If
+			asm_code("cmp "+op1+", "+op2)
 
 			if label=0 then
 				asm_code("set"+suffix+" al")
