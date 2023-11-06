@@ -79,6 +79,8 @@ int fb_hVirtualToScancode(int vkey)
 	return 0;
 }
 
+#if 0
+/* !!!TODO!!! need a way to find out if console is foreground in windows terminal */
 static int maybeDoFindWindow()
 {
 	static int inited = FB_FALSE;
@@ -95,17 +97,24 @@ static int maybeDoFindWindow()
 	}
 	return do_find;
 }
+#endif
 
 int fb_ConsoleMultikey( int scancode )
 {
 	int i;
 
-	/* don't find the window if OS limits GetAsyncKeyState() to active console anyway */
+#if 1
+	/* !!!FIXME!!! this doesn't seem to work under windows terminal */
+	if ( find_window() != GetForegroundWindow() )
+		return FB_FALSE;
+#else
+	/* !!!TODO!!! need a way to find out if console is foreground in windows terminal */
 	if( maybeDoFindWindow() )
 	{
 		if ( find_window() != GetForegroundWindow() )
 			return FB_FALSE;
 	}
+#endif
 
 	for( i = 0; __fb_keytable[i][0]; i++ ) {
 		if( __fb_keytable[i][0] == scancode ) {
