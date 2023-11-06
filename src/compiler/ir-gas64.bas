@@ -3938,6 +3938,10 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 				end select
 			end if
 
+			if v1->typ=IR_VREGTYPE_IMM then
+				asm_code("mov rax, "+op1)
+				op1="rax"
+			end if
 			asm_code("cmp "+op1+", "+op2)
 
 			if label=0 then
