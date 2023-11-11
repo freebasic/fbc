@@ -487,7 +487,7 @@ extern as IR_VTBL irllvm_vtbl
 extern as IR_VTBL irgas64_vtbl
 declare sub irInit( )
 declare sub irEnd( )
-#if __FB_DEBUG__
+#if (__FB_DEBUG__ <> 0) orelse defined(__GAS64_DEBUG__)
 declare function vregDumpToStr( byval v as IRVREG ptr ) as string
 declare sub vregDump( byval v as IRVREG ptr )
 #endif

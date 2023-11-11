@@ -2600,7 +2600,7 @@ private function hGetNamespacePrefix( byval sym as FBSYMBOL ptr ) as string
 	function = s
 end function
 
-#if __FB_DEBUG__
+#if (__FB_DEBUG__ <> 0) orelse defined(__GAS64_DEBUG__)
 static shared as zstring ptr classnames(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIMPORT) = _
 { _
 	@"var"      , _
