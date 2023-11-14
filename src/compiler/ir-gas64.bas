@@ -1776,6 +1776,12 @@ private sub reg_branch(byval label as FBSYMBOL ptr )
 				v = flistGetNext( v )
 			wend
 		end if
+
+		for ireg as integer =0 To KREGUPPER
+			'asm_info("Reseting ireg="+str(ireg)+" previous status="+str(regroom(ireg).status))
+			regroom(ireg).status=KROOMFREE
+		Next
+
 		ctx.labeljump=0
 		ctx.labelbranch2=0
 		asm_code(*symbGetMangledName( label )+":")
