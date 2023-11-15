@@ -1,3 +1,5 @@
+Version 1.07.4
+
 Version 1.07.3
 
 [added]
