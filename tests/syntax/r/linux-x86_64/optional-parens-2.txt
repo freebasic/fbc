@@ -1,0 +1,24 @@
+-----
+foo 10
+    A is  $"10"
+    C is  ""
+-----
+10 ', 100
+    A is  $"10"
+    C is  ""
+-----
+foo 10 ', 
+    A is  $"10"
+    C is  ""
+-----
+foo 10 ', asdasd
+    A is  $"10"
+    C is  ""
+-----
+foo 10 ', foo
+    A is  $"10"
+    C is  ""
+-----
+foo 10 'foo
+    A is  $"10"
+    C is  ""
