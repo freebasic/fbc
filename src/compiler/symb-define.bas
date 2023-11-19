@@ -345,19 +345,36 @@ private function hMacro_EvalZ( byval arg as zstring ptr, byval errnum as integer
 		'' prevent cExpression from writing to .pp.bas file
 		lex.ctx->reclevel += 1
 
-		DZstrAssign( lex.ctx->deftext, *arg )
-		lex.ctx->defptr = lex.ctx->deftext.data
-		lex.ctx->deflen += len( *arg )
+		'' ascii
+		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
+			DZstrAssign( lex.ctx->deftext, *arg )
+			lex.ctx->defptr = lex.ctx->deftext.data
+			lex.ctx->deflen += len( *arg )
 
-		'' Add an end of expression marker so that the parser
-		'' doesn't read past the end of the expression text
-		'' by appending an LFCHAR to the end of the expression
-		'' It would be better to use the explicit EOF character,
-		'' but we can't appened an extra NUL character to a zstring
+			'' Add an end of expression marker so that the parser
+			'' doesn't read past the end of the expression text
+			'' by appending an LFCHAR to the end of the expression
+			'' It would be better to use the explicit EOF character,
+			'' but we can't appened an extra NUL character to a zstring
 
-		DZstrConcatAssign( lex.ctx->deftext, LFCHAR )
-		lex.ctx->defptr = lex.ctx->deftext.data
-		lex.ctx->deflen += len( LFCHAR )
+			DZstrConcatAssign( lex.ctx->deftext, LFCHAR )
+			lex.ctx->defptr = lex.ctx->deftext.data
+			lex.ctx->deflen += len( LFCHAR )
+
+		'' unicode
+		else
+			DWstrAssignA( lex.ctx->deftextw, *arg )
+			lex.ctx->defptrw = lex.ctx->deftextw.data
+			lex.ctx->deflen += len( *arg )
+
+			'' Add an end of expression marker so that the parser
+			'' (see above)
+
+			DWstrConcatAssignA( lex.ctx->deftextw, LFCHAR )
+			lex.ctx->defptrw = lex.ctx->deftextw.data
+			lex.ctx->deflen += len( LFCHAR )
+
+		end if
 
 		dim expr as ASTNODE ptr = cExpression( )
 		var errmsg = FB_ERRMSG_OK
@@ -432,19 +449,36 @@ private function hMacro_EvalW( byval arg as wstring ptr, byval errnum as integer
 		'' prevent cExpression from writing to .pp.bas file
 		lex.ctx->reclevel += 1
 
-		DWstrAssign( lex.ctx->deftextw, *arg )
-		lex.ctx->defptrw = lex.ctx->deftextw.data
-		lex.ctx->deflen += len( *arg )
+		'' ascii
+		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
+			DZstrAssignW( lex.ctx->deftext, *arg )
+			lex.ctx->defptr = lex.ctx->deftext.data
+			lex.ctx->deflen += len( *arg )
 
-		'' Add an end of expression marker so that the parser
-		'' doesn't read past the end of the expression text
-		'' by appending an LFCHAR to the end of the expression
-		'' It would be better to use the explicit EOF character,
-		'' but we can't appened an extra NUL character to a zstring
+			'' Add an end of expression marker so that the parser
+			'' doesn't read past the end of the expression text
+			'' by appending an LFCHAR to the end of the expression
+			'' It would be better to use the explicit EOF character,
+			'' but we can't appened an extra NUL character to a zstring
 
-		DWstrConcatAssign( lex.ctx->deftextw, LFCHAR )
-		lex.ctx->defptrw = lex.ctx->deftextw.data
-		lex.ctx->deflen += len( LFCHAR )
+			DZstrConcatAssign( lex.ctx->deftext, LFCHAR )
+			lex.ctx->defptr = lex.ctx->deftext.data
+			lex.ctx->deflen += len( LFCHAR )
+
+		''unicode
+		else
+			DWstrAssign( lex.ctx->deftextw, *arg )
+			lex.ctx->defptrw = lex.ctx->deftextw.data
+			lex.ctx->deflen += len( *arg )
+
+			'' Add an end of expression marker so that the parser
+			'' (see above)
+
+			DWstrConcatAssignA( lex.ctx->deftextw, LFCHAR )
+			lex.ctx->defptrw = lex.ctx->deftextw.data
+			lex.ctx->deflen += len( LFCHAR )
+
+		end if
 
 		dim expr as ASTNODE ptr = cExpression( )
 		var errmsg = FB_ERRMSG_OK
@@ -1037,13 +1071,27 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 			'' prevent cExpression from writing to .pp.bas file
 			lex.ctx->reclevel += 1
 
-			DZstrAssign( lex.ctx->deftext, *sexpr )
-			lex.ctx->defptr = lex.ctx->deftext.data
-			lex.ctx->deflen += len( *sexpr )
+			'' ascii
+			if( env.inf.format = FBFILE_FORMAT_ASCII ) then
+				DZstrAssign( lex.ctx->deftext, *sexpr )
+				lex.ctx->defptr = lex.ctx->deftext.data
+				lex.ctx->deflen += len( *sexpr )
 
-			DZstrConcatAssign( lex.ctx->deftext, LFCHAR )
-			lex.ctx->defptr = lex.ctx->deftext.data
-			lex.ctx->deflen += len( LFCHAR )
+				DZstrConcatAssign( lex.ctx->deftext, LFCHAR )
+				lex.ctx->defptr = lex.ctx->deftext.data
+				lex.ctx->deflen += len( LFCHAR )
+
+			'' unicode
+			else
+				DWstrAssignA( lex.ctx->deftextw, *sexpr )
+				lex.ctx->defptrw = lex.ctx->deftextw.data
+				lex.ctx->deflen += len( *sexpr )
+
+				DWstrConcatAssignA( lex.ctx->deftextw, LFCHAR )
+				lex.ctx->defptrw = lex.ctx->deftextw.data
+				lex.ctx->deflen += len( LFCHAR )
+
+			end if
 
 			'' if filtervalue is zero then set the default methods to use for
 			'' look-up depending on what we are looking for
@@ -1133,13 +1181,27 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 					'' reset the current lexer context and refresh the text to parse.
 					lexInit( FALSE, TRUE )
 
-					DZstrAssign( lex.ctx->deftext, *sexpr )
-					lex.ctx->defptr = lex.ctx->deftext.data
-					lex.ctx->deflen += len( *sexpr )
+					'' ascii
+					if( env.inf.format = FBFILE_FORMAT_ASCII ) then
+						DZstrAssign( lex.ctx->deftext, *sexpr )
+						lex.ctx->defptr = lex.ctx->deftext.data
+						lex.ctx->deflen += len( *sexpr )
 
-					DZstrConcatAssign( lex.ctx->deftext, LFCHAR )
-					lex.ctx->defptr = lex.ctx->deftext.data
-					lex.ctx->deflen += len( LFCHAR )
+						DZstrConcatAssign( lex.ctx->deftext, LFCHAR )
+						lex.ctx->defptr = lex.ctx->deftext.data
+						lex.ctx->deflen += len( LFCHAR )
+
+					'' unicode
+					else
+						DWstrAssignA( lex.ctx->deftextw, *sexpr )
+						lex.ctx->defptrw = lex.ctx->deftextw.data
+						lex.ctx->deflen += len( *sexpr )
+
+						DWstrConcatAssignA( lex.ctx->deftextw, LFCHAR )
+						lex.ctx->defptrw = lex.ctx->deftextw.data
+						lex.ctx->deflen += len( LFCHAR )
+
+					end if
 				end if
 
 			end if
