@@ -11,6 +11,7 @@ Version 1.10.1
 - release: add recipes for building fbc distros using gcc-11.2 and gcc-12.2 Mingw-w64 project toolchains
 - release: add recipe for building fbc distros using winlibs-gcc-11.2/3/4 toolchain
 - fbc: '-fbgfx' command line option to link against correct libfbgfx variant, for platforms (emscripten) where it's not automatic due to missing objinfo support
+- basic-macros: better support for zstring and wstring conversion in evaluation of compile time arguments in __fb_query_symbol__, __fb_arg_extract__, __fb_iif__
 
 [fixed]
 - sf.net #982: Array descriptors emitted incorrectly in gcc backend
@@ -23,6 +24,7 @@ Version 1.10.1
 - rtlib: emscripten: CURDIR and EXEPATH always returned ""
 - emscripten/fbc: -sASYNCIFY wasn't passed to emcc at link-time as needed by recent Emscripten
 - sf.net #993: ignore (parse) single line comments for macros invoked with optional parentheses instead of passing as an argument to macro
+- sf.net #994: Bad handling of macro argument evaluation - reset file pointers after evaluating arguments in __fb_query_symbol__, __fb_eval__, __fb_arg_extract__, __fb_iif__
 
 
 Version 1.10.0
