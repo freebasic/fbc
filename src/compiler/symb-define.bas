@@ -319,6 +319,55 @@ end function
 
 #define hIsTokenEndOfStream()  ((lexGetToken() = FB_TK_EOL) orelse (lexGetToken() = FB_TK_EOF))
 
+private sub hArgAppendLFCHAR( )
+	'' Add an end of expression marker so that the parser
+	'' doesn't read past the end of the expression text
+	'' by appending an LFCHAR to the end of the expression
+	'' It would be better to use the explicit EOF character,
+	'' but we can't appened an extra NUL character to a zstring
+
+	'' ascii
+	if( env.inf.format = FBFILE_FORMAT_ASCII ) then
+		DZstrConcatAssign( lex.ctx->deftext, LFCHAR )
+		lex.ctx->defptr = lex.ctx->deftext.data
+		lex.ctx->deflen += len( LFCHAR )
+	'' unicode
+	else
+		DWstrConcatAssignA( lex.ctx->deftextw, LFCHAR )
+		lex.ctx->defptrw = lex.ctx->deftextw.data
+		lex.ctx->deflen += len( LFCHAR )
+	end if
+end sub
+
+private sub hArgInsertArgA( byval arg as zstring ptr )
+	'' ascii
+	if( env.inf.format = FBFILE_FORMAT_ASCII ) then
+		DZstrAssign( lex.ctx->deftext, *arg )
+		lex.ctx->defptr = lex.ctx->deftext.data
+		lex.ctx->deflen += len( *arg )
+	'' unicode
+	else
+		DWstrAssignA( lex.ctx->deftextw, *arg )
+		lex.ctx->defptrw = lex.ctx->deftextw.data
+		lex.ctx->deflen += len( *arg )
+	end if
+end sub
+
+private sub hArgInsertArgW( byval arg as wstring ptr )
+	'' ascii
+	if( env.inf.format = FBFILE_FORMAT_ASCII ) then
+		DZstrAssignW( lex.ctx->deftext, *arg )
+		lex.ctx->defptr = lex.ctx->deftext.data
+		lex.ctx->deflen += len( *arg )
+	'' unicode
+	else
+		DWstrAssign( lex.ctx->deftextw, *arg )
+		lex.ctx->defptrw = lex.ctx->deftextw.data
+		lex.ctx->deflen += len( *arg )
+	end if
+end sub
+
+
 private function hMacro_EvalZ( byval arg as zstring ptr, byval errnum as integer ptr ) as string
 
 	'' the expression should have already been handled in hLoadMacro|hLoadMacroW
@@ -345,36 +394,8 @@ private function hMacro_EvalZ( byval arg as zstring ptr, byval errnum as integer
 		'' prevent cExpression from writing to .pp.bas file
 		lex.ctx->reclevel += 1
 
-		'' ascii
-		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-			DZstrAssign( lex.ctx->deftext, *arg )
-			lex.ctx->defptr = lex.ctx->deftext.data
-			lex.ctx->deflen += len( *arg )
-
-			'' Add an end of expression marker so that the parser
-			'' doesn't read past the end of the expression text
-			'' by appending an LFCHAR to the end of the expression
-			'' It would be better to use the explicit EOF character,
-			'' but we can't appened an extra NUL character to a zstring
-
-			DZstrConcatAssign( lex.ctx->deftext, LFCHAR )
-			lex.ctx->defptr = lex.ctx->deftext.data
-			lex.ctx->deflen += len( LFCHAR )
-
-		'' unicode
-		else
-			DWstrAssignA( lex.ctx->deftextw, *arg )
-			lex.ctx->defptrw = lex.ctx->deftextw.data
-			lex.ctx->deflen += len( *arg )
-
-			'' Add an end of expression marker so that the parser
-			'' (see above)
-
-			DWstrConcatAssignA( lex.ctx->deftextw, LFCHAR )
-			lex.ctx->defptrw = lex.ctx->deftextw.data
-			lex.ctx->deflen += len( LFCHAR )
-
-		end if
+		hArgInsertArgA( arg )
+		hArgAppendLFCHAR()
 
 		dim expr as ASTNODE ptr = cExpression( )
 		var errmsg = FB_ERRMSG_OK
@@ -449,36 +470,8 @@ private function hMacro_EvalW( byval arg as wstring ptr, byval errnum as integer
 		'' prevent cExpression from writing to .pp.bas file
 		lex.ctx->reclevel += 1
 
-		'' ascii
-		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-			DZstrAssignW( lex.ctx->deftext, *arg )
-			lex.ctx->defptr = lex.ctx->deftext.data
-			lex.ctx->deflen += len( *arg )
-
-			'' Add an end of expression marker so that the parser
-			'' doesn't read past the end of the expression text
-			'' by appending an LFCHAR to the end of the expression
-			'' It would be better to use the explicit EOF character,
-			'' but we can't appened an extra NUL character to a zstring
-
-			DZstrConcatAssign( lex.ctx->deftext, LFCHAR )
-			lex.ctx->defptr = lex.ctx->deftext.data
-			lex.ctx->deflen += len( LFCHAR )
-
-		''unicode
-		else
-			DWstrAssign( lex.ctx->deftextw, *arg )
-			lex.ctx->defptrw = lex.ctx->deftextw.data
-			lex.ctx->deflen += len( *arg )
-
-			'' Add an end of expression marker so that the parser
-			'' (see above)
-
-			DWstrConcatAssignA( lex.ctx->deftextw, LFCHAR )
-			lex.ctx->defptrw = lex.ctx->deftextw.data
-			lex.ctx->deflen += len( LFCHAR )
-
-		end if
+		hArgInsertArgW( arg )
+		hArgAppendLFCHAR()
 
 		dim expr as ASTNODE ptr = cExpression( )
 		var errmsg = FB_ERRMSG_OK
@@ -1071,27 +1064,8 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 			'' prevent cExpression from writing to .pp.bas file
 			lex.ctx->reclevel += 1
 
-			'' ascii
-			if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-				DZstrAssign( lex.ctx->deftext, *sexpr )
-				lex.ctx->defptr = lex.ctx->deftext.data
-				lex.ctx->deflen += len( *sexpr )
-
-				DZstrConcatAssign( lex.ctx->deftext, LFCHAR )
-				lex.ctx->defptr = lex.ctx->deftext.data
-				lex.ctx->deflen += len( LFCHAR )
-
-			'' unicode
-			else
-				DWstrAssignA( lex.ctx->deftextw, *sexpr )
-				lex.ctx->defptrw = lex.ctx->deftextw.data
-				lex.ctx->deflen += len( *sexpr )
-
-				DWstrConcatAssignA( lex.ctx->deftextw, LFCHAR )
-				lex.ctx->defptrw = lex.ctx->deftextw.data
-				lex.ctx->deflen += len( LFCHAR )
-
-			end if
+			hArgInsertArgA( sexpr )
+			hArgAppendLFCHAR()
 
 			'' if filtervalue is zero then set the default methods to use for
 			'' look-up depending on what we are looking for
@@ -1181,27 +1155,8 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 					'' reset the current lexer context and refresh the text to parse.
 					lexInit( FALSE, TRUE )
 
-					'' ascii
-					if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-						DZstrAssign( lex.ctx->deftext, *sexpr )
-						lex.ctx->defptr = lex.ctx->deftext.data
-						lex.ctx->deflen += len( *sexpr )
-
-						DZstrConcatAssign( lex.ctx->deftext, LFCHAR )
-						lex.ctx->defptr = lex.ctx->deftext.data
-						lex.ctx->deflen += len( LFCHAR )
-
-					'' unicode
-					else
-						DWstrAssignA( lex.ctx->deftextw, *sexpr )
-						lex.ctx->defptrw = lex.ctx->deftextw.data
-						lex.ctx->deflen += len( *sexpr )
-
-						DWstrConcatAssignA( lex.ctx->deftextw, LFCHAR )
-						lex.ctx->defptrw = lex.ctx->deftextw.data
-						lex.ctx->deflen += len( LFCHAR )
-
-					end if
+					hArgInsertArgA( sexpr )
+					hArgAppendLFCHAR()
 				end if
 
 			end if
