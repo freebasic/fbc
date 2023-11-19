@@ -317,6 +317,8 @@ private function hMacro_getArgW( byval argtb as LEXPP_ARGTB ptr, byval num as in
 
 end function
 
+#define hIsTokenEndOfStream()  ((lexGetToken() = FB_TK_EOL) orelse (lexGetToken() = FB_TK_EOF))
+
 private function hMacro_EvalZ( byval arg as zstring ptr, byval errnum as integer ptr ) as string
 
 	'' the expression should have already been handled in hLoadMacro|hLoadMacroW
@@ -367,13 +369,13 @@ private function hMacro_EvalZ( byval arg as zstring ptr, byval errnum as integer
 				DZStrAssign( res, astConstFlushToStr( expr ) )
 
 				'' any tokens still in the buffer? cExpression() should have used them all
-				if( lexGetToken( ) <> FB_TK_EOL ) then
+				if( not hIsTokenEndOfStream() ) then
 					errmsg = FB_ERRMSG_SYNTAXERROR
 				end if
 			elseif( astIsConstant( expr ) ) then
 				DZStrAssign( res, symbGetConstStrAsStr( expr->sym ) )
 				'' any tokens still in the buffer? cExpression() should have used them all
-				if( lexGetToken( ) <> FB_TK_EOL ) then
+				if( not hIsTokenEndOfStream() ) then
 					errmsg = FB_ERRMSG_SYNTAXERROR
 				end if
 				astDelTree( expr )
@@ -454,13 +456,13 @@ private function hMacro_EvalW( byval arg as wstring ptr, byval errnum as integer
 				DWStrAssign( res, astConstFlushToWstr( expr ) )
 
 				'' any tokens still in the buffer? cExpression() should have used them all
-				if( lexGetToken( ) <> FB_TK_EOL ) then
+				if( not hIsTokenEndOfStream() ) then
 					errmsg = FB_ERRMSG_SYNTAXERROR
 				end if
 			elseif( astIsConstant( expr ) ) then
 				DWStrAssign( res, symbGetConstStrAsWstr( expr->sym ) )
 				'' any tokens still in the buffer? cExpression() should have used them all
-				if( lexGetToken( ) <> FB_TK_EOL ) then
+				if( not hIsTokenEndOfStream() ) then
 					errmsg = FB_ERRMSG_SYNTAXERROR
 				end if
 				astDelTree( expr )
@@ -1114,7 +1116,7 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 				'' because there is more, try as typeof.
 
 				'' not the end of 'sym'? retry as TYPEOF
-				if( lexGetToken( ) <> FB_TK_EOF ) then
+				if( not hIsTokenEndOfStream() ) then
 					retry = TRUE
 				end if
 
