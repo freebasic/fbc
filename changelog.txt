@@ -22,6 +22,7 @@ Version 1.10.1
 - emscripten: non-graphical programs will now run under node.js. Use -x output.js to produce a .js rather than an .html
 - rtlib: emscripten: CURDIR and EXEPATH always returned ""
 - emscripten/fbc: -sASYNCIFY wasn't passed to emcc at link-time as needed by recent Emscripten
+- sf.net #993: ignore (parse) single line comments for macros invoked with optional parentheses instead of passing as an argument to macro
 
 
 Version 1.10.0
