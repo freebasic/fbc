@@ -1264,8 +1264,8 @@ private function hLinkFiles( ) as integer
 			exit function
 		end if
 
-		dim value as long = clng( fbGetOption( FB_COMPOPT_STACKSIZE ) ) 
-		put #f, 533, value 
+		dim value as long = clng( fbGetOption( FB_COMPOPT_STACKSIZE ) )
+		put #f, 533, value
 
 		close #f
 
