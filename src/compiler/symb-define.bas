@@ -1041,6 +1041,10 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 			lex.ctx->defptr = lex.ctx->deftext.data
 			lex.ctx->deflen += len( *sexpr )
 
+			DZstrConcatAssign( lex.ctx->deftext, LFCHAR )
+			lex.ctx->defptr = lex.ctx->deftext.data
+			lex.ctx->deflen += len( LFCHAR )
+
 			'' if filtervalue is zero then set the default methods to use for
 			'' look-up depending on what we are looking for
 			if( filtervalue = 0 ) then
@@ -1073,6 +1077,9 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 				     FB_TKCLASS_QUIRKWD, FB_TKCLASS_OPERATOR
 
 					sym = cIdentifierOrUDTMember( )
+					if( sym = NULL ) then
+						retry = TRUE
+					end if
 				end select
 
 				'' for some symbols, we maybe want to reset and try a TYPEOF below
@@ -1129,6 +1136,10 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 					DZstrAssign( lex.ctx->deftext, *sexpr )
 					lex.ctx->defptr = lex.ctx->deftext.data
 					lex.ctx->deflen += len( *sexpr )
+
+					DZstrConcatAssign( lex.ctx->deftext, LFCHAR )
+					lex.ctx->defptr = lex.ctx->deftext.data
+					lex.ctx->deflen += len( LFCHAR )
 				end if
 
 			end if
@@ -1182,6 +1193,12 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 				*errnum = FB_ERRMSG_SYNTAXERROR
 				res = str( -1 )
 			end select
+
+			if( *errnum <> FB_ERRMSG_OK ) then
+				errReport( *errnum )
+				'' error recovery: skip until next line (in the buffer)
+				hSkipUntil( FB_TK_EOL, TRUE )
+			end if
 
 			lex.ctx->reclevel -= 1
 

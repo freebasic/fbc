@@ -60,6 +60,13 @@ sub lexPopCtx( )
 		DWstrAllocate( lex.ctx->deftextw, 0 )
 	end if
 
+	'' restore file pointer position if current context is different from previous
+	if( (lex.ctx-1)->physfilepos > 0 ) then
+		if( (lex.ctx-1)->physfilepos <> lex.ctx->physfilepos ) then
+			seek #env.inf.num, lex.ctx->physfilepos
+		end if
+	end if
+
 	lex.ctx -= 1
 
 end sub
@@ -133,9 +140,11 @@ sub lexInit _
 	if( is_fb_eval ) then
 		lex.ctx->filepos = (lex.ctx-1)->filepos
 		lex.ctx->lastfilepos = (lex.ctx-1)->lastfilepos
+		lex.ctx->physfilepos = (lex.ctx-1)->physfilepos
 	else
 		lex.ctx->filepos = 0
 		lex.ctx->lastfilepos = 0
+		lex.ctx->physfilepos = 0
 	end if
 
 	'' only if it's not on an inc file
@@ -227,7 +236,8 @@ private function hReadChar _
 				select case as const env.inf.format
 				case FBFILE_FORMAT_ASCII
 					if( get( #env.inf.num, , lex.ctx->buff ) = 0 ) then
-						lex.ctx->bufflen = seek( env.inf.num ) - lex.ctx->filepos
+						lex.ctx->physfilepos = seek( env.inf.num )
+						lex.ctx->bufflen = lex.ctx->physfilepos - lex.ctx->filepos
 						lex.ctx->buffptr = @lex.ctx->buff
 					end if
 
