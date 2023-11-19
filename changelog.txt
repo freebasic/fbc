@@ -42,6 +42,7 @@ Version 1.10.1
 - release: add recipes for building fbc distros using gcc-11.2 and gcc-12.2 Mingw-w64 project toolchains
 - release: add recipe for building fbc distros using winlibs-gcc-11.2/3/4 toolchain
 - fbc: '-fbgfx' command line option to link against correct libfbgfx variant, for platforms (emscripten) where it's not automatic due to missing objinfo support
+- basic-macros: better support for zstring and wstring conversion in evaluation of compile time arguments in __fb_query_symbol__, __fb_arg_extract__, __fb_iif__
 
 [fixed]
 - sf.net #982: Array descriptors emitted incorrectly in gcc backend
@@ -53,6 +54,8 @@ Version 1.10.1
 - emscripten: non-graphical programs will now run under node.js. Use -x output.js to produce a .js rather than an .html
 - rtlib: emscripten: CURDIR and EXEPATH always returned ""
 - emscripten/fbc: -sASYNCIFY wasn't passed to emcc at link-time as needed by recent Emscripten
+- sf.net #993: ignore (parse) single line comments for macros invoked with optional parentheses instead of passing as an argument to macro
+- sf.net #994: Bad handling of macro argument evaluation - reset file pointers after evaluating arguments in __fb_query_symbol__, __fb_eval__, __fb_arg_extract__, __fb_iif__
 
 
 Version 1.10.0
@@ -346,7 +349,7 @@ Version 1.08.0
 - Change overload to SCREENINFO( byref as long = 0, byref as long = 0, byref as long = 0, byref as long = 0, byref as long = 0, byref as long = 0, byref as string = "" )
 - Add overload for SCREENINFO( byref as longint, byref as longint, byref as longint = 0, byref as longint = 0, byref as longint = 0, byref as longint = 0, byref as string = "" )
 - Add new gflib2 API's fb_GfxImageInfo32() and fb_GfxImageInfo64()
-- Change overload to IMAGEINFO( byval as const any ptr, byref as long = 0, byref as long = 0, byref as long = 0, byref as long = 0, byref as any ptr = 0, byref as longint = 0 ) as long
+- Change overload to IMAGEINFO( byval as const any ptr, byref as long = 0, byref as long = 0, byref as long = 0, byref as long = 0, byref as any ptr = 0, byref as long = 0 ) as long
 - Add overload for IMAGEINFO( byval as const any ptr, byref as longint, byref as longint, byref as longint = 0, byref as longint = 0, byref as any ptr = 0, byref as longint = 0 ) as long
 - Add new gfxlib2 API's fb_GfxControl_i32() and fb_GfxControl_i64()
 - Change overload for SCREENCONTROL( byval as const long, byref as long = -2147483648, byref as long = -2147483648, byref as long = -2147483648, byref as long = -2147483648 )

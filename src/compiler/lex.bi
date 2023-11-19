@@ -130,6 +130,7 @@ type LEX_TKCTX
 
 	filepos         as integer
 	lastfilepos     as integer
+	physfilepos     as integer
 
 	currline        as DZSTRING                 '' current line in text form
 
