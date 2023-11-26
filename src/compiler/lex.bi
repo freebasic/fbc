@@ -77,6 +77,12 @@ const FB_LEX_MAXK   = 3
 
 const LEX_MAXBUFFCHARS = 8192
 
+enum LEX_TKCTX_CONTEXT
+	LEX_TKCTX_CONTEXT_INIT = 0                  '' initializing, first time only
+	LEX_TKCTX_CONTEXT_INCLUDE = 1               '' include file
+	LEX_TKCTX_CONTEXT_EVAL = 2                  '' preprocessor evaluation
+end enum
+
 type LEX_TKCTX
 	tokenTB(0 to FB_LEX_MAXK) as FBTOKEN
 	k               as integer                  '' look ahead cnt (1..MAXK)
@@ -95,7 +101,7 @@ type LEX_TKCTX
 	currmacro       as FBSYMBOL ptr             '' used to check macro recursion
 
 	kwdns           as FBSYMBOL ptr             '' used by the PP
-	is_fb_eval      as integer                  '' TRUE if inside an FB_EVAL
+	kind            as LEX_TKCTX_CONTEXT        '' the kind of lexer context
 
 	'' last #define's text
 	deflen          as integer
@@ -159,8 +165,7 @@ end type
 
 declare sub lexInit _
 	( _
-		byval isinclude as integer, _
-		byval is_fb_eval as integer _
+		byval ctx_kind as LEX_TKCTX_CONTEXT _
 	)
 
 declare sub lexEnd _
