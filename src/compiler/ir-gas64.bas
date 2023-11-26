@@ -3495,6 +3495,29 @@ private sub bop_float( _
 	end select
 
 end sub
+''multiplication optimized
+sub optim_mult(byref op1 as string,byref op2 as string)
+	''0,1,2,4,8,16, etc are already optimized by storing 0, doing nothing or using shl
+	select case op2
+		Case "-1"
+			asm_code("neg "+op1)
+		Case "-2"
+			asm_code("neg "+op1)
+			asm_code("shl "+op1+", 1")
+		case "3"
+			asm_code("lea "+op1+", ["+op1+"+"+op1+"*2]")
+		case "5"
+			asm_code("lea "+op1+", ["+op1+"+"+op1+"*4]")
+		case "6"
+			asm_code("lea "+op1+", ["+op1+"+"+op1+"*2]")
+			asm_code("add "+op1+", "+op1)
+		case "10"
+			asm_code("lea "+op1+", ["+op1+"+"+op1+"*4]")
+			asm_code("add "+op1+", "+op1)
+		case else
+			asm_code("imul "+op1+", "+op2)
+	End Select
+end sub
 private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVREG ptr,byval vr as IRVREG ptr,byval label as FBSYMBOL ptr =0,byval options as IR_EMITOPT)
 
 	dim as string op1,op2,op3,op4,prefix1,prefix2,suffix,op1prev,regtempo,op1bis
@@ -3731,25 +3754,27 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 	end if
 
 	if v2->typ=IR_VREGTYPE_IMM then
-		if v2->value.i<-2147483648 or v2->value.i>=2147483648 then
-			if v2->value.i<-2147483648 or v2->value.i>4294967295 then
-				asm_code("mov rax, "+Str(v2->value.i))
-			else
-				asm_code("mov eax, "+Str(v2->value.i))
+		if op<>AST_OP_MUL orelse v2->value.i < -2 orelse v2->value.i > 10 then
+			if v2->value.i<-2147483648 or v2->value.i>=2147483648 then
+				if v2->value.i>=0 and v2->value.i<4294967296 then
+					asm_code("mov eax, "+Str(v2->value.i))
+				else
+					asm_code("mov rax, "+Str(v2->value.i))
+				end if
+				op2="rax"
+				select case tempodtype
+					case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_ENUM,FB_DATATYPE_DOUBLE
+						'op2="rax" ''already done
+					case FB_DATATYPE_LONG,FB_DATATYPE_ULONG,FB_DATATYPE_SINGLE
+						op2="eax"
+					case FB_DATATYPE_SHORT,FB_DATATYPE_USHORT
+						op2="ax"
+					case FB_DATATYPE_BYTE,FB_DATATYPE_UBYTE,FB_DATATYPE_BOOLEAN,FB_DATATYPE_CHAR
+						op2="al"
+					case else
+						asm_error("BOP datatype not handled 0100 ="+typedumpToStr(v1->dtype,0))
+				end select
 			end if
-			op2="rax"
-			select case tempodtype
-				case FB_DATATYPE_INTEGER,FB_DATATYPE_UINT,FB_DATATYPE_LONGINT,FB_DATATYPE_ULONGINT,FB_DATATYPE_ENUM,FB_DATATYPE_DOUBLE
-					'op2="rax" ''already done
-				case FB_DATATYPE_LONG,FB_DATATYPE_ULONG,FB_DATATYPE_SINGLE
-					op2="eax"
-				case FB_DATATYPE_SHORT,FB_DATATYPE_USHORT
-					op2="ax"
-				case FB_DATATYPE_BYTE,FB_DATATYPE_UBYTE,FB_DATATYPE_BOOLEAN,FB_DATATYPE_CHAR
-					op2="al"
-				case else
-					asm_error("BOP datatype not handled 0100 ="+typedumpToStr(v1->dtype,0))
-			end select
 		end if
 	end if
 
@@ -3866,13 +3891,8 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 			end if
 			if vr<>0 then restore_vrreg(vr,vrreg)
 		case AST_OP_MUL
-			'if v1->typ<>IR_VREGTYPE_REG then
-			'   'asm_code("mov rax, "+op1)
-			'   asm_code("imul "+op2+", "+op1) ''op2 should be a register
-			'   asm_code("mov "+op1+", rax")
-			'else
-			asm_code("imul "+op1+", "+op2)
-			'end if
+			'asm_code("imul "+op1+", "+op2)
+			optim_mult(op1,op2)
 			if op1prev<>"" then asm_code("mov "+op1prev+", "+op1)
 		case AST_OP_LE,AST_OP_LT,AST_OP_NE,AST_OP_GE,AST_OP_GT,AST_OP_EQ
 			if v1->dtype=FB_DATATYPE_UINT Or v1->dtype=FB_DATATYPE_ULONGINT Or _
@@ -5766,7 +5786,6 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 					case else
 						asm_error("in hdocall datatype not handled 01 ="+typedumpToStr(dtype,0))
 				end select
-
 
 			case IR_VREGTYPE_VAR ''format varname ofs1   local/static  ofs1 could be zero
 				if v2->sym<>0 andalso (symbIsStatic(v2->sym) Or symbisshared(v2->sym) ) then ''for gas64

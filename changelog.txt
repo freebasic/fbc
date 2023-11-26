@@ -14,9 +14,10 @@ Version 1.20.0
 - fbc: Add warning for suspicious arg passed to BYREF AS ANY (dkl) 
 - fbc: #ELSEIFDEF and #ELSEIFNDEF pre-processor conditional compilation directives
 - set default procedure linkage with '#pragma private [=value]' or '#pragma push( private [,value] )'
-- gas64: optimizations: simplify some operations where one operand is zero (0)
-- gas64: optimizations: storage of registers with branching
-- gas64: optimizations: Replace some CMP instructions with TEST instruction 
+- gas64: optimizations: simplify some operations where one operand is zero (0) (SARG)
+- gas64: optimizations: storage of registers with branching (SARG)
+- gas64: optimizations: Replace some CMP instructions with TEST instruction (SARG) 
+- gas64: optimizations: multiplication for small constants -1,-2,3,5,6,10 (SARG)
 
 [fixed]
 - github #410: give consistent floating point comparisons results involving NaNs.
@@ -30,7 +31,7 @@ Version 1.20.0
 - sf.net #989: gas64: "rsi" replaced with "r11" in some symbols (SARG)
 - gas64: NEW UBYTE/BYTE[count] not handled (SARG)
 - sf.net #988: (regression) re-allow overloaded non-indexed array arguments - Can't pass UDT member array to an overloaded sub
-- gas64: 'SI' word found in cvtsi2ss wrongly releasing RSI register
+- gas64: 'SI' word found in cvtsi2ss wrongly releasing RSI register (SARG)
 
 
 Version 1.10.1
