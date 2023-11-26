@@ -83,7 +83,7 @@ declare function _getTypeString( byval dtype as integer ) as const zstring ptr
 '' helper functions
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-#if __FB_DEBUG__
+#if (__FB_DEBUG__ <> 0) orelse defined(__GAS64_DEBUG__)
 function emitDumpRegName( byval dtype as integer, byval reg as integer ) as string
 	function = *hGetRegName( dtype, reg )
 end function

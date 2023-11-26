@@ -2681,7 +2681,7 @@ declare sub symbForEachGlobal _
 		byval callback as sub( byval as FBSYMBOL ptr ) _
 	)
 
-#if __FB_DEBUG__
+#if (__FB_DEBUG__ <> 0) orelse defined(__GAS64_DEBUG__)
 declare function typeDumpToStr _
 	( _
 		byval dtype as integer, _

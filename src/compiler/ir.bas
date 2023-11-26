@@ -235,7 +235,7 @@ sub irhlFlushStaticInitializer( byval sym as FBSYMBOL ptr )
 	symbSetTypeIniTree( sym, NULL )
 end sub
 
-#if __FB_DEBUG__
+#if (__FB_DEBUG__ <> 0) orelse defined(__GAS64_DEBUG__)
 function vregDumpToStr( byval v as IRVREG ptr ) as string
 	dim as string s
 	dim as string regname
