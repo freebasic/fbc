@@ -496,7 +496,7 @@ sub fbInit _
 	hashInit( @env.inconcehash, FB_INITINCFILES, FALSE )
 
 	stackNew( @parser.stmt.stk, FB_INITSTMTSTACKNODES, len( FB_CMPSTMTSTK ), FALSE )
-	lexInit( FALSE, FALSE )
+	lexInit( LEX_TKCTX_CONTEXT_INIT )
 	parserInit( )
 	rtlInit( )
 
@@ -1661,7 +1661,7 @@ sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
 	'' parse
 	lexPushCtx( )
 
-	lexInit( TRUE, FALSE )
+	lexInit( LEX_TKCTX_CONTEXT_INCLUDE )
 
 	cProgram()
 

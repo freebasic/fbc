@@ -388,8 +388,8 @@ private function hMacro_EvalZ( byval arg as zstring ptr, byval errnum as integer
 		'' - text to expand is to be loaded in LEX.CTX->DEFTEXT[W]
 		'' - use the parser to build an AST for the literal result
 
-		lexPushCtx()
-		lexInit( FALSE, TRUE )
+		lexPushCtx( )
+		lexInit( LEX_TKCTX_CONTEXT_EVAL )
 
 		'' prevent cExpression from writing to .pp.bas file
 		lex.ctx->reclevel += 1
@@ -428,7 +428,7 @@ private function hMacro_EvalZ( byval arg as zstring ptr, byval errnum as integer
 
 		lex.ctx->reclevel -= 1
 
-		lexPopCtx()
+		lexPopCtx( )
 
 		if( errmsg <> FB_ERRMSG_OK ) then
 			errReportEx( errmsg, *arg )
@@ -464,8 +464,8 @@ private function hMacro_EvalW( byval arg as wstring ptr, byval errnum as integer
 		'' - text to expand is to be loaded in LEX.CTX->DEFTEXT[W]
 		'' - use the parser to build an AST for the literal result
 
-		lexPushCtx()
-		lexInit( FALSE, TRUE )
+		lexPushCtx( )
+		lexInit( LEX_TKCTX_CONTEXT_EVAL )
 
 		'' prevent cExpression from writing to .pp.bas file
 		lex.ctx->reclevel += 1
@@ -504,7 +504,7 @@ private function hMacro_EvalW( byval arg as wstring ptr, byval errnum as integer
 
 		lex.ctx->reclevel -= 1
 
-		lexPopCtx()
+		lexPopCtx( )
 
 		if( errmsg <> FB_ERRMSG_OK ) then
 			errReportEx( errmsg, *arg )
@@ -1058,8 +1058,8 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 			var errmsg = FB_ERRMSG_OK
 
 			'' create a lightweight context push
-			lexPushCtx()
-			lexInit( FALSE, TRUE )
+			lexPushCtx( )
+			lexInit( LEX_TKCTX_CONTEXT_EVAL )
 
 			'' prevent cExpression from writing to .pp.bas file
 			lex.ctx->reclevel += 1
@@ -1153,7 +1153,10 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 					sym = NULL
 
 					'' reset the current lexer context and refresh the text to parse.
-					lexInit( FALSE, TRUE )
+					'' !!!TODO!!! - probably more efficient with some kind of 'lexReinit()' function
+					lexPopCtx( )
+					lexPushCtx( )
+					lexInit( LEX_TKCTX_CONTEXT_EVAL )
 
 					hArgInsertArgA( sexpr )
 					hArgAppendLFCHAR()
@@ -1219,7 +1222,7 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 
 			lex.ctx->reclevel -= 1
 
-			lexPopCtx()
+			lexPopCtx( )
 
 		else
 			'' NUMARG isn't a number
