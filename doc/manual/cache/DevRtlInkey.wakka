@@ -47,7 +47,7 @@
 		
 		##""SetConsoleCtrlHandler()""## is used to listen for console close/system shutdown events to provide ##SC_CLOSE## events for console-mode (the win32 port of the rtlib might be the only one going this far).
 		
-		##fb_ConsoleMultikey()## uses a ##""FindWindow()""##/##""GetForegroundWindow()""## hack to determine whether the console window is focused, and if yes, simply uses ##""GetAsyncKeyState()""##.
+		##fb_ConsoleMultikey()## uses a ##""FindWindow()""##/##""GetForegroundWindow()""## hack on older versions of windows (before Windows 7) to determine whether the console window is focused, and if yes, simply uses ##""GetAsyncKeyState()""##.  Newer versions of windows should limit function of ##""GetAsyncKeyState()""## to the currently focused window.  In newer versions of windows when using windows terminal, the ##""FindWindow()""## hack causes issues and must be disabled.
 		
 	- Linux, *BSD
 		The Unix port of the rtlib runs a console keyboard handler (and a console mouse handler) in a background thread, in order to provide input for ##multikey()## (and ##getmouse()##).

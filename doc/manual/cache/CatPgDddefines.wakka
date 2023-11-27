@@ -52,6 +52,8 @@ Preprocessor symbols defined by the compiler.
 		Defined if compiling for the ""PowerPC"" architecture.
 	=={{fbdoc item="keyword" value="KeyPgDdfbx86|__FB_X86__"}}==
 		Defined if compiling for the X86 / X86_64 architecture.
+	=={{fbdoc item="keyword" value="KeyPgDdfbjs|__FB_JS__"}}==
+		Defined if compiling for emscripten target.
 
 {{anchor name="VERSION"}}{{fbdoc item="section" value="Version Information"}}
 	=={{fbdoc item="keyword" value="KeyPgDdfbversion|__FB_VERSION__"}}==

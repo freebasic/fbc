@@ -9,7 +9,7 @@ Sets the backend code emitter.
 		##**gas**## for x86 GAS assembly, ##**gcc**## for GNU C, ##**gas64**## for x86_64 GAS assembly, ##**llvm**## for LLVM IR.
 
 {{fbdoc item="desc"}}
-	The ##-gen## compiler option sets the backend code emitter and assembler.
+	The ##-gen## compiler option sets the backend code emitter and assembler. If this option is not specified, the default is ##-gen gas## for x86 and ##-gen gcc## for x86_64.
 	
 	{{fbdoc item="subsect" value="-gen gas"}}
 		The compiler will emit GAS assembler code to a ##.asm## file which will then be compiled to an object file using '##as##'. This is fbc's original x86 code generation backend.

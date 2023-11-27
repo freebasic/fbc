@@ -15,7 +15,7 @@ Proper use of **Constructors**, '=' **Assignment-Operators**, and **Destructors*
 		Algorithm:
 			%%
 '   If (Type has a copy-assignment operator) Then
-'   |  => the copy-assignment opertator of Type is called
+'   |  => the copy-assignment operator of Type is called
 '   Else
 '   |  If (Type has a Base with default-constructor) AND (Type has a Base with copy-assignment operator) Then
 '   |  |  => the copy-assignment operator of Base is called (for Base fields)

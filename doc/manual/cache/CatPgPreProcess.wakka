@@ -24,6 +24,10 @@ Commands that control the preprocessor.
 		Compiles the following code block if a symbol is not defined.
 	=={{fbdoc item="keyword" value="KeyPgPpelseif|#ELSEIF"}}==
 		Compiles the following code block if a condition is true and the previous conditions was false.
+	=={{fbdoc item="keyword" value="KeyPgPpelseifdef|#ELSEIFDEF"}}==
+		Compiles the following code block if a symbol is defined and the previous conditions was false.
+	=={{fbdoc item="keyword" value="KeyPgPpelseifndef|#ELSEIFNDEF"}}==
+		Compiles the following code block if a symbol is not defined and the previous conditions was false.
 	=={{fbdoc item="keyword" value="KeyPgPpelse|#ELSE"}}==
 		Compiles the following code block if previous conditions were false.
 	=={{fbdoc item="keyword" value="KeyPgPpendif|#ENDIF"}}==

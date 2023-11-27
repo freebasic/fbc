@@ -11,7 +11,7 @@ Preprocessor directive
 {{fbdoc item="param"}}
 	Possible values for ##//option//## and related ##//value//##s:
 	
-	{{table columns="3" cellpadding="1" cells="Option; Value; Description; msbitfields; false; Use bitfields compatible with gcc (default); msbitfields; true ; Use bitfields compatible with those used in Microsoft C compilers; once; N/A; cause the source file in which the pragma ppears to behave as though it was included with #include once ...; constness; false; disable 'CONST qualifier discarded' warning in current source; constness; true; enable 'CONST qualifier discarded' warning in current source; lookup108; false; use normal symbol lookups for unqualified symbol names; lookup108; true; use fbc-1.08.x or earlier symbol lookups for unqualified symbol names"}}
+	{{table columns="3" cellpadding="1" cells="Option; Value; Description; msbitfields; false; Use bitfields compatible with gcc (default); msbitfields; true ; Use bitfields compatible with those used in Microsoft C compilers; once; N/A; cause the source file in which the pragma ppears to behave as though it was included with #include once ...; constness; false; disable 'CONST qualifier discarded' warning in current source; constness; true; enable 'CONST qualifier discarded' warning in current source; lookup108; false; use normal symbol lookups for unqualified symbol names; lookup108; true; use fbc-1.08.x or earlier symbol lookups for unqualified symbol names; private; false; allow procedures in sources to be compiled as separate modules with public linkage; private; true; allow procedures in sources to be compiled as privately included with minimal overhead for changing desired linkage"}}
 	If //value// is not given, the compiler assumes //True// (//-1//).  A zero (//0//) value may be used in place of //False//.  A non-zero (for example, //-1//) value may be used in place of //True//.
 
 {{fbdoc item="desc"}}
@@ -32,6 +32,7 @@ Preprocessor directive
 #pragma pop(msbitfields)
 %%
 {{fbdoc item="ver"}}
+	- //#pragma private// added in version 1.20.0
 	- //#pragma lookup108// added in version 1.09.0, and to be removed in next minor release
 
 {{fbdoc item="diff"}}

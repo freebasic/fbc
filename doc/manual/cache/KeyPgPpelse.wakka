@@ -31,6 +31,8 @@ Print "Program is "; a
 	- ##[[KeyPgPpmacro|#macro]]##
 	- ##[[KeyPgPpif|#if]]##
 	- ##[[KeyPgPpelseif|#elseif]]## 
+	- ##[[KeyPgPpelseifdef|#elseifdef]]## 
+	- ##[[KeyPgPpelseifndef|#elseifndef]]## 
 	- ##[[KeyPgPpendif|#endif]]## 
 	- ##[[KeyPgPpifdef|#ifdef]]##
 	- ##[[KeyPgPpifndef|#ifndef]]##

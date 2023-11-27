@@ -2,7 +2,7 @@
 Specifies execution of a procedure before module-level code
 
 {{fbdoc item="syntax"}}##
-	[[[KeyPgPublic|Public]] | [[KeyPgPrivate|Private]]] [[KeyPgSub|Sub]] //procedure_name// [[[KeyPgAlias|Alias]] "//external_identifier//"] [()] **Constructor** [//priority//] [[[KeyPgStatic|Static]]]
+	[[[KeyPgPublic|Public]] | [[KeyPgPrivate|Private]]] [[KeyPgSub|Sub]] //procedure_name// [[[KeyPgAlias|Alias]] "//external_identifier//"] [()] **Constructor** [//priority//]
 		{ //procedure body// }
 	[[KeyPgEndblock|End]] [[KeyPgSub|Sub]]
 ##

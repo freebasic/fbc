@@ -43,6 +43,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgDdfbgui|__FB_GUI__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbiif|__FB_IIF__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbjoin|__FB_JOIN__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbjs|__FB_JS__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfblang|__FB_LANG__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfblinux|__FB_LINUX__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBMain|__FB_MAIN__"}} 
@@ -94,6 +95,8 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgPpdefine|#DEFINE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpelse|#ELSE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpelseif|#ELSEIF"}}
+	- {{fbdoc item="keyword" value="KeyPgPpelseifdef|#ELSEIFDEF"}}
+	- {{fbdoc item="keyword" value="KeyPgPpelseifndef|#ELSEIFNDEF"}}
 	- {{fbdoc item="keyword" value="KeyPgPpendif|#ENDIF"}}
 	- {{fbdoc item="keyword" value="KeyPgPpmacro|#ENDMACRO"}}
 	- {{fbdoc item="keyword" value="KeyPgPperror|#ERROR"}}

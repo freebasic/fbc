@@ -30,6 +30,8 @@ Preprocessor conditional directive
 	- ##[[KeyPgPpmacro|#macro]]##
 	- ##[[KeyPgPpelse|#else]]## 
 	- ##[[KeyPgPpelseif|#elseif]]## 
+	- ##[[KeyPgPpelseifdef|#elseifdef]]## 
+	- ##[[KeyPgPpelseifndef|#elseifndef]]## 
 	- ##[[KeyPgPpendif|#endif]]## 
 	- ##[[KeyPgPpifdef|#ifdef]]##
 	- ##[[KeyPgPpifndef|#ifndef]]##

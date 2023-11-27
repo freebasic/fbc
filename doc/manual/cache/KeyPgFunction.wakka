@@ -16,7 +16,7 @@ Defines a procedure returning a value
 	##//parameter//##: ##[[[KeyPgByref|ByRef]]|[[KeyPgByval|ByVal]]] //identifier// [[[KeyPgAs|As]] //type//] [= //default_value//]##
 		##//identifier//##: the name of the variable referenced in the function.  If the argument is an array then the identifier must be followed by an empty parenthesis. 
 		##//type//##: the type of variable
-		##//default_value//##: the value of the argument if none is specified in the call
+		##//default_value//##: the value of the argument if none is specified in the call (##//default_value//## can be a literal, or a constant, or a shared variable)
 	##//return_type//##: the type of variable returned by the function
 	##//statements//##: one or more statements that make up the function body
 	##//return_value//##: the value returned from the function

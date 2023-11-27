@@ -1,0 +1,48 @@
+{{fbdoc item="title" value="#ELSEIFNDEF"}}----
+Preprocessor conditional directive
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgPpifdef|#ifdef]] A
+		' Conditionally included statements if A is defined
+	**#elseifndef** B
+		' Conditionally included statements if both A and B are not defined
+	[[KeyPgPpelse|#else]]
+		' Conditionally included statements if A is not defined and B is defined
+	[[KeyPgPpendif|#endif]]
+##
+{{fbdoc item="desc"}}
+	**#elseifndef** can be added to an ##[[KeyPgPpif|#if]]## block to provide an additional condition.
+	
+	##**#elseifndef** //symbol//## is equivalent to ##[[KeyPgPpelseif|#elseif]] [[KeyPgOpNot|Not]] [[KeyPgDefined|defined]](//symbol//)##
+
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/prepro/elseifndef.bas"}}%%(freebasic)
+#IFDEF A
+	Print "A is defined"
+#ELSEIFNDEF B
+	Print "both A and B are not defined"
+#ELSE
+	Print "A is not defined and B is defined"
+#ENDIF
+%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.20.0
+
+{{fbdoc item="diff"}}
+	- New to Freebasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPpdefine|#define]]##
+	- ##[[KeyPgPpmacro|#macro]]##
+	- ##[[KeyPgPpif|#if]]##
+	- ##[[KeyPgPpelse|#else]]## 
+	- ##[[KeyPgPpelseif|#elseif]]## 
+	- ##[[KeyPgPpelseifdef|#elseifdef]]## 
+	- ##[[KeyPgPpendif|#endif]]## 
+	- ##[[KeyPgPpifdef|#ifdef]]##
+	- ##[[KeyPgPpifndef|#ifndef]]##
+	- ##[[KeyPgPpundef|#undef]]##
+	- ##[[KeyPgDefined|defined]]##
+
+
+{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

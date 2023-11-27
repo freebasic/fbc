@@ -49,6 +49,8 @@ dim c as single
 	- ##[[KeyPgPpif|#if]]##
 	- ##[[KeyPgPpelse|#else]]## 
 	- ##[[KeyPgPpelseif|#elseif]]## 
+	- ##[[KeyPgPpelseifdef|#elseifdef]]## 
+	- ##[[KeyPgPpelseifndef|#elseifndef]]## 
 	- ##[[KeyPgPpendif|#endif]]## 
 	- ##[[KeyPgPpifdef|#ifdef]]##
 	- ##[[KeyPgPpifndef|#ifndef]]##

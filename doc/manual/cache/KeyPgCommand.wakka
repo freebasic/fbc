@@ -28,7 +28,7 @@ Returns command line parameters used to call the program
 	
 ~&//**WARNING**: By nature of constructor precedence in ""FreeBASIC"" and main() initialization, calling ##**Command**## within a global constructor (module constructor or UDT constructor called for static/shared object) is not safe (may even induce a runtime error).//
 	
-	__Disabling filename globbing under Win32__
+	__Disabling filename globbing under Windows__
 		Define the following global variable(s) somewhere in the source:
 		{{fbdoc item="filename" value="examples/manual/check/KeyPgCommand_mingw.bas"}}%%(freebasic)
 '' For MinGW.org and Cygwin runtimes:
