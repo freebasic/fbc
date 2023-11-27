@@ -12,11 +12,11 @@ Function pixelptr(ByVal img As Any Ptr, ByVal x As Integer, ByVal y As Integer) 
 
 	Dim As Long w, h, bypp, pitch
 	Dim As Any Ptr pixdata
-	Dim As Long success
+	Dim As Long result
 	
-	success = (ImageInfo(img, w, h, bypp, pitch, pixdata) = 0)
+	result = ImageInfo(img, w, h, bypp, pitch, pixdata)
 	
-	If success Then
+	If result = 0 Then '' seems like a valid image
 		If x < 0 Or x >= w Then Return 0
 		If y < 0 Or y >= h Then Return 0
 		Return pixdata + y * pitch + x * bypp
