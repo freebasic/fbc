@@ -3511,6 +3511,8 @@ sub optim_mult(byref op1 as string,byref op2 as string)
 		case "6"
 			asm_code("lea "+op1+", ["+op1+"+"+op1+"*2]")
 			asm_code("add "+op1+", "+op1)
+		case "9"
+			asm_code("lea "+op1+", ["+op1+"+"+op1+"*8]")
 		case "10"
 			asm_code("lea "+op1+", ["+op1+"+"+op1+"*4]")
 			asm_code("add "+op1+", "+op1)
