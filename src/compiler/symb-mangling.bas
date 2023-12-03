@@ -668,7 +668,9 @@ private function hDoCppMangling( byval sym as FBSYMBOL ptr ) as integer
 	end if
 
 	'' extern "rtlib"? disable cpp mangling
-	if( symbGetMangling( sym ) = FB_MANGLING_RTLIB ) then
+	if( (symbGetMangling( sym ) = FB_MANGLING_RTLIB) _
+	    andalso (env.clopt.backend <> FB_BACKEND_GCC) _
+	    andalso (sym->id.alias <> NULL) ) then
 		'' disable cpp mangling only if it's not internally generated:
 		'' Internally generated symbols:
 		''   - vtable

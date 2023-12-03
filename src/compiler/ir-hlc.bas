@@ -467,7 +467,13 @@ private function hGetMangledNameForASM _
 
 	dim as string mangled
 
-	mangled = *symbGetMangledName( sym )
+	'' rtlib mangling?  Just use the alias if one was given
+	if( (symbGetMangling( sym ) = FB_MANGLING_RTLIB) andalso _
+	    (sym->id.alias <> NULL) ) then
+		mangled = *sym->id.alias
+	else
+		mangled = *symbGetMangledName( sym )
+	end if
 
 	if( underscore_prefix and env.underscoreprefix ) then
 		mangled  = "_" + mangled
@@ -486,6 +492,12 @@ end function
 
 private function hNeedAlias( byval proc as FBSYMBOL ptr ) as integer
 	function = FALSE
+
+	'' rtlib mangling?  Expect we always need the asm alias
+	if( symbGetMangling( proc ) = FB_MANGLING_RTLIB ) then
+		function = TRUE
+		exit function
+	end if 
 
 	'' Only on systems where gcc would use the @N suffix
 	if( fbGetCpuFamily( ) <> FB_CPUFAMILY_X86 ) then

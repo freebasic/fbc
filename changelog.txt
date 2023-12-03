@@ -33,6 +33,7 @@ Version 1.20.0
 - gas64: NEW UBYTE/BYTE[count] not handled (SARG)
 - sf.net #988: (regression) re-allow overloaded non-indexed array arguments - Can't pass UDT member array to an overloaded sub
 - gas64: 'SI' word found in cvtsi2ss wrongly releasing RSI register (SARG)
+- sf.net #997: gcc backend: handle EXTERN "rtlib": preserve the internally mangled name but emit an extra prototype to map the internal name to the external ASM name
 
 
 Version 1.10.1
