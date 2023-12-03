@@ -1,4 +1,19 @@
+T1 -- fields only
+T1.value defined
+T1.constructor not defined
+T1.constructor not defined
+T1.let not defined
+T1.cast not defined
+T2 -- fields and procedures
 value defined
 proc defined
 svalue defined
 sproc defined
+T2.value defined
+T2.proc defined
+T2.svalue defined
+T2.sproc defined
+T2.constructor not defined
+T2.constructor not defined
+T2.let not defined
+T2.cast not defined

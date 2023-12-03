@@ -689,19 +689,33 @@ function cIdentifierOrUDTMember _
 		end if
 
 		'' else there are member procs, so search for keywords as members
+		'' !!!TODO!!! - optimize lookups
+		'' symbGetCompXXX() functions test for things we already know here
 
 		select case as const lexGetToken( )
 		case FB_TK_CONSTRUCTOR
 			sym = symbGetCompCtorHead( base_parent )
+			'' if( base_parent->udt.ext ) then
+			''  sym = base_parent->udt.ext->ctorhead
+			'' end if
 
 		case FB_TK_DESTRUCTOR
 			sym = symbGetCompDtor1( base_parent )
+			'' if( base_parent->udt.ext ) then
+			''  sym = base_parent->udt.ext->dtor1
+			'' end if
 
 		case FB_TK_LET
 			sym = symbGetCompOpOvlHead( base_parent, AST_OP_ASSIGN )
+			'' if( base_parent->udt.ext ) then
+			''  sym = symbGetUDTOpOvlTb( base_parent )(AST_OP_ASSIGN - AST_OP_SELFBASE)
+			'' end if
 
 		case FB_TK_CAST
-			sym = symbGetUDTOpOvlTb( base_parent )(AST_OP_CAST - AST_OP_SELFBASE)
+			sym = symbGetCompOpOvlHead( base_parent, AST_OP_CAST )
+			'' if( base_parent->udt.ext ) then
+			''  sym = symbGetUDTOpOvlTb( base_parent )(AST_OP_CAST - AST_OP_SELFBASE)
+			'' end if
 
 		end select
 

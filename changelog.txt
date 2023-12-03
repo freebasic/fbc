@@ -62,6 +62,7 @@ Version 1.10.1
 - emscripten/fbc: -sASYNCIFY wasn't passed to emcc at link-time as needed by recent Emscripten
 - sf.net #993: ignore (parse) single line comments for macros invoked with optional parentheses instead of passing as an argument to macro
 - sf.net #994: Bad handling of macro argument evaluation - reset file pointers to previous context after evaluating arguments in __fb_query_symbol__, __fb_eval__, __fb_arg_extract__, __fb_iif__, and releasing lexer context
+- sf.net #996: fbc null pointer access testing defined(UDT.cast)
 
 
 Version 1.10.0
