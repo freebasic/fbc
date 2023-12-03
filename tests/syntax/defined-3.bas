@@ -1,11 +1,47 @@
-type T
+#print "T1 -- fields only"
+type T1
+	value as integer
+end type
+
+#if defined( T1.value )
+	#print "T1.value defined"
+#else
+	#print "T1.value not defined - NOK"
+#endif
+
+#if defined( T1.constructor )
+	#print "T1.constructor defined - NOK"
+#else
+	#print "T1.constructor not defined"
+#endif
+
+#if defined( T1.destructor )
+	#print "T1.constructor defined - NOK"
+#else
+	#print "T1.constructor not defined"
+#endif
+
+#if defined( T1.let )
+	#print "T1.let defined - NOK"
+#else
+	#print "T1.let not defined"
+#endif
+
+#if defined( T1.cast )
+	#print "T1.cast defined - NOK"
+#else
+	#print "T1.cast not defined"
+#endif
+
+#print "T2 -- fields and procedures"
+type T2
 	value as integer
 	static svalue as integer
 	declare sub proc()
 	declare static sub sproc()
 end type
 
-sub T.proc()
+sub T2.proc()
 
 	#if defined( value )
 		#print "value defined"
@@ -31,31 +67,55 @@ sub T.proc()
 		#print "sproc not defined - NOK"
 	#endif
 
+	#if defined( T2.value )
+		#print "T2.value defined"
+	#else
+		#print "T2.value not defined - NOK"
+	#endif
+
+	#if defined( T2.proc )
+		#print "T2.proc defined"
+	#else
+		#print "T2.proc not defined - NOK"
+	#endif
+
+	#if defined( T2.svalue )
+		#print "T2.svalue defined"
+	#else
+		#print "T2.svalue not defined - NOK"
+	#endif
+
+	#if defined( T2.sproc )
+		#print "T2.sproc defined"
+	#else
+		#print "T2.sproc not defined - NOK"
+	#endif
+
+	#if defined( T2.constructor )
+		#print "T2.constructor defined - NOK"
+	#else
+		#print "T2.constructor not defined"
+	#endif
+	
+	#if defined( T2.destructor )
+		#print "T2.constructor defined - NOK"
+	#else
+		#print "T2.constructor not defined"
+	#endif
+	
+	#if defined( T2.let )
+		#print "T2.let defined - NOK"
+	#else
+		#print "T2.let not defined"
+	#endif
+	
+	#if defined( T2.cast )
+		#print "T2.cast defined - NOK"
+	#else
+		#print "T2.cast not defined"
+	#endif
+
 #if ENABLE_CHECK_BUGS
-
-	#if defined( T.value )
-		#print "T.value defined"
-	#else
-		#print "T.value not defined - NOK"
-	#endif
-
-	#if defined( T.proc )
-		#print "T.proc defined"
-	#else
-		#print "T.proc not defined - NOK"
-	#endif
-
-	#if defined( T.svalue )
-		#print "T.svalue defined"
-	#else
-		#print "T.svalue not defined - NOK"
-	#endif
-
-	#if defined( T.sproc )
-		#print "T.sproc defined"
-	#else
-		#print "T.sproc not defined - NOK"
-	#endif
 
 	#if defined( this.svalue )
 		#print "this.svalue defined"
