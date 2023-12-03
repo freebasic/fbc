@@ -19,6 +19,7 @@ Version 1.20.0
 - gas64: optimizations: Replace some CMP instructions with TEST instruction (SARG) 
 - gas64: optimizations: multiplication for small constants -1,-2,3,5,6,10 (SARG)
 - fbc headers: add ./inc/fberror.bi for runtime library error constants
+- rtlib: ./inc/fbc-int/string.bi - for string descriptor and low level string functions
 
 [fixed]
 - github #410: give consistent floating point comparisons results involving NaNs.
