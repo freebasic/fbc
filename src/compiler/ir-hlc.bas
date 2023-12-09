@@ -497,7 +497,7 @@ private function hNeedAlias( byval proc as FBSYMBOL ptr ) as integer
 	if( symbGetMangling( proc ) = FB_MANGLING_RTLIB ) then
 		function = TRUE
 		exit function
-	end if 
+	end if
 
 	'' Only on systems where gcc would use the @N suffix
 	if( fbGetCpuFamily( ) <> FB_CPUFAMILY_X86 ) then
