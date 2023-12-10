@@ -20,7 +20,7 @@
 ''   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 

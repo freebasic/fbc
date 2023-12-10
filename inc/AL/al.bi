@@ -21,7 +21,7 @@
 ''   Or go to http://www.gnu.org/copyleft/lgpl.html
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 

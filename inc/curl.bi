@@ -23,7 +23,7 @@
 ''   in this Software without prior written authorization of the copyright holder.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2021 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 

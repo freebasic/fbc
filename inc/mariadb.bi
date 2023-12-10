@@ -20,7 +20,7 @@
 ''   MA 02111-1301, USA 
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2021 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 

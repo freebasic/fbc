@@ -7,7 +7,7 @@
 ''   it under the terms of the MIT license. See COPYING for details.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 

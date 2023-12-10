@@ -26,7 +26,7 @@
 ''   authorization from the authors.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 

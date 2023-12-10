@@ -31,7 +31,7 @@
 ''   (zlib format), rfc1951 (deflate format) and rfc1952 (gzip format).
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 
