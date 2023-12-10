@@ -6,12 +6,17 @@ Version 1.10.1
 - release: update to build libffi 3.4.4 - this is needed to work with newer mingw-w64 based toolchains for gcc 11.x and up
 - emscripten/fbc: in debug version of fbc (__FB_DEBUG__<>0) allow wchar conversion on win32 host to allow building and testing of the test-suite 
 - github #421: fbc: win32/win64: pass '-fno-ident' to gcc to help prevent identification strings from accumulating in the final binary
+- updated bindings: PostgreSQL to 14.0
+- updated bindings: sqlite to 3.39.4
+- updated bindings: curl to 7.85.0
+- updated bindings: BASS to 2.4.17.0
 
 [added]
 - release: add recipes for building fbc distros using gcc-11.2 and gcc-12.2 Mingw-w64 project toolchains
 - release: add recipe for building fbc distros using winlibs-gcc-11.2/3/4 toolchain
 - fbc: '-fbgfx' command line option to link against correct libfbgfx variant, for platforms (emscripten) where it's not automatic due to missing objinfo support
 - basic-macros: better support for zstring and wstring conversion in evaluation of compile time arguments in __fb_query_symbol__, __fb_arg_extract__, __fb_iif__
+- added bindings: MariaDB 3.3.1
 
 [fixed]
 - sf.net #982: Array descriptors emitted incorrectly in gcc backend
