@@ -22,3 +22,6 @@
 /doc/fbchkdoc/fbchkdoc.ini
 
 .vscode
+
+/lib/dos/libfb.dxe
+/lib/dos/libfblst.txt

@@ -26,7 +26,7 @@
 ''   package are the property of their respective owners.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 
@@ -119,7 +119,7 @@ declare sub BASSMOD_Free()
 declare function BASSMOD_GetCPU() as single
 declare function BASSMOD_SetVolume(byval volume as DWORD) as BOOL
 declare function BASSMOD_GetVolume() as long
-declare function BASSMOD_MusicLoad(byval mem as BOOL, byval file as zstring ptr, byval offset as DWORD, byval length as DWORD, byval flags as DWORD) as BOOL
+declare function BASSMOD_MusicLoad(byval mem as BOOL, byval file as any ptr, byval offset as DWORD, byval length as DWORD, byval flags as DWORD) as BOOL
 declare sub BASSMOD_MusicFree()
 declare function BASSMOD_MusicGetName() as zstring ptr
 declare function BASSMOD_MusicGetLength(byval playlen as BOOL) as DWORD

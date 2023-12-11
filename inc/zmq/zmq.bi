@@ -1,4 +1,4 @@
-'' FreeBASIC binding for zeromq-4.1.3
+'' FreeBASIC binding for zmq-4.1.3
 ''
 '' based on the C header files:
 ''   Copyright (c) 2007-2015 Contributors as noted in the AUTHORS file
@@ -27,7 +27,7 @@
 ''   *************************************************************************
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 

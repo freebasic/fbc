@@ -40,7 +40,7 @@
 ''   bzip2/libbzip2 version 1.0.8 of 13 July 2019
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2021 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 

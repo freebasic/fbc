@@ -43,7 +43,7 @@
 ''   SOFTWARE.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2017 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 

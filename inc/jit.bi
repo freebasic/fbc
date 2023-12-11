@@ -18,7 +18,7 @@
 ''   <http://www.gnu.org/licenses/>.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2021 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 
@@ -1513,17 +1513,9 @@ const JIT_OPCODE_OPER_SHR = &h01200000
 const JIT_OPCODE_OPER_SHR_UN = &h01300000
 const JIT_OPCODE_OPER_COPY = &h01400000
 const JIT_OPCODE_OPER_ADDRESS_OF = &h01500000
-
-#if defined(__FB_64BIT__) and (defined(__FB_WIN32__) or defined(__FB_UNIX__))
-	const JIT_OPCODE_DEST_PTR = JIT_OPCODE_DEST_LONG
-	const JIT_OPCODE_SRC1_PTR = JIT_OPCODE_SRC1_LONG
-	const JIT_OPCODE_SRC2_PTR = JIT_OPCODE_SRC2_LONG
-#else
-	const JIT_OPCODE_DEST_PTR = JIT_OPCODE_DEST_INT
-	const JIT_OPCODE_SRC1_PTR = JIT_OPCODE_SRC1_INT
-	const JIT_OPCODE_SRC2_PTR = JIT_OPCODE_SRC2_INT
-#endif
-
+const JIT_OPCODE_DEST_PTR = JIT_OPCODE_DEST_INT
+const JIT_OPCODE_SRC1_PTR = JIT_OPCODE_SRC1_INT
+const JIT_OPCODE_SRC2_PTR = JIT_OPCODE_SRC2_INT
 extern jit_opcodes(0 to 438) as const jit_opcode_info_t
 #define _JIT_OPCODE_COMPAT_H
 const JIT_OP_FEQ_INV = JIT_OP_FEQ

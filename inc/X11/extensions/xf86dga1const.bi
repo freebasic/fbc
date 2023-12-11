@@ -27,7 +27,7 @@
 ''   in this Software without prior written authorization from the XFree86 Project.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 

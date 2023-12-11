@@ -44,7 +44,7 @@
 ''   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 

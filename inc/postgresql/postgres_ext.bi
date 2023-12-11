@@ -1,10 +1,10 @@
-'' FreeBASIC binding for postgresql-12.0
+'' FreeBASIC binding for postgresql-14.0
 ''
 '' based on the C header files:
 ''   PostgreSQL Database Management System
 ''   (formerly known as Postgres, then as Postgres95)
 ''
-''   Portions Copyright (c) 1996-2019, PostgreSQL Global Development Group
+''   Portions Copyright (c) 1996-2021, PostgreSQL Global Development Group
 ''
 ''   Portions Copyright (c) 1994, The Regents of the University of California
 ''
@@ -26,7 +26,7 @@
 ''   PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2019 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 
