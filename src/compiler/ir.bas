@@ -184,6 +184,7 @@ function irhlAllocVrIdx _
 	vr->sym = symbol
 	vr->ofs = ofs
 	vr->vidx = vidx
+	vr->mult = mult
 
 	function = vr
 end function

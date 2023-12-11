@@ -17,7 +17,8 @@ Version 1.20.0
 - gas64: optimizations: simplify some operations where one operand is zero (0) (SARG)
 - gas64: optimizations: storage of registers with branching (SARG)
 - gas64: optimizations: Replace some CMP instructions with TEST instruction (SARG) 
-- gas64: optimizations: multiplication for small constants -1,-2,3,5,6,10 (SARG)
+- gas64: optimizations: multiplication for small constants -1,-2,3,5,6,9,10 (SARG)
+- gas64: optimizations: enable IR_OPT_ADDRCISC optimizations to use complex addressing (base + offset*multiplier) optimization for indexes (SARG)
 - fbc headers: add ./inc/fberror.bi for runtime library error constants
 - rtlib: ./inc/fbc-int/string.bi - for string descriptor and low level string functions
 

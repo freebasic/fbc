@@ -2048,7 +2048,7 @@ private sub _init( )
 
 	irhlInit( )
 	'' IR_OPT_CPUSELFBOPS disabled, to prevent AST from producing self-ops.
-	irSetOption(IR_OPT_CPUBOPFLAGS or IR_OPT_MISSINGOPS or IR_OPT_CPUSELFBOPS)'  or IR_OPT_ADDRCISC)'
+	irSetOption(IR_OPT_CPUBOPFLAGS or IR_OPT_MISSINGOPS or IR_OPT_CPUSELFBOPS or IR_OPT_ADDRCISC)'
 
 	' dtypeName(FB_DATATYPE_INTEGER) = dtypeName(FB_DATATYPE_LONGINT)
 	'dtypeName(FB_DATATYPE_UINT   ) = dtypeName(FB_DATATYPE_ULONGINT)
@@ -3103,6 +3103,56 @@ private sub prepare_idx(byval v1 as IRVREG ptr, byref op1 as string, byref op3 a
 
 	dim as string regtempo
 	'asm_info("prepare_op v1->sym="+str(v1->sym)+" "+str(v1->vidx->sym))
+
+	if v1->mult<>0 then
+		if v1->vidx->sym=0 then
+			if v1->vidx->reg<>-1 then
+				regtempo=*regstrq(reg_findreal(v1->vidx->reg))
+			else
+				regtempo=*regstrq(reg_findreal(v1->vidx->vidx->reg))
+				asm_code("mov "+regtempo+", "+"["+regtempo+"]")
+			end if
+		else
+			regtempo=*reg_tempo()
+			if symbIsStatic(v1->vidx->sym) Or symbisshared(v1->vidx->sym) then
+				if v1->vidx->typ=IR_VREGTYPE_IDX then
+					asm_code("lea "+regtempo+", "+*symbGetMangledName(v1->vidx->sym)+"[rip+"+Str(v1->vidx->ofs)+"]")
+				elseif v1->vidx->typ=IR_VREGTYPE_VAR then
+					asm_code("mov "+regtempo+", "+*symbGetMangledName(v1->vidx->sym)+"[rip+"+Str(v1->vidx->ofs)+"]")
+				else
+					asm_error("prepare_IDX case v1->vidx->typ not handled 00")
+				end if
+				if v1->vidx->vidx then
+					asm_code("mov "+regtempo+", ["+regtempo+"+"+*regstrq(reg_findreal(v1->vidx->vidx->reg))+"]")
+				end if
+			else
+				asm_code("mov "+regtempo+", "+Str(v1->vidx->ofs)+"[rbp]")
+			end if
+		end if
+
+		select case as const v1->mult
+			Case 2,4,8
+				regtempo=regtempo+"*"+str(v1->mult)
+			case 3,5,9
+				asm_code("lea "+regtempo+", "+"["+regtempo+"+"+regtempo+"*"+str(v1->mult-1)+"]")
+		End Select
+
+		if v1->sym=0 then
+			op1=str(v1->ofs)+"["+regtempo+"]"
+		elseif symbIsStatic(v1->sym) Or symbisshared(v1->sym) then
+			dim as string regtempo2
+			regtempo2=*reg_tempo()
+			asm_code("lea "+regtempo2+", "+*symbGetMangledName(v1->sym)+"[rip+"+Str(v1->ofs)+"]")
+			asm_code("lea "+regtempo2+", "+"["+regtempo2+"+"+regtempo+"]")
+			op1="["+regtempo2+"]"
+		else
+			op1=Str(v1->ofs)+"[rbp+"+regtempo+"]"
+		end if
+
+		return
+	end if
+
+
 	if v1->sym=0 then
 		 ''format  (ofs= )[datatype]  vidx=<reg>  /// vidx=<var varname ofs
 		if v1->vidx->sym=0 then
@@ -3114,7 +3164,7 @@ private sub prepare_idx(byval v1 as IRVREG ptr, byref op1 as string, byref op3 a
 			else
 				''2 levels of deref
 				regtempo=*regstrq(reg_findreal(v1->vidx->vidx->reg))
-				op3="mov "+regtempo+", "+"["+regtempo+"]"
+				asm_code("mov "+regtempo+", "+"["+regtempo+"]")
 				op1=Str(v1->ofs)+"["+regtempo+"]"
 				return
 			end if
@@ -3122,12 +3172,12 @@ private sub prepare_idx(byval v1 as IRVREG ptr, byref op1 as string, byref op3 a
 			''with vidx=<var varname ofs
 			regtempo=*reg_tempo()
 			if symbIsStatic(v1->vidx->sym) Or symbisshared(v1->vidx->sym) then
-				op3="lea "+regtempo+", "+*symbGetMangledName(v1->vidx->sym)+"[rip+"+Str(v1->vidx->ofs)+"]"
-				op3+=newline2+"mov "+regtempo+", "+"["+regtempo+"] #NO"
+				asm_code("lea "+regtempo+", "+*symbGetMangledName(v1->vidx->sym)+"[rip+"+Str(v1->vidx->ofs)+"]")
+				asm_code("mov "+regtempo+", "+"["+regtempo+"]") ' #NO"
 				op1=Str(v1->ofs)+"["+regtempo+"]"
 				return
 			else
-				op3="mov "+regtempo+", "+Str(v1->vidx->ofs)+"[rbp]"
+				asm_code("mov "+regtempo+", "+Str(v1->vidx->ofs)+"[rbp]")
 				op1=Str(v1->ofs)+"["+regtempo+"]"
 				return
 			end if
@@ -3137,18 +3187,18 @@ private sub prepare_idx(byval v1 as IRVREG ptr, byref op1 as string, byref op3 a
 		''format  varname ofs1= [dt] vidx=<reg>  /// vidx=<var varname ofs
 		regtempo=*reg_tempo()
 		if symbIsStatic(v1->sym) Or symbisshared(v1->sym) then
-			op3="lea "+regtempo+", "+*symbGetMangledName(v1->sym)+"[rip+"+Str(v1->ofs)+"] #NO"
+			asm_code("lea "+regtempo+", "+*symbGetMangledName(v1->sym)+"[rip+"+Str(v1->ofs)+"]")' #NO"
 		else
-			op3="lea "+regtempo+", "+Str(v1->ofs)+"[rbp]"
+			asm_code("lea "+regtempo+", "+Str(v1->ofs)+"[rbp]")
 		end if
 		if v1->vidx->typ=IR_VREGTYPE_REG then
 			op1="["+regtempo+"+"+*regstrq(reg_findreal(v1->vidx->reg))+"]"
 			return
 		elseif v1->vidx->typ=IR_VREGTYPE_VAR then
 			if symbIsStatic(v1->vidx->sym) Or symbisshared(v1->vidx->sym) then
-				op3+=newline2+"add "+regtempo+", "+*symbGetMangledName(v1->vidx->sym)+"[rip+"+Str(v1->vidx->ofs)+"]"
+				asm_code("add "+regtempo+", "+*symbGetMangledName(v1->vidx->sym)+"[rip+"+Str(v1->vidx->ofs)+"]")
 			else
-				op3+=newline2+"add "+regtempo+","+Str(v1->vidx->ofs)+"[rbp]"
+				asm_code("add "+regtempo+","+Str(v1->vidx->ofs)+"[rbp]")
 			end if
 			op1="["+regtempo+"]"
 			return
@@ -3511,6 +3561,8 @@ sub optim_mult(byref op1 as string,byref op2 as string)
 		case "6"
 			asm_code("lea "+op1+", ["+op1+"+"+op1+"*2]")
 			asm_code("add "+op1+", "+op1)
+		case "9"
+			asm_code("lea "+op1+", ["+op1+"+"+op1+"*8]")
 		case "10"
 			asm_code("lea "+op1+", ["+op1+"+"+op1+"*4]")
 			asm_code("add "+op1+", "+op1)
