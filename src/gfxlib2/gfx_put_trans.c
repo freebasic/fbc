@@ -85,7 +85,7 @@ void fb_hPutTrans(unsigned char *src, unsigned char *dest, int w, int h, int src
 	
 	if (!context->putter[PUT_MODE_TRANS]) {
 #ifdef HOST_X86
-		if (__fb_gfx->flags & HAS_MMX)
+		if (__fb_gfx->flags & X86_MMX_ENABLED)
 			context->putter[PUT_MODE_TRANS] = &all_putters[4];
 		else
 #endif

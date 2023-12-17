@@ -15,7 +15,7 @@ static void fb_hPutAlphaMask(unsigned char *src, unsigned char *dest, int w, int
 	int x;
 
 #ifdef HOST_X86
-	if (__fb_gfx->flags & HAS_MMX) {
+	if (__fb_gfx->flags & X86_MMX_ENABLED) {
 		fb_hPutAlphaMaskMMX(src, dest, w, h, src_pitch, dest_pitch, alpha, blender, param);
 		return;
 	}
