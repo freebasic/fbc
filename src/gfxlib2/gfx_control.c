@@ -165,6 +165,11 @@ FBCALL void fb_GfxControl_i( int what, ssize_t *param1, ssize_t *param2, ssize_t
 			res1 = __fb_gfx->scanline_size;
 		break;
 
+	case GET_X86_MMX_ENABLED:
+		if (__fb_gfx)
+			res1 = (__fb_gfx->flags & X86_MMX_ENABLED) ? FB_TRUE : FB_FALSE;
+		break;
+
 	case SET_WINDOW_POS:
 		if ((__fb_gfx) && (__fb_gfx->driver->set_window_pos))
 			__fb_gfx->driver->set_window_pos(*param1, *param2);
@@ -301,6 +306,23 @@ FBCALL void fb_GfxControl_i( int what, ssize_t *param1, ssize_t *param2, ssize_t
 
 	case SET_GL_NUM_SAMPLES:
 		__fb_gl_params.num_samples = *param1;
+		break;
+
+	case SET_X86_MMX_ENABLED:
+#ifdef HOST_X86
+		if (__fb_gfx) {
+			if (fb_CpuDetect() & 0x800000) {
+				if (*param1) {
+					__fb_gfx->flags |= X86_MMX_ENABLED;
+				} else {
+					__fb_gfx->flags &= ~X86_MMX_ENABLED;
+				}
+			} else {
+				__fb_gfx->flags &= ~X86_MMX_ENABLED;
+			}
+		}
+#endif
+		context->last_target = NULL;
 		break;
 
 	case SET_GL_2D_MODE:

@@ -47,6 +47,7 @@ DRIVER_SHAPED_WINDOW    0x00000010    yes  no   yes  no   no
 DRIVER_ALWAYS_ON_TOP    0x00000020    no   no   yes  no   no
 DRIVER_ALPHA_PRIMITIVES 0x00000040    yes  no   no   no   no
 DRIVER_HIGH_PRIORITY    0x00000080    yes  no   yes  no   no
+DRIVER_NO_X86_MMX       0x00000100    yes  no   yes  no   no
 DRIVER_OPENGL_OPTIONS   0x000F0000    no   no   yes  no   no
 HAS_STENCIL_BUFFER      0x00010000    no   no   yes  no   no
 HAS_ACCUMULATION_BUFFER 0x00020000    no   no   yes  no   no
@@ -78,6 +79,7 @@ OPENGL_SUPPORT          0x20000000    no   yes  no   yes  yes
 #define DRIVER_ALWAYS_ON_TOP    0x00000020
 #define DRIVER_ALPHA_PRIMITIVES 0x00000040
 #define DRIVER_HIGH_PRIORITY    0x00000080
+#define DRIVER_NO_X86_MMX       0x00000100
 #define DRIVER_OPENGL_OPTIONS   0x000F0000
 #define HAS_STENCIL_BUFFER      0x00010000
 #define HAS_ACCUMULATION_BUFFER 0x00020000
@@ -156,6 +158,7 @@ OPENGL_SUPPORT          0x20000000    no   yes  no   yes  yes
 #define GET_GL_EXTENSIONS           15
 #define GET_HIGH_PRIORITY           16
 #define GET_SCANLINE_SIZE           17
+#define GET_X86_MMX_ENABLED         18
 
 #define GET_GL_COLOR_BITS           37
 #define GET_GL_COLOR_RED_BITS       38
@@ -195,6 +198,7 @@ OPENGL_SUPPORT          0x20000000    no   yes  no   yes  yes
 #define SET_GL_ACCUM_BLUE_BITS      115
 #define SET_GL_ACCUM_ALPHA_BITS     116
 #define SET_GL_NUM_SAMPLES          117
+#define SET_X86_MMX_ENABLED         118
 
 #define SET_GL_2D_MODE              150
 #define SET_GL_SCALE                151

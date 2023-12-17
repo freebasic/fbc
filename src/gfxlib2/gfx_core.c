@@ -290,8 +290,7 @@ static void *fb_hPixelCpy4(void *dest, const void *src, size_t size)
 void fb_hSetupFuncs(int bpp)
 {
 #ifdef HOST_X86
-	if (fb_CpuDetect() & 0x800000) {
-		__fb_gfx->flags |= X86_MMX_ENABLED;
+	if (__fb_gfx->flags & X86_MMX_ENABLED) {
 		fb_hMemCpy = fb_hMemCpyMMX;
 		fb_hMemSet = fb_hMemSetMMX;
 	} else {
