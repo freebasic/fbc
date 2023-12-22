@@ -83,7 +83,7 @@ static void fb_hPutBlend4C(unsigned char *src, unsigned char *dest, int w, int h
 				drb = dc & MASK_RB_32;
 				dga = dc & MASK_GA_32;
 				srb = ((srb - drb) * alpha) >> 8;
-				sga = ((sga - dga) >> 8) * alpha;
+				sga = ((sga >> 8) - (dga >> 8)) * alpha;
 				*d = ((drb + srb) & MASK_RB_32) | ((dga + sga) & MASK_GA_32);
 			}
 			d++;
