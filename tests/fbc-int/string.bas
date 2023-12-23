@@ -142,6 +142,27 @@ SUITE( fbc_tests.fbc_int.string_ )
 	END_TEST
 
 	TEST( concat_no_resize )
+		dim s as string = string( 100, 32 )
+		var p = cast(fbc.FBSTRING ptr, @s)
+		dim size as integer
+
+		CU_ASSERT( p->data <> NULL )
+		CU_ASSERT( p->len = 100 )
+		CU_ASSERT( p->size > 100 )
+		size = p->size 
+
+		FBC.LeftSelf( s, 0 )
+		CU_ASSERT( p->data <> NULL )
+		CU_ASSERT( p->len = 0 )
+		CU_ASSERT( p->size = size )
+
+		for i as integer = 1 to 100
+			s += "A"
+			CU_ASSERT( p->data <> NULL )
+			CU_ASSERT( p->len = i )
+			CU_ASSERT( p->size = size )
+		next
+
 	END_TEST
 
 END_SUITE

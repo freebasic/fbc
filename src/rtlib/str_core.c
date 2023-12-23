@@ -101,8 +101,8 @@ FBCALL FBSTRING *fb_hStrRealloc( FBSTRING *str, ssize_t size, int preserve )
 	newsize += (newsize >> 3);
 
 	if( (str->data == NULL) ||
-	    (size > str->size) ||
-	    (newsize < (str->size - (str->size >> 3))) )
+		(size > str->size) ||
+		( !preserve && (newsize < (str->size - (str->size >> 3)))) )
 	{
 		if( preserve == FB_FALSE )
 		{
