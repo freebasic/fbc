@@ -132,8 +132,8 @@ declare sub render()
 function WinMain(byval hInstance as HINSTANCE, _
 				 byval hPrevInstance as HINSTANCE, _
 				 byval lpCmdLine as zstring ptr, _
-				 byval nCmdShow as integer _
-				) as integer
+				 byval nCmdShow as long _
+				) as long
 
 	dim as WNDCLASSEX winClass 
 	dim as MSG        uMsg

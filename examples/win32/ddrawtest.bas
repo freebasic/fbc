@@ -3,31 +3,43 @@
 ''
 '' code looks hard to read because all the COM interface "hacking" needed, as FB
 '' has no OO-support (yet :P)
-''				
+''
 '' based on C++ DX tutorials found on the Net
 ''
 
 
 #include once "windows.bi"
+#include once "win/d3dx9.bi"
 #include once "win/ddraw.bi"
 
-const SCR_WIDTH 		= 320
-const SCR_HEIGHT 		= 240
-const SCR_SIZE 			= (SCR_WIDTH * SCR_HEIGHT)
-const SCR_BPP 			= 16					'' \
-#define SCR_TYPE		ushort					'' /
+const SCR_WIDTH         = 320
+const SCR_HEIGHT        = 240
+const SCR_SIZE          = (SCR_WIDTH * SCR_HEIGHT)
 
-#define VAL2RGB(v) (((v) shl 11) or ((v) shl 5) or (v))
+#ifdef __FB_64BIT__
+	const SCR_BPP           = 32                    '' \
+	#define SCR_TYPE        ulong                   '' /
+	#define VAL2RGB(v) (((v) shl 16) or ((v) shl 8) or (v))
+#else
+	const SCR_BPP           = 16                    '' \
+	#define SCR_TYPE        ushort                  '' /
+	#define VAL2RGB(v) (((v) shl 11) or ((v) shl 5) or (v))
+#endif
 
-declare function WinMain     ( byval hInstance as HINSTANCE, _
-                               byval hPrevInstance as HINSTANCE, _
-                               byref szCmdLine as string, _
-                               byval iCmdShow as integer ) as integer
+
+
+declare function WinMain _
+	( _
+		byval hInstance as HINSTANCE, _
+		byval hPrevInstance as HINSTANCE, _
+		byref szCmdLine as string, _
+		byval iCmdShow as long _
+	) as long
 
 
 '' globals
 	dim shared hInst as HINSTANCE
-	
+
 	dim shared pDD as IDirectDraw7 ptr
 	dim shared pDDSFront as IDirectDrawSurface7 ptr
 	dim shared pDDSBack as IDirectDrawSurface7 ptr
@@ -39,21 +51,21 @@ declare function WinMain     ( byval hInstance as HINSTANCE, _
 
 
 '':::::
-function InitDirectDraw( byval hWnd as HWND ) as integer	
+function InitDirectDraw( byval hWnd as HWND ) as long
 	dim ddscaps as DDSCAPS2
 
-	function = FALSE	
-	
+	function = FALSE
+
 	' create an interface to DDraw
 	if( DirectDrawCreateEx( NULL, @pDD, @IID_IDirectDraw7, NULL ) <> DD_OK ) then
-       exit function
+	exit function
 	end if
 
 	' set the access mode (full screen)
 	if( IDirectDraw7_SetCooperativeLevel( pDD, hWnd, DDSCL_EXCLUSIVE or DDSCL_FULLSCREEN ) <> DD_OK ) then
 		exit function
 	end if
-	
+
 	' set the display mode
 	if( IDirectDraw7_SetDisplayMode( pDD, SCR_WIDTH, SCR_HEIGHT, SCR_BPP, 0, 0 ) <> DD_OK ) then
 		exit function
@@ -62,10 +74,10 @@ function InitDirectDraw( byval hWnd as HWND ) as integer
 	' create the primary surface with 1 back-buffer
 	clear ddsd, 0, len( ddsd )
 	with ddsd
-		.dwSize 			= len( ddsd )
-		.dwFlags 			= DDSD_CAPS or DDSD_BACKBUFFERCOUNT
-		.ddsCaps.dwCaps 	= DDSCAPS_PRIMARYSURFACE or DDSCAPS_FLIP or DDSCAPS_COMPLEX
-		.dwBackBufferCount 	= 1
+		.dwSize             = len( ddsd )
+		.dwFlags            = DDSD_CAPS or DDSD_BACKBUFFERCOUNT
+		.ddsCaps.dwCaps     = DDSCAPS_PRIMARYSURFACE or DDSCAPS_FLIP or DDSCAPS_COMPLEX
+		.dwBackBufferCount  = 1
 	end with
 
 	if( IDirectDraw7_CreateSurface( pDD, @ddsd, @pDDSFront, NULL ) <> DD_OK ) then
@@ -73,46 +85,46 @@ function InitDirectDraw( byval hWnd as HWND ) as integer
 	end if
 
 	'' get a pointer to the back buffer
-	clear ddscaps, 0, len( ddscaps )
-	ddscaps.dwCaps 			= DDSCAPS_BACKBUFFER
+	clear ddscaps, 0, len( ..ddscaps )
+	ddscaps.dwCaps          = DDSCAPS_BACKBUFFER
 
 	if( IDirectDrawSurface7_GetAttachedSurface( pDDSFront, @ddscaps, @pDDSBack ) <> DD_OK ) then
 		exit function
 	end if
 
 	function = TRUE
-	
+
 end function
 
 '':::::
-sub doRendering	
-	static seed as integer = &h12345
+sub doRendering
+	static seed as long = &h12345
 	dim dst as SCR_TYPE ptr
-	dim noise as integer, carry as integer
-	dim x as integer, y as integer
-	
+	dim noise as long, carry as long
+	dim x as long, y as long
+
 	'' lock the back buffer before start drawing on it
 	if( IDirectDrawSurface7_Lock( pDDSBack, NULL, @ddsd, DDLOCK_WAIT, NULL ) <> DD_OK ) then
 		exit sub
 	end if
-	
+
 	'' get the pointer to back-buffer
 	dst = ddsd.lpSurface
-	
-   	'' draw some static (code from ptc_test)
-   	for y = 0 to SCR_HEIGHT-1
-   		for x = 0 to SCR_WIDTH-1
+
+	'' draw some static (code from ptc_test)
+	for y = 0 to SCR_HEIGHT-1
+		for x = 0 to SCR_WIDTH-1
 			noise = (seed shr 3) xor seed
-       		carry = noise and 1
-       		seed = (seed shr 1) or (carry shl 30)
-       		noise = (noise shr 1) and &hFF
+			carry = noise and 1
+			seed = (seed shr 1) or (carry shl 30)
+			noise = (noise shr 1) and &hFF
 			*dst = VAL2RGB(noise)
 			dst += 1
 		next x
 		'' advance to next scanline
 		cast(byte ptr, dst) += ddsd.lPitch - (SCR_WIDTH * len( SCR_TYPE ))
-   	next y
-	
+	next y
+
 	'' unlock it, no more needed
 	IDirectDrawSurface7_Unlock( pDDSBack, NULL )
 
@@ -121,57 +133,57 @@ end sub
 '':::::
 sub CleanUp
 
-    '' free the back-buffer
-    if( pDDSBack <> NULL ) then
-        IDirectDrawSurface7_Release( pDDSBack )
-        pDDSBack = NULL
-    end if
+	'' free the back-buffer
+	if( pDDSBack <> NULL ) then
+		IDirectDrawSurface7_Release( pDDSBack )
+		pDDSBack = NULL
+	end if
 
-    '' and the primary one
-    if( pDDSFront <> NULL ) then
-        IDirectDrawSurface7_Release( pDDSFront )
-        pDDSFront = NULL
-    end if
+	'' and the primary one
+	if( pDDSFront <> NULL ) then
+		IDirectDrawSurface7_Release( pDDSFront )
+		pDDSFront = NULL
+	end if
 
-    '' and for last the ddraw interface
-    if( pDD <> NULL ) then
-        IDirectDraw7_Release( pDD )
-        pDD = NULL
-    end if
+	'' and for last the ddraw interface
+	if( pDD <> NULL ) then
+		IDirectDraw7_Release( pDD )
+		pDD = NULL
+	end if
 
 end sub
 
 '':::::
-function ProcessIdle as integer
-    dim hRet as integer
-    
-    function = FALSE
+function ProcessIdle as long
+	dim hRet as long
+
+	function = FALSE
 
 	'' buffers were not allocated? exit
 	if( (pDDSBack = NULL) or (pDDSFront = NULL) ) then
 		exit function
 	end if
 
-    '' draw onto back-buffer
-    doRendering( )
+	'' draw onto back-buffer
+	doRendering( )
 
-    '' turn it visible (flip)
-    do        
-        hRet = IDirectDrawSurface7_Flip( pDDSFront, NULL, 0 )
-        
-        '' flip done? exit
-        if( hRet = DD_OK ) then
-        	exit do
-        
-        '' surface lost? (user switched to desktop??)
-        elseif( hRet = DDERR_SURFACELOST ) then        
-            IDirectDrawSurface7_Restore( pDDSFront )
-        
-        '' wait until all current drawing is being done
-        elseif( hRet <> DDERR_WASSTILLDRAWING ) then
-        	exit do
-    	end if
-    loop
+	'' turn it visible (flip)
+	do
+		hRet = IDirectDrawSurface7_Flip( pDDSFront, NULL, 0 )
+
+		'' flip done? exit
+		if( hRet = DD_OK ) then
+			exit do
+
+		'' surface lost? (user switched to desktop??)
+		elseif( hRet = DDERR_SURFACELOST ) then
+			IDirectDrawSurface7_Restore( pDDSFront )
+
+		'' wait until all current drawing is being done
+		elseif( hRet <> DDERR_WASSTILLDRAWING ) then
+			exit do
+		end if
+	loop
 
 	function = TRUE
 
@@ -179,12 +191,12 @@ end function
 
 '':::::
 function WndProc ( byval hWnd as HWND, _
-                   byval uMsg as UINT, _
-                   byval wParam as WPARAM, _
-                   byval lParam as LPARAM ) as LRESULT
+				byval uMsg as UINT, _
+				byval wParam as WPARAM, _
+				byval lParam as LPARAM ) as LRESULT
 
 	function = 0
-	
+
 	'' process messages
 	select case uMsg
 	case WM_CREATE
@@ -209,11 +221,14 @@ function WndProc ( byval hWnd as HWND, _
 end function
 
 '':::::
-function WinMain ( byval hInstance as HINSTANCE, _
-                   byval hPrevInstance as HINSTANCE, _
-                   byref szCmdLine as string, _
-                   byval iCmdShow as integer ) as integer    
-	
+function WinMain _
+	( _
+		byval hInstance as HINSTANCE, _
+		byval hPrevInstance as HINSTANCE, _
+		byref szCmdLine as string, _
+		byval iCmdShow as long _
+	) as long
+
 	dim appName as string
 	dim wc as WNDCLASS
 	dim hWnd as HWND
@@ -223,20 +238,20 @@ function WinMain ( byval hInstance as HINSTANCE, _
 
 	'' create an window
 	appName = "DD test"
-	
+
 	with wc
-		.style 			= CS_HREDRAW or CS_VREDRAW
-   		.lpfnWndProc 	= @WndProc
-   		.cbClsExtra 	= 0
-   		.cbWndExtra 	= 0
-   		.hInstance 		= hInst
-   		.hIcon 			= LoadIcon( hInst, IDI_APPLICATION )
-   		.hCursor 		= LoadCursor( NULL, IDC_ARROW )
-   		.hbrBackground 	= GetStockObject( BLACK_BRUSH )
-   		.lpszMenuName 	= NULL
-   		.lpszClassName 	= strptr( appName )
-   	end with
-   	
+		.style          = CS_HREDRAW or CS_VREDRAW
+		.lpfnWndProc    = @WndProc
+		.cbClsExtra     = 0
+		.cbWndExtra     = 0
+		.hInstance      = hInst
+		.hIcon          = LoadIcon( hInst, IDI_APPLICATION )
+		.hCursor        = LoadCursor( NULL, IDC_ARROW )
+		.hbrBackground  = GetStockObject( BLACK_BRUSH )
+		.lpszMenuName   = NULL
+		.lpszClassName  = strptr( appName )
+	end with
+
 	if( RegisterClass( @wc ) = 0 ) then
 		exit function
 	end if
@@ -264,7 +279,7 @@ function WinMain ( byval hInstance as HINSTANCE, _
 
 			TranslateMessage( @msg )
 			DispatchMessage( @msg )
-		
+
 		else
 			if( ProcessIdle( ) = FALSE ) then
 				exit do
@@ -274,6 +289,6 @@ function WinMain ( byval hInstance as HINSTANCE, _
 
 	''
 	function = msg.wParam
-	
+
 end function
 
