@@ -2939,7 +2939,7 @@
 
 	ID( sub fb_LeftSelf alias "fb_LEFTSELF" )
 	scope
-		dim chk as sub fbcall ( byref as const string, byval as const integer )
+		dim chk as sub fbcall ( byref as string, byval as const integer )
 		chk = procptr( fb_LeftSelf )
 	end scope
 
