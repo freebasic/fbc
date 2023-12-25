@@ -815,7 +815,7 @@ BLITTER *fb_hGetBlitter(int device_depth, int is_rgb)
 	}
 	
 #ifdef HOST_X86
-	if ((__fb_gfx->flags & HAS_MMX) && (__fb_gfx->scanline_size == 1) && !(__fb_gfx->w & 0x3))
+	if ((__fb_gfx->flags & X86_MMX_ENABLED) && (__fb_gfx->scanline_size == 1) && !(__fb_gfx->w & 0x3))
 		blitter = &blitter[24];
 #endif
 

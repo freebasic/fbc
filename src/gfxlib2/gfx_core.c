@@ -290,8 +290,7 @@ static void *fb_hPixelCpy4(void *dest, const void *src, size_t size)
 void fb_hSetupFuncs(int bpp)
 {
 #ifdef HOST_X86
-	if (fb_CpuDetect() & 0x800000) {
-		__fb_gfx->flags |= HAS_MMX;
+	if (__fb_gfx->flags & X86_MMX_ENABLED) {
 		fb_hMemCpy = fb_hMemCpyMMX;
 		fb_hMemSet = fb_hMemSetMMX;
 	} else {
@@ -313,7 +312,7 @@ void fb_hSetupFuncs(int bpp)
 			fb_hPutPixelSolid = fb_hPutPixelAlpha = fb_hPutPixel2;
 			fb_hGetPixel = fb_hGetPixel2;
 #ifdef HOST_X86
-			if (__fb_gfx->flags & HAS_MMX)
+			if (__fb_gfx->flags & X86_MMX_ENABLED)
 				fb_hPixelSetSolid = fb_hPixelSetAlpha = fb_hPixelSet2MMX;
 			else
 #endif
@@ -325,7 +324,7 @@ void fb_hSetupFuncs(int bpp)
 			fb_hPutPixelSolid = fb_hPutPixel4;
 			fb_hGetPixel = fb_hGetPixel4;
 #ifdef HOST_X86
-			if (__fb_gfx->flags & HAS_MMX)
+			if (__fb_gfx->flags & X86_MMX_ENABLED)
 				fb_hPixelSetSolid = fb_hPixelSet4MMX;
 			else
 #endif
@@ -333,7 +332,7 @@ void fb_hSetupFuncs(int bpp)
 			fb_hPixelCpy = fb_hPixelCpy4;
 			if (__fb_gfx->flags & ALPHA_PRIMITIVES) {
 #ifdef HOST_X86
-				if (__fb_gfx->flags & HAS_MMX) {
+				if (__fb_gfx->flags & X86_MMX_ENABLED) {
 					fb_hPutPixelAlpha = fb_hPutPixelAlpha4MMX;
 					fb_hPixelSetAlpha = fb_hPixelSetAlpha4MMX;
 				} else {

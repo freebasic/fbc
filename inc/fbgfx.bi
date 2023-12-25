@@ -48,7 +48,8 @@ namespace FB
 		GFX_SHAPED_WINDOW           = &h00000010, _
 		GFX_ALWAYS_ON_TOP           = &h00000020, _
 		GFX_ALPHA_PRIMITIVES        = &h00000040, _
-		GFX_HIGH_PRIORITY           = &h00000080,_
+		GFX_HIGH_PRIORITY           = &h00000080, _
+		GFX_NO_X86_MMX              = &h00000100, _
 		GFX_SCREEN_EXIT             = &h80000000l
 
 	'' OpenGL options
@@ -85,6 +86,7 @@ namespace FB
 		GET_GL_EXTENSIONS           = 15, _
 		GET_HIGH_PRIORITY           = 16, _
 		GET_SCANLINE_SIZE           = 17, _
+		GET_X86_MMX_ENABLED         = 18, _
 		_
 		GET_GL_COLOR_BITS           = 37, _
 		GET_GL_COLOR_RED_BITS       = 38, _
@@ -124,6 +126,7 @@ namespace FB
 		SET_GL_ACCUM_BLUE_BITS      = 115, _
 		SET_GL_ACCUM_ALPHA_BITS     = 116, _
 		SET_GL_NUM_SAMPLES          = 117, _
+		SET_X86_MMX_ENABLED         = 118, _
 		_
 		SET_GL_2D_MODE              = 150, _
 		SET_GL_SCALE                = 151

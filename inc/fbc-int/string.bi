@@ -42,10 +42,12 @@ extern "rtlib"
 		size as integer              '' size of allocated memory
 	end type
 
-	'' VAR-LEN STRING API (STRING)
-	'' declare sub fb_StrDelete( byref s as const string )
+	'' VAR-LEN STRING API (FBSTRING)
+	declare sub fb_StrDelete( byval s as const FBSTRING ptr )
+	declare sub fb_LEFTSELF( byval dst as FBSTRING ptr, byval length as const integer )
 
-	declare sub fb_StrDelete alias "fb_StrDelete" ( byval s as const FBSTRING ptr )
+	'' VAR-LEN STRING API (STRING)
+	declare sub LEFTSELF alias "fb_LEFTSELF" ( byref dst as string, byval length as const integer )  
 
 end extern
 

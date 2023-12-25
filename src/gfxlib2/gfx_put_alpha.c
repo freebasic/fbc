@@ -22,13 +22,13 @@ static void fb_hPutAlpha4C(unsigned char *src, unsigned char *dest, int w, int h
 		for (x = w; x; x--) {
 			sc = *s++;
 			dc = *d;
-			a = (sc >> 24);
+			a = (sc >> 24) + 1;
 			srb = sc & MASK_RB_32;
 			sga = sc & MASK_GA_32;
 			drb = dc & MASK_RB_32;
 			dga = dc & MASK_GA_32;
 			srb = ((srb - drb) * a) >> 8;
-			sga = ((sga - dga) >> 8) * a;
+			sga = ((sga >> 8) - (dga >> 8)) * a;
 			*d++ = ((drb + srb) & MASK_RB_32) | ((dga + sga) & MASK_GA_32);
 		}
 		s += src_pitch;
@@ -51,7 +51,7 @@ void fb_hPutAlpha(unsigned char *src, unsigned char *dest, int w, int h, int src
 	
 	if (!context->putter[PUT_MODE_ALPHA]) {
 #ifdef HOST_X86
-		if (__fb_gfx->flags & HAS_MMX)
+		if (__fb_gfx->flags & X86_MMX_ENABLED)
 			context->putter[PUT_MODE_ALPHA] = &all_putters[4];
 		else
 #endif

@@ -29,35 +29,39 @@ FUNC(fb_hMemCpyMMX)
 	movl %esp, %ebp
 	pushl %esi
 	pushl %edi
+
+	/* For best results, source and destination should be aligned to
+	** 4 byte memory address and length should be a multiple of 4 bytes 
+	*/  
 	
-	movl ARG1, %edi
-	movl ARG2, %esi
-	movl ARG3, %ecx
-	shrl $1, %ecx
-	jnc memcpy_skip_1
-	movsb
+	movl ARG1, %edi                /* edi = dst                         */
+	movl ARG2, %esi                /* esi = src                         */
+	movl ARG3, %ecx                /* ecx = len                         */
+	shrl $1, %ecx                  /* ecx = len \ 2                     */
+	jnc memcpy_skip_1              /* if len mod 2 = 0, no 1 byte copy  */
+	movsb                          /* copy 1 byte                       */
 
 LABEL(memcpy_skip_1)
-	shrl $1, %ecx
-	jnc memcpy_skip_2
-	movsw
+	shrl $1, %ecx                  /* ecx = len \ 4                     */
+	jnc memcpy_skip_2              /* if len mod 4 = 0, no 1 byte copy  */
+	movsw                          /* copy 2 bytes                       */
 
 LABEL(memcpy_skip_2)
-	shrl $1, %ecx
-	jnc memcpy_skip_4
-	movsl
+	shrl $1, %ecx                  /* ecx = len \ 8                     */
+	jnc memcpy_skip_4              /* if len mod 5 = 0, no 2 byte copy  */
+	movsl                          /* copy 4 bytes                      */
 
 LABEL(memcpy_skip_4)
 	orl %ecx, %ecx
-	jz memcpy_end
+	jz memcpy_end                  /* if nothing left to copy, skip     */
 
 LABEL(memcpy_loop)
-	addl $8, %edi
-	movq (%esi), %mm0
-	addl $8, %esi
-	movq %mm0, -8(%edi)
-	decl %ecx
-	jnz memcpy_loop
+	addl $8, %edi                  /* dst ++                            */
+	movq (%esi), %mm0              /* mm0 = *src (8 bytes)              */
+	addl $8, %esi                  /* src ++                            */
+	movq %mm0, -8(%edi)            /* *dst = mm0                        */
+	decl %ecx                      /* len -= 1                          */
+	jnz memcpy_loop                /* loop until all copied             */
 	
 LABEL(memcpy_end)
 	emms
@@ -74,37 +78,37 @@ FUNC(fb_hMemSetMMX)
 	pushl %edi
 	
 	movl ARG1, %edi                /* edi = dst                         */
-	movl ARG2, %eax                /* esi = sc                          */
+	movl ARG2, %eax                /* esi = fill byte (Aa)              */
 	movl ARG3, %ecx                /* ecx = len                         */
-	movb %al, %ah
-	movw %ax, %dx
-	shll $16, %eax
-	movw %dx, %ax
-	shrl $1, %ecx
-	jnc memset_skip_1
-	stosb
+	movb %al, %ah                  /* eax = | ?? ?? Aa Aa |             */ 
+	movw %ax, %dx                  /* edx = | ?? ?? Aa Aa |             */
+	shll $16, %eax                 /* eax = | Aa Aa ?? ?? |             */
+	movw %dx, %ax                  /* eax = | Aa Aa Aa Aa |             */
+	shrl $1, %ecx                  /* ecx = len \ 2                     */
+	jnc memset_skip_1              /* if len mod 2 = 0, no 1 byte copy  */          
+	stosb                          /* store 1 byte                      */
 
 LABEL(memset_skip_1)
-	shrl $1, %ecx
-	jnc memset_skip_2
-	stosw
+	shrl $1, %ecx                  /* ecx = len \ 4                     */
+	jnc memset_skip_2              /* if len mod 4 = 0, no 2 byte copy  */
+	stosw                          /* store 2 bytes                     */
 
 LABEL(memset_skip_2)
-	shrl $1, %ecx
-	jnc memset_skip_4
-	stosl
+	shrl $1, %ecx                  /* ecx = len \ 8                     */
+	jnc memset_skip_4              /* if len mod 8 = 0, no 4 byte copy  */
+	stosl                          /* store 4 bytes                     */
 
 LABEL(memset_skip_4)
 	orl %ecx, %ecx
-	jz memset_end
-	movd %eax, %mm0
-	punpckldq %mm0, %mm0
+	jz memset_end                  /* if nothing left to fill, skip     */
+	movd %eax, %mm0                /* mm0 = ____ | ____ | AaAa | AaAa   */  
+	punpckldq %mm0, %mm0           /* mm0 = AaAa | AaAa | AaAa | AaAa   */
 	
 LABEL(memset_loop)
-	movq %mm0, (%edi)
-	addl $8, %edi
-	decl %ecx
-	jnz memset_loop
+	movq %mm0, (%edi)              /* *dst = mm0                        */
+	addl $8, %edi                  /* dst ++                            */
+	decl %ecx                      /* len -= 1                          */
+	jnz memset_loop                /* loop until all copied             */
 	
 LABEL(memset_end)
 	emms
@@ -120,7 +124,7 @@ FUNC(fb_hPixelSet2MMX)
 	pushl %edi
 	
 	movl ARG1, %edi                /* edi = dst                         */
-	movl ARG2, %eax                /* esi = sc                          */
+	movl ARG2, %eax                /* esi = fill pixel (2 bytes)        */
 	movl ARG3, %ecx                /* ecx = len                         */
 	movw %ax, %dx
 	shll $16, %eax
@@ -167,7 +171,7 @@ FUNC(fb_hPixelSet4MMX)
 	pushl %edi
 	
 	movl ARG1, %edi                /* edi = dst                         */
-	movl ARG2, %eax                /* esi = sc                          */
+	movl ARG2, %eax                /* esi = fill pixel (4 bytes)        */
 	movl ARG3, %ecx                /* ecx = len                         */
 	shrl $1, %ecx
 	jnc pixelset4_skip_1
@@ -217,7 +221,7 @@ FUNC(fb_hPixelSetAlpha4MMX)
 	pushl %edi
 	pushl %ebx
 	
-	movl ARG2, %esi                /* esi = sc                          */
+	movl ARG2, %esi                /* esi = fill color (4 bytes)        */
 	movl ARG1, %edi                /* edi = dst                         */
 	movd %esi, %mm6                /* mm6 = esi                         */
 	movl ARG3, %ecx                /* ecx = len                         */

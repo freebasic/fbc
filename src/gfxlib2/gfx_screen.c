@@ -285,14 +285,26 @@ static int set_mode
         __fb_gfx->event_queue = (EVENT *)malloc(sizeof(EVENT) * MAX_EVENTS);
         __fb_gfx->event_mutex = fb_MutexCreate();
         __fb_color_conv_16to32 = (unsigned int *)malloc(sizeof(int) * 512);
-        if (flags != DRIVER_NULL) {
-			if (flags & DRIVER_ALPHA_PRIMITIVES)
-	        	__fb_gfx->flags |= ALPHA_PRIMITIVES;
-	        if (flags & DRIVER_OPENGL)
-	        	__fb_gfx->flags |= OPENGL_SUPPORT;
-	        if (flags & DRIVER_HIGH_PRIORITY)
-	        	__fb_gfx->flags |= HIGH_PRIORITY;
-	    }
+
+		if (flags != DRIVER_NULL) {
+			if (flags & DRIVER_ALPHA_PRIMITIVES) {
+				__fb_gfx->flags |= ALPHA_PRIMITIVES;
+			}
+			if (flags & DRIVER_OPENGL) {
+				__fb_gfx->flags |= OPENGL_SUPPORT;
+			}
+			if (flags & DRIVER_HIGH_PRIORITY) {
+				__fb_gfx->flags |= HIGH_PRIORITY;
+			}
+		}
+
+#ifdef HOST_X86
+		if (fb_CpuDetect() & 0x800000) {
+			if (!(flags & DRIVER_NO_X86_MMX)) {
+				__fb_gfx->flags |= X86_MMX_ENABLED;
+			}
+		}
+#endif
 
         fb_hSetupFuncs(__fb_gfx->bpp);
         fb_hSetupData();

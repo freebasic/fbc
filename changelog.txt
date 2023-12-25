@@ -8,6 +8,8 @@ Version 1.20.0
 - emscripten/fbc: don't cast to integer for array indexing (possible regression of behaviour when fixing github #217)
 - github #421: fbc: win32/win64: pass '-fno-ident' to gcc to help prevent identification strings from accumulating in the final binary
 - fbc: internal: rtlMathLongintDIV() decide on signed or unsigned division based on sign instead of exact data type
+- gfxlib2: on x86 32-bit, query the cpu type for MMX capability only when setting the graphics mode with SCREEN[RES] or when setting x86 MMX feature with ScreenControl fb.SET_X86_MMX_ENABLED function
+- rtlib: optimize string concatenation reallocations: do not reallocate to smaller memory buffer if the contents are to be preserved
 
 [added]
 - x86_64: optimize SHL MOD INTDIV to use 32-bit operation when result will be converted to long/ulong
@@ -21,6 +23,9 @@ Version 1.20.0
 - gas64: optimizations: enable IR_OPT_ADDRCISC optimizations to use complex addressing (base + offset*multiplier) optimization for indexes (SARG)
 - fbc headers: add ./inc/fberror.bi for runtime library error constants
 - rtlib: ./inc/fbc-int/string.bi - for string descriptor and low level string functions
+- gfxlib2: added fb.GFX_NO_X86_MMX = &h00000100 constant to fbgfx.bi - when passed as flag to SCREEN[RES] disable MMX blitters on x86 32-bit 
+- gfxlib2: added fb.GET_X86_MMX_ENABLED = 18 constant to fbgfx.bi - used with ScreenControl to determine if MMX blitters are selected on x86 32 bit.  If returned value is non-zero, then MMX is enabled.  If zero, then MMX is disabled.  All other platforms return zero.
+- gfxlib2: added fb.SET_X86_MMX_ENABLED = 118 constant to fbgfx.bi - used with ScreenControl to specific if MMX blitters should be used on x86 32-bit.  Pass non-zero value to enable, and zero value to disable.  All other platforms ignore this setting 
 
 [fixed]
 - github #410: give consistent floating point comparisons results involving NaNs.
@@ -36,6 +41,8 @@ Version 1.20.0
 - sf.net #988: (regression) re-allow overloaded non-indexed array arguments - Can't pass UDT member array to an overloaded sub
 - gas64: 'SI' word found in cvtsi2ss wrongly releasing RSI register (SARG)
 - sf.net #997: gcc backend: handle EXTERN "rtlib": preserve the internally mangled name but emit an extra prototype to map the internal name to the external ASM name
+- gfxlib2: Incorrect alpha blending in ALPHA put method - fix C implementation to avoid overflowing int type
+- rtlib: internal fb_LeftSelf( s, 0 ) was failing to reduce the string to a length of zero.
 
 
 Version 1.10.1
