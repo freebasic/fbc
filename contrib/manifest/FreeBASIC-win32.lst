@@ -26,6 +26,7 @@ bin/win32/zlib1.dll
 changelog.txt
 doc/GoRC.txt
 doc/fbc.1
+doc/fdl-1.2.txt
 doc/gpl.txt
 doc/lgpl.txt
 doc/libffi-license.txt

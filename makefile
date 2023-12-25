@@ -1190,7 +1190,7 @@ bindist:
 	# Docs
 	cp $(rootdir)changelog.txt $(rootdir)readme.txt $(FBPACKAGE)
 	mkdir $(FBPACKAGE)/doc
-	cp $(rootdir)doc/fbc.1 $(rootdir)doc/gpl.txt $(rootdir)doc/lgpl.txt $(FBPACKAGE)/doc
+	cp $(rootdir)doc/fbc.1 $(rootdir)doc/gpl.txt $(rootdir)doc/lgpl.txt $(rootdir)doc/fdl-1.2.txt $(FBPACKAGE)/doc
     ifneq ($(filter win32 win64,$(TARGET_OS)),)
       ifdef ENABLE_STANDALONE
 	cp $(rootdir)doc/GoRC.txt $(rootdir)doc/libffi-license.txt $(FBPACKAGE)/doc

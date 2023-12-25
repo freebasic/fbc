@@ -1,6 +1,7 @@
 bin/fbc
 changelog.txt
 doc/fbc.1
+doc/fdl-1.2.txt
 doc/gpl.txt
 doc/lgpl.txt
 examples/DOS/gfxsleep.bas
