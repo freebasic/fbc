@@ -77,6 +77,7 @@
 #   clean-tests
 #
 #   bootstrap-dist      Create source package with precompiled fbc sources
+#   bootstrap-dist-arm  Create source package with precompiled fbc sources for arm and aarach64 only
 #   bootstrap           Build fbc from the precompiled sources (only if precompiled sources exist)
 #   bootstrap-minimal   Build fbc from the precompiled sources (only if precompiled sources exist) with only the minimal features needed to compile another fbc
 #
@@ -1391,6 +1392,25 @@ bootstrap-dist:
 	mv bootstrap $(FBBOOTSTRAPTITLE)
 	tar -cJf "$(FBBOOTSTRAPTITLE).tar.xz" "$(FBBOOTSTRAPTITLE)"
 	rm -rf "$(FBBOOTSTRAPTITLE)"
+
+FBBOOTSTRAPTITLEARM := $(FBSOURCETITLE)-bootstrap-arm
+.PHONY: bootstrap-dist-arm
+bootstrap-dist-arm:
+	# Precompile fbc sources for various targets
+	rm -rf bootstrap
+	mkdir -p bootstrap/linux-arm
+	mkdir -p bootstrap/linux-aarch64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target linux-arm           && mv src/compiler/*.c   bootstrap/linux-arm
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target linux-aarch64       && mv src/compiler/*.c   bootstrap/linux-aarch64
+	dos2unix bootstrap/linux-arm/*
+	dos2unix bootstrap/linux-aarch64/*
+
+	# Package FB sources (similar to our "gitdist" command), and add the bootstrap/ directory
+	# Making a .tar.xz should be good enough for now.
+	git -c core.autocrlf=false archive --format tar --prefix "$(FBBOOTSTRAPTITLEARM)/" HEAD | tar xf -
+	mv bootstrap $(FBBOOTSTRAPTITLEARM)
+	tar -cJf "$(FBBOOTSTRAPTITLEARM).tar.xz" "$(FBBOOTSTRAPTITLEARM)"
+	rm -rf "$(FBBOOTSTRAPTITLEARM)"
 
 #
 # Build the fbc[.exe] binary from the precompiled sources in the bootstrap/

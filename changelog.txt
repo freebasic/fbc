@@ -13,6 +13,7 @@ fbc: BUILD_FB_DEFAULT_CPUTYPE_X86 to set FB_DEFAULT_CPUTYPE_X86 in source code; 
 makefile:  DEFAULT_CPUTYPE_ARM build option to set the default ARM cpu; if given sets BUILD_FB_DEFAULT_CPUTYPE_ARM compiler configration option
 makefile: add BUILD_FB_DEFAULT_CPUTYPE_ARM to BOOTFBCFLAGS
 fbc: BUILD_FB_DEFAULT_CPUTYPE_ARM to set FB_DEFAULT_CPUTYPE_ARM in source code; if not given then default is FB_CPUTYPE_ARMV7A
+makefile: add bootstrap-dist-arm to make ARM/AARCH64 only bootstrap-source-arm package (convenience for different build requirements and not building every source bootstrap target)
 
 [fixed]
 
