@@ -555,8 +555,10 @@ endif
 ifdef FBSHA1
   ifeq ($(FBSHA1),1)
     ALLFBCFLAGS += -d 'FBSHA1="$(shell git rev-parse HEAD)"'
+    BOOTFBCFLAGS += -d 'FBSHA1="$(shell git rev-parse HEAD)"'
   else
     ALLFBCFLAGS += -d 'FBSHA1="$(FBSHA1)"'
+    BOOTFBCFLAGS += -d 'FBSHA1="$(FBSHA1)"'
   endif
 endif
 ifdef ENABLE_SUFFIX
@@ -1336,21 +1338,21 @@ bootstrap-dist:
 	mkdir -p bootstrap/win64
 	mkdir -p bootstrap/linux-arm
 	mkdir -p bootstrap/linux-aarch64
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target dos                 && mv src/compiler/*.asm bootstrap/dos
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-x86         && mv src/compiler/*.asm bootstrap/freebsd-x86
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-x86_64      && mv src/compiler/*.c   bootstrap/freebsd-x86_64
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-powerpc     && mv src/compiler/*.c   bootstrap/freebsd-powerpc
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-powerpc64   && mv src/compiler/*.c   bootstrap/freebsd-powerpc64
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-powerpc64le && mv src/compiler/*.c   bootstrap/freebsd-powerpc64le
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target dragonfly-x86_64    && mv src/compiler/*.c   bootstrap/dragonfly-x86_64
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target solaris-x86_64      && mv src/compiler/*.c   bootstrap/solaris-x86_64
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-x86           && mv src/compiler/*.asm bootstrap/linux-x86
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-x86_64        && mv src/compiler/*.c   bootstrap/linux-x86_64
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target cygwin-x86_64       && mv src/compiler/*.c   bootstrap/cygwin-x86_64
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target win32               && mv src/compiler/*.asm bootstrap/win32
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target win64               && mv src/compiler/*.c   bootstrap/win64
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-arm           && mv src/compiler/*.c   bootstrap/linux-arm
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-aarch64       && mv src/compiler/*.c   bootstrap/linux-aarch64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target dos                 && mv src/compiler/*.asm bootstrap/dos
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target freebsd-x86         && mv src/compiler/*.asm bootstrap/freebsd-x86
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target freebsd-x86_64      && mv src/compiler/*.c   bootstrap/freebsd-x86_64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target freebsd-powerpc     && mv src/compiler/*.c   bootstrap/freebsd-powerpc
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target freebsd-powerpc64   && mv src/compiler/*.c   bootstrap/freebsd-powerpc64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target freebsd-powerpc64le && mv src/compiler/*.c   bootstrap/freebsd-powerpc64le
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target dragonfly-x86_64    && mv src/compiler/*.c   bootstrap/dragonfly-x86_64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target solaris-x86_64      && mv src/compiler/*.c   bootstrap/solaris-x86_64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target linux-x86           && mv src/compiler/*.asm bootstrap/linux-x86
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target linux-x86_64        && mv src/compiler/*.c   bootstrap/linux-x86_64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target cygwin-x86_64       && mv src/compiler/*.c   bootstrap/cygwin-x86_64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target win32               && mv src/compiler/*.asm bootstrap/win32
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target win64               && mv src/compiler/*.c   bootstrap/win64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target linux-arm           && mv src/compiler/*.c   bootstrap/linux-arm
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target linux-aarch64       && mv src/compiler/*.c   bootstrap/linux-aarch64
 
 	# Ensure to have LFs regardless of host system (LFs will probably work
 	# on DOS/Win32, but CRLFs could cause issues on Linux)

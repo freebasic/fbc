@@ -5,6 +5,8 @@ Version 1.10.2
 [added]
 fbc: add FB_CPUTYPE_ARMV6_FP for -march=armv6+fp
 fbc: add FB_CPUTYPE_ARMV7A_FP for -march=armv7-a+fp
+makefile: pass BOOTFBCFLAGS to bootstrap-dist target when making source boostrap
+makefile: add FBSHA1 to BOOTFBCFLAGS to allow setting fbc's sha-1 version in the bootstrap sources 
 
 [fixed]
 
