@@ -3,6 +3,8 @@ Version 1.10.2
 [changed]
 
 [added]
+fbc: add FB_CPUTYPE_ARMV6_FP for -march=armv6+fp
+fbc: add FB_CPUTYPE_ARMV7A_FP for -march=armv7-a+fp
 
 [fixed]
 

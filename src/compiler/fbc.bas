@@ -1510,7 +1510,9 @@ dim shared as FBGNUARCHINFO gnuarchmap(0 to ...) => _
 	(@"x86_64"     , FB_DEFAULT_CPUTYPE_X86_64 ), _
 	(@"amd64"      , FB_DEFAULT_CPUTYPE_X86_64 ), _
 	(@"armv6"      , FB_CPUTYPE_ARMV6          ), _
+	(@"armv6+fp"   , FB_CPUTYPE_ARMV6_FP       ), _
 	(@"armv7a"     , FB_CPUTYPE_ARMV7A         ), _
+	(@"armv7a+fp"  , FB_CPUTYPE_ARMV7A_FP      ), _
 	(@"arm"        , FB_DEFAULT_CPUTYPE_ARM    ), _
 	(@"aarch64"    , FB_DEFAULT_CPUTYPE_AARCH64), _
 	(@"ppc"        , FB_DEFAULT_CPUTYPE_PPC    ), _
