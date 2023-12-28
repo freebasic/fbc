@@ -106,6 +106,8 @@
 #                    build tools have different file naming than the target to build (i.e. cross compiling)
 #   DISABLE_GAS64_DEBUG    use "-d DISABLE_GAS64_DEBUG" (see below)
 #   DISABLE_STDCXX_PATH    tells fbc to not search for some libstdc++/libc++ depending on target platform
+#   DEFAULT_CPUTYPE_X86=<FB_CPUTYPE>    set default x86 cpu type to one of FB_CPU_TYPE
+#   DEFAULT_CPUTYPE_ARM=<FB_CPUTYPE>    set default arm cpu type to one of FB_CPUTYPE
 # compiler source code configuration (FBCFLAGS, FBLFLAGS):
 #   -d ENABLE_STANDALONE     build for a self-contained installation
 #   -d ENABLE_SUFFIX=-0.24   assume FB's lib dir uses the given suffix (non-standalone only)
@@ -115,6 +117,8 @@
 #   -d FBSHA1=some-sha-1     store 'some-sha-1' in the compiler for version information
 #   -d DISABLE_GAS64_DEBUG   disable gas64 debugging comments in asm files even if __FB_DEBUG__ is defined (-g)
 #   -d DISABLE_STDCXX_PATH    tells fbc to not search for some libstdc++/libc++ depending on target platform
+#   -d BUILD_FB_DEFAULT_CPUTYPE_X86=<FB_CPUTYPE>    set default x86 cpu type to one of FB_CPUTYPE
+#   -d BUILD_FB_DEFAULT_CPUTYPE_ARM=<FB_CPUTYPE>    set default arm cpu type to one of FB_CPUTYPE
 #
 # internal makefile configuration (but can override):
 #   libsubdir       override the library directory - default is set depending on TARGET
@@ -583,6 +587,15 @@ endif
 ifdef DISABLE_GAS64_DEBUG
   ALLFBCFLAGS += -d DISABLE_GAS64_DEBUG
 endif
+ifdef DEFAULT_CPUTYPE_X86
+  ALLFBCFLAGS += -d BUILD_FB_DEFAULT_CPUTYPE_X86=$(DEFAULT_CPUTYPE_X86)
+  BOOTFBCFLAGS += -d BUILD_FB_DEFAULT_CPUTYPE_X86=$(DEFAULT_CPUTYPE_X86)
+endif
+ifdef DEFAULT_CPUTYPE_ARM
+  ALLFBCFLAGS += -d BUILD_FB_DEFAULT_CPUTYPE_ARM=$(DEFAULT_CPUTYPE_ARM)
+  BOOTFBCFLAGS += -d BUILD_FB_DEFAULT_CPUTYPE_ARM=$(DEFAULT_CPUTYPE_ARM)
+endif
+
 ifdef DISABLE_STDCXX_PATH
   ALLFBCFLAGS += -d DISABLE_STDCXX_PATH
 endif
