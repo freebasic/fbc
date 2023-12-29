@@ -2,7 +2,7 @@
 ''
 '' based on the C header files:
 ''   BASS 2.4 C/C++ header file
-''   Copyright (c) 1999-2019 Un4seen Developments Ltd.
+''   Copyright (c) 1999-2022 Un4seen Developments Ltd.
 ''
 ''   See the BASS.CHM file for more detailed documentation
 ''
@@ -33,13 +33,16 @@
 
 #if defined(__FB_DOS__) or defined(__FB_UNIX__)
 	#include once "crt/stdint.bi"
+
 	'' The following symbols have been renamed:
 	''     constant TRUE => CTRUE
-#elseif defined(__FB_WIN32__)
-	#include once "win/wtypes.bi"
+#elseif defined(__FB_WIN32__) and defined(__FB_64BIT__)
+	#include once "wtypes.bi"
 #endif
 
-#ifdef __FB_WIN32__
+#if defined(__FB_WIN32__) and (not defined(__FB_64BIT__))
+	#include once "wtypes.bi"
+
 	extern "Windows-MS"
 #else
 	extern "C"
@@ -58,9 +61,6 @@ type QWORD as ulongint
 	type BOOL as long
 	#ifndef CTRUE
 		const CTRUE = 1
-	#endif
-	#ifndef TRUE
-		const TRUE = 1
 	#endif
 	#ifndef FALSE
 		const FALSE = 0
@@ -92,6 +92,7 @@ const BASS_ERROR_POSITION = 7
 const BASS_ERROR_INIT = 8
 const BASS_ERROR_START = 9
 const BASS_ERROR_SSL = 10
+const BASS_ERROR_REINIT = 11
 const BASS_ERROR_ALREADY = 14
 const BASS_ERROR_NOTAUDIO = 17
 const BASS_ERROR_NOCHAN = 18
@@ -119,6 +120,8 @@ const BASS_ERROR_CODEC = 44
 const BASS_ERROR_ENDED = 45
 const BASS_ERROR_BUSY = 46
 const BASS_ERROR_UNSTREAMABLE = 47
+const BASS_ERROR_PROTOCOL = 48
+const BASS_ERROR_DENIED = 49
 const BASS_ERROR_UNKNOWN = -1
 const BASS_CONFIG_BUFFER = 0
 const BASS_CONFIG_UPDATEPERIOD = 1
@@ -170,19 +173,32 @@ const BASS_CONFIG_ANDROID_SESSIONID = 62
 const BASS_CONFIG_WASAPI_PERSIST = 65
 const BASS_CONFIG_REC_WASAPI = 66
 const BASS_CONFIG_ANDROID_AAUDIO = 67
+const BASS_CONFIG_SAMPLE_ONEHANDLE = 69
+const BASS_CONFIG_NET_META = 71
+const BASS_CONFIG_NET_RESTRATE = 72
+const BASS_CONFIG_REC_DEFAULT = 73
+const BASS_CONFIG_NORAMP = 74
 const BASS_CONFIG_NET_AGENT = 16
 const BASS_CONFIG_NET_PROXY = 17
 const BASS_CONFIG_IOS_NOTIFY = 46
+const BASS_CONFIG_ANDROID_JAVAVM = 63
 const BASS_CONFIG_LIBSSL = 64
+const BASS_CONFIG_FILENAME = 75
+const BASS_CONFIG_THREAD = &h40000000
 const BASS_IOS_SESSION_MIX = 1
 const BASS_IOS_SESSION_DUCK = 2
 const BASS_IOS_SESSION_AMBIENT = 4
 const BASS_IOS_SESSION_SPEAKER = 8
 const BASS_IOS_SESSION_DISABLE = 16
+const BASS_IOS_SESSION_DEACTIVATE = 32
+const BASS_IOS_SESSION_AIRPLAY = 64
+const BASS_IOS_SESSION_BTHFP = 128
+const BASS_IOS_SESSION_BTA2DP = &h100
 const BASS_DEVICE_8BITS = 1
 const BASS_DEVICE_MONO = 2
 const BASS_DEVICE_3D = 4
 const BASS_DEVICE_16BITS = 8
+const BASS_DEVICE_REINIT = 128
 const BASS_DEVICE_LATENCY = &h100
 const BASS_DEVICE_CPSPEAKERS = &h400
 const BASS_DEVICE_SPEAKERS = &h800
@@ -193,6 +209,7 @@ const BASS_DEVICE_STEREO = &h8000
 const BASS_DEVICE_HOG = &h10000
 const BASS_DEVICE_AUDIOTRACK = &h20000
 const BASS_DEVICE_DSOUND = &h40000
+const BASS_DEVICE_SOFTWARE = &h80000
 const BASS_OBJECT_DS = 1
 const BASS_OBJECT_DS3DL = 2
 
@@ -206,6 +223,7 @@ const BASS_DEVICE_ENABLED = 1
 const BASS_DEVICE_DEFAULT = 2
 const BASS_DEVICE_INIT = 4
 const BASS_DEVICE_LOOPBACK = 8
+const BASS_DEVICE_DEFAULTCOM = 128
 const BASS_DEVICE_TYPE_MASK = &hff000000
 const BASS_DEVICE_TYPE_NETWORK = &h01000000
 const BASS_DEVICE_TYPE_SPEAKERS = &h02000000
@@ -237,13 +255,9 @@ type BASS_INFO
 	freq as DWORD
 end type
 
-const DSCAPS_CONTINUOUSRATE = &h00000010
 const DSCAPS_EMULDRIVER = &h00000020
 const DSCAPS_CERTIFIED = &h00000040
-const DSCAPS_SECONDARYMONO = &h00000100
-const DSCAPS_SECONDARYSTEREO = &h00000200
-const DSCAPS_SECONDARY8BIT = &h00000400
-const DSCAPS_SECONDARY16BIT = &h00000800
+const DSCAPS_HARDWARE = &h80000000
 
 type BASS_RECORDINFO
 	flags as DWORD
@@ -336,7 +350,7 @@ const BASS_MUSIC_NOSAMPLE = &h100000
 const BASS_SPEAKER_FRONT = &h1000000
 const BASS_SPEAKER_REAR = &h2000000
 const BASS_SPEAKER_CENLFE = &h3000000
-const BASS_SPEAKER_REAR2 = &h4000000
+const BASS_SPEAKER_SIDE = &h4000000
 #define BASS_SPEAKER_N(n) ((n) shl 24)
 const BASS_SPEAKER_LEFT = &h10000000
 const BASS_SPEAKER_RIGHT = &h20000000
@@ -346,13 +360,16 @@ const BASS_SPEAKER_REARLEFT = BASS_SPEAKER_REAR or BASS_SPEAKER_LEFT
 const BASS_SPEAKER_REARRIGHT = BASS_SPEAKER_REAR or BASS_SPEAKER_RIGHT
 const BASS_SPEAKER_CENTER = BASS_SPEAKER_CENLFE or BASS_SPEAKER_LEFT
 const BASS_SPEAKER_LFE = BASS_SPEAKER_CENLFE or BASS_SPEAKER_RIGHT
-const BASS_SPEAKER_REAR2LEFT = BASS_SPEAKER_REAR2 or BASS_SPEAKER_LEFT
-const BASS_SPEAKER_REAR2RIGHT = BASS_SPEAKER_REAR2 or BASS_SPEAKER_RIGHT
+const BASS_SPEAKER_SIDELEFT = BASS_SPEAKER_SIDE or BASS_SPEAKER_LEFT
+const BASS_SPEAKER_SIDERIGHT = BASS_SPEAKER_SIDE or BASS_SPEAKER_RIGHT
+const BASS_SPEAKER_REAR2 = BASS_SPEAKER_SIDE
+const BASS_SPEAKER_REAR2LEFT = BASS_SPEAKER_SIDELEFT
+const BASS_SPEAKER_REAR2RIGHT = BASS_SPEAKER_SIDERIGHT
 const BASS_ASYNCFILE = &h40000000
 const BASS_UNICODE = &h80000000
-const BASS_RECORD_PAUSE = &h8000
 const BASS_RECORD_ECHOCANCEL = &h2000
 const BASS_RECORD_AGC = &h4000
+const BASS_RECORD_PAUSE = &h8000
 const BASS_VAM_HARDWARE = 1
 const BASS_VAM_SOFTWARE = 2
 const BASS_VAM_TERM_TIME = 4
@@ -383,6 +400,7 @@ const BASS_CTYPE_STREAM_AIFF = &h10006
 const BASS_CTYPE_STREAM_CA = &h10007
 const BASS_CTYPE_STREAM_MF = &h10008
 const BASS_CTYPE_STREAM_AM = &h10009
+const BASS_CTYPE_STREAM_SAMPLE = &h1000a
 const BASS_CTYPE_STREAM_DUMMY = &h18000
 const BASS_CTYPE_STREAM_DEVICE = &h18001
 const BASS_CTYPE_STREAM_WAV = &h40000
@@ -394,6 +412,7 @@ const BASS_CTYPE_MUSIC_S3M = &h20002
 const BASS_CTYPE_MUSIC_XM = &h20003
 const BASS_CTYPE_MUSIC_IT = &h20004
 const BASS_CTYPE_MUSIC_MO3 = &h00100
+const BASS_PLUGIN_PROC = 1
 
 type BASS_PLUGINFORM
 	ctype as DWORD
@@ -420,64 +439,8 @@ const BASS_3DALG_DEFAULT = 0
 const BASS_3DALG_OFF = 1
 const BASS_3DALG_FULL = 2
 const BASS_3DALG_LIGHT = 3
-
-enum
-	EAX_ENVIRONMENT_GENERIC
-	EAX_ENVIRONMENT_PADDEDCELL
-	EAX_ENVIRONMENT_ROOM
-	EAX_ENVIRONMENT_BATHROOM
-	EAX_ENVIRONMENT_LIVINGROOM
-	EAX_ENVIRONMENT_STONEROOM
-	EAX_ENVIRONMENT_AUDITORIUM
-	EAX_ENVIRONMENT_CONCERTHALL
-	EAX_ENVIRONMENT_CAVE
-	EAX_ENVIRONMENT_ARENA
-	EAX_ENVIRONMENT_HANGAR
-	EAX_ENVIRONMENT_CARPETEDHALLWAY
-	EAX_ENVIRONMENT_HALLWAY
-	EAX_ENVIRONMENT_STONECORRIDOR
-	EAX_ENVIRONMENT_ALLEY
-	EAX_ENVIRONMENT_FOREST
-	EAX_ENVIRONMENT_CITY
-	EAX_ENVIRONMENT_MOUNTAINS
-	EAX_ENVIRONMENT_QUARRY
-	EAX_ENVIRONMENT_PLAIN
-	EAX_ENVIRONMENT_PARKINGLOT
-	EAX_ENVIRONMENT_SEWERPIPE
-	EAX_ENVIRONMENT_UNDERWATER
-	EAX_ENVIRONMENT_DRUGGED
-	EAX_ENVIRONMENT_DIZZY
-	EAX_ENVIRONMENT_PSYCHOTIC
-	EAX_ENVIRONMENT_COUNT
-end enum
-
-'' TODO: #define EAX_PRESET_GENERIC EAX_ENVIRONMENT_GENERIC,0.5F,1.493F,0.5F
-'' TODO: #define EAX_PRESET_PADDEDCELL EAX_ENVIRONMENT_PADDEDCELL,0.25F,0.1F,0.0F
-'' TODO: #define EAX_PRESET_ROOM EAX_ENVIRONMENT_ROOM,0.417F,0.4F,0.666F
-'' TODO: #define EAX_PRESET_BATHROOM EAX_ENVIRONMENT_BATHROOM,0.653F,1.499F,0.166F
-'' TODO: #define EAX_PRESET_LIVINGROOM EAX_ENVIRONMENT_LIVINGROOM,0.208F,0.478F,0.0F
-'' TODO: #define EAX_PRESET_STONEROOM EAX_ENVIRONMENT_STONEROOM,0.5F,2.309F,0.888F
-'' TODO: #define EAX_PRESET_AUDITORIUM EAX_ENVIRONMENT_AUDITORIUM,0.403F,4.279F,0.5F
-'' TODO: #define EAX_PRESET_CONCERTHALL EAX_ENVIRONMENT_CONCERTHALL,0.5F,3.961F,0.5F
-'' TODO: #define EAX_PRESET_CAVE EAX_ENVIRONMENT_CAVE,0.5F,2.886F,1.304F
-'' TODO: #define EAX_PRESET_ARENA EAX_ENVIRONMENT_ARENA,0.361F,7.284F,0.332F
-'' TODO: #define EAX_PRESET_HANGAR EAX_ENVIRONMENT_HANGAR,0.5F,10.0F,0.3F
-'' TODO: #define EAX_PRESET_CARPETEDHALLWAY EAX_ENVIRONMENT_CARPETEDHALLWAY,0.153F,0.259F,2.0F
-'' TODO: #define EAX_PRESET_HALLWAY EAX_ENVIRONMENT_HALLWAY,0.361F,1.493F,0.0F
-'' TODO: #define EAX_PRESET_STONECORRIDOR EAX_ENVIRONMENT_STONECORRIDOR,0.444F,2.697F,0.638F
-'' TODO: #define EAX_PRESET_ALLEY EAX_ENVIRONMENT_ALLEY,0.25F,1.752F,0.776F
-'' TODO: #define EAX_PRESET_FOREST EAX_ENVIRONMENT_FOREST,0.111F,3.145F,0.472F
-'' TODO: #define EAX_PRESET_CITY EAX_ENVIRONMENT_CITY,0.111F,2.767F,0.224F
-'' TODO: #define EAX_PRESET_MOUNTAINS EAX_ENVIRONMENT_MOUNTAINS,0.194F,7.841F,0.472F
-'' TODO: #define EAX_PRESET_QUARRY EAX_ENVIRONMENT_QUARRY,1.0F,1.499F,0.5F
-'' TODO: #define EAX_PRESET_PLAIN EAX_ENVIRONMENT_PLAIN,0.097F,2.767F,0.224F
-'' TODO: #define EAX_PRESET_PARKINGLOT EAX_ENVIRONMENT_PARKINGLOT,0.208F,1.652F,1.5F
-'' TODO: #define EAX_PRESET_SEWERPIPE EAX_ENVIRONMENT_SEWERPIPE,0.652F,2.886F,0.25F
-'' TODO: #define EAX_PRESET_UNDERWATER EAX_ENVIRONMENT_UNDERWATER,1.0F,1.499F,0.0F
-'' TODO: #define EAX_PRESET_DRUGGED EAX_ENVIRONMENT_DRUGGED,0.875F,8.392F,1.388F
-'' TODO: #define EAX_PRESET_DIZZY EAX_ENVIRONMENT_DIZZY,0.139F,17.234F,0.666F
-'' TODO: #define EAX_PRESET_PSYCHOTIC EAX_ENVIRONMENT_PSYCHOTIC,0.486F,7.563F,0.806F
-
+const BASS_SAMCHAN_NEW = 1
+const BASS_SAMCHAN_STREAM = 2
 const BASS_STREAMPROC_END = &h80000000
 const STREAMPROC_DUMMY = cptr(function(byval handle as HSTREAM, byval buffer as any ptr, byval length as DWORD, byval user as any ptr) as DWORD, 0)
 const STREAMPROC_PUSH = cptr(function(byval handle as HSTREAM, byval buffer as any ptr, byval length as DWORD, byval user as any ptr) as DWORD, -1)
@@ -506,6 +469,7 @@ const BASS_FILEPOS_SOCKET = 6
 const BASS_FILEPOS_ASYNCBUF = 7
 const BASS_FILEPOS_SIZE = 8
 const BASS_FILEPOS_BUFFERING = 9
+const BASS_FILEPOS_AVAILABLE = 10
 const BASS_SYNC_POS = 0
 const BASS_SYNC_END = 2
 const BASS_SYNC_META = 4
@@ -542,6 +506,12 @@ const BASS_ATTRIB_NORAMP = 11
 const BASS_ATTRIB_BITRATE = 12
 const BASS_ATTRIB_BUFFER = 13
 const BASS_ATTRIB_GRANULE = 14
+const BASS_ATTRIB_USER = 15
+const BASS_ATTRIB_TAIL = 16
+const BASS_ATTRIB_PUSH_LIMIT = 17
+const BASS_ATTRIB_DOWNLOADPROC = 18
+const BASS_ATTRIB_VOLDSP = 19
+const BASS_ATTRIB_VOLDSP_PRIORITY = 20
 const BASS_ATTRIB_MUSIC_AMPLIFY = &h100
 const BASS_ATTRIB_MUSIC_PANSEP = &h101
 const BASS_ATTRIB_MUSIC_PSCALER = &h102
@@ -553,6 +523,7 @@ const BASS_ATTRIB_MUSIC_VOL_CHAN = &h200
 const BASS_ATTRIB_MUSIC_VOL_INST = &h300
 const BASS_SLIDE_LOG = &h1000000
 const BASS_DATA_AVAILABLE = 0
+const BASS_DATA_NOREMOVE = &h10000000
 const BASS_DATA_FIXED = &h20000000
 const BASS_DATA_FLOAT = &h40000000
 const BASS_DATA_FFT256 = &h80000000
@@ -572,6 +543,7 @@ const BASS_LEVEL_MONO = 1
 const BASS_LEVEL_STEREO = 2
 const BASS_LEVEL_RMS = 4
 const BASS_LEVEL_VOLPAN = 8
+const BASS_LEVEL_NOREMOVE = 16
 const BASS_TAG_ID3 = 0
 const BASS_TAG_ID3V2 = 1
 const BASS_TAG_OGG = 2
@@ -586,8 +558,10 @@ const BASS_TAG_LYRICS3 = 10
 const BASS_TAG_CA_CODEC = 11
 const BASS_TAG_MF = 13
 const BASS_TAG_WAVEFORMAT = 14
-const BASS_TAG_AM_MIME = 15
 const BASS_TAG_AM_NAME = 16
+const BASS_TAG_ID3V2_2 = 17
+const BASS_TAG_AM_MIME = 18
+const BASS_TAG_LOCATION = 19
 const BASS_TAG_RIFF_INFO = &h100
 const BASS_TAG_RIFF_BEXT = &h101
 const BASS_TAG_RIFF_CART = &h102
@@ -600,6 +574,7 @@ const BASS_TAG_MUSIC_MESSAGE = &h10001
 const BASS_TAG_MUSIC_ORDERS = &h10002
 const BASS_TAG_MUSIC_AUTH = &h10003
 const BASS_TAG_MUSIC_INST = &h10100
+const BASS_TAG_MUSIC_CHAN = &h10200
 const BASS_TAG_MUSIC_SAMPLE = &h10300
 
 type TAG_ID3
@@ -723,6 +698,9 @@ end type
 const BASS_POS_BYTE = 0
 const BASS_POS_MUSIC_ORDER = 1
 const BASS_POS_OGG = 3
+const BASS_POS_END = &h10
+const BASS_POS_LOOP = &h11
+const BASS_POS_FLUSH = &h1000000
 const BASS_POS_RESET = &h2000000
 const BASS_POS_RELATIVE = &h4000000
 const BASS_POS_INEXACT = &h8000000
@@ -851,50 +829,43 @@ const BASS_IOSNOTIFY_INTERRUPT_END = 2
 declare function BASS_SetConfig(byval option as DWORD, byval value as DWORD) as BOOL
 declare function BASS_GetConfig(byval option as DWORD) as DWORD
 declare function BASS_SetConfigPtr(byval option as DWORD, byval value as const any ptr) as BOOL
-declare function BASS_GetConfigPtr(byval option as DWORD) as any ptr
+declare function BASS_GetConfigPtr(byval option as DWORD) as const any ptr
 declare function BASS_GetVersion() as DWORD
 declare function BASS_ErrorGetCode() as long
 declare function BASS_GetDeviceInfo(byval device as DWORD, byval info as BASS_DEVICEINFO ptr) as BOOL
 
 #ifdef __FB_WIN32__
-	declare function BASS_Init(byval device as long, byval freq as DWORD, byval flags as DWORD, byval win as HWND, byval dsguid as const GUID ptr) as BOOL
+	declare function BASS_Init(byval device as long, byval freq as DWORD, byval flags as DWORD, byval win as HWND, byval dsguid as const any ptr) as BOOL
 #else
-	declare function BASS_Init(byval device as long, byval freq as DWORD, byval flags as DWORD, byval win as any ptr, byval dsguid as any ptr) as BOOL
+	declare function BASS_Init(byval device as long, byval freq as DWORD, byval flags as DWORD, byval win as any ptr, byval dsguid as const any ptr) as BOOL
 #endif
 
+declare function BASS_Free() as BOOL
 declare function BASS_SetDevice(byval device as DWORD) as BOOL
 declare function BASS_GetDevice() as DWORD
-declare function BASS_Free() as BOOL
+declare function BASS_GetInfo(byval info as BASS_INFO ptr) as BOOL
+declare function BASS_Start() as BOOL
+declare function BASS_Stop() as BOOL
+declare function BASS_Pause() as BOOL
+declare function BASS_IsStarted() as DWORD
+declare function BASS_Update(byval length as DWORD) as BOOL
+declare function BASS_GetCPU() as single
+declare function BASS_SetVolume(byval volume as single) as BOOL
+declare function BASS_GetVolume() as single
 
 #ifdef __FB_WIN32__
 	declare function BASS_GetDSoundObject(byval object as DWORD) as any ptr
 #endif
 
-declare function BASS_GetInfo(byval info as BASS_INFO ptr) as BOOL
-declare function BASS_Update(byval length as DWORD) as BOOL
-declare function BASS_GetCPU() as single
-declare function BASS_Start() as BOOL
-declare function BASS_Stop() as BOOL
-declare function BASS_Pause() as BOOL
-declare function BASS_IsStarted() as BOOL
-declare function BASS_SetVolume(byval volume as single) as BOOL
-declare function BASS_GetVolume() as single
-declare function BASS_PluginLoad(byval file as const zstring ptr, byval flags as DWORD) as HPLUGIN
-declare function BASS_PluginFree(byval handle as HPLUGIN) as BOOL
-declare function BASS_PluginGetInfo(byval handle as HPLUGIN) as const BASS_PLUGININFO ptr
 declare function BASS_Set3DFactors(byval distf as single, byval rollf as single, byval doppf as single) as BOOL
 declare function BASS_Get3DFactors(byval distf as single ptr, byval rollf as single ptr, byval doppf as single ptr) as BOOL
 declare function BASS_Set3DPosition(byval pos as const BASS_3DVECTOR ptr, byval vel as const BASS_3DVECTOR ptr, byval front as const BASS_3DVECTOR ptr, byval top as const BASS_3DVECTOR ptr) as BOOL
 declare function BASS_Get3DPosition(byval pos as BASS_3DVECTOR ptr, byval vel as BASS_3DVECTOR ptr, byval front as BASS_3DVECTOR ptr, byval top as BASS_3DVECTOR ptr) as BOOL
 declare sub BASS_Apply3D()
-
-#ifdef __FB_WIN32__
-	declare function BASS_SetEAXParameters(byval env as long, byval vol as single, byval decay as single, byval damp as single) as BOOL
-	declare function BASS_GetEAXParameters(byval env as DWORD ptr, byval vol as single ptr, byval decay as single ptr, byval damp as single ptr) as BOOL
-#endif
-
-declare function BASS_MusicLoad(byval mem as BOOL, byval file as const zstring ptr, byval offset as QWORD, byval length as DWORD, byval flags as DWORD, byval freq as DWORD) as HMUSIC
-declare function BASS_MusicFree(byval handle as HMUSIC) as BOOL
+declare function BASS_PluginLoad(byval file as const zstring ptr, byval flags as DWORD) as HPLUGIN
+declare function BASS_PluginFree(byval handle as HPLUGIN) as BOOL
+declare function BASS_PluginEnable(byval handle as HPLUGIN, byval enable as BOOL) as BOOL
+declare function BASS_PluginGetInfo(byval handle as HPLUGIN) as const BASS_PLUGININFO ptr
 declare function BASS_SampleLoad(byval mem as BOOL, byval file as const any ptr, byval offset as QWORD, byval length as DWORD, byval max as DWORD, byval flags as DWORD) as HSAMPLE
 declare function BASS_SampleCreate(byval length as DWORD, byval freq as DWORD, byval chans as DWORD, byval max as DWORD, byval flags as DWORD) as HSAMPLE
 declare function BASS_SampleFree(byval handle as HSAMPLE) as BOOL
@@ -902,7 +873,7 @@ declare function BASS_SampleSetData(byval handle as HSAMPLE, byval buffer as con
 declare function BASS_SampleGetData(byval handle as HSAMPLE, byval buffer as any ptr) as BOOL
 declare function BASS_SampleGetInfo(byval handle as HSAMPLE, byval info as BASS_SAMPLE ptr) as BOOL
 declare function BASS_SampleSetInfo(byval handle as HSAMPLE, byval info as const BASS_SAMPLE ptr) as BOOL
-declare function BASS_SampleGetChannel(byval handle as HSAMPLE, byval onlynew as BOOL) as HCHANNEL
+declare function BASS_SampleGetChannel(byval handle as HSAMPLE, byval flags as DWORD) as DWORD
 declare function BASS_SampleGetChannels(byval handle as HSAMPLE, byval channels as HCHANNEL ptr) as DWORD
 declare function BASS_SampleStop(byval handle as HSAMPLE) as BOOL
 declare function BASS_StreamCreate(byval freq as DWORD, byval chans as DWORD, byval flags as DWORD, byval proc as function(byval handle as HSTREAM, byval buffer as any ptr, byval length as DWORD, byval user as any ptr) as DWORD, byval user as any ptr) as HSTREAM
@@ -913,11 +884,13 @@ declare function BASS_StreamFree(byval handle as HSTREAM) as BOOL
 declare function BASS_StreamGetFilePosition(byval handle as HSTREAM, byval mode as DWORD) as QWORD
 declare function BASS_StreamPutData(byval handle as HSTREAM, byval buffer as const any ptr, byval length as DWORD) as DWORD
 declare function BASS_StreamPutFileData(byval handle as HSTREAM, byval buffer as const any ptr, byval length as DWORD) as DWORD
+declare function BASS_MusicLoad(byval mem as BOOL, byval file as const zstring ptr, byval offset as QWORD, byval length as DWORD, byval flags as DWORD, byval freq as DWORD) as HMUSIC
+declare function BASS_MusicFree(byval handle as HMUSIC) as BOOL
 declare function BASS_RecordGetDeviceInfo(byval device as DWORD, byval info as BASS_DEVICEINFO ptr) as BOOL
 declare function BASS_RecordInit(byval device as long) as BOOL
+declare function BASS_RecordFree() as BOOL
 declare function BASS_RecordSetDevice(byval device as DWORD) as BOOL
 declare function BASS_RecordGetDevice() as DWORD
-declare function BASS_RecordFree() as BOOL
 declare function BASS_RecordGetInfo(byval info as BASS_RECORDINFO ptr) as BOOL
 declare function BASS_RecordGetInputName(byval input as long) as const zstring ptr
 declare function BASS_RecordSetInput(byval input as long, byval flags as DWORD, byval volume as single) as BOOL
@@ -931,11 +904,13 @@ declare function BASS_ChannelIsActive(byval handle as DWORD) as DWORD
 declare function BASS_ChannelGetInfo(byval handle as DWORD, byval info as BASS_CHANNELINFO ptr) as BOOL
 declare function BASS_ChannelGetTags(byval handle as DWORD, byval tags as DWORD) as const zstring ptr
 declare function BASS_ChannelFlags(byval handle as DWORD, byval flags as DWORD, byval mask as DWORD) as DWORD
-declare function BASS_ChannelUpdate(byval handle as DWORD, byval length as DWORD) as BOOL
 declare function BASS_ChannelLock(byval handle as DWORD, byval lock as BOOL) as BOOL
+declare function BASS_ChannelFree(byval handle as DWORD) as BOOL
 declare function BASS_ChannelPlay(byval handle as DWORD, byval restart as BOOL) as BOOL
+declare function BASS_ChannelStart(byval handle as DWORD) as BOOL
 declare function BASS_ChannelStop(byval handle as DWORD) as BOOL
 declare function BASS_ChannelPause(byval handle as DWORD) as BOOL
+declare function BASS_ChannelUpdate(byval handle as DWORD, byval length as DWORD) as BOOL
 declare function BASS_ChannelSetAttribute(byval handle as DWORD, byval attrib as DWORD, byval value as single) as BOOL
 declare function BASS_ChannelGetAttribute(byval handle as DWORD, byval attrib as DWORD, byval value as single ptr) as BOOL
 declare function BASS_ChannelSlideAttribute(byval handle as DWORD, byval attrib as DWORD, byval value as single, byval time as DWORD) as BOOL
@@ -954,15 +929,15 @@ declare function BASS_ChannelGetLevelEx(byval handle as DWORD, byval levels as s
 declare function BASS_ChannelGetData(byval handle as DWORD, byval buffer as any ptr, byval length as DWORD) as DWORD
 declare function BASS_ChannelSetSync(byval handle as DWORD, byval type as DWORD, byval param as QWORD, byval proc as sub(byval handle as HSYNC, byval channel as DWORD, byval data as DWORD, byval user as any ptr), byval user as any ptr) as HSYNC
 declare function BASS_ChannelRemoveSync(byval handle as DWORD, byval sync as HSYNC) as BOOL
-declare function BASS_ChannelSetDSP(byval handle as DWORD, byval proc as sub(byval handle as HDSP, byval channel as DWORD, byval buffer as any ptr, byval length as DWORD, byval user as any ptr), byval user as any ptr, byval priority as long) as HDSP
-declare function BASS_ChannelRemoveDSP(byval handle as DWORD, byval dsp as HDSP) as BOOL
 declare function BASS_ChannelSetLink(byval handle as DWORD, byval chan as DWORD) as BOOL
 declare function BASS_ChannelRemoveLink(byval handle as DWORD, byval chan as DWORD) as BOOL
+declare function BASS_ChannelSetDSP(byval handle as DWORD, byval proc as sub(byval handle as HDSP, byval channel as DWORD, byval buffer as any ptr, byval length as DWORD, byval user as any ptr), byval user as any ptr, byval priority as long) as HDSP
+declare function BASS_ChannelRemoveDSP(byval handle as DWORD, byval dsp as HDSP) as BOOL
 declare function BASS_ChannelSetFX(byval handle as DWORD, byval type as DWORD, byval priority as long) as HFX
 declare function BASS_ChannelRemoveFX(byval handle as DWORD, byval fx as HFX) as BOOL
 declare function BASS_FXSetParameters(byval handle as HFX, byval params as const any ptr) as BOOL
 declare function BASS_FXGetParameters(byval handle as HFX, byval params as any ptr) as BOOL
-declare function BASS_FXReset(byval handle as HFX) as BOOL
 declare function BASS_FXSetPriority(byval handle as HFX, byval priority as long) as BOOL
+declare function BASS_FXReset(byval handle as DWORD) as BOOL
 
 end extern

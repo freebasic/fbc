@@ -16,6 +16,7 @@ fbc: BUILD_FB_DEFAULT_CPUTYPE_ARM to set FB_DEFAULT_CPUTYPE_ARM in source code; 
 makefile: add bootstrap-dist-arm to make ARM/AARCH64 only bootstrap-source-arm package (convenience for different build requirements and not building every source bootstrap target)
 
 [fixed]
+- updated bindings: BASS to 2.4.17.0
 
 
 Version 1.10.1
