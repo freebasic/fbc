@@ -789,6 +789,16 @@ private sub check_optim(byref code as string)
 				code="#16"+code+newline+string( ctx.indent*3, 32 )+instruc+" "+part1+", "+prevpart2+" #Optim 16"
 				part2=prevpart2
 
+			elseif prevpart2[0]>=asc("0") andalso prevpart2[0]<=asc("9") andalso instr(prevpart1,"[") andalso part1[0]<>asc("x") then
+				''mov -40[rbp], 89
+				''mov r11, -40[rbp] --> mov r11, 89 (no memory access) and if value is zero changed by xor r11, r11
+				writepos=len(ctx.proc_txt)+len(code)+9
+				if prevpart2[0]=asc("0") and len(prevpart2)=1 then
+					code="#20"+code+newline+string( ctx.indent*3, 32 )+"xor "+part1+", "+part1+" #Optim 20"
+				else
+					code="#19"+code+newline+string( ctx.indent*3, 32 )+instruc+" "+part1+", "+prevpart2+" #Optim 19"
+					part2=prevpart2
+				end if
 			end if
 		end if
 	end if
