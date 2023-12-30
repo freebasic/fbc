@@ -118,20 +118,21 @@ FBCALL FBSTRING *fb_hStrRealloc( FBSTRING *str, ssize_t size, int preserve )
 		}
 		else
 		{
-			char *pszOld = str->data;
-			str->data = (char *)realloc( pszOld, newsize + 1 );
+			char *newbuffer;
+			newbuffer = (char *)realloc( str->data, newsize + 1 );
+
 			/* failed? try the original request */
-			if( str->data == NULL )
+			if( newbuffer == NULL )
 			{
-				str->data = (char *)realloc( pszOld, size + 1 );
 				newsize = size;
-				if( str->data == NULL )
+				newbuffer = (char *)realloc( str->data, newsize + 1 );
+				if( newbuffer == NULL )
 				{
-					/* restore the old memory block */
-					str->data = pszOld;
 					return NULL;
 				}
 			}
+			newsize = size;
+			str->data = newbuffer;
 		}
 
 		if( str->data == NULL )
