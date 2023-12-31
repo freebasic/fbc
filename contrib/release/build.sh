@@ -64,7 +64,7 @@
 #       -gcc-7.1.0r0        (mingw-w64 project)
 #       -gcc-7.1.0r2        (mingw-w64 project)
 #       -gcc-7.3.0          (mingw-w64 project)
-#       -gcc-8.1.0          (mingw-w64 project)
+#     * -gcc-8.1.0          (mingw-w64 project)
 #     * -gcc-11.2.0         (mingw-w64 project)
 #       -gcc-12.2.0         (mingw-w64 project)
 #     * -winlibs-gcc-9.3.0  (winlibs mingwrt 7.0.0r3 - sjlj)
@@ -673,8 +673,17 @@ win64)
 esac
 
 # choose a bootstrap source for the target
+# - the minimum needed to build the current release
 case $fbtarget in
-linux-arm|linux-aarch64)
+linux-arm)
+	# - 1.10.2 for arm is a little weird because it depended on changes 
+	#   in fbc to make the 1.10.2 release work automatically and bootstrap
+	#   on debian 12 with gcc 12.  Could bootstrap from older versions
+	#   but it requires some manual intervention to set compile options
+	BUILD_BOOTFBCFLAGS=DEFAULT_CPUTYPE_ARM=FB_CPUTYPE_ARMV7A_FP
+	bootfb_title=FreeBASIC-1.10.2-$fbtarget
+	;;
+linux-aarch64)
 	bootfb_title=FreeBASIC-1.07.2-$fbtarget
 	;;
 *)
@@ -816,16 +825,16 @@ linuxbuild() {
 	echo
 	echo "bootstrapping normal fbc"
 	echo
-	make FBC=../$bootfb_title/bin/fbc FBSHA1=$FBSHA1
+	make FBC=../$bootfb_title/bin/fbc FBSHA1=$FBSHA1 $BUILD_BOOTFBCFLAGS
 	make install prefix=../tempinstall
 	echo
 	echo "rebuilding normal fbc"
 	echo
 	make clean-compiler
-	make FBC=../tempinstall/bin/fbc FBSHA1=$FBSHA1
+	make FBC=../tempinstall/bin/fbc FBSHA1=$FBSHA1 $BUILD_BOOTFBCFLAGS
 	cd ..
 
-	cd fbc && make bindist FBSHA1=$FBSHA1 && cd ..
+	cd fbc && make bindist FBSHA1=$FBSHA1 $BUILD_BOOTFBCFLAGS && cd ..
 	cp fbc/*.tar.* ../output
 	cp fbc/contrib/manifest/FreeBASIC-$fbtarget.lst ../output
 }
