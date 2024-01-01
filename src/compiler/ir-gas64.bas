@@ -693,7 +693,7 @@ private sub check_optim(byref code as string)
 			end if
 
 			''direct simple register ?
-			if prevpart2[0]=asc("r") and part1[3]<>asc("d") and part1[0]<>asc("e") then
+			if prevpart2[0]=asc("r") and right(part1,1)<>"d" and part1[0]<>asc("e") then
 				if instr(prevpart1,"[")<>0 then
 					'asm_info("OPTIMIZATION 2-1")
 					''skip comment
@@ -721,7 +721,7 @@ private sub check_optim(byref code as string)
 				if instr(prevpart1,"[")<>0 then
 					'asm_info("OPTIMIZATION 3-1")
 					''skip comment
-					if previnstruc="movss" then
+					if previnstruc="movss" orelse part1[0]=asc("e") orelse right(part1,1)="d" then
 						instruc="movd"
 					else
 						instruc="movq"
