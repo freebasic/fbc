@@ -209,7 +209,7 @@ clean_main_exe :
 clean_tests :
 	@$(ECHO) Cleaning unit-tests files ...
 	@$(RM) ./$(MAINBAS).o
-	@if [ -f $(UNIT_TESTS_OBJ_LST) ]; then $(CAT) $(UNIT_TESTS_OBJ_LST) | $(XARGS) -r $(RM) ; fi
+	@if [ -s $(UNIT_TESTS_OBJ_LST) ]; then $(CAT) $(UNIT_TESTS_OBJ_LST) | $(XARGS) $(RM) ; fi
 
 .PHONY: clean_fbcu
 clean_fbcu :

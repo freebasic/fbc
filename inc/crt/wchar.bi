@@ -24,6 +24,10 @@
 #include once "crt/freebsd/wchar.bi"
 #elseif defined(__FB_DOS__)
 #include once "crt/dos/wchar.bi"
+#elseif defined(__FB_DARWIN__)
+#include once "crt/linux/wchar.bi"
+#else
+#error Unsupported platform
 #endif
 
 extern "c"

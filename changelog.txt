@@ -26,6 +26,7 @@ Version 1.20.0
 - gfxlib2: added fb.GFX_NO_X86_MMX = &h00000100 constant to fbgfx.bi - when passed as flag to SCREEN[RES] disable MMX blitters on x86 32-bit 
 - gfxlib2: added fb.GET_X86_MMX_ENABLED = 18 constant to fbgfx.bi - used with ScreenControl to determine if MMX blitters are selected on x86 32 bit.  If returned value is non-zero, then MMX is enabled.  If zero, then MMX is disabled.  All other platforms return zero.
 - gfxlib2: added fb.SET_X86_MMX_ENABLED = 118 constant to fbgfx.bi - used with ScreenControl to specific if MMX blitters should be used on x86 32-bit.  Pass non-zero value to enable, and zero value to disable.  All other platforms ignore this setting 
+- darwin: inc/darwin (WIP) Use linux versions of various crt headers; can include crt.bi now
 
 [fixed]
 - github #410: give consistent floating point comparisons results involving NaNs.
