@@ -99,8 +99,8 @@ type FBCCTX
 #ifndef ENABLE_STANDALONE
 	target              as zstring * FB_MAXNAMELEN+1  '' Target system identifier (e.g. a name like "win32", or a GNU triplet) to prefix in front of cross-compiling tool names
 	targetprefix        as zstring * FB_MAXNAMELEN+1  '' same, but with "-" appended, if there was a target id given; otherwise empty.
-	sysroot             as zstring * FB_MAXPATHLEN+1
 #endif
+	sysroot             as zstring * FB_MAXPATHLEN+1
 	xbe_title           as zstring * FB_MAXNAMELEN+1  '' For the '-title <title>' xbox option
 	nodeflibs           as integer
 	staticlink          as integer
