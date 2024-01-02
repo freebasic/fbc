@@ -184,7 +184,6 @@ declare function hMakeParamDesc _
 		/'FB_ERRMSG_GENGASWITHOUTINTEL                 '/ @"-asm att used for -gen gas, but -gen gas only supports -asm intel", _
 		/'FB_ERRMSG_PICNOTSUPPORTEDFOREXE              '/ @"-pic used when making executable (only works when making a shared library)", _
 		/'FB_ERRMSG_PICNOTSUPPORTEDFORTARGET           '/ @"-pic used, but not supported by target system (only works for non-x86 Unixes)", _
-		/'FB_ERRMSG_GFXLIBNOTSUPPORTEDFORTARGET        '/ @"Graphics routines were used, but the gfxlib has not been ported to this target", _
 		/'FB_ERRMSG_CANTINITDYNAMICSTRINGS             '/ @"Var-len strings cannot be initialized", _
 		/'FB_ERRMSG_RECURSIVEUDT                       '/ @"Recursive TYPE or UNION not allowed", _
 		/'FB_ERRMSG_RECURSIVEMACRO                     '/ @"Recursive DEFINE not allowed", _
@@ -427,6 +426,7 @@ declare function hMakeParamDesc _
 		/'FB_ERRMSG_EXPECTEDCOMMAORSEMICOLON           '/ @"Expected ',' or ';'", _
 		/'FB_ERRMSG_EXPECTEDFILENUMBEREXPRESSION       '/ @"Expected file number expression", _
 		/'FB_ERRMSG_MALFORMEDSOURCEDATEEPOCH           '/ @"Malformed SOURCE_DATE_EPOCH environment variable", _
+		/'FB_ERRMSG_GFXLIBNOTSUPPORTEDFORTARGET        '/ @"Graphics routines were used, but the gfxlib has not been ported to this target", _
 		/'FB_ERRMSGS                                   '/ @"FB_ERRMSGS"  _
 	}
 
