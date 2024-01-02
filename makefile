@@ -38,9 +38,9 @@
 #     src/fbrt/*.bas -> src/fbrt/obj/$(FBTARGET)/*.o
 #     src/fbrt/*.bas -> src/fbrt/obj/$(FBTARGET)/mt/*.o
 #     combine missing object modules from:
-#     src/rtlib/obj/$(FBTARGET)/*.o -> src/fbrt/obj/$(FBTARGET)/*.o 
+#     src/rtlib/obj/$(FBTARGET)/*.o -> src/fbrt/obj/$(FBTARGET)/*.o
 #     src/rtlib/obj/$(FBTARGET)/mt/*.o -> src/fbrt/obj/$(FBTARGET)/mt/*.o
-#     -> libfbrt.a     
+#     -> libfbrt.a
 #     -> libfbrtmt.a
 #     -> libfbrtpic.a
 #     -> libfbrtmtpic.a
@@ -228,9 +228,9 @@ ifdef TARGET
     endif
     ifneq ($(filter emscripten%,$(triplet)),)
       TARGET_OS := js
-	  AS = llvm-as
-	  AR = emar
-	  CC = emcc
+      AS = llvm-as
+      AR = emar
+      CC = emcc
     endif
   endif
 
@@ -536,7 +536,7 @@ endif
 
 ifeq ($(TARGET_OS),darwin)
   ALLCFLAGS += -I/opt/X11/include -I/usr/include/ffi
-  
+
   ifdef ENABLE_XQUARTZ
     ALLFBCFLAGS += -d ENABLE_XQUARTZ
   else
@@ -776,10 +776,10 @@ $(libdir)/termlib_min.js: $(rootdir)lib/termlib_min.js
 
 $(libdir)/fb_rtlib.js: $(rootdir)lib/fb_rtlib.js
 	cp $< $@
-	
+
 $(libdir)/fb_shell.html: $(rootdir)lib/fb_shell.html
 	cp $< $@
-	
+
 $(libdir)/libfb.a: $(LIBFB_C) $(LIBFB_S)
 ifeq ($(TARGET_OS),dos)
   # Avoid hitting the command line length limit (the libfb.a ar command line
