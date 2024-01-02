@@ -432,7 +432,6 @@ const FB_DEFAULT_CPUTYPE_X86     = FB_CPUTYPE_686
 const FB_DEFAULT_CPUTYPE_X86_64  = FB_CPUTYPE_X86_64
 
 '' default ARM CPU
-'' A reasonable default for PCs, but on android is overridden to FB_CPUTYPE_ARMV5TE
 #ifdef BUILD_FB_DEFAULT_CPUTYPE_ARM
 const FB_DEFAULT_CPUTYPE_ARM     = BUILD_FB_DEFAULT_CPUTYPE_ARM
 #else
