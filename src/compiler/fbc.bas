@@ -367,7 +367,20 @@ private function fbcBuildPathToLibFile( byval file as zstring ptr ) as string
 
 	found = fbc.libpath + FB_HOST_PATHDIV + *file
 
-#ifndef ENABLE_STANDALONE
+	#ifdef ENABLE_STANDALONE
+	'' running a standalone version of fbc to build with android
+	'' ndk is not recommended, but if we are, try and query the
+	'' sysroot if it wasn't already supplied.  Otherwise
+	'' if with are running a standalone fbc, just return the
+	'' computed library file name if we didn't explicitly pass
+	'' in a -sysroot
+	if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_ANDROID ) then
+		if( len( fbc.sysroot ) = 0 ) then
+			return found
+		end if
+	end if
+	#endif
+
 	'' Does it exist in our lib/?
 	if( hFileExists( found ) ) then
 		'' Overrides anything else
@@ -403,7 +416,6 @@ private function fbcBuildPathToLibFile( byval file as zstring ptr ) as string
 	if( found = hStripPath( found ) ) then
 		exit function
 	end if
-#endif
 
 	function = found
 end function

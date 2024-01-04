@@ -32,6 +32,7 @@ Version 1.20.0
 - "-fpu neon" option for ARM archs (passed through to gcc).
 - -pic option (position-independent code) is now allowed on x86 (where it forces -gen gcc) and when building executables (in which case it passes -pie option to ld to produce position independent executables)
 - fbc: add '-sysroot <path>' command line option to specify the sysroot, needed by some cross-compiling toolchains
+- fbc: in fbc standalone version query gcc for library names when targetting android or -sysroot was passed explicitly to fbc
 
 [fixed]
 - github #410: give consistent floating point comparisons results involving NaNs.
