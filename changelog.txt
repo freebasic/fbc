@@ -27,6 +27,11 @@ Version 1.20.0
 - gfxlib2: added fb.GET_X86_MMX_ENABLED = 18 constant to fbgfx.bi - used with ScreenControl to determine if MMX blitters are selected on x86 32 bit.  If returned value is non-zero, then MMX is enabled.  If zero, then MMX is disabled.  All other platforms return zero.
 - gfxlib2: added fb.SET_X86_MMX_ENABLED = 118 constant to fbgfx.bi - used with ScreenControl to specific if MMX blitters should be used on x86 32-bit.  Pass non-zero value to enable, and zero value to disable.  All other platforms ignore this setting 
 - darwin: inc/darwin (WIP) Use linux versions of various crt headers; can include crt.bi now
+- Add "-arch armv5te" cpu type option, and several arch aliases: x86 (for 686), armeabi and armv5 (for armv5te), armv7 and armv7a (for armv7-a)
+- Android support. Commandline executables and shared/static libraries only; gfxlib (graphical/audio commands) and also console commands like "color" are not supported, nor does the android libc support locales for string<->wstring conversion. THREADCALL is also not enabled. The default target abi is armeabi; use arch=x86, arch=armv7a, or arch=aarch64 to target a different abi.
+- "-fpu neon" option for ARM archs (passed through to gcc).
+- -pic option (position-independent code) is now allowed on x86 (where it forces -gen gcc) and when building executables (in which case it passes -pie option to ld to produce position independent executables)
+- fbc: add '-sysroot <path>' command line option to specify the sysroot, needed by some cross-compiling toolchains
 
 [fixed]
 - github #410: give consistent floating point comparisons results involving NaNs.
@@ -45,6 +50,7 @@ Version 1.20.0
 - gfxlib2: Incorrect alpha blending in ALPHA put method - fix C implementation to avoid overflowing int type
 - rtlib: internal fb_LeftSelf( s, 0 ) was failing to reduce the string to a length of zero.
 - fbc: 64-bit builds of fbc didn't recognise UTF32-BE encoded source files
+- sf.net #659: Keep the stack 16-byte aligned on linux-x86, android-x86 and darwin-x86 to comply with ABI; fixes crashes when external libraries use SSE
 
 
 Version 1.10.2
@@ -299,7 +305,6 @@ Version 1.09.0
 - ./inc/fbc-int/array.bi - add fb.ArrayLen( array ) function to return total number of elements in an array
 - ./inc/fbc-int/array.bi - add fb.ArraySize( array ) function to return total size of an array in bytes
 - fbc: #pragma push( lookup108 ) to use symbol lookup method from fbc-1.08.x and earlier on unqualified symbol names
-- fbc: add '-sysroot <path>' command line option to specify the sysroot, needed by some cross-compiling toolchains
 
 [fixed]
 - github #315: set parameters when calling SCREENCONTROL (was broken in fbc 1.08.0 due to new LONG/LONGINT SCREENCONTROL API's)
@@ -579,10 +584,6 @@ Version 1.06.0
 - allow [static] shared byref variables to be initialized with byref variable
 - warning '-w constness' to enable 'CONST qualifier discarded' warning on command line
 - #pragma constness to enable/disable 'CONST qualifier discarded' warning in source code
-- Add "-arch armv5te" cpu type option, and several arch aliases: x86 (for 686), armeabi and armv5 (for armv5te), armv7 and armv7a (for armv7-a)
-- Android support. Commandline executables and shared/static libraries only; gfxlib (graphical/audio commands) and also console commands like "color" are not supported, nor does the android libc support locales for string<->wstring conversion. THREADCALL is also not enabled. The default target abi is armeabi; use arch=x86, arch=armv7a, or arch=aarch64 to target a different abi.
-- "-fpu neon" option for ARM archs (passed through to gcc).
-- -pic option (position-independent code) is now allowed on x86 (where it forces -gen gcc) and when building executables (in which case it passes -pie option to ld to produce position independent executables)
 
 [fixed]
 - win/d3dx9.bi no longer has a hard-coded #inclib "d3dx9d". d3dx9d.dll is apparently not a generally valid choice. In practice programs have to be linked against d3dx9_33.dll or d3dx9_39.dll, etc.
@@ -595,7 +596,7 @@ Version 1.06.0
 - TRE binding: Didn't compile with TRE_USE_SYSTEM_REGEX_H
 - LLVM backend: Emit the new (LLVM 3.7+) load-syntax
 - When compiling .rc files with windres instead of GoRC (happens with non-standalone fbc), the current directory is now an include search directory, to match the GoRC behaviour.
-- #659: Keep the stack 16-byte aligned on linux-x86, android-x86 and darwin-x86 to comply with ABI; fixes crashes when external libraries use SSE
+- #659: Keep the stack 16-byte aligned on linux-x86 and darwin-x86 to comply with ABI; fixes crashes when external libraries use SSE
 - On Windows, FB console input treated multiple repeated keypresses that were merged into one event by the system as a single keypress
 - Accesses to 64bit bitfields could be miscompiled or trigger a compiler crash
 - #732: Virtual destructors couldn't be called on const objects
