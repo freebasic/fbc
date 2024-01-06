@@ -772,7 +772,7 @@ private function hLinkFiles( ) as integer
 		'' Optional?
 		' select case( fbGetCpuFamily( ) )
 		' case FB_CPUFAMILY_X86
-		' 	ldcline += "-m elf_i386 "
+		'   ldcline += "-m elf_i386 "
 		' end select
 	case FB_COMPTARGET_DARWIN
 		select case( fbGetCpuFamily( ) )

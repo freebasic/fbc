@@ -454,7 +454,7 @@ sub errInit( )
 
 	'' sanity check that warningMsgs() and errorMsgs() are the correct length
 	assert( ubound(warningMsgs) = FB_WARNINGMSGS )
-	assert( *warningMsgs(FB_WARNINGMSGS).text = "FB_WARNINGMSGS" )  
+	assert( *warningMsgs(FB_WARNINGMSGS).text = "FB_WARNINGMSGS" )
 	assert( ubound(errorMsgs) = FB_ERRMSGS )
 	assert( *errorMsgs(FB_ERRMSGS) = "FB_ERRMSGS" )
 end sub
