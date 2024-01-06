@@ -772,16 +772,16 @@ $(libdir)/fbrt0pic.o: $(srcdir)/rtlib/static/fbrt0.c $(LIBFB_H) | $(libdir)
 	$(QUIET_CC)$(CC) -fPIC $(ALLCFLAGS) -c $< -o $@
 
 $(libdir)/libfb.a: $(LIBFB_C) $(LIBFB_S) | $(libdir)
-$(libdir)/termlib_min.js: $(rootdir)lib/termlib_min.js
+$(libdir)/termlib_min.js: $(rootdir)lib/termlib_min.js | $(libdir)
 	cp $< $@
 
-$(libdir)/fb_rtlib.js: $(rootdir)lib/fb_rtlib.js
+$(libdir)/fb_rtlib.js: $(rootdir)lib/fb_rtlib.js | $(libdir)
 	cp $< $@
 
-$(libdir)/fb_shell.html: $(rootdir)lib/fb_shell.html
+$(libdir)/fb_shell.html: $(rootdir)lib/fb_shell.html | $(libdir)
 	cp $< $@
 
-$(libdir)/libfb.a: $(LIBFB_C) $(LIBFB_S)
+$(libdir)/libfb.a: $(LIBFB_C) $(LIBFB_S) | $(libdir)
 ifeq ($(TARGET_OS),dos)
   # Avoid hitting the command line length limit (the libfb.a ar command line
   # is very long...)
@@ -842,7 +842,7 @@ endif
 .PHONY: fbrt
 fbrt: $(RTL_LIBS) $(FBRTL_LIBS)
 
-$(libdir)/libfbrt.a: $(LIBFBRT_BAS) $(LIBFBRT_S) $(LIBFBRT_C)
+$(libdir)/libfbrt.a: $(LIBFBRT_BAS) $(LIBFBRT_S) $(LIBFBRT_C) | $(libdir)
 ifeq ($(TARGET_OS),dos)
   # Avoid hitting the command line length limit (the libfbrt.a ar command line
   # is very long...)
