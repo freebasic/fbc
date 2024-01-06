@@ -71,7 +71,9 @@ int fb_ConsoleMultikey( int scancode )
 
 		for( i = 0; __fb_keytable[i][0]; i++ ) {
 			if( __fb_keytable[i][0] == scancode ) {
-				return ((GetAsyncKeyState(__fb_keytable[i][1]) | GetAsyncKeyState(__fb_keytable[i][2])) & 0x8000) ? FB_TRUE : FB_FALSE;
+				return ((GetAsyncKeyState(__fb_keytable[i][1])
+				| (__fb_keytable[i][2] ? GetAsyncKeyState(__fb_keytable[i][2]) : 0 ))
+				& 0x8000) ? FB_TRUE : FB_FALSE;
 			}
 		}
 	}

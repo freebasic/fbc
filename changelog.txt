@@ -53,6 +53,7 @@ Version 1.20.0
 - fbc: 64-bit builds of fbc didn't recognise UTF32-BE encoded source files
 - sf.net #659: Keep the stack 16-byte aligned on linux-x86, android-x86 and darwin-x86 to comply with ABI; fixes crashes when external libraries use SSE
 - rtlib: win32/win64: MULTIKEY() on consoles track console focus, remove the 'FindWindow' logic for console windows and handle FOCUS_EVENT message to track focus (adeyblue)
+- rtlib: win32/win64: MULTIKEY() always returns true; don't call GetAsyncKeyState(0), seem that in windows terminal, dragging a console tab out of the terminal window triggers key 0 and is never reset resulting in MULTIKEY() always returning true
 
 
 Version 1.10.2
