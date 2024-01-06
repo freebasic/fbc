@@ -2,6 +2,7 @@
 
 #include "../fb.h"
 #include <windows.h>
+#include "fb_private_console.h"
 
 const unsigned char __fb_keytable[][3] = {
 	{ SC_ESCAPE,    VK_ESCAPE,  0           },  { SC_1,         '1',        0           },
@@ -51,24 +52,6 @@ const unsigned char __fb_keytable[][3] = {
 	{ 0,            0,          0           }
 };
 
-static HWND find_window(void)
-{
-	TCHAR old_title[MAX_PATH];
-	TCHAR title[MAX_PATH];
-	static HWND hwnd = NULL;
-
-	if (hwnd)
-		return hwnd;
-
-	if (GetConsoleTitle(old_title, MAX_PATH)) {
-		sprintf(title, "_fb_console_title %f", fb_Timer());
-		SetConsoleTitle(title);
-		hwnd = FindWindow(NULL, title);
-		SetConsoleTitle(old_title);
-	}
-	return hwnd;
-}
-
 int fb_hVirtualToScancode(int vkey)
 {
 	int i;
@@ -79,46 +62,19 @@ int fb_hVirtualToScancode(int vkey)
 	return 0;
 }
 
-#if 0
-/* !!!TODO!!! need a way to find out if console is foreground in windows terminal */
-static int maybeDoFindWindow()
-{
-	static int inited = FB_FALSE;
-	static int do_find = FB_FALSE;
-	if( !inited )
-	{
-		OSVERSIONINFO info;
-		info.dwOSVersionInfoSize = sizeof(info);
-		GetVersionEx(&info);
-		if( ((info.dwMajorVersion << 8) | info.dwMinorVersion) <= 0x600 ) {
-			do_find = FB_TRUE;
-		}
-		inited = FB_TRUE;
-	}
-	return do_find;
-}
-#endif
-
 int fb_ConsoleMultikey( int scancode )
 {
-	int i;
+	fb_ConsoleProcessEvents();
 
-#if 1
-	/* !!!FIXME!!! this doesn't seem to work under windows terminal */
-	if ( find_window() != GetForegroundWindow() )
-		return FB_FALSE;
-#else
-	/* !!!TODO!!! need a way to find out if console is foreground in windows terminal */
-	if( maybeDoFindWindow() )
-	{
-		if ( find_window() != GetForegroundWindow() )
-			return FB_FALSE;
-	}
-#endif
+	if(fb_ConsoleHasFocus()) {
+		int i;
 
-	for( i = 0; __fb_keytable[i][0]; i++ ) {
-		if( __fb_keytable[i][0] == scancode ) {
-			return ((GetAsyncKeyState(__fb_keytable[i][1]) | GetAsyncKeyState(__fb_keytable[i][2])) & 0x8000) ? FB_TRUE : FB_FALSE;
+		for( i = 0; __fb_keytable[i][0]; i++ ) {
+			if( __fb_keytable[i][0] == scancode ) {
+				return ((GetAsyncKeyState(__fb_keytable[i][1])
+				| (__fb_keytable[i][2] ? GetAsyncKeyState(__fb_keytable[i][2]) : 0 ))
+				& 0x8000) ? FB_TRUE : FB_FALSE;
+			}
 		}
 	}
 	return FB_FALSE;

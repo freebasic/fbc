@@ -10,6 +10,7 @@ static size_t key_head = 0, key_tail = 0;
 static INPUT_RECORD input_events[KEY_BUFFER_LEN];
 static unsigned key_scratch_pad = 0;
 static int key_buffer_changed = FALSE;
+static int console_has_focus = TRUE;
 
 typedef struct _FB_KEY_CODES {
     unsigned short value_normal;
@@ -383,10 +384,15 @@ static void fb_hInitControlHandler( void )
     FB_UNLOCK();
 }
 
+int fb_ConsoleHasFocus( void )
+{
+    return console_has_focus;
+}
+
 int fb_ConsoleProcessEvents( void )
 {
     int got_event = FALSE;
-	INPUT_RECORD ir;
+    INPUT_RECORD ir;
     DWORD dwRead;
 
     fb_hInitControlHandler();
@@ -418,6 +424,9 @@ int fb_ConsoleProcessEvents( void )
                     got_event = TRUE;
                 }
                 break;
+            case FOCUS_EVENT:
+                console_has_focus = ir.Event.FocusEvent.bSetFocus;
+                break;
             }
 
             FB_UNLOCK();
@@ -425,7 +434,7 @@ int fb_ConsoleProcessEvents( void )
 
     } while( dwRead != 0 );
 
-	return got_event;
+    return got_event;
 }
 
 /** Translates an ASCII character, Virtual scan code and Virtual key code to
