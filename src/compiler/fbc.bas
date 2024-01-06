@@ -1021,6 +1021,12 @@ private function hLinkFiles( ) as integer
 
 	if( fbGetOption( FB_COMPOPT_PIC ) ) then
 		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE ) then
+			'' NOTE: For android 4.0-, user will need to pass in '-Wl -no-pie'
+			''       to override this default.
+			''       On android 4.1+ this is accepted, and on android 5.0+
+			''       is required. For android 4.0- this will probably link
+			''       but then segfault when executed on the device.
+
 			ldcline += " -pie"
 		else
 			'' Dynamic library: no flag needed
