@@ -20,7 +20,7 @@
 #   rtlib:
 #     src/rtlib/static/fbrt0.c
 #     -> fbrt0.o
-#     -> fbrt0pic.o, -fPIC version (non-x86 Linux etc.)
+#     -> fbrt0pic.o, -fPIC version (Unixes)
 #
 #     all *.c and *.s files in
 #     src/rtlib/
@@ -28,8 +28,8 @@
 #     src/rtlib/$(TARGET_ARCH)
 #     -> libfb.a
 #     -> libfbmt.a, -DENABLE_MT (threadsafe) version (except for DOS)
-#     -> libfbpic.a, -fPIC version (non-x86 Linux etc.)
-#     -> libfbmtpic.a, threadsafe and -fPIC (non-x86 Linux etc.)
+#     -> libfbpic.a, -fPIC version (Unixes)
+#     -> libfbmtpic.a, threadsafe and -fPIC (Unixes)
 #
 #     contrib/djgpp/libc/...
 #     -> libc.a, fixed libc for DOS/DJGPP (see contrib/djgpp/ for more info)
@@ -52,8 +52,8 @@
 #     src/gfxlib2/$(TARGET_ARCH)
 #     -> libfbgfx.a
 #     -> libfbgfxmt.a, -DENABLE_MT (threadsafe) version (except for DOS)
-#     -> libfbgfxpic.a, -fPIC version (non-x86 Linux etc.)
-#     -> libfbgfxmtpic.a, threadsafe and -fPIC (non-x86 Linux etc.)
+#     -> libfbgfxpic.a, -fPIC version (Unixes)
+#     -> libfbgfxmtpic.a, threadsafe and -fPIC (Unixes)
 #
 # commands:
 #
@@ -129,13 +129,17 @@
 # fbrt source code configuration (FBRTCFLAGS, FBRTLFLAGS)
 #
 # rtlib/gfxlib2 source code configuration (CFLAGS):
-#   -DDISABLE_X11    build without X11 headers (disables X11 gfx driver)
-#   -DDISABLE_GPM    build without gpm.h (disables GetMouse in the Linux terminal (TERM=linux),
-#                    although the TERM=xterm variant keeps working)
-#   -DDISABLE_FFI    build without ffi.h (disables ThreadCall)
-#   -DDISABLE_OPENGL build without OpenGL headers (disables OpenGL gfx drivers)
-#   -DDISABLE_FBDEV  build without Linux framebuffer device headers (disables Linux fbdev gfx driver)
-#   -DDISABLE_D3D10  build without DirectX 10 driver(disable D2D driver in windows)
+#   -DDISABLE_X11      build without X11 headers (disables X11 gfx driver)
+#   -DDISABLE_GPM      build without gpm.h (disables GetMouse in the Linux terminal (TERM=linux),
+#                      although the TERM=xterm variant keeps working)
+#   -DDISABLE_FFI      build without ffi.h (disables ThreadCall)
+#   -DDISABLE_OPENGL   build without OpenGL headers (disables OpenGL gfx drivers)
+#   -DDISABLE_FBDEV    build without Linux framebuffer device headers (disables Linux fbdev gfx driver)
+#   -DDISABLE_D3D10    build without DirectX 10 driver(disable D2D driver in windows)
+#   -DDISABLE_NCURSES  build without libtinfo or ncurses (disables console commands)
+#   -DDISABLE_LANGINFO build without locale info (affects Unix only; makes no difference unless you
+#                      call setlocale() manually). Does not remove setlocale(LC_CTYPE, "") call.
+#   -DDISABLE_WCHAR    build without wchar_t type or functions. wstring becomes ASCII only (fbc needs to match this).
 #
 # makefile variables may either be set on the make command line,
 # or (in a more permanent way) inside a 'config.mk' file before
@@ -201,7 +205,9 @@ ifdef TARGET
   endif
 
   ifndef TARGET_OS
-    ifneq ($(filter cygwin%,$(triplet)),)
+    ifneq ($(filter android%,$(triplet)),)
+      TARGET_OS := android
+    else ifneq ($(filter cygwin%,$(triplet)),)
       TARGET_OS := cygwin
     else ifneq ($(filter darwin%,$(triplet)),)
       TARGET_OS := darwin
@@ -214,6 +220,7 @@ ifdef TARGET
     else ifneq ($(filter dragonfly%,$(triplet)),)
       TARGET_OS := dragonfly
     else ifneq ($(filter linux%,$(triplet)),)
+      # GNU/Linux. arm-linux-androideabi is not.
       TARGET_OS := linux
     else ifneq ($(filter mingw%,$(triplet)),)
       TARGET_OS := win32
@@ -371,12 +378,14 @@ else
   FB_LDSCRIPT := fbextra.x
 endif
 
-# ENABLE_PIC for non-x86 Linux etc. (for every system where we need separate
-# -fPIC versions of FB libs besides the normal ones)
-ifneq ($(filter freebsd dragonfly linux netbsd openbsd solaris,$(TARGET_OS)),)
-  ifneq ($(TARGET_ARCH),x86)
-    ENABLE_PIC := YesPlease
-  endif
+# ENABLE_PIC for every system where we need separate
+# -fPIC versions of FB libs besides the normal ones
+ifneq ($(filter android freebsd dragonfly freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+  ENABLE_PIC := YesPlease
+endif
+ifneq ($(TARGET_OS),android)
+  # Everything is PIC on Android by default, so don't produce two sets of libraries
+  ENABLE_NONPIC := YesPlease
 endif
 
 # disable .ident directive on windows targets
@@ -489,7 +498,9 @@ ifdef MULTILIB
   ALLFBLFLAGS += -arch $(MULTILIB)
   ALLFBRTCFLAGS += -arch $(MULTILIB)
   ALLFBRTLFLAGS += -arch $(MULTILIB)
-  ALLCFLAGS   += -m$(MULTILIB)
+  ifneq ($(TARGET_ARCH),arm)
+    ALLCFLAGS += -m$(MULTILIB)
+  endif
 endif
 
 ALLFBCFLAGS += -e -m fbc -w pedantic
@@ -501,6 +512,18 @@ ALLCFLAGS += -Wall -Wextra -Wno-unused-parameter -Werror-implicit-function-decla
 ifneq ($(filter bootstrap-minimal, $(MAKECMDGOALS)),)
   # Disable features not needed to compile a minimal bootstrap fbc
   ALLCFLAGS += -DDISABLE_GPM -DDISABLE_FFI -DDISABLE_X11
+endif
+
+ifeq ($(TARGET_OS),dos)
+  ALLCFLAGS += -DDISABLE_WCHAR -DDISABLE_FFI
+endif
+
+ifeq ($(TARGET_OS),android)
+  # These aren't available
+  # Android has very limited locale support in the NDK -- only the C locale is supported.
+  # Locale information is available from Java. The CrystaX alternative NDK has locale support.
+
+  ALLCFLAGS += -DDISABLE_NCURSES -DDISABLE_X11 -DDISABLE_FFI -DDISABLE_LANGINFO
 endif
 
 ifeq ($(TARGET_OS),xbox)
@@ -617,7 +640,7 @@ RTLIB_DIRS := $(srcdir)/rtlib $(srcdir)/rtlib/$(TARGET_OS) $(srcdir)/rtlib/$(TAR
 ifeq ($(TARGET_OS),cygwin)
   RTLIB_DIRS += $(srcdir)/rtlib/win32
 endif
-ifneq ($(filter darwin freebsd dragonfly linux netbsd openbsd solaris,$(TARGET_OS)),)
+ifneq ($(filter android darwin freebsd dragonfly linux netbsd openbsd solaris,$(TARGET_OS)),)
   RTLIB_DIRS += $(srcdir)/rtlib/unix
 endif
 GFXLIB2_DIRS := $(patsubst $(srcdir)/rtlib%,$(srcdir)/gfxlib2%,$(RTLIB_DIRS))
@@ -635,9 +658,11 @@ LIBFB_H := $(sort $(foreach i,$(RTLIB_DIRS),$(wildcard $(i)/*.h)))
 LIBFB_C := $(sort $(foreach i,$(RTLIB_DIRS),$(patsubst $(i)/%.c,$(libfbobjdir)/%.o,$(wildcard $(i)/*.c))))
 LIBFB_S := $(sort $(foreach i,$(RTLIB_DIRS),$(patsubst $(i)/%.s,$(libfbobjdir)/%.o,$(wildcard $(i)/*.s))))
 LIBFBPIC_C   := $(patsubst $(libfbobjdir)/%,$(libfbpicobjdir)/%,$(LIBFB_C))
+LIBFBPIC_S   := $(patsubst $(libfbobjdir)/%,$(libfbpicobjdir)/%,$(LIBFB_S))
 LIBFBMT_C    := $(patsubst $(libfbobjdir)/%,$(libfbmtobjdir)/%,$(LIBFB_C))
 LIBFBMT_S    := $(patsubst $(libfbobjdir)/%,$(libfbmtobjdir)/%,$(LIBFB_S))
 LIBFBMTPIC_C := $(patsubst $(libfbobjdir)/%,$(libfbmtpicobjdir)/%,$(LIBFB_C))
+LIBFBMTPIC_S := $(patsubst $(libfbobjdir)/%,$(libfbmtpicobjdir)/%,$(LIBFB_S))
 
 # LIBFBRT_BI     - src/fbrt/*.bi - include files
 # LIBFBRT_BAS    - src/fbrt/obj/<target>/*.o files sourced from *.bas
@@ -670,18 +695,24 @@ LIBFBGFXMT_C    := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtobjdir)/%,$(LIBFBG
 LIBFBGFXMT_S    := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtobjdir)/%,$(LIBFBGFX_S))
 LIBFBGFXMTPIC_C := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtpicobjdir)/%,$(LIBFBGFX_C))
 
-RTL_LIBS := $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a
-FBRTL_LIBS := $(libdir)/libfbrt.a
-GFX_LIBS := $(libdir)/libfbgfx.a
+
+RTL_LIBS := $(libdir)/$(FB_LDSCRIPT)
+ifdef ENABLE_NONPIC
+  RTL_LIBS += $(libdir)/fbrt0.o $(libdir)/libfb.a
+  FBRTL_LIBS += $(libdir)/libfbrt.a
+  GFX_LIBS += $(libdir)/libfbgfx.a
+endif
 ifdef ENABLE_PIC
   RTL_LIBS += $(libdir)/fbrt0pic.o $(libdir)/libfbpic.a
   FBRTL_LIBS += $(libdir)/libfbrtpic.a
   GFX_LIBS += $(libdir)/libfbgfxpic.a
 endif
 ifndef DISABLE_MT
-  RTL_LIBS += $(libdir)/libfbmt.a
-  FBRTL_LIBS += $(libdir)/libfbrtmt.a
-  GFX_LIBS += $(libdir)/libfbgfxmt.a
+  ifdef ENABLE_NONPIC
+    RTL_LIBS += $(libdir)/libfbmt.a
+    FBRTL_LIBS += $(libdir)/libfbrtmt.a
+    GFX_LIBS += $(libdir)/libfbgfxmt.a
+  endif
   ifdef ENABLE_PIC
     RTL_LIBS += $(libdir)/libfbmtpic.a
     FBRTL_LIBS += $(libdir)/libfbrtmtpic.a
@@ -797,10 +828,12 @@ $(LIBFB_C): $(libfbobjdir)/%.o: %.c $(LIBFB_H) | $(libfbobjdir)
 $(LIBFB_S): $(libfbobjdir)/%.o: %.s $(LIBFB_H) | $(libfbobjdir)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
-$(libdir)/libfbpic.a: $(LIBFBPIC_C) | $(libdir)
+$(libdir)/libfbpic.a: $(LIBFBPIC_C) $(LIBFBPIC_S) | $(libdir)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
 $(LIBFBPIC_C): $(libfbpicobjdir)/%.o: %.c $(LIBFB_H) | $(libfbpicobjdir)
 	$(QUIET_CC)$(CC) -fPIC $(ALLCFLAGS) -c $< -o $@
+$(LIBFBPIC_S): $(libfbpicobjdir)/%.o: %.s $(LIBFB_H) | $(libfbpicobjdir)
+	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp -DENABLE_PIC $(ALLCFLAGS) -c $< -o $@
 
 $(libdir)/libfbmt.a: $(LIBFBMT_C) $(LIBFBMT_S) | $(libdir)
 ifeq ($(TARGET_OS),dos)
@@ -819,10 +852,12 @@ $(LIBFBMT_C): $(libfbmtobjdir)/%.o: %.c $(LIBFB_H) | $(libfbmtobjdir)
 $(LIBFBMT_S): $(libfbmtobjdir)/%.o: %.s $(LIBFB_H) | $(libfbmtobjdir)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
-$(libdir)/libfbmtpic.a: $(LIBFBMTPIC_C) | $(libdir)
+$(libdir)/libfbmtpic.a: $(LIBFBMTPIC_C) $(LIBFBMTPIC_S) | $(libdir)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
 $(LIBFBMTPIC_C): $(libfbmtpicobjdir)/%.o: %.c $(LIBFB_H) | $(libfbmtpicobjdir)
 	$(QUIET_CC)$(CC) -DENABLE_MT -fPIC $(ALLCFLAGS) -c $< -o $@
+$(LIBFBMTPIC_S): $(libfbmtpicobjdir)/%.o: %.s $(LIBFB_H) | $(libfbmtpicobjdir)
+	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp -DENABLE_MT -DENABLE_PIC $(ALLCFLAGS) -c $< -o $@
 
 ifeq ($(TARGET_OS),dos)
 djgpplibc := $(shell $(CC) -print-file-name=libc.a)

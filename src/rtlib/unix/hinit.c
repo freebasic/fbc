@@ -7,7 +7,9 @@
 #include "fb_private_console.h"
 #include "../fb_private_thread.h"
 #include <signal.h>
+#ifndef DISABLE_NCURSES
 #include <termcap.h>
+#endif
 
 #if defined HOST_LINUX && (defined HOST_X86 || defined HOST_X86_64)
 	/*
@@ -31,6 +33,7 @@ FBCONSOLE __fb_con;
 typedef void (*SIGHANDLER)(int);
 static SIGHANDLER old_sighandler[NSIG];
 static volatile sig_atomic_t __fb_console_resized;
+#ifndef DISABLE_NCURSES
 static const char *seq[] = {
 	"cm", /* SEQ_LOCATE        */
 	"ho", /* SEQ_HOME          */
@@ -50,6 +53,7 @@ static const char *seq[] = {
 	"ks", /* SEQ_INIT_KEYPAD   */
 	"ke", /* SEQ_EXIT_KEYPAD   */
 };
+#endif
 
 static pthread_t __fb_bg_thread;
 static int bgthread_inited = FALSE;
@@ -268,6 +272,10 @@ static void sigwinch_handler(int sig)
 
 int fb_hTermOut( int code, int param1, int param2 )
 {
+#ifdef DISABLE_NCURSES
+	/* Never output escape sequences. */
+	return FALSE;
+#else
 	/* Hard-coded VT100 terminal escape sequences corresponding to our SEQ_*
 	   #defines with values >= 100. Apparently these codes are not available
 	   through termcap/terminfo (tgetstr()), so we need to hard-code them.
@@ -290,8 +298,6 @@ int fb_hTermOut( int code, int param1, int param2 )
 		"\e[H\e[J\e[0m",      /* SEQ_EXIT_GFX_MODE */
 	};
 
-	char *str;
-
 	if (!__fb_con.inited)
 		return FALSE;
 
@@ -312,18 +318,26 @@ int fb_hTermOut( int code, int param1, int param2 )
 			break;
 		}
 	} else {
+#ifdef DISABLE_NCURSES
+		/* if (code == SEQ_FG_COLOR) */
+		/* 	puts() */
+		/* else */
+#else
 		if (!__fb_con.seq[code])
 			return FALSE;
+		char *str;
 		str = tgoto(__fb_con.seq[code], param1, param2);
 		if (!str)
 			return FALSE;
 		tputs(str, 1, putchar);
+#endif
 	}
 
 	/* Ensure the terminal gets to see the escape sequence */
 	fflush( stdout );
 
 	return TRUE;
+#endif
 }
 
 /**
@@ -546,11 +560,14 @@ void fb_hExitConsole( void )
 static void hInit( void )
 {
 	const int sigs[] = { SIGABRT, SIGFPE, SIGILL, SIGSEGV, SIGTERM, SIGINT, SIGQUIT, -1 };
-	char buffer[2048], *p, *term;
+#ifndef DISABLE_NCURSES
+	char buffer[2048], *p;
 	struct termios tty;
-    int i;
+#endif
+	char *term;
+	int i;
 
-    pthread_mutexattr_t attr;
+	pthread_mutexattr_t attr;
 
 #if defined(__GNUC__) && defined(__i386__)
 	unsigned int control_word;
@@ -579,6 +596,17 @@ static void hInit( void )
 
 	memset(&__fb_con, 0, sizeof(__fb_con));
 
+#ifdef DISABLE_NCURSES
+	
+	term = getenv("TERM");
+	if (!term)
+		term = "console";
+	// Allow initialisation continue, aside from loading terminal control codes.
+	
+	/* for (i = 0; i < SEQ_MAX; i++) */
+	/* 	__fb_con.seq[i] = vt100_codes[i]; */
+#else
+
 	/* Init termcap */
 	term = getenv("TERM");
 	if ((!term) || (tgetent(buffer, term) <= 0))
@@ -593,6 +621,7 @@ static void hInit( void )
 		return;
 	for (i = 0; i < SEQ_MAX; i++)
 		__fb_con.seq[i] = tgetstr((char*)seq[i], NULL);
+#endif
 
 	/* !!!TODO!!! detect other OS consoles? (freebsd: 'cons25', etc?) */
 	if ((!strcmp(term, "console")) || (!strncmp(term, "linux", 5)))
@@ -649,7 +678,8 @@ void fb_hInit( void )
 	hInit( );
 
 #if defined HOST_LINUX && (defined HOST_X86 || defined HOST_X86_64)
-	/* Permissions for port I/O */
+	/* Permissions for port I/O
+	   (Android has the syscall but no libc wrapper) */
 	__fb_con.has_perm = ioperm(0, 0x400, 1) ? FALSE : TRUE;
 #endif
 }

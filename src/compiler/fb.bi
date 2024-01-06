@@ -163,6 +163,7 @@ enum FB_CPUTYPE
 	FB_CPUTYPE_PENTIUM4
 	FB_CPUTYPE_PENTIUMSSE3
 	FB_CPUTYPE_X86_64
+	FB_CPUTYPE_ARMV5TE
 	FB_CPUTYPE_ARMV6
 	FB_CPUTYPE_ARMV6_FP
 	FB_CPUTYPE_ARMV7A
@@ -191,6 +192,7 @@ end enum
 enum FB_FPUTYPE
 	FB_FPUTYPE_FPU
 	FB_FPUTYPE_SSE
+	FB_FPUTYPE_NEON
 end enum
 
 '' floating-point modes
@@ -226,6 +228,7 @@ enum FB_COMPTARGET
 	FB_COMPTARGET_WIN32
 	FB_COMPTARGET_CYGWIN
 	FB_COMPTARGET_LINUX
+	FB_COMPTARGET_ANDROID
 	FB_COMPTARGET_DOS
 	FB_COMPTARGET_XBOX
 	FB_COMPTARGET_FREEBSD
@@ -396,6 +399,10 @@ const FB_DEFAULT_TARGET     = FB_COMPTARGET_DARWIN
 const FB_HOST_EXEEXT        = ""
 const FB_HOST_PATHDIV       = "/"
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_NETBSD
+#elseif defined(__FB_ANDROID__)
+const FB_HOST_EXEEXT        = ""
+const FB_HOST_PATHDIV       = "/"
+const FB_DEFAULT_TARGET     = FB_COMPTARGET_ANDROID
 #else
 #error Unsupported host
 #endif
@@ -544,8 +551,8 @@ declare sub fbOverrideFilename(byval filename as zstring ptr)
 declare function fbGetTargetId( ) as string
 declare function fbGetHostId( ) as string
 declare function fbIdentifyOs( byref osid as string ) as integer
-declare function fbIdentifyCpuFamily( byref osid as string ) as integer
-declare function fbCpuTypeFromCpuFamilyId( byref cpufamilyid as string ) as integer
+declare function fbIdentifyCpuFamily( byref cpufamilyid as string ) as integer
+declare function fbDefaultCpuTypeFromCpuFamilyId( byval os as integer, byref cpufamilyid as string ) as integer
 declare function fbGetGccArch( ) as zstring ptr
 declare function fbGetFbcArch( ) as zstring ptr
 declare function fbIs64Bit( ) as integer

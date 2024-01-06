@@ -21,7 +21,7 @@
 
 #include "fb.h"
 
-#if defined DISABLE_FFI || defined HOST_DOS || (!defined HOST_X86 && !defined HOST_X86_64)
+#if defined DISABLE_FFI || (!defined HOST_X86 && !defined HOST_X86_64)
 
 FBTHREAD *fb_ThreadCall( void *proc, int abi, ssize_t stack_size, int num_args, ... )
 {

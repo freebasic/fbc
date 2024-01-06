@@ -2224,11 +2224,19 @@ private sub hBuildWstrLit _
 
 	dim as integer ch = any
 	dim as integer wcharsize = any
+	dim as zstring ptr strstart = any
 
 	'' (ditto)
 
-	ln += "L"""
 	wcharsize = typeGetSize( FB_DATATYPE_WCHAR )
+	'' On android wstring is 1 byte but C wide strings/chars are 4 bytes, so don't use them
+	if( wcharsize = 1 ) then
+		strstart = @""""
+	else
+		strstart = @"L"""
+	end if
+
+	ln += *strstart
 
 	'' Don't bother emitting the null terminator explicitly - gcc will add
 	'' it automatically already
@@ -2238,7 +2246,7 @@ private sub hBuildWstrLit _
 		if( hCharNeedsEscaping( ch, asc( """" ) ) ) then
 			ln += $"\x" + hex( ch, wcharsize * 2 )
 			if( hIsValidHexDigit( (*w)[i+1] ) ) then
-				ln += """ L"""
+				ln += """ " + *strstart
 			end if
 		elseif( ch = asc( "?" ) ) then
 			ln += "?"
@@ -2248,7 +2256,7 @@ private sub hBuildWstrLit _
 				case asc( "=" ), asc( "/" ), asc( "'" ), _
 				     asc( "(" ), asc( ")" ), asc( "!" ), _
 				     asc( "<" ), asc( ">" ), asc( "-" )
-					ln += """ L"""
+					ln += """ " + *strstart
 				end select
 			end if
 		else
@@ -3677,7 +3685,15 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 			select case( fbGetCpuFamily( ) )
 			case FB_CPUFAMILY_X86, FB_CPUFAMILY_X86_64
 				if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
-					ln += ", ""eax"", ""ebx"", ""ecx"", ""edx"", ""edi"", ""esi"""
+					if( env.clopt.pic ) then
+						'' ebx is the fixed-purpose PIC register. GCC versions before 5.0
+						'' throw an error if you declare that it is clobbered, so we don't do
+						'' that. GCC 5 has rewritten PIC register handling and can now save and
+						'' restore ebx.
+						ln += ", ""eax"", ""ecx"", ""edx"", ""edi"", ""esi"""
+					else
+						ln += ", ""eax"", ""ebx"", ""ecx"", ""edx"", ""edi"", ""esi"""
+					end if
 				else
 					ln += ", ""rax"", ""rbx"", ""rcx"", ""rdx"", ""rdi"", ""rsi"""
 					ln += ", ""r8"", ""r9"", ""r10"", ""r11"", ""r12"", ""r13"", ""r14"", ""r15"""
@@ -3852,7 +3868,12 @@ private sub _emitVarIniWstr _
 			ctx.varini += ", "
 		end if
 
-		ctx.varini += "L'"
+		'' On android wstring is 1 byte but C wide strings/chars are 4 bytes, so don't use them
+		if( wcharsize = 1 ) then
+			ctx.varini += "'"
+		else
+			ctx.varini += "L'"
+		end if
 
 		ch = (*literal)[i]
 

@@ -93,6 +93,7 @@ declare function hMakeParamDesc _
 		( /'FB_WARNINGMSG_EXPECTEDDIGIT             '/ 1, @"Expected digit" ), _
 		( /'FB_WARNINGMSG_UPCASTDISCARDSINITIALIZER '/ 1, @"Up-casting discards initializer(s)" ), _
 		( /'FB_WARNINGMSG_BYREFTEMPVAR              '/ 2, @"Suspicious address expression passed to BYREF parameter" ), _
+		( /'FB_WARNINGMSG_MISSINGANDROIDSYSROOT     '/ 1, @"GCC didn't provide a proper sysroot. You probably have to pass fbc an argument of the form '-sysroot $NDK/platforms/android-$API/arch-$ARCH'" ), _
 		( /'FB_WARNINGMSGS                          '/ 0, @"FB_WARNINGMSGS" ) _
 	}
 
@@ -182,8 +183,8 @@ declare function hMakeParamDesc _
 		/'FB_ERRMSG_DOSWITHNONX86                      '/ @"Selected non-x86 CPU when compiling for DOS", _
 		/'FB_ERRMSG_GENGASWITHNONX86                   '/ @"Selected -gen gas|gas64 ASM backend is incompatible with CPU", _
 		/'FB_ERRMSG_GENGASWITHOUTINTEL                 '/ @"-asm att used for -gen gas, but -gen gas only supports -asm intel", _
-		/'FB_ERRMSG_PICNOTSUPPORTEDFOREXE              '/ @"-pic used when making executable (only works when making a shared library)", _
-		/'FB_ERRMSG_PICNOTSUPPORTEDFORTARGET           '/ @"-pic used, but not supported by target system (only works for non-x86 Unixes)", _
+		/'FB_ERRMSG_GENGASWITHPIC                      '/ @"-pic is not supported with -gen gas", _
+		/'FB_ERRMSG_PICNOTSUPPORTEDFORTARGET           '/ @"-pic used, but not supported by target system (only works for Unixes)", _
 		/'FB_ERRMSG_CANTINITDYNAMICSTRINGS             '/ @"Var-len strings cannot be initialized", _
 		/'FB_ERRMSG_RECURSIVEUDT                       '/ @"Recursive TYPE or UNION not allowed", _
 		/'FB_ERRMSG_RECURSIVEMACRO                     '/ @"Recursive DEFINE not allowed", _
@@ -426,6 +427,9 @@ declare function hMakeParamDesc _
 		/'FB_ERRMSG_EXPECTEDCOMMAORSEMICOLON           '/ @"Expected ',' or ';'", _
 		/'FB_ERRMSG_EXPECTEDFILENUMBEREXPRESSION       '/ @"Expected file number expression", _
 		/'FB_ERRMSG_MALFORMEDSOURCEDATEEPOCH           '/ @"Malformed SOURCE_DATE_EPOCH environment variable", _
+		/'FB_ERRMSG_GFXLIBNOTSUPPORTEDFORTARGET        '/ @"Graphics routines were used, but the gfxlib has not been ported to this target", _
+		/' FB_ERRMSG_SSEREQUIRESX86                    '/ @"-fpu sse option can only be used on x86 and x86_64 architectures", _
+		/' FB_ERRMSG_NEONREQUIRESARM                   '/ @"-fpu neon option can only be used on arm architectures", _
 		/'FB_ERRMSGS                                   '/ @"FB_ERRMSGS"  _
 	}
 
@@ -450,7 +454,7 @@ sub errInit( )
 
 	'' sanity check that warningMsgs() and errorMsgs() are the correct length
 	assert( ubound(warningMsgs) = FB_WARNINGMSGS )
-	assert( *warningMsgs(FB_WARNINGMSGS).text = "FB_WARNINGMSGS" )  
+	assert( *warningMsgs(FB_WARNINGMSGS).text = "FB_WARNINGMSGS" )
 	assert( ubound(errorMsgs) = FB_ERRMSGS )
 	assert( *errorMsgs(FB_ERRMSGS) = "FB_ERRMSGS" )
 end sub

@@ -15,7 +15,8 @@ FBCALL double fb_FileDateTime( const char *filename )
 #endif
 		return 0.0;
 
-	struct tm *tm = localtime( &buf.st_mtime );
+	time_t t = buf.st_mtime;
+	struct tm *tm = localtime( &t );
 	if( tm == NULL )
 		return 0.0;
 

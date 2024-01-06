@@ -24,7 +24,7 @@ type ptrdiff_t as integer
 #endif
 
 #ifndef wchar_t
-#ifdef __FB_DOS__
+#if defined(__FB_DOS__) or defined(__FB_ANDROID__)
 	type wchar_t as ubyte
 #elseif defined( __FB_WIN32__ ) or defined( __FB_CYGWIN__ )
 	type wchar_t as ushort

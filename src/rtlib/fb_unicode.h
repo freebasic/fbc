@@ -16,7 +16,7 @@ typedef uint8_t  UTF_8;
 #define UTF16_HALFBASE           ((UTF_32)0x0010000UL)
 #define UTF16_HALFMASK           ((UTF_32)0x3FFUL)
 
-#if defined HOST_DOS
+#ifdef DISABLE_WCHAR
 #	include <ctype.h>
 #	define FB_WCHAR char
 #	define _LC(c) c
@@ -81,6 +81,32 @@ typedef uint8_t  UTF_8;
 #	define FB_WCHAR wchar_t
 #	define _LC(c) L ## c
 #	define FB_WEOF ((FB_WCHAR)WEOF)
+#endif
+
+#ifdef HOST_ANDROID
+#ifndef DISABLE_WCHAR
+/* If you want to target Android 5.0+ (or 2.3+ and don't care that half the wstring functions are
+   broken you can use this*/
+
+/* Note: old NDKs defined wchar_t as 8 bit in APIs before 9 (Android 2.3), and 32 bit in API 9 and later,
+  but now NDKs define it as 32 bit everywhere. https://code.google.com/p/android/issues/detail?id=57267*/
+#ifndef wcstoull
+	/* Not added until Android 5.0 */
+#	define wcstoull wcstoul
+#endif
+/* Early NDKs (before Android 2.3?) declared mbstowcs and wcstombs in <stdlib.h>, but didn't actually provide an
+   implementation in libc; however all Android versions have mbsrtowcs and wcsrtombs. */
+#	define mbstowcs __android_mbstowcs
+#	define wcstombs __android_wcstombs
+	static __inline__ size_t __android_mbstowcs(FB_WCHAR *dst, const char *src, size_t count)
+	{
+		return mbsrtowcs(dst, &src, count, NULL);
+	}
+	static __inline__ size_t __android_wcstombs(char *dst, const FB_WCHAR *src, size_t count)
+	{
+		return wcsrtombs(dst, &src, count, NULL);
+	}
+#endif
 #endif
 
 #ifndef FB_WSTR_FROM_INT

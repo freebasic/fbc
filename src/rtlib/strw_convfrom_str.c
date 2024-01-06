@@ -35,7 +35,7 @@ ssize_t fb_wstr_ConvFromA(FB_WCHAR *dst, ssize_t dst_chars, const char *src)
 		return 0;
 	}
 
-#if defined HOST_DOS
+#if defined DISABLE_WCHAR
 	ssize_t chars = strlen(src);
 	if (chars > dst_chars)
 		chars = dst_chars;
