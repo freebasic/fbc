@@ -52,6 +52,7 @@ Version 1.20.0
 - rtlib: internal fb_LeftSelf( s, 0 ) was failing to reduce the string to a length of zero.
 - fbc: 64-bit builds of fbc didn't recognise UTF32-BE encoded source files
 - sf.net #659: Keep the stack 16-byte aligned on linux-x86, android-x86 and darwin-x86 to comply with ABI; fixes crashes when external libraries use SSE
+- rtlib: win32/win64: MULTIKEY() on consoles track console focus, remove the 'FindWindow' logic for console windows and handle FOCUS_EVENT message to track focus (adeyblue)
 
 
 Version 1.10.2

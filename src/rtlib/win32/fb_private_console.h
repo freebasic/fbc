@@ -42,6 +42,7 @@ void fb_hConsoleResetHandles( void );
 int fb_ConsoleGetRawX( void );
 int fb_ConsoleGetRawY( void );
 HANDLE fb_hConsoleCreateBuffer( void );
+int fb_ConsoleHasFocus( void );
 
 #define __fb_in_handle  fb_hConsoleGetHandle( TRUE )
 #define __fb_out_handle fb_hConsoleGetHandle( FALSE )
