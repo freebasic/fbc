@@ -1643,13 +1643,10 @@ private sub hParseGnuTriplet _
 		next
 	end if
 
-'' !!!TODO!!! - remove this block
-#if 0
 	'' Special case: our default arm cpu should be armv5te on android
 	if( (os = FB_COMPTARGET_ANDROID) and (arch = "arm") ) then
 		cputype = FB_CPUTYPE_ARMV5TE
 	end if
-#endif
 
 end sub
 
@@ -1690,7 +1687,7 @@ dim shared as FBOSARCHINFO fbosarchmap(0 to ...) => _
 	(@"darwin" , FB_COMPTARGET_DARWIN , FB_DEFAULT_CPUTYPE       ), _
 	(@"freebsd", FB_COMPTARGET_FREEBSD, FB_DEFAULT_CPUTYPE       ), _
 	(@"linux"  , FB_COMPTARGET_LINUX  , FB_DEFAULT_CPUTYPE       ), _
-	(@"android", FB_COMPTARGET_ANDROID, FB_CPUTYPE_ARMV7A        ), _
+	(@"android", FB_COMPTARGET_ANDROID, FB_CPUTYPE_ARMV5TE       ), _
 	(@"netbsd" , FB_COMPTARGET_NETBSD , FB_DEFAULT_CPUTYPE       ), _
 	(@"openbsd", FB_COMPTARGET_OPENBSD, FB_DEFAULT_CPUTYPE       )  _
 }
@@ -1712,7 +1709,7 @@ dim shared as FBOSARCHINFO fbosarchmap(0 to ...) => _
 '' (the rough format is <arch>-<vendor>-<os> but it can vary a lot)
 ''    -target i686-pc-linux-gnu      ->    Linux + i686
 ''    -target arm-linux-gnueabihf    ->    Linux + default ARM arch
-''    -target arm-linux-androideabi  ->    Android + ARMv7-a/ARM eabi
+''    -target arm-linux-androideabi  ->    Android + ARMv5te/ARM eabi
 ''    -target x86_64-w64-mingw32     ->    Windows + x86_64
 ''    ...
 ''
