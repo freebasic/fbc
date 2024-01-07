@@ -1,4 +1,4 @@
-.TH FBC 1 "2023-12-24" "FreeBASIC Compiler 1.10.2" "FreeBASIC Compiler"
+.TH FBC 1 "2023-01-07" "FreeBASIC Compiler 1.20.0" "FreeBASIC Compiler"
 .SH NAME
 fbc \- The FreeBASIC compiler
 .SH DESCRIPTION
@@ -188,6 +188,9 @@ Prefer static libraries over dynamic ones when linking
 .TP
 \fB\-strip\fR
 Omit all symbol information from the output file
+.TP
+\fB\-sysroot\fR \fIpath\fR
+Tell the linker the root path of where to find libraries (needed by some toolchains)
 .TP
 \fB\-t\fR \fIvalue\fR
 Set Win32/DOS .exe stack size in kbytes, default: 1024
