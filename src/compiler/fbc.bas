@@ -1661,11 +1661,6 @@ private sub hParseGnuTriplet _
 		next
 	end if
 
-	'' Special case: our default arm cpu should be armv5te on android
-	if( (os = FB_COMPTARGET_ANDROID) and (arch = "arm") ) then
-		cputype = FB_CPUTYPE_ARMV5TE
-	end if
-
 end sub
 
 function fbCpuTypeFromGNUArchInfo( byref arch as string ) as integer
@@ -1697,15 +1692,15 @@ dim shared as FBOSARCHINFO fbosarchmap(0 to ...) => _
 	_ '' OS given without arch, using the default arch, except for dos/xbox
 	_ ''  which only work with x86, so we can always default to x86 for them.
 	_ '' (these are supported for backwards compatibility with x86-only FB)
-	_ '' When targetting android assume cross-compiling. armv5te is the most
-	_ '' portable arch, supported even on x86 devices via emulation.
+	_ '' When targetting android assume cross-compiling.
+	_ '' armv7a is the default arch for android ndk r11 and later
 	(@"dos"    , FB_COMPTARGET_DOS    , FB_DEFAULT_CPUTYPE_X86   ), _
 	(@"xbox"   , FB_COMPTARGET_XBOX   , FB_DEFAULT_CPUTYPE_X86   ), _
 	(@"cygwin" , FB_COMPTARGET_CYGWIN , FB_DEFAULT_CPUTYPE       ), _
 	(@"darwin" , FB_COMPTARGET_DARWIN , FB_DEFAULT_CPUTYPE       ), _
 	(@"freebsd", FB_COMPTARGET_FREEBSD, FB_DEFAULT_CPUTYPE       ), _
 	(@"linux"  , FB_COMPTARGET_LINUX  , FB_DEFAULT_CPUTYPE       ), _
-	(@"android", FB_COMPTARGET_ANDROID, FB_CPUTYPE_ARMV5TE       ), _
+	(@"android", FB_COMPTARGET_ANDROID, FB_CPUTYPE_ARMV7A        ), _
 	(@"netbsd" , FB_COMPTARGET_NETBSD , FB_DEFAULT_CPUTYPE       ), _
 	(@"openbsd", FB_COMPTARGET_OPENBSD, FB_DEFAULT_CPUTYPE       )  _
 }
@@ -1725,10 +1720,17 @@ dim shared as FBOSARCHINFO fbosarchmap(0 to ...) => _
 ''
 '' The normal (non-standalone) build also accepts GNU triplets:
 '' (the rough format is <arch>-<vendor>-<os> but it can vary a lot)
-''    -target i686-pc-linux-gnu      ->    Linux + i686
-''    -target arm-linux-gnueabihf    ->    Linux + default ARM arch
-''    -target arm-linux-androideabi  ->    Android + ARMv5te/ARM eabi
-''    -target x86_64-w64-mingw32     ->    Windows + x86_64
+''    -target i686-pc-linux-gnu        ->    Linux + i686
+''    -target arm-linux-gnueabihf      ->    Linux + default ARM arch
+''    -target arm-android              ->    android-arm, armv7-a, 32bit
+''    -target android -arch armv5      ->    android-arm, armv5te, 32bit
+''    -target armv5te-linux-android    ->    android-arm, armv5te, 32bit
+''    -target android -arch armv7      ->    android-arm, armv7-a, 32bit
+''    -target arm-linux-android        ->    android-arm, armv7-a, 32bit
+''    -target armv7a-linux-android     ->    android-arm, armv7-a, 32bit
+''    -target armv7a-linux-androideabi ->    android-arm, armv7-a, 32bit
+''    -target i686-linux-android       ->    android-x86, 686, 32bit
+''    -target x86_64-w64-mingw32       ->    Windows + x86_64
 ''    ...
 ''
 '' The normal build uses the -target argument as prefix for binutils/gcc tools.
