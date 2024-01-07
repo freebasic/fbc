@@ -988,11 +988,6 @@ end function
 function fbDefaultCpuTypeFromCpuFamilyId( byval os as integer, byref cpufamilyid as string ) as integer
 	var cpufamily = fbIdentifyCpuFamily( cpufamilyid )
 	if( cpufamily >= 0 ) then
-		if( (os = FB_COMPTARGET_ANDROID) and _
-		    (cpufamily = FB_CPUFAMILY_ARM) ) then
-			'' Special case: our default arm cpu should be armv5te on android
-			return FB_CPUTYPE_ARMV5TE
-		end if
 		return cpufamilyinfo(cpufamily).defaultcputype
 	end if
 	function = -1
@@ -1067,9 +1062,9 @@ function fbIdentifyFbcArch( byref fbcarch as string ) as integer
 		function = FB_CPUTYPE_686
 	case "x86_64", "amd64"
 		function = FB_CPUTYPE_X86_64
-	case "armv5", "armv5te"
+	case "armv5", "armeabi"
 		function = FB_CPUTYPE_ARMV5TE
-	case "armeabi", "armv7a", "armv7"
+	case "armeabi-v7a", "armv7a", "armv7"
 		function = FB_CPUTYPE_ARMV7A
 	case else
 		function = -1
