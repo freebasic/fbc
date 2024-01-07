@@ -246,6 +246,8 @@ private function hDefFpu_cb() as string static
 		return "x87"
 	case FB_FPUTYPE_SSE
 		return "sse"
+	case FB_FPUTYPE_NEON
+		return "neon"
 	case else
 		assert( 0 )
 	end select
