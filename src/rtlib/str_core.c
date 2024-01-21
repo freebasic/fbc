@@ -131,7 +131,6 @@ FBCALL FBSTRING *fb_hStrRealloc( FBSTRING *str, ssize_t size, int preserve )
 					return NULL;
 				}
 			}
-			newsize = size;
 			str->data = newbuffer;
 		}
 
