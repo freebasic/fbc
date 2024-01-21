@@ -42,7 +42,7 @@ private function isMacroAllowed(byval s as FBSYMBOL ptr) as integer
 		if (s->def.flags and FB_DEFINE_FLAGS_NOGCC) then
 			select case env.clopt.backend
 			case FB_BACKEND_GCC, FB_BACKEND_CLANG
-				errReport(FB_ERRMSG_STMTUNSUPPORTEDINGCC)
+				errReport(FB_ERRMSG_STMTUNSUPPORTEDINC)
 				return FALSE
 			end select
 		end if

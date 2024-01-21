@@ -93,7 +93,7 @@ declare function hMakeParamDesc _
 		( /'FB_WARNINGMSG_EXPECTEDDIGIT             '/ 1, @"Expected digit" ), _
 		( /'FB_WARNINGMSG_UPCASTDISCARDSINITIALIZER '/ 1, @"Up-casting discards initializer(s)" ), _
 		( /'FB_WARNINGMSG_BYREFTEMPVAR              '/ 2, @"Suspicious address expression passed to BYREF parameter" ), _
-		( /'FB_WARNINGMSG_MISSINGANDROIDSYSROOT     '/ 1, @"GCC didn't provide a proper sysroot. You probably have to pass fbc an argument of the form '-sysroot $NDK/platforms/android-$API/arch-$ARCH'" ), _
+		( /'FB_WARNINGMSG_MISSINGANDROIDSYSROOT     '/ 1, @"GCC/Clang didn't provide a proper sysroot. You probably have to pass fbc an argument of the form '-sysroot $NDK/platforms/android-$API/arch-$ARCH'" ), _
 		( /'FB_WARNINGMSGS                          '/ 0, @"FB_WARNINGMSGS" ) _
 	}
 
@@ -384,7 +384,7 @@ declare function hMakeParamDesc _
 		/'FB_ERRMSG_FORNEXTVARIABLEMISMATCH            '/ @"FOR/NEXT variable name mismatch", _
 		/'FB_ERRMSG_OPTIONREQUIRESSSE                  '/ @"Selected option requires an SSE FPU mode", _
 		/'FB_ERRMSG_EXPECTEDRELOP                      '/ @"Expected relational operator ( =, >, <, <>, <=, >= )", _
-		/'FB_ERRMSG_STMTUNSUPPORTEDINGCC               '/ @"Unsupported statement in -gen gcc mode", _
+		/'FB_ERRMSG_STMTUNSUPPORTEDINC                 '/ @"Unsupported statement in -gen gcc/clang mode", _
 		/'FB_ERRMSG_TOOMANYLABELS                      '/ @"Too many labels", _
 		/'FB_ERRMSG_UNSUPPORTEDFUNCTION                '/ @"Unsupported function", _
 		/'FB_ERRMSG_EXPECTEDSUB                        '/ @"Expected sub", _

@@ -218,7 +218,7 @@ function cVAFunct() as ASTNODE ptr
 	'' C backend? va_* not supported
 	select case env.clopt.backend
 	case FB_BACKEND_GCC, FB_BACKEND_CLANG
-		errReport( FB_ERRMSG_STMTUNSUPPORTEDINGCC, TRUE )
+		errReport( FB_ERRMSG_STMTUNSUPPORTEDINC, TRUE )
 
 		'' error recovery: fake an expr
 		function = astNewCONSTi( 0 )
