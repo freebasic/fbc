@@ -310,7 +310,15 @@ end function
 '' an error.
 private function fbcQueryGcc( byref options as string ) as string
 	dim as string path
-	fbcFindBin( FBCTOOL_GCC, path )
+
+	select case( fbGetOption( FB_COMPOPT_BACKEND ) )
+	case FB_BACKEND_CLANG
+		fbcFindBin( FBCTOOL_CLANG, path )
+
+	'' For gcc backend and all other backends assume we want to query gcc
+	case else 
+		fbcFindBin( FBCTOOL_GCC, path )
+	end select
 
 	select case( fbGetCpuFamily( ) )
 	case FB_CPUFAMILY_X86
@@ -389,7 +397,14 @@ private function fbcBuildPathToLibFile( byval file as zstring ptr ) as string
 
 	'' Not found in our lib/, query the target-specific gcc
 	dim as string path
-	fbcFindBin( FBCTOOL_GCC, path )
+	select case( fbGetOption( FB_COMPOPT_BACKEND ) )
+	case FB_BACKEND_CLANG
+		fbcFindBin( FBCTOOL_CLANG, path )
+
+	'' For gcc backend and all other backends assume we want to query gcc
+	case else 
+		fbcFindBin( FBCTOOL_GCC, path )
+	end select
 
 	select case( fbGetCpuFamily( ) )
 	case FB_CPUFAMILY_X86
@@ -425,7 +440,16 @@ private function fbcFindSysroot( ) as string
 	'' Query the target-specific gcc
 	'' (TODO: need to tell which arch and ABI we are targetting, especially on android)
 	dim as string path
-	fbcFindBin( FBCTOOL_GCC, path )
+
+	select case( fbGetOption( FB_COMPOPT_BACKEND ) )
+	case FB_BACKEND_CLANG
+		fbcFindBin( FBCTOOL_CLANG, path )
+
+	'' For gcc backend and all other backends assume we want to query gcc
+	case else 
+		fbcFindBin( FBCTOOL_GCC, path )
+	end select
+
 	path += " --print-sysroot"
 	return hGet1stOutputLineFromCommand( path )
 end function
@@ -489,7 +513,7 @@ private sub fbcFindBin _
 		#ifndef ENABLE_STANDALONE
 			if( hFileExists( path ) = FALSE ) then
 				select case fbGetOption( FB_COMPOPT_BACKEND )
-				case FB_BACKEND_GCC
+				case FB_BACKEND_GCC, FB_BACKEND_CLANG
 					'' c) Ask GCC where it is, if applicable (GCC might have its
 					'' own copy which we must use instead of the system one)
 					if( tool = FBCTOOL_AS ) then
@@ -803,15 +827,15 @@ private function hLinkFiles( ) as integer
 
 	'' dll dos targets need to run DXE3GEN
 	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) and _
-	(fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB) then
+	   (fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB) then
 		'' Building an import library is usable but need to watch
 		'' the initialization order.  libfb exports need to be
 		'' initialized before trying to load the DXE.  FYI, if this
 		'' is handled at load time by the loader code (global
 		'' constructor) user may have issues with the ctor order.
 		'' Which means that user is expected to have called
-		'' defined a call to DyLibLoad("") in a global ctor and
-		'' no other global ctors that depend on libfb functions
+		'' DyLibLoad("") in a global ctor and no other global ctors
+		'' that depend on libfb functions are defined
 		''
 		ldcline += " -I ""lib" + hStripExt( fbc.outname ) + "_il.a"""
 		''
@@ -2130,6 +2154,8 @@ private sub handleOpt _
 			fbc.backend = FB_BACKEND_GAS
 		case "gcc"
 			fbc.backend = FB_BACKEND_GCC
+		case "clang"
+			fbc.backend = FB_BACKEND_CLANG
 		case "llvm"
 			fbc.backend = FB_BACKEND_LLVM
 		Case "gas64"
@@ -3221,7 +3247,7 @@ private function hGetAsmName _
 	end if
 	if( stage = 1 ) then
 		select case( fbGetOption( FB_COMPOPT_BACKEND ) )
-		case FB_BACKEND_GCC
+		case FB_BACKEND_GCC, FB_BACKEND_CLANG
 			ext = @".c"
 		case FB_BACKEND_LLVM
 			ext = @".ll"
@@ -3573,7 +3599,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 	end if
 
 	select case( fbGetOption( FB_COMPOPT_BACKEND ) )
-	case FB_BACKEND_GCC
+	case FB_BACKEND_GCC, FB_BACKEND_CLANG
 		dim as boolean ism64target = false
 		select case( fbGetCpuFamily( ) )
 		case FB_CPUFAMILY_X86
@@ -3618,7 +3644,21 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		end if
 
 		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
-			ln += "-S -nostdlib -nostdinc -Wall "
+
+			'' Even though clang's assembly output is syntax compatible with gnu-as,
+			'' clang may produce extra directives not understood by gnu-as
+			if( fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_CLANG ) then
+				ln += "-fno-integrated-as "
+			end if
+
+			'' generate assembly
+			ln += "-S "
+
+			'' don't use any standard libraries or includes
+			ln += "-nostdlib -nostdinc "
+
+			'' enable all warnings
+			ln += "-Wall "
 
 			'' -Wno-unused-but-set-variable and the warning it suppresses were introduced
 			'' in GCC 4.6. Don't pass that flag to avoid an error on earlier GCC. As a
@@ -3626,11 +3666,13 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			' ln += "-Wno-unused-label -Wno-unused-function -Wno-unused-variable "
 			' ln += "-Wno-unused-but-set-variable "
 			ln += "-Wno-unused "
+
 		else
 			'if Emscripten is used, we will skip the assembly generation and compile directly to object code
 			ln += "-c -nostdlib -nostdinc -Wall -Wno-unused-label " + _
 				"-Wno-unused-function -Wno-unused-variable "
 			ln += "-Wno-warn-absolute-paths "
+
 		end if
 
 		'' Don't warn about non-standard main() signature
@@ -3794,6 +3836,8 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			gcc = FBCTOOL_EMCC
 		end if
 		function = fbcRunBin( "compiling C", gcc, ln )
+	case FB_BACKEND_CLANG
+		function = fbcRunBin( "compiling C", FBCTOOL_CLANG, ln )
 	case FB_BACKEND_LLVM
 		function = fbcRunBin( "compiling LLVM IR", FBCTOOL_LLC, ln )
 	end select
@@ -4224,7 +4268,14 @@ private sub hAddDefaultLibs( )
 	case FB_COMPTARGET_ANDROID
 		fbcAddDefLib( "m" )
 		fbcAddDefLib( "dl" )
-		fbcAddDefLib( "gcc" )
+
+		'' android-ndk-r24 drops support for gcc
+		'' so, assume that if we are compiling for android with clang
+		'' that gcc won't be available
+		if( (fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_CLANG) ) then
+			fbcAddDefLib( "gcc" )
+		end if
+
 		fbcAddDefLib( "c" )
 
 	case FB_COMPTARGET_WIN32

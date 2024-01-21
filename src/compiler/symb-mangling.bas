@@ -63,7 +63,9 @@ sub symbMangleEnd( )
 end sub
 
 function symbUniqueId( byval validfbname as boolean ) as zstring ptr
-	if( (env.clopt.backend = FB_BACKEND_GCC) and (validfbname = false) ) then
+	if( ((env.clopt.backend = FB_BACKEND_GCC) orelse _
+	    (env.clopt.backend = FB_BACKEND_CLANG)) andalso _
+	    (validfbname = false) ) then
 		ctx.tempstr = "tmp$"
 		ctx.tempstr += str( ctx.uniqueidcount )
 	else
@@ -77,11 +79,12 @@ function symbUniqueId( byval validfbname as boolean ) as zstring ptr
 end function
 
 function symbUniqueLabel( ) as zstring ptr
-	if( env.clopt.backend = FB_BACKEND_GCC ) then
+	select case env.clopt.backend
+	case FB_BACKEND_GCC, FB_BACKEND_CLANG
 		ctx.tempstr = "label$"
 		ctx.tempstr += str( ctx.uniquelabelcount )
 		ctx.uniquelabelcount += 1
-	else
+	case else
 		if( env.clopt.target = FB_COMPTARGET_DARWIN ) then
 			ctx.tempstr = "L_"
 		else
@@ -89,7 +92,7 @@ function symbUniqueLabel( ) as zstring ptr
 		end if
 		ctx.tempstr += *hHexUInt( ctx.uniqueidcount )
 		ctx.uniqueidcount += 1
-	end if
+	end select
 
 	function = @ctx.tempstr
 end function
@@ -241,11 +244,12 @@ function symbGetMangledName( byval sym as FBSYMBOL ptr ) as zstring ptr
 	symbMangleResetAbbrev( )
 
 	'' Periods in symbol names?  not allowed in C, must be replaced.
-	if( env.clopt.backend = FB_BACKEND_GCC ) then
+	select case env.clopt.backend
+	case FB_BACKEND_GCC, FB_BACKEND_CLANG
 		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
 			hReplaceChar( sym->id.mangled, asc( "." ), asc( "$" ) )
 		end if
-	end if
+	end select
 
 	function = sym->id.mangled
 end function
@@ -648,12 +652,13 @@ end sub
 
 private function hAddUnderscore( ) as integer
 	'' C backend? don't add underscores; gcc will already do it.
-	if( env.clopt.backend = FB_BACKEND_GCC ) then
+	select case env.clopt.backend
+	case FB_BACKEND_GCC, FB_BACKEND_CLANG
 		function = FALSE
-	else
+	case else
 		'' For ASM, add underscores if the target requires it
 		function = env.underscoreprefix
-	end if
+	end select
 end function
 
 private function hDoCppMangling( byval sym as FBSYMBOL ptr ) as integer
@@ -669,19 +674,22 @@ private function hDoCppMangling( byval sym as FBSYMBOL ptr ) as integer
 
 	'' extern "rtlib"? disable cpp mangling
 	if( (symbGetMangling( sym ) = FB_MANGLING_RTLIB) _
-	    andalso (env.clopt.backend <> FB_BACKEND_GCC) _
 	    andalso (sym->id.alias <> NULL) ) then
-		'' disable cpp mangling only if it's not internally generated:
-		'' Internally generated symbols:
-		''   - vtable
-		''   - rtti
-		''   - default constructor / copy constructor
-		''   - default assignment operator
-		''   - default complete destructor / deleting constructor
 
-		if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_INTERNAL)) = 0 ) then
-			return FALSE
-		end if
+		select case env.clopt.backend
+		case FB_BACKEND_GCC, FB_BACKEND_CLANG
+		case else
+			'' disable cpp mangling only if it's not internally generated:
+			'' Internally generated symbols:
+			''   - vtable
+			''   - rtti
+			''   - default constructor / copy constructor
+			''   - default assignment operator
+			''   - default complete destructor / deleting constructor
+			if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_INTERNAL)) = 0 ) then
+				return FALSE
+			end if
+		end select
 	end if
 
 	'' inside a namespace or class?
@@ -832,9 +840,10 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 			if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
 				id = *sym->id.name
 				'' !!! TODO !!! - if backend is gas, then can't mix gcc and gas globals
-				if( ( env.clopt.backend = FB_BACKEND_GCC ) or (env.clopt.backend = FB_BACKEND_GAS64) ) then
+				select case env.clopt.backend
+				case FB_BACKEND_GCC, FB_BACKEND_CLANG, FB_BACKEND_GAS64
 					id += "$"
-				end if
+				end select
 			'' else, the case-sensitive name saved in the alias..
 			else
 				id = *sym->id.alias
@@ -843,13 +852,14 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 			'' suffixed?
 			if( symbIsSuffixed( sym ) ) then
 				id += *hMangleBuiltInType( symbGetType( sym ) )
-				if( env.clopt.backend = FB_BACKEND_GCC ) then
+				select case env.clopt.backend
+				case FB_BACKEND_GCC, FB_BACKEND_CLANG
 					id += "$"
-				end if
+				end select
 			end if
 		else
 			select case( env.clopt.backend )
-			case FB_BACKEND_GCC
+			case FB_BACKEND_GCC, FB_BACKEND_CLANG
 				'' ir-hlc emits statics with dtors as globals,
 				'' so they need a unique name. Other statics are
 				'' still emitted locally, so they can keep their
@@ -1260,7 +1270,8 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 	                      (env.clopt.target = FB_COMPTARGET_CYGWIN) or _
 	                      (env.clopt.target = FB_COMPTARGET_XBOX)))) and _
 	                     (fbGetCpuFamily( ) = FB_CPUFAMILY_X86) and _
-	                     (env.clopt.backend <> FB_BACKEND_GCC)
+	                     ((env.clopt.backend <> FB_BACKEND_GCC) and _
+	                     (env.clopt.backend <> FB_BACKEND_CLANG))
 
 	'' LLVM: @ prefix for global symbols
 	if( env.clopt.backend = FB_BACKEND_LLVM ) then

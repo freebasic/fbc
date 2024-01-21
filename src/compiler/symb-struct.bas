@@ -748,9 +748,10 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 	'' C backend: Trivial structs can just be returned as-is, no need to
 	'' "lower the AST" to using registers or a hidden pointer parameter and
 	'' pointer result. Instead, gcc will do that.
-	if( env.clopt.backend = FB_BACKEND_GCC ) then
+	select case env.clopt.backend
+	case FB_BACKEND_GCC, FB_BACKEND_CLANG
 		return FB_DATATYPE_STRUCT
-	end if
+	end select
 
 	'' 64-bit + gas64 + linux?
 	if( fbIs64Bit() ) then

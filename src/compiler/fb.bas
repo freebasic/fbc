@@ -383,6 +383,8 @@ function fbGetBackendName _
 		function = "gas"
 	case FB_BACKEND_GCC
 		function = "gcc"
+	case FB_BACKEND_CLANG
+		function = "clang"
 	case FB_BACKEND_LLVM
 		function = "llvm"
 	case FB_BACKEND_GAS64
@@ -1730,7 +1732,7 @@ function fbGetBackendValistType _
 	dim typedef as FB_CVA_LIST_TYPEDEF = FB_CVA_LIST_NONE
 
 	select case env.clopt.backend
-	case FB_BACKEND_GCC
+	case FB_BACKEND_GCC, FB_BACKEND_CLANG
 
 		select case( fbGetCpuFamily( ) )
 		case FB_CPUFAMILY_X86

@@ -276,9 +276,10 @@ function symbAddArrayDesc( byval array as FBSYMBOL ptr ) as FBSYMBOL ptr
 			if( symbIsSuffixed( array ) ) then
 				tempid = *id
 				tempid += *hMangleBuiltInType( symbGetType( array ) )
-				if( env.clopt.backend = FB_BACKEND_GCC ) then
+				select case env.clopt.backend
+				case FB_BACKEND_GCC, FB_BACKEND_CLANG
 					tempid += "$"
-				end if
+				end select
 				id = strptr( tempid )
 			end if
 
