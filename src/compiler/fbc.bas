@@ -306,9 +306,9 @@ private function hGet1stOutputLineFromCommand( byref cmd as string ) as string
 	return ln
 end function
 
-'' Pass some arguments to gcc and read the results. Returns an empty string on
+'' Pass some arguments to gcc/clang and read the results. Returns an empty string on
 '' an error.
-private function fbcQueryGcc( byref options as string ) as string
+private function fbcQueryCC( byref options as string ) as string
 	dim as string path
 
 	select case( fbGetOption( FB_COMPOPT_BACKEND ) )
@@ -517,9 +517,9 @@ private sub fbcFindBin _
 					'' c) Ask GCC where it is, if applicable (GCC might have its
 					'' own copy which we must use instead of the system one)
 					if( tool = FBCTOOL_AS ) then
-						path = fbcQueryGcc( " -print-prog-name=as" )
+						path = fbcQueryCC( " -print-prog-name=as" )
 					elseif( tool = FBCTOOL_LD ) then
-						path = fbcQueryGcc( " -print-prog-name=ld" )
+						path = fbcQueryCC( " -print-prog-name=ld" )
 					end if
 				case FB_BACKEND_GAS, FB_BACKEND_GAS64
 					#if defined( __FB_FREEBSD__ )
