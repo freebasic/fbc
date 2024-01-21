@@ -22,6 +22,7 @@ typedef struct NODE
 	struct NODE *next, *child;
 } NODE;
 
+#ifndef DISABLE_NCURSES
 typedef struct KEY_DATA
 {
 	char *cap;
@@ -56,6 +57,7 @@ static const KEY_DATA key_data[] = {
 	{ "kD", KEY_DEL       },
 	{ NULL, 0 }
 };
+#endif
 
 static int key_buffer[KEY_BUFFER_LEN], key_head = 0, key_tail = 0, key_buffer_changed = FALSE;
 static NODE *root_node = NULL;
