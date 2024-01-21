@@ -621,7 +621,8 @@ sub astScopeAllocLocals( byval symtbhead as FBSYMBOL ptr )
 	assert( ast.doemit )
 
 	s = symtbhead
-	if( env.clopt.backend = FB_BACKEND_GCC ) then
+	select case env.clopt.backend
+	case FB_BACKEND_GCC, FB_BACKEND_CLANG
 		''
 		'' C backend: Most locals (including statics) are emitted from
 		'' astLoadDECL(), assuming they have DECL nodes, so they will
@@ -649,7 +650,7 @@ sub astScopeAllocLocals( byval symtbhead as FBSYMBOL ptr )
 			end if
 			s = s->next
 		wend
-	else
+	case else
 		''
 		'' ASM/LLVM backends: All locals except statics or shared vars
 		'' are allocated from here (i.e. the backend reserves the stack
@@ -669,7 +670,7 @@ sub astScopeAllocLocals( byval symtbhead as FBSYMBOL ptr )
 			end if
 			s = s->next
 		wend
-	end if
+	end select
 end sub
 
 function astLoadSCOPEBEGIN( byval n as ASTNODE ptr ) as IRVREG ptr

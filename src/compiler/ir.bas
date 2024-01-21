@@ -12,7 +12,7 @@ dim shared ir as IRCTX
 
 sub irInit( )
 	select case( env.clopt.backend )
-	case FB_BACKEND_GCC
+	case FB_BACKEND_GCC, FB_BACKEND_CLANG
 		ir.vtbl = irhlc_vtbl
 	case FB_BACKEND_LLVM
 		ir.vtbl = irllvm_vtbl

@@ -310,7 +310,15 @@ end function
 '' an error.
 private function fbcQueryGcc( byref options as string ) as string
 	dim as string path
-	fbcFindBin( FBCTOOL_GCC, path )
+
+	select case( fbGetOption( FB_COMPOPT_BACKEND ) )
+	case FB_BACKEND_CLANG
+		fbcFindBin( FBCTOOL_CLANG, path )
+
+	'' For gcc backend and all other backends assume we want to query gcc
+	case else 
+		fbcFindBin( FBCTOOL_GCC, path )
+	end select
 
 	select case( fbGetCpuFamily( ) )
 	case FB_CPUFAMILY_X86
@@ -389,7 +397,14 @@ private function fbcBuildPathToLibFile( byval file as zstring ptr ) as string
 
 	'' Not found in our lib/, query the target-specific gcc
 	dim as string path
-	fbcFindBin( FBCTOOL_GCC, path )
+	select case( fbGetOption( FB_COMPOPT_BACKEND ) )
+	case FB_BACKEND_CLANG
+		fbcFindBin( FBCTOOL_CLANG, path )
+
+	'' For gcc backend and all other backends assume we want to query gcc
+	case else 
+		fbcFindBin( FBCTOOL_GCC, path )
+	end select
 
 	select case( fbGetCpuFamily( ) )
 	case FB_CPUFAMILY_X86
@@ -425,7 +440,16 @@ private function fbcFindSysroot( ) as string
 	'' Query the target-specific gcc
 	'' (TODO: need to tell which arch and ABI we are targetting, especially on android)
 	dim as string path
-	fbcFindBin( FBCTOOL_GCC, path )
+
+	select case( fbGetOption( FB_COMPOPT_BACKEND ) )
+	case FB_BACKEND_CLANG
+		fbcFindBin( FBCTOOL_CLANG, path )
+
+	'' For gcc backend and all other backends assume we want to query gcc
+	case else 
+		fbcFindBin( FBCTOOL_GCC, path )
+	end select
+
 	path += " --print-sysroot"
 	return hGet1stOutputLineFromCommand( path )
 end function
@@ -489,7 +513,7 @@ private sub fbcFindBin _
 		#ifndef ENABLE_STANDALONE
 			if( hFileExists( path ) = FALSE ) then
 				select case fbGetOption( FB_COMPOPT_BACKEND )
-				case FB_BACKEND_GCC
+				case FB_BACKEND_GCC, FB_BACKEND_CLANG
 					'' c) Ask GCC where it is, if applicable (GCC might have its
 					'' own copy which we must use instead of the system one)
 					if( tool = FBCTOOL_AS ) then
@@ -2130,6 +2154,8 @@ private sub handleOpt _
 			fbc.backend = FB_BACKEND_GAS
 		case "gcc"
 			fbc.backend = FB_BACKEND_GCC
+		case "clang"
+			fbc.backend = FB_BACKEND_CLANG
 		case "llvm"
 			fbc.backend = FB_BACKEND_LLVM
 		Case "gas64"
@@ -3221,7 +3247,7 @@ private function hGetAsmName _
 	end if
 	if( stage = 1 ) then
 		select case( fbGetOption( FB_COMPOPT_BACKEND ) )
-		case FB_BACKEND_GCC
+		case FB_BACKEND_GCC, FB_BACKEND_CLANG
 			ext = @".c"
 		case FB_BACKEND_LLVM
 			ext = @".ll"
@@ -3573,7 +3599,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 	end if
 
 	select case( fbGetOption( FB_COMPOPT_BACKEND ) )
-	case FB_BACKEND_GCC
+	case FB_BACKEND_GCC, FB_BACKEND_CLANG
 		dim as boolean ism64target = false
 		select case( fbGetCpuFamily( ) )
 		case FB_CPUFAMILY_X86
@@ -3794,6 +3820,8 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			gcc = FBCTOOL_EMCC
 		end if
 		function = fbcRunBin( "compiling C", gcc, ln )
+	case FB_BACKEND_CLANG
+		function = fbcRunBin( "compiling C", FBCTOOL_CLANG, ln )
 	case FB_BACKEND_LLVM
 		function = fbcRunBin( "compiling LLVM IR", FBCTOOL_LLC, ln )
 	end select

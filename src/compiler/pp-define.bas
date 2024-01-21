@@ -40,10 +40,11 @@ private function isMacroAllowed(byval s as FBSYMBOL ptr) as integer
 	'' Error recovery: continue parsing as usual
 	if (pp.skipping = FALSE) then
 		if (s->def.flags and FB_DEFINE_FLAGS_NOGCC) then
-			if( env.clopt.backend = FB_BACKEND_GCC ) then
+			select case env.clopt.backend
+			case FB_BACKEND_GCC, FB_BACKEND_CLANG
 				errReport(FB_ERRMSG_STMTUNSUPPORTEDINGCC)
 				return FALSE
-			end if
+			end select
 		end if
 	end if
 	return TRUE

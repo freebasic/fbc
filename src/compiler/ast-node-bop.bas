@@ -1597,9 +1597,10 @@ function astNewBOP _
 	n->op.op = op
 
 	'' always alloc the result VR for the C backend
-	if( env.clopt.backend = FB_BACKEND_GCC ) then
+	select case env.clopt.backend
+	case FB_BACKEND_GCC, FB_BACKEND_CLANG
 		options or= AST_OPOPT_ALLOCRES
-	end if
+	end select
 
 	n->op.options = options
 

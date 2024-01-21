@@ -106,9 +106,10 @@ private sub hMainBegin( )
 	if( env.clopt.outtype = FB_OUTTYPE_DYNAMICLIB ) then
 		attrib = FB_SYMBATTRIB_PRIVATE
 		'' Use a random name for the C backend
-		if( env.clopt.backend = FB_BACKEND_GCC ) then
+		select case env.clopt.backend
+		case FB_BACKEND_GCC, FB_BACKEND_CLANG
 			id = *symbUniqueId( )
-		end if
+		end select
 	else
 		'' If the implicit main() will actually be called main() and be
 		'' public too, then the C backend needs to take care to emit

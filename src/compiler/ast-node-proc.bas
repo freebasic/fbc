@@ -623,10 +623,13 @@ private function hCallProfiler _
 	) as ASTNODE ptr
 
 	'' on all ports except dos _mcount() is just a normal call
-	if( env.clopt.profile andalso ( fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GCC ) ) then
-		if( env.clopt.target <> FB_COMPTARGET_DOS ) then
-			head_node = astAddAfter( rtlProfileCall_mcount(), head_node )
-		end if
+	if( env.clopt.profile ) then
+		select case fbGetOption( FB_COMPOPT_BACKEND )
+		case FB_BACKEND_GCC, FB_BACKEND_CLANG
+			if( env.clopt.target <> FB_COMPTARGET_DOS ) then
+				head_node = astAddAfter( rtlProfileCall_mcount(), head_node )
+			end if
+		end select
 	end if
 
 	function = head_node
@@ -837,9 +840,10 @@ private sub hLoadProcResult( byval proc as FBSYMBOL ptr )
 	if( (symbGetType( proc ) = FB_DATATYPE_STRING) and (not symbIsReturnByRef( proc )) ) then
 		n = rtlStrAllocTmpResult( astNewVAR( s ) )
 
-		if( ( env.clopt.backend = FB_BACKEND_GCC ) or ( env.clopt.backend = FB_BACKEND_LLVM ) or ( env.clopt.backend = FB_BACKEND_GAS64 ) ) then
+		select case env.clopt.backend
+		case FB_BACKEND_GCC, FB_BACKEND_CLANG, FB_BACKEND_LLVM, FB_BACKEND_GAS64
 			n = astNewLOAD( n, symbGetFullType( proc ), TRUE )
-		end if
+		end select
 	else
 		'' Use the real type, in case it's BYREF return or a UDT result
 		n = astNewLOAD( astNewVAR( s, 0, symbGetProcRealType( proc ), _
