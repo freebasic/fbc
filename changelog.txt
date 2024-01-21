@@ -55,6 +55,7 @@ Version 1.20.0
 - sf.net #659: Keep the stack 16-byte aligned on linux-x86, android-x86 and darwin-x86 to comply with ABI; fixes crashes when external libraries use SSE
 - rtlib: win32/win64: MULTIKEY() on consoles track console focus, remove the 'FindWindow' logic for console windows and handle FOCUS_EVENT message to track focus (adeyblue)
 - rtlib: win32/win64: MULTIKEY() always returns true; don't call GetAsyncKeyState(0), seem that in windows terminal, dragging a console tab out of the terminal window triggers key 0 and is never reset resulting in MULTIKEY() always returning true
+- fbc: when compiling with "-e -gen clang", work around a "indirect goto in function with no address-of-label expressions" clang error
 
 
 Version 1.10.2
