@@ -10,6 +10,7 @@ Version 1.20.0
 - fbc: internal: rtlMathLongintDIV() decide on signed or unsigned division based on sign instead of exact data type
 - gfxlib2: on x86 32-bit, query the cpu type for MMX capability only when setting the graphics mode with SCREEN[RES] or when setting x86 MMX feature with ScreenControl fb.SET_X86_MMX_ENABLED function
 - rtlib: optimize string concatenation reallocations: do not reallocate to smaller memory buffer if the contents are to be preserved
+- clang backend/android: android-ndk-r24 drops support for gcc so assume that if we are compiling for android with clang that gcc won't be availabl
 
 [added]
 - x86_64: optimize SHL MOD INTDIV to use 32-bit operation when result will be converted to long/ulong
