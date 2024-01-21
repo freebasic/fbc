@@ -827,15 +827,15 @@ private function hLinkFiles( ) as integer
 
 	'' dll dos targets need to run DXE3GEN
 	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) and _
-	(fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB) then
+	   (fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB) then
 		'' Building an import library is usable but need to watch
 		'' the initialization order.  libfb exports need to be
 		'' initialized before trying to load the DXE.  FYI, if this
 		'' is handled at load time by the loader code (global
 		'' constructor) user may have issues with the ctor order.
 		'' Which means that user is expected to have called
-		'' defined a call to DyLibLoad("") in a global ctor and
-		'' no other global ctors that depend on libfb functions
+		'' DyLibLoad("") in a global ctor and no other global ctors
+		'' that depend on libfb functions are defined
 		''
 		ldcline += " -I ""lib" + hStripExt( fbc.outname ) + "_il.a"""
 		''
@@ -3644,7 +3644,15 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		end if
 
 		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
-			ln += "-S -nostdlib -nostdinc -Wall "
+
+			'' generate assembly
+			ln += "-S "
+
+			'' don't use any standard libraries or includes
+			ln += "-nostdlib -nostdinc "
+
+			'' enable all warnings
+			ln += "-Wall "
 
 			'' -Wno-unused-but-set-variable and the warning it suppresses were introduced
 			'' in GCC 4.6. Don't pass that flag to avoid an error on earlier GCC. As a
