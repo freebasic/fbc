@@ -817,8 +817,7 @@ private function hLinkFiles( ) as integer
 		'' androideabi-v7a ABI requires extra linker options; apparently
 		'' others don't. See https://developer.android.com/ndk/guides/standalone_toolchain.html
 		if( fbGetOption( FB_COMPOPT_CPUTYPE ) = FB_CPUTYPE_ARMV7A ) then
-			'FIXME: passing -march to linker doesn't seem right
-			ldcline += "-march=armv7-a --fix-cortex-a8 "
+			ldcline += "--fix-cortex-a8 "
 		end if
 		'' Optional?
 		' select case( fbGetCpuFamily( ) )
@@ -3711,7 +3710,9 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		end select
 
 		'' The rtlib sets its own rounding mode, don't let gcc make assumptions.
-		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
+		'' (Should this be skipped for ARM rather than Android?)
+		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS andalso _
+		    fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_ANDROID ) then
 			ln += "-frounding-math "
 		end if
 
