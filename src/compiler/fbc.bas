@@ -4268,14 +4268,7 @@ private sub hAddDefaultLibs( )
 	case FB_COMPTARGET_ANDROID
 		fbcAddDefLib( "m" )
 		fbcAddDefLib( "dl" )
-
-		'' android-ndk-r24 drops support for gcc
-		'' so, assume that if we are compiling for android with clang
-		'' that gcc won't be available
-		if( (fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_CLANG) ) then
-			fbcAddDefLib( "gcc" )
-		end if
-
+		fbcAddDefLib( "gcc" )
 		fbcAddDefLib( "c" )
 
 	case FB_COMPTARGET_WIN32
