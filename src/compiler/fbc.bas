@@ -3645,6 +3645,12 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 
 		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
 
+			'' Even though clang's assembly output is syntax compatible with gnu-as,
+			'' clang may produce extra directives not understood by gnu-as
+			if( fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_CLANG ) then
+				ln += "-fno-integrated-as "
+			end if
+
 			'' generate assembly
 			ln += "-S "
 
@@ -3660,11 +3666,13 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			' ln += "-Wno-unused-label -Wno-unused-function -Wno-unused-variable "
 			' ln += "-Wno-unused-but-set-variable "
 			ln += "-Wno-unused "
+
 		else
 			'if Emscripten is used, we will skip the assembly generation and compile directly to object code
 			ln += "-c -nostdlib -nostdinc -Wall -Wno-unused-label " + _
 				"-Wno-unused-function -Wno-unused-variable "
 			ln += "-Wno-warn-absolute-paths "
+
 		end if
 
 		'' Don't warn about non-standard main() signature
