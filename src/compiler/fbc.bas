@@ -799,6 +799,18 @@ private function hLinkFiles( ) as integer
 			end if
 		end if
 
+		'' The compiler runtime support library, usually called libgcc on other platforms
+		'' (even when using clang) or when using gcc in older NDK, varies by target, something
+		'' like libclang_rt.builtins-aarch64-android.a
+		var args = ""
+		if( len( fbc.target ) > 0 ) then
+			'' Without the correct -target, clang just returns the host libgcc.
+			args = " -target " & fbc.target
+		end if
+		args &= " -print-libgcc-file-name"
+		var path = fbcQueryCC( args )
+		ldcline &= path & " "
+
 		'' androideabi-v7a ABI requires extra linker options; apparently
 		'' others don't. See https://developer.android.com/ndk/guides/standalone_toolchain.html
 		if( fbGetOption( FB_COMPOPT_CPUTYPE ) = FB_CPUTYPE_ARMV7A ) then
@@ -4081,7 +4093,12 @@ private sub hSetDefaultLibPaths( )
 	'' Add gcc's private lib directory, to find libgcc
 	'' This is for installing into Unix-like systems, and not for
 	'' standalone, which has libgcc in the main lib/.
-	if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
+	select case fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_ANDROID
+		'' We don't pass -lgcc to ld (it's probably not called libgcc)
+	case FB_COMPTARGET_JS
+		'' We let emcc handle linking
+	case else
 		fbcAddLibPathFor( "libgcc.a" )
 
 		#ifndef DISABLE_STDCXX_PATH
@@ -4097,7 +4114,7 @@ private sub hSetDefaultLibPaths( )
 				fbcAddLibPathFor( "libstdc++.so" )
 			end select
 		#endif
-	end if
+	end select
 
 	select case( fbGetOption( FB_COMPOPT_TARGET ) )
 	case FB_COMPTARGET_DOS
@@ -4268,8 +4285,10 @@ private sub hAddDefaultLibs( )
 	case FB_COMPTARGET_ANDROID
 		fbcAddDefLib( "m" )
 		fbcAddDefLib( "dl" )
-		fbcAddDefLib( "gcc" )
 		fbcAddDefLib( "c" )
+		'' On Android we don't even know what the runtime support library
+		'' is called (it won't be libgcc when compiling with clang, unlike
+		'' on Linux); we query gcc/clang for it later in hLinkFiles.
 
 	case FB_COMPTARGET_WIN32
 		fbcAddDefLib( "gcc" )
