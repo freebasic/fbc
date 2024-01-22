@@ -784,8 +784,11 @@ private function hLinkFiles( ) as integer
 			ldcline += "-m armelf_linux_eabi "
 		end select
 	case FB_COMPTARGET_ANDROID
-		if( len( fbc.sysroot ) = 0 ) then
-			'' We need the sysroot before calling hFindLib().
+		if( (len( fbc.sysroot ) = 0) and _
+		    (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GCC) ) then
+			'' Newer NDKs use clang which doesn't support -print-sysroot,
+			'' and we don't need it.
+			'' GCC in older NDKs may need the sysroot before calling hFindLib().
 			'' At least in older NDKs, if a standalone NDK toolchain (for a particular
 			'' platform+arch) is used then gcc --print-sysroot returns the correct
 			'' sysroot. Otherwise, running directly from a full NDK install, it prints a
