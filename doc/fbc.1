@@ -1,4 +1,4 @@
-.TH FBC 1 "2024-01-07" "FreeBASIC Compiler 1.20.0" "FreeBASIC Compiler"
+.TH FBC 1 "2024-01-28" "FreeBASIC Compiler 1.20.0" "FreeBASIC Compiler"
 .SH NAME
 fbc \- The FreeBASIC compiler
 .SH DESCRIPTION
@@ -81,20 +81,32 @@ Change the entry point of the program from main()
 \fB\-export\fR
 Export symbols for dynamic linkage
 .TP
+\fB\-fbgfx\fR
+Link to the appropriate libfbgfx variant (normally automatic)
+.TP
 \fB\-forcelang\fR \fIname\fR
 Override #lang statements in source code
 .TP
 \fB\-fpmode\fR \fBfast\fR|\fBprecise\fR
 Select floating-point math accuracy/speed
 .TP
-\fB\-fpu\fR \fBx87\fR|\fBsse\fR
+\fB\-fpu\fR \fBx87\fR|\fBsse\fR|\fneon\fR
 Set target FPU
 .TP
 \fB\-g\fR
 Add debug info, enable __FB_DEBUG__, and enable asserts
 .TP
-\fB\-gen\fR \fBgas\fR|\fBgcc\fR|\fBllvm\fR|\fgas64\fR
-Select code generation backend
+\fB\-gen\fR \fIbackend\fR
+Select code generation backend (gas|gas64|gcc|llvm|clang)
+.TP
+\fB\-gen clang\fR       Select clang C backend
+\fB\-gen gas\fR     Select GNU gas 32-bit assembler backend
+\fB\-gen gas64\fR       Select GNU gas 64-bit assembler backend
+\fB\-gen gcc\fR         Select GNU gcc C backend
+\fB\-gen llvm\fR        Select LLVM backend
+.TP
+\fB\-help\fR, \fB\--help\fR
+Show help output; use '-help -v' to show verbose help
 .TP
 \fB\-i\fR \fIpath\fR
 Add an include file search path
@@ -159,6 +171,9 @@ Set the compiler prefix path
 \fB\-print\fR \fBhost\fR|\fBtarget\fR
 Display host/target system name
 .TP
+\fB\-print\fR \fBlibfbdir\fR  
+Display the compiler's lib/ path
+.TP
 \fB\-print\fR \fBx\fR
 Display output binary/library file name (if known)
 .TP
@@ -207,7 +222,7 @@ Be verbose
 \fB\-vec \fIn\fR
 Automatic vectorization level (default: 0)
 .TP
-\fB\-version\fR
+\fB\-version\fR, \fB\--version\fR
 Show compiler version
 .TP
 \fB\-w\fR \fBall\fR|\fBpedantic\fR|\fIn\fR
@@ -255,41 +270,65 @@ Pass options to LD
 \fB\-x \fIfile\fR
 Set output executable/library file name
 .TP
+\fB\-z fbrt\fR
+Link with 'fbrt' instead of 'fb' runtime library
+.TP
 \fB\-z gosub-setjmp\fR
 Use setjmp/longjmp to implement GOSUB
-.TP
-\fB\-z valist-as-ptr\fR
-Use pointer expressions to implement CVA_*() macros
-.TP
-\fB\-z no-thiscall\fR
-Don't use '__thiscall' calling convention
 .TP
 \fB\-z no-fastcall\fR
 Don't use '__fastcall' calling convention
 .TP
-\fB\-z fbrt\fR
-Link with 'fbrt' instead of 'fb' runtime library
+\fB\-z no-thiscall\fR
+Don't use '__thiscall' calling convention
+.TP
+\fB\-z nocmdline\fR
+Disable #cmdline source directives
 .TP
 \fB\-z retinflts\fR
 Enable returning some types in floating point registers
 .TP
-\fB\-z nocmdline\fR
-Disable #cmdline source directives
+\fB\-z valist-as-ptr\fR
+Use pointer expressions to implement CVA_*() macros
 
 .SH ENVIRONMENT
 .IP AS
 Overrides location of GNU as (assembler)
+.IP AR
+Overrides location of GNU ar (archiver)
 .IP LD
 Overrides location of GNU ld (linker)
 .IP GCC
-Overrides location of gcc (-gen gcc)
+Overrides location of gcc (compiler, -gen gcc)
+.IP LLC
+Overrides location of llc (compiler, -gen llvm)
+.IP CLANG
+Overrides location of clang (compiler, -gen clang)
+.IP DLLTOOL
+Overrides location of dlltool (import library, -target win32|cygwin)
+.IP GORC
+Overrides location of gorc (resource compiler, on standalone win32 host version only
+.IP WINDRES
+Overrides location of windres (resource compiler)
+.IP CXBE
+Overrides location of cxbe (executable convertor, -target xbox)
+.IP DXEGEN
+Overrides location of dxe3gen (-target dos)
+.IP EMAS
+Overrides location of emas (-target js-asmjs)
+.IP EMAR
+Overrides location of emar (-target js-asmjs)
+.IP EMCC
+Overrides location of emcc (-target js-asmjs)
+.IP EMLD
+Overrides location of emld (-target js-asmjs)
 
 .SH "SEE ALSO"
 The full language specification and help is available in wiki format at
 .B 
 https://www.freebasic.net/wiki/
 .SH COPYRIGHT
-Copyright \(co 2004\-2023 The FreeBASIC Development Team
+Copyright \(co 2004\-2024 The FreeBASIC Development Team
 .br
 This is free software.  You may redistribute copies of it under the terms of
 the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.

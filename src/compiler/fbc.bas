@@ -3077,10 +3077,12 @@ private sub hCheckArgs()
 		end select
 
 		'' -gen gas only supports -asm intel
-		if( ( (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) or (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS64) ) and _
-			(fbc.asmsyntax <> FB_ASMSYNTAX_INTEL) ) then
-			errReportEx( FB_ERRMSG_GENGASWITHOUTINTEL, "", -1 )
-		end if
+		select case fbGetOption( FB_COMPOPT_BACKEND )
+		case FB_BACKEND_GAS, FB_BACKEND_GAS64  
+			if( fbc.asmsyntax <> FB_ASMSYNTAX_INTEL ) then
+				errReportEx( FB_ERRMSG_GENGASWITHOUTINTEL, "", -1 )
+			end if
+		end select
 
 		'' -asm overrides the target's default
 		fbSetOption( FB_COMPOPT_ASMSYNTAX, fbc.asmsyntax )
@@ -3632,21 +3634,22 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		end select
 
 		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
-			'' GCC doesn't recognize the -march option and PowerPC combination and recommendeds
-			'' the -mcpu option be used for PowerPC.
-			if( (fbGetCpuFamily( ) = FB_CPUFAMILY_PPC) orelse (fbGetCpuFamily( ) = FB_CPUFAMILY_PPC64) orelse (fbGetCpuFamily( ) = FB_CPUFAMILY_PPC64LE) ) then
+			'' GCC doesn't recognize the -march option and PowerPC combination
+			'' and recommendeds the -mcpu option be used for PowerPC.
+			select case fbGetCpuFamily( )
+			case FB_CPUFAMILY_PPC, FB_CPUFAMILY_PPC64, FB_CPUFAMILY_PPC64LE   
 				if( fbc.cputype_is_native ) then
 					ln += "-mcpu=native "
 				else
 					ln += "-mcpu=" + *fbGetGccArch( ) + " "
 				end if
-			else
+			case else
 				if( fbc.cputype_is_native ) then
 					ln += "-march=native "
 				else
 					ln += "-march=" + *fbGetGccArch( ) + " "
 				end if
-			end if
+			end select
 		end if
 
 		if( (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_ANDROID) and _
@@ -3680,12 +3683,13 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			'' -Wno-unused-but-set-variable and the warning it suppresses were introduced
 			'' in GCC 4.6. Don't pass that flag to avoid an error on earlier GCC. As a
 			'' result, to disable the warning on 4.6+ need to disable all unused warnings...
-			' ln += "-Wno-unused-label -Wno-unused-function -Wno-unused-variable "
-			' ln += "-Wno-unused-but-set-variable "
+			'' ln += "-Wno-unused-label -Wno-unused-function -Wno-unused-variable "
+			'' ln += "-Wno-unused-but-set-variable "
 			ln += "-Wno-unused "
 
 		else
-			'if Emscripten is used, we will skip the assembly generation and compile directly to object code
+			'' if Emscripten is used, we will skip the assembly generation and 
+			'' compile directly to object code
 			ln += "-c -nostdlib -nostdinc -Wall -Wno-unused-label " + _
 				"-Wno-unused-function -Wno-unused-variable "
 			ln += "-Wno-warn-absolute-paths "
@@ -4380,10 +4384,9 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -elocation       Enable error location reporting"
 	print "  -enullptr        Enable null-pointer checking"
 	print "  -eunwind         Enable call stack unwind information"
-	print "  -entry           Change the entry point of the program from main()"
+	print "  -entry <name>    Change the entry point of the program from main()"
 	end if
 
-	print "  -entry <name>    Change the entry point of the program from main()"
 	print "  -ex              -e plus RESUME support"
 	print "  -exx             -ex plus array bounds/null-pointer checking"
 	print "  -export          Export symbols for dynamic linkage"
@@ -4402,8 +4405,9 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -gen gas64       Select GNU gas 64-bit assembler backend"
 	print "  -gen gcc         Select GNU gcc C backend"
 	print "  -gen llvm        Select LLVM backend"
+	print "  -gen clang       Select clang C backend"
 	else
-	print "  -gen gas|gas64|gcc|llvm  Select code generation backend"
+	print "  -gen <backend>   Select code generation backend (gas|gas64|gcc|llvm|clang)"
 	end if
 
 	print "  [-]-help         Show this help output; use '-help -v' to show verbose help"
@@ -4473,13 +4477,13 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -x <file>        Set output executable/library file name"
 
 	if( verbose ) then
+	print "  -z fbrt          Link with 'fbrt' instead of 'fb' runtime library"
 	print "  -z gosub-setjmp  Use setjmp/longjmp to implement GOSUB"
-	print "  -z valist-as-ptr Use pointer expressions to implement CVA_*() macros"
 	print "  -z no-thiscall   Don't use '__thiscall' calling convention"
 	print "  -z no-fastcall   Don't use '__fastcall' calling convention"
-	print "  -z fbrt          Link with 'fbrt' instead of 'fb' runtime library"
 	print "  -z nocmdline     Disable #cmdline source directives"
 	print "  -z retinflts     Enable returning some types in floating point registers"
+	print "  -z valist-as-ptr Use pointer expressions to implement CVA_*() macros"
 	else
 	print "  -z <option>      Extended options (see fbc -help -v)"
 	end if
