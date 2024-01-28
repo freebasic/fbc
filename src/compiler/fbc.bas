@@ -316,7 +316,7 @@ private function fbcQueryCC( byref options as string ) as string
 		fbcFindBin( FBCTOOL_CLANG, path )
 
 	'' For gcc backend and all other backends assume we want to query gcc
-	case else 
+	case else
 		fbcFindBin( FBCTOOL_GCC, path )
 	end select
 
@@ -402,7 +402,7 @@ private function fbcBuildPathToLibFile( byval file as zstring ptr ) as string
 		fbcFindBin( FBCTOOL_CLANG, path )
 
 	'' For gcc backend and all other backends assume we want to query gcc
-	case else 
+	case else
 		fbcFindBin( FBCTOOL_GCC, path )
 	end select
 
@@ -446,7 +446,7 @@ private function fbcFindSysroot( ) as string
 		fbcFindBin( FBCTOOL_CLANG, path )
 
 	'' For gcc backend and all other backends assume we want to query gcc
-	case else 
+	case else
 		fbcFindBin( FBCTOOL_GCC, path )
 	end select
 
@@ -806,10 +806,12 @@ private function hLinkFiles( ) as integer
 		'' (even when using clang) or when using gcc in older NDK, varies by target, something
 		'' like libclang_rt.builtins-aarch64-android.a
 		var args = ""
+#ifndef ENABLE_STANDALONE
 		if( len( fbc.target ) > 0 ) then
 			'' Without the correct -target, clang just returns the host libgcc.
 			args = " -target " & fbc.target
 		end if
+#endif
 		args &= " -print-libgcc-file-name"
 		var path = fbcQueryCC( args )
 		ldcline &= path & " "
