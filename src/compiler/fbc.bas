@@ -119,7 +119,8 @@ type FBCCTX
 end type
 
 enum FBCTOOL
-	FBCTOOL_AS = 0
+	FBCTOOL_NONE = 0
+	FBCTOOL_AS
 	FBCTOOL_AR
 	FBCTOOL_LD
 	FBCTOOL_GCC
@@ -161,6 +162,7 @@ end type
 '' must be same order as enum FBCTOOL
 static shared as FBCTOOLINFO fbctoolTB(0 to FBCTOOL__COUNT-1) = _
 { _
+	/' FBCTOOL_NONE    '/ ( ""       , ""       , FBCTOOLFLAG_INVALID  ), _
 	/' FBCTOOL_AS      '/ ( "as"     , "AS"     , FBCTOOLFLAG_DEFAULT  ), _
 	/' FBCTOOL_AR      '/ ( "ar"     , "AR"     , FBCTOOLFLAG_DEFAULT  ), _
 	/' FBCTOOL_LD      '/ ( "ld"     , "LD"     , FBCTOOLFLAG_DEFAULT  ), _
@@ -3852,17 +3854,21 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 	ln += "-o """ + asmfile + """"
 	ln += fbc.extopt.gcc
 
+	dim as FBCTOOL ccompiler = FBCTOOL_NONE
+
 	select case( fbGetOption( FB_COMPOPT_BACKEND ) )
 	case FB_BACKEND_GCC
-		var gcc = FBCTOOL_GCC
+		ccompiler = FBCTOOL_GCC
 		if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_JS ) then
-			gcc = FBCTOOL_EMCC
+			ccompiler = FBCTOOL_EMCC
 		end if
-		function = fbcRunBin( "compiling C", gcc, ln )
+		function = fbcRunBin( "compiling C", ccompiler, ln )
 	case FB_BACKEND_CLANG
-		function = fbcRunBin( "compiling C", FBCTOOL_CLANG, ln )
+		ccompiler = FBCTOOL_CLANG
+		function = fbcRunBin( "compiling C", ccompiler, ln )
 	case FB_BACKEND_LLVM
-		function = fbcRunBin( "compiling LLVM IR", FBCTOOL_LLC, ln )
+		ccompiler = FBCTOOL_LLC
+		function = fbcRunBin( "compiling LLVM IR", ccompiler, ln )
 	end select
 end function
 
@@ -3879,45 +3885,68 @@ end sub
 private function hAssembleModule( byval module as FBCIOFILE ptr ) as integer
 	dim as string ln
 
-	select case( fbGetCpuFamily( ) )
-	case FB_CPUFAMILY_X86
-		if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN) then
-			ln += "-arch i386 "
-		else
-			ln += "--32 "
-		endif
-	case FB_CPUFAMILY_X86_64
-		if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN) then
-			ln += "-arch x86_64 "
-		else
-			ln += "--64 "
-		endif
-	end select
+	dim as FBCTOOL assembler = FBCTOOL_NONE
 
-	if( fbGetOption( FB_COMPOPT_DEBUGINFO ) = FALSE ) then
-		if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) then
-			if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
-				ln += "--strip-local-absolute "
-			end if
-		endif
+#ifdef ENABLE_STANDALONE
+	if( assembler = FBCTOOL_NONE ) then
+		if( fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_CLANG ) then
+			assembler = FBCTOOL_CLANG
+		end if
+	end if
+#endif
+
+	if( assembler = FBCTOOL_NONE ) then
+		select case fbGetOption( FB_COMPOPT_TARGET )
+		case FB_COMPTARGET_JS
+			'' We will skip assemble stage, since it is
+			'' already performed by Emscripten
+			'' to re-enable assembly, change to FBCTOOL_EMAS
+			assembler = FBCTOOL_NONE
+		case else
+			assembler = FBCTOOL_AS
+		end select
 	end if
 
-	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_JS ) then
-		'' We will skip assemble stage, since it is already performed by Emscripten
+	'' Still no assembler selected? Then we are skipping the assembly
+	'' and letting the ccompiler generate the object file directly
+	if( assembler = FBCTOOL_NONE ) then
 		function = TRUE
 		exit function
 	end if
+
+	select case assembler
+	case FBCTOOL_CLANG
+		ln += "-c "
+	case else
+		select case( fbGetCpuFamily( ) )
+		case FB_CPUFAMILY_X86
+			if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN) then
+				ln += "-arch i386 "
+			else
+				ln += "--32 "
+			endif
+		case FB_CPUFAMILY_X86_64
+			if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN) then
+				ln += "-arch x86_64 "
+			else
+				ln += "--64 "
+			endif
+		end select
+
+		if( fbGetOption( FB_COMPOPT_DEBUGINFO ) = FALSE ) then
+			if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) then
+				if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
+					ln += "--strip-local-absolute "
+				end if
+			endif
+		end if
+	end select
 
 	ln += """" + hGetAsmName( module, 2 ) + """ "
 	ln += "-o """ + *module->objfile + """"
 	ln += fbc.extopt.gas
 
-	var gas = FBCTOOL_AS
-	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_JS ) then
-		gas = FBCTOOL_EMAS
-	end if
-
-	if( fbcRunBin( "assembling", gas, ln ) = FALSE ) then
+	if( fbcRunBin( "assembling", assembler, ln ) = FALSE ) then
 		exit function
 	end if
 
