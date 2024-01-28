@@ -4000,6 +4000,16 @@ private sub _emitProcBegin _
 	hWriteLine( "{" )
 	sectionIndent( )
 
+	if( (env.clopt.backend = FB_BACKEND_CLANG) and (env.clopt.errorcheck = TRUE) ) then
+		'' Compiling with -e
+		'' Work around an error clang unnecessarily throws if a function
+		'' contains a computed goto but no address-of-label operator.
+		'' See https://bugs.llvm.org/show_bug.cgi?id=18658
+		'' (TODO: We emit computed gotos for RESUME/ON ERROR GOTO
+		'' support (-ex) but also unnecessarily use them to terminate
+		'' the program after fb_ErrorThrowAt when compiled only with -e)
+		hWriteLine( "_unusedlabel: ; void *_llvmbug18658 = &&_unusedlabel;" )
+	end if
 end sub
 
 private sub _emitProcEnd _

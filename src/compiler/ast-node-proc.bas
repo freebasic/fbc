@@ -622,10 +622,12 @@ private function hCallProfiler _
 		byval head_node as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	'' on all ports except dos _mcount() is just a normal call
 	if( env.clopt.profile ) then
 		select case fbGetOption( FB_COMPOPT_BACKEND )
 		case FB_BACKEND_GCC, FB_BACKEND_CLANG
+			'' _mcount call is inserted by the C compiler
+		case else
+			'' On all ports except dos _mcount() is just a normal call
 			if( env.clopt.target <> FB_COMPTARGET_DOS ) then
 				head_node = astAddAfter( rtlProfileCall_mcount(), head_node )
 			end if
