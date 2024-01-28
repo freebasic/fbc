@@ -148,9 +148,10 @@ enum FBCTOOLFLAG
 end enum
 
 type FBCTOOLINFO
-	name as zstring * 16
+	name as zstring * 16                  '' default name of tool to invoke 
+	env_variable as zstring * 16          '' environment variable to override
 	flags as FBCTOOLFLAG
-	path as zstring * (FB_MAXPATHLEN + 1)
+	path as zstring * (FB_MAXPATHLEN + 1) '' cached tool path and name
 end type
 
 #define fbctoolGetFlags( tool, f )   ((fbctoolTB( tool ).flags and (f)) <> 0)
@@ -160,21 +161,21 @@ end type
 '' must be same order as enum FBCTOOL
 static shared as FBCTOOLINFO fbctoolTB(0 to FBCTOOL__COUNT-1) = _
 { _
-	/' FBCTOOL_AS      '/ ( "as"     , FBCTOOLFLAG_DEFAULT  ), _
-	/' FBCTOOL_AR      '/ ( "ar"     , FBCTOOLFLAG_DEFAULT  ), _
-	/' FBCTOOL_LD      '/ ( "ld"     , FBCTOOLFLAG_DEFAULT  ), _
-	/' FBCTOOL_GCC     '/ ( "gcc"    , FBCTOOLFLAG_DEFAULT  ), _
-	/' FBCTOOL_LLC     '/ ( "llc"    , FBCTOOLFLAG_DEFAULT  ), _
-	/' FBCTOOL_CLANG   '/ ( "clang"  , FBCTOOLFLAG_DEFAULT  ), _
-	/' FBCTOOL_DLLTOOL '/ ( "dlltool", FBCTOOLFLAG_DEFAULT  ), _
-	/' FBCTOOL_GORC    '/ ( "GoRC"   , FBCTOOLFLAG_DEFAULT  ), _
-	/' FBCTOOL_WINDRES '/ ( "windres", FBCTOOLFLAG_DEFAULT  ), _
-	/' FBCTOOL_CXBE    '/ ( "cxbe"   , FBCTOOLFLAG_DEFAULT  ), _
-	/' FBCTOOL_DXEGEN  '/ ( "dxe3gen", FBCTOOLFLAG_DEFAULT  ), _
-	/' FBCTOOL_EMAS    '/ ( "emcc"   , FBCTOOLFLAG_DEFAULT  ), _
-	/' FBCTOOL_EMAR    '/ ( "emar"   , FBCTOOLFLAG_DEFAULT  ), _
-	/' FBCTOOL_EMLD    '/ ( "emcc"   , FBCTOOLFLAG_DEFAULT  ), _
-	/' FBCTOOL_EMCC    '/ ( "emcc"   , FBCTOOLFLAG_DEFAULT  )  _
+	/' FBCTOOL_AS      '/ ( "as"     , "AS"     , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_AR      '/ ( "ar"     , "AR"     , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_LD      '/ ( "ld"     , "LD"     , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_GCC     '/ ( "gcc"    , "GCC"    , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_LLC     '/ ( "llc"    , "LLC"    , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_CLANG   '/ ( "clang"  , "CLANG"  , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_DLLTOOL '/ ( "dlltool", "DLLTOOL", FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_GORC    '/ ( "GoRC"   , "GORC"   , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_WINDRES '/ ( "windres", "WINDRES", FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_CXBE    '/ ( "cxbe"   , "CXBE"   , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_DXEGEN  '/ ( "dxe3gen", "DXEGEN" , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_EMAS    '/ ( "emcc"   , "EMAS"   , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_EMAR    '/ ( "emar"   , "EMAR"   , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_EMLD    '/ ( "emcc"   , "EMLD"   , FBCTOOLFLAG_DEFAULT  ), _
+	/' FBCTOOL_EMCC    '/ ( "emcc"   , "EMCC"   , FBCTOOLFLAG_DEFAULT  )  _
 }
 
 declare sub fbcFindBin _
@@ -497,7 +498,7 @@ private sub fbcFindBin _
 
 	'' a) Use the path from the corresponding environment variable if it's set
 	if( (fbctoolTB(tool).flags and FBCTOOLFLAG_CAN_USE_ENVIRON) <> 0 ) then
-		path = environ( ucase( fbctoolTB(tool).name ) )
+		path = environ( fbctoolTB(tool).env_variable )
 	end if
 
 	if( len( path ) = 0 ) then
