@@ -37,6 +37,7 @@ Version 1.20.0
 - makefile: option FBFORKID="name", or by adding to config.mk, to set the internal constant FB_BUILD_FORK_ID.  Intended to identify experimental variants of fbc
 - fbc: __FB_BUILD_FORK_ID__ intrinsic define.  By default is an empty string.  Can be customized by makefile
 - fbc: '-print fork-id' command line option to report the fork-id version of fbc
+- fbc: '-nolib fbrt0.o' and '-nolib fbrt0pic.o' can be used to omit fb's startup files from the link.  Implied by '-nodeflibs'.
 
 [fixed]
 - github #410: give consistent floating point comparisons results involving NaNs.

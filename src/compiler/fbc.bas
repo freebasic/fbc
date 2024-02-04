@@ -104,6 +104,7 @@ type FBCCTX
 	sysroot             as zstring * FB_MAXPATHLEN+1
 	xbe_title           as zstring * FB_MAXNAMELEN+1  '' For the '-title <title>' xbox option
 	nodeflibs           as integer
+	nofbrt0             as integer  '' If we should exclude fbrt0.o or fbrt0pic.o (implied by nodeflibs, and optional by -nolib fbrt0.o,fbrt0pic.o)
 	staticlink          as integer
 	stripsymbols        as integer
 
@@ -1214,7 +1215,7 @@ private function hLinkFiles( ) as integer
 
 	end select
 
-	if( fbc.nodeflibs = FALSE ) then
+	if( fbc.nofbrt0 = FALSE ) then
 		'' don't add the fbrt0 if compiling for javascript, because global constructors and destructors are not supported by emscripten
 		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
 			ldcline += " """ + fbc.libpath + FB_HOST_PATHDIV
@@ -2242,6 +2243,7 @@ private sub handleOpt _
 
 	case OPT_NODEFLIBS
 		fbc.nodeflibs = TRUE
+		fbc.nofbrt0 = TRUE
 
 	case OPT_NOERRLINE
 		fbSetOption( FB_COMPOPT_SHOWERROR, FALSE )
@@ -4376,7 +4378,12 @@ private sub hExcludeLibsFromLink( )
 	'' Remove any excluded libs from fbc.finallibs list
 	dim as TSTRSETITEM ptr i = listGetHead(@fbc.excludedlibs.list)
 	while i
-		strsetDel(@fbc.finallibs, i->s)
+		select case i->s
+		case "fbrt0.o", "fbrt0pic.o"
+			fbc.nofbrt0 = TRUE
+		case else
+			strsetDel(@fbc.finallibs, i->s)
+		end select
 		i = listGetNext(i)
 	wend
 end sub
