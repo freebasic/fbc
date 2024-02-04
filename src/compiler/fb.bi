@@ -15,6 +15,12 @@ const FB_BUILD_SHA1 = FBSHA1
 const FB_BUILD_SHA1 = ""
 #endif
 
+#ifdef FBFORKID
+const FB_BUILD_FORK_ID = FBFORKID
+#else
+const FB_BUILD_FORK_ID = ""
+#endif
+
 #define QUOTE !"\""
 #if defined( __FB_WIN32__ ) or defined( __FB_CYGWIN__ ) or defined( __FB_DOS__ )
 	#define NEWLINE !"\r\n"

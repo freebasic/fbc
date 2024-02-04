@@ -1254,6 +1254,7 @@ dim shared defTb(0 to ...) as SYMBDEF => _
 	(@"__FB_VER_PATCH__"      , @FB_VER_PATCH     , 0                  , NULL           ), _
 	(@"__FB_SIGNATURE__"      , @FB_SIGN          , FB_DEFINE_FLAGS_STR, NULL           ), _
 	(@"__FB_BUILD_SHA1__"     , @FB_BUILD_SHA1    , FB_DEFINE_FLAGS_STR, NULL           ), _
+	(@"__FB_BUILD_FORK_ID__"  , @FB_BUILD_FORK_ID , FB_DEFINE_FLAGS_STR, NULL           ), _
 	(@"__FB_MT__"             , NULL          , 0                  , @hDefMultithread_cb), _
 	(@"__FILE__"              , NULL          , FB_DEFINE_FLAGS_STR, @hDefFile_cb       ), _
 	(@"__FILE_NQ__"           , NULL          , 0                  , @hDefFile_cb       ), _

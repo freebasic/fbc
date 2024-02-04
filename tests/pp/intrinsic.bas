@@ -106,6 +106,9 @@
 #error __FB_GUI__ not defined
 #endif
 
+#ifndef __FB_BUILD_FORK_ID__
+#error __FB_BUILD_FORK_ID__ not defined
+#endif
 
 '' Always defined for this test
 

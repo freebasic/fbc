@@ -22,6 +22,7 @@ enum
 	PRINT_X
 	PRINT_FBLIBDIR
 	PRINT_SHA1
+	PRINT_FORK_ID
 end enum
 
 type FBC_EXTOPT
@@ -2312,6 +2313,7 @@ private sub handleOpt _
 		case "x"      : fbc.print = PRINT_X
 		case "fblibdir" : fbc.print = PRINT_FBLIBDIR
 		case "sha-1"  : fbc.print = PRINT_SHA1
+		case "fork-id": fbc.print = PRINT_FORK_ID
 		case else
 			hFatalInvalidOption( arg, is_source )
 		end select
@@ -4464,6 +4466,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -print fblibdir  Display the compiler's lib/ path"
 	print "  -print x         Display output binary/library file name (if known)"
 	if( verbose ) then
+	print "  -print fork-id   Display compiler's fork identifier (if set)"
 	print "  -print sha-1     Display compiler's source code commit sha-1 (if known)"
 	end if
 	print "  -profile         Enable function profiling"
@@ -4550,6 +4553,9 @@ private sub hPrintVersion( byval verbose as integer )
 		if( FB_BUILD_SHA1 > "" ) then
 			print "source sha-1: " & FB_BUILD_SHA1
 		end if
+		if( FB_BUILD_FORK_ID > "" ) then
+			print "fbc fork id:  " & FB_BUILD_FORK_ID
+		end if
 	end if
 end sub
 
@@ -4618,6 +4624,8 @@ end sub
 				print fbc.libpath
 			case PRINT_SHA1
 				print FB_BUILD_SHA1
+			case PRINT_FORK_ID
+				print FB_BUILD_FORK_ID
 			end select
 			fbcEnd( 0 )
 		end if
