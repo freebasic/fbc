@@ -24,7 +24,7 @@ declare function    hThreadCall_cb      ( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@FB_RTL_INIT, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_REQUIRED, _
 			3, _
 			{ _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
@@ -36,21 +36,21 @@ declare function    hThreadCall_cb      ( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@FB_RTL_INITSIGNALS, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_REQUIRED, _
 			0 _
 		), _
 		/' sub __main cdecl( ) '/ _
 		( _
 			@FB_RTL_INITCRTCTOR, @"__main", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_REQUIRED, _
 			0 _
 		), _
 		/' sub fb_End( byval errlevel as const long ) '/ _
 		( _
 			@FB_RTL_END, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_REQUIRED, _
 			1, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
@@ -660,14 +660,17 @@ function rtlInitApp _
 	is_exe = (env.clopt.outtype <> FB_OUTTYPE_DYNAMICLIB)
 
 	if( env.clopt.backend = FB_BACKEND_GAS ) then
-		'' call __monstartup() on win32/cygwin if profiling
-		select case( env.clopt.target )
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-			if( env.clopt.profile ) then
-				'' __monstartup()
-				rtlProfileCall_monstartup( )
-			end if
-		end select
+
+		if( env.clopt.nobuiltins = FALSE ) then
+			'' call __monstartup() on win32/cygwin if profiling
+			select case( env.clopt.target )
+			case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+				if( env.clopt.profile ) then
+					'' __monstartup()
+					rtlProfileCall_monstartup( )
+				end if
+			end select
+		end if
 
 		'' call default CRT0 constructors (only required for Win32)
 		if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
@@ -683,15 +686,17 @@ function rtlInitApp _
 	astNewARG( proc, astNewCONSTi( env.clopt.lang ) )
 	astAdd( proc )
 
-	'' Error checking enabled and not a DLL? And emscripten doesn't have signals
-	if( env.clopt.errorcheck andalso is_exe andalso ( env.clopt.target <> FB_COMPTARGET_JS ) ) then
-		'' fb_InitSignals( )
-		astAdd( astNewCALL( PROCLOOKUP( INITSIGNALS ), NULL ) )
+	if( env.clopt.nobuiltins = FALSE ) then
+		'' Error checking enabled and not a DLL? And emscripten doesn't have signals
+		if( env.clopt.errorcheck andalso is_exe andalso ( env.clopt.target <> FB_COMPTARGET_JS ) ) then
+			'' fb_InitSignals( )
+			astAdd( astNewCALL( PROCLOOKUP( INITSIGNALS ), NULL ) )
 
-		'' Checking the CPU for features on x86
-		if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
-			'' Check CPU type
-			rtlX86CpuCheck( )
+			'' Checking the CPU for features on x86
+			if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
+				'' Check CPU type
+				rtlX86CpuCheck( )
+			end if
 		end if
 	end if
 

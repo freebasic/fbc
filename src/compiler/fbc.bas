@@ -2510,6 +2510,8 @@ private sub handleOpt _
 			fbSetOption( FB_COMPOPT_NOCMDLINE, TRUE )
 		case "retinflts"
 			fbSetOption( FB_COMPOPT_RETURNINFLTS, TRUE )
+		case "nobuiltins"
+			fbSetOption( FB_COMPOPT_NOBUILTINS, TRUE )
 		case else
 			hFatalInvalidOption( arg, is_source )
 		end select
@@ -4520,6 +4522,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -z gosub-setjmp  Use setjmp/longjmp to implement GOSUB"
 	print "  -z no-thiscall   Don't use '__thiscall' calling convention"
 	print "  -z no-fastcall   Don't use '__fastcall' calling convention"
+	print "  -z nobuiltins    Disable all non-required builtin procedure definitions"
 	print "  -z nocmdline     Disable #cmdline source directives"
 	print "  -z retinflts     Enable returning some types in floating point registers"
 	print "  -z valist-as-ptr Use pointer expressions to implement CVA_*() macros"
