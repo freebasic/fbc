@@ -10,7 +10,7 @@ FBCALL FBSTRING *fb_StrAllocTempResult ( FBSTRING *src )
 	FB_STRLOCK();
 	
  	/* alloc a temporary descriptor (the current one at stack will be trashed) */
- 	dsc = fb_hStrAllocTmpDesc( );
+ 	dsc = fb_hStrAllocTempDesc( );
     if( dsc == NULL ) {
     	FB_STRUNLOCK();
     	return &__fb_ctx.null_desc;

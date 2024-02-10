@@ -11,7 +11,7 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 
-private function hAllocTmpArrayDesc _
+private function hAllocTempArrayDesc _
 	( _
 		byval array as FBSYMBOL ptr, _
 		byval array_expr as ASTNODE ptr, _
@@ -54,7 +54,7 @@ private function hAddToCopyBackList _
 	function = t
 end function
 
-private function hAllocTmpString _
+private function hAllocTempString _
 	( _
 		byval parent as ASTNODE ptr, _
 		byval n as ASTNODE ptr, _
@@ -80,7 +80,7 @@ private function hAllocTmpString _
 		AST_LINK_RETURN_RIGHT )
 end function
 
-private function hAllocTmpWstrPtr _
+private function hAllocTempWstrPtr _
 	( _
 		byval parent as ASTNODE ptr, _
 		byval n as ASTNODE ptr _
@@ -135,7 +135,7 @@ private function hCheckArgForStringParam _
 			'' functions don't ever modify it.
 			case FB_DATATYPE_CHAR, FB_DATATYPE_FIXSTR
 				assert( symbGetType( param ) = FB_DATATYPE_STRING )
-				return rtlStrAllocTmpDesc( arg )
+				return rtlStrAllocTempDesc( arg )
 			end select
 		end if
 	end if
@@ -224,7 +224,7 @@ private function hCheckArgForStringParam _
 	end if
 
 	'' Copy arg to temp STRING, then pass that temp
-	function = hAllocTmpString( parent, arg, copyback )
+	function = hAllocTempString( parent, arg, copyback )
 end function
 
 private sub hStrArgToStrPtrParam _
@@ -246,7 +246,7 @@ private sub hStrArgToStrPtrParam _
 		'' If it's a STRING function result, copy to temp STRING so
 		'' that the result is automatically freed later.
 		if( astIsCALL( n->l ) ) then
-			n->l = hAllocTmpString( parent, n->l, FALSE )
+			n->l = hAllocTempString( parent, n->l, FALSE )
 		end if
 
 		'' *cast( [const] zstring const ptr ptr, @expr )
@@ -265,7 +265,7 @@ private sub hStrArgToStrPtrParam _
 		'' If it's a WSTRING function result, copy to temp WSTRING so
 		'' that the result is automatically freed later.
 		if( astIsCALL( n->l ) ) then
-			n->l = hAllocTmpWstrPtr( parent, n->l )
+			n->l = hAllocTempWstrPtr( parent, n->l )
 		else
 			n->l = astNewADDROF( n->l )
 		end if
@@ -495,7 +495,7 @@ private function hCheckByDescParam _
 			astDelNode( n->l )
 
 			'' Static array field: Create a temp array descriptor
-			desc = hAllocTmpArrayDesc( s, l, desc_tree )
+			desc = hAllocTempArrayDesc( s, l, desc_tree )
 			l = astNewLINK( astNewADDROF( astNewVAR( desc ) ), desc_tree, AST_LINK_RETURN_LEFT )
 			n->l = l
 			return TRUE
