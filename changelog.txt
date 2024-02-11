@@ -13,19 +13,19 @@ Version 1.20.0
 
 [added]
 - x86_64: optimize SHL MOD INTDIV to use 32-bit operation when result will be converted to long/ulong
-- fbc: Add warning for suspicious arg passed to BYREF AS ANY (dkl) 
+- fbc: Add warning for suspicious arg passed to BYREF AS ANY (dkl)
 - fbc: #ELSEIFDEF and #ELSEIFNDEF pre-processor conditional compilation directives
 - set default procedure linkage with '#pragma private [=value]' or '#pragma push( private [,value] )'
 - gas64: optimizations: simplify some operations where one operand is zero (0) (SARG)
 - gas64: optimizations: storage of registers with branching (SARG)
-- gas64: optimizations: Replace some CMP instructions with TEST instruction (SARG) 
+- gas64: optimizations: Replace some CMP instructions with TEST instruction (SARG)
 - gas64: optimizations: multiplication for small constants -1,-2,3,5,6,9,10 (SARG)
 - gas64: optimizations: enable IR_OPT_ADDRCISC optimizations to use complex addressing (base + offset*multiplier) optimization for indexes (SARG)
 - fbc headers: add ./inc/fberror.bi for runtime library error constants
 - rtlib: ./inc/fbc-int/string.bi - for string descriptor and low level string functions
-- gfxlib2: added fb.GFX_NO_X86_MMX = &h00000100 constant to fbgfx.bi - when passed as flag to SCREEN[RES] disable MMX blitters on x86 32-bit 
+- gfxlib2: added fb.GFX_NO_X86_MMX = &h00000100 constant to fbgfx.bi - when passed as flag to SCREEN[RES] disable MMX blitters on x86 32-bit
 - gfxlib2: added fb.GET_X86_MMX_ENABLED = 18 constant to fbgfx.bi - used with ScreenControl to determine if MMX blitters are selected on x86 32 bit.  If returned value is non-zero, then MMX is enabled.  If zero, then MMX is disabled.  All other platforms return zero.
-- gfxlib2: added fb.SET_X86_MMX_ENABLED = 118 constant to fbgfx.bi - used with ScreenControl to specific if MMX blitters should be used on x86 32-bit.  Pass non-zero value to enable, and zero value to disable.  All other platforms ignore this setting 
+- gfxlib2: added fb.SET_X86_MMX_ENABLED = 118 constant to fbgfx.bi - used with ScreenControl to specific if MMX blitters should be used on x86 32-bit.  Pass non-zero value to enable, and zero value to disable.  All other platforms ignore this setting
 - darwin: inc/darwin (WIP) Use linux versions of various crt headers; can include crt.bi now
 - Add "-arch armv5te" cpu type option, and several arch aliases: x86 (for 686), armeabi and armv5 (for armv5te), armeabi-v7a, armv7 and armv7a (for armv7-a)
 - Android support. Commandline executables and shared/static libraries only; gfxlib (graphical/audio commands) and also console commands like "color" are not supported, nor does the android libc support locales for string<->wstring conversion. THREADCALL is also not enabled. The default target abi is armeabi; use arch=x86, arch=armv7a, or arch=aarch64 to target a different abi.
@@ -66,7 +66,7 @@ Version 1.10.2
 fbc: add FB_CPUTYPE_ARMV6_FP for -march=armv6+fp
 fbc: add FB_CPUTYPE_ARMV7A_FP for -march=armv7-a+fp
 makefile: pass BOOTFBCFLAGS to bootstrap-dist target when making source boostrap
-makefile: add FBSHA1 to BOOTFBCFLAGS to allow setting fbc's sha-1 version in the bootstrap sources 
+makefile: add FBSHA1 to BOOTFBCFLAGS to allow setting fbc's sha-1 version in the bootstrap sources
 makefile:  DEFAULT_CPUTYPE_X86 build option to set the default X86 cpu; if given sets BUILD_FB_DEFAULT_CPUTYPE_X86 compiler configration option
 makefile: add BUILD_FB_DEFAULT_CPUTYPE_X86 to BOOTFBCFLAGS
 fbc: BUILD_FB_DEFAULT_CPUTYPE_X86 to set FB_DEFAULT_CPUTYPE_X86 in source code; if not given then default depends on host
@@ -85,7 +85,7 @@ Version 1.10.1
 - rtlib: printf format specifier, use 'll' instead of 'I64' if building for ucrt or mingw-w64's stdio implementation (for newer gcc versions and c std)
 - gcc backend: use 'char' types for zstring instead of 'uint8' to avoid warnings in newer gcc 11+
 - release: update to build libffi 3.4.4 - this is needed to work with newer mingw-w64 based toolchains for gcc 11.x and up
-- emscripten/fbc: in debug version of fbc (__FB_DEBUG__<>0) allow wchar conversion on win32 host to allow building and testing of the test-suite 
+- emscripten/fbc: in debug version of fbc (__FB_DEBUG__<>0) allow wchar conversion on win32 host to allow building and testing of the test-suite
 - github #421: fbc: win32/win64: pass '-fno-ident' to gcc to help prevent identification strings from accumulating in the final binary
 - updated bindings: PostgreSQL to 14.0
 - updated bindings: sqlite to 3.39.4
@@ -102,7 +102,7 @@ Version 1.10.1
 [fixed]
 - sf.net #982: Array descriptors emitted incorrectly in gcc backend
 - gas64: emit debug information for statics
-- gas64: handle #inf's and NaN's in float comparisons 
+- gas64: handle #inf's and NaN's in float comparisons
 - unable to set opengl scaling to 1 after initial screen mode - previously: logic error in the driver code prevented the scaling from being set to 1
 - emscripten: fbc created faulty static libraries (it called ar instead of emar)
 - fbc: emscripten: wstring was broken because sizeof(wstring) was 2 rather than 4
@@ -243,7 +243,7 @@ Version 1.10.0
 - fbc: basic-macros: improve the handling of optional parens in function like macros by ending a macro argument list on the number of arguments expected (non-variadic macros only).
 - fbc: bad error recovery after overloaded operator [] caused compiler crash, for example if overloaded operator [] is found but can't be used due to mixing const and non-const types, or invalid members
 - fbc: improve error message 215 to indicate that only static members can be accessed from parameter intializers as well as static functions
-- fbc: #cmdline "-c ..." needs to restart parser since code generation is affected.  The implicit main was being emitted even when '-c' was give in #cmdline and was working differently than when '-c' given on the actual command line. 
+- fbc: #cmdline "-c ..." needs to restart parser since code generation is affected.  The implicit main was being emitted even when '-c' was give in #cmdline and was working differently than when '-c' given on the actual command line.
 - fbc: extend lifetime of temporary variables in WITH TYPE(...) expressions to the END WITH statement
 - fbc: #cmdline "-r -rr -R -RR -o objfile ..." needs to restart the parser and handle changes in keeping the ASM file.  In the case of '-o objfile' a major restart is needed since some initialization of filenames is done before parsing starts.  By default the temporary ASM file was being kept even if #cmdline options indicate to keep it.
 - sf.net #569: gfxlib2: GetMouse/SetMouse scaling problem in QB modes Screen 2 & 8 - adjust GetMouse/SetMouse by internal scanline_size
@@ -328,8 +328,8 @@ Version 1.09.0
 - fbc: fix regression - fbc.stripsymbols (-strip/-nostrip) check clobbered by emscripten merge
 - fbc: improve error message on statement between SELECT and first CASE inside a subroutine and don't allow CONST/ENUM between any SELECT & first CASE.
 - fbc: don't allow labels or EXIT statements between SELECT and first CASE statement
-- sf.net #843: Implicit casting of argument to string works for Instr() and Mid() but not for Left() and Right() 
-- sf.net #483 fblite: Can't call LEN with nested WITH block string member 
+- sf.net #843: Implicit casting of argument to string works for Instr() and Mid() but not for Left() and Right()
+- sf.net #483 fblite: Can't call LEN with nested WITH block string member
 - gas64 : fix required size for local variables >2GB
 - sf.net #645: don't access locals if explicit namespace is given on identifier
 - sf.net #645: don't access locals if explicit global namespace '.' and '..' prefixes are given on identifier
@@ -396,7 +396,7 @@ Version 1.08.0
 - sf.net #927: PUT custom method expects function(ulong,ulong,any pr) as ulong callback function
 - fbc: double the minimum and default stacksize on 64-bit to 64Kb and 2048Kb respectively.
 - fbc: internal changes to optimize away unused call results
-- github #203: allow casts of addresses on static initializers 
+- github #203: allow casts of addresses on static initializers
 - only write debug line information for statements and don't write comments / empty lines / directives for top level source code in assembly debug output
 - optimize byref 'm += s' string concatenations to fb_StrConcatByref() which will check for same string descriptor at run-time which can't be determined at compile time for byref parameters.
 - github #298: allow command line options passed to as, gcc, ld  to be longer than 128 characters by using string types internally
@@ -469,7 +469,7 @@ Version 1.08.0
 - sf.net #921: gfxlib: horizontal line drawing on 8-bit image was using wrong bpp
 - oGLfbGFX: opengl driver was leaking thread handle under 'screencontrol fb.SET_GL_2D_MODE, fb.OGL_2D_AUTO_SYNC'
 - oGLfbGFX: prevent opengl mode and scale from changing until next mode is set
-- sf.net #908: visibility / access rights of overload For/Next/Step operators not taken into account by for...next statement 
+- sf.net #908: visibility / access rights of overload For/Next/Step operators not taken into account by for...next statement
 - sf.net #906: #error on line 2 not reported if immediately following #error on line 1
 - rtlib: ERASE - check for static (fixed length) plain, string, and object arrays passed to ERASE; clear only if array is static, and free memory if dynamic
 - rtlib: allow reading/writing data larger than 2GB with GET # / PUT # [WIP]
@@ -501,7 +501,7 @@ Version 1.08.0
 - C backend: switch to .text section after writing the exports to the C file in the explicit asm block.  gcc can move sections around with optimizations and there is a change between 7.x and 8.x that causes issue with where the directive section is located
 - sf.net #917: optimize 'm += s' string concatenations to fix the long compile times in the gcc backend (which makes heavy use of string building).
 - github #217: C backend, fix gcc array out of bounds warning when compiled with -O2 or higher optimizations and accessing non-zero lower bound fixed length string arrays
-- C backend: inline asm - don't add rsp/esp to the clobber list, it's deprecated in newer gcc versions and silently ignored in older versions 
+- C backend: inline asm - don't add rsp/esp to the clobber list, it's deprecated in newer gcc versions and silently ignored in older versions
 - github #309: token pasting operator '##' allows pasting of single '_' characters
 - fbc: re-add __FB_GUI__ intrinsic define - the change was clobbered for a time during fbc 1.08.0 development after basic-macros were added
 
@@ -538,7 +538,7 @@ Version 1.07.0
 - IIF function will accept UDT as Z|WSTRING
 - PRINT/LPRINT/WRITE will accept UDT as Z|WSTRING
 - '-earray' command line option to enable array bounds checking
-- '-enullptr' command line option to enable null pointer checking 
+- '-enullptr' command line option to enable null pointer checking
 - '-eassert' command line option to enable assert() and assertwarn() checking
 - '-edebug' command line option to enable __FB_DEBUG__
 - '-edebuginfo' command line option to enable debug symbols
@@ -630,7 +630,7 @@ Version 1.06.0
 - Incorrect C++ mangling for BYREF parameters using built-in types
 - #844: Fix bug in -gen gcc due to duplicated type (struct) names in the main module and global namespace
 - #875: Fix bug where boolean variable to single/double conversion gives wrong sign on -gen gas -fpu x87 & sse
-- #872: Fix broken boolean bitfield runtime assignments from unsigned values 
+- #872: Fix broken boolean bitfield runtime assignments from unsigned values
 - #876: ThreadCall does not support subroutine with [U]Long type parameter
 - #877: fix SLEEP behaviour in linux console and wait for key presses, and do not affect input buffer.  Match linux SLEEP to behaviour on Windows.
 - Fixed inline asm procedure name mangling bug (missing underscore prefix) with -gen gcc -asm intel on dos/win32

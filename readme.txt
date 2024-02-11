@@ -310,8 +310,8 @@
         him.
     - VonGodric
         Author of the first FreeBASIC IDE: FBIDE.
-    - Everybody that helped writing the documentation (and in special Nexinarus 
+    - Everybody that helped writing the documentation (and in special Nexinarus
       who started it)
         https://freebasic.net/wiki/ContributorList
-    - All users that reported bugs, requested features and as such helped 
+    - All users that reported bugs, requested features and as such helped
       improving the compiler, language and run-time libraries.

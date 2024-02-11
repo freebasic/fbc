@@ -149,7 +149,7 @@ enum FBCTOOLFLAG
 end enum
 
 type FBCTOOLINFO
-	name as zstring * 16                  '' default name of tool to invoke 
+	name as zstring * 16                  '' default name of tool to invoke
 	env_variable as zstring * 16          '' environment variable to override
 	flags as FBCTOOLFLAG
 	path as zstring * (FB_MAXPATHLEN + 1) '' cached tool path and name
@@ -3080,7 +3080,7 @@ private sub hCheckArgs()
 
 		'' -gen gas only supports -asm intel
 		select case fbGetOption( FB_COMPOPT_BACKEND )
-		case FB_BACKEND_GAS, FB_BACKEND_GAS64  
+		case FB_BACKEND_GAS, FB_BACKEND_GAS64
 			if( fbc.asmsyntax <> FB_ASMSYNTAX_INTEL ) then
 				errReportEx( FB_ERRMSG_GENGASWITHOUTINTEL, "", -1 )
 			end if
@@ -3639,7 +3639,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			'' GCC doesn't recognize the -march option and PowerPC combination
 			'' and recommendeds the -mcpu option be used for PowerPC.
 			select case fbGetCpuFamily( )
-			case FB_CPUFAMILY_PPC, FB_CPUFAMILY_PPC64, FB_CPUFAMILY_PPC64LE   
+			case FB_CPUFAMILY_PPC, FB_CPUFAMILY_PPC64, FB_CPUFAMILY_PPC64LE
 				if( fbc.cputype_is_native ) then
 					ln += "-mcpu=native "
 				else
@@ -3690,7 +3690,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			ln += "-Wno-unused "
 
 		else
-			'' if Emscripten is used, we will skip the assembly generation and 
+			'' if Emscripten is used, we will skip the assembly generation and
 			'' compile directly to object code
 			ln += "-c -nostdlib -nostdinc -Wall -Wno-unused-label " + _
 				"-Wno-unused-function -Wno-unused-variable "
