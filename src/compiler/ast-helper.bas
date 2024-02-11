@@ -37,7 +37,7 @@ function astBuildVarAssign _
 end function
 
 function astBuildFakeWstringAccess( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
-	assert( symbGetIsWstring( sym ) )
+	assert( symbGetIsTemporary( sym ) )
 	function = astNewDEREF( astNewVAR( sym ) )
 end function
 
@@ -50,7 +50,7 @@ function astBuildFakeWstringAssign _
 
 	dim as ASTNODE ptr t = any
 
-	assert( symbGetIsWstring( sym ) )
+	assert( symbGetIsTemporary( sym ) )
 	t = NULL
 
 	'' side-effect?
@@ -144,7 +144,7 @@ function astBuildVarDtorCall overload _
 
 		'' wchar ptr marked as "dynamic wstring"?
 		case typeAddrOf( FB_DATATYPE_WCHAR )
-			assert( symbGetIsWstring( s ) ) '' This check should be done in symbGetVarHasDtor() already
+			assert( symbGetIsTemporary( s ) ) '' This check should be done in symbGetVarHasDtor() already
 			'' It points to a dynamically allocated wchar buffer
 			'' that must be deallocated.
 			function = rtlStrDelete( astNewVAR( s ) )

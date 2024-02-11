@@ -149,6 +149,7 @@ enum FB_SYMBSTATS
 	FB_SYMBSTATS_HASRTTI      = &h00400000
 	FB_SYMBSTATS_CANTUNDEF    = &h00800000
 	FB_SYMBSTATS_UNIONFIELD   = &h01000000  '' fields only
+	FB_SYMBSTATS_TEMPORARY    = &h01000000  '' variables: String and Wstring - a pointer that needs deallocating at scope breaks/end
 	''                      ''= &h02000000  '' not-used
 	FB_SYMBSTATS_EMITTED      = &h04000000  '' needed by high-level IRs, to avoid emitting structs etc twice
 	FB_SYMBSTATS_BEINGEMITTED = &h08000000  '' ditto, for circular dependencies with structs
@@ -156,11 +157,6 @@ enum FB_SYMBSTATS
 	'' reuse - take care
 	FB_SYMBSTATS_PROCEMITTED  = FB_SYMBSTATS_UNIONFIELD  '' procs only
 	FB_SYMBSTATS_EXCLPARENT   = FB_SYMBSTATS_DONTINIT    '' procs only
-
-	'' A wchar ptr var that needs deallocating at scope breaks/end.
-	'' (Cheap dynamic wstring used by the 'SELECT CASE wstring' temporary,
-	'' there is no real FB_DATATYPE_WSTRING yet)
-	FB_SYMBSTATS_WSTRING = FB_SYMBSTATS_UNIONFIELD '' vars only
 
 	FB_SYMBSTATS_ARGV = FB_SYMBSTATS_CANBECLONED  '' params/paramvars only: is it main()'s argv? (helping the C backend to emit a clang-compatible main() signature)
 end enum
@@ -2193,8 +2189,8 @@ declare function symbCloneSimpleStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL 
 #define symbGetProcIsEmitted(s) ((s->stats and FB_SYMBSTATS_PROCEMITTED) <> 0)
 #define symbSetProcIsEmitted(s) s->stats or= FB_SYMBSTATS_PROCEMITTED
 
-#define symbGetIsWstring(s) (((s)->stats and FB_SYMBSTATS_WSTRING) <> 0)
-#define symbSetIsWstring(s) (s)->stats or= FB_SYMBSTATS_WSTRING
+#define symbGetIsTemporary(s) (((s)->stats and FB_SYMBSTATS_TEMPORARY) <> 0)
+#define symbSetIsTemporary(s) (s)->stats or= FB_SYMBSTATS_TEMPORARY
 
 #define symbGetStats(s) s->stats
 

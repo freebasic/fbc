@@ -89,7 +89,7 @@ private function hAllocTempWstrPtr _
 	dim as FBSYMBOL ptr temp = any
 
 	temp = symbAddTempVar( typeAddrOf( FB_DATATYPE_WCHAR ) )
-	symbSetIsWstring( temp )
+	symbSetIsTemporary( temp )
 	astDtorListAdd( temp )
 
 	'' evil hack: a function returning a "wstring" is actually returning a pointer,

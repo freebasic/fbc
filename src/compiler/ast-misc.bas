@@ -1004,7 +1004,7 @@ private function hHasDtor( byval sym as FBSYMBOL ptr ) as integer
 		function = TRUE
 
 	case typeAddrOf( FB_DATATYPE_WCHAR )
-		if( symbGetIsWstring( sym ) ) then
+		if( symbGetIsTemporary( sym ) ) then
 			function = TRUE
 		end if
 

@@ -168,7 +168,7 @@ sub cSelectStmtBegin( )
 
 			'' Mark it as "dynamic wstring" so it will be
 			'' deallocated with fb_WstrDelete() at scope breaks
-			symbSetIsWstring( sym )
+			symbSetIsTemporary( sym )
 
 			if( options and FB_SYMBOPT_UNSCOPE ) then
 				'' Clear the pointer at procedure-level,
@@ -222,7 +222,7 @@ private sub hCaseExpression _
 	if( casectx.expr1 = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: fake an expr
-		casectx.expr1 = astNewCONSTz( iif( symbGetIsWstring( sym ), _
+		casectx.expr1 = astNewCONSTz( iif( symbGetIsTemporary( sym ), _
 							FB_DATATYPE_WCHAR, _
 							symbGetType( sym ) ) )
 	end if
@@ -263,7 +263,7 @@ private function hFlushCaseExpr _
 
 	'' if it's the fake "dynamic wstring", do "if *tmp op expr"
 	#define NEWCASEVAR( sym ) _
-		iif( symbGetIsWstring( sym ), _
+		iif( symbGetIsTemporary( sym ), _
 		     astBuildFakeWstringAccess( sym ), _
 		     astNewVAR( sym ) )
 

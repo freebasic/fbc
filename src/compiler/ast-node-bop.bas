@@ -653,7 +653,7 @@ private function hCheckDerefWcharPtr _
 	ll = l->l
 	if( ll ) then
 		if( ll->class = AST_NODECLASS_VAR ) then
-			if( symbGetIsWstring( ll->sym ) ) then
+			if( symbGetIsTemporary( ll->sym ) ) then
 				exit function
 			end if
 		end if

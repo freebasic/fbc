@@ -848,7 +848,7 @@ function symbGetVarHasCtor( byval s as FBSYMBOL ptr ) as integer
 
 	'' wchar ptr marked as "dynamic wstring"?
 	case typeAddrOf( FB_DATATYPE_WCHAR )
-		if( symbGetIsWstring( s ) ) then
+		if( symbGetIsTemporary( s ) ) then
 			return TRUE
 		end if
 
@@ -887,7 +887,7 @@ function symbGetVarHasDtor( byval s as FBSYMBOL ptr ) as integer
 
 	'' wchar ptr marked as "dynamic wstring"?
 	case typeAddrOf( FB_DATATYPE_WCHAR )
-		if( symbGetIsWstring(s) ) then
+		if( symbGetIsTemporary(s) ) then
 			return TRUE
 		end if
 

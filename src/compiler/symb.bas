@@ -2912,7 +2912,7 @@ function symbDumpToStr _
 	elseif( symbIsProc( sym ) ) then
 		checkStat( PROCEMITTED )
 	else
-		checkStat( WSTRING )
+		checkStat( TEMPORARY )
 	end if
 
 	checkStat( EMITTED )
