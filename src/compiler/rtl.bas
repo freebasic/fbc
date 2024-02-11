@@ -309,7 +309,7 @@ function rtlProcLookup _
 				pname = strptr( tmp_name )
 				chain_ = symbLookupAt( @symbGetGlobalNamespc( ), pname, FALSE, FALSE )
 				if( chain_ = NULL ) then
-					errReportEx( FB_ERRMSG_UNDEFINEDSYMBOL, *pname )
+					errReportEx( FB_ERRMSG_UNDEFINEDBUILTINSYMBOL, *pname )
 					rtlLookupTB( pidx ) = NULL
 				else
 					rtlLookupTB( pidx ) = chain_->sym
