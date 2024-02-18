@@ -1325,11 +1325,14 @@ sub fbCompile _
 
 	fbParsePreDefines()
 	fbParsePreIncludes()
+
 	if (fbShouldContinue()) then
 		cProgram()
 	end if
 
-	fbMainEnd( )
+	if (fbShouldContinue()) then
+		fbMainEnd( )
+	end if
 
 	'' compiling only, not cross-compiling?
 	if( fbGetOption( FB_COMPOPT_OBJINFO ) and _
