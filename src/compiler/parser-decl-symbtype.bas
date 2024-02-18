@@ -513,6 +513,21 @@ private function cMangleModifier _
 
 end function
 
+''
+private sub hCheckFixedStringSize _
+	( _
+		byref lgt as longint _
+	)
+
+	'' min 1 char, max 2^31-1 = 2,147,483,647
+	if( (lgt < 1) orelse (lgt > 2147483647ll) ) then
+		errReport( FB_ERRMSG_INVALIDSIZE, TRUE )
+		'' error recovery: fake a len
+		lgt = 1
+	end if
+
+end sub
+
 '':::::
 ''SymbolType      =   CONST? UNSIGNED? (
 ''                    ANY
@@ -854,23 +869,13 @@ function cSymbolType _
 			'' plus the null-term
 			lgt += 1
 
-			'' min 1 char (+ null-term)
-			if( lgt <= 1 ) then
-				errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
-				'' error recovery: fake a len
-				lgt = 2
-			end if
+			hCheckFixedStringSize( lgt )
 
 			'' remap type
 			dtype = FB_DATATYPE_FIXSTR
 
 		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-			'' min 1 char
-			if( lgt < 1 ) then
-				errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
-				'' error recovery: fake a len
-				lgt = 1
-			end if
+			hCheckFixedStringSize( lgt )
 
 			'' note: len of "wstring * expr" symbols will be actually
 			''       the number of chars times sizeof(wstring), so
