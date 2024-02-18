@@ -61,7 +61,7 @@ sub cParameters _
 			exit do
 		end if
 
-		length += symbGetLen( param )
+		length += symbGetSizeOf( param )
 
 		'' vararg?
 		if( param->param.mode = FB_PARAMMODE_VARARG ) then
@@ -486,7 +486,7 @@ private function hParamDecl _
 	end if
 
 	if( isproto = FALSE ) then
-		if( symbGetLen( param ) > (env.pointersize * 4) ) then
+		if( symbGetSizeOf( param ) > (env.pointersize * 4) ) then
 			if( fbPdCheckIsSet( FB_PDCHECK_PARAMSIZE ) ) then
 				hParamWarning( proc, id, FB_WARNINGMSG_PARAMSIZETOOBIG, 0 )
 			end if

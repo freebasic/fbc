@@ -2740,7 +2740,7 @@ function rtlStrAllocTempDesc _
 
 		'' length is known at compile-time
 		if( litsym <> NULL ) then
-			lgt = symbGetStrLen( litsym ) - 1   '' less the null-term
+			lgt = symbGetStrLength( litsym )
 
 			'' byval len as integer
 			if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
@@ -2875,7 +2875,7 @@ function rtlToStr _
 		if( litsym <> NULL ) then
 			if( env.wcharconv <> FB_WCHARCONV_NEVER ) then
 				litsym = symbAllocStrConst( str( *symbGetVarLitTextW( litsym ) ), _
-				                            symbGetWstrLen( litsym ) - 1 )
+				                            symbGetWstrLength( litsym ) )
 
 				return astNewVAR( litsym )
 			end if
@@ -2980,7 +2980,7 @@ function rtlToWstr _
 		if( litsym <> NULL ) then
 			if( env.wcharconv <> FB_WCHARCONV_NEVER ) then
 				litsym = symbAllocWstrConst( wstr( *symbGetVarLitText( litsym ) ), _
-				                             symbGetStrLen( litsym ) - 1 )
+				                             symbGetStrLength( litsym ) )
 				return astNewVAR( litsym )
 			end if
 		end if
@@ -3776,7 +3776,7 @@ private function hEvalAscCase _
 		w = symbGetVarLitTextW( literal )
 		internallength = len( *w )
 		w = hUnescapeW( w )
-		reallength = symbGetWstrLen( literal ) - 1
+		reallength = symbGetWstrLength( literal )
 
 		if( internallength <> reallength ) then
 			exit function
@@ -3795,7 +3795,7 @@ private function hEvalAscCase _
 		z = symbGetVarLitText( literal )
 		internallength = len( *z )
 		z = hUnescape( z )
-		reallength = symbGetStrLen( literal ) - 1
+		reallength = symbGetStrLength( literal )
 
 		'' Don't do it if it includes internal escape sequences,
 		'' handling these here would be quite hard... (TODO)

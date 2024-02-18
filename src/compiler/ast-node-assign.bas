@@ -413,7 +413,7 @@ private function hShallowCopy _
 
 	'' How much to copy must depend on the possibly-casted lhs, since that's
 	'' what we're writing into, and we don't want a buffer overflow.
-	bytestocopy = symbGetLen( l->subtype )
+	bytestocopy = symbGetSizeOf( l->subtype )
 	has_vptr = symbGetHasRTTI( l->subtype )
 
 	'' Need to remove casts before doing ADDROF or passing to astNewMEM().
@@ -538,7 +538,7 @@ function astNewASSIGN _
 					else
 						result = astNewMEM( AST_OP_MEMCLEAR, _
 							astCloneTree( l ), _
-							astNewCONSTi( symbGetLen( l->subtype ) ) )
+							astNewCONSTi( symbGetSizeOf( l->subtype ) ) )
 					end if
 				else
 					result = NULL

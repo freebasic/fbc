@@ -7787,7 +7787,7 @@ private sub _procAllocArg _
 	assert( symbIsParamVar( sym ) )
 
 	if( symbIsParamVarByVal( sym ) ) then
-		lgt = symbGetLen( sym )
+		lgt = symbGetSizeOf( sym )
 	else
 		'' Bydesc/byref
 		lgt = env.pointersize

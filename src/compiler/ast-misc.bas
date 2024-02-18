@@ -1291,7 +1291,7 @@ function astSizeOf( byval n as ASTNODE ptr, byref is_fixlenstr as integer ) as l
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, FB_DATATYPE_FIXSTR
 		if( n->sym ) then
 			is_fixlenstr = TRUE
-			function = symbGetLen( n->sym )
+			function = symbGetSizeOf( n->sym )
 		end if
 	end select
 end function

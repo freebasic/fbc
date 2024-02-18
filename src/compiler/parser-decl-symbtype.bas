@@ -768,7 +768,7 @@ function cSymbolType _
 							lexSkipToken( LEXCHECK_POST_SUFFIX )
 							dtype = FB_DATATYPE_STRUCT
 							subtype = sym
-							lgt = symbGetLen( sym )
+							lgt = symbGetSizeOf( sym )
 							cMangleModifier( dtype, subtype )
 							exit do, do
 
@@ -789,7 +789,7 @@ function cSymbolType _
 							lexSkipToken( LEXCHECK_POST_SUFFIX )
 							dtype = symbGetFullType( sym )
 							subtype = symbGetSubtype( sym )
-							lgt = symbGetLen( sym )
+							lgt = symbGetSizeOf( sym )
 							is_fixlenstr = symbGetIsFixLenStr( sym )
 							ptr_cnt += typeGetPtrCnt( dtype )
 							exit do, do

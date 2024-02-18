@@ -426,7 +426,7 @@ function rtlCalcStrLen _
 			if( symbGetType( s ) <> typeGetDtAndPtrOnly( dtype ) ) then
 				function = 0
 			else
-				function = symbGetStrLen( s )
+				function = symbGetStrLength( s ) + 1
 			end if
 		end if
 
@@ -439,12 +439,14 @@ function rtlCalcStrLen _
 			if( symbGetType( s ) <> typeGetDtAndPtrOnly( dtype ) ) then
 				function = 0
 			else
-				function = symbGetWStrLen( s )
+				function = symbGetWStrLength( s ) + 1
 			end if
 		end if
 
 	case else
+		'' var-len STRING
 		function = -1
+
 	end select
 
 end function

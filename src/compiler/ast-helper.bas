@@ -278,7 +278,7 @@ function astBuildTempVarClear( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 
 	'' Clear variable's memory
 	function = astNewMEM( AST_OP_MEMCLEAR, astNewVAR( sym ), _
-	                      astNewCONSTi( symbGetLen( sym ) ) )
+	                      astNewCONSTi( symbGetSizeOf( sym ) ) )
 end function
 
 ''
@@ -889,7 +889,7 @@ function astBuildArrayDescIniTree _
 	elm = symbGetNext( elm )
 
 	'' .element_len = len( array )
-	astTypeIniAddAssign( tree, astNewCONSTi( symbGetLen( array ) ), elm )
+	astTypeIniAddAssign( tree, astNewCONSTi( symbGetSizeOf( array ) ), elm )
 
 	elm = symbGetNext( elm )
 
@@ -957,7 +957,7 @@ function astBuildArrayDescIniTree _
 		end if
 		assert( dimensions > 0 )
 		assert( symbDescriptorHasRoomFor( desc, dimensions ) )
-		astTypeIniAddPad( tree, dimensions * symbGetLen( symb.fbarraydim ) )
+		astTypeIniAddPad( tree, dimensions * symbGetSizeOf( symb.fbarraydim ) )
 	end if
 
 	astTypeIniScopeEnd( tree, dimtbfield )

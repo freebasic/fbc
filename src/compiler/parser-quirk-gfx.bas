@@ -80,7 +80,7 @@ private function hNidxArray2ArrayAccess( byval nidxarray as ASTNODE ptr ) as AST
 		'' lBound * elemLen
 		dataOffset = astNewBOP( AST_OP_MUL, _
 								dataOffset, _
-								astNewCONSTi( symbGetLen( sym ), FB_DATATYPE_UINT ) )
+								astNewCONSTi( symbGetSizeOf( sym ), FB_DATATYPE_UINT ) )
 
 		'' add above to data ptr
 		idxexpr = astNewBOP( AST_OP_ADD, idxexpr, dataOffset )
@@ -106,7 +106,7 @@ private function hNidxArray2ArrayAccess( byval nidxarray as ASTNODE ptr ) as AST
 		'' lBound * elemLen
 		dataOffset = astNewBOP( AST_OP_MUL, _
 								dataOffset, _
-								astNewCONSTi( symbGetLen( sym ), FB_DATATYPE_UINT ) )
+								astNewCONSTi( symbGetSizeOf( sym ), FB_DATATYPE_UINT ) )
 
 		'' add above to data ptr
 		idxexpr = astNewBOP( AST_OP_ADD, idxexpr, dataOffset )

@@ -922,7 +922,7 @@ private function hCallCtorList _
 			fldexpr = astBuildVarField( this_, fld )
 		else
 			'' iter = @this.field(elements-1)
-			fldexpr = astBuildVarField( this_, fld, (elements - 1) * symbGetLen( fld ) )
+			fldexpr = astBuildVarField( this_, fld, (elements - 1) * symbGetSizeOf( fld ) )
 		end if
 	else
 		if( is_ctor ) then
@@ -930,7 +930,7 @@ private function hCallCtorList _
 			fldexpr = astBuildVarField( this_, NULL, 0 )
 		else
 			'' iter = @symbol(0) + (elements - 1)
-			fldexpr = astBuildVarField( this_, NULL, (elements - 1) * symbGetLen( subtype ) )
+			fldexpr = astBuildVarField( this_, NULL, (elements - 1) * symbGetSizeOf( subtype ) )
 		end if
 	end if
 	tree = astBuildVarAssign( iter, astNewADDROF( fldexpr ), AST_OPOPT_ISINI )

@@ -346,7 +346,7 @@ function astNewFIELD _
 		if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_BOOLEAN ) then
 			'' !!!TODO!!! check for other sizes of BOOLEAN bitfield containers?
 			'' final type is always a signed int
-			select case symbGetLen( sym )
+			select case symbGetSizeOf( sym )
 			case 1
 				dtype = typeJoin( dtype, FB_DATATYPE_BYTE )
 			case else

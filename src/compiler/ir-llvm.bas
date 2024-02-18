@@ -670,10 +670,10 @@ private sub hEmitVariable( byval sym as FBSYMBOL ptr )
 			ln += hEmitSymType( sym )
 			ln += " c"""
 			if( symbGetType( sym ) = FB_DATATYPE_WCHAR ) then
-				length = symbGetWstrLen( sym )
+				length = symbGetWstrLength( sym ) + 1
 				hBuildWstrLit( ln, length, hUnescapeW( symbGetVarLitTextW( sym ) ), length )
 			else
-				length = symbGetStrLen( sym )
+				length = symbGetStrLength( sym ) + 1
 				hBuildStrLit( ln, length, hUnescape( symbGetVarLitText( sym ) ), length )
 			end if
 			ln += """"

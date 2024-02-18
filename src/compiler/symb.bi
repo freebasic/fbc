@@ -2194,11 +2194,10 @@ declare function symbCloneSimpleStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL 
 
 #define symbGetStats(s) s->stats
 
-#define symbGetLen( s ) (s)->lgt
+#define symbGetSizeOf( s ) (s)->lgt
 
-#define symbGetStrLen(s) symbGetLen(s)
-
-#define symbGetWstrLen(s) ((s)->lgt \ typeGetSize( FB_DATATYPE_WCHAR ))
+declare function symbGetStrLength( byval sym as FBSYMBOL ptr ) as longint
+declare function symbGetWstrLength( byval sym as FBSYMBOL ptr ) as longint
 
 #define symbGetFullType(s) s->typ
 #define symbGetType(s) typeGetDtAndPtrOnly( symbGetFullType( s ) )
@@ -2701,7 +2700,7 @@ declare sub symbDumpChain( byval chain_ as FBSYMCHAIN ptr )
 declare sub symbDumpLookup( byval id as zstring ptr )
 
 '' FBARRAY: 6 pointer/integer fields + the dimTB with 3 integer fields per dimension
-#define symbDescriptorHasRoomFor( sym, dimensions ) (symbGetLen( sym ) >= env.pointersize * (((dimensions) * 3) + 6))
+#define symbDescriptorHasRoomFor( sym, dimensions ) (symbGetSizeOf( sym ) >= env.pointersize * (((dimensions) * 3) + 6))
 #endif
 
 declare function symbDumpPrettyToStr( byval sym as FBSYMBOL ptr ) as string

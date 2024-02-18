@@ -230,7 +230,7 @@ function cVAFunct() as ASTNODE ptr
 		expr = astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, expr )
 
 		'' + paramlen( param )
-		function = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( symbGetLen( vararg_param ), FB_DATATYPE_UINT ),,AST_OPOPT_NOCOERCION )
+		function = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( symbGetSizeOf( vararg_param ), FB_DATATYPE_UINT ),,AST_OPOPT_NOCOERCION )
 	end select
 end function
 
@@ -449,7 +449,7 @@ function cVALISTStmt _
 			'' expr = astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, expr )
 
 			'' + paramlen( param )
-			expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( symbGetLen( vararg_param ), FB_DATATYPE_UINT ) )
+			expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( symbGetSizeOf( vararg_param ), FB_DATATYPE_UINT ) )
 
 			'' cptr( any ptr, list ) = first_vararg
 			astAdd( astNewASSIGN( expr1, expr, AST_OPOPT_DONTCHKPTR ) )
