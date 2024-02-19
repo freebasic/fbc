@@ -1653,11 +1653,10 @@ private function reg_findfree(byval vreg as long,byval regparam as integer=-1) a
 			regspill+=1
 			if regspill=6 then regspill=0
 			''avoid spilling a param register
-			while reghandle(regspill)=KREGLOCK
+			while reghandle(reg_prio(regspill))=KREGLOCK
 				regspill+=1
-				if regspill=6 then regspill=0
+				if regspill=6 then regspill=0 ''use R11
 			wend
-
 			regfree=reg_prio(regspill)
 		else
 			''just spilling the register used for parameter but not free
@@ -1678,10 +1677,10 @@ private function reg_findfree(byval vreg as long,byval regparam as integer=-1) a
 end function
 ''=====================================================================
 '' in case of callptr avoid potential register used as parameter
-'' eg op1=-1520[rdx] --> op1=-1520[r11] and 'mov r11, rdx'
+'' eg op1=-1520[rdx] --> op1=-1520[r10] and 'mov r10, rdx'
 
 '' note : it swaps all the POTENTIAL registers not only those laterly used
-'' op1=-1520[r8] --> op1=-1520[r11] and 'mov r11, r8'  even if r8 will be not be used as parameter
+'' op1=-1520[r8] --> op1=-1520[r10] and 'mov r10, r8'  even if r8 will be not be used as parameter
 ''=====================================================================
 private sub reg_callptr(byref op1 as string,byref op3 as string)
 	dim as long regfree
@@ -1692,11 +1691,16 @@ private sub reg_callptr(byref op1 as string,byref op3 as string)
 	for ireg as integer = 1 to ubound(listreg)-2
 		p=instr(p2,op1,*regstrq(listreg(ireg)))
 		if p=0 then continue for
-		asm_info("Transfering value for freeing register / case callptr")
-		regfree=reg_findfree(reghandle(listreg(ireg)))
+		asm_info("Transfering value for freeing register / case callptr to R10")
+		regfree=KREG_R10
+		if reghandle(KREG_R10)<>KREGFREE then
+			reg_spilling(KREG_R10)
+		End If
 		''transfering so it can be used for storing the parameter
+		reghandle(KREG_R10)=reghandle(listreg(ireg))
 		asm_code("mov "+*regstrq(regfree)+", "+*regstrq(listreg(ireg)),KNOOPTIM)
 		reghandle(listreg(ireg))=KREGLOCK
+
 		''replace in the string the previous register by the new one
 		if len(*regstrq(regfree))=len(*regstrq(listreg(ireg))) then
 			mid(op1,p)=*regstrq(regfree)
@@ -1704,6 +1708,7 @@ private sub reg_callptr(byref op1 as string,byref op3 as string)
 			''case r8/r9 as other registers have a size of 3 characters
 			op1=left(op1,p-1)+*regstrq(regfree)+mid(op1,p+2)
 		end if
+		exit for
 	next
 	if op3<>"" then
 		for ireg as integer = 1 to ubound(listreg)-2
