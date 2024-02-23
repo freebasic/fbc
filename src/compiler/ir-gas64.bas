@@ -140,7 +140,7 @@ declare sub cfi_windows_asm_code(byval statement as string)
 #ifndef DISABLE_GAS64_DEBUG
 	'' not disabled? OK turn on debugging information in asm
 	'' files by default if this is a debug version of fbc
-	#if __FB_DEBUG__ <> 0
+	#if (__FB_DEBUG__ <> 0) and not defined(__GAS64_DEBUG__)
 		#define __GAS64_DEBUG__
 	#endif
 #endif
