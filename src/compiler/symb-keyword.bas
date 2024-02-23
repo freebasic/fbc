@@ -370,7 +370,7 @@ end function
 sub symbKeywordConstsInit( )
 
 	dim as FBVALUE v
-	dim id as string * 10
+	dim id as zstring * 10
 
 	dim as FB_SYMBATTRIB attrib = any
 	dim as FBSYMBOL ptr sym = any
