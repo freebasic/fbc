@@ -1,131 +1,295 @@
 #include "fbcunit.bi"
 
+function chars( byref s as string ) as string
+	dim ret as string
+	for i as integer = 0 to len(s)-1
+		var ch = cubyte(s[i])
+		select case ch
+		case 0
+			ret += "."
+		case 32
+			ret += "-"
+		case else
+			ret += chr(ch)
+		end select
+	next
+	return ret
+end function
+
 SUITE( fbc_tests.swap_.strings )
 
 	'' SWAP on local vars
 	TEST( localVars )
-		#macro make( TA, TB )
+		#macro make( TA, NA, TB, NB )
 			scope
-				dim as TA a
-				dim as TB b
+				#if NA > 0
+					dim as TA * NA a
+				#else
+					dim as TA a
+				#endif
+				#if NB > 0
+					dim as TB * NB b
+				#else
+					dim as TB b
+				#endif
 
 				a = "1"
 				b = "0"
+
+				#if (#TA = "string") and (NA > 0)
+					CU_ASSERT( a = "1" + space(NA-1) )
+				#else
+					CU_ASSERT( a = "1" )
+				#endif
+
+				#if (#TB = "string") and (NB > 0)
+					CU_ASSERT( b = "0" + space(NB-1) )
+				#else
+					CU_ASSERT( b = "0" )
+				#endif
+
 				swap a, b
-				CU_ASSERT( a = "0" )
-				CU_ASSERT( b = "1" )
+
+				#if (#TA = "string") and (NA > 0)
+					#if (#TB = "string") and (NB > 0)
+						CU_ASSERT( a = "0" + space(NA-1) )
+						CU_ASSERT( b = "1" + space(NB-1) )
+					#else
+						CU_ASSERT( a = "0" + space(NA-1) )
+						CU_ASSERT( b = "1" + space(NA-1) )
+					#endif
+				#else
+					#if (#TB = "string") and (NB > 0)
+						CU_ASSERT( a = "0" + space(NB-1) )
+						CU_ASSERT( b = "1" + space(NB-1) )
+					#else
+						CU_ASSERT( a = "0" )
+						CU_ASSERT( b = "1" )
+					#endif
+				#endif
 			end scope
 		#endmacro
 
-		make( string, string )
-		make( string, string * 5 )
-		make( string, zstring * 5 )
+		make( string, 0, string, 0 )
+		make( string, 0, string, 4 )
+		make( string, 0, zstring, 5 )
 
-		make( string * 5, string )
-		make( string * 5, string * 5 )
-		make( string * 5, zstring * 5 )
+		make( string, 4, string, 0 )
+		make( string, 4, string, 4 )
+		make( string, 4, zstring, 5 )
 
-		make( zstring * 5, string )
-		make( zstring * 5, string * 5 )
-		make( zstring * 5, zstring * 5 )
+		make( zstring, 5, string, 0 )
+		make( zstring, 5, string, 4 )
+		make( zstring, 5, zstring, 5 )
 
-		make( wstring * 5, wstring * 5 )
+		make( wstring, 5, wstring, 5 )
 	END_TEST
 
 	'' SWAP on static vars
 	TEST( StaticVars )
-		#macro make( TA, TB )
+		#macro make( TA, NA, TB, NB )
 			scope
-				static as TA static_a
-				static as TB static_b
+				#if NA > 0
+					static as TA * NA static_a
+				#else
+					static as TA static_a
+				#endif
+				#if NB > 0
+					static as TB * NB static_b
+				#else
+					static as TB static_b
+				#endif
 
 				static_a = "1"
 				static_b = "0"
+
+				#if (#TA = "string") and (NA > 0)
+					CU_ASSERT( static_a = "1" + space(NA-1) )
+				#else
+					CU_ASSERT( static_a = "1" )
+				#endif
+
+				#if (#TB = "string") and (NB > 0)
+					CU_ASSERT( static_b = "0" + space(NB-1) )
+				#else
+					CU_ASSERT( static_b = "0" )
+				#endif
+
 				swap static_a, static_b
-				CU_ASSERT( static_a = "0" )
-				CU_ASSERT( static_b = "1" )
+
+				#if (#TA = "string") and (NA > 0)
+					#if (#TB = "string") and (NB > 0)
+						CU_ASSERT( static_a = "0" + space(NA-1) )
+						CU_ASSERT( static_b = "1" + space(NB-1) )
+					#else
+						CU_ASSERT( static_a = "0" + space(NA-1) )
+						CU_ASSERT( static_b = "1" + space(NA-1) )
+					#endif
+				#else
+					#if (#TB = "string") and (NB > 0)
+						CU_ASSERT( static_a = "0" + space(NB-1) )
+						CU_ASSERT( static_b = "1" + space(NB-1) )
+					#else
+						CU_ASSERT( static_a = "0" )
+						CU_ASSERT( static_b = "1" )
+					#endif
+				#endif
 			end scope
 		#endmacro
 
-		make( string, string )
-		make( string, string * 5 )
-		make( string, zstring * 5 )
+		make( string, 0, string, 0 )
+		make( string, 0, string, 4 )
+		make( string, 0, zstring, 5 )
 
-		make( string * 5, string )
-		make( string * 5, string * 5 )
-		make( string * 5, zstring * 5 )
+		make( string, 4, string, 0 )
+		make( string, 4, string, 4 )
+		make( string, 4, zstring, 5 )
 
-		make( zstring * 5, string )
-		make( zstring * 5, string * 5 )
-		make( zstring * 5, zstring * 5 )
+		make( zstring, 5, string, 0 )
+		make( zstring, 5, string, 4 )
+		make( zstring, 5, zstring, 5 )
 
-		make( wstring * 5, wstring * 5 )
+		make( wstring, 5, wstring, 5 )
 	END_TEST
 
 	'' SWAP local, static
 	TEST( LocalVarsAndStaticVars )
-		#macro make( TA, TB )
+		#macro make( TA, NA, TB, NB )
 			scope
-				dim as TA a
-				static as TB static_b
+				#if NA > 0
+					dim as TA * NA a
+				#else
+					dim as TA a
+				#endif
+				#if NB > 0
+					static as TB * NB static_b
+				#else
+					static as TB static_b
+				#endif
 
 				a = "1"
 				static_b = "0"
+
+				#if (#TA = "string") and (NA > 0)
+					CU_ASSERT( a = "1" + space(NA-1) )
+				#else
+					CU_ASSERT( a = "1" )
+				#endif
+
+				#if (#TB = "string") and (NB > 0)
+					CU_ASSERT( static_b = "0" + space(NB-1) )
+				#else
+					CU_ASSERT( static_b = "0" )
+				#endif
+
 				swap a, static_b
-				CU_ASSERT( a = "0" )
-				CU_ASSERT( static_b = "1" )
+
+				#if (#TA = "string") and (NA > 0)
+					#if (#TB = "string") and (NB > 0)
+						CU_ASSERT( a = "0" + space(NA-1) )
+						CU_ASSERT( static_b = "1" + space(NB-1) )
+					#else
+						CU_ASSERT( a = "0" + space(NA-1) )
+						CU_ASSERT( static_b = "1" + space(NA-1) )
+					#endif
+				#else
+					#if (#TB = "string") and (NB > 0)
+						CU_ASSERT( a = "0" + space(NB-1) )
+						CU_ASSERT( static_b = "1" + space(NB-1) )
+					#else
+						CU_ASSERT( a = "0" )
+						CU_ASSERT( static_b = "1" )
+					#endif
+				#endif
 			end scope
 		#endmacro
 
-		make( string, string )
-		make( string, string * 5 )
-		make( string, zstring * 5 )
+		make( string, 0, string, 0 )
+		make( string, 0, string, 4 )
+		make( string, 0, zstring, 5 )
 
-		make( string * 5, string )
-		make( string * 5, string * 5 )
-		make( string * 5, zstring * 5 )
+		make( string, 4, string, 0 )
+		make( string, 4, string, 4 )
+		make( string, 4, zstring, 5 )
 
-		make( zstring * 5, string )
-		make( zstring * 5, string * 5 )
-		make( zstring * 5, zstring * 5 )
+		make( zstring, 5, string, 0 )
+		make( zstring, 5, string, 4 )
+		make( zstring, 5, zstring, 5 )
 
-		make( wstring * 5, wstring * 5 )
+		make( wstring, 5, wstring, 5 )
 	END_TEST
 
 	'' SWAP static, local
 	TEST( StaticVarsAndLocalVars )
-		#macro make( TA, TB )
+		#macro make( TA, NA, TB, NB )
 			scope
-				dim as TB b
-				static as TA static_a
+				#if NA > 0
+					static as TA * NA static_a
+				#else
+					static as TA static_a
+				#endif
+				#if NB > 0
+					dim as TB * NB b
+				#else
+					dim as TB b
+				#endif
 
 				static_a = "1"
 				b = "0"
+
+				#if (#TA = "string") and (NA > 0)
+					CU_ASSERT( static_a = "1" + space(NA-1) )
+				#else
+					CU_ASSERT( static_a = "1" )
+				#endif
+
+				#if (#TB = "string") and (NB > 0)
+					CU_ASSERT( b = "0" + space(NB-1) )
+				#else
+					CU_ASSERT( b = "0" )
+				#endif
+
 				swap static_a, b
-				CU_ASSERT( static_a = "0" )
-				CU_ASSERT( b = "1" )
+
+				#if (#TA = "string") and (NA > 0)
+					#if (#TB = "string") and (NB > 0)
+						CU_ASSERT( static_a = "0" + space(NA-1) )
+						CU_ASSERT( b = "1" + space(NB-1) )
+					#else
+						CU_ASSERT( static_a = "0" + space(NA-1) )
+						CU_ASSERT( b = "1" + space(NA-1) )
+					#endif
+				#else
+					#if (#TB = "string") and (NB > 0)
+						CU_ASSERT( static_a = "0" + space(NB-1) )
+						CU_ASSERT( b = "1" + space(NB-1) )
+					#else
+						CU_ASSERT( static_a = "0" )
+						CU_ASSERT( b = "1" )
+					#endif
+				#endif
 			end scope
 		#endmacro
 
-		make( string, string )
-		make( string, string * 5 )
-		make( string, zstring * 5 )
+		make( string, 0, string, 0 )
+		make( string, 0, string, 4 )
+		make( string, 0, zstring, 5 )
 
-		make( string * 5, string )
-		make( string * 5, string * 5 )
-		make( string * 5, zstring * 5 )
+		make( string, 4, string, 0 )
+		make( string, 4, string, 4 )
+		make( string, 4, zstring, 5 )
 
-		make( zstring * 5, string )
-		make( zstring * 5, string * 5 )
-		make( zstring * 5, zstring * 5 )
+		make( zstring, 5, string, 0 )
+		make( zstring, 5, string, 4 )
+		make( zstring, 5, zstring, 5 )
 
-		make( wstring * 5, wstring * 5 )
+		make( wstring, 5, wstring, 5 )
 	END_TEST
 
 	dim shared as string global_string_a
 	dim shared as string global_string_b
-	dim shared as string * 5 global_fixstr_a
-	dim shared as string * 5 global_fixstr_b
+	dim shared as string * 4 global_fixstr_a
+	dim shared as string * 4 global_fixstr_b
 	dim shared as zstring * 5 global_zstring_a
 	dim shared as zstring * 5 global_zstring_b
 	dim shared as wstring * 5 global_wstring_a
@@ -142,8 +306,8 @@ SUITE( fbc_tests.swap_.strings )
 		global_fixstr_a = "1"
 		global_fixstr_b = "0"
 		swap global_fixstr_a, global_fixstr_b
-		CU_ASSERT( global_fixstr_a = "0" )
-		CU_ASSERT( global_fixstr_b = "1" )
+		CU_ASSERT( global_fixstr_a = "0   " )
+		CU_ASSERT( global_fixstr_b = "1   " )
 
 		global_zstring_a = "1"
 		global_zstring_b = "0"
@@ -160,14 +324,14 @@ SUITE( fbc_tests.swap_.strings )
 		global_string_a = "1"
 		global_fixstr_b = "0"
 		swap global_string_a, global_fixstr_b
-		CU_ASSERT( global_string_a = "0" )
-		CU_ASSERT( global_fixstr_b = "1" )
+		CU_ASSERT( global_string_a = "0   " )
+		CU_ASSERT( global_fixstr_b = "1   " )
 
 		global_fixstr_a = "1"
 		global_string_b = "0"
 		swap global_fixstr_a, global_string_b
-		CU_ASSERT( global_fixstr_a = "0" )
-		CU_ASSERT( global_string_b = "1" )
+		CU_ASSERT( global_fixstr_a = "0   " )
+		CU_ASSERT( global_string_b = "1   " )
 
 		global_string_a = "1"
 		global_zstring_b = "0"
@@ -490,33 +654,34 @@ SUITE( fbc_tests.swap_.strings )
 		scope
 			dim as string s
 			dim as string * 1 f
-			CU_ASSERT( sizeof(f) = 2 )
+			CU_ASSERT( sizeof(f) = 1 )
 
 			s = "foobarbaz"
+
 			swap s, f
-			CU_ASSERT( len(s) = 0 )
-			CU_ASSERT( s = "" )
+			CU_ASSERT( len(s) = 1 )
+			CU_ASSERT( s = " " )
 			CU_ASSERT( f = "f" )
-			CU_ASSERT( f[1] = 0 )
+			'' CU_ASSERT( f[1] = 0 )
 
 			swap s, f
 			CU_ASSERT( len(s) = 1 )
 			CU_ASSERT( s = "f" )
-			CU_ASSERT( f = "" )
-			CU_ASSERT( f[0] = 0 )
+			CU_ASSERT( f = " " )
+			CU_ASSERT( f[0] = 32 )
 
 			s = "foobarbaz"
 			swap f, s
-			CU_ASSERT( len(s) = 0 )
-			CU_ASSERT( s = "" )
+			CU_ASSERT( len(s) = 1 )
+			CU_ASSERT( s = " " )
 			CU_ASSERT( f = "f" )
-			CU_ASSERT( f[1] = 0 )
+			'' CU_ASSERT( f[1] = 0 )
 
 			swap f, s
 			CU_ASSERT( len(s) = 1 )
 			CU_ASSERT( s = "f" )
-			CU_ASSERT( f = "" )
-			CU_ASSERT( f[0] = 0 )
+			CU_ASSERT( f = " " )
+			CU_ASSERT( f[0] = 32 )
 		end scope
 
 		scope
@@ -525,49 +690,49 @@ SUITE( fbc_tests.swap_.strings )
 
 			s = "foobarbaz"
 			swap s, f
-			CU_ASSERT( len(s) = 0 )
-			CU_ASSERT( s = "" )
+			CU_ASSERT( len(s) = 9 )
+			CU_ASSERT( s = "         " )
 			CU_ASSERT( f = "foobarbaz" )
-			CU_ASSERT( f[9] = 0 )
+			CU_ASSERT( f[8] = 122 )
 
 			swap s, f
 			CU_ASSERT( len(s) = 9 )
 			CU_ASSERT( s = "foobarbaz" )
-			CU_ASSERT( f = "" )
-			CU_ASSERT( f[0] = 0 )
+			CU_ASSERT( f = "         " )
+			CU_ASSERT( f[0] = 32 )
 
 			swap f, s
-			CU_ASSERT( len(s) = 0 )
-			CU_ASSERT( s = "" )
+			CU_ASSERT( len(s) = 9 )
+			CU_ASSERT( s = "         " )
 			CU_ASSERT( f = "foobarbaz" )
-			CU_ASSERT( f[9] = 0 )
+			CU_ASSERT( f[8] = 122 )
 
 			swap f, s
 			CU_ASSERT( len(s) = 9 )
 			CU_ASSERT( s = "foobarbaz" )
-			CU_ASSERT( f = "" )
-			CU_ASSERT( f[0] = 0 )
+			CU_ASSERT( f = "         " )
+			CU_ASSERT( f[0] = 32 )
 		end scope
 
 		scope
 			dim as string * 9 a
-			dim as string * 4 b
+			dim as string * 5 b
 
 			a = "foobarbaz"
 			b = "test"
 			swap a, b
-			CU_ASSERT( a = "test" )
-			CU_ASSERT( b = "foob" )
-			CU_ASSERT( a[4] = 0 )
-			CU_ASSERT( b[4] = 0 )
+			CU_ASSERT( a = "test     " )
+			CU_ASSERT( b = "fooba" )
+			CU_ASSERT( a[4] = 32 )
+			CU_ASSERT( b[4] = 97 )
 
 			a = "foobarbaz"
 			b = "test"
 			swap b, a
-			CU_ASSERT( a = "test" )
-			CU_ASSERT( b = "foob" )
-			CU_ASSERT( a[4] = 0 )
-			CU_ASSERT( b[4] = 0 )
+			CU_ASSERT( a = "test     " )
+			CU_ASSERT( b = "fooba" )
+			CU_ASSERT( a[4] = 32 )
+			CU_ASSERT( b[4] = 97 )
 		end scope
 
 		'' Fixed-size zstrings
@@ -1106,11 +1271,11 @@ SUITE( fbc_tests.swap_.strings )
 
 			swap s, f
 
-			CU_ASSERT( s = "abcd" )
-			CU_ASSERT( f = "12" )
-			CU_ASSERT( f[2] = 0 ) '' null terminator
-			CU_ASSERT( f[3] = 0 ) '' remainder
-			CU_ASSERT( f[4] = 0 )
+			CU_ASSERT( s = "abcd " )
+			CU_ASSERT( f = "12   " )
+			CU_ASSERT( f[2] = 32 ) '' null terminator
+			CU_ASSERT( f[3] = 32 ) '' remainder
+			CU_ASSERT( f[4] = 32 )
 		end scope
 
 		scope
@@ -1122,34 +1287,34 @@ SUITE( fbc_tests.swap_.strings )
 
 			swap a, b
 
-			CU_ASSERT( a = "12" )
-			CU_ASSERT( a[2] = 0 )
-			CU_ASSERT( a[3] = 0 )
-			CU_ASSERT( a[4] = 0 )
+			CU_ASSERT( a = "12   " )
+			CU_ASSERT( a[2] = 32 )
+			CU_ASSERT( a[3] = 32 )
+			CU_ASSERT( a[4] = 32 )
 
-			CU_ASSERT( b = "abcde" )
-			CU_ASSERT( b[5] = 0 )
-			CU_ASSERT( b[6] = 0 )
-			CU_ASSERT( b[7] = 0 )
-			CU_ASSERT( b[8] = 0 )
-			CU_ASSERT( b[9] = 0 )
+			CU_ASSERT( b = "abcde     " )
+			CU_ASSERT( b[5] = 32 )
+			CU_ASSERT( b[6] = 32 )
+			CU_ASSERT( b[7] = 32 )
+			CU_ASSERT( b[8] = 32 )
+			CU_ASSERT( b[9] = 32 )
 
 			a = "abcde"
 			b = "12"
 
 			swap b, a
 
-			CU_ASSERT( a = "12" )
-			CU_ASSERT( a[2] = 0 )
-			CU_ASSERT( a[3] = 0 )
-			CU_ASSERT( a[4] = 0 )
+			CU_ASSERT( a = "12   " )
+			CU_ASSERT( a[2] = 32 )
+			CU_ASSERT( a[3] = 32 )
+			CU_ASSERT( a[4] = 32 )
 
-			CU_ASSERT( b = "abcde" )
-			CU_ASSERT( b[5] = 0 )
-			CU_ASSERT( b[6] = 0 )
-			CU_ASSERT( b[7] = 0 )
-			CU_ASSERT( b[8] = 0 )
-			CU_ASSERT( b[9] = 0 )
+			CU_ASSERT( b = "abcde     " )
+			CU_ASSERT( b[5] = 32 )
+			CU_ASSERT( b[6] = 32 )
+			CU_ASSERT( b[7] = 32 )
+			CU_ASSERT( b[8] = 32 )
+			CU_ASSERT( b[9] = 32 )
 		end scope
 	END_TEST
 

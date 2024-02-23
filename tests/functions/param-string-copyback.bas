@@ -45,8 +45,8 @@ SUITE( fbc_tests.functions.param_string_copyback )
 
 	namespace ns2
 		sub appendChars( byref s as string, byval n as integer )
-			CU_ASSERT( s = "a" )
-			s += string( n, "!" )
+			CU_ASSERT( rtrim(s) = "a" )
+			s = rtrim(s) + string( n, "!" )
 		end sub
 
 		TEST( differentLength )
@@ -61,8 +61,8 @@ SUITE( fbc_tests.functions.param_string_copyback )
 			s = "a" : appendChars( s, 3 ) : CU_ASSERT( s = "a!!!" )
 			s = "a" : appendChars( s, 5 ) : CU_ASSERT( s = "a!!!!!" )
 
-			f = "a" : appendChars( f, 1 ) : CU_ASSERT( f = "a!" )
-			f = "a" : appendChars( f, 3 ) : CU_ASSERT( f = "a!!!" )
+			f = "a" : appendChars( f, 1 ) : CU_ASSERT( f = "a!   " )
+			f = "a" : appendChars( f, 3 ) : CU_ASSERT( f = "a!!! " )
 			f = "a" : appendChars( f, 5 ) : CU_ASSERT( f = "a!!!!" )  '' truncated
 
 			z = "a" : appendChars( z, 1 ) : CU_ASSERT( z = "a" )

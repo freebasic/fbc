@@ -111,6 +111,53 @@ SUITE( fbc_tests.expressions.iif_ )
 		a = ""          : b = ""         : checkStr(          a,         "", c, "", hex )
 	#endmacro
 
+	#macro checkStr_fixed( a, b, c, EMPTY, hex )
+		c = iif( -1, a, b )
+		CU_ASSERT( c = a )
+
+		c = iif( -1, hex( 123 ), hex( 456 ) )
+		CU_ASSERT( c = left( hex( 123 ) + space(32), 32 ) )
+
+
+		c = iif( 0, a, b )
+		CU_ASSERT( c = b )
+
+		c = iif( 0, hex( 123 ), hex( 456 ) )
+		CU_ASSERT( c = left( hex( 456 ) + space(32), 32 ) )
+
+
+		c = iif( condtrue, a, b )
+		CU_ASSERT( c = a )
+
+		c = iif( condtrue, hex( 123 ), hex( 456 ) )
+		CU_ASSERT( c = left( hex( 123 ) + space(32), 32 ) )
+
+
+		c = iif( condfalse, a, b )
+		CU_ASSERT( c = b )
+
+		c = iif( condfalse, hex( 123 ), hex( 456 ) )
+		CU_ASSERT( c = left( hex( 456 ) + space(32), 32 ) )
+	#endmacro
+
+	#macro hStringChecks_fixed( a, b, c )
+		a = "1234"      : b = "5678"     : checkStr_fixed(                                  a,                                  b, c, "                                ", hex )
+		a = ""          : b = "5678"     : checkStr_fixed( "1234                            ",                                  b, c, "                                ", hex )
+		a = "1234"      : b = ""         : checkStr_fixed(                                  a, "5678                            ", c, "                                ", hex )
+
+		a = "aaaaaaaa"  : b = "b"        : checkStr_fixed(                                  a,                                  b, c, "                                ", hex )
+		a = ""          : b = "b"        : checkStr_fixed( "aaaaaaaa                        ",                                  b, c, "                                ", hex )
+		a = "aaaaaaaa"  : b = ""         : checkStr_fixed(                                  a, "b                               ", c, "                                ", hex )
+
+		a = "a"         : b = "bbbbbbbb" : checkStr_fixed(                                  a,                                  b, c, "                                ", hex )
+		a = ""          : b = "bbbbbbbb" : checkStr_fixed( "a                               ",                                  b, c, "                                ", hex )
+		a = "a"         : b = ""         : checkStr_fixed(                                  a, "bbbbbbbb                        ", c, "                                ", hex )
+
+		a = ""          : b = ""         : checkStr_fixed(                                  a,                                  b, c, "                                ", hex )
+		a = ""          : b = ""         : checkStr_fixed( "                                ",                                  b, c, "                                ", hex )
+		a = ""          : b = ""         : checkStr_fixed(                                  a, "                                ", c, "                                ", hex )
+	#endmacro
+
 	#macro hWstringChecks( a, b, c )
 		a = wstr( "1234"     ) : b = wstr( "5678"     ) : checkStr(                  a,                  b, c, wstr( "" ), whex )
 		a = wstr( ""         ) : b = wstr( "5678"     ) : checkStr(     wstr( "1234" ),                  b, c, wstr( "" ), whex )
@@ -142,8 +189,8 @@ SUITE( fbc_tests.expressions.iif_ )
 		end scope
 
 		scope
-			dim as string * 33 a, b, c
-			hStringChecks( a, b, c )
+			dim as string * 32 a, b, c
+			hStringChecks_fixed( a, b, c )
 		end scope
 
 		scope

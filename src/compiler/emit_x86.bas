@@ -7355,11 +7355,14 @@ sub emitVARINIOFS( byval sname as zstring ptr, byval ofs as integer )
 	outEx( ostr )
 end sub
 
-sub emitVARINISTR( byval s as const zstring ptr )
+sub emitVARINISTR( byval s as const zstring ptr, byval noterm as integer )
 	static as string ostr
 	ostr = ".ascii " + QUOTE
 	ostr += *s
-	ostr += RSLASH + "0" + QUOTE + NEWLINE
+	if( noterm = FALSE ) then
+		ostr += RSLASH + "0"
+	end if
+	ostr += QUOTE + NEWLINE
 	outEx( ostr )
 end sub
 
@@ -7374,8 +7377,8 @@ sub emitVARINIWSTR( byval s as zstring ptr )
 	outEx( ostr )
 end sub
 
-sub emitVARINIPAD( byval bytes as integer )
-	outEx( ".skip " + str( bytes ) + ",0" + NEWLINE )
+sub emitVARINIPAD( byval bytes as integer, byval fillchar as integer )
+	outEx( ".skip " + str( bytes ) + "," + str( fillchar ) + NEWLINE )
 end sub
 
 sub emitFBCTINFBEGIN( )

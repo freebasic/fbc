@@ -52,6 +52,7 @@ private function hDefaultInit( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 	end if
 
 	'' local..
+	dim as long fillchar = 0
 
 	'' Do not initialize?
 	if( symbGetDontInit( sym ) ) then
@@ -78,8 +79,15 @@ private function hDefaultInit( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 		exit function
 	end if
 
+	'' fixed string? initialize to spaces
+	if( symbGetType( sym ) = FB_DATATYPE_FIXSTR ) then
+		fillchar = 32
+	end if
+
 	function = astNewMEM( AST_OP_MEMCLEAR, astNewVAR( sym ), _
-	                      astNewCONSTi( symbGetSizeOf( sym ) * symbGetArrayElements( sym ) ) )
+	                      astNewCONSTi( symbGetSizeOf( sym ) _
+	                      * symbGetArrayElements( sym ) ) _
+	                      , 0, fillchar )
 end function
 
 function astNewDECL _

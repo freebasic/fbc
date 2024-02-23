@@ -10,7 +10,7 @@ FBCALL ssize_t fb_StrLen( void *str, ssize_t str_size )
 		return 0;
 
 	/* is dst var-len? */
-	if( str_size == -1 )
+	if( str_size == FB_STRSIZEVARLEN )
 	{
 		len = FB_STRSIZE( str );
 

@@ -805,7 +805,8 @@ private sub _emitVarIniStr _
 	( _
 		byval totlgt as longint, _
 		byval litstr as zstring ptr, _
-		byval litlgt as longint _
+		byval litlgt as longint, _
+		byval noterm as integer _
 	)
 
 	dim as const zstring ptr s
@@ -825,10 +826,11 @@ private sub _emitVarIniStr _
 	end if
 
 	''
-	emitVARINISTR( s )
+	emitVARINISTR( s, noterm )
 
 	if( litlgt < totlgt ) then
-		emitVARINIPAD( totlgt - litlgt )
+		'' pad with zero (0) or spaces (32)
+		emitVARINIPAD( totlgt - litlgt, iif(noterm,32,0) )
 	end if
 
 end sub
@@ -864,13 +866,14 @@ private sub _emitVarIniWstr _
 	emitVARINIWSTR( s )
 
 	if( litlgt < totlgt ) then
-		emitVARINIPAD( (totlgt - litlgt) * wclen )
+		'' pad with zero (0)
+		emitVARINIPAD( (totlgt - litlgt) * wclen, 0 )
 	end if
 
 end sub
 
-private sub _emitVarIniPad( byval bytes as longint )
-	emitVARINIPAD( bytes )
+private sub _emitVarIniPad( byval bytes as longint, byval fillchar as integer )
+	emitVARINIPAD( bytes, fillchar )
 end sub
 
 private sub _emitVarIniScopeBegin( byval sym as FBSYMBOL ptr, byval is_array as integer )

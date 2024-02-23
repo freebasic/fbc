@@ -122,6 +122,7 @@ extern_asm(_fb_TlsDelCtx);
 extern_asm(_fb_TRIM);
 extern_asm(_fb_StrFill1);
 extern_asm(_fb_FileKill);
+extern_asm(_fb_hStrCopyN);
 extern_asm(_fb_FileTell);
 extern_asm(_fb_hFilePrintBufferWstr);
 extern_asm(_fb_WstrValULng);
@@ -960,6 +961,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_TRIM)
     DXE_EXPORT_ASM (_fb_StrFill1)
     DXE_EXPORT_ASM (_fb_FileKill)
+    DXE_EXPORT_ASM (_fb_hStrCopyN)
     DXE_EXPORT_ASM (_fb_FileTell)
     DXE_EXPORT_ASM (_fb_hFilePrintBufferWstr)
     DXE_EXPORT_ASM (_fb_WstrValULng)

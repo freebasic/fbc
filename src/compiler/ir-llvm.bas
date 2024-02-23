@@ -2311,7 +2311,8 @@ private sub _emitVarIniStr _
 	( _
 		byval varlength as longint, _
 		byval literal as zstring ptr, _
-		byval litlength as longint _
+		byval litlength as longint, _
+		byval noterm as integer _
 	)
 
 	'' also see hVarIniElementType()
@@ -2343,7 +2344,7 @@ private sub _emitVarIniWstr _
 
 end sub
 
-private sub _emitVarIniPad( byval bytes as longint )
+private sub _emitVarIniPad( byval bytes as longint, byval fillchar as integer )
 end sub
 
 private sub _emitVarIniScopeBegin( byval sym as FBSYMBOL ptr, byval is_array as integer )
