@@ -15,7 +15,8 @@ function astNewMEM _
 		byval op as integer, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr, _
-		byval bytes as longint _
+		byval bytes as longint, _
+		byval fillchar as integer _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
@@ -49,6 +50,7 @@ function astNewMEM _
 	n->l = l
 	n->r = r
 	n->mem.bytes = bytes
+	n->mem.fillchar = fillchar
 
 	function = n
 end function
@@ -403,7 +405,7 @@ function astLoadMEM( byval n as ASTNODE ptr ) as IRVREG ptr
 	end if
 
 	if( ast.doemit ) then
-		irEmitMEM( n->mem.op, v1, v2, n->mem.bytes )
+		irEmitMEM( n->mem.op, v1, v2, n->mem.bytes, n->mem.fillchar )
 	end if
 
 	function = NULL

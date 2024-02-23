@@ -694,10 +694,21 @@ private sub _emitMem _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
-		byval bytes as longint _
+		byval bytes as longint, _
+		byval fillchar as integer _
 	)
 
-	_emit( op, v1, v2, NULL, 0, bytes )
+	'' current limitation of _emit() is that it can only
+	'' properly take one integer argument unless _emit()
+	'' is changed and underlying IRTAC stores more data.
+	''
+	'' Even though  _emitMem has 'bytes' and 'fillchar'
+	'' currently only one of the two should be set since
+	'' bytes is also passed in as v2.
+	assert( (bytes = 0) or (fillchar = 0) )
+
+	'' to keep both bytes and fillchar, pass the fillchar value in ex3
+	_emit( op, v1, v2, NULL, NULL, bytes, cast(any ptr, fillchar) )
 
 end sub
 
@@ -1420,7 +1431,7 @@ private sub _flush static
 			hFlushADDR( op, v1, vr )
 
 		case AST_NODECLASS_MEM
-			hFlushMEM( op, v1, v2, t->ex2, t->ex1 )
+			hFlushMEM( op, v1, v2, t->ex2, t->ex3 )
 
 		case AST_NODECLASS_DBG
 			hFlushDBG( op, t->ex1, t->ex2, t->ex3 )
@@ -2449,7 +2460,7 @@ private sub hFlushMEM _
 		emitMEMSWAP( v1, v2, bytes )
 
 	case AST_OP_MEMCLEAR
-		emitMEMCLEAR( v1, v2 )
+		emitMEMCLEAR( v1, v2, bytes, cint(extra) )
 
 	case AST_OP_STKCLEAR
 		emitSTKCLEAR( bytes, cint( extra ) )

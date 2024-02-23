@@ -827,7 +827,9 @@ declare function emitMEMSWAP _
 declare function emitMEMCLEAR _
 	( _
 		byval dvreg as IRVREG ptr, _
-		byval bytes_vreg as IRVREG ptr _
+		byval bytes_vreg as IRVREG ptr, _
+		byval bytes as integer, _
+		byval fillchar as integer _
 	) as EMIT_NODE ptr
 
 declare function emitSTKCLEAR _
