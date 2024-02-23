@@ -763,17 +763,19 @@ end function
 '':::::
 function hEscape _
 	( _
-		byval text as const zstring ptr _
+		byval text as const zstring ptr, _
+		byval maxlen as integer = 0 _
 	) as const zstring ptr static
 
 	static as DZSTRING res
-	dim as integer c, octlen, lgt
+	dim as integer c, octlen, lgt, n
 	dim as const zstring ptr src, /'dst,'/ src_end
 	dim as zstring ptr dst
 
 	'' convert the internal escape sequences to GAS format
 
 	octlen = 0
+	n = 0
 
 	lgt = len( *text )
 	if( lgt = 0 ) then
@@ -838,6 +840,9 @@ function hEscape _
 
 		*dst = c
 		dst += 1
+
+		n += 1
+		if( (maxlen > 0) andalso (n >= maxlen) ) then exit do
 
 		'' add quote's when the octagonal escape ends
 		if( octlen > 0 ) then
@@ -1011,18 +1016,20 @@ end function
 '':::::
 function hEscapeW _
 	( _
-		byval text as const wstring ptr _
+		byval text as const wstring ptr, _
+		byval maxlen as integer = 0 _
 	) as zstring ptr static
 
 	static as DZSTRING res
 	dim as uinteger char, c
-	dim as integer lgt, i, wcharlen
+	dim as integer lgt, i, wcharlen, n
 	dim as const wstring ptr src, src_end
 	dim as zstring ptr dst
 
 	'' convert the internal escape sequences to GAS format
 
 	wcharlen = typeGetSize( FB_DATATYPE_WCHAR )
+	n = 0
 
 	'' up to (4 * wcharlen) ascii chars can be used per unicode char
 	'' (up to one '\ooo' per byte of wchar)
@@ -1103,6 +1110,9 @@ function hEscapeW _
 
 			char shr= 8
 		next
+
+		n += 1
+		if( (maxlen > 0) andalso (n >= maxlen) ) then exit do
 
 	loop
 

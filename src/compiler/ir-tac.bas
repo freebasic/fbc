@@ -808,8 +808,7 @@ private sub _emitVarIniStr _
 	''
 	if( litlgt > totlgt ) then
 		errReportWarn( FB_WARNINGMSG_LITSTRINGTOOBIG )
-		'' !!!FIXME!!! truncate will fail if it lies on an escape seq
-		s = hEscape( left( *litstr, totlgt ) )
+		s = hEscape( litstr, totlgt )
 	else
 		s = hEscape( litstr )
 	end if
@@ -843,8 +842,7 @@ private sub _emitVarIniWstr _
 	''
 	if( litlgt > totlgt ) then
 		errReportWarn( FB_WARNINGMSG_LITSTRINGTOOBIG )
-		'' !!!FIXME!!! truncate will fail if it lies on an escape seq
-		s = hEscapeW( left( *litstr, totlgt ) )
+		s = hEscapeW( litstr, totlgt )
 	else
 		s = hEscapeW( litstr )
 	end if

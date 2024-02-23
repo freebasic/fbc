@@ -7224,7 +7224,7 @@ private sub _emitvarinistr(byval varlength as longint,byval literal as zstring p
 	end if
 	if varlength<litlength then ''too big for planned space ?
 		errReportWarn( FB_WARNINGMSG_LITSTRINGTOOBIG )
-		s = hEscape( left( *literal, varlength ) )
+		s = hEscape( literal, varlength )
 	else
 		s = hEscape( literal )
 	end if
@@ -7253,8 +7253,7 @@ private sub _emitVarIniWstr (byval totlgt as longint,byval litstr as wstring ptr
 	''
 	if( litlgt > totlgt ) then
 		errReportWarn( FB_WARNINGMSG_LITSTRINGTOOBIG )
-		'' !!!FIXME!!! truncate will fail if it lies on an escape seq
-		s = hEscapeW( left( *litstr, totlgt ) )
+		s = hEscapeW( litstr, totlgt )
 	else
 		s = hEscapeW( litstr )
 	end if

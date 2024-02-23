@@ -62,6 +62,7 @@ Version 1.20.0
 - rtlib: win32/win64: MULTIKEY() on consoles track console focus, remove the 'FindWindow' logic for console windows and handle FOCUS_EVENT message to track focus (adeyblue)
 - rtlib: win32/win64: MULTIKEY() always returns true; don't call GetAsyncKeyState(0), seem that in windows terminal, dragging a console tab out of the terminal window triggers key 0 and is never reset resulting in MULTIKEY() always returning true
 - fbc: when compiling with "-e -gen clang", work around a "indirect goto in function with no address-of-label expressions" clang error
+- fbc/gas/gas64: truncate string literals that are too big for the assigned destination on the last full escape sequence instead of in the middle of an escape sequence (which would cause gas assembly errors)
 
 
 Version 1.10.2
