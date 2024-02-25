@@ -116,6 +116,8 @@ Command line compiler options for the fbc compiler:
 		- Prefer static libraries over dynamic ones when linking
 	{{fbdoc item="keyword" value="CompilerOptstrip|-strip"}}
 		- Omit all symbol information from the output file
+	{{fbdoc item="keyword" value="CompilerOptsysroot|-sysroot < path >"}}
+		- Tell the linker where to find libraries (needed by some toolchains)
 	{{fbdoc item="keyword" value="CompilerOptt|-t < value >"}}
 		- Set stack size in kbytes (default: 1 MB or 2 MB)
 	{{fbdoc item="keyword" value="CompilerOpttarget|-target < platform >"}}

@@ -97,8 +97,25 @@ make install-rtlib install-gfxlib2 TARGET=i686-w64-mingw32
 		
 		This is only supported for the normal (non-standalone) build. It is not needed for the standalone build, because everyone of those can be in a separate installation directory anyways, while normal (non-standalone) builds may have to share a common installation directory such as ##/usr/local## or ##""C:\MinGW""##.
 	
+	- ##BUILD_PREFIX=<prefix>##
+		This is automatically set depending on the target but can override for special builds where the build tools have different file naming than the target to build (i.e. cross compiling)
+	
 	- ##ENABLE_LIB64=1##
 		This causes the makefile to use ##-d ENABLE_LIB64## when building the compiler. 64bit libraries are placed into ##lib64/freebasic/## instead of ##lib/freebasic/##.
+	
+	- ##DISABLE_GAS64_DEBUG=1##
+		Use "-d DISABLE_GAS64_DEBUG" (see below)
+	
+	- ##DISABLE_STDCXX_PATH=1##
+		Tells fbc to not search for some libstdc++/libc++ depending on target platform
+	
+	- ##DEFAULT_CPUTYPE_X86=<FB_CPUTYPE>##
+		Sets default x86 cpu type to one of ##FB_CPU_TYPE##
+		For example ##make compiler DEFAULT_CPUTYPE_X86=FB_CPUTYPE_386##
+	
+	- ##DEFAULT_CPUTYPE_ARM=<FB_CPUTYPE>##
+		Sets default arm cpu type to one of ##FB_CPUTYPE##
+		##make compiler DEFAULT_CPUTYPE_ARM=FB_CPUTYPE_ARM7A_FP##
 
 {{fbdoc item="section" value="Compiler source code configuration (FBFLAGS)"}}
 
@@ -116,6 +133,21 @@ make install-rtlib install-gfxlib2 TARGET=i686-w64-mingw32
 	
 	- ##-d ENABLE_LIB64##
 		This makes the compiler search 64bit libraries in ##lib64/freebasic/## instead of ##lib/freebasic/##. This only affects the normal (non-standalone) build. 32bit libraries are still searched in ##lib/freebasic/##.
+	
+	- ##-d FBSHA1=some-sha-1##
+		This makes the compiler store 'some-sha-1' in the compiler for version information
+	
+	- ##-d DISABLE_GAS64_DEBUG##
+		This makes the compiler disable gas64 debugging comments in asm files even if __FB_DEBUG__ is defined (-g)
+	
+	- ##-d DISABLE_STDCXX_PATH##
+		This makes the compiler to not search for some libstdc++/libc++ depending on target platform
+	
+	- ##-d BUILD_FB_DEFAULT_CPUTYPE_X86=<FB_CPUTYPE>##
+		This make the compiler set default x86 cpu type to one of FB_CPUTYPE
+	
+	- ##-d BUILD_FB_DEFAULT_CPUTYPE_ARM=<FB_CPUTYPE>##
+		This make the compiler set default arm cpu type to one of FB_CPUTYPE
 
 {{fbdoc item="section" value="rtlib and gfxlib2 source code configuration (CFLAGS)"}}
 
@@ -130,6 +162,21 @@ make install-rtlib install-gfxlib2 TARGET=i686-w64-mingw32
 	
 	- ##-DDISABLE_OPENGL##
 		With this, the gfxlib2 will not use ""OpenGL"" headers, disabling the ""OpenGL"" graphics drivers.
+	
+	- ##-DDISABLE_FBDEV##
+		With this, the gfxlib2 will not use, Linux framebuffer device headers (disables Linux fbdev gfx driver)
+	
+	- ##-DDISABLE_D3D10##
+		With this, the gfxlib2 will not use, ""DirectX"" 10 driver (disable D2D driver in windows)
+	
+	- ##-DDISABLE_NCURSES##
+		With this, the rtlib will not use, libtinfo or ncurses headers (disables console commands)
+	
+	- ##-DDISABLE_LANGINFO##
+		With this, the rtlib will not use, locale info (affects Unix only; makes no difference unless you call setlocale() manually). Does not remove setlocale(LC_CTYPE, "") call.
+	
+	- ##-DDISABLE_WCHAR##
+		With this, the rtlib will not use, wchar_t type or functions. wstring becomes ASCII only (fbc needs to match this).
 
 {{fbdoc item="see"}}
 	- [[DevBuildOptions|FreeBASIC Build Options]]

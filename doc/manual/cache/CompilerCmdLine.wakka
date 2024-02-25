@@ -129,6 +129,8 @@ Using the **fbc** command-line.
 		Do not strip symbol information from the output file
 	=={{fbdoc item="keyword" value="CompilerOptstrip|-strip"}}==
 		Omit all symbol information from the output file
+	=={{fbdoc item="keyword" value="CompilerOptsysroot|-sysroot < path >"}}==
+		Tell the linker where to find libraries (needed by some toolchains)
 
 {{fbdoc item="section" value="Behaviour"}}
 	=={{fbdoc item="keyword" value="CompilerOptprefix|-prefix < path >"}}==

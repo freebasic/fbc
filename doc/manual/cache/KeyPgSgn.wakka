@@ -26,9 +26,10 @@ Returns the sign part of a number
 	**Note:**
 		The return type of **##Sgn##** depends on the type of the passed argument (variable or constant, its data type), and of the used backend (gas, gas64, gcc 32-bit, gcc 64-bit):
 			**""-""** **##Sgn##** return type for a variable passed as argument:
-			~~{{table columns="5" cellpadding="5" cells=" Argument ; gas (32-bit) ; gas64 (64-bit) ; gcc 32-bit ; gcc 64-bit ; [U]BYTE variable ; INTEGER ; INTEGER ; LONG ; LONG ; [U]SHORT variable ; INTEGER ; INTEGER ; LONG ; LONG ; [U]LONG variable ; INTEGER ; INTEGER ; LONG ; LONG ; [U]INTEGER variable ; INTEGER ; INTEGER ; LONG ; LONG ; [U]LONGINT variable ; LONGINT ; INTEGER ; LONG ; LONG ; SINGLE variable ; SINGLE ; LONG  ; LONG  ; LONG ; DOUBLE variable ; DOUBLE ; LONG ; LONG ; LONG "}}
+			~~{{table columns="5" cellpadding="5" cells=" Argument ; gas (32-bit) ; gas64 (64-bit) ; gcc 32-bit (*) ; gcc 64-bit (*) ; [U]BYTE variable ; INTEGER ; INTEGER ; LONG ; LONG ; [U]SHORT variable ; INTEGER ; INTEGER ; LONG ; LONG ; [U]LONG variable ; INTEGER ; INTEGER ; LONG ; LONG ; [U]INTEGER variable ; INTEGER ; INTEGER ; LONG ; LONG ; [U]LONGINT variable ; LONGINT ; INTEGER ; LONG ; LONG ; SINGLE variable ; SINGLE ; LONG  ; LONG  ; LONG ; DOUBLE variable ; DOUBLE ; LONG ; LONG ; LONG "}}
 			**""-""** **##Sgn##** return type for a constant passed as argument:
-			~~{{table columns="5" cellpadding="5" cells=" Argument ; gas (32-bit) ; gas64 (64-bit) ; gcc 32-bit ; gcc 64-bit ; [U]BYTE constant ; INTEGER ; INTEGER ; INTEGER ; INTEGER ; [U]SHORT constant ; INTEGER ; INTEGER ; INTEGER ; INTEGER ; [U]LONG constant ; INTEGER ; INTEGER ; INTEGER ; INTEGER ; [U]INTEGER constant ; INTEGER ; INTEGER ; INTEGER ; INTEGER ; [U]LONGINT constant ; LONGINT ; INTEGER ; LONGINT ; INTEGER ; SINGLE constant ; SINGLE ; SINGLE ; SINGLE ; SINGLE ; DOUBLE constant ; DOUBLE ; DOUBLE ; DOUBLE ; DOUBLE "}}
+			~~{{table columns="5" cellpadding="5" cells=" Argument ; gas (32-bit) ; gas64 (64-bit) ; gcc 32-bit (*) ; gcc 64-bit (*) ; [U]BYTE constant ; INTEGER ; INTEGER ; INTEGER ; INTEGER ; [U]SHORT constant ; INTEGER ; INTEGER ; INTEGER ; INTEGER ; [U]LONG constant ; INTEGER ; INTEGER ; INTEGER ; INTEGER ; [U]INTEGER constant ; INTEGER ; INTEGER ; INTEGER ; INTEGER ; [U]LONGINT constant ; LONGINT ; INTEGER ; LONGINT ; INTEGER ; SINGLE constant ; SINGLE ; SINGLE ; SINGLE ; SINGLE ; DOUBLE constant ; DOUBLE ; DOUBLE ; DOUBLE ; DOUBLE "}}
+			(*): applicable also for clang and llvm
 			
 	The ##**Sgn**## unary ##[[KeyPgOperator|operator]]## can be overloaded with user defined types.
 

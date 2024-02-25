@@ -7,10 +7,10 @@
 '' --------
 
 /''
- ' This example shows how you can simulate getting a class method pointer, 
+ ' This example shows, before fbc 1.10.0, how you can simulate getting a class method pointer, 
  ' until support is properly implemented in the compiler.
  '
- ' When this is supported, you will only need to remove the static wrapper
+ ' When this is supported (since fbc 1.10.0), you will only need to remove the static wrapper
  ' function presented here, to maintain compatibility. 
  '/
 

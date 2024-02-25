@@ -11,6 +11,7 @@
 		[[KeyPgDddate|__DATE__]]
 		[[KeyPgDddateiso|__DATE_ISO__]]
 		[[KeyPgDdfb64bit|__FB_64BIT__]]
+		[[KeyPgDdfbandroid|__FB_ANDROID__]]
 		[[KeyPgDdfbargcount|__FB_ARG_COUNT__]]
 		[[KeyPgDdfbargextract|__FB_ARG_EXTRACT__]]
 		[[KeyPgDdfbargleftof|__FB_ARG_LEFTOF__]]
@@ -884,6 +885,7 @@
 		[[ProPgAntiFlickering|Graphics Mode Refresh and Anti-Flickering]]
 		[[GfxInternalFormats|Internal Graphics Formats]]
 		[[ProPgExternalFormats|External Graphics File Formats]]
+		[[ProPgLiteRegulate|Lite regulation function to be integrated into user loop for FPS control]]
 		[[ProPgDelayRegulate|Fine-grain procedure for waiting and in-loop procedure for fine-regulating FPS]]
 
 	{{fbdoc item="subsect" value="Multi-Threading"}}
@@ -1109,6 +1111,7 @@
 		[[CompilerOptshowincludes|-showincludes]]
 		[[CompilerOptstatic|-static]]
 		[[CompilerOptstrip|-strip]]
+		[[CompilerOptsysroot|-sysroot < path >]]
 		[[CompilerOptt|-t < value >]]
 		[[CompilerOpttarget|-target < platform >]]
 		[[CompilerOptv|-v]]

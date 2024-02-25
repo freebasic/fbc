@@ -7,12 +7,14 @@ Set the target platform for cross compilation
 {{fbdoc item="param"}}
 	##//platform//##
 		The target platform. Recognized values:
+			- ##android##
 			- ##dos##
 			- ##win32##
 			- ##win64##
 			- ##xbox##
 			- ##<os>-<arch>##
 				##<os>## can be one of:
+					- ##android##
 					- ##linux##
 					- ##cygwin##
 					- ##darwin##
@@ -20,20 +22,22 @@ Set the target platform for cross compilation
 					- ##netbsd##
 					- ##openbsd##
 				##<arch>## can be one of:
-					- ##x86##
-					- ##x86_64##
 					- ##arm##
 					- ##aarch64##
 					- ##powerpc## or ##ppc##
 					- ##powerpc64## or ##ppc64##
 					- ##powerpc64le## or ##ppc64le##
+					- ##x86##
+					- ##x86_64##
 				Examples:
-					- ##linux-x86##
-					- ##linux-x86_64##
-					- ##linux-arm##
-					- ##linux-aarch64##
+					- ##android-arm##
+					- ##android-x86##
 					- ##freebsd-x86##
 					- ##freebsd-x86_64##
+					- ##linux-arm##
+					- ##linux-aarch64##
+					- ##linux-x86##
+					- ##linux-x86_64##
 					- ##...##
 			- For backwards compatibility, the following values are recognized. They will select the corresponding operating system, together with the compiler's default architecture (same as the host), because these values do not specify an architecture explicitly.
 				- ##linux##
@@ -48,6 +52,12 @@ Set the target platform for cross compilation
 				- ##i686-pc-linux-gnu##
 				- ##arm-linux-gnueabihf##
 				- ##i386-pc-msdosdjgpp##
+				- ##arm-linux-android##
+				- ##armv7a-linux-android##
+				- ##armv7a-linux-androideabi##
+				- ##armv5te-linux-android##
+				- ##i686-linux-android##
+				- ##x86_64-linux-android##
 				- ##...##
 
 {{fbdoc item="desc"}}
@@ -68,14 +78,19 @@ Set the target platform for cross compilation
 		- For backwards compatibility, if the given //platform// string describes the host and is an FB target name (the values accepted by the ##-target## option with a standalone FB setup) instead of a GNU triplet, then the ##-target## option will be ignored, and the ##<platform>-## string will not be prefixed to compiler tools. For example, this allows ##-target linux## to work with the FB-linux release. It will be ignored instead of causing the compiler to try to use ##linux-ld## instead of ##ld##.
 		- If ##-target## is not specified, the compiler defaults to compiling for the native system, and it will invoke binutils/gcc without a target-specific prefix. This allows fbc to integrate with usual Linux (and similar) systems where binutils/gcc for native compilation are installed without any target-specific prefix.
 		- Libraries besides FB's own runtime libraries are located by running ##gcc -print-file-name=...## (or ##<platform>-gcc -print-file-name=...##). This allows fbc to use the system and gcc libraries installed on Linux and similar systems without knowing the exact installation directories.
+		
+
+	When using triplets they generally have the form os ##<arch>-<vendor>-<os>## but can vary a lot between build systems or over time between different versions of a build system or toolchain.  ##fbc## also accepts the form ##<arch>-<os>## and is fairly permissive in what will be accepted and typically will not throw an error if at least part of the gnu triplet is recognized
 
 		
 	For more details, see on page ##[[CompilerOptbuildprefix|-buildprefix]]##, the paragraph: "Detailed behavior if using ##-buildprefix##, ##-prefix##, ##-target## command line options".
 
 {{fbdoc item="ver"}}
+	- Before fbc 1.20.0, ##android## was not recognized as a target
 	- Before fbc 1.10.0, gnu triplets were not allowed in standalone builds, and '-target i386-pc-msdosdjgpp' and similar were not allowed.
 
 {{fbdoc item="see"}}
+	- [[CompilerOptarch|-arch]]
 	- [[CompilerOptbuildprefix|-buildprefix]]
 	- [[CompilerOptprefix|-prefix]]
 	- [[CompilerCmdLine|Using the Command Line]]

@@ -54,6 +54,8 @@ During the program compilation three types of errors can arise:
 	- //47(1) Use of reserved global or backend symbol//
 	- //48(1) Expected digit//
 	- //49(1) Up-casting discards initializer(s)//
+	- //50(2) Suspicious address expression passed to BYREF parameter//
+	- //51(1) GCC/Clang didn't provide a proper sysroot. You probably have to pass fbc an argument of the form '-sysroot $NDK/platforms/android-$API/arch-$ARCH'//
 
 ==Compiler Error messages:==
 	The error messages stop the compilation after 10 errors (see the -maxerr command-line option to change that default value) or a fatal error occurred, and require a correction by the user before the compilation can be continued. The compiler signals the lines where the errors have been found, so the correction can be done quickly. In a few cases the place pointed at by the error messages is not where the errors can be found, it's the place where the compiler has given up in waiting for something that should be somewhere.
@@ -142,8 +144,8 @@ During the program compilation three types of errors can arise:
 	- //82 Selected non-x86 CPU when compiling for DOS//
 	- //83 Selected -gen gas|gas64 ASM backend is incompatible with CPU//
 	- //84 -asm att used for -gen gas, but -gen gas only supports -asm intel//
-	- //85 -pic used when making executable (only works when making a shared library)//
-	- //86 -pic used, but not supported by target system (only works for non-x86 Unixes)//
+	- //85 -pic is not supported with -gen gas//
+	- //86 -pic used, but not supported by target system (only works for Unixes)//
 	- //87 Var-len strings cannot be initialized//
 	- //88 Recursive TYPE or UNION not allowed//
 	- //89 Recursive DEFINE not allowed//
@@ -343,7 +345,7 @@ During the program compilation three types of errors can arise:
 	- //283 FOR/NEXT variable name mismatch//
 	- //284 Selected option requires an SSE FPU mode//
 	- //285 Expected relational operator ( =, >, <, <>, <=, >= )//
-	- //286 Unsupported statement in -gen gcc mode//
+	- //286 Unsupported statement in -gen gcc/clang mode//
 	- //287 Too many labels//
 	- //288 Unsupported function//
 	- //289 Expected sub//
@@ -386,6 +388,9 @@ During the program compilation three types of errors can arise:
 	- //326 Expected ',' or ';'//
 	- //327 Expected file number expression//
 	- //328 Malformed SOURCE_DATE_EPOCH environment variable//
+	- //329 Graphics routines were used, but the gfxlib has not been ported to this target//
+	- //330 -fpu sse option can only be used on x86 and x86_64 architectures//
+	- //331 -fpu neon option can only be used on arm architectures//
 
 
 ==Third party programs errors==

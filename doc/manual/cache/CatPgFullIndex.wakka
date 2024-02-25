@@ -17,6 +17,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgDddate|__DATE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDddateiso|__DATE_ISO__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfb64bit|__FB_64BIT__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbandroid|__FB_ANDROID__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargcount|__FB_ARG_COUNT__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargextract|__FB_ARG_EXTRACT__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargleftof|__FB_ARG_LEFTOF__"}}

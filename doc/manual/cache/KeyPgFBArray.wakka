@@ -126,10 +126,10 @@ end namespace
 		Upper bound is the highest valid index in this dimension.
 		
 	{{fbdoc item="subsect" value="ArrayDescriptorPtr( array() as any ) as FBC.FBARRAY ptr"}}
-		Retrieves a pointer to the array descriptor, returning a pointer to ##FBC.ARRAY## that can be modified.
+		Retrieves a pointer to the array descriptor, returning a pointer to ##FBC.ARRAY## that can be modified (the array descriptor thus referenced is valid until the end of the scope where it is created).
 		
 	{{fbdoc item="subsect" value="ArrayConstDescriptorPtr( array() as const any ) as const FBC.FBARRAY ptr"}}
-		Retrieves a pointer to the array descriptor, returning a pointer to ##FBC.ARRAY## that is read only.
+		Retrieves a pointer to the array descriptor, returning a pointer to ##FBC.ARRAY## that is read only (the array descriptor thus referenced is valid until the end of the scope where it is created).
 
 {{fbdoc item="ex"}}
 	Very simple syntaxic example highlighting the access capabilities to the data fields of an array descriptor:

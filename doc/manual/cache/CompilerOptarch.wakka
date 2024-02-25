@@ -22,11 +22,20 @@ Set target architecture for improved/restricted code generation or cross-compili
 				- ##pentium3##
 				- ##pentium4##
 				- ##pentium4-sse3##
+				- ##x86##
 			- Related to 64bit x86_64:
 				- ##x86_64##, ##x86-64##, ##amd64##
 			- Related to 32bit ARM:
+				- ##armeabi##
+				- ##armeabi-v7a## (default for ##arm-android##)
+				- ##armv5## (alias for ##armv5te##)
+				- ##armv5te## (default for ##armeabi##)
 				- ##armv6##
-				- ##armv7-a## (default for ARM)
+				- ##armv7## (alias for ##armv7-a##)
+				- ##armv7a## (alias for ##armv7-a##)
+				- ##armv7-a## (default for ARM, but the toolchain may interpret as ##armv7-a+fp##)
+				- ##armv7-a+fp##
+				- There are variations of arm architecture in the wild and interpretations will vary across toolchains and time
 			- Related to 64bit ARM (""AArch64""):
 				- ##aarch64##
 			- Related to 32bit ""PowerPC"":

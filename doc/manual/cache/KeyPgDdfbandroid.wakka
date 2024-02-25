@@ -1,0 +1,27 @@
+{{fbdoc item="title" value="__FB_ANDROID__"}}----
+Intrinsic define set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FB_ANDROID__""
+##
+{{fbdoc item="desc"}}
+	Define without a value created at compile time when targeting ##android## platforms, when the ##-target android## command line option is used. It can be used to compile parts of the program only for a such target.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/defines/fbandroid.bas"}}%%(freebasic)
+#IFDEF __FB_ANDROID__
+  '...instructions only for android target...
+#ELSE
+  '...instructions not for android target...
+#ENDIF 
+%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.20.0
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- [[DevBuildEmscripten|Compiling FB for Android]]
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

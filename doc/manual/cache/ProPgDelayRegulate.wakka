@@ -517,5 +517,6 @@ Loop
 	- ##[[KeyPgSleep|Sleep]]##
 	- ##[[KeyPgTimer|Timer]]##
 	- [[ProPgAntiFlickering|Graphics Mode Refresh and Anti-Flickering]]
+	- [[ProPgLiteRegulate|Lite regulation function to be integrated into user loop for FPS control]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
