@@ -864,7 +864,7 @@ dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
 	( /' @"AST_OP_JUMPPTR"         , '/ @"JUMPPTR"      /' , 0 '/ ), _
 	( /' @"AST_OP_MEMMOVE"         , '/ @"MEMMOVE"      /' , 0 '/ ), _
 	( /' @"AST_OP_MEMSWAP"         , '/ @"MEMSWAP"      /' , 0 '/ ), _
-	( /' @"AST_OP_MEMCLEAR"        , '/ @"MEMCLEAR"     /' , 0 '/ ), _
+	( /' @"AST_OP_MEMFILL"         , '/ @"MEMFILL"      /' , 0 '/ ), _
 	( /' @"AST_OP_STKCLEAR"        , '/ @"STKCLEAR"     /' , 0 '/ ), _
 	( /' @"AST_OP_VA_START"        , '/ @"VA_START"     /' , 0 '/ ), _
 	( /' @"AST_OP_VA_END"          , '/ @"VA_END"       /' , 0 '/ ), _
@@ -1162,8 +1162,8 @@ sub astDumpSmall( byval n as ASTNODE ptr, byref prefix as string )
 		select case as const( n->class )
 		case AST_NODECLASS_MEM
 			select case n->mem.op
-			case AST_OP_MEMCLEAR
-				s += " memclear"
+			case AST_OP_MEMFILL
+				s += " memfill"
 			case AST_OP_MEMMOVE
 				s += " memmove"
 			end select

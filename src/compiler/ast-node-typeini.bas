@@ -802,7 +802,7 @@ function astTypeIniFlush overload _
 							'' Beginning of a field containing one or more bitfields?
 							if( n->sym->var_.bitpos = 0 ) then
 								l = astBuildDerefAddrOf( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype )
-								l = astNewMEM( AST_OP_MEMCLEAR, l, astNewCONSTi( typeGetSize( symbGetFullType( n->sym ) ) ) )
+								l = astNewMEM( AST_OP_MEMFILL, l, astNewCONSTi( typeGetSize( symbGetFullType( n->sym ) ) ) )
 								t = astNewLINK( t, l, AST_LINK_RETURN_NONE )
 							end if
 						end if
@@ -820,7 +820,7 @@ function astTypeIniFlush overload _
 		case AST_NODECLASS_TYPEINI_PAD
 			if( hAstCheckTypeIniAssignment( n, maxsize, scoped ) ) then
 				l = astBuildDerefAddrOf( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype )
-				l = astNewMEM( AST_OP_MEMCLEAR, l, astNewCONSTi( n->typeini.bytes ) )
+				l = astNewMEM( AST_OP_MEMFILL, l, astNewCONSTi( n->typeini.bytes ) )
 				t = astNewLINK( t, l, AST_LINK_RETURN_NONE )
 			end if
 

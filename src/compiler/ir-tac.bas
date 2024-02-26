@@ -2459,8 +2459,8 @@ private sub hFlushMEM _
 	case AST_OP_MEMSWAP
 		emitMEMSWAP( v1, v2, bytes )
 
-	case AST_OP_MEMCLEAR
-		emitMEMCLEAR( v1, v2, bytes, cint(extra) )
+	case AST_OP_MEMFILL
+		emitMEMFILL( v1, v2, bytes, cint(extra) )
 
 	case AST_OP_STKCLEAR
 		emitSTKCLEAR( bytes, cint( extra ) )

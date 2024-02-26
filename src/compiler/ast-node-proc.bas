@@ -994,7 +994,7 @@ private function hCallFieldCtor _
 		                         astNewCONSTi( 0, FB_DATATYPE_UINT ), _
 		                         AST_OPOPT_ISINI )
 	else
-		function = astNewMEM( AST_OP_MEMCLEAR, _
+		function = astNewMEM( AST_OP_MEMFILL, _
 		                      astBuildVarField( this_, fld ), _
 		                      astNewCONSTi( symbGetRealSize( fld ) ) )
 	end if
@@ -1028,7 +1028,7 @@ private function hClearUnionFields _
 	*pfinalfield = fld
 
 	'' clear all them at once
-	function = astNewMEM( AST_OP_MEMCLEAR, _
+	function = astNewMEM( AST_OP_MEMFILL, _
 	                      astBuildVarField( this_, base_fld ), _
 	                      astNewCONSTi( bytes ) )
 end function
