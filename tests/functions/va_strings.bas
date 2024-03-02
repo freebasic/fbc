@@ -26,12 +26,17 @@ SUITE( fbc_tests.functions.va_strings )
 
 	sub vastrings_test( byval a as string )
 		dim s as string
-		dim f as string * 3
+		dim f as string * 3+1
 		dim z as zstring * 3+1
 		dim p1 as zstring ptr, p2 as zstring ptr
 
 		s = strtb(3)
+
+		'' add nul terminator to fixed length string
+		'' to allow passing as varargs
 		f = strtb(4)
+		f[3] = 0
+
 		z = strtb(5)
 		p1 = strptr( strtb(7) )
 		p2 = strptr( strtb(8) )

@@ -82,10 +82,10 @@ private function hLen _
 		lgt = len( *hUnescapeW( symbGetVarLitTextW( litsym ) ) )
 
 	case FB_DATATYPE_FIXSTR
-		'' len( fixstr ) returns the N from STRING * N, i.e. it works
-		'' like sizeof() - 1 (-1 for the implicit null terminator),
-		'' it does not return the length of the stored string data.
-		lgt = astSizeOf( expr ) - 1
+		'' len( fixstr ) returns the N from STRING * N, i.e. it works like sizeof()
+		'' length of the stored data should always be same as the size
+		'' where the data is padded with spaces and there is no null terminator
+		lgt = astSizeOf( expr )
 		assert( lgt >= 0 )
 
 	case FB_DATATYPE_STRUCT

@@ -942,21 +942,26 @@ private sub hFlushExprStatic( byval n as ASTNODE ptr, byval basesym as FBSYMBOL 
 		if( sdtype <> FB_DATATYPE_WCHAR ) then
 			'' convert?
 			if( edtype <> FB_DATATYPE_WCHAR ) then
-				'' less the null-char
+				'' symbGetStrLength() returns length
+				''   less the null-char for FB_DATATYPE_CHAR
+				''   otherwise the size of the text for FB_DATATYPE_FIXSTR
 				irEmitVARINISTR( symbGetStrLength( sym ), _
 				                 symbGetVarLitText( litsym ), _
-				                 symbGetStrLength( litsym ) )
+				                 symbGetStrLength( litsym ), _
+				                 (symbGetType(sym) = FB_DATATYPE_FIXSTR) )
 			else
 				'' ditto
 				irEmitVARINISTR( symbGetStrLength( sym ), _
 				                 str( *symbGetVarLitTextW( litsym ) ), _
-				                 symbGetWstrLength( litsym ) )
+				                 symbGetWstrLength( litsym ), _
+				                 (symbGetType(sym) = FB_DATATYPE_FIXSTR) )
 			end if
 		'' wstring..
 		else
 			'' convert?
 			if( edtype <> FB_DATATYPE_WCHAR ) then
-				'' less the null-char
+				'' symbGetStrLength() returns length
+				''   less the null-char for FB_DATATYPE_WCHAR
 				irEmitVARINIWSTR( symbGetWstrLength( sym ), _
 				                  wstr( *symbGetVarLitText( litsym ) ), _
 				                  symbGetStrLength( litsym ) )
@@ -991,7 +996,7 @@ sub astLoadStaticInitializer _
 
 		select case as const n->class
 		case AST_NODECLASS_TYPEINI_PAD
-			irEmitVARINIPAD( n->typeini.bytes )
+			irEmitVARINIPAD( n->typeini.bytes, 0 )
 
 		case AST_NODECLASS_TYPEINI_SCOPEINI
 			irEmitVARINISCOPEBEGIN( n->sym, n->typeiniscope.is_array )

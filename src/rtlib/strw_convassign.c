@@ -32,7 +32,7 @@ FBCALL FB_WCHAR *fb_WstrAssignFromA
 	}
 
 	/* delete temp? */
-	if( src_size == -1 )
+	if( src_size == FB_STRSIZEVARLEN )
 		fb_hStrDelTemp( (FBSTRING *)src );
 
 	return dst;
@@ -65,7 +65,7 @@ FBCALL void *fb_WstrAssignToAEx
 		src_chars = 0;
 
 	/* is dst var-len? */
-	if( dst_chars == -1 )
+	if( dst_chars == FB_STRSIZEVARLEN )
 	{
 		/* src NULL? */
 		if( src_chars == 0 )
@@ -99,7 +99,26 @@ FBCALL void *fb_WstrAssignToAEx
 			fb_hStrSetLength( dst, writtenchars );
 		}
 	}
-	/* fixed-len or zstring.. */
+	/* fixed-len string */
+	else if( dst_chars & FB_STRISFIXED )
+	{
+		ssize_t writtenchars = 0;
+		dst_chars &= FB_STRSIZEMSK;
+
+		if( src_chars > 0 )
+		{
+			if( dst_chars < src_chars )
+				src_chars = dst_chars;
+
+			writtenchars = fb_wstr_ConvToA( (char *)dst, dst_chars, src );
+		}
+
+		if( dst_chars - writtenchars > 0 )
+		{
+			memset( ((char *)dst) + writtenchars, 32, dst_chars - writtenchars );
+		}
+	}
+	/* fixed-len zstring or zstring ptr */
 	else
 	{
 		/* src NULL? */

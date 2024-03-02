@@ -20,7 +20,7 @@ FBCALL void *fb_StrAssignEx
 
 	if( dst == NULL )
 	{
-		if( src_size == -1 )
+		if( src_size == FB_STRSIZEVARLEN )
 			fb_hStrDelTemp_NoLock( (FBSTRING *)src );
 
 		FB_STRUNLOCK();
@@ -32,7 +32,7 @@ FBCALL void *fb_StrAssignEx
 	FB_STRSETUP_FIX( src, src_size, src_ptr, src_len );
 
 	/* is dst var-len? */
-	if( dst_size == -1 )
+	if( dst_size == FB_STRSIZEVARLEN )
 	{
         dstr = (FBSTRING *)dst;
 
@@ -53,7 +53,7 @@ FBCALL void *fb_StrAssignEx
 		else
 		{
 			/* if src is a temp, just copy the descriptor */
-			if( (src_size == -1) && FB_ISTEMP(src) )
+			if( (src_size == FB_STRSIZEVARLEN) && FB_ISTEMP(src) )
 			{
 				if( is_init == FB_FALSE )
 					fb_StrDelete( dstr );
@@ -87,7 +87,26 @@ FBCALL void *fb_StrAssignEx
 			fb_hStrCopy( dstr->data, src_ptr, src_len );
 		}
 	}
-	/* fixed-len or zstring.. */
+	/* fixed-len string */
+	else if( dst_size & FB_STRISFIXED )
+	{
+		dst_size &= FB_STRSIZEMSK;
+
+		if( src_len > 0 )
+		{
+			if( dst_size < src_len )
+				src_len = dst_size;
+
+			fb_hStrCopyN( (char *)dst, src_ptr, src_len );
+		}
+
+		dst_size -= src_len;
+		if( dst_size > 0 )
+		{
+			memset( &(((char *)dst)[src_len]), 32, dst_size );
+		}
+	}
+	/* fixed-len zstring or zstring ptr */
 	else
 	{
 		/* src NULL? */
@@ -102,7 +121,9 @@ FBCALL void *fb_StrAssignEx
 				dst_size = src_len;
 			else
 			{
-				--dst_size; 						/* less the null-term */
+				/* less the null-term */
+				--dst_size;
+
 				if( dst_size < src_len )
 					src_len = dst_size;
 			}
@@ -121,7 +142,7 @@ FBCALL void *fb_StrAssignEx
 
 
 	/* delete temp? */
-	if( src_size == -1 )
+	if( src_size == FB_STRSIZEVARLEN )
 		fb_hStrDelTemp_NoLock( (FBSTRING *)src );
 
 	FB_STRUNLOCK();

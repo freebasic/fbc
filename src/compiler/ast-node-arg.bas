@@ -939,10 +939,16 @@ private function hCheckParam _
 		select case param_dtype
 		'' zstring ptr / zstring param?
 		case typeAddrOf( FB_DATATYPE_CHAR ), FB_DATATYPE_CHAR
-			'' if it's a wstring param, convert..
-			if( arg_dtype = FB_DATATYPE_WCHAR ) then
+			select case arg_dtype
+			case FB_DATATYPE_WCHAR
+				'' if it's a wstring param, convert..
 				n->l = rtlToStr( n->l, FALSE )
-			end if
+			case FB_DATATYPE_FIXSTR
+				'' if it's a fxied length string, make a copy
+				'' because STRING*N is not guaranteed to have
+				'' a null terminator
+				n->l = hAllocTempString( parent, n->l, FALSE )
+			end select
 
 		'' wstring ptr / wstring?
 		case typeAddrOf( FB_DATATYPE_WCHAR ), FB_DATATYPE_WCHAR

@@ -426,7 +426,15 @@ function rtlCalcStrLen _
 			if( symbGetType( s ) <> typeGetDtAndPtrOnly( dtype ) ) then
 				function = 0
 			else
-				function = symbGetStrLength( s ) + 1
+				if( typeGet( dtype ) = FB_DATATYPE_FIXSTR ) then
+					if( fbIs64bit() ) then
+						function = symbGetStrLength( s ) or &h8000000000000000ull
+					else
+						function = symbGetStrLength( s ) or &h80000000ul
+					end if
+				else
+					function = symbGetStrLength( s ) + 1
+				end if
 			end if
 		end if
 

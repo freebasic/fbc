@@ -2,12 +2,12 @@
 
 SUITE( fbc_tests.functions.fixstr_arg )
 
-	const TEST_LC = "hello!"
-	const TEST_UC = "HELLO!"
+	const TEST_LC = "hello!              "
+	const TEST_UC = "HELLO!              "
 
 	type foo
 		f1 as integer
- 		s as string * 20
+		s as string * 20
 	end type
 
 	sub ucaseme_ref(byref s as string)
@@ -51,7 +51,7 @@ SUITE( fbc_tests.functions.fixstr_arg )
 		f(0).s = TEST_LC
 		ucaseme_val( f(0).s )
 		CU_ASSERT( f(0).s = TEST_LC )
-		
+
 	END_TEST
 
 END_SUITE

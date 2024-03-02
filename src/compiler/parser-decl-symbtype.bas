@@ -866,9 +866,6 @@ function cSymbolType _
 
 		select case as const typeGet( dtype )
 		case FB_DATATYPE_STRING
-			'' plus the null-term
-			lgt += 1
-
 			hCheckFixedStringSize( lgt )
 
 			'' remap type
@@ -892,6 +889,7 @@ function cSymbolType _
 
 		'' STRING * N can't be allowed with BYREF or pointers, because
 		'' we can't represent the * N on expression data types.
+		'' plus, we can't assume a NULL terminator.
 		if( options and FB_SYMBTYPEOPT_ISBYREF ) then
 			errReport( FB_ERRMSG_BYREFFIXSTR, TRUE )
 		end if

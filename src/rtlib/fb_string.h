@@ -7,9 +7,14 @@
  */
 #ifdef HOST_64BIT
 	#define FB_TEMPSTRBIT ((long long)0x8000000000000000ll)
+	#define FB_STRISFIXED ((long long)0x8000000000000000ll)
+	#define FB_STRSIZEMSK ((long long)0x7fffffffffffffffll)  
 #else
 	#define FB_TEMPSTRBIT ((int)0x80000000)
+	#define FB_STRISFIXED ((int)0x80000000)
+	#define FB_STRSIZEMSK ((int)0x7fffffff)
 #endif
+#define FB_STRSIZEVARLEN -1
 
 /** Returns if the string is a temporary string.
  */
@@ -35,14 +40,26 @@ do {                                                        \
     {                                                       \
         if( size == -1 )                                    \
         {                                                   \
+            /* var-len STRING, descriptor */                \
             ptr = ((FBSTRING *)s)->data;                    \
             len = FB_STRSIZE( s );                          \
         }                                                   \
+        else if( size & FB_STRISFIXED )                                \
+        {                                                   \
+            /* fix-len STRING*N */                          \
+            ptr = (char *)s;                                \
+            len = size & FB_STRSIZEMSK;                     \
+        }                                                   \
+        else if( size == 0 )                                \
+        {                                                   \
+            /* ZSTRING PTR, unknown length  */              \
+            ptr = (char *)s;                                \
+            len = strlen( (char *)s );                      \
+        }                                                   \
         else                                                \
         {                                                   \
+            /* fix-len ZSTRING*N */                         \
             ptr = (char *)s;                                \
-            /* always get the real len, as fix-len string */ \
-            /* will have garbage at end (nulls or spaces) */ \
             len = strlen( (char *)s );                      \
         }                                                   \
     }                                                       \
@@ -57,19 +74,29 @@ do {                                                        \
     }                                                       \
     else                                                    \
     {                                                       \
-        switch ( size ) {                                   \
-        case -1:                                            \
+        if( size == -1 )                                    \
+        {                                                   \
+            /* var-len STRING, descriptor */                \
             ptr = ((FBSTRING *)s)->data;                    \
             len = FB_STRSIZE( s );                          \
-            break;                                          \
-        case 0:                                             \
+        }                                                   \
+        else if( size & FB_STRISFIXED )                               \
+        {                                                   \
+            /* fix-len STRING*N */                          \
+            ptr = (char *)s;                                \
+            len = size & FB_STRSIZEMSK;                     \
+        }                                                   \
+        else if( size == 0 )                                \
+        {                                                   \
+            /* ZSTRING PTR, unknown length  */              \
             ptr = (char *) s;                               \
             len = strlen( ptr );                            \
-            break;                                          \
-        default:                                            \
+        }                                                   \
+        else                                                \
+        {                                                   \
+            /* fix-len ZSTRING*N */                         \
             ptr = (char *) s;                               \
             len = size - 1; /* without terminating NUL */   \
-            break;                                          \
         }                                                   \
     }                                                       \
 } while (0)
@@ -111,6 +138,7 @@ FBCALL FBSTRING    *fb_hStrAllocTemp_NoLock     ( FBSTRING *str, ssize_t size );
 FBCALL int          fb_hStrDelTemp              ( FBSTRING *str );
 FBCALL int          fb_hStrDelTemp_NoLock       ( FBSTRING *str );
 FBCALL void         fb_hStrCopy                 ( char *dst, const char *src, ssize_t bytes );
+FBCALL void         fb_hStrCopyN                ( char *dst, const char *src, ssize_t bytes );
 FBCALL char        *fb_hStrSkipChar             ( char *s, ssize_t len, int c );
 FBCALL char        *fb_hStrSkipCharRev          ( char *s, ssize_t len, int c );
 

@@ -4,7 +4,7 @@ SUITE( fbc_tests.quirk.zwstr_deref )
 
 	TEST( all )
 		dim s as string
-		dim f as  string * 31
+		dim f as string * 31
 		dim as zstring * 32 z, z0
 		dim as wstring * 32 w, w0
 		dim pz as zstring ptr = @z0
@@ -34,7 +34,7 @@ SUITE( fbc_tests.quirk.zwstr_deref )
 		z = *pz
 		w = *pz
 		CU_ASSERT( s = "123" )
-		CU_ASSERT( f = "123" )
+		CU_ASSERT( f = "123" + space(28) )
 		CU_ASSERT( z = "123" )
 		CU_ASSERT( w = "123" )
 
@@ -43,7 +43,7 @@ SUITE( fbc_tests.quirk.zwstr_deref )
 		z = *pw
 		w = *pw
 		CU_ASSERT( s = wstr( "123" ) )
-		CU_ASSERT( f = wstr( "123" ) )
+		CU_ASSERT( f = wstr( "123" ) + wspace(28) )
 		CU_ASSERT( z = wstr( "123" ) )
 		CU_ASSERT( w = wstr( "123" ) )
 

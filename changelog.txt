@@ -11,6 +11,11 @@ Version 1.20.0
 - gfxlib2: on x86 32-bit, query the cpu type for MMX capability only when setting the graphics mode with SCREEN[RES] or when setting x86 MMX feature with ScreenControl fb.SET_X86_MMX_ENABLED function
 - rtlib: optimize string concatenation reallocations: do not reallocate to smaller memory buffer if the contents are to be preserved
 - limit WSTRING*N, ZSTRING*N, STRING*N types to 2^31-1 and show an 'invalid size' error if the size given is less than 1 or greater than the limit
+- STRING*N occupies N bytes in memory, pads the variable / field with spaces, and does not automatically append a terminating null character
+- STRING*N variables and fields are initialized to spaces by default
+- LEN(STRING*N) = SIZEOF(STRING*N) due to padding and no null terminator
+- STRING*N/SWAP: swap will pad values with spaces where one of the arguments is of the STRING*N data type
+- STRING*N is copied to a temporary variable when passed to ZSTRING PTR parameters since there is no expectaction that STRING*N will have it's own terminating null character
 
 [added]
 - x86_64: optimize SHL MOD INTDIV to use 32-bit operation when result will be converted to long/ulong
@@ -63,6 +68,7 @@ Version 1.20.0
 - rtlib: win32/win64: MULTIKEY() always returns true; don't call GetAsyncKeyState(0), seem that in windows terminal, dragging a console tab out of the terminal window triggers key 0 and is never reset resulting in MULTIKEY() always returning true
 - fbc: when compiling with "-e -gen clang", work around a "indirect goto in function with no address-of-label expressions" clang error
 - fbc/gas/gas64: truncate string literals that are too big for the assigned destination on the last full escape sequence instead of in the middle of an escape sequence (which would cause gas assembly errors)
+- sf.net #372: Bad Fixed length strings in UDT
 
 
 Version 1.10.2

@@ -31,7 +31,7 @@ FBCALL FB_WCHAR *fb_WstrConcatWA( const FB_WCHAR *str1, const void *str2, ssize_
     }
 
 	/* delete temp? */
-	if( str2_size == -1 )
+	if( str2_size == FB_STRSIZEVARLEN )
 		fb_hStrDelTemp( (FBSTRING *)str2 );
 
 	return dst;
@@ -67,7 +67,7 @@ FBCALL FB_WCHAR *fb_WstrConcatAW( const void *str1, ssize_t str1_size, const FB_
     }
 
 	/* delete temp? */
-	if( str1_size == -1 )
+	if( str1_size == FB_STRSIZEVARLEN )
 		fb_hStrDelTemp( (FBSTRING *)str1 );
 
 	return dst;

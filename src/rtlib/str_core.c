@@ -220,3 +220,11 @@ FBCALL void fb_hStrCopy( char *dst, const char *src, ssize_t bytes )
 	/* add the null-term */
 	*dst = 0;
 }
+
+FBCALL void fb_hStrCopyN( char *dst, const char *src, ssize_t bytes )
+{
+	if( (src != NULL) && (bytes > 0) )
+	{
+		dst = (char *) FB_MEMCPYX( dst, src, bytes );
+	}
+}

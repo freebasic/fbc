@@ -18,7 +18,7 @@ FBCALL void *fb_StrConcatAssign
 	if( dst == NULL )
 	{
 		/* delete temp? */
-		if( src_size == -1 )
+		if( src_size == FB_STRSIZEVARLEN )
 			fb_hStrDelTemp( (FBSTRING *)src );
 
 		return dst;
@@ -31,14 +31,19 @@ FBCALL void *fb_StrConcatAssign
 	if( src_len > 0 )
 	{
 		/* is dst var-len? */
-		if( dst_size == -1 )
+		if( dst_size == FB_STRSIZEVARLEN )
 		{
-        	dstr = (FBSTRING *)dst;
-        	dst_len = FB_STRSIZE( dst );
+			dstr = (FBSTRING *)dst;
+			dst_len = FB_STRSIZE( dst );
 
 			fb_hStrRealloc( dstr, dst_len+src_len, FB_TRUE );
 
 			fb_hStrCopy( &dstr->data[dst_len], src_ptr, src_len );
+		}
+		else if( dst_size & FB_STRISFIXED )
+		{
+			/* do nothing, can't concat to STRING*N
+			because it is padded with spaces */
 		}
 		else
 		{
@@ -47,7 +52,8 @@ FBCALL void *fb_StrConcatAssign
 			/* don't check byte ptr's */
 			if( dst_size > 0 )
 			{
-				--dst_size;							/* less the null-term */
+				/* less the null-term */
+				--dst_size;
 
 				if( src_len > dst_size - dst_len )
 					src_len = dst_size - dst_len;
@@ -68,7 +74,7 @@ FBCALL void *fb_StrConcatAssign
 
 
 	/* delete temp? */
-	if( src_size == -1 )
+	if( src_size == FB_STRSIZEVARLEN )
 		fb_hStrDelTemp( (FBSTRING *)src );
 
 	return dst;

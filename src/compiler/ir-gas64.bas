@@ -343,7 +343,7 @@ declare sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 declare function hgetdatatype_asm64 (byval sym as FBSYMBOL ptr,byval arraydimensions as integer = 0) as string
 declare sub hwriteasm64( byref ln as string,byval opt as integer=KDOALL)
 declare sub _emitvariniend( byval sym as FBSYMBOL ptr )
-declare sub _emitvarinipad( byval bytes as longint )
+declare sub _emitvarinipad( byval bytes as longint, byval fillchar as integer )
 declare sub _emitvariniwstr(byval varlength as longint,byval literal as wstring ptr,byval litlength as longint)
 declare sub _emitvariniscopebegin(byval sym as FBSYMBOL ptr,byval is_array as integer)
 declare sub _emitvariniscopeend( )
@@ -7188,16 +7188,20 @@ private sub _emitvariniofs(byval sym as FBSYMBOL ptr,byval rhs as FBSYMBOL ptr,b
 		asm_code(".quad "+s)
 	end if
 end sub
-private sub _emitvarinipad( byval bytes as longint )
-	asm_info("_emitvarinipad="+Str(bytes))
-	asm_code(".zero "+Str(bytes))
+private sub _emitvarinipad( byval bytes as longint, byval fillchar as integer )
+	asm_info("_emitvarinipad="+Str(bytes)+","+Str(fillchar))
+	if( fillchar <> 0 ) then
+		asm_code(".skip "+Str(bytes)+","+Str(fillchar))
+	else
+		asm_code(".zero "+Str(bytes))
+	end if
 end sub
 private sub _emitfbctinfstring( byval s as const zstring ptr )
 	asm_info("_emitfbctinfstring="+*s)
 	asm_section("."+FB_INFOSEC_NAME)
 	asm_code(".ascii """+*s+$"\0""")
 end sub
-private sub _emitvarinistr(byval varlength as longint,byval literal as zstring ptr,byval litlength as longint)
+private sub _emitvarinistr(byval varlength as longint,byval literal as zstring ptr,byval litlength as longint,byval noterm as integer)
 	dim as const zstring ptr s
 
 	asm_info("emitVarIniStr="+*literal)
@@ -7212,9 +7216,19 @@ private sub _emitvarinistr(byval varlength as longint,byval literal as zstring p
 	else
 		s = hEscape( literal )
 	end if
-	asm_code(".ascii """+*s+$"\0""")
-	If( litlength < varlength ) then ''skip the exceding space
-		asm_code(".zero "+Str( varlength - litlength ))
+	if( noterm ) then
+		'' pad with spaces
+		asm_code(".ascii """+*s+$"""")
+		If( litlength < varlength ) then
+			'' pad with spaces, no null terminator
+			asm_code(".skip "+Str( varlength - litlength )+",32")
+		end if
+	else
+		asm_code(".ascii """+*s+$"\0""")
+		If( litlength < varlength ) then ''skip the exceding space
+			'' pad with zeroes
+			asm_code(".zero "+Str( varlength - litlength ))
+		end if
 	end if
 end sub
 

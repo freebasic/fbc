@@ -33,7 +33,7 @@ SUITE( fbc_tests.quirk.len_sizeof )
 		'' i.e. the N from STRING * N, not the length of the stored string data.
 		dim fstr as string * 31
 		CU_ASSERT(    len( fstr ) = 31 )
-		CU_ASSERT( sizeof( fstr ) = 32 )
+		CU_ASSERT( sizeof( fstr ) = 31 )
 
 		const STRCONST = "12345"
 		CU_ASSERT(    len( STRCONST ) = 5 )
@@ -190,7 +190,7 @@ SUITE( fbc_tests.quirk.len_sizeof )
 
 		CU_ASSERT( sizeof( sa + sbb ) = sizeof( string ) )
 		CU_ASSERT(    len( sa + sbb ) = 3 )
-		CU_ASSERT( sizeof( fstr ) = 32 )
+		CU_ASSERT( sizeof( fstr ) = 31 )
 		CU_ASSERT(    len( fstr ) = 31 )
 		CU_ASSERT( sizeof( *psa ) = sizeof( string ) )
 		CU_ASSERT(    len( *psa ) = 1 )
@@ -290,7 +290,7 @@ SUITE( fbc_tests.quirk.len_sizeof )
 		CU_ASSERT( sizeof( "test" ) = 5 )
 		CU_ASSERT( sizeof( wstr( "test" ) ) = 5 * sizeof( wstring ) )
 		CU_ASSERT( sizeof( s ) = sizeof( string ) )
-		CU_ASSERT( sizeof( fixstr31 ) = 32 ) '' 31 + implicit null terminator
+		CU_ASSERT( sizeof( fixstr31 ) = 31 )
 		CU_ASSERT( sizeof( z32 ) = 32 )
 		CU_ASSERT( sizeof( w32 ) = 32 * sizeof( wstring ) )
 
@@ -355,8 +355,8 @@ SUITE( fbc_tests.quirk.len_sizeof )
 		CU_ASSERT(    len( string ) = 12 )
 		CU_ASSERT( sizeof( string ) = 12 )
 	#endif
-		CU_ASSERT(    len( string * 5 ) = 5 + 1 ) '' + the implicit null terminator
-		CU_ASSERT( sizeof( string * 5 ) = 5 + 1 )
+		CU_ASSERT(    len( string * 5 ) = 5 )
+		CU_ASSERT( sizeof( string * 5 ) = 5 )
 		CU_ASSERT(    len( zstring ) = 1 )
 		CU_ASSERT( sizeof( zstring ) = 1 )
 		CU_ASSERT(    len( zstring * 5 ) = 5 )
@@ -516,7 +516,7 @@ SUITE( fbc_tests.quirk.len_sizeof )
 		'' namespace prefix is given
 
 		'' direct use of namespace
-		
+
 		CU_ASSERT(   len(ns1.T) = sizeof(ns1.T))
 		CU_ASSERT(sizeof(ns1.T) = sizeof(integer)*4)
 

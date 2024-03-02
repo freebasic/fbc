@@ -1854,8 +1854,7 @@ function symbGetStrLength( byval sym as FBSYMBOL ptr ) as longint
 	case FB_DATATYPE_STRING
 		function = (sym)->lgt
 	case FB_DATATYPE_FIXSTR
-		'' !!!TODO!!! in future STRING*N should not deduct a null terminator
-		function = (sym)->lgt - 1
+		function = (sym)->lgt
 	end select
 end function
 
@@ -1953,11 +1952,6 @@ function symbTypeToStr _
 		s += *symb_dtypeTB(dtypeonly).name
 		if( is_fixlenstr or (length <> symb_dtypeTB(dtypeonly).size) ) then
 			select case( dtypeonly )
-			case FB_DATATYPE_FIXSTR
-				'' For STRING*N the null terminator is
-				'' implicitly added, the length actually is N+1,
-				'' unlike Z/WSTRING*N where N includes it.
-				length -= 1
 			case FB_DATATYPE_WCHAR
 				'' Convert bytes back to chars
 				length \= typeGetSize( FB_DATATYPE_WCHAR )

@@ -6,6 +6,9 @@ SUITE( fbc_tests.functions.zwstring_params )
 	declare sub foo(  s as  string )
 	declare sub zfoo( z as zstring )
 	declare sub wfoo( w as wstring )
+	declare sub foofixed(  s as  string )
+	declare sub zfoofixed( z as zstring )
+	declare sub wfoofixed( w as wstring )
 
 	sub foo( byref s as string )
 		CU_ASSERT_EQUAL( s, "Test" )
@@ -19,6 +22,18 @@ SUITE( fbc_tests.functions.zwstring_params )
 		CU_ASSERT_EQUAL( w, wstr("Test") )
 	end sub
 
+	sub foofixed( byref s as string )
+		CU_ASSERT_EQUAL( s, "Test      " )
+	end sub
+
+	sub zfoofixed( byref z as zstring )
+		CU_ASSERT_EQUAL( z, "Test      " )
+	end sub
+
+	sub wfoofixed( byref w as wstring )
+		CU_ASSERT_EQUAL( w, wstr("Test      ") )
+	end sub
+
 	TEST( implicitByref )
 		dim s as string = "Test"
 		dim s10 as string * 10 = "Test"
@@ -30,7 +45,7 @@ SUITE( fbc_tests.functions.zwstring_params )
 
 		foo( "Test" )
 		foo( s )
-		foo( s10 )
+		foofixed( s10 )
 		foo( z10 )
 		foo( w10 )
 		foo( *ps )
@@ -40,7 +55,7 @@ SUITE( fbc_tests.functions.zwstring_params )
 
 		zfoo( "Test" )
 		zfoo( s )
-		zfoo( s10 )
+		zfoofixed( s10 )
 		zfoo( z10 )
 		zfoo( w10 )
 		zfoo( *ps )
@@ -50,7 +65,7 @@ SUITE( fbc_tests.functions.zwstring_params )
 
 		wfoo( "Test" )
 		wfoo( s )
-		wfoo( s10 )
+		wfoofixed( s10 )
 		wfoo( z10 )
 		wfoo( w10 )
 		wfoo( *ps )
