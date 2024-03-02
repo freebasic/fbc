@@ -1653,11 +1653,10 @@ private function reg_findfree(byval vreg as long,byval regparam as integer=-1) a
 			regspill+=1
 			if regspill=6 then regspill=0
 			''avoid spilling a param register
-			while reghandle(regspill)=KREGLOCK
+			while reghandle(reg_prio(regspill))=KREGLOCK
 				regspill+=1
-				if regspill=6 then regspill=0
+				if regspill=6 then regspill=0 ''use R11
 			wend
-
 			regfree=reg_prio(regspill)
 		else
 			''just spilling the register used for parameter but not free
@@ -1678,10 +1677,10 @@ private function reg_findfree(byval vreg as long,byval regparam as integer=-1) a
 end function
 ''=====================================================================
 '' in case of callptr avoid potential register used as parameter
-'' eg op1=-1520[rdx] --> op1=-1520[r11] and 'mov r11, rdx'
+'' eg op1=-1520[rdx] --> op1=-1520[r10] and 'mov r10, rdx'
 
 '' note : it swaps all the POTENTIAL registers not only those laterly used
-'' op1=-1520[r8] --> op1=-1520[r11] and 'mov r11, r8'  even if r8 will be not be used as parameter
+'' op1=-1520[r8] --> op1=-1520[r10] and 'mov r10, r8'  even if r8 will be not be used as parameter
 ''=====================================================================
 private sub reg_callptr(byref op1 as string,byref op3 as string)
 	dim as long regfree
@@ -1692,11 +1691,16 @@ private sub reg_callptr(byref op1 as string,byref op3 as string)
 	for ireg as integer = 1 to ubound(listreg)-2
 		p=instr(p2,op1,*regstrq(listreg(ireg)))
 		if p=0 then continue for
-		asm_info("Transfering value for freeing register / case callptr")
-		regfree=reg_findfree(reghandle(listreg(ireg)))
+		asm_info("Transfering value for freeing register / case callptr to R10")
+		regfree=KREG_R10
+		if reghandle(KREG_R10)<>KREGFREE then
+			reg_spilling(KREG_R10)
+		End If
 		''transfering so it can be used for storing the parameter
+		reghandle(KREG_R10)=reghandle(listreg(ireg))
 		asm_code("mov "+*regstrq(regfree)+", "+*regstrq(listreg(ireg)),KNOOPTIM)
 		reghandle(listreg(ireg))=KREGLOCK
+
 		''replace in the string the previous register by the new one
 		if len(*regstrq(regfree))=len(*regstrq(listreg(ireg))) then
 			mid(op1,p)=*regstrq(regfree)
@@ -1704,6 +1708,7 @@ private sub reg_callptr(byref op1 as string,byref op3 as string)
 			''case r8/r9 as other registers have a size of 3 characters
 			op1=left(op1,p-1)+*regstrq(regfree)+mid(op1,p+2)
 		end if
+		exit for
 	next
 	if op3<>"" then
 		for ireg as integer = 1 to ubound(listreg)-2
@@ -2385,9 +2390,6 @@ private function _emitbegin( ) as integer
 	asm_code( ".intel_syntax noprefix")
 	cfi_windows_asm_code( ".cfi_sections .debug_frame")
 	asm_section(".text")
-	if env.clopt.nullptrchk=true then
-		asm_code("mov qword ptr $totalstacksize[rip], 0")
-	end if
 	ctx.indent-=1
 	function = TRUE
 end function
@@ -2444,17 +2446,6 @@ private sub _emitend( )
 	irForEachDataStmt( @hEmitVariable )
 	'' Global arrays for global ctors/dtors
 	symbForEachGlobal( FB_SYMBCLASS_PROC, @hAddGlobalCtorDtor )
-
-	''for checking stack overflow
-	if env.clopt.nullptrchk=true then
-		asm_section(".bss")
-		if ctx.systemv then
-			asm_code(".local $totalstacksize")
-			asm_code(".comm $totalstacksize,8,8")
-		else
-			asm_code(".lcomm $totalstacksize,8,8")
-		end if
-	EndIf
 
 	''if float rounding is used check sse4_1 for using roundsd/roundss
 	if ctx.roundfloat=true then
@@ -3817,7 +3808,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 
 	if v2->typ=IR_VREGTYPE_IMM then
 		if op<>AST_OP_MUL orelse v2->value.i < -2 orelse v2->value.i > 10 then
-			if v2->value.i<-2147483648 or v2->value.i>=2147483648 then
+			if v2->value.i<-2147483648 or v2->value.i>=2147483648ll then
 				if v2->value.i>=0 and v2->value.i<4294967296 then
 					asm_code("mov eax, "+Str(v2->value.i))
 				else
@@ -7043,47 +7034,6 @@ private sub _emitprocend _
 		cfi_windows_asm_code(".seh_setframe rbp, 0") '' 0 = offset into this function's stack alloocation
 		cfi_asm_code(".cfi_def_cfa_register 6")
 
-		if env.clopt.nullptrchk=true then
-			asm_code("add qword ptr $totalstacksize[rip], "+str(ctx.stk))
-			asm_code("cmp qword ptr $totalstacksize[rip], "+str(ctx.maxstack))
-
-			asm_code(".section .data")
-			asm_code(".align 8")
-			var lname1 = *symbUniqueLabel( )
-			asm_code(lname1+":")
-			'asm_code(".ascii """+*s+$"\0""")
-			asm_code(".ascii ""Aborting : stack overflow "+env.inf.name+" "+*symbGetMangledName( proc )+$"\0""")
-
-			asm_code(".text")
-			var lname = *symbUniqueLabel( )
-			asm_code("jl "+lname)
-
-			if ctx.systemv then
-				asm_code("lea rdi, "+lname1+"[rip]")
-				asm_code("call fb_StrAllocTempDescZ")
-
-				asm_code("xor edi, edi")
-				asm_code("mov rsi, rax")
-				asm_code("mov rdx, 1")
-				asm_code("call fb_PrintString")
-
-				asm_code("mov rdi, 4")
-			else
-				asm_code("lea rcx, "+lname1+"[rip]")
-				asm_code("call fb_StrAllocTempDescZ")
-
-				asm_code("xor ecx, ecx")
-				asm_code("mov rdx, rax")
-				asm_code("mov r8d, 1")
-				asm_code("call fb_PrintString")
-
-				asm_code("mov rcx, 4")
-			end if
-			asm_code("call fb_End")
-			asm_code(lname+":")
-		end if
-
-
 		if ctx.stk>=2147483648 then
 			asm_code("mov rax, "+Str(ctx.stk))
 			asm_code("sub rsp, rax")
@@ -7143,10 +7093,6 @@ private sub _emitprocend _
 
 	''--> EPILOG code
 	ctx.section=SECTION_EPILOG
-
-	if env.clopt.nullptrchk=true then
-		asm_code("sub qword ptr $totalstacksize[rip], "+str(ctx.stk))
-	EndIf
 
 	if( env.clopt.debuginfo = true ) then
 		lname = *symbUniqueLabel( )
