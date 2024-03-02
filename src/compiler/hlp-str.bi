@@ -75,12 +75,14 @@ declare function hReEscapeW _
 
 declare function hEscape _
 	( _
-		byval text as const zstring ptr _
+		byval text as const zstring ptr, _
+		byval maxlen as integer = 0 _
 	) as const zstring ptr
 
 declare function hEscapeW _
 	( _
-		byval text as const wstring ptr _
+		byval text as const wstring ptr, _
+		byval maxlen as integer = 0 _
 	) as zstring ptr
 
 declare function hUnescape _

@@ -272,7 +272,7 @@ function astNewIIF _
 
 		'' dim temp as wstring ptr (doesn't need to be cleared)
 		temp = symbAddTempVar( typeAddrOf( FB_DATATYPE_WCHAR ) )
-		symbSetIsWstring( temp )
+		symbSetIsTemporary( temp )
 
 		'' Register for cleanup at the end of the statement
 		astDtorListAdd( temp )

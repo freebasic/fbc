@@ -140,7 +140,7 @@ declare sub cfi_windows_asm_code(byval statement as string)
 #ifndef DISABLE_GAS64_DEBUG
 	'' not disabled? OK turn on debugging information in asm
 	'' files by default if this is a debug version of fbc
-	#if __FB_DEBUG__ <> 0
+	#if (__FB_DEBUG__ <> 0) and not defined(__GAS64_DEBUG__)
 		#define __GAS64_DEBUG__
 	#endif
 #endif
@@ -1274,7 +1274,7 @@ private sub hdecludt_asm64 _
 
 	desc = *symbGetDBGName( sym )
 
-	desc += ":Tt" + str( sym->udt.dbg.typenum ) + "=s" + str( symbGetlen( sym ) )
+	desc += ":Tt" + str( sym->udt.dbg.typenum ) + "=s" + str( symbGetSizeOf( sym ) )
 
 	fld = symbUdtGetFirstField( sym )
 	while( fld )
@@ -1876,11 +1876,12 @@ end sub
 ''==============================================
 '' MEMCLEAR size should be known at compile time
 ''==============================================
-private sub memclear(byval bytestoclear as Integer,byref dst as string,byval dtyp as long=KUSE_MOV)
+private sub memclear(byval bytestoclear as Integer,byref dst as string,byval dtyp as long=KUSE_MOV,byval fillchar as integer)
 
 	dim as uinteger nbbytes=CUnsg(bytestoclear),nooptim
 	dim as string lname,regdst
 	dim as long nb8,rdst
+	dim as ulongint fill2, fill4
 
 	if instr("rcx rdx rbx rdi rsi r8 r9 r10 r11 r12 r13 r14 r15",dst) then
 		regdst=dst
@@ -1901,21 +1902,39 @@ private sub memclear(byval bytestoclear as Integer,byref dst as string,byval dty
 		nooptim=KDOALL
 	end if
 
+	if( fillchar <> 0 ) then
+		fillchar = fillchar and 255
+		fill2 = fillchar or (fillchar shl 8)
+		fill4 = fill2 or (fill2 shl 16)
+	end if
+
 	if nbbytes>7 then  ''clear by 8 bytes step
 		nb8=nbbytes\8
 		if nb8>7 then ''more than 7 times 64+
 			asm_code("mov rax, "+Str(nb8))
 			lname=*symbUniqueLabel( )
 			asm_code(lname+":")
-			asm_code("mov QWORD PTR ["+regdst+"], 0")
+			if( fillchar = 0 ) then
+				asm_code("mov QWORD PTR ["+regdst+"], 0")
+			else
+				asm_code("mov DWORD PTR ["+regdst+"], "+Str(fill4))
+				asm_code("mov DWORD PTR 4["+regdst+"], "+Str(fill4))
+			end if
 			asm_code("add "+regdst+", 8")
 			asm_code("dec rax")
 			asm_code("jnz "+lname)
 			nbbytes-=nb8*8
 		else
-			for inb8 as long = 0 To nb8-1
-				asm_code("mov QWORD PTR "+Str(inb8*8)+"["+regdst+"], 0",nooptim)
-			next
+			if( fill4 = 0 ) then
+				for inb8 as long = 0 To nb8-1
+					asm_code("mov QWORD PTR "+Str(inb8*8)+"["+regdst+"], 0",nooptim)
+				next
+			else
+				for inb8 as long = 0 To nb8-1
+					asm_code("mov DWORD PTR "+Str(inb8*8)+"["+regdst+"], "+Str(fill4),nooptim)
+					asm_code("mov DWORD PTR "+Str(inb8*8+4)+"["+regdst+"], "+Str(fill4),nooptim)
+				next
+			end if
 			nbbytes-=nb8*8
 			if nbbytes<>0 then
 				asm_code("add "+regdst+", "+str(nb8*8))
@@ -1924,27 +1943,27 @@ private sub memclear(byval bytestoclear as Integer,byref dst as string,byval dty
 	end if
 	if nbbytes>3 then
 		''clear 7/6/5/4 bytes
-		asm_code("mov dword ptr ["+regdst+"], 0",nooptim)
+		asm_code("mov dword ptr ["+regdst+"], "+Str(fill4),nooptim)
 		nbbytes-=4
 		if nbbytes>1 then
-			asm_code("mov word ptr 4["+regdst+"], 0",nooptim)
+			asm_code("mov word ptr 4["+regdst+"], "+Str(fill2),nooptim)
 			nbbytes-=2
 			if nbbytes>0 then
-				asm_code("mov byte ptr 6["+regdst+"], 0",nooptim)
+				asm_code("mov byte ptr 6["+regdst+"], "+Str(fillchar),nooptim)
 			end if
 		elseif nbbytes>0 then
-			asm_code("mov byte ptr 4["+regdst+"], 0",nooptim)
+			asm_code("mov byte ptr 4["+regdst+"], "+Str(fillchar),nooptim)
 		end if
 	elseif nbbytes>1 then
 		''clear 2/3 bytes
-		asm_code("mov word ptr ["+regdst+"], 0",nooptim)
+		asm_code("mov word ptr ["+regdst+"], "+Str(fill2),nooptim)
 		nbbytes-=2
 		if nbbytes>0 then
-			asm_code("mov byte ptr 2["+regdst+"], 0",nooptim)
+			asm_code("mov byte ptr 2["+regdst+"], "+Str(fill2),nooptim)
 		end if
 	elseif nbbytes>0 then
 		 ''clear 1 byte
-		asm_code("mov byte ptr ["+regdst+"], 0")
+		asm_code("mov byte ptr ["+regdst+"], "+Str(fillchar))
 	end if
 end sub
 ''=============================================
@@ -2791,7 +2810,7 @@ private sub _procallocarg( byval proc as FBSYMBOL ptr, byval sym as FBSYMBOL ptr
 
 	symbGetRealType( sym, dtype, subtype )
 
-	asm_info("paramvar="+*symbGetMangledName( sym )+" real typ="+ typedumpToStr( dtype, subtype )+" symbgetlen="+Str(symbGetlen( sym )))
+	asm_info("paramvar="+*symbGetMangledName( sym )+" real typ="+ typedumpToStr( dtype, subtype )+" symbgetsizeof="+Str(symbGetSizeOf( sym )))
 	asm_info(symbdumpToStr(sym))
 
 	asm_info("lgt="+Str(sym->lgt)+" real="+Str(symbGetRealSize( sym )))
@@ -2844,7 +2863,7 @@ private sub _procallocarg( byval proc as FBSYMBOL ptr, byval sym as FBSYMBOL ptr
 				else
 					''byval structure passed directly in a register
 					asm_info("Copying byval parameter directly from register")
-					lgt = symbGetlen( sym )
+					lgt = symbGetSizeOf( sym )
 					asm_info("stk="+Str(ctx.stk))
 					ctx.stk=(lgt+ctx.stk+lgt-1) And (Not(lgt-1))
 					'ctx.stk+=8-(ctx.stk mod 8)
@@ -2887,7 +2906,7 @@ private sub _procallocarg( byval proc as FBSYMBOL ptr, byval sym as FBSYMBOL ptr
 				end if
 			else
 				''byval simple datatype
-				lgt = symbGetlen( sym )
+				lgt = symbGetSizeOf( sym )
 				if typegetclass(dtype)=FB_DATACLASS_FPOINT then
 					ctx.argfloat+=1
 					if ctx.argfloat<=8 then
@@ -2983,7 +3002,7 @@ private sub _procallocarg( byval proc as FBSYMBOL ptr, byval sym as FBSYMBOL ptr
 						sym->ofs=ctx.ofs
 						'if ctx.arginteg<=4 and ctx.variadic=false then
 						if ctx.variadic=false then
-							lgt = symbGetlen( sym )
+							lgt = symbGetSizeOf( sym )
 							''otherwise already in memory
 							if paramtype=KPARAMX1 then
 								if lgt=4 then
@@ -3009,7 +3028,7 @@ private sub _procallocarg( byval proc as FBSYMBOL ptr, byval sym as FBSYMBOL ptr
 				end select
 			else
 				''byval simple datatype
-				lgt = symbGetlen( sym )
+				lgt = symbGetSizeOf( sym )
 				sym->ofs=ctx.ofs
 				ctx.arginteg+=1
 				if ctx.arginteg<=4 and ctx.variadic=false then
@@ -6590,7 +6609,7 @@ private sub _emitjmptb _
 	end if
 
 end sub
-private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVREG ptr, byval bytes as longint)
+private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVREG ptr,byval bytes as longint,byval fillchar as integer)
 
 	dim as string op1,op2,op3,lname1,lname2,instruc="mov "
 	dim as const zstring ptr regtempo
@@ -6645,7 +6664,7 @@ private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVR
 				asm_code("mov rax, "+op1)
 				lname1=*symbUniqueLabel( )
 				asm_code(lname1+":")
-				asm_code("mov BYTE PTR [rax], 0")
+				asm_code("mov BYTE PTR [rax], " + str(fillchar))
 				asm_code("inc rax")
 				asm_code("dec "+op2)
 				asm_code("jnz "+lname1)
@@ -6668,34 +6687,53 @@ private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVR
 
 			select case v2->value.i
 				case is>8,3,5,6,7
-					memclear(v2->value.i,op1,srctyp)
+					memclear(v2->value.i,op1,srctyp,fillchar)
 				case 1
 					if v1->typ=IR_VREGTYPE_REG then
-						asm_code("mov BYTE PTR ["+op1+"], 0")
+						asm_code("mov BYTE PTR ["+op1+"], " + str(fillchar))
 					else
 						asm_code(instruc+"rax, "+op1)
-						asm_code("mov BYTE PTR [rax], 0")
+						asm_code("mov BYTE PTR [rax], " + str(fillchar))
 					end if
 				case 2
+					dim as ulongint fill2 = (fillchar and 255)
+					fill2 or= fill2 shl 8
 					if v1->typ=IR_VREGTYPE_REG then
-						asm_code("mov WORD PTR ["+op1+"], 0")
+						asm_code("mov WORD PTR ["+op1+"], " + str(fill2))
 					else
 						asm_code(instruc+"rax, "+op1)
-						asm_code("mov WORD PTR [rax], 0")
+						asm_code("mov WORD PTR [rax], " + str(fill2))
 					end if
 				case 4
+					dim as ulongint fill4 = (fillchar and 255)
+					fill4 or= fill4 shl 8
+					fill4 or= fill4 shl 16
 					if v1->typ=IR_VREGTYPE_REG then
-						asm_code("mov DWORD PTR ["+op1+"], 0")
+						asm_code("mov DWORD PTR ["+op1+"], " + str(fill4))
 					else
 						asm_code(instruc+"rax, "+op1)
-						asm_code("mov DWORD PTR [rax], 0")
+						asm_code("mov DWORD PTR [rax], " + str(fill4))
 					end if
 				case 8
-					if v1->typ=IR_VREGTYPE_REG then
-						asm_code("mov QWORD PTR ["+op1+"], 0")
+					if( fillchar = 0 ) then
+						if v1->typ=IR_VREGTYPE_REG then
+							asm_code("mov QWORD PTR ["+op1+"], 0")
+						else
+							asm_code(instruc+"rax, "+op1)
+							asm_code("mov QWORD PTR [rax], 0")
+						end if
 					else
-						asm_code(instruc+"rax, "+op1)
-						asm_code("mov QWORD PTR [rax], 0")
+						dim as ulongint fill4 = (fillchar and 255)
+						fill4 or= fill4 shl 8
+						fill4 or= fill4 shl 16
+						if v1->typ=IR_VREGTYPE_REG then
+							asm_code("mov DWORD PTR ["+op1+"], " + str(fill4))
+							asm_code("mov DWORD PTR 4["+op1+"], " + str(fill4))
+						else
+							asm_code(instruc+"rax, "+op1)
+							asm_code("mov DWORD PTR [rax], " + str(fill4))
+							asm_code("mov DWORD PTR 4[rax], " + str(fill4))
+						end if
 					end if
 			end select
 
@@ -7170,7 +7208,7 @@ private sub _emitvarinistr(byval varlength as longint,byval literal as zstring p
 	end if
 	if varlength<litlength then ''too big for planned space ?
 		errReportWarn( FB_WARNINGMSG_LITSTRINGTOOBIG )
-		s = hEscape( left( *literal, varlength ) )
+		s = hEscape( literal, varlength )
 	else
 		s = hEscape( literal )
 	end if
@@ -7199,8 +7237,7 @@ private sub _emitVarIniWstr (byval totlgt as longint,byval litstr as wstring ptr
 	''
 	if( litlgt > totlgt ) then
 		errReportWarn( FB_WARNINGMSG_LITSTRINGTOOBIG )
-		'' !!!FIXME!!! truncate will fail if it lies on an escape seq
-		s = hEscapeW( left( *litstr, totlgt ) )
+		s = hEscapeW( litstr, totlgt )
 	else
 		s = hEscapeW( litstr )
 	end if
@@ -7366,7 +7403,7 @@ private sub _emitMacro( byval op as integer,byval v1 as IRVREG ptr, byval v2 as 
 				_emitaddr(AST_OP_ADDROF,v1,tempo1)
 				tempo2 = irhlAllocVreg( FB_DATATYPE_INTEGER, 0 )
 				_emitaddr(AST_OP_ADDROF,v2,tempo2)
-				_emitmem(AST_OP_MEMMOVE,tempo1,tempo2,v1->sym->lgt)
+				_emitmem(AST_OP_MEMMOVE,tempo1,tempo2,v1->sym->lgt, 0)
 			else
 				''windows
 				_emitstore(v1,v2)

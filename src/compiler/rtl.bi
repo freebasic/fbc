@@ -12,10 +12,10 @@
 #define FB_RTL_STRCONCATBYREF           "fb_StrConcatByref"
 #define FB_RTL_STRCOMPARE               "fb_StrCompare"
 #define FB_RTL_STRCONCATASSIGN          "fb_StrConcatAssign"
-#define FB_RTL_STRALLOCTMPRES           "fb_StrAllocTempResult"
-#define FB_RTL_STRALLOCTMPDESCF         "fb_StrAllocTempDescF"
-#define FB_RTL_STRALLOCTMPDESCZ         "fb_StrAllocTempDescZ"
-#define FB_RTL_STRALLOCTMPDESCZEX       "fb_StrAllocTempDescZEx"
+#define FB_RTL_STRALLOCTEMPRES          "fb_StrAllocTempResult"
+#define FB_RTL_STRALLOCTEMPDESCF        "fb_StrAllocTempDescF"
+#define FB_RTL_STRALLOCTEMPDESCZ        "fb_StrAllocTempDescZ"
+#define FB_RTL_STRALLOCTEMPDESCZEX      "fb_StrAllocTempDescZEx"
 
 #define FB_RTL_BOOL2STR                 "fb_BoolToStr"
 #define FB_RTL_INT2STR                  "fb_IntToStr"
@@ -423,10 +423,10 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_STRCONCATBYREF
 	FB_RTL_IDX_STRCOMPARE
 	FB_RTL_IDX_STRCONCATASSIGN
-	FB_RTL_IDX_STRALLOCTMPRES
-	FB_RTL_IDX_STRALLOCTMPDESCF
-	FB_RTL_IDX_STRALLOCTMPDESCZ
-	FB_RTL_IDX_STRALLOCTMPDESCZEX
+	FB_RTL_IDX_STRALLOCTEMPRES
+	FB_RTL_IDX_STRALLOCTEMPDESCF
+	FB_RTL_IDX_STRALLOCTEMPDESCZ
+	FB_RTL_IDX_STRALLOCTEMPDESCZEX
 
 	FB_RTL_IDX_BOOL2STR
 	FB_RTL_IDX_INT2STR
@@ -833,7 +833,7 @@ enum FB_RTL_OPT
 	FB_RTL_OPT_MT             = &h00000004  '' needs the multithreaded rtlib
 
 	FB_RTL_OPT_ASSERTONLY     = &h00000010  '' only if asserts are enabled
-	''                        = &h00000020
+	FB_RTL_OPT_REQUIRED       = &h00000020  '' required even if -z nobuiltins was given
 	FB_RTL_OPT_STRSUFFIX      = &h00000040  '' has a $ suffix (-lang qb only)
 	FB_RTL_OPT_NOQB           = &h00000080  '' anything but -lang qb
 	FB_RTL_OPT_QBONLY         = &h00000100  '' -lang qb only
@@ -973,12 +973,12 @@ declare function rtlWstrConcatAssign _
 
 declare function rtlStrDelete( byval expr as ASTNODE ptr ) as ASTNODE ptr
 
-declare function rtlStrAllocTmpResult _
+declare function rtlStrAllocTempResult _
 	( _
 		byval strg as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function rtlStrAllocTmpDesc _
+declare function rtlStrAllocTempDesc _
 	( _
 		byval strg as ASTNODE ptr _
 	) as ASTNODE ptr

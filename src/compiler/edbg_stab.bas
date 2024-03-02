@@ -830,7 +830,7 @@ private sub hDeclUDT _
 
 	desc = *symbGetDBGName( sym )
 
-	desc += ":Tt" + str( sym->udt.dbg.typenum ) + "=s" + str( symbGetLen( sym ) )
+	desc += ":Tt" + str( sym->udt.dbg.typenum ) + "=s" + str( symbGetSizeOf( sym ) )
 
 	fld = symbUdtGetFirstField( sym )
 	while( fld )

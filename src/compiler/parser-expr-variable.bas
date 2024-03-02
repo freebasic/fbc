@@ -108,7 +108,7 @@ private function cFixedSizeArrayIndex( byval sym as FBSYMBOL ptr ) as ASTNODE pt
 	end if
 
 	'' times length
-	expr = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( symbGetLen( sym ) ) )
+	expr = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( symbGetSizeOf( sym ) ) )
 
 	function = expr
 end function
@@ -446,7 +446,7 @@ sub cUdtTypeMember _
 				subtype = symbGetSubType( sym )
 			end if
 
-			lgt = symbGetLen( sym )
+			lgt = symbGetSizeOf( sym )
 			is_fixlenstr = symbGetIsFixLenStr( sym )
 
 			'' const string? get the size from the constant string value
@@ -454,7 +454,7 @@ sub cUdtTypeMember _
 				select case( typeGetDtAndPtrOnly( dtype ) )
 				case FB_DATATYPE_WCHAR, FB_DATATYPE_CHAR, FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
 					is_fixlenstr = TRUE
-					lgt = symbGetLen( symbGetConstStr( sym ) )
+					lgt = symbGetSizeOf( symbGetConstStr( sym ) )
 					exit while
 				end select
 			end if
@@ -889,7 +889,7 @@ private function cDynamicArrayIndex _
 	expr = NULL
 	do
 		dimension += 1
-		dimoffset = symb.fbarray_dimtb + (dimension * symbGetLen( symb.fbarraydim ))
+		dimoffset = symb.fbarray_dimtb + (dimension * symbGetSizeOf( symb.fbarraydim ))
 
 		'' Expression
 		dimexpr = hCheckIntegerIndex( hIndexExpr( ) )
@@ -914,7 +914,7 @@ private function cDynamicArrayIndex _
 	loop while( hMatch( CHAR_COMMA ) )
 
 	'' times length
-	expr = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( symbGetLen( sym ) ) )
+	expr = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( symbGetSizeOf( sym ) ) )
 
 	'' No longer needed, all places using it should have cloned
 	astDelTree( descexpr )

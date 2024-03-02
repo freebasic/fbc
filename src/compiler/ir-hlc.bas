@@ -807,9 +807,9 @@ private function hEmitArrayDecl( byval sym as FBSYMBOL ptr ) as string
 		dim as longint length = 0
 		select case( symbGetType( sym ) )
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-			length = symbGetStrLen( sym )
+			length = symbGetStrLength( sym ) + 1
 		case FB_DATATYPE_WCHAR
-			length = symbGetWstrLen( sym )
+			length = symbGetWstrLength( sym ) + 1
 		end select
 		if( length > 0 ) then
 			s += "[" + str( length ) + "]"
@@ -1179,7 +1179,7 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 	if( emit_fields ) then
 		hEmitStructWithFields( s )
 	else
-		hWriteLine( "uint8 __fb_struct_body[" & symbGetLen( s ) & "];", TRUE )
+		hWriteLine( "uint8 __fb_struct_body[" & symbGetSizeOf( s ) & "];", TRUE )
 	end if
 
 	'' Close UDT body
@@ -1192,7 +1192,7 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 	'' at least with the correct sizeof(), because if it'd be too small,
 	'' that could easily cause stack trashing etc., because local vars
 	'' allocated by gcc would be smaller than expected, etc.
-	hWriteStaticAssert( "sizeof( " + hGetUdtTag( s ) + hGetUdtId( s ) + " ) == " + str( culngint( symbGetLen( s ) ) ) )
+	hWriteStaticAssert( "sizeof( " + hGetUdtTag( s ) + hGetUdtId( s ) + " ) == " + str( culngint( symbGetSizeOf( s ) ) ) )
 end sub
 
 private sub hWriteX86F2I _
@@ -2370,9 +2370,9 @@ private sub hSym2Text( byref s as string, byval sym as FBSYMBOL ptr )
 	'' String literal?
 	if( symbGetIsLiteral( sym ) ) then
 		if( symbGetType( sym ) = FB_DATATYPE_WCHAR ) then
-			hBuildWstrLit( s, hUnescapeW( symbGetVarLitTextW( sym ) ), symbGetWstrLen( sym ) )
+			hBuildWstrLit( s, hUnescapeW( symbGetVarLitTextW( sym ) ), symbGetWstrLength( sym ) + 1 )
 		else
-			hBuildStrLit( s, hUnescape( symbGetVarLitText( sym ) ), symbGetStrLen( sym ) )
+			hBuildStrLit( s, hUnescape( symbGetVarLitText( sym ) ), symbGetStrLength( sym ) + 1 )
 		end if
 	else
 		if( symbIsLabel( sym ) ) then
@@ -3328,12 +3328,13 @@ private sub _emitMem _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
-		byval bytes as longint _
+		byval bytes as longint, _
+		byval fillchar as integer _
 	)
 
 	select case op
 	case AST_OP_MEMCLEAR
-		hWriteLine("__builtin_memset( " + exprFlush( exprNewVREG( v1 ) ) + ", 0, " + exprFlush( exprNewVREG( v2 ) ) + " );" )
+		hWriteLine("__builtin_memset( " + exprFlush( exprNewVREG( v1 ) ) + ", " + str(fillchar) + ", " + exprFlush( exprNewVREG( v2 ) ) + " );" )
 	case AST_OP_MEMMOVE
 		hWriteLine("__builtin_memcpy( " + exprFlush( exprNewVREG( v1 ) ) + ", " + exprFlush( exprNewVREG( v2 ) ) + ", " + str( cunsg( bytes ) ) + " );" )
 	end select

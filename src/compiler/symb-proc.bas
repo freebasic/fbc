@@ -152,7 +152,7 @@ function symbProcCalcStdcallSuffixN( byval proc as FBSYMBOL ptr ) as longint
 		else
 			'' Use param's size on stack
 			'' VARARG params have 0 (unknown) length; they do not affect the sum.
-			length += symbGetLen( param )
+			length += symbGetSizeOf( param )
 		end if
 
 		param = param->next
@@ -200,7 +200,7 @@ function symbProcCalcBytesToPop( byval proc as FBSYMBOL ptr ) as longint
 			if( param->param.regnum = 0 ) then
 				'' Param symbols store their size on stack as their length.
 				'' VARARG params have 0 (unknown) length; they do not affect the sum.
-				bytestopop += symbGetLen( param )
+				bytestopop += symbGetSizeOf( param )
 			end if
 			param = param->next
 		wend
@@ -707,7 +707,7 @@ private sub hSetupProcRegisterParameters _
 		'' Allow:
 		''   - instance params
 		''   - pointers
-		''   - integers where (symbGetLen() <= env.pointersize)
+		''   - integers where (symbGetSizeOf() <= env.pointersize)
 		''   - byref parameters
 
 		var param = symbGetProcHeadParam( proc )
@@ -724,7 +724,7 @@ private sub hSetupProcRegisterParameters _
 				param->param.regnum = regnum
 				regnum += 1
 			elseif( typeGetClass( symbGetType( param ) ) = FB_DATACLASS_INTEGER ) then
-				if( symbGetLen( param ) <= env.pointersize ) then
+				if( symbGetSizeOf( param ) <= env.pointersize ) then
 					'' pass argument in ECX/EDX register
 					param->param.regnum = regnum
 					regnum += 1

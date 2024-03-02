@@ -370,7 +370,7 @@ end function
 sub symbKeywordConstsInit( )
 
 	dim as FBVALUE v
-	dim id as string * 10
+	dim id as zstring * 10
 
 	dim as FB_SYMBATTRIB attrib = any
 	dim as FBSYMBOL ptr sym = any
@@ -497,7 +497,7 @@ sub symbKeywordTypeInit( )
 		symbSetUdtValistType( s, FB_CVA_LIST_BUILTIN_C_STD )
 
 		'' type cva_list as __va_list_tag alias "__builtin_va_list[]"
-		symbAddTypedef( pid, typeSetMangleDt( symbGetType( s ), FB_DATATYPE_VA_LIST ), s, symbGetLen( s ) )
+		symbAddTypedef( pid, typeSetMangleDt( symbGetType( s ), FB_DATATYPE_VA_LIST ), s, symbGetSizeOf( s ) )
 
 	case FB_CVA_LIST_BUILTIN_AARCH64
 		'' cva_list is from ARM64 definition:
@@ -535,7 +535,7 @@ sub symbKeywordTypeInit( )
 		symbSetUdtValistType( s, FB_CVA_LIST_BUILTIN_AARCH64 )
 
 		'' type cva_list as __va_list alias "__builtin_va_list"
-		symbAddTypedef( pid, typeSetMangleDt( symbGetType( s ), FB_DATATYPE_VA_LIST ), s, symbGetLen( s ) )
+		symbAddTypedef( pid, typeSetMangleDt( symbGetType( s ), FB_DATATYPE_VA_LIST ), s, symbGetSizeOf( s ) )
 
 	case FB_CVA_LIST_BUILTIN_ARM
 		'' cva_list is from ARM definition
@@ -557,7 +557,7 @@ sub symbKeywordTypeInit( )
 		symbSetUdtValistType( s, FB_CVA_LIST_BUILTIN_ARM )
 
 		'' type cva_list as __va_list alias "__builtin_va_list"
-		symbAddTypedef( pid, typeSetMangleDt( symbGetType( s ), FB_DATATYPE_VA_LIST ), s, symbGetLen( s ) )
+		symbAddTypedef( pid, typeSetMangleDt( symbGetType( s ), FB_DATATYPE_VA_LIST ), s, symbGetSizeOf( s ) )
 
 	case else
 		'' FB_CVA_LIST_POINTER

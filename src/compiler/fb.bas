@@ -603,6 +603,7 @@ sub fbGlobalInit()
 	env.clopt.modeview      = FB_DEFAULT_MODEVIEW
 	env.clopt.nocmdline     = FALSE
 	env.clopt.returninflts  = FALSE
+	env.clopt.nobuiltins    = FALSE
 
 	env.restart_request     = FB_RESTART_NONE
 	env.restart_action      = FB_RESTART_NONE
@@ -738,6 +739,8 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 	case FB_COMPOPT_RETURNINFLTS
 		env.clopt.returninflts = value
 		hUpdateTargetOptions( )
+	case FB_COMPOPT_NOBUILTINS
+		env.clopt.nobuiltins = value
 	end select
 end sub
 
@@ -836,6 +839,8 @@ function fbGetOption( byval opt as integer ) as integer
 		function = env.clopt.nocmdline
 	case FB_COMPOPT_RETURNINFLTS
 		function = env.clopt.returninflts
+	case FB_COMPOPT_NOBUILTINS
+		function = env.clopt.nobuiltins
 
 	case else
 		function = 0
@@ -1320,11 +1325,14 @@ sub fbCompile _
 
 	fbParsePreDefines()
 	fbParsePreIncludes()
+
 	if (fbShouldContinue()) then
 		cProgram()
 	end if
 
-	fbMainEnd( )
+	if (fbShouldContinue()) then
+		fbMainEnd( )
+	end if
 
 	'' compiling only, not cross-compiling?
 	if( fbGetOption( FB_COMPOPT_OBJINFO ) and _

@@ -670,10 +670,10 @@ private sub hEmitVariable( byval sym as FBSYMBOL ptr )
 			ln += hEmitSymType( sym )
 			ln += " c"""
 			if( symbGetType( sym ) = FB_DATATYPE_WCHAR ) then
-				length = symbGetWstrLen( sym )
+				length = symbGetWstrLength( sym ) + 1
 				hBuildWstrLit( ln, length, hUnescapeW( symbGetVarLitTextW( sym ) ), length )
 			else
-				length = symbGetStrLen( sym )
+				length = symbGetStrLength( sym ) + 1
 				hBuildStrLit( ln, length, hUnescape( symbGetVarLitText( sym ) ), length )
 			end if
 			ln += """"
@@ -2073,7 +2073,8 @@ private sub _emitMem _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
-		byval bytes as longint _
+		byval bytes as longint, _
+		byval fillchar as integer _
 	)
 
 	dim as string ln
@@ -2098,7 +2099,7 @@ private sub _emitMem _
 
 		ln += "@llvm.memset.p0i8.i32( "
 		ln += "i8* " + hVregToStr( v1 ) + ", "
-		ln += "i8 0, "
+		ln += "i8 " + str(fillchar) + ", "
 		ln += "i32 " + hVregToStr( v2 ) + ", "
 
 	case AST_OP_MEMMOVE

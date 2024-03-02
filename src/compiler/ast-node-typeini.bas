@@ -75,7 +75,7 @@ private sub hAstTypeIniMaybeConvertUpcast _
 	'' we want the size of the elements (type) not the whole array
 	'' !!!TODO!!! byrefs? with symbGetRealSize( sym )?
 
-	maxsize = symbGetLen( sym )
+	maxsize = symbGetSizeOf( sym )
 
 	'' This should only be true if astTypeIniAddAssign()
 	'' determined that the initree was constant
@@ -386,7 +386,7 @@ private sub hAstTypeIniTreeMergeUpcast _
 	dim as integer maxsize = any
 
 	'' maxsize = symbGetRealSize( sym )
-	maxsize = symbGetLen( sym )
+	maxsize = symbGetSizeOf( sym )
 
 	'' too big for target?
 	if( tree->typeini.ofs + expr->typeini.bytes > maxsize ) then
@@ -492,7 +492,7 @@ function astTypeIniAddAssign _
 			if( symbIsRef( sym ) ) then
 				n->typeini.bytes = env.pointersize
 			else
-				n->typeini.bytes = symbGetLen( sym )
+				n->typeini.bytes = symbGetSizeOf( sym )
 			end if
 		end if
 
@@ -519,7 +519,7 @@ function astTypeIniAddCtorCall _
 
 	n->sym = sym
 	n->typeini.ofs = tree->typeini.ofs
-	n->typeini.bytes = symbGetLen( sym )
+	n->typeini.bytes = symbGetSizeOf( sym )
 
 	n->l = procexpr
 
@@ -552,8 +552,8 @@ function astTypeIniAddCtorList _
 
 	n->typeini.elements = elements
 
-	tree->typeini.ofs += symbGetLen( sym ) * elements
-	tree->typeini.bytes += symbGetLen( sym ) * elements
+	tree->typeini.ofs += symbGetSizeOf( sym ) * elements
+	tree->typeini.bytes += symbGetSizeOf( sym ) * elements
 
 	function = n
 end function
@@ -943,28 +943,28 @@ private sub hFlushExprStatic( byval n as ASTNODE ptr, byval basesym as FBSYMBOL 
 			'' convert?
 			if( edtype <> FB_DATATYPE_WCHAR ) then
 				'' less the null-char
-				irEmitVARINISTR( symbGetStrLen( sym ) - 1, _
+				irEmitVARINISTR( symbGetStrLength( sym ), _
 				                 symbGetVarLitText( litsym ), _
-				                 symbGetStrLen( litsym ) - 1 )
+				                 symbGetStrLength( litsym ) )
 			else
 				'' ditto
-				irEmitVARINISTR( symbGetStrLen( sym ) - 1, _
+				irEmitVARINISTR( symbGetStrLength( sym ), _
 				                 str( *symbGetVarLitTextW( litsym ) ), _
-				                 symbGetWstrLen( litsym ) - 1 )
+				                 symbGetWstrLength( litsym ) )
 			end if
 		'' wstring..
 		else
 			'' convert?
 			if( edtype <> FB_DATATYPE_WCHAR ) then
 				'' less the null-char
-				irEmitVARINIWSTR( symbGetWstrLen( sym ) - 1, _
+				irEmitVARINIWSTR( symbGetWstrLength( sym ), _
 				                  wstr( *symbGetVarLitText( litsym ) ), _
-				                  symbGetStrLen( litsym ) - 1 )
+				                  symbGetStrLength( litsym ) )
 			else
 				'' ditto
-				irEmitVARINIWSTR( symbGetWstrLen( sym ) - 1, _
+				irEmitVARINIWSTR( symbGetWstrLength( sym ), _
 				                  symbGetVarLitTextW( litsym ), _
-				                  symbGetWstrLen( litsym ) - 1 )
+				                  symbGetWstrLength( litsym ) )
 			end if
 		end if
 	end if

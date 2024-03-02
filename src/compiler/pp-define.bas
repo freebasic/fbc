@@ -504,7 +504,7 @@ private function hLoadDefine _
 				end if
 			end if
 
-			lgt = symbGetLen( s )
+			lgt = symbGetSizeOf( s )
 		end if
 
 	end if
@@ -983,7 +983,7 @@ private function hLoadDefineW _
 				end if
 			end if
 
-			lgt = symbGetLen( s )
+			lgt = symbGetSizeOf( s )
 		end if
 
 	end if

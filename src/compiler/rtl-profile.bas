@@ -41,7 +41,7 @@
 		( _
 			@FB_RTL_PROFILEMONSTARTUP, @"_monstartup", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_REQUIRED, _
 			0 _
 		), _
 		( NULL ) _

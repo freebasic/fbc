@@ -6470,7 +6470,8 @@ end sub
 private sub hMemClearRepIMM _
 	( _
 		byval dvreg as IRVREG ptr, _
-		byval bytes as ulong _
+		byval bytes as ulong, _
+		byval fillchar as long _
 	) static
 
 	dim as string dst
@@ -6502,7 +6503,15 @@ private sub hMemClearRepIMM _
 		end if
 	end if
 
-	outp "xor eax, eax"
+	if( fillchar = 0 ) then
+		outp "xor eax, eax"
+	else
+		'' load eax with the fillchar in all 4 bytes
+		fillchar and= 255
+		fillchar or= (fillchar shl 8)
+		fillchar or= (fillchar shl 16)
+		outp "mov eax, " + str(fillchar)
+	end if
 
 	if( bytes > 4 ) then
 		ostr = "mov ecx, " + str( bytes \ 4 )
@@ -6546,31 +6555,37 @@ end sub
 private sub hMemClearBlkIMM _
 	( _
 		byval dvreg as IRVREG ptr, _
-		byval bytes as ulong _
+		byval bytes as ulong, _
+		byval fillchar as long _
 	) static
 
 	dim as string dst
 	dim as integer i, ofs
+	dim as long fill1, fill2, fill4
+
+	fill1 = fillchar and 255
+	fill2 = (fill1 shl 8) or fill1
+	fill4  = (fill2 shl 16) or fill2
 
 	ofs = 0
 	'' move dwords
 	for i = 1 to bytes \ 4
 		hPrepOperand( dvreg, dst, FB_DATATYPE_INTEGER, ofs )
-		hMOV( dst, "0" )
+		hMOV( dst, str(fill4) )
 		ofs += 4
 	next
 
 	'' a word left?
 	if( (bytes and 2) <> 0 ) then
 		hPrepOperand( dvreg, dst, FB_DATATYPE_SHORT, ofs )
-		hMOV( dst, "0" )
+		hMOV( dst, str(fill2) )
 		ofs += 2
 	end if
 
 	'' a byte left?
 	if( (bytes and 1) <> 0 ) then
 		hPrepOperand( dvreg, dst, FB_DATATYPE_BYTE, ofs )
-		hMOV( dst, "0" )
+		hMOV( dst, str(fill1) )
 	end if
 
 end sub
@@ -6579,7 +6594,8 @@ end sub
 private sub hMemClear _
 	( _
 		byval dvreg as IRVREG ptr, _
-		byval bytes_vreg as IRVREG ptr _
+		byval bytes_vreg as IRVREG ptr, _
+		byval fillchar as integer _
 	) static
 
 	dim as string dst, bytes
@@ -6631,7 +6647,15 @@ private sub hMemClear _
 		hPOP( "ecx" )
 	end if
 
-	outp "xor eax, eax"
+	if( fillchar = 0 ) then
+		outp "xor eax, eax"
+	else
+		'' load eax with the fillchar in all 4 bytes
+		fillchar and= 255
+		fillchar or= (fillchar shl 8)
+		fillchar or= (fillchar shl 16)
+		outp "mov eax, " + str(fillchar)
+	end if
 
 	outp "push ecx"
 	outp "shr ecx, 2"
@@ -6657,8 +6681,8 @@ private sub _emitMEMCLEAR _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr, _
-		byval unused as integer, _
-		byval extra as integer _
+		byval bytes as integer, _
+		byval fillchar as integer _
 	)
 
 	ASSERT_PROC_DECL( EMIT_MEMCB )
@@ -6667,13 +6691,13 @@ private sub _emitMEMCLEAR _
 	if( irIsIMM( svreg ) ) then
 		dim as ulong bytes = svreg->value.i
 		if( bytes > EMIT_MEMBLOCK_MAXLEN ) then
-			hMemClearRepIMM( dvreg, bytes )
+			hMemClearRepIMM( dvreg, bytes, fillchar )
 		else
-			hMemClearBlkIMM( dvreg, bytes )
+			hMemClearBlkIMM( dvreg, bytes, fillchar )
 		end if
 
 	else
-		hMemClear( dvreg, svreg )
+		hMemClear( dvreg, svreg, fillchar )
 	end if
 
 end sub
@@ -7787,7 +7811,7 @@ private sub _procAllocArg _
 	assert( symbIsParamVar( sym ) )
 
 	if( symbIsParamVarByVal( sym ) ) then
-		lgt = symbGetLen( sym )
+		lgt = symbGetSizeOf( sym )
 	else
 		'' Bydesc/byref
 		lgt = env.pointersize

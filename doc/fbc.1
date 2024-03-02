@@ -1,4 +1,4 @@
-.TH FBC 1 "2024-01-28" "FreeBASIC Compiler 1.20.0" "FreeBASIC Compiler"
+.TH FBC 1 "2024-02-04" "FreeBASIC Compiler 1.20.0" "FreeBASIC Compiler"
 .SH NAME
 fbc \- The FreeBASIC compiler
 .SH DESCRIPTION
@@ -180,6 +180,9 @@ Display output binary/library file name (if known)
 \fB\-print\fR \fBsha-1\fR
 Display compiler's source code commit sha-1 (if known)
 .TP
+\fB\-print\fR \fBfork-id\fR
+Display compiler's fork identifier (if set)
+.TP
 \fB\-profile\fR
 Enable function profiling
 .TP
@@ -281,6 +284,9 @@ Don't use '__fastcall' calling convention
 .TP
 \fB\-z no-thiscall\fR
 Don't use '__thiscall' calling convention
+.TP
+\fB\-z nobuiltins\fR
+Disable all non-required builtin procedure definitions
 .TP
 \fB\-z nocmdline\fR
 Disable #cmdline source directives

@@ -428,8 +428,9 @@ declare function hMakeParamDesc _
 		/'FB_ERRMSG_EXPECTEDFILENUMBEREXPRESSION       '/ @"Expected file number expression", _
 		/'FB_ERRMSG_MALFORMEDSOURCEDATEEPOCH           '/ @"Malformed SOURCE_DATE_EPOCH environment variable", _
 		/'FB_ERRMSG_GFXLIBNOTSUPPORTEDFORTARGET        '/ @"Graphics routines were used, but the gfxlib has not been ported to this target", _
-		/' FB_ERRMSG_SSEREQUIRESX86                    '/ @"-fpu sse option can only be used on x86 and x86_64 architectures", _
-		/' FB_ERRMSG_NEONREQUIRESARM                   '/ @"-fpu neon option can only be used on arm architectures", _
+		/'FB_ERRMSG_SSEREQUIRESX86                     '/ @"-fpu sse option can only be used on x86 and x86_64 architectures", _
+		/'FB_ERRMSG_NEONREQUIRESARM                    '/ @"-fpu neon option can only be used on arm architectures", _
+		/'FB_ERRMSG_UNDEFINEDBUILTINSYMBOL             '/ @"Undefined built-in symbol", _
 		/'FB_ERRMSGS                                   '/ @"FB_ERRMSGS"  _
 	}
 

@@ -98,6 +98,7 @@
 #   ENABLE_STRIPALL=0      disable "-d ENABLE_STRIPALL" with all targets
 #   FBSHA1=1               determine the sha-1 of the current commit in repo and store it in the compiler
 #   FBSHA1=some-sha-1      explicitly indicate the sha-1 to store in the compiler
+#   FBFORKID=name          tells fbc to set a custom value for __FB_FORK_ID__
 #   FBPACKAGE     bindist: The package/archive file name without path or extension
 #   FBPACKSUFFIX  bindist: Allows adding a custom suffix to the normal package name (and the toplevel dir in the archive)
 #   FBMANIFEST    bindist: The manifest file name without path or extension
@@ -120,6 +121,7 @@
 #   -d DISABLE_STDCXX_PATH    tells fbc to not search for some libstdc++/libc++ depending on target platform
 #   -d BUILD_FB_DEFAULT_CPUTYPE_X86=<FB_CPUTYPE>    set default x86 cpu type to one of FB_CPUTYPE
 #   -d BUILD_FB_DEFAULT_CPUTYPE_ARM=<FB_CPUTYPE>    set default arm cpu type to one of FB_CPUTYPE
+#   -d FBFORKID="name"     tells fbc to set a custom value for __FB_FORK_ID__ 
 #
 # internal makefile configuration (but can override):
 #   libsubdir       override the library directory - default is set depending on TARGET
@@ -587,6 +589,12 @@ ifdef FBSHA1
   else
     ALLFBCFLAGS += -d 'FBSHA1="$(FBSHA1)"'
     BOOTFBCFLAGS += -d 'FBSHA1="$(FBSHA1)"'
+  endif
+endif
+ifdef FBFORKID
+  ifneq ($(FBFORKID),)
+    ALLFBCFLAGS += -d 'FBFORKID=$(FBFORKID)'
+    BOOTFBCFLAGS += -d 'FBFORKID=$(FBFORKID)'
   endif
 endif
 ifdef ENABLE_SUFFIX

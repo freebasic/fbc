@@ -102,7 +102,7 @@ static __inline__ void fb_hStrSetLength( FBSTRING *str, size_t size ) {
     str->len = size | (str->len & FB_TEMPSTRBIT);
 }
 
-FBCALL FBSTRING    *fb_hStrAllocTmpDesc         ( void );
+FBCALL FBSTRING    *fb_hStrAllocTempDesc        ( void );
 FBCALL int          fb_hStrDelTempDesc          ( FBSTRING *str );
 FBCALL FBSTRING    *fb_hStrAlloc                ( FBSTRING *str, ssize_t size );
 FBCALL FBSTRING    *fb_hStrRealloc              ( FBSTRING *str, ssize_t size, int preserve );

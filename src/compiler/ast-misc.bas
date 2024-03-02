@@ -1004,7 +1004,7 @@ private function hHasDtor( byval sym as FBSYMBOL ptr ) as integer
 		function = TRUE
 
 	case typeAddrOf( FB_DATATYPE_WCHAR )
-		if( symbGetIsWstring( sym ) ) then
+		if( symbGetIsTemporary( sym ) ) then
 			function = TRUE
 		end if
 
@@ -1291,7 +1291,7 @@ function astSizeOf( byval n as ASTNODE ptr, byref is_fixlenstr as integer ) as l
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, FB_DATATYPE_FIXSTR
 		if( n->sym ) then
 			is_fixlenstr = TRUE
-			function = symbGetLen( n->sym )
+			function = symbGetSizeOf( n->sym )
 		end if
 	end select
 end function

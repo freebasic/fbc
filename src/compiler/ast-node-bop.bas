@@ -23,9 +23,9 @@ private function hStrLiteralConcat _
 	ls = astGetSymbol( l )
 	rs = astGetSymbol( r )
 
-	'' new len = both strings' len less the 2 null-chars
+	'' new len = both strings - symbGetStrLength() handles the null terminator chars
 	s = symbAllocStrConst( *symbGetVarLitText( ls ) + *symbGetVarLitText( rs ), _
-						   symbGetStrLen( ls ) - 1 + symbGetStrLen( rs ) - 1 )
+	                       symbGetStrLength( ls ) + symbGetStrLength( rs ) )
 
 	function = astNewVAR( s )
 
@@ -49,15 +49,15 @@ private function hWstrLiteralConcat _
 	if( symbGetType( ls ) <> FB_DATATYPE_WCHAR ) then
 		'' new len = both strings' len less the 2 null-chars
 		s = symbAllocWstrConst( wstr( *symbGetVarLitText( ls ) ) + *symbGetVarLitTextW( rs ), _
-		                        symbGetStrLen( ls ) - 1 + symbGetWstrLen( rs ) - 1 )
+		                        symbGetStrLength( ls ) + symbGetWstrLength( rs ) )
 
 	elseif( symbGetType( rs ) <> FB_DATATYPE_WCHAR ) then
 		s = symbAllocWstrConst( *symbGetVarLitTextW( ls ) + wstr( *symbGetVarLitText( rs ) ), _
-		                        symbGetWstrLen( ls ) - 1 + symbGetStrLen( rs ) - 1 )
+		                        symbGetWstrLength( ls ) + symbGetStrLength( rs ) )
 
 	else
 		s = symbAllocWstrConst( *symbGetVarLitTextW( ls ) + *symbGetVarLitTextW( rs ), _
-		                        symbGetWstrLen( ls ) - 1 + symbGetWstrLen( rs ) - 1 )
+		                        symbGetWstrLength( ls ) + symbGetWstrLength( rs ) )
 	end if
 
 	function = astNewVAR( s )
@@ -653,7 +653,7 @@ private function hCheckDerefWcharPtr _
 	ll = l->l
 	if( ll ) then
 		if( ll->class = AST_NODECLASS_VAR ) then
-			if( symbGetIsWstring( ll->sym ) ) then
+			if( symbGetIsTemporary( ll->sym ) ) then
 				exit function
 			end if
 		end if

@@ -22,6 +22,7 @@ enum
 	PRINT_X
 	PRINT_FBLIBDIR
 	PRINT_SHA1
+	PRINT_FORK_ID
 end enum
 
 type FBC_EXTOPT
@@ -103,6 +104,7 @@ type FBCCTX
 	sysroot             as zstring * FB_MAXPATHLEN+1
 	xbe_title           as zstring * FB_MAXNAMELEN+1  '' For the '-title <title>' xbox option
 	nodeflibs           as integer
+	nofbrt0             as integer  '' If we should exclude fbrt0.o or fbrt0pic.o (implied by nodeflibs, and optional by -nolib fbrt0.o,fbrt0pic.o)
 	staticlink          as integer
 	stripsymbols        as integer
 
@@ -149,7 +151,7 @@ enum FBCTOOLFLAG
 end enum
 
 type FBCTOOLINFO
-	name as zstring * 16                  '' default name of tool to invoke 
+	name as zstring * 16                  '' default name of tool to invoke
 	env_variable as zstring * 16          '' environment variable to override
 	flags as FBCTOOLFLAG
 	path as zstring * (FB_MAXPATHLEN + 1) '' cached tool path and name
@@ -1213,7 +1215,7 @@ private function hLinkFiles( ) as integer
 
 	end select
 
-	if( fbc.nodeflibs = FALSE ) then
+	if( fbc.nofbrt0 = FALSE ) then
 		'' don't add the fbrt0 if compiling for javascript, because global constructors and destructors are not supported by emscripten
 		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
 			ldcline += " """ + fbc.libpath + FB_HOST_PATHDIV
@@ -2241,6 +2243,7 @@ private sub handleOpt _
 
 	case OPT_NODEFLIBS
 		fbc.nodeflibs = TRUE
+		fbc.nofbrt0 = TRUE
 
 	case OPT_NOERRLINE
 		fbSetOption( FB_COMPOPT_SHOWERROR, FALSE )
@@ -2312,6 +2315,7 @@ private sub handleOpt _
 		case "x"      : fbc.print = PRINT_X
 		case "fblibdir" : fbc.print = PRINT_FBLIBDIR
 		case "sha-1"  : fbc.print = PRINT_SHA1
+		case "fork-id": fbc.print = PRINT_FORK_ID
 		case else
 			hFatalInvalidOption( arg, is_source )
 		end select
@@ -2506,6 +2510,8 @@ private sub handleOpt _
 			fbSetOption( FB_COMPOPT_NOCMDLINE, TRUE )
 		case "retinflts"
 			fbSetOption( FB_COMPOPT_RETURNINFLTS, TRUE )
+		case "nobuiltins"
+			fbSetOption( FB_COMPOPT_NOBUILTINS, TRUE )
 		case else
 			hFatalInvalidOption( arg, is_source )
 		end select
@@ -3080,7 +3086,7 @@ private sub hCheckArgs()
 
 		'' -gen gas only supports -asm intel
 		select case fbGetOption( FB_COMPOPT_BACKEND )
-		case FB_BACKEND_GAS, FB_BACKEND_GAS64  
+		case FB_BACKEND_GAS, FB_BACKEND_GAS64
 			if( fbc.asmsyntax <> FB_ASMSYNTAX_INTEL ) then
 				errReportEx( FB_ERRMSG_GENGASWITHOUTINTEL, "", -1 )
 			end if
@@ -3639,7 +3645,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			'' GCC doesn't recognize the -march option and PowerPC combination
 			'' and recommendeds the -mcpu option be used for PowerPC.
 			select case fbGetCpuFamily( )
-			case FB_CPUFAMILY_PPC, FB_CPUFAMILY_PPC64, FB_CPUFAMILY_PPC64LE   
+			case FB_CPUFAMILY_PPC, FB_CPUFAMILY_PPC64, FB_CPUFAMILY_PPC64LE
 				if( fbc.cputype_is_native ) then
 					ln += "-mcpu=native "
 				else
@@ -3690,7 +3696,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			ln += "-Wno-unused "
 
 		else
-			'' if Emscripten is used, we will skip the assembly generation and 
+			'' if Emscripten is used, we will skip the assembly generation and
 			'' compile directly to object code
 			ln += "-c -nostdlib -nostdinc -Wall -Wno-unused-label " + _
 				"-Wno-unused-function -Wno-unused-variable "
@@ -4374,7 +4380,12 @@ private sub hExcludeLibsFromLink( )
 	'' Remove any excluded libs from fbc.finallibs list
 	dim as TSTRSETITEM ptr i = listGetHead(@fbc.excludedlibs.list)
 	while i
-		strsetDel(@fbc.finallibs, i->s)
+		select case i->s
+		case "fbrt0.o", "fbrt0pic.o"
+			fbc.nofbrt0 = TRUE
+		case else
+			strsetDel(@fbc.finallibs, i->s)
+		end select
 		i = listGetNext(i)
 	wend
 end sub
@@ -4464,6 +4475,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -print fblibdir  Display the compiler's lib/ path"
 	print "  -print x         Display output binary/library file name (if known)"
 	if( verbose ) then
+	print "  -print fork-id   Display compiler's fork identifier (if set)"
 	print "  -print sha-1     Display compiler's source code commit sha-1 (if known)"
 	end if
 	print "  -profile         Enable function profiling"
@@ -4510,6 +4522,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -z gosub-setjmp  Use setjmp/longjmp to implement GOSUB"
 	print "  -z no-thiscall   Don't use '__thiscall' calling convention"
 	print "  -z no-fastcall   Don't use '__fastcall' calling convention"
+	print "  -z nobuiltins    Disable all non-required builtin procedure definitions"
 	print "  -z nocmdline     Disable #cmdline source directives"
 	print "  -z retinflts     Enable returning some types in floating point registers"
 	print "  -z valist-as-ptr Use pointer expressions to implement CVA_*() macros"
@@ -4549,6 +4562,9 @@ private sub hPrintVersion( byval verbose as integer )
 		fbcPrintTargetInfo( )
 		if( FB_BUILD_SHA1 > "" ) then
 			print "source sha-1: " & FB_BUILD_SHA1
+		end if
+		if( FB_BUILD_FORK_ID > "" ) then
+			print "fbc fork id:  " & FB_BUILD_FORK_ID
 		end if
 	end if
 end sub
@@ -4618,6 +4634,8 @@ end sub
 				print fbc.libpath
 			case PRINT_SHA1
 				print FB_BUILD_SHA1
+			case PRINT_FORK_ID
+				print FB_BUILD_FORK_ID
 			end select
 			fbcEnd( 0 )
 		end if

@@ -568,7 +568,7 @@ function rtlArrayRedim _
 
 	sym = astGetSymbol( arrayexpr )
 	dtype = symbGetFullType( sym )
-	elementlen = symbGetLen( sym )
+	elementlen = symbGetSizeOf( sym )
 
 	hGetCtorDtorForRedim( dtype, symbGetSubtype( sym ), ctor, dtor )
 

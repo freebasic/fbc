@@ -19,7 +19,7 @@ static FB_LIST tmpdsList = { 0, NULL, NULL, NULL };
 
 static FB_STR_TMPDESC fb_tmpdsTB[FB_STR_TMPDESCRIPTORS];
 
-FBCALL FBSTRING *fb_hStrAllocTmpDesc( void )
+FBCALL FBSTRING *fb_hStrAllocTempDesc( void )
 {
 	FB_STR_TMPDESC *dsc;
 
@@ -154,7 +154,7 @@ FBCALL FBSTRING *fb_hStrAllocTemp_NoLock( FBSTRING *str, ssize_t size )
 
 	if( try_alloc )
 	{
-		str = fb_hStrAllocTmpDesc( );
+		str = fb_hStrAllocTempDesc( );
 		if( str==NULL )
 			return NULL;
 	}

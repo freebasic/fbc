@@ -138,6 +138,12 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 			end if
 		end if
 
+		if( (procdef->options and FB_RTL_OPT_REQUIRED) = 0 ) then
+			if( env.clopt.nobuiltins ) then
+				doadd = FALSE
+			end if
+		end if
+
 		if( doadd ) then
 			dim as FBSYMBOL ptr proc = symbPreAddProc( NULL )
 
@@ -255,9 +261,14 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 				palias = pname
 			end if
 
+			dim symb_opts as FB_SYMBOPT = FB_SYMBOPT_NONE
+			if( env.clopt.nobuiltins = FALSE ) then
+				symb_opts or= FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL
+			end if
+
 			proc = symbAddProc( proc, pname, palias, _
 			                    procdef->dtype, NULL, attrib, pattrib, callconv, _
-			                    FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
+			                    symb_opts )
 
 			if( proc <> NULL ) then
 				symbSetProcCallback( proc, procdef->callback )
@@ -298,7 +309,7 @@ function rtlProcLookup _
 				pname = strptr( tmp_name )
 				chain_ = symbLookupAt( @symbGetGlobalNamespc( ), pname, FALSE, FALSE )
 				if( chain_ = NULL ) then
-					errReportEx( FB_ERRMSG_UNDEFINEDSYMBOL, *pname )
+					errReportEx( FB_ERRMSG_UNDEFINEDBUILTINSYMBOL, *pname )
 					rtlLookupTB( pidx ) = NULL
 				else
 					rtlLookupTB( pidx ) = chain_->sym
@@ -415,7 +426,7 @@ function rtlCalcStrLen _
 			if( symbGetType( s ) <> typeGetDtAndPtrOnly( dtype ) ) then
 				function = 0
 			else
-				function = symbGetStrLen( s )
+				function = symbGetStrLength( s ) + 1
 			end if
 		end if
 
@@ -428,12 +439,14 @@ function rtlCalcStrLen _
 			if( symbGetType( s ) <> typeGetDtAndPtrOnly( dtype ) ) then
 				function = 0
 			else
-				function = symbGetWStrLen( s )
+				function = symbGetWStrLength( s ) + 1
 			end if
 		end if
 
 	case else
+		'' var-len STRING
 		function = -1
+
 	end select
 
 end function

@@ -79,7 +79,7 @@ private function hDefaultInit( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 	end if
 
 	function = astNewMEM( AST_OP_MEMCLEAR, astNewVAR( sym ), _
-	                      astNewCONSTi( symbGetLen( sym ) * symbGetArrayElements( sym ) ) )
+	                      astNewCONSTi( symbGetSizeOf( sym ) * symbGetArrayElements( sym ) ) )
 end function
 
 function astNewDECL _

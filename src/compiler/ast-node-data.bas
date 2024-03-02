@@ -123,12 +123,12 @@ sub astDataStmtEnd( byval tree as ASTNODE ptr )
 
 		select case n->data.id
 		case FB_DATASTMT_ID_ZSTR
-			id = symbGetStrLen( astGetStrLitSymbol( expr ) ) - 1
+			id = symbGetStrLength( astGetStrLitSymbol( expr ) )
 			expr = astNewADDROF( expr )
 
 		case FB_DATASTMT_ID_WSTR
 			id = FB_DATASTMT_ID_WSTR + _
-				 (symbGetWstrLen( astGetStrLitSymbol( expr ) ) - 1)
+			     (symbGetWstrLength( astGetStrLitSymbol( expr ) ) )
 			expr = astNewADDROF( expr )
 
 		case FB_DATASTMT_ID_CONST

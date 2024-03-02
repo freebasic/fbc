@@ -253,7 +253,7 @@
 		), _
 		/' function fb_StrAllocTempResult( byref str as const string ) as string '/ _
 		( _
-			@FB_RTL_STRALLOCTMPRES, NULL, _
+			@FB_RTL_STRALLOCTEMPRES, NULL, _
 			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
@@ -263,7 +263,7 @@
 		), _
 		/' function fb_StrAllocTempDescF( byref str as const any, byval str_size as const integer ) as string '/ _
 		( _
-			@FB_RTL_STRALLOCTMPDESCF, NULL, _
+			@FB_RTL_STRALLOCTEMPDESCF, NULL, _
 			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
@@ -274,7 +274,7 @@
 		), _
 		/' function fb_StrAllocTempDescZ( byval str as const zstring ptr ) as string '/ _
 		( _
-			@FB_RTL_STRALLOCTMPDESCZ, NULL, _
+			@FB_RTL_STRALLOCTEMPDESCZ, NULL, _
 			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
@@ -284,7 +284,7 @@
 		), _
 		/' function fb_StrAllocTempDescZEx( byval str as const zstring ptr, byval len as const integer ) as string '/ _
 		( _
-			@FB_RTL_STRALLOCTMPDESCZEX, NULL, _
+			@FB_RTL_STRALLOCTEMPDESCZEX, NULL, _
 			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
@@ -2685,7 +2685,7 @@ function rtlStrDelete( byval expr as ASTNODE ptr ) as ASTNODE ptr
 end function
 
 '':::::
-function rtlStrAllocTmpResult _
+function rtlStrAllocTempResult _
 	( _
 		byval strg as ASTNODE ptr _
 	) as ASTNODE ptr static
@@ -2695,7 +2695,7 @@ function rtlStrAllocTmpResult _
 	function = NULL
 
 	''
-	proc = astNewCALL( PROCLOOKUP( STRALLOCTMPRES ), NULL )
+	proc = astNewCALL( PROCLOOKUP( STRALLOCTEMPRES ), NULL )
 
 	'' src as string
 	if( astNewARG( proc, strg, FB_DATATYPE_STRING ) = NULL ) then
@@ -2707,7 +2707,7 @@ function rtlStrAllocTmpResult _
 end function
 
 '':::::
-function rtlStrAllocTmpDesc _
+function rtlStrAllocTempDesc _
 	( _
 		byval strexpr as ASTNODE ptr _
 	) as ASTNODE ptr
@@ -2728,9 +2728,9 @@ function rtlStrAllocTmpDesc _
 		'' literal?
 		litsym = astGetStrLitSymbol( strexpr )
 		if( litsym = NULL ) then
-			proc = astNewCALL( PROCLOOKUP( STRALLOCTMPDESCZ ) )
+			proc = astNewCALL( PROCLOOKUP( STRALLOCTEMPDESCZ ) )
 		else
-			proc = astNewCALL( PROCLOOKUP( STRALLOCTMPDESCZEX ) )
+			proc = astNewCALL( PROCLOOKUP( STRALLOCTEMPDESCZEX ) )
 		end if
 
 		'' byval str as zstring ptr
@@ -2740,7 +2740,7 @@ function rtlStrAllocTmpDesc _
 
 		'' length is known at compile-time
 		if( litsym <> NULL ) then
-			lgt = symbGetStrLen( litsym ) - 1   '' less the null-term
+			lgt = symbGetStrLength( litsym )
 
 			'' byval len as integer
 			if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
@@ -2749,7 +2749,7 @@ function rtlStrAllocTmpDesc _
 		end if
 
 	case FB_DATATYPE_FIXSTR
-		proc = astNewCALL( PROCLOOKUP( STRALLOCTMPDESCF ) )
+		proc = astNewCALL( PROCLOOKUP( STRALLOCTEMPDESCF ) )
 
 		'' always calc len before pushing the param
 		lgt = rtlCalcStrLen( strexpr, dtype )
@@ -2875,7 +2875,7 @@ function rtlToStr _
 		if( litsym <> NULL ) then
 			if( env.wcharconv <> FB_WCHARCONV_NEVER ) then
 				litsym = symbAllocStrConst( str( *symbGetVarLitTextW( litsym ) ), _
-				                            symbGetWstrLen( litsym ) - 1 )
+				                            symbGetWstrLength( litsym ) )
 
 				return astNewVAR( litsym )
 			end if
@@ -2980,7 +2980,7 @@ function rtlToWstr _
 		if( litsym <> NULL ) then
 			if( env.wcharconv <> FB_WCHARCONV_NEVER ) then
 				litsym = symbAllocWstrConst( wstr( *symbGetVarLitText( litsym ) ), _
-				                             symbGetStrLen( litsym ) - 1 )
+				                             symbGetStrLength( litsym ) )
 				return astNewVAR( litsym )
 			end if
 		end if
@@ -3776,7 +3776,7 @@ private function hEvalAscCase _
 		w = symbGetVarLitTextW( literal )
 		internallength = len( *w )
 		w = hUnescapeW( w )
-		reallength = symbGetWstrLen( literal ) - 1
+		reallength = symbGetWstrLength( literal )
 
 		if( internallength <> reallength ) then
 			exit function
@@ -3795,7 +3795,7 @@ private function hEvalAscCase _
 		z = symbGetVarLitText( literal )
 		internallength = len( *z )
 		z = hUnescape( z )
-		reallength = symbGetStrLen( literal ) - 1
+		reallength = symbGetStrLength( literal )
 
 		'' Don't do it if it includes internal escape sequences,
 		'' handling these here would be quite hard... (TODO)

@@ -1844,6 +1844,26 @@ function symbIsString _
 
 end function
 
+function symbGetStrLength( byval sym as FBSYMBOL ptr ) as longint
+	assert( symbIsString( symbGetType( sym ) ) )
+	select case as const symbGetType( sym )
+	case FB_DATATYPE_CHAR
+		function = (sym)->lgt - 1
+	case FB_DATATYPE_WCHAR
+		function = ((sym)->lgt \ typeGetSize( FB_DATATYPE_WCHAR )) - 1
+	case FB_DATATYPE_STRING
+		function = (sym)->lgt
+	case FB_DATATYPE_FIXSTR
+		'' !!!TODO!!! in future STRING*N should not deduct a null terminator
+		function = (sym)->lgt - 1
+	end select
+end function
+
+function symbGetWstrLength( byval sym as FBSYMBOL ptr ) as longint
+	assert( symbGetType( sym ) = FB_DATATYPE_WCHAR )
+	function = ((sym)->lgt \ typeGetSize( FB_DATATYPE_WCHAR )) - 1
+end function
+
 '':::::
 function symbGetValistType _
 	( _
@@ -2912,7 +2932,7 @@ function symbDumpToStr _
 	elseif( symbIsProc( sym ) ) then
 		checkStat( PROCEMITTED )
 	else
-		checkStat( WSTRING )
+		checkStat( TEMPORARY )
 	end if
 
 	checkStat( EMITTED )

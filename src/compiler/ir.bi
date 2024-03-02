@@ -309,7 +309,8 @@ type IR_VTBL
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
-		byval bytes as longint _
+		byval bytes as longint, _
+		byval fillchar as integer _
 	)
 
 	emitMacro as sub _
@@ -612,7 +613,7 @@ declare sub vregDump( byval v as IRVREG ptr )
 
 #define irEmitBRANCH(op, label) ir.vtbl.emitBranch( op, label )
 
-#define irEmitMEM(op, v1, v2, bytes) ir.vtbl.emitMem( op, v1, v2, bytes )
+#define irEmitMEM(op, v1, v2, bytes, fillchar) ir.vtbl.emitMem( op, v1, v2, bytes, fillchar )
 
 #define irEmitSCOPEBEGIN(s) ir.vtbl.emitScopeBegin( s )
 
