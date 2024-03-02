@@ -3808,7 +3808,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 
 	if v2->typ=IR_VREGTYPE_IMM then
 		if op<>AST_OP_MUL orelse v2->value.i < -2 orelse v2->value.i > 10 then
-			if v2->value.i<-2147483648 or v2->value.i>=2147483648 then
+			if v2->value.i<-2147483648 or v2->value.i>=2147483648ll then
 				if v2->value.i>=0 and v2->value.i<4294967296 then
 					asm_code("mov eax, "+Str(v2->value.i))
 				else
