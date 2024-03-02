@@ -106,7 +106,7 @@ enum EMIT_NODEOP
 	'' mem
 	EMIT_OP_MEMMOVE
 	EMIT_OP_MEMSWAP
-	EMIT_OP_MEMCLEAR
+	EMIT_OP_MEMFILL
 	EMIT_OP_STKCLEAR
 
 	'' dgb
@@ -824,7 +824,7 @@ declare function emitMEMSWAP _
 		byval bytes as integer _
 	) as EMIT_NODE ptr
 
-declare function emitMEMCLEAR _
+declare function emitMEMFILL _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval bytes_vreg as IRVREG ptr, _

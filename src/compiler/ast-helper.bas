@@ -277,7 +277,7 @@ function astBuildTempVarClear( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 	'' WITH compound).
 
 	'' Clear variable's memory
-	function = astNewMEM( AST_OP_MEMCLEAR, astNewVAR( sym ), _
+	function = astNewMEM( AST_OP_MEMFILL, astNewVAR( sym ), _
 	                      astNewCONSTi( symbGetSizeOf( sym ) ) )
 end function
 

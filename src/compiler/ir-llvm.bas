@@ -2082,8 +2082,8 @@ private sub _emitMem _
 	ln = "call void "
 
 	select case( op )
-	case AST_OP_MEMCLEAR
-		hAstCommand( "memclear " + vregPretty( v1 ) )
+	case AST_OP_MEMFILL
+		hAstCommand( "memfill " + vregPretty( v1 ) )
 	case AST_OP_MEMMOVE
 		hAstCommand( "memmove " + vregPretty( v1 ) + " <= " + vregPretty( v2 ) )
 	end select
@@ -2092,7 +2092,7 @@ private sub _emitMem _
 	hLoadVreg( v2 )
 
 	select case( op )
-	case AST_OP_MEMCLEAR
+	case AST_OP_MEMFILL
 		builtins(BUILTIN_MEMSET).used = TRUE
 		_setVregDataType( v1, typeAddrOf( FB_DATATYPE_BYTE ), NULL )
 		_setVregDataType( v2, FB_DATATYPE_INTEGER, NULL )

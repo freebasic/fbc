@@ -3339,7 +3339,7 @@ private sub _emitMem _
 	)
 
 	select case op
-	case AST_OP_MEMCLEAR
+	case AST_OP_MEMFILL
 		hWriteLine("__builtin_memset( " + exprFlush( exprNewVREG( v1 ) ) + ", " + str(fillchar) + ", " + exprFlush( exprNewVREG( v2 ) ) + " );" )
 	case AST_OP_MEMMOVE
 		hWriteLine("__builtin_memcpy( " + exprFlush( exprNewVREG( v1 ) ) + ", " + exprFlush( exprNewVREG( v2 ) ) + ", " + str( cunsg( bytes ) ) + " );" )

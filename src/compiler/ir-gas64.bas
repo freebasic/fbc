@@ -1874,11 +1874,11 @@ private sub reg_transfer(byval regtrans as long,byval regsource as long)
 
 end sub
 ''==============================================
-'' MEMCLEAR size should be known at compile time
+'' MEMFILL size should be known at compile time
 ''==============================================
-private sub memclear(byval bytestoclear as Integer,byref dst as string,byval dtyp as long=KUSE_MOV,byval fillchar as integer)
+private sub memfill(byval bytestofill as Integer,byref dst as string,byval dtyp as long=KUSE_MOV,byval fillchar as integer)
 
-	dim as uinteger nbbytes=CUnsg(bytestoclear),nooptim
+	dim as uinteger nbbytes=CUnsg(bytestofill),nooptim
 	dim as string lname,regdst
 	dim as long nb8,rdst
 	dim as ulongint fill2, fill4
@@ -1969,13 +1969,13 @@ end sub
 ''=============================================
 '' MEMCOPY size should be known at compile time
 ''=============================================
-private sub memcopy(byval bytestoclear as Integer,byref src as string, byref dst as string,byval styp as long=KUSE_MOV,byval dtyp as long=KUSE_MOV)
+private sub memcopy(byval bytestocopy as Integer,byref src as string, byref dst as string,byval styp as long=KUSE_MOV,byval dtyp as long=KUSE_MOV)
 
-	dim as uinteger nbbytes=CUnsg(bytestoclear)
+	dim as uinteger nbbytes=CUnsg(bytestocopy)
 	dim as string lname,regsrc,regdst,regnbb
 	dim as long nb8,rsrc,rdst,rnbb
 
-	if( bytestoclear = 0 ) then
+	if( bytestocopy = 0 ) then
 		exit sub
 	end if
 	asm_info("memcopy="+src+" "+dst)
@@ -6616,8 +6616,8 @@ private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVR
 	dim as long desttyp=KUSE_MOV,srctyp=KUSE_MOV,regsrc
 
 	select case( op )
-		case AST_OP_MEMCLEAR ''========================== MEMCLEAR ===========================
-			asm_info("memclear " + vregPretty( v1 ))
+		case AST_OP_MEMFILL ''========================== MEMFILL ===========================
+			asm_info("memfill " + vregPretty( v1 ))
 			asm_info("v1="+vregdumpfull(v1))
 			asm_info("v2="+vregdumpfull(v2))
 
@@ -6637,7 +6637,7 @@ private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVR
 				srctyp=KUSE_LEA
 				instruc="lea "
 			else
-				asm_error("Memclear v1 not a reg nor a var")
+				asm_error("Memfill v1 not a reg nor a var")
 				exit sub
 			end if
 
@@ -6679,7 +6679,7 @@ private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVR
 			end if
 
 			if v2->typ<>IR_VREGTYPE_IMM then
-				asm_error("Memclear without an immediat as size")
+				asm_error("Memfill without an immediat as size")
 				exit sub
 			end if
 
@@ -6687,7 +6687,7 @@ private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVR
 
 			select case v2->value.i
 				case is>8,3,5,6,7
-					memclear(v2->value.i,op1,srctyp,fillchar)
+					memfill(v2->value.i,op1,srctyp,fillchar)
 				case 1
 					if v1->typ=IR_VREGTYPE_REG then
 						asm_code("mov BYTE PTR ["+op1+"], " + str(fillchar))

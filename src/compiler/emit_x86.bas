@@ -6467,7 +6467,7 @@ private sub _emitMEMSWAP _
 end sub
 
 '':::::
-private sub hMemClearRepIMM _
+private sub hMemFillRepIMM _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval bytes as ulong, _
@@ -6552,7 +6552,7 @@ private sub hMemClearRepIMM _
 end sub
 
 '':::::
-private sub hMemClearBlkIMM _
+private sub hMemFillBlkIMM _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval bytes as ulong, _
@@ -6591,7 +6591,7 @@ private sub hMemClearBlkIMM _
 end sub
 
 '':::::
-private sub hMemClear _
+private sub hMemFill _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval bytes_vreg as IRVREG ptr, _
@@ -6677,7 +6677,7 @@ private sub hMemClear _
 end sub
 
 '':::::
-private sub _emitMEMCLEAR _
+private sub _emitMEMFILL _
 	( _
 		byval dvreg as IRVREG ptr, _
 		byval svreg as IRVREG ptr, _
@@ -6691,13 +6691,13 @@ private sub _emitMEMCLEAR _
 	if( irIsIMM( svreg ) ) then
 		dim as ulong bytes = svreg->value.i
 		if( bytes > EMIT_MEMBLOCK_MAXLEN ) then
-			hMemClearRepIMM( dvreg, bytes, fillchar )
+			hMemFillRepIMM( dvreg, bytes, fillchar )
 		else
-			hMemClearBlkIMM( dvreg, bytes, fillchar )
+			hMemFillBlkIMM( dvreg, bytes, fillchar )
 		end if
 
 	else
-		hMemClear( dvreg, svreg, fillchar )
+		hMemFill( dvreg, svreg, fillchar )
 	end if
 
 end sub
@@ -7489,7 +7489,7 @@ end sub
 		_
 		EMIT_CBENTRY(MEMMOVE), _
 		EMIT_CBENTRY(MEMSWAP), _
-		EMIT_CBENTRY(MEMCLEAR), _
+		EMIT_CBENTRY(MEMFILL), _
 		EMIT_CBENTRY(STKCLEAR), _
 		_
 		EMIT_CBENTRY(LINEINI), _

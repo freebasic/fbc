@@ -84,7 +84,7 @@ private function hDefaultInit( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 		fillchar = 32
 	end if
 
-	function = astNewMEM( AST_OP_MEMCLEAR, astNewVAR( sym ), _
+	function = astNewMEM( AST_OP_MEMFILL, astNewVAR( sym ), _
 	                      astNewCONSTi( symbGetSizeOf( sym ) _
 	                      * symbGetArrayElements( sym ) ) _
 	                      , 0, fillchar )

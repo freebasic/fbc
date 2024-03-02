@@ -536,7 +536,7 @@ function astNewASSIGN _
 					if( symbGetCompDefCtor( l->subtype ) <> NULL ) then
 						result = astBuildCtorCall( l->subtype, astCloneTree( l ) )
 					else
-						result = astNewMEM( AST_OP_MEMCLEAR, _
+						result = astNewMEM( AST_OP_MEMFILL, _
 							astCloneTree( l ), _
 							astNewCONSTi( symbGetSizeOf( l->subtype ) ) )
 					end if
