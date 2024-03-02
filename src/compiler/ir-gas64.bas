@@ -2390,9 +2390,6 @@ private function _emitbegin( ) as integer
 	asm_code( ".intel_syntax noprefix")
 	cfi_windows_asm_code( ".cfi_sections .debug_frame")
 	asm_section(".text")
-	if env.clopt.nullptrchk=true then
-		asm_code("mov qword ptr $totalstacksize[rip], 0")
-	end if
 	ctx.indent-=1
 	function = TRUE
 end function
@@ -2449,17 +2446,6 @@ private sub _emitend( )
 	irForEachDataStmt( @hEmitVariable )
 	'' Global arrays for global ctors/dtors
 	symbForEachGlobal( FB_SYMBCLASS_PROC, @hAddGlobalCtorDtor )
-
-	''for checking stack overflow
-	if env.clopt.nullptrchk=true then
-		asm_section(".bss")
-		if ctx.systemv then
-			asm_code(".local $totalstacksize")
-			asm_code(".comm $totalstacksize,8,8")
-		else
-			asm_code(".lcomm $totalstacksize,8,8")
-		end if
-	EndIf
 
 	''if float rounding is used check sse4_1 for using roundsd/roundss
 	if ctx.roundfloat=true then
@@ -7048,47 +7034,6 @@ private sub _emitprocend _
 		cfi_windows_asm_code(".seh_setframe rbp, 0") '' 0 = offset into this function's stack alloocation
 		cfi_asm_code(".cfi_def_cfa_register 6")
 
-		if env.clopt.nullptrchk=true then
-			asm_code("add qword ptr $totalstacksize[rip], "+str(ctx.stk))
-			asm_code("cmp qword ptr $totalstacksize[rip], "+str(ctx.maxstack))
-
-			asm_code(".section .data")
-			asm_code(".align 8")
-			var lname1 = *symbUniqueLabel( )
-			asm_code(lname1+":")
-			'asm_code(".ascii """+*s+$"\0""")
-			asm_code(".ascii ""Aborting : stack overflow "+env.inf.name+" "+*symbGetMangledName( proc )+$"\0""")
-
-			asm_code(".text")
-			var lname = *symbUniqueLabel( )
-			asm_code("jl "+lname)
-
-			if ctx.systemv then
-				asm_code("lea rdi, "+lname1+"[rip]")
-				asm_code("call fb_StrAllocTempDescZ")
-
-				asm_code("xor edi, edi")
-				asm_code("mov rsi, rax")
-				asm_code("mov rdx, 1")
-				asm_code("call fb_PrintString")
-
-				asm_code("mov rdi, 4")
-			else
-				asm_code("lea rcx, "+lname1+"[rip]")
-				asm_code("call fb_StrAllocTempDescZ")
-
-				asm_code("xor ecx, ecx")
-				asm_code("mov rdx, rax")
-				asm_code("mov r8d, 1")
-				asm_code("call fb_PrintString")
-
-				asm_code("mov rcx, 4")
-			end if
-			asm_code("call fb_End")
-			asm_code(lname+":")
-		end if
-
-
 		if ctx.stk>=2147483648 then
 			asm_code("mov rax, "+Str(ctx.stk))
 			asm_code("sub rsp, rax")
@@ -7148,10 +7093,6 @@ private sub _emitprocend _
 
 	''--> EPILOG code
 	ctx.section=SECTION_EPILOG
-
-	if env.clopt.nullptrchk=true then
-		asm_code("sub qword ptr $totalstacksize[rip], "+str(ctx.stk))
-	EndIf
 
 	if( env.clopt.debuginfo = true ) then
 		lname = *symbUniqueLabel( )
