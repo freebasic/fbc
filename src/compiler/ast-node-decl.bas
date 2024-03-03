@@ -79,10 +79,21 @@ private function hDefaultInit( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 		exit function
 	end if
 
+
+	select case symbGetType( sym )
+
 	'' fixed string? initialize to spaces
-	if( symbGetType( sym ) = FB_DATATYPE_FIXSTR ) then
+	case FB_DATATYPE_FIXSTR
 		fillchar = 32
-	end if
+
+	'' UDT containing only fixed length string?
+	'' optimize to a memory fill instead of implicit constructor
+	case FB_DATATYPE_STRUCT
+		if( symbGetUDTHasFilledField( sym->subtype ) ) then
+			fillchar = 32
+		end if
+
+	end select
 
 	function = astNewMEM( AST_OP_MEMFILL, astNewVAR( sym ), _
 	                      astNewCONSTi( symbGetSizeOf( sym ) _

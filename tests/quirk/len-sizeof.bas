@@ -28,9 +28,6 @@ SUITE( fbc_tests.quirk.len_sizeof )
 		CU_ASSERT( len( string( 3, "a" ) ) = 3 )  '' Relies on disambiguation from len(string) via the '(' in 'string('
 		CU_ASSERT( len( (string( 3, "a" )) ) = 3 ) '' Not ambiguous
 
-		'' FIXSTRs are somewhat of an exception though,
-		'' len() returns the sizeof()-1 (-1 for the implicit null terminator),
-		'' i.e. the N from STRING * N, not the length of the stored string data.
 		dim fstr as string * 31
 		CU_ASSERT(    len( fstr ) = 31 )
 		CU_ASSERT( sizeof( fstr ) = 31 )
@@ -49,14 +46,21 @@ SUITE( fbc_tests.quirk.len_sizeof )
 		CU_ASSERT(    len( wstr( "1234567" ) ) = 7 )
 		CU_ASSERT( sizeof( wstr( "1234567" ) ) = 8 * sizeof( wstring ) )
 
-		type UDT
-			zstr as zstring * len( STRCONST ) + 1
-			fstr as  string * len( STRCONST )
-		end type
+		'' mixing of zstring*N and string*N in the same type
+		'' induces the creation of an implicit constructor
+		'' so we can't scope one UDT here that contains both
 
-		dim x as UDT
+		type UDTZ
+			zstr as zstring * len( STRCONST ) + 1
+		end type
+		dim x as UDTZ
 		CU_ASSERT( sizeof( x.zstr ) = len( STRCONST ) + 1 )
-		CU_ASSERT(    len( x.fstr ) = len( STRCONST )     )
+
+		type UDTF
+			fstr as  string * len( STRCONST )
+		 end type
+		dim y as UDTF
+		CU_ASSERT(    len( y.fstr ) = len( STRCONST )     )
 	END_TEST
 
 	namespace ns

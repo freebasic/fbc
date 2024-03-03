@@ -12,10 +12,12 @@ Version 1.20.0
 - rtlib: optimize string concatenation reallocations: do not reallocate to smaller memory buffer if the contents are to be preserved
 - limit WSTRING*N, ZSTRING*N, STRING*N types to 2^31-1 and show an 'invalid size' error if the size given is less than 1 or greater than the limit
 - STRING*N occupies N bytes in memory, pads the variable / field with spaces, and does not automatically append a terminating null character
-- STRING*N variables and fields are initialized to spaces by default
+- STRING*N variables and type fields are initialized to spaces by default
+- internal: types containing only STRING*N fields or child types containing only STRING*N fields will initialize to spaces using a memory fill operation, and where other data types are present will induce the creation of an implicit constructor
+- unions containing STRING*N fields will initialize to spaces if the first field is a STRING*N type, otherwise will initialize to zero
 - LEN(STRING*N) = SIZEOF(STRING*N) due to padding and no null terminator
 - STRING*N/SWAP: swap will pad values with spaces where one of the arguments is of the STRING*N data type
-- STRING*N is copied to a temporary variable when passed to ZSTRING PTR parameters since there is no expectaction that STRING*N will have it's own terminating null character
+- arguments of STRING*N type are copied to a temporary variable when passed to BYVAL ZSTRING PTR and BYREF ZSTRING parameters (since there is no expectaction that STRING*N will have it's own terminating null character) and copied back after the call
 
 [added]
 - x86_64: optimize SHL MOD INTDIV to use 32-bit operation when result will be converted to long/ulong

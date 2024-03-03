@@ -493,6 +493,8 @@ enum FB_UDTOPT
 	FB_UDTOPT_ISWSTRING         = &h00010000
 	FB_UDTOPT_ISZSTRING         = &h00020000
 	FB_UDTOPT_HASNESTED         = &h00040000
+	FB_UDTOPT_HASZEROEDFIELD    = &h00080000
+	FB_UDTOPT_HASFILLEDFIELD    = &h00100000
 	FB_UDTOPT_VALISTTYPEMASK    = &h00f00000
 end enum
 
@@ -2388,6 +2390,12 @@ declare function symbGetWstrLength( byval sym as FBSYMBOL ptr ) as longint
 
 #define symbSetUdtHasNested( s )   (s)->udt.options or= FB_UDTOPT_HASNESTED
 #define symbGetUdtHasNested( s ) (((s)->udt.options and FB_UDTOPT_HASNESTED) <> 0)
+
+#define symbSetUDTHasZeroedField( s ) (s)->udt.options or= FB_UDTOPT_HASZEROEDFIELD
+#define symbGetUDTHasZeroedField( s ) (((s)->udt.options and FB_UDTOPT_HASZEROEDFIELD) <> 0)
+
+#define symbSetUDTHasFilledField( s ) (s)->udt.options or= FB_UDTOPT_HASFILLEDFIELD
+#define symbGetUDTHasFilledField( s ) (((s)->udt.options and FB_UDTOPT_HASFILLEDFIELD) <> 0)
 
 #define symbGetUDTIsUnionOrAnon(s) (((s)->udt.options and (FB_UDTOPT_ISUNION or FB_UDTOPT_ISANON)) <> 0)
 

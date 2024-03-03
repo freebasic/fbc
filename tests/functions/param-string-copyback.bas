@@ -43,6 +43,39 @@ SUITE( fbc_tests.functions.param_string_copyback )
 		END_TEST
 	end namespace
 
+	namespace ns1z
+		sub chk_byval_zstring_copyback( byval s as zstring ptr )
+			*s = ucase( *s )
+		end sub
+
+		sub chk_byref_zstring_copyback( byref s as zstring )
+			s = ucase( s )
+		end sub
+
+		TEST( simple_zstring )
+			dim s as string
+			dim f as string * 3
+			dim z as zstring * 3+1
+			dim w as wstring * 3+1
+			dim pz as zstring ptr = @z
+			dim pw as wstring ptr = @w
+
+			s = "var" : chk_byval_zstring_copyback( s   ) : CU_ASSERT( s = "VAR" ) '' copyback
+			f = "fix" : chk_byval_zstring_copyback( f   ) : CU_ASSERT( f = "FIX" ) '' copyback
+			z = "zer" : chk_byval_zstring_copyback( z   ) : CU_ASSERT( z = "ZER" ) '' copyback
+			z = "zer" : chk_byval_zstring_copyback( *pz ) : CU_ASSERT( z = "ZER" ) '' copyback
+			w = "foo" : chk_byval_zstring_copyback( w   ) : CU_ASSERT( w = "foo" ) '' no copyback
+			w = "foo" : chk_byval_zstring_copyback( *pw ) : CU_ASSERT( w = "foo" ) '' no copyback
+
+			s = "var" : chk_byref_zstring_copyback( s   ) : CU_ASSERT( s = "VAR" ) '' copyback
+			f = "fix" : chk_byref_zstring_copyback( f   ) : CU_ASSERT( f = "FIX" ) '' copyback
+			z = "zer" : chk_byref_zstring_copyback( z   ) : CU_ASSERT( z = "ZER" ) '' copyback
+			z = "zer" : chk_byref_zstring_copyback( *pz ) : CU_ASSERT( z = "ZER" ) '' copyback
+			w = "foo" : chk_byref_zstring_copyback( w   ) : CU_ASSERT( w = "foo" ) '' no copyback
+			w = "foo" : chk_byref_zstring_copyback( *pw ) : CU_ASSERT( w = "foo" ) '' no copyback
+		END_TEST
+	end namespace
+
 	namespace ns2
 		sub appendChars( byref s as string, byval n as integer )
 			CU_ASSERT( rtrim(s) = "a" )

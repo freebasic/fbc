@@ -944,10 +944,10 @@ private function hCheckParam _
 				'' if it's a wstring param, convert..
 				n->l = rtlToStr( n->l, FALSE )
 			case FB_DATATYPE_FIXSTR
-				'' if it's a fxied length string, make a copy
+				'' if it's a fixed length string, make a copy
 				'' because STRING*N is not guaranteed to have
 				'' a null terminator
-				n->l = hAllocTempString( parent, n->l, FALSE )
+				n->l = hAllocTempString( parent, n->l, TRUE )
 			end select
 
 		'' wstring ptr / wstring?

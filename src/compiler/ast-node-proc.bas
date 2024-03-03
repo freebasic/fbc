@@ -996,7 +996,8 @@ private function hCallFieldCtor _
 	else
 		function = astNewMEM( AST_OP_MEMFILL, _
 		                      astBuildVarField( this_, fld ), _
-		                      astNewCONSTi( symbGetRealSize( fld ) ) )
+		                      astNewCONSTi( symbGetRealSize( fld ) ), _
+		                      0, iif( (symbGetType( fld ) = FB_DATATYPE_FIXSTR), 32, 0 ) )
 	end if
 end function
 
