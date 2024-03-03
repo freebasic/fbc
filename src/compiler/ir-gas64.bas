@@ -1959,7 +1959,7 @@ private sub memfill(byval bytestofill as Integer,byref dst as string,byval dtyp 
 		asm_code("mov word ptr ["+regdst+"], "+Str(fill2),nooptim)
 		nbbytes-=2
 		if nbbytes>0 then
-			asm_code("mov byte ptr 2["+regdst+"], "+Str(fill2),nooptim)
+			asm_code("mov byte ptr 2["+regdst+"], "+Str(fillchar),nooptim)
 		end if
 	elseif nbbytes>0 then
 		 ''clear 1 byte
@@ -6620,7 +6620,7 @@ private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVR
 			asm_info("memfill " + vregPretty( v1 ))
 			asm_info("v1="+vregdumpfull(v1))
 			asm_info("v2="+vregdumpfull(v2))
-
+			asm_info("fillchar="+str(fillchar))
 			if v1->typ=IR_VREGTYPE_REG then
 				regsrc=reg_findreal(v1->reg)
 				op1=*regstrq(regsrc)
