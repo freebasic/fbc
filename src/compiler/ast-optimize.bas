@@ -1760,8 +1760,18 @@ private function hOptStrAssignment _
 			end if
 		end if
 	else
+		'' !!!TODO!!! - fixed length string can be optimized this
+		'' this way with multiple concatassign, so just disable
+		'' for now.  Maybe could optimize with a different
+		'' concatassign just for fixed length strings - TODO
+		select case astGetDataType( l )
+		case FB_DATATYPE_FIXSTR
+		case else
+			optimize = hIsMultStrConcat( l, r )
+		end select 
+
 		'' convert "a = b + c + d" to "a = b: a += c: a += d"
-		if( hIsMultStrConcat( l, r ) ) then
+		if( optimize ) then
 			function = hOptStrMultConcat( NULL, l, r, is_wstr )
 		else
 			''  =            f() -- assign
