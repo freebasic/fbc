@@ -28,9 +28,9 @@ SUITE( fbc_tests.functions.param_string_copyback )
 
 			s = "var" : copyback( s   ) : CU_ASSERT( s = "VAR" )
 			f = "fix" : copyback( f   ) : CU_ASSERT( f = "FIX" )
-			z = "zer" : copyback( z   ) : CU_ASSERT( z = "zer" )  '' no copy back should be done for z/wstrings
+			z = "zer" : copyback( z   ) : CU_ASSERT( z = "ZER" )
 			z = "zer" : copyback( *pz ) : CU_ASSERT( z = "zer" )
-			w = "foo" : copyback( w   ) : CU_ASSERT( w = "foo" )
+			w = "foo" : copyback( w   ) : CU_ASSERT( w = "FOO" )
 			w = "foo" : copyback( *pw ) : CU_ASSERT( w = "foo" )
 
 			'' Special cases with string literals (passed via implicitly
@@ -98,13 +98,13 @@ SUITE( fbc_tests.functions.param_string_copyback )
 			f = "a" : appendChars( f, 3 ) : CU_ASSERT( f = "a!!! " )
 			f = "a" : appendChars( f, 5 ) : CU_ASSERT( f = "a!!!!" )  '' truncated
 
-			z = "a" : appendChars( z, 1 ) : CU_ASSERT( z = "a" )
-			z = "a" : appendChars( z, 3 ) : CU_ASSERT( z = "a" )
-			z = "a" : appendChars( z, 5 ) : CU_ASSERT( z = "a" )
+			z = "a" : appendChars( z, 1 ) : CU_ASSERT( z = "a!" )
+			z = "a" : appendChars( z, 3 ) : CU_ASSERT( z = "a!!!" )
+			z = "a" : appendChars( z, 5 ) : CU_ASSERT( z = "a!!!!" )  '' truncated
 
-			w = "a" : appendChars( w, 1 ) : CU_ASSERT( w = "a" )
-			w = "a" : appendChars( w, 3 ) : CU_ASSERT( w = "a" )
-			w = "a" : appendChars( w, 5 ) : CU_ASSERT( w = "a" )
+			w = "a" : appendChars( w, 1 ) : CU_ASSERT( w = "a!" )
+			w = "a" : appendChars( w, 3 ) : CU_ASSERT( w = "a!!!" )
+			w = "a" : appendChars( w, 5 ) : CU_ASSERT( w = "a!!!!" )  '' truncated
 
 			z = "a" : appendChars( *pz, 1 ) : CU_ASSERT( z = "a" )
 			z = "a" : appendChars( *pz, 3 ) : CU_ASSERT( z = "a" )

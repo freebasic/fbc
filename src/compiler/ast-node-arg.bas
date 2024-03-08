@@ -159,9 +159,8 @@ private function hCheckArgForStringParam _
 			'' fixed-length strings from functions.
 			assert( astIsCALL( arg ) = FALSE )
 
-#if 0
 		''
-		'' Copy back for z/wstrings can't be done safely.
+		'' Copy back for z/wstrings can't always be done safely.
 		''
 		'' If given a DEREF'ed zstring pointer, there's no way of
 		'' knowing what it points to:
@@ -175,16 +174,9 @@ private function hCheckArgForStringParam _
 		'' buffer will be big enough to hold the string that's supposed
 		'' to be copied back.
 		''
-		'' Both these issues could be avoided by only copying back when
-		'' given z/wstring vars, but then the behaviour is too
-		'' inconsistent. It's better if z/wstring always behave the
-		'' same, as opposed to copyback here, no copyback there.
-		''
-		'' I.e. copyback should only work for FIXSTR which is acceptable
-		'' because FIXSTR can only appear on variables (not literals,
-		'' and not DEREFs/CALLs), and STRING * N is arguable the same
-		'' data type as STRING; or at least they're closer related than
-		'' Z/WSTRING.
+		'' Both these issues can be avoided by only copying back when
+		'' given z/wstring vars, then the behaviour is consistent with
+		'' other fixed length string types where the length is known.
 		''
 
 		'' ZSTRINGs too
@@ -210,7 +202,6 @@ private function hCheckArgForStringParam _
 			copyback = (astGetStrLitSymbol( arg ) = NULL) and _
 				(not astIsDEREF( arg )) and _
 				(not astIsCALL( arg ))
-#endif
 
 		'' STRING to BYREF AS STRING
 		case FB_DATATYPE_STRING

@@ -18,6 +18,7 @@ Version 1.20.0
 - LEN(STRING*N) = SIZEOF(STRING*N) due to padding and no null terminator
 - STRING*N/SWAP: swap will pad values with spaces where one of the arguments is of the STRING*N data type
 - arguments of STRING*N type are copied to a temporary variable when passed to BYVAL ZSTRING PTR and BYREF ZSTRING parameters (since there is no expectaction that STRING*N will have it's own terminating null character) and copied back after the call
+- Allow ZSTRING*N and WSTRING*N arguments passed to BYREF AS STRING paremeters to be modified (copied back to original variable)
 
 [added]
 - x86_64: optimize SHL MOD INTDIV to use 32-bit operation when result will be converted to long/ulong
