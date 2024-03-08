@@ -76,6 +76,8 @@ int fb_hArrayRealloc
 				this_ += element_len;
 				--objects;
 			}
+		} else if( doclear == 32 ) {
+			memset( (void *)this_, 32, size - array->size );
 		} else if( doclear ) {
 			memset( (void *)this_, 0, size - array->size );
 		}

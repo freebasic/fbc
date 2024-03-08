@@ -154,6 +154,17 @@
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ) _
 			} _
 		), _
+		/' function fb_ArrayFill( array() as any, byval value as const long ) as long '/ _
+		( _
+			@FB_RTL_ARRAYFILL, NULL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+			{ _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function fb_ArrayClearObj _
 			( _
 				array() as any, _
@@ -355,7 +366,7 @@ end sub
 '' destruct elements if needed and then re-initialize
 ''
 '' fb_ArrayClear* rtlib functions are called when it is known at
-'' compile time that array is static (fixed length).  It it is unknown
+'' compile time that array is static (fixed length).  If it is unknown
 '' at compile time, then rtlArrayErase() should be used instead and
 '' the runtime library will do a run time check on the array's
 '' descriptor flags to determine if it is static or dynamic.
@@ -363,7 +374,8 @@ end sub
 function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr proc = any
 	dim as integer dtype = any
-	dim as FBSYMBOL ptr ctor = any, dtor = any, subtype = any
+	dim as FBSYMBOL ptr ctor = NULL, dtor = NULL, subtype = any
+	dim as integer fillchar = 0
 
 	function = NULL
 
@@ -379,9 +391,14 @@ function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
 		if( (ctor = NULL) and (symbGetCompCtorHead( subtype ) <> NULL) ) then
 			errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
 		end if
-	else
-		ctor = NULL
-		dtor = NULL
+
+		if( symbGetUDTHasFilledField( subtype ) ) then
+			fillchar = 32
+		end if
+
+	elseif( dtype = FB_DATATYPE_FIXSTR ) then
+		fillchar = 32
+
 	end if
 
 	if( (ctor <> NULL) or (dtor <> NULL) ) then
@@ -415,6 +432,21 @@ function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
 		if( astNewARG( proc, arrayexpr, dtype ) = NULL ) then
 			exit function
 		end if
+
+	elseif( fillchar <> 0 ) then
+		'' fb_ArrayFill()
+		proc = astNewCALL( PROCLOOKUP( ARRAYFILL ) )
+
+		'' array() as any
+		if( astNewARG( proc, arrayexpr, dtype ) = NULL ) then
+			exit function
+		end if
+
+		'' byval fillchar as long
+		if( astNewARG( proc, astNewCONSTi( fillchar ) ) = NULL ) then
+			exit function
+		end if
+
 	else
 		'' fb_ArrayClear()
 		proc = astNewCALL( PROCLOOKUP( ARRAYCLEAR ) )
@@ -600,6 +632,15 @@ function rtlArrayRedim _
 
 	if( (ctor = NULL) and (dtor = NULL) ) then
 		'' byval doclear as integer
+
+		if( doclear ) then
+			if( (dtype = FB_DATATYPE_FIXSTR) orelse _
+			    ((dtype = FB_DATATYPE_STRUCT) andalso _
+			    (symbGetUDTHasFilledField( symbGetSubtype( sym ) ))) ) then
+				doclear = 32
+			end if
+		end if
+
 		if( astNewARG( proc, astNewCONSTi( doclear ) ) = NULL ) then
 			exit function
 		end if

@@ -12,6 +12,7 @@
    for plain arrays: fbc calls fb_ArrayClear()
    for object arrays: fbc calls fb_ArrayClearObj()
    for FBSTRING arrays: fbc calls fb_ArrayDestructStr()
+   for STRING*N arrays: fbc calls fb_ArrayFill()
 */
 
 #include "fb.h"
@@ -20,6 +21,14 @@ FBCALL int fb_ArrayClear( FBARRAY *array )
 {
 	if( array->ptr )
 		memset( array->ptr, 0, array->size );
+
+	return fb_ErrorSetNum( FB_RTERROR_OK );
+}
+
+FBCALL int fb_ArrayFill( FBARRAY *array, int fillchar )
+{
+	if( array->ptr )
+		memset( array->ptr, fillchar, array->size );
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

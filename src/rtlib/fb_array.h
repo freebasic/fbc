@@ -52,6 +52,7 @@ FBCALL int        fb_ArrayClear        ( FBARRAY *array );
 FBCALL int        fb_ArrayClearObj     ( FBARRAY *array, FB_DEFCTOR ctor, FB_DEFCTOR dtor );
 FBCALL int        fb_ArrayErase        ( FBARRAY *array );
 FBCALL int        fb_ArrayEraseObj     ( FBARRAY *array, FB_DEFCTOR ctor, FB_DEFCTOR dtor );
+FBCALL int        fb_ArrayFill         ( FBARRAY *array, int fillchar );
 FBCALL FBARRAY   *fb_ArrayGetDesc      ( FBARRAY *array );
 FBCALL void       fb_ArrayStrErase     ( FBARRAY *array );
        int        fb_ArrayRedimEx      ( FBARRAY *array, size_t element_len, int doclear, int isvarlen, size_t dimensions, ... );
