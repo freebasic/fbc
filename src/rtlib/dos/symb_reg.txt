@@ -776,6 +776,7 @@ extern_asm(_fb_LocateEx);
 extern_asm(_fb_ExecEx);
 extern_asm(_fb_StrUcase2);
 extern_asm(_fb_WriteLongint);
+extern_asm(_fb_ArrayFill);
 extern_asm(_fb_FilePutData);
 extern_asm(_fb_DateAdd);
 extern_asm(_fb_Delay);
@@ -1615,6 +1616,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_ExecEx)
     DXE_EXPORT_ASM (_fb_StrUcase2)
     DXE_EXPORT_ASM (_fb_WriteLongint)
+    DXE_EXPORT_ASM (_fb_ArrayFill)
     DXE_EXPORT_ASM (_fb_FilePutData)
     DXE_EXPORT_ASM (_fb_DateAdd)
     DXE_EXPORT_ASM (_fb_Delay)
