@@ -7,13 +7,25 @@
  */
 #ifdef HOST_64BIT
 	#define FB_TEMPSTRBIT ((long long)0x8000000000000000ll)
+#else
+	#define FB_TEMPSTRBIT ((int)0x80000000)
+#endif
+
+/** Flag to identify a string size as fixed length without a null terminator
+ *
+ * This flag is stored in in the ssize_t size parameter passed in to string 
+ * handling functions, use FB_STRSETUP_FIX)() and FB_STRSETUP_DYN() to query
+ * the string's length.
+ */
+#ifdef HOST_64BIT
 	#define FB_STRISFIXED ((long long)0x8000000000000000ll)
 	#define FB_STRSIZEMSK ((long long)0x7fffffffffffffffll)  
 #else
-	#define FB_TEMPSTRBIT ((int)0x80000000)
 	#define FB_STRISFIXED ((int)0x80000000)
 	#define FB_STRSIZEMSK ((int)0x7fffffff)
 #endif
+
+/* Value to identify string size as variable length */
 #define FB_STRSIZEVARLEN -1
 
 /** Returns if the string is a temporary string.
@@ -38,13 +50,13 @@ do {                                                        \
     }                                                       \
     else                                                    \
     {                                                       \
-        if( size == -1 )                                    \
+        if( size == FB_STRSIZEVARLEN )                      \
         {                                                   \
             /* var-len STRING, descriptor */                \
             ptr = ((FBSTRING *)s)->data;                    \
             len = FB_STRSIZE( s );                          \
         }                                                   \
-        else if( size & FB_STRISFIXED )                                \
+        else if( size & FB_STRISFIXED )                     \
         {                                                   \
             /* fix-len STRING*N */                          \
             ptr = (char *)s;                                \
@@ -74,13 +86,13 @@ do {                                                        \
     }                                                       \
     else                                                    \
     {                                                       \
-        if( size == -1 )                                    \
+        if( size == FB_STRSIZEVARLEN )                      \
         {                                                   \
             /* var-len STRING, descriptor */                \
             ptr = ((FBSTRING *)s)->data;                    \
             len = FB_STRSIZE( s );                          \
         }                                                   \
-        else if( size & FB_STRISFIXED )                               \
+        else if( size & FB_STRISFIXED )                     \
         {                                                   \
             /* fix-len STRING*N */                          \
             ptr = (char *)s;                                \
