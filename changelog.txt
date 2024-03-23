@@ -5,6 +5,7 @@ Version 1.10.3
 [added]
 
 [fixed]
+- bad code generation of operator cast() UDT ptr passed to byval UDT ptr parameter when matching constructors() are also present
 
 
 Version 1.10.2
