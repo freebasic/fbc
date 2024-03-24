@@ -666,11 +666,11 @@
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_WCHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
-		/' sub fb_StrRset overload( byref dst as string, byref src as const string ) '/ _
+		/' sub fb_StrRset( byref dst as string, byref src as const string ) '/ _
 		( _
 			@FB_RTL_STRRSET, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER, _
+			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
 				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
@@ -681,7 +681,7 @@
 		( _
 			@FB_RTL_WSTRRSET, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			NULL, FB_RTL_OPT_NONE or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
 				( typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE ), _
