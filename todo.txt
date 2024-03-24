@@ -69,7 +69,7 @@ o ABI
     for calling and returning but not when different backends are mixed
     for example, gas/gcc32 or gas64/gcc64.  Appears that windows only
     passes structs through hidden parameter, regardless of the size.
-  - MinGW GCC 4.7 C++ defaults to __thiscall for methods like MSVC,  - MinGW GCC 4.7 C++ defaults to __thiscall for methods like MSVC,
+  - MinGW GCC 4.7 C++ defaults to __thiscall for methods like MSVC,
     instead of __cdecl as on Linux, even though GCC doesn't use MSVC's name
     mangling [yet].
     [ ] refactor cProcCallingConv() usage and target specific checks
@@ -240,10 +240,8 @@ o -exx should catch...
 
 [ ] PP:
     [ ] add #pragma cmdline="-foo bar -baz"
-        [X] painful to add
-        [X] added as '#cmdline "args..."'
-        [ ] painful to complete
-        [X] don't allow #cmdline if any line was parsed already that emits backend code
+        [x] added as '#cmdline "args..."'
+        [x] don't allow #cmdline if any line was parsed already that emits backend code
         [ ] clean-up the lang compatibility options in fbc source,
             the restart logic and option tracking is difficult to
             follow (even with the comments and well named symbols).
@@ -341,7 +339,7 @@ o -exx should catch...
     - no more STR_LOCK's
     - no more checks for temp descriptors in all rtlib procs taking STRINGs
 
-[ ] fixed-len strings compatible with QB:
+[x] fixed-len strings compatible with QB:
     - no null-term, temporaries always created when passing to functions
     - probably will need their own assign and concat functions
 
