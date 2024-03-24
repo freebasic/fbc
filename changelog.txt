@@ -75,6 +75,16 @@ Version 1.20.0
 - sf.net #372: Bad Fixed length strings in UDT
 
 
+Version 1.10.3
+
+[changed]
+
+[added]
+
+[fixed]
+- bad code generation of operator cast() UDT ptr passed to byval UDT ptr parameter when matching constructors() are also present
+
+
 Version 1.10.2
 
 [changed]

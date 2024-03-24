@@ -866,8 +866,9 @@ private function hCheckParam _
 		dim as integer err_num = any
 		dim as FBSYMBOL ptr proc = any
 
-		'' try constructor first - but only if byval parameter
-		if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
+		'' try constructor first - but only if byval parameter and not a pointer
+		if( (symbGetParamMode( param ) = FB_PARAMMODE_BYVAL) andalso _
+		    (typeIsPtr( symbGetType(param)) = FALSE) ) then
 			proc = symbFindCtorOvlProc( symbGetSubtype( param ), n->l, symbGetParamMode( param ), _
 			                            @err_num, FB_SYMBFINDOPT_NO_CAST )
 
