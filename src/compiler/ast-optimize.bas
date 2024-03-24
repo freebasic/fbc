@@ -1768,7 +1768,7 @@ private function hOptStrAssignment _
 		case FB_DATATYPE_FIXSTR
 		case else
 			optimize = hIsMultStrConcat( l, r )
-		end select 
+		end select
 
 		'' convert "a = b + c + d" to "a = b: a += c: a += d"
 		if( optimize ) then
