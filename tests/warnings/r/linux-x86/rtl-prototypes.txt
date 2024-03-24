@@ -7,6 +7,7 @@ function fb_ArrayRedimTo
 sub fb_ArrayDestructObj
 sub fb_ArrayDestructStr
 function fb_ArrayClear
+function fb_ArrayFill
 function fb_ArrayClearObj
 function fb_ArrayErase
 function fb_ArrayEraseObj

@@ -57,6 +57,12 @@
 		chk = procptr( fb_ArrayClear )
 	end scope
 
+	ID( function fb_ArrayFill )
+	scope
+		dim chk as function fbcall ( bydesc as any, byval as const long ) as long
+		chk = procptr( fb_ArrayFill )
+	end scope
+
 	ID( function fb_ArrayClearObj )
 	scope
 		dim chk as function fbcall ( bydesc as any, byval as any ptr, byval as any ptr ) as long
