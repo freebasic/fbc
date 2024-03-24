@@ -63,8 +63,10 @@
 #define FB_RTL_STRFILL1                 "fb_StrFill1"
 #define FB_RTL_STRFILL2                 "fb_StrFill2"
 #define FB_RTL_STRLEN                   "fb_StrLen"
-#define FB_RTL_STRLSET                  "fb_StrLset"
-#define FB_RTL_STRRSET                  "fb_StrRset"
+#define FB_RTL_STRLSET                  "fb_StrLset"        '' set var-len string from var-len string
+#define FB_RTL_STRLSETANA               "fb_StrLsetANA"     '' set var-len string from fixed-len string
+#define FB_RTL_STRRSET                  "fb_StrRset"        '' set var-len string from var-len string
+#define FB_RTL_STRRSETANA               "fb_StrRsetANA"     '' set var-len string from fixed-len string
 #define FB_RTL_STRASC                   "fb_ASC"
 #define FB_RTL_STRCHR                   "fb_CHR"
 #define FB_RTL_STRINSTR                 "fb_StrInstr"
@@ -476,7 +478,9 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_STRFILL2
 	FB_RTL_IDX_STRLEN
 	FB_RTL_IDX_STRLSET
+	FB_RTL_IDX_STRLSETANA
 	FB_RTL_IDX_STRRSET
+	FB_RTL_IDX_STRRSETANA
 	FB_RTL_IDX_STRASC
 	FB_RTL_IDX_STRCHR
 	FB_RTL_IDX_STRINSTR

@@ -655,6 +655,19 @@
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
 			} _
 		), _
+		/' sub fb_StrLsetANA( byref dst as any, byval dst_len as const integer, _
+				byref src as const any, byval src_len as const integer ) '/ _
+		( _
+			@FB_RTL_STRLSETANA, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			3, _
+			{ _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
+			} _
+		), _
 		/' sub fb_WstrLset( byval dst as wstring ptr, byval src as const wstring ptr ) '/ _
 		( _
 			@FB_RTL_WSTRLSET, NULL, _
@@ -674,6 +687,19 @@
 			2, _
 			{ _
 				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
+			} _
+		), _
+		/' sub fb_StrRsetANA overload( byref dst as any, byval dst_len as const integer, _
+				byref src as const any, byval src_len as const integer ) '/ _
+		( _
+			@FB_RTL_STRRSETANA, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER, _
+			3, _
+			{ _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
 			} _
 		), _
@@ -3227,23 +3253,41 @@ function rtlStrLRSet _
 	) as integer
 
 	dim as ASTNODE ptr proc = any
+	dim as integer ddtype = any
+	dim as longint dst_size = any
 
 	function = FALSE
 
-	''
-	if( astGetDataType( dstexpr ) <> FB_DATATYPE_WCHAR ) then
-		proc = astNewCALL( iif( is_rset, _
-		                        PROCLOOKUP( STRRSET ), _
-		                        PROCLOOKUP( STRLSET ) ) )
-	else
+	ddtype = astGetDataType( dstexpr )
+
+	select case ddtype
+	case FB_DATATYPE_WCHAR
 		proc = astNewCALL( iif( is_rset, _
 		                        PROCLOOKUP( WSTRRSET ), _
 		                        PROCLOOKUP( WSTRLSET ) ) )
-	end if
+	case FB_DATATYPE_FIXSTR
+		proc = astNewCALL( iif( is_rset, _
+		                        PROCLOOKUP( STRRSETANA ), _
+		                        PROCLOOKUP( STRLSETANA ) ) )
+	case else
+		proc = astNewCALL( iif( is_rset, _
+		                        PROCLOOKUP( STRRSET ), _
+		                        PROCLOOKUP( STRLSET ) ) )
+	end select
 
-	'' dst as string
+	'' dst as string | dst as any
 	if( astNewARG( proc, dstexpr ) = NULL ) then
 		exit function
+	end if
+
+	if( ddtype = FB_DATATYPE_FIXSTR ) then
+		'' always calc len before pushing the param
+		dst_size = rtlCalcStrLen( dstexpr, ddtype )
+
+		'' byval dst_size as integer
+		if( astNewARG( proc, astNewCONSTi( dst_size ) ) = NULL ) then
+			exit function
+		end if
 	end if
 
 	'' src as string

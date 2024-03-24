@@ -333,8 +333,10 @@ function fb_WstrFill2
 function fb_StrLen
 function fb_WstrLen
 sub fb_StrLset
+sub fb_StrLsetANA
 sub fb_WstrLset
 sub fb_StrRset
+sub fb_StrRsetANA
 sub fb_WstrRset
 function fb_ASC
 function fb_WstrAsc

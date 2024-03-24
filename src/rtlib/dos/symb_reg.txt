@@ -171,6 +171,7 @@ extern_asm(_fb_DevFileWriteWstr);
 extern_asm(_fb_StrConcatByref);
 extern_asm(_fb_WstrTrimAny);
 extern_asm(_fb_WstrInstrRev);
+extern_asm(_fb_StrLsetANA);
 extern_asm(_fb_PrintUsingULongint);
 extern_asm(_fb_PrinterOpen);
 extern_asm(_fb_LongintToStr);
@@ -494,6 +495,7 @@ extern_asm(_fb_ExePath);
 extern_asm(_fb_SGNDouble);
 extern_asm(_fb_ConsoleLocate);
 extern_asm(_fb_hFarMemSet);
+extern_asm(_fb_StrRsetANA);
 extern_asm(_fb_hOut);
 extern_asm(_fb_WstrLcase);
 extern_asm(_fb_hStrSkipChar);
@@ -1011,6 +1013,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_StrConcatByref)
     DXE_EXPORT_ASM (_fb_WstrTrimAny)
     DXE_EXPORT_ASM (_fb_WstrInstrRev)
+    DXE_EXPORT_ASM (_fb_StrLsetANA)
     DXE_EXPORT_ASM (_fb_PrintUsingULongint)
     DXE_EXPORT_ASM (_fb_PrinterOpen)
     DXE_EXPORT_ASM (_fb_LongintToStr)
@@ -1334,6 +1337,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_SGNDouble)
     DXE_EXPORT_ASM (_fb_ConsoleLocate)
     DXE_EXPORT_ASM (_fb_hFarMemSet)
+    DXE_EXPORT_ASM (_fb_StrRsetANA)
     DXE_EXPORT_ASM (_fb_hOut)
     DXE_EXPORT_ASM (_fb_WstrLcase)
     DXE_EXPORT_ASM (_fb_hStrSkipChar)

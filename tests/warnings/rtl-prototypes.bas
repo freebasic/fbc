@@ -2253,6 +2253,12 @@
 		chk = procptr( fb_StrLset )
 	end scope
 
+	ID( sub fb_StrLsetANA )
+	scope
+		dim chk as sub fbcall ( byref as any, byval as const integer, byref as const string )
+		chk = procptr( fb_StrLsetANA )
+	end scope
+
 	ID( sub fb_WstrLset )
 	scope
 		dim chk as sub fbcall ( byval as wchar ptr, byval as const wchar ptr )
@@ -2263,6 +2269,12 @@
 	scope
 		dim chk as sub fbcall ( byref as string, byref as const string )
 		chk = procptr( fb_StrRset )
+	end scope
+
+	ID( sub fb_StrRsetANA )
+	scope
+		dim chk as sub fbcall ( byref as any, byval as const integer, byref as const string )
+		chk = procptr( fb_StrRsetANA )
 	end scope
 
 	ID( sub fb_WstrRset )
