@@ -2528,7 +2528,7 @@ function symbFindSelfBopOvlProc _
 
 	'' try (l, r) -- don't pass the instance ptr
 	arg1.expr = r
-	arg1.mode = INVALID
+	arg1.mode = astBydescArrayArg(r)
 	arg1.next = NULL
 
 	proc = symbFindClosestOvlProc( head_proc, 1, @arg1, err_num )

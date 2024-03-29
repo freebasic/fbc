@@ -1289,6 +1289,11 @@ declare function astBuildImplicitCtorCall _
 		byref is_ctorcall as integer _
 	) as ASTNODE ptr
 
+declare function astBydescArrayArg _
+	( _
+		byval arg as ASTNODE ptr _
+	) as FB_PARAMMODE
+
 declare function astBuildImplicitCtorCallEx _
 	( _
 		byval sym as FBSYMBOL ptr, _

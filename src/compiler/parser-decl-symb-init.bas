@@ -413,7 +413,7 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 		end if
 
 		dim as integer is_ctorcall = any
-		expr = astBuildImplicitCtorCallEx( ctx.sym, expr, cBydescArrayArgParens( expr ), is_ctorcall )
+		expr = astBuildImplicitCtorCallEx( ctx.sym, expr, astBydescArrayArg( expr ), is_ctorcall )
 		if( expr = NULL ) then
 			exit function
 		end if

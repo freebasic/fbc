@@ -695,26 +695,18 @@ private function hFileGet _
 	end if
 
 	isarray = FALSE
-	if( lexGetToken( ) = CHAR_LPRNT ) then
-		if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
-			s = astGetSymbol( dstexpr )
-			if( s <> NULL ) then
-				isarray = symbIsArray( s )
-				if( isarray ) then
-					'' don't allow var-len strings
-					if( symbGetType( s ) = FB_DATATYPE_STRING ) then
-						errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-						if( isfunc ) then
-							hSkipUntil( CHAR_RPRNT )
-						else
-							hSkipStmt( )
-						end if
-						return astNewCONSTi( 0 )
-					end if
-					lexSkipToken( )
-					lexSkipToken( )
-				end if
+	if( astIsNIDXARRAY( dstexpr ) ) then
+		s = astGetSymbol( dstexpr )
+		isarray = TRUE
+		'' don't allow var-len strings
+		if( symbGetType( s ) = FB_DATATYPE_STRING ) then
+			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+			if( isfunc ) then
+				hSkipUntil( CHAR_RPRNT )
+			else
+				hSkipStmt( )
 			end if
+			return astNewCONSTi( 0 )
 		end if
 	end if
 

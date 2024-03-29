@@ -2120,7 +2120,7 @@ private function hBuildAutoVarInitializer( byval sym as FBSYMBOL ptr, byval expr
 	'' handle constructors..
 	else
 		dim as integer is_ctorcall = any
-		expr = astBuildImplicitCtorCallEx( sym, expr, cBydescArrayArgParens( expr ), is_ctorcall )
+		expr = astBuildImplicitCtorCallEx( sym, expr, astBydescArrayArg( expr ), is_ctorcall )
 
 		if( expr <> NULL ) then
 			if( is_ctorcall ) then

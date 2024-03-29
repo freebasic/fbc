@@ -1188,6 +1188,21 @@ function cVariableEx overload _
 	else
 		if( is_nidxarray ) then
 			varexpr = astNewNIDXARRAY( varexpr )
+
+			if( check_array ) then
+				''  and (not fbGetIdxInParensOnly( )) ) then
+				if( lexGetToken( ) = CHAR_LPRNT ) then
+					if( lexGetLookAhead( 1 ) <> CHAR_RPRNT ) then
+						errReport( FB_ERRMSG_EXPECTEDARRAY )
+					else
+						lexSkipToken()
+						lexSkipToken()
+					end if
+				else
+					errReport( FB_ERRMSG_EXPECTEDARRAY )
+				end if
+			end if
+
 		end if
 	end if
 

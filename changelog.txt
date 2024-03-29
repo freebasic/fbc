@@ -49,6 +49,7 @@ Version 1.20.0
 - fbc: '-print fork-id' command line option to report the fork-id version of fbc
 - fbc: '-nolib fbrt0.o' and '-nolib fbrt0pic.o' can be used to omit fb's startup files from the link.  Implied by '-nodeflibs'.
 - fbc: '-z nobuiltins' command line option to disable all non-required built-in procedure definitions
+- sf.net feature #273 fbc: allow UDT operators (LET, +=, etc) to support array parameters
 
 [fixed]
 - github #410: give consistent floating point comparisons results involving NaNs.
@@ -73,6 +74,7 @@ Version 1.20.0
 - fbc: when compiling with "-e -gen clang", work around a "indirect goto in function with no address-of-label expressions" clang error
 - fbc/gas/gas64: truncate string literals that are too big for the assigned destination on the last full escape sequence instead of in the middle of an escape sequence (which would cause gas assembly errors)
 - sf.net #372: Bad Fixed length strings in UDT
+- sf.net #991: fbc: parse empty parens '()' for arrays when used in UDT operator expressions (LET, +=, etc)
 
 
 Version 1.10.3

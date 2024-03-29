@@ -14,21 +14,6 @@ declare sub hBaseInit( )
 declare function hBaseMemberAccess( ) as integer
 declare function hForwardCall( ) as integer
 
-function cBydescArrayArgParens( byval arg as ASTNODE ptr ) as FB_PARAMMODE
-	function = INVALID
-	if( lexGetToken( ) = CHAR_LPRNT ) then
-		if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
-			if( astGetSymbol( arg ) <> NULL ) then
-				if( symbIsArray( astGetSymbol( arg ) ) ) then
-					lexSkipToken( )
-					lexSkipToken( )
-					function = FB_PARAMMODE_BYDESC
-				end if
-			end if
-		end if
-	end if
-end function
-
 function cAssignFunctResult( byval is_return as integer ) as integer
 	dim as FBSYMBOL ptr res = any, subtype = any
 	dim as ASTNODE ptr rhs = any, expr = any
@@ -136,7 +121,7 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 	if( is_return and (not returns_byref) ) then
 		if( has_ctor ) then
 			dim as integer is_ctorcall = any
-			rhs = astBuildImplicitCtorCallEx( res, rhs, cBydescArrayArgParens( rhs ), is_ctorcall )
+			rhs = astBuildImplicitCtorCallEx( res, rhs, astBydescArrayArg( rhs ), is_ctorcall )
 			if( rhs = NULL ) then
 				exit function
 			end if
@@ -1100,14 +1085,8 @@ function hForwardCall( ) as integer
 		end if
 
 		dim as FB_PARAMMODE mode = FB_PARAMMODE_BYREF
-
-		'' ('('')')?
-		if( lexGetToken( ) = CHAR_LPRNT ) then
-			if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
-				lexSkipToken( )
-				lexSkipToken( )
-				mode = FB_PARAMMODE_BYDESC
-			end if
+		if( astIsNIDXARRAY( expr ) ) then
+			mode = FB_PARAMMODE_BYDESC 
 		end if
 
 		''

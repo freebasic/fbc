@@ -666,6 +666,14 @@ function astBuildImplicitCtorCall _
 end function
 
 '':::::
+function astBydescArrayArg( byval arg as ASTNODE ptr ) as FB_PARAMMODE
+	function = INVALID
+	if( astIsNIDXARRAY( arg ) ) then
+		function = FB_PARAMMODE_BYDESC
+	end if
+end function
+
+'':::::
 function astBuildImplicitCtorCallEx _
 	( _
 		byval sym as FBSYMBOL ptr, _
