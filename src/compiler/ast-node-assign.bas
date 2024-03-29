@@ -712,6 +712,12 @@ function astNewASSIGN _
 		end if
 	end if
 
+	'' arrays can't be converted, so don't allow if it wasn't already
+	'' handled as a UDT let operation
+	if( astIsNIDXARRAY( r ) ) then
+		exit function
+	end if
+
 	'' convert types if needed
 	if( (ldtype <> rdtype) or (l->subtype <> r->subtype) ) then
 		'' don't convert strings
