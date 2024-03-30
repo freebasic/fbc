@@ -60,9 +60,9 @@ sub lexPopCtx( )
 		DWstrAllocate( lex.ctx->deftextw, 0 )
 	end if
 
-
 	'' if it's an include file, don't bother restoring file position because
-	'' we are going to be closing the file anyway
+	'' we are going to be closing the file and contexts for evaluating
+	'' preprocessor text only should only read buffers in memory
 	if( lex.ctx->kind <> LEX_TKCTX_CONTEXT_INCLUDE ) then
 		'' restore file pointer position if current context is different from previous
 		if( (lex.ctx-1)->physfilepos > 0 ) then
@@ -239,6 +239,9 @@ private function hReadChar _
 				hCollectCharForDebugOutput( char )
 			end if
 		end if
+
+	elseif( lex.ctx->kind = LEX_TKCTX_CONTEXT_EVAL ) then
+		char = 0
 
 	else
 

@@ -40,7 +40,7 @@ enum FB_DATATYPE
 	FB_DATATYPE_USHORT
 	FB_DATATYPE_WCHAR
 	FB_DATATYPE_INTEGER
-	FB_DATATYPE_UINT
+	FB_DATATYPE_UINTEGER
 	FB_DATATYPE_ENUM
 	FB_DATATYPE_LONG
 	FB_DATATYPE_ULONG
@@ -142,7 +142,7 @@ end enum
 
 '' FB_DATACLASS
 #define isDataClassInteger( sym ) ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.dataclass, sym ) = fbc.FB_DATACLASS_INTEGER )
-#define isDataClassFloat( sym )   ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.dataclass, sym ) = fbc.FB_DATACLASS_FLOAT )
+#define isDataClassFloat( sym )   ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.dataclass, sym ) = fbc.FB_DATACLASS_FPOINT )
 #define isDataClassString( sym )  ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.dataclass, sym ) = fbc.FB_DATACLASS_STRING )
 #define isDataClassUDT( sym )     ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.dataclass, sym ) = fbc.FB_DATACLASS_UDT )
 #define isDataClassProc( sym )    ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.dataclass, sym ) = fbc.FB_DATACLASS_PROC )
@@ -164,9 +164,6 @@ end enum
 #define isTypeUDT( sym )      ( fbcTypeGetDtOnly( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.datatype, sym ) ) = fbc.FB_DATATYPE_STRUCT )
 #define isTypePointer( sym )  ( fbcTypeGet      ( __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.datatype, sym ) ) = fbc.FB_DATATYPE_POINTER )
 
-
 end namespace
 
 #endif
-
-

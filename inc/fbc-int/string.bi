@@ -47,7 +47,7 @@ extern "rtlib"
 	declare sub fb_LEFTSELF( byval dst as FBSTRING ptr, byval length as const integer )
 
 	'' VAR-LEN STRING API (STRING)
-	declare sub LEFTSELF alias "fb_LEFTSELF" ( byref dst as string, byval length as const integer )  
+	declare sub LEFTSELF alias "fb_LEFTSELF" ( byref dst as string, byval length as const integer )
 
 end extern
 

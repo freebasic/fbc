@@ -149,7 +149,7 @@ SUITE( fbc_tests.fbc_int.string_ )
 		CU_ASSERT( p->data <> NULL )
 		CU_ASSERT( p->len = 100 )
 		CU_ASSERT( p->size > 100 )
-		size = p->size 
+		size = p->size
 
 		FBC.LeftSelf( s, 0 )
 		CU_ASSERT( p->data <> NULL )

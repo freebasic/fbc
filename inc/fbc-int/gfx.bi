@@ -145,7 +145,7 @@ extern "rtlib"
 		lock_count as long
 	end type
 
-    extern __fb_gfx as FBGFXLIB.FBGFX ptr
+	extern __fb_gfx as FBGFXLIB.FBGFX ptr
 
 	declare sub fb_hPutPSet _
 		( _
@@ -157,9 +157,9 @@ extern "rtlib"
 			byval dst_pitch as long, _
 			byval alpha as long, _
 			byval blender as FBGFX_BLENDER ptr, _
-			byval param as any ptr _ 
-		) 
-	
+			byval param as any ptr _
+		)
+
 
 end extern
 

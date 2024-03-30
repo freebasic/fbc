@@ -75,6 +75,8 @@ Version 1.20.0
 - fbc/gas/gas64: truncate string literals that are too big for the assigned destination on the last full escape sequence instead of in the middle of an escape sequence (which would cause gas assembly errors)
 - sf.net #372: Bad Fixed length strings in UDT
 - sf.net #991: fbc: parse empty parens '()' for arrays when used in UDT operator expressions (LET, +=, etc)
+- sf.net #1003: symbol.bi typo in macro - should have been FB_DATACLASS_FPOINT
+- fbc: __FB_QUERY_SYMBOL__: evaluation contexts were reading past the end of the current buffer and in to the current file causing tokens to be consumed in the wrong context  
 
 
 Version 1.10.3
