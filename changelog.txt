@@ -50,6 +50,7 @@ Version 1.20.0
 - fbc: '-nolib fbrt0.o' and '-nolib fbrt0pic.o' can be used to omit fb's startup files from the link.  Implied by '-nodeflibs'.
 - fbc: '-z nobuiltins' command line option to disable all non-required built-in procedure definitions
 - sf.net feature #273 fbc: allow UDT operators (LET, +=, etc) to support array parameters
+- improved stabs debug information for STRING*N, ZSTRING*N, and WSTRING*N types
 
 [fixed]
 - github #410: give consistent floating point comparisons results involving NaNs.

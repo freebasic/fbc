@@ -95,12 +95,19 @@ declare function hGetDataType _
 		@"fixstr:t14=-2", _
 		@"pchar:t15=*4;", _  '' used for the data ptr in the string:t13 declaration only
 		@"boolean:t16=@s8;-16", _
-		@"va_list:t17=-11" _
+		@"va_list:t17=-11", _
+		@"wchar:t18=-30" _
 	}
 
 sub edbgInit( )
 	'' Remap wchar to target-specific type
-	remapTB(FB_DATATYPE_WCHAR) = remapTB(env.target.wchar)
+	select case( env.clopt.target )
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
+		'' remap to FB_DATATYPE_WCHAR to "wchar"
+		remapTB(FB_DATATYPE_WCHAR) = 18
+	case else
+		remapTB(FB_DATATYPE_WCHAR) = remapTB(env.target.wchar)
+	end select
 
 	'' The above tables assume 32bit, but that's ok because -gen gas
 	'' currently only supports 32bit x86 anyways, and this stabs emitter
@@ -803,6 +810,18 @@ private function hGetDataType _
 	'' forward reference?
 	case FB_DATATYPE_FWDREF
 		desc += str( remapTB(FB_DATATYPE_VOID) )
+
+	case FB_DATATYPE_CHAR, FB_DATATYPE_FIXSTR, FB_DATATYPE_WCHAR
+		if( (symbGetSizeOf(sym) > 0) andalso (typeIsPtr(symbGetType(sym)) = FALSE) ) then
+			desc += str( ctx.typecnt ) + "="
+			ctx.typecnt += 1
+			desc += "ar1;"
+			desc += "0;"
+			desc += str( symbGetSizeOf(sym) \ typeGetSize( dtype ) - 1) + ";"
+			desc += str( remapTB(dtype) )
+		else
+			desc += str( remapTB(dtype) )
+		end if
 
 	'' ordinary type..
 	case else
