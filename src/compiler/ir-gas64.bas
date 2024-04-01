@@ -419,7 +419,8 @@ dim shared stabsTb(0 to ...) as const zstring ptr = _
 @"fixstr:t14=-2", _
 @"pchar:t15=*4;", _  '' used for the data ptr in the string:t13 declaration only
 @"boolean:t16=@s8;-16", _
-@"va_list:t17=-11" _
+@"va_list:t17=-11", _
+@"wchar:t18=-30" _
 }
 
 dim shared as const zstring ptr regstrq(17)=>{@"rax",@"rbx",@"rcx",@"rdx",@"rsi",@"rdi",@"rbp",@"rsp",@"r8",@"r9",@"r10",@"r11",@"r12",@"r13",@"r14",@"r15",@"rip",@"* X_Q"}
@@ -1443,6 +1444,18 @@ private function hgetdatatype_asm64 _
 			desc += str( ctxdbg.typecnt ) + "=f"
 			ctxdbg.typecnt += 1
 			desc += hGetDataType_asm64( subtype )
+
+		case FB_DATATYPE_CHAR, FB_DATATYPE_FIXSTR, FB_DATATYPE_WCHAR
+			if( (symbGetSizeOf(sym) > 0) andalso (typeIsPtr(symbGetType(sym)) = FALSE) ) then
+				desc += str( ctxdbg.typecnt ) + "="
+				ctxdbg.typecnt += 1
+				desc += "ar1;"
+				desc += "0;"
+				desc += str( symbGetSizeOf(sym) \ typeGetSize( dtype ) - 1) + ";"
+				desc += str( remapTB(dtype) )
+			else
+				desc += str( remapTB(dtype) )
+			end if
 
 			'' forward reference?
 		case FB_DATATYPE_FWDREF
