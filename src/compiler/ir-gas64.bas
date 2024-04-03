@@ -386,7 +386,7 @@ dim shared remapTB(0 to FB_DATATYPES-1) as integer = _
 4, _                                   '' char
 5, _                                   '' short
 6, _                                   '' ushort
-6, _                                   '' wchar
+18, _                                   '' wchar
 9, _                                   '' int
 10, _                                  '' uint
 9, _                                   '' enum
