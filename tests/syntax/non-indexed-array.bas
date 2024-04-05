@@ -85,6 +85,7 @@
 	scope
 		dim array4b(0 to 3) as byte
 		get #1,,array4b()
+		put #1,,array4b()
 	end scope
 
 #print "-- no errors expected"

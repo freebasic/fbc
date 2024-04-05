@@ -1086,7 +1086,7 @@ function hForwardCall( ) as integer
 
 		dim as FB_PARAMMODE mode = FB_PARAMMODE_BYREF
 		if( astIsNIDXARRAY( expr ) ) then
-			mode = FB_PARAMMODE_BYDESC 
+			mode = FB_PARAMMODE_BYDESC
 		end if
 
 		''

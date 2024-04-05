@@ -49,7 +49,7 @@ Version 1.20.0
 - fbc: '-print fork-id' command line option to report the fork-id version of fbc
 - fbc: '-nolib fbrt0.o' and '-nolib fbrt0pic.o' can be used to omit fb's startup files from the link.  Implied by '-nodeflibs'.
 - fbc: '-z nobuiltins' command line option to disable all non-required built-in procedure definitions
-- sf.net feature #273 fbc: allow UDT operators (LET, +=, etc) to support array parameters
+- sf.net feature #285 fbc: allow UDT operators (LET, +=, etc) to support array parameters
 - improved stabs debug information in -gen gas and -gen gas64 for STRING*N, ZSTRING*N, and WSTRING*N types
 
 [fixed]

@@ -572,31 +572,20 @@ private function hFilePut _
 	end if
 
 	isarray = FALSE
-	if( lexGetToken( ) = CHAR_LPRNT ) then
-		if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
-
-			s = astGetSymbol( srcexpr )
-			if( s <> NULL ) then
-				isarray = symbIsArray( s )
-				if( isarray ) then
-
-					'' don't allow var-len strings
-					if( symbGetType( s ) = FB_DATATYPE_STRING ) then
-						astDelTree( srcexpr )
-						errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-						if( isfunc ) then
-							hSkipUntil( CHAR_RPRNT )
-						else
-							hSkipStmt( )
-						end if
-						return astNewCONSTi( 0 )
-					end if
-
-					lexSkipToken( )
-					lexSkipToken( )
-
-				end if
+	if( astIsNIDXARRAY( srcexpr ) ) then
+		s = astGetSymbol( srcexpr )
+		assert( s )
+		assert( symbIsArray( s ) )
+		isarray = TRUE
+		'' don't allow var-len strings
+		if( symbGetType( s ) = FB_DATATYPE_STRING ) then
+			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+			if( isfunc ) then
+				hSkipUntil( CHAR_RPRNT )
+			else
+				hSkipStmt( )
 			end if
+			return astNewCONSTi( 0 )
 		end if
 	end if
 
@@ -697,6 +686,8 @@ private function hFileGet _
 	isarray = FALSE
 	if( astIsNIDXARRAY( dstexpr ) ) then
 		s = astGetSymbol( dstexpr )
+		assert( s )
+		assert( symbIsArray( s ) )
 		isarray = TRUE
 		'' don't allow var-len strings
 		if( symbGetType( s ) = FB_DATATYPE_STRING ) then
