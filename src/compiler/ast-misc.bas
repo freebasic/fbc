@@ -739,7 +739,7 @@ function astBuildBranch _
 	'' relied upon for x86 flag assumptions below
 	expr = astOptimizeTree( expr )
 
-	dtype = astGetDataType( expr )
+	dtype = astGetFullType( expr )
 
 	'' string? invalid..
 	if( typeGetClass( dtype ) = FB_DATACLASS_STRING ) then
@@ -747,7 +747,7 @@ function astBuildBranch _
 	end if
 
 	'' CHAR and WCHAR literals are also from the INTEGER class
-	select case as const dtype
+	select case as const typeGetDtAndPtrOnly( dtype )
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		'' don't allow, unless it's a deref pointer
 		if( astIsDEREF( expr ) = FALSE ) then
@@ -779,7 +779,7 @@ function astBuildBranch _
 
 		'' build cast call
 		expr = astBuildCall( ovlProc, expr )
-		dtype = astGetDataType( expr )
+		dtype = astGetFullType( expr )
 
 	end select
 
@@ -900,7 +900,7 @@ function astBuildBranch _
 				if( typeGetClass( dtype ) = FB_DATACLASS_INTEGER ) then
 					doopt = irGetOption( IR_OPT_CPUBOPFLAGS )
 					if( doopt ) then
-						select case as const dtype
+						select case as const typeGetDtAndPtrOnly( dtype )
 						case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 							'' can't be done with longints either, as flag is set twice
 							doopt = irGetOption( IR_OPT_64BITCPUREGS )
@@ -953,9 +953,10 @@ function astBuildBranch _
 
 	'' Remap zstring/wstring types, we don't want the temp var to be a
 	'' string, or the comparison against zero to be a string comparison...
-	select case( dtype )
+	select case typeGetDtAndPtrOnly( dtype )
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-		dtype = typeRemap( dtype )
+		'' don't use typeRemap(), we are preserving const
+		dtype = typeJoin( dtype, symb_dtypeTB(typeGetDtAndPtrOnly( dtype )).remaptype )
 	end select
 
 	if( call_dtors ) then
