@@ -1,6 +1,7 @@
 Version 1.10.3
 
 [changed]
+- updated bindings: Windows API - refresh the existing windows headers after retranslating with addition of version 8.1 (&h0603) and windows 10 (&h0A00)
 
 [added]
 

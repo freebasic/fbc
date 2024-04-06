@@ -96,7 +96,7 @@ end type
 
 type AUTHZ_SECURITY_EVENT_PROVIDER_HANDLE as AUTHZ_SECURITY_EVENT_PROVIDER_HANDLE__ ptr
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	type AUTHZ_CAP_CHANGE_SUBSCRIPTION_HANDLE__
 		unused as long
 	end type
@@ -111,7 +111,7 @@ type PAUTHZ_AUDIT_EVENT_HANDLE as AUTHZ_AUDIT_EVENT_HANDLE ptr
 type PAUTHZ_AUDIT_EVENT_TYPE_HANDLE as AUTHZ_AUDIT_EVENT_TYPE_HANDLE ptr
 type PAUTHZ_SECURITY_EVENT_PROVIDER_HANDLE as AUTHZ_SECURITY_EVENT_PROVIDER_HANDLE ptr
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	type PAUTHZ_CAP_CHANGE_SUBSCRIPTION_HANDLE as AUTHZ_CAP_CHANGE_SUBSCRIPTION_HANDLE ptr
 #endif
 
@@ -141,7 +141,7 @@ type PFN_AUTHZ_DYNAMIC_ACCESS_CHECK as function(byval hAuthzClientContext as AUT
 type PFN_AUTHZ_COMPUTE_DYNAMIC_GROUPS as function(byval hAuthzClientContext as AUTHZ_CLIENT_CONTEXT_HANDLE, byval Args as PVOID, byval pSidAttrArray as PSID_AND_ATTRIBUTES ptr, byval pSidCount as PDWORD, byval pRestrictedSidAttrArray as PSID_AND_ATTRIBUTES ptr, byval pRestrictedSidCount as PDWORD) as WINBOOL
 type PFN_AUTHZ_FREE_DYNAMIC_GROUPS as sub(byval pSidAttrArray as PSID_AND_ATTRIBUTES)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	type PFN_AUTHZ_GET_CENTRAL_ACCESS_POLICY as function(byval hAuthzClientContext as AUTHZ_CLIENT_CONTEXT_HANDLE, byval capid as PSID, byval pArgs as PVOID, byval pCentralAccessPolicyApplicable as PBOOL, byval ppCentralAccessPolicy as PVOID ptr) as WINBOOL
 	type PFN_AUTHZ_FREE_CENTRAL_ACCESS_POLICY as sub(byval pCentralAccessPolicy as PVOID)
 #endif
@@ -152,7 +152,7 @@ const AUTHZ_SECURITY_ATTRIBUTE_TYPE_UINT64 = &h02
 const AUTHZ_SECURITY_ATTRIBUTE_TYPE_STRING = &h03
 const AUTHZ_SECURITY_ATTRIBUTE_TYPE_FQBN = &h04
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	const AUTHZ_SECURITY_ATTRIBUTE_TYPE_SID = &h05
 	const AUTHZ_SECURITY_ATTRIBUTE_TYPE_BOOLEAN = &h06
 #endif
@@ -186,7 +186,7 @@ end enum
 
 type PAUTHZ_SECURITY_ATTRIBUTE_OPERATION as AUTHZ_SECURITY_ATTRIBUTE_OPERATION ptr
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	type AUTHZ_SID_OPERATION as long
 	enum
 		AUTHZ_SID_OPERATION_NONE = 0
@@ -249,7 +249,7 @@ declare function AuthzOpenObjectAudit(byval Flags as DWORD, byval hAuthzClientCo
 declare function AuthzFreeHandle(byval hAccessCheckResults as AUTHZ_ACCESS_CHECK_RESULTS_HANDLE) as WINBOOL
 declare function AuthzInitializeResourceManager(byval Flags as DWORD, byval pfnDynamicAccessCheck as PFN_AUTHZ_DYNAMIC_ACCESS_CHECK, byval pfnComputeDynamicGroups as PFN_AUTHZ_COMPUTE_DYNAMIC_GROUPS, byval pfnFreeDynamicGroups as PFN_AUTHZ_FREE_DYNAMIC_GROUPS, byval szResourceManagerName as PCWSTR, byval phAuthzResourceManager as PAUTHZ_RESOURCE_MANAGER_HANDLE) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	const AUTHZ_RPC_INIT_INFO_CLIENT_VERSION_V1 = 1
 	const AUTHZ_INIT_INFO_VERSION_V1 = 1
 
@@ -287,7 +287,7 @@ declare function AuthzInitializeContextFromToken(byval Flags as DWORD, byval Tok
 declare function AuthzInitializeContextFromSid(byval Flags as DWORD, byval UserSid as PSID, byval hAuthzResourceManager as AUTHZ_RESOURCE_MANAGER_HANDLE, byval pExpirationTime as PLARGE_INTEGER, byval Identifier as LUID, byval DynamicGroupArgs as PVOID, byval phAuthzClientContext as PAUTHZ_CLIENT_CONTEXT_HANDLE) as WINBOOL
 declare function AuthzInitializeContextFromAuthzContext(byval Flags as DWORD, byval hAuthzClientContext as AUTHZ_CLIENT_CONTEXT_HANDLE, byval pExpirationTime as PLARGE_INTEGER, byval Identifier as LUID, byval DynamicGroupArgs as PVOID, byval phNewAuthzClientContext as PAUTHZ_CLIENT_CONTEXT_HANDLE) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	declare function AuthzInitializeCompoundContext(byval UserContext as AUTHZ_CLIENT_CONTEXT_HANDLE, byval DeviceContext as AUTHZ_CLIENT_CONTEXT_HANDLE, byval phCompoundContext as PAUTHZ_CLIENT_CONTEXT_HANDLE) as WINBOOL
 #endif
 
@@ -316,7 +316,7 @@ end enum
 
 type AUTHZ_CONTEXT_INFORMATION_CLASS as _AUTHZ_CONTEXT_INFORMATION_CLASS
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	declare function AuthzModifyClaims(byval hAuthzClientContext as AUTHZ_CLIENT_CONTEXT_HANDLE, byval ClaimClass as AUTHZ_CONTEXT_INFORMATION_CLASS, byval pClaimOperations as PAUTHZ_SECURITY_ATTRIBUTE_OPERATION, byval pClaims as PAUTHZ_SECURITY_ATTRIBUTES_INFORMATION) as WINBOOL
 	declare function AuthzModifySids(byval hAuthzClientContext as AUTHZ_CLIENT_CONTEXT_HANDLE, byval SidClass as AUTHZ_CONTEXT_INFORMATION_CLASS, byval pSidOperations as PAUTHZ_SID_OPERATION, byval pSids as PTOKEN_GROUPS) as WINBOOL
 	declare function AuthzSetAppContainerInformation(byval hAuthzClientContext as AUTHZ_CLIENT_CONTEXT_HANDLE, byval pAppContainerSid as PSID, byval CapabilityCount as DWORD, byval pCapabilitySids as PSID_AND_ATTRIBUTES) as WINBOOL
@@ -381,7 +381,7 @@ declare function AuthzUnregisterSecurityEventSource(byval dwFlags as DWORD, byva
 declare function AuthzReportSecurityEvent cdecl(byval dwFlags as DWORD, byval hEventProvider as AUTHZ_SECURITY_EVENT_PROVIDER_HANDLE, byval dwAuditId as DWORD, byval pUserSid as PSID, byval dwCount as DWORD, ...) as WINBOOL
 declare function AuthzReportSecurityEventFromParams(byval dwFlags as DWORD, byval hEventProvider as AUTHZ_SECURITY_EVENT_PROVIDER_HANDLE, byval dwAuditId as DWORD, byval pUserSid as PSID, byval pParams as PAUDIT_PARAMS) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	declare function AuthzRegisterCapChangeNotification(byval phCapChangeSubscription as PAUTHZ_CAP_CHANGE_SUBSCRIPTION_HANDLE, byval pfnCapChangeCallback as LPTHREAD_START_ROUTINE, byval pCallbackContext as PVOID) as WINBOOL
 	declare function AuthzUnregisterCapChangeNotification(byval hCapChangeSubscription as AUTHZ_CAP_CHANGE_SUBSCRIPTION_HANDLE) as WINBOOL
 	declare function AuthzFreeCentralAccessPolicyCache() as WINBOOL

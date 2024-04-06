@@ -1029,7 +1029,7 @@ type SFGAOF as ULONG
 	#define STR_INTERNETFOLDER_PARSE_ONLY_URLMON_BINDABLE wstr("Validate URL")
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	const BIND_INTERRUPTABLE = &hffffffff
 #endif
 
@@ -9569,7 +9569,7 @@ end type
 declare function IDesktopGadget_RunGadget_Proxy(byval This as IDesktopGadget ptr, byval gadgetPath as LPCWSTR) as HRESULT
 declare sub IDesktopGadget_RunGadget_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	#define __IDesktopWallpaper_INTERFACE_DEFINED__
 
 	type DESKTOP_SLIDESHOW_OPTIONS as long
@@ -10006,7 +10006,7 @@ declare sub IDefaultFolderMenuInitialize_GetMenuRestrictions_Stub(byval This as 
 declare function IDefaultFolderMenuInitialize_SetHandlerClsid_Proxy(byval This as IDefaultFolderMenuInitialize ptr, byval rclsid as const IID const ptr) as HRESULT
 declare sub IDefaultFolderMenuInitialize_SetHandlerClsid_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	type ACTIVATEOPTIONS as long
 	enum
 		AO_NONE = &h0
@@ -10243,7 +10243,7 @@ extern CLSID_ExecuteFolder as const GUID
 	declare function SHAssocEnumHandlersForProtocolByApplication(byval protocol as PCWSTR, byval riid as const IID const ptr, byval enumHandlers as any ptr ptr) as HRESULT
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	#define __IDataObjectProvider_INTERFACE_DEFINED__
 	extern IID_IDataObjectProvider as const GUID
 	type IDataObjectProvider as IDataObjectProvider_

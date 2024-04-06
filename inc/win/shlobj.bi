@@ -252,7 +252,7 @@ enum
 
 	#if _WIN32_WINNT = &h0601
 		SLDF_VALID = &h07fff7ff
-	#elseif _WIN32_WINNT = &h0602
+	#elseif _WIN32_WINNT >= &h0602
 		SLDF_PERSIST_VOLUME_ID_RELATIVE = &h08000000
 		SLDF_VALID = &h0ffff7ff
 	#endif
@@ -2133,7 +2133,7 @@ enum
 		OAIF_URL_PROTOCOL = &h40
 	#endif
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0602
 		OAIF_FILE_IS_URI = &h80
 	#endif
 end enum
@@ -2750,7 +2750,7 @@ const SSF_SHOWSTARTPAGE = &h00400000
 	const SSF_SHOWTYPEOVERLAY = &h02000000
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	const SSF_SHOWSTATUSBAR = &h04000000
 #endif
 

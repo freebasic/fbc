@@ -1700,7 +1700,7 @@ end type
 declare function IShellDispatch5_WindowSwitcher_Proxy(byval This as IShellDispatch5 ptr) as HRESULT
 declare sub IShellDispatch5_WindowSwitcher_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	#define __IShellDispatch6_INTERFACE_DEFINED__
 	extern IID_IShellDispatch6 as const GUID
 	type IShellDispatch6 as IShellDispatch6_
@@ -1738,9 +1738,9 @@ declare sub IShellDispatch5_WindowSwitcher_Stub(byval This as IRpcStubBuffer ptr
 		ControlPanelItem as function(byval This as IShellDispatch6 ptr, byval bstrDir as BSTR) as HRESULT
 		IsRestricted as function(byval This as IShellDispatch6 ptr, byval Group as BSTR, byval Restriction as BSTR, byval plRestrictValue as LONG ptr) as HRESULT
 
-		#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+		#if defined(UNICODE) and (_WIN32_WINNT >= &h0602)
 			ShellExecuteW as function(byval This as IShellDispatch6 ptr, byval File as BSTR, byval vArgs as VARIANT, byval vDir as VARIANT, byval vOperation as VARIANT, byval vShow as VARIANT) as HRESULT
-		#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+		#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0602)
 			ShellExecuteA as function(byval This as IShellDispatch6 ptr, byval File as BSTR, byval vArgs as VARIANT, byval vDir as VARIANT, byval vOperation as VARIANT, byval vShow as VARIANT) as HRESULT
 		#endif
 

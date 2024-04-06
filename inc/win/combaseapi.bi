@@ -95,7 +95,7 @@ end enum
 
 type COINITBASE as tagCOINITBASE
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	type tagServerInformation
 		dwServerPid as DWORD
 		dwServerTid as DWORD
@@ -133,7 +133,7 @@ declare function CoGetCurrentProcess() as DWORD
 declare function CoGetCallerTID(byval lpdwTID as LPDWORD) as HRESULT
 declare function CoGetDefaultContext(byval aptType as APTTYPE, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	declare function CoDecodeProxy(byval dwClientPid as DWORD, byval ui64ProxyAddress as UINT64, byval pServerInformation as PServerInformation) as HRESULT
 	declare function CoIncrementMTAUsage(byval pCookie as CO_MTA_USAGE_COOKIE ptr) as HRESULT
 	declare function CoDecrementMTAUsage(byval Cookie as CO_MTA_USAGE_COOKIE) as HRESULT
@@ -223,7 +223,7 @@ end enum
 
 type COWAIT_FLAGS as tagCOWAIT_FLAGS
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	type CWMO_FLAGS as long
 	enum
 		CWMO_DEFAULT = 0

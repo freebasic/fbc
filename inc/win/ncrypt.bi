@@ -79,7 +79,7 @@ const NCRYPT_MAX_ALG_ID_LENGTH = 512
 #define NCRYPT_ECDH_P384_ALGORITHM BCRYPT_ECDH_P384_ALGORITHM
 #define NCRYPT_ECDH_P521_ALGORITHM BCRYPT_ECDH_P521_ALGORITHM
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	#define NCRYPT_AES_ALGORITHM BCRYPT_AES_ALGORITHM
 	#define NCRYPT_RC2_ALGORITHM BCRYPT_RC2_ALGORITHM
 	#define NCRYPT_3DES_ALGORITHM BCRYPT_3DES_ALGORITHM
@@ -99,7 +99,7 @@ const NCRYPT_ASYMMETRIC_ENCRYPTION_INTERFACE = BCRYPT_ASYMMETRIC_ENCRYPTION_INTE
 const NCRYPT_SECRET_AGREEMENT_INTERFACE = BCRYPT_SECRET_AGREEMENT_INTERFACE
 const NCRYPT_SIGNATURE_INTERFACE = BCRYPT_SIGNATURE_INTERFACE
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	const NCRYPT_KEY_DERIVATION_INTERFACE = BCRYPT_KEY_DERIVATION_INTERFACE
 #endif
 
@@ -107,7 +107,7 @@ const NCRYPT_KEY_STORAGE_INTERFACE = &h00010001
 const NCRYPT_SCHANNEL_INTERFACE = &h00010002
 const NCRYPT_SCHANNEL_SIGNATURE_INTERFACE = &h00010003
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	const NCRYPT_KEY_PROTECTION_INTERFACE = &h00010004
 #endif
 
@@ -117,7 +117,7 @@ const NCRYPT_SCHANNEL_SIGNATURE_INTERFACE = &h00010003
 #define NCRYPT_ECDSA_ALGORITHM_GROUP wstr("ECDSA")
 #define NCRYPT_ECDH_ALGORITHM_GROUP wstr("ECDH")
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	#define NCRYPT_AES_ALGORITHM_GROUP NCRYPT_AES_ALGORITHM
 	#define NCRYPT_RC2_ALGORITHM_GROUP NCRYPT_RC2_ALGORITHM
 	#define NCRYPT_DES_ALGORITHM_GROUP wstr("DES")
@@ -147,7 +147,7 @@ const NCRYPT_PAD_PKCS1_FLAG = &h2
 const NCRYPT_PAD_OAEP_FLAG = &h4
 const NCRYPT_PAD_PSS_FLAG = &h8
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	const NCRYPT_PAD_CIPHER_FLAG = &h10
 	const NCRYPT_CIPHER_NO_PADDING_FLAG = &h0
 	const NCRYPT_CIPHER_BLOCK_PADDING_FLAG = &h1
@@ -173,7 +173,7 @@ type NCRYPT_KEY_HANDLE as ULONG_PTR
 type NCRYPT_HASH_HANDLE as ULONG_PTR
 type NCRYPT_SECRET_HANDLE as ULONG_PTR
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	type _NCRYPT_CIPHER_PADDING_INFO
 		cbSize as ULONG
 		dwFlags as DWORD
@@ -204,7 +204,7 @@ const NCRYPT_SECRET_AGREEMENT_OPERATION = BCRYPT_SECRET_AGREEMENT_OPERATION
 const NCRYPT_SIGNATURE_OPERATION = BCRYPT_SIGNATURE_OPERATION
 const NCRYPT_RNG_OPERATION = BCRYPT_RNG_OPERATION
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	const NCRYPT_KEY_DERIVATION_OPERATION = BCRYPT_KEY_DERIVATION_OPERATION
 #endif
 
@@ -251,7 +251,7 @@ declare function NCryptCreatePersistedKey(byval hProvider as NCRYPT_PROV_HANDLE,
 #define NCRYPT_LENGTHS_PROPERTY wstr("Lengths")
 #define NCRYPT_BLOCK_LENGTH_PROPERTY wstr("Block Length")
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	#define NCRYPT_CHAINING_MODE_PROPERTY wstr("Chaining Mode")
 	#define NCRYPT_AUTH_TAG_LENGTH wstr("AuthTagLength")
 #endif
@@ -285,7 +285,7 @@ declare function NCryptCreatePersistedKey(byval hProvider as NCRYPT_PROV_HANDLE,
 #define NCRYPT_SCARD_PIN_ID wstr("SmartCardPinId")
 #define NCRYPT_SCARD_PIN_INFO wstr("SmartCardPinInfo")
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	#define NCRYPT_READER_ICON_PROPERTY wstr("SmartCardReaderIcon")
 	#define NCRYPT_KDF_SECRET_VALUE wstr("KDFKeySecret")
 	#define NCRYPT_PCP_PLATFORM_TYPE_PROPERTY wstr("PCP_PLATFORM_TYPE")
@@ -364,7 +364,7 @@ declare function NCryptFinalizeKey(byval hKey as NCRYPT_KEY_HANDLE, byval dwFlag
 declare function NCryptEncrypt(byval hKey as NCRYPT_KEY_HANDLE, byval pbInput as PBYTE, byval cbInput as DWORD, byval pPaddingInfo as any ptr, byval pbOutput as PBYTE, byval cbOutput as DWORD, byval pcbResult as DWORD ptr, byval dwFlags as DWORD) as SECURITY_STATUS
 declare function NCryptDecrypt(byval hKey as NCRYPT_KEY_HANDLE, byval pbInput as PBYTE, byval cbInput as DWORD, byval pPaddingInfo as any ptr, byval pbOutput as PBYTE, byval cbOutput as DWORD, byval pcbResult as DWORD ptr, byval dwFlags as DWORD) as SECURITY_STATUS
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	type _NCRYPT_KEY_BLOB_HEADER
 		cbSize as ULONG
 		dwMagic as ULONG
@@ -403,7 +403,7 @@ declare function NCryptNotifyChangeKey(byval hProvider as NCRYPT_PROV_HANDLE, by
 declare function NCryptSecretAgreement(byval hPrivKey as NCRYPT_KEY_HANDLE, byval hPubKey as NCRYPT_KEY_HANDLE, byval phAgreedSecret as NCRYPT_SECRET_HANDLE ptr, byval dwFlags as DWORD) as SECURITY_STATUS
 declare function NCryptDeriveKey(byval hSharedSecret as NCRYPT_SECRET_HANDLE, byval pwszKDF as LPCWSTR, byval pParameterList as NCryptBufferDesc ptr, byval pbDerivedKey as PBYTE, byval cbDerivedKey as DWORD, byval pcbResult as DWORD ptr, byval dwFlags as ULONG) as SECURITY_STATUS
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	declare function NCryptKeyDerivation(byval hKey as NCRYPT_KEY_HANDLE, byval pParameterList as NCryptBufferDesc ptr, byval pbDerivedKey as PUCHAR, byval cbDerivedKey as DWORD, byval pcbResult as DWORD ptr, byval dwFlags as ULONG) as SECURITY_STATUS
 #endif
 

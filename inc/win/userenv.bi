@@ -362,7 +362,7 @@ const RSOP_TEMPNAMESPACE_EXISTS = &h00000004
 	declare function GenerateGPNotification(byval bMachine as WINBOOL, byval lpwszMgmtProduct as LPCWSTR, byval dwMgmtProductOptions as DWORD) as DWORD
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	declare function CreateAppContainerProfile(byval pszAppContainerName as PCWSTR, byval pszDisplayName as PCWSTR, byval pszDescription as PCWSTR, byval pCapabilities as PSID_AND_ATTRIBUTES, byval dwCapabilityCount as DWORD, byval ppSidAppContainerSid as PSID ptr) as HRESULT
 	declare function DeleteAppContainerProfile(byval pszAppContainerName as PCWSTR) as HRESULT
 	declare function GetAppContainerRegistryLocation(byval desiredAccess as REGSAM, byval phAppContainerKey as PHKEY) as HRESULT
