@@ -33,16 +33,13 @@
 
 #if defined(__FB_DOS__) or defined(__FB_UNIX__)
 	#include once "crt/stdint.bi"
-
 	'' The following symbols have been renamed:
 	''     constant TRUE => CTRUE
-#elseif defined(__FB_WIN32__) and defined(__FB_64BIT__)
-	#include once "wtypes.bi"
+#elseif defined(__FB_WIN32__)
+	#include once "win/wtypes.bi"
 #endif
 
-#if defined(__FB_WIN32__) and (not defined(__FB_64BIT__))
-	#include once "wtypes.bi"
-
+#ifdef __FB_WIN32__
 	extern "Windows-MS"
 #else
 	extern "C"
@@ -61,6 +58,9 @@ type QWORD as ulongint
 	type BOOL as long
 	#ifndef CTRUE
 		const CTRUE = 1
+	#endif
+	#ifndef TRUE
+		const TRUE = 1
 	#endif
 	#ifndef FALSE
 		const FALSE = 0
