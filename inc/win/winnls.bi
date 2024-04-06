@@ -160,7 +160,7 @@ const LCMAP_LINGUISTIC_CASING = &h01000000
 const LCMAP_SIMPLIFIED_CHINESE = &h02000000
 const LCMAP_TRADITIONAL_CHINESE = &h04000000
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	const LCMAP_SORTHANDLE = &h20000000
 	const LCMAP_HASH = &h00040000
 #endif
@@ -772,7 +772,7 @@ type _nlsversioninfo
 	dwNLSVersion as DWORD
 	dwDefinedVersion as DWORD
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0602
 		dwEffectiveId as DWORD
 		guidCustomVersion as GUID
 	#endif
@@ -1148,7 +1148,7 @@ declare function EnumSystemCodePagesW(byval lpCodePageEnumProc as CODEPAGE_ENUMP
 	declare function ResolveLocaleName(byval lpNameToResolve as LPCWSTR, byval lpLocaleName as LPWSTR, byval cchLocaleName as long) as long
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	declare function IsValidNLSVersion(byval function as NLS_FUNCTION, byval lpLocaleName as LPCWSTR, byval lpVersionInformation as LPNLSVERSIONINFOEX) as DWORD
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
 	declare function EnumSystemCodePages alias "EnumSystemCodePagesA"(byval lpCodePageEnumProc as CODEPAGE_ENUMPROCA, byval dwFlags as DWORD) as WINBOOL

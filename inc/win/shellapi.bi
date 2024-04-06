@@ -219,7 +219,7 @@ const ABM_SETAUTOHIDEBAR = &h00000008
 const ABM_WINDOWPOSCHANGED = &h0000009
 const ABM_SETSTATE = &h0000000a
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	const ABM_GETAUTOHIDEBAREX = &h0000000b
 	const ABM_SETAUTOHIDEBAREX = &h0000000c
 #endif
@@ -456,7 +456,7 @@ const SEE_MASK_NOQUERYCLASSSTORE = &h1000000
 const SEE_MASK_WAITFORINPUTIDLE = &h2000000
 const SEE_MASK_FLAG_LOG_USAGE = &h4000000
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	const SEE_MASK_FLAG_HINST_IS_SITE = &h8000000
 #endif
 
@@ -633,7 +633,7 @@ declare function SHCreateProcessAsUserW(byval pscpi as PSHCREATEPROCESSINFOW) as
 		ASSOCCLASS_FOLDER
 		ASSOCCLASS_STAR
 
-		#if _WIN32_WINNT = &h0602
+		#if _WIN32_WINNT >= &h0602
 			ASSOCCLASS_FIXED_PROGID_STR
 			ASSOCCLASS_PROTOCOL_STR
 		#endif
@@ -708,7 +708,7 @@ declare function SHEmptyRecycleBinW(byval hwnd as HWND, byval pszRootPath as LPC
 			QUNS_QUIET_TIME = 6
 		#endif
 
-		#if _WIN32_WINNT = &h0602
+		#if _WIN32_WINNT >= &h0602
 			QUNS_APP = 7
 		#endif
 	end enum

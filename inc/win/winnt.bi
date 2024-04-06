@@ -3962,7 +3962,7 @@ const IO_REPARSE_TAG_DRIVE_EXTENDER = &h80000005
 const IO_REPARSE_TAG_DEDUP = &h80000013
 const IO_REPARSE_TAG_NFS = &h80000014
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	const SCRUB_DATA_INPUT_FLAG_RESUME = &h00000001
 	const SCRUB_DATA_INPUT_FLAG_SKIP_IN_SYNC = &h00000002
 	const SCRUB_DATA_INPUT_FLAG_SKIP_NON_INTEGRITY_DATA = &h00000004
@@ -4514,12 +4514,12 @@ const POWER_PLATFORM_ROLE_V1_MAX = PlatformRolePerformanceServer + 1
 const POWER_PLATFORM_ROLE_V2 = &h00000002
 const POWER_PLATFORM_ROLE_V2_MAX = PlatformRoleSlate + 1
 
-#if _WIN32_WINNT = &h0602
-	const POWER_PLATFORM_ROLE_VERSION = POWER_PLATFORM_ROLE_V2
-	const POWER_PLATFORM_ROLE_VERSION_MAX = POWER_PLATFORM_ROLE_V2_MAX
-#else
+#if _WIN32_WINNT <= &h0601
 	const POWER_PLATFORM_ROLE_VERSION = POWER_PLATFORM_ROLE_V1
 	const POWER_PLATFORM_ROLE_VERSION_MAX = POWER_PLATFORM_ROLE_V1_MAX
+#else
+	const POWER_PLATFORM_ROLE_VERSION = POWER_PLATFORM_ROLE_V2
+	const POWER_PLATFORM_ROLE_VERSION_MAX = POWER_PLATFORM_ROLE_V2_MAX
 #endif
 
 type BATTERY_REPORTING_SCALE
@@ -6685,7 +6685,7 @@ declare sub RtlCaptureContext(byval ContextRecord as PCONTEXT)
 declare function RtlCompareMemory(byval Source1 as const any ptr, byval Source2 as const any ptr, byval Length as SIZE_T_) as SIZE_T_
 
 #ifdef __FB_64BIT__
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0602
 		declare function RtlAddGrowableFunctionTable(byval DynamicTable as PVOID ptr, byval FunctionTable as PRUNTIME_FUNCTION, byval EntryCount as DWORD, byval MaximumEntryCount as DWORD, byval RangeBase as ULONG_PTR, byval RangeEnd as ULONG_PTR) as DWORD
 		declare sub RtlGrowFunctionTable(byval DynamicTable as PVOID, byval NewEntryCount as DWORD)
 		declare sub RtlDeleteGrowableFunctionTable(byval DynamicTable as PVOID)
@@ -7035,7 +7035,7 @@ type RTL_UMS_SCHEDULER_REASON as _RTL_UMS_SCHEDULER_REASON
 type PRTL_UMS_SCHEDULER_REASON as _RTL_UMS_SCHEDULER_REASON ptr
 type PRTL_UMS_SCHEDULER_ENTRY_POINT as sub(byval Reason as RTL_UMS_SCHEDULER_REASON, byval ActivationPayload as ULONG_PTR, byval SchedulerParam as PVOID)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	#define IS_VALIDATION_ENABLED(C, L) ((L) and (C))
 	const VRL_PREDEFINED_CLASS_BEGIN = 1
 	const VRL_CUSTOM_CLASS_BEGIN = 1 shl 8

@@ -345,7 +345,7 @@ const PP_CRYPT_COUNT_KEY_USE = 41
 	const PP_ROOT_CERTSTORE = 46
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	const PP_SMARTCARD_READER_ICON = 47
 #endif
 
@@ -5186,7 +5186,7 @@ type _CERT_CHAIN_ENGINE_CONFIG
 		hExclusiveTrustedPeople as HCERTSTORE
 	#endif
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0602
 		dwExclusiveFlags as DWORD
 	#endif
 end type
@@ -5194,7 +5194,7 @@ end type
 type CERT_CHAIN_ENGINE_CONFIG as _CERT_CHAIN_ENGINE_CONFIG
 type PCERT_CHAIN_ENGINE_CONFIG as _CERT_CHAIN_ENGINE_CONFIG ptr
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	const CERT_CHAIN_EXCLUSIVE_ENABLE_CA_FLAG = &h1
 #endif
 
@@ -5249,7 +5249,7 @@ const CERT_TRUST_IS_PEER_TRUSTED = &h800
 const CERT_TRUST_HAS_CRL_VALIDITY_EXTENDED = &h1000
 const CERT_TRUST_IS_FROM_EXCLUSIVE_TRUST_STORE = &h2000
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	const CERT_TRUST_IS_CA_TRUSTED = &h4000
 #endif
 
@@ -5775,7 +5775,7 @@ const CERT_RETRIEVE_BIOMETRIC_SIGNATURE_TYPE = CERT_RETRIEVE_BIOMETRIC_PREDEFINE
 	declare function CryptVerifyTimeStampSignature(byval pbTSContentInfo as const UBYTE ptr, byval cbTSContentInfo as DWORD, byval pbData as const UBYTE ptr, byval cbData as DWORD, byval hAdditionalStore as HCERTSTORE, byval ppTsContext as PCRYPT_TIMESTAMP_CONTEXT ptr, byval ppTsSigner as PCCERT_CONTEXT ptr, byval phStore as HCERTSTORE ptr) as WINBOOL
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	const CRYPT_OBJECT_LOCATOR_SPN_NAME_TYPE = 1
 	const CRYPT_OBJECT_LOCATOR_LAST_RESERVED_NAME_TYPE = 32
 	const CRYPT_OBJECT_LOCATOR_FIRST_RESERVED_USER_NAME_TYPE = 33
@@ -5848,7 +5848,7 @@ declare function CryptUnprotectData(byval pDataIn as DATA_BLOB ptr, byval ppszDa
 declare function CryptProtectMemory(byval pDataIn as LPVOID, byval cbDataIn as DWORD, byval dwFlags as DWORD) as WINBOOL
 declare function CryptUnprotectMemory(byval pDataIn as LPVOID, byval cbDataIn as DWORD, byval dwFlags as DWORD) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	declare function CryptProtectDataNoUI(byval pDataIn as DATA_BLOB ptr, byval szDataDescr as LPCWSTR, byval pOptionalEntropy as DATA_BLOB ptr, byval pvReserved as PVOID, byval pPromptStruct as CRYPTPROTECT_PROMPTSTRUCT ptr, byval dwFlags as DWORD, byval pbOptionalPassword as const UBYTE ptr, byval cbOptionalPassword as DWORD, byval pDataOut as DATA_BLOB ptr) as WINBOOL
 	declare function CryptUnprotectDataNoUI(byval pDataIn as DATA_BLOB ptr, byval ppszDataDescr as LPWSTR ptr, byval pOptionalEntropy as DATA_BLOB ptr, byval pvReserved as PVOID, byval pPromptStruct as CRYPTPROTECT_PROMPTSTRUCT ptr, byval dwFlags as DWORD, byval pbOptionalPassword as const UBYTE ptr, byval cbOptionalPassword as DWORD, byval pDataOut as DATA_BLOB ptr) as WINBOOL
 #endif

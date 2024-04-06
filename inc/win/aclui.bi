@@ -101,13 +101,13 @@ const SI_NO_ADDITIONAL_PERMISSION = &h00200000
 	const SI_OWNER_ELEVATION_REQUIRED = &h04000000
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	const SI_SCOPE_ELEVATION_REQUIRED = &h08000000
 #endif
 
 const SI_MAY_WRITE = &h10000000
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	const SI_ENABLE_EDIT_ATTRIBUTE_CONDITION = &h20000000
 	const SI_ENABLE_CENTRAL_POLICY = &h40000000
 	const SI_DISABLE_DENY_ACE = &h80000000
@@ -150,7 +150,7 @@ enum
 		SI_PAGE_TAKEOWNERSHIP
 	#endif
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0602
 		SI_PAGE_SHARE
 	#endif
 end enum
@@ -279,7 +279,7 @@ type LPSecurityObjectTypeInfo as ISecurityObjectTypeInfo ptr
 	type LPSECURITYINFO3 as ISecurityInformation3 ptr
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	type _SECURITY_OBJECT
 		pwszName as PWSTR
 		pData as PVOID
@@ -345,7 +345,7 @@ extern IID_ISecurityObjectTypeInfo as const IID
 	extern IID_ISecurityInformation3 as const IID
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	extern IID_ISecurityInformation4 as const IID
 	extern IID_IEffectivePermission2 as const IID
 #endif
