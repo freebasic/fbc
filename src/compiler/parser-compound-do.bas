@@ -9,10 +9,10 @@
 
 '' DoStmtBegin  =  DO ((WHILE | UNTIL) Expression)? .
 sub cDoStmtBegin( )
-    dim as ASTNODE ptr expr = any
+	dim as ASTNODE ptr expr = any
 	dim as integer iswhile = any, isuntil = any
-    dim as FBSYMBOL ptr il = any, el = any, cl = any
-    dim as FB_CMPSTMTSTK ptr stk = any
+	dim as FBSYMBOL ptr il = any, el = any, cl = any
+	dim as FB_CMPSTMTSTK ptr stk = any
 
 	'' DO
 	lexSkipToken( LEXCHECK_POST_SUFFIX )
@@ -64,16 +64,16 @@ sub cDoStmtBegin( )
 
 	'' push to stmt stack
 	stk = cCompStmtPush( FB_TK_DO )
-    stk->scopenode = astScopeBegin( )
+	stk->scopenode = astScopeBegin( )
 	stk->do.attop = (expr <> NULL)
 	stk->do.inilabel = il
-    stk->do.cmplabel = cl
-    stk->do.endlabel = el
+	stk->do.cmplabel = cl
+	stk->do.endlabel = el
 end sub
 
 '' DoStmtEnd  =  LOOP ((WHILE | UNTIL) Expression)? .
 sub cDoStmtEnd( )
-    dim as ASTNODE ptr expr = any
+	dim as ASTNODE ptr expr = any
 	dim as integer iswhile = any, isuntil = any
 	dim as FB_CMPSTMTSTK ptr stk = any
 
@@ -137,8 +137,8 @@ sub cDoStmtEnd( )
 		astAdd( astNewBRANCH( AST_OP_JMP, stk->do.inilabel ) )
 	end if
 
-    '' end label (loop exit)
-    astAdd( astNewLABEL( stk->do.endlabel ) )
+	'' end label (loop exit)
+	astAdd( astNewLABEL( stk->do.endlabel ) )
 
 	'' pop from stmt stack
 	cCompStmtPop( stk )

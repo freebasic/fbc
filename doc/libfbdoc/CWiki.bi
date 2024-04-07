@@ -2,7 +2,7 @@
 #define __CWIKI_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006-2020 The FreeBASIC development team.
+''	Copyright (C) 2006-2022 The FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -95,7 +95,8 @@ namespace fb.fbdoc
 
 		declare function GetParam _
 			( _
-				byval sParamName as zstring ptr _
+				byval sParamName as zstring ptr, _
+				byval default as zstring ptr = NULL _
 			) as string
 
 		declare sub SetParam _

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="OPEN PIPE"}}----
-Opens an external process' standard input (//stdin//) or output (//stdout//) stream for file operations.
+Opens an external process' standard input (//stdin//) or output (//stdout//) stream, using it as if it were file operations.
 
 {{fbdoc item="syntax"}}##
 	**Open Pipe** //shell_command// **For** **[[KeyPgInputfilemode|Input]]** **As** [**#**]//filenumber//

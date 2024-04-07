@@ -13,7 +13,7 @@ ssize_t fb_wstr_ConvToA(char *dst, ssize_t dst_chars, const FB_WCHAR *src)
 		return 0;
 	}
 
-#if defined HOST_DOS
+#if defined DISABLE_WCHAR
 	ssize_t chars = strlen(src);
 	if (chars > dst_chars)
 		chars = dst_chars;

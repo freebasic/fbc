@@ -10,15 +10,15 @@
 #include once "pp.bi"
 
 #define LEX_FLAGS (LEXCHECK_NOWHITESPC or _
-				   LEXCHECK_NOSUFFIX or _
-				   LEXCHECK_NODEFINE or _
-				   LEXCHECK_NOQUOTES or _
-				   LEXCHECK_NOSYMBOL)
+	LEXCHECK_NOSUFFIX or _
+	LEXCHECK_NODEFINE or _
+	LEXCHECK_NOQUOTES or _
+	LEXCHECK_NOSYMBOL)
 
 type SYMBKWD
-	name			as const zstring ptr
-	id				as integer
-	sym				as FBSYMBOL ptr
+	name            as const zstring ptr
+	id              as integer
+	sym             as FBSYMBOL ptr
 end type
 
 declare sub ppInclude()
@@ -26,41 +26,55 @@ declare sub ppIncLib( )
 declare sub ppLibPath( )
 declare sub ppLine()
 declare sub ppLang()
+declare sub ppCmdline()
+
+#if __FB_DEBUG__
 
 declare sub ppDumpTree _
 	( _
 		byval optimize as integer = FALSE _
 	)
 
+declare sub ppLookup _
+	( _
+	)
+
+#endif
+
+
 '' globals
 	dim shared as PP_CTX pp
 
-const SYMB_MAXKEYWORDS = 24
+const SYMB_MAXKEYWORDS = 26
 
 	dim shared kwdTb( 0 to SYMB_MAXKEYWORDS-1 ) as SYMBKWD => _
 	{ _
-        (@"IF"		, FB_TK_PP_IF		), _
-        (@"IFDEF"	, FB_TK_PP_IFDEF	), _
-        (@"IFNDEF"	, FB_TK_PP_IFNDEF	), _
-        (@"ELSE"	, FB_TK_PP_ELSE		), _
-        (@"ELSEIF"	, FB_TK_PP_ELSEIF	), _
-        (@"ENDIF"	, FB_TK_PP_ENDIF	), _
-        (@"DEFINE"	, FB_TK_PP_DEFINE	), _
-        (@"UNDEF"	, FB_TK_PP_UNDEF	), _
-        (@"MACRO"	, FB_TK_PP_MACRO	), _
-        (@"ENDMACRO", FB_TK_PP_ENDMACRO	), _
-        (@"INCLUDE"	, FB_TK_PP_INCLUDE	), _
-        (@"LIBPATH"	, FB_TK_PP_LIBPATH	), _
-        (@"INCLIB"	, FB_TK_PP_INCLIB	), _
-        (@"PRAGMA"	, FB_TK_PP_PRAGMA	), _
-        (@"PRINT"	, FB_TK_PP_PRINT	), _
-        (@"ERROR"	, FB_TK_PP_ERROR	), _
-        (@"LINE"	, FB_TK_PP_LINE		), _
-        (@"LANG"	, FB_TK_PP_LANG		), _
-        (@"ASSERT"	, FB_TK_PP_ASSERT	), _
-        (@"DUMP"    , FB_TK_PP_DUMP     ), _
-        (@"ODUMP"   , FB_TK_PP_ODUMP    ), _
-        (NULL) _
+		(@"IF"        , FB_TK_PP_IF         ), _
+		(@"IFDEF"     , FB_TK_PP_IFDEF      ), _
+		(@"IFNDEF"    , FB_TK_PP_IFNDEF     ), _
+		(@"ELSE"      , FB_TK_PP_ELSE       ), _
+		(@"ELSEIF"    , FB_TK_PP_ELSEIF     ), _
+		(@"ELSEIFDEF" , FB_TK_PP_ELSEIFDEF  ), _
+		(@"ELSEIFNDEF", FB_TK_PP_ELSEIFNDEF ), _
+		(@"ENDIF"     , FB_TK_PP_ENDIF      ), _
+		(@"DEFINE"    , FB_TK_PP_DEFINE     ), _
+		(@"UNDEF"     , FB_TK_PP_UNDEF      ), _
+		(@"MACRO"     , FB_TK_PP_MACRO      ), _
+		(@"ENDMACRO"  , FB_TK_PP_ENDMACRO   ), _
+		(@"INCLUDE"   , FB_TK_PP_INCLUDE    ), _
+		(@"LIBPATH"   , FB_TK_PP_LIBPATH    ), _
+		(@"INCLIB"    , FB_TK_PP_INCLIB     ), _
+		(@"PRAGMA"    , FB_TK_PP_PRAGMA     ), _
+		(@"PRINT"     , FB_TK_PP_PRINT      ), _
+		(@"ERROR"     , FB_TK_PP_ERROR      ), _
+		(@"LINE"      , FB_TK_PP_LINE       ), _
+		(@"LANG"      , FB_TK_PP_LANG       ), _
+		(@"ASSERT"    , FB_TK_PP_ASSERT     ), _
+		(@"CMDLINE"   , FB_TK_PP_CMDLINE    ), _
+		(@"DUMP"      , FB_TK_PP_DUMP       ), _
+		(@"ODUMP"     , FB_TK_PP_ODUMP      ), _
+		(@"LOOKUP"    , FB_TK_PP_LOOKUP     ), _
+		(NULL) _
 	}
 
 ''::::
@@ -82,9 +96,9 @@ sub ppInit( )
 		end if
 
 		kwdTb(i).sym = symbAddKeyword( kwdTb(i).name, _
-									   kwdTb(i).id, _
-									   FB_TKCLASS_KEYWORD, _
-									   @pp.kwdns.nspc.ns.hashtb )
+			kwdTb(i).id, _
+			FB_TKCLASS_KEYWORD, _
+			@pp.kwdns.nspc.ns.hashtb )
 		if( kwdTb(i).sym = NULL ) then
 			exit sub
 		end if
@@ -198,6 +212,7 @@ sub ppParse( )
 		dim as FBSYMCHAIN ptr chain_ = any
 		dim as FBSYMBOL ptr base_parent = any
 
+		'' #undef
 		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
 
 		chain_ = cIdentifier( base_parent, FB_IDOPT_NONE )
@@ -235,7 +250,7 @@ sub ppParse( )
 		ppCondIf( )
 
 	'' ELSE
-	case FB_TK_PP_ELSE, FB_TK_PP_ELSEIF
+	case FB_TK_PP_ELSE, FB_TK_PP_ELSEIF, FB_TK_PP_ELSEIFDEF, FB_TK_PP_ELSEIFNDEF
 		ppCondElse( )
 
 	'' ENDIF
@@ -249,13 +264,30 @@ sub ppParse( )
 
 	'' DUMP Expression
 	case FB_TK_PP_DUMP
-		lexSkipToken( LEXCHECK_POST_SUFFIX )
-		ppDumpTree( FALSE )
+		#if __FB_DEBUG__
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
+			ppDumpTree( FALSE )
+		#else
+			errReport( FB_ERRMSG_SYNTAXERROR )
+		#endif
 
 	'' ODUMP Expression
 	case FB_TK_PP_ODUMP
-		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
-		ppDumpTree( TRUE )
+		#if __FB_DEBUG__
+			lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
+			ppDumpTree( TRUE )
+		#else
+			errReport( FB_ERRMSG_SYNTAXERROR )
+		#endif
+
+	'' LOOKUP Symbol
+	case FB_TK_PP_LOOKUP
+		#if __FB_DEBUG__
+			lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
+			ppLookup( )
+		#else
+			errReport( FB_ERRMSG_SYNTAXERROR )
+		#endif
 
 	'' PRINT LITERAL*
 	case FB_TK_PP_PRINT
@@ -296,6 +328,10 @@ sub ppParse( )
 		lexSkipToken( LEXCHECK_POST_SUFFIX)
 		ppLang( )
 
+	case FB_TK_PP_CMDLINE
+		lexSkipToken( LEXCHECK_POST_SUFFIX)
+		ppCmdline( )
+
 	case else
 		errReport( FB_ERRMSG_SYNTAXERROR )
 	end select
@@ -317,7 +353,7 @@ sub ppParse( )
 end sub
 
 '':::::
-'' ppInclude		=   '#'INCLUDE ONCE? LIT_STR
+'' ppInclude        =   '#'INCLUDE ONCE? LIT_STR
 ''
 private sub ppInclude()
 	static as zstring * FB_MAXPATHLEN+1 incfile
@@ -339,7 +375,7 @@ private sub ppInclude()
 end sub
 
 '':::::
-'' ppIncLib			=   '#'INCLIB LIT_STR
+'' ppIncLib         =   '#'INCLIB LIT_STR
 ''
 private sub ppIncLib( )
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
@@ -360,7 +396,7 @@ private sub ppIncLib( )
 end sub
 
 '':::::
-'' ppLibPath		=   '#'LIBPATH LIT_STR
+'' ppLibPath        =   '#'LIBPATH LIT_STR
 ''
 private sub ppLibPath( )
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
@@ -381,7 +417,7 @@ private sub ppLibPath( )
 end sub
 
 '':::::
-'' ppLine		=   '#'LINE LIT_NUM LIT_STR?
+'' ppLine       =   '#'LINE LIT_NUM LIT_STR?
 ''
 private sub ppLine()
 	'' LIT_NUM
@@ -402,7 +438,7 @@ private sub ppLine()
 end sub
 
 '':::::
-'' ppLang		=   '#'LANG LIT_STR
+'' ppLang       =   '#'LANG LIT_STR
 ''
 private sub ppLang( )
 	dim as FB_LANG id = any
@@ -430,6 +466,8 @@ private sub ppLang( )
 	lexSkipToken( )
 end sub
 
+#if __FB_DEBUG__
+
 '':::::
 '' ppDump      =   '#'DUMP|ODUMP Expression
 ''
@@ -456,6 +494,20 @@ private sub ppDumpTree _
 	end if
 
 end sub
+
+'':::::
+'' ppLookup    =   '#'LOOKUP name
+''
+private sub ppLookup _
+	( _
+	)
+
+	symbDumpLookup( lexGetText( ) )
+	lexSkipToken( )
+
+end sub
+
+#endif
 
 '':::::
 private sub hRtrimMacroText _
@@ -532,7 +584,7 @@ function ppReadLiteral _
 			end if
 
 			do
-				lexSkipToken( LEX_FLAGS )
+				lexSkipToken( LEX_FLAGS or LEXCHECK_NOLINECONT )
 
 				select case lexGetToken( LEX_FLAGS )
 				case FB_TK_EOL, FB_TK_EOF
@@ -545,7 +597,7 @@ function ppReadLiteral _
 		'' '#'?
 		case CHAR_SHARP
 			select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
-									 		(not LEXCHECK_NOWHITESPC) )
+				(not LEXCHECK_NOWHITESPC) )
 			'' '##'?
 			case CHAR_SHARP
 				lexSkipToken( LEX_FLAGS )
@@ -596,7 +648,7 @@ function ppReadLiteral _
 
 			continue do
 
-	  	case FB_TK_TYPEOF
+		case FB_TK_TYPEOF
 			DZstrConcatAssign( text, ppTypeOf( ) )
 			exit do
 
@@ -687,7 +739,7 @@ function ppReadLiteralW _
 			end if
 
 			do
-				lexSkipToken( LEX_FLAGS )
+				lexSkipToken( LEX_FLAGS or LEXCHECK_NOLINECONT )
 
 				select case lexGetToken( LEX_FLAGS )
 				case FB_TK_EOL, FB_TK_EOF
@@ -700,7 +752,7 @@ function ppReadLiteralW _
 		'' '#'?
 		case CHAR_SHARP
 			select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
-									 		(not LEXCHECK_NOWHITESPC) )
+				(not LEXCHECK_NOWHITESPC) )
 			'' '##'?
 			case CHAR_SHARP
 				lexSkipToken( LEX_FLAGS )
@@ -751,7 +803,7 @@ function ppReadLiteralW _
 
 			continue do
 
-	  	case FB_TK_TYPEOF
+		case FB_TK_TYPEOF
 			DWstrConcatAssignA( text, ppTypeOf( ) )
 			exit do
 
@@ -799,3 +851,99 @@ function ppTypeOf( ) as string
 		lexSkipToken( )
 	end if
 end function
+
+
+'' fbcParseArgsFromString() exists in fbc.bas which is our main
+'' entry point for the fbc compiler.  We would probably like to
+'' separate it in to another interface, but fbc.bas has everything
+'' we need to process options.  So, we've made fbcParseArgsFromString()
+'' public and just declare it here because for now this is the only
+'' place we use it outside of fbc.bas
+
+declare sub fbcParseArgsFromString _
+	( _
+		byval args as zstring ptr, _
+		byval is_source as integer, _
+		byval is_file as integer _
+	)
+
+'':::::
+'' ppCmdLine        =   '#'CMDLINE LIT_STR
+''
+private sub ppCmdline( )
+	dim as zstring ptr args = any
+
+	'' Prepocessor is done parsing? warn that statement is ignored
+	if( parser.stage > 0 ) then
+		errReportWarn( FB_WARNINGMSG_CMDLINEIGNORED )
+		'' error recovery: skip
+		lexSkipToken( )
+		exit sub
+	end if
+
+	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
+		errReport( FB_ERRMSG_SYNTAXERROR )
+		'' error recovery: skip
+		lexSkipToken( )
+		exit sub
+	end if
+
+	args = lexGetText( )
+
+	'' Preserve under -pp
+	if( env.ppfile_num > 0 ) then
+		lexPPOnlyEmitText( "#cmdline """ + *args + """" )
+	end if
+
+	'' not in module scope?
+	if( parser.scope <> FB_MAINSCOPE ) then
+
+		if( fbIsModLevel( ) = FALSE ) then
+			errReport( FB_ERRMSG_ILLEGALINSIDEASUB )
+		else
+			errReport( FB_ERRMSG_ILLEGALINSIDEASCOPE )
+		end if
+
+	'' not first module?
+	elseif( env.module_count <> 1 ) then
+		errReportWarn( FB_WARNINGMSG_CMDLINEIGNORED )
+
+	'' ignoring all #cmdline's due to '-z nocmdline' option?
+	elseif( fbGetOption(FB_COMPOPT_NOCMDLINE) ) then
+		errReportWarn( FB_WARNINGMSG_CMDLINEIGNORED )
+
+	'' Already restarted due to #cmdline "-end" | "-restart"?
+	elseif( (env.restart_status and FB_RESTART_CMDLINE) <> 0 ) then
+		'' do nothing
+
+	'' #cmdline "-end" ?
+	elseif( lcase(trim(*args)) = "-end" ) then
+
+		'' We don't have any clever way to auto-detect when all #cmdline's have been read
+		'' Check for '#cmdline "-end"' to begin a restart and not wait for end of file
+		'' The restart request will have been stored in env.restart_request
+		fbRestartAcceptRequest( FB_RESTART_CMDLINE )
+
+		'' and don't show any more errors until we've restarted
+		errHideFurtherErrors()
+
+	'' #cmdline "-restart" ?
+	elseif( lcase(trim(*args)) = "-restart" ) then
+
+		'' like "-end" above, but always reset fbc
+		fbRestartBeginRequest( FB_RESTART_FBC_CMDLINE )
+		fbRestartAcceptRequest( FB_RESTART_CMDLINE )
+
+		'' and don't show any more errors until we've restarted
+		errHideFurtherErrors()
+
+	'' must be first pass in the first module, so process the option
+	else
+		fbcParseArgsFromString( args, TRUE, FALSE )
+
+	end if
+
+	'' "args..."
+	lexSkipToken( )
+
+end sub

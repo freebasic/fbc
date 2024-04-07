@@ -1,0 +1,25 @@
+{{fbdoc item="title" value="Compiler Option: -sysroot"}}----
+Add a path to search for libraries
+
+{{fbdoc item="syntax"}}##
+	**-sysroot** < //sysroot path// >
+##
+{{fbdoc item="param"}}
+	##//sysroot path//##
+		The directory path of the sysroot for the toolchain used.
+
+{{fbdoc item="desc"}}
+	The ##-sysroot## compiler option passes this directory location to the linker to indicate where the linker should look for default object modules and libraries.
+	
+	This passes on some responsibility of finding needed resources to the toolchain.  Typically only needed when cross compiling where resources are expected to be in a single directory structure and expected to be found at known locations relative to the ##sysroot##.
+	
+	To explicitly locate libraries use ##[[KeyPgPplibpath|#libpath]]## or [[CompilerOptp|Compiler Option: -p]].
+
+{{fbdoc item="ver"}}
+	- Since fbc 1.20.0
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPplibpath|#libpath]]##
+	- [[CompilerCmdLine|Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

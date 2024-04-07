@@ -6,7 +6,7 @@
 ''   Authors: Kenton Varda <temporal@gauge3d.org> (C interface wrapper)
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 

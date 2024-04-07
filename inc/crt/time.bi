@@ -16,10 +16,15 @@
 #include once "crt/win32/time.bi"
 #elseif defined(__FB_DOS__)
 #include once "crt/dos/time.bi"
-#elseif defined(__FB_LINUX__)
+#elseif defined(__FB_LINUX__) or defined(__FB_ANDROID__)
 #include once "crt/linux/time.bi"
 #elseif defined(__FB_FREEBSD__)
 #include once "crt/freebsd/time.bi"
+#elseif defined(__FB_DARWIN__)
+'' FIXME: may be wrong
+#include once "crt/linux/time.bi"
+#else
+#error Unsupported platform
 #endif
 
 extern "c"

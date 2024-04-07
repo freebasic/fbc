@@ -12,9 +12,9 @@ Initializes a graphics mode by specifying horizontal and vertical resolution
 	##//width//##, ##//height//##
 		The display width and height, respectively. For fullscreen mode, the user should check the availability of the resolution using ##[[KeyPgScreenlist|Screenlist]]##.
 	##//depth//##
-		The color depth in bits per pixel. Valid color depths are: ##1##, ##2##, ##4##, ##8##, ##16## and ##32##.  Values of ##15## and ##24## are also allowed as aliases for ##16## and ##32##, respectively.  If omitted, the default is 8 bits per pixel.  8 bits and below will give a palette image.  The default palette will be the first ##2 [[KeyPgOpExponentiate|^]] //depth//## colors of the 256-color palette used in ##[[KeyPgScreengraphics|Screen]] 13##.
+		The color depth in bits per pixel. Valid color depths are: ##1##, ##2##, ##4##, ##8##, ##16## and ##32##.  Values of ##15## and ##24## are also allowed as aliases for ##16## and ##32##, respectively.  If omitted, the default is 8 bits per pixel.  8 bits and below will give a palette image.  The default palette will be the first ##2 [[KeyPgOpExponentiate|^]] //depth//## colors of the 256-color palette used in ##[[KeyPgScreengraphics|Screen (Graphics)]] 13##.
 	##//num_pages//##
-		The number of video pages to create, defaults to ##1##. (see ##[[KeyPgScreengraphics|Screen]]##)
+		The number of video pages to create, defaults to ##1##. (see ##[[KeyPgScreengraphics|Screen (Graphics)]]##)
 	##//flags//##
 		Used to set various properties of the screen, including fullscreen mode and graphics driver priority. (see the standard header "fbgfx.bi" for available flags)
 	##//refresh_rate//##
@@ -72,17 +72,21 @@ __##flags## details:__
 		
 	Depending on whether the ##GFX_FULLSCREEN## parameter is present or not, ##**Screen**## will try to set the specified video mode in fullscreen or windowed mode, respectively.  If fullscreen mode is set and the system cannot set specified mode in fullscreen, it will try in windowed mode. If windowed mode is set and the system fails to open a window for specified mode, it will try fullscreen.  If everything fails, ##**Screen**## will have no effect and execution will resume from the statement following the ##**Screen**## call.  You should take care of checking if a graphics mode has been set or not, and behave accordingly; a way to check if ##**Screen**## is successful is to test the return value of the ##[[KeyPgScreenptr|Screenptr]]## function; see its page for details.
 	
+	Note:
+		##Screen 0## closes any graphics window, but also clears the console window if it exists.
+		##Screen 0, , , GFX_SCREEN_EXIT## (with ##GFX_SCREEN_EXIT=&h80000000##) also closes any graphics window, but does not clear the console window if it exists (previous text is preserved).
+		
 __Graphics mode console__
 	Console commands (##[[KeyPgLocate|Locate]]##, ##[[KeyPgPrint|Print]]##), input can be used both with standard QB ##**Screen**## modes and with the extended ones too, provided the standard color depth is not modified by using the second argument of ##**Screen**##. Where the table says more than one text resolution is available for the text mode, the required text resolution can be requested by using ##[[KeyPgWidth|Width]]##.  Any characters ##[[KeyPgPrint|Print]]##ed will erase the background around them; it does not use a transparent background.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/gfx/screenres.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/gfx/screenres.bas"}}%%(freebasic)
 ' Set the screen mode to 320*200, with 8 bits per pixel
 screenres 320, 200, 8
 
 ' Draw color bands in a diagonal pattern over the whole screen
-for y as integer = 0 to 200-1
-	for x as integer = 0 to 320-1
+for y as long = 0 to 200-1
+	for x as long = 0 to 320-1
 		pset (x,y),(x + y) and 255
 	next x
 next y
@@ -93,7 +97,6 @@ print "Hello world!!"
 ' Keep the window open until the user presses a key
 sleep
 %%
-
 {{fbdoc item="target"}}
 	- In DOS, Windowing and ""OpenGL"" related switches are not available, and other issues, see [[GfxLib|GfxLib overview]]
 
@@ -104,7 +107,7 @@ sleep
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgScreengraphics|Screen]]## The QB-like way to set graphics mode
+	- ##[[KeyPgScreengraphics|Screen (Graphics)]]## The QB-like way to set graphics mode
 	- ##[[KeyPgScreenlist|Screenlist]]## Check display modes available for FB ""GfxLib"" to use
 	- ##[[KeyPgScreencontrol|Screencontrol]]## Select driver and more 
 	- ##[[KeyPgScreenlock|Screenlock]]##

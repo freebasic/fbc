@@ -1,46 +1,61 @@
 {{fbdoc item="title" value="__THISCALL"}}----
-Specifies the //Thiscall// calling convention in a member procedure declaration
+Specifies the //Thiscall// calling convention in a procedure declaration
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgType|Type]] //typename//
-		declare [[KeyPgSub|Sub]] //name// **""__Thiscall""** [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //"""alias"""//] ( //parameters// )
-		declare [[KeyPgFunction|Function]] //name// **""__Thiscall""** [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //"""alias"""//] ( //parameters// ) [ [[KeyPgByrefFunction|Byref]] ] [[KeyPgAs|as]] //return_type//
-	End Type
+	declare [[KeyPgSub|Sub]] //name// **""__Thiscall""** [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //"""alias"""//] ( //parameters// )
+	declare [[KeyPgFunction|Function]] //name// **""__Thiscall""** [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //"""alias"""//] ( //parameters// ) [ [[KeyPgByrefFunction|Byref]] ] [[KeyPgAs|as]] //return_type//
+	
+	[[KeyPgSub|Sub]] //name// [**""__Thiscall""**] [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //"""alias"""//] ( //parameters// )
+	[[KeyPgFunction|Function]] //name// [**""__Thiscall""**] [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //"""alias"""//] ( //parameters// ) [ [[KeyPgByrefFunction|Byref]] ] [[KeyPgAs|as]] //return_type//
 ##
 {{fbdoc item="desc"}}
-	In member procedure declarations, ##**""__Thiscall""**## specifies that a procedure will use the ##**Thiscall**## calling convention. In the //Thiscall// calling convention, the implicit and hidden [[KeyPgThis|This]] parameter is passed in the ##ECX## register.
+	##**Thiscall**## is a calling convention for x86 targets where the first integral argument is passed in the ##ECX## register instead of on the stack. All other arguments are passed right to left and callee cleans up the stack (like Stdcall).
 	
-	The ##//Thiscall//## calling convention is for 32-bit x86 targets only and is only partially implemented.  It should work when using //-gen gcc// backend, but as of fbc-1.08.0, it is not implemented for the //-gen gas// backed.
+	On win32 x86, mingw+gcc will use ##**Thiscall**## as the default calling convention for non-static member procedures in classes passing the hidden [[KeyPgThis|This]] parameter by ##ECX## register instead of pushing to the stack.
 	
-	It is not needed for normal fbc usage, and would typically only be needed for linking to and using ""g++/c++"" libraries.
+	Default calling convention on win32 x86 inside an extern """c++""" block for non-static member procedures is ##**Thiscall**##.
+	
+	##**Thiscall**## can be explicitly specified for normal procedures and static member procedures to override the default calling convention.
+	Other calling conventions (Cdecl/Stdcall/etc) can be explicitly specified to override the default ##**Thiscall**## calling convention on non-static member procedures.
+	
+	##**Thiscall**## can be specified at both the declaration and the definition.
+	If a procedure definition has a declaration (with calling convention explicit or by default) and the definition does not explicitly specify a calling convention, then the calling convention is implied by the declaration.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/procs/thiscall.bas"}}%%(freebasic)
-'' __thiscall only makes sense on windows 32-bit
-#if defined(__FB_WIN32__) and not defined(__FB_64BIT__)
-	#define thiscall __thiscall
-#else
-	#define thiscall
-#endif
-
+	**""-""** If inside extern """c++""" and also on win32 / x86, and it's a non-static member procedure, and no other calling convention is given, the default is ""__thiscall"":
+		%%(freebasic)
 extern "c++"
-type UDT
-	value as long
-	'' fbc doesn't automatically add the __thiscall calling convention
-	'' therefore, currently needs to be explicitly given where needed
-	declare constructor thiscall ()
-	declare destructor thiscall ()
-	declare sub someproc thiscall ()
-	'' etc
-end type
+	type T extends object
+		declare constructor() '' __thiscall is default
+	end type
+
+	constructor T()  '' __thiscall is default
+	end constructor	
 end extern
 %%
+	**""-""** If definition is outside the extern """c++""" block, then ""__thiscall"" is optional on the definition (if the default for the non-static member procedure was ""__thiscall""):
+		%%(freebasic)
+extern "c++"
+	type T extends object
+		declare constructor() '' __thiscall is default
+	end type
+
+end extern
+
+constructor T() '' __thiscall is implied by declaration
+end constructor	
+%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.10.0:
+			**""-""** ##**Thiscall**## calling convention is used as default for non-static member procedures under extern """c++""" / win32 / x86.
+			**""-""** ##**Thiscall**## can also be explicitly specified for normal procedures and static member procedures to override the default calling convention.
+	- Since fbc 1.08.0
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCdecl|Cdecl]]##, ##[[KeyPgStdcall|Stdcall]]##
+	- ##[[KeyPgCdecl|Cdecl]]##, ##[[KeyPgStdcall|Stdcall]]##, ##[[KeyPgFastcall|Fastcall]]##
 	- ##[[KeyPgDeclare|Declare]]##
 	- ##[[KeyPgSub|Sub]]##, ##[[KeyPgFunction|Function]]##
 

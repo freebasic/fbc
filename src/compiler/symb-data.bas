@@ -55,7 +55,7 @@ dim shared symb_dtypeTB( 0 to FB_DATATYPES-1 ) as SYMB_DATATYPE => _
 '' result type being the same no matter whether we're doing signed + unsigned
 '' or unsigned + signed, we need to have this kind of rule to decide)
 
-dim shared symb_dtypeMatchTB(FB_DATATYPE_BOOLEAN to FB_DATATYPE_DOUBLE, FB_DATATYPE_BOOLEAN to FB_DATATYPE_DOUBLE) as integer
+dim shared symb_dtypeMatchTB(FB_DATATYPE_FIRST_NUMERIC to FB_DATATYPE_LAST_NUMERIC, FB_DATATYPE_FIRST_NUMERIC to FB_DATATYPE_LAST_NUMERIC) as integer
 
 declare function closestType _
 	( _
@@ -109,17 +109,17 @@ sub symbDataInit( )
 
 
 	'' Create symb_dtypeMatchTB(), used to score overload resolutions
-	const NUMTYPES = FB_DATATYPE_DOUBLE - FB_DATATYPE_BYTE + 1
+	const NUMTYPES = FB_DATATYPE_DOUBLE - FB_DATATYPE_BOOLEAN + 1
 	dim as FB_DATATYPE rank(0 to NUMTYPES - 1)
 
 	dim as FB_DATATYPE dtype1 = any, dtype2 = any
 	dim as integer i = any, j = any
 
-	for dtype1 = FB_DATATYPE_BYTE to FB_DATATYPE_DOUBLE
+	for dtype1 = FB_DATATYPE_FIRST_NUMERIC to FB_DATATYPE_LAST_NUMERIC
 
 		'' fill the rank() table with data types
-		for dtype2 = FB_DATATYPE_BYTE to FB_DATATYPE_DOUBLE
-			rank(dtype2 - FB_DATATYPE_BYTE) = dtype2
+		for dtype2 = FB_DATATYPE_FIRST_NUMERIC to FB_DATATYPE_LAST_NUMERIC
+			rank(dtype2 - FB_DATATYPE_BOOLEAN) = dtype2
 		next
 
 		'' sort the table in order of closeness
@@ -155,7 +155,7 @@ sub typeMax _
 
 	'' Same type?
 	if( (typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( rdtype )) and _
-	    (lsubtype = rsubtype) ) then
+		(lsubtype = rsubtype) ) then
 		dtype = ldtype
 		subtype = lsubtype
 		exit sub
@@ -176,7 +176,7 @@ sub typeMax _
 	'' If both are integers (only basic integers will appear, since it's
 	'' the remap types), decide based on integer rank
 	elseif( (typeGetClass( dtype1 ) = FB_DATACLASS_INTEGER) and _
-	        (typeGetClass( dtype2 ) = FB_DATACLASS_INTEGER) ) then
+			(typeGetClass( dtype2 ) = FB_DATACLASS_INTEGER) ) then
 
 		if( typeGetIntRank( dtype1 ) > typeGetIntRank( dtype2 ) ) then
 			dtype = ldtype
@@ -229,7 +229,7 @@ function typeToSigned _
 
 	case FB_DATATYPE_POINTER
 		if( env.pointersize = 8 ) then
-			nd = FB_DATATYPE_LONGINT	
+			nd = FB_DATATYPE_LONGINT
 		else
 			nd = FB_DATATYPE_LONG
 		end if
@@ -272,7 +272,7 @@ function typeToUnsigned _
 
 	case FB_DATATYPE_POINTER
 		if( env.pointersize = 8 ) then
-			nd = FB_DATATYPE_ULONGINT	
+			nd = FB_DATATYPE_ULONGINT
 		else
 			nd = FB_DATATYPE_ULONG
 		end if
@@ -283,7 +283,7 @@ function typeToUnsigned _
 	case else
 		nd = dtype
 	end select
-	
+
 	function = typeJoin( dtype, nd )
 
 end function
@@ -429,7 +429,7 @@ function typeMerge _
 	'' Replace the forward ref with the real type,
 	'' but preserve existing PTRs and CONSTs
 	dtype1 = typeMultAddrOf( dtype2, oldptrcount ) or _
-	         typeGetConstMask( dtype1 )
+		typeGetConstMask( dtype1 )
 
 	function = dtype1
 end function
@@ -531,9 +531,13 @@ end function
 '' FB_OVLPROC_HALFMATCH              => compatible, same data type class
 '' FB_OVLPROC_HALFMATCH - rank       => compatible, distance between numeric types
 '' FB_OVLPROC_HALFMATCH - stringrank => compatible, distance between string types (w<->z conversion)
-'' FB_OVLPROC_CONVMATCH - struct     => compatible, UDT ctor
 '' FB_OVLPROC_CASTMATCH              => compatible, implicit cast required (udt and string casts)
+''                                      TYPEMATCH is changed to a CASTMATCH if a CAST operator had to be
+''                                      invoked to allow a match
+'' FB_OVLPROC_CASTMATCH - struct     => compatible, UDT ctor
 '' FB_OVLPROC_CONVMATCH              => compatible, implicit conversion required (udt and string conversions)
+''                                      HALFMATCH is changed to CONVMATCH if a CAST operator had to be
+''                                      invoked to allow a match
 '' FB_OVLPROC_CONVMATCH - struct     => compatible, lowest UDT conv/cast
 '' FB_OVLPROC_LOWEST_MATCH           => compatible, lowest scoring parameter
 '' FB_OVLPROC_NO_MATCH               => incompatible
@@ -581,8 +585,8 @@ function typeCalcMatch _
 		'' For example: Integer [Ptr] will be treated as compatible to Long/LongInt [Ptr],
 		'' on 32bit/64bit respectively, and vice-versa.
 		if( (typeGetClass( ldt ) = FB_DATACLASS_INTEGER) and _
-		    (typeGetClass( rdt ) = FB_DATACLASS_INTEGER) and _
-		    (typeGetSize( ldt ) = typeGetSize( rdt )) ) then
+			(typeGetClass( rdt ) = FB_DATACLASS_INTEGER) and _
+			(typeGetSize( ldt ) = typeGetSize( rdt )) ) then
 			return FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB( ldt, rdt )
 		end if
 

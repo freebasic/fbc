@@ -1,7 +1,7 @@
 '' examples/manual/data/restore.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'RESTORE'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgRestore
 '' --------

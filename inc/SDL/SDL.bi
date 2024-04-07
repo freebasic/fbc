@@ -22,7 +22,7 @@
 ''   slouken@libsdl.org
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2020 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 
@@ -847,6 +847,7 @@ type SDL_Palette
 end type
 
 type SDL_PixelFormat
+#ifndef __FB_JS__
 	palette as SDL_Palette ptr
 	BitsPerPixel as Uint8
 	BytesPerPixel as Uint8
@@ -864,6 +865,27 @@ type SDL_PixelFormat
 	Amask as Uint32
 	colorkey as Uint32
 	alpha as Uint8
+#else
+	format as Uint32
+	palette as SDL_Palette ptr
+	BitsPerPixel as Uint8
+	BytesPerPixel as Uint8
+	padding(1) as Uint8
+	Rmask as Uint32
+	Gmask as Uint32
+	Bmask as Uint32
+	Amask as Uint32
+	Rloss as Uint8
+	Gloss as Uint8
+	Bloss as Uint8
+	Aloss as Uint8
+	Rshift as Uint8
+	Gshift as Uint8
+	Bshift as Uint8
+	Ashift as Uint8
+	refcount as long
+	next as SDL_PixelFormat ptr
+#endif
 end type
 
 type private_hwdata as private_hwdata_
@@ -874,6 +896,7 @@ type SDL_Surface
 	format as SDL_PixelFormat ptr
 	w as long
 	h as long
+#ifndef __FB_JS__
 	pitch as Uint16
 	pixels as any ptr
 	offset as long
@@ -883,9 +906,19 @@ type SDL_Surface
 	locked as Uint32
 	map as SDL_BlitMap ptr
 	format_version as ulong
+#else
+	pitch as long
+	pixels as any ptr
+	userdata as any ptr
+	locked as long
+	lock_data as any ptr
+	clip_rect as SDL_Rect
+	map as SDL_BlitMap ptr
+#endif
 	refcount as long
 end type
 
+#ifndef __FB_JS__
 const SDL_SWSURFACE = &h00000000
 const SDL_HWSURFACE = &h00000001
 const SDL_ASYNCBLIT = &h00000004
@@ -903,6 +936,23 @@ const SDL_RLEACCELOK = &h00002000
 const SDL_RLEACCEL = &h00004000
 const SDL_SRCALPHA = &h00010000
 const SDL_PREALLOC = &h01000000
+#else
+const SDL_SWSURFACE = &h00000000
+const SDL_SRCALPHA = &h00010000
+const SDL_SRCCOLORKEY = &h00020000
+const SDL_ANYFORMAT = &h00100000
+const SDL_HWPALETTE = &h00200000
+const SDL_DOUBLEBUF = &h00400000
+const SDL_FULLSCREEN = &h00800000
+const SDL_RESIZABLE = &h01000000
+const SDL_NOFRAME = &h02000000
+const SDL_OPENGL = &h04000000
+const SDL_HWSURFACE = &h08000001
+const SDL_ASYNCBLIT = &h08000000
+const SDL_RLEACCELOK = &h08000000
+const SDL_HWACCEL = &h08000000
+#endif
+
 #define SDL_MUSTLOCK(surface) (surface->offset orelse ((surface->flags and ((SDL_HWSURFACE or SDL_ASYNCBLIT) or SDL_RLEACCEL)) <> 0))
 type SDL_blit as function(byval src as SDL_Surface ptr, byval srcrect as SDL_Rect ptr, byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr) as long
 
@@ -1174,6 +1224,9 @@ enum
 	SDL_EVENT_COMPAT1 = &h7000
 	SDL_EVENT_COMPAT2
 	SDL_EVENT_COMPAT3
+	SDL_ACTIVEEVENT	= SDL_EVENT_COMPAT1
+	SDL_VIDEORESIZE	= SDL_EVENT_COMPAT2
+	SDL_VIDEOEXPOSE	= SDL_EVENT_COMPAT3
 	SDL_USEREVENT    = &h8000
 	SDL_LASTEVENT    = &hFFFF
 #endif
@@ -1240,17 +1293,19 @@ type SDL_MouseMotionEvent
 	state as Uint8
 	x as Uint16
 	y as Uint16
+	xrel as Sint16
+	yrel as Sint16
 #else
 	as Uint32 type
 	timestamp as Uint32
 	windowID as Uint32
 	which as Uint32
 	state as Uint32
-	x as Sint16
-	y as Sint16
+	x as Sint32
+	y as Sint32
+	xrel as Sint32
+	yrel as Sint32
 #endif
-	xrel as Sint16
-	yrel as Sint16
 end type
 
 type SDL_MouseButtonEvent
@@ -1270,8 +1325,8 @@ type SDL_MouseButtonEvent
 	state as Uint8
 	padding1 as Uint8
 	padding2 as Uint8
-	x as Sint16
-	y as Sint16
+	x as Sint32
+	y as Sint32
 #endif
 end type
 
@@ -1432,7 +1487,11 @@ const SDL_QUERY = -1
 const SDL_IGNORE = 0
 const SDL_DISABLE = 0
 const SDL_ENABLE = 1
+#ifndef __FB_JS__
 declare function SDL_EventState(byval type as Uint8, byval state as long) as Uint8
+#else
+'SDL_EventState doesn't exist
+#endif
 #define _SDL_loadso_h
 
 declare function SDL_LoadObject(byval sofile as const zstring ptr) as any ptr

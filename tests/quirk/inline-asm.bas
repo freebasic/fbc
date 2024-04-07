@@ -16,7 +16,11 @@ private sub test_proc
 	dim f1address as any ptr
 	asm
 		#ifdef __FB_64BIT__
-			mov rax, offset quirk_inline_asm_f1
+			'' use RIP-relative addressing.  If quirk_inline_asm_f1 is located
+			'' above 2GB then 'mov rax, offset quirk_inline_asm_f1' will
+			'' generate a link time error only 32-bits are reserved and the
+			'' address can't be correctly sign extended to 64-bit
+			lea rax, offset quirk_inline_asm_f1[rip]
 			mov [f1address], rax
 		#else
 			mov eax, offset quirk_inline_asm_f1

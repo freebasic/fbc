@@ -18,16 +18,10 @@
 '' an equally-named FB symbol (e.g. a variable/procedure/label), if one was
 '' declared (such that, for example, a call to f becomes a call to F@0).
 ''
-dim shared asmKeywordsX86(0 to ...) as const zstring ptr => _
+
+dim shared inlineAsmKeywordsX86(0 to ...) as const zstring ptr => _
 { _
-	@"dl", @"di", @"si", @"cl", @"bl", @"al", @"bp", @"sp", _
-	@"dx", @"cx", @"bx", @"ax", _
-	@"edx",  @"edi",  @"esi",  @"ecx",  @"ebx",  @"eax",  @"ebp",  @"esp", _
-	@"st", @"cs", @"ds", @"es", @"fs", @"gs", @"ss", _
-	@"mm0", @"mm1", @"mm2", @"mm3", @"mm4", @"mm5", @"mm6", @"mm7", _
-	@"xmm0", @"xmm1", @"xmm2", @"xmm3", @"xmm4", @"xmm5", @"xmm6", @"xmm7", _
-	@"byte", @"word", @"dword", @"qword", _
-	@"ptr", @"offset", _
+	@"byte", @"ptr", @"offset", _
 	@"aaa", @"aad", @"aam", @"aas", @"adc", @"add", @"addpd", @"addps", @"addsd", @"addss", @"and", @"andpd", @"andps", _
 	@"andnpd", @"andnps", @"arpl", @"bound", @"bsf", @"bsr", @"bswap", @"bt", @"btc", @"btr", @"bts", @"call", @"cbw", _
 	@"cwde", @"cdq", @"clc", @"cld", @"clflush", @"cli", @"clts", @"cmc", @"cmova", @"cmovae", @"cmovb", @"cmovbe", _
@@ -82,34 +76,143 @@ dim shared asmKeywordsX86(0 to ...) as const zstring ptr => _
 	@"pmulhrw", @"pswapw", @"femms", @"prefetch", @"prefetchw", @"pfnacc", @"pfpnacc", @"pswapd", @"pmulhuw" _
 }
 
+'' Ditto as above, but reserve on the extern keyword list.  Any public symbol having the
+'' same name will conflict with assembly usage.
+dim shared globalAsmKeywordsX86(0 to ...) as const zstring ptr => _
+{ _
+	@"dl", @"di", @"si", @"cl", @"bl", @"al", _
+	@"bp", @"sp", @"dx", @"cx", @"bx", @"ax", _
+	@"edx", @"edi", @"esi", @"ecx", @"ebx", @"eax", @"ebp", @"esp", _
+	@"st", @"cs", @"ds", @"es", @"fs", @"gs", @"ss", _
+	@"mm0", @"mm1", @"mm2", @"mm3", @"mm4", @"mm5", @"mm6", @"mm7", _
+	@"xmm0", @"xmm1", @"xmm2", @"xmm3", @"xmm4", @"xmm5", @"xmm6", @"xmm7", _
+	@"xmm8", @"xmm9", @"xmm10", @"xmm11", @"xmm12", @"xmm13", @"xmm14", @"xmm15", _
+	@"word", @"dword", @"qword", @"fword", @"mmword", @"oword", _
+	@"r8", @"r9", @"r10", @"r11", @"r12", @"r13", @"r14", @"r15", _
+	@"r8w", @"r9w", @"r10w", @"r11w", @"r12w", @"r13w", @"r14w", @"r15w", _
+	@"rax", @"rbp", @"rbx", @"rcx", @"rdi", @"rdx", @"rsi", @"rsp", _
+	@"tbyte", @"xmmword", @"ymmword", @"zmmword", _
+	@"ah", @"axl", @"bh", @"bpl", @"bxl", @"ch", @"cxl", @"dh", @"dil", _
+	@"dr0", @"dr1", @"dr2", @"dr3", @"dr4", @"dr5", @"dr6", @"dr7", _
+	@"dxl", @"eip", @"eq", @"ge", @"gt", @"le", @"lt", @"ne", _
+	@"r8b", @"r9b", @"r10b", @"r11b", @"r12b", @"r13b", @"r14b", @"r15b", _
+	@"r8d", @"r9d", @"r10d", @"r11d", @"r12d", @"r13d", @"r14d", @"r15d", _
+	@"rip", @"sil", @"spl", _
+	@"ymm0", @"ymm1", @"ymm2", @"ymm3", @"ymm4", @"ymm5", @"ymm6", @"ymm7", _
+	@"ymm8", @"ymm9", @"ymm10", @"ymm11", @"ymm12", @"ymm13", @"ymm14", @"ymm15", _
+	@"zmm0", @"zmm1", @"zmm2", @"zmm3", @"zmm4", @"zmm5", @"zmm6", @"zmm7", _
+	@"zmm8", @"zmm9", @"zmm10", @"zmm11", @"zmm12", @"zmm13", @"zmm14", @"zmm15", _
+	@"zmm16", @"zmm17", @"zmm18", @"zmm19", @"zmm20", @"zmm21", @"zmm22", @"zmm23", _
+	@"zmm24", @"zmm25", @"zmm26", @"zmm27", @"zmm28", @"zmm29", @"zmm30", @"zmm31" _
+}
+
 type AsmKeywordsInfo
 	inited as integer
-	hash as THASH
+	hash as THASH     '' hash of all words pre-defined in inline|globalAsmKeywordsX86() and user added words
+	list as TLIST     '' only the user added words - will be deallocated when parser ends
 end type
 
-dim shared asmkeywords as AsmKeywordsInfo
+dim shared inlineAsmKeywords as AsmKeywordsInfo
+dim shared globalAsmKeywords as AsmKeywordsInfo
 
-private sub hInitAsmKeywords( )
-	'' TODO: support x86_64, arm, aarch64; select keyword list based on compilation target
-	hashInit( @asmkeywords.hash, 600 )
-	for i as integer = 0 to ubound( asmKeywordsX86 )
-		hashAdd( @asmkeywords.hash, asmKeywordsX86(i), cast( any ptr, INVALID ), INVALID )
+#if 0
+!!!FIXME!!! - we'd like to use this sub, but see https://sourceforge.net/p/fbc/bugs/944/
+private sub hAddAsmKeywords( byref info as AsmKeywordsInfo, keywords() as const zstring ptr )
+	for i as integer = 0 to ubound( keywords )
+		hashAdd( @info.hash, keywords(i), cast( any ptr, INVALID ), INVALID )
 	next
 end sub
+#else
+#macro hAddAsmKeywords( info, keywords )
+	for i as integer = 0 to ubound( keywords )
+		hashAdd( @info.hash, keywords(i), cast( any ptr, INVALID ), INVALID )
+	next
+#endmacro
+#endif
 
-private function hIsAsmKeyword( byval text as zstring ptr ) as integer
-	if( asmkeywords.inited = FALSE ) then
-		hInitAsmKeywords( )
-		asmkeywords.inited = TRUE
+private sub hInitInlineAsmKeywords( )
+	'' TODO: support x86_64, arm, aarch64; select keyword list based on compilation target
+	if( inlineAsmKeywords.inited = FALSE ) then
+		listInit( @inlineAsmKeywords.list, 8, sizeof( zstring ptr ) )
+		hashInit( @inlineAsmKeywords.hash, 800 )
+		hAddAsmKeywords( inlineAsmKeywords, inlineAsmKeywordsX86 )
+		hAddAsmKeywords( inlineAsmKeywords, globalAsmKeywordsX86 )
+		inlineAsmKeywords.inited = TRUE
 	end if
-	function = (hashLookup( @asmkeywords.hash, text ) <> NULL)
+end sub
+
+private sub hInitGlobalAsmKeywords( )
+	if( globalAsmKeywords.inited = FALSE ) then
+		listInit( @globalAsmKeywords.list, 8, sizeof( zstring ptr ) )
+		hashInit( @globalAsmKeywords.hash, 200 )
+		'' TODO: support x86_64, arm, aarch64; select keyword list based on compilation target
+		select case( fbGetCpuFamily( ) )
+		case FB_CPUFAMILY_X86, FB_CPUFAMILY_X86_64
+			hAddAsmKeywords( globalAsmKeywords, globalAsmKeywordsX86 )
+		end select
+		globalAsmKeywords.inited = TRUE
+	end if
+end sub
+
+private sub hAsmKeywordsEnd( byref info as AsmKeywordsInfo )
+	if( info.inited ) then
+		hashEnd( @info.hash )
+		dim s as zstring ptr ptr = listGetHead( @info.list )
+		while( s )
+			deallocate( *s )
+			s = listGetNext( s )
+		wend
+		listEnd( @info.list )
+		info.inited = FALSE
+	end if
+end sub
+
+private function hIsInlineAsmKeyword( byval id as const zstring ptr ) as integer
+	hInitInlineAsmKeywords( )
+	function = (hashLookup( @inlineAsmKeywords.hash, id ) <> NULL)
 end function
 
-sub parserInlineAsmEnd( )
-	if( asmkeywords.inited ) then
-		hashEnd( @asmkeywords.hash )
-		asmkeywords.inited = FALSE
+private sub hAddAsmKeyword( byref info as AsmKeywordsInfo, byval id as const zstring ptr )
+	dim as zstring ptr ptr s = listNewNode( @info.list )
+	*s = callocate( len(*id) + 1 )
+	**s = *id
+	hashAdd( @info.hash, *s, cast( any ptr, INVALID ), INVALID )
+end sub
+
+function parserInlineAsmAddKeyword( byval id as const zstring ptr ) as integer
+	static as zstring * FB_MAXLITLEN+1 text
+	text = lcase( *id )
+	hInitInlineAsmKeywords( )
+	if( hIsInlineAsmKeyword( @text ) ) then
+		return FALSE
 	end if
+	hAddAsmKeyword( inlineAsmKeywords, @text )
+	return TRUE
+end function
+
+function parserGlobalAsmAddKeyword( byval id as const zstring ptr ) as integer
+	static as zstring * FB_MAXLITLEN+1 text
+	text = lcase( *id )
+	if( parserIsGlobalAsmKeyword( @text ) ) then
+		return FALSE
+	end if
+	hAddAsmKeyword( globalAsmKeywords, @text )
+	return TRUE
+end function
+
+function parserIsGlobalAsmKeyword( byval id as const zstring ptr ) as integer
+	'' no need to call hInitGlobalAsmKeywords( )
+	'' - it will already have been called from parserInit( )/parserAsmInit( )
+	function = (hashLookup( @GlobalAsmKeywords.hash, lcase(*id) ) <> NULL)
+end function
+
+sub parserAsmInit( )
+	hInitGlobalAsmKeywords( )
+end sub
+
+sub parserAsmEnd( )
+	hAsmKeywordsEnd( globalAsmKeywords )
+	hAsmKeywordsEnd( inlineAsmKeywords )
 end sub
 
 const LEX_FLAGS = (LEXCHECK_NOWHITESPC or LEXCHECK_NOLETTERSUFFIX)
@@ -162,7 +265,7 @@ sub cAsmCode()
 					doskip = TRUE
 				end if
 
-			elseif( hIsAsmKeyword( lcase(text) ) = FALSE ) then
+			elseif( hIsInlineAsmKeyword( lcase(text) ) = FALSE ) then
 				dim as FBSYMBOL ptr base_parent = any
 
 				chain_ = cIdentifier( base_parent )
@@ -195,7 +298,7 @@ sub cAsmCode()
 
 					chain_ = symbChainGetNext( chain_ )
 				loop
-            end if
+			end if
 
 		'' lit number?
 		case FB_TKCLASS_NUMLITERAL
@@ -208,18 +311,18 @@ sub cAsmCode()
 		case FB_TKCLASS_STRLITERAL
 			 expr = cStrLiteral( FALSE )
 			 if( expr <> NULL ) then
-             	dim as FBSYMBOL ptr litsym = astGetStrLitSymbol( expr )
-             	if( litsym <> NULL ) then
-                    text = """"
-                    if( symbGetType( litsym ) <> FB_DATATYPE_WCHAR ) then
-             			text += *symbGetVarLitText( litsym )
-             		else
-             			text += *symbGetVarLitTextW( litsym )
-             		end if
-             		text += """"
-			 	end if
+				dim as FBSYMBOL ptr litsym = astGetStrLitSymbol( expr )
+				if( litsym <> NULL ) then
+					text = """"
+					if( symbGetType( litsym ) <> FB_DATATYPE_WCHAR ) then
+						text += *symbGetVarLitText( litsym )
+					else
+						text += *symbGetVarLitTextW( litsym )
+					end if
+					text += """"
+				end if
 
-			 	astDelTree( expr )
+				astDelTree( expr )
 			 end if
 
 		''
@@ -227,13 +330,13 @@ sub cAsmCode()
 			select case thisTok
 			case FB_TK_FUNCTION
 			'' FUNCTION?
-    			sym = symbGetProcResult( parser.currproc )
-    			if( sym = NULL ) then
+				sym = symbGetProcResult( parser.currproc )
+				if( sym = NULL ) then
 					errReport( FB_ERRMSG_SYNTAXERROR )
 					doskip = TRUE
-    			else
-    				symbSetIsAccessed( sym )
-    			end if
+				else
+					symbSetIsAccessed( sym )
+				end if
 
 			case FB_TK_CINT
 				'' CINT( valid expression )?
@@ -280,9 +383,9 @@ end sub
 '':::::
 ''AsmBlock        =   ASM Comment? SttSeparator
 ''                        (AsmCode Comment? NewLine)+
-''					  END ASM .
+''                    END ASM .
 function cAsmBlock as integer
-    dim as integer issingleline = any
+	dim as integer issingleline = any
 
 	function = FALSE
 
@@ -291,11 +394,11 @@ function cAsmBlock as integer
 		exit function
 	end if
 
-    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
-    	'' error recovery: skip the whole compound stmt
-    	hSkipCompound( FB_TK_ASM )
-    	exit function
-    end if
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		'' error recovery: skip the whole compound stmt
+		hSkipCompound( FB_TK_ASM )
+		exit function
+	end if
 
 	'' ASM
 	lexSkipToken( LEXCHECK_POST_SUFFIX )
@@ -314,13 +417,13 @@ function cAsmBlock as integer
 	else
 		if( cStmtSeparator( ) = FALSE ) then
 			issingleline = TRUE
-        end if
+		end if
 	end if
 
 	'' (AsmCode Comment? NewLine)+
 	do
 		if( issingleline = FALSE ) then
-         astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ), env.inf.incfile ))
+		astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ), env.inf.incfile ))
 		end if
 
 		cAsmCode( )

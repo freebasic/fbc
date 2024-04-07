@@ -1,7 +1,7 @@
 '' examples/manual/gfx/screencontrol.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'SCREENCONTROL'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgScreencontrol
 '' --------
@@ -13,7 +13,7 @@
 Using FB
 
 Dim e As Event
-Dim As Integer x0, y0, x, y
+Dim As Long x0, y0, x, y
 Dim As Integer shakes = 0
 Dim As Any Ptr img
 
@@ -73,3 +73,4 @@ Do
 	Sleep 5
 
 Loop
+	

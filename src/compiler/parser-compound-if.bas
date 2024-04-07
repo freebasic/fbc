@@ -15,11 +15,14 @@
 private sub hIfSingleLine(byval stk as FB_CMPSTMTSTK ptr)
 	'' NUM_LIT | Statement*
 	if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
-		dim as FBSYMBOL ptr l = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
-										  				  lexGetText( ), _
-										  				  FB_SYMBCLASS_LABEL, _
-										  				  FALSE, _
-										  				  FALSE )
+		dim as FBSYMBOL ptr l = symbLookupByNameAndClass _
+			( _
+				symbGetCurrentNamespc( ), _
+				lexGetText( ), _
+				FB_SYMBCLASS_LABEL, _
+				FALSE, _
+				FALSE _
+			)
 		if( l = NULL ) then
 			l = symbAddLabel( lexGetText( ), FB_SYMBOPT_CREATEALIAS )
 		end if
@@ -49,11 +52,14 @@ private sub hIfSingleLine(byval stk as FB_CMPSTMTSTK ptr)
 
 		'' NUM_LIT | Statement*
 		if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
-			dim as FBSYMBOL ptr l = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
-										  				  	  lexGetText( ), _
-										  				  	  FB_SYMBCLASS_LABEL, _
-										  				  	  FALSE, _
-										  				  	  FALSE )
+			dim as FBSYMBOL ptr l = symbLookupByNameAndClass _
+				( _
+					symbGetCurrentNamespc( ), _
+					lexGetText( ), _
+					FB_SYMBCLASS_LABEL, _
+					FALSE, _
+					FALSE _
+				)
 			if( l = NULL ) then
 				l = symbAddLabel( lexGetText( ), FB_SYMBOPT_CREATEALIAS )
 			end if
@@ -108,13 +114,13 @@ sub cIfStmtBegin( )
 	'' IF
 	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
-    '' Expression
-    expr = cExpression( )
-    if( expr = NULL ) then
+	'' Expression
+	expr = cExpression( )
+	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: fake an expr
 		expr = astNewCONSTi( 0 )
-    end if
+	end if
 
 	'' add end label (at ENDIF)
 	el = symbAddLabel( NULL, FB_SYMBOPT_NONE )
@@ -199,10 +205,10 @@ sub cIfStmtNext( )
 		exit sub
 	end if
 
-    '' ELSE already parsed?
-    if( stk->if.elsecnt <> 0 ) then
+	'' ELSE already parsed?
+	if( stk->if.elsecnt <> 0 ) then
 		errReport( FB_ERRMSG_EXPECTEDENDIF )
-    end if
+	end if
 
 	'' end scope
 	if( stk->scopenode <> NULL ) then
@@ -211,7 +217,7 @@ sub cIfStmtNext( )
 	end if
 
 	'' ELSEIF Expression THEN ?
-    if( lexGetToken( ) = FB_TK_ELSEIF ) then
+	if( lexGetToken( ) = FB_TK_ELSEIF ) then
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' exit last if stmt
@@ -226,13 +232,13 @@ sub cIfStmtNext( )
 		'' add next label (at ELSE/ELSEIF)
 		stk->if.nxtlabel = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
-	    '' Expression
-    	expr = cExpression( )
-    	if( expr = NULL ) then
+		'' Expression
+		expr = cExpression( )
+		if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			'' error recovery: fake an expr
 			expr = astNewCONSTi( 0 )
-    	end if
+		end if
 
 		'' THEN
 		if( hMatch( FB_TK_THEN, LEXCHECK_POST_SUFFIX ) = FALSE ) then
@@ -247,9 +253,9 @@ sub cIfStmtNext( )
 			astAdd( expr )
 		end if
 
-    '' ELSE..
-    else
-    	stk->if.elsecnt += 1
+	'' ELSE..
+	else
+		stk->if.elsecnt += 1
 
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 

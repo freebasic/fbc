@@ -72,21 +72,23 @@ static BOOL PrintFailedHResult(HRESULT hr, const char* pFailure, int line)
 static int D2DDriverInit(char *title, int w, int h, int depth, int refresh_rate, int flags);
 static int* D2DFetchModes(int depth, int* size);
 
-GFXDRIVER fb_gfxDriverD2D = {
+/* GFXDRIVER */
+const GFXDRIVER fb_gfxDriverD2D = {
 	"Direct2D",              /* char *name; */
-	&D2DDriverInit,          /* int (*init)(int w, int h, char *title, int fullscreen); */
+	&D2DDriverInit,          /* int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags); */
 	&fb_hWin32Exit,          /* void (*exit)(void); */
-	&fb_hWin32Lock,	         /* void (*lock)(void); */
+	&fb_hWin32Lock,          /* void (*lock)(void); */
 	&fb_hWin32Unlock,        /* void (*unlock)(void); */
 	&fb_hWin32SetPalette,    /* void (*set_palette)(int index, int r, int g, int b); */
 	&fb_hWin32WaitVSync,     /* void (*wait_vsync)(void); */
 	&fb_hWin32GetMouse,      /* int (*get_mouse)(int *x, int *y, int *z, int *buttons, int *clip); */
 	&fb_hWin32SetMouse,      /* void (*set_mouse)(int x, int y, int cursor, int clip); */
 	&fb_hWin32SetWindowTitle,/* void (*set_window_title)(char *title); */
-	&fb_hWin32SetWindowPos,	 /* int (*set_window_pos)(int x, int y); */
+	&fb_hWin32SetWindowPos,  /* int (*set_window_pos)(int x, int y); */
 	&D2DFetchModes,          /* int *(*fetch_modes)(int depth, int *size); */
 	NULL,                    /* void (*flip)(void); */
-	NULL                     /* void (*poll_events)(void); */
+	NULL,                    /* void (*poll_events)(void); */
+	NULL                     /* void (*update)(void); */
 };
 
 #define DX_GUID(id,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) static const GUID id = {l,w1,w2,{b1,b2,b3,b4,b5,b6,b7,b8}}

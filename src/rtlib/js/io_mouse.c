@@ -8,8 +8,14 @@ int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons, int *clip )
 {
 	EmscriptenMouseEvent mouseState;
 
-	if( emscripten_get_mouse_status( &mouseState ) != EMSCRIPTEN_RESULT_SUCCESS )
+	if( emscripten_get_mouse_status( &mouseState ) != EMSCRIPTEN_RESULT_SUCCESS ) {
+		if (x) *x = -1;
+		if (y) *y = -1;
+		if (z) *z = -1;
+		if (buttons) *buttons = -1;
+		if (clip) *clip = -1;
         return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	}
 
     if( x != NULL )
         *x = mouseState.clientX;

@@ -132,9 +132,9 @@
 const MAX_SECTIONS = FB_MAXSCOPEDEPTH + 1
 
 type SECTIONENTRY
-	text		as string
-	old		as integer '' old junk text (that is only kept around to keep the string allocated)?
-	indent		as integer '' current indendation level to be used when emitting lines into this section
+	text        as string
+	old         as integer '' old junk text (that is only kept around to keep the string allocated)?
+	indent      as integer '' current indendation level to be used when emitting lines into this section
 end type
 
 enum
@@ -148,20 +148,20 @@ enum
 end enum
 
 type EXPRNODE
-	class		as integer  '' EXPRCLASS_*
+	class       as integer  '' EXPRCLASS_*
 
 	'' This expression's type, to determine whether CASTs are needed or not
-	dtype		as integer
-	subtype		as FBSYMBOL ptr
+	dtype       as integer
+	subtype     as FBSYMBOL ptr
 
-	l		as EXPRNODE ptr  '' CAST/UOP/BOP
-	r		as EXPRNODE ptr  '' BOP
+	l           as EXPRNODE ptr  '' CAST/UOP/BOP
+	r           as EXPRNODE ptr  '' BOP
 
 	union
-		text		as zstring ptr  '' TEXT
-		val		as FBVALUE      '' IMM
-		sym		as FBSYMBOL ptr '' SYM
-		op		as integer      '' UOP/BOP
+		text    as zstring ptr  '' TEXT
+		val     as FBVALUE      '' IMM
+		sym     as FBSYMBOL ptr '' SYM
+		op      as integer      '' UOP/BOP
 	end union
 end type
 
@@ -174,8 +174,8 @@ type EXPRCACHENODE
 	'' the whole ctx.exprnodes list. Often there will be only 1 (UOPs) or
 	'' 2 (BOPs) expression trees cached, since the AST usually accesses
 	'' expression results right when emitting the next expression/statement.
-	vregid		as integer
-	expr		as EXPRNODE ptr
+	vregid      as integer
+	expr        as EXPRNODE ptr
 end type
 
 enum
@@ -189,27 +189,27 @@ enum
 end enum
 
 type IRHLCCTX
-	sections(0 to MAX_SECTIONS-1)	as SECTIONENTRY
-	section				as integer '' Current section to write to
-	sectiongosublevel		as integer
+	sections(0 to MAX_SECTIONS-1)   as SECTIONENTRY
+	section                 as integer '' Current section to write to
+	sectiongosublevel       as integer
 
-	linenum				as integer
-	escapedinputfilename		as string
-	usedbuiltins			as uinteger  '' BUILTIN_*
+	linenum                 as integer
+	escapedinputfilename    as string
+	usedbuiltins            as uinteger  '' BUILTIN_*
 
-	anonstack			as TLIST  '' stack of nested anonymous structs/unions in a struct/union
+	anonstack               as TLIST  '' stack of nested anonymous structs/unions in a struct/union
 
-	varini				as string
-	variniscopelevel		as integer
+	varini                  as string
+	variniscopelevel        as integer
 
-	fbctinf				as string
-	exports				as string
+	fbctinf                 as string
+	exports                 as string
 
-	exprnodes			as TLIST   '' EXPRNODE
-	exprtext			as string  '' buffer used by exprFlush() to build the final text
-	exprcache			as TLIST   '' EXPRCACHENODE
+	exprnodes               as TLIST   '' EXPRNODE
+	exprtext                as string  '' buffer used by exprFlush() to build the final text
+	exprcache               as TLIST   '' EXPRCACHENODE
 
-	globalvarpass			as integer  '' Global var emitting is done in 2 passes; this allows the callbacks to identify the current pass.
+	globalvarpass           as integer  '' Global var emitting is done in 2 passes; this allows the callbacks to identify the current pass.
 end type
 
 declare function hEmitType _
@@ -243,7 +243,7 @@ dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 	@"boolean"  , _ '' boolean
 	@"int8"     , _ '' byte
 	@"uint8"    , _ '' ubyte
-	NULL        , _ '' char
+	@"char"     , _ '' char
 	@"int16"    , _ '' short
 	@"uint16"   , _ '' ushort
 	NULL        , _ '' wchar
@@ -467,7 +467,13 @@ private function hGetMangledNameForASM _
 
 	dim as string mangled
 
-	mangled = *symbGetMangledName( sym )
+	'' rtlib mangling?  Just use the alias if one was given
+	if( (symbGetMangling( sym ) = FB_MANGLING_RTLIB) andalso _
+	    (sym->id.alias <> NULL) ) then
+		mangled = *sym->id.alias
+	else
+		mangled = *symbGetMangledName( sym )
+	end if
 
 	if( underscore_prefix and env.underscoreprefix ) then
 		mangled  = "_" + mangled
@@ -487,6 +493,12 @@ end function
 private function hNeedAlias( byval proc as FBSYMBOL ptr ) as integer
 	function = FALSE
 
+	'' rtlib mangling?  Expect we always need the asm alias
+	if( symbGetMangling( proc ) = FB_MANGLING_RTLIB ) then
+		function = TRUE
+		exit function
+	end if
+
 	'' Only on systems where gcc would use the @N suffix
 	if( fbGetCpuFamily( ) <> FB_CPUFAMILY_X86 ) then
 		exit function
@@ -495,6 +507,10 @@ private function hNeedAlias( byval proc as FBSYMBOL ptr ) as integer
 	select case( env.clopt.target )
 	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, _
 	     FB_COMPTARGET_XBOX
+
+		if( symbGetProcMode( proc ) = FB_FUNCMODE_FASTCALL ) then
+			exit function
+		end if
 
 	case else
 		exit function
@@ -561,6 +577,13 @@ private function hEmitProcHeader _
 				ln += " __thiscall"
 			case else
 				ln += " __attribute__((thiscall))"
+			end select
+		case FB_FUNCMODE_FASTCALL
+			select case( env.clopt.target )
+			case FB_COMPTARGET_WIN32, FB_COMPTARGET_XBOX
+				ln += " __fastcall"
+			case else
+				ln += " __attribute__((fastcall))"
 			end select
 		end select
 	end if
@@ -657,12 +680,14 @@ end function
 
 private function hGetUdtId( byval sym as FBSYMBOL ptr ) as string
 
-	'' gcc's __builtin_va_list needs an exact name
-	select case symbGetValistType( symbGetFullType( sym ), symbGetSubtype( sym ) )
-	case FB_CVA_LIST_BUILTIN_C_STD, FB_CVA_LIST_BUILTIN_AARCH64, FB_CVA_LIST_BUILTIN_ARM
-			function = *sym->id.alias
-			exit function
-	end select
+	if( typeGetMangleDt( symbGetFullType( sym ) ) = FB_DATATYPE_VA_LIST ) then
+		'' gcc's __builtin_va_list needs an exact name
+		select case symbGetValistType( symbGetFullType( sym ), symbGetSubtype( sym ) )
+		case FB_CVA_LIST_BUILTIN_C_STD, FB_CVA_LIST_BUILTIN_AARCH64, FB_CVA_LIST_BUILTIN_ARM
+				function = *sym->id.alias
+				exit function
+		end select
+	end if
 
 	'' Prefixing the mangled name with a $ because it may start with a
 	'' number which isn't allowed in C.
@@ -779,12 +804,13 @@ private function hEmitArrayDecl( byval sym as FBSYMBOL ptr ) as string
 	if( symbIsRef( sym ) = FALSE ) then
 		'' If it's a fixed-length string, add an extra array dimension
 		'' (zstring * 5 becomes char[5])
+		'' (string * 5 becomes char[5])
 		dim as longint length = 0
 		select case( symbGetType( sym ) )
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-			length = symbGetStrLen( sym )
+			length = symbGetSizeOf( sym )
 		case FB_DATATYPE_WCHAR
-			length = symbGetWstrLen( sym )
+			length = symbGetWstrLength( sym ) + 1
 		end select
 		if( length > 0 ) then
 			s += "[" + str( length ) + "]"
@@ -1055,8 +1081,8 @@ private sub hEmitStructWithFields( byval s as FBSYMBOL ptr )
 					ln += " __attribute__((packed, aligned(" + str( align ) + ")))"
 				end if
 			end if
-			
-			'' The alignment of nested structures which are packed with a 
+
+			'' The alignment of nested structures which are packed with a
 			'' smaller alignment than the natural or specified alignment of the
 			'' parent structure has to be specified explicitly,
 			'' otherwise the field will be packed too.
@@ -1154,7 +1180,7 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 	if( emit_fields ) then
 		hEmitStructWithFields( s )
 	else
-		hWriteLine( "uint8 __fb_struct_body[" & symbGetLen( s ) & "];", TRUE )
+		hWriteLine( "uint8 __fb_struct_body[" & symbGetSizeOf( s ) & "];", TRUE )
 	end if
 
 	'' Close UDT body
@@ -1167,7 +1193,7 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 	'' at least with the correct sizeof(), because if it'd be too small,
 	'' that could easily cause stack trashing etc., because local vars
 	'' allocated by gcc would be smaller than expected, etc.
-	hWriteStaticAssert( "sizeof( " + hGetUdtTag( s ) + hGetUdtId( s ) + " ) == " + str( culngint( symbGetLen( s ) ) ) )
+	hWriteStaticAssert( "sizeof( " + hGetUdtTag( s ) + hGetUdtId( s ) + " ) == " + str( culngint( symbGetSizeOf( s ) ) ) )
 end sub
 
 private sub hWriteX86F2I _
@@ -1260,8 +1286,8 @@ private sub hMaybeEmitProcExport( byval proc as FBSYMBOL ptr )
 
 	'' Code we want in the final ASM file:
 	''
-	''	.section .drectve
-	''	.ascii " -export:\"MangledProcNameWithoutUnderscorePrefix\""
+	''  .section .drectve
+	''  .ascii " -export:\"MangledProcNameWithoutUnderscorePrefix\""
 	''
 	'' Since that includes double-quotes and backslashes we need to do
 	'' lots of escaping when emitting this in strings in GCC inline ASM.
@@ -1578,9 +1604,8 @@ private function hEmitType _
 		hEmitUDT( subtype, (ptrcount > 0) )
 		s = *symbGetMangledName( subtype )
 
-	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-		'' Emit ubyte instead of char,
-		'' and ubyte/ushort/uinteger instead of wchar_t
+	case FB_DATATYPE_WCHAR
+		'' Emit ubyte/ushort/uinteger instead of wchar_t
 		s = *dtypeName(typeGetRemapType( dtype ))
 
 	case FB_DATATYPE_FIXSTR
@@ -1686,7 +1711,7 @@ end function
 
 private function symbIsCArray( byval sym as FBSYMBOL ptr ) as integer
 	'' No bydesc/byref, those are emitted as pointers...
-	if( symbIsRef( sym ) or symbIsParamBydescOrByref( sym ) or symbIsImport( sym ) ) then
+	if( symbIsRef( sym ) or symbIsParamVarBydescOrByref( sym ) or symbIsImport( sym ) ) then
 		return FALSE
 	end if
 
@@ -1741,6 +1766,16 @@ private function exprNewCAST _
 			l->subtype = subtype
 			return l
 		end if
+	end if
+
+	'' casting zstring to some other type? Try to force unsigned char by
+	'' casting to unsigned char first.  If char is signed (in gcc) then
+	'' the sign is extended and will give negative numbers when promoted
+	'' which we probably don't want when converting ascii to integer.
+	if( typeGetDtAndPtrOnly( l->dtype ) = FB_DATATYPE_CHAR ) then
+		var n = exprNew( EXPRCLASS_CAST, FB_DATATYPE_UBYTE, NULL )
+		n->l = l
+		l = n
 	end if
 
 	var n = exprNew( EXPRCLASS_CAST, dtype, subtype )
@@ -1919,7 +1954,7 @@ private function exprNewUOP _
 		assert( typeGetPtrCnt( dtype ) > 0 )
 		dtype = typeDeref( dtype )
 
-	case AST_OP_NEG, AST_OP_NOT
+	case AST_OP_NEG, AST_OP_NOT, AST_OP_BOOLNOT
 		'' peep-hole optimization:
 		''    -(-(foo)) -> foo
 		''    ~(~(foo)) -> foo
@@ -2039,16 +2074,17 @@ private function hEmitInt _
 
 		'' Prevent GCC warnings for INT_MIN/LLONG_MIN:
 		'' The '-' minus sign doesn't count as part of the number
-		'' literal, and 2147483648 is too big for a 32bit integer,
-		'' so it must be marked as unsigned.
+		'' literal, and 2147483648 is too big to fit into a signed int,
+		'' so according to C99 it is an unsigned int. We must add a cast
+		'' to make it signed.
 		if( typeGetSize( dtype ) = 8 ) then
 			if( value = -9223372036854775808ull ) then
-				s += "u"
+				s = "(int64)" + s + "u"
 			end if
 			s += "ll"
 		else
 			if( value = -2147483648u ) then
-				s += "u"
+				s = "(int32)" + s + "u"
 			end if
 		end if
 	else
@@ -2126,7 +2162,8 @@ private sub hBuildStrLit _
 	( _
 		byref ln as string, _
 		byval z as zstring ptr, _
-		byval length as longint _  '' including null terminator
+		byval length as longint, _  '' including null terminator
+		byval paddedlength as longint _
 	)
 
 	dim as integer ch = any
@@ -2177,6 +2214,10 @@ private sub hBuildStrLit _
 		end if
 	next
 
+	if( paddedlength > length ) then
+		ln += space( paddedlength-length )
+	end if
+
 	ln += """"
 end sub
 
@@ -2189,11 +2230,19 @@ private sub hBuildWstrLit _
 
 	dim as integer ch = any
 	dim as integer wcharsize = any
+	dim as zstring ptr strstart = any
 
 	'' (ditto)
 
-	ln += "L"""
 	wcharsize = typeGetSize( FB_DATATYPE_WCHAR )
+	'' On android wstring is 1 byte but C wide strings/chars are 4 bytes, so don't use them
+	if( wcharsize = 1 ) then
+		strstart = @""""
+	else
+		strstart = @"L"""
+	end if
+
+	ln += *strstart
 
 	'' Don't bother emitting the null terminator explicitly - gcc will add
 	'' it automatically already
@@ -2203,7 +2252,7 @@ private sub hBuildWstrLit _
 		if( hCharNeedsEscaping( ch, asc( """" ) ) ) then
 			ln += $"\x" + hex( ch, wcharsize * 2 )
 			if( hIsValidHexDigit( (*w)[i+1] ) ) then
-				ln += """ L"""
+				ln += """ " + *strstart
 			end if
 		elseif( ch = asc( "?" ) ) then
 			ln += "?"
@@ -2213,7 +2262,7 @@ private sub hBuildWstrLit _
 				case asc( "=" ), asc( "/" ), asc( "'" ), _
 				     asc( "(" ), asc( ")" ), asc( "!" ), _
 				     asc( "<" ), asc( ">" ), asc( "-" )
-					ln += """ L"""
+					ln += """ " + *strstart
 				end select
 			end if
 		else
@@ -2260,6 +2309,7 @@ private function hUopToStr _
 	case AST_OP_DEREF  : function = @"*"
 	case AST_OP_NEG    : function = @"-"
 	case AST_OP_NOT    : function = @"~"
+	case AST_OP_BOOLNOT: function = @"!"
 
 	case AST_OP_ABS
 		is_builtin = TRUE
@@ -2326,9 +2376,9 @@ private sub hSym2Text( byref s as string, byval sym as FBSYMBOL ptr )
 	'' String literal?
 	if( symbGetIsLiteral( sym ) ) then
 		if( symbGetType( sym ) = FB_DATATYPE_WCHAR ) then
-			hBuildWstrLit( s, hUnescapeW( symbGetVarLitTextW( sym ) ), symbGetWstrLen( sym ) )
+			hBuildWstrLit( s, hUnescapeW( symbGetVarLitTextW( sym ) ), symbGetWstrLength( sym ) + 1 )
 		else
-			hBuildStrLit( s, hUnescape( symbGetVarLitText( sym ) ), symbGetStrLen( sym ) )
+			hBuildStrLit( s, hUnescape( symbGetVarLitText( sym ) ), symbGetStrLength( sym ) + 1, 0 )
 		end if
 	else
 		if( symbIsLabel( sym ) ) then
@@ -2378,7 +2428,7 @@ private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
 			ctx.exprtext += ", "
 			hExprFlush( n->r, TRUE )
 			ctx.exprtext += ")"
-			
+
 		case AST_OP_VA_END
 			'' cva_end(l) := __builtin_va_end(l)
 			ctx.exprtext += "__builtin_va_end( "
@@ -2685,18 +2735,23 @@ private function exprNewVREG _
 			l = exprNewUOP( AST_OP_ADDROF, l )
 		end if
 		if( have_offset ) then
-			if( is_c_array ) then
+			if( ( is_c_array ) andalso ( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) ) then
 				'' Cast to intptr_t to work around gcc out side of array bounds
-				'' warnings if we are casting from FBSTRING array to pointer
-				'' fbc uses a kind of virtual pointer for the an array's (0,..)
-				'' index; technically this is undefinded behaviour in C and is
-				'' impossible to cast away even when using pointer only casts
-				'' in the same expression.  Some gcc optimizations cause a 
+				'' warnings if we are casting from FBSTRING array to pointer.
+				'' fbc uses a kind of virtual pointer for the array's @(0,..)
+				'' index ptr; technically this is undefinded behaviour in C and
+				'' is impossible to cast away even when using pointer only casts
+				'' in the same expression.  Some gcc's/compiler's cause a
 				'' a warning when setting a pointer for the array's virtual
-				'' index location.  To fix this for compliant C code, would
-				'' need to rewrite the array descriptor to contain only the
+				'' index location.
+				''
+				'' However, this also seems to cause other issuse with
+				'' emscripten target, so don't when targeting asm.js
+				''
+				'' To fix this for compliant C code, should fix the design
+				'' and rewrite the array descriptor to contain only the
 				'' offset value from actual memory pointer and compute the
-				'' array access fully on each array element access.   
+				'' array access fully on each array element access.
 				l = exprNewCAST( FB_DATATYPE_INTEGER, NULL, l )
 			else
 				'' Cast to ubyte ptr to work around C's pointer arithmetic
@@ -2792,7 +2847,7 @@ private sub exprSTORE _
 			''     through a hidden parameter. The CALL expression
 			''     must be emitted, but the result vreg won't ever
 			''     be accessed.
-			'' 
+			''
 			'' -> Create a temp var and use that as the new vreg
 			'' expression, instead of the original expr itself:
 			''    type tempvar = expr;
@@ -2847,7 +2902,8 @@ private sub _emitBop _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval label as FBSYMBOL ptr _
+		byval label as FBSYMBOL ptr, _
+		byval options as IR_EMITOPT _
 	)
 
 	dim as EXPRNODE ptr l = any, r = any
@@ -2860,8 +2916,14 @@ private sub _emitBop _
 		assert( vr = NULL )
 		static as string s
 		s = "if( "
+		if( (options and IR_EMITOPT_REL_DOINVERSE) <> 0 ) then
+			s += "!("
+		end if
 		s += exprFlush( exprNewBOP( op, l, r ) )
-		s += " ) goto "
+		if( (options and IR_EMITOPT_REL_DOINVERSE) <> 0 ) then
+			s += ")"
+		end if
+		s += ") goto "
 		s += *symbGetMangledName( label )
 		s += ";"
 		hWriteLine( s )
@@ -2875,6 +2937,10 @@ private sub _emitBop _
 	select case as const( op )
 	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
 		l = exprNewBOP( op, l, r )
+
+		if( (options and IR_EMITOPT_REL_DOINVERSE) <> 0 ) then
+			l = exprNewUOP( AST_OP_BOOLNOT, l )
+		end if
 
 		'' comparisons returning a boolean produce 0/1,
 		'' comparisons returning an integer produce 0/-1.
@@ -2954,8 +3020,7 @@ private sub _emitUop _
 		'' the inverse 1/0 boolean. Thus it can't be implemented as
 		'' bitwise NOT.
 		'' Do: <expr == 0>
-		'' We could also do <!expr>, but we don't support emitting the
-		'' ! operator at the moment.
+		'' !!!TODO!!! We could also do <!expr>, see AST_OP_BOOLNOT
 		expr = exprNewBOP( AST_OP_EQ, expr, exprNewIMMi( 0 ) )
 	else
 		expr = exprNewUOP( op, expr )
@@ -3269,12 +3334,13 @@ private sub _emitMem _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
-		byval bytes as longint _
+		byval bytes as longint, _
+		byval fillchar as integer _
 	)
 
 	select case op
-	case AST_OP_MEMCLEAR
-		hWriteLine("__builtin_memset( " + exprFlush( exprNewVREG( v1 ) ) + ", 0, " + exprFlush( exprNewVREG( v2 ) ) + " );" )
+	case AST_OP_MEMFILL
+		hWriteLine("__builtin_memset( " + exprFlush( exprNewVREG( v1 ) ) + ", " + str(fillchar) + ", " + exprFlush( exprNewVREG( v2 ) ) + " );" )
 	case AST_OP_MEMMOVE
 		hWriteLine("__builtin_memcpy( " + exprFlush( exprNewVREG( v1 ) ) + ", " + exprFlush( exprNewVREG( v2 ) ) + ", " + str( cunsg( bytes ) ) + " );" )
 	end select
@@ -3312,7 +3378,7 @@ private sub _emitMacro _
 		hWriteLine( exprFlush( exprNewMACRO( op, FB_DATATYPE_INVALID, NULL, l, r ) ) + ";" )
 
 	end select
-	
+
 end sub
 
 private sub _emitDECL( byval sym as FBSYMBOL ptr )
@@ -3436,9 +3502,29 @@ end sub
 '' -asm att: FB asm blocks are expected to be in the GCC format already,
 ''           i.e. quoted and including constraints if needed.
 ''
+private function hFindLabelInSeenList( _
+	byref labellist as TLIST, _
+	byval labelsym as FBSYMBOL ptr _
+) as long
+	dim as FBSYMBOL ptr ptr symnode = listGetHead( @labellist )
+	dim as long index = -1, curindex = 0
+	do
+		if symnode = NULL then exit do
+		if *symnode = labelsym then
+			index = curindex
+			exit do
+		end if
+		symnode = listGetNext( symnode )
+		curindex += 1
+	loop
+	return index
+end function
+
 private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 	'' 1st pass to count some stats (no emitting yet)
-	dim as integer uses_label, labelindex
+	dim as integer uses_label, labelindex, labelindexbase
+	dim as TLIST seenlabellist
+	listInit( @seenlabellist, 8, sizeof( FBSYMBOL ptr ) )
 	var n = asmtokenhead
 	while( n )
 		if( n->type = AST_ASMTOK_SYMB ) then
@@ -3456,6 +3542,7 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 		n = n->next
 	wend
 
+	labelindexbase = labelindex
 	dim as string ln = "__asm__"
 
 	'' Only when inside normal procedures
@@ -3519,13 +3606,27 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 						'' Referencing a label: insert %lN place-holder
 						'' (N refers to N'th operand written in whole
 						'' asm goto(outputs... inputs... labels...) statement)
-						asmcode += "%l" & labelindex
-						labelindex += 1
 
-						if( len( labellist ) > 0 ) then
-							labellist += ", "
+						'' GCC only allows a label to be in the label list once
+						'' no matter how many times it appears in the code, so we keep track
+						'' of what we've seen to make sure we only emit labels into the list once
+						'' and subsequent access use the previous index
+						dim as integer labelnum = any
+						dim as FBSYMBOL ptr labelsym = n->sym
+						dim as long seenlabelindex = hFindLabelInSeenList( seenlabellist, labelsym )
+						if seenlabelindex <> -1 then
+							labelnum = seenlabelindex + labelindexbase
+						else
+							labelnum = labelindex
+							labelindex += 1
+							*CPtr(FBSYMBOL ptr ptr, listNewNode( @seenlabellist ) ) = labelsym
+							if( len( labellist ) > 0 ) then
+								labellist += ", "
+							end if
+							labellist += *symbGetMangledName( labelsym )
 						end if
-						labellist += *symbGetMangledName( n->sym )
+
+						asmcode += "%l" & labelnum
 
 					case else
 						'' Referencing a procedure: no gcc constraints needed;
@@ -3550,6 +3651,7 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 
 		n = n->next
 	wend
+	listEnd( @seenlabellist )
 
 	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
 		''
@@ -3570,7 +3672,7 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 		'' .asm:
 		''    .ascii "zzz\"\0"
 		''
-		hBuildStrLit( ln, strptr( asmcode ), len( asmcode ) + 1 )
+		hBuildStrLit( ln, strptr( asmcode ), len( asmcode ) + 1, 0 )
 
 		'' Only when inside normal procedures
 		'' (NAKED procedures don't increase the indentation)
@@ -3584,13 +3686,21 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 			'' then there is no way to get it back after esp/rsp changes to
 			'' something else.  User is always responsible for handling the stack
 			'' registers.
-			'' 
+			''
 			ln += " : ""cc"", ""memory"""
 
 			select case( fbGetCpuFamily( ) )
 			case FB_CPUFAMILY_X86, FB_CPUFAMILY_X86_64
 				if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
-					ln += ", ""eax"", ""ebx"", ""ecx"", ""edx"", ""edi"", ""esi"""
+					if( env.clopt.pic ) then
+						'' ebx is the fixed-purpose PIC register. GCC versions before 5.0
+						'' throw an error if you declare that it is clobbered, so we don't do
+						'' that. GCC 5 has rewritten PIC register handling and can now save and
+						'' restore ebx.
+						ln += ", ""eax"", ""ecx"", ""edx"", ""edi"", ""esi"""
+					else
+						ln += ", ""eax"", ""ebx"", ""ecx"", ""edx"", ""edi"", ""esi"""
+					end if
 				else
 					ln += ", ""rax"", ""rbx"", ""rcx"", ""rdx"", ""rdi"", ""rsi"""
 					ln += ", ""r8"", ""r9"", ""r10"", ""r11"", ""r12"", ""r13"", ""r14"", ""r15"""
@@ -3716,7 +3826,8 @@ private sub _emitVarIniStr _
 	( _
 		byval varlength as longint, _    '' without null terminator
 		byval literal as zstring ptr, _
-		byval litlength as longint _     '' without null terminator
+		byval litlength as longint, _     '' without null terminator
+		byval noterm as integer _
 	)
 
 	'' Simple fixed-length string initialized from string literal
@@ -3728,7 +3839,11 @@ private sub _emitVarIniStr _
 		litlength = varlength
 	end if
 
-	hBuildStrLit( ctx.varini, hUnescape( literal ), litlength + 1 )
+	if( noterm ) then
+		hBuildStrLit( ctx.varini, hUnescape( literal ), litlength + 1, varlength + 1 )
+	else
+		hBuildStrLit( ctx.varini, hUnescape( literal ), litlength + 1, 0 )
+	end if
 
 	hVarIniSeparator( )
 
@@ -3765,7 +3880,12 @@ private sub _emitVarIniWstr _
 			ctx.varini += ", "
 		end if
 
-		ctx.varini += "L'"
+		'' On android wstring is 1 byte but C wide strings/chars are 4 bytes, so don't use them
+		if( wcharsize = 1 ) then
+			ctx.varini += "'"
+		else
+			ctx.varini += "L'"
+		end if
 
 		ch = (*literal)[i]
 
@@ -3784,7 +3904,7 @@ private sub _emitVarIniWstr _
 
 end sub
 
-private sub _emitVarIniPad( byval bytes as longint )
+private sub _emitVarIniPad( byval bytes as longint, byval fillchar as integer )
 	'' Nothing to do -- we're using {...} for structs and each array
 	'' dimension, and gcc will zero-initialize any uninitialized elements,
 	'' aswell as add padding between fields etc. where needed.
@@ -3805,8 +3925,8 @@ private sub _emitVarIniScopeEnd( )
 		#ifndef fb_leftself
 			ctx.varini = left( ctx.varini, len( ctx.varini ) - 2 )
 		#else
-			fb_leftself( ctx.varini, len( ctx.varini ) - 2 ) 
-		#endif		''     
+			fb_leftself( ctx.varini, len( ctx.varini ) - 2 )
+		#endif
 	end if
 
 	ctx.varini += " }"
@@ -3892,6 +4012,16 @@ private sub _emitProcBegin _
 	hWriteLine( "{" )
 	sectionIndent( )
 
+	if( (env.clopt.backend = FB_BACKEND_CLANG) and (env.clopt.errorcheck = TRUE) ) then
+		'' Compiling with -e
+		'' Work around an error clang unnecessarily throws if a function
+		'' contains a computed goto but no address-of-label operator.
+		'' See https://bugs.llvm.org/show_bug.cgi?id=18658
+		'' (TODO: We emit computed gotos for RESUME/ON ERROR GOTO
+		'' support (-ex) but also unnecessarily use them to terminate
+		'' the program after fb_ErrorThrowAt when compiled only with -e)
+		hWriteLine( "_unusedlabel: ; void *_llvmbug18658 = &&_unusedlabel;" )
+	end if
 end sub
 
 private sub _emitProcEnd _

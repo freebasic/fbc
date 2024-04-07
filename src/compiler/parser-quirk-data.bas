@@ -10,9 +10,9 @@
 #include once "ast.bi"
 
 '':::::
-''DataStmt   	  =   RESTORE LABEL?
-''				  |   READ Variable{int|flt|str} (',' Variable{int|flt|str})*
-''				  |   DATA literal|constant (',' literal|constant)*
+''DataStmt        =   RESTORE LABEL?
+''                |   READ Variable{int|flt|str} (',' Variable{int|flt|str})*
+''                |   DATA literal|constant (',' literal|constant)*
 ''
 function cDataStmt  _
 	( _
@@ -137,10 +137,10 @@ function cDataStmt  _
 		'' qb mode, read tokens as-is, no lookup, no expressions..
 		else
 			const LEX_FLAGS = LEXCHECK_NOWHITESPC or _
-				   		  	  LEXCHECK_NOSUFFIX or _
-				   		  	  LEXCHECK_NODEFINE or _
-				   		  	  LEXCHECK_NOQUOTES or _
-				   		   	  LEXCHECK_NOSYMBOL
+			                  LEXCHECK_NOSUFFIX or _
+			                  LEXCHECK_NODEFINE or _
+			                  LEXCHECK_NOQUOTES or _
+			                  LEXCHECK_NOSYMBOL
 
 			'' DATA
 			lexSkipToken( LEX_FLAGS )
@@ -194,8 +194,8 @@ function cDataStmt  _
 
 		astDataStmtEnd( tree )
 
-    	'' node is unused, the tree will become an initialized static array
-    	astDelNode( tree )
+		'' node is unused, the tree will become an initialized static array
+		astDelNode( tree )
 
 		function = TRUE
 

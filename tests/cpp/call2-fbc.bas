@@ -1,7 +1,17 @@
 ' TEST_MODE : MULTI_MODULE_TEST
 
-'' test mapping of mangling and calling convention 
+'' test mapping of mangling and calling convention
 '' between fbc and c/c++ class procedures
+
+#ifdef __FB_FREEBSD__
+	#inclib "c++"
+#else
+	#ifdef __FB_DOS__
+		#inclib "stdcx"
+	#else
+		#inclib "stdc++"
+	#endif
+#endif
 
 '' helper macro to track progress
 #define DLOG( msg ) '' print #msg
@@ -10,23 +20,15 @@
 	#define DOTEST
 	#define DOFUNCS
 #else
-	'' thiscall is not supported in -gen gas
-	#if __FB_BACKEND__ <> "gas"
-		#define DOTEST
-	#endif
+	#define DOTEST
 
-	'' strutures returned by value from c++
-	'' needs some work on arm targets (bugs!)
-	#if not defined( __FB_ARM__ )
+	'' some structures returned by value from g++
+	'' not working for several targets.  Just disable
+	'' for now.  It's likely related to passing
+	'' structs in registers and size of the struct.
+	#if defined( __FB_WIN32__ )
 		#define DOFUNCS
 	#endif
-#endif
-
-'' !!! TODO !!! this default should be handled in fbc
-#if defined(__FB_WIN32__) and not defined(__FB_64BIT__)
-	#define thiscall __thiscall
-#else
-	#define thiscall
 #endif
 
 #ifndef NULL
@@ -44,10 +46,10 @@ extern "c++"
 
 type UDT
 	value as long
-	declare constructor thiscall ()
-	declare constructor thiscall ( byval rhs as long )
-	declare constructor thiscall ( byref rhs as const UDT )
-	declare destructor thiscall ()
+	declare constructor ()
+	declare constructor ( byval rhs as long )
+	declare constructor ( byref rhs as const UDT )
+	declare destructor ()
 end type
 
 end extern
@@ -104,16 +106,28 @@ end extern
 	scope
 	#if count = 1
 		dim a as UDT
+		a.value = 10
 		n( a )
+		assert( a.value = 10 )
 		assert( @a = getPtr1() )
 	#elseif count = 2
 		dim a as UDT, b as UDT
+		a.value = 10
+		b.value = 20
 		n( a, b )
+		assert( a.value = 10 )
+		assert( b.value = 20 )
 		assert( @a = getPtr1() )
 		assert( @b = getPtr2() )
 	#else
 		dim a as UDT, b as UDT, c as UDT
+		a.value = 10
+		b.value = 20
+		c.value = 30
 		n( a, b, c )
+		assert( a.value = 10 )
+		assert( b.value = 20 )
+		assert( c.value = 30 )
 		assert( @a = getPtr1() )
 		assert( @b = getPtr2() )
 		assert( @c = getPtr3() )
@@ -128,16 +142,34 @@ end extern
 	scope
 	#if count = 1
 		dim a as UDT, r as UDT
+		a.value = 11
+		r.value = 0
 		r = n( a )
+		assert( r.value = 1 )
+		assert( a.value = 11 )
 		assert( @a = getPtr1() )
 	#elseif count = 2
 		dim a as UDT, b as UDT, r as UDT
+		a.value = 21
+		b.value = 22
+		r.value = 0
 		r = n( a, b )
+		assert( r.value = 1 )
+		assert( a.value = 21 )
+		assert( b.value = 22 )
 		assert( @a = getPtr1() )
 		assert( @b = getPtr2() )
 	#else
 		dim a as UDT, b as UDT, c as UDT, r as UDT
+		a.value = 31
+		b.value = 32
+		c.value = 33
+		r.value = 0
 		r = n( a, b, c )
+		assert( r.value = 1 )
+		assert( a.value = 31 )
+		assert( b.value = 32 )
+		assert( c.value = 33 )
 		assert( @a = getPtr1() )
 		assert( @b = getPtr2() )
 		assert( @c = getPtr3() )

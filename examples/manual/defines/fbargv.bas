@@ -1,30 +1,18 @@
 '' examples/manual/defines/fbargv.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic '__FB_ARGV__'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDdfbargv
 '' --------
 
-Declare Function main _
-  ( _
-	ByVal argc As Integer, _
-	ByVal argv As ZString Ptr Ptr _
-  ) As Integer
-
-  End main( __FB_ARGC__, __FB_ARGV__ )
-
-Private Function main _
-  ( _
-	ByVal argc As Integer, _
-	ByVal argv As ZString Ptr Ptr _
-  ) As Integer
-
-  Dim i As Integer
-  For i = 0 To argc - 1
+Sub displayCommandLineArguments( ByVal argc As Integer, ByVal argv As ZString Ptr Ptr )
+	Dim i As Integer
+	For i = 0 To argc - 1
 		Print "arg "; i; " = '"; *argv[i]; "'"
-  Next i
+	Next i
+End Sub
 
-  Return 0
+displayCommandLineArguments( __FB_ARGC__, __FB_ARGV__ )
 
-End Function
+Sleep

@@ -111,7 +111,7 @@ SUITE( fbc_tests.pointers.procptr_type )
 			CU_ASSERT( id = "s( byval arg as single )" )
 		end scope
 
-		
+
 	END_TEST
 
 END_SUITE

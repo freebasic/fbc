@@ -26,7 +26,7 @@
 ''   ings in this Software without prior written authorization from him.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 

@@ -1,7 +1,7 @@
 '' emit abstract interface
 ''
 '' chng: jun/2005 written [v1ctor]
-''
+'' chng: jun/2018 use FB_SIZETYPE_* for emitter calls [jeffm]
 
 #include once "fb.bi"
 #include once "fbint.bi"
@@ -11,7 +11,17 @@
 #include once "emit.bi"
 #include once "symb.bi"
 
-declare function emitGasX86_ctor	_
+/'
+	From the point of view of emit.bas and EMIT_NODEOP,
+	only x86 32 bit emitter is available.
+	The one letter codes in the EMIT_OP_* enum names have
+	the meaning:
+
+		I = 32 bit or smaller
+		L = 64 bit
+'/
+
+declare function emitGasX86_ctor _
 	( _
 	) as integer
 
@@ -50,7 +60,7 @@ sub emitWriteStr _
 		byval addtab as integer _
 	)
 
-    static as string ostr
+	static as string ostr
 
 	if( addtab ) then
 		ostr = TABCHAR
@@ -114,7 +124,7 @@ end function
 
 '':::::
 private sub hPeepHoleOpt( )
-    dim as EMIT_NODE ptr n = any, p = any
+	dim as EMIT_NODE ptr n = any, p = any
 
 	p = NULL
 	n = flistGetHead( @emit.nodeTB )
@@ -144,9 +154,9 @@ end sub
 
 '':::::
 sub emitFlush( )
-    dim as EMIT_NODE ptr n = any
+	dim as EMIT_NODE ptr n = any
 
-    hPeepHoleOpt( )
+	hPeepHoleOpt( )
 
 	n = flistGetHead( @emit.nodeTB )
 	do while( n <> NULL )
@@ -157,26 +167,31 @@ sub emitFlush( )
 		case EMIT_NODECLASS_NOP
 
 		case EMIT_NODECLASS_BOP
-			cast( EMIT_BOPCB, emit.opFnTb[n->bop.op] )( n->bop.dvreg, _
-												   		n->bop.svreg )
+			cast( EMIT_BOPCB, emit.opFnTb[n->bop.op] )( _
+				n->bop.dvreg, _
+				n->bop.svreg )
 
 		case EMIT_NODECLASS_UOP
 			cast( EMIT_UOPCB, emit.opFnTb[n->uop.op ] )( n->uop.dvreg )
 
 		case EMIT_NODECLASS_REL
-			cast( EMIT_RELCB, emit.opFnTb[n->rel.op] )( n->rel.rvreg, _
-												   		n->rel.label, _
-												   		n->rel.dvreg, _
-												   		n->rel.svreg )
+			cast( EMIT_RELCB, emit.opFnTb[n->rel.op] )( _
+				n->rel.rvreg, _
+				n->rel.label, _
+				n->rel.dvreg, _
+				n->rel.svreg, _
+				n->options )
 
 		case EMIT_NODECLASS_STK
-			cast( EMIT_STKCB, emit.opFnTb[n->stk.op] )( n->stk.vreg, _
-												   n->stk.extra )
+			cast( EMIT_STKCB, emit.opFnTb[n->stk.op] )( _
+				n->stk.vreg, _
+				n->stk.extra )
 
 		case EMIT_NODECLASS_BRC
-			cast( EMIT_BRCCB, emit.opFnTb[n->brc.op] )( n->brc.vreg, _
-												   		n->brc.sym, _
-												   		n->brc.extra )
+			cast( EMIT_BRCCB, emit.opFnTb[n->brc.op] )( _
+				n->brc.vreg, _
+				n->brc.sym, _
+				n->brc.extra )
 
 		case EMIT_NODECLASS_SOP
 			cast( EMIT_SOPCB, emit.opFnTb[n->sop.op] )( n->sop.sym )
@@ -196,16 +211,18 @@ sub emitFlush( )
 			deallocate( n->jtb.labels )
 
 		case EMIT_NODECLASS_MEM
-			cast( EMIT_MEMCB, emit.opFnTb[n->mem.op] )( n->mem.dvreg, _
-												   		n->mem.svreg, _
-												   		n->mem.bytes, _
-												   		n->mem.extra )
+			cast( EMIT_MEMCB, emit.opFnTb[n->mem.op] )( _
+				n->mem.dvreg, _
+				n->mem.svreg, _
+				n->mem.bytes, _
+				n->mem.extra )
 
 		case EMIT_NODECLASS_DBG
-			cast( EMIT_DBGCB, emit.opFnTb[n->dbg.op] )( n->dbg.sym, _
-												   		n->dbg.lnum, _
-												   		n->dbg.pos, _
-												   		n->dbg.filename )
+			cast( EMIT_DBGCB, emit.opFnTb[n->dbg.op] )( _
+				n->dbg.sym, _
+				n->dbg.lnum, _
+				n->dbg.pos, _
+				n->dbg.filename )
 
 		end select
 
@@ -234,8 +251,8 @@ private function hNewVR _
 		byval v as IRVREG ptr _
 	) as IRVREG ptr
 
-    dim as IRVREG ptr n = any
-    dim as integer dclass = any
+	dim as IRVREG ptr n = any
+	dim as integer dclass = any
 
 	if( v = NULL ) then
 		return NULL
@@ -340,7 +357,8 @@ private function hNewREL _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) as EMIT_NODE ptr static
 
 	dim as EMIT_NODE ptr n
@@ -352,6 +370,7 @@ private function hNewREL _
 	n->rel.label = label
 	n->rel.dvreg = hNewVR( dvreg )
 	n->rel.svreg = hNewVR( svreg )
+	n->options = options
 
 	function = n
 
@@ -458,7 +477,7 @@ private function hNewDBG _
 		byval sym as FBSYMBOL ptr, _
 		byval lnum as integer = 0, _
 		byval pos_ as integer = 0, _
-		byval filename As zstring ptr = 0  _
+		byval filename As zstring ptr = 0 _
 	) as EMIT_NODE ptr static
 
 	dim as EMIT_NODE ptr n
@@ -486,21 +505,21 @@ function emitLOAD _
 		byval svreg as IRVREG ptr _
 	) as EMIT_NODE ptr static
 
-	select case as const dvreg->dtype
+	select case as const typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 
-		select case as const svreg->dtype
+		select case as const typeGetSizeType( svreg->dtype )
 		'' longint?
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+		case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 			function = hNewBOP( EMIT_OP_LOADL2L, dvreg, svreg )
 
 		'' float?
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+		case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
 			function = hNewBOP( EMIT_OP_LOADF2L, dvreg, svreg )
 
 		'' boolean?
-		case FB_DATATYPE_BOOLEAN
+		case FB_SIZETYPE_BOOLEAN
 			function = hNewBOP( EMIT_OP_LOADB2L, dvreg, svreg )
 
 		case else
@@ -508,19 +527,19 @@ function emitLOAD _
 		end select
 
 	'' float?
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
 
-		select case as const svreg->dtype
+		select case as const typeGetSizeType( svreg->dtype )
 		'' longint?
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+		case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 			function = hNewBOP( EMIT_OP_LOADL2F, dvreg, svreg )
 
 		'' float?
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+		case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
 			function = hNewBOP( EMIT_OP_LOADF2F, dvreg, svreg )
 
 		'' boolean?
-		case FB_DATATYPE_BOOLEAN
+		case FB_SIZETYPE_BOOLEAN
 			function = hNewBOP( EMIT_OP_LOADB2F, dvreg, svreg )
 
 		case else
@@ -528,19 +547,19 @@ function emitLOAD _
 		end select
 
 	'' boolean?
-	case FB_DATATYPE_BOOLEAN
+	case FB_SIZETYPE_BOOLEAN
 
-		select case as const svreg->dtype
+		select case as const typeGetSizeType( svreg->dtype )
 		'' longint?
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+		case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 			function = hNewBOP( EMIT_OP_LOADL2B, dvreg, svreg )
 
 		'' float?
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+		case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
 			function = hNewBOP( EMIT_OP_LOADF2B, dvreg, svreg )
 
 		'' boolean?
-		case FB_DATATYPE_BOOLEAN
+		case FB_SIZETYPE_BOOLEAN
 			function = hNewBOP( EMIT_OP_LOADB2B, dvreg, svreg )
 
 		case else
@@ -549,17 +568,17 @@ function emitLOAD _
 
 	case else
 
-		select case as const svreg->dtype
+		select case as const typeGetSizeType( svreg->dtype )
 		'' longint?
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+		case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 			function = hNewBOP( EMIT_OP_LOADL2I, dvreg, svreg )
 
 		'' float?
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+		case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
 			function = hNewBOP( EMIT_OP_LOADF2I, dvreg, svreg )
 
 		'' boolean?
-		case FB_DATATYPE_BOOLEAN
+		case FB_SIZETYPE_BOOLEAN
 			function = hNewBOP( EMIT_OP_LOADB2I, dvreg, svreg )
 
 		case else
@@ -577,21 +596,21 @@ function emitSTORE _
 		byval svreg as IRVREG ptr _
 	) as EMIT_NODE ptr static
 
-	select case as const dvreg->dtype
+	select case as const typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 
-		select case as const svreg->dtype
+		select case as const typeGetSizeType( svreg->dtype )
 		'' longint?
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+		case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 			function = hNewBOP( EMIT_OP_STORL2L, dvreg, svreg )
 
 		'' float?
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+		case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
 			function = hNewBOP( EMIT_OP_STORF2L, dvreg, svreg )
 
 		'' boolean?
-		case FB_DATATYPE_BOOLEAN
+		case FB_SIZETYPE_BOOLEAN
 			function = hNewBOP( EMIT_OP_STORB2L, dvreg, svreg )
 
 		case else
@@ -599,39 +618,39 @@ function emitSTORE _
 		end select
 
 	'' float?
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
 
-		select case as const svreg->dtype
+		select case as const typeGetSizeType( svreg->dtype )
 		'' longint?
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+		case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 			function = hNewBOP( EMIT_OP_STORL2F, dvreg, svreg )
 
 		'' float?
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+		case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
 			function = hNewBOP( EMIT_OP_STORF2F, dvreg, svreg )
 
 		'' boolean?
-		case FB_DATATYPE_BOOLEAN
+		case FB_SIZETYPE_BOOLEAN
 			function = hNewBOP( EMIT_OP_STORB2F, dvreg, svreg )
 
 		case else
 			function = hNewBOP( EMIT_OP_STORI2F, dvreg, svreg )
 		end select
-	
-	'' boolean?
-	case FB_DATATYPE_BOOLEAN
 
-		select case as const svreg->dtype
+	'' boolean?
+	case FB_SIZETYPE_BOOLEAN
+
+		select case as const typeGetSizeType( svreg->dtype )
 		'' longint?
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+		case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 			function = hNewBOP( EMIT_OP_STORL2B, dvreg, svreg )
 
 		'' float?
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+		case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
 			function = hNewBOP( EMIT_OP_STORF2B, dvreg, svreg )
 
 		'' boolean?
-		case FB_DATATYPE_BOOLEAN
+		case FB_SIZETYPE_BOOLEAN
 			function = hNewBOP( EMIT_OP_STORB2B, dvreg, svreg )
 
 		case else
@@ -640,17 +659,17 @@ function emitSTORE _
 
 	case else
 
-		select case as const svreg->dtype
+		select case as const typeGetSizeType( svreg->dtype )
 		'' longint?
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+		case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 			function = hNewBOP( EMIT_OP_STORL2I, dvreg, svreg )
 
 		'' float?
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+		case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
 			function = hNewBOP( EMIT_OP_STORF2I, dvreg, svreg )
 
 		'' boolean?
-		case FB_DATATYPE_BOOLEAN
+		case FB_SIZETYPE_BOOLEAN
 			function = hNewBOP( EMIT_OP_STORB2I, dvreg, svreg )
 
 		case else
@@ -672,13 +691,13 @@ function emitMOV _
 		byval svreg as IRVREG ptr _
 	) as EMIT_NODE ptr static
 
-	select case as const dvreg->dtype
+	select case as const typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 		function = hNewBOP( EMIT_OP_MOVL, dvreg, svreg )
 
 	'' float?
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
 		function = hNewBOP( EMIT_OP_MOVF, dvreg, svreg )
 
 	case else
@@ -694,13 +713,13 @@ function emitADD _
 		byval svreg as IRVREG ptr _
 	) as EMIT_NODE ptr static
 
-	select case as const dvreg->dtype
+	select case as const typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 		function = hNewBOP( EMIT_OP_ADDL, dvreg, svreg )
 
 	'' float?
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
 		function = hNewBOP( EMIT_OP_ADDF, dvreg, svreg )
 
 	case else
@@ -716,13 +735,13 @@ function emitSUB _
 		byval svreg as IRVREG ptr _
 	) as EMIT_NODE ptr static
 
-	select case as const dvreg->dtype
+	select case as const typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 		function = hNewBOP( EMIT_OP_SUBL, dvreg, svreg )
 
 	'' float?
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
 		function = hNewBOP( EMIT_OP_SUBF, dvreg, svreg )
 
 	case else
@@ -738,13 +757,13 @@ function emitMUL _
 		byval svreg as IRVREG ptr _
 	) as EMIT_NODE ptr static
 
-	select case as const dvreg->dtype
+	select case as const typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 		function = hNewBOP( EMIT_OP_MULL, dvreg, svreg )
 
 	'' float?
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
 		function = hNewBOP( EMIT_OP_MULF, dvreg, svreg )
 
 	case else
@@ -793,9 +812,9 @@ function emitSHL _
 		byval svreg as IRVREG ptr _
 	) as EMIT_NODE ptr static
 
-	select case dvreg->dtype
+	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 		function = hNewBOP( EMIT_OP_SHLL, dvreg, svreg )
 
 	case else
@@ -811,9 +830,9 @@ function emitSHR _
 		byval svreg as IRVREG ptr _
 	) as EMIT_NODE ptr static
 
-	select case dvreg->dtype
+	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 		function = hNewBOP( EMIT_OP_SHRL, dvreg, svreg )
 
 	case else
@@ -829,9 +848,9 @@ function emitAND _
 		byval svreg as IRVREG ptr _
 	) as EMIT_NODE ptr static
 
-	select case dvreg->dtype
+	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 		function = hNewBOP( EMIT_OP_ANDL, dvreg, svreg )
 
 	case else
@@ -847,9 +866,9 @@ function emitOR _
 		byval svreg as IRVREG ptr _
 	) as EMIT_NODE ptr static
 
-	select case dvreg->dtype
+	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 		function = hNewBOP( EMIT_OP_ORL, dvreg, svreg )
 
 	case else
@@ -865,9 +884,9 @@ function emitXOR _
 		byval svreg as IRVREG ptr _
 	) as EMIT_NODE ptr static
 
-	select case dvreg->dtype
+	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 		function = hNewBOP( EMIT_OP_XORL, dvreg, svreg )
 
 	case else
@@ -883,9 +902,9 @@ function emitEQV _
 		byval svreg as IRVREG ptr _
 	) as EMIT_NODE ptr static
 
-	select case dvreg->dtype
+	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 		function = hNewBOP( EMIT_OP_EQVL, dvreg, svreg )
 
 	case else
@@ -901,9 +920,9 @@ function emitIMP _
 		byval svreg as IRVREG ptr _
 	) as EMIT_NODE ptr static
 
-	select case dvreg->dtype
+	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 		function = hNewBOP( EMIT_OP_IMPL, dvreg, svreg )
 
 	case else
@@ -966,20 +985,21 @@ function emitGT _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) as EMIT_NODE ptr static
 
-	select case as const dvreg->dtype
+	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		function = hNewREL( EMIT_OP_CGTL, rvreg, label, dvreg, svreg )
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
+		function = hNewREL( EMIT_OP_CGTL, rvreg, label, dvreg, svreg, options )
 
 	'' float?
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		function = hNewREL( EMIT_OP_CGTF, rvreg, label, dvreg, svreg )
+	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
+		function = hNewREL( EMIT_OP_CGTF, rvreg, label, dvreg, svreg, options )
 
 	case else
-		function = hNewREL( EMIT_OP_CGTI, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CGTI, rvreg, label, dvreg, svreg, options )
 	end select
 
 end function
@@ -990,20 +1010,21 @@ function emitLT _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) as EMIT_NODE ptr static
 
-	select case as const dvreg->dtype
+	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		function = hNewREL( EMIT_OP_CLTL, rvreg, label, dvreg, svreg )
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
+		function = hNewREL( EMIT_OP_CLTL, rvreg, label, dvreg, svreg, options )
 
 	'' float?
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		function = hNewREL( EMIT_OP_CLTF, rvreg, label, dvreg, svreg )
+	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
+		function = hNewREL( EMIT_OP_CLTF, rvreg, label, dvreg, svreg, options )
 
 	case else
-		function = hNewREL( EMIT_OP_CLTI, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CLTI, rvreg, label, dvreg, svreg, options )
 	end select
 
 end function
@@ -1014,20 +1035,21 @@ function emitEQ _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) as EMIT_NODE ptr static
 
-	select case as const dvreg->dtype
+	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		function = hNewREL( EMIT_OP_CEQL, rvreg, label, dvreg, svreg )
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
+		function = hNewREL( EMIT_OP_CEQL, rvreg, label, dvreg, svreg, options )
 
 	'' float?
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		function = hNewREL( EMIT_OP_CEQF, rvreg, label, dvreg, svreg )
+	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
+		function = hNewREL( EMIT_OP_CEQF, rvreg, label, dvreg, svreg, options )
 
 	case else
-		function = hNewREL( EMIT_OP_CEQI, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CEQI, rvreg, label, dvreg, svreg, options )
 	end select
 
 end function
@@ -1038,20 +1060,21 @@ function emitNE _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) as EMIT_NODE ptr static
 
-	select case as const dvreg->dtype
+	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		function = hNewREL( EMIT_OP_CNEL, rvreg, label, dvreg, svreg )
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
+		function = hNewREL( EMIT_OP_CNEL, rvreg, label, dvreg, svreg, options )
 
 	'' float?
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		function = hNewREL( EMIT_OP_CNEF, rvreg, label, dvreg, svreg )
+	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
+		function = hNewREL( EMIT_OP_CNEF, rvreg, label, dvreg, svreg, options )
 
 	case else
-		function = hNewREL( EMIT_OP_CNEI, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CNEI, rvreg, label, dvreg, svreg, options )
 	end select
 
 end function
@@ -1062,20 +1085,21 @@ function emitGE _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) as EMIT_NODE ptr static
 
-	select case as const dvreg->dtype
+	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		function = hNewREL( EMIT_OP_CGEL, rvreg, label, dvreg, svreg )
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
+		function = hNewREL( EMIT_OP_CGEL, rvreg, label, dvreg, svreg, options )
 
 	'' float?
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		function = hNewREL( EMIT_OP_CGEF, rvreg, label, dvreg, svreg )
+	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
+		function = hNewREL( EMIT_OP_CGEF, rvreg, label, dvreg, svreg, options )
 
 	case else
-		function = hNewREL( EMIT_OP_CGEI, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CGEI, rvreg, label, dvreg, svreg, options )
 	end select
 
 end function
@@ -1086,20 +1110,21 @@ function emitLE _
 		byval rvreg as IRVREG ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
+		byval svreg as IRVREG ptr, _
+		byval options as IR_EMITOPT _
 	) as EMIT_NODE ptr static
 
-	select case as const dvreg->dtype
+	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		function = hNewREL( EMIT_OP_CLEL, rvreg, label, dvreg, svreg )
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
+		function = hNewREL( EMIT_OP_CLEL, rvreg, label, dvreg, svreg, options )
 
 	'' float?
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		function = hNewREL( EMIT_OP_CLEF, rvreg, label, dvreg, svreg )
+	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
+		function = hNewREL( EMIT_OP_CLEF, rvreg, label, dvreg, svreg, options )
 
 	case else
-		function = hNewREL( EMIT_OP_CLEI, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CLEI, rvreg, label, dvreg, svreg, options )
 	end select
 
 end function
@@ -1114,13 +1139,13 @@ function emitNEG _
 		byval dvreg as IRVREG ptr _
 	) as EMIT_NODE ptr static
 
-	select case as const dvreg->dtype
+	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 		function = hNewUOP( EMIT_OP_NEGL, dvreg )
 
 	'' float?
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
 		function = hNewUOP( EMIT_OP_NEGF, dvreg )
 
 	case else
@@ -1135,9 +1160,9 @@ function emitNOT _
 		byval dvreg as IRVREG ptr _
 	) as EMIT_NODE ptr static
 
-	select case dvreg->dtype
+	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 		function = hNewUOP( EMIT_OP_NOTL, dvreg )
 
 	case else
@@ -1152,9 +1177,9 @@ function emitHADD _
 		byval dvreg as IRVREG ptr _
 	) as EMIT_NODE ptr static
 
-	select case as const dvreg->dtype
+	select case typeGetSizeType( dvreg->dtype )
 	'' float?
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
 		function = hNewUOP( EMIT_OP_HADDF, dvreg )
 
 	case else
@@ -1169,13 +1194,13 @@ function emitABS _
 		byval dvreg as IRVREG ptr _
 	) as EMIT_NODE ptr static
 
-	select case as const dvreg->dtype
+	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 		function = hNewUOP( EMIT_OP_ABSL, dvreg )
 
 	'' float?
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
 		function = hNewUOP( EMIT_OP_ABSF, dvreg )
 
 	case else
@@ -1190,13 +1215,13 @@ function emitSGN _
 		byval dvreg as IRVREG ptr _
 	) as EMIT_NODE ptr static
 
-	select case as const dvreg->dtype
+	select case typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 		function = hNewUOP( EMIT_OP_SGNL, dvreg )
 
 	'' float?
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
 		function = hNewUOP( EMIT_OP_SGNF, dvreg )
 
 	case else
@@ -1388,13 +1413,13 @@ function emitPUSH _
 		byval svreg as IRVREG ptr _
 	) as EMIT_NODE ptr static
 
-	select case as const svreg->dtype
+	select case as const typeGetSizeType( svreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 		function = hNewSTK( EMIT_OP_PUSHL, svreg )
 
 	'' float?
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
 		function = hNewSTK( EMIT_OP_PUSHF, svreg )
 
 	case else
@@ -1409,13 +1434,13 @@ function emitPOP _
 		byval dvreg as IRVREG ptr _
 	) as EMIT_NODE ptr static
 
-	select case as const dvreg->dtype
+	select case as const typeGetSizeType( dvreg->dtype )
 	'' longint?
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+	case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 		function = hNewSTK( EMIT_OP_POPL, dvreg )
 
 	'' float?
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+	case FB_SIZETYPE_FLOAT32, FB_SIZETYPE_FLOAT64
 		function = hNewSTK( EMIT_OP_POPF, dvreg )
 
 	case else
@@ -1452,7 +1477,7 @@ sub emitASM( byval text as zstring ptr )
 
 	'' reset reg usage
 	for c as integer = 0 to EMIT_REGCLASSES-1
-		EMIT_REGTRASHALL( c )						'' can't check the reg usage
+		EMIT_REGTRASHALL( c )                       '' can't check the reg usage
 	next
 end sub
 
@@ -1606,13 +1631,15 @@ function emitMEMSWAP _
 end function
 
 '':::::
-function emitMEMCLEAR _
+function emitMEMFILL _
 	( _
 		byval dvreg as IRVREG ptr, _
-		byval bytes_vreg as IRVREG ptr _
+		byval bytes_vreg as IRVREG ptr, _
+		byval bytes as integer, _
+		byval fillchar as integer _
 	) as EMIT_NODE ptr static
 
-	function = hNewMEM( EMIT_OP_MEMCLEAR, dvreg, bytes_vreg, 0 )
+	function = hNewMEM( EMIT_OP_MEMFILL, dvreg, bytes_vreg, bytes, fillchar )
 
 end function
 

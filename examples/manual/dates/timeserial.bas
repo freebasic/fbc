@@ -1,7 +1,7 @@
 '' examples/manual/dates/timeserial.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'TIMESERIAL'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgTimeserial
 '' --------

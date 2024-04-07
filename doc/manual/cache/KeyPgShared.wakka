@@ -6,7 +6,7 @@ Variable declaration modifier specifying visibility throughout a module
 	[[KeyPgRedim|Redim]] **Shared** ...
 	[[KeyPgCommon|Common]] **Shared** ...
 	[[KeyPgStatic|Static]] **Shared** ...
-	[[KeyPgVar|Var]] **Shared** ...
+	[[[KeyPgStatic|Static]]] [[KeyPgVar|Var]] **Shared** ...
 ##
 {{fbdoc item="desc"}}
 	##**Shared**## makes module-level variables visible inside ##[[KeyPgSub|Sub]]##s and ##[[KeyPgFunction|Function]]##s.
@@ -16,6 +16,9 @@ Variable declaration modifier specifying visibility throughout a module
 		- Generally a ##**Shared**## variable may only be initialized with a constant value (its starting value is set at the start of the program in the .data section before any code is run, and so it cannot depend on any variables or functions in it).
 		- A first exception is a ##**Shared**## variable of var-len string type, that never can be initialized, even with a constant string (because of its structure with a descriptor in the .data section, but to point to a dynamic memory block).
 		- A second exception is a ##**Shared**## variable of user-defined type having a constructor even implicit, that can be initialized with a non-constant value (because it's the constructor code, called when the program starts, which writes the "initial" values into the .data section).
+
+
+	To access from a local scope block to duplicated symbols of ##**Shared**## variables defined in the global namespace, add one or preferably two dot(s) as prefix: ##.""SomeSymbol""## or preferably ##..""SomeSymbol""## (or only ##..""SomeSymbol""## if inside a [[KeyPgWith|With..End With]] block).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/variable/shared.bas"}}%%(freebasic)

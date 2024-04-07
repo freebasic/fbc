@@ -1,0 +1,27 @@
+{{fbdoc item="title" value="__FB_PPC__"}}----
+Intrinsic define set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FB_PPC__""
+##
+{{fbdoc item="desc"}}
+	Define created at compile time if the compilation target uses the ""PowerPC"" CPU architecture, otherwise undefined.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/defines/fbppc.bas"}}%%(freebasic)
+#IFDEF __FB_PPC__
+  '...instructions for PowerPC OSes...
+#ELSE
+  '...instructions for other OSes
+#ENDIF 
+%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.09.0
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- [[CompilerOpttarget|Compiler Option: -target]]
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

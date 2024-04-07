@@ -27,7 +27,7 @@ Queries for and retrieves system events.
 		If you receive a KEY_PRESS, KEY_RELEASE or KEY_REPEAT event, it does not clear the keyboard buffer.  If you need the buffer to be clear after you receive the event, you will need to clear it manually.  See ##[[KeyPgInkey|Inkey]]##.
 		
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/gfx/screenevent.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/gfx/screenevent.bas"}}%%(freebasic)
 '' include fbgfx.bi for some useful definitions
 #include "fbgfx.bi"
 #if __FB_LANG__ = "fb"
@@ -113,7 +113,6 @@ do
 	sleep 1
 loop
 %%
-
 {{fbdoc item="target"}}
 	- ##**Screenevent**## does not return window related events in the DOS version, but does return input events.
 
@@ -130,5 +129,7 @@ loop
 	- ##[[KeyPgMultikey|Multikey]]##
 	- ##[[KeyPgGetmouse|Getmouse]]##
 	- [[ProPgEventHandling|Event Handling]]
+	- [[GfxScancodes|Keyboard scancodes]]
+	- [[DevRtlInkey|Keyboard Input]]
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

@@ -3,9 +3,9 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL int fb_Color( int fc, int bc, int flags )
+FBCALL unsigned int fb_Color( unsigned int fc, unsigned int bc, int flags )
 {
-	int cur;
+	unsigned int cur;
 
 	FB_LOCK();
 

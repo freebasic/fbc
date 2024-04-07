@@ -2,7 +2,7 @@
 #define __CWIKICON_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006-2020 The FreeBASIC development team.
+''	Copyright (C) 2006-2022 The FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -25,6 +25,13 @@ namespace fb.fbdoc
 
 	type CWikiCon extends object
 
+		enum IndexFormat
+			INDEX_FORMAT_LEGACY = 0 '' choose index format based on page name (old way)
+			INDEX_FORMAT_INDEX = 1 '' plain text page names with revision numbers
+			INDEX_FORMAT_LIST = 2  '' plain text page names
+			INDEX_FORMAT_HTML = 3  '' extract from HTML (old way)
+		end enum
+
 		declare constructor()
 		declare virtual destructor()
 
@@ -37,7 +44,8 @@ namespace fb.fbdoc
 		declare virtual function LoadIndex _
 			( _
 				byval pagename as zstring ptr, _
-				byref body as string _
+				byref body as string, _
+				byval format as IndexFormat _
 			) as boolean
 
 		declare virtual function StorePage _

@@ -2,14 +2,15 @@
 
 FBCALL int fb_GetMouse64( long long *x, long long *y, long long *z, long long *buttons, long long *clip )
 {
-	int res, ix, iy, iz, ibuttons, iclip;
+	int ix = -1, iy = -1, iz = -1, ibuttons = -1, iclip = -1;
 
-	res = fb_GetMouse( &ix, &iy, &iz, &ibuttons, &iclip );
+	int res = fb_GetMouse( &ix, &iy, &iz, &ibuttons, &iclip );
 
-	*x = ix;
-	*y = iy;
-	*z = iz;
-	*buttons = ibuttons;
-	*clip = iclip;
+	if (x) *x = ix;
+	if (y) *y = iy;
+	if (z) *z = iz;
+	if (buttons) *buttons = ibuttons;
+	if (clip) *clip = iclip;
+
 	return res;
 }

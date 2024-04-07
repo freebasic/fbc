@@ -14,10 +14,14 @@ Specifies a type which inherits a Wstring behavior
 	##[[KeyPgWstring|Wstring]]## behaviour can be inherited directly, or indirectly and singly from a base-type.
 	##[[KeyPgWstring|Wstring]]## behaviour can be inherited by a UDT also extending ##//base_typename//## (a kind of pseudo multiple-inheritance).
 	
-	**Note:** By declaring a type (directly or indirectly) as ##**Extends Wstring**## (in addition to defining a suitable ##[[KeyPgOpCast|Cast]]## operator only), this promotes it fully compatible even with ##[[KeyPgOpStrptr|Strptr]]##/##[[KeyPgSadd|Sadd]]##, ##[[KeyPgLset|Lset]]##/##[[KeyPgRset|Rset]]##, and ##[[KeyPgSelectcase|Select Case]]##, but currently not yet with the built in functions ##[[KeyPgVal|Val]]##/##[[KeyPgValint|Valint]]##/##[[KeyPgVallng|Vallng]]##/##[[KeyPgValuint|Valuint]]##/##[[KeyPgValulng|Valunlg]]## and ##[[KeyPgLeft|Left]]##/##[[KeyPgRight|Right]]##.
+	By declaring a type (directly or indirectly) as ##**Extends Wstring**## (in addition to defining a suitable ##[[KeyPgOpCast|Cast]]## operator only), this promotes it fully ##[[KeyPgWstring|Wstring]]## type compatible, even with ##[[KeyPgOpStrptr|Strptr]]##/##[[KeyPgSadd|Sadd]]##, ##[[KeyPgLset|Lset]]##/##[[KeyPgRset|Rset]]##, and ##[[KeyPgSelectcase|Select Case]]##.
 
 {{fbdoc item="ex"}}
 	See ##[[KeyPgExtendsZstring|Extends Zstring]]## for similar examples.
+
+{{fbdoc item="ver"}}
+	- Before fbc 1.09.0, this promotion was not yet fully ##[[KeyPgWstring|Wstring]]## type compatible with the built in functions ##[[KeyPgVal|Val]]##/##[[KeyPgValint|Valint]]##/##[[KeyPgVallng|Vallng]]##/##[[KeyPgValuint|Valuint]]##/##[[KeyPgValulng|Valunlg]]## and ##[[KeyPgLeft|Left]]##/##[[KeyPgRight|Right]]##.
+	- Since fbc 1.07.0
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Extends __Wstring""**##, but unusable because no member procedure is allowed in this dialect.

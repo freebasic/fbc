@@ -1,7 +1,7 @@
 '' examples/manual/math/rnd.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'RND'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgRnd
 '' --------
@@ -27,3 +27,4 @@ Print Int(Rnd * 10) + 1
 '' prints a random integral number in the range [69, 420], or {69 <= n <= 420}.
 ''     (because: 69 <= rnd_range(69, 421) < 421)
 Print Int(rnd_range(69, 421))
+	

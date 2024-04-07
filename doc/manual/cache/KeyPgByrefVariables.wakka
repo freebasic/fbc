@@ -6,7 +6,7 @@ Declares a reference
 	//or//
 		##([[KeyPgDim|Dim]] | [[KeyPgStatic|Static]]) [[[KeyPgShared|Shared]]] **Byref** As [[DataType|DataType]] //name1// = //variable1// [, //name2// = //variable2//, ...]##
 	//or//
-		##[[KeyPgVar|Var]] [[[KeyPgShared|Shared]]] **Byref** //name1// = //variable1// [, **Byref** //name2// = //variable2//, ...]##
+		##[[[KeyPgStatic|Static]]] [[KeyPgVar|Var]] [[[KeyPgShared|Shared]]] **Byref** //name1// = //variable1// [, **Byref** //name2// = //variable2//, ...]##
 
 {{fbdoc item="param"}}
 	##//name//##
@@ -176,6 +176,9 @@ rmd.hello()     '' rmd is a base-type reference referring to a derived-type obje
 
 Sleep
 	%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.04.0
+
 {{fbdoc item="lang"}}
 	- Only supported in //[[CompilerOptlang|-lang fb]]//, //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang deprecated]]// dialects.
 

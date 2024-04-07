@@ -1,5 +1,5 @@
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2008-2020 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2008-2022 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ using fb
 using fbdoc
 
 const def_index_file = hardcoded.default_index_file
+const def_recent_file = hardcoded.default_recent_file
 const def_output_file = "delete.html"
 const wakka_extension = "wakka"
 const DELETE_ME_SENTINEL = "!!! DELETE ME !!!"
@@ -157,6 +158,10 @@ dim isgit as boolean = false
 dim nodelete as boolean = false
 dim doscan as boolean = false
 dim bHTML as boolean = false
+dim index_file as string
+dim bUseRecent as boolean = false
+
+index_file = def_index_file
 
 '' enable cache
 cmd_opts_init( CMD_OPTS_ENABLE_URL or CMD_OPTS_ENABLE_CACHE )
@@ -175,6 +180,9 @@ while( command(i) > "" )
 			isgit = true
 		case "-n"
 			nodelete = true
+		case "-recent"
+			bUseRecent = true
+			index_file = def_recent_file
 		case else
 			cmd_opts_unrecognized_die( i )
 		end select
@@ -192,6 +200,7 @@ if( app_opt.help ) then
 	cmd_opts_show_help_item( "-scan", "scan page for " + DELETE_ME_SENTINEL )
 	cmd_opts_show_help_item( "-html", "write '" + def_output_file + "' helper file" )
 	cmd_opts_show_help_item( "-git", "use 'git rm' instead of file system delete" )
+	cmd_opts_show_help_item( "-recent", "read from RecentChanges.txt instead of PageIndex.txt" )
 	print
 	cmd_opts_show_help( "delete extra files in" )
 	print
@@ -206,9 +215,9 @@ cmd_opts_check_url()
 
 print "cache: "; app_opt.cache_dir
 
-print "Reading '" + def_index_file + "' ..."
-if( ReadIndex( def_index_file ) = FALSE ) then
-	print "Unable to read '" + def_index_file + "'"
+print "Reading '" + index_file + "' ..."
+if( ReadIndex( index_file ) = FALSE ) then
+	print "Unable to read '" + index_file + "'"
 	end 1
 end if
 

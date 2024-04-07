@@ -9,7 +9,7 @@
 /* note: they must be static, or shared libraries in Linux would reuse the 
 		 same function */
 
-#ifdef HOST_DARWIN
+#if defined(HOST_DARWIN) || defined(HOST_ANDROID)
 	/* It seems like __attribute__((constructor(priority))) (or in general, ordering
 	   ctors/dtors across modules) isn't supported on Darwin/MacOSX, so we just use
 	   plain __attribute__((constructor)). */

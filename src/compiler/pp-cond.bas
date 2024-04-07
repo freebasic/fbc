@@ -11,8 +11,8 @@
 const FB_PP_MAXRECLEVEL = 64
 
 type LEXPP_REC
-	istrue		as integer
-	elsecnt		as integer
+	istrue      as integer
+	elsecnt     as integer
 end type
 
 declare sub ppSkip( )
@@ -55,31 +55,20 @@ private function ppExpression( ) as integer
 end function
 
 sub ppCondIf( )
-    dim as integer istrue = any
-    dim as FBSYMBOL ptr base_parent = any
+	dim as integer istrue = any
 
 	istrue = FALSE
 
 	select case as const lexGetToken( LEXCHECK_KWDNAMESPC )
 	'' IFDEF ID
 	case FB_TK_PP_IFDEF
-        lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
-
-		if( cIdentifier( base_parent, FB_IDOPT_NONE ) <> NULL ) then
-			'' any symbol is okay or type's wouldn't be found
-			istrue = TRUE
-		end if
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
+		istrue = (cIdentifierOrUDTMember( ) <> NULL)
 
 	'' IFNDEF ID
 	case FB_TK_PP_IFNDEF
-        lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
-
-		if( cIdentifier( base_parent, FB_IDOPT_NONE ) = NULL ) then
-			'' ditto
-			istrue = TRUE
-		end if
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
+		istrue = (cIdentifierOrUDTMember( ) = NULL)
 
 	'' IF Expression
 	case FB_TK_PP_IF
@@ -107,7 +96,7 @@ end sub
 sub ppCondElse( )
 	dim as integer istrue = any
 
-   	istrue = FALSE
+	istrue = FALSE
 
 	if( pp.level = 0 ) then
 		errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP )
@@ -123,11 +112,22 @@ sub ppCondElse( )
 		exit sub
 	end if
 
-	'' ELSEIF?
-	if( lexGetToken( LEXCHECK_KWDNAMESPC ) = FB_TK_PP_ELSEIF ) then
-		lexSkipToken( LEXCHECK_POST_SUFFIX )
+	select case as const lexGetToken( LEXCHECK_KWDNAMESPC )
 
-		istrue = ppExpression( )
+	'' ELSEIF | ELSEIFDEF | ELSEIFNDEF?
+	case FB_TK_PP_ELSEIF, FB_TK_PP_ELSEIFDEF, FB_TK_PP_ELSEIFNDEF
+
+		select case as const lexGetToken( LEXCHECK_KWDNAMESPC )
+		case FB_TK_PP_ELSEIF
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
+			istrue = ppExpression( )
+		case FB_TK_PP_ELSEIFDEF
+			lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
+			istrue = (cIdentifierOrUDTMember( ) <> NULL)
+		case FB_TK_PP_ELSEIFNDEF
+			lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
+			istrue = (cIdentifierOrUDTMember( ) = NULL)
+		end select
 
 		if( pptb(pp.level).istrue ) then
 			ppSkip( )
@@ -135,13 +135,15 @@ sub ppCondElse( )
 		end if
 
 		pptb(pp.level).istrue = istrue
+
 	'' ELSE
-	else
+	case else
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
-        pptb(pp.level).elsecnt += 1
-        pptb(pp.level).istrue = not pptb(pp.level).istrue
-    end if
+		pptb(pp.level).elsecnt += 1
+		pptb(pp.level).istrue = not pptb(pp.level).istrue
+
+	end select
 
 	if( pptb(pp.level).istrue = FALSE ) then
 		ppSkip( )
@@ -161,21 +163,21 @@ end sub
 
 '':::::
 sub ppAssert( )
-    dim as integer istrue = any
+	dim as integer istrue = any
 
 	'' ASSERT Expression
 
 	istrue = ppExpression( )
 
 	if( istrue = FALSE ) then
-		errReport( FB_ERRMSG_PPASSERT_FAILED ) 
+		errReport( FB_ERRMSG_PPASSERT_FAILED )
 	end if
 
 end sub
 
 '':::::
 private sub ppSkip( )
-    dim as integer iflevel = any
+	dim as integer iflevel = any
 
 	pp.skipping = TRUE
 
@@ -197,6 +199,10 @@ private sub ppSkip( )
 	iflevel = pp.level
 
 	'' skip lines until a #ENDIF or #ELSE at same level is found
+	'' we only care about lines that would affect the level of
+	'' PP processing, like multiline comments and #if* pp tokens.
+	'' we don't care about invalid directives or line continuation
+	'' characters.
 	do
 		select case lexGetToken( )
 		case CHAR_SHARP
@@ -206,7 +212,8 @@ private sub ppSkip( )
 			case FB_TK_PP_IF, FB_TK_PP_IFDEF, FB_TK_PP_IFNDEF
 				iflevel += 1
 
-			case FB_TK_PP_ELSE, FB_TK_PP_ELSEIF
+			case FB_TK_PP_ELSE, FB_TK_PP_ELSEIF, _
+			     FB_TK_PP_ELSEIFDEF, FB_TK_PP_ELSEIFNDEF
 				select case( iflevel )
 				case pp.level
 					pp.skipping = FALSE
@@ -228,13 +235,6 @@ private sub ppSkip( )
 					iflevel -= 1
 				end select
 
-			case FB_TK_PP_DEFINE, FB_TK_PP_UNDEF, FB_TK_PP_PRINT, FB_TK_PP_ERROR, _
-			     FB_TK_PP_INCLUDE, FB_TK_PP_INCLIB, FB_TK_PP_LIBPATH, FB_TK_PP_PRAGMA, _
-			     FB_TK_PP_MACRO, FB_TK_PP_ENDMACRO, FB_TK_PP_LINE, FB_TK_PP_LANG, _
-			     FB_TK_PP_ASSERT, FB_TK_PP_DUMP, FB_TK_PP_ODUMP
-
-			case else
-				errReport( FB_ERRMSG_SYNTAXERROR )
 			end select
 
 		case FB_TK_EOF

@@ -89,7 +89,7 @@ SUITE( fbc_tests.quirk.assignment_token )
 		dim l as integer => 123
 		CU_ASSERT( l = 123 )
 		dim fixstr as string * 5 => "abc"
-		CU_ASSERT( fixstr = "abc" )
+		CU_ASSERT( fixstr = "abc  " )
 
 		'' Parameter initializer and FUNCTION=
 		CU_ASSERT( ftest( ) = 456 )

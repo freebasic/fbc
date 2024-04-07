@@ -27,7 +27,7 @@
 ''   You can do whatever you want with this file.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 

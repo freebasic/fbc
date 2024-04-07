@@ -1,16 +1,16 @@
 '' examples/manual/proguide/procptrs/method-ptr.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'Pointers to Procedures'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgProcedurePointers
 '' --------
 
 /''
- ' This example shows how you can simulate getting a class method pointer, 
+ ' This example shows, before fbc 1.10.0, how you can simulate getting a class method pointer, 
  ' until support is properly implemented in the compiler.
  '
- ' When this is supported, you will only need to remove the static wrapper
+ ' When this is supported (since fbc 1.10.0), you will only need to remove the static wrapper
  ' function presented here, to maintain compatibility. 
  '/
 

@@ -2,10 +2,10 @@
 
 #include "fb_gfx.h"
 
-int fb_GfxColor(int fg, int bg, int flags)
+unsigned int fb_GfxColor(unsigned int fg, unsigned int bg, int flags)
 {
 	FB_GFXCTX *context;
-	int cur;
+	unsigned int cur;
 
 	FB_GRAPHICS_LOCK( );
 
@@ -16,8 +16,8 @@ int fb_GfxColor(int fg, int bg, int flags)
 	} else if (__fb_gfx->depth == 16) {
 		unsigned c = context->fg_color;
 		cur = (((c & 0x001F) << 3) | ((c >> 2) & 0x7) |
-		       ((c & 0x07E0) << 5) | ((c >> 1) & 0x300) |
-		       ((c & 0xF800) << 8) | ((c << 3) & 0x70000) | 0xff000000);
+			((c & 0x07E0) << 5) | ((c >> 1) & 0x300) |
+			((c & 0xF800) << 8) | ((c << 3) & 0x70000) | 0xff000000);
 	} else {
 		cur = context->fg_color;
 	}

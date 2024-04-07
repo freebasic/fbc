@@ -1,0 +1,41 @@
+{{fbdoc item="title" value="ARRAYLEN"}}----
+Provides the length of an array given its array-name.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **""ArrayLen""** ( //arrayname()// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgAny|any]] ) [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]]
+##
+{{fbdoc item="usage"}}##
+	#include once "fbc-int/array.bi"
+	using FB
+	...
+	//result// = **""ArrayLen""**(//arrayname()//)
+##
+{{fbdoc item="param"}}
+	##//arrayname//##
+		The name of the array for which the length is returned.
+
+{{fbdoc item="desc"}}
+	Returns the total number of elements of the array specified by ##//arrayname()//## (taking into account all dimensions of array).
+
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/array/len.bas"}}%%(freebasic)
+#include once "fbc-int/array.bi"
+Using FB
+
+Dim As Longint array(4, 5)
+Dim As Uinteger array_length
+
+array_length = ArrayLen(array())
+Print array_length                '' 30
+%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.09.0. 
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC"".
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgArraySize|ArraySize]]##
+	- ##[[KeyPgFBArray|FBARRAY (array descriptor structure and access)]]##
+
+{{fbdoc item="back" value="CatPgArray|Array Functions"}}

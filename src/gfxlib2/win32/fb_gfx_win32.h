@@ -65,11 +65,11 @@ typedef struct {
 
 extern WIN32DRIVER fb_win32;
 #ifndef HOST_CYGWIN
-extern GFXDRIVER fb_gfxDriverD2D;
-extern GFXDRIVER fb_gfxDriverDirectDraw;
+extern const GFXDRIVER fb_gfxDriverD2D;
+extern const GFXDRIVER fb_gfxDriverDirectDraw;
 #endif
-extern GFXDRIVER fb_gfxDriverGDI;
-extern GFXDRIVER fb_gfxDriverOpenGL;
+extern const GFXDRIVER fb_gfxDriverGDI;
+extern const GFXDRIVER fb_gfxDriverOpenGL;
 
 extern LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 extern void fb_hHandleMessages(void);

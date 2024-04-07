@@ -1,0 +1,663 @@
+---------- public/public/public
+---------- public/public/protected
+Expect error to follow @ 78,4
+vis-nested-1.bas(78) error 202: Illegal member access, found 'i3' in 'test_X0( UDT02, 0, 0, 0, 1, 1 )'
+Expect error to follow @ 78,5
+vis-nested-1.bas(78) error 202: Illegal member access, found 'm3' in 'test_X0( UDT02, 0, 0, 0, 1, 1 )'
+Expect error to follow @ 79,3
+vis-nested-1.bas(79) error 202: Illegal member access, found 'i3' in 'test_X1( UDT02,    0, 0, 1, 1 )'
+Expect error to follow @ 79,4
+vis-nested-1.bas(79) error 202: Illegal member access, found 'm3' in 'test_X1( UDT02,    0, 0, 1, 1 )'
+Expect error to follow @ 80,2
+vis-nested-1.bas(80) error 202: Illegal member access, found 'i3' in 'test_X2( UDT02,       0, 1, 1 )'
+Expect error to follow @ 80,3
+vis-nested-1.bas(80) error 202: Illegal member access, found 'm3' in 'test_X2( UDT02,       0, 1, 1 )'
+Expect error to follow @ 81,1
+vis-nested-1.bas(81) error 202: Illegal member access in 'test_X3( UDT02,          1, 1 )'
+Expect error to follow @ 81,2
+vis-nested-1.bas(81) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT02,          1, 1 )'
+---------- public/public/private
+Expect error to follow @ 88,4
+vis-nested-1.bas(88) error 202: Illegal member access, found 'i3' in 'test_X0( UDT03, 0, 0, 0, 1, 1 )'
+Expect error to follow @ 88,5
+vis-nested-1.bas(88) error 202: Illegal member access, found 'm3' in 'test_X0( UDT03, 0, 0, 0, 1, 1 )'
+Expect error to follow @ 89,3
+vis-nested-1.bas(89) error 202: Illegal member access, found 'i3' in 'test_X1( UDT03,    0, 0, 1, 1 )'
+Expect error to follow @ 89,4
+vis-nested-1.bas(89) error 202: Illegal member access, found 'm3' in 'test_X1( UDT03,    0, 0, 1, 1 )'
+Expect error to follow @ 90,2
+vis-nested-1.bas(90) error 202: Illegal member access, found 'i3' in 'test_X2( UDT03,       0, 1, 1 )'
+Expect error to follow @ 90,3
+vis-nested-1.bas(90) error 202: Illegal member access, found 'm3' in 'test_X2( UDT03,       0, 1, 1 )'
+Expect error to follow @ 91,1
+vis-nested-1.bas(91) error 202: Illegal member access in 'test_X3( UDT03,          1, 1 )'
+Expect error to follow @ 91,2
+vis-nested-1.bas(91) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT03,          1, 1 )'
+---------- public/protected/public
+Expect error to follow @ 98,3
+vis-nested-1.bas(98) error 202: Illegal member access, found 'i2' in 'test_X0( UDT04, 0, 0, 1, 1, 1 )'
+Expect error to follow @ 98,4
+vis-nested-1.bas(98) error 202: Illegal member access, found 'm2' in 'test_X0( UDT04, 0, 0, 1, 1, 1 )'
+Expect error to follow @ 98,5
+vis-nested-1.bas(98) error 202: Illegal member access, found 'm2' in 'test_X0( UDT04, 0, 0, 1, 1, 1 )'
+Expect error to follow @ 99,2
+vis-nested-1.bas(99) error 202: Illegal member access, found 'i2' in 'test_X1( UDT04,    0, 1, 1, 1 )'
+Expect error to follow @ 99,3
+vis-nested-1.bas(99) error 202: Illegal member access, found 'm2' in 'test_X1( UDT04,    0, 1, 1, 1 )'
+Expect error to follow @ 99,4
+vis-nested-1.bas(99) error 202: Illegal member access, found 'm2' in 'test_X1( UDT04,    0, 1, 1, 1 )'
+Expect error to follow @ 100,1
+vis-nested-1.bas(100) error 202: Illegal member access, found 'UDT042' in 'test_X2( UDT04,       1, 1, 1 )'
+Expect error to follow @ 100,2
+vis-nested-1.bas(100) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT04,       1, 1, 1 )'
+Expect error to follow @ 100,3
+vis-nested-1.bas(100) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT04,       1, 1, 1 )'
+Expect error to follow @ 101,1
+vis-nested-1.bas(101) error 202: Illegal member access, found 'UDT042' in 'test_X3( UDT04,          1, 1 )'
+Expect error to follow @ 101,2
+vis-nested-1.bas(101) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT04,          1, 1 )'
+Expect error to follow @ 102,1
+vis-nested-1.bas(102) error 202: Illegal member access, found 'UDT042' in 'test_X3( UDT04,          1, 1 )'
+Expect error to follow @ 102,2
+vis-nested-1.bas(102) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT04,          1, 1 )'
+---------- public/protected/protected
+Expect error to follow @ 109,3
+vis-nested-1.bas(109) error 202: Illegal member access, found 'i2' in 'test_X0( UDT05, 0, 0, 1, 1, 1 )'
+Expect error to follow @ 109,4
+vis-nested-1.bas(109) error 202: Illegal member access, found 'm2' in 'test_X0( UDT05, 0, 0, 1, 1, 1 )'
+Expect error to follow @ 109,5
+vis-nested-1.bas(109) error 202: Illegal member access, found 'm2' in 'test_X0( UDT05, 0, 0, 1, 1, 1 )'
+Expect error to follow @ 110,2
+vis-nested-1.bas(110) error 202: Illegal member access, found 'i2' in 'test_X1( UDT05,    0, 1, 1, 1 )'
+Expect error to follow @ 110,3
+vis-nested-1.bas(110) error 202: Illegal member access, found 'm2' in 'test_X1( UDT05,    0, 1, 1, 1 )'
+Expect error to follow @ 110,4
+vis-nested-1.bas(110) error 202: Illegal member access, found 'm2' in 'test_X1( UDT05,    0, 1, 1, 1 )'
+Expect error to follow @ 111,1
+vis-nested-1.bas(111) error 202: Illegal member access, found 'UDT052' in 'test_X2( UDT05,       1, 1, 1 )'
+Expect error to follow @ 111,2
+vis-nested-1.bas(111) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT05,       1, 1, 1 )'
+Expect error to follow @ 111,3
+vis-nested-1.bas(111) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT05,       1, 1, 1 )'
+Expect error to follow @ 112,1
+vis-nested-1.bas(112) error 202: Illegal member access, found 'UDT052' in 'test_X3( UDT05,          1, 1 )'
+Expect error to follow @ 112,2
+vis-nested-1.bas(112) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT05,          1, 1 )'
+---------- public/protected/private
+Expect error to follow @ 119,3
+vis-nested-1.bas(119) error 202: Illegal member access, found 'i2' in 'test_X0( UDT06, 0, 0, 1, 1, 1 )'
+Expect error to follow @ 119,4
+vis-nested-1.bas(119) error 202: Illegal member access, found 'm2' in 'test_X0( UDT06, 0, 0, 1, 1, 1 )'
+Expect error to follow @ 119,5
+vis-nested-1.bas(119) error 202: Illegal member access, found 'm2' in 'test_X0( UDT06, 0, 0, 1, 1, 1 )'
+Expect error to follow @ 120,2
+vis-nested-1.bas(120) error 202: Illegal member access, found 'i2' in 'test_X1( UDT06,    0, 1, 1, 1 )'
+Expect error to follow @ 120,3
+vis-nested-1.bas(120) error 202: Illegal member access, found 'm2' in 'test_X1( UDT06,    0, 1, 1, 1 )'
+Expect error to follow @ 120,4
+vis-nested-1.bas(120) error 202: Illegal member access, found 'm2' in 'test_X1( UDT06,    0, 1, 1, 1 )'
+Expect error to follow @ 121,1
+vis-nested-1.bas(121) error 202: Illegal member access, found 'UDT062' in 'test_X2( UDT06,       1, 1, 1 )'
+Expect error to follow @ 121,2
+vis-nested-1.bas(121) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT06,       1, 1, 1 )'
+Expect error to follow @ 121,3
+vis-nested-1.bas(121) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT06,       1, 1, 1 )'
+Expect error to follow @ 122,1
+vis-nested-1.bas(122) error 202: Illegal member access, found 'UDT062' in 'test_X3( UDT06,          1, 1 )'
+Expect error to follow @ 122,2
+vis-nested-1.bas(122) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT06,          1, 1 )'
+---------- public/private/public
+Expect error to follow @ 129,3
+vis-nested-1.bas(129) error 202: Illegal member access, found 'i2' in 'test_X0( UDT07, 0, 0, 1, 1, 1 )'
+Expect error to follow @ 129,4
+vis-nested-1.bas(129) error 202: Illegal member access, found 'm2' in 'test_X0( UDT07, 0, 0, 1, 1, 1 )'
+Expect error to follow @ 129,5
+vis-nested-1.bas(129) error 202: Illegal member access, found 'm2' in 'test_X0( UDT07, 0, 0, 1, 1, 1 )'
+Expect error to follow @ 130,2
+vis-nested-1.bas(130) error 202: Illegal member access, found 'i2' in 'test_X1( UDT07,    0, 1, 1, 1 )'
+Expect error to follow @ 130,3
+vis-nested-1.bas(130) error 202: Illegal member access, found 'm2' in 'test_X1( UDT07,    0, 1, 1, 1 )'
+Expect error to follow @ 130,4
+vis-nested-1.bas(130) error 202: Illegal member access, found 'm2' in 'test_X1( UDT07,    0, 1, 1, 1 )'
+Expect error to follow @ 131,1
+vis-nested-1.bas(131) error 202: Illegal member access, found 'UDT072' in 'test_X2( UDT07,       1, 1, 1 )'
+Expect error to follow @ 131,2
+vis-nested-1.bas(131) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT07,       1, 1, 1 )'
+Expect error to follow @ 131,3
+vis-nested-1.bas(131) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT07,       1, 1, 1 )'
+Expect error to follow @ 132,1
+vis-nested-1.bas(132) error 202: Illegal member access, found 'UDT072' in 'test_X3( UDT07,          1, 1 )'
+Expect error to follow @ 132,2
+vis-nested-1.bas(132) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT07,          1, 1 )'
+---------- public/private/protected
+Expect error to follow @ 139,3
+vis-nested-1.bas(139) error 202: Illegal member access, found 'i2' in 'test_X0( UDT08, 0, 0, 1, 1, 1 )'
+Expect error to follow @ 139,4
+vis-nested-1.bas(139) error 202: Illegal member access, found 'm2' in 'test_X0( UDT08, 0, 0, 1, 1, 1 )'
+Expect error to follow @ 139,5
+vis-nested-1.bas(139) error 202: Illegal member access, found 'm2' in 'test_X0( UDT08, 0, 0, 1, 1, 1 )'
+Expect error to follow @ 140,2
+vis-nested-1.bas(140) error 202: Illegal member access, found 'i2' in 'test_X1( UDT08,    0, 1, 1, 1 )'
+Expect error to follow @ 140,3
+vis-nested-1.bas(140) error 202: Illegal member access, found 'm2' in 'test_X1( UDT08,    0, 1, 1, 1 )'
+Expect error to follow @ 140,4
+vis-nested-1.bas(140) error 202: Illegal member access, found 'm2' in 'test_X1( UDT08,    0, 1, 1, 1 )'
+Expect error to follow @ 141,1
+vis-nested-1.bas(141) error 202: Illegal member access, found 'UDT082' in 'test_X2( UDT08,       1, 1, 1 )'
+Expect error to follow @ 141,2
+vis-nested-1.bas(141) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT08,       1, 1, 1 )'
+Expect error to follow @ 141,3
+vis-nested-1.bas(141) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT08,       1, 1, 1 )'
+Expect error to follow @ 142,1
+vis-nested-1.bas(142) error 202: Illegal member access, found 'UDT082' in 'test_X3( UDT08,          1, 1 )'
+Expect error to follow @ 142,2
+vis-nested-1.bas(142) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT08,          1, 1 )'
+---------- public/private/private
+Expect error to follow @ 149,3
+vis-nested-1.bas(149) error 202: Illegal member access, found 'i2' in 'test_X0( UDT09, 0, 0, 1, 1, 1 )'
+Expect error to follow @ 149,4
+vis-nested-1.bas(149) error 202: Illegal member access, found 'm2' in 'test_X0( UDT09, 0, 0, 1, 1, 1 )'
+Expect error to follow @ 149,5
+vis-nested-1.bas(149) error 202: Illegal member access, found 'm2' in 'test_X0( UDT09, 0, 0, 1, 1, 1 )'
+Expect error to follow @ 150,2
+vis-nested-1.bas(150) error 202: Illegal member access, found 'i2' in 'test_X1( UDT09,    0, 1, 1, 1 )'
+Expect error to follow @ 150,3
+vis-nested-1.bas(150) error 202: Illegal member access, found 'm2' in 'test_X1( UDT09,    0, 1, 1, 1 )'
+Expect error to follow @ 150,4
+vis-nested-1.bas(150) error 202: Illegal member access, found 'm2' in 'test_X1( UDT09,    0, 1, 1, 1 )'
+Expect error to follow @ 151,1
+vis-nested-1.bas(151) error 202: Illegal member access, found 'UDT092' in 'test_X2( UDT09,       1, 1, 1 )'
+Expect error to follow @ 151,2
+vis-nested-1.bas(151) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT09,       1, 1, 1 )'
+Expect error to follow @ 151,3
+vis-nested-1.bas(151) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT09,       1, 1, 1 )'
+Expect error to follow @ 152,1
+vis-nested-1.bas(152) error 202: Illegal member access, found 'UDT092' in 'test_X3( UDT09,          1, 1 )'
+Expect error to follow @ 152,2
+vis-nested-1.bas(152) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT09,          1, 1 )'
+---------- protected/public/public
+Expect error to follow @ 159,2
+vis-nested-1.bas(159) error 202: Illegal member access, found 'i1' in 'test_X0( UDT10, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 159,3
+vis-nested-1.bas(159) error 202: Illegal member access, found 'm1' in 'test_X0( UDT10, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 159,4
+vis-nested-1.bas(159) error 202: Illegal member access, found 'm1' in 'test_X0( UDT10, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 159,5
+vis-nested-1.bas(159) error 202: Illegal member access, found 'm1' in 'test_X0( UDT10, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 160,1
+vis-nested-1.bas(160) error 202: Illegal member access, found 'UDT101' in 'test_X1( UDT10,    1, 1, 1, 1 )'
+Expect error to follow @ 160,2
+vis-nested-1.bas(160) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT10,    1, 1, 1, 1 )'
+Expect error to follow @ 160,3
+vis-nested-1.bas(160) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT10,    1, 1, 1, 1 )'
+Expect error to follow @ 160,4
+vis-nested-1.bas(160) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT10,    1, 1, 1, 1 )'
+Expect error to follow @ 161,1
+vis-nested-1.bas(161) error 202: Illegal member access, found 'UDT101' in 'test_X2( UDT10,       1, 1, 1 )'
+Expect error to follow @ 161,2
+vis-nested-1.bas(161) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT10,       1, 1, 1 )'
+Expect error to follow @ 161,3
+vis-nested-1.bas(161) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT10,       1, 1, 1 )'
+Expect error to follow @ 162,1
+vis-nested-1.bas(162) error 202: Illegal member access, found 'UDT101' in 'test_X3( UDT10,          1, 1 )'
+Expect error to follow @ 162,2
+vis-nested-1.bas(162) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT10,          1, 1 )'
+---------- protected/public/protected
+Expect error to follow @ 169,2
+vis-nested-1.bas(169) error 202: Illegal member access, found 'i1' in 'test_X0( UDT11, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 169,3
+vis-nested-1.bas(169) error 202: Illegal member access, found 'm1' in 'test_X0( UDT11, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 169,4
+vis-nested-1.bas(169) error 202: Illegal member access, found 'm1' in 'test_X0( UDT11, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 169,5
+vis-nested-1.bas(169) error 202: Illegal member access, found 'm1' in 'test_X0( UDT11, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 170,1
+vis-nested-1.bas(170) error 202: Illegal member access, found 'UDT111' in 'test_X1( UDT11,    1, 1, 1, 1 )'
+Expect error to follow @ 170,2
+vis-nested-1.bas(170) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT11,    1, 1, 1, 1 )'
+Expect error to follow @ 170,3
+vis-nested-1.bas(170) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT11,    1, 1, 1, 1 )'
+Expect error to follow @ 170,4
+vis-nested-1.bas(170) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT11,    1, 1, 1, 1 )'
+Expect error to follow @ 171,1
+vis-nested-1.bas(171) error 202: Illegal member access, found 'UDT111' in 'test_X2( UDT11,       1, 1, 1 )'
+Expect error to follow @ 171,2
+vis-nested-1.bas(171) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT11,       1, 1, 1 )'
+Expect error to follow @ 171,3
+vis-nested-1.bas(171) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT11,       1, 1, 1 )'
+Expect error to follow @ 172,1
+vis-nested-1.bas(172) error 202: Illegal member access, found 'UDT111' in 'test_X3( UDT11,          1, 1 )'
+Expect error to follow @ 172,2
+vis-nested-1.bas(172) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT11,          1, 1 )'
+---------- protected/public/private
+Expect error to follow @ 179,2
+vis-nested-1.bas(179) error 202: Illegal member access, found 'i1' in 'test_X0( UDT12, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 179,3
+vis-nested-1.bas(179) error 202: Illegal member access, found 'm1' in 'test_X0( UDT12, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 179,4
+vis-nested-1.bas(179) error 202: Illegal member access, found 'm1' in 'test_X0( UDT12, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 179,5
+vis-nested-1.bas(179) error 202: Illegal member access, found 'm1' in 'test_X0( UDT12, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 180,1
+vis-nested-1.bas(180) error 202: Illegal member access, found 'UDT121' in 'test_X1( UDT12,    1, 1, 1, 1 )'
+Expect error to follow @ 180,2
+vis-nested-1.bas(180) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT12,    1, 1, 1, 1 )'
+Expect error to follow @ 180,3
+vis-nested-1.bas(180) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT12,    1, 1, 1, 1 )'
+Expect error to follow @ 180,4
+vis-nested-1.bas(180) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT12,    1, 1, 1, 1 )'
+Expect error to follow @ 181,1
+vis-nested-1.bas(181) error 202: Illegal member access, found 'UDT121' in 'test_X2( UDT12,       1, 1, 1 )'
+Expect error to follow @ 181,2
+vis-nested-1.bas(181) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT12,       1, 1, 1 )'
+Expect error to follow @ 181,3
+vis-nested-1.bas(181) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT12,       1, 1, 1 )'
+Expect error to follow @ 182,1
+vis-nested-1.bas(182) error 202: Illegal member access, found 'UDT121' in 'test_X3( UDT12,          1, 1 )'
+Expect error to follow @ 182,2
+vis-nested-1.bas(182) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT12,          1, 1 )'
+---------- protected/protected/public
+Expect error to follow @ 189,2
+vis-nested-1.bas(189) error 202: Illegal member access, found 'i1' in 'test_X0( UDT13, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 189,3
+vis-nested-1.bas(189) error 202: Illegal member access, found 'm1' in 'test_X0( UDT13, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 189,4
+vis-nested-1.bas(189) error 202: Illegal member access, found 'm1' in 'test_X0( UDT13, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 189,5
+vis-nested-1.bas(189) error 202: Illegal member access, found 'm1' in 'test_X0( UDT13, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 190,1
+vis-nested-1.bas(190) error 202: Illegal member access, found 'UDT131' in 'test_X1( UDT13,    1, 1, 1, 1 )'
+Expect error to follow @ 190,2
+vis-nested-1.bas(190) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT13,    1, 1, 1, 1 )'
+Expect error to follow @ 190,3
+vis-nested-1.bas(190) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT13,    1, 1, 1, 1 )'
+Expect error to follow @ 190,4
+vis-nested-1.bas(190) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT13,    1, 1, 1, 1 )'
+Expect error to follow @ 191,1
+vis-nested-1.bas(191) error 202: Illegal member access, found 'UDT131' in 'test_X2( UDT13,       1, 1, 1 )'
+Expect error to follow @ 191,2
+vis-nested-1.bas(191) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT13,       1, 1, 1 )'
+Expect error to follow @ 191,3
+vis-nested-1.bas(191) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT13,       1, 1, 1 )'
+Expect error to follow @ 192,1
+vis-nested-1.bas(192) error 202: Illegal member access, found 'UDT131' in 'test_X3( UDT13,          1, 1 )'
+Expect error to follow @ 192,2
+vis-nested-1.bas(192) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT13,          1, 1 )'
+---------- protected/protected/protected
+Expect error to follow @ 199,2
+vis-nested-1.bas(199) error 202: Illegal member access, found 'i1' in 'test_X0( UDT14, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 199,3
+vis-nested-1.bas(199) error 202: Illegal member access, found 'm1' in 'test_X0( UDT14, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 199,4
+vis-nested-1.bas(199) error 202: Illegal member access, found 'm1' in 'test_X0( UDT14, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 199,5
+vis-nested-1.bas(199) error 202: Illegal member access, found 'm1' in 'test_X0( UDT14, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 200,1
+vis-nested-1.bas(200) error 202: Illegal member access, found 'UDT141' in 'test_X1( UDT14,    1, 1, 1, 1 )'
+Expect error to follow @ 200,2
+vis-nested-1.bas(200) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT14,    1, 1, 1, 1 )'
+Expect error to follow @ 200,3
+vis-nested-1.bas(200) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT14,    1, 1, 1, 1 )'
+Expect error to follow @ 200,4
+vis-nested-1.bas(200) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT14,    1, 1, 1, 1 )'
+Expect error to follow @ 201,1
+vis-nested-1.bas(201) error 202: Illegal member access, found 'UDT141' in 'test_X2( UDT14,       1, 1, 1 )'
+Expect error to follow @ 201,2
+vis-nested-1.bas(201) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT14,       1, 1, 1 )'
+Expect error to follow @ 201,3
+vis-nested-1.bas(201) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT14,       1, 1, 1 )'
+Expect error to follow @ 202,1
+vis-nested-1.bas(202) error 202: Illegal member access, found 'UDT141' in 'test_X3( UDT14,          1, 1 )'
+Expect error to follow @ 202,2
+vis-nested-1.bas(202) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT14,          1, 1 )'
+---------- protected/protected/private
+Expect error to follow @ 209,2
+vis-nested-1.bas(209) error 202: Illegal member access, found 'i1' in 'test_X0( UDT15, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 209,3
+vis-nested-1.bas(209) error 202: Illegal member access, found 'm1' in 'test_X0( UDT15, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 209,4
+vis-nested-1.bas(209) error 202: Illegal member access, found 'm1' in 'test_X0( UDT15, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 209,5
+vis-nested-1.bas(209) error 202: Illegal member access, found 'm1' in 'test_X0( UDT15, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 210,1
+vis-nested-1.bas(210) error 202: Illegal member access, found 'UDT151' in 'test_X1( UDT15,    1, 1, 1, 1 )'
+Expect error to follow @ 210,2
+vis-nested-1.bas(210) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT15,    1, 1, 1, 1 )'
+Expect error to follow @ 210,3
+vis-nested-1.bas(210) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT15,    1, 1, 1, 1 )'
+Expect error to follow @ 210,4
+vis-nested-1.bas(210) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT15,    1, 1, 1, 1 )'
+Expect error to follow @ 211,1
+vis-nested-1.bas(211) error 202: Illegal member access, found 'UDT151' in 'test_X2( UDT15,       1, 1, 1 )'
+Expect error to follow @ 211,2
+vis-nested-1.bas(211) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT15,       1, 1, 1 )'
+Expect error to follow @ 211,3
+vis-nested-1.bas(211) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT15,       1, 1, 1 )'
+Expect error to follow @ 212,1
+vis-nested-1.bas(212) error 202: Illegal member access, found 'UDT151' in 'test_X3( UDT15,          1, 1 )'
+Expect error to follow @ 212,2
+vis-nested-1.bas(212) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT15,          1, 1 )'
+---------- protected/private/public
+Expect error to follow @ 219,2
+vis-nested-1.bas(219) error 202: Illegal member access, found 'i1' in 'test_X0( UDT16, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 219,3
+vis-nested-1.bas(219) error 202: Illegal member access, found 'm1' in 'test_X0( UDT16, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 219,4
+vis-nested-1.bas(219) error 202: Illegal member access, found 'm1' in 'test_X0( UDT16, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 219,5
+vis-nested-1.bas(219) error 202: Illegal member access, found 'm1' in 'test_X0( UDT16, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 220,1
+vis-nested-1.bas(220) error 202: Illegal member access, found 'UDT161' in 'test_X1( UDT16,    1, 1, 1, 1 )'
+Expect error to follow @ 220,2
+vis-nested-1.bas(220) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT16,    1, 1, 1, 1 )'
+Expect error to follow @ 220,3
+vis-nested-1.bas(220) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT16,    1, 1, 1, 1 )'
+Expect error to follow @ 220,4
+vis-nested-1.bas(220) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT16,    1, 1, 1, 1 )'
+Expect error to follow @ 221,1
+vis-nested-1.bas(221) error 202: Illegal member access, found 'UDT161' in 'test_X2( UDT16,       1, 1, 1 )'
+Expect error to follow @ 221,2
+vis-nested-1.bas(221) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT16,       1, 1, 1 )'
+Expect error to follow @ 221,3
+vis-nested-1.bas(221) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT16,       1, 1, 1 )'
+Expect error to follow @ 222,1
+vis-nested-1.bas(222) error 202: Illegal member access, found 'UDT161' in 'test_X3( UDT16,          1, 1 )'
+Expect error to follow @ 222,2
+vis-nested-1.bas(222) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT16,          1, 1 )'
+---------- protected/private/protected
+Expect error to follow @ 229,2
+vis-nested-1.bas(229) error 202: Illegal member access, found 'i1' in 'test_X0( UDT17, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 229,3
+vis-nested-1.bas(229) error 202: Illegal member access, found 'm1' in 'test_X0( UDT17, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 229,4
+vis-nested-1.bas(229) error 202: Illegal member access, found 'm1' in 'test_X0( UDT17, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 229,5
+vis-nested-1.bas(229) error 202: Illegal member access, found 'm1' in 'test_X0( UDT17, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 230,1
+vis-nested-1.bas(230) error 202: Illegal member access, found 'UDT171' in 'test_X1( UDT17,    1, 1, 1, 1 )'
+Expect error to follow @ 230,2
+vis-nested-1.bas(230) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT17,    1, 1, 1, 1 )'
+Expect error to follow @ 230,3
+vis-nested-1.bas(230) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT17,    1, 1, 1, 1 )'
+Expect error to follow @ 230,4
+vis-nested-1.bas(230) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT17,    1, 1, 1, 1 )'
+Expect error to follow @ 231,1
+vis-nested-1.bas(231) error 202: Illegal member access, found 'UDT171' in 'test_X2( UDT17,       1, 1, 1 )'
+Expect error to follow @ 231,2
+vis-nested-1.bas(231) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT17,       1, 1, 1 )'
+Expect error to follow @ 231,3
+vis-nested-1.bas(231) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT17,       1, 1, 1 )'
+Expect error to follow @ 232,1
+vis-nested-1.bas(232) error 202: Illegal member access, found 'UDT171' in 'test_X3( UDT17,          1, 1 )'
+Expect error to follow @ 232,2
+vis-nested-1.bas(232) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT17,          1, 1 )'
+---------- protected/private/private
+Expect error to follow @ 239,2
+vis-nested-1.bas(239) error 202: Illegal member access, found 'i1' in 'test_X0( UDT18, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 239,3
+vis-nested-1.bas(239) error 202: Illegal member access, found 'm1' in 'test_X0( UDT18, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 239,4
+vis-nested-1.bas(239) error 202: Illegal member access, found 'm1' in 'test_X0( UDT18, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 239,5
+vis-nested-1.bas(239) error 202: Illegal member access, found 'm1' in 'test_X0( UDT18, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 240,1
+vis-nested-1.bas(240) error 202: Illegal member access, found 'UDT181' in 'test_X1( UDT18,    1, 1, 1, 1 )'
+Expect error to follow @ 240,2
+vis-nested-1.bas(240) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT18,    1, 1, 1, 1 )'
+Expect error to follow @ 240,3
+vis-nested-1.bas(240) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT18,    1, 1, 1, 1 )'
+Expect error to follow @ 240,4
+vis-nested-1.bas(240) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT18,    1, 1, 1, 1 )'
+Expect error to follow @ 241,1
+vis-nested-1.bas(241) error 202: Illegal member access, found 'UDT181' in 'test_X2( UDT18,       1, 1, 1 )'
+Expect error to follow @ 241,2
+vis-nested-1.bas(241) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT18,       1, 1, 1 )'
+Expect error to follow @ 241,3
+vis-nested-1.bas(241) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT18,       1, 1, 1 )'
+Expect error to follow @ 242,1
+vis-nested-1.bas(242) error 202: Illegal member access, found 'UDT181' in 'test_X3( UDT18,          1, 1 )'
+Expect error to follow @ 242,2
+vis-nested-1.bas(242) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT18,          1, 1 )'
+---------- private/public/public
+Expect error to follow @ 249,2
+vis-nested-1.bas(249) error 202: Illegal member access, found 'i1' in 'test_X0( UDT19, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 249,3
+vis-nested-1.bas(249) error 202: Illegal member access, found 'm1' in 'test_X0( UDT19, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 249,4
+vis-nested-1.bas(249) error 202: Illegal member access, found 'm1' in 'test_X0( UDT19, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 249,5
+vis-nested-1.bas(249) error 202: Illegal member access, found 'm1' in 'test_X0( UDT19, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 250,1
+vis-nested-1.bas(250) error 202: Illegal member access, found 'UDT191' in 'test_X1( UDT19,    1, 1, 1, 1 )'
+Expect error to follow @ 250,2
+vis-nested-1.bas(250) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT19,    1, 1, 1, 1 )'
+Expect error to follow @ 250,3
+vis-nested-1.bas(250) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT19,    1, 1, 1, 1 )'
+Expect error to follow @ 250,4
+vis-nested-1.bas(250) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT19,    1, 1, 1, 1 )'
+Expect error to follow @ 251,1
+vis-nested-1.bas(251) error 202: Illegal member access, found 'UDT191' in 'test_X2( UDT19,       1, 1, 1 )'
+Expect error to follow @ 251,2
+vis-nested-1.bas(251) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT19,       1, 1, 1 )'
+Expect error to follow @ 251,3
+vis-nested-1.bas(251) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT19,       1, 1, 1 )'
+Expect error to follow @ 252,1
+vis-nested-1.bas(252) error 202: Illegal member access, found 'UDT191' in 'test_X3( UDT19,          1, 1 )'
+Expect error to follow @ 252,2
+vis-nested-1.bas(252) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT19,          1, 1 )'
+---------- private/public/protected
+Expect error to follow @ 259,2
+vis-nested-1.bas(259) error 202: Illegal member access, found 'i1' in 'test_X0( UDT20, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 259,3
+vis-nested-1.bas(259) error 202: Illegal member access, found 'm1' in 'test_X0( UDT20, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 259,4
+vis-nested-1.bas(259) error 202: Illegal member access, found 'm1' in 'test_X0( UDT20, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 259,5
+vis-nested-1.bas(259) error 202: Illegal member access, found 'm1' in 'test_X0( UDT20, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 260,1
+vis-nested-1.bas(260) error 202: Illegal member access, found 'UDT201' in 'test_X1( UDT20,    1, 1, 1, 1 )'
+Expect error to follow @ 260,2
+vis-nested-1.bas(260) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT20,    1, 1, 1, 1 )'
+Expect error to follow @ 260,3
+vis-nested-1.bas(260) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT20,    1, 1, 1, 1 )'
+Expect error to follow @ 260,4
+vis-nested-1.bas(260) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT20,    1, 1, 1, 1 )'
+Expect error to follow @ 261,1
+vis-nested-1.bas(261) error 202: Illegal member access, found 'UDT201' in 'test_X2( UDT20,       1, 1, 1 )'
+Expect error to follow @ 261,2
+vis-nested-1.bas(261) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT20,       1, 1, 1 )'
+Expect error to follow @ 261,3
+vis-nested-1.bas(261) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT20,       1, 1, 1 )'
+Expect error to follow @ 262,1
+vis-nested-1.bas(262) error 202: Illegal member access, found 'UDT201' in 'test_X3( UDT20,          1, 1 )'
+Expect error to follow @ 262,2
+vis-nested-1.bas(262) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT20,          1, 1 )'
+---------- private/public/private
+Expect error to follow @ 269,2
+vis-nested-1.bas(269) error 202: Illegal member access, found 'i1' in 'test_X0( UDT21, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 269,3
+vis-nested-1.bas(269) error 202: Illegal member access, found 'm1' in 'test_X0( UDT21, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 269,4
+vis-nested-1.bas(269) error 202: Illegal member access, found 'm1' in 'test_X0( UDT21, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 269,5
+vis-nested-1.bas(269) error 202: Illegal member access, found 'm1' in 'test_X0( UDT21, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 270,1
+vis-nested-1.bas(270) error 202: Illegal member access, found 'UDT211' in 'test_X1( UDT21,    1, 1, 1, 1 )'
+Expect error to follow @ 270,2
+vis-nested-1.bas(270) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT21,    1, 1, 1, 1 )'
+Expect error to follow @ 270,3
+vis-nested-1.bas(270) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT21,    1, 1, 1, 1 )'
+Expect error to follow @ 270,4
+vis-nested-1.bas(270) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT21,    1, 1, 1, 1 )'
+Expect error to follow @ 271,1
+vis-nested-1.bas(271) error 202: Illegal member access, found 'UDT211' in 'test_X2( UDT21,       1, 1, 1 )'
+Expect error to follow @ 271,2
+vis-nested-1.bas(271) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT21,       1, 1, 1 )'
+Expect error to follow @ 271,3
+vis-nested-1.bas(271) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT21,       1, 1, 1 )'
+Expect error to follow @ 272,1
+vis-nested-1.bas(272) error 202: Illegal member access, found 'UDT211' in 'test_X3( UDT21,          1, 1 )'
+Expect error to follow @ 272,2
+vis-nested-1.bas(272) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT21,          1, 1 )'
+---------- private/protected/public
+Expect error to follow @ 279,2
+vis-nested-1.bas(279) error 202: Illegal member access, found 'i1' in 'test_X0( UDT22, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 279,3
+vis-nested-1.bas(279) error 202: Illegal member access, found 'm1' in 'test_X0( UDT22, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 279,4
+vis-nested-1.bas(279) error 202: Illegal member access, found 'm1' in 'test_X0( UDT22, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 279,5
+vis-nested-1.bas(279) error 202: Illegal member access, found 'm1' in 'test_X0( UDT22, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 280,1
+vis-nested-1.bas(280) error 202: Illegal member access, found 'UDT221' in 'test_X1( UDT22,    1, 1, 1, 1 )'
+Expect error to follow @ 280,2
+vis-nested-1.bas(280) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT22,    1, 1, 1, 1 )'
+Expect error to follow @ 280,3
+vis-nested-1.bas(280) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT22,    1, 1, 1, 1 )'
+Expect error to follow @ 280,4
+vis-nested-1.bas(280) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT22,    1, 1, 1, 1 )'
+Expect error to follow @ 281,1
+vis-nested-1.bas(281) error 202: Illegal member access, found 'UDT221' in 'test_X2( UDT22,       1, 1, 1 )'
+Expect error to follow @ 281,2
+vis-nested-1.bas(281) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT22,       1, 1, 1 )'
+Expect error to follow @ 281,3
+vis-nested-1.bas(281) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT22,       1, 1, 1 )'
+Expect error to follow @ 282,1
+vis-nested-1.bas(282) error 202: Illegal member access, found 'UDT221' in 'test_X3( UDT22,          1, 1 )'
+Expect error to follow @ 282,2
+vis-nested-1.bas(282) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT22,          1, 1 )'
+---------- private/protected/protected
+Expect error to follow @ 289,2
+vis-nested-1.bas(289) error 202: Illegal member access, found 'i1' in 'test_X0( UDT23, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 289,3
+vis-nested-1.bas(289) error 202: Illegal member access, found 'm1' in 'test_X0( UDT23, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 289,4
+vis-nested-1.bas(289) error 202: Illegal member access, found 'm1' in 'test_X0( UDT23, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 289,5
+vis-nested-1.bas(289) error 202: Illegal member access, found 'm1' in 'test_X0( UDT23, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 290,1
+vis-nested-1.bas(290) error 202: Illegal member access, found 'UDT231' in 'test_X1( UDT23,    1, 1, 1, 1 )'
+Expect error to follow @ 290,2
+vis-nested-1.bas(290) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT23,    1, 1, 1, 1 )'
+Expect error to follow @ 290,3
+vis-nested-1.bas(290) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT23,    1, 1, 1, 1 )'
+Expect error to follow @ 290,4
+vis-nested-1.bas(290) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT23,    1, 1, 1, 1 )'
+Expect error to follow @ 291,1
+vis-nested-1.bas(291) error 202: Illegal member access, found 'UDT231' in 'test_X2( UDT23,       1, 1, 1 )'
+Expect error to follow @ 291,2
+vis-nested-1.bas(291) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT23,       1, 1, 1 )'
+Expect error to follow @ 291,3
+vis-nested-1.bas(291) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT23,       1, 1, 1 )'
+Expect error to follow @ 292,1
+vis-nested-1.bas(292) error 202: Illegal member access, found 'UDT231' in 'test_X3( UDT23,          1, 1 )'
+Expect error to follow @ 292,2
+vis-nested-1.bas(292) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT23,          1, 1 )'
+---------- private/protected/private
+Expect error to follow @ 299,2
+vis-nested-1.bas(299) error 202: Illegal member access, found 'i1' in 'test_X0( UDT24, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 299,3
+vis-nested-1.bas(299) error 202: Illegal member access, found 'm1' in 'test_X0( UDT24, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 299,4
+vis-nested-1.bas(299) error 202: Illegal member access, found 'm1' in 'test_X0( UDT24, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 299,5
+vis-nested-1.bas(299) error 202: Illegal member access, found 'm1' in 'test_X0( UDT24, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 300,1
+vis-nested-1.bas(300) error 202: Illegal member access, found 'UDT241' in 'test_X1( UDT24,    1, 1, 1, 1 )'
+Expect error to follow @ 300,2
+vis-nested-1.bas(300) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT24,    1, 1, 1, 1 )'
+Expect error to follow @ 300,3
+vis-nested-1.bas(300) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT24,    1, 1, 1, 1 )'
+Expect error to follow @ 300,4
+vis-nested-1.bas(300) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT24,    1, 1, 1, 1 )'
+Expect error to follow @ 301,1
+vis-nested-1.bas(301) error 202: Illegal member access, found 'UDT241' in 'test_X2( UDT24,       1, 1, 1 )'
+Expect error to follow @ 301,2
+vis-nested-1.bas(301) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT24,       1, 1, 1 )'
+Expect error to follow @ 301,3
+vis-nested-1.bas(301) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT24,       1, 1, 1 )'
+Expect error to follow @ 302,1
+vis-nested-1.bas(302) error 202: Illegal member access, found 'UDT241' in 'test_X3( UDT24,          1, 1 )'
+Expect error to follow @ 302,2
+vis-nested-1.bas(302) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT24,          1, 1 )'
+---------- private/private/public
+Expect error to follow @ 309,2
+vis-nested-1.bas(309) error 202: Illegal member access, found 'i1' in 'test_X0( UDT25, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 309,3
+vis-nested-1.bas(309) error 202: Illegal member access, found 'm1' in 'test_X0( UDT25, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 309,4
+vis-nested-1.bas(309) error 202: Illegal member access, found 'm1' in 'test_X0( UDT25, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 309,5
+vis-nested-1.bas(309) error 202: Illegal member access, found 'm1' in 'test_X0( UDT25, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 310,1
+vis-nested-1.bas(310) error 202: Illegal member access, found 'UDT251' in 'test_X1( UDT25,    1, 1, 1, 1 )'
+Expect error to follow @ 310,2
+vis-nested-1.bas(310) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT25,    1, 1, 1, 1 )'
+Expect error to follow @ 310,3
+vis-nested-1.bas(310) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT25,    1, 1, 1, 1 )'
+Expect error to follow @ 310,4
+vis-nested-1.bas(310) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT25,    1, 1, 1, 1 )'
+Expect error to follow @ 311,1
+vis-nested-1.bas(311) error 202: Illegal member access, found 'UDT251' in 'test_X2( UDT25,       1, 1, 1 )'
+Expect error to follow @ 311,2
+vis-nested-1.bas(311) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT25,       1, 1, 1 )'
+Expect error to follow @ 311,3
+vis-nested-1.bas(311) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT25,       1, 1, 1 )'
+Expect error to follow @ 312,1
+vis-nested-1.bas(312) error 202: Illegal member access, found 'UDT251' in 'test_X3( UDT25,          1, 1 )'
+Expect error to follow @ 312,2
+vis-nested-1.bas(312) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT25,          1, 1 )'
+---------- private/private/protected
+Expect error to follow @ 319,2
+vis-nested-1.bas(319) error 202: Illegal member access, found 'i1' in 'test_X0( UDT26, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 319,3
+vis-nested-1.bas(319) error 202: Illegal member access, found 'm1' in 'test_X0( UDT26, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 319,4
+vis-nested-1.bas(319) error 202: Illegal member access, found 'm1' in 'test_X0( UDT26, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 319,5
+vis-nested-1.bas(319) error 202: Illegal member access, found 'm1' in 'test_X0( UDT26, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 320,1
+vis-nested-1.bas(320) error 202: Illegal member access, found 'UDT261' in 'test_X1( UDT26,    1, 1, 1, 1 )'
+Expect error to follow @ 320,2
+vis-nested-1.bas(320) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT26,    1, 1, 1, 1 )'
+Expect error to follow @ 320,3
+vis-nested-1.bas(320) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT26,    1, 1, 1, 1 )'
+Expect error to follow @ 320,4
+vis-nested-1.bas(320) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT26,    1, 1, 1, 1 )'
+Expect error to follow @ 321,1
+vis-nested-1.bas(321) error 202: Illegal member access, found 'UDT261' in 'test_X2( UDT26,       1, 1, 1 )'
+Expect error to follow @ 321,2
+vis-nested-1.bas(321) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT26,       1, 1, 1 )'
+Expect error to follow @ 321,3
+vis-nested-1.bas(321) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT26,       1, 1, 1 )'
+Expect error to follow @ 322,1
+vis-nested-1.bas(322) error 202: Illegal member access, found 'UDT261' in 'test_X3( UDT26,          1, 1 )'
+Expect error to follow @ 322,2
+vis-nested-1.bas(322) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT26,          1, 1 )'
+---------- private/private/private
+Expect error to follow @ 329,2
+vis-nested-1.bas(329) error 202: Illegal member access, found 'i1' in 'test_X0( UDT27, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 329,3
+vis-nested-1.bas(329) error 202: Illegal member access, found 'm1' in 'test_X0( UDT27, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 329,4
+vis-nested-1.bas(329) error 202: Illegal member access, found 'm1' in 'test_X0( UDT27, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 329,5
+vis-nested-1.bas(329) error 202: Illegal member access, found 'm1' in 'test_X0( UDT27, 0, 1, 1, 1, 1 )'
+Expect error to follow @ 330,1
+vis-nested-1.bas(330) error 202: Illegal member access, found 'UDT271' in 'test_X1( UDT27,    1, 1, 1, 1 )'
+Expect error to follow @ 330,2
+vis-nested-1.bas(330) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT27,    1, 1, 1, 1 )'
+Expect error to follow @ 330,3
+vis-nested-1.bas(330) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT27,    1, 1, 1, 1 )'
+Expect error to follow @ 330,4
+vis-nested-1.bas(330) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X1( UDT27,    1, 1, 1, 1 )'
+Expect error to follow @ 331,1
+vis-nested-1.bas(331) error 202: Illegal member access, found 'UDT271' in 'test_X2( UDT27,       1, 1, 1 )'
+Expect error to follow @ 331,2
+vis-nested-1.bas(331) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT27,       1, 1, 1 )'
+Expect error to follow @ 331,3
+vis-nested-1.bas(331) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X2( UDT27,       1, 1, 1 )'
+Expect error to follow @ 332,1
+vis-nested-1.bas(332) error 202: Illegal member access, found 'UDT271' in 'test_X3( UDT27,          1, 1 )'
+Expect error to follow @ 332,2
+vis-nested-1.bas(332) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'test_X3( UDT27,          1, 1 )'

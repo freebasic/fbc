@@ -26,6 +26,8 @@ Preprocessor conditional directive
 	- ##[[KeyPgPpif|#if]]##
 	- ##[[KeyPgPpelse|#else]]## 
 	- ##[[KeyPgPpelseif|#elseIf]]## 
+	- ##[[KeyPgPpelseifdef|#elseIfdef]]## 
+	- ##[[KeyPgPpelseifndef|#elseIfndef]]## 
 	- ##[[KeyPgPpifdef|#ifdef]]##
 	- ##[[KeyPgPpifndef|#ifndef]]##
 	- ##[[KeyPgPpundef|#undef]]##

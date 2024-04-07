@@ -4,6 +4,7 @@
 
 ssize_t fb_hGetCurrentDir( char *dst, ssize_t maxlen )
 {
-	*dst = '\0';
+	if( getcwd( dst, maxlen ) != NULL )
+		return strlen( dst );
 	return 0;
 }

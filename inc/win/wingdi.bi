@@ -11,7 +11,7 @@
 ''   warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 
@@ -2091,7 +2091,7 @@ const DISPLAY_DEVICE_MIRRORING_DRIVER = &h00000008
 const DISPLAY_DEVICE_VGA_COMPATIBLE = &h00000010
 const DISPLAY_DEVICE_REMOVABLE = &h00000020
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0602
 	const DISPLAY_DEVICE_ACC_DRIVER = &h00000040
 #endif
 

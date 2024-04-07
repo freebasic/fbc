@@ -1,7 +1,7 @@
 '' examples/manual/fileio/put-array.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'PUT (File I/O)'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPutfileio
 '' --------
@@ -13,7 +13,7 @@ For i As Integer = 1 To 10
 Next
 
 ' Find the first free file file number
-Dim f As Integer
+Dim f As Long
 f = FreeFile()
 
 ' Open the file "file.ext" for binary usage, using the file number "f"

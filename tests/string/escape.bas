@@ -47,36 +47,56 @@ SUITE( fbc_tests.string_.escape )
 		CU_ASSERT( s[3] = 0 )
 	#endmacro
 
+	#macro checkAbc_fixedtooshort( s )
+		CU_ASSERT( s[0] = 97 )
+		CU_ASSERT( s[1] = 98 )
+		CU_ASSERT( s[2] = 99 )
+		CU_ASSERT( s[3] = 32 )
+	#endmacro
+
+	#macro checkAbc_fixedexact( s )
+		CU_ASSERT( s[0] = 97 )
+		CU_ASSERT( s[1] = 98 )
+		CU_ASSERT( s[2] = 99 )
+	#endmacro
+
+	#macro checkAbc_fixedtoolong( s )
+		CU_ASSERT( s[0] = 97 )
+		CU_ASSERT( s[1] = 98 )
+		CU_ASSERT( s[2] = 99 )
+		CU_ASSERT( s[3] = 100 )
+	#endmacro
+
 	TEST_GROUP( tooShort1 )
 		'' Initializer definitely too short
-		dim shared as  string * 9   globalf = "abc"
+		dim shared as  string * 10   globalf = "abc"
 		dim shared as zstring * 10  globalz = "abc"
 		dim shared as wstring * 10  globalw = wstr( "abc" )
 
 		TEST( default )
-			checkAbc( globalf )
+			checkAbc_fixedtooshort( globalf )
 			checkAbc( globalz )
 			checkAbc( globalw )
 
-			dim as  string * 9   f = "abc"
+			dim as  string * 10   f = "abc"
 			dim as zstring * 10  z = "abc"
 			dim as wstring * 10  w = wstr( "abc" )
 
-			checkAbc( f )
+			checkAbc_fixedtooshort( f )
 			checkAbc( z )
 			checkAbc( w )
 		END_TEST
 	END_TEST_GROUP
 
 	TEST_GROUP( tooShort2 )
-		'' Initializer too short, by one char (the null terminator should be
-		'' taken into account properly)
+		'' Initializer too short, by one char (the null terminator
+		'' or space padding should be taken into account properly)
 		dim shared as  string * 4  globalf = "abc"
 		dim shared as zstring * 5  globalz = "abc"
 		dim shared as wstring * 5  globalw = wstr( "abc" )
 
 		TEST( default )
-			checkAbc( globalf )
+			checkAbc_fixedtooshort( globalf )
 			checkAbc( globalz )
 			checkAbc( globalw )
 
@@ -84,7 +104,7 @@ SUITE( fbc_tests.string_.escape )
 			dim as zstring * 5  z = "abc"
 			dim as wstring * 5  w = wstr( "abc" )
 
-			checkAbc( f )
+			checkAbc_fixedtooshort( f )
 			checkAbc( z )
 			checkAbc( w )
 		END_TEST
@@ -96,7 +116,7 @@ SUITE( fbc_tests.string_.escape )
 		dim shared as wstring * 4  globalw = wstr( "abc" )
 
 		TEST( default )
-			checkAbc( globalf )
+			checkAbc_fixedexact( globalf )
 			checkAbc( globalz )
 			checkAbc( globalw )
 
@@ -104,7 +124,7 @@ SUITE( fbc_tests.string_.escape )
 			dim as zstring * 4  z = "abc"
 			dim as wstring * 4  w = wstr( "abc" )
 
-			checkAbc( f )
+			checkAbc_fixedexact( f )
 			checkAbc( z )
 			checkAbc( w )
 		END_TEST
@@ -113,20 +133,20 @@ SUITE( fbc_tests.string_.escape )
 	TEST_GROUP( tooLong1 )
 		'' Initializer definitely too long, must be truncated, possibly with
 		'' a warning shown
-		dim shared as  string * 3  globalf = "abcdefghij"
+		dim shared as  string * 4  globalf = "abcdefghij"
 		dim shared as zstring * 4  globalz = "abcdefghij"
 		dim shared as wstring * 4  globalw = wstr( "abcdefghij" )
 
 		TEST( default )
-			checkAbc( globalf )
+			checkAbc_fixedtoolong( globalf )
 			checkAbc( globalz )
 			checkAbc( globalw )
 
-			dim as  string * 3  f = "abcdefghij"
+			dim as  string * 4  f = "abcdefghij"
 			dim as zstring * 4  z = "abcdefghij"
 			dim as wstring * 4  w = wstr( "abcdefghij" )
 
-			checkAbc( f )
+			checkAbc_fixedtoolong( f )
 			checkAbc( z )
 			checkAbc( w )
 		END_TEST
@@ -134,13 +154,14 @@ SUITE( fbc_tests.string_.escape )
 
 	TEST_GROUP( tooLong2 )
 		'' Only room for one char + the null terminator
+		'' or no other characters in the case of STRING*1
 		dim shared as  string * 1  globalf = "abc"
 		dim shared as zstring * 2  globalz = "abc"
 		dim shared as wstring * 2  globalw = wstr( "abc" )
 
 		TEST( default )
 			CU_ASSERT( globalf[0] = 97 )
-			CU_ASSERT( globalf[1] = 0 )
+
 			CU_ASSERT( globalz[0] = 97 )
 			CU_ASSERT( globalz[1] = 0 )
 			CU_ASSERT( globalw[0] = 97 )
@@ -151,7 +172,7 @@ SUITE( fbc_tests.string_.escape )
 			dim as wstring * 2  w = wstr( "abc" )
 
 			CU_ASSERT( f[0] = 97 )
-			CU_ASSERT( f[1] = 0 )
+
 			CU_ASSERT( z[0] = 97 )
 			CU_ASSERT( z[1] = 0 )
 			CU_ASSERT( w[0] = 97 )
@@ -406,8 +427,8 @@ SUITE( fbc_tests.string_.escape )
 
 	TEST_GROUP( combination )
 		dim shared as  string * 31  globalf1 = !"a\1\\\"b"
-		dim shared as  string * 1   globalf2 = !"a\1\\\"b"
-		dim shared as  string * 5   globalf3 = !"a\1\\\"b"
+		dim shared as  string * 2   globalf2 = !"a\1\\\"b"
+		dim shared as  string * 6   globalf3 = !"a\1\\\"b"
 
 		dim shared as zstring * 32  globalz1 = !"a\1\\\"b"
 		dim shared as zstring * 2   globalz2 = !"a\1\\\"b"
@@ -432,9 +453,23 @@ SUITE( fbc_tests.string_.escape )
 				CU_ASSERT( s[1] = 0  )
 			#endmacro
 
-			check6( globalf1 )
-			check2( globalf2 )
-			check6( globalf3 )
+			#macro check6fixed( s )
+				CU_ASSERT( s[0] = 97 )
+				CU_ASSERT( s[1] = 1  )
+				CU_ASSERT( s[2] = 92 )
+				CU_ASSERT( s[3] = 34 )
+				CU_ASSERT( s[4] = 98 )
+				CU_ASSERT( s[5] = 32  )
+			#endmacro
+
+			#macro check2fixed( s )
+				CU_ASSERT( s[0] = 97 )
+				CU_ASSERT( s[1] = 1 )
+			#endmacro
+
+			check6fixed( globalf1 )
+			check2fixed( globalf2 )
+			check6fixed( globalf3 )
 
 			check6( globalz1 )
 			check2( globalz2 )
@@ -445,8 +480,8 @@ SUITE( fbc_tests.string_.escape )
 			check6( globalw3 )
 
 			dim as  string * 31  f1 = !"a\1\\\"b"
-			dim as  string * 1   f2 = !"a\1\\\"b"
-			dim as  string * 5   f3 = !"a\1\\\"b"
+			dim as  string * 2   f2 = !"a\1\\\"b"
+			dim as  string * 6   f3 = !"a\1\\\"b"
 
 			dim as zstring * 32  z1 = !"a\1\\\"b"
 			dim as zstring * 2   z2 = !"a\1\\\"b"
@@ -456,9 +491,9 @@ SUITE( fbc_tests.string_.escape )
 			dim as wstring * 2   w2 = wstr( !"a\1\\\"b" )
 			dim as wstring * 6   w3 = wstr( !"a\1\\\"b" )
 
-			check6( f1 )
-			check2( f2 )
-			check6( f3 )
+			check6fixed( f1 )
+			check2fixed( f2 )
+			check6fixed( f3 )
 
 			check6( z1 )
 			check2( z2 )

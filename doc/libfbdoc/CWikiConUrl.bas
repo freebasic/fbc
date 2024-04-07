@@ -1,5 +1,5 @@
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006-2020 The FreeBASIC development team.
+''	Copyright (C) 2006-2022 The FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -39,14 +39,16 @@ namespace fb.fbdoc
 		as zstring ptr		pagename
 		as integer			pageid
 		as string csrftoken
-		declare function queryCsrfToken( ) as string
-		declare function queryCsrfTokenIfNeeded( ) as boolean
+		declare function queryCsrfTokenString( ) as string
+		declare function queryCsrfToken( byval force as boolean = TRUE ) as boolean
 		declare sub maybeAddCsrfTokenToForm( byval form as CHttpForm ptr )
 	end type
 
 	const wakka_prefix = "?wakka="
 	const wakka_loginpage = "UserSettings"
 	const wakka_raw = "/raw"
+	const wakka_rawlist = "/rawlist"
+	const wakka_rawlist_index = "/rawlist&format=index"
 	const wakka_edit = "/edit"
 	const wakka_getid = "/getid"
 	const wakka_error = "wiki-error"
@@ -112,7 +114,7 @@ namespace fb.fbdoc
 		return token
 	end function
 
-	function CWikiConUrlCtx.queryCsrfToken( ) as string
+	function CWikiConUrlCtx.queryCsrfTokenString( ) as string
 		dim stream as CHttpStream = CHttpStream( http )
 		if( stream.Receive( build_url( @this, wakka_loginpage ), TRUE, ca_file ) = FALSE ) then
 			return ""
@@ -120,9 +122,9 @@ namespace fb.fbdoc
 		return extractCsrfToken( stream.Read() )
 	end function
 
-	function CWikiConUrlCtx.queryCsrfTokenIfNeeded( ) as boolean
-		if( len( csrftoken ) = 0 ) then
-			csrftoken = queryCsrfToken( )
+	function CWikiConUrlCtx.queryCsrfToken( byval force as boolean = TRUE ) as boolean
+		if( (len( csrftoken ) = 0) orelse (force = TRUE) ) then
+			csrftoken = queryCsrfTokenString( )
 			if( len( csrftoken ) = 0 ) then
 				return FALSE
 			end if
@@ -209,7 +211,7 @@ namespace fb.fbdoc
 			return FALSE
 		end if
 
-		if( ctx->queryCsrfTokenIfNeeded( ) = FALSE ) then
+		if( ctx->queryCsrfToken( ) = FALSE ) then
 			return FALSE
 		end if
 
@@ -557,8 +559,11 @@ namespace fb.fbdoc
 	function CWikiConUrl.LoadIndex _
 		( _
 			byval page as zstring ptr, _
-			byref body as string _
+			byref body as string, _
+			byval format as CWikiCon.IndexFormat _
 		) as boolean
+
+		dim isHTML as boolean = false
 
 		function = FALSE
 		body = ""
@@ -578,13 +583,42 @@ namespace fb.fbdoc
 		end if
 
 		dim URL as string
-		URL = build_url( ctx, NULL, NULL )
+
+		select case format
+		case CWikiCon.IndexFormat.INDEX_FORMAT_LEGACY
+			'' cheap trick to use the rawlist format for PageIndex and RecentChanges"
+			if( *page = "PageIndex" ) then
+				URL = build_url( ctx, NULL, wakka_rawlist )
+			elseif( *page = "RecentChanges" ) then
+				URL = build_url( ctx, NULL, wakka_rawlist_index )
+			else
+				URL = build_url( ctx, NULL, NULL )
+				isHTML = true
+			end if
+
+		case CWikiCon.IndexFormat.INDEX_FORMAT_HTML
+			URL = build_url( ctx, NULL, NULL )
+			isHTML = true
+
+		case CWikiCon.IndexFormat.INDEX_FORMAT_LIST
+			URL = build_url( ctx, NULL, wakka_rawlist )
+
+		case CWikiCon.IndexFormat.INDEX_FORMAT_INDEX
+			URL = build_url( ctx, NULL, wakka_rawlist_index )
+
+		case else
+			delete stream
+			exit function
+
+		end select
 
 		if( stream->Receive( URL, TRUE, ctx->ca_file ) ) then
 			body = stream->Read()
 			remove_http_headers( body )
-			remove_html_tags( body )
-			extract_page_names( body )
+			if( isHTML ) then
+				remove_html_tags(  body )
+				extract_page_names( body )
+			end if
 			function = TRUE
 		end if
 
@@ -604,6 +638,10 @@ namespace fb.fbdoc
 		dim body_out as string
 
 		if( ctx = NULL ) then
+			return FALSE
+		end if
+
+		if( ctx->queryCsrfToken( ) = FALSE ) then
 			return FALSE
 		end if
 
@@ -656,6 +694,10 @@ namespace fb.fbdoc
 		) as boolean
 
 		if( ctx = NULL ) then
+			return FALSE
+		end if
+
+		if( ctx->queryCsrfToken( ) = FALSE ) then
 			return FALSE
 		end if
 

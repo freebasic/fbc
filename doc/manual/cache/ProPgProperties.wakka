@@ -1,6 +1,7 @@
 {{fbdoc item="title" value="Properties"}}----
+Properties are a special mix of member variable and member procedure. 
 
-Properties are a special mix of member variable and member procedure. They provide a way to set or retrieve values of an object, through normal looking assignments or member accesses, but also let the object perform actions if it needs to update itself.
+They provide a way to set or retrieve values of an object, through normal looking assignments or member accesses, but also let the object perform actions if it needs to update itself.
 
 **{{anchor name="BASIC|Basic properties"}}**
 	Declaring and using setter and getter properties.

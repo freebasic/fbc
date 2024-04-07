@@ -10,7 +10,7 @@ Intrinsic define (macro) performed by the compiler.
 
 {{fbdoc item="desc"}}
 	Converts the argument to a string, similar to stringize operator (#) but can be used anywhere (will expand the argument before conversion).
-	More precisely, ##**""__FB_QUOTE__""**## returns an over-quoted text compared to the one passed through the argument (the argument may already be a string, and so the return will be an over-quoted string in this case).
+	More precisely, ##**""__FB_QUOTE__""**## returns an over-quoted text (prefixed with the ##[[KeyPgOpPpNoescape|Operator $ (Non-Escaped String Literal)]]##) compared to the one passed through the argument (the argument may already be a string, and so the return will be an over-quoted string in this case).
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/defines/fbquote.bas"}}%%(freebasic)
@@ -58,7 +58,10 @@ FreeBASIC
 FreeBASIC
 '/
 	%%
-	See also ##[[KeyPgDdfbunquote|__FB_QUOTE__]]## example.
+	See also ##[[KeyPgDdfbunquote|__FB_UNQUOTE__]]## example.
+
+{{fbdoc item="ver"}}
+	- Since fbc 1.08.0
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""

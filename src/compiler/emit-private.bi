@@ -1,22 +1,22 @@
 const COMMA   = ", "
 
 type EMITDATATYPE
-	rnametb			as integer
-	mname			as zstring * 11+1
+	rnametb         as integer
+	mname           as zstring * 11+1
 end type
 
 extern dtypeTB(0 to FB_DATATYPES-1) as EMITDATATYPE
 
-const EMIT_MEMBLOCK_MAXLEN	= 16				'' when to use memblk clear/move (needed by AST)
+const EMIT_MEMBLOCK_MAXLEN  = 16          '' when to use memblk clear/move (needed by AST)
 
 const EMIT_MAXRNAMES  = REG_MAXREGS
-const EMIT_MAXRTABLES = 4				'' 8-bit, 16-bit, 32-bit, fpoint
+const EMIT_MAXRTABLES   = 4               '' 8-bit, 16-bit, 32-bit, fpoint
 
-const EMIT_LOCSTART 	= 0
-const EMIT_ARGSTART 	= 4 + 4 '' skip return address + saved ebp
+const EMIT_LOCSTART     = 0
+const EMIT_ARGSTART     = 4 + 4 '' skip return address + saved ebp
 
 enum EMITREG_ENUM
-	EMIT_REG_FP0	= 0
+	EMIT_REG_FP0    = 0
 	EMIT_REG_FP1
 	EMIT_REG_FP2
 	EMIT_REG_FP3
@@ -25,7 +25,7 @@ enum EMITREG_ENUM
 	EMIT_REG_FP6
 	EMIT_REG_FP7
 
-	EMIT_REG_EDX	= EMIT_REG_FP0				'' aliased
+	EMIT_REG_EDX    = EMIT_REG_FP0              '' aliased
 	EMIT_REG_EDI
 	EMIT_REG_ESI
 	EMIT_REG_ECX
@@ -116,3 +116,42 @@ declare function _init_opFnTB_SSE _
 	( _
 		byval _opFnTB_SSE as any ptr ptr _
 	) as integer
+
+
+'' float comparison
+
+enum CMPF_OP
+	CMPF_OP_EQ = 0
+	CMPF_OP_NE
+	CMPF_OP_GT
+	CMPF_OP_LT
+	CMPF_OP_GE
+	CMPF_OP_LE
+
+	CMPF_OP_COUNT
+end enum
+
+type CMPF_RECIPE
+	op as CMPF_OP
+	mnemonic as zstring ptr             '' 'normal' comparison to use
+	rev_mnemonic as zstring ptr         '' swapped comparison
+	msk_mnemonic as zstring ptr
+	mask as zstring ptr
+	parity_false as integer
+	parity_true as integer
+	swapregs as integer
+	swapinit as integer
+end type
+
+declare sub hCMPF_jxx _
+	( _
+		byval recipe as CMPF_RECIPE ptr, _
+		byref lname as string _
+	)
+
+declare sub hCMPF_set _
+	( _
+		byval rvreg as IRVREG ptr, _
+		byval recipe as CMPF_RECIPE ptr, _
+		byref lname as string _
+	)

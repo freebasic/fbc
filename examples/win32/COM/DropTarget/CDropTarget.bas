@@ -8,7 +8,7 @@
 ''
 '' Constructor for the CDropTarget class
 ''
-constructor CDropTarget(hwnd as HWND)
+constructor CDropTarget(byval hwnd as HWND)
 	'' IDropTarget implementation (while there's no support for virtual methods and inheritance)
 	static as IDropTargetVtbl vtbl = _
 	( _
@@ -32,7 +32,7 @@ constructor CDropTarget(hwnd as HWND)
 
 	'' tell OLE that the window is a drop target
 	RegisterDragDrop(m_hWnd, cast(LPDROPTARGET, @this))
-	
+
 end constructor
 
 ''
@@ -48,19 +48,19 @@ destructor CDropTarget()
 
 	'' release our own reference
 	m_DropTarget.lpVtbl->Release(@m_DropTarget)
-	
+
 end destructor
 
 
 ''
-''	IUnknown::QueryInterface
+''  IUnknown::QueryInterface
 ''
 private function CDropTarget.QueryInterface _
-	(pInst as IDropTarget ptr, _ 
-	 iid as REFIID, ppvObject as any ptr ptr) as HRESULT
-	 
+	(byval pInst as IDropTarget ptr, _
+	 byval iid as REFIID, byval ppvObject as any ptr ptr) as HRESULT
+
 	dim as CDropTarget ptr _this = cast(CDropTarget ptr, pInst)
-	
+
 	if( (memcmp( iid, @IID_IUnknown, len( GUID ) ) = 0) or _
 		(memcmp( iid, @IID_IDropTarget, len( GUID ) ) = 0) ) then
 		CDropTarget.AddRef( pInst )
@@ -70,30 +70,30 @@ private function CDropTarget.QueryInterface _
 		*ppvObject = NULL
 		return E_NOINTERFACE
 	end if
-	
+
 end function
 
 ''
-''	IUnknown::AddRef
+''  IUnknown::AddRef
 ''
 private function CDropTarget.AddRef _
-	(pInst as IDropTarget ptr) as ULONG
-	
+	(byval pInst as IDropTarget ptr) as ULONG
+
 	dim as CDropTarget ptr _this = cast(CDropTarget ptr, pInst)
-	
+
 	return InterlockedIncrement(@_this->m_lRefCount)
 end function
 
 ''
-''	IUnknown::Release
+''  IUnknown::Release
 ''
 private function CDropTarget.Release _
-	(pInst as IDropTarget ptr) as ULONG
-	
+	(byval pInst as IDropTarget ptr) as ULONG
+
 	dim as CDropTarget ptr _this = cast(CDropTarget ptr, pInst)
-	
+
 	dim as LONG count = InterlockedDecrement(@_this->m_lRefCount)
-		
+
 	if(count = 0) then
 		return 0
 	else
@@ -102,18 +102,18 @@ private function CDropTarget.Release _
 end function
 
 ''
-''	IDropTarget::DragEnter
+''  IDropTarget::DragEnter
 ''
 private function CDropTarget.DragEnter _
-	(pInst as IDropTarget ptr, _ 
-	 pDataObject as IDataObject ptr, grfKeyState as DWORD, _
-	 pt as POINTL, pdwEffect as DWORD ptr) as HRESULT
-	
+	(byval pInst as IDropTarget ptr, _
+	 byval pDataObject as IDataObject ptr, byval grfKeyState as DWORD, _
+	 byval pt as POINTL, byval pdwEffect as DWORD ptr) as HRESULT
+
 	dim as CDropTarget ptr _this = cast(CDropTarget ptr, pInst)
-	
+
 	'' does the dataobject contain data we want?
 	_this->m_fAllowDrop = _this->QueryDataObject(pDataObject)
-	
+
 	if(_this->m_fAllowDrop) then
 		'' get the dropeffect based on keyboard state
 		*pdwEffect = _this->DropEffect(grfKeyState, pt, *pdwEffect)
@@ -129,14 +129,14 @@ private function CDropTarget.DragEnter _
 end function
 
 ''
-''	IDropTarget::DragOver
+''  IDropTarget::DragOver
 ''
 private function CDropTarget.DragOver _
-	(pInst as IDropTarget ptr, _ 
-	 grfKeyState as DWORD, pt as POINTL, pdwEffect as DWORD ptr) as HRESULT
+	(byval pInst as IDropTarget ptr, _
+	 byval grfKeyState as DWORD, byval pt as POINTL, byval pdwEffect as DWORD ptr) as HRESULT
 
 	dim as CDropTarget ptr _this = cast(CDropTarget ptr, pInst)
-	
+
 	if(_this->m_fAllowDrop) then
 		*pdwEffect = _this->DropEffect(grfKeyState, pt, *pdwEffect)
 		_this->PositionCursor(pt)
@@ -148,26 +148,26 @@ private function CDropTarget.DragOver _
 end function
 
 ''
-''	IDropTarget::DragLeave
+''  IDropTarget::DragLeave
 ''
 private function CDropTarget.DragLeave _
-	(pInst as IDropTarget ptr) as HRESULT
-	
+	(byval pInst as IDropTarget ptr) as HRESULT
+
 	dim as CDropTarget ptr _this = cast(CDropTarget ptr, pInst)
-	
+
 	return S_OK
 end function
 
 ''
-''	IDropTarget::Drop
+''  IDropTarget::Drop
 ''
 private function CDropTarget.Drop _
-	(pInst as IDropTarget ptr, _ 
-	 pDataObject as IDataObject ptr, grfKeyState as DWORD, _
-	 pt as POINTL, pdwEffect as DWORD ptr) as HRESULT
-	
+	(byval pInst as IDropTarget ptr, _
+	 byval pDataObject as IDataObject ptr, byval grfKeyState as DWORD, _
+	 byval pt as POINTL, byval pdwEffect as DWORD ptr) as HRESULT
+
 	dim as CDropTarget ptr _this = cast(CDropTarget ptr, pInst)
-	
+
 	_this->PositionCursor(pt)
 
 	if(_this->m_fAllowDrop) then
@@ -185,10 +185,10 @@ end function
 '' Position the edit control's caret under the mouse
 ''
 private sub CDropTarget.PositionCursor _
-	(pt as POINTL)
-	
+	(byval pt as POINTL)
+
 	dim as DWORD curpos
-		
+
 	'' get the character position of mouse
 	ScreenToClient(m_hWnd, cast(POINT ptr, @pt))
 	curpos = SendMessage(m_hWnd, EM_CHARFROMPOS, 0, MAKELPARAM(pt.x, pt.y))
@@ -201,8 +201,8 @@ end sub
 ''
 ''
 private sub CDropTarget.DropData _
-	(pDataObject as IDataObject ptr)
-	
+	(byval pDataObject as IDataObject ptr)
+
 	'' construct a FORMATETC object
 	dim as FORMATETC fmtetc = ( CF_TEXT, 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL )
 	dim as STGMEDIUM stgmed
@@ -225,11 +225,11 @@ private sub CDropTarget.DropData _
 end sub
 
 ''
-''	QueryDataObject private helper routine
+''  QueryDataObject private helper routine
 ''
 private function CDropTarget.QueryDataObject _
-	(pDataObject as IDataObject ptr) as integer
-	
+	(byval pDataObject as IDataObject ptr) as integer
+
 	dim as FORMATETC fmtetc = ( CF_TEXT, 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL )
 
 	'' does the data object support CF_TEXT using a HGLOBAL?
@@ -237,29 +237,29 @@ private function CDropTarget.QueryDataObject _
 end function
 
 ''
-''	DropEffect private helper routine
+''  DropEffect private helper routine
 ''
 private function CDropTarget.DropEffect _
-	(grfKeyState as DWORD, pt as POINTL, dwAllowed as DWORD ) as DWORD
-	
+	(byval grfKeyState as DWORD, byval pt as POINTL, byval dwAllowed as DWORD ) as DWORD
+
 	dim as DWORD dwEffect = 0
 
 	'' 1. check "pt" -> do we allow a drop at the specified coordinates?
-	
+
 	'' 2. work out that the drop-effect should be based on grfKeyState
 	if(grfKeyState and MK_CONTROL) then
 		dwEffect = dwAllowed and DROPEFFECT_COPY
 	elseif(grfKeyState and MK_SHIFT) then
 		dwEffect = dwAllowed and DROPEFFECT_MOVE
 	end if
-	
+
 	'' 3. no key-modifiers were specified (or drop effect not allowed), so
 	''    base the effect on those allowed by the dropsource
 	if(dwEffect = 0) then
 		if(dwAllowed and DROPEFFECT_COPY) then dwEffect = DROPEFFECT_COPY
 		if(dwAllowed and DROPEFFECT_MOVE) then dwEffect = DROPEFFECT_MOVE
 	end if
-	
+
 	return dwEffect
 end function
 

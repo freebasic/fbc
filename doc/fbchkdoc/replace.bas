@@ -1,5 +1,5 @@
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2008-2020 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2008-2022 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ using fb
 using fbdoc
 
 const def_index_file = hardcoded.default_index_file
+const def_recent_file = hardcoded.default_recent_file
 
 '' --------------------------------------------------------
 
@@ -105,6 +106,10 @@ dim sComment as string
 dim bNoSave as boolean = false
 dim bHTML as boolean = false
 dim bProcess as boolean = true
+dim bUseRecent as boolean = false
+dim index_file as string
+
+index_file = def_index_file
 
 '' enable cache
 cmd_opts_init( CMD_OPTS_ENABLE_URL or CMD_OPTS_ENABLE_CACHE or CMD_OPTS_ENABLE_AUTOCACHE )
@@ -132,6 +137,10 @@ while( command(i) > "" )
 		case "-r"
 			bHTML = TRUE
 
+		case "-recent"
+			bUseRecent = TRUE
+			index_file = def_recent_file
+
 		case else
 			cmd_opts_unrecognized_die( i )
 		end select
@@ -152,6 +161,7 @@ if( app_opt.help ) then
 	print "   -s           skip processing"
 	print "   -n           don't save the changes"
 	print "   -r           create html page with clone and delete links"
+	print "   -recent      use RecentChanges.txt instead of PageIndex.txt"
 	print
 	cmd_opts_show_help( "replace files in" )
 	print
@@ -190,8 +200,9 @@ end type
 
 dim replace(1 to 1000) as replace_t
 dim count as integer = 0
-dim as string sName, sOld, sNew, x, text, newtext
+dim as string sName, sOld, sNew, x, text, newtext, cmt
 dim as integer h
+dim as long rev
 
 if( open( f for input as #2 ) <> 0 ) then
 	print "Unable to open '"; f; "'"
@@ -219,14 +230,15 @@ if( bProcess ) then
 
 	print "cache: "; app_opt.cache_dir
 
-	if( open( def_index_file for input as #1 ) <> 0 ) then
-		print "Unable to open '" + def_index_file + "'"
+	if( open( index_file for input as #1 ) <> 0 ) then
+		print "Unable to open '" + index_file + "'"
 		end 1
 	end if
 
 	while eof(1) = 0
 		line input #1, x
 		x = Trim(x)
+		x = ParsePageName( x, cmt, rev )
 		if( x > "" ) then
 			f = app_opt.cache_dir + x + ".wakka"
 			text = LoadFileAsString( f )

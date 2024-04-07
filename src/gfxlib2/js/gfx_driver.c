@@ -219,10 +219,10 @@ static int driver_get_mouse(int *x, int *y, int *z, int *buttons, int *clip)
 {
 	SDL_PumpEvents();
 
-	*buttons = fb_js_sdl_buttons_to_fb_buttons(SDL_GetMouseState(x, y));
-
-	*z = 0;
-	*clip = 0;
+	uint32_t state = SDL_GetMouseState(x, y);
+	if (buttons) *buttons = fb_js_sdl_buttons_to_fb_buttons(state);
+	if (z) *z = 0;
+	if (clip) *clip = 0;
 
 	return 0;
 }
@@ -259,6 +259,7 @@ static void driver_set_window_title(char *title)
     SDL_WM_SetCaption(title, NULL);
 }
 
+/* GFXDRIVER */
 static const GFXDRIVER fb_gfxDriverJS =
 {
 	"asmjs",                 /* char *name; */
@@ -274,14 +275,16 @@ static const GFXDRIVER fb_gfxDriverJS =
 	NULL,                    /* int (*set_window_pos)(int x, int y); */
 	driver_fetch_modes,      /* int *(*fetch_modes)(int depth, int *size); */
 	NULL,                    /* void (*flip)(void); */
-	driver_poll_events       /* void (*poll_events)(void); */
+	driver_poll_events,      /* void (*poll_events)(void); */
+	NULL                     /* void (*update)(void); */
 };
 
+/* GFXDRIVER */
 static const GFXDRIVER fb_gfxWebGL =
 {
 	"WebGL",                 /* char *name; */
-	WGL_init,             /* int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags); */
-	WGL_exit,             /* void (*exit)(void); */
+	WGL_init,                /* int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags); */
+	WGL_exit,                /* void (*exit)(void); */
 	driver_lock,             /* void (*lock)(void); */
 	driver_unlock,           /* void (*unlock)(void); */
 	NULL,                    /* void (*set_palette)(int index, int r, int g, int b); */
@@ -291,8 +294,9 @@ static const GFXDRIVER fb_gfxWebGL =
 	driver_set_window_title, /* void (*set_window_title)(char *title); */
 	NULL,                    /* int (*set_window_pos)(int x, int y); */
 	driver_fetch_modes,      /* int *(*fetch_modes)(int depth, int *size); */
-	WGL_Flip,                    /* void (*flip)(void); */
-	driver_poll_events       /* void (*poll_events)(void); */
+	WGL_Flip,                /* void (*flip)(void); */
+	driver_poll_events,      /* void (*poll_events)(void); */
+	NULL                     /* void (*update)(void); */
 };
 
 const GFXDRIVER *__fb_gfx_drivers_list[] = {

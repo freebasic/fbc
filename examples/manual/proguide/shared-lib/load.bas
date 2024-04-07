@@ -1,7 +1,7 @@
 '' examples/manual/proguide/shared-lib/load.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'Shared Libraries'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgSharedLibraries
 '' --------
@@ -46,4 +46,3 @@ Print x; " +"; y; " ="; AddNumbers( x, y )
 '' you got from it via dylibsymbol will become invalid, and accessing them
 '' will cause the application to crash.
 DyLibFree( libhandle )
-	

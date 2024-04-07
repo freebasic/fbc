@@ -56,8 +56,8 @@ FBCALL void         fb_ConsoleGetSize   ( int *cols, int *rows );
 FBCALL void         fb_ConsoleGetXY     ( int *col, int *row );
 
 FBCALL unsigned int fb_ConsoleReadXY    ( int col, int row, int colorflag );
-       int          fb_ConsoleColor     ( int fc, int bc, int flags );
-       int          fb_ConsoleGetColorAtt( void );
+       unsigned int fb_ConsoleColor     ( unsigned int fc, unsigned int bc, int flags );
+       unsigned int fb_ConsoleGetColorAtt( void );
 
 FBCALL int          fb_ConsoleView      ( int toprow, int botrow );
        int          fb_ConsoleViewEx    ( int toprow, int botrow, int set_cursor );

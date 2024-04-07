@@ -1,0 +1,16 @@
+{{fbdoc item="title" value="Line Separator"}}----
+**Line Separator** character(s) allow to place multiple statements on the same line.
+
+{{fbdoc item="desc"}}
+	Statements normally take up a single line with no terminator.
+	But statements can even be stacked by using a colon (:) to separate them.
+	
+	To place multiple statements on the same line, separate the statements with a colon (:), as in the following example:
+		{{fbdoc item="filename" value="examples/manual/proguide/lineseparator.bas"}}%%(freebasic)
+'' These 5 statements are stacked on the same line, using the ':' character as a separator
+Dim As String text = "Hello!" : Color 14, 3 : Print text : Color 7, 0 : Sleep
+		%%
+{{fbdoc item="see"}}
+	- [[ProPgLineContinuation|Line Continuation]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

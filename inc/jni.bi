@@ -10,7 +10,9 @@
 #ifndef __jni_bi__
 #define __jni_bi__
 
+#ifndef __FB_ANDROID__
 #inclib "jvm"
+#endif
 
 #include once "crt/stdio.bi"
 #include once "crt/stdarg.bi"
@@ -376,9 +378,12 @@ type JavaVM_
 	functions as JNIInvokeInterface_ ptr
 end type
 
+#ifndef __FB_ANDROID__
 declare function JNI_GetDefaultJavaVMInitArgs  alias "JNI_GetDefaultJavaVMInitArgs" (byval args as any ptr) as jint
 declare function JNI_CreateJavaVM  alias "JNI_CreateJavaVM" (byval pvm as JavaVM ptr ptr, byval penv as any ptr ptr, byval args as any ptr) as jint
 declare function JNI_GetCreatedJavaVMs  alias "JNI_GetCreatedJavaVMs" (byval as JavaVM ptr ptr, byval as jsize, byval as jsize ptr) as jint
+#endif
+
 declare function JNI_OnLoad  alias "JNI_OnLoad" (byval vm as JavaVM ptr, byval reserved as any ptr) as jint
 declare sub JNI_OnUnload  alias "JNI_OnUnload" (byval vm as JavaVM ptr, byval reserved as any ptr)
 

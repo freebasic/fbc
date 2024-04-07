@@ -27,11 +27,11 @@ Reads a number of wide-characters from console or file
 ~&//Note: FreeBASIC does not currently support reading wide-characters from the console.//
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/console/winput.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/console/winput.bas"}}%%(freebasic)
 dim char as wstring * 2
 
 dim filename as string, enc as string
-dim f as integer
+dim f as long
 
 line input "Please enter a file name: ", filename
 line input "Please enter an encoding type (optional): ", enc
@@ -74,7 +74,6 @@ else
 	
 end if
 %%
-
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect.
 

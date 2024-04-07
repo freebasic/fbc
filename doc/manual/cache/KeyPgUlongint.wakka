@@ -26,5 +26,6 @@ Print "ULongInt Range = "; x; " to "; y
 {{fbdoc item="see"}}
 	- ##[[KeyPgLongint|Longint]]##
 	- ##[[KeyPgCulngint|Culngint]]##
+	- ##[[TblVarTypes|Table with variable types overview, limits and suffixes]]##
 	
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

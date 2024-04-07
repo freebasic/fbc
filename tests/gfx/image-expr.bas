@@ -418,7 +418,7 @@ SUITE( fbc_tests.gfx.image_expr )
 		get (0, 0) - (SCREEN_W-1, SCREEN_H-1), array0
 		CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
 
-	
+
 	end sub
 
 	'' GET from screen into some array...

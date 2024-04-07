@@ -3,7 +3,7 @@
 
 #include once "windows.bi"
 #include once "win/exdisp.bi"
-#include once "win/mshtml.bi"
+#include once "win/mshtmlc.bi"
 
 #include once "CInPlaceFrame.bi"
 #include once "CInPlaceSite.bi"

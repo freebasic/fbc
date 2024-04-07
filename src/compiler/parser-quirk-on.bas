@@ -119,7 +119,7 @@ private function cGOTBStmt _
 end function
 
 '':::::
-''OnStmt		=	ON LOCAL? (Keyword | Expression) (GOTO|GOSUB) Label .
+''OnStmt        =   ON LOCAL? (Keyword | Expression) (GOTO|GOSUB) Label .
 ''
 function cOnStmt _
 	( _

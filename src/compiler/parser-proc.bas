@@ -287,7 +287,7 @@ private function hCheckIdToken( byval has_parent as integer ) as integer
 		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
 			'' if inside a namespace, symbols can't contain periods (.)'s
 			if( symbIsGlobalNamespc( ) = FALSE ) then
-  				if( lexGetPeriodPos( ) > 0 ) then
+				if( lexGetPeriodPos( ) > 0 ) then
 					errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
 				end if
 			end if
@@ -450,9 +450,10 @@ sub cProcRetType _
 
 		case FB_DATATYPE_STRUCT
 			'' __builtin_va_list[] not allowed as a byval return type
+			'' __builtin_va_list on ARM fails translation in C backend
 			if( subtype ) then
 				select case symbGetUdtValistType( subtype )
-				case FB_CVA_LIST_BUILTIN_C_STD
+				case FB_CVA_LIST_BUILTIN_C_STD, FB_CVA_LIST_BUILTIN_ARM
 					if( ((pattrib and FB_PROCATTRIB_RETURNBYREF) = 0) and _
 						typeIsPtr( dtype ) = FALSE ) then
 						errReport( FB_ERRMSG_INVALIDDATATYPES )
@@ -503,42 +504,73 @@ function cProcReturnMethod( byval dtype as FB_DATATYPE ) as FB_PROC_RETURN_METHO
 	end if
 end function
 
-function cProcCallingConv( byval default as FB_FUNCMODE ) as FB_FUNCMODE
+function cProcCallingConv _
+	( _
+		byval default as FB_FUNCMODE, _
+		byref is_explicit as integer _
+	) as FB_FUNCMODE
+
+	is_explicit = FALSE
+
 	'' Use the default FBCALL?
 	if( default = FB_FUNCMODE_FBCALL ) then
 		default = env.target.fbcall
 	end if
 
-	'' (CDECL|STDCALL|PASCAL|THISCALL)?
+	'' (CDECL|STDCALL|PASCAL|THISCALL|FASTCALL)?
 	select case as const lexGetToken( )
 	case FB_TK_CDECL
+		is_explicit = TRUE
 		function = FB_FUNCMODE_CDECL
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	case FB_TK_STDCALL
 		'' FB_FUNCMODE_STDCALL may be remapped to FB_FUNCMODE_STDCALL_MS
 		'' for targets that do not support the @N suffix
+		is_explicit = TRUE
 		function = env.target.stdcall
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	case FB_TK_PASCAL
 		function = FB_FUNCMODE_PASCAL
+		is_explicit = TRUE
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	case FB_TK_THISCALL
 		'' ignore thiscall if '-z no-thiscall' was given
 		if( env.clopt.nothiscall = FALSE ) then
+			'' keep the thiscall call convention even if the target/archictecture wont't support it
+			'' this will allow us to check that the declaration matches the definition.  Also,
+			'' gcc supports extensions for using thiscall even with normal procedures
+			is_explicit = TRUE
 			function = FB_FUNCMODE_THISCALL
 		end if
 		lexSkipToken( )
 
-	case else
+	case FB_TK_FASTCALL
+		'' ignore fastcall if '-z no-fastcall' was given
+		if( env.clopt.nofastcall = FALSE ) then
+			'' keep the fastcall call convention even if the target/archictecture wont't support it
+			'' this will allow us to check that the declaration matches the definition.
+			is_explicit = TRUE
+			function = FB_FUNCMODE_FASTCALL
+		end if
+		lexSkipToken( )
+
+	end select
+
+	'' no explicit calling convention given? then, calculate a default
+	if( is_explicit = FALSE ) then
 		select case as const parser.mangling
 		case FB_MANGLING_BASIC, FB_MANGLING_RTLIB
 			function = default
 
 		case FB_MANGLING_CDECL, FB_MANGLING_CPP
-			function = FB_FUNCMODE_CDECL
+			if( default = FB_FUNCMODE_THISCALL ) then
+				function = default
+			else
+				function = FB_FUNCMODE_CDECL
+			end if
 
 		case FB_MANGLING_STDCALL
 			'' FB_FUNCMODE_STDCALL may be remapped to FB_FUNCMODE_STDCALL_MS
@@ -548,7 +580,7 @@ function cProcCallingConv( byval default as FB_FUNCMODE ) as FB_FUNCMODE
 		case FB_MANGLING_STDCALL_MS
 			function = FB_FUNCMODE_STDCALL_MS
 		end select
-	end select
+	end if
 end function
 
 private sub cNakedAttribute( byref pattrib as FB_PROCATTRIB )
@@ -647,7 +679,7 @@ private function hCheckOpOvlParams _
 		'' self only if FOR, STEP and NEXT
 		if( astGetOpIsSelf( op ) ) then
 			min_params = 0
-	'			min_params = iif( op = AST_OP_NEXT, 1, 0 )
+	'           min_params = iif( op = AST_OP_NEXT, 1, 0 )
 			max_params = 1
 			if( op = AST_OP_NEXT ) then
 				min_params += 1
@@ -668,7 +700,7 @@ private function hCheckOpOvlParams _
 	dim as integer real_params = params - iif( is_method, 1, 0 )
 	if( (real_params < min_params) or (real_params > max_params) ) then
 		errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
-	   	exit function
+		exit function
 	end if
 
 	if( params > 0 ) then
@@ -756,25 +788,25 @@ private function hCheckOpOvlParams _
 			case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
 				if( params > 1 ) then
 					dim as FBSYMBOL ptr nxtparam = param->next
-	
+
 					hCheckParam( proc, nxtparam, 2 )
-	
+
 					'' is the 1st param an UDT?
 					select case symbGetType( param )
 					case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
-	
+
 					case else
 						'' try the 2nd one..
 						select case symbGetType( nxtparam )
 						case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
-	
+
 						case else
 							hParamError( proc, 2, FB_ERRMSG_ATLEASTONEPARAMMUSTBEANUDT )
 							exit function
 						end select
 					end select
 				end if
-	
+
 			'' FOR, STEP or NEXT?
 			case AST_OP_FOR, AST_OP_STEP, AST_OP_NEXT
 				if( astGetOpIsSelf( op ) ) then
@@ -783,15 +815,15 @@ private function hCheckOpOvlParams _
 						if( is_method ) then
 							param = param->next
 						end if
-	
+
 						'' must be of the same type as parent
 						if( (param = NULL) or (parent = NULL) ) then
 							hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
 							exit function
 						end if
-	
+
 						hCheckParam( proc, param, 1 )
-	
+
 						'' same type?
 						if( (symbGetType( param ) <> symbGetType( parent )) or _
 						    (symbGetSubtype( param ) <> parent) ) then
@@ -918,11 +950,11 @@ private function hCheckIsSelfCloneByval _
 	if( options and FB_PROCOPT_ISPROTO ) then
 		param = param->next
 	end if
-	
+
 	if( param = NULL ) then
 		exit function
 	end if
-	
+
 	'' struct?
 	if( symbGetType( param ) <> FB_DATATYPE_STRUCT ) then
 		exit function
@@ -932,7 +964,7 @@ private function hCheckIsSelfCloneByval _
 	if( symbGetSubtype( param ) <> parent ) then
 		exit function
 	end if
-	
+
 	'' byval?
 	if( symbGetParamMode( param ) <> FB_PARAMMODE_BYVAL ) then
 		exit function
@@ -944,7 +976,7 @@ private function hCheckIsSelfCloneByval _
 			exit function
 		end if
 	end if
-	
+
 	'' At least one additional non-optional parameter?
 	param = param->next
 	while( param <> NULL )
@@ -1042,6 +1074,7 @@ function cProcHeader _
 	dim as integer dtype = any, is_outside = any, is_memberproc = any
 	dim as integer mode = any, stats = any, op = any, is_get = any, is_indexed = any
 	dim as integer priority = any, idopt = any
+	dim as integer mode_is_explicit = any
 
 	is_nested = FALSE
 	is_outside = FALSE
@@ -1052,6 +1085,7 @@ function cProcHeader _
 	subtype = NULL
 	stats = 0
 	priority = 0
+	mode_is_explicit = FALSE
 
 	select case( tk )
 	case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
@@ -1089,10 +1123,15 @@ function cProcHeader _
 		idopt = FB_IDOPT_ISDECL or FB_IDOPT_SHOWERROR or FB_IDOPT_ALLOWSTRUCT
 		select case( tk )
 		case FB_TK_OPERATOR
-			idopt or= FB_IDOPT_ISOPERATOR
+			idopt or= FB_IDOPT_ALLOWOPERATOR
 		case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
 			idopt or= FB_IDOPT_DONTCHKPERIOD
 		end select
+		'' don't check access if we are defining the procedure
+		'' (which must be done outside of the TYPE declaration)
+		if( (options and FB_PROCOPT_ISPROTO) = 0 ) then
+			idopt or= idopt or FB_IDOPT_ISDEFN
+		end if
 		parent = cParentId( idopt )
 	end if
 
@@ -1234,7 +1273,7 @@ function cProcHeader _
 
 		if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
 			if( dtype <> FB_DATATYPE_INVALID ) then
-				attrib or= FB_SYMBATTRIB_SUFFIXED 
+				attrib or= FB_SYMBATTRIB_SUFFIXED
 			end if
 		end if
 
@@ -1253,7 +1292,23 @@ function cProcHeader _
 	case else
 		mode = FB_FUNCMODE_FBCALL
 	end select
-	mode = cProcCallingConv( mode )
+
+	'' extern "c++" / win32 / x86 / non-static member ? then default to THISCALL
+	if( is_memberproc ) then
+		if( (attrib and FB_SYMBATTRIB_STATIC) = 0 ) then
+			if( parser.mangling = FB_MANGLING_CPP ) then
+				if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+					if( fbIs64bit( ) = FALSE ) then
+						if( env.clopt.nothiscall = FALSE ) then
+							mode = FB_FUNCMODE_THISCALL
+						end if
+					end if
+				end if
+			end if
+		end if
+	end if
+
+	mode = cProcCallingConv( mode, mode_is_explicit )
 
 	'' OVERLOAD?
 	if( lexGetToken( ) = FB_TK_OVERLOAD ) then
@@ -1573,7 +1628,7 @@ function cProcHeader _
 
 		fbSetOption( FB_COMPOPT_EXPORT, TRUE )
 		'''''if( fbGetOption( FB_COMPOPT_EXPORT ) = FALSE ) then
-		'''''	errReportWarn( FB_WARNINGMSG_CANNOTEXPORT )
+		'''''   errReportWarn( FB_WARNINGMSG_CANNOTEXPORT )
 		'''''end if
 		attrib or= FB_SYMBATTRIB_EXPORT or FB_SYMBATTRIB_PUBLIC
 	end if
@@ -1601,10 +1656,11 @@ function cProcHeader _
 			head_proc = symbAddCtor( proc, palias, attrib, pattrib, mode, FB_SYMBOPT_DECLARING )
 		case FB_TK_OPERATOR
 			head_proc = symbAddOperator( proc, op, palias, dtype, subtype, _
-			                             attrib, pattrib, mode, FB_SYMBOPT_DECLARING )
+				attrib, pattrib, mode, FB_SYMBOPT_DECLARING )
 		case else
 			head_proc = symbAddProc( proc, @id, palias, dtype, subtype, _
-			                         attrib, pattrib, mode, FB_SYMBOPT_DECLARING )
+				attrib, pattrib, mode, FB_SYMBOPT_DECLARING )
+
 		end select
 
 		if( head_proc = NULL ) then
@@ -1633,7 +1689,7 @@ function cProcHeader _
 				head_proc = symbFindOpOvlProc( op, head_proc, proc )
 			case else
 				head_proc = symbFindOverloadProc( head_proc, proc, _
-						iif( is_get, FB_SYMBLOOKUPOPT_PROPGET, FB_SYMBLOOKUPOPT_NONE ) )
+						iif( is_get, FB_SYMBFINDOPT_PROPGET, FB_SYMBFINDOPT_NONE ) )
 			end select
 			pattrib or= FB_PROCATTRIB_OVERLOADED
 		end if
@@ -1670,6 +1726,13 @@ function cProcHeader _
 				return CREATEFAKE( )
 			end if
 
+			'' no explicit calling convention? then use the proc declaration
+			if( mode_is_explicit = FALSE ) then
+				'' patch the proc with the declaration's calling convention
+				mode = symbGetProcMode( head_proc )
+				proc->proc.mode = mode
+			end if
+
 			'' There already is a prototype for this proc, check for
 			'' declaration conflicts and fix up the parameters
 			hCheckPrototype( head_proc, proc, palias, dtype, subtype, mode )
@@ -1686,6 +1749,21 @@ function cProcHeader _
 			end if
 
 			symbSetIsDeclared( proc )
+		end if
+	end if
+
+	if( proc ) then
+		var is_global = (symbGetAttrib( proc ) and _
+			(FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or _
+			FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_SHARED)) <> 0
+
+		'' only warn if the symbol is global and in the global namespace
+		if( is_global ) then
+			if( (len(id) > 0) and (symbGetNamespace( proc ) = @symbGetGlobalNamespc( )) ) then
+				if( parserIsGlobalAsmKeyword( @id ) ) then
+					errReportWarnEx( FB_WARNINGMSG_RESERVEDGLOBALSYMBOL, @id , lexLineNum( ) )
+				end if
+			end if
 		end if
 	end if
 

@@ -16,10 +16,12 @@ The ##**Any**## keyword is used as a placeholder for a type or value in various 
 ##//or//##
 	[[KeyPgOpPlacementNew|New(address)]] [[DataType|DataType]] [//count//] **{ Any }**
 ##//or//##
-	[[KeyPgInstr|Instr]]|[[KeyPgInstrrev|InstrRev]] ( //string//, **Any** //substring// )
+	[[KeyPgInstr|Instr]]|[[KeyPgInstrrev|InstrRev]] ( //identifier//, **Any** //substring// )
+##//or//##
+	[[KeyPgOpProcptr|Procptr]] ( //identifier//, [[[KeyPgVirtual|Virtual]]] **Any** )
 ##
 {{fbdoc item="desc"}}
-	- Pointers:
+	- Pointers (1st syntax):
 		A special pointer type called the ##**Any** [[KeyPgPtr|Ptr]]## (or "##**Any** [[KeyPgPtr|Pointer]]##") allows pointing to any variable type.  If you cast it to a ##//[[DataType]]// [[KeyPgPtr|Ptr]]##, it can be indexed or dereferenced to access the memory as an instance of ##//[[DataType]]//##. Pointer arithmetic is allowed on an ##**Any** Ptr##, and treats it like a ##[[KeyPgByte|Byte]] Ptr##: The pointer is changed by increments of ##1##.
 		
 		A pure ##**Any** [[KeyPgPtr|Ptr]]## has no type checking by the compiler.  It can be implicitly converted to and from other pointer types through assignment or parameter passing.
@@ -28,25 +30,28 @@ The ##**Any**## keyword is used as a placeholder for a type or value in various 
 		
 		This should not be confused with ##**Variant**##, a Visual Basic data type which can contain any type of variable. ""FreeBASIC"" does not provide native support for a ##**Variant**## type.
 		
-	- Byref parameters:
+	- Byref parameters (2nd syntax):
 		**##Any##** can be used in procedure prototypes (in a ##[[KeyPgDeclare|Declare]]## statement) with ##[[KeyPgByref|ByRef]]## parameters to disable the compiler checking for the correct type of the variable passed (this includes the array parameters because always implicitly passed by reference).
 		However, it does not work with UDT member procedures, except if they are static procedures.
 		This use of ##**Any**## is deprecated and it only exists for compatibility with QB.
 		
-	- Array dimensions:
+	- Array dimensions (3rd/4th syntax):
 		In array declarations, **##Any##** can be specified in place of the array bounds in order to create a dynamic array with a certain amount of dimensions that is determined based on the number of **##Any##**s specified (use the syntax with **##Any##** is mandatory when declaring a dynamic array member inside a ##[[KeyPgType|Type]]##).
 		
 		In parameter declarations, **##Any##** can be also specified instead of empty parenthesis in order to fix the amount of dimensions.
 		
-	- Initialization:
+	- Initialization (5th/6th/7th syntax):
 		##**Any**## can be used as a fake initializer to disable the default initialization of variables to ##0##, leaving the variable uninitialized. This may save time in critical sections of a program. It is the program's responsibility to fill the variables with meaningful data before reading it.
 		
 		Comparison to ""C/C++"": This matches the behavior of a variable declaration without initialization value in ""C/C++"".
 		
 		Similar to **##Any##** initializers for variables, **##Any##** can also be used with the ##[[KeyPgOpNew|New Expression]]## or ##[[KeyPgOpPlacementNew|Placement New]]## operators in order to leave the newly created object uninitialized (only allowed with data types that do not have constructors).
 		
-	- ""Instr/InstrRev"":
+	- ""Instr/InstrRev"" (8th syntax):
 		**##Any##** can be used with ##[[KeyPgInstr|Instr]]## or ##[[KeyPgInstrrev|InstrRev]]## as a qualifier for the ##//substring//## parameter, to indicate that any individual character in it may be matched.
+		
+	- Procptr (9th syntax):
+		**##Any##**, ie any procedure signature, does not induce any particular selection (compared to its non-use), but just allows for writing ##[[KeyPgOpProcptr|Procptr]]## always with 2 arguments.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/misc/any.bas"}}%%(freebasic)

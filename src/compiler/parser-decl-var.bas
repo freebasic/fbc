@@ -25,6 +25,32 @@ sub hComplainIfAbstractClass _
 
 end sub
 
+sub hMaybeComplainTypeUsage _
+	( _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as longint _
+	)
+
+	'' check access to structs and if the check fails, fake a
+	'' a type for error recovery
+
+	select case typeGetDtAndPtrOnly( dtype )
+	case FB_DATATYPE_STRUCT
+
+		'' Check visibility of the symbol type
+		if( symbCheckAccessStruct( subtype ) = FALSE ) then
+			errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
+			'' error recovery: fake a type
+			dtype = FB_DATATYPE_INTEGER
+			subtype = NULL
+			lgt = typeGetSize( dtype )
+		end if
+
+	end select
+
+end sub
+
 sub hComplainAboutConstDynamicArray( byval sym as FBSYMBOL ptr )
 	'' Disallow const dynamic arrays, they could never be assigned,
 	'' since dynamic arrays aren't allowed to have initializers.
@@ -219,7 +245,7 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 				attrib or= FB_SYMBATTRIB_STATIC
 			else
 				attrib or= FB_SYMBATTRIB_SHARED or _
-						   FB_SYMBATTRIB_STATIC
+				           FB_SYMBATTRIB_STATIC
 			end if
 			lexSkipToken( LEXCHECK_POST_SUFFIX )
 		end if
@@ -353,7 +379,7 @@ private sub hCheckExternVarAndRecover _
 		'' Error recovery: make definition match the EXTERN declaration
 		dtype = symbGetFullType( sym )
 		subtype = symbGetSubType( sym )
-		lgt = symbGetLen( sym )
+		lgt = symbGetSizeOf( sym )
 		const AttribsToCopy = FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_REF
 		attrib = (attrib and (not AttribsToCopy)) or (sym->attrib and AttribsToCopy)
 		dimensions = symbGetArrayDimensions( sym )
@@ -441,9 +467,9 @@ private function hAddVar _
 		'' Note: If the existing array is a COMMON, then not only REDIM is allowed,
 		'' but also DIM etc.
 		elseif( ((attrib and FB_SYMBATTRIB_DYNAMIC) <> 0) and _
-			have_bounds and _
-			symbGetIsDynamic( sym ) and _
-			((token = FB_TK_REDIM) or symbIsCommon( sym )) ) then
+		        have_bounds and _
+		        symbGetIsDynamic( sym ) and _
+		        ((token = FB_TK_REDIM) or symbIsCommon( sym )) ) then
 
 			'' nothing to do here (besides not declaring a new variable),
 			'' rtlArrayRedim() will be called below
@@ -504,7 +530,22 @@ private function hAddVar _
 		end if
 
 		sym = symbAddVar( id, idalias, dtype, subtype, lgt, dimensions, dTB(), attrib, _
-				iif( fbLangOptIsSet( FB_LANG_OPT_SCOPE ), 0, FB_SYMBOPT_UNSCOPE ) )
+		                  iif( fbLangOptIsSet( FB_LANG_OPT_SCOPE ), 0, FB_SYMBOPT_UNSCOPE ) )
+
+		if( sym ) then
+			var is_global = (symbGetAttrib( sym ) and _
+			                (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or _
+			                FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_SHARED )) <> 0
+
+			'' only warn if the symbol is global and in the global namespace
+			if( is_global ) then
+				if( (id <> NULL) and (symbGetNamespace( sym ) = @symbGetGlobalNamespc( )) ) then
+					if( parserIsGlobalAsmKeyword( lcase(*id) ) ) then
+						errReportWarnEx( FB_WARNINGMSG_RESERVEDGLOBALSYMBOL, id , lexLineNum( ) )
+					end if
+				end if
+			end if
+		end if
 	end if
 
 	if( sym = NULL ) then
@@ -638,8 +679,8 @@ private function hLookupVarAndCheckParent _
 
 	sym = hLookupVar( chain_, dtype, is_typeless, has_suffix )
 
-	'' Namespace prefix explicitly given?
-	if( parent ) then
+	'' Namespace prefix explicitly given? And is not global
+	if( (parent <> NULL) and (parent <> @symbGetGlobalNamespc()) ) then
 		if( sym ) then
 			'' "DIM Parent.foo" is only allowed if there was an
 			'' "EXTERN foo" in the Parent namespace, or if it's a
@@ -648,7 +689,7 @@ private function hLookupVarAndCheckParent _
 			'' No EXTERN, or different parent, and not REDIM?
 			if( ((symbIsExtern( sym ) = FALSE) or _
 			     (symbGetNamespace( sym ) <> parent)) and _
-			    (not is_redim) ) then
+			     (not is_redim) ) then
 				errReport( FB_ERRMSG_DECLOUTSIDECLASS )
 			end if
 		else
@@ -779,7 +820,7 @@ private function hVarInitDefault _
 	if( has_defctor ) then
 		'' not already declared nor dynamic array?
 		if( (not is_declared) and ((symbGetAttrib( sym ) and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_COMMON)) = 0) ) then
-			'' Check visibility
+			'' Check visibility to the default constructor
 			if( symbCheckAccess( symbGetCompDefCtor( symbGetSubtype( sym ) ) ) = FALSE ) then
 				errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
 			end if
@@ -878,7 +919,7 @@ private function hResolveRefToRefInitializer( byval dtype as integer, byval expr
 	dim n as ASTNODE ptr = any
 
 	'' if initializer expr is a REF VAR, then crawl the INITREE of the var
-	'' it references for a VAR initializer.  If none found just return the 
+	'' it references for a VAR initializer.  If none found just return the
 	'' original expr.
 
 	if( expr andalso astIsDEREF( expr ) ) then
@@ -922,6 +963,9 @@ private function hCheckAndBuildByrefInitializer( byval sym as FBSYMBOL ptr, byre
 	'' permitted) that aren't already disallowed in cVarOrDeref()
 	ok and= (not astIsCALL( expr ))
 
+	'' Disallow AST nodes that can't take address of
+	ok and= astCanTakeAddrOf( expr )
+
 	if( ok = FALSE ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
 		astDelTree( expr )
@@ -947,8 +991,8 @@ end function
 '':::::
 private function hVarInit _
 	( _
-        byval sym as FBSYMBOL ptr, _
-        byval isdecl as integer _
+		byval sym as FBSYMBOL ptr, _
+		byval isdecl as integer _
 	) as ASTNODE ptr
 
 	dim as integer attrib = any
@@ -963,7 +1007,7 @@ private function hVarInit _
 
 	'' already declared, extern or common?
 	if( isdecl or _
-		((attrib and (FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_COMMON)) <> 0) ) then
+	    ((attrib and (FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_COMMON)) <> 0) ) then
 		errReport( FB_ERRMSG_CANNOTINITEXTERNORCOMMON )
 		'' error recovery: skip
 		hSkipUntil( FB_TK_EOL )
@@ -1001,7 +1045,7 @@ private function hVarInit _
 		return hCheckAndBuildByrefInitializer( sym, expr )
 	end if
 
-    '' ANY?
+	'' ANY?
 	if( lexGetToken( ) = FB_TK_ANY ) then
 
 		'' don't allow arrays with ellipsis denoting unknown size at this time
@@ -1094,9 +1138,9 @@ private function hWrapInStaticFlag( byval code as ASTNODE ptr ) as ASTNODE ptr
 	'' condition expression is trivial and won't have temp vars itself.
 	label = symbAddLabel( NULL )
 	t = astNewLINK( t, _
-		astBuildBranch( _
-			astNewBOP( AST_OP_EQ, astNewVAR( flag ), astNewCONSTi( 0 ) ), _
-			label, FALSE, TRUE ), AST_LINK_RETURN_NONE )
+	        astBuildBranch( _
+	        astNewBOP( AST_OP_EQ, astNewVAR( flag ), astNewCONSTi( 0 ) ), _
+	        label, FALSE, TRUE ), AST_LINK_RETURN_NONE )
 
 	'' flag = 1
 	t = astNewLINK( t, astBuildVarAssign( flag, 1 ), AST_LINK_RETURN_NONE )
@@ -1188,7 +1232,7 @@ private function hFlushInitializer _
 
 	'' object?
 	if( has_dtor and (not symbIsRef( sym )) ) then
-		'' check visibility
+		'' Check visibility of the destructor
 		if( symbCheckAccess( symbGetCompDtor1( symbGetSubtype( sym ) ) ) = FALSE ) then
 			errReport( FB_ERRMSG_NOACCESSTODTOR )
 		end if
@@ -1197,19 +1241,19 @@ private function hFlushInitializer _
 	'' no initializer?
 	if( initree = NULL ) then
 		'' static or shared?
-        if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
-        						   	   FB_SYMBATTRIB_SHARED or _
-        						   	   FB_SYMBATTRIB_COMMON)) <> 0 ) then
+		if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
+		                               FB_SYMBATTRIB_SHARED or _
+		                               FB_SYMBATTRIB_COMMON)) <> 0 ) then
 			'' object?
-        	if( has_dtor ) then
-        		'' local?
-           		if( symbIsLocal( sym ) ) then
-           			var_decl = hCallStaticCtor( sym, var_decl, NULL, TRUE )
+			if( has_dtor ) then
+				'' local?
+				if( symbIsLocal( sym ) ) then
+					var_decl = hCallStaticCtor( sym, var_decl, NULL, TRUE )
 
-           		'' global..
-          		else
-        			var_decl = hCallGlobalCtor( sym, var_decl, NULL, TRUE )
-           		end if
+				'' global..
+				else
+					var_decl = hCallGlobalCtor( sym, var_decl, NULL, TRUE )
+				end if
 			end if
 		end if
 
@@ -1217,9 +1261,9 @@ private function hFlushInitializer _
 	end if
 
 	'' not static or shared?
-    if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
-    							   FB_SYMBATTRIB_SHARED or _
-    							   FB_SYMBATTRIB_COMMON)) = 0 ) then
+	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
+	                               FB_SYMBATTRIB_SHARED or _
+	                               FB_SYMBATTRIB_COMMON)) = 0 ) then
 
 		var_decl = hFlushDecl( var_decl )
 
@@ -1243,15 +1287,15 @@ private function hFlushInitializer _
 
 	'' Need to call constructor and/or destructor
 
-    '' local?
-    if( symbIsLocal( sym ) ) then
-       	'' the only possibility is static, SHARED can't be
-        '' used in -lang fb..
-        function = hCallStaticCtor( sym, var_decl, initree, has_dtor )
+	'' local?
+	if( symbIsLocal( sym ) ) then
+		'' the only possibility is static, SHARED can't be
+		'' used in -lang fb..
+		function = hCallStaticCtor( sym, var_decl, initree, has_dtor )
 
 	'' global.. add to the list, to be emitted later
-    else
-    	function = hCallGlobalCtor( sym, var_decl, initree, has_dtor )
+	else
+		function = hCallGlobalCtor( sym, var_decl, initree, has_dtor )
 	end if
 
 end function
@@ -1269,11 +1313,9 @@ end function
 
 private function hCheckDynamicArrayExpr( byval varexpr as ASTNODE ptr ) as ASTNODE ptr
 	if( varexpr andalso astIsNIDXARRAY( varexpr ) ) then
-		varexpr = astRemoveNIDXARRAY( varexpr )
-
-		if( astIsVAR( varexpr ) or astIsFIELD( varexpr ) ) then
-			if( symbIsVar( varexpr->sym ) or symbIsField( varexpr->sym ) ) then
-				if( symbGetIsDynamic( varexpr->sym ) ) then
+		if( astIsVAR( varexpr->l ) or astIsFIELD( varexpr->l ) ) then
+			if( symbIsVar( varexpr->l->sym ) or symbIsField( varexpr->l->sym ) ) then
+				if( symbGetIsDynamic( varexpr->l->sym ) ) then
 					return varexpr
 				end if
 			end if
@@ -1342,9 +1384,9 @@ function cVarDecl _
 		byval is_fordecl as integer _
 	) as FBSYMBOL ptr
 
-    static as zstring * FB_MAXNAMELEN+1 id
-    static as ASTNODE ptr exprTB(0 to FB_MAXARRAYDIMS-1, 0 to 1)
-    static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
+	static as zstring * FB_MAXNAMELEN+1 id
+	static as ASTNODE ptr exprTB(0 to FB_MAXARRAYDIMS-1, 0 to 1)
+	static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
 	dim as FBSYMCHAIN ptr chain_ = any
 	dim as FBSYMBOL ptr sym = any, subtype = any, parent = any
 	dim as ASTNODE ptr varexpr = any, initree = any, redimcall = any
@@ -1352,12 +1394,12 @@ function cVarDecl _
 	dim as integer is_typeless = any, is_declared = any, is_redim = any
 	dim as integer dtype = any, maybe_expr = any
 	dim as longint lgt = any
-    dim as integer dimensions = any, suffix = any
-    dim as zstring ptr palias = any
-    dim as ASTNODE ptr assign_initree = any
+	dim as integer dimensions = any, suffix = any
+	dim as zstring ptr palias = any
+	dim as ASTNODE ptr assign_initree = any
 	dim as FB_IDOPT options = any
 
-    function = NULL
+	function = NULL
 
 	'' inside a namespace but outside a proc?
 	if( symbIsGlobalNamespc( ) = FALSE ) then
@@ -1382,6 +1424,8 @@ function cVarDecl _
 			'' Disallow creating objects of abstract classes
 			hComplainIfAbstractClass( dtype, subtype )
 		end if
+
+		hMaybeComplainTypeUsage( dtype, subtype, lgt )
 
 		addsuffix = FALSE
 		is_multdecl = TRUE
@@ -1412,7 +1456,8 @@ function cVarDecl _
 		is_redim = (token = FB_TK_REDIM) and ((attrib and FB_SYMBATTRIB_SHARED) = 0)
 
 		parent = cParentId( FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT or FB_IDOPT_ISVAR or _
-				iif( is_redim, 0, FB_IDOPT_ISDECL ) )
+		                    iif( is_redim, 0, FB_IDOPT_ISDECL ) or _
+		                    FB_IDOPT_ISDEFN )
 
 		''
 		'' Ambiguity: If this is a REDIM, it can either redim an existing
@@ -1519,7 +1564,7 @@ function cVarDecl _
 					'' (but they can have fixed dimensions)
 					if( ((attrib and FB_SYMBATTRIB_COMMON) <> 0) or _
 					    (((attrib and FB_SYMBATTRIB_EXTERN) <> 0) and _
-					     ((attrib and FB_SYMBATTRIB_DYNAMIC) <> 0)) ) then
+					    ((attrib and FB_SYMBATTRIB_DYNAMIC) <> 0)) ) then
 						errReport( FB_ERRMSG_DYNAMICEXTERNCANTHAVEBOUNDS )
 						dimensions = -1
 						have_bounds = FALSE
@@ -1581,6 +1626,8 @@ function cVarDecl _
 					hComplainIfAbstractClass( dtype, subtype )
 				end if
 
+				hMaybeComplainTypeUsage( dtype, subtype, lgt )
+
 				addsuffix = FALSE
 
 			'' No explicit 'AS DataType', and no suffix?
@@ -1614,8 +1661,8 @@ function cVarDecl _
 			sym = varexpr->sym
 		else
 			sym = hLookupVarAndCheckParent( parent, chain_, dtype, is_typeless, _
-						(suffix <> FB_DATATYPE_INVALID), _
-						is_redim )
+			                                (suffix <> FB_DATATYPE_INVALID), _
+			                                is_redim )
 
 			if( sym ) then
 				'' If it's an existing field, then we must be inside a method,
@@ -1637,10 +1684,21 @@ function cVarDecl _
 		'' typeless REDIM?
 		if( is_typeless ) then
 			if( sym ) then
-				'' REDIM'ing existing symbol, uses the same dtype
-				dtype = symbGetType( sym )
-				subtype = symbGetSubtype( sym )
-				lgt = symbGetLen( sym )
+				if( symbIsArray( sym ) ) then
+					'' REDIM'ing existing symbol, uses the same dtype
+					dtype = symbGetType( sym )
+					subtype = symbGetSubtype( sym )
+					lgt = symbGetSizeOf( sym )
+					if( symbIsDynamic( sym ) = FALSE ) then
+						'' if it's a parameter, we won't know if it's dynamic or not until run-time
+						if( symbIsParamVarByDesc( sym ) = FALSE ) then
+							errReportEx( FB_ERRMSG_EXPECTEDDYNAMICARRAY, @id )
+						end if
+					end if
+				else
+					'' -lang fb: typeless REDIM without pre-existing array not allowed
+					hErrorDefTypeNotAllowed( dtype, subtype, lgt )
+				end if
 			elseif( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) ) then
 				'' DEF* is allowed, so typeless REDIM defaults to the default type
 				'' (can just keep using the deftype set above)
@@ -1676,7 +1734,7 @@ function cVarDecl _
 			else
 				'' "array too big/huge array on stack" check
 				if( symbCheckArraySize( dimensions, @dTB(0), lgt, _
-				                        ((attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0) ) = FALSE ) then
+				    ((attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0) ) = FALSE ) then
 					errReport( FB_ERRMSG_ARRAYTOOBIG )
 					'' error recovery: use small array
 					dimensions = 1
@@ -1715,11 +1773,11 @@ function cVarDecl _
 		end if
 
 		''
-		'' Declare the new variable or comlain about duplicate
+		'' Declare the new variable or complain about duplicate
 		'' definition, etc.
 		''
 		sym = hAddVar( sym, parent, id, palias, dtype, subtype, lgt, addsuffix, _
-				attrib, dimensions, have_bounds, dTB(), token )
+		               attrib, dimensions, have_bounds, dTB(), token )
 
 		dim as integer has_defctor = FALSE, has_dtor = FALSE
 		if( sym <> NULL ) then
@@ -1747,8 +1805,8 @@ function cVarDecl _
 				if( ( initree <> NULL ) and ( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) ) then
 					'' local?
 					if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
-												   FB_SYMBATTRIB_SHARED or _
-												   FB_SYMBATTRIB_COMMON)) = 0 ) then
+					                               FB_SYMBATTRIB_SHARED or _
+					                               FB_SYMBATTRIB_COMMON)) = 0 ) then
 
 						''
 						'' The variable will be unscoped, i.e. it needs a default initree
@@ -1825,8 +1883,8 @@ function cVarDecl _
 					if( ((attrib and FB_SYMBATTRIB_DYNAMIC) <> 0) or (dimensions > 0) ) then
 						'' local?
 						if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
-												   	   FB_SYMBATTRIB_SHARED or _
-												   	   FB_SYMBATTRIB_COMMON)) = 0 ) then
+						                               FB_SYMBATTRIB_SHARED or _
+						                               FB_SYMBATTRIB_COMMON)) = 0 ) then
 
 							'' flush the decl node, safe to do here as it's a non-static
 							'' local var (and because the decl must be flushed first)
@@ -1873,10 +1931,10 @@ function cVarDecl _
 				'' Dynamic array? If the dimensions are known, redim it.
 				if( ((attrib and FB_SYMBATTRIB_DYNAMIC) <> 0) and have_bounds ) then
 					if( varexpr = NULL ) then
-						varexpr = astNewVAR( sym )
+						varexpr = astNewNIDXARRAY( astNewVAR( sym ) )
 					end if
 					redimcall = rtlArrayRedim( varexpr, dimensions, exprTB(), _
-								dopreserve, (not symbGetDontInit( sym )) )
+					                           dopreserve, (not symbGetDontInit( sym )) )
 
 					'' If this is a local STATIC (not SHARED/COMMON) array declaration (and not
 					'' a typeless REDIM), then the redim call should be executed only once, not
@@ -2062,7 +2120,7 @@ private function hBuildAutoVarInitializer( byval sym as FBSYMBOL ptr, byval expr
 	'' handle constructors..
 	else
 		dim as integer is_ctorcall = any
-		expr = astBuildImplicitCtorCallEx( sym, expr, cBydescArrayArgParens( expr ), is_ctorcall )
+		expr = astBuildImplicitCtorCallEx( sym, expr, astBydescArrayArg( expr ), is_ctorcall )
 
 		if( expr <> NULL ) then
 			if( is_ctorcall ) then
@@ -2147,7 +2205,8 @@ private sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 
 		'' id.id? if not, NULL
 		parent = cParentId( FB_IDOPT_DEFAULT or FB_IDOPT_ISDECL or _
-					FB_IDOPT_ALLOWSTRUCT or FB_IDOPT_ISVAR )
+		                    FB_IDOPT_ALLOWSTRUCT or FB_IDOPT_ISVAR or _
+		                    FB_IDOPT_ISDEFN)
 
 		'' get id
 		dim as integer suffix = any
@@ -2165,7 +2224,7 @@ private sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 		end if
 
 		sym = hLookupVarAndCheckParent( parent, chain_, FB_DATATYPE_INVALID, _
-						TRUE, FALSE, FALSE )
+		                                TRUE, FALSE, FALSE )
 
 		'' '=' | '=>' ?
 		if( cAssignToken( ) = FALSE ) then
@@ -2228,7 +2287,7 @@ private sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 
 		'' add var after parsing the expression, or the the var itself could be used
 		sym = hAddVar( sym, parent, id, NULL, dtype, subtype, _
-			symbCalcLen( dtype, subtype ), FALSE, attrib, 0, FALSE, dTB(), FB_TK_VAR )
+		               symbCalcLen( dtype, subtype ), FALSE, attrib, 0, FALSE, dTB(), FB_TK_VAR )
 
 		if( sym <> NULL ) then
 			if( symbIsRef( sym ) ) then

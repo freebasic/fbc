@@ -6,7 +6,7 @@
  * Assumes coordinates to be physical ones.
  * Also assumes color is already masked. */
 
-/* Caller is expected to hold FB_GRAPHICSLOCK() */
+/* Caller is expected to hold FB_GRAPHICS_LOCK() */
 void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full, unsigned int style)
 {
 	FB_GFXCTX *context;

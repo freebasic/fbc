@@ -1,0 +1,29 @@
+{{fbdoc item="title" value="Compiler Option: -nolib"}}----
+Do not include specific library(s).
+
+{{fbdoc item="syntax"}}##
+		**-nolib** < //libname1// [, //libname2// [, ... ] ] >
+##
+{{fbdoc item="param"}}
+	##//libname1//##, ##//libname2//##, ...
+		Name (without name's extension) of each library to exclude.
+
+{{fbdoc item="desc"}}
+	The ##-nolib## compiler option allows excluding specific libraries when linking, no matter where it came from (default lib, #inclib, -l, objinfo...).
+	(more fine-grained control than ##[[CompilerOptnodeflibs|-nodeflibs]]##, and not only for default libraries)
+	
+	This allows selectively blacklisting libraries and can be used to:
+		**""-""** remove unused dependencies when linking against shared libraries (when linking against static libraries via -l, the linker automatically skips unused libs, but not for shared libraries),
+		**""-""** override unwanted #inclibs (although arguably this is not the ideal solution for that, but just a last resort),
+		**""-""** disable only some default libs, instead of all as done by ##[[CompilerOptnodeflibs|-nodeflibs]]##:
+			For example, this could be used to specifically omit ##libtinfo##.
+			Using ##[[CompilerOptnodeflibs|-nodeflibs]]## would omit a lot more (including ##fbrt0.o##) which would have to be re-added manually again.
+
+{{fbdoc item="ver"}}
+	- Since fbc 1.10.0.
+
+{{fbdoc item="see"}}
+	- [[CompilerOptnodeflibs|Compiler Option: -nodeflibs]]
+	- [[CompilerCmdLine|Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

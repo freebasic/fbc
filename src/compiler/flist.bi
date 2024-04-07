@@ -4,17 +4,17 @@
 #include once "list.bi"
 
 type TFLISTITEM
-	next		as TFLISTITEM ptr
+	next        as TFLISTITEM ptr
 end type
 
 type TFLIST
-	totitems	as integer
-	items		as integer
-	itemtb		as TFLISTITEM ptr
-	index		as integer
-	lastitem	as TFLISTITEM ptr
-	list		as TLIST
-	listtb 		as TLISTTB ptr
+	totitems    as integer
+	items       as integer
+	itemtb      as TFLISTITEM ptr
+	index       as integer
+	lastitem    as TFLISTITEM ptr
+	list        as TLIST
+	listtb      as TLISTTB ptr
 end type
 
 declare sub flistInit _

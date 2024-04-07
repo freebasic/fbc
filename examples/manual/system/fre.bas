@@ -1,12 +1,12 @@
 '' examples/manual/system/fre.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'FRE'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgFre
 '' --------
 
-Dim mem As Integer = Fre
+Dim mem As UInteger = Fre
 
 Print "Free memory:"
 Print

@@ -1,7 +1,7 @@
 '' examples/manual/udt/step-char-iterator.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'Operator Step (Iteration)'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOpStep
 '' --------
@@ -107,3 +107,4 @@ For i As CharIterator = "z" To "a" Step "up"
 	Print i; " ";
 Next
 Print "done"
+	

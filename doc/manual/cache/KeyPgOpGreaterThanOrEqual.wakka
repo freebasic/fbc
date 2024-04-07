@@ -37,6 +37,8 @@ Compares an expression greater than or equal to another expression
 {{fbdoc item="desc"}}
 	**##Operator >=## (Greater than or Equal)** is a binary operator that compares an expression greater than or equal to another expression and returns the result - a boolean value in the form of an ##[[KeyPgInteger|Integer]]##: negative one (-1) for true and zero (0) for false. The arguments are not modified in any way.
 	
+	When this operator is applied to string type data, then a lexicographic/alphabetic order comparison is performed (ordered from the numeric ASCII values of the characters of the two strings).
+	
 	This operator can be overloaded to accept user-defined types as well.
 
 {{fbdoc item="ex"}}

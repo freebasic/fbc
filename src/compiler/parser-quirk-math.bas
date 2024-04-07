@@ -67,7 +67,7 @@ private function hLen _
 		end if
 
 		'' String literal, evaluate at compile-time
-		lgt = symbGetStrLen( litsym ) - 1
+		lgt = symbGetStrLength( litsym )
 
 	case FB_DATATYPE_WCHAR
 		litsym = astGetStrLitSymbol( expr )
@@ -76,16 +76,16 @@ private function hLen _
 		end if
 
 		'' String literal, evaluate at compile-time
-		'' symbGetStrLen( litsym ) will return the number of codepoints
+		'' symbGetStrLength( litsym ) will return the number of codepoints
 		'' that are used to store the escaped WSTRING literal, when what
 		'' we really want is the number of codepoints unescaped.
 		lgt = len( *hUnescapeW( symbGetVarLitTextW( litsym ) ) )
 
 	case FB_DATATYPE_FIXSTR
-		'' len( fixstr ) returns the N from STRING * N, i.e. it works
-		'' like sizeof() - 1 (-1 for the implicit null terminator),
-		'' it does not return the length of the stored string data.
-		lgt = astSizeOf( expr ) - 1
+		'' len( fixstr ) returns the N from STRING * N, i.e. it works like sizeof()
+		'' length of the stored data should always be same as the size
+		'' where the data is padded with spaces and there is no null terminator
+		lgt = astSizeOf( expr )
 		assert( lgt >= 0 )
 
 	case FB_DATATYPE_STRUCT
@@ -127,7 +127,6 @@ private function hLenSizeof( byval tk as integer, byval isasm as integer ) as AS
 		'' Array without index makes this a SIZEOF()
 		if( astIsNIDXARRAY( expr ) ) then
 			tk = FB_TK_SIZEOF
-			expr = astRemoveNIDXARRAY( expr )
 		end if
 
 	'' then must be a type
@@ -186,11 +185,11 @@ private function hLenSizeof( byval tk as integer, byval isasm as integer ) as AS
 end function
 
 '':::::
-'' cMathFunct	=	ABS( Expression )
-'' 				|   SGN( Expression )
-''				|   FIX( Expression )
-''				|   INT( Expression )
-''				|	LEN( data type | Expression ) .
+'' cMathFunct   =   ABS( Expression )
+''              |   SGN( Expression )
+''              |   FIX( Expression )
+''              |   INT( Expression )
+''              |   LEN( data type | Expression ) .
 ''
 function cMathFunct _
 	( _

@@ -25,5 +25,6 @@ Standard data type: 16 bit signed
 {{fbdoc item="see"}}
 	- ##[[KeyPgUshort|Ushort]]##
 	- ##[[KeyPgCshort|Cshort]]##
+	- ##[[TblVarTypes|Table with variable types overview, limits and suffixes]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

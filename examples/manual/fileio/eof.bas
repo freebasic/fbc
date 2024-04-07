@@ -1,7 +1,7 @@
 '' examples/manual/fileio/eof.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'EOF'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgEof
 '' --------
@@ -12,7 +12,7 @@
 '' returns true, in this case we ignore the loop if file is empty.
 
 Dim As String file_name
-Dim As Integer file_num
+Dim As Long file_num
 
 file_name = "file.ext"
 file_num = FreeFile( )                 '' retrieve an available file number

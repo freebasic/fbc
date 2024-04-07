@@ -155,9 +155,6 @@ sub cEnumDecl( byval attrib as FB_SYMBATTRIB )
 	'' ENUM
 	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
-	'' Namespace identifier if it matches the current namespace
-	cCurrentParentId()
-
 	'' ID?
 	select case lexGetClass( )
 	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
@@ -176,6 +173,7 @@ sub cEnumDecl( byval attrib as FB_SYMBATTRIB )
 
 	case else
 		id = *symbUniqueId( )
+		attrib or= FB_SYMBATTRIB_ANONYMOUS
 	end select
 
 	'' [ALIAS "id"]
@@ -230,8 +228,8 @@ sub cEnumDecl( byval attrib as FB_SYMBATTRIB )
 		symbNestBegin( e, FALSE )
 	end if
 
-	'' EnumBody
-	cEnumBody( e, attrib )
+	'' EnumBody (enum elements don't inherit anonymous attribute)
+	cEnumBody( e, attrib and (not FB_SYMBATTRIB_ANONYMOUS) )
 
 	'' close scope
 	if( use_hashtb ) then

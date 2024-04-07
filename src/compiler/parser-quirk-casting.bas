@@ -9,7 +9,7 @@
 #include once "ast.bi"
 
 '':::::
-''TypeConvExpr		=    (C### '(' expression ')') .
+''TypeConvExpr      =    (C### '(' expression ')') .
 ''
 function cTypeConvExpr _
 	( _
@@ -112,10 +112,10 @@ function cTypeConvExpr _
 	case AST_OP_TOSIGNED
 		dtype = typeToSigned( astGetFullType( expr ) )
 	case AST_OP_TOUNSIGNED
-	    dtype = typeToUnsigned( astGetFullType( expr ) )
+		dtype = typeToUnsigned( astGetFullType( expr ) )
 	end select
 
-	expr = astNewCONV( dtype, NULL, expr, AST_CONVOPT_CHECKSTR, @errmsg )
+	expr = astNewCONV( dtype, NULL, expr, AST_CONVOPT_CHECKSTR or AST_CONVOPT_EXACT_CAST, @errmsg )
 	if( expr = NULL ) then
 		if( errmsg = FB_ERRMSG_OK ) then
 			errmsg = FB_ERRMSG_TYPEMISMATCH
@@ -197,6 +197,12 @@ function cAnonType( ) as ASTNODE ptr
 
 	'' UDT?
 	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_STRUCT ) then
+		'' if it's a UDT and the next token is a
+		'' left parenthesis, don't handle parentheses as optional
+		if( lexGetToken() = CHAR_LPRNT ) then
+			fbSetPrntOptional( FALSE )
+		end if
+
 		'' Has a ctor?
 		if( symbGetCompCtorHead( subtype ) ) then
 			return cCtorCall( subtype )

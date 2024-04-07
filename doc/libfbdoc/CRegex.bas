@@ -1,5 +1,5 @@
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006-2020 The FreeBASIC development team.
+''	Copyright (C) 2006-2022 The FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -23,6 +23,14 @@
 ''
 
 #include once "CRegex.bi"
+
+'' from make file, if USE_PCRE_STATIC was defined then define PCRE_STATIC here  
+#ifdef USE_PCRE_STATIC
+	#ifndef PCRE_STATIC 
+		#define PCRE_STATIC 1
+	#endif
+#endif
+
 #include once "pcre.bi"
 
 namespace fb

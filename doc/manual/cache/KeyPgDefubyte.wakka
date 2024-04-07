@@ -14,7 +14,7 @@ Specifies a default data type for a range of variable names
 	##**Defubyte**## specifies that variables and arrays which aren't declared with a data type - or not declared at all - are implicitly declared of type ##[[KeyPgUbyte|Ubyte]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
 
 {{fbdoc item="ex"}}
-	This will make ##uNumber## a ##[[KeyPgUbyte|Ubyte]]## number since it's first letter starts with u.
+	This will make ##uNumber## a ##[[KeyPgUbyte|Ubyte]]## number since it's first letter starts with ##u##.
 {{fbdoc item="filename" value="examples/manual/switches/defubyte.bas"}}%%(freebasic)
 '' Compile with -lang fblite
 

@@ -25,7 +25,7 @@
 ''   Andreas Schiffler -- aschiffler at ferzkopp dot net
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2020 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 

@@ -17,7 +17,7 @@ Declares a union user defined type.
 		Any of the supported member functions
 
 {{fbdoc item="desc"}}
-	The data elements of a ##**Union**## occupy a common space in memory (same memory address for all data elements of the ##**Union**##). A data element of a ##**Union**## can be a simple data field or an unnamed ##[[KeyPgType|Type]]## block of data fields.
+	The data elements of a ##**Union**## occupy a common space in memory (same memory address for all data elements of the ##**Union**##). A data element of a ##**Union**## can be a simple data field or an anonymous ##[[KeyPgType|Type]]## block of data fields.
 	The size of the ##**Union**## is the size of the largest data element.
 	Since they occupy a common memory space, only one data element can usually be used at a given time (when a given data element is written, the other data elements sharing the common union space may be overwritten or mutilated).
 	
@@ -26,7 +26,18 @@ Declares a union user defined type.
 	
 	A ##**Union**## supports member procedures including ##[[KeyPgConstructor|Constructor]]##, ##[[KeyPgDestructor|Destructor]]##, ##[[KeyPgMemberFunction|Function]]##, ##[[KeyPgOperator|Operator]]##, ##[[KeyPgProperty|Property]]## and ##[[KeyPgMemberSub|Sub]]##. All members of a ##**Union**## are public and access modifiers are not supported. 
 	
-	Nested unnamed ##[[KeyPgType|Type]]## or ##**Union**## can not have procedure members or static data members (same restriction for local scope named Type/Union).
+	A ##**Union**## can also contain nested Types or Unions, of different kinds:
+		- Nested Anonymous Type/Union:
+				**""-""** Nested Anonymous Type/Union allows data members to be grouped as desired.
+				**""-""** Anonymous Type or Anonymous Union can be nested on condition of alternating their nesting.
+				**""-""** Nested Anonymous Type/Union can not have procedure members or static data members (same restriction than for a local scope named Type/Union).
+		- Nested Named Type/Union:
+				**""-""** Nested Named Type/Union allows declaration of an inner structure inside a (named) Type/Union namespace and according to the access right of the place
+				**""-""** Mostly everything it can be done in a Named Type/Union can also be done in a Nested Named Type/Union.
+				**""-""** When there are circular dependencies between Types/Unions, Nested Named Type/Union usage can avoid using type aliases and forward referencing.
+		- Nested Type-Def:
+				**""-""** Nested Type-Def allows declaration of an inner Type (Alias) inside a Type/Union and according to the access right of the place.
+	The main structure (Type/Union) must be always named, the other (nested) structures can be anonymous or named.
 	
 	A ##**Union**## can be passed in a similar way of a User Defined Type to overloaded operator procedures.
 	
@@ -35,7 +46,7 @@ Declares a union user defined type.
 	Since ##**Union**## is not allowed to have complex data elements (i.e. UDTs with constructor/destructor, or dynamic strings), a derived Union can not be allowed to have (contain) a complex base.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/udt/union.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/udt/union.bas"}}%%(freebasic)
 ' Example 0: Little-endianness
 ' For larger integer values (as the following Ulong data type),
 '   bytes are arranged in memory in 'little-endian' byte order
@@ -58,7 +69,7 @@ Print Hex(u.ub3), Hex(u.ub2), Hex(u.ub1), Hex(u.ub0)  ' Result: 12   34   56   7
 
 Sleep
 %%
-{{fbdoc item="filename" value="examples/manual/udt/union1.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/udt/union1.bas"}}%%(freebasic)
 ' Example 1: Only one union member can be relevantly accessed at a time
 Union member
   username As String * 32
@@ -85,7 +96,7 @@ Print
 
 Sleep
 %%
-{{fbdoc item="filename" value="examples/manual/udt/union2.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/udt/union2.bas"}}%%(freebasic)
 ' Example 2: Alternative to RGBA keyword and allowing to retrieve elementary colors values
 UNION BGRA_UNION
    colour AS ULONG
@@ -117,7 +128,7 @@ print
 
 sleep
 %%
-{{fbdoc item="filename" value="examples/manual/udt/union3.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/udt/union3.bas"}}%%(freebasic)
 ' Example 3.
 ' Define a simple union.
 Union AUnion
@@ -163,6 +174,38 @@ Print
 
 Sleep
 %%
+	{{fbdoc item="filename" value="examples/manual/udt/union4.bas"}}%%(freebasic)
+' Example 4: Using Nested Named Union
+Type T
+	Union U
+		a As Short
+		Type
+			b1 As Byte
+			b2 As Byte
+		End Type
+		Declare Sub proc(Byval _b1 As Byte, Byval _b2 As Byte)
+	End Union
+	m As U	
+	Declare Sub proc()
+End Type
+
+Sub T.U.proc(Byval _b1 As Byte, Byval _b2 As Byte)
+	This.b1 = _b1
+	This.b2 = _b2
+End Sub
+
+Sub T.proc()
+	Print This.m.b1, This.m.b2, This.m.a
+End Sub
+
+Dim x As T
+x.m.proc(1, 2)
+x.proc()
+
+Sleep
+%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.10.0: Nested Named Type/Union capability added.
 
 {{fbdoc item="lang"}}
 	- Object-related features as functions defined inside the ##**Union**## block are supported only in the //[[CompilerOptlang|-lang fb]]// dialect.

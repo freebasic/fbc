@@ -1,7 +1,7 @@
 '' examples/manual/udt/with-2.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'WITH'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgWith
 '' --------
@@ -19,7 +19,7 @@ Dim As Integer loopvar, temp, t
 
 For loopvar = 0 To 4
 
-  With the_rectangle[loopvar]
+  With the_rectangle[loopvar]  '' dereferenced pointer
 
 	temp = .x
 	.x = 234 * t + 48 + .y

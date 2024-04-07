@@ -2,7 +2,7 @@
 byte:
 
 
-warnings for:  $"byte" $"-9223372036854775808ull"
+warnings for:  $"byte" $"-  9223372036854775808ull"
 1:
 	Overflow in constant conversion
 2:
@@ -18,7 +18,7 @@ warnings for:  $"byte" $"-9223372036854775808ull"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"byte" $"-2147483649ll"
+warnings for:  $"byte" $"-           2147483649ll"
 1:
 	Overflow in constant conversion
 2:
@@ -34,7 +34,7 @@ warnings for:  $"byte" $"-2147483649ll"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"byte" $"-2147483649ull"
+warnings for:  $"byte" $"-           2147483649ull"
 1:
 	Overflow in constant conversion
 2:
@@ -50,7 +50,7 @@ warnings for:  $"byte" $"-2147483649ull"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"byte" $"-2147483648u"
+warnings for:  $"byte" $"-           2147483648u"
 1:
 	Overflow in constant conversion
 2:
@@ -66,7 +66,7 @@ warnings for:  $"byte" $"-2147483648u"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"byte" $"-2147483648ll"
+warnings for:  $"byte" $"-           2147483648ll"
 1:
 	Overflow in constant conversion
 2:
@@ -82,7 +82,7 @@ warnings for:  $"byte" $"-2147483648ll"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"byte" $"-2147483648ull"
+warnings for:  $"byte" $"-           2147483648ull"
 1:
 	Overflow in constant conversion
 2:
@@ -98,7 +98,7 @@ warnings for:  $"byte" $"-2147483648ull"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"byte" $"-2147483647u"
+warnings for:  $"byte" $"-           2147483647u"
 1:
 	Overflow in constant conversion
 2:
@@ -114,7 +114,7 @@ warnings for:  $"byte" $"-2147483647u"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"byte" $"-2147483647ll"
+warnings for:  $"byte" $"-           2147483647ll"
 1:
 	Overflow in constant conversion
 2:
@@ -130,7 +130,7 @@ warnings for:  $"byte" $"-2147483647ll"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"byte" $"-2147483647ull"
+warnings for:  $"byte" $"-           2147483647ull"
 1:
 	Overflow in constant conversion
 2:
@@ -146,7 +146,7 @@ warnings for:  $"byte" $"-2147483647ull"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"byte" $"-32769"
+warnings for:  $"byte" $"-                32769"
 1:
 	Overflow in constant conversion
 2:
@@ -162,7 +162,7 @@ warnings for:  $"byte" $"-32769"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"byte" $"-32769u"
+warnings for:  $"byte" $"-                32769u"
 1:
 	Overflow in constant conversion
 2:
@@ -178,7 +178,7 @@ warnings for:  $"byte" $"-32769u"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"byte" $"-32769ll"
+warnings for:  $"byte" $"-                32769ll"
 1:
 	Overflow in constant conversion
 2:
@@ -194,7 +194,7 @@ warnings for:  $"byte" $"-32769ll"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"byte" $"-32769ull"
+warnings for:  $"byte" $"-                32769ull"
 1:
 	Overflow in constant conversion
 2:
@@ -210,7 +210,7 @@ warnings for:  $"byte" $"-32769ull"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"byte" $"-32768"
+warnings for:  $"byte" $"-                32768"
 1:
 	Overflow in constant conversion
 2:
@@ -226,7 +226,7 @@ warnings for:  $"byte" $"-32768"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"byte" $"-32768u"
+warnings for:  $"byte" $"-                32768u"
 1:
 	Overflow in constant conversion
 2:
@@ -242,7 +242,7 @@ warnings for:  $"byte" $"-32768u"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"byte" $"-32768ll"
+warnings for:  $"byte" $"-                32768ll"
 1:
 	Overflow in constant conversion
 2:
@@ -258,7 +258,7 @@ warnings for:  $"byte" $"-32768ll"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"byte" $"-32768ull"
+warnings for:  $"byte" $"-                32768ull"
 1:
 	Overflow in constant conversion
 2:
@@ -274,7 +274,7 @@ warnings for:  $"byte" $"-32768ull"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"byte" $"-129"
+warnings for:  $"byte" $"-                  129"
 1:
 	Overflow in constant conversion
 2:
@@ -290,7 +290,7 @@ warnings for:  $"byte" $"-129"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"byte" $"-129u"
+warnings for:  $"byte" $"-                  129u"
 1:
 	Overflow in constant conversion
 2:
@@ -306,7 +306,7 @@ warnings for:  $"byte" $"-129u"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"byte" $"-129ll"
+warnings for:  $"byte" $"-                  129ll"
 1:
 	Overflow in constant conversion
 2:
@@ -322,7 +322,7 @@ warnings for:  $"byte" $"-129ll"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"byte" $"-129ull"
+warnings for:  $"byte" $"-                  129ull"
 1:
 	Overflow in constant conversion
 2:
@@ -747,7 +747,7 @@ warnings for:  $"byte" $"3.402823e+38"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"byte" $"-3.402823e+38"
+warnings for:  $"byte" $"- 3.402823e+38"
 1:
 	Overflow in constant conversion
 2:
@@ -779,7 +779,7 @@ warnings for:  $"byte" $"1.797693134862316e+308"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"byte" $"-1.797693134862316e+308"
+warnings for:  $"byte" $"- 1.797693134862316e+308"
 1:
 	Overflow in constant conversion
 2:
@@ -798,7 +798,7 @@ warnings for:  $"byte" $"-1.797693134862316e+308"
 ubyte:
 
 
-warnings for:  $"ubyte" $"-9223372036854775808ull"
+warnings for:  $"ubyte" $"-  9223372036854775808ull"
 1:
 	Overflow in constant conversion
 2:
@@ -814,7 +814,7 @@ warnings for:  $"ubyte" $"-9223372036854775808ull"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ubyte" $"-2147483649ll"
+warnings for:  $"ubyte" $"-           2147483649ll"
 1:
 	Overflow in constant conversion
 2:
@@ -830,7 +830,7 @@ warnings for:  $"ubyte" $"-2147483649ll"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ubyte" $"-2147483649ull"
+warnings for:  $"ubyte" $"-           2147483649ull"
 1:
 	Overflow in constant conversion
 2:
@@ -846,7 +846,7 @@ warnings for:  $"ubyte" $"-2147483649ull"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ubyte" $"-2147483648u"
+warnings for:  $"ubyte" $"-           2147483648u"
 1:
 	Overflow in constant conversion
 2:
@@ -862,7 +862,7 @@ warnings for:  $"ubyte" $"-2147483648u"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ubyte" $"-2147483648ll"
+warnings for:  $"ubyte" $"-           2147483648ll"
 1:
 	Overflow in constant conversion
 2:
@@ -878,7 +878,7 @@ warnings for:  $"ubyte" $"-2147483648ll"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ubyte" $"-2147483648ull"
+warnings for:  $"ubyte" $"-           2147483648ull"
 1:
 	Overflow in constant conversion
 2:
@@ -894,7 +894,7 @@ warnings for:  $"ubyte" $"-2147483648ull"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ubyte" $"-2147483647u"
+warnings for:  $"ubyte" $"-           2147483647u"
 1:
 	Overflow in constant conversion
 2:
@@ -910,7 +910,7 @@ warnings for:  $"ubyte" $"-2147483647u"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ubyte" $"-2147483647ll"
+warnings for:  $"ubyte" $"-           2147483647ll"
 1:
 	Overflow in constant conversion
 2:
@@ -926,7 +926,7 @@ warnings for:  $"ubyte" $"-2147483647ll"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ubyte" $"-2147483647ull"
+warnings for:  $"ubyte" $"-           2147483647ull"
 1:
 	Overflow in constant conversion
 2:
@@ -942,7 +942,7 @@ warnings for:  $"ubyte" $"-2147483647ull"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ubyte" $"-32769"
+warnings for:  $"ubyte" $"-                32769"
 1:
 	Overflow in constant conversion
 2:
@@ -958,7 +958,7 @@ warnings for:  $"ubyte" $"-32769"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ubyte" $"-32769u"
+warnings for:  $"ubyte" $"-                32769u"
 1:
 	Overflow in constant conversion
 2:
@@ -974,7 +974,7 @@ warnings for:  $"ubyte" $"-32769u"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ubyte" $"-32769ll"
+warnings for:  $"ubyte" $"-                32769ll"
 1:
 	Overflow in constant conversion
 2:
@@ -990,7 +990,7 @@ warnings for:  $"ubyte" $"-32769ll"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ubyte" $"-32769ull"
+warnings for:  $"ubyte" $"-                32769ull"
 1:
 	Overflow in constant conversion
 2:
@@ -1006,7 +1006,7 @@ warnings for:  $"ubyte" $"-32769ull"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ubyte" $"-32768"
+warnings for:  $"ubyte" $"-                32768"
 1:
 	Overflow in constant conversion
 2:
@@ -1022,7 +1022,7 @@ warnings for:  $"ubyte" $"-32768"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ubyte" $"-32768u"
+warnings for:  $"ubyte" $"-                32768u"
 1:
 	Overflow in constant conversion
 2:
@@ -1038,7 +1038,7 @@ warnings for:  $"ubyte" $"-32768u"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ubyte" $"-32768ll"
+warnings for:  $"ubyte" $"-                32768ll"
 1:
 	Overflow in constant conversion
 2:
@@ -1054,7 +1054,7 @@ warnings for:  $"ubyte" $"-32768ll"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ubyte" $"-32768ull"
+warnings for:  $"ubyte" $"-                32768ull"
 1:
 	Overflow in constant conversion
 2:
@@ -1070,7 +1070,7 @@ warnings for:  $"ubyte" $"-32768ull"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ubyte" $"-129"
+warnings for:  $"ubyte" $"-                  129"
 1:
 	Overflow in constant conversion
 2:
@@ -1086,7 +1086,7 @@ warnings for:  $"ubyte" $"-129"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ubyte" $"-129u"
+warnings for:  $"ubyte" $"-                  129u"
 1:
 	Overflow in constant conversion
 2:
@@ -1102,7 +1102,7 @@ warnings for:  $"ubyte" $"-129u"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ubyte" $"-129ll"
+warnings for:  $"ubyte" $"-                  129ll"
 1:
 	Overflow in constant conversion
 2:
@@ -1118,7 +1118,7 @@ warnings for:  $"ubyte" $"-129ll"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ubyte" $"-129ull"
+warnings for:  $"ubyte" $"-                  129ull"
 1:
 	Overflow in constant conversion
 2:
@@ -1543,7 +1543,7 @@ warnings for:  $"ubyte" $"3.402823e+38"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ubyte" $"-3.402823e+38"
+warnings for:  $"ubyte" $"- 3.402823e+38"
 1:
 	Overflow in constant conversion
 2:
@@ -1575,7 +1575,7 @@ warnings for:  $"ubyte" $"1.797693134862316e+308"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ubyte" $"-1.797693134862316e+308"
+warnings for:  $"ubyte" $"- 1.797693134862316e+308"
 1:
 	Overflow in constant conversion
 2:
@@ -1594,7 +1594,7 @@ warnings for:  $"ubyte" $"-1.797693134862316e+308"
 short:
 
 
-warnings for:  $"short" $"-9223372036854775808ull"
+warnings for:  $"short" $"-  9223372036854775808ull"
 1:
 	Overflow in constant conversion
 2:
@@ -1610,7 +1610,7 @@ warnings for:  $"short" $"-9223372036854775808ull"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"short" $"-2147483649ll"
+warnings for:  $"short" $"-           2147483649ll"
 1:
 	Overflow in constant conversion
 2:
@@ -1626,7 +1626,7 @@ warnings for:  $"short" $"-2147483649ll"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"short" $"-2147483649ull"
+warnings for:  $"short" $"-           2147483649ull"
 1:
 	Overflow in constant conversion
 2:
@@ -1642,7 +1642,7 @@ warnings for:  $"short" $"-2147483649ull"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"short" $"-2147483648u"
+warnings for:  $"short" $"-           2147483648u"
 1:
 	Overflow in constant conversion
 2:
@@ -1658,7 +1658,7 @@ warnings for:  $"short" $"-2147483648u"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"short" $"-2147483648ll"
+warnings for:  $"short" $"-           2147483648ll"
 1:
 	Overflow in constant conversion
 2:
@@ -1674,7 +1674,7 @@ warnings for:  $"short" $"-2147483648ll"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"short" $"-2147483648ull"
+warnings for:  $"short" $"-           2147483648ull"
 1:
 	Overflow in constant conversion
 2:
@@ -1690,7 +1690,7 @@ warnings for:  $"short" $"-2147483648ull"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"short" $"-32769"
+warnings for:  $"short" $"-                32769"
 1:
 	Overflow in constant conversion
 2:
@@ -1706,7 +1706,7 @@ warnings for:  $"short" $"-32769"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"short" $"-32769u"
+warnings for:  $"short" $"-                32769u"
 1:
 	Overflow in constant conversion
 2:
@@ -1722,7 +1722,7 @@ warnings for:  $"short" $"-32769u"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"short" $"-32769ll"
+warnings for:  $"short" $"-                32769ll"
 1:
 	Overflow in constant conversion
 2:
@@ -1738,7 +1738,7 @@ warnings for:  $"short" $"-32769ll"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"short" $"-32769ull"
+warnings for:  $"short" $"-                32769ull"
 1:
 	Overflow in constant conversion
 2:
@@ -2099,7 +2099,7 @@ warnings for:  $"short" $"3.402823e+38"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"short" $"-3.402823e+38"
+warnings for:  $"short" $"- 3.402823e+38"
 1:
 	Overflow in constant conversion
 2:
@@ -2131,7 +2131,7 @@ warnings for:  $"short" $"1.797693134862316e+308"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"short" $"-1.797693134862316e+308"
+warnings for:  $"short" $"- 1.797693134862316e+308"
 1:
 	Overflow in constant conversion
 2:
@@ -2150,7 +2150,7 @@ warnings for:  $"short" $"-1.797693134862316e+308"
 ushort:
 
 
-warnings for:  $"ushort" $"-9223372036854775808ull"
+warnings for:  $"ushort" $"-  9223372036854775808ull"
 1:
 	Overflow in constant conversion
 2:
@@ -2166,7 +2166,7 @@ warnings for:  $"ushort" $"-9223372036854775808ull"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ushort" $"-2147483649ll"
+warnings for:  $"ushort" $"-           2147483649ll"
 1:
 	Overflow in constant conversion
 2:
@@ -2182,7 +2182,7 @@ warnings for:  $"ushort" $"-2147483649ll"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ushort" $"-2147483649ull"
+warnings for:  $"ushort" $"-           2147483649ull"
 1:
 	Overflow in constant conversion
 2:
@@ -2198,7 +2198,7 @@ warnings for:  $"ushort" $"-2147483649ull"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ushort" $"-2147483648u"
+warnings for:  $"ushort" $"-           2147483648u"
 1:
 	Overflow in constant conversion
 2:
@@ -2214,7 +2214,7 @@ warnings for:  $"ushort" $"-2147483648u"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ushort" $"-2147483648ll"
+warnings for:  $"ushort" $"-           2147483648ll"
 1:
 	Overflow in constant conversion
 2:
@@ -2230,7 +2230,7 @@ warnings for:  $"ushort" $"-2147483648ll"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ushort" $"-2147483648ull"
+warnings for:  $"ushort" $"-           2147483648ull"
 1:
 	Overflow in constant conversion
 2:
@@ -2246,7 +2246,7 @@ warnings for:  $"ushort" $"-2147483648ull"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ushort" $"-32769"
+warnings for:  $"ushort" $"-                32769"
 1:
 	Overflow in constant conversion
 2:
@@ -2262,7 +2262,7 @@ warnings for:  $"ushort" $"-32769"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ushort" $"-32769u"
+warnings for:  $"ushort" $"-                32769u"
 1:
 	Overflow in constant conversion
 2:
@@ -2278,7 +2278,7 @@ warnings for:  $"ushort" $"-32769u"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ushort" $"-32769ll"
+warnings for:  $"ushort" $"-                32769ll"
 1:
 	Overflow in constant conversion
 2:
@@ -2294,7 +2294,7 @@ warnings for:  $"ushort" $"-32769ll"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ushort" $"-32769ull"
+warnings for:  $"ushort" $"-                32769ull"
 1:
 	Overflow in constant conversion
 2:
@@ -2655,7 +2655,7 @@ warnings for:  $"ushort" $"3.402823e+38"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ushort" $"-3.402823e+38"
+warnings for:  $"ushort" $"- 3.402823e+38"
 1:
 	Overflow in constant conversion
 2:
@@ -2687,7 +2687,7 @@ warnings for:  $"ushort" $"1.797693134862316e+308"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ushort" $"-1.797693134862316e+308"
+warnings for:  $"ushort" $"- 1.797693134862316e+308"
 1:
 	Overflow in constant conversion
 2:
@@ -2706,7 +2706,7 @@ warnings for:  $"ushort" $"-1.797693134862316e+308"
 integer:
 
 
-warnings for:  $"integer" $"-9223372036854775808ull"
+warnings for:  $"integer" $"-  9223372036854775808ull"
 1:
 	Overflow in constant conversion
 2:
@@ -2722,7 +2722,7 @@ warnings for:  $"integer" $"-9223372036854775808ull"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"integer" $"-2147483649ll"
+warnings for:  $"integer" $"-           2147483649ll"
 1:
 	Overflow in constant conversion
 2:
@@ -2738,7 +2738,7 @@ warnings for:  $"integer" $"-2147483649ll"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"integer" $"-2147483649ull"
+warnings for:  $"integer" $"-           2147483649ull"
 1:
 	Overflow in constant conversion
 2:
@@ -2891,7 +2891,7 @@ warnings for:  $"integer" $"3.402823e+38"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"integer" $"-3.402823e+38"
+warnings for:  $"integer" $"- 3.402823e+38"
 1:
 	Overflow in constant conversion
 2:
@@ -2923,7 +2923,7 @@ warnings for:  $"integer" $"1.797693134862316e+308"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"integer" $"-1.797693134862316e+308"
+warnings for:  $"integer" $"- 1.797693134862316e+308"
 1:
 	Overflow in constant conversion
 2:
@@ -2942,7 +2942,7 @@ warnings for:  $"integer" $"-1.797693134862316e+308"
 uinteger:
 
 
-warnings for:  $"uinteger" $"-9223372036854775808ull"
+warnings for:  $"uinteger" $"-  9223372036854775808ull"
 1:
 	Overflow in constant conversion
 2:
@@ -2958,7 +2958,7 @@ warnings for:  $"uinteger" $"-9223372036854775808ull"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"uinteger" $"-2147483649ll"
+warnings for:  $"uinteger" $"-           2147483649ll"
 1:
 	Overflow in constant conversion
 2:
@@ -2974,7 +2974,7 @@ warnings for:  $"uinteger" $"-2147483649ll"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"uinteger" $"-2147483649ull"
+warnings for:  $"uinteger" $"-           2147483649ull"
 1:
 	Overflow in constant conversion
 2:
@@ -3127,7 +3127,7 @@ warnings for:  $"uinteger" $"3.402823e+38"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"uinteger" $"-3.402823e+38"
+warnings for:  $"uinteger" $"- 3.402823e+38"
 1:
 	Overflow in constant conversion
 2:
@@ -3159,7 +3159,7 @@ warnings for:  $"uinteger" $"1.797693134862316e+308"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"uinteger" $"-1.797693134862316e+308"
+warnings for:  $"uinteger" $"- 1.797693134862316e+308"
 1:
 	Overflow in constant conversion
 2:
@@ -3194,7 +3194,7 @@ warnings for:  $"longint" $"3.402823e+38"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"longint" $"-3.402823e+38"
+warnings for:  $"longint" $"- 3.402823e+38"
 1:
 	Overflow in constant conversion
 2:
@@ -3226,7 +3226,7 @@ warnings for:  $"longint" $"1.797693134862316e+308"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"longint" $"-1.797693134862316e+308"
+warnings for:  $"longint" $"- 1.797693134862316e+308"
 1:
 	Overflow in constant conversion
 2:
@@ -3261,7 +3261,7 @@ warnings for:  $"ulongint" $"3.402823e+38"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ulongint" $"-3.402823e+38"
+warnings for:  $"ulongint" $"- 3.402823e+38"
 1:
 	Overflow in constant conversion
 2:
@@ -3293,7 +3293,7 @@ warnings for:  $"ulongint" $"1.797693134862316e+308"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"ulongint" $"-1.797693134862316e+308"
+warnings for:  $"ulongint" $"- 1.797693134862316e+308"
 1:
 	Overflow in constant conversion
 2:
@@ -3337,7 +3337,7 @@ warnings for:  $"single" $"4.490656458412465e-324"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"single" $"-4.490656458412465e-324"
+warnings for:  $"single" $"- 4.490656458412465e-324"
 1:
 	Overflow in constant conversion
 2:
@@ -3353,7 +3353,7 @@ warnings for:  $"single" $"-4.490656458412465e-324"
 7:
 	Overflow in constant conversion
 
-warnings for:  $"single" $"-1.797693134862316e+308"
+warnings for:  $"single" $"- 1.797693134862316e+308"
 1:
 2:
 3:
@@ -3368,7 +3368,7 @@ warnings for:  $"single" $"-1.797693134862316e+308"
 byte:
 
 
-no warnings for:  $"byte" $"-128"
+no warnings for:  $"byte" $"- 128"
 1:
 2:
 3:
@@ -3377,7 +3377,7 @@ no warnings for:  $"byte" $"-128"
 6:
 7:
 
-no warnings for:  $"byte" $"-128u"
+no warnings for:  $"byte" $"- 128u"
 1:
 2:
 3:
@@ -3386,7 +3386,7 @@ no warnings for:  $"byte" $"-128u"
 6:
 7:
 
-no warnings for:  $"byte" $"-128ll"
+no warnings for:  $"byte" $"- 128ll"
 1:
 2:
 3:
@@ -3395,7 +3395,7 @@ no warnings for:  $"byte" $"-128ll"
 6:
 7:
 
-no warnings for:  $"byte" $"-128ull"
+no warnings for:  $"byte" $"- 128ull"
 1:
 2:
 3:
@@ -3404,7 +3404,7 @@ no warnings for:  $"byte" $"-128ull"
 6:
 7:
 
-no warnings for:  $"byte" $"-1"
+no warnings for:  $"byte" $"-   1"
 1:
 2:
 3:
@@ -3413,7 +3413,7 @@ no warnings for:  $"byte" $"-1"
 6:
 7:
 
-no warnings for:  $"byte" $"-1u"
+no warnings for:  $"byte" $"-   1u"
 1:
 2:
 3:
@@ -3422,7 +3422,7 @@ no warnings for:  $"byte" $"-1u"
 6:
 7:
 
-no warnings for:  $"byte" $"-1ll"
+no warnings for:  $"byte" $"-   1ll"
 1:
 2:
 3:
@@ -3431,7 +3431,7 @@ no warnings for:  $"byte" $"-1ll"
 6:
 7:
 
-no warnings for:  $"byte" $"-1ull"
+no warnings for:  $"byte" $"-   1ull"
 1:
 2:
 3:
@@ -3440,7 +3440,7 @@ no warnings for:  $"byte" $"-1ull"
 6:
 7:
 
-no warnings for:  $"byte" $"-1.0"
+no warnings for:  $"byte" $"-   1.0"
 1:
 2:
 3:
@@ -3503,7 +3503,7 @@ no warnings for:  $"byte" $"1.401298e-45"
 6:
 7:
 
-no warnings for:  $"byte" $"-1.401298e-45"
+no warnings for:  $"byte" $"- 1.401298e-45"
 1:
 2:
 3:
@@ -3521,7 +3521,7 @@ no warnings for:  $"byte" $"4.490656458412465e-324"
 6:
 7:
 
-no warnings for:  $"byte" $"-4.490656458412465e-324"
+no warnings for:  $"byte" $"- 4.490656458412465e-324"
 1:
 2:
 3:
@@ -3686,7 +3686,7 @@ no warnings for:  $"byte" $"255ull"
 ubyte:
 
 
-no warnings for:  $"ubyte" $"-128"
+no warnings for:  $"ubyte" $"- 128"
 1:
 2:
 3:
@@ -3695,7 +3695,7 @@ no warnings for:  $"ubyte" $"-128"
 6:
 7:
 
-no warnings for:  $"ubyte" $"-128u"
+no warnings for:  $"ubyte" $"- 128u"
 1:
 2:
 3:
@@ -3704,7 +3704,7 @@ no warnings for:  $"ubyte" $"-128u"
 6:
 7:
 
-no warnings for:  $"ubyte" $"-128ll"
+no warnings for:  $"ubyte" $"- 128ll"
 1:
 2:
 3:
@@ -3713,7 +3713,7 @@ no warnings for:  $"ubyte" $"-128ll"
 6:
 7:
 
-no warnings for:  $"ubyte" $"-128ull"
+no warnings for:  $"ubyte" $"- 128ull"
 1:
 2:
 3:
@@ -3722,7 +3722,7 @@ no warnings for:  $"ubyte" $"-128ull"
 6:
 7:
 
-no warnings for:  $"ubyte" $"-1"
+no warnings for:  $"ubyte" $"-   1"
 1:
 2:
 3:
@@ -3731,7 +3731,7 @@ no warnings for:  $"ubyte" $"-1"
 6:
 7:
 
-no warnings for:  $"ubyte" $"-1u"
+no warnings for:  $"ubyte" $"-   1u"
 1:
 2:
 3:
@@ -3740,7 +3740,7 @@ no warnings for:  $"ubyte" $"-1u"
 6:
 7:
 
-no warnings for:  $"ubyte" $"-1ll"
+no warnings for:  $"ubyte" $"-   1ll"
 1:
 2:
 3:
@@ -3749,7 +3749,7 @@ no warnings for:  $"ubyte" $"-1ll"
 6:
 7:
 
-no warnings for:  $"ubyte" $"-1ull"
+no warnings for:  $"ubyte" $"-   1ull"
 1:
 2:
 3:
@@ -3758,7 +3758,7 @@ no warnings for:  $"ubyte" $"-1ull"
 6:
 7:
 
-no warnings for:  $"ubyte" $"-1.0"
+no warnings for:  $"ubyte" $"-   1.0"
 1:
 2:
 3:
@@ -3821,7 +3821,7 @@ no warnings for:  $"ubyte" $"1.401298e-45"
 6:
 7:
 
-no warnings for:  $"ubyte" $"-1.401298e-45"
+no warnings for:  $"ubyte" $"- 1.401298e-45"
 1:
 2:
 3:
@@ -3839,7 +3839,7 @@ no warnings for:  $"ubyte" $"4.490656458412465e-324"
 6:
 7:
 
-no warnings for:  $"ubyte" $"-4.490656458412465e-324"
+no warnings for:  $"ubyte" $"- 4.490656458412465e-324"
 1:
 2:
 3:
@@ -4004,7 +4004,7 @@ no warnings for:  $"ubyte" $"255ull"
 short:
 
 
-no warnings for:  $"short" $"-32768"
+no warnings for:  $"short" $"- 32768"
 1:
 2:
 3:
@@ -4013,7 +4013,7 @@ no warnings for:  $"short" $"-32768"
 6:
 7:
 
-no warnings for:  $"short" $"-32768u"
+no warnings for:  $"short" $"- 32768u"
 1:
 2:
 3:
@@ -4022,7 +4022,7 @@ no warnings for:  $"short" $"-32768u"
 6:
 7:
 
-no warnings for:  $"short" $"-32768ll"
+no warnings for:  $"short" $"- 32768ll"
 1:
 2:
 3:
@@ -4031,7 +4031,7 @@ no warnings for:  $"short" $"-32768ll"
 6:
 7:
 
-no warnings for:  $"short" $"-32768ull"
+no warnings for:  $"short" $"- 32768ull"
 1:
 2:
 3:
@@ -4040,7 +4040,7 @@ no warnings for:  $"short" $"-32768ull"
 6:
 7:
 
-no warnings for:  $"short" $"-1"
+no warnings for:  $"short" $"-     1"
 1:
 2:
 3:
@@ -4049,7 +4049,7 @@ no warnings for:  $"short" $"-1"
 6:
 7:
 
-no warnings for:  $"short" $"-1u"
+no warnings for:  $"short" $"-     1u"
 1:
 2:
 3:
@@ -4058,7 +4058,7 @@ no warnings for:  $"short" $"-1u"
 6:
 7:
 
-no warnings for:  $"short" $"-1ll"
+no warnings for:  $"short" $"-     1ll"
 1:
 2:
 3:
@@ -4067,7 +4067,7 @@ no warnings for:  $"short" $"-1ll"
 6:
 7:
 
-no warnings for:  $"short" $"-1ull"
+no warnings for:  $"short" $"-     1ull"
 1:
 2:
 3:
@@ -4076,7 +4076,7 @@ no warnings for:  $"short" $"-1ull"
 6:
 7:
 
-no warnings for:  $"short" $"-1.0"
+no warnings for:  $"short" $"-     1.0"
 1:
 2:
 3:
@@ -4139,7 +4139,7 @@ no warnings for:  $"short" $"1.401298e-45"
 6:
 7:
 
-no warnings for:  $"short" $"-1.401298e-45"
+no warnings for:  $"short" $"- 1.401298e-45"
 1:
 2:
 3:
@@ -4157,7 +4157,7 @@ no warnings for:  $"short" $"4.490656458412465e-324"
 6:
 7:
 
-no warnings for:  $"short" $"-4.490656458412465e-324"
+no warnings for:  $"short" $"- 4.490656458412465e-324"
 1:
 2:
 3:
@@ -4322,7 +4322,7 @@ no warnings for:  $"short" $"65535ull"
 ushort:
 
 
-no warnings for:  $"ushort" $"-32768"
+no warnings for:  $"ushort" $"- 32768"
 1:
 2:
 3:
@@ -4331,7 +4331,7 @@ no warnings for:  $"ushort" $"-32768"
 6:
 7:
 
-no warnings for:  $"ushort" $"-32768u"
+no warnings for:  $"ushort" $"- 32768u"
 1:
 2:
 3:
@@ -4340,7 +4340,7 @@ no warnings for:  $"ushort" $"-32768u"
 6:
 7:
 
-no warnings for:  $"ushort" $"-32768ll"
+no warnings for:  $"ushort" $"- 32768ll"
 1:
 2:
 3:
@@ -4349,7 +4349,7 @@ no warnings for:  $"ushort" $"-32768ll"
 6:
 7:
 
-no warnings for:  $"ushort" $"-32768ull"
+no warnings for:  $"ushort" $"- 32768ull"
 1:
 2:
 3:
@@ -4358,7 +4358,7 @@ no warnings for:  $"ushort" $"-32768ull"
 6:
 7:
 
-no warnings for:  $"ushort" $"-1"
+no warnings for:  $"ushort" $"-     1"
 1:
 2:
 3:
@@ -4367,7 +4367,7 @@ no warnings for:  $"ushort" $"-1"
 6:
 7:
 
-no warnings for:  $"ushort" $"-1u"
+no warnings for:  $"ushort" $"-     1u"
 1:
 2:
 3:
@@ -4376,7 +4376,7 @@ no warnings for:  $"ushort" $"-1u"
 6:
 7:
 
-no warnings for:  $"ushort" $"-1ll"
+no warnings for:  $"ushort" $"-     1ll"
 1:
 2:
 3:
@@ -4385,7 +4385,7 @@ no warnings for:  $"ushort" $"-1ll"
 6:
 7:
 
-no warnings for:  $"ushort" $"-1ull"
+no warnings for:  $"ushort" $"-     1ull"
 1:
 2:
 3:
@@ -4394,7 +4394,7 @@ no warnings for:  $"ushort" $"-1ull"
 6:
 7:
 
-no warnings for:  $"ushort" $"-1.0"
+no warnings for:  $"ushort" $"-     1.0"
 1:
 2:
 3:
@@ -4457,7 +4457,7 @@ no warnings for:  $"ushort" $"1.401298e-45"
 6:
 7:
 
-no warnings for:  $"ushort" $"-1.401298e-45"
+no warnings for:  $"ushort" $"- 1.401298e-45"
 1:
 2:
 3:
@@ -4475,7 +4475,7 @@ no warnings for:  $"ushort" $"4.490656458412465e-324"
 6:
 7:
 
-no warnings for:  $"ushort" $"-4.490656458412465e-324"
+no warnings for:  $"ushort" $"- 4.490656458412465e-324"
 1:
 2:
 3:
@@ -4640,7 +4640,7 @@ no warnings for:  $"ushort" $"65535ull"
 integer:
 
 
-no warnings for:  $"integer" $"-2147483648u"
+no warnings for:  $"integer" $"- 2147483648u"
 1:
 2:
 3:
@@ -4649,7 +4649,7 @@ no warnings for:  $"integer" $"-2147483648u"
 6:
 7:
 
-no warnings for:  $"integer" $"-2147483648ll"
+no warnings for:  $"integer" $"- 2147483648ll"
 1:
 2:
 3:
@@ -4658,7 +4658,7 @@ no warnings for:  $"integer" $"-2147483648ll"
 6:
 7:
 
-no warnings for:  $"integer" $"-2147483648ull"
+no warnings for:  $"integer" $"- 2147483648ull"
 1:
 2:
 3:
@@ -4667,7 +4667,7 @@ no warnings for:  $"integer" $"-2147483648ull"
 6:
 7:
 
-no warnings for:  $"integer" $"-1"
+no warnings for:  $"integer" $"-          1"
 1:
 2:
 3:
@@ -4676,7 +4676,7 @@ no warnings for:  $"integer" $"-1"
 6:
 7:
 
-no warnings for:  $"integer" $"-1u"
+no warnings for:  $"integer" $"-          1u"
 1:
 2:
 3:
@@ -4685,7 +4685,7 @@ no warnings for:  $"integer" $"-1u"
 6:
 7:
 
-no warnings for:  $"integer" $"-1ll"
+no warnings for:  $"integer" $"-          1ll"
 1:
 2:
 3:
@@ -4694,7 +4694,7 @@ no warnings for:  $"integer" $"-1ll"
 6:
 7:
 
-no warnings for:  $"integer" $"-1ull"
+no warnings for:  $"integer" $"-          1ull"
 1:
 2:
 3:
@@ -4703,7 +4703,7 @@ no warnings for:  $"integer" $"-1ull"
 6:
 7:
 
-no warnings for:  $"integer" $"-1.0"
+no warnings for:  $"integer" $"-          1.0"
 1:
 2:
 3:
@@ -4766,7 +4766,7 @@ no warnings for:  $"integer" $"1.401298e-45"
 6:
 7:
 
-no warnings for:  $"integer" $"-1.401298e-45"
+no warnings for:  $"integer" $"- 1.401298e-45"
 1:
 2:
 3:
@@ -4784,7 +4784,7 @@ no warnings for:  $"integer" $"4.490656458412465e-324"
 6:
 7:
 
-no warnings for:  $"integer" $"-4.490656458412465e-324"
+no warnings for:  $"integer" $"- 4.490656458412465e-324"
 1:
 2:
 3:
@@ -4922,7 +4922,7 @@ no warnings for:  $"integer" $"4294967295ull"
 uinteger:
 
 
-no warnings for:  $"uinteger" $"-2147483648u"
+no warnings for:  $"uinteger" $"- 2147483648u"
 1:
 2:
 3:
@@ -4931,7 +4931,7 @@ no warnings for:  $"uinteger" $"-2147483648u"
 6:
 7:
 
-no warnings for:  $"uinteger" $"-2147483648ll"
+no warnings for:  $"uinteger" $"- 2147483648ll"
 1:
 2:
 3:
@@ -4940,7 +4940,7 @@ no warnings for:  $"uinteger" $"-2147483648ll"
 6:
 7:
 
-no warnings for:  $"uinteger" $"-2147483648ull"
+no warnings for:  $"uinteger" $"- 2147483648ull"
 1:
 2:
 3:
@@ -4949,7 +4949,7 @@ no warnings for:  $"uinteger" $"-2147483648ull"
 6:
 7:
 
-no warnings for:  $"uinteger" $"-1"
+no warnings for:  $"uinteger" $"-          1"
 1:
 2:
 3:
@@ -4958,7 +4958,7 @@ no warnings for:  $"uinteger" $"-1"
 6:
 7:
 
-no warnings for:  $"uinteger" $"-1u"
+no warnings for:  $"uinteger" $"-          1u"
 1:
 2:
 3:
@@ -4967,7 +4967,7 @@ no warnings for:  $"uinteger" $"-1u"
 6:
 7:
 
-no warnings for:  $"uinteger" $"-1ll"
+no warnings for:  $"uinteger" $"-          1ll"
 1:
 2:
 3:
@@ -4976,7 +4976,7 @@ no warnings for:  $"uinteger" $"-1ll"
 6:
 7:
 
-no warnings for:  $"uinteger" $"-1ull"
+no warnings for:  $"uinteger" $"-          1ull"
 1:
 2:
 3:
@@ -4985,7 +4985,7 @@ no warnings for:  $"uinteger" $"-1ull"
 6:
 7:
 
-no warnings for:  $"uinteger" $"-1.0"
+no warnings for:  $"uinteger" $"-          1.0"
 1:
 2:
 3:
@@ -5048,7 +5048,7 @@ no warnings for:  $"uinteger" $"1.401298e-45"
 6:
 7:
 
-no warnings for:  $"uinteger" $"-1.401298e-45"
+no warnings for:  $"uinteger" $"- 1.401298e-45"
 1:
 2:
 3:
@@ -5066,7 +5066,7 @@ no warnings for:  $"uinteger" $"4.490656458412465e-324"
 6:
 7:
 
-no warnings for:  $"uinteger" $"-4.490656458412465e-324"
+no warnings for:  $"uinteger" $"- 4.490656458412465e-324"
 1:
 2:
 3:
@@ -5204,7 +5204,7 @@ no warnings for:  $"uinteger" $"4294967295ull"
 longint:
 
 
-no warnings for:  $"longint" $"-9223372036854775808ull"
+no warnings for:  $"longint" $"- 9223372036854775808ull"
 1:
 2:
 3:
@@ -5213,7 +5213,7 @@ no warnings for:  $"longint" $"-9223372036854775808ull"
 6:
 7:
 
-no warnings for:  $"longint" $"-1"
+no warnings for:  $"longint" $"-                   1"
 1:
 2:
 3:
@@ -5222,7 +5222,7 @@ no warnings for:  $"longint" $"-1"
 6:
 7:
 
-no warnings for:  $"longint" $"-1u"
+no warnings for:  $"longint" $"-                   1u"
 1:
 2:
 3:
@@ -5231,7 +5231,7 @@ no warnings for:  $"longint" $"-1u"
 6:
 7:
 
-no warnings for:  $"longint" $"-1ll"
+no warnings for:  $"longint" $"-                   1ll"
 1:
 2:
 3:
@@ -5240,7 +5240,7 @@ no warnings for:  $"longint" $"-1ll"
 6:
 7:
 
-no warnings for:  $"longint" $"-1ull"
+no warnings for:  $"longint" $"-                   1ull"
 1:
 2:
 3:
@@ -5249,7 +5249,7 @@ no warnings for:  $"longint" $"-1ull"
 6:
 7:
 
-no warnings for:  $"longint" $"-1.0"
+no warnings for:  $"longint" $"-                   1.0"
 1:
 2:
 3:
@@ -5312,7 +5312,7 @@ no warnings for:  $"longint" $"1.401298e-45"
 6:
 7:
 
-no warnings for:  $"longint" $"-1.401298e-45"
+no warnings for:  $"longint" $"- 1.401298e-45"
 1:
 2:
 3:
@@ -5330,7 +5330,7 @@ no warnings for:  $"longint" $"4.490656458412465e-324"
 6:
 7:
 
-no warnings for:  $"longint" $"-4.490656458412465e-324"
+no warnings for:  $"longint" $"- 4.490656458412465e-324"
 1:
 2:
 3:
@@ -5441,7 +5441,7 @@ no warnings for:  $"longint" $"1.844674407370955e+19"
 ulongint:
 
 
-no warnings for:  $"ulongint" $"-9223372036854775808ull"
+no warnings for:  $"ulongint" $"- 9223372036854775808ull"
 1:
 2:
 3:
@@ -5450,7 +5450,7 @@ no warnings for:  $"ulongint" $"-9223372036854775808ull"
 6:
 7:
 
-no warnings for:  $"ulongint" $"-1"
+no warnings for:  $"ulongint" $"-                   1"
 1:
 2:
 3:
@@ -5459,7 +5459,7 @@ no warnings for:  $"ulongint" $"-1"
 6:
 7:
 
-no warnings for:  $"ulongint" $"-1u"
+no warnings for:  $"ulongint" $"-                   1u"
 1:
 2:
 3:
@@ -5468,7 +5468,7 @@ no warnings for:  $"ulongint" $"-1u"
 6:
 7:
 
-no warnings for:  $"ulongint" $"-1ll"
+no warnings for:  $"ulongint" $"-                   1ll"
 1:
 2:
 3:
@@ -5477,7 +5477,7 @@ no warnings for:  $"ulongint" $"-1ll"
 6:
 7:
 
-no warnings for:  $"ulongint" $"-1ull"
+no warnings for:  $"ulongint" $"-                   1ull"
 1:
 2:
 3:
@@ -5486,7 +5486,7 @@ no warnings for:  $"ulongint" $"-1ull"
 6:
 7:
 
-no warnings for:  $"ulongint" $"-1.0"
+no warnings for:  $"ulongint" $"-                   1.0"
 1:
 2:
 3:
@@ -5549,7 +5549,7 @@ no warnings for:  $"ulongint" $"1.401298e-45"
 6:
 7:
 
-no warnings for:  $"ulongint" $"-1.401298e-45"
+no warnings for:  $"ulongint" $"- 1.401298e-45"
 1:
 2:
 3:
@@ -5567,7 +5567,7 @@ no warnings for:  $"ulongint" $"4.490656458412465e-324"
 6:
 7:
 
-no warnings for:  $"ulongint" $"-4.490656458412465e-324"
+no warnings for:  $"ulongint" $"- 4.490656458412465e-324"
 1:
 2:
 3:
@@ -5678,7 +5678,7 @@ no warnings for:  $"ulongint" $"1.844674407370955e+19"
 single:
 
 
-no warnings for:  $"single" $"-1"
+no warnings for:  $"single" $"- 1"
 1:
 2:
 3:
@@ -5687,7 +5687,7 @@ no warnings for:  $"single" $"-1"
 6:
 7:
 
-no warnings for:  $"single" $"-1u"
+no warnings for:  $"single" $"- 1u"
 1:
 2:
 3:
@@ -5696,7 +5696,7 @@ no warnings for:  $"single" $"-1u"
 6:
 7:
 
-no warnings for:  $"single" $"-1ll"
+no warnings for:  $"single" $"- 1ll"
 1:
 2:
 3:
@@ -5705,7 +5705,7 @@ no warnings for:  $"single" $"-1ll"
 6:
 7:
 
-no warnings for:  $"single" $"-1ull"
+no warnings for:  $"single" $"- 1ull"
 1:
 2:
 3:
@@ -5714,7 +5714,7 @@ no warnings for:  $"single" $"-1ull"
 6:
 7:
 
-no warnings for:  $"single" $"-1.0"
+no warnings for:  $"single" $"- 1.0"
 1:
 2:
 3:
@@ -5831,7 +5831,7 @@ no warnings for:  $"single" $"1.401298e-45"
 6:
 7:
 
-no warnings for:  $"single" $"-1.401298e-45"
+no warnings for:  $"single" $"- 1.401298e-45"
 1:
 2:
 3:
@@ -5840,7 +5840,7 @@ no warnings for:  $"single" $"-1.401298e-45"
 6:
 7:
 
-no warnings for:  $"single" $"-3.402823e+38"
+no warnings for:  $"single" $"- 3.402823e+38"
 1:
 2:
 3:
@@ -5852,7 +5852,7 @@ no warnings for:  $"single" $"-3.402823e+38"
 double:
 
 
-no warnings for:  $"double" $"-1"
+no warnings for:  $"double" $"- 1"
 1:
 2:
 3:
@@ -5861,7 +5861,7 @@ no warnings for:  $"double" $"-1"
 6:
 7:
 
-no warnings for:  $"double" $"-1u"
+no warnings for:  $"double" $"- 1u"
 1:
 2:
 3:
@@ -5870,7 +5870,7 @@ no warnings for:  $"double" $"-1u"
 6:
 7:
 
-no warnings for:  $"double" $"-1ll"
+no warnings for:  $"double" $"- 1ll"
 1:
 2:
 3:
@@ -5879,7 +5879,7 @@ no warnings for:  $"double" $"-1ll"
 6:
 7:
 
-no warnings for:  $"double" $"-1ull"
+no warnings for:  $"double" $"- 1ull"
 1:
 2:
 3:
@@ -5888,7 +5888,7 @@ no warnings for:  $"double" $"-1ull"
 6:
 7:
 
-no warnings for:  $"double" $"-1.0"
+no warnings for:  $"double" $"- 1.0"
 1:
 2:
 3:
@@ -6005,7 +6005,7 @@ no warnings for:  $"double" $"1.401298e-45"
 6:
 7:
 
-no warnings for:  $"double" $"-1.401298e-45"
+no warnings for:  $"double" $"- 1.401298e-45"
 1:
 2:
 3:
@@ -6014,7 +6014,7 @@ no warnings for:  $"double" $"-1.401298e-45"
 6:
 7:
 
-no warnings for:  $"double" $"-3.402823e+38"
+no warnings for:  $"double" $"- 3.402823e+38"
 1:
 2:
 3:
@@ -6041,7 +6041,7 @@ no warnings for:  $"double" $"4.490656458412465e-324"
 6:
 7:
 
-no warnings for:  $"double" $"-4.490656458412465e-324"
+no warnings for:  $"double" $"- 4.490656458412465e-324"
 1:
 2:
 3:
@@ -6050,7 +6050,7 @@ no warnings for:  $"double" $"-4.490656458412465e-324"
 6:
 7:
 
-no warnings for:  $"double" $"-1.797693134862316e+308"
+no warnings for:  $"double" $"- 1.797693134862316e+308"
 1:
 2:
 3:

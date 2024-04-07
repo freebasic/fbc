@@ -1,3 +1,31 @@
+Aug 8, 2022
+- change ParsePageName() to recognize index format and extract the revision number
+- add 'getindex -recent' option to retrieve RecentChanges
+- add 'getindex -list' option to save index in plain list format
+- add 'replace -recent' option to read RecentChanges.txt
+- add 'delextra -recent' option to read RecentChanges.txt
+- add 'getpage -diff pagelist' option to check difference or one index against an
+  older index and only get pages that are newer (by revision number)
+- if the any revision number is zero, the age of the content is not known and is
+  assumed that it needs to be refreshed
+- the default for 'getindex -web' for 'PageIndex.txt' is still in the list format.
+
+May 26, 2022
+- support 'visible' parameter in {{fbdoc item="title"}} action
+
+April 30, 2022
+- allow force query for CSRFToken
+- set-up libCurl to keep POST on redirects
+- copyright updates for 2022
+- remove distribution notice from extracted wiki examples
+
+October 10, 2021
+- Add recognition for {{fbdoc item="ver"}} for "Version" section
+- Change index loading in CWikiConUrl.LoadIndex() to use PageIndex/rawlist and avoid having to process html tags
+
+August 28, 2021
+- add '-trace' option to show libcurl verbosity
+
 January 28, 2018
 - copyright updates for 2018
 

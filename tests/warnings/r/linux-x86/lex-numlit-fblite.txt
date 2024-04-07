@@ -1,0 +1,752 @@
+lex-numlit-fblite.bas(2) error 4: Duplicated definition, typeof
+#define typeof __typeof
+              ^
+
+--------------------------------------------------------------------------------
+no suffix
+
+dec:
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+UINTEGER
+UINTEGER
+LONGINT
+ULONGINT
+ULONGINT
+
+bin:
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+LONGINT
+LONGINT
+LONGINT
+
+oct:
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+LONGINT
+LONGINT
+LONGINT
+
+hex:
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+LONGINT
+LONGINT
+LONGINT
+
+--------------------------------------------------------------------------------
+u suffix
+
+dec:
+UINTEGER
+UINTEGER
+UINTEGER
+UINTEGER
+UINTEGER
+UINTEGER
+UINTEGER
+UINTEGER
+ULONGINT
+ULONGINT
+ULONGINT
+
+bin:
+UINTEGER
+UINTEGER
+UINTEGER
+UINTEGER
+UINTEGER
+UINTEGER
+UINTEGER
+UINTEGER
+ULONGINT
+ULONGINT
+ULONGINT
+
+oct:
+UINTEGER
+UINTEGER
+UINTEGER
+UINTEGER
+UINTEGER
+UINTEGER
+UINTEGER
+UINTEGER
+ULONGINT
+ULONGINT
+ULONGINT
+
+hex:
+UINTEGER
+UINTEGER
+UINTEGER
+UINTEGER
+UINTEGER
+UINTEGER
+UINTEGER
+UINTEGER
+ULONGINT
+ULONGINT
+ULONGINT
+
+--------------------------------------------------------------------------------
+l suffix
+
+dec:
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+LONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+LONG
+	Literal number too big, truncated
+LONG
+
+bin:
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+LONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+LONG
+	Literal number too big, truncated
+LONG
+
+oct:
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+LONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+LONG
+	Literal number too big, truncated
+LONG
+
+hex:
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+LONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+LONG
+	Literal number too big, truncated
+LONG
+
+--------------------------------------------------------------------------------
+ul suffix
+
+dec:
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+ULONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+ULONG
+	Literal number too big, truncated
+ULONG
+
+bin:
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+ULONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+ULONG
+	Literal number too big, truncated
+ULONG
+
+oct:
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+ULONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+ULONG
+	Literal number too big, truncated
+ULONG
+
+hex:
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+ULONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+ULONG
+	Literal number too big, truncated
+ULONG
+
+--------------------------------------------------------------------------------
+ll suffix
+
+dec:
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+
+bin:
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+
+oct:
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+
+hex:
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+LONGINT
+
+--------------------------------------------------------------------------------
+ull suffix
+
+dec:
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+
+bin:
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+
+oct:
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+
+hex:
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+ULONGINT
+
+--------------------------------------------------------------------------------
+% suffix
+
+dec:
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+	Literal number too big, truncated
+	Overflow in constant conversion
+INTEGER
+	Literal number too big, truncated
+	Overflow in constant conversion
+INTEGER
+	Literal number too big, truncated
+INTEGER
+
+bin:
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+	Literal number too big, truncated
+	Overflow in constant conversion
+INTEGER
+	Literal number too big, truncated
+	Overflow in constant conversion
+INTEGER
+	Literal number too big, truncated
+INTEGER
+
+oct:
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+	Literal number too big, truncated
+	Overflow in constant conversion
+INTEGER
+	Literal number too big, truncated
+	Overflow in constant conversion
+INTEGER
+	Literal number too big, truncated
+INTEGER
+
+hex:
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+	Literal number too big, truncated
+	Overflow in constant conversion
+INTEGER
+	Literal number too big, truncated
+	Overflow in constant conversion
+INTEGER
+	Literal number too big, truncated
+INTEGER
+
+--------------------------------------------------------------------------------
+& suffix
+
+dec:
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+LONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+LONG
+	Literal number too big, truncated
+LONG
+
+bin:
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+LONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+LONG
+	Literal number too big, truncated
+LONG
+
+oct:
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+LONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+LONG
+	Literal number too big, truncated
+LONG
+
+hex:
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+LONG
+	Literal number too big, truncated
+	Overflow in constant conversion
+LONG
+	Literal number too big, truncated
+LONG
+
+--------------------------------------------------------------------------------
+f suffix
+
+dec:
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+
+bin:
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+
+oct:
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+
+--------------------------------------------------------------------------------
+d suffix
+
+dec:
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+
+bin:
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+
+oct:
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+
+--------------------------------------------------------------------------------
+! suffix
+
+dec:
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+
+bin:
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+
+oct:
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+
+hex:
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+
+--------------------------------------------------------------------------------
+# suffix
+
+dec:
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+
+bin:
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+
+oct:
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+
+hex:
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+
+--------------------------------------------------------------------------------
+float literal
+
+DOUBLE
+DOUBLE
+DOUBLE
+---
+DOUBLE
+DOUBLE
+---
+SINGLE
+DOUBLE
+DOUBLE
+---
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+
+--------------------------------------------------------------------------------
+missing non decimal digits
+expect 3 warnings
+	Expected digit
+	Expected digit
+	Expected digit
+expect 0 warnings
+expect 3 warnings
+	Expected digit
+	Expected digit
+	Expected digit

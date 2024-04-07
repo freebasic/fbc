@@ -23,7 +23,9 @@ Loads to a Dynamic Link Library (DLL) into memory at runtime
 	See the dynamic loading example on the [[ProPgSharedLibraries|Shared Libraries]] page.
 
 {{fbdoc item="target"}}
-	- Dynamic link libraries are not available in DOS, as the OS doesn't support them.
+	- DOS: dynamic link libraries have ".dxe" file name extension and the full ##//libname//## must be specified: "<name>.dxe".
+	- DOS: calling ##dylibload( ####"####"#### )##, using an empty file name will initialize the run time library exports.
+	- DOS: see specific [[ProPgSharedLibrariesDOS|Shared Libraries - DOS]] page
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Dylibload""**##.

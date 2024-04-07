@@ -164,10 +164,8 @@ function astNewUOP _
 
 	'' pointer?
 	case FB_DATATYPE_POINTER
-		'' only NOT allowed
-		if( op <> AST_OP_NOT ) then
-			exit function
-		end if
+		'' no UOP's allowed with pointers
+		exit function
 
 	end select
 
@@ -176,7 +174,7 @@ function astNewUOP _
 	'' see also astNewBOP()
 	''
 	'' - do nothing if operand is boolean with NOT operator
-	
+
 	do_promote = (env.clopt.lang <> FB_LANG_QB) and (typeGetClass( o->dtype ) = FB_DATACLASS_INTEGER)
 
 	if( typeGetDtAndPtrOnly( o->dtype ) = FB_DATATYPE_BOOLEAN ) then
@@ -290,7 +288,13 @@ function astNewUOP _
 	'' Optimize bitwise NOT on boolean expressions (where NOT = logical negation)
 	if( op = AST_OP_NOT ) then
 		if( astIsRelationalBop( o ) ) then
-			o->op.op = astGetInverseLogOp( o->op.op )
+			'' let the backend deal with the inverse logic, unless we are in '-fpmode fast'
+			if( (typeGetClass( astGetDataType( o->l ) ) = FB_DATACLASS_FPOINT) and _
+			    (env.clopt.fpmode = FB_FPMODE_PRECISE) ) then
+				o->op.options xor= AST_OPOPT_DOINVERSE
+			else
+				o->op.op = astGetInverseLogOp( o->op.op )
+			end if
 			return o
 		end if
 	end if
@@ -304,7 +308,6 @@ function astNewUOP _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_UOP, dtype, subtype )
-
 	n->l = o
 	n->r = NULL
 	n->op.op = op
@@ -320,9 +323,9 @@ function astLoadUOP _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-    dim as ASTNODE ptr o = any
-    dim as integer op = any
-    dim as IRVREG ptr v1 = any, vr = any
+	dim as ASTNODE ptr o = any
+	dim as integer op = any
+	dim as IRVREG ptr v1 = any, vr = any
 
 	o = n->l
 	op = n->op.op

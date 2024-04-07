@@ -95,12 +95,12 @@ parser-quirk-on.bas ----
 	Suffix ignored in 'label1%'
 warning expected
 	Suffix ignored in 'label1%'
-----String Functions ----
+---- String Functions ----
 none expected
 4 warnings expected
 	Suffix ignored in 'wchr$'
 	Suffix ignored in 'wstr$'
 	Suffix ignored in 'wstring$'
 	Suffix ignored in 'bin$'
-----Procedure ----
+---- Procedure ----
 none expected

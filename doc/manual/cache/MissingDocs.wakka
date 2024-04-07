@@ -5,7 +5,7 @@ Please edit this page to remove items when they are written or add items when th
 	[[ExtLibTOC|External Libraries]] - availability (windows, linux, DOS), usage, and download locations
 	Cross compiling and environment variables (used to invoke sub-programs)
 	See [[CatPgProgrammer|Programmer's Guide]] (W.I.P.): [[ProPgExternalFormats|External Graphics File Formats]] (page to fill in)
-	Dedicated page for ##[[KeyPgScreengraphics|Screen]]##'s QB/page-choosing mode - perhaps KeyPgScreenqb?  (quick fb example added to KeyPgPcopy for now...)
+	Dedicated page for ##[[KeyPgScreengraphics|Screen (Graphics)]]##'s QB/page-choosing mode - perhaps KeyPgScreenqb?  (quick fb example added to KeyPgPcopy for now...)
 
 {{fbdoc item="section" value="Pages missing/incorrect examples"}}
 	None known (but if found, please edit this page)

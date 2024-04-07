@@ -1,7 +1,7 @@
 '' examples/manual/defines/fbargrightof2.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic '__FB_ARG_RIGHTOF__'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDdfbargrightof
 '' --------
@@ -41,4 +41,3 @@ Counting 7 to 2
  3
  2
 '/
-	

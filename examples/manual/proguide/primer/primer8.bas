@@ -1,7 +1,7 @@
 '' examples/manual/proguide/primer/primer8.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'FreeBASIC Primer #1'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgPrimer1
 '' --------

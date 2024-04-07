@@ -10,9 +10,9 @@ Set target architecture for improved/restricted code generation or cross-compili
 		
 			- Related to 32bit x86:
 				- ##386##
-				- ##486## (default for x86)
-				- ##586##
-				- ##686##
+				- ##486##
+				- ##586## (default for x86 on DOS)
+				- ##686## (default for x86 except on DOS)
 				- ##athlon##
 				- ##athlon-xp##
 				- ##athlon-fx##
@@ -22,20 +22,34 @@ Set target architecture for improved/restricted code generation or cross-compili
 				- ##pentium3##
 				- ##pentium4##
 				- ##pentium4-sse3##
+				- ##x86##
 			- Related to 64bit x86_64:
 				- ##x86_64##, ##x86-64##, ##amd64##
 			- Related to 32bit ARM:
+				- ##armeabi##
+				- ##armeabi-v7a## (default for ##arm-android##)
+				- ##armv5## (alias for ##armv5te##)
+				- ##armv5te## (default for ##armeabi##)
 				- ##armv6##
-				- ##armv7-a## (default for ARM)
+				- ##armv7## (alias for ##armv7-a##)
+				- ##armv7a## (alias for ##armv7-a##)
+				- ##armv7-a## (default for ARM, but the toolchain may interpret as ##armv7-a+fp##)
+				- ##armv7-a+fp##
+				- There are variations of arm architecture in the wild and interpretations will vary across toolchains and time
 			- Related to 64bit ARM (""AArch64""):
 				- ##aarch64##
+			- Related to 32bit ""PowerPC"":
+				- ##powerpc## (big endian)
+			- Related to 64bit ""PowerPC"":
+				- ##powerpc64## (big endian)
+				- ##powerpc64le## (little endian)
 			- Others:
 				- ##native##: For compiling to the architecture which the compiler is running on.
 				- ##32##, ##64##: For quick cross-compiling to the 32bit or 64bit version of the default architecture.
 
 {{fbdoc item="desc"}}
 	The ##-arch## compiler option sets the target CPU architecture. This can be used for multiple purposes:
-		- Improving code generation; for example: You can use ##-arch 686## to override the default ##-arch 486##, and the compiler will generate faster code in some cases, by using certain instructions which were not available on i486 (or other CPUs older than i686).
+		- Improving code generation; for example: You can use ##-arch pentium4-sse3## to override the default ##-arch 686##, and the compiler will generate faster code in some cases, by using certain instructions which were not available on i686.
 		- Restricting code generation; for example: You can use ##-arch 386## to limit the compiler to using only i386-compatible instructions.
 		- Cross-compiling; for example: You can use ##-arch x86_64## on 32bit x86 systems to cross-compile to 64bit x86_64.
 		
@@ -44,11 +58,14 @@ Set target architecture for improved/restricted code generation or cross-compili
 	
 	However, ##-arch## only affects newly generated code, but not pre-compiled code such as the ""FreeBASIC"" runtime libraries, or any other library from the ##lib/## directory. For example, using ##-arch 386## is not necessarily enough to get a pure i386 executable -- it also depends on how all the libraries that will be linked in were compiled.
 	
-	The ##-arch 32## and ##-arch 64## shortcuts are similar to gcc's ##-m32/-m64## options. On 32bit architectures, ##-arch 64## is an abbreviation for cross-compiling to the default 64bit version of the architecture (e.g. from 32bit x86 to 64bit x86_64, or 32bit ARM to 64bit ""AArch64""), and ##-arch 32## does nothing. On 64bit systems, it is the other way round: ##-arch 32## cross-compiles to the default 32bit architecture, while ##-arch 64## does nothing.
+	The ##-arch 32## and ##-arch 64## shortcuts are similar to gcc's ##-m32/-m64## options. On 32bit architectures, ##-arch 64## is an abbreviation for cross-compiling to the default 64bit version of the architecture (e.g. from 32bit x86 to 64bit x86_64, or 32bit ARM to 64bit ""AArch64"", or 32bit ""PowerPC"" to 64bit ""PowerPC""), and ##-arch 32## does nothing. On 64bit systems, it is the other way round: ##-arch 32## cross-compiles to the default 32bit architecture, while ##-arch 64## does nothing.
 	
 	The ##-arch native## shortcut is similar to gcc's ##-march=native## option. On x86, it causes fbc to try and detect the host CPU automatically based on the ##cpuid## instruction and its availability or results. On other architectures, this will currently simply use the architecture which the compiler itself was built for. Under -gen gcc this will use ##gcc -march=native##.
 	
 	Specifying an ##-arch## setting incompatible to the native architecture will trigger [[DevCrossCompiling|cross-compilation]], just like the ##[[CompilerOpttarget|-target]]## option, except that only the target architecture, but not the target operating system, is changed.
+
+{{fbdoc item="ver"}}
+	- Before fbc 1.10.0, default was 486 for 32bit x86.
 
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]

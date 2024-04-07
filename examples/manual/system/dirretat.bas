@@ -1,7 +1,7 @@
 '' examples/manual/system/dirretat.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'DIR'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDir
 '' --------
@@ -49,4 +49,3 @@ Loop
 
 Print
 Print "Found " & filecount & " files and " & dircount & " subdirs"
-	

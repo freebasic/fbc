@@ -13,15 +13,15 @@
 #include once "objinfo.bi"
 
 type FB_LANG_INFO
-	name		as const zstring ptr
-	options		as FB_LANG_OPT
+	name        as const zstring ptr
+	options     as FB_LANG_OPT
 end type
 
-declare sub	parserInit ( )
+declare sub parserInit ( )
 
-declare sub	parserEnd ( )
+declare sub parserEnd ( )
 
-declare sub	parserSetCtx ( )
+declare sub parserSetCtx ( )
 
 '' globals
 dim shared env as FBENV
@@ -57,13 +57,13 @@ dim shared env as FBENV
 			FB_LANG_OPT_LET or _
 			FB_LANG_OPT_PERIODS or _
 			FB_LANG_OPT_NUMLABEL or _
-            FB_LANG_OPT_IMPLICIT or _
-            FB_LANG_OPT_DEFTYPE or _
-            FB_LANG_OPT_SUFFIX or _
-            FB_LANG_OPT_METACMD or _
+			FB_LANG_OPT_IMPLICIT or _
+			FB_LANG_OPT_DEFTYPE or _
+			FB_LANG_OPT_SUFFIX or _
+			FB_LANG_OPT_METACMD or _
 			FB_LANG_OPT_OPTION or _
-    		FB_LANG_OPT_ONERROR or _
-    		FB_LANG_OPT_QUIRKFUNC _
+			FB_LANG_OPT_ONERROR or _
+			FB_LANG_OPT_QUIRKFUNC _
 		) _
 		, _
 		( _
@@ -94,13 +94,13 @@ dim shared env as FBENV
 			FB_LANG_OPT_LET or _
 			FB_LANG_OPT_PERIODS or _
 			FB_LANG_OPT_NUMLABEL or _
-            FB_LANG_OPT_IMPLICIT or _
-            FB_LANG_OPT_DEFTYPE or _
-            FB_LANG_OPT_SUFFIX or _
-            FB_LANG_OPT_METACMD or _
+			FB_LANG_OPT_IMPLICIT or _
+			FB_LANG_OPT_DEFTYPE or _
+			FB_LANG_OPT_SUFFIX or _
+			FB_LANG_OPT_METACMD or _
 			FB_LANG_OPT_OPTION or _
-    		FB_LANG_OPT_ONERROR or _
-    		FB_LANG_OPT_QUIRKFUNC _
+			FB_LANG_OPT_ONERROR or _
+			FB_LANG_OPT_QUIRKFUNC _
 		) _
 	}
 
@@ -111,159 +111,182 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_USHORT, _   '' wchar
 		FB_FUNCMODE_STDCALL, _  '' fbcall
 		FB_FUNCMODE_STDCALL, _  '' stdcall
-		0	or FB_TARGETOPT_EXPORT _
-			or FB_TARGETOPT_RETURNINREGS _
-			or FB_TARGETOPT_COFF _
+		0   or FB_TARGETOPT_EXPORT _
+		    or FB_TARGETOPT_RETURNINREGS _
+		    or FB_TARGETOPT_COFF _
 	), _
 	( _
 		@"cygwin", _
 		FB_DATATYPE_USHORT, _
 		FB_FUNCMODE_STDCALL, _
 		FB_FUNCMODE_STDCALL, _
-		0	or FB_TARGETOPT_UNIX _
-			or FB_TARGETOPT_EXPORT _
-			or FB_TARGETOPT_RETURNINREGS _
-			or FB_TARGETOPT_COFF _
+		0   or FB_TARGETOPT_UNIX _
+		    or FB_TARGETOPT_EXPORT _
+		    or FB_TARGETOPT_RETURNINREGS _
+		    or FB_TARGETOPT_COFF _
 	), _
 	( _
 		@"linux", _
 		FB_DATATYPE_ULONG, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		0	or FB_TARGETOPT_UNIX _
-			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
-			or FB_TARGETOPT_STACKALIGN16 _
-			or FB_TARGETOPT_ELF _
+		0   or FB_TARGETOPT_UNIX _
+		    or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
+		    or FB_TARGETOPT_STACKALIGN16 _
+		    or FB_TARGETOPT_ELF _
+	), _
+	( _
+		@"android", _
+		FB_DATATYPE_ULONG, _
+		FB_FUNCMODE_CDECL, _
+		FB_FUNCMODE_STDCALL_MS, _
+		0   or FB_TARGETOPT_UNIX _
+		    or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
+		    or FB_TARGETOPT_STACKALIGN16 _
+		    or FB_TARGETOPT_ELF _
 	), _
 	( _
 		@"dos", _
 		FB_DATATYPE_UBYTE, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		0	or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
-			or FB_TARGETOPT_COFF _
+		0   or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
+		    or FB_TARGETOPT_COFF _
 	), _
 	( _
 		@"xbox", _
 		FB_DATATYPE_ULONG, _
 		FB_FUNCMODE_STDCALL, _
 		FB_FUNCMODE_STDCALL, _
-		0	or FB_TARGETOPT_RETURNINREGS _
-			or FB_TARGETOPT_COFF _
+		0   or FB_TARGETOPT_RETURNINREGS _
+		    or FB_TARGETOPT_COFF _
 	), _
 	( _
 		@"freebsd", _
 		FB_DATATYPE_ULONG, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		0	or FB_TARGETOPT_UNIX _
-			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
-			or FB_TARGETOPT_RETURNINREGS _
-			or FB_TARGETOPT_ELF _
+		0   or FB_TARGETOPT_UNIX _
+		    or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
+		    or FB_TARGETOPT_RETURNINREGS _
+		    or FB_TARGETOPT_RETURNINFLTS _
+		    or FB_TARGETOPT_ELF _
 	), _
 	( _
 		@"dragonfly", _
 		FB_DATATYPE_ULONG, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		0	or FB_TARGETOPT_UNIX _
-			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
-			or FB_TARGETOPT_RETURNINREGS _
-			or FB_TARGETOPT_ELF _
+		0   or FB_TARGETOPT_UNIX _
+		    or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
+		    or FB_TARGETOPT_RETURNINREGS _
+		    or FB_TARGETOPT_ELF _
 	), _
 	( _
 		@"solaris", _
 		FB_DATATYPE_ULONG, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		0	or FB_TARGETOPT_UNIX _
-			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
-			or FB_TARGETOPT_RETURNINREGS _
-			or FB_TARGETOPT_ELF _
+		0   or FB_TARGETOPT_UNIX _
+		    or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
+		    or FB_TARGETOPT_RETURNINREGS _
+		    or FB_TARGETOPT_ELF _
 	), _
 	( _
 		@"openbsd", _
 		FB_DATATYPE_ULONG, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		0	or FB_TARGETOPT_UNIX _
-			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
-			or FB_TARGETOPT_RETURNINREGS _
-			or FB_TARGETOPT_ELF _
+		0   or FB_TARGETOPT_UNIX _
+		    or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
+		    or FB_TARGETOPT_RETURNINREGS _
+		    or FB_TARGETOPT_RETURNINFLTS _
+		    or FB_TARGETOPT_ELF _
 	), _
 	( _
 		@"darwin", _
 		FB_DATATYPE_ULONG, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		0	or FB_TARGETOPT_UNIX _
-			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
-			or FB_TARGETOPT_RETURNINREGS _
-			or FB_TARGETOPT_STACKALIGN16 _
-			or FB_TARGETOPT_MACHO _
+		0   or FB_TARGETOPT_UNIX _
+		    or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
+		    or FB_TARGETOPT_RETURNINREGS _
+		    or FB_TARGETOPT_STACKALIGN16 _
+		    or FB_TARGETOPT_MACHO _
 	), _
 	( _
 		@"netbsd", _
 		FB_DATATYPE_ULONG, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		0	or FB_TARGETOPT_UNIX _
-			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
-			or FB_TARGETOPT_RETURNINREGS _
-			or FB_TARGETOPT_ELF _
+		0   or FB_TARGETOPT_UNIX _
+		    or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
+		    or FB_TARGETOPT_RETURNINREGS _
+		    or FB_TARGETOPT_RETURNINFLTS _
+		    or FB_TARGETOPT_ELF _
 	), _
 	( _
 		@"js", _
-		FB_DATATYPE_USHORT, _   '' wchar
+		FB_DATATYPE_ULONG, _   '' wchar
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		0	or FB_TARGETOPT_UNIX _
-			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
-			or FB_TARGETOPT_RETURNINREGS _
+		0   or FB_TARGETOPT_UNIX _
+		    or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
+		    or FB_TARGETOPT_RETURNINREGS _
 	) _
 }
 
 type FBCPUFAMILYINFO
-	id		 as zstring ptr
-	defaultcputype	as integer
+	id as zstring ptr
+	defaultcputype as integer
 end type
 
 dim shared as FBCPUFAMILYINFO cpufamilyinfo(0 to FB_CPUFAMILY__COUNT-1) = _
 { _
-	(@"x86"    , FB_DEFAULT_CPUTYPE_X86    ), _
-	(@"x86_64" , FB_DEFAULT_CPUTYPE_X86_64 ), _
-	(@"arm"    , FB_DEFAULT_CPUTYPE_ARM    ), _
-	(@"aarch64", FB_DEFAULT_CPUTYPE_AARCH64), _
-	(@"asmjs"  , FB_DEFAULT_CPUTYPE_ASMJS  )  _
+	(@"x86"        , FB_DEFAULT_CPUTYPE_X86    ), _
+	(@"x86_64"     , FB_DEFAULT_CPUTYPE_X86_64 ), _
+	(@"arm"        , FB_DEFAULT_CPUTYPE_ARM    ), _
+	(@"aarch64"    , FB_DEFAULT_CPUTYPE_AARCH64), _
+	(@"powerpc"    , FB_DEFAULT_CPUTYPE_PPC    ), _
+	(@"powerpc64"  , FB_DEFAULT_CPUTYPE_PPC64  ), _
+	(@"powerpc64le", FB_DEFAULT_CPUTYPE_PPC64LE), _
+	(@"asmjs"      , FB_DEFAULT_CPUTYPE_ASMJS  )  _
 }
 
 type FBCPUTYPEINFO
-	gccarch		as zstring ptr  '' gcc -march argument (used for -gen gcc), or NULL if same as fbcarch
-	fbcarch		as zstring ptr  '' fbc -arch argument
-	family		as integer
-	bits		as integer
+	gccarch     as zstring ptr  '' gcc -march argument (used for -gen gcc), or NULL if same as fbcarch
+	fbcarch     as zstring ptr  '' fbc -arch argument
+	family      as integer      '' enum FB_CPUFAMILY
+	bits        as integer      '' 32 or 64
+	bigendian   as integer      '' endianness - TRUE=big endian, FALSE=little endian
 end type
 
 dim shared as FBCPUTYPEINFO cputypeinfo(0 to FB_CPUTYPE__COUNT-1) = _
 { _
-	( @"i386"    , @"386"          , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_386
-	( @"i486"    , @"486"          , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_486
-	( @"i586"    , @"586"          , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_586
-	( @"i686"    , @"686"          , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_686
-	( NULL       , @"athlon"       , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_ATHLON
-	( NULL       , @"athlon-xp"    , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_ATHLONXP
-	( NULL       , @"athlon-fx"    , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_ATHLONFX
-	( NULL       , @"k8-sse3"      , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_ATHLONSSE3
-	( NULL       , @"pentium-mmx"  , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUMMMX
-	( NULL       , @"pentium2"     , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUM2
-	( NULL       , @"pentium3"     , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUM3
-	( NULL       , @"pentium4"     , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUM4
-	( @"prescott", @"pentium4-sse3", FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUMSSE3
-	( NULL       , @"x86-64"       , FB_CPUFAMILY_X86_64 , 64 ), _ '' FB_CPUTYPE_X86_64
-	( NULL       , @"armv6"        , FB_CPUFAMILY_ARM    , 32 ), _ '' FB_CPUTYPE_ARMV6
-	( NULL       , @"armv7-a"      , FB_CPUFAMILY_ARM    , 32 ), _ '' FB_CPUTYPE_ARMV7A
-	( @"armv8-a" , @"aarch64"      , FB_CPUFAMILY_AARCH64, 64 ), _ '' FB_CPUTYPE_AARCH64
-	( NULL       , @"asmjs"        , FB_CPUFAMILY_ASMJS	 , 32 )  _ '' FB_CPUTYPE_ASMJS
+	( @"i386"    , @"386"          , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_386
+	( @"i486"    , @"486"          , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_486
+	( @"i586"    , @"586"          , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_586
+	( @"i686"    , @"686"          , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_686
+	( NULL       , @"athlon"       , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_ATHLON
+	( NULL       , @"athlon-xp"    , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_ATHLONXP
+	( NULL       , @"athlon-fx"    , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_ATHLONFX
+	( NULL       , @"k8-sse3"      , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_ATHLONSSE3
+	( NULL       , @"pentium-mmx"  , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_PENTIUMMMX
+	( NULL       , @"pentium2"     , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_PENTIUM2
+	( NULL       , @"pentium3"     , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_PENTIUM3
+	( NULL       , @"pentium4"     , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_PENTIUM4
+	( @"prescott", @"pentium4-sse3", FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_PENTIUMSSE3
+	( NULL       , @"x86-64"       , FB_CPUFAMILY_X86_64 , 64, FALSE ), _ '' FB_CPUTYPE_X86_64
+	( NULL       , @"armv5te"      , FB_CPUFAMILY_ARM    , 32, FALSE ), _ '' FB_CPUTYPE_ARMV5TE
+	( NULL       , @"armv6"        , FB_CPUFAMILY_ARM    , 32, FALSE ), _ '' FB_CPUTYPE_ARMV6
+	( NULL       , @"armv6+fp"     , FB_CPUFAMILY_ARM    , 32, FALSE ), _ '' FB_CPUTYPE_ARMV6_FP
+	( NULL       , @"armv7-a"      , FB_CPUFAMILY_ARM    , 32, FALSE ), _ '' FB_CPUTYPE_ARMV7A
+	( NULL       , @"armv7-a+fp"   , FB_CPUFAMILY_ARM    , 32, FALSE ), _ '' FB_CPUTYPE_ARMV7A_FP
+	( @"armv8-a" , @"aarch64"      , FB_CPUFAMILY_AARCH64, 64, FALSE ), _ '' FB_CPUTYPE_AARCH64
+	( NULL       , @"powerpc"      , FB_CPUFAMILY_PPC    , 32, TRUE  ), _ '' FB_CPUTYPE_PPC
+	( NULL       , @"powerpc64"    , FB_CPUFAMILY_PPC64  , 64, TRUE  ), _ '' FB_CPUTYPE_PPC64
+	( NULL       , @"powerpc64le"  , FB_CPUFAMILY_PPC64LE, 64, FALSE ), _ '' FB_CPUTYPE_PPC64LE
+	( NULL       , @"asmjs"        , FB_CPUFAMILY_ASMJS  , 32, FALSE )  _ '' FB_CPUTYPE_ASMJS
 }
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -299,8 +322,8 @@ private function hAddIncFile _
 		byval filename as zstring ptr _
 	) as zstring ptr static
 
-    dim as zstring ptr fname, res
-    dim as uinteger index
+	dim as zstring ptr fname, res
+	dim as uinteger index
 
 	fname = xallocate( len( *filename ) + 1 )
 #if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
@@ -360,6 +383,8 @@ function fbGetBackendName _
 		function = "gas"
 	case FB_BACKEND_GCC
 		function = "gcc"
+	case FB_BACKEND_CLANG
+		function = "clang"
 	case FB_BACKEND_LLVM
 		function = "llvm"
 	case FB_BACKEND_GAS64
@@ -368,18 +393,33 @@ function fbGetBackendName _
 
 end function
 
-sub fbInit( byval ismain as integer, byval restarts as integer, byval entry as zstring ptr )
+sub fbInit _
+	( _
+		byval ismain as integer, _
+		byval entry as zstring ptr, _
+		byval module_count as integer _
+	)
+
 	strsetInit( @env.libs, FB_INITLIBNODES \ 4 )
 	strsetInit( @env.libpaths, FB_INITLIBNODES \ 4 )
 
-	env.restarts = restarts
-	env.dorestart = FALSE
+	'' when starting a compile, reset the restart requests
+	'' env.restart_status preserves state from previous runs
+	''     and would have been initialized to 0 (FB_RESTART_NONE)
+	''     but we need to clear the PARSER_LANG status because
+	''     #lang directives should only apply to current module
+	'' env.restart_count is preserved between runs (passes) so don't
+	''    re-initialize it here.
+	env.restart_request = FB_RESTART_NONE
+	env.restart_action = FB_RESTART_NONE
+	env.restart_status and= not (FB_RESTART_PARSER_LANG or FB_RESTART_PARSER_MT)
 
 	redim infileTb( 0 to FB_MAXINCRECLEVEL-1 )
 
 	env.includerec = 0
 	env.main.proc = NULL
 	env.entry = *entry
+	env.module_count = module_count
 
 	env.opt.explicit = (env.clopt.lang = FB_LANG_FB)
 
@@ -421,9 +461,9 @@ sub fbInit( byval ismain as integer, byval restarts as integer, byval entry as z
 	end if
 
 	env.opt.parammode       = FB_PARAMMODE_BYREF
-	env.opt.procpublic		= TRUE
-	env.opt.escapestr		= FALSE
-	env.opt.dynamic			= FALSE
+	env.opt.procpublic      = TRUE
+	env.opt.escapestr       = FALSE
+	env.opt.dynamic         = FALSE
 	env.opt.base = 0
 	env.opt.gosub = (env.clopt.lang = FB_LANG_QB)
 
@@ -449,14 +489,29 @@ sub fbInit( byval ismain as integer, byval restarts as integer, byval entry as z
 	irInit( )
 
 	'' After symbInit(), we can use typeGetSize()
-	env.wchar_doconv = (sizeof( wstring ) = typeGetSize( env.target.wchar ))
+	if( sizeof( wstring ) = typeGetSize( env.target.wchar ) ) then
+		env.wcharconv = FB_WCHARCONV_ALWAYS
+	else
+		env.wcharconv = FB_WCHARCONV_NEVER
+	end if
+
+#if ( __FB_DEBUG__ <> 0 ) andalso defined( __FB_WIN32__ )
+	select case( env.clopt.target )
+	case FB_COMPTARGET_JS
+		'' !!!TODO!!! - FB_WCHARCONV_WARNING needs to show warnings on conversions
+		'' !!!TODO!!! - FB_WCHARCONV_WARNING probably not correct to force a value
+		''              but setting it helps with development and testing
+		''              where sizeof(host-wstring) <> sizeof(target-wstring)
+		env.wcharconv = FB_WCHARCONV_WARNING
+	end select
+#endif
 
 	hashInit( @env.filenamehash, FB_INITINCFILES )
 	hashInit( @env.incfilehash, FB_INITINCFILES, FALSE )
 	hashInit( @env.inconcehash, FB_INITINCFILES, FALSE )
 
 	stackNew( @parser.stmt.stk, FB_INITSTMTSTACKNODES, len( FB_CMPSTMTSTK ), FALSE )
-	lexInit( FALSE, FALSE )
+	lexInit( LEX_TKCTX_CONTEXT_INIT )
 	parserInit( )
 	rtlInit( )
 
@@ -493,6 +548,9 @@ end sub
 
 private sub hUpdateTargetOptions( )
 	env.target = targetinfo(env.clopt.target)
+	if( env.clopt.returninflts ) then
+		env.target.options or= FB_TARGETOPT_RETURNINFLTS
+	end if
 end sub
 
 sub fbGlobalInit()
@@ -524,6 +582,7 @@ sub fbGlobalInit()
 	env.clopt.errlocation   = FALSE
 	env.clopt.arrayboundchk = FALSE
 	env.clopt.nullptrchk    = FALSE
+	env.clopt.unwindinfo    = FALSE
 	env.clopt.resumeerr     = FALSE
 	env.clopt.profile       = FALSE
 
@@ -535,13 +594,24 @@ sub fbGlobalInit()
 	env.clopt.gosubsetjmp   = FALSE
 	env.clopt.export        = FALSE
 	env.clopt.multithreaded = FALSE
-	env.clopt.gfx           = FALSE
+	env.clopt.fbgfx         = FALSE
 	env.clopt.pic           = FALSE
 	env.clopt.msbitfields   = FALSE
 	env.clopt.stacksize     = 0 '' default will be set by fbSetOption() called from hParseArgs()
 	env.clopt.objinfo       = TRUE
 	env.clopt.showincludes  = FALSE
 	env.clopt.modeview      = FB_DEFAULT_MODEVIEW
+	env.clopt.nocmdline     = FALSE
+	env.clopt.returninflts  = FALSE
+	env.clopt.nobuiltins    = FALSE
+
+	env.restart_request     = FB_RESTART_NONE
+	env.restart_action      = FB_RESTART_NONE
+	env.restart_status      = FB_RESTART_NONE
+	env.restart_lang        = FB_LANG_INVALID
+	env.restart_count       = 0
+
+	env.module_count        = 0
 
 	hUpdateLangOptions( )
 	hUpdateTargetOptions( )
@@ -589,6 +659,8 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		hUpdateLangOptions( )
 	case FB_COMPOPT_FORCELANG
 		env.clopt.forcelang = value
+	case FB_COMPOPT_RESTART_LANG
+		env.restart_lang = value
 
 	case FB_COMPOPT_DEBUG
 		env.clopt.debug = value
@@ -608,6 +680,8 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		env.clopt.arrayboundchk = value
 	case FB_COMPOPT_NULLPTRCHECK
 		env.clopt.nullptrchk = value
+	case FB_COMPOPT_UNWINDINFO
+		env.clopt.unwindinfo = value
 	case FB_COMPOPT_PROFILE
 		env.clopt.profile = value
 
@@ -626,6 +700,8 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		env.clopt.valistasptr = value
 	case FB_COMPOPT_NOTHISCALL
 		env.clopt.nothiscall = value
+	case FB_COMPOPT_NOFASTCALL
+		env.clopt.nofastcall = value
 	case FB_COMPOPT_FBRT
 		env.clopt.fbrt = value
 	case FB_COMPOPT_EXPORT
@@ -634,8 +710,8 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		env.clopt.msbitfields = value
 	case FB_COMPOPT_MULTITHREADED
 		env.clopt.multithreaded = value
-	case FB_COMPOPT_GFX
-		env.clopt.gfx = value
+	case FB_COMPOPT_FBGFX
+		env.clopt.fbgfx = value
 	case FB_COMPOPT_PIC
 		env.clopt.pic = value
 	case FB_COMPOPT_STACKSIZE
@@ -658,6 +734,13 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		env.clopt.showincludes = value
 	case FB_COMPOPT_MODEVIEW
 		env.clopt.modeview = value
+	case FB_COMPOPT_NOCMDLINE
+		env.clopt.nocmdline = value
+	case FB_COMPOPT_RETURNINFLTS
+		env.clopt.returninflts = value
+		hUpdateTargetOptions( )
+	case FB_COMPOPT_NOBUILTINS
+		env.clopt.nobuiltins = value
 	end select
 end sub
 
@@ -689,6 +772,8 @@ function fbGetOption( byval opt as integer ) as integer
 		function = env.clopt.lang
 	case FB_COMPOPT_FORCELANG
 		function = env.clopt.forcelang
+	case FB_COMPOPT_RESTART_LANG
+		function = env.restart_lang
 
 	case FB_COMPOPT_DEBUG
 		function = env.clopt.debug
@@ -708,6 +793,8 @@ function fbGetOption( byval opt as integer ) as integer
 		function = env.clopt.arrayboundchk
 	case FB_COMPOPT_NULLPTRCHECK
 		function = env.clopt.nullptrchk
+	case FB_COMPOPT_UNWINDINFO
+		function = env.clopt.unwindinfo
 	case FB_COMPOPT_PROFILE
 		function = env.clopt.profile
 
@@ -726,6 +813,8 @@ function fbGetOption( byval opt as integer ) as integer
 		function = env.clopt.valistasptr
 	case FB_COMPOPT_NOTHISCALL
 		function = env.clopt.nothiscall
+	case FB_COMPOPT_NOFASTCALL
+		function = env.clopt.nofastcall
 	case FB_COMPOPT_FBRT
 		function = env.clopt.fbrt
 	case FB_COMPOPT_EXPORT
@@ -734,8 +823,8 @@ function fbGetOption( byval opt as integer ) as integer
 		function = env.clopt.msbitfields
 	case FB_COMPOPT_MULTITHREADED
 		function = env.clopt.multithreaded
-	case FB_COMPOPT_GFX
-		function = env.clopt.gfx
+	case FB_COMPOPT_FBGFX
+		function = env.clopt.fbgfx
 	case FB_COMPOPT_PIC
 		function = env.clopt.pic
 	case FB_COMPOPT_STACKSIZE
@@ -746,6 +835,12 @@ function fbGetOption( byval opt as integer ) as integer
 		function = env.clopt.showincludes
 	case FB_COMPOPT_MODEVIEW
 		function = env.clopt.modeview
+	case FB_COMPOPT_NOCMDLINE
+		function = env.clopt.nocmdline
+	case FB_COMPOPT_RETURNINFLTS
+		function = env.clopt.returninflts
+	case FB_COMPOPT_NOBUILTINS
+		function = env.clopt.nobuiltins
 
 	case else
 		function = 0
@@ -777,14 +872,15 @@ sub fbChangeOption(byval opt as integer, byval value as integer)
 					errReportWarn( FB_WARNINGMSG_CMDLINEOVERRIDES )
 				else
 
-					'' First pass?
-					if( env.restarts = 0 ) then
+					'' Never restarted due to #lang?
+					if( ( env.restart_status and FB_RESTART_PARSER_LANG ) = 0 ) then
 						fbSetOption( opt, value )
 
 						'' Tell parser to restart as soon as possible
-						env.dorestart = TRUE
+						fbRestartBeginRequest( FB_RESTART_PARSER_LANG )
+						fbRestartAcceptRequest( FB_RESTART_PARSER_LANG )
 
-						'' and don't show any more errors
+						'' and don't show any more errors until we've restarted
 						errHideFurtherErrors()
 
 					'' Second pass? Show a warning and ignore
@@ -845,6 +941,9 @@ private function hGetTargetId _
 	''    linux-aarch64
 	''    freebsd-x86
 	''    freebsd-x86_64
+	''    freebsd-powerpc | freebsd-ppc
+	''    freebsd-powerpc64 | freebsd-ppc64
+	''    freebsd-powerpc64le | freebsd-ppc64le
 	''    ...
 
 	var cpufamily = cputypeinfo(cputype).family
@@ -893,7 +992,7 @@ function fbIdentifyCpuFamily( byref cpufamilyid as string ) as integer
 	function = -1
 end function
 
-function fbCpuTypeFromCpuFamilyId( byref cpufamilyid as string ) as integer
+function fbDefaultCpuTypeFromCpuFamilyId( byval os as integer, byref cpufamilyid as string ) as integer
 	var cpufamily = fbIdentifyCpuFamily( cpufamilyid )
 	if( cpufamily >= 0 ) then
 		return cpufamilyinfo(cpufamily).defaultcputype
@@ -930,6 +1029,10 @@ function fbGetCpuFamily( ) as integer
 	function = cputypeinfo(env.clopt.cputype).family
 end function
 
+function fbIsHostBigEndian( ) as integer
+	function = cputypeinfo(env.clopt.cputype).bigendian
+end function
+
 function fbIdentifyFbcArch( byref fbcarch as string ) as integer
 	select case( fbcarch )
 	case "native"
@@ -962,8 +1065,14 @@ function fbIdentifyFbcArch( byref fbcarch as string ) as integer
 
 	'' Extra names to be recognized by -arch to make it nicer to use
 	select case( fbcarch )
+	case "x86"
+		function = FB_CPUTYPE_686
 	case "x86_64", "amd64"
 		function = FB_CPUTYPE_X86_64
+	case "armv5", "armeabi"
+		function = FB_CPUTYPE_ARMV5TE
+	case "armeabi-v7a", "armv7a", "armv7"
+		function = FB_CPUTYPE_ARMV7A
 	case else
 		function = -1
 	end select
@@ -1000,11 +1109,11 @@ end function
 
 '':::::
 function fbGetModuleEntry( ) as string static
-    dim as string sname
+	dim as string sname
 
-   	sname = hStripPath( hStripExt( env.outf.name ) )
+	sname = hStripPath( hStripExt( env.outf.name ) )
 
-   	hClearName( sname )
+	hClearName( sname )
 
 	function = "fb_ctor__" + sname
 
@@ -1024,6 +1133,25 @@ end function
 
 '' Used to add libs found during parsing (#inclib, Lib "...", rtl-* callbacks)
 sub fbAddLib(byval libname as zstring ptr)
+
+	'' gfx library?
+	if( *libname = "fbgfx?" ) then
+		'' Special handling for "fbgfx" and "fbgfxmt" because
+		'' depending on order of modules given on the cmd line
+		'' multithreading may have been set after fbgfx.bi was
+		'' included, and we can't have both libs passed to the
+		'' linker. We can end up linking to the non-threaded
+		'' version of fbgfx when we would expect the mt version,
+		'' and the linker won't complain even when both versions
+		'' are passed.
+
+		'' Set the -fbgfx option to link to the gfx library
+		'' and the lib will be added in hAddDefaultLibs()
+		fbSetOption( FB_COMPOPT_FBGFX, TRUE )
+
+		exit sub
+	end if
+
 	strsetAdd(@env.libs, *libname, FALSE)
 end sub
 
@@ -1108,8 +1236,8 @@ private sub hEmitObjinfo( )
 		hAppendFbctinf( objinfoEncode( OBJINFO_MT ) )
 	end if
 
-	'' -gfx
-	if( env.clopt.gfx ) then
+	'' -fbgfx
+	if( env.clopt.fbgfx ) then
 		hAppendFbctinf( objinfoEncode( OBJINFO_GFX ) )
 	end if
 
@@ -1197,16 +1325,19 @@ sub fbCompile _
 
 	fbParsePreDefines()
 	fbParsePreIncludes()
+
 	if (fbShouldContinue()) then
 		cProgram()
 	end if
 
-	fbMainEnd( )
+	if (fbShouldContinue()) then
+		fbMainEnd( )
+	end if
 
 	'' compiling only, not cross-compiling?
 	if( fbGetOption( FB_COMPOPT_OBJINFO ) and _
-	    (not fbIsCrossComp( )) and _
-	    (env.clopt.outtype = FB_OUTTYPE_OBJECT) ) then
+		(not fbIsCrossComp( )) and _
+		(env.clopt.outtype = FB_OUTTYPE_OBJECT) ) then
 		'' store libs, paths and cmd-line options in the obj
 		hEmitObjinfo( )
 	end if
@@ -1227,11 +1358,59 @@ sub fbCompile _
 end sub
 
 function fbShouldRestart() as integer
-	return env.dorestart
+
+	'' missing #cmdline "-end" ?
+	'' have a request to restart due to #cmdline?
+	if( (env.restart_request and FB_RESTART_CMDLINE ) <> 0 ) then
+
+		'' but we didn't have any restart yet?
+		if( (env.restart_status and FB_RESTART_CMDLINE) = 0 ) then
+
+			'' tell parser / fbc to restart as soon as possible
+			fbRestartAcceptRequest( FB_RESTART_CMDLINE )
+
+			'' and don't show any more errors until we've restarted
+			errHideFurtherErrors()
+
+			return TRUE
+		endif
+	end if
+
+	return (env.restart_action <> FB_RESTART_NONE)
 end function
 
 function fbShouldContinue() as integer
-	return ((env.dorestart = FALSE) and (errGetCount() < env.clopt.maxerrors))
+	return ((env.restart_action = FB_RESTART_NONE) and (errGetCount() < env.clopt.maxerrors))
+end function
+
+sub fbRestartBeginRequest( byval flags as FB_RESTART_FLAGS )
+	env.restart_request or= flags
+end sub
+
+sub fbRestartAcceptRequest( byval filter as FB_RESTART_FLAGS )
+	'' only restart if we need a restart
+	if( (env.restart_request and filter) <> 0 ) then
+		'' and only if we haven't already restarted
+		if( (env.restart_status and env.restart_request and filter) = 0 ) then
+			env.restart_action or= (env.restart_request and filter)
+		end if
+	end if
+	'' clear the request
+	env.restart_request and= not filter
+end sub
+
+sub fbRestartEndRequest( byval filter as FB_RESTART_FLAGS )
+	'' update status, action is completed
+	env.restart_status or= (env.restart_action and filter)
+
+	env.restart_count += 1
+
+	'' clear the action
+	env.restart_action and= not filter
+end sub
+
+function fbRestartGetCount() as integer
+	return env.restart_count
 end function
 
 sub fbSetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
@@ -1405,8 +1584,8 @@ private function solve_path( byval path as zstring ptr ) as integer
 end function
 
 sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
-    static as zstring * FB_MAXPATHLEN incfile
-    dim as zstring ptr fileidx
+	static as zstring * FB_MAXPATHLEN incfile
+	dim as zstring ptr fileidx
 
 	if( env.includerec >= FB_MAXINCRECLEVEL ) then
 		errReport( FB_ERRMSG_RECLEVELTOODEEP )
@@ -1460,7 +1639,7 @@ sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
 		exit sub
 	end if
 
- 	'' solve out the .. and .
+	'' solve out the .. and .
 	if( solve_path( incfile ) = FALSE ) then
 		errReportEx( FB_ERRMSG_FILENOTFOUND, QUOTE + incfile + QUOTE )
 		errHideFurtherErrors()
@@ -1484,12 +1663,12 @@ sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
 		exit sub
 	end if
 
-    '' we should respect the path here too
+	'' we should respect the path here too
 	fileidx = hAddIncFile( @env.incfilehash, @env.filenamehash, incfile )
 
 	'' push context
 	infileTb(env.includerec) = env.inf
-   	env.includerec += 1
+	env.includerec += 1
 
 	env.inf.name  = incfile
 	env.inf.incfile = fileidx
@@ -1511,7 +1690,7 @@ sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
 	'' parse
 	lexPushCtx( )
 
-	lexInit( TRUE, FALSE )
+	lexInit( LEX_TKCTX_CONTEXT_INCLUDE )
 
 	cProgram()
 
@@ -1554,14 +1733,14 @@ function fbGetLangId _
 end function
 
 '':::::
-function fbGetBackendValistType _	
+function fbGetBackendValistType _
 	( _
 	) as FB_CVA_LIST_TYPEDEF
 
 	dim typedef as FB_CVA_LIST_TYPEDEF = FB_CVA_LIST_NONE
 
 	select case env.clopt.backend
-	case FB_BACKEND_GCC
+	case FB_BACKEND_GCC, FB_BACKEND_CLANG
 
 		select case( fbGetCpuFamily( ) )
 		case FB_CPUFAMILY_X86
@@ -1580,6 +1759,12 @@ function fbGetBackendValistType _
 
 		case FB_CPUFAMILY_AARCH64
 			typedef = FB_CVA_LIST_BUILTIN_AARCH64
+
+		case FB_CPUFAMILY_PPC
+			typedef = FB_CVA_LIST_BUILTIN_POINTER
+
+		case FB_CPUFAMILY_PPC64, FB_CPUFAMILY_PPC64LE
+			typedef = FB_CVA_LIST_BUILTIN_POINTER
 
 		case else
 			typedef = FB_CVA_LIST_BUILTIN_POINTER
@@ -1612,7 +1797,7 @@ function fbGetBackendValistType _
 	'' on gcc backend we prefer that the cva_list type
 	'' map to gcc's __builtin_va_list, which is a different
 	'' type depending on platform. If the combination of
-	'' target and arch support it, we can override this with 
+	'' target and arch support it, we can override this with
 	'' -z valist-as-ptr to force use of pointer expressions
 	'' instead of builtins even though gcc is backend.
 

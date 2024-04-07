@@ -1,7 +1,7 @@
 '' symbol table module for variables (scalars and arrays)
 ''
 '' chng: sep/2004 written [v1ctor]
-''		 jan/2005 updated to use real linked-lists [v1ctor]
+''       jan/2005 updated to use real linked-lists [v1ctor]
 
 
 #include once "fb.bi"
@@ -21,15 +21,15 @@ sub symbVarInit( )
 	'' type FBARRAYDIM
 	symb.fbarraydim = symbStructBegin( NULL, NULL, NULL, "__FB_ARRAYDIMTB$", NULL, FALSE, 0, FALSE, 0, 0 )
 
-	'' elements		as integer
+	'' elements     as integer
 	symbAddField( symb.fbarraydim, "elements", 0, dTB(), _
 	              FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
 
-	'' lbound		as integer
+	'' lbound       as integer
 	symbAddField( symb.fbarraydim, "lbound", 0, dTB(), _
 	              FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
 
-	'' ubound		as integer
+	'' ubound       as integer
 	symbAddField( symb.fbarraydim, "ubound", 0, dTB(), _
 	              FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
 
@@ -96,7 +96,7 @@ function symbGetDescTypeDimensions( byval desctype as FBSYMBOL ptr ) as integer
 	end if
 
 	'' dimensions = sizeof(dimTB) \ sizeof(FBARRAYDIM)
-	dimtbsize = symbGetLen( desctype ) - (env.pointersize * 6)
+	dimtbsize = symbGetSizeOf( desctype ) - (env.pointersize * 6)
 	dimensions = dimtbsize \ (env.pointersize * 3)
 
 	assert( (dimensions > 0) and (dimensions <= FB_MAXARRAYDIMS) )
@@ -175,7 +175,7 @@ function symbAddArrayDescriptorType _
 	'' dtype), that may end up being deleted before the global.
 	attrib = FB_SYMBATTRIB_NONE
 	pattrib = FB_PROCATTRIB_NONE
-	sym = symbLookupInternallyMangledSubtype( id, attrib, pattrib, NULL, symtb, hashtb )
+	sym = symbLookupInternallyMangledSubtype( id, NULL, attrib, pattrib, NULL, symtb, hashtb )
 	if( sym ) then
 		return sym
 	end if
@@ -189,6 +189,16 @@ function symbAddArrayDescriptorType _
 	'' descriptor type, e.g. in hMangleUdtId().
 	''
 	attrib or= FB_SYMBATTRIB_DESCRIPTOR
+
+	''
+	'' If it is a struct and also a simple local struct, then mark the descriptor as local too
+
+	if( (arraydtype = FB_DATATYPE_STRUCT) andalso _
+	    (symbIsStruct(arraySubType)) andalso _
+	    (symbIsLocal(arraySubType)) ) then
+		attrib or= FB_SYMBATTRIB_LOCAL
+	end if
+
 	sym = symbStructBegin( symtb, hashtb, NULL, id, aliasid, FALSE, 0, FALSE, attrib, FB_SYMBOPT_PRESERVECASE )
 	assert( sym )
 	dTB(0).lower = 0
@@ -266,9 +276,10 @@ function symbAddArrayDesc( byval array as FBSYMBOL ptr ) as FBSYMBOL ptr
 			if( symbIsSuffixed( array ) ) then
 				tempid = *id
 				tempid += *hMangleBuiltInType( symbGetType( array ) )
-				if( env.clopt.backend = FB_BACKEND_GCC ) then
+				select case env.clopt.backend
+				case FB_BACKEND_GCC, FB_BACKEND_CLANG
 					tempid += "$"
-				end if
+				end select
 				id = strptr( tempid )
 			end if
 
@@ -333,7 +344,7 @@ function symbAddArrayDesc( byval array as FBSYMBOL ptr ) as FBSYMBOL ptr
 		exit function
 	end if
 
-	desc->lgt = symbGetLen( desctype )
+	desc->lgt = symbGetSizeOf( desctype )
 	desc->ofs = 0
 
 	desc->stats = stats or (array->stats and FB_SYMBSTATS_ACCESSED)
@@ -410,7 +421,7 @@ end function
 ''
 sub symbMaybeAddArrayDesc( byval sym as FBSYMBOL ptr )
 	assert( symbIsField( sym ) = FALSE )
-	assert( symbIsParamBydesc( sym ) = FALSE )
+	assert( symbIsParamVarBydesc( sym ) = FALSE )
 
 	if( symbGetArrayDimensions( sym ) = 0 ) then
 		exit sub
@@ -518,7 +529,7 @@ sub symbVarInitArrayDimensions _
 			symbSetArrayDimTb( sym, dimensions, dTB() )
 		end if
 
-		if( (not symbIsField( sym )) and (not symbIsParamBydesc( sym )) ) then
+		if( (not symbIsField( sym )) and (not symbIsParamVarBydesc( sym )) ) then
 			symbMaybeAddArrayDesc( sym )
 		end if
 	end if
@@ -538,33 +549,33 @@ function symbAddVar _
 		byval options as FB_SYMBOPT _
 	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr s = any
-    dim as FBSYMBOLTB ptr symtb = any
-    dim as FBHASHTB ptr hashtb = any
-    dim as integer isglobal = any, stats = any
+	dim as FBSYMBOL ptr s = any
+	dim as FBSYMBOLTB ptr symtb = any
+	dim as FBHASHTB ptr hashtb = any
+	dim as integer isglobal = any, stats = any
 
-    function = NULL
+	function = NULL
 
-    ''
-    isglobal = (attrib and (FB_SYMBATTRIB_PUBLIC or _
-			 				FB_SYMBATTRIB_EXTERN or _
-			 				FB_SYMBATTRIB_SHARED or _
-			 				FB_SYMBATTRIB_COMMON)) <> 0
+	''
+	isglobal = (attrib and (FB_SYMBATTRIB_PUBLIC or _
+	                        FB_SYMBATTRIB_EXTERN or _
+	                        FB_SYMBATTRIB_SHARED or _
+	                        FB_SYMBATTRIB_COMMON)) <> 0
 
-    ''
-    if( lgt <= 0 ) then
-    	lgt	= symbCalcLen( dtype, subtype )
-    end if
+	''
+	if( lgt <= 0 ) then
+		lgt = symbCalcLen( dtype, subtype )
+	end if
 
-    '' no explict alias?
-    if( id_alias = NULL ) then
-    	'' only preserve a case-sensitive version if in BASIC mangling
-    	if( parser.mangling <> FB_MANGLING_BASIC ) then
-    		id_alias = id
-    	end if
-    	stats = 0
+	'' no explict alias?
+	if( id_alias = NULL ) then
+		'' only preserve a case-sensitive version if in BASIC mangling
+		if( parser.mangling <> FB_MANGLING_BASIC ) then
+			id_alias = id
+		end if
+		stats = 0
 
-    else
+	else
 		stats = FB_SYMBSTATS_HASALIAS
 	end if
 
@@ -623,8 +634,7 @@ function symbAddVar _
 
 	'' Static member var using parent UDT as dtype? Length must be
 	'' recalculated later, when UDT was fully parsed...
-	if( (symbGetType( s ) = FB_DATATYPE_STRUCT) and _
-	    (s->subtype = symbGetCurrentNamespc( )) ) then
+	if( symbIsParentNamespace( symbGetType( s ), s->subtype ) ) then
 		symbSetUdtHasRecByvalRes( subtype )
 	end if
 
@@ -710,7 +720,7 @@ end function
 
 function symbGetRealSize( byval sym as FBSYMBOL ptr ) as longint
 	assert( symbIsVar( sym ) or symbIsField( sym ) )
-	var size = iif( symbIsRef( sym ), env.pointersize, symbGetLen( sym ) )
+	var size = iif( symbIsRef( sym ), env.pointersize, symbGetSizeOf( sym ) )
 	size *= symbGetArrayElements( sym )
 	function = size
 end function
@@ -719,16 +729,16 @@ sub symbGetRealType( byval sym as FBSYMBOL ptr, byref dtype as integer, byref su
 	assert( symbIsVar( sym ) or symbIsField( sym ) )
 	dtype = symbGetFullType( sym )
 	subtype = sym->subtype
-	if( symbIsParam( sym ) ) then
+	if( symbIsParamVar( sym ) ) then
 		dim parammode as integer
 		dim bydescrealsubtype as FBSYMBOL ptr
-		if( symbIsParamByref( sym ) ) then
+		if( symbIsParamVarByref( sym ) ) then
 			parammode = FB_PARAMMODE_BYREF
-		elseif( symbIsParamBydesc( sym ) ) then
+		elseif( symbIsParamVarBydesc( sym ) ) then
 			parammode = FB_PARAMMODE_BYDESC
 			bydescrealsubtype = sym->var_.array.desctype
 		else
-			assert( symbIsParamByval( sym ) )
+			assert( symbIsParamVarByval( sym ) )
 			parammode = FB_PARAMMODE_BYVAL
 		end if
 		symbGetRealParamDtype( parammode, bydescrealsubtype, dtype, subtype )
@@ -823,9 +833,9 @@ function symbGetVarHasCtor( byval s as FBSYMBOL ptr ) as integer
 	                    FB_SYMBATTRIB_STATIC or _
 	                    FB_SYMBATTRIB_COMMON or _
 	                    FB_SYMBATTRIB_REF or _
-	                    FB_SYMBATTRIB_PARAMBYDESC or _
-	                    FB_SYMBATTRIB_PARAMBYVAL or _
-	                    FB_SYMBATTRIB_PARAMBYREF or _
+	                    FB_SYMBATTRIB_PARAMVARBYDESC or _
+	                    FB_SYMBATTRIB_PARAMVARBYVAL or _
+	                    FB_SYMBATTRIB_PARAMVARBYREF or _
 	                    FB_SYMBATTRIB_TEMP or _
 	                    FB_SYMBATTRIB_FUNCRESULT)) <> 0 ) then
 		return FALSE
@@ -838,7 +848,7 @@ function symbGetVarHasCtor( byval s as FBSYMBOL ptr ) as integer
 
 	'' wchar ptr marked as "dynamic wstring"?
 	case typeAddrOf( FB_DATATYPE_WCHAR )
-		if( symbGetIsWstring( s ) ) then
+		if( symbGetIsTemporary( s ) ) then
 			return TRUE
 		end if
 
@@ -847,7 +857,7 @@ function symbGetVarHasCtor( byval s as FBSYMBOL ptr ) as integer
 	'' array? dims can be -1 with "DIM foo()" arrays..
 	if( symbGetArrayDimensions( s ) <> 0 ) then
 		'' (note: it doesn't matter if it's dynamic array or not, local
-		'' 		  non-dynamic array allocations will have to fill
+		''        non-dynamic array allocations will have to fill
 		''        the descriptor, so arrays can't be accessed before that)
 		return TRUE
 	end if
@@ -862,9 +872,9 @@ function symbGetVarHasDtor( byval s as FBSYMBOL ptr ) as integer
 	                    FB_SYMBATTRIB_STATIC or _
 	                    FB_SYMBATTRIB_COMMON or _
 	                    FB_SYMBATTRIB_REF or _
-	                    FB_SYMBATTRIB_PARAMBYDESC or _
-	                    FB_SYMBATTRIB_PARAMBYVAL or _
-	                    FB_SYMBATTRIB_PARAMBYREF or _
+	                    FB_SYMBATTRIB_PARAMVARBYDESC or _
+	                    FB_SYMBATTRIB_PARAMVARBYVAL or _
+	                    FB_SYMBATTRIB_PARAMVARBYREF or _
 	                    FB_SYMBATTRIB_TEMP or _
 	                    FB_SYMBATTRIB_FUNCRESULT)) <> 0 ) then
 		return FALSE
@@ -877,7 +887,7 @@ function symbGetVarHasDtor( byval s as FBSYMBOL ptr ) as integer
 
 	'' wchar ptr marked as "dynamic wstring"?
 	case typeAddrOf( FB_DATATYPE_WCHAR )
-		if( symbGetIsWstring(s) ) then
+		if( symbGetIsTemporary(s) ) then
 			return TRUE
 		end if
 
@@ -914,8 +924,8 @@ function symbCloneVar( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 		end if
 
 		function = symbAddVar( symbGetName( sym ), NULL, _
-				symbGetType( sym ), symbGetSubType( sym ), 0, _
-				symbGetArrayDimensions( sym ), dTB(), symbGetAttrib( sym ), 0 )
+		                       symbGetType( sym ), symbGetSubType( sym ), 0, _
+		                       symbGetArrayDimensions( sym ), dTB(), symbGetAttrib( sym ), 0 )
 	end if
 end function
 

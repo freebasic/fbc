@@ -1,7 +1,7 @@
 '' examples/manual/system/dirnbfiles.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'DIR'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDir
 '' --------
@@ -20,4 +20,3 @@ End If
 Print FileCount & " files in the current directory."
 
 Sleep
-	

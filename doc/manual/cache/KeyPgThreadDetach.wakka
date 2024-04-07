@@ -25,16 +25,16 @@ Releases a thread handle without waiting for the thread to finish
 	{{fbdoc item="filename" value="examples/manual/threads/threadsdetach.bas"}}%%(freebasic)
 #include "fbthread.bi"
 
-sub mythread( byval param as any ptr )
-	print "hi!"
-end sub
+Sub mythread( ByVal param As Any Ptr )
+	Print "hi!"
+End Sub
 
-var thread = threadcreate( @mythread )
-threaddetach( thread )
+Dim As Any Ptr thread = ThreadCreate( @mythread )
+ThreadDetach( thread )
+'' or
+ThreadDetach( ThreadCreate( @mythread ) )
 
-threaddetach( threadcreate( @mythread ) )
-
-sleep
+Sleep
 %%
 
 {{fbdoc item="lang"}}

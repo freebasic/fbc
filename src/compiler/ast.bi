@@ -5,8 +5,8 @@
 #include once "ast-op.bi"
 #include once "ir.bi"
 
-const AST_INITNODES				= 8192
-const AST_INITPROCNODES			= 128
+const AST_INITNODES             = 8192
+const AST_INITPROCNODES         = 128
 
 '' when changing, update ast.bas:ast_loadcallbacks() and ast-node-misc.bas:dbg_astNodeClassNames()
 enum AST_NODECLASS
@@ -76,19 +76,20 @@ enum AST_NODECLASS
 end enum
 
 enum AST_OPOPT
-	AST_OPOPT_NONE  		= &h00000000
+	AST_OPOPT_NONE          = &h00000000
 
-	AST_OPOPT_ALLOCRES		= &h00000001
-	AST_OPOPT_LPTRARITH		= &h00000002
-	AST_OPOPT_RPTRARITH		= &h00000004
-	AST_OPOPT_NOCOERCION	= &h00000008
-	AST_OPOPT_DONTCHKPTR	= &h00000010
-	AST_OPOPT_DONTCHKOPOVL	= &h00000020
-	AST_OPOPT_ISINI			= &h00000040
+	AST_OPOPT_ALLOCRES      = &h00000001
+	AST_OPOPT_LPTRARITH     = &h00000002
+	AST_OPOPT_RPTRARITH     = &h00000004
+	AST_OPOPT_NOCOERCION    = &h00000008
+	AST_OPOPT_DONTCHKPTR    = &h00000010
+	AST_OPOPT_DONTCHKOPOVL  = &h00000020
+	AST_OPOPT_ISINI         = &h00000040
+	AST_OPOPT_DOINVERSE     = &h00000080  '' indicates that logic needs to be inverted by the backend (i.e. branching)
 
-	AST_OPOPT_DOPTRARITH	= AST_OPOPT_LPTRARITH or AST_OPOPT_RPTRARITH
+	AST_OPOPT_DOPTRARITH    = AST_OPOPT_LPTRARITH or AST_OPOPT_RPTRARITH
 
-	AST_OPOPT_DEFAULT		= AST_OPOPT_ALLOCRES
+	AST_OPOPT_DEFAULT       = AST_OPOPT_ALLOCRES
 end enum
 
 #ifndef ASTNODE_
@@ -97,54 +98,64 @@ type ASTNODE_ as ASTNODE
 
 '' update astCloneCALL( ), astDelCALL() if the next structs are changed
 type AST_TMPSTRLIST_ITEM
-	sym				as FBSYMBOL ptr
-	srctree			as ASTNODE_ ptr
-	prev			as AST_TMPSTRLIST_ITEM ptr
+	sym             as FBSYMBOL ptr
+	srctree         as ASTNODE_ ptr
+	prev            as AST_TMPSTRLIST_ITEM ptr
 end type
 
 type AST_NODE_CALL
-	isrtl			as integer
-	args			as integer
-	currarg			as FBSYMBOL ptr
-	argtail			as ASTNODE_ ptr
-	strtail 		as AST_TMPSTRLIST_ITEM ptr  '' fixed-length string argument copy-back list
-	tmpres          as FBSYMBOL ptr					'' temp result structure, if needed
+	isrtl           as integer
+	args            as integer
+	currarg         as FBSYMBOL ptr
+	argtail         as ASTNODE_ ptr
+	strtail         as AST_TMPSTRLIST_ITEM ptr      '' fixed-length string argument copy-back list
+	tmpres          as FBSYMBOL ptr                 '' temp result structure, if needed
 end type
 
 type AST_NODE_ARG
-	mode			as integer						'' to pass NULL's to byref args, etc
-	lgt				as longint						'' length, used to push UDT's by value
+	mode            as integer                      '' to pass NULL's to byref args, etc
+	lgt             as longint                      '' length, used to push UDT's by value
+end type
+
+type AST_NODE_CONST
+	union                                           '' extends FBVALUE
+		value       as FBVALUE
+		s           as FBSYMBOL_ ptr
+		i           as longint
+		f           as double
+	end union
+	hassuffix       as integer                      '' TRUE = original constant had a suffix
 end type
 
 type AST_NODE_VAR
-	ofs				as longint						'' offset
+	ofs             as longint                      '' offset
 end type
 
 type AST_NODE_IDX
-	ofs				as longint						'' offset
-	mult			as integer						'' multipler
+	ofs             as longint                      '' offset
+	mult            as integer                      '' multipler
 	'' Note: the multiplier field is used in combination with x86 ASM-backend specific
 	'' optimizations only, see hOptConstIdxMult().
 end type
 
 type AST_NODE_PTR
-	ofs				as longint						'' offset
+	ofs             as longint                      '' offset
 end type
 
 type AST_NODE_IIF
-	falselabel 		as FBSYMBOL ptr
+	falselabel      as FBSYMBOL ptr
 end type
 
 type AST_NODE_LOAD
-	isres			as integer
+	isres           as integer
 end type
 
 type AST_NODE_LABEL
-	flush			as integer
+	flush           as integer
 end type
 
 type AST_NODE_LIT
-	text			as zstring ptr
+	text            as zstring ptr
 end type
 
 type AST_NODE_ASM
@@ -152,49 +163,50 @@ type AST_NODE_ASM
 end type
 
 type AST_NODE_OP  '' used by: bop, uop, addr
-	op				as integer
-	options 		as AST_OPOPT
-	ex				as FBSYMBOL ptr					'' (extra: label, etc)
+	op              as integer
+	options         as AST_OPOPT
+	ex              as FBSYMBOL ptr                 '' (extra: label, etc)
 end type
 
 type AST_NODE_OFFS
-	ofs				as longint
+	ofs             as longint
 end type
 
 type AST_NODE_JMPTB
 	'' Dynamically allocated buffer holding the jmptb's value/label pairs
-	values				as ulongint ptr
-	labels				as FBSYMBOL ptr ptr
-	labelcount			as integer
+	values              as ulongint ptr
+	labels              as FBSYMBOL ptr ptr
+	labelcount          as integer
 
-	deflabel			as FBSYMBOL ptr
-	bias				as ulongint
-	span				as ulongint
+	deflabel            as FBSYMBOL ptr
+	bias                as ulongint
+	span                as ulongint
 end type
 
 type AST_NODE_DBG
-	ex				as integer
-	filename		as zstring ptr
-	op				as integer
+	ex              as integer
+	filename        as zstring ptr
+	op              as integer
 end type
 
 type AST_NODE_MEM
-	bytes				as longint
-	op				as integer
+	op              as integer
+	bytes           as longint
+	fillchar        as integer
 end type
 
 type AST_NODE_STACK
-	op				as integer
+	op              as integer
 end type
 
 type AST_NODE_TYPEINI
-	ofs				as longint
+	ofs             as longint
 	union
-		bytes		as longint
-		elements	as longint
+		bytes       as longint
+		elements    as longint            '' TYPEINI_CTORLIST only
 	end union
-	scp				as FBSYMBOL ptr
-	lastscp			as FBSYMBOL ptr
+	scp             as FBSYMBOL ptr
+	lastscp         as FBSYMBOL ptr
 end type
 
 type AST_NODE_TYPEINISCOPE
@@ -208,36 +220,36 @@ type AST_NODE_TYPEINISCOPE
 end type
 
 type AST_NODE_BREAK
-	parent			as ASTNODE_ ptr
-	scope			as integer
-	linenum			as integer
-	stmtnum			as integer						'' can't use colnum as it's unreliable
+	parent          as ASTNODE_ ptr
+	scope           as integer
+	linenum         as integer
+	stmtnum         as integer                      '' can't use colnum as it's unreliable
 end type
 
 type AST_BREAKLIST
-	head			as ASTNODE_ ptr
-	tail			as ASTNODE_ ptr
+	head            as ASTNODE_ ptr
+	tail            as ASTNODE_ ptr
 end type
 
 type AST_NODE_PROC
-	ismain			as integer
-	decl_last		as ASTNODE_ ptr					'' to support implicit variables decl
+	ismain          as integer
+	decl_last       as ASTNODE_ ptr                 '' to support implicit variables decl
 end type
 
 type AST_NODE_BLOCK
-	parent			as ASTNODE_ ptr
-	inistmt			as integer
-	endstmt			as integer
-	initlabel		as FBSYMBOL ptr
-	exitlabel		as FBSYMBOL ptr
-	breaklist		as AST_BREAKLIST
-	proc			as AST_NODE_PROC
+	parent          as ASTNODE_ ptr
+	inistmt         as integer
+	endstmt         as integer
+	initlabel       as FBSYMBOL ptr
+	exitlabel       as FBSYMBOL ptr
+	breaklist       as AST_BREAKLIST
+	proc            as AST_NODE_PROC
 end type
 
 type AST_NODE_DATASTMT
 	union
-		id			as integer
-		elmts		as integer
+		id          as integer
+		elmts       as integer
 	end union
 end type
 
@@ -248,122 +260,122 @@ enum AST_LINK_RETURN
 end enum
 
 type AST_NODE_LINK
-	ret			as integer
+	ret         as integer
 end type
 
 type AST_NODE_CAST
-	doconv 			as integer	'' do conversion (TRUE or FALSE)
-	do_convfd2fs	as integer  '' whether or not to ensure truncation in double2single conversions
-	convconst		as integer	'' const qualifier bits discarded/changed in the conversion (TRUE or FALSE)
+	doconv          as integer  '' do conversion (TRUE or FALSE)
+	do_convfd2fs    as integer  '' whether or not to ensure truncation in double2single conversions
+	convconst       as integer  '' const qualifier bits discarded/changed in the conversion (TRUE or FALSE)
 end type
 
 ''
 type ASTNODE
-	class			as AST_NODECLASS
+	class           as AST_NODECLASS
 
-	dtype			as integer
-	subtype			as FBSYMBOL ptr
+	dtype           as integer
+	subtype         as FBSYMBOL ptr
 
-	sym				as FBSYMBOL ptr					'' attached symbol
+	sym             as FBSYMBOL ptr                 '' attached symbol
 
-	vector			as integer					'' 0, 2, 3, or 4 (> 2 for single only)
+	vector          as integer                      '' 0, 2, 3, or 4 (> 2 for single only)
 
 	union
-		val			as FBVALUE    '' CONST nodes
-		var_		as AST_NODE_VAR
-		idx			as AST_NODE_IDX
-		ptr			as AST_NODE_PTR
-		call		as AST_NODE_CALL
-		arg			as AST_NODE_ARG
-		iif			as AST_NODE_IIF
-		op			as AST_NODE_OP
-		lod			as AST_NODE_LOAD
-		lbl			as AST_NODE_LABEL
-		ofs			as AST_NODE_OFFS
-		lit			as AST_NODE_LIT
-		asm			as AST_NODE_ASM
-		jmptb		as AST_NODE_JMPTB
-		dbg			as AST_NODE_DBG
-		mem			as AST_NODE_MEM
-		stack		as AST_NODE_STACK
-		typeini		as AST_NODE_TYPEINI
-		typeiniscope	as AST_NODE_TYPEINISCOPE
-		block		as AST_NODE_BLOCK				'' shared by PROC and SCOPE nodes
-		break		as AST_NODE_BREAK
-		data		as AST_NODE_DATASTMT
-		link		as AST_NODE_LINK
-		cast		as AST_NODE_CAST
+		val         as AST_NODE_CONST               '' CONST nodes
+		var_        as AST_NODE_VAR
+		idx         as AST_NODE_IDX
+		ptr         as AST_NODE_PTR
+		call        as AST_NODE_CALL
+		arg         as AST_NODE_ARG
+		iif         as AST_NODE_IIF
+		op          as AST_NODE_OP
+		lod         as AST_NODE_LOAD
+		lbl         as AST_NODE_LABEL
+		ofs         as AST_NODE_OFFS
+		lit         as AST_NODE_LIT
+		asm         as AST_NODE_ASM
+		jmptb       as AST_NODE_JMPTB
+		dbg         as AST_NODE_DBG
+		mem         as AST_NODE_MEM
+		stack       as AST_NODE_STACK
+		typeini     as AST_NODE_TYPEINI
+		typeiniscope    as AST_NODE_TYPEINISCOPE
+		block       as AST_NODE_BLOCK               '' shared by PROC and SCOPE nodes
+		break       as AST_NODE_BREAK
+		data        as AST_NODE_DATASTMT
+		link        as AST_NODE_LINK
+		cast        as AST_NODE_CAST
 	end union
 
-	l				as ASTNODE ptr					'' left node
-	r				as ASTNODE ptr					'' right /
+	l               as ASTNODE ptr                  '' left node
+	r               as ASTNODE ptr                  '' right /
 
-	prev			as ASTNODE ptr					'' used by astAdd()
-	next			as ASTNODE ptr					'' /
+	prev            as ASTNODE ptr                  '' used by astAdd()
+	next            as ASTNODE ptr                  '' /
 end type
 
 type AST_PROC_CTX
-	head			as ASTNODE ptr					'' procs list
-	tail			as ASTNODE ptr					'' /     /
-	curr			as ASTNODE ptr					'' current proc
+	head            as ASTNODE ptr                  '' procs list
+	tail            as ASTNODE ptr                  '' /     /
+	curr            as ASTNODE ptr                  '' current proc
 end type
 
 type AST_CALL_CTX
-	tmpstrlist		as TLIST						'' list of temp strings
+	tmpstrlist      as TLIST                        '' list of temp strings
 end type
 
 type AST_GLOBINST_CTX
-	list			as TLIST						'' global symbols with ctors/dtors
-	ctorcnt			as integer						'' number of ctors in the list above
-	dtorcnt			as integer						''      /    dtors       /
+	list            as TLIST                        '' global symbols with ctors/dtors
+	ctorcnt         as integer                      '' number of ctors in the list above
+	dtorcnt         as integer                      ''      /    dtors       /
 end type
 
 type AST_DATASTMT_CTX
-	desc			as FBSYMBOL ptr
-	lastsym			as FBSYMBOL ptr
-	firstsym		as FBSYMBOL ptr
-	lastlbl			as FBSYMBOL ptr
+	desc            as FBSYMBOL ptr
+	lastsym         as FBSYMBOL ptr
+	firstsym        as FBSYMBOL ptr
+	lastlbl         as FBSYMBOL ptr
 end type
 
 type AST_DTORLIST_ITEM
-	sym 			as FBSYMBOL ptr
+	sym             as FBSYMBOL ptr
 
 	'' Some integer used to identify temp vars from expressions nested
 	'' inside the true/false expressions of iif()'s, which may have to be
 	'' destroyed conditionally, depending on which code path was executed.
-	cookie			as integer
+	cookie          as integer
 
-	refcount		as integer
+	refcount        as integer
 end type
 
 type AST_DTORLIST_SCOPESTACK
 	'' Grow array; the stack of cookies of the current live dtorlist scopes
-	cookies	as integer ptr
-	count	as integer
-	room	as integer
+	cookies as integer ptr
+	count   as integer
+	room    as integer
 end type
 
 type ASTCTX
-	astTB			as TLIST
+	astTB           as TLIST
 
-	proc			as AST_PROC_CTX
-	call			as AST_CALL_CTX
-	globinst		as AST_GLOBINST_CTX				'' global instances
-	data			as AST_DATASTMT_CTX				'' DATA stmt garbage
+	proc            as AST_PROC_CTX
+	call            as AST_CALL_CTX
+	globinst        as AST_GLOBINST_CTX             '' global instances
+	data            as AST_DATASTMT_CTX             '' DATA stmt garbage
 
-	currblock		as ASTNODE ptr					'' current scope block (PROC or SCOPE)
+	currblock       as ASTNODE ptr                  '' current scope block (PROC or SCOPE)
 
-	doemit			as integer
+	doemit          as integer
 
 	'' Count of TYPEINI nodes in expressions that are about to be astAdd()ed
 	'' (so astAdd() only bothers running astTypeIniUpdate() if it's really
 	'' necessary -- another pass besides astOptimizeTree() walking the
 	'' whole expression tree during every astAdd() would just be
 	'' unnecessarily slow)
-	typeinicount		as integer
+	typeinicount        as integer
 
 	'' Same for FIELD with bitfield type (for astUpdateBitfields())
-	bitfieldcount		as integer
+	bitfieldcount       as integer
 
 	'' The counters must always be >= the amount of corresponding nodes that
 	'' will be given to astAdd() so that the updating functions don't miss
@@ -373,12 +385,12 @@ type ASTCTX
 	'' expressions will always be cloned instead of being astAdd()ed
 	'' themselves. Unfortunately
 
-	dtorlist		as TLIST						'' temp dtors list
-	dtorlistscopes		as AST_DTORLIST_SCOPESTACK	'' scope stack for astDtorListScope*()
-	dtorlistcookies		as integer			'' Cookie counter used to allocate new cookie numbers
-	flushdtorlist	as integer
+	dtorlist        as TLIST                        '' temp dtors list
+	dtorlistscopes  as AST_DTORLIST_SCOPESTACK      '' scope stack for astDtorListScope*()
+	dtorlistcookies as integer                      '' Cookie counter used to allocate new cookie numbers
+	flushdtorlist   as integer
 
-	asmtoklist		as TLIST  '' inline ASM token nodes
+	asmtoklist      as TLIST                        '' inline ASM token nodes
 
 	'' Whether warnings related to CONST nodes (e.g. "const overflow"
 	'' warnings from astCheckConst()) should be hidden. Sometimes we do
@@ -390,22 +402,22 @@ type ASTCTX
 	'' push/pop stack.
 	''   0 => show warnings
 	'' > 0 => hide warnings
-	hidewarningslevel	as integer
+	hidewarningslevel   as integer
 end type
 
 enum AST_OPFLAGS
-	AST_OPFLAGS_NONE		= &h00000000
-	AST_OPFLAGS_SELF		= &h00000001			'' op=
-	AST_OPFLAGS_COMM		= &h00000002			'' commutative
-	AST_OPFLAGS_NORES		= &h00000004			'' no result (it's a SUB)
-	AST_OPFLAGS_RELATIONAL		= &h00000008  '' whether it's one of the relational BOPs
+	AST_OPFLAGS_NONE        = &h00000000
+	AST_OPFLAGS_SELF        = &h00000001            '' op=
+	AST_OPFLAGS_COMM        = &h00000002            '' commutative
+	AST_OPFLAGS_NORES       = &h00000004            '' no result (it's a SUB)
+	AST_OPFLAGS_RELATIONAL  = &h00000008  '' whether it's one of the relational BOPs
 end enum
 
 type AST_OPINFO
-	class			as AST_NODECLASS
-	flags 			as AST_OPFLAGS
-	id				as const zstring ptr
-	selfop			as AST_OP						'' self version
+	class           as AST_NODECLASS
+	flags           as AST_OPFLAGS
+	id              as const zstring ptr
+	selfop          as AST_OP                       '' self version
 end type
 
 declare sub astInit( )
@@ -534,12 +546,15 @@ declare function astNewASSIGN _
 	) as ASTNODE ptr
 
 enum AST_CONVOPT
-	AST_CONVOPT_SIGNCONV = &h1
-	AST_CONVOPT_CHECKSTR = &h2
-	AST_CONVOPT_PTRONLY  = &h4
-	AST_CONVOPT_DONTCHKPTR = &h8
-	AST_CONVOPT_DONTWARNCONST = &h10
+	AST_CONVOPT_NONE            = &h0
+	AST_CONVOPT_SIGNCONV        = &h1
+	AST_CONVOPT_CHECKSTR        = &h2
+	AST_CONVOPT_PTRONLY         = &h4
+	AST_CONVOPT_DONTCHKPTR      = &h8
+	AST_CONVOPT_DONTWARNCONST   = &h10
 	AST_CONVOPT_DONTWARNFUNCPTR = &h20
+	AST_CONVOPT_EXACT_CAST      = &h40
+	AST_CONVOPT_NOCONVTOBASE    = &h80
 end enum
 
 declare function astTryOvlStringCONV( byref expr as ASTNODE ptr ) as integer
@@ -814,7 +829,8 @@ declare function astNewMEM _
 		byval op as integer, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr, _
-		byval bytes as longint = 0 _
+		byval bytes as longint = 0, _
+		byval fillchar as integer = 0 _
 	) as ASTNODE ptr
 
 declare function astNewMACRO _
@@ -880,8 +896,6 @@ declare function astNewNIDXARRAY _
 		byval expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astRemoveNIDXARRAY( byval n as ASTNODE ptr ) as ASTNODE ptr
-
 declare function astNewNode _
 	( _
 		byval class_ as integer, _
@@ -915,14 +929,16 @@ declare sub astCheckConst _
 declare function astCheckASSIGN _
 	( _
 		byval l as ASTNODE ptr, _
-		byval r as ASTNODE ptr _
+		byval r as ASTNODE ptr, _
+		byval no_upcast as integer _
 	) as integer
 
 declare function astCheckASSIGNToType _
 	( _
 		byval ldtype as integer, _
 		byval lsubtype as FBSYMBOL ptr, _
-		byval r as ASTNODE ptr _
+		byval r as ASTNODE ptr, _
+		byval no_upcast as integer _
 	) as integer
 
 declare function astCheckByrefAssign _
@@ -990,7 +1006,8 @@ declare function astTypeIniAddAssign _
 		byval expr as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr, _
 		byval dtype as integer = FB_DATATYPE_INVALID, _
-		byval subtype as FBSYMBOL ptr = NULL _
+		byval subtype as FBSYMBOL ptr = NULL, _
+		byval check_upcast as integer = FALSE _
 	) as ASTNODE ptr
 
 declare function astTypeIniAddCtorCall _
@@ -1272,6 +1289,11 @@ declare function astBuildImplicitCtorCall _
 		byref is_ctorcall as integer _
 	) as ASTNODE ptr
 
+declare function astBydescArrayArg _
+	( _
+		byval arg as ASTNODE ptr _
+	) as FB_PARAMMODE
+
 declare function astBuildImplicitCtorCallEx _
 	( _
 		byval sym as FBSYMBOL ptr, _
@@ -1330,6 +1352,7 @@ declare sub astDtorListDel( byval sym as FBSYMBOL ptr )
 declare sub astDtorListScopeBegin( byval cookie as integer = 0 )
 declare function astDtorListScopeEnd( ) as integer
 declare sub astDtorListUnscope( byval cookie as integer )
+declare sub astDtorListScopeDelete( byval cookie as integer )
 
 declare sub astSetType _
 	( _
@@ -1463,7 +1486,7 @@ declare function astLoadMACRO( byval n as ASTNODE ptr ) as IRVREG ptr
 
 #define astIsCAST(n) (n->class = AST_NODECLASS_CONV)
 
-#define astConstGetVal( n ) (@(n)->val)
+#define astConstGetVal( n ) (@(n)->val.value)
 #define astConstGetFloat( n ) ((n)->val.f)
 #define astConstGetInt( n ) ((n)->val.i)
 #define astConstGetUint( n ) cunsg( (n)->val.i )
@@ -1475,7 +1498,7 @@ declare function astLoadMACRO( byval n as ASTNODE ptr ) as IRVREG ptr
 
 #define astGetDataClass(n) typeGetClass( astGetDataType( n ) )
 
-#define astGetSymbol(n)	n->sym
+#define astGetSymbol(n) n->sym
 
 #define astGetProcExitlabel(n) n->block.exitlabel
 

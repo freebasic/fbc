@@ -8,7 +8,7 @@
 ''      program is -not- in the public domain. */
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 

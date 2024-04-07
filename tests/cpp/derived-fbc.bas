@@ -2,7 +2,15 @@
 
 '' test mapping of mangling between c++ derived class and fbc type
 
-#inclib "stdc++"
+#ifdef __FB_FREEBSD__
+	#inclib "c++"
+#else
+	#ifdef __FB_DOS__
+		#inclib "stdcx"
+	#else
+		#inclib "stdc++"
+	#endif
+#endif
 
 '' helper macro to track progress
 #define DLOG( msg ) '' print #msg
@@ -11,23 +19,15 @@
 	#define DOTEST
 	#define DOFUNCS
 #else
-	'' thiscall is not supported in -gen gas
-	#if __FB_BACKEND__ <> "gas"
-		#define DOTEST
-	#endif
+	#define DOTEST
 
-	'' structures returned by value from c++
-	'' needs some work on arm targets (bugs!)
-	#if not defined( __FB_ARM__ )
+	'' some structures returned by value from g++
+	'' not working for several targets.  Just disable
+	'' for now.  It's likely related to passing
+	'' structs in registers and size of the struct.
+	#if defined( __FB_WIN32__ )
 		#define DOFUNCS
 	#endif
-#endif
-
-'' !!! TODO !!! this default should be handled in fbc
-#if defined(__FB_WIN32__) and not defined(__FB_64BIT__)
-	#define thiscall __thiscall
-#else
-	#define thiscall
 #endif
 
 #ifndef NULL
@@ -52,23 +52,23 @@ extern "c++"
 	type UDT_BASE extends OBJECT
 		value as long
 
-		declare constructor thiscall ()
-		declare constructor thiscall ( byref rhs as const UDT_BASE )
-		declare constructor thiscall ( byref rhs as const long )
-		declare virtual destructor thiscall ()
-		declare virtual sub method thiscall ( byref rhs as const long ) 
-		declare operator let thiscall ( byref rhs as const UDT_BASE )
+		declare constructor ()
+		declare constructor ( byref rhs as const UDT_BASE )
+		declare constructor ( byref rhs as const long )
+		declare virtual destructor ()
+		declare virtual sub method ( byref rhs as const long )
+		declare operator let ( byref rhs as const UDT_BASE )
 
 	end type
 
 	'' DERIVED UDT to test with and we declare the same on c++ side
 	type UDT_DERIVED extends UDT_BASE
-		declare constructor thiscall ()
-		declare constructor thiscall ( byref rhs as const UDT_DERIVED )
-		declare constructor thiscall ( byref rhs as const long )
-		declare virtual destructor thiscall ()
-		declare virtual sub method thiscall ( byref rhs as const long )
-		declare operator let thiscall ( byref rhs as const UDT_DERIVED )
+		declare constructor ()
+		declare constructor ( byref rhs as const UDT_DERIVED )
+		declare constructor ( byref rhs as const long )
+		declare virtual destructor ()
+		declare virtual sub method ( byref rhs as const long )
+		declare operator let ( byref rhs as const UDT_DERIVED )
 
 	end type
 

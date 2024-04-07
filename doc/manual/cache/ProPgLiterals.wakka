@@ -25,7 +25,7 @@ Dim b As Byte = &H80
 %%
 			
 	__Octal__
-	"##&O##" ( O as in "Octal" ), followed by octal digits ( ##0 1 2 3 4 5 6 7## )
+	"##&O##" (or "##&##"), followed by octal digits ( ##0 1 2 3 4 5 6 7## )
 
 {{fbdoc item="filename" value="examples/manual/proguide/literals/oct.bas"}}%%(freebasic)
 Dim x as integer = &O361100
@@ -120,6 +120,7 @@ print $"C:\temp"
 %%
 	
 	Besides ASCII files with Unicode escape sequences (##\u##), ""FreeBASIC"" can parse UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE source files as long as they were saved with Byte Order Mark (BOM), allowing unicode characters directly in the string literal.
+	**Note:** The most reliable cross-platform code is obtained by encoding without BOM in ASCII/UTF-8 characters.
 	
 	String literals in an ASCII file are treated as ##[[KeyPgZstring|ZString]]##, while string literals in a Unicode file are treated as ##[[KeyPgWstring|WString]]## (regardless of the string literal's value).
 

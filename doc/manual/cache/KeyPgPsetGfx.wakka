@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="PSET"}}----
+{{fbdoc item="title" value="PSET (graphics Put)"}}----
 Parameter to the ##[[KeyPgPutgraphics|Put]]## graphics statement which selects ##[[KeyPgPset|PSet]]## as the blitting method
 
 {{fbdoc item="syntax"}}##

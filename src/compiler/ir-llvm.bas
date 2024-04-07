@@ -154,25 +154,25 @@ end type
 const MAXVARINISCOPES = 128
 
 type IRLLVMCONTEXT
-	indent				as integer  '' current indentation used by hWriteLine()
-	linenum				as integer
+	indent              as integer  '' current indentation used by hWriteLine()
+	linenum             as integer
 
-	varini				as string
-	variniscopelevel		as integer
+	varini              as string
+	variniscopelevel    as integer
 	variniscopes(0 to MAXVARINISCOPES-1) as IRLLVMVARINISCOPE
 
-	ctors				as string
-	dtors				as string
-	ctorcount			as integer
-	dtorcount			as integer
+	ctors               as string
+	dtors               as string
+	ctorcount           as integer
+	dtorcount           as integer
 
-	fbctinf				as string
-	fbctinf_len			as integer
+	fbctinf             as string
+	fbctinf_len         as integer
 
-	section				as integer  '' current section to write to
-	head_txt			as string
-	body_txt			as string
-	foot_txt			as string
+	section             as integer  '' current section to write to
+	head_txt            as string
+	body_txt            as string
+	foot_txt            as string
 end type
 
 declare function hEmitType _
@@ -197,7 +197,8 @@ declare sub hEmitBop _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval label as FBSYMBOL ptr _
+		byval label as FBSYMBOL ptr, _
+		byval options as IR_EMITOPT _
 	)
 
 '' globals
@@ -225,6 +226,7 @@ dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 	@"double"   , _ '' double
 	@"%FBSTRING", _ '' string
 	@"i8"       , _ '' fix-len string
+	@"%struct.va_list", _ '' va_list - not tested, it can be different for every platform
 	NULL        , _ '' struct
 	NULL        , _ '' namespace
 	NULL        , _ '' function
@@ -369,6 +371,8 @@ private function hEmitProcCallConv( byval proc as FBSYMBOL ptr ) as string
 		function = "x86_stdcallcc "
 	case FB_FUNCMODE_THISCALL
 		function = "x86_thiscall "
+	case FB_FUNCMODE_FASTCALL
+		function = "x86_fastcall "
 	end select
 end function
 
@@ -666,10 +670,10 @@ private sub hEmitVariable( byval sym as FBSYMBOL ptr )
 			ln += hEmitSymType( sym )
 			ln += " c"""
 			if( symbGetType( sym ) = FB_DATATYPE_WCHAR ) then
-				length = symbGetWstrLen( sym )
+				length = symbGetWstrLength( sym ) + 1
 				hBuildWstrLit( ln, length, hUnescapeW( symbGetVarLitTextW( sym ) ), length )
 			else
-				length = symbGetStrLen( sym )
+				length = symbGetStrLength( sym ) + 1
 				hBuildStrLit( ln, length, hUnescape( symbGetVarLitText( sym ) ), length )
 			end if
 			ln += """"
@@ -1082,7 +1086,7 @@ private sub hAddOffset _
 		'' can't do self-BOPs on REGs)
 		var vimmoffset = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, ofs )
 		var vnewoffset = irhlAllocVreg( FB_DATATYPE_INTEGER, NULL )
-		hEmitBop( AST_OP_ADD, voffset, vimmoffset, vnewoffset, NULL )
+		hEmitBop( AST_OP_ADD, voffset, vimmoffset, vnewoffset, NULL, IR_EMITOPT_NONE )
 		voffset = vnewoffset
 	end if
 
@@ -1404,17 +1408,41 @@ private function hGetBopCode _
 	case AST_OP_XOR
 		function = @"xor"
 	case AST_OP_EQ
-		function = @"icmp eq"
+		if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
+			function = @"fcmp oeq"
+		else
+			function = @"icmp eq"
+		end if
 	case AST_OP_NE
-		function = @"icmp ne"
+		if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
+			function = @"fcmp one"
+		else
+			function = @"icmp ne"
+		end if
 	case AST_OP_GT
-		function = @"icmp sgt"
+		if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
+			function = @"fcmp ogt"
+		else
+			function = @"icmp sgt"
+		end if
 	case AST_OP_LT
-		function = @"icmp slt"
+		if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
+			function = @"fcmp olt"
+		else
+			function = @"icmp slt"
+		end if
 	case AST_OP_GE
-		function = @"icmp sge"
+		if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
+			function = @"fcmp oge"
+		else
+			function = @"icmp sge"
+		end if
 	case AST_OP_LE
-		function = @"icmp sle"
+		if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
+			function = @"fcmp ole"
+		else
+			function = @"icmp sle"
+		end if
 	case AST_OP_EQV
 		'' TODO: vr = not (v1 xor v2)
 		function = @"eqv"
@@ -1433,13 +1461,20 @@ private sub hLoadOperandsAndWriteBop _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval subtype as FBSYMBOL ptr, _
+		byval options as IR_EMITOPT _
 	)
 
 	hLoadVreg( v1 )
 	hLoadVreg( v2 )
 	_setVregDataType( v1, dtype, subtype )
 	_setVregDataType( v2, dtype, subtype )
+
+	'' !!!TODO!!! Comparisons with NaN not tested
+
+	if( (options and IR_EMITOPT_REL_DOINVERSE) <> 0 ) then
+		op = astGetInverseLogOp( op )
+	end if
 
 	var ln = hVregToStr( vr )
 	ln += " = "
@@ -1460,7 +1495,8 @@ private sub hEmitBop _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval label as FBSYMBOL ptr _
+		byval label as FBSYMBOL ptr, _
+		byval options as IR_EMITOPT _
 	)
 
 	'' Conditional branch?
@@ -1469,7 +1505,7 @@ private sub hEmitBop _
 		vr = irhlAllocVreg( FB_DATATYPE_INTEGER, NULL )
 
 		'' condition = comparison expression
-		hLoadOperandsAndWriteBop( op, v1, v2, vr, v1->dtype, v1->subtype )
+		hLoadOperandsAndWriteBop( op, v1, v2, vr, v1->dtype, v1->subtype, options )
 
 		'' The conditional branch in LLVM always needs both
 		'' true and false labels, to keep the proper basic
@@ -1508,7 +1544,7 @@ private sub hEmitBop _
 		v1orig = *v1
 	end if
 
-	hLoadOperandsAndWriteBop( op, v1, v2, vr, vr->dtype, vr->subtype )
+	hLoadOperandsAndWriteBop( op, v1, v2, vr, vr->dtype, vr->subtype, options )
 
 	'' LLVM comparison ops return i1, but we usually want i32,
 	'' so do an sign-extending cast (i1 -1 to i32 -1).
@@ -1535,7 +1571,8 @@ private sub _emitBop _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval label as FBSYMBOL ptr _
+		byval label as FBSYMBOL ptr, _
+		byval options as IR_EMITOPT _
 	)
 
 	var bopdump = vregPretty( v1 ) + " " + astDumpOpToStr( op ) + " " + vregPretty( v2 )
@@ -1547,7 +1584,7 @@ private sub _emitBop _
 		hAstCommand( "bop " + bopdump )
 	end if
 
-	hEmitBop( op, v1, v2, vr, label )
+	hEmitBop( op, v1, v2, vr, label, options )
 
 end sub
 
@@ -1642,7 +1679,7 @@ private sub _emitUop _
 		end if
 
 		var zero = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, 0 )
-		hEmitBop( AST_OP_SUB, zero, v1, vr, NULL )
+		hEmitBop( AST_OP_SUB, zero, v1, vr, NULL, IR_EMITOPT_NONE )
 
 		if( isself ) then
 			hEmitStore( @v1orig, vr )
@@ -1654,7 +1691,7 @@ private sub _emitUop _
 		'' Just pass on as BOP. Works even for self-UOPs, as v1 will be
 		'' the lhs of the self-BOP as expected by hEmitBop().
 		var minusone = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, -1 )
-		hEmitBop( AST_OP_XOR, v1, minusone, vr, NULL )
+		hEmitBop( AST_OP_XOR, v1, minusone, vr, NULL, IR_EMITOPT_NONE )
 
 	case else
 		hBuiltInUop( op, v1, vr )
@@ -1665,8 +1702,13 @@ end sub
 private function hGetConvOpCode( byval ldtype as integer, byval rdtype as integer ) as zstring ptr
 	if( typeGetClass( ldtype ) = FB_DATACLASS_FPOINT ) then
 		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
+
+			'' same size? i.e. due to const -> non-const, then no convert
+			if( typeGetSize( ldtype ) = typeGetSize( rdtype ) ) then
+				return NULL
+			end if
+
 			'' float to float (i.e. single <-> double)
-			assert( typeGetSize( ldtype ) <> typeGetSize( rdtype ) )
 			return iif( typeGetSize( ldtype ) < typeGetSize( rdtype ), @"fptrunc", @"fpext" )
 		end if
 
@@ -2031,7 +2073,8 @@ private sub _emitMem _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
-		byval bytes as longint _
+		byval bytes as longint, _
+		byval fillchar as integer _
 	)
 
 	dim as string ln
@@ -2039,8 +2082,8 @@ private sub _emitMem _
 	ln = "call void "
 
 	select case( op )
-	case AST_OP_MEMCLEAR
-		hAstCommand( "memclear " + vregPretty( v1 ) )
+	case AST_OP_MEMFILL
+		hAstCommand( "memfill " + vregPretty( v1 ) )
 	case AST_OP_MEMMOVE
 		hAstCommand( "memmove " + vregPretty( v1 ) + " <= " + vregPretty( v2 ) )
 	end select
@@ -2049,14 +2092,14 @@ private sub _emitMem _
 	hLoadVreg( v2 )
 
 	select case( op )
-	case AST_OP_MEMCLEAR
+	case AST_OP_MEMFILL
 		builtins(BUILTIN_MEMSET).used = TRUE
 		_setVregDataType( v1, typeAddrOf( FB_DATATYPE_BYTE ), NULL )
 		_setVregDataType( v2, FB_DATATYPE_INTEGER, NULL )
 
 		ln += "@llvm.memset.p0i8.i32( "
 		ln += "i8* " + hVregToStr( v1 ) + ", "
-		ln += "i8 0, "
+		ln += "i8 " + str(fillchar) + ", "
 		ln += "i32 " + hVregToStr( v2 ) + ", "
 
 	case AST_OP_MEMMOVE
@@ -2268,7 +2311,8 @@ private sub _emitVarIniStr _
 	( _
 		byval varlength as longint, _
 		byval literal as zstring ptr, _
-		byval litlength as longint _
+		byval litlength as longint, _
+		byval noterm as integer _
 	)
 
 	'' also see hVarIniElementType()
@@ -2300,7 +2344,7 @@ private sub _emitVarIniWstr _
 
 end sub
 
-private sub _emitVarIniPad( byval bytes as longint )
+private sub _emitVarIniPad( byval bytes as longint, byval fillchar as integer )
 end sub
 
 private sub _emitVarIniScopeBegin( byval sym as FBSYMBOL ptr, byval is_array as integer )

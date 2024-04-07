@@ -1,0 +1,25 @@
+---
+-- 5 errors expected
+field-deref.bas(19) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print *p.I'
+field-deref.bas(20) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print *(p).I'
+field-deref.bas(21) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print *This.p.I'
+field-deref.bas(22) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print *(This).p.I'
+field-deref.bas(23) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print *(This.p).I'
+-- 5 errors expected
+field-deref.bas(26) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print *p0.I'
+field-deref.bas(27) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print *(p0).I'
+field-deref.bas(28) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print *UDT.p0.I'
+field-deref.bas(29) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print *(UDT).p0.I'
+field-deref.bas(30) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print *(UDT.p0).I'
+-- no errors expected
+-- 5 errors expected
+field-deref.bas(45) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print *UDT.p0.I'
+field-deref.bas(46) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print *(UDT.p0).I'
+field-deref.bas(47) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print *u.p.I'
+field-deref.bas(48) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print *(u).p.I'
+field-deref.bas(49) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print *(u.p).I'
+-- no errors expected
+field-deref.bas(52) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print *(UDT.p0).I'
+-- 2 errors expected
+field-deref.bas(59) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print *p.i'
+field-deref.bas(60) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print *(p).i'

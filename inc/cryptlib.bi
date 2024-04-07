@@ -57,7 +57,7 @@
 ''     public), contact the author for details if you think you qualify.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2020 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 

@@ -7,7 +7,7 @@
 '' and the garbage in the buffer will affect the tests
 #macro INIT_FIXED_STRING( s, dtype, size, value )
 	dim s as dtype * size
-	clear @s, 0, sizeof(s)
+	clear s, 0, sizeof(s)
 	s = value
 #endmacro
 
@@ -18,7 +18,7 @@ SUITE( fbc_tests.wstring_.midstmt )
 			INIT_FIXED_STRING( w1, wstring, BUFFERSIZE, left( dst, (length1) ) )
 			INIT_FIXED_STRING( w2, wstring, BUFFERSIZE, left( src, (length2) ) )
 			INIT_FIXED_STRING( e1, wstring, BUFFERSIZE, w1 )
-			dim n1 as integer = 50 '' len(w1)
+			dim n1 as integer = BUFFERSIZE '' len(w1)
 			dim n2 as integer = len(w2)
 			dim idx1 as integer = start
 			dim idx2 as integer = 1
@@ -30,7 +30,7 @@ SUITE( fbc_tests.wstring_.midstmt )
 					idx1 += 1
 					idx2 += 1
 				wend
-				e1[n1] = 0
+				e1[n1-1] = 0
 			end if
 
 			mid( w1, start ) = w2
@@ -58,7 +58,7 @@ SUITE( fbc_tests.wstring_.midstmt )
 					idx2 += 1
 					n += 1
 				wend
-				e1[n1] = 0
+				e1[n1-1] = 0
 			end if
 
 			mid( w1, start, length ) = w2

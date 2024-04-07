@@ -1,28 +1,43 @@
-{{fbdoc item="title" value="Operator PROCPTR (Procedure pointer)"}}----
-Returns the address of a procedure
+{{fbdoc item="title" value="Operator PROCPTR (Procedure pointer and vtable index)"}}----
+Returns the address of any procedure, and the index in the vtable for a virtual/abstract member procedure.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Procptr** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] //T// ) [[KeyPgAs|as]] //T// [[KeyPgPtr|ptr]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Procptr** ( [[KeyPgByref|byref]] //identifier// [[KeyPgAs|as]] //proctype// [, [[KeyPgAny|any]]|//user_proctype// ] ) [[KeyPgAs|as]] //internal_proctype// [[KeyPgPtr|ptr]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Procptr** ( [[KeyPgByref|byref]] //identifier// [[KeyPgAs|as]] //proctype//, virtual [ [[KeyPgAny|any]]|//user_proctype// ] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Procptr** ( //lhs// )
+	//result// = **Procptr** ( //identifier// [, [virtual] [any|//user_proctype//] ] )
 ##
 {{fbdoc item="param"}}
-	##//lhs//##
-		A procedure.
-	##//T//##
-		The type of procedure.
+	##//identifier//##
+		A procedure identifier.
+	##//user_proctype//##
+		Any user type of procedure (sub/function, static/member, normal/virtual).
+		(##//internal_proctype//## has a supplementary first parameter ##byref as udt_name## only for the member procedures)
 
 {{fbdoc item="ret"}}
-	Returns the address of the procedure.
+	Returns the address of any procedure (first syntax), or the index in the vtable for a virtual/abstract member procedure (second syntax with additional qualifier ##virtual##).
+	(##any##, ie any procedure signature, does not induce any particular selection (compared to its non-use), but just allows for writing ##**Procptr**## always with 2 arguments)
 
 {{fbdoc item="desc"}}
-	This operator returns the address of a ##[[KeyPgSub|Sub]]## or ##[[KeyPgFunction|Function]]## procedure.
+	First syntax:
+		""-"" This operator returns the address of a ##[[KeyPgSub|Sub]]## or ##[[KeyPgFunction|Function]]## static/member procedure or member operator.
+		""-"" The type of the return value corresponds to the internal signature of the procedure (user signature, plus a supplementary first parameter ##byref as udt_name## for a member procedure) .
+	Second syntax (with qualifier ##virtual##):
+		""-"" This operator returns the zero based index in the vtable for a virtual/abstract member procedure or member operator.
+		""-"" In case of overridden member procedure (polymorphism), the vtable index allows access, from the vtable of the used instance, to the address of the most derived override member procedure.
+		
+	When using the ##//user_proctype//## argument, ##**Procptr**## syntax allows of getting procedure pointer or vtable index for based on parameter types (including sub/function type and return type if any).
+	This makes it possible to explicitly specify the right procedure to resolve procedure overloads, or make a check for parameter types (including sub/function type and return type if any) on non-overloaded procedures.
 	
-	##[[KeyPgOpAt|Operator @ (Address of)]]##, when used with procedures, has identical behavior.
+	##[[KeyPgOpAt|Operator @ (Address of)]]##, when used with procedures, behaves the same as the first ##**Procptr**## syntax without second argument.
+	
+	**Note:**
+		""-"" If the procedure member is abstract, then ## **Procptr** ( //identifier// [, any|//user_proctype// ] ) ## returns a null procedure pointer of the member procedure call signature (##//internal_proctype//##).
+		""-"" If there is no vtable entry (or no vtable at all) then ## **Procptr** ( //identifier// , virtual [any|//user_proctype//] ) ## returns the special value of ##-1##.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/operator/procptr.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/operator/procptr.bas"}}%%(freebasic)
 ' This example uses ProcPtr to demonstrate function pointers
 Declare Function Subtract( x as Integer, y as Integer) as Integer
 Declare Function Add( x as Integer, y as Integer) as Integer
@@ -44,9 +59,168 @@ Function Subtract( x as Integer, y as Integer) as Integer
 	return x - y
 end function
 %%
+	{{fbdoc item="filename" value="examples/manual/operator/procptr2.bas"}}%%(freebasic)
+Sub s Overload()
+End Sub
+
+Sub s( ByVal i As Integer )
+End Sub
+
+'----- since fbc 1.09.0, ProcPtr supports a second parameter (optional):
+Var s1 = ProcPtr( s, Sub() )
+Var s2 = ProcPtr( s, Sub( ByVal i As Integer ) )
+
+'----- before fbc 1.09.0, it was only possible with:
+'Dim s1 As Sub()
+'s1 = ProcPtr( s )
+'Dim s2 As Sub( Byval i As Integer)
+'s2 = ProcPtr( s )
+%%
+	{{fbdoc item="filename" value="examples/manual/operator/procptr3.bas"}}%%(freebasic)
+' Since fbc 1.10.0, ProcPtr supports the member procedures/operators with various syntaxes
+
+Type UDT Extends Object
+	Dim As String s1
+	Dim As String s2
+	Declare Virtual Sub test()
+	Declare Virtual Operator Cast() As String
+End Type
+
+Sub UDT.test()
+	Print This.s1
+End Sub
+
+Operator UDT.Cast() As String
+	Return This.s2
+End operator
+
+Var testPtr1 = Procptr(UDT.test)
+Var testPtr2 = Procptr(UDT.test, Any)
+Var testPtr3 = Procptr(UDT.test, Sub())
+
+Dim As Function(Byref As UDT) As String castPtr1 = Procptr(UDT.cast)
+Dim As Function(Byref As UDT) As String castPtr2 = Procptr(UDT.cast, Any)
+Dim As Function(Byref As UDT) As String castPtr3 =  Procptr(UDT.cast, Function() As String)
+
+Var testIndex1 = Procptr(UDT.test, Virtual)
+Var testIndex2 = Procptr(UDT.test, Virtual Any)
+Var testIndex3 = Procptr(UDT.test, Virtual Sub())
+
+Dim As Integer castIndex1 = Procptr(UDT.cast, Virtual)
+Dim As Integer castIndex2 = Procptr(UDT.cast, Virtual Any)
+Dim As Integer castIndex3 = Procptr(UDT.cast, Virtual Function() As String)
+
+Print testPtr1  '' absolue address value of UDT.test pointer
+Print testPtr2  '' absolue address value of UDT.test pointer
+Print testPtr3  '' absolue address value of UDT.test pointer
+Print
+
+Print castPtr1  '' absolue address value of UDT.Cast pointer
+Print castPtr2  '' absolue address value of UDT.Cast pointer
+Print castPtr3  '' absolue address value of UDT.Cast pointer
+Print
+
+Print testIndex1  '' vtable index of UDT.test
+Print testIndex2  '' vtable index of UDT.test
+Print testIndex3  '' vtable index of UDT.test
+Print
+
+Print castIndex1  '' vtable index of UDT.Cast
+Print castIndex2  '' vtable index of UDT.Cast
+Print castIndex3  '' vtable index of UDT.Cast
+Print
+
+Dim As UDT u
+u.s1 = "Virtual Sub test()"
+u.s2 = "Virtual Operator Cast() As String"
+
+testPtr1(u)  '' execute u.test() through its procedure pointer
+testPtr2(u)  '' execute u.test() through its procedure pointer
+testPtr3(u)  '' execute u.test() through its procedure pointer
+Print
+
+Print castPtr1(u)  '' execute Cast(UDT, u) through its procedure pointer
+Print castPtr2(u)  '' execute Cast(UDT, u) through its procedure pointer
+Print castPtr3(u)  '' execute Cast(UDT, u) through its procedure pointer
+Print
+
+Cptr(Sub(Byref As UDT), Cptr(Any Ptr Ptr Ptr, @u)[0][testIndex1])(u)  '' execute u.test() through its vtable index
+Cptr(Sub(Byref As UDT), Cptr(Any Ptr Ptr Ptr, @u)[0][testIndex2])(u)  '' execute u.test() through its vtable index
+Cptr(Sub(Byref As UDT), Cptr(Any Ptr Ptr Ptr, @u)[0][testIndex3])(u)  '' execute u.test() through its vtable index
+Print
+
+Print Cptr(Function(Byref As UDT) As String, Cptr(Any Ptr Ptr Ptr, @u)[0][castIndex1])(u)  '' execute Cast(UDT, u) through its vtable index
+Print Cptr(Function(Byref As UDT) As String, Cptr(Any Ptr Ptr Ptr, @u)[0][castIndex2])(u)  '' execute Cast(UDT, u) through its vtable index
+Print Cptr(Function(Byref As UDT) As String, Cptr(Any Ptr Ptr Ptr, @u)[0][castIndex3])(u)  '' execute Cast(UDT, u) through its vtable index
+Print
+
+Sleep
+%%
+	{{fbdoc item="filename" value="examples/manual/operator/procptr4.bas"}}%%(freebasic)
+' Since fbc 1.10.0, ProcPtr also allows to access the vtable index of a virtual/abstract member procedure/operator
+
+Type Parent Extends Object
+	Declare Abstract Sub VirtualTest()
+	Declare Virtual Operator Cast() As String
+	Declare Sub NormalTest()
+End Type
+
+Operator Parent.Cast() As String
+	Return "Parent.Cast() As String"
+End Operator
+
+Sub Parent.NormalTest()
+	Print "Parent.NormalTest()"
+End Sub
+
+Type Child Extends Parent
+	Declare Virtual Sub VirtualTest()          '' or Declare Sub test()
+	Declare Virtual Operator Cast() As String  '' or Declare Operator Cast() As String
+	Declare Sub NormalTest()
+End Type
+
+Sub Child.VirtualTest()
+	Print "Child.VirtualTest"
+End Sub
+
+Operator Child.Cast() As String
+	Return "Child.Cast() As String"
+End Operator
+
+Sub Child.NormalTest()
+	Print "Child.NormalTest()"
+End Sub
+
+Dim As Parent Ptr p = New Child
+
+(*p).VirtualTest()      '' or p->VirtualTest()
+Print Cast(Parent, *p)  '' or Print *p
+(*p).NormalTest()       '' or p->NormalTest()
+Print
+
+#define RuntimeProcPtr(instance, procedure, signature...) _   '' pointer to procedure
+	__FB_IIF__(ProcPtr(procedure, Virtual signature) >= 0, _  '' (the most derived override if exists)
+			   CPtr(TypeOf(ProcPtr(procedure, signature)), _
+					CPtr(Any Ptr Ptr Ptr, @(instance)) _
+					[0][ProcPtr(procedure, Virtual signature)]), _
+			   ProcPtr(procedure, signature))
+
+'' Here, providing the procedure signature to the macro is useless
+'' (because there are no procedure overloads to solve in this case)
+RuntimeProcPtr(*p, Parent.VirtualTest)(*p)  '' execute (*p).VirtualTest() through its vtable index
+Print RuntimeProcPtr(*p, Parent.Cast)(*p)   '' execute Cast(Parent, *p) through its vtable index
+RuntimeProcPtr(*p, Parent.NormalTest)(*p)   '' execute (*p).NormalTest() through its compile address
+Print
+
+Delete p
+Sleep
+%%
+{{fbdoc item="ver"}}
+	- Before fbc 1.10.0, the member procedures/operators were not supported.
+	- Before fbc 1.09.0, the second argument (the optional) was not supported.
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Procptr""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Procptr""**## (but does not support qualifier ##virtual##).
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
@@ -55,6 +229,8 @@ end function
 	- ##[[KeyPgSub|Sub]]##
 	- ##[[KeyPgOpVarptr|Varptr]]##
 	- ##[[KeyPgOpStrptr|Strptr]]##
+	- ##[[KeyPgAny|Any]]##
+	- ##[[KeyPgVirtual|Virtual]]
 	- [[ProPgPointers|Pointers]]
 
 {{fbdoc item="back" value="CatPgOpPoint|Pointer Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

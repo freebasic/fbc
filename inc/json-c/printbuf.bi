@@ -15,7 +15,7 @@
 ''   (http://www.opensource.org/licenses/mit-license.php)
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 

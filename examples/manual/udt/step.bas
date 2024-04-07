@@ -1,7 +1,7 @@
 '' examples/manual/udt/step.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'Operator Step (Iteration)'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOpStep
 '' --------
@@ -45,3 +45,4 @@ End Operator
 For i As T = 10 To 1 Step -1
   Print i.value;
 Next i
+	

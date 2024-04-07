@@ -22,7 +22,8 @@ Specifies that a procedure name can be overloaded
 	
 	##**Overload**## is not necessary in member procedure declarations, as they are always implicitly overloaded.
 	
-	When calling an overloaded procedure, the compiler determines the most appropriate definition to use among a set of compatible candidates, by comparing the argument types used to call the procedure with the parameter types specified in the definitions. If no match or an ambiguous match is found, the compiler generates an error at compile time.
+	When calling an overloaded procedure name, a match score is calculated comparing the call argument types with the parameter types for each candidate procedure (major resolution on datatypes themselves, minor resolution on datatype sizes).
+	The highest matching score wins. If this highest score is too low, or if several overloaded procedures have the same highest score, the compiler then generates an error at compile time (no matching procedure, or ambiguous call).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/overload.bas"}}%%(freebasic)

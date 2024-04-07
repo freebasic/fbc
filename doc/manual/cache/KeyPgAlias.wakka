@@ -34,9 +34,14 @@ Clause of the ##[[KeyPgSub|Sub]]## and ##[[KeyPgFunction|Function]]## statements
 
 {{fbdoc item="ex"}}
 
-If there is a sub called ##xClearScreen## in an external library and you want to reference it with the name ##""ClearVideoScreen""##, here is sample code to do so:
+If there is a sub (without parameter) called ##xClearScreen## in an external library and you want to reference it with the name ##""ClearVideoScreen""##, here is sample code to do so:
 {{fbdoc item="filename" value="examples/manual/procs/alias.bas"}}%%(freebasic)
 DECLARE SUB ClearVideoScreen ALIAS "xClearScreen" ()
+%%
+
+If there is a function (with parameters and return value) called ##""MyFunctioninLib""## in an external library and you want to reference it with the name ##myfunction##, here is sample code to do so:
+{{fbdoc item="filename" value="examples/manual/procs/alias1.bas"}}%%(freebasic)
+DECLARE FUNCTION myfunction ALIAS "MyFunctioninLib" (BYVAL AS LONG, BYVAL AS LONG, BYVAL AS ZSTRING PTR) AS INTEGER
 %%
 
 A procedure meant to be used by external C code, exported as ##""MyExportedProc""##:

@@ -1,5 +1,11 @@
 #include "fbcunit.bi"
 
+'' Emscripten (and wasm) doesn't support common symbols
+#ifdef __FB_JS__
+	#undef common
+	#define common dim  '' Fixes the compile but fails tests
+#endif
+
 common shared array1() as integer
 common shared array2() as integer
 dim shared array3() as integer
@@ -18,11 +24,8 @@ namespace ns
 	end sub
 
 	private sub f2( )
-		'' Even with the . global namespace resolution, this will currently
-		'' not redim the COMMON SHARED (which is somewhat weird)
-		dim .array1(2 to 2) as integer
-
-		'' These should REDIM the globals though
+		'' These REDIM the globals
+		redim .array1(2 to 2) as integer
 		redim .array2(2 to 2) as integer
 		redim .array3(2 to 2) as integer
 		redim .array4(2 to 2) as integer
@@ -52,7 +55,7 @@ private sub test_proc
 
 	ns.f2( )
 
-	CU_ASSERT( lbound( array1 ) = 0 ) : CU_ASSERT( ubound( array1 ) = -1 )
+	CU_ASSERT( lbound( array1 ) = 2 ) : CU_ASSERT( ubound( array1 ) = 2 )
 	CU_ASSERT( lbound( array2 ) = 2 ) : CU_ASSERT( ubound( array2 ) = 2 )
 	CU_ASSERT( lbound( array3 ) = 2 ) : CU_ASSERT( ubound( array3 ) = 2 )
 	CU_ASSERT( lbound( array4 ) = 2 ) : CU_ASSERT( ubound( array4 ) = 2 )

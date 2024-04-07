@@ -14,7 +14,7 @@ Specifies a default data type for a range of variable names
 	##**Deflng**## specifies that variables and arrays which aren't declared with a data type - or not declared at all - are implicitly declared of type ##[[KeyPgLong|Long]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
 
 {{fbdoc item="ex"}}
-	This will make ##lNumber## a ##[[KeyPgLong|Long]]## integer number since it starts with l.
+	This will make ##lNumber## a ##[[KeyPgLong|Long]]## integer number since it starts with ##l##.
 {{fbdoc item="filename" value="examples/manual/switches/deflng.bas"}}%%(freebasic)
 '' Compile with -lang fblite or qb
 

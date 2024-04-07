@@ -1,7 +1,7 @@
 '' examples/manual/datatype/string-buffer.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'STRING'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgString
 '' --------
@@ -10,7 +10,7 @@
 
 '' Reserving space for a string,
 '' using Space() to produce lots of space characters (ASCII 32)
-Var mybigstring = Space(1024)
+Dim As String mybigstring = Space(1024)
 Print "buffer address: &h" & Hex( StrPtr( mybigstring ), 8 ) & ", length: " & Len( mybigstring )
 
 '' Explicitly destroying a string

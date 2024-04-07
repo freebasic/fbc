@@ -1,7 +1,7 @@
 '' examples/manual/error/erl.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'ERL'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgErl
 '' --------
@@ -20,7 +20,7 @@ Error 100
 End
 
 ErrorHandler:
-  Dim num As Integer = Err
+  Dim num As Long = Err
   Print "Error "; num; " on line "; Erl
   Resume Next
 

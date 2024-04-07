@@ -64,18 +64,18 @@ function cParentExpression _
 	dim as integer eqinparensonly = any, gtinparensonly = any
 	dim as integer idxinparensonly = any
 
-  	'' '('
-  	if( lexGetToken( ) <> CHAR_LPRNT ) then
-  		return NULL
-  	end if
+	'' '('
+	if( lexGetToken( ) <> CHAR_LPRNT ) then
+		return NULL
+	end if
 
-  	lexSkipToken( )
+	lexSkipToken( )
 
-  	'' ++parent cnt
-  	parser.prntcnt += 1
+	'' ++parent cnt
+	parser.prntcnt += 1
 
-  	dim as integer is_opt = fbGetPrntOptional( )
-  	fbSetPrntOptional( FALSE )
+	dim as integer is_opt = fbGetPrntOptional( )
+	fbSetPrntOptional( FALSE )
 
 	eqinparensonly = fbGetEqInParensOnly( )
 	gtinparensonly = fbGetGtInParensOnly( )
@@ -84,40 +84,40 @@ function cParentExpression _
 	fbSetGtInParensOnly( FALSE )
 	fbSetIdxInParensOnly( FALSE )
 
-  	parexpr = cExpression(  )
+	parexpr = cExpression(  )
 
 	fbSetEqInParensOnly( eqinparensonly )
 	fbSetGtInParensOnly( gtinparensonly )
 	fbSetIdxInParensOnly( idxinparensonly )
 
-  	if( parexpr = NULL ) then
-  		'' calling a SUB? it could be a BYVAL or nothing due the optional ()'s
-  		if( is_opt ) then
-  			return NULL
-  		end if
+	if( parexpr = NULL ) then
+		'' calling a SUB? it could be a BYVAL or nothing due the optional ()'s
+		if( is_opt ) then
+			return NULL
+		end if
 
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: skip until next ')', fake an expr
 		hSkipUntil( CHAR_RPRNT, TRUE )
 		return astNewCONSTi( 0 )
-    end if
+	end if
 
-  	'' ')'
-  	if( lexGetToken( ) = CHAR_RPRNT ) then
-  		lexSkipToken( )
-  		'' --parent cnt
-  		parser.prntcnt -= 1
+	'' ')'
+	if( lexGetToken( ) = CHAR_RPRNT ) then
+		lexSkipToken( )
+		'' --parent cnt
+		parser.prntcnt -= 1
 
-  	else
-  		'' not calling a SUB or parent cnt = 0?
-  		if( (is_opt = FALSE) or (parser.prntcnt = 0) ) then
+	else
+		'' not calling a SUB or parent cnt = 0?
+		if( (is_opt = FALSE) or (parser.prntcnt = 0) ) then
 			errReport( FB_ERRMSG_EXPECTEDRPRNT )
 			'' error recovery: skip until next ')'
 			hSkipUntil( CHAR_RPRNT, TRUE )
-  		end if
-  	end if
+		end if
+	end if
 
-  	function = parexpr
+	function = parexpr
 
 end function
 
@@ -128,64 +128,64 @@ private function hFindId_QB _
 		byval chain_ as FBSYMCHAIN ptr _
 	) as ASTNODE ptr
 
-    dim as zstring ptr id = lexGetText( )
-    dim as integer suffix = lexGetType( )
-    dim as integer defdtype = symbGetDefType( id )
+	dim as zstring ptr id = lexGetText( )
+	dim as integer suffix = lexGetType( )
+	dim as integer defdtype = symbGetDefType( id )
 
-    do
-    	dim as FBSYMBOL ptr sym = chain_->sym
-    	dim as FBSYMBOL ptr var_sym = NULL
+	do
+		dim as FBSYMBOL ptr sym = chain_->sym
+		dim as FBSYMBOL ptr var_sym = NULL
 
-    	'' no suffix?
-    	if( suffix = FB_DATATYPE_INVALID ) then
+		'' no suffix?
+		if( suffix = FB_DATATYPE_INVALID ) then
 
-    		do
-    			dim as integer is_match = TRUE
-    			'' is the original symbol suffixed?
-    			if( symbIsSuffixed( sym ) ) then
-    				'' if it's a VAR, lookup the default type (last DEF###) in
-    				'' the case symbol could not be found..
-    				if( symbGetClass( sym ) = FB_SYMBCLASS_VAR ) then
-    					if( defdtype = FB_DATATYPE_STRING ) then
-	          				select case as const symbGetType( sym )
-	          				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+			do
+				dim as integer is_match = TRUE
+				'' is the original symbol suffixed?
+				if( symbIsSuffixed( sym ) ) then
+					'' if it's a VAR, lookup the default type (last DEF###) in
+					'' the case symbol could not be found..
+					if( symbGetClass( sym ) = FB_SYMBCLASS_VAR ) then
+						if( defdtype = FB_DATATYPE_STRING ) then
+							select case as const symbGetType( sym )
+							case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 
-	          				case else
-	          					is_match = FALSE
-	          				end select
-    					else
-    						is_match = (symbGetType( sym ) = defdtype)
-    					end if
-    				end if
-    			end if
+							case else
+								is_match = FALSE
+							end select
+						else
+							is_match = (symbGetType( sym ) = defdtype)
+						end if
+					end if
+				end if
 
 				if( is_match ) then
-    				select case as const symbGetClass( sym )
+					select case as const symbGetClass( sym )
 					case FB_SYMBCLASS_CONST
 						return cConstant( sym )
 
 					case FB_SYMBCLASS_PROC
-  						'' if it's a RTL func, the suffix is obligatory
-  						if( symbGetIsRTL( sym ) ) then
-  							is_match = (symbIsSuffixed( sym ) = FALSE)
-  						end if
+						'' if it's a RTL func, the suffix is obligatory
+						if( symbGetIsRTL( sym ) ) then
+							is_match = (symbIsSuffixed( sym ) = FALSE)
+						end if
 
 						if( is_match ) then
 							return cFunctionEx( base_parent, sym )
 						end if
 
 					case FB_SYMBCLASS_VAR
-	           			if( var_sym = NULL ) then
-	           				if( symbVarCheckAccess( sym ) ) then
-	           					var_sym = sym
-	           				end if
-	           			end if
+						if( var_sym = NULL ) then
+							if( symbVarCheckAccess( sym ) ) then
+								var_sym = sym
+							end if
+						end if
 
-  					case FB_SYMBCLASS_KEYWORD
-  						'' only if not suffixed
-  						if( symbIsSuffixed( sym ) = FALSE ) then
-  							return cQuirkFunction( sym )
-  						end if
+					case FB_SYMBCLASS_KEYWORD
+						'' only if not suffixed
+						if( symbIsSuffixed( sym ) = FALSE ) then
+							return cQuirkFunction( sym )
+						end if
 
 					end select
 				end if
@@ -193,25 +193,25 @@ private function hFindId_QB _
 				sym = sym->hash.next
 			loop while( sym <> NULL )
 
-    	'' suffix..
-    	else
-    		do
-	      		dim as integer is_match = any
-	       		if( suffix = FB_DATATYPE_STRING ) then
-	          		select case as const symbGetType( sym )
-	          		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-	          			is_match = TRUE
-	          		case else
-	          			is_match = FALSE
-	          		end select
+		'' suffix..
+		else
+			do
+				dim as integer is_match = any
+				if( suffix = FB_DATATYPE_STRING ) then
+					select case as const symbGetType( sym )
+					case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+						is_match = TRUE
+					case else
+						is_match = FALSE
+					end select
 
-	          	else
-	          		is_match = (symbGetType( sym ) = suffix)
+				else
+					is_match = (symbGetType( sym ) = suffix)
 
-	          	end if
+				end if
 
-    			if( is_match ) then
-    				select case as const symbGetClass( sym )
+				if( is_match ) then
+					select case as const symbGetClass( sym )
 					case FB_SYMBCLASS_CONST
 						return cConstant( sym )
 
@@ -219,14 +219,14 @@ private function hFindId_QB _
 						return cFunctionEx( base_parent, sym )
 
 					case FB_SYMBCLASS_VAR
-           				if( var_sym = NULL ) then
-           					if( symbVarCheckAccess( sym ) ) then
-           						var_sym = sym
-           					end if
-           				end if
+						if( var_sym = NULL ) then
+							if( symbVarCheckAccess( sym ) ) then
+								var_sym = sym
+							end if
+						end if
 
-  					case FB_SYMBCLASS_KEYWORD
-  						return cQuirkFunction( sym )
+					case FB_SYMBCLASS_KEYWORD
+						return cQuirkFunction( sym )
 
 					end select
 
@@ -255,10 +255,10 @@ private function hFindId_QB _
 			return cVariableEx( var_sym, fbGetCheckArray( ) )
 		end if
 
-    	chain_ = symbChainGetNext( chain_ )
-    loop while( chain_ <> NULL )
+		chain_ = symbChainGetNext( chain_ )
+	loop while( chain_ <> NULL )
 
-    function = NULL
+	function = NULL
 
 end function
 
@@ -270,15 +270,15 @@ private function hFindId _
 		byval options as FB_PARSEROPT = 0 _
 	) as ASTNODE ptr
 
-    '' QB mode?
-    if( env.clopt.lang = FB_LANG_QB ) then
-    	return hFindId_QB( base_parent, chain_ )
-    end if
+	'' QB mode?
+	if( env.clopt.lang = FB_LANG_QB ) then
+		return hFindId_QB( base_parent, chain_ )
+	end if
 
-    do
-    	dim as FBSYMBOL ptr sym = chain_->sym
-    	do
-    		select case as const symbGetClass( sym )
+	do
+		dim as FBSYMBOL ptr sym = chain_->sym
+		do
+			select case as const symbGetClass( sym )
 			case FB_SYMBCLASS_CONST
 				return cConstant( sym )
 
@@ -286,18 +286,18 @@ private function hFindId _
 				return cFunctionEx( base_parent, sym, options )
 
 			case FB_SYMBCLASS_VAR
-	      		return cVariableEx( chain_, fbGetCheckArray( ) )
+				return cVariableEx( chain_, fbGetCheckArray( ) )
 
-       		case FB_SYMBCLASS_FIELD
+			case FB_SYMBCLASS_FIELD
 				return cImplicitDataMember( base_parent, chain_, fbGetCheckArray( ), options )
 
-  			'' quirk-keyword?
-  			case FB_SYMBCLASS_KEYWORD
-  				'' BASE?
-  				if( lexGetToken() = FB_TK_BASE ) then
-  					return hBaseMemberAccess( )
-  				else
-  					return cQuirkFunction( sym )
+			'' quirk-keyword?
+			case FB_SYMBCLASS_KEYWORD
+				'' BASE?
+				if( lexGetToken() = FB_TK_BASE ) then
+					return hBaseMemberAccess( )
+				else
+					return cQuirkFunction( sym )
 				end if
 
 			case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_CLASS
@@ -323,20 +323,23 @@ private function hFindId _
 					return cStrIdxOrMemberDeref( cCtorCall( symbGetSubtype( sym ) ) )
 				end if
 
+			case FB_SYMBCLASS_RESERVED
+				errReport( FB_ERRMSG_ILLEGALUSEOFRESERVEDSYMBOL )
+
 			end select
 
 			sym = sym->hash.next
 		loop while( sym <> NULL )
 
-    	chain_ = symbChainGetNext( chain_ )
-    loop while( chain_ <> NULL )
+		chain_ = symbChainGetNext( chain_ )
+	loop while( chain_ <> NULL )
 
-    function = NULL
+	function = NULL
 
 end function
 
 '':::::
-'' BaseMemberAccess	= (BASE '.')+ ID
+'' BaseMemberAccess = (BASE '.')+ ID
 ''
 ''
 private function hBaseMemberAccess _
@@ -354,14 +357,14 @@ private function hBaseMemberAccess _
 		errReport( FB_ERRMSG_ILLEGALOUTSIDEAMETHOD )
 		'' error recovery: skip stmt, return
 		hSkipStmt( )
-		return astNewCONSTi( 0 )  
+		return astNewCONSTi( 0 )
 	end if
 
 	var parent = symbGetNamespace( proc )
-	
+
 	'' is class derived?
 	var base_ = parent->udt.base
-	
+
 	do
 		if( base_ = NULL ) then
 			errReport( FB_ERRMSG_CLASSNOTDERIVED )

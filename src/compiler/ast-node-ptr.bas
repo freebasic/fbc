@@ -16,27 +16,27 @@ function astNewDEREF _
 		byval ofs as longint _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
+	dim as ASTNODE ptr n = any
 
 	if( l <> NULL ) then
-    	if( dtype = FB_DATATYPE_INVALID ) then
-    		dtype = typeDeref( astGetFullType( l ) )
-    		subtype = astGetSubType( l )
-    	end if
+		if( dtype = FB_DATATYPE_INVALID ) then
+			dtype = typeDeref( astGetFullType( l ) )
+			subtype = astGetSubType( l )
+		end if
 
 		if( ofs = 0 ) then
 			'' skip any casting if they won't do any conversion
 			dim as ASTNODE ptr t = astSkipNoConvCAST( l )
 
 			'' convert *@ to nothing
-    		dim as integer delchild = any
+			dim as integer delchild = any
 			select case t->class
 			case AST_NODECLASS_ADDROF
 				delchild = TRUE
 
 			case AST_NODECLASS_OFFSET
 				delchild = (t->ofs.ofs = 0)
-			
+
 			case AST_NODECLASS_PTRCHK
 
 				'' convert *PTRCHK(@expr) to (expr)
@@ -46,7 +46,7 @@ function astNewDEREF _
 					(t->l->class = AST_NODECLASS_OFFSET and t->l->ofs.ofs = 0) ) then
 
 					'' delete the null ptr check func call
-					astDelTree( t->r )	
+					astDelTree( t->r )
 
 					'' move to ADDROF/OFFSET node
 					t = t->l
@@ -96,8 +96,8 @@ function astNewDEREF _
 end function
 
 function astLoadDEREF( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as ASTNODE ptr l = any
-    dim as IRVREG ptr v1 = any, vp = any, vr = any
+	dim as ASTNODE ptr l = any
+	dim as IRVREG ptr v1 = any, vp = any, vr = any
 
 	l = n->l
 	'' no index? can happen with absolute addresses + ptr typecasting

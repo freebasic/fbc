@@ -1,7 +1,7 @@
 '' examples/manual/array/memcopyclear.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'FB_MEMCOPYCLEAR'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgFBMemcopyclear
 '' --------
@@ -15,7 +15,7 @@ Print "dst = " & dst
 Print
 
 '' copy first 4 bytes and clear the rest
-fb_memcopyclear(dst, SizeOf(dst), src, 4)
+fb_MemCopyClear(dst, SizeOf(dst), src, 4)
 
 Print "after:"
 Print "src = " & src

@@ -1,12 +1,13 @@
 {{fbdoc item="title" value="Returning Values"}}----
 
 {{fbdoc item="section" value="Returning Values"}}
-
-... refers to the ability of a ##[[KeyPgFunction|Function]]## procedure to have a value when the function finishes such that the value can be used in an expression or assigned to a variable.
-
-The value of a function can be returned in three ways:
-
-{{fbdoc item="filename" value="examples/manual/proguide/procs/return-methods.bas"}}%%(freebasic)
+	Refers to the ability of a ##[[KeyPgFunction|Function]]## procedure to have a value when the function finishes such that the value can be used in an expression or assigned to a variable.
+	
+	The value of a function can be returned in three ways:
+		**""-""** ##Return## keyword followed by a value exits the function immediately, and returns that value to the caller.
+		**""-""** Functions can also return values by assigning the ##Function## keyword or the ##function_identifier## to the desired return value (but ##Function## keyword or ##function_identifier## does not allow to evaluate the current assigned value). The latter two methods do not cause the function to exit, however.
+	
+	{{fbdoc item="filename" value="examples/manual/proguide/procs/return-methods.bas"}}%%(freebasic)
 '' Using the name of the function to set the return value and continue executing the function:
 Function myfunc1() As Integer
    myfunc1 = 1
@@ -22,8 +23,7 @@ Function myfunc3() As Integer
    Return 3
 End Function
 %%
-
-{{fbdoc item="filename" value="examples/manual/proguide/procs/returnval.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/proguide/procs/returnval.bas"}}%%(freebasic)
 '' This program demonstrates a function returning a value.
 
 Declare Function myFunction () As Integer
@@ -41,6 +41,7 @@ Function myFunction () As Integer
   function = 10 
 End Function
 %%
+	##Return## keyword mixed with ##Function=## keyword or ##function_identifier=## or ##Exit Function## keyword in a same function is unsupported when returning objects with constructors.
 
 {{fbdoc item="section" value="Returning References"}}
 	Function results can also be returned by reference, rather than by value. The semantics are quite different.
@@ -52,7 +53,7 @@ End Function
 {{fbdoc item="section" value="Manually returning pointers as-is from Byref functions"}}
 	By specifying the ##Byval## keyword in front of the result variable in the ##Function = variable## or ##Return variable## statements, an address (usually stored in a pointer) can be passed directly as-is, forcing the ##Byref## function result to reference the same memory location which the address pointed to. For example:
 
-{{fbdoc item="filename" value="examples/manual/proguide/procs/byrefresult-explicit-byval.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/proguide/procs/byrefresult-explicit-byval.bas"}}%%(freebasic)
 dim shared i as integer = 123
 
 function f( ) byref as integer
@@ -66,7 +67,6 @@ end function
 
 print i, f( )
 %%
-
 {{fbdoc item="see"}}
 	- ##[[KeyPgFunction|Function]]##
 	- ##[[KeyPgByrefFunction|Byref (function results)]]##

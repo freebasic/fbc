@@ -1,7 +1,7 @@
 '' examples/manual/operator/xor-logical.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'Operator XOR (Exclusive Disjunction)'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOpXor
 '' --------

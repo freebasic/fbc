@@ -1,14 +1,14 @@
 '' examples/manual/faq/gfxlib2/bload-workaround.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'BLOAD/BSAVE text mode work-around'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=FaqPgbloadworkaround
 '' --------
 
 Sub _bsave( file As String, p As Any Ptr, sz As Integer ) 
 
-  Dim As Integer ff 
+  Dim As Long ff 
   ff = FreeFile 
   
   Open file For Binary As ff 
@@ -20,7 +20,7 @@ End Sub
 
 Sub _bload( file As String, p As Any Ptr ) 
 
-  Dim As Integer ff 
+  Dim As Long ff 
   ff = FreeFile 
   
   Open file For Binary As ff 

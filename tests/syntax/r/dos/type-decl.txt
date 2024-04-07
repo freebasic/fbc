@@ -1,0 +1,8 @@
+---
+2 errors for field members as parent type
+type-decl.bas(9) error 24: Invalid data types in 'member1 as T1'
+type-decl.bas(10) error 24: Invalid data types, found 'member2' in 'as T1 member2'
+---
+2 errors for named type/union in an anonymous type/union
+type-decl.bas(24) error 17: Syntax error, found 'NAMED1' in 'type NAMED1'
+type-decl.bas(31) error 17: Syntax error, found 'NAMED2' in 'union NAMED2'

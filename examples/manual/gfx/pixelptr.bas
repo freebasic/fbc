@@ -1,7 +1,7 @@
 '' examples/manual/gfx/pixelptr.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'IMAGEINFO'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgImageInfo
 '' --------
@@ -10,13 +10,13 @@
 '' returns null on error or x,y out of bounds
 Function pixelptr(ByVal img As Any Ptr, ByVal x As Integer, ByVal y As Integer) As Any Ptr
 
-	Dim As Integer w, h, bypp, pitch
+	Dim As Long w, h, bypp, pitch
 	Dim As Any Ptr pixdata
-	Dim As Integer success
+	Dim As Long result
 	
-	success = (ImageInfo(img, w, h, bypp, pitch, pixdata) = 0)
+	result = ImageInfo(img, w, h, bypp, pitch, pixdata)
 	
-	If success Then
+	If result = 0 Then '' seems like a valid image
 		If x < 0 Or x >= w Then Return 0
 		If y < 0 Or y >= h Then Return 0
 		Return pixdata + y * pitch + x * bypp
@@ -67,3 +67,4 @@ Else
 End If
 
 Sleep
+	

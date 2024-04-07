@@ -102,6 +102,6 @@ End Sub
 {{fbdoc item="section" value="See also"}}
 	- [[ProPgPassingArguments|Passing Arguments to Procedures]]
 	- [[ProPgCallingConventions|Calling Conventions]]
-	- [[ProPgReturnValue|Returning a Value]]
+	- [[ProPgReturnValue|Returning Values]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

@@ -18,7 +18,7 @@ List of operators used in FreeBASIC.
 	- {{fbdoc item="keyword" value="KeyPgOpCombineXor|XOR= (Exclusive Disjunction and Assign)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpCombineShiftLeft|SHL= (Shift Left and Assign)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpCombineShiftRight|SHR= (Shift Right and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgOpLet|LET (Assignment)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpLet|LET (Assign)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpLetlist|LET() (Assignment)"}}
 
 {{fbdoc item="section" value="Type Cast Operators"}}
@@ -76,7 +76,7 @@ List of operators used in FreeBASIC.
 	- {{fbdoc item="keyword" value="KeyPgOpAt|@ (Address of)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpValueOf|* (Value of)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpVarptr|VARPTR (Variable pointer)"}}
-	- {{fbdoc item="keyword" value="KeyPgOpProcptr|PROCPTR (Procedure pointer)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpProcptr|PROCPTR (Procedure pointer and vtable index)"}}
 
 {{fbdoc item="section" value="Type or Class Operators"}}
 	- {{fbdoc item="keyword" value="KeyPgOpMemberAccess|. (Member access)"}}

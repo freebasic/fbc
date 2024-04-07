@@ -18,7 +18,7 @@ Debugging macro that halts program execution if an expression is evaluated to ##
 	
 	If ##[[CompilerOpteassert|-g]]## and [[CompilerOpteassert|-eassert]]## are not passed to fbc, the macro does not generate any code, and has no effect.
 	
-	Note: If an ##**ASSERT**## fails while the program is in a graphics ##[[KeyPgScreengraphics|Screen]]##, the error message will not be visible as it will be printed to the graphics screen, which will be closed immediately after.
+	Note: If an ##**ASSERT**## fails while the program is in a graphics ##[[KeyPgScreengraphics|Screen (Graphics)]]##, the error message will not be visible as it will be printed to the graphics screen, which will be closed immediately after.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/debug/assert.bas"}}%%(freebasic)

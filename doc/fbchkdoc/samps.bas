@@ -1,5 +1,5 @@
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2008-2020 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2008-2022 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -387,7 +387,7 @@ function cmd_extract_proc() as integer
 				if( wikiex->filename > "" ) then
 				'' !!! FIXME !!! - only allow "examples/manual/"
 					if( left( wikiex->filename, len( sample_dir ) ) = sample_dir ) then
-						if( WriteExampleFile( sPage, base_dir, wikiex->filename, wikiex->text, TRUE, "", opt_force ) ) then
+						if( WriteExampleFile( sPage, base_dir, wikiex->filename, wikiex->text, TRUE, "", opt_force, wiki->GetPageTitle( ) ) ) then
 							''
 						end if
 					else
@@ -510,7 +510,7 @@ function cmd_getex_proc() as integer
 			dim wikiex as WikiExample ptr = new WikiExample( wiki )
 			while( wikiex->FindNext() )
 				if( wikiex->filename = "" ) then
-					WriteExampleFile( sPage, base_dir, sample_dir & "incoming/" & wikiex->refid & ".bas", wikiex->text, FALSE, wikiex->refid, opt_force )
+					WriteExampleFile( sPage, base_dir, sample_dir & "incoming/" & wikiex->refid & ".bas", wikiex->text, FALSE, wikiex->refid, opt_force, wiki->GetPageTitle( ) )
 				end if
 			wend
 			delete wikiex
@@ -758,7 +758,7 @@ function cmd_addlang_proc() as integer
 
 		if( changed ) then
 			text = b1.text()
-			if( WriteExampleFile( refs(i).pagename, base_dir, sample_dir & refs(i).filename, text, TRUE, "", opt_force ) ) then
+			if( WriteExampleFile( refs(i).pagename, base_dir, sample_dir & refs(i).filename, text, TRUE, "", opt_force, "" ) ) then
 				''
 			end if
 		end if
@@ -903,6 +903,7 @@ if( (opt and opt_get_pages) <> 0 ) then
 	pageCount = 0
 	redim pageList(1 to 1) as string
 	dim as string cmt
+	dim as long rev
 	i = 2
 	while command(i) > ""
 		if left( command(i), 1) = "@" then
@@ -914,7 +915,7 @@ if( (opt and opt_get_pages) <> 0 ) then
 				else
 					while eof(h) = 0
 						line input #h, x
-						x = ParsePageName( x, cmt )
+						x = ParsePageName( x, cmt, rev )
 						if( x > "" ) then 
 							pageCount += 1
 							if( pageCount > ubound(pageList) ) then

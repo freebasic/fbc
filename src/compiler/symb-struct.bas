@@ -1,7 +1,7 @@
 '' symbol table module for user defined types (structures and unions)
 ''
 '' chng: sep/2004 written [v1ctor]
-''		 jan/2005 updated to use real linked-lists [v1ctor]
+''       jan/2005 updated to use real linked-lists [v1ctor]
 
 
 #include once "fb.bi"
@@ -83,7 +83,7 @@ function symbStructBegin _
 	s->udt.align = align
 	s->udt.natalign = 1
 	s->udt.bitpos = 0
-	s->udt.unpadlgt	= 0
+	s->udt.unpadlgt = 0
 	s->udt.retdtype = FB_DATATYPE_INVALID
 	s->udt.dbg.typenum = INVALID
 	s->udt.ext = NULL
@@ -144,7 +144,7 @@ function typeCalcNaturalAlign _
 
 	'' LONGINT/DOUBLE are 4-byte aligned on 32bit x86 Linux/DOS/BSD,
 	'' but 8-byte aligned on other systems (Win32/Win64, 64bit Linux/BSD,
-	'' ARM Linux)
+	'' ARM Linux, JS/wasm)
 	if( (fbGetCpuFamily( ) = FB_CPUFAMILY_X86) and _
 		(env.clopt.target <> FB_COMPTARGET_WIN32) ) then
 		'' As a result, on 32bit x86 Linux/DOS/BSD, everything that is
@@ -285,7 +285,7 @@ function symbAddField _
 
 	'' calc length if it wasn't given
 	if( lgt <= 0 ) then
-		lgt	= symbCalcLen( dtype, subtype )
+		lgt = symbCalcLen( dtype, subtype )
 	end if
 
 	'' Dynamic array field? Recursively add the corresponding descriptor field.
@@ -472,6 +472,7 @@ function symbAddField _
 			symbSetUDTHasDtorField( parent )
 			symbSetUDTHasPtrField( parent )
 		end if
+		symbSetUDTHasZeroedField( parent )
 	else
 		select case( typeGetDtAndPtrOnly( dtype ) )
 		'' var-len string fields? must add a ctor, copyctor and dtor
@@ -484,6 +485,7 @@ function symbAddField _
 				symbSetUDTHasDtorField( parent )
 				symbSetUDTHasPtrField( parent )
 			end if
+			symbSetUDTHasZeroedField( parent )
 
 		'' struct with a ctor or dtor? must add a ctor or dtor too
 		case FB_DATATYPE_STRUCT
@@ -491,6 +493,18 @@ function symbAddField _
 			'' parent if this field has it.
 			if( symbGetUDTHasPtrField( subtype ) ) then
 				symbSetUDTHasPtrField( base_parent )
+			end if
+
+			'' Let the FB_UDTOPT_HASFILLEDFIELD flag propagate up to the
+			'' parent if this field has it.
+			if( symbGetUDTHasFilledField( subtype ) ) then
+				symbSetUDTHasFilledField( base_parent )
+			end if
+
+			'' Let the FB_UDTOPT_HASZEROEDFIELD flag propagate up to the
+			'' parent if this field has it.
+			if( symbGetUDTHasZeroedField( subtype ) ) then
+				symbSetUDTHasZeroedField( base_parent )
 			end if
 
 			if( symbGetCompCtorHead( subtype ) ) then
@@ -509,6 +523,28 @@ function symbAddField _
 				else
 					symbSetUDTHasDtorField( parent )
 				end if
+			end if
+
+		case FB_DATATYPE_FIXSTR
+			'' only the first field in a UNION can decide if it will be zeroed or filled
+			if( symbGetUDTIsUnion( parent ) ) then
+				if( (symbGetUDTHasFilledField( parent ) = FALSE) andalso _
+				    (symbGetUDTHasZeroedField( parent ) = FALSE) ) then
+					symbSetUDTHasFilledField( parent )
+				end if
+			else
+				symbSetUDTHasFilledField( parent )
+			end if
+
+		case else
+			'' only the first field in a UNION can decide if it will be zeroed or filled
+			if( symbGetUDTIsUnion( parent ) ) then
+				if( (symbGetUDTHasFilledField( parent ) = FALSE) andalso _
+				    (symbGetUDTHasZeroedField( parent ) = FALSE) ) then
+					symbSetUDTHasZeroedField( parent )
+				end if
+			else
+				symbSetUDTHasZeroedField( parent )
 			end if
 
 		end select
@@ -649,7 +685,7 @@ end sub
 '' (the structure contains only an array of simple datatype) and the result is forced to KSTRUCT_XX or KSTRUCT_RR
 ''================================================
 private sub struct_analyze( byval fld as FBSYMBOL ptr, byref part1 as integer, byref part2 as integer, byref range as integer )
-	
+
 	dim as integer lgt=fld->lgt
 	fld = symbUdtGetFirstField(fld)
 	while fld
@@ -691,17 +727,17 @@ function hGetMagicStructNumber( byval sym as FBSYMBOL ptr ) as integer
 	return part1 + part2
 end function
 
-private function hGetReturnTypeGas64Linux( byval sym as FBSYMBOL ptr ) as integer
+private function hGetReturnTypeGas64SystemV( byval sym as FBSYMBOL ptr ) as integer
 
 	assert( env.clopt.backend = FB_BACKEND_GAS64 )
-	assert( env.clopt.target = FB_COMPTARGET_LINUX )
+	assert( (env.clopt.target = FB_COMPTARGET_LINUX) or  (env.clopt.target = FB_COMPTARGET_FREEBSD))
 
-	'' Linux gas64 could use 2 registers	
+	'' Linux gas64 could use 2 registers
 
 	if( sym->lgt <= typeGetSize( FB_DATATYPE_LONGINT ) * 2 ) then
 		select case as const hGetMagicStructNumber( sym )
 			case KSTRUCT_R ''only integers in RAX
-				'' don't set retin2regs, it's handled by datatype only 
+				'' don't set retin2regs, it's handled by datatype only
 				'' sym->udt.retin2regs = FB_STRUCT_R
 				return FB_DATATYPE_LONGINT
 			case KSTRUCT_X ''only floats in XMM0
@@ -716,7 +752,7 @@ private function hGetReturnTypeGas64Linux( byval sym as FBSYMBOL ptr ) as intege
 				 return FB_DATATYPE_STRUCT
 			case KSTRUCT_XR ''first part in XMMO then in RAX
 				sym->udt.retin2regs = FB_STRUCT_XR
-				return typeAddrOf( FB_DATATYPE_STRUCT )
+				return FB_DATATYPE_STRUCT
 			case KSTRUCT_XX ''only floats in XMM0/XMM1
 				sym->udt.retin2regs = FB_STRUCT_XX
 				return FB_DATATYPE_STRUCT
@@ -748,16 +784,18 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 	'' C backend: Trivial structs can just be returned as-is, no need to
 	'' "lower the AST" to using registers or a hidden pointer parameter and
 	'' pointer result. Instead, gcc will do that.
-	if( env.clopt.backend = FB_BACKEND_GCC ) then
+	select case env.clopt.backend
+	case FB_BACKEND_GCC, FB_BACKEND_CLANG
 		return FB_DATATYPE_STRUCT
-	end if
+	end select
 
 	'' 64-bit + gas64 + linux?
 	if( fbIs64Bit() ) then
 		if( env.clopt.backend = FB_BACKEND_GAS64 ) then
 			'' linux 64bit allows structure returned in registers
-			if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-				return hGetReturnTypeGas64Linux( sym )
+			'' !!!TODO!!! add to target options
+			if( (env.clopt.target = FB_COMPTARGET_LINUX) or (env.clopt.target = FB_COMPTARGET_FREEBSD)) then
+				return hGetReturnTypeGas64SystemV( sym )
 			end if
 		end if
 	end if
@@ -767,7 +805,7 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 		return typeAddrOf( FB_DATATYPE_STRUCT )
 	end if
 
-	'' Otherwise, 32-bit gas (linux / dos) &  64-bit (gas64 windows)
+	'' Otherwise, 32-bit gas (linux / dos) &  64-bit BSD's, etc
 	'' compute a usable return type
 
 	res = FB_DATATYPE_VOID
@@ -799,7 +837,7 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 		if( fld->lgt = 2 ) then
 			'' and if the struct is not packed
 			if( sym->lgt >= 4 ) then
-				res = FB_DATATYPE_INTEGER
+				res = FB_DATATYPE_LONG
 			end if
 		end if
 
@@ -825,13 +863,13 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 		loop
 
 		if( res = FB_DATATYPE_VOID ) then
-			res = FB_DATATYPE_INTEGER
+			res = FB_DATATYPE_LONG
 		end if
 
 	case 5, 6, 7
-		'' return as longint only if first is a int
+		'' return as longint only if first is a small int
 		fld = symbUdtGetFirstField( sym )
-		if( fld->lgt = 4 ) then
+		if( fld->lgt <= 4 ) then
 			'' and if the struct is not packed
 			if( sym->lgt >= 8 ) then
 				res = FB_DATATYPE_LONGINT
@@ -881,6 +919,7 @@ sub symbStructEnd _
 
 	dim as SYMBDEFAULTMEMBERS defaultmembers = any
 	dim as integer pad = any
+	dim mode as FB_FUNCMODE = any
 
 	'' end nesting?
 	if( isnested ) then
@@ -897,8 +936,32 @@ sub symbStructEnd _
 		sym->lgt += pad
 	end if
 
+	'' default mode for default non-static members
+	mode = FB_FUNCMODE_CDECL
+
+	'' extern "c++" / win32 / x86 ? then
+	'' default to THISCALL for default non-static members
+	if( parser.mangling = FB_MANGLING_CPP ) then
+		if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+			if( fbIs64bit( ) = FALSE ) then
+				if( env.clopt.nothiscall = FALSE ) then
+					mode = FB_FUNCMODE_THISCALL
+				end if
+			end if
+		end if
+	end if
+
+	'' Zeroed fields and Filled fields are incompatible since
+	'' we expect to only use a single memory zero/fill operation
+	if( symbGetUDTHasZeroedField( sym ) andalso symbGetUDTHasFilledField( sym ) ) then
+		'' handle through implicit constructor
+		symbSetUDTHasInitedField( sym )
+		sym->udt.options and= not FB_UDTOPT_HASFILLEDFIELD
+	end if
+
+
 	'' Declare implicit members (but don't implement them yet)
-	symbUdtDeclareDefaultMembers( defaultmembers, sym )
+	symbUdtDeclareDefaultMembers( defaultmembers, sym, mode )
 
 	'' Determine how to return this structure from procedures
 	'' (must be done after declaring default members because it depends on
@@ -1071,7 +1134,7 @@ function symbGetUDTBaseLevel _
 		byval s as FBSYMBOL ptr, _
 		byval baseSym as FBSYMBOL ptr _
 	) as integer
-	
+
 	if( s = NULL or baseSym = NULL ) then
 		return 0
 	end if
@@ -1084,13 +1147,13 @@ function symbGetUDTBaseLevel _
 		if( s->udt.base->subtype = baseSym ) then
 			return level
 		End If
-		
+
 		s = s->udt.base->subtype
-		level += 1 
+		level += 1
 	Loop
-	
+
 	return 0
-	
+
 End Function
 
 function symbCloneSimpleStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
@@ -1104,7 +1167,7 @@ function symbCloneSimpleStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 	'' used for __builtin_va_list mangle modifier, we only ever refer to this struct
 	'' through the typedef, so it doesn't need a visible name
-	
+
 	s = symbStructBegin( NULL, NULL, NULL, symbUniqueLabel( ), sym->id.alias, FALSE, 0, FALSE, 0, 0 )
 
 	fld = symbUdtGetFirstField( sym )

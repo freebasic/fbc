@@ -7,7 +7,7 @@
 #define hDylibFree( lib ) dlclose( lib )
 #define hDylibSymbol( lib, sym ) dlsym( lib, sym )
 
-FB_DYLIB fb_hDynLoad(const char *libname, const char **funcname, void **funcptr)
+FB_DYLIB fb_hDynLoad(const char *libname, const char *const *funcname, void **funcptr)
 {
 	FB_DYLIB lib;
 	ssize_t i;
@@ -33,7 +33,7 @@ FB_DYLIB fb_hDynLoad(const char *libname, const char **funcname, void **funcptr)
 	return lib;
 }
 
-int fb_hDynLoadAlso( FB_DYLIB lib, const char **funcname, void **funcptr, ssize_t count )
+int fb_hDynLoadAlso( FB_DYLIB lib, const char *const *funcname, void **funcptr, ssize_t count )
 {
 	ssize_t i;
 

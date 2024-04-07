@@ -52,6 +52,7 @@ redim vlarray(1 to 10)
 	%%
 {{fbdoc item="section" value="Multi-dimensional arrays"}}
 	The arrays discussed so far have been one-dimensional, that is, the elements are accessed through a single position. One-dimensional arrays can be thought of as a simple row of elements. Arrays can also have more than one dimension; an individual element of the array is accessed using two or more positions. Two-dimensional arrays use two positions--a row and a column position--to refer to individual elements, like a grid or table. Three-dimensional arrays use three positions--a row, column and perhaps depth position--to refer to individual elements, like a cube. Four-dimensional arrays can be thought of as one or more three-dimensional arrays, and so on. Multi-dimensional arrays are declared just like one-dimensional arrays, except that more than one lower and upper bound range is specified.
+	The total number of elements and the total size (in bytes) of a multi-dimensional array can be directly obtained using ##[[KeyPgArrayLen|ArrayLen]]## and ##[[KeyPgArraySize|ArraySize]]##, respectively.
 	{{fbdoc item="filename" value="examples/manual/proguide/arrays/array4.bas"}}%%(freebasic)
 ' Take Care while initializing multi-dimensional array
 Dim as integer multidim(1 to 2,1 to 5) = {{0,0,0,0,0},{0,0,0,0,0}}

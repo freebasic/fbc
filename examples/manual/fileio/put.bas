@@ -1,13 +1,13 @@
 '' examples/manual/fileio/put.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'PUT (File I/O)'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPutfileio
 '' --------
 
 ' Create variables for the file number, and the number to put
-Dim As Integer f
+Dim As Long f
 Dim As Long value
 
 ' Find the first free file number

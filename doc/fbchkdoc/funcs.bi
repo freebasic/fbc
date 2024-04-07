@@ -2,7 +2,7 @@
 #define __FBCHKDOC_FUNCS_BI__
 
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2008-2020 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2008-2022 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ const TRUE = NOT FALSE
 #endif
 
 '' funcs.bas
-declare function ParsePageName( byref x as string, byref comment as string ) as string
+declare function ParsePageName( byref x as string, byref comment as string, byref revision as long ) as string
 declare function ReplacePathChar( byref a as string, byval ch as integer ) as string
 declare function GetUrlFileName( byref url as string ) as string
 

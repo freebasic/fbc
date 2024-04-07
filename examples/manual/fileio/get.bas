@@ -1,7 +1,7 @@
 '' examples/manual/fileio/get.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'GET (File I/O)'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgGetfileio
 '' --------

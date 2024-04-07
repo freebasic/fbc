@@ -18,9 +18,10 @@
 #define SERIAL_TIMEOUT	3	/* seconds  for write on open*/
 #define SREAD_TIMEOUT	70	/* if not receive any character in less 50 millisecs finish read process */
 
-static void alrm()
+static void alrm(int signal_number)
 {
 	/* signal callback, do nothing */
+	(void)signal_number;
 }
 
 static speed_t get_speed( int speed )
@@ -65,6 +66,24 @@ static speed_t get_speed( int speed )
 #endif
 #ifdef  B1152000
 		{1152000, B1152000 },
+#endif
+#ifdef  B1500000
+		{1500000, B1500000 },
+#endif
+#ifdef  B2000000
+		{2000000, B2000000 },
+#endif
+#ifdef  B2500000
+		{2500000, B2500000 },
+#endif
+#ifdef  B3000000
+		{3000000, B3000000 },
+#endif
+#ifdef  B3500000
+		{3500000, B3500000 },
+#endif
+#ifdef  B4000000
+		{4000000, B4000000 },
 #endif
 
         {ENDSPD, 0},

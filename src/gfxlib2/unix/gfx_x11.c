@@ -181,11 +181,15 @@ static void *window_thread(void *arg)
 					mouse_y_root = event.xmotion.y_root;
 					mouse_x = event.xmotion.x;
 					mouse_y = event.xmotion.y - fb_x11.display_offset;
-                    mouse_on = ((mouse_x >= 0) && (mouse_x < fb_x11.w) && (mouse_y >= 0) && (mouse_y < fb_x11.h));
+					mouse_on = ((mouse_x >= 0) && (mouse_x < fb_x11.w) && (mouse_y >= 0) && (mouse_y < fb_x11.h));
 					if (has_focus) {
 						e.type = EVENT_MOUSE_MOVE;
 						e.x = mouse_x;
 						e.y = mouse_y;
+						if( __fb_gfx->scanline_size != 1 ) {
+							e.y /= __fb_gfx->scanline_size;
+							e.dy /= __fb_gfx->scanline_size;
+						}
 					}
 					break;
 
@@ -696,20 +700,22 @@ int fb_hX11GetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 		return -1;
 
 	/* prefer XQueryPointer to have a more responsive mouse position retrieval */
-	*z = mouse_wheel;
+	if (z) *z = mouse_wheel;
 	if (XQueryPointer(fb_x11.display, fb_x11.window, &root, &child, &root_x, &root_y, &win_x, &win_y, &buttons_mask)) {
-		*x = win_x;
-		*y = win_y;
-		*buttons = (buttons_mask & Button1Mask ? 0x1 : 0) |
+		if (x) *x = win_x;
+		if (y) *y = win_y;
+		if (buttons) {
+			*buttons = (buttons_mask & Button1Mask ? 0x1 : 0) |
 				   (buttons_mask & Button3Mask ? 0x2 : 0) |
 				   (buttons_mask & Button2Mask ? 0x4 : 0);
+		}
 	} else {
-		*x = mouse_x;
-		*y = mouse_y;
-		*buttons = mouse_buttons;
+		if (x) *x = mouse_x;
+		if (y) *y = mouse_y;
+		if (buttons) *buttons = mouse_buttons;
 	}
 
-	*clip = fb_x11.mouse_clip;
+	if (clip) *clip = fb_x11.mouse_clip;
 	return 0;
 }
 

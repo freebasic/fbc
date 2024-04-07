@@ -46,14 +46,14 @@ Using the **fbc** command-line.
 	=={{fbdoc item="keyword" value="CompilerOptasm|-asm < format >"}}==
 		Sets the assembler format for Asm block
 	=={{fbdoc item="keyword" value="CompilerOptarch|-arch < type >"}}==
-		Set target architecture (default: ##486##)
+		Set target architecture
 	=={{fbdoc item="keyword" value="CompilerOptoptimization|-O < level >"}}==
 		Set the optimization level (-gen gcc)
 	=={{fbdoc item="keyword" value="CompilerOptvec|-vec < level >"}}==
 		Set level of vector optimizations enabled by the compiler (default: ##0##)
 	=={{fbdoc item="keyword" value="CompilerOptfpu|-fpu < type >"}}==
 		Set the floating point arithmetics unit (default: ##FPU##)
-	=={{fbdoc item="keyword" value="compileroptfpmode|-fpmode < type >"}}==
+	=={{fbdoc item="keyword" value="CompilerOptfpmode|-fpmode < type >"}}==
 		Select between fast and accurate floating-point operations (default: ##PRECISE##)
 	=={{fbdoc item="keyword" value="CompilerOptz|-z < value >"}}==
 		Sets miscellaneous or experimental options
@@ -62,7 +62,9 @@ Using the **fbc** command-line.
 
 {{fbdoc item="section" value="Compilation"}}
 	=={{fbdoc item="keyword" value="CompilerOptm|-m < name >"}}==
-		Main file without extension, the entry point (default is the first .bas file on the command line)
+		Define main file (without extension), the entry point (default is the first .bas file on the command line)
+	=={{fbdoc item="keyword" value="CompilerOptentry|-entry < name >"}}==
+		Override public exported name of implicit user main function
 	=={{fbdoc item="keyword" value="CompilerOptg|-g"}}==
 		Add debug info
 	=={{fbdoc item="keyword" value="CompilerOptprofile|-profile"}}==
@@ -73,12 +75,26 @@ Using the **fbc** command-line.
 		Add error checking with RESUME support
 	=={{fbdoc item="keyword" value="CompilerOptexx|-exx"}}==
 		Same as ##-ex##, plus array bounds, null-pointer, and error location reporting
+	=={{fbdoc item="keyword" value="CompilerOpteunwind|-eunwind"}}==
+		Enable stack unwind information
 	=={{fbdoc item="keyword" value="CompilerOptWa|-Wa < opt >"}}==
 		Pass options to GAS (separated by commas)
 	=={{fbdoc item="keyword" value="CompilerOptWc|-Wc < opt >"}}==
 		Pass options to GCC (separated by commas)
 	=={{fbdoc item="keyword" value="CompilerOpto|-o < name >"}}==
 		Set object file path/name (must be passed after the .bas file)
+	=={{fbdoc item="keyword" value="CompilerOptearray|-earray"}}==
+		Enable array bounds checking
+	=={{fbdoc item="keyword" value="CompilerOpteassert|-eassert"}}==
+		Enable assert() and assertwarn() checking
+	=={{fbdoc item="keyword" value="CompilerOptedebug|-edebug"}}==
+		Enable ##[[KeyPgDdfbdebug|__FB_DEBUG__]]##
+	=={{fbdoc item="keyword" value="CompilerOptedebuginfo|-edebuginfo"}}==
+		Add debug information
+	=={{fbdoc item="keyword" value="CompilerOptelocation|-elocation"}}==
+		Enable full error location reporting
+	=={{fbdoc item="keyword" value="CompilerOptenullptr|-enullptr"}}==
+		Enable null-pointer checking
 
 <<>>{{fbdoc item="section" value="Linking"}}
 	=={{fbdoc item="keyword" value="CompilerOpta|-a < name >"}}==
@@ -91,6 +107,8 @@ Using the **fbc** command-line.
 		Link with thread-safe runtime library
 	=={{fbdoc item="keyword" value="CompilerOptnodeflibs|-nodeflibs"}}==
 		Do not include the default libraries
+	=={{fbdoc item="keyword" value="CompilerOptnolib|-nolib < name(s) >"}}==
+		Do not include specific library(s)
 	=={{fbdoc item="keyword" value="CompilerOptstatic|-static"}}==
 		Prefer static libraries over dynamic ones when linking
 	=={{fbdoc item="keyword" value="CompilerOptmap|-map < name >"}}==
@@ -107,10 +125,18 @@ Using the **fbc** command-line.
 		Create a DLL, including the import library.  (Same as ##-dylib##)
 	=={{fbdoc item="keyword" value="CompilerOptx|-x < name >"}}==
 		Set executable/library path/name
+	=={{fbdoc item="keyword" value="CompilerOptnostrip|-nostrip"}}==
+		Do not strip symbol information from the output file
+	=={{fbdoc item="keyword" value="CompilerOptstrip|-strip"}}==
+		Omit all symbol information from the output file
+	=={{fbdoc item="keyword" value="CompilerOptsysroot|-sysroot < path >"}}==
+		Tell the linker where to find libraries (needed by some toolchains)
 
 {{fbdoc item="section" value="Behaviour"}}
 	=={{fbdoc item="keyword" value="CompilerOptprefix|-prefix < path >"}}==
 		Set the compiler prefix path
+	=={{fbdoc item="keyword" value="CompilerOptbuildprefix|-buildprefix < name >"}}==
+		Set the internal buildprefix option
 	=={{fbdoc item="keyword" value="CompilerOptversion|-version"}}==
 		Show compiler version on the command line, do not compile or link
 	=={{fbdoc item="keyword" value="CompilerOptv|-v"}}==
@@ -132,7 +158,7 @@ Using the **fbc** command-line.
 	=={{fbdoc item="keyword" value="CompilerOptcupp|-C"}}==
 		Do not delete the object file(s)
 	=={{fbdoc item="keyword" value="CompilerOptw|-w < value >"}}==
-		Set min warning level: ##all##, ##none##, ##param##, ##escape##, ##pedantic##, ##next##, ##funcptr##, ##constness##, ##suffix## or a value
+		Set min warning level: ##all##, ##none##, ##param##, ##escape##, ##pedantic##, ##next##, ##funcptr##, ##constness##, ##suffix##, ##error##, ##upcast## or a value
 	=={{fbdoc item="keyword" value="CompilerOptmaxerr|-maxerr < val >"}}==
 		Only stop parsing if <val> errors occurred
 	=={{fbdoc item="keyword" value="CompilerOptnoerrline|-noerrline"}}==
@@ -184,5 +210,6 @@ Using the **fbc** command-line.
 	- [[CatPgCompOpt|Compiler Options]]
 	- [[CompilerInstalling|Installing FreeBASIC]]
 	- [[CompilerRunning|Invoking the FreeBASIC compiler]]
+	- ##[[KeyPgPpcmdline|#cmdline]]##
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

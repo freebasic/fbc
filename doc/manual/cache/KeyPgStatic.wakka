@@ -5,6 +5,8 @@ Defines variables, objects and arrays having static storage
 	**Static** //symbol1// [ (//array-dimensions//) ] [[KeyPgAs|As]] [[DataType|DataType]] [ = //expression//] [, //symbol2// [ (//array-dimensions//) ] [[KeyPgAs|As]] [[DataType|DataType]] [ = //expression//], ...]
 		//or//
 	**Static** [[KeyPgAs|As]] [[DataType|DataType]] //symbol1// [ (//array-dimensions//) ] [ = //expression//] [, //symbol2// [ (//array-dimensions//) ] [ = //expression//], ...]
+		//or//
+	**Static** [[KeyPgVar|Var]] //symbol1// = //expression// [, //symbol2// = //expression//, ...]
 	
 		//or//
 		

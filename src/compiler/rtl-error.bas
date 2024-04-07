@@ -22,12 +22,12 @@
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
-	 		{ _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' function fb_ErrorThrowEx cdecl _
 			( _
@@ -42,13 +42,13 @@
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			5, _
-	 		{ _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ),FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ),FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ),FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
 		/' function fb_ErrorSetHandler( byval newhandler as FB_ERRHANDLER ) as FB_ERRHANDLER '/ _
 		( _
@@ -56,9 +56,9 @@
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
-	 		{ _
-				( typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			{ _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
 		/' function fb_ErrorGetNum( ) as long '/ _
 		( _
@@ -73,9 +73,9 @@
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
-	 		{ _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' function fb_ErrorResume cdecl( ) as any ptr '/ _
 		( _
@@ -118,9 +118,9 @@
 			typeAddrOf( FB_DATATYPE_CHAR ), FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
-	 		{ _
-				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ),FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			{ _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
 		/' function fb_ErrorSetFuncName( byval fun_name as const zstring ptr ) as zstring ptr '/ _
 		( _
@@ -128,9 +128,9 @@
 			typeAddrOf( FB_DATATYPE_CHAR ), FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
-	 		{ _
-				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ),FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			{ _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
 		/' sub fb_Assert overload _
 			( _
@@ -144,12 +144,12 @@
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			4, _
-	 		{ _
+			{ _
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_Assert overload alias "fb_AssertW" _
 			( _
@@ -163,12 +163,12 @@
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			4, _
-	 		{ _
+			{ _
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ),FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( typeSetIsConst( FB_DATATYPE_WCHAR ) ),FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_WCHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
 		/' sub fb_AssertWarn overload _
 			( _
@@ -182,12 +182,12 @@
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			4, _
-	 		{ _
-				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ),FB_PARAMMODE_BYVAL, FALSE ), _
+			{ _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ),FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ),FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
 		/' sub fb_AssertWarn overload alias "fb_AssertWarnW" _
 			( _
@@ -201,17 +201,17 @@
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			4, _
-	 		{ _
+			{ _
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_WCHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-	 	), _
-	 	/' EOL '/ _
-	 	( _
-	 		NULL _
-	 	) _
+			} _
+		), _
+		/' EOL '/ _
+		( _
+			NULL _
+		) _
 	 }
 
 '':::::
@@ -318,8 +318,8 @@ sub rtlErrorThrow _
 	proc = astNewCALL( PROCLOOKUP( ERRORTHROWEX ) )
 
 	''
-    reslabel = symbAddLabel( NULL )
-    astAdd( astNewLABEL( reslabel ) )
+	reslabel = symbAddLabel( NULL )
+	astAdd( astNewLABEL( reslabel ) )
 
 	nxtlabel = symbAddLabel( NULL )
 
@@ -373,33 +373,33 @@ sub rtlErrorSetHandler _
 		byval savecurrent as integer _
 	)
 
-    dim as ASTNODE ptr proc = any, expr = any
+	dim as ASTNODE ptr proc = any, expr = any
 
 	''
-    proc = astNewCALL( PROCLOOKUP( ERRORSETHANDLER ) )
+	proc = astNewCALL( PROCLOOKUP( ERRORSETHANDLER ) )
 
-    '' byval newhandler as uint
-    if( astNewARG( proc, newhandler ) = NULL ) then
-    	exit sub
-    end if
+	'' byval newhandler as uint
+	if( astNewARG( proc, newhandler ) = NULL ) then
+		exit sub
+	end if
 
-    ''
-    expr = NULL
-    if( savecurrent ) then
-    	if( fbIsModLevel( ) = FALSE ) then
-    		with parser.currproc->proc.ext->err
-    			if( .lasthnd = NULL ) then
+	''
+	expr = NULL
+	if( savecurrent ) then
+		if( fbIsModLevel( ) = FALSE ) then
+			with parser.currproc->proc.ext->err
+				if( .lasthnd = NULL ) then
 					.lasthnd = symbAddTempVar( typeAddrOf( FB_DATATYPE_VOID ) )
 					expr = astNewVAR( .lasthnd )
-                	astAdd( astNewASSIGN( expr, proc ) )
-    			end if
-    		end with
+					astAdd( astNewASSIGN( expr, proc ) )
+				end if
+			end with
 		end if
-    end if
+	end if
 
-    if( expr = NULL ) then
-    	astAdd( proc )
-    end if
+	if( expr = NULL ) then
+		astAdd( proc )
+	end if
 
 end sub
 
@@ -409,8 +409,8 @@ function rtlErrorGetNum _
 		_
 	) as ASTNODE ptr
 
-    ''
-    function = astNewCALL( PROCLOOKUP( ERRORGETNUM ) )
+	''
+	function = astNewCALL( PROCLOOKUP( ERRORGETNUM ) )
 
 end function
 
@@ -420,24 +420,24 @@ sub rtlErrorSetNum _
 		byval errexpr as ASTNODE ptr _
 	)
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	''
-    proc = astNewCALL( PROCLOOKUP( ERRORSETNUM ) )
+	proc = astNewCALL( PROCLOOKUP( ERRORSETNUM ) )
 
-    '' byval errnum as integer
-    if( astNewARG( proc, errexpr ) = NULL ) then
-    	exit sub
-    end if
+	'' byval errnum as integer
+	if( astNewARG( proc, errexpr ) = NULL ) then
+		exit sub
+	end if
 
-    ''
-    astAdd( proc )
+	''
+	astAdd( proc )
 
 end sub
 
 sub rtlErrorResume( byval isnext as integer )
 	dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
+	dim as FBSYMBOL ptr f = any
 
 	if( isnext = FALSE ) then
 		f = PROCLOOKUP( ERRORRESUME )
@@ -457,24 +457,24 @@ function rtlErrorSetModName _
 		byval modname as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any, expr = any
+	dim as ASTNODE ptr proc = any, expr = any
 
 	proc = astNewCALL( PROCLOOKUP( ERRORSETMODNAME ) )
 
-    '' byval module as zstring ptr
-    if( astNewARG( proc, modname ) = NULL ) then
-    	return NULL
-    end if
+	'' byval module as zstring ptr
+	if( astNewARG( proc, modname ) = NULL ) then
+		return NULL
+	end if
 
-    if( sym <> NULL ) then
-    	with sym->proc.ext->err
+	if( sym <> NULL ) then
+		with sym->proc.ext->err
 			.lastmod = symbAddTempVar( typeAddrOf( FB_DATATYPE_CHAR ) )
 			expr = astNewVAR( .lastmod )
-          	function = astNewASSIGN( expr, proc )
-    	end with
-    else
-    	function = proc
-    end if
+			function = astNewASSIGN( expr, proc )
+		end with
+	else
+		function = proc
+	end if
 
 end function
 
@@ -485,23 +485,23 @@ function rtlErrorSetFuncName _
 		byval funcname as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any, expr = any
+	dim as ASTNODE ptr proc = any, expr = any
 
 	proc = astNewCALL( PROCLOOKUP( ERRORSETFUNCNAME ) )
 
-    '' byval function as zstring ptr
-    if( astNewARG( proc, funcname ) = NULL ) then
-    	return NULL
-    end if
+	'' byval function as zstring ptr
+	if( astNewARG( proc, funcname ) = NULL ) then
+		return NULL
+	end if
 
-    if( sym <> NULL ) then
-    	with sym->proc.ext->err
+	if( sym <> NULL ) then
+		with sym->proc.ext->err
 			.lastfun = symbAddTempVar( typeAddrOf( FB_DATATYPE_CHAR ) )
 			expr = astNewVAR( .lastfun )
-            function = astNewASSIGN( expr, proc )
-    	end with
-    else
-    	function = proc
-    end if
+			function = astNewASSIGN( expr, proc )
+		end with
+	else
+		function = proc
+	end if
 
 end function

@@ -8,28 +8,28 @@
 #include once "rtl.bi"
 
 declare function hThreadCallPushType _
-    ( _
-        byval funcexpr as ASTNODE ptr, _
-        byval tctype as integer, _
-        byval stype as FBSYMBOL ptr _
-    ) as integer
+	( _
+		byval funcexpr as ASTNODE ptr, _
+		byval tctype as integer, _
+		byval stype as FBSYMBOL ptr _
+	) as integer
 
 private function hThreadCallMapType _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval udt as integer = FALSE _
 	) as integer
-    
+
 	function = -1
-    
+
 	dim as FB_DATATYPE dtype = symbGetType( sym )
 	dim as FBSYMBOL ptr subtype = symbGetSubType( sym )
-    
+
 	'' arrays not supported inside udts
 	if( symbIsArray( sym ) ) then
 		return iif( udt, -1, FB_THREADCALL_PTR )
 	end if
-    
+
 	'' Bitfields not supported
 	if( symbIsBitfield( sym ) ) then
 		exit function
@@ -105,7 +105,7 @@ private function hThreadCallPushStruct _
 	if( astNewArg( funcexpr, astNewCONSTi( count ) ) = NULL ) then
 		exit function
 	end if
-    
+
 	'' push each element
 	fld = symbUdtGetFirstField( struct )
 	do
@@ -119,38 +119,38 @@ private function hThreadCallPushStruct _
 
 	function = TRUE
 end function
-    
+
 '':::::
 private function hThreadCallPushType _
-    ( _
-        byval funcexpr as ASTNODE ptr, _
-        byval tctype as integer, _
-        byval stype as FBSYMBOL ptr _
-    ) as integer
-    
-    function = false
-    
-    '' Unsupported datatype
-    if( tctype = -1 ) then
-        errReport( FB_ERRMSG_UNSUPPORTEDFUNCTION )
-        exit function
-    end if
-    
-    '' push argument on stack
-    dim as ASTNODE ptr typeexpr
-    typeexpr = astNewCONSTi( tctype )
-    if( astNewARG( funcexpr, typeexpr ) = NULL ) then
-        exit function
-    end if
-    
-    '' push type info to the stack
-    if( tctype = FB_THREADCALL_STRUCT ) then
-        if( hThreadCallPushStruct( funcexpr, stype ) = FALSE ) then
-            exit function
-        end if
-    end if
-    
-    function = true
+	( _
+		byval funcexpr as ASTNODE ptr, _
+		byval tctype as integer, _
+		byval stype as FBSYMBOL ptr _
+	) as integer
+
+	function = false
+
+	'' Unsupported datatype
+	if( tctype = -1 ) then
+		errReport( FB_ERRMSG_UNSUPPORTEDFUNCTION )
+		exit function
+	end if
+
+	'' push argument on stack
+	dim as ASTNODE ptr typeexpr
+	typeexpr = astNewCONSTi( tctype )
+	if( astNewARG( funcexpr, typeexpr ) = NULL ) then
+		exit function
+	end if
+
+	'' push type info to the stack
+	if( tctype = FB_THREADCALL_STRUCT ) then
+		if( hThreadCallPushStruct( funcexpr, stype ) = FALSE ) then
+			exit function
+		end if
+	end if
+
+	function = true
 end function
 
 '' TODO: Re-use astRemSideFx/astMakeRef instead of this?
@@ -176,128 +176,128 @@ end function
 '':::::
 function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
 
-    function = NULL
+	function = NULL
 
-    dim as FBSYMBOL ptr proc, param
-    dim as ASTNODE ptr procmodeexpr, t
-    dim as ASTNODE ptr stacksizeexpr, argsexpr, ptrexpr
-    
-    proc = callexpr->sym
-    
-    '' copy off symbol and all the arguments
-    dim args as integer = callexpr->call.args
-    dim arg as ASTNODE ptr = callexpr->r
-    dim argupper as integer = iif( args=0, 1, args )
-    redim argexpr( 1 to argupper ) as ASTNODE ptr
-    redim argmode( 1 to argupper ) as integer
-    for i as integer = 1 to args
-        if arg = 0 then
-            exit function
-        end if
+	dim as FBSYMBOL ptr proc, param
+	dim as ASTNODE ptr procmodeexpr, t
+	dim as ASTNODE ptr stacksizeexpr, argsexpr, ptrexpr
 
-        '' Take the argument expression out of the ARG node
-        argexpr( args-i+1 ) = arg->l
-        arg->l = NULL
+	proc = callexpr->sym
 
-        argmode( args-i+1 ) = arg->arg.mode
+	'' copy off symbol and all the arguments
+	dim args as integer = callexpr->call.args
+	dim arg as ASTNODE ptr = callexpr->r
+	dim argupper as integer = iif( args=0, 1, args )
+	redim argexpr( 1 to argupper ) as ASTNODE ptr
+	redim argmode( 1 to argupper ) as integer
+	for i as integer = 1 to args
+		if arg = 0 then
+			exit function
+		end if
 
-        arg = arg->r
-    next i
-    
+		'' Take the argument expression out of the ARG node
+		argexpr( args-i+1 ) = arg->l
+		arg->l = NULL
+
+		argmode( args-i+1 ) = arg->arg.mode
+
+		arg = arg->r
+	next i
+
 	'' Delete the CALL and its now empty ARGs
 	astDelTREE( callexpr )
 
-    '' create new call
-    dim as ASTNODE ptr expr = astNewCall( PROCLOOKUP( THREADCALL ) )
+	'' create new call
+	dim as ASTNODE ptr expr = astNewCall( PROCLOOKUP( THREADCALL ) )
 
-    '' push function argument
-    if( astNewARG( expr, astBuildProcAddrOf( proc ) ) = NULL ) then
-        exit function
-    end if
+	'' push function argument
+	if( astNewARG( expr, astBuildProcAddrOf( proc ) ) = NULL ) then
+		exit function
+	end if
 
-    '' get calling convention
-    dim as integer procmode, procmode_fb
-    procmode_fb = symbGetProcMode( proc )
-    if procmode_fb = FB_FUNCMODE_FBCALL then procmode_fb = env.target.fbcall
-    if( procmode_fb = FB_FUNCMODE_CDECL ) then
-        procmode = FB_THREADCALL_CDECL
-    elseif( ((procmode_fb = FB_FUNCMODE_STDCALL) or _
-             (procmode_fb = FB_FUNCMODE_STDCALL_MS)) _
-        and env.clopt.target = FB_COMPTARGET_WIN32 ) then
-        procmode = FB_THREADCALL_STDCALL
-    else
-        errReport( FB_ERRMSG_UNSUPPORTEDFUNCTION )
-        exit function
-    end if
+	'' get calling convention
+	dim as integer procmode, procmode_fb
+	procmode_fb = symbGetProcMode( proc )
+	if procmode_fb = FB_FUNCMODE_FBCALL then procmode_fb = env.target.fbcall
+	if( procmode_fb = FB_FUNCMODE_CDECL ) then
+		procmode = FB_THREADCALL_CDECL
+	elseif( ((procmode_fb = FB_FUNCMODE_STDCALL) or _
+			(procmode_fb = FB_FUNCMODE_STDCALL_MS)) _
+		and env.clopt.target = FB_COMPTARGET_WIN32 ) then
+		procmode = FB_THREADCALL_STDCALL
+	else
+		errReport( FB_ERRMSG_UNSUPPORTEDFUNCTION )
+		exit function
+	end if
 
-    '' push calling convention
-    procmodeexpr = astNewCONSTi( procmode )
-    if( astNewARG( expr, procmodeexpr ) = NULL ) then
-        exit function
-    end if
-    
-    '' push stack size (not in syntax)
-    stacksizeexpr = astNewCONSTi( 0 )
-    if( astNewARG( expr, stacksizeexpr ) = NULL ) then
-        exit function
-    end if
-    
-    '' push number of arguments
-    argsexpr = astNewCONSTi( args )
-    if( astNewARG( expr, argsexpr ) = NULL ) then
-        exit function
-    end if
-    
-    '' push each argument type
-    param = symbGetProcLastParam( proc )
-    for i as integer = 1 to args
-    
-        '' allow byval and byref
-        dim as FB_PARAMMODE mode
-        dim as integer tctype = -1
-        mode = symbGetParamMode( param )
-        
-        tctype = hThreadCallMapType( param )
-        select case mode
-            case FB_PARAMMODE_BYVAL
-            case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
-                if( tctype <> -1 ) then 
-                    tctype = FB_THREADCALL_PTR
-                end if
-            case else
-                tctype = -1
-        end select
-        
-        '' push parameter type
-        dim as FBSYMBOL ptr stype = symbGetSubType( param )
-        if hThreadCallPushType( expr, tctype, stype ) = FALSE then
-            exit function
-        end if
+	'' push calling convention
+	procmodeexpr = astNewCONSTi( procmode )
+	if( astNewARG( expr, procmodeexpr ) = NULL ) then
+		exit function
+	end if
 
-        '' get pointer to argument
-        ptrexpr = argexpr( i )
-        t = astNewLINK( t, hGetExprRef( ptrexpr ), AST_LINK_RETURN_RIGHT )
+	'' push stack size (not in syntax)
+	stacksizeexpr = astNewCONSTi( 0 )
+	if( astNewARG( expr, stacksizeexpr ) = NULL ) then
+		exit function
+	end if
 
-        ''byref
-        dim isstring as integer
-        isstring = typeGetDtOnly( astGetDataType( argexpr( i ) ) )
-        if( mode = FB_PARAMMODE_BYREF and _
-            argmode( i ) <> FB_PARAMMODE_BYVAL and _
-            isstring = FALSE ) then
-            t = astNewLINK( t, hGetExprRef( ptrexpr ), AST_LINK_RETURN_RIGHT )
-        end if
-        
-        if( ptrexpr = NULL ) then
-            exit function
-        end if
-        
-        '' push pointer to argument
-        if( astNewARG( expr, ptrexpr ) = NULL ) then
-            exit function
-        end if
-        
-        param = symbGetProcPrevParam( proc, param )
-    next
+	'' push number of arguments
+	argsexpr = astNewCONSTi( args )
+	if( astNewARG( expr, argsexpr ) = NULL ) then
+		exit function
+	end if
+
+	'' push each argument type
+	param = symbGetProcLastParam( proc )
+	for i as integer = 1 to args
+
+		'' allow byval and byref
+		dim as FB_PARAMMODE mode
+		dim as integer tctype = -1
+		mode = symbGetParamMode( param )
+
+		tctype = hThreadCallMapType( param )
+		select case mode
+			case FB_PARAMMODE_BYVAL
+			case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
+				if( tctype <> -1 ) then
+					tctype = FB_THREADCALL_PTR
+				end if
+			case else
+				tctype = -1
+		end select
+
+		'' push parameter type
+		dim as FBSYMBOL ptr stype = symbGetSubType( param )
+		if hThreadCallPushType( expr, tctype, stype ) = FALSE then
+			exit function
+		end if
+
+		'' get pointer to argument
+		ptrexpr = argexpr( i )
+		t = astNewLINK( t, hGetExprRef( ptrexpr ), AST_LINK_RETURN_RIGHT )
+
+		''byref
+		dim isstring as integer
+		isstring = typeGetDtOnly( astGetDataType( argexpr( i ) ) )
+		if( mode = FB_PARAMMODE_BYREF and _
+			argmode( i ) <> FB_PARAMMODE_BYVAL and _
+			isstring = FALSE ) then
+			t = astNewLINK( t, hGetExprRef( ptrexpr ), AST_LINK_RETURN_RIGHT )
+		end if
+
+		if( ptrexpr = NULL ) then
+			exit function
+		end if
+
+		'' push pointer to argument
+		if( astNewARG( expr, ptrexpr ) = NULL ) then
+			exit function
+		end if
+
+		param = symbGetProcPrevParam( proc, param )
+	next
 
 	function = astNewLINK( t, expr, AST_LINK_RETURN_RIGHT )
 end function

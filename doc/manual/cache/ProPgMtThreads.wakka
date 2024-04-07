@@ -60,7 +60,7 @@ The built-in procedures that create, and detach/wait-for the **Threads**.
 		There may be a long time between the end of the ##[[KeyPgThreadCreate|Threadcreate]]##/##[[KeyPgThreadCall|Threadcall]]## statement execution and the effective launch of the thread. So some statements following the ##[[KeyPgThreadCreate|Threadcreate]]##/##[[KeyPgThreadCall|Threadcall]]## statement can be executed before the actual launch of the thread.
 		Conversely, the thread body can start executing even before ##[[KeyPgThreadCreate|Threadcreate]]##/##[[KeyPgThreadCall|Threadcall]]## returns.
 		
-		There is no guarantee about the order in which different threads execute, and no assumptions can be made about the order in which multiple create threads actually start executing (except in Linux).
+		There is no guarantee about the order in which different threads execute, and no assumptions can be made about the order in which multiple created threads actually start executing (except in Linux).
 		
 		By default, a thread is always created in the "joinable" state, ie its handle is accessible by its ##//'threadid'//## identifier.
 		If a thread ends in this state (joinable), the resources that were assigned to it will not be released automatically (but only at the main thread termination).

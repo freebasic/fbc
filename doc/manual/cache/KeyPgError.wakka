@@ -2,7 +2,7 @@
 Error handling statement to force an error to be generated
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Error** ( //errno// [[KeyPgAs|as]] [[KeyPgInteger|integer]] )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Error** ( //errno// [[KeyPgAs|as]] [[KeyPgLong|long]] )
 ##
 {{fbdoc item="usage"}}##
 	**Error** //number//
@@ -16,10 +16,9 @@ Error handling statement to force an error to be generated
 
 {{fbdoc item="ex"}}
 	To send an error alert of error 150 (just some arbitrary error code) one would do the following:
-{{fbdoc item="filename" value="examples/manual/error/error.bas"}}%%(freebasic)
+		{{fbdoc item="filename" value="examples/manual/error/error.bas"}}%%(freebasic)
 error 150
 %%
-
 {{fbdoc item="diff"}}
 	- Error numbers are not the same as in QB.
 

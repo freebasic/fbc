@@ -1,14 +1,14 @@
 '' examples/manual/system/name.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'NAME'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgName
 '' --------
 
 Dim OldName As String
 Dim NewName As String
-Dim result As Integer 
+Dim result As Long 
 
 OldName = "dsc001.jpg"
 NewName = "landscape.jpg"

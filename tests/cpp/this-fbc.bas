@@ -4,14 +4,6 @@
 '' has same address as the instance parameter
 '' in the callee
 
-#if ENABLE_CHECK_BUGS
-	#define DOTEST
-#else
-	'' thiscall is not supported in -gen gas
-	#if __FB_BACKEND__ <> "gas"
-		#define DOTEST
-	#endif
-#endif
 
 extern "c++"
 	'' getters to retrieve call information
@@ -26,25 +18,18 @@ end extern
 '' on the cpp side, we are not explicitly specifying calling
 '' calling convention, and it varies by target/platform
 
-'' !!! TODO !!! this default should be handled in fbc
-#if defined(__FB_WIN32__) and not defined(__FB_64BIT__)
-	#define thiscall __thiscall
-#else
-	#define thiscall
-#endif
-
 extern "c++"
 
 type UDT_DEFAULT
-	
+
 	value as long
 
-	declare constructor thiscall ()
-	declare destructor thiscall ()
+	declare constructor ()
+	declare destructor ()
 
-	declare sub loadpointer1 thiscall ()
-	declare sub loadpointer2 thiscall ( byval arg1 as any ptr )
-	declare sub loadpointer3 thiscall ( byval arg1 as any ptr, byval arg2 as any ptr )
+	declare sub loadpointer1 ()
+	declare sub loadpointer2 ( byval arg1 as any ptr )
+	declare sub loadpointer3 ( byval arg1 as any ptr, byval arg2 as any ptr )
 
 end type
 
@@ -52,7 +37,7 @@ end type
 '' on the cpp side, we are explicitly specifying __atribute__((thiscall))
 '' for all member procs.  We do the same here with __thiscall
 type UDT_THISCALL
-	
+
 	value as long
 
 	declare constructor __thiscall ()
@@ -68,7 +53,7 @@ end type
 '' on the cpp side, we are explicitly specifying __atribute__((cdecl))
 '' for all member procs.  We do the same here with cdecl
 type UDT_CDECL
-	
+
 	value as long
 
 	declare constructor cdecl ()
@@ -84,7 +69,7 @@ end type
 '' on the cpp side, we are explicitly specifying __atribute__((stdcall))
 '' for all member procs.  We do the same here with stdcall
 type UDT_STDCALL
-	
+
 	value as long
 
 	declare constructor stdcall ()
@@ -107,11 +92,6 @@ end extern
 	assert( r2 = getPtr2() )
 	assert( r3 = getPtr3() )
 #endmacro
-
-#ifdef DOTEST
-
-'' !!! TODO !!! combine duplicate code to #macro
-'' currently separate to track assert locatons
 
 dim p1 as any ptr = any
 dim p2 as any ptr = cast( any ptr, 1111 )
@@ -216,5 +196,3 @@ end scope
 
 '' check results of destructor called
 checkResults( p1, 0, 0 )
-
-#endif '' DOTEST

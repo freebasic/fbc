@@ -1,13 +1,13 @@
 '' examples/manual/gfx/screenlock.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'SCREENLOCK'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgScreenlock
 '' --------
 
 '' Draws a circle on-screen at the mouse cursor
-Dim As Integer mx, my
+Dim As Long mx, my
 Dim As String key
 
 ScreenRes 640, 480, 32

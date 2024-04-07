@@ -15,10 +15,13 @@
 #include once "crt/sys/win32/types.bi"
 #elseif defined(__FB_DOS__)
 #include once "crt/sys/dos/types.bi"
-#elseif defined(__FB_LINUX__)
+#elseif defined(__FB_LINUX__) or defined(__FB_ANDROID__)
 #include once "crt/sys/linux/types.bi"
 #elseif defined(__FB_FREEBSD__)
 #include once "crt/sys/freebsd/types.bi"
+#elseif defined(__FB_DARWIN__)
+'' May not be correct
+#include once "crt/sys/linux/types.bi"
 #else
 #error Platform unsupported
 #endif

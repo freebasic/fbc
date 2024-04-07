@@ -11,6 +11,23 @@
 	#define FB_TEMPSTRBIT ((int)0x80000000)
 #endif
 
+/** Flag to identify a string size as fixed length without a null terminator
+ *
+ * This flag is stored in in the ssize_t size parameter passed in to string 
+ * handling functions, use FB_STRSETUP_FIX)() and FB_STRSETUP_DYN() to query
+ * the string's length.
+ */
+#ifdef HOST_64BIT
+	#define FB_STRISFIXED ((long long)0x8000000000000000ll)
+	#define FB_STRSIZEMSK ((long long)0x7fffffffffffffffll)  
+#else
+	#define FB_STRISFIXED ((int)0x80000000)
+	#define FB_STRSIZEMSK ((int)0x7fffffff)
+#endif
+
+/* Value to identify string size as variable length */
+#define FB_STRSIZEVARLEN -1
+
 /** Returns if the string is a temporary string.
  */
 #define FB_ISTEMP(s) ((((FBSTRING *)s)->len & FB_TEMPSTRBIT) != 0)
@@ -33,16 +50,28 @@ do {                                                        \
     }                                                       \
     else                                                    \
     {                                                       \
-        if( size == -1 )                                    \
+        if( size == FB_STRSIZEVARLEN )                      \
         {                                                   \
+            /* var-len STRING, descriptor */                \
             ptr = ((FBSTRING *)s)->data;                    \
             len = FB_STRSIZE( s );                          \
         }                                                   \
+        else if( size & FB_STRISFIXED )                     \
+        {                                                   \
+            /* fix-len STRING*N */                          \
+            ptr = (char *)s;                                \
+            len = size & FB_STRSIZEMSK;                     \
+        }                                                   \
+        else if( size == 0 )                                \
+        {                                                   \
+            /* ZSTRING PTR, unknown length  */              \
+            ptr = (char *)s;                                \
+            len = strlen( (char *)s );                      \
+        }                                                   \
         else                                                \
         {                                                   \
+            /* fix-len ZSTRING*N */                         \
             ptr = (char *)s;                                \
-            /* always get the real len, as fix-len string */ \
-            /* will have garbage at end (nulls or spaces) */ \
             len = strlen( (char *)s );                      \
         }                                                   \
     }                                                       \
@@ -57,19 +86,29 @@ do {                                                        \
     }                                                       \
     else                                                    \
     {                                                       \
-        switch ( size ) {                                   \
-        case -1:                                            \
+        if( size == FB_STRSIZEVARLEN )                      \
+        {                                                   \
+            /* var-len STRING, descriptor */                \
             ptr = ((FBSTRING *)s)->data;                    \
             len = FB_STRSIZE( s );                          \
-            break;                                          \
-        case 0:                                             \
+        }                                                   \
+        else if( size & FB_STRISFIXED )                     \
+        {                                                   \
+            /* fix-len STRING*N */                          \
+            ptr = (char *)s;                                \
+            len = size & FB_STRSIZEMSK;                     \
+        }                                                   \
+        else if( size == 0 )                                \
+        {                                                   \
+            /* ZSTRING PTR, unknown length  */              \
             ptr = (char *) s;                               \
             len = strlen( ptr );                            \
-            break;                                          \
-        default:                                            \
+        }                                                   \
+        else                                                \
+        {                                                   \
+            /* fix-len ZSTRING*N */                         \
             ptr = (char *) s;                               \
             len = size - 1; /* without terminating NUL */   \
-            break;                                          \
         }                                                   \
     }                                                       \
 } while (0)
@@ -102,7 +141,7 @@ static __inline__ void fb_hStrSetLength( FBSTRING *str, size_t size ) {
     str->len = size | (str->len & FB_TEMPSTRBIT);
 }
 
-FBCALL FBSTRING    *fb_hStrAllocTmpDesc         ( void );
+FBCALL FBSTRING    *fb_hStrAllocTempDesc        ( void );
 FBCALL int          fb_hStrDelTempDesc          ( FBSTRING *str );
 FBCALL FBSTRING    *fb_hStrAlloc                ( FBSTRING *str, ssize_t size );
 FBCALL FBSTRING    *fb_hStrRealloc              ( FBSTRING *str, ssize_t size, int preserve );
@@ -111,6 +150,7 @@ FBCALL FBSTRING    *fb_hStrAllocTemp_NoLock     ( FBSTRING *str, ssize_t size );
 FBCALL int          fb_hStrDelTemp              ( FBSTRING *str );
 FBCALL int          fb_hStrDelTemp_NoLock       ( FBSTRING *str );
 FBCALL void         fb_hStrCopy                 ( char *dst, const char *src, ssize_t bytes );
+FBCALL void         fb_hStrCopyN                ( char *dst, const char *src, ssize_t bytes );
 FBCALL char        *fb_hStrSkipChar             ( char *s, ssize_t len, int c );
 FBCALL char        *fb_hStrSkipCharRev          ( char *s, ssize_t len, int c );
 
@@ -258,7 +298,9 @@ FBCALL FBSTRING    *fb_TRIM             ( FBSTRING *src );
 FBCALL FBSTRING    *fb_TrimEx           ( FBSTRING *str, FBSTRING *pattern );
 FBCALL FBSTRING    *fb_TrimAny          ( FBSTRING *str, FBSTRING *pattern );
 FBCALL void         fb_StrLset          ( FBSTRING *dst, FBSTRING *src );
+FBCALL void         fb_StrLsetANA       ( void *dst, ssize_t dst_len, FBSTRING *src );
 FBCALL void         fb_StrRset          ( FBSTRING *dst, FBSTRING *src );
+FBCALL void         fb_StrRsetANA       ( void *dst, ssize_t dst_len, FBSTRING *src );
 FBCALL FBSTRING    *fb_StrLcase2        ( FBSTRING *src, int mode );
 FBCALL FBSTRING    *fb_StrUcase2        ( FBSTRING *src, int mode );
 FBCALL FBSTRING    *fb_StrFill1         ( ssize_t cnt, int fchar );

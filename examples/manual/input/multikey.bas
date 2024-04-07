@@ -1,7 +1,7 @@
 '' examples/manual/input/multikey.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'MULTIKEY'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgMultikey
 '' --------
@@ -49,3 +49,4 @@ Do
 	'' Stay in loop until user holds down CTRL and H at the same time
 	If MultiKey(SC_CONTROL) And MultiKey(SC_H) Then Exit Do
 Loop
+	

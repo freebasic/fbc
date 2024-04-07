@@ -1,12 +1,13 @@
 '' examples/manual/gfx/screenlist.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'SCREENLIST'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgScreenlist
 '' --------
 
-Dim As Integer mode, w, h
+Dim As Long mode
+Dim As UInteger w, h
 
 Print "Resolutions supported at 8 bits per pixel:"
 

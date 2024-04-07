@@ -1,4 +1,4 @@
-.TH FBC 1 "2021-06-05" "FreeBASIC Compiler 1.09.0" "FreeBASIC Compiler"
+.TH FBC 1 "2024-03-24" "FreeBASIC Compiler 1.20.0" "FreeBASIC Compiler"
 .SH NAME
 fbc \- The FreeBASIC compiler
 .SH DESCRIPTION
@@ -19,13 +19,16 @@ Read more command line arguments from a file
 Treat file as .o/.a input file
 .TP
 \fB\-arch\fR \fItype\fR
-Set target architecture (default: \fB486\fR)
+Set target architecture (default: \fB686\fR)
 .TP
 \fB\-asm\fR \fBatt\fR|\fBintel\fR
 Set the assembler format for Asm blocks and for code generation (x86 only)
 .TP
 \fB\-b\fR \fIfile\fR
 Treat file as .bas input file
+.TP
+\fB\-buildprefix\fR \fIname\fR
+Specify prefix on tool names (as, ar, ld)
 .TP
 \fB\-c\fR
 Compile only, do not link
@@ -63,6 +66,9 @@ Enable full error location reporting
 \fB\-enullptr\fR
 Enable null-pointer checking
 .TP
+\fB\-eunwind\fR
+Enable call stack unwind information
+.TP
 \fB\-entry\fR \fIname\fR
 Change the entry point of the program from main()
 .TP
@@ -75,20 +81,32 @@ Change the entry point of the program from main()
 \fB\-export\fR
 Export symbols for dynamic linkage
 .TP
+\fB\-fbgfx\fR
+Link to the appropriate libfbgfx variant (normally automatic)
+.TP
 \fB\-forcelang\fR \fIname\fR
 Override #lang statements in source code
 .TP
 \fB\-fpmode\fR \fBfast\fR|\fBprecise\fR
 Select floating-point math accuracy/speed
 .TP
-\fB\-fpu\fR \fBx87\fR|\fBsse\fR
+\fB\-fpu\fR \fBx87\fR|\fBsse\fR|\fneon\fR
 Set target FPU
 .TP
 \fB\-g\fR
 Add debug info, enable __FB_DEBUG__, and enable asserts
 .TP
-\fB\-gen\fR \fBgas\fR|\fBgcc\fR|\fBllvm\fR|\fgas64\fR
-Select code generation backend
+\fB\-gen\fR \fIbackend\fR
+Select code generation backend (gas|gas64|gcc|llvm|clang)
+.TP
+\fB\-gen clang\fR       Select clang C backend
+\fB\-gen gas\fR     Select GNU gas 32-bit assembler backend
+\fB\-gen gas64\fR       Select GNU gas 64-bit assembler backend
+\fB\-gen gcc\fR         Select GNU gcc C backend
+\fB\-gen llvm\fR        Select LLVM backend
+.TP
+\fB\-help\fR, \fB\--help\fR
+Show help output; use '-help -v' to show verbose help
 .TP
 \fB\-i\fR \fIpath\fR
 Add an include file search path
@@ -118,10 +136,16 @@ Only show \fIn\fR errors
 Use thread-safe FB runtime
 .TP
 \fB\-nodeflibs\fR
-Do not include the default libraries
+Do not include the default libraries when linking
 .TP
 \fB\-noerrline\fR
 Do not show source context in error messages
+.TP
+\fB\-nolib\fR \fIa,b,c\fR
+Do not include the specified libraries when linking
+.TP
+\fB\-noobjinfo\fR
+Do not read/write compile-time info from/to .o and .a files
 .TP
 \fB\-nostrip\fR
 Do not strip symbol information from the output file
@@ -147,11 +171,17 @@ Set the compiler prefix path
 \fB\-print\fR \fBhost\fR|\fBtarget\fR
 Display host/target system name
 .TP
+\fB\-print\fR \fBlibfbdir\fR  
+Display the compiler's lib/ path
+.TP
 \fB\-print\fR \fBx\fR
 Display output binary/library file name (if known)
 .TP
 \fB\-print\fR \fBsha-1\fR
 Display compiler's source code commit sha-1 (if known)
+.TP
+\fB\-print\fR \fBfork-id\fR
+Display compiler's fork identifier (if set)
 .TP
 \fB\-profile\fR
 Enable function profiling
@@ -177,6 +207,9 @@ Prefer static libraries over dynamic ones when linking
 \fB\-strip\fR
 Omit all symbol information from the output file
 .TP
+\fB\-sysroot\fR \fIpath\fR
+Tell the linker the root path of where to find libraries (needed by some toolchains)
+.TP
 \fB\-t\fR \fIvalue\fR
 Set Win32/DOS .exe stack size in kbytes, default: 1024
 .TP
@@ -192,7 +225,7 @@ Be verbose
 \fB\-vec \fIn\fR
 Automatic vectorization level (default: 0)
 .TP
-\fB\-version\fR
+\fB\-version\fR, \fB\--version\fR
 Show compiler version
 .TP
 \fB\-w\fR \fBall\fR|\fBpedantic\fR|\fIn\fR
@@ -220,7 +253,13 @@ Enable type signedness warnings
 Enable const type warnings
 .TP
 \fB\-w\fR \fBsuffix\fR
-Enable invalid suffix warnings
+Enable warning when up-casting discards initializers
+.TP
+\fB\-w\fR \fBerror\fR
+Report warnings as errors
+.TP
+\fB\-w\fR \fBupcast\fR
+Warn when up-casting discards initializers
 .TP
 \fB\-Wa\fR \fIa,b,c\fR
 Pass options to GAS
@@ -234,29 +273,74 @@ Pass options to LD
 \fB\-x \fIfile\fR
 Set output executable/library file name
 .TP
+\fB\-z fbrt\fR
+Link with 'fbrt' instead of 'fb' runtime library
+.TP
 \fB\-z gosub-setjmp\fR
 Use setjmp/longjmp to implement GOSUB
+.TP
+\fB\-z no-fastcall\fR
+Don't use '__fastcall' calling convention
+.TP
+\fB\-z no-thiscall\fR
+Don't use '__thiscall' calling convention
+.TP
+\fB\-z nobuiltins\fR
+Disable all non-required builtin procedure definitions
+.TP
+\fB\-z nocmdline\fR
+Disable #cmdline source directives
+.TP
+\fB\-z retinflts\fR
+Enable returning some types in floating point registers
+.TP
+\fB\-z valist-as-ptr\fR
+Use pointer expressions to implement CVA_*() macros
 
 .SH ENVIRONMENT
 .IP AS
 Overrides location of GNU as (assembler)
+.IP AR
+Overrides location of GNU ar (archiver)
 .IP LD
 Overrides location of GNU ld (linker)
 .IP GCC
-Overrides location of gcc (-gen gcc)
+Overrides location of gcc (compiler, -gen gcc)
+.IP LLC
+Overrides location of llc (compiler, -gen llvm)
+.IP CLANG
+Overrides location of clang (compiler, -gen clang)
+.IP DLLTOOL
+Overrides location of dlltool (import library, -target win32|cygwin)
+.IP GORC
+Overrides location of gorc (resource compiler, on standalone win32 host version only
+.IP WINDRES
+Overrides location of windres (resource compiler)
+.IP CXBE
+Overrides location of cxbe (executable convertor, -target xbox)
+.IP DXEGEN
+Overrides location of dxe3gen (-target dos)
+.IP EMAS
+Overrides location of emas (-target js-asmjs)
+.IP EMAR
+Overrides location of emar (-target js-asmjs)
+.IP EMCC
+Overrides location of emcc (-target js-asmjs)
+.IP EMLD
+Overrides location of emld (-target js-asmjs)
 
 .SH "SEE ALSO"
 The full language specification and help is available in wiki format at
 .B 
 https://www.freebasic.net/wiki/
 .SH COPYRIGHT
-Copyright \(co 2004\-2020 The FreeBASIC Development Team
+Copyright \(co 2004\-2024 The FreeBASIC Development Team
 .br
 This is free software.  You may redistribute copies of it under the terms of
 the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.
 There is NO WARRANTY, to the extent permitted by law.
 .SH BUGS
-Any bugs should be reported on the Sourceforge.net tracker located at http://www.sourceforge.net/projects/fbc
+Any bugs should be reported on the Sourceforge.net tracker located at https://www.sourceforge.net/projects/fbc/
 
 .SH AUTHOR
 This manpage written by Ebben Feagan (ebben.feagan@gmail.com)

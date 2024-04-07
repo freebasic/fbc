@@ -5,12 +5,14 @@ Create a DLL and import library
 		**-dll**
 ##
 {{fbdoc item="desc"}}
-	The ##-dll## compiler option creates a dynamic link library. This creates a DLL under Windows (including the import library), and creates a .so under Linux.
+	The ##-dll## compiler option creates a dynamic link library. This creates a DLL under Windows (including the import library), creates a .so under Linux, and a DXE under DOS.
 	
 	The intrinsic macro ##[[KeyPgDdfboutdll|__FB_OUT_DLL__]]## is set to non-zero (-1) if the ##-dll## option was specified, and set to zero (0) otherwise.
 
 {{fbdoc item="target"}}
-	- Not supported on the DOS platform.
+	- On windows, dynamic link library is created with ".dll" file name extension and import library created as "lib<name>.dll.a" file name
+	- On Linux, dynamic link library is created with ".so" file name extension
+	- On DOS, dynamic link library is created with ".dxe" file name extension and import library created as "lib<name>_il.a" file name
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfboutdll|__FB_OUT_DLL__]]##

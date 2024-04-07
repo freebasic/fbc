@@ -1,7 +1,7 @@
 '' examples/manual/procs/cva_list2.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'CVA_LIST'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCvaList
 '' --------
@@ -10,10 +10,10 @@
 #include "crt/stdio.bi"
 
 Sub myprintf cdecl( fmt As ZString Ptr, ... )
-	Dim args As cva_list
-	cva_start( args, fmt )
+	Dim args As Cva_List
+	Cva_Start( args, fmt )
 	vprintf( fmt, args )
-	cva_end( args )
+	Cva_End( args )
 End Sub
 
 Dim As String s = "bar"

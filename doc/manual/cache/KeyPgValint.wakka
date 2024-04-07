@@ -25,18 +25,15 @@ Converts a string to a 32bit integer
 	If you want to convert a number into string format, use the ##[[KeyPgStr|Str]]## function.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/strings/valint.bas"}}%%(freebasic)
-dim a as string, b as integer
+	{{fbdoc item="filename" value="examples/manual/strings/valint.bas"}}%%(freebasic)
+dim a as string, b as long
 a = "20xa211"
 b = valint(a)
 print a, b
 %%
-
-%%
+	%%
 20xa211   20
 %%
-
-
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Valint""**##.
 

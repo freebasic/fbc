@@ -2,7 +2,7 @@
 Reads buttons and axis information from attached gaming devices
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Getjoystick** ( [[KeyPgByval|byval]] //id// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByref|byref]] //buttons// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //a1// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0, [[KeyPgByref|byref]] //a2// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0, [[KeyPgByref|byref]] //a3// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0, [[KeyPgByref|byref]] //a4// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0, [[KeyPgByref|byref]] //a5// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0, [[KeyPgByref|byref]] //a6// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0, [[KeyPgByref|byref]] //a7// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0, [[KeyPgByref|byref]] //a8// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0 ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Getjoystick** ( [[KeyPgByval|byval]] //id// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByref|byref]] //buttons// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //a1// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0, [[KeyPgByref|byref]] //a2// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0, [[KeyPgByref|byref]] //a3// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0, [[KeyPgByref|byref]] //a4// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0, [[KeyPgByref|byref]] //a5// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0, [[KeyPgByref|byref]] //a6// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0, [[KeyPgByref|byref]] //a7// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0, [[KeyPgByref|byref]] //a8// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Getjoystick**( //id//[, //buttons//[, //a1//[, //a2//[, //a3//[, //a4//[, //a5//[, //a6//[, //a7//[, //a8//]]]]]]]]] )
@@ -42,13 +42,13 @@ Reads buttons and axis information from attached gaming devices
 	The error code returned by ##**Getjoystick**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##Getjoystick## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/input/getjoystick.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/input/getjoystick.bas"}}%%(freebasic)
 screen 12
 
 dim x as single
 dim y as single
 dim buttons as integer
-dim result as integer
+dim result as long
 dim a as integer
 
 const JoystickID = 0
@@ -80,7 +80,6 @@ do
 	next a
 loop
 %%
-
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Getjoystick""**##.
 

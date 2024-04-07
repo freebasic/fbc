@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="OPEN CONS"}}----
-Opens the console's standard input (//stdin//) or output (//stdout//) streams for use in file operations.
+Opens the console's standard input (//stdin//) or output (//stdout//) streams, using it as if it were file operations.
 
 {{fbdoc item="syntax"}}##
 	**Open Cons** **As** [**#**]//filenumber//
@@ -26,6 +26,9 @@ Opens the console's standard input (//stdin//) or output (//stdout//) streams fo
 	The //stdin// and //stdout// streams are the ones used when the calling process' input or output is redirected (piped) by OS commands, or when it is opened with ##[[KeyPgOpenPipe|Open Pipe]]##.
 	
 	To open both the //stdin// and //stdout// streams for file operations, a process must use multiple //file numbers//.
+	
+	The normal screen commands, such as ##[[KeyPgColor|Color]]## and ##[[KeyPgLocate|Locate]]##, do not work in this mode, because they do not accept a file number.
+	The ##[[KeyPgTab|TAB]]## keyword, regardless of the given column number, is always interpreted as a simple comma (##,##) (next output will take place at the next 14 column boundary).
 	
 	The error code returned by ##**Open Cons**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**Open Cons**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
 	

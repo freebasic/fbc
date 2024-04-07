@@ -1,7 +1,7 @@
 '' examples/manual/system/setenviron2.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'SETENVIRON'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgSetenviron
 '' --------
@@ -12,7 +12,7 @@
 SetEnviron("fbgfx=GDI")
 
   '' Desktop width/height
-Dim As Integer ScrW, ScrH, BPP
+Dim As Long ScrW, ScrH, BPP
 ScreenInfo ScrW, ScrH, BPP
 
   '' Create a screen at the half width/height of your monitor.

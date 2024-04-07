@@ -1,7 +1,7 @@
 '' examples/manual/proguide/shared-lib/mydll.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'Shared Libraries'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgSharedLibraries
 '' --------
@@ -22,4 +22,3 @@
 Function AddNumbers Alias "AddNumbers"( ByVal a As Integer, ByVal b As Integer ) As Integer Export
 	Function = a + b
 End Function
-	

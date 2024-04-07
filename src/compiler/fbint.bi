@@ -12,43 +12,43 @@ const FB_DEFSTACKSIZE32 = 1024 * 1024
 const FB_MINSTACKSIZE64 = 64 * 1024
 const FB_DEFSTACKSIZE64 = 2048 * 1024
 
-const FB_MAXINTNAMELEN		= 1 + FB_MAXNAMELEN + 1 + 1 + 2
-const FB_MAXINTLITLEN		= FB_MAXLITLEN + 32
+const FB_MAXINTNAMELEN      = 1 + FB_MAXNAMELEN + 1 + 1 + 2
+const FB_MAXINTLITLEN       = FB_MAXLITLEN + 32
 
-const FB_MAXGOTBITEMS		= 64
+const FB_MAXGOTBITEMS       = 64
 
 ''
-const FB_INITSYMBOLNODES	= 8000
-const FB_INITFIELDNODES		= 16
-const FB_INITDEFARGNODES	= 500
-const FB_INITDEFTOKNODES	= 1000
-const FB_INITDIMNODES		= 400
-const FB_INITLIBNODES		= 20
-const FB_INITFWDREFNODES	= 500
-const FB_INITVARININODES	= 1000
-const FB_INITINCFILES		= 256
-const FB_INITSTMTSTACKNODES	= 128
+const FB_INITSYMBOLNODES    = 8000
+const FB_INITFIELDNODES     = 16
+const FB_INITDEFARGNODES    = 500
+const FB_INITDEFTOKNODES    = 1000
+const FB_INITDIMNODES       = 400
+const FB_INITLIBNODES       = 20
+const FB_INITFWDREFNODES    = 500
+const FB_INITVARININODES    = 1000
+const FB_INITINCFILES       = 256
+const FB_INITSTMTSTACKNODES = 128
 
 '' DATA stmt internal format
 enum FB_DATASTMT_ID
-	FB_DATASTMT_ID_NULL		= &h0000
-	FB_DATASTMT_ID_WSTR		= &h8000                '' start point
-	FB_DATASTMT_ID_LINK		= &hffff
-	FB_DATASTMT_ID_OFFSET	= &hfffe
+	FB_DATASTMT_ID_NULL     = &h0000
+	FB_DATASTMT_ID_WSTR     = &h8000                '' start point
+	FB_DATASTMT_ID_LINK     = &hffff
+	FB_DATASTMT_ID_OFFSET   = &hfffe
 
-	FB_DATASTMT_ID_ZSTR		= &h0001				'' used by AST only
-	FB_DATASTMT_ID_CONST	= &h0002				'' /
+	FB_DATASTMT_ID_ZSTR     = &h0001                '' used by AST only
+	FB_DATASTMT_ID_CONST    = &h0002                '' /
 end enum
 
-const FB_DATASTMT_PREFIX	= "_{fbdata}_"
+const FB_DATASTMT_PREFIX    = "_{fbdata}_"
 
 
 '' print modes (same as in rtlib/fb_console.h)
 enum FBPRINTMASK
-	FB_PRINTMASK_NEWLINE	  = &h00000001
+	FB_PRINTMASK_NEWLINE      = &h00000001
 	FB_PRINTMASK_PAD          = &h00000002
 	FB_PRINTMASK_APPEND_SPACE = &h00000010
-	FB_PRINTMASK_ISLAST		  = &h80000000
+	FB_PRINTMASK_ISLAST       = &h80000000
 end enum
 
 '' file constants (same as in rtlib/fb_file.h)
@@ -75,14 +75,14 @@ enum FBFILELOCK
 end enum
 
 enum FBOPENKIND
-    FB_FILE_TYPE_FILE
-    FB_FILE_TYPE_CONS
-    FB_FILE_TYPE_ERR
-    FB_FILE_TYPE_PIPE
-    FB_FILE_TYPE_SCRN
-    FB_FILE_TYPE_LPT
-    FB_FILE_TYPE_COM
-    FB_FILE_TYPE_QB
+	FB_FILE_TYPE_FILE
+	FB_FILE_TYPE_CONS
+	FB_FILE_TYPE_ERR
+	FB_FILE_TYPE_PIPE
+	FB_FILE_TYPE_SCRN
+	FB_FILE_TYPE_LPT
+	FB_FILE_TYPE_COM
+	FB_FILE_TYPE_QB
 end enum
 
 '' FB runtime errors (same as rtlib/fb_error.h)
@@ -121,92 +121,92 @@ const FB_INSTANCEPTR = "THIS"
 ''
 
 '' some chars
-const CHAR_NULL   	= 00, _
-      CHAR_BELL		= 07, _
-      CHAR_BKSPC	= 08, _
-      CHAR_TAB    	= 09, _
-      CHAR_LF  	  	= 10, _
-      CHAR_VTAB 	= 11, _
-      CHAR_FORMFEED = 12, _
-      CHAR_CR  	  	= 13, _
-      CHAR_SPACE  	= 32, _
-      CHAR_0       	= 48, _
-      CHAR_1       	= 49, _
-      CHAR_2       	= 50, _
-      CHAR_3       	= 51, _
-      CHAR_4       	= 52, _
-      CHAR_5       	= 53, _
-      CHAR_6       	= 54, _
-      CHAR_7       	= 55, _
-      CHAR_8       	= 56, _
-      CHAR_9       	= 57, _
-      CHAR_AUPP    	= 65, CHAR_ALOW    	=  97, _
-      CHAR_BUPP    	= 66, CHAR_BLOW    	=  98, _
-      CHAR_CUPP    	= 67, CHAR_CLOW    	=  99, _
-      CHAR_DUPP    	= 68, CHAR_DLOW    	= 100, _
-      CHAR_EUPP    	= 69, CHAR_ELOW    	= 101, _
-      CHAR_FUPP    	= 70, CHAR_FLOW    	= 102, _
-      CHAR_GUPP    	= 71, CHAR_GLOW    	= 103, _
-      CHAR_HUPP    	= 72, CHAR_HLOW    	= 104, _
-      CHAR_IUPP    	= 73, CHAR_ILOW    	= 105, _
-      CHAR_JUPP    	= 74, CHAR_JLOW    	= 106, _
-      CHAR_KUPP    	= 75, CHAR_KLOW    	= 107, _
-      CHAR_LUPP    	= 76, CHAR_LLOW    	= 108, _
-      CHAR_MUPP    	= 77, CHAR_MLOW    	= 109, _
-      CHAR_NUPP    	= 78, CHAR_NLOW    	= 110, _
-      CHAR_OUPP    	= 79, CHAR_OLOW    	= 111, _
-      CHAR_PUPP    	= 80, CHAR_PLOW    	= 112, _
-      CHAR_QUPP    	= 81, CHAR_QLOW    	= 113, _
-      CHAR_RUPP    	= 82, CHAR_RLOW    	= 114, _
-      CHAR_SUPP    	= 83, CHAR_SLOW    	= 115, _
-      CHAR_TUPP    	= 84, CHAR_TLOW    	= 116, _
-      CHAR_UUPP    	= 85, CHAR_ULOW    	= 117, _
-      CHAR_VUPP    	= 86, CHAR_VLOW    	= 118, _
-      CHAR_WUPP    	= 87, CHAR_WLOW    	= 119, _
-      CHAR_XUPP    	= 88, CHAR_XLOW    	= 120, _
-      CHAR_YUPP    	= 89, CHAR_YLOW    	= 121, _
-      CHAR_ZUPP    	= 90, CHAR_ZLOW    	= 122, _
-      CHAR_LPRNT  	= 40, _
-      CHAR_RPRNT  	= 41, _
-      CHAR_COMMA 	= 44, _
-      CHAR_DOT    	= 46, _
-      CHAR_PLUS   	= 43, _
-      CHAR_MINUS  	= 45, _
-      CHAR_RSLASH  	= 92, _
-      CHAR_SLASH   	= 47, _
-      CHAR_CART   	= 94, _
-      CHAR_EQ     	= 61, _
-      CHAR_LT     	= 60, _
-      CHAR_GT     	= 62, _
-      CHAR_AMP		= 38, _
-      CHAR_UNDER	= 95, _
-      CHAR_EXCL		= 33, _
-      CHAR_SHARP	= 35, _
-      CHAR_DOLAR	= 36, _
-      CHAR_PERC		= 37, _
-      CHAR_QUOTE	= 34, _
-      CHAR_APOST	= 39, _
-      CHAR_TIMES	= 42, _
-      CHAR_STAR		= CHAR_TIMES, _
-      CHAR_COLON	= 58, _
-      CHAR_SEMICOLON= 59, _
-      CHAR_AT		= 64, _
-      CHAR_QUESTION	= 63, _
-      CHAR_TILD		= 126, _
-      CHAR_ESC		= 27, _
-      CHAR_LBRACE	= 123, _
-      CHAR_RBRACE	= 125, _
-      CHAR_LBRACKET	= 91, _
-      CHAR_RBRACKET	= 93
+const CHAR_NULL     = 00, _
+	CHAR_BELL       = 07, _
+	CHAR_BKSPC  = 08, _
+	CHAR_TAB        = 09, _
+	CHAR_LF         = 10, _
+	CHAR_VTAB   = 11, _
+	CHAR_FORMFEED = 12, _
+	CHAR_CR         = 13, _
+	CHAR_SPACE      = 32, _
+	CHAR_0          = 48, _
+	CHAR_1          = 49, _
+	CHAR_2          = 50, _
+	CHAR_3          = 51, _
+	CHAR_4          = 52, _
+	CHAR_5          = 53, _
+	CHAR_6          = 54, _
+	CHAR_7          = 55, _
+	CHAR_8          = 56, _
+	CHAR_9          = 57, _
+	CHAR_AUPP       = 65, CHAR_ALOW     =  97, _
+	CHAR_BUPP       = 66, CHAR_BLOW     =  98, _
+	CHAR_CUPP       = 67, CHAR_CLOW     =  99, _
+	CHAR_DUPP       = 68, CHAR_DLOW     = 100, _
+	CHAR_EUPP       = 69, CHAR_ELOW     = 101, _
+	CHAR_FUPP       = 70, CHAR_FLOW     = 102, _
+	CHAR_GUPP       = 71, CHAR_GLOW     = 103, _
+	CHAR_HUPP       = 72, CHAR_HLOW     = 104, _
+	CHAR_IUPP       = 73, CHAR_ILOW     = 105, _
+	CHAR_JUPP       = 74, CHAR_JLOW     = 106, _
+	CHAR_KUPP       = 75, CHAR_KLOW     = 107, _
+	CHAR_LUPP       = 76, CHAR_LLOW     = 108, _
+	CHAR_MUPP       = 77, CHAR_MLOW     = 109, _
+	CHAR_NUPP       = 78, CHAR_NLOW     = 110, _
+	CHAR_OUPP       = 79, CHAR_OLOW     = 111, _
+	CHAR_PUPP       = 80, CHAR_PLOW     = 112, _
+	CHAR_QUPP       = 81, CHAR_QLOW     = 113, _
+	CHAR_RUPP       = 82, CHAR_RLOW     = 114, _
+	CHAR_SUPP       = 83, CHAR_SLOW     = 115, _
+	CHAR_TUPP       = 84, CHAR_TLOW     = 116, _
+	CHAR_UUPP       = 85, CHAR_ULOW     = 117, _
+	CHAR_VUPP       = 86, CHAR_VLOW     = 118, _
+	CHAR_WUPP       = 87, CHAR_WLOW     = 119, _
+	CHAR_XUPP       = 88, CHAR_XLOW     = 120, _
+	CHAR_YUPP       = 89, CHAR_YLOW     = 121, _
+	CHAR_ZUPP       = 90, CHAR_ZLOW     = 122, _
+	CHAR_LPRNT      = 40, _
+	CHAR_RPRNT      = 41, _
+	CHAR_COMMA  = 44, _
+	CHAR_DOT        = 46, _
+	CHAR_PLUS       = 43, _
+	CHAR_MINUS      = 45, _
+	CHAR_RSLASH     = 92, _
+	CHAR_SLASH      = 47, _
+	CHAR_CART       = 94, _
+	CHAR_EQ         = 61, _
+	CHAR_LT         = 60, _
+	CHAR_GT         = 62, _
+	CHAR_AMP        = 38, _
+	CHAR_UNDER  = 95, _
+	CHAR_EXCL       = 33, _
+	CHAR_SHARP  = 35, _
+	CHAR_DOLAR  = 36, _
+	CHAR_PERC       = 37, _
+	CHAR_QUOTE  = 34, _
+	CHAR_APOST  = 39, _
+	CHAR_TIMES  = 42, _
+	CHAR_STAR       = CHAR_TIMES, _
+	CHAR_COLON  = 58, _
+	CHAR_SEMICOLON= 59, _
+	CHAR_AT     = 64, _
+	CHAR_QUESTION   = 63, _
+	CHAR_TILD       = 126, _
+	CHAR_ESC        = 27, _
+	CHAR_LBRACE = 123, _
+	CHAR_RBRACE = 125, _
+	CHAR_LBRACKET   = 91, _
+	CHAR_RBRACKET   = 93
 
 
 '' assuming it won't ever be used inside lit strings
-const FB_INTSCAPECHAR		= CHAR_ESC
+const FB_INTSCAPECHAR       = CHAR_ESC
 
 
 '' tokens
 enum FB_TOKEN
-	FB_TK_EOF					= 256
+	FB_TK_EOF                   = 256
 	FB_TK_EOL
 	FB_TK_STMTSEP
 	FB_TK_COMMENT
@@ -347,6 +347,7 @@ enum FB_TOKEN
 	FB_TK_CDECL
 	FB_TK_STDCALL
 	FB_TK_THISCALL
+	FB_TK_FASTCALL
 	FB_TK_ALIAS
 	FB_TK_LIB
 	FB_TK_OVERLOAD
@@ -495,17 +496,17 @@ enum FB_TOKEN
 end enum
 
 '' single char tokens
-const FB_TK_DIRECTIVECHAR		= CHAR_DOLAR	'' $
-const FB_TK_DECLSEPCHAR			= CHAR_COMMA	'' ,
-const FB_TK_ASSIGN				= FB_TK_EQ		'' special case, because lex
-const FB_TK_DEREFCHAR			= CHAR_STAR	    '' *
-const FB_TK_ADDROFCHAR			= CHAR_AT		'' @
+const FB_TK_DIRECTIVECHAR       = CHAR_DOLAR    '' $
+const FB_TK_DECLSEPCHAR         = CHAR_COMMA    '' ,
+const FB_TK_ASSIGN              = FB_TK_EQ      '' special case, because lex
+const FB_TK_DEREFCHAR           = CHAR_STAR     '' *
+const FB_TK_ADDROFCHAR          = CHAR_AT       '' @
 
-const FB_TK_INTTYPECHAR			= CHAR_PERC
-const FB_TK_LNGTYPECHAR			= CHAR_AMP
-const FB_TK_SNGTYPECHAR			= CHAR_EXCL
-const FB_TK_DBLTYPECHAR			= CHAR_SHARP
-const FB_TK_STRTYPECHAR			= CHAR_DOLAR
+const FB_TK_INTTYPECHAR         = CHAR_PERC
+const FB_TK_LNGTYPECHAR         = CHAR_AMP
+const FB_TK_SNGTYPECHAR         = CHAR_EXCL
+const FB_TK_DBLTYPECHAR         = CHAR_SHARP
+const FB_TK_STRTYPECHAR         = CHAR_DOLAR
 
 
 '' token classes
@@ -535,16 +536,16 @@ enum FBFILE_FORMAT
 end enum
 
 type FBFILE
-	num				as integer
-	name			as zstring * FB_MAXPATHLEN+1
-	incfile			as zstring ptr
-	ismain			as integer
-	format			as FBFILE_FORMAT
+	num             as integer
+	name            as zstring * FB_MAXPATHLEN+1
+	incfile         as zstring ptr
+	ismain          as integer
+	format          as FBFILE_FORMAT
 end type
 
 enum FB_TARGETOPT
 	FB_TARGETOPT_UNIX       = &h00000001  '' Unix-like system? (for __FB_UNIX__ #define)
-	                      ''= &h00000002
+	''                      = &h00000002
 	FB_TARGETOPT_EXPORT     = &h00000004  '' Support for exporting symbols from DLLs?
 
 	'' Whether callee always pops the hidden struct result ptr
@@ -558,15 +559,22 @@ enum FB_TARGETOPT
 	'' - neither Linux GCC (following the i386 SysV ABI),
 	'' - nor DJGPP
 	'' do it. TODO: what about the BSDs?
-	FB_TARGETOPT_RETURNINREGS        = &h00000010
+	FB_TARGETOPT_RETURNINREGS        = &h00000010   '' mingw-w64 & winlibs / BSD's
+	FB_TARGETOPT_RETURNINFLTS        = &h00000020   '' mingw-w64 / BSD, but not win-libs
 
 	'' Whether the stack needs to be aligned to 16 bytes before any
-	'' call to external code (x86/x86_64 GNU/Linux and Darwin)
-	FB_TARGETOPT_STACKALIGN16        = &h00000020
+	'' call to external code (x86/x86_64 GNU/Linux, Android and Darwin)
+	FB_TARGETOPT_STACKALIGN16        = &h00000040
 
-	FB_TARGETOPT_ELF   = &h00000040
-	FB_TARGETOPT_COFF  = &h00000080
-	FB_TARGETOPT_MACHO = &h00000100
+	FB_TARGETOPT_ELF                 = &h00000080
+	FB_TARGETOPT_COFF                = &h00000100
+	FB_TARGETOPT_MACHO               = &h00000200
+end enum
+
+enum FB_WCHARCONV
+	FB_WCHARCONV_NEVER                = 0
+	FB_WCHARCONV_WARNING              = 1
+	FB_WCHARCONV_ALWAYS               = 2
 end enum
 
 type FBTARGET
@@ -578,73 +586,80 @@ type FBTARGET
 end type
 
 type FBOPTION
-	base			as integer					'' default= 0
-	parammode		as integer					'' def    = byref
-	explicit		as integer					'' def    = false
-	procpublic		as integer					'' def    = true
-	escapestr		as integer					'' def    = false
-	dynamic			as integer					'' def    = false
-	gosub			as integer					'' def    = true in FB_LANG_QB, false in all other dialects 
+	base            as integer                  '' default= 0
+	parammode       as integer                  '' def    = byref
+	explicit        as integer                  '' def    = false
+	procpublic      as integer                  '' def    = true
+	escapestr       as integer                  '' def    = false
+	dynamic         as integer                  '' def    = false
+	gosub           as integer                  '' def    = true in FB_LANG_QB, false in all other dialects
 end type
 
 type FBMAIN
-	proc			as FBSYMBOL ptr
-	initnode		as ASTNODE ptr
+	proc            as FBSYMBOL ptr
+	initnode        as ASTNODE ptr
 end type
 
 type FB_LANG_CTX
-	opt				as FB_LANG_OPT				'' language supported features
-	integerkeyworddtype		as FB_DATATYPE  '' dtype produced by INTEGER (and related) keywords
-	int15literaldtype		as FB_DATATYPE  '' default dtype for integer number literals that fit into 15 bits
-	int16literaldtype		as FB_DATATYPE  '' etc.
-	int31literaldtype		as FB_DATATYPE
-	int32literaldtype		as FB_DATATYPE
-	int63literaldtype		as FB_DATATYPE
-	int64literaldtype		as FB_DATATYPE
-	floatliteraldtype		as FB_DATATYPE  '' default dtype for float number literals
+	opt                     as FB_LANG_OPT  '' language supported features
+	integerkeyworddtype     as FB_DATATYPE  '' dtype produced by INTEGER (and related) keywords
+	int15literaldtype       as FB_DATATYPE  '' default dtype for integer number literals that fit into 15 bits
+	int16literaldtype       as FB_DATATYPE  '' etc.
+	int31literaldtype       as FB_DATATYPE
+	int32literaldtype       as FB_DATATYPE
+	int63literaldtype       as FB_DATATYPE
+	int64literaldtype       as FB_DATATYPE
+	floatliteraldtype       as FB_DATATYPE  '' default dtype for float number literals
 end type
 
 type FBENV
 	'' Global fb interface data
-	predefines		as TLIST
-	preincludes		as TLIST
-	includepaths		as TLIST
+	predefines      as TLIST
+	preincludes     as TLIST
+	includepaths    as TLIST
 
-	clopt			as FBCMMLINEOPT				'' cmm-line options
-	target			as FBTARGET					'' target specific
-	wchar_doconv		as integer				'' ok to convert literals at compile-time?
-	underscoreprefix	as integer  '' Whether ASM symbols need a leading underscore on the current target
-	pointersize		as integer
+	clopt               as FBCMMLINEOPT    '' cmm-line options
+	target              as FBTARGET        '' target specific
+	wcharconv           as FB_WCHARCONV    '' ok to convert literals at compile-time?
+	underscoreprefix    as integer         '' Whether ASM symbols need a leading underscore on the current target
+	pointersize         as integer
 
 	'' Parse-specific things
 
-	inf				as FBFILE					'' source file
-	outf			as FBFILE					'' destine file
+	inf             as FBFILE                   '' source file
+	outf            as FBFILE                   '' destine file
 
-	ppfile_num		as integer					'' -pp output file
+	ppfile_num      as integer                  '' -pp output file
 
 	'' include files
-	filenamehash		as THASH
-	incfilehash		as THASH					'' A subset of filenamehash
-	inconcehash		as THASH					'' A subset of filenamehash
-	includerec		as integer					'' >0 if parsing an include file
+	filenamehash    as THASH
+	incfilehash     as THASH                    '' A subset of filenamehash
+	inconcehash     as THASH                    '' A subset of filenamehash
+	includerec      as integer                  '' >0 if parsing an include file
 
-	entry			as zstring * FB_MAXNAMELEN	'' name of main function if overridden
-	main			as FBMAIN
+	entry           as zstring * FB_MAXNAMELEN  '' name of main function if overridden
+	main            as FBMAIN
 
-	lang			as FB_LANG_CTX				'' language supported features
+	lang            as FB_LANG_CTX              '' language supported features
 
-	opt				as FBOPTION					'' context-sensitive options
+	opt             as FBOPTION                 '' context-sensitive options
 
-	inited			as integer					'' set to TRUE if parser ready
-	restarts		as integer					'' number of parser restarts
-	dorestart		as integer					'' request parser restart
+	'' initialization state
+	inited          as integer                  '' set to TRUE if ready to parse source code
+	module_count    as integer                  '' module (.bas) count, 1 = first
+
+	'' restart state
+	restart_request  as FB_RESTART_FLAGS        '' request parser or fbc restart on a trigger later (e.g #cmdline "-end")
+	restart_action   as FB_RESTART_FLAGS        '' restart as soon as possible
+	restart_status   as FB_RESTART_FLAGS        '' current status of restarts #lang/#cmdline/parser/fbc
+	restart_count    as integer                 '' number of restarts
+	restart_lang     as FB_LANG                 '' lang compatibility on restart if processed in #cmdline "-lang LANG"
 
 	'' Lists to collect #inclibs and #libpaths
-	libs			as TSTRSET
-	libpaths		as TSTRSET
+	libs            as TSTRSET
+	libpaths        as TSTRSET
 
-	fbctinf_started		as integer
+	fbctinf_started     as integer
 end type
 
 #include once "hlp.bi"

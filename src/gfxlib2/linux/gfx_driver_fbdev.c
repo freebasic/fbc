@@ -42,22 +42,24 @@ static int driver_get_mouse(int *x, int *y, int *z, int *buttons, int *clip);
 static void driver_set_mouse(int x, int y, int cursor, int clip);
 static int *driver_fetch_modes(int depth, int *size);
 
-GFXDRIVER fb_gfxDriverFBDev =
+/* GFXDRIVER */
+const GFXDRIVER fb_gfxDriverFBDev =
 {
-	"FBDev",		/* char *name; */
-	driver_init,		/* int (*init)(int w, int h, char *title, int fullscreen); */
-	driver_exit,		/* void (*exit)(void); */
-	driver_lock,		/* void (*lock)(void); */
-	driver_unlock,		/* void (*unlock)(void); */
-	driver_set_palette,	/* void (*set_palette)(int index, int r, int g, int b); */
-	driver_wait_vsync,	/* void (*wait_vsync)(void); */
-	driver_get_mouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons, int *clip); */
-	driver_set_mouse,	/* void (*set_mouse)(int x, int y, int cursor, int clip); */
-	NULL,			/* void (*set_window_title)(char *title); */
-	NULL,			/* int (*set_window_pos)(int x, int y); */
-	driver_fetch_modes,	/* int *(*fetch_modes)(void); */
-	NULL,			/* void (*flip)(void); */
-	NULL			/* void (*poll_events)(void); */
+	"FBDev",            /* char *name; */
+	driver_init,        /* int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags); */
+	driver_exit,        /* void (*exit)(void); */
+	driver_lock,        /* void (*lock)(void); */
+	driver_unlock,      /* void (*unlock)(void); */
+	driver_set_palette, /* void (*set_palette)(int index, int r, int g, int b); */
+	driver_wait_vsync,  /* void (*wait_vsync)(void); */
+	driver_get_mouse,   /* int (*get_mouse)(int *x, int *y, int *z, int *buttons, int *clip); */
+	driver_set_mouse,   /* void (*set_mouse)(int x, int y, int cursor, int clip); */
+	NULL,               /* void (*set_window_title)(char *title); */
+	NULL,               /* int (*set_window_pos)(int x, int y); */
+	driver_fetch_modes, /* int *(*fetch_modes)(void); */
+	NULL,               /* void (*flip)(void); */
+	NULL,               /* void (*poll_events)(void); */
+	NULL                /* void (*update)(void); */
 };
 
 
@@ -224,6 +226,10 @@ static void *driver_thread(void *arg)
 							mouse_y += e.dy;
 							e.x = mouse_x = MID(0, mouse_x, __fb_gfx->w - 1);
 							e.y = mouse_y = MID(0, mouse_y, __fb_gfx->h - 1);
+							if( __fb_gfx->scanline_size != 1 ) {
+								e.y /= __fb_gfx->scanline_size;
+								e.dy /= __fb_gfx->scanline_size;
+							}
 							if (e.dx || e.dy) {
 								e.type = EVENT_MOUSE_MOVE;
 								fb_hPostEvent(&e);
@@ -641,11 +647,11 @@ static int driver_get_mouse(int *x, int *y, int *z, int *buttons, int *clip)
 {
 	if (mouse_fd < 0)
 		return -1;
-	*x = mouse_x;
-	*y = mouse_y;
-	*z = mouse_z;
-	*buttons = mouse_buttons;
-	*clip = mouse_clip;
+	if (x) *x = mouse_x;
+	if (y) *y = mouse_y;
+	if (z) *z = mouse_z;
+	if (buttons) *buttons = mouse_buttons;
+	if (clip) *clip = mouse_clip;
 	return 0;
 }
 

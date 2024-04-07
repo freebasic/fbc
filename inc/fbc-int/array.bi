@@ -1,4 +1,4 @@
-#ifndef __FBC_INT_ARRAY_BI__ 
+#ifndef __FBC_INT_ARRAY_BI__
 #define __FBC_INT_ARRAY_BI__
 
 # if __FB_LANG__ = "qb"
@@ -33,7 +33,7 @@ type FBARRAY
 	'' take care with number of dimensions; fbc may allocate
 	'' a smaller descriptor with fewer than FB_MAXDIMENSIONS
 	'' in dimTb() if it is known at compile time that they
-	'' are never needed.  Always respect number of 
+	'' are never needed.  Always respect number of
 	'' dimensions when accessing dimTb()
 
 	dim as FBARRAYDIM dimTb(0 to FB_MAXDIMENSIONS-1)
@@ -44,6 +44,17 @@ extern "rtlib"
 		( array() as any ) as FBC.FBARRAY ptr
 	declare function ArrayConstDescriptorPtr alias "fb_ArrayGetDesc" _
 		( array() as const any ) as const FBC.FBARRAY ptr
+end extern
+
+end namespace
+
+namespace FB
+
+extern "rtlib"
+	declare function ArrayLen alias "fb_ArrayLen" _
+		( array() as const any ) as uinteger
+	declare function ArraySize alias "fb_ArraySize" _
+		( array() as const any ) as uinteger
 end extern
 
 end namespace

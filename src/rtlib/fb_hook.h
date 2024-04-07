@@ -11,9 +11,9 @@ typedef void        (*FB_CLSPROC)       ( int mode );
 
 FBCALL void         fb_Cls              ( int mode );
 
-typedef int         (*FB_COLORPROC)     ( int fc, int bc, int flags );
+typedef unsigned int (*FB_COLORPROC)    ( unsigned int fc, unsigned int bc, int flags );
 
-FBCALL int          fb_Color            ( int fc, int bc, int flags );
+FBCALL unsigned int fb_Color            ( unsigned int fc, unsigned int bc, int flags );
 
 typedef int         (*FB_LOCATEPROC)    ( int row, int col, int cursor );
 

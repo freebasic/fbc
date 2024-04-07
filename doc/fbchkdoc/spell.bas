@@ -1,5 +1,5 @@
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2008-2020 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2008-2022 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -396,18 +396,19 @@ end if
 
 if( app_opt.pageCount > 0 ) then
 	dim as integer i, h, h2
-	dim as string ret
+	dim as string ret, cmt
+	dim as long rev
 
 	pagehash.alloc( 1000 )
 	wordhash.alloc( 1000 )
-
+	
 	scope
 		dim as string x, cmt
 		h = freefile
 		if( open( "PageIndex.txt" for input as #h ) = 0 ) then
 			while eof( h ) = 0
 				line input #h, x
-				x = ParsePageName( x, cmt )
+				x = ParsePageName( x, cmt, rev )
 				if( x > "" ) then
 					pagehash.add x
 				end if

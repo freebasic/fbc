@@ -1,7 +1,7 @@
 '' examples/manual/gfx/color2.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'COLOR'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgColor
 '' --------
@@ -11,7 +11,7 @@
 #include "fbgfx.bi"
 
 '' screencontrol expects integer/uinteger
-Dim As UInteger fgcolor, bkcolor
+Dim As Long fgcolor, bkcolor
 
 ScreenRes 500, 500, 32
 Width 500\8, 500\16

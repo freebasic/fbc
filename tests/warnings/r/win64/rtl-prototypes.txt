@@ -7,6 +7,7 @@ function fb_ArrayRedimTo
 sub fb_ArrayDestructObj
 sub fb_ArrayDestructStr
 function fb_ArrayClear
+function fb_ArrayFill
 function fb_ArrayClearObj
 function fb_ArrayErase
 function fb_ArrayEraseObj
@@ -185,7 +186,6 @@ function fb_GfxImageCreate
 function fb_GfxImageCreateQB
 sub imagedestroy alias "fb_GfxImageDestroy"
 function imageinfo alias "fb_GfxImageInfo32"
-	Suspicious pointer assignment
 function imageinfo alias "fb_GfxImageInfo64"
 sub imageconvertrow alias "fb_GfxImageConvertRow"
 function screenevent alias "fb_GfxEvent"
@@ -293,13 +293,13 @@ sub fb_StrDelete
 function fb_hStrDelTemp
 sub fb_WstrDelete
 function fb_StrConcat
+function fb_StrConcatByref
 function fb_WstrConcat
 function fb_WstrConcatWA
 function fb_WstrConcatAW
 function fb_StrCompare
 function fb_WstrCompare
 function fb_StrConcatAssign
-function fb_StrConcatByref
 function fb_WstrConcatAssign
 function fb_StrAllocTempResult
 function fb_StrAllocTempDescF
@@ -333,8 +333,10 @@ function fb_WstrFill2
 function fb_StrLen
 function fb_WstrLen
 sub fb_StrLset
+sub fb_StrLsetANA
 sub fb_WstrLset
 sub fb_StrRset
+sub fb_StrRsetANA
 sub fb_WstrRset
 function fb_ASC
 function fb_WstrAsc
@@ -447,8 +449,8 @@ function fb_MKI
 function fb_MKL
 function fb_MKLONGINT
 function left alias "fb_LEFT"
-function fb_leftself alias "fb_LEFTSELF"
 function left alias "fb_WstrLeft"
+sub fb_LeftSelf alias "fb_LEFTSELF"
 function right alias "fb_RIGHT"
 function right alias "fb_WstrRight"
 function space alias "fb_SPACE"

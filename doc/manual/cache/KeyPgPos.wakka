@@ -19,8 +19,8 @@ Returns the horizontal (left to right) position of the text cursor
 	Returns the horizontal (left to right) position of the text cursor. The leftmost column is number ##1##.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/console/pos.bas"}}%%(freebasic)
-dim as integer p
+	{{fbdoc item="filename" value="examples/manual/console/pos.bas"}}%%(freebasic)
+dim as long p
 
 '' print starting column position
 p = pos()
@@ -38,7 +38,6 @@ Print
 Print "Column numbers: "
 Print Pos(), Pos(), Pos(), Pos(), Pos()
 %%
-
 {{fbdoc item="diff"}}
 	- The ##//dummy//## parameter was not optional in QBASIC.
 

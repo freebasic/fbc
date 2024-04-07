@@ -18,7 +18,7 @@
 ''   * Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02111-1301, USA.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 

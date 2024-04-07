@@ -14,7 +14,7 @@ Specifies a type which inherits a Zstring behavior
 	##[[KeyPgZstring|Zstring]]## behaviour can be inherited directly, or indirectly and singly from a base-type.
 	##[[KeyPgZstring|Zstring]]## behaviour can be inherited by a UDT also extending ##//base_typename//## (a kind of pseudo multiple-inheritance).
 	
-	**Note:** By declaring a type (directly or indirectly) as ##**Extends Zstring**## (in addition to defining a suitable ##[[KeyPgOpCast|Cast]]## operator only), this promotes it fully compatible even with ##[[KeyPgOpStrptr|Strptr]]##/##[[KeyPgSadd|Sadd]]##, ##[[KeyPgLset|Lset]]##/##[[KeyPgRset|Rset]]##, and ##[[KeyPgSelectcase|Select Case]]##, but currently not yet with the built in functions ##[[KeyPgVal|Val]]##/##[[KeyPgValint|Valint]]##/##[[KeyPgVallng|Vallng]]##/##[[KeyPgValuint|Valuint]]##/##[[KeyPgValulng|Valunlg]]## and ##[[KeyPgLeft|Left]]##/##[[KeyPgRight|Right]]##.
+	By declaring a type (directly or indirectly) as ##**Extends Zstring**## (in addition to defining a suitable ##[[KeyPgOpCast|Cast]]## operator only), this promotes it fully ##[[KeyPgZstring|Zstring]]## type compatible, even with ##[[KeyPgOpStrptr|Strptr]]##/##[[KeyPgSadd|Sadd]]##, ##[[KeyPgLset|Lset]]##/##[[KeyPgRset|Rset]]##, and ##[[KeyPgSelectcase|Select Case]]##.
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/udt/extendszstring1.bas"}}%%(freebasic)
@@ -46,7 +46,7 @@ z &= " compiler"
 Print "'" & z & "'"
 
 Sleep
-	%%
+%%
 	{{fbdoc item="filename" value="examples/manual/udt/extendszstring2.bas"}}%%(freebasic)
 Type vZstring Extends Zstring
   Public:
@@ -113,11 +113,15 @@ End Select
 v[0] = Asc("-")
 Print "'" & v & "'", Len(v)
 
-'Print "'" & Right(v, 5) & "'"      '' 'Right' does not yet support types with 'Extends Zstring'
-Print "'" & Right(Str(v), 5) & "'"  '' workaround (or: 'Right(Type<String>(v), 5)')
+Print "'" & Right(v, 5) & "'"        '' since fbc 1.09.0, 'Right' supports types with 'Extends Zstring'
+'Print "'" & Right(Str(v), 5) & "'"  '' before fbc 1.09.0, use this workaround (or: 'Right(Type<String>(v), 5)')
 
 Sleep
-	%%
+%%
+{{fbdoc item="ver"}}
+	- Before fbc 1.09.0, this promotion was not yet fully ##[[KeyPgZstring|Zstring]]## type compatible with the built in functions ##[[KeyPgVal|Val]]##/##[[KeyPgValint|Valint]]##/##[[KeyPgVallng|Vallng]]##/##[[KeyPgValuint|Valuint]]##/##[[KeyPgValulng|Valunlg]]## and ##[[KeyPgLeft|Left]]##/##[[KeyPgRight|Right]]##.
+	- Since fbc 1.07.0
+
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Extends __Zstring""**##, but unusable because no member procedure is allowed in this dialect.
 

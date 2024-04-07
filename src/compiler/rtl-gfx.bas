@@ -720,8 +720,8 @@ declare function hPorts_cb _
 		), _
 		/' function getmouse overload _
 			( _
-				byref x as long = 0, _
-				byref y as long = 0, _
+				byref x as long, _
+				byref y as long, _
 				byref z as long = 0, _
 				byref buttons as long = 0, _
 				byref clip as long = 0 _
@@ -732,17 +732,17 @@ declare function hPorts_cb _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			5, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE, 0 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE, 0 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0 ) _
 			} _
 		), _
 		/' function getmouse overload _
 			( _
-				byref x as longint = 0, _
-				byref y as longint = 0, _
+				byref x as longint, _
+				byref y as longint, _
 				byref z as longint = 0, _
 				byref buttons as longint = 0, _
 				byref clip as longint = 0 _
@@ -753,11 +753,11 @@ declare function hPorts_cb _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			5, _
 			{ _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ) _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE, 0  ), _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE, 0 ), _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, TRUE, 0 ) _
 			} _
 		), _
 		/' function setmouse _
@@ -798,16 +798,16 @@ declare function hPorts_cb _
 			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			10, _
 			{ _
-				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE, 0, TRUE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE, 0 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 ) _
 			} _
 		), _
 		/' function stick( byval n as const long ) as long '/ _
@@ -944,13 +944,13 @@ declare function hPorts_cb _
 		), _
 		/' function imageinfo overload _
 			( _
-				byval img	  as const any ptr, _
+				byval img     as const any ptr, _
 				byref width   as long = 0, _
 				byref height  as long = 0, _
-				byref bpp	  as long = 0, _
+				byref bpp     as long = 0, _
 				byref pitch   as long = 0, _
 				byref imgdata as any ptr = 0, _
-				byref size	  as long = 0 _
+				byref size    as long = 0 _
 			) as long '/ _
 		( _
 			@"imageinfo", @"fb_GfxImageInfo32", _
@@ -969,13 +969,13 @@ declare function hPorts_cb _
 		), _
 		/' function imageinfo overload _
 			( _
-				byval img	  as const any ptr, _
+				byval img     as const any ptr, _
 				byref width   as longint, _
 				byref height  as longint, _
-				byref bpp	  as longint = 0, _
+				byref bpp     as longint = 0, _
 				byref pitch   as longint = 0, _
 				byref imgdata as any ptr = 0, _
-				byref size	  as longint = 0 _
+				byref size    as longint = 0 _
 			) as long '/ _
 		( _
 			@"imageinfo", @"fb_GfxImageInfo64", _
@@ -1022,7 +1022,7 @@ declare function hPorts_cb _
 			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0, TRUE ) _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
 			} _
 		), _
 		/' sub screencontrol overload _
@@ -1408,7 +1408,8 @@ private function hPorts_cb _
 		byval sym as FBSYMBOL ptr _
 	) as integer
 
-    static as integer libsAdded = FALSE
+	'' minor optimization to avoid having to lookup env.libs hash
+	fbRestartableStaticVariable( integer, libsAdded, FALSE )
 
 	if( libsadded = FALSE ) then
 		libsAdded = TRUE
@@ -1424,7 +1425,7 @@ private function hPorts_cb _
 end function
 
 private function hGfxlib_cb( byval sym as FBSYMBOL ptr ) as integer
-	env.clopt.gfx = TRUE
+	env.clopt.fbgfx = TRUE
 	function = TRUE
 end function
 
@@ -1473,43 +1474,43 @@ function rtlGfxPset _
 		byval ispreset as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
-    proc = astNewCALL( PROCLOOKUP( GFXPSET ) )
+	proc = astNewCALL( PROCLOOKUP( GFXPSET ) )
 
 	'' byval target as any ptr
 	if( astNewARG( proc, target ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	'' byval x as single
- 	if( astNewARG( proc, xexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval x as single
+	if( astNewARG( proc, xexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval y as single
- 	if( astNewARG( proc, yexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval y as single
+	if( astNewARG( proc, yexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval color as uinteger
- 	if( astNewARG( proc, cexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval color as uinteger
+	if( astNewARG( proc, cexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval coordtype as integer
+	'' byval coordtype as integer
 	if( astNewARG( proc, astNewCONSTi( coordtype ) ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	'' byval ispreset as integer
+	'' byval ispreset as integer
 	if( astNewARG( proc, astNewCONSTi( ispreset ) ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	astAdd( proc )
+	astAdd( proc )
 	function = TRUE
 end function
 
@@ -1528,21 +1529,21 @@ function rtlGfxPoint _
 
 	'' byval target as any ptr
 	if( astNewARG( proc, target ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	'' byval x as single
- 	if( astNewARG( proc, xexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval x as single
+	if( astNewARG( proc, xexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval y as single
+	'' byval y as single
 	if( yexpr = NULL ) then
- 		yexpr = astNewCONSTf( -8388607, FB_DATATYPE_SINGLE )
- 	end if
- 	if( astNewARG( proc, yexpr ) = NULL ) then
- 		exit function
- 	end if
+		yexpr = astNewCONSTf( -8388607, FB_DATATYPE_SINGLE )
+	end if
+	if( astNewARG( proc, yexpr ) = NULL ) then
+		exit function
+	end if
 
 	function = proc
 end function
@@ -1560,58 +1561,58 @@ function rtlGfxLine _
 		byval coordtype as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
-    proc = astNewCALL( PROCLOOKUP( GFXLINE ) )
+	proc = astNewCALL( PROCLOOKUP( GFXLINE ) )
 
 	'' byval target as any ptr
 	if( astNewARG( proc, target ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	'' byval x1 as single
- 	if( astNewARG( proc, x1expr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval x1 as single
+	if( astNewARG( proc, x1expr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval y1 as single
- 	if( astNewARG( proc, y1expr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval y1 as single
+	if( astNewARG( proc, y1expr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval x2 as single
- 	if( astNewARG( proc, x2expr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval x2 as single
+	if( astNewARG( proc, x2expr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval y2 as single
- 	if( astNewARG( proc, y2expr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval y2 as single
+	if( astNewARG( proc, y2expr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval color as uinteger
- 	if( astNewARG( proc, cexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval color as uinteger
+	if( astNewARG( proc, cexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval linetype as integer
+	'' byval linetype as integer
 	if( astNewARG( proc, astNewCONSTi( linetype ) ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	'' byval style as uinteger
- 	if( astNewARG( proc, styleexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval style as uinteger
+	if( astNewARG( proc, styleexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval coordtype as integer
+	'' byval coordtype as integer
 	if( astNewARG( proc, astNewCONSTi( coordtype ) ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	astAdd( proc )
+	astAdd( proc )
 	function = TRUE
 end function
 
@@ -1630,72 +1631,72 @@ function rtlGfxCircle _
 		byval coordtype as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
-    proc = astNewCALL( PROCLOOKUP( GFXCIRCLE ) )
+	proc = astNewCALL( PROCLOOKUP( GFXCIRCLE ) )
 
 	'' byval target as any ptr
 	if( astNewARG( proc, target ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	'' byval x as single
- 	if( astNewARG( proc, xexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval x as single
+	if( astNewARG( proc, xexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval y as single
- 	if( astNewARG( proc, yexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval y as single
+	if( astNewARG( proc, yexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval radians as single
- 	if( astNewARG( proc, radexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval radians as single
+	if( astNewARG( proc, radexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval color as uinteger
- 	if( astNewARG( proc, cexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval color as uinteger
+	if( astNewARG( proc, cexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval aspect as single
- 	if( aspexpr = NULL ) then
- 		aspexpr = astNewCONSTf( 0.0, FB_DATATYPE_SINGLE )
- 	end if
- 	if( astNewARG( proc, aspexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval aspect as single
+	if( aspexpr = NULL ) then
+		aspexpr = astNewCONSTf( 0.0, FB_DATATYPE_SINGLE )
+	end if
+	if( astNewARG( proc, aspexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval arcini as single
- 	if( iniexpr = NULL ) then
- 		iniexpr = astNewCONSTf( 0.0, FB_DATATYPE_SINGLE )
- 	end if
- 	if( astNewARG( proc, iniexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval arcini as single
+	if( iniexpr = NULL ) then
+		iniexpr = astNewCONSTf( 0.0, FB_DATATYPE_SINGLE )
+	end if
+	if( astNewARG( proc, iniexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval arcend as single
- 	if( endexpr = NULL ) then
- 		endexpr = astNewCONSTf( 3.141593*2, FB_DATATYPE_SINGLE )
- 	end if
- 	if( astNewARG( proc, endexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval arcend as single
+	if( endexpr = NULL ) then
+		endexpr = astNewCONSTf( 3.141593*2, FB_DATATYPE_SINGLE )
+	end if
+	if( astNewARG( proc, endexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval fillflag as integer
+	'' byval fillflag as integer
 	if( astNewARG( proc, astNewCONSTi( fillflag ) ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	'' byval coordtype as integer
+	'' byval coordtype as integer
 	if( astNewARG( proc, astNewCONSTi( coordtype ) ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	astAdd( proc )
+	astAdd( proc )
 	function = TRUE
 end function
 
@@ -1709,55 +1710,55 @@ function rtlGfxPaint _
 		byval coord_type as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 	dim as integer pattern = any
 
-    function = FALSE
+	function = FALSE
 
 	proc = astNewCALL( PROCLOOKUP( GFXPAINT ) )
 
 	'' byval target as any ptr
 	if( astNewARG( proc, target ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	'' byval x as single
- 	if( astNewARG( proc, xexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval x as single
+	if( astNewARG( proc, xexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval y as single
- 	if( astNewARG( proc, yexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval y as single
+	if( astNewARG( proc, yexpr ) = NULL ) then
+		exit function
+	end if
 
 	'' byval color as uinteger
 	if( symbIsString( astGetDataType( pexpr ) ) ) then
 		pattern = TRUE
 		if( astNewARG( proc, astNewCONSTi( &hFFFF0000 ) ) = NULL ) then
- 			exit function
- 		end if
+			exit function
+		end if
 	else
 		pattern = FALSE
 		if( astNewARG( proc, pexpr ) = NULL ) then
- 			exit function
- 		end if
+			exit function
+		end if
 	end if
 
 	'' byval border_color as uinteger
 	if( astNewARG( proc, bexpr ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
 	'' pattern as string
 	if( pattern ) then
 		if( astNewARG( proc, pexpr ) = NULL ) then
- 			exit function
- 		end if
+			exit function
+		end if
 	else
 		if( astNewARG( proc, astNewVAR( symbAllocStrConst( "", 0 ) ) ) = NULL ) then
- 			exit function
- 		end if
+			exit function
+		end if
 	end if
 
 	'' byval mode as integer
@@ -1767,10 +1768,10 @@ function rtlGfxPaint _
 
 	'' byval coord_type as integer
 	if( astNewARG( proc, astNewCONSTi( coord_type ) ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	astAdd( proc )
+	astAdd( proc )
 	function = TRUE
 end function
 
@@ -1780,23 +1781,23 @@ function rtlGfxDraw _
 		byval cexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
-    proc = astNewCALL( PROCLOOKUP( GFXDRAW ) )
+	proc = astNewCALL( PROCLOOKUP( GFXDRAW ) )
 
 	'' byval target as any ptr
 	if( astNewARG( proc, target ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	'' cmd as string
- 	if( astNewARG( proc, cexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' cmd as string
+	if( astNewARG( proc, cexpr ) = NULL ) then
+		exit function
+	end if
 
- 	astAdd( proc )
+	astAdd( proc )
 	function = TRUE
 end function
 
@@ -1815,72 +1816,72 @@ function rtlGfxDrawString _
 		byval paramexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc = any, putter = any
+	dim as ASTNODE ptr proc = any, putter = any
 
-    function = FALSE
+	function = FALSE
 
 	proc = astNewCALL( PROCLOOKUP( GFXDRAWSTRING ) )
 
 	'' byval target as any ptr
 	if( astNewARG( proc, target ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	'' byval x as single
- 	if( astNewARG( proc, xexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval x as single
+	if( astNewARG( proc, xexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval y as single
- 	if( astNewARG( proc, yexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval y as single
+	if( astNewARG( proc, yexpr ) = NULL ) then
+		exit function
+	end if
 
 	'' byval coord_type as integer
 	if( astNewARG( proc, astNewCONSTi( coord_type ) ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	'' text as string
- 	if( astNewARG( proc, sexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' text as string
+	if( astNewARG( proc, sexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval color as uinteger
- 	if( alphaexpr <> NULL ) then
- 		cexpr = alphaexpr
- 	end if
- 	if( astNewARG( proc, cexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval color as uinteger
+	if( alphaexpr <> NULL ) then
+		cexpr = alphaexpr
+	end if
+	if( astNewARG( proc, cexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byref font as any
+	'' byref font as any
 	if( astNewARG( proc, fexpr ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	'' byval mode as integer
+	'' byval mode as integer
 	if( astNewARG( proc, astNewCONSTi( mode ) ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	'' byval putter as integer
+	'' byval putter as integer
 	if( astNewARG( proc, iif( fexpr, hGetPutter( mode ), astNewCONSTi( 0 ) ) ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	'' byval func as function( src as uinteger, dest as uinteger ) as uinteger
- 	if( astNewARG( proc, funcexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval func as function( src as uinteger, dest as uinteger ) as uinteger
+	if( astNewARG( proc, funcexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval param as any ptr
- 	if( paramexpr = NULL ) then
+	'' byval param as any ptr
+	if( paramexpr = NULL ) then
 		paramexpr = astNewCONSTi( 0 )
- 	end if
- 	if( astNewARG( proc, paramexpr ) = NULL ) then
- 		exit function
- 	end if
+	end if
+	if( astNewARG( proc, paramexpr ) = NULL ) then
+		exit function
+	end if
 
 	astAdd( rtlErrorCheck( proc ) )
 	function = TRUE
@@ -1897,48 +1898,48 @@ function rtlGfxView _
 		byval screenflag as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
-    proc = astNewCALL( PROCLOOKUP( GFXVIEW ) )
+	proc = astNewCALL( PROCLOOKUP( GFXVIEW ) )
 
- 	'' byval x1 as integer
- 	if( astNewARG( proc, x1expr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval x1 as integer
+	if( astNewARG( proc, x1expr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval y1 as integer
- 	if( astNewARG( proc, y1expr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval y1 as integer
+	if( astNewARG( proc, y1expr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval x2 as integer
- 	if( astNewARG( proc, x2expr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval x2 as integer
+	if( astNewARG( proc, x2expr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval y2 as integer
- 	if( astNewARG( proc, y2expr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval y2 as integer
+	if( astNewARG( proc, y2expr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval fillcolor as uinteger
- 	if( astNewARG( proc, fillexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval fillcolor as uinteger
+	if( astNewARG( proc, fillexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval bordercolor as uinteger
- 	if( astNewARG( proc, bordexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval bordercolor as uinteger
+	if( astNewARG( proc, bordexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval screenflag as integer
+	'' byval screenflag as integer
 	if( astNewARG( proc, astNewCONSTi( screenflag ) ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	astAdd( proc )
+	astAdd( proc )
 	function = TRUE
 end function
 
@@ -1951,50 +1952,50 @@ function rtlGfxWindow _
 		byval screenflag as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
-    proc = astNewCALL( PROCLOOKUP( GFXWINDOW ) )
+	proc = astNewCALL( PROCLOOKUP( GFXWINDOW ) )
 
- 	'' byval x1 as single
- 	if( x1expr = NULL ) then
-        x1expr = astNewCONSTf( 0.0, FB_DATATYPE_SINGLE )
-    end if
- 	if( astNewARG( proc, x1expr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval x1 as single
+	if( x1expr = NULL ) then
+		x1expr = astNewCONSTf( 0.0, FB_DATATYPE_SINGLE )
+	end if
+	if( astNewARG( proc, x1expr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval y1 as single
- 	if( y1expr = NULL ) then
-        y1expr = astNewCONSTf( 0.0, FB_DATATYPE_SINGLE )
-    end if
- 	if( astNewARG( proc, y1expr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval y1 as single
+	if( y1expr = NULL ) then
+		y1expr = astNewCONSTf( 0.0, FB_DATATYPE_SINGLE )
+	end if
+	if( astNewARG( proc, y1expr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval x2 as single
- 	if( x2expr = NULL ) then
-        x2expr = astNewCONSTf( 0.0, FB_DATATYPE_SINGLE )
-    end if
- 	if( astNewARG( proc, x2expr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval x2 as single
+	if( x2expr = NULL ) then
+		x2expr = astNewCONSTf( 0.0, FB_DATATYPE_SINGLE )
+	end if
+	if( astNewARG( proc, x2expr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval y2 as single
- 	if( y2expr = NULL ) then
-        y2expr = astNewCONSTf( 0.0, FB_DATATYPE_SINGLE )
-    end if
- 	if( astNewARG( proc, y2expr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval y2 as single
+	if( y2expr = NULL ) then
+		y2expr = astNewCONSTf( 0.0, FB_DATATYPE_SINGLE )
+	end if
+	if( astNewARG( proc, y2expr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval screenflag as integer
+	'' byval screenflag as integer
 	if( astNewARG( proc, astNewCONSTi( screenflag ) ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	astAdd( proc )
+	astAdd( proc )
 	function = TRUE
 end function
 
@@ -2007,8 +2008,8 @@ function rtlGfxPalette  _
 		byval isget as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
 	dim as integer gbdefval = any, gbmode = any
 
 	function = FALSE
@@ -2042,7 +2043,7 @@ function rtlGfxPalette  _
 	end if
 
 	'' byval|byref r as long|longint
- 	if( rexpr = NULL ) then
+	if( rexpr = NULL ) then
 		rexpr = astNewCONSTi( -1 )
 	end if
 	if( astNewARG( proc, rexpr ) = NULL ) then
@@ -2090,8 +2091,8 @@ function rtlGfxPaletteUsing  _
 		byval is64bit as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
 
 	function = FALSE
 
@@ -2136,75 +2137,75 @@ function rtlGfxPut _
 		byval coordtype as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
-    function = FALSE
+	function = FALSE
 
-    proc = astNewCALL( PROCLOOKUP( GFXPUT ) )
+	proc = astNewCALL( PROCLOOKUP( GFXPUT ) )
 
 	'' byval target as any ptr
 	if( astNewARG( proc, target ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	'' byval x as single
- 	if( astNewARG( proc, xexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval x as single
+	if( astNewARG( proc, xexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval y as single
- 	if( astNewARG( proc, yexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval y as single
+	if( astNewARG( proc, yexpr ) = NULL ) then
+		exit function
+	end if
 
 	'' byval array as any ptr
 	if( astNewARG( proc, arrayexpr ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	'' area coordinates, if any
-  	if( astNewARG( proc, x1expr ) = NULL ) then
- 		exit function
- 	end if
-  	if( astNewARG( proc, x2expr ) = NULL ) then
- 		exit function
- 	end if
-  	if( astNewARG( proc, y1expr ) = NULL ) then
- 		exit function
- 	end if
-  	if( astNewARG( proc, y2expr ) = NULL ) then
- 		exit function
- 	end if
+	'' area coordinates, if any
+	if( astNewARG( proc, x1expr ) = NULL ) then
+		exit function
+	end if
+	if( astNewARG( proc, x2expr ) = NULL ) then
+		exit function
+	end if
+	if( astNewARG( proc, y1expr ) = NULL ) then
+		exit function
+	end if
+	if( astNewARG( proc, y2expr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval coordtype as integer
+	'' byval coordtype as integer
 	if( astNewARG( proc, astNewCONSTi( coordtype ) ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	'' byval mode as integer
+	'' byval mode as integer
 	if( astNewARG( proc, astNewCONSTi( mode ) ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	'' byval putter as integer
- 	if( astNewARG( proc, hGetPutter( mode ) ) = NULL ) then
- 		exit function
- 	end if
+	'' byval putter as integer
+	if( astNewARG( proc, hGetPutter( mode ) ) = NULL ) then
+		exit function
+	end if
 
 	'' byval alpha as integer
- 	if( astNewARG( proc, alphaexpr ) = NULL ) then
- 		exit function
- 	end if
+	if( astNewARG( proc, alphaexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval func as function( src as uinteger, dest as uinteger ) as uinteger
- 	if( astNewARG( proc, funcexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval func as function( src as uinteger, dest as uinteger ) as uinteger
+	if( astNewARG( proc, funcexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval param as any ptr
- 	if( astNewARG( proc, paramexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval param as any ptr
+	if( astNewARG( proc, paramexpr ) = NULL ) then
+		exit function
+	end if
 
 	astAdd( rtlErrorCheck( proc ) )
 	function = TRUE
@@ -2224,45 +2225,45 @@ function rtlGfxGet _
 
 	dim as ASTNODE ptr proc = any
 
-    function = FALSE
+	function = FALSE
 
 	'' use new header in -lang fb, otherwise old header
-    proc = astNewCALL( iif( fbLangIsSet( FB_LANG_FB ), PROCLOOKUP( GFXGET ), PROCLOOKUP( GFXGETQB ) ) )
+	proc = astNewCALL( iif( fbLangIsSet( FB_LANG_FB ), PROCLOOKUP( GFXGET ), PROCLOOKUP( GFXGETQB ) ) )
 
 	'' byval target as any ptr
 	if( astNewARG( proc, target ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	'' byval x1 as single
- 	if( astNewARG( proc, x1expr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval x1 as single
+	if( astNewARG( proc, x1expr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval y1 as single
- 	if( astNewARG( proc, y1expr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval y1 as single
+	if( astNewARG( proc, y1expr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval x2 as single
- 	if( astNewARG( proc, x2expr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval x2 as single
+	if( astNewARG( proc, x2expr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval y2 as single
- 	if( astNewARG( proc, y2expr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval y2 as single
+	if( astNewARG( proc, y2expr ) = NULL ) then
+		exit function
+	end if
 
 	'' byval array as any ptr
 	if( astNewARG( proc, arrayexpr ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	'' byval coordtype as integer
+	'' byval coordtype as integer
 	if( astNewARG( proc, astNewCONSTi( coordtype ) ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
 	'' array() as any
 	if( descexpr ) then
@@ -2290,36 +2291,36 @@ function rtlGfxScreenSet _
 		byval rexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
 	proc = astNewCALL( PROCLOOKUP( GFXSCREENSET ) )
 
- 	'' byval m as integer
- 	if( astNewARG( proc, mexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval m as integer
+	if( astNewARG( proc, mexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval d as integer
- 	if( astNewARG( proc, dexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval d as integer
+	if( astNewARG( proc, dexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval depth as integer
- 	if( astNewARG( proc, pexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval depth as integer
+	if( astNewARG( proc, pexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval flags as integer
- 	if( astNewARG( proc, fexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval flags as integer
+	if( astNewARG( proc, fexpr ) = NULL ) then
+		exit function
+	end if
 
 	'' byval refresh_rate as integer
- 	if( astNewARG( proc, rexpr ) = NULL ) then
- 		exit function
- 	end if
+	if( astNewARG( proc, rexpr ) = NULL ) then
+		exit function
+	end if
 
 	astAdd( rtlErrorCheck( proc ) )
 	function = TRUE
@@ -2332,26 +2333,26 @@ function rtlGfxScreenSetQB _
 		byval visible as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
-    proc = astNewCALL( PROCLOOKUP( GFXSCREENSETQB ) )
+	proc = astNewCALL( PROCLOOKUP( GFXSCREENSETQB ) )
 
- 	'' byval mode as integer
- 	if( astNewARG( proc, mode ) = NULL ) then
- 		exit function
- 	end if
+	'' byval mode as integer
+	if( astNewARG( proc, mode ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval active as integer
- 	if( astNewARG( proc, active ) = NULL ) then
- 		exit function
- 	end if
+	'' byval active as integer
+	if( astNewARG( proc, active ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval visible as integer
- 	if( astNewARG( proc, visible ) = NULL ) then
- 		exit function
- 	end if
+	'' byval visible as integer
+	if( astNewARG( proc, visible ) = NULL ) then
+		exit function
+	end if
 
 	astAdd( rtlErrorCheck( proc ) )
 	function = TRUE
@@ -2375,28 +2376,28 @@ function rtlGfxImageCreate _
 
 	'' byval w as integer
 	if( astNewARG( proc, wexpr ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	'' byval h as integer
- 	if( astNewARG( proc, hexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byval h as integer
+	if( astNewARG( proc, hexpr ) = NULL ) then
+		exit function
+	end if
 
 	'' byval c as integer
- 	if( astNewARG( proc, cexpr ) = NULL ) then
- 		exit function
- 	end if
+	if( astNewARG( proc, cexpr ) = NULL ) then
+		exit function
+	end if
 
 	'' byval d as integer
- 	if( astNewARG( proc, dexpr ) = NULL ) then
- 		exit function
- 	end if
+	if( astNewARG( proc, dexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval flags as integer
+	'' byval flags as integer
 	if( astNewARG( proc, astNewCONSTi( flags ) ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
 	function = proc
 end function

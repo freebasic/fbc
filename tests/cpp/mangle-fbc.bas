@@ -3,13 +3,13 @@
 '' test mapping of basic data types between fbc and g++
 '' with c++ name mangling
 
-'' by default, fbc's Long/ULong data type maps to c's int type, and since 
+'' by default, fbc's Long/ULong data type maps to c's int type, and since
 '' Integer/Uinteger are meant to be (consistently) 64bits in fbc-64bit,
-'' there is no other type that (by default) that can map to c's long int, 
+'' there is no other type that (by default) that can map to c's long int,
 '' which is 32bit even on Win64.
 
-'' So, in Win64, to allow calling an external library that needs a 'long int' 
-'' parameter there is the following, non-portable mangling modifier.  It is 
+'' So, in Win64, to allow calling an external library that needs a 'long int'
+'' parameter there is the following, non-portable mangling modifier.  It is
 '' ignored for all targets except for Win64
 
 #if defined(__FB_64BIT__) and not defined(__FB_UNIX__)
@@ -19,12 +19,12 @@
 	'' otherwise, integer is used on 32bit and Unix-64bit consistently to map
 	'' fbc's 32/64bit 'INTEGER' type to the target 32/64bit 'long int' type
 	type cxxlongint as integer
-#endif 
+#endif
 
 extern "c++"
 
 namespace cpp_mangle
-	
+
 	declare function cpp_byval_bool( byval a as boolean ) as boolean
 	declare function cpp_byref_bool( byref a as boolean ) as boolean
 
@@ -33,30 +33,38 @@ namespace cpp_mangle
 
 	declare function cpp_byval_double( byval a as double ) as double
 	declare function cpp_byref_double( byref a as double ) as double
-	
+
+	declare function cpp_byval_char_b( byval a as byte alias "char" ) as byte alias "char"
+	declare function cpp_byval_char_u( byval a as ubyte alias "char" ) as ubyte alias "char"
+	declare function cpp_byval_char_ub( byval a as unsigned byte alias "char" ) as unsigned byte alias "char"
+
+	declare function cpp_byref_char_b( byref a as byte alias "char" ) as byte alias "char"
+	declare function cpp_byref_char_u( byref a as ubyte alias "char" ) as ubyte alias "char"
+	declare function cpp_byref_char_ub( byref a as unsigned byte alias "char" ) as unsigned byte alias "char"
+
 	declare function cpp_byval_uchar( byval a as unsigned byte ) as unsigned byte
 	declare function cpp_byval_schar( byval a as byte ) as byte
 	declare function cpp_byref_uchar( byref a as unsigned byte ) as unsigned byte
 	declare function cpp_byref_schar( byref a as byte ) as byte
 
-   	declare function cpp_byval_ushort( byval a as unsigned short ) as unsigned short
+	declare function cpp_byval_ushort( byval a as unsigned short ) as unsigned short
 	declare function cpp_byval_sshort( byval a as short ) as short
 	declare function cpp_byref_ushort( byref a as unsigned short ) as unsigned short
 	declare function cpp_byref_sshort( byref a as short ) as short
 
-   	declare function cpp_byval_uint( byval a as unsigned long ) as unsigned long
+	declare function cpp_byval_uint( byval a as unsigned long ) as unsigned long
 	declare function cpp_byval_sint( byval a as long ) as long
 	declare function cpp_byref_uint( byref a as unsigned long ) as unsigned long
 	declare function cpp_byref_sint( byref a as long ) as long
 
-   	declare function cpp_byval_ulongint( byval a as unsigned cxxlongint ) as unsigned cxxlongint
+	declare function cpp_byval_ulongint( byval a as unsigned cxxlongint ) as unsigned cxxlongint
 	declare function cpp_byval_slongint( byval a as cxxlongint ) as cxxlongint
 	declare function cpp_byref_ulongint( byref a as unsigned cxxlongint ) as unsigned cxxlongint
 	declare function cpp_byref_slongint( byref a as cxxlongint ) as cxxlongint
 
-   	declare function cpp_byval_ulonglongint( byval a as unsigned longint ) as unsigned longint
+	declare function cpp_byval_ulonglongint( byval a as unsigned longint ) as unsigned longint
 	declare function cpp_byval_slonglongint( byval a as longint ) as longint
-	declare function cpp_byref_ulonglongint( byref a as unsigned longint ) as unsigned longint 
+	declare function cpp_byref_ulonglongint( byref a as unsigned longint ) as unsigned longint
 	declare function cpp_byref_slonglongint( byref a as longint ) as longint
 
 	declare function cpp_byval_const_double( byval a as const double ) as double
@@ -85,6 +93,11 @@ namespace cpp_mangle
 	declare function cpp_variadic_list_byref_ptr( byval n as long, byref args as cva_list ptr ) as long
 	declare function cpp_variadic_list_ptr( byval n as long, byval args as cva_list ptr ) as long
 	declare function cpp_variadic_list_ptr_ptr( byval n as long, byval args as cva_list ptr ptr ) as long
+
+	declare function cpp__byval_int__byref_int__byref_int(byval a as long, byref b as long, byref c as long) as long
+	declare function cpp__byval_const_int__byref_int__byref_int(byval a as const long, byref b as long, byref c as long) as long
+	declare function cpp__byval_const_int_ptr__byref_int__byref_int(byval a as const long ptr, byref b as long, byref c as long) as long
+	declare function cpp__byval_const_int_const_ptr__byref_int__byref_int(byval a as const long const ptr, byref b as long, byref c as long) as long
 
 end namespace
 
@@ -132,21 +145,33 @@ scope
 end scope
 
 scope
-				 
-	''  c = signed|unsigned char
+
+	''  c = [signed|unsigned] char
 	'' fb = [unsigned] byte
 
+	ASSERT( cpp_byval_char_b(0) = 0 )
+	ASSERT( cpp_byval_char_u(0) = 0 )
+	ASSERT( cpp_byval_char_ub(0) = 0 )
 	ASSERT( cpp_byval_uchar(0) = 0 )
 	ASSERT( cpp_byval_schar(0) = 0 )
+	ASSERT( cpp_byval_char_b(&h7f) = &h7f )
+	ASSERT( cpp_byval_char_u(&h7f) = &h7f )
+	ASSERT( cpp_byval_char_ub(&h7f) = &h7f )
 	ASSERT( cpp_byval_uchar(&h7f) = &h7f )
 	ASSERT( cpp_byval_schar(&h7f) = &h7f )
 
 	dim ub as unsigned byte = 0
 	dim sb as byte = 0
+	ASSERT( cpp_byref_char_b(ub) = 0 )
+	ASSERT( cpp_byref_char_u(ub) = 0 )
+	ASSERT( cpp_byref_char_ub(ub) = 0 )
 	ASSERT( cpp_byref_uchar(ub) = 0 )
 	ASSERT( cpp_byref_schar(sb) = 0 )
 	ub = &h7f
 	sb = &h7f
+	ASSERT( cpp_byref_char_b(ub) = &h7f )
+	ASSERT( cpp_byref_char_u(ub) = &h7f )
+	ASSERT( cpp_byref_char_ub(ub) = &h7f )
 	ASSERT( cpp_byref_uchar(ub) = &h7f )
 	ASSERT( cpp_byref_schar(sb) = &h7f )
 
@@ -316,3 +341,10 @@ scope
 	variadic_list_ptr_ptr( 3, 1, 2, 3 )
 end scope
 
+scope
+	dim i as long = 123
+	ASSERT( cpp__byval_int__byref_int__byref_int( 123, 0, 0 ) = 123 )
+	ASSERT( cpp__byval_const_int__byref_int__byref_int( 123, 0, 0 ) = 123 )
+	ASSERT( cpp__byval_const_int_ptr__byref_int__byref_int( @i, 0, 0 ) = 123 )
+	ASSERT( cpp__byval_const_int_const_ptr__byref_int__byref_int( @i, 0, 0 ) = 123 )
+end scope

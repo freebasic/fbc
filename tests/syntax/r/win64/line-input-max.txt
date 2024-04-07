@@ -1,0 +1,150 @@
+line input #1, s
+OK
+line input #1, fz
+OK
+line input #1, fw
+OK
+line input #1, *z, 10
+OK
+line input #1, *w, 10
+OK
+line input "", s
+OK
+line input "", fz
+OK
+line input "", fw
+OK
+line input "", *z, 10
+OK
+line input "", *w, 10
+OK
+line input ps, s
+OK
+line input ps, fz
+OK
+line input ps, fw
+OK
+line input ps, *z, 10
+OK
+line input ps, *w, 10
+OK
+line input pfz, s
+OK
+line input pfz, fz
+OK
+line input pfz, fw
+OK
+line input pfz, *z, 10
+OK
+line input pfz, *w, 10
+OK
+line input pfw, s
+OK
+line input pfw, fz
+OK
+line input pfw, fw
+OK
+line input pfw, *z, 10
+OK
+line input pfw, *w, 10
+OK
+line input *pz, s
+OK
+line input *pz, fz
+OK
+line input *pz, fw
+OK
+line input *pz, *z, 10
+OK
+line input *pz, *w, 10
+OK
+line input *pw, s
+OK
+line input *pw, fz
+OK
+line input *pw, fw
+OK
+line input *pw, *z, 10
+OK
+line input *pw, *w, 10
+OK
+line input #1, s, 10
+line-input-max.bas(69) error 3: Expected End-of-Line, found ',' in 't( 1, line input #1, s, 10 )'
+line input #1, fz, 10
+line-input-max.bas(70) error 3: Expected End-of-Line, found ',' in 't( 1, line input #1, fz, 10 )'
+line input #1, fw, 10
+line-input-max.bas(71) error 3: Expected End-of-Line, found ',' in 't( 1, line input #1, fw, 10 )'
+line input #1, *z
+line-input-max.bas(73) error 16: Expected ',' in 't( 1, line input #1, *z )'
+line input #1, *w
+line-input-max.bas(74) error 16: Expected ',' in 't( 1, line input #1, *w )'
+line input p, s, 10
+line-input-max.bas(76) error 42: Variable not declared, p in 't( 1, line input p, s, 10 )'
+line input p, fz, 10
+line-input-max.bas(77) error 326: Expected ',' or ';', found 'p' in 't( 1, line input p, fz, 10 )'
+line input p, fw, 10
+line-input-max.bas(78) error 326: Expected ',' or ';', found 'p' in 't( 1, line input p, fw, 10 )'
+line input "", *z
+line-input-max.bas(80) error 16: Expected ',' in 't( 1, line input "", *z )'
+line input "", *w
+line-input-max.bas(81) error 16: Expected ',' in 't( 1, line input "", *w )'
+line input p, s, 10
+line-input-max.bas(83) error 326: Expected ',' or ';', found 'p' in 't( 1, line input p, s, 10 )'
+line input p, fz, 10
+line-input-max.bas(84) error 326: Expected ',' or ';', found 'p' in 't( 1, line input p, fz, 10 )'
+line input p, fw, 10
+line-input-max.bas(85) error 326: Expected ',' or ';', found 'p' in 't( 1, line input p, fw, 10 )'
+line input p, *z
+line-input-max.bas(87) error 326: Expected ',' or ';', found 'p' in 't( 1, line input p, *z )'
+line input p, *w
+line-input-max.bas(88) error 326: Expected ',' or ';', found 'p' in 't( 1, line input p, *w )'
+line input ps, s, 10
+line-input-max.bas(90) error 3: Expected End-of-Line, found ',' in 't( 1, line input ps, s, 10 )'
+line input ps, fz, 10
+line-input-max.bas(91) error 3: Expected End-of-Line, found ',' in 't( 1, line input ps, fz, 10 )'
+line input ps, fw, 10
+line-input-max.bas(92) error 3: Expected End-of-Line, found ',' in 't( 1, line input ps, fw, 10 )'
+line input ps, *z
+line-input-max.bas(94) error 16: Expected ',' in 't( 1, line input ps, *z )'
+line input ps, *w
+line-input-max.bas(95) error 16: Expected ',' in 't( 1, line input ps, *w )'
+line input pfz, s, 10
+line-input-max.bas(97) error 3: Expected End-of-Line, found ',' in 't( 1, line input pfz, s, 10 )'
+line input pfz, fz, 10
+line-input-max.bas(98) error 3: Expected End-of-Line, found ',' in 't( 1, line input pfz, fz, 10 )'
+line input pfz, fw, 10
+line-input-max.bas(99) error 3: Expected End-of-Line, found ',' in 't( 1, line input pfz, fw, 10 )'
+line input pfz, *z
+line-input-max.bas(101) error 16: Expected ',' in 't( 1, line input pfz, *z )'
+line input pfz, *w
+line-input-max.bas(102) error 16: Expected ',' in 't( 1, line input pfz, *w )'
+line input pfw, s, 10
+line-input-max.bas(104) error 3: Expected End-of-Line, found ',' in 't( 1, line input pfw, s, 10 )'
+line input pfw, fz, 10
+line-input-max.bas(105) error 3: Expected End-of-Line, found ',' in 't( 1, line input pfw, fz, 10 )'
+line input pfw, fw, 10
+line-input-max.bas(106) error 3: Expected End-of-Line, found ',' in 't( 1, line input pfw, fw, 10 )'
+line input pfw, *z
+line-input-max.bas(108) error 16: Expected ',' in 't( 1, line input pfw, *z )'
+line input pfw, *w
+line-input-max.bas(109) error 16: Expected ',' in 't( 1, line input pfw, *w )'
+line input *pz, s, 10
+line-input-max.bas(111) error 3: Expected End-of-Line, found ',' in 't( 1, line input *pz, s, 10 )'
+line input *pz, fz, 10
+line-input-max.bas(112) error 3: Expected End-of-Line, found ',' in 't( 1, line input *pz, fz, 10 )'
+line input *pz, fw, 10
+line-input-max.bas(113) error 3: Expected End-of-Line, found ',' in 't( 1, line input *pz, fw, 10 )'
+line input *pz, *z
+line-input-max.bas(115) error 16: Expected ',' in 't( 1, line input *pz, *z )'
+line input *pz, *w
+line-input-max.bas(116) error 16: Expected ',' in 't( 1, line input *pz, *w )'
+line input *pw, s, 10
+line-input-max.bas(118) error 3: Expected End-of-Line, found ',' in 't( 1, line input *pw, s, 10 )'
+line input *pw, fz, 10
+line-input-max.bas(119) error 3: Expected End-of-Line, found ',' in 't( 1, line input *pw, fz, 10 )'
+line input *pw, fw, 10
+line-input-max.bas(120) error 3: Expected End-of-Line, found ',' in 't( 1, line input *pw, fw, 10 )'
+line input *pw, *z
+line-input-max.bas(122) error 16: Expected ',' in 't( 1, line input *pw, *z )'
+line input *pw, *w
+line-input-max.bas(123) error 16: Expected ',' in 't( 1, line input *pw, *w )'

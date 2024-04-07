@@ -1,5 +1,5 @@
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2008-2020 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2008-2022 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -196,28 +196,14 @@ end sub
 
 '':::::
 function ReadTextFile( byref sFile as string ) as string
-	dim ret as string, h as integer
-	h = freefile
-	if( open( sFile for input access read as #h ) = 0 ) then
-		close #h
-		open sFile for binary access read as #h
-		ret = space(lof(h))
-		get #h,,ret
-		close #h
-	end if
-	return ret
+	'' !!!TODO!!! refactor
+	return ReadFileAsText( sFile )
 end function
 
 '':::::
 sub WriteTextFile( byref sFile as string, byref text as string )
-	dim h as integer
-	h = freefile
-	if( open( sFile for output as #h ) = 0 ) then
-		close #h
-		open sFile for binary as #h
-		put #h,,text
-		close #h
-	end if
+	'' !!!TODO!!! refactor
+	WriteFileAsText( sFile, text, TRUE )
 end sub
 
 '' ----------------------------------------------
@@ -929,16 +915,6 @@ function is_header_text( byval token as WikiToken ptr ) as integer
 	return PAGEINFO_HEADER_MSG_NO_INTRO_TEXT
 end function
 
-'':::::
-#macro CHK_TOKEN( f )
-	if( token <> NULL ) then
-		if( msg = PAGEINFO_HEADER_MSG_NONE ) then
-			if( msg = PAGEINFO_HEADER_MSG_NONE ) then msg = f( token )
-			token = tokenlist->GetNext( token )
-		end if
-	end if
-#endmacro
-
 ''::::
 function Links_LoadFromPage_ScanHeader _
 	( _
@@ -949,6 +925,25 @@ function Links_LoadFromPage_ScanHeader _
 	/'
 		check that certain kinds of pages start off with correct formats
 	'/
+
+	#macro CHK_TOKEN( f )
+		if( token <> NULL ) then
+			if( msg = PAGEINFO_HEADER_MSG_NONE ) then
+				msg = f( token )
+				token = tokenlist->GetNext( token )
+			end if
+		end if
+	#endmacro
+
+	#macro SKP_TOKEN( tokenid )
+		if( token <> NULL ) then
+			if( msg = PAGEINFO_HEADER_MSG_NONE ) then
+				if( token->id = tokenid ) then
+					token = tokenlist->GetNext( token )
+				end if
+			end if
+		end if
+	#endmacro
 
 	dim as string text, sPage, sItem, sValue, sTitle, n
 	dim as CList ptr tokenlist
@@ -969,6 +964,7 @@ function Links_LoadFromPage_ScanHeader _
 		CHK_TOKEN( is_fbdoc_title )
 		CHK_TOKEN( is_horzline )
 		CHK_TOKEN( is_newline )
+		SKP_TOKEN( WIKI_TOKEN_BOLD )
 		CHK_TOKEN( is_header_text )
 
 	elseif lcase(left(sName,5)) = "catpg" then
@@ -2208,7 +2204,7 @@ if( app_opt.help ) then
 	print "   f       check duplicate file names"
 	print "   i       check image file names"
 	print
-	print "   t       perform all token checks ( h n )"
+	print "   t       perform all token checks ( h n cc html)"
 	print "   h       check page headers"
 	print "   n       check name case in links"
 	print "   tc      report token counts"

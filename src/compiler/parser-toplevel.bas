@@ -11,17 +11,17 @@
 #include once "ast.bi"
 #include once "pp.bi"
 
-declare sub	parserCompoundStmtInit ( )
+declare sub parserCompoundStmtInit ( )
 
-declare sub	parserCompoundStmtEnd ( )
+declare sub parserCompoundStmtEnd ( )
 
-declare sub	parserCompoundStmtSetCtx ( )
+declare sub parserCompoundStmtSetCtx ( )
 
-declare sub	parserProcCallInit ( )
+declare sub parserProcCallInit ( )
 
-declare sub	parserProcCallEnd ( )
+declare sub parserProcCallEnd ( )
 
-declare sub	parserLetInit( )
+declare sub parserLetInit( )
 
 declare sub parserLetEnd( )
 
@@ -31,9 +31,10 @@ declare sub parserLetEnd( )
 '':::::
 sub parserSetCtx( )
 
+	parser.stage = 0 '' start in preprocessor stage
 	parser.scope = FB_MAINSCOPE
 
-	parser.currproc	= NULL
+	parser.currproc = NULL
 	parser.currblock = NULL
 
 	parser.nspcrec = 0
@@ -54,7 +55,7 @@ sub parserSetCtx( )
 end sub
 
 '':::::
-sub	parserInit( )
+sub parserInit( )
 
 	parserCompoundStmtInit( )
 
@@ -62,18 +63,20 @@ sub	parserInit( )
 
 	parserLetInit( )
 
+	parserAsmInit( )
+
 end sub
 
 '':::::
-sub	parserEnd( )
+sub parserEnd( )
+
+	parserAsmEnd( )
 
 	parserLetEnd( )
 
 	parserProcCallEnd( )
 
 	parserCompoundStmtEnd( )
-
-	parserInlineAsmEnd( )
 
 end sub
 
@@ -114,9 +117,16 @@ sub cProgram()
 		end if
 	#endmacro
 
+	#macro maybeRestartParser()
+		if( fbShouldRestart() ) then
+			exit sub
+		elseif( fbShouldContinue() = FALSE ) then
+			exit sub
+		end if
+	#endmacro
+
 	'' For each line...
 	do
-
 		'' parse the empty lines and comments and process directives, but
 		'' don't write to the ASM output.  Clear the output buffer for
 		'' the current line instead of calling hEmitCurrentLineText( )
@@ -151,10 +161,17 @@ sub cProgram()
 			continue do
 		end if
 
-		maybeExitParser()
+		maybeRestartParser()
 
 		'' if it wasn't an empty line, comment, or directive then
 		'' we should expect a statement next requiring debug nodes
+		'' i.e. even on first entry to CProgram(), if execution makes
+		'' it to this point then next statement is expected to be something
+		'' executable.  And if the parser or fbc needed to be restarted,
+		'' it would have happened already in maybeExitParser() above
+
+		'' set parser executable code stage
+		parser.stage = 1
 
 		'' line begin
 		astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ), env.inf.incfile ) )

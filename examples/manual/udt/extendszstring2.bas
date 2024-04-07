@@ -1,7 +1,7 @@
 '' examples/manual/udt/extendszstring2.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'EXTENDS ZSTRING'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgExtendsZstring
 '' --------
@@ -71,8 +71,7 @@ End Select
 v[0] = Asc("-")
 Print "'" & v & "'", Len(v)
 
-'Print "'" & Right(v, 5) & "'"      '' 'Right' does not yet support types with 'Extends Zstring'
-Print "'" & Right(Str(v), 5) & "'"  '' workaround (or: 'Right(Type<String>(v), 5)')
+Print "'" & Right(v, 5) & "'"        '' since fbc 1.09.0, 'Right' supports types with 'Extends Zstring'
+'Print "'" & Right(Str(v), 5) & "'"  '' before fbc 1.09.0, use this workaround (or: 'Right(Type<String>(v), 5)')
 
 Sleep
-	

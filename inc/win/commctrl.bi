@@ -44,7 +44,7 @@
 ''   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 
@@ -5931,7 +5931,7 @@ const LM_GETITEM = WM_USER + &h303
 		TDF_NO_DEFAULT_RADIO_BUTTON = &h4000
 		TDF_CAN_BE_MINIMIZED = &h8000
 
-		#if _WIN32_WINNT = &h0602
+		#if _WIN32_WINNT >= &h0602
 			TDF_NO_SET_FOREGROUND = &h10000
 		#endif
 

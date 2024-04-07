@@ -21,7 +21,7 @@ Copies an image on to another image or screen
 			##PRESET## : Source pixel values are 1's-complement negated before being copied.
 			##[[KeyPgTransGfx|TRANS]]## : Source pixel values are copied without modification. Does not draw source pixels of mask color. See below.
 		Background-dependent methods
-			##[[KeyPgAndGfx|AND]]## : Destination pixels are bitwise ##[[KeyPgOpAnd|AND]]##ed with source pixels. See below.
+			##[[KeyPgAndGfx|AND (Graphics Put)]]## : Destination pixels are bitwise ##[[KeyPgOpAnd|AND]]##ed with source pixels. See below.
 			##[[KeyPgOrGfx|OR]]## : Destination pixels are bitwise ##[[KeyPgOpOr|OR]]##ed with source pixels. See below.
 			##[[KeyPgXorGfx|XOR]]## : Destination pixels are bitwise ##[[KeyPgOpXor|XOR]]##ed with source pixels. See below.
 			##[[KeyPgAlphaGfx|ALPHA]]## : Source is blended with a transparency factor specified either in the ##//value//## parameter, or in the image's individual pixels.  See below.
@@ -45,7 +45,7 @@ Copies an image on to another image or screen
 		Depending on the method used, the existing pixel values in the destination buffer are used to calculate the pixel values that are actually drawn. The ##PSET##, ##PRESET## and ##TRANS## methods do not use the destination buffer for calculating final pixel values, while the ##AND##, ##OR##, ##XOR##, ##ALPHA## and ##ADD## methods do. Images that are drawn with these latter methods will look differently depending on the content of the destination buffer.
 		
 	**Different pixel formats**
-		The pixel format of an image buffer must be compatible with the current graphics mode color depth; that is, if you acquire an image using ##[[KeyPgGetgraphics|Get]]## and you later change screen mode via the ##[[KeyPgScreengraphics|Screen]]## statement, the image data may not be valid in the new graphics mode, and you may not be able to draw it on the screen. You should note however that you will always be able to draw image buffers onto other image buffers via ##**Put**## as long as these buffers were created with the same depth.
+		The pixel format of an image buffer must be compatible with the current graphics mode color depth; that is, if you acquire an image using ##[[KeyPgGetgraphics|Get]]## and you later change screen mode via the ##[[KeyPgScreengraphics|Screen (Graphics)]]## statement, the image data may not be valid in the new graphics mode, and you may not be able to draw it on the screen. You should note however that you will always be able to draw image buffers onto other image buffers via ##**Put**## as long as these buffers were created with the same depth.
 		
 		The ##AND##, ##OR## and ##XOR## methods produce different results depending on the current color depth, as pixels are stored in different formats; see [[GfxInternalFormats|Internal pixel formats]] for details.
 		

@@ -28,6 +28,8 @@ Print ADD2(1, 2)
 	- ##[[KeyPgPpif|#if]]##
 	- ##[[KeyPgPpelse|#else]]## 
 	- ##[[KeyPgPpelseif|#elseif]]## 
+	- ##[[KeyPgPpelseifdef|#elseifdef]]## 
+	- ##[[KeyPgPpelseifndef|#elseifndef]]## 
 	- ##[[KeyPgPpendif|#endif]]## 
 	- ##[[KeyPgPpifdef|#ifdef]]##
 	- ##[[KeyPgPpifndef|#ifndef]]##

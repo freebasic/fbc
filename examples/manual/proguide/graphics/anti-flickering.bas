@@ -1,7 +1,7 @@
 '' examples/manual/proguide/graphics/anti-flickering.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'Graphics Mode Refresh and Anti-Flickering'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgAntiFlickering
 '' --------

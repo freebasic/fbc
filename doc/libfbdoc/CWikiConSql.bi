@@ -2,7 +2,7 @@
 #define __CWIKICONSQL_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006-2020 The FreeBASIC development team.
+''	Copyright (C) 2006-2022 The FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -61,7 +61,8 @@ namespace fb.fbdoc
 		declare function LoadIndex _
 			( _
 				byval page as zstring ptr, _
-				byref body as string _
+				byref body as string, _
+				byval format as CWikiCon.IndexFormat _
 			) as boolean
 
 		declare function StorePage _

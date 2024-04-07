@@ -8,41 +8,41 @@
 #include once "ast.bi"
 #include once "rtl.bi"
 
-declare sub			rtlArrayModInit		( )
-declare sub			rtlConsoleModInit	( )
-declare sub			rtlDataModInit		( )
-declare sub			rtlErrorModInit		( )
-declare sub			rtlFileModInit		( )
-declare sub			rtlGfxModInit		( )
-declare sub			rtlMacroModInit		( )
-declare sub			rtlMathModInit		( )
-declare sub			rtlMemModInit		( )
-declare sub			rtlPrintModInit		( )
-declare sub			rtlProfileModInit	( )
-declare sub			rtlStringModInit	( )
-declare sub			rtlSystemModInit	( )
-declare sub			rtlGosubModInit		( )
-declare sub			rtlOOPModInit		( )
+declare sub         rtlArrayModInit     ( )
+declare sub         rtlConsoleModInit   ( )
+declare sub         rtlDataModInit      ( )
+declare sub         rtlErrorModInit     ( )
+declare sub         rtlFileModInit      ( )
+declare sub         rtlGfxModInit       ( )
+declare sub         rtlMacroModInit     ( )
+declare sub         rtlMathModInit      ( )
+declare sub         rtlMemModInit       ( )
+declare sub         rtlPrintModInit     ( )
+declare sub         rtlProfileModInit   ( )
+declare sub         rtlStringModInit    ( )
+declare sub         rtlSystemModInit    ( )
+declare sub         rtlGosubModInit     ( )
+declare sub         rtlOOPModInit       ( )
 
-declare sub			rtlArrayModEnd		( )
-declare sub			rtlConsoleModEnd	( )
-declare sub			rtlDataModEnd		( )
-declare sub			rtlErrorModEnd		( )
-declare sub			rtlFileModEnd		( )
-declare sub			rtlGfxModEnd		( )
-declare sub			rtlMacroModEnd		( )
-declare sub			rtlMathModEnd		( )
-declare sub			rtlMemModEnd		( )
-declare sub			rtlPrintModEnd		( )
-declare sub			rtlProfileModEnd	( )
-declare sub			rtlStringModEnd		( )
-declare sub			rtlSystemModEnd		( )
-declare sub			rtlGosubModEnd		( )
-declare sub			rtlOOPModEnd		( )
+declare sub         rtlArrayModEnd      ( )
+declare sub         rtlConsoleModEnd    ( )
+declare sub         rtlDataModEnd       ( )
+declare sub         rtlErrorModEnd      ( )
+declare sub         rtlFileModEnd       ( )
+declare sub         rtlGfxModEnd        ( )
+declare sub         rtlMacroModEnd      ( )
+declare sub         rtlMathModEnd       ( )
+declare sub         rtlMemModEnd        ( )
+declare sub         rtlPrintModEnd      ( )
+declare sub         rtlProfileModEnd    ( )
+declare sub         rtlStringModEnd     ( )
+declare sub         rtlSystemModEnd     ( )
+declare sub         rtlGosubModEnd      ( )
+declare sub         rtlOOPModEnd        ( )
 
 
 type RTLCTX
-	arglist		as TLIST
+	arglist     as TLIST
 end type
 
 ''globals
@@ -102,7 +102,7 @@ end sub
 
 sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 	dim as FBSYMBOL ptr param = any
-    dim as integer callconv = any
+	dim as integer callconv = any
 
 	'' for each proc..
 	do
@@ -110,12 +110,12 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 			exit do
 		end if
 
-        callconv = procdef->callconv
+		callconv = procdef->callconv
 
-        '' Use the default FBCALL?
-        if( callconv = FB_FUNCMODE_FBCALL ) then
-            callconv = env.target.fbcall
-        end if
+		'' Use the default FBCALL?
+		if( callconv = FB_FUNCMODE_FBCALL ) then
+			callconv = env.target.fbcall
+		end if
 
 		dim as integer doadd = TRUE
 		if( procdef->options and FB_RTL_OPT_MT ) then
@@ -135,6 +135,12 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 			end if
 			if( (procdef->options and FB_RTL_OPT_NOFB) <> 0 ) then
 				doadd = ( env.clopt.lang <> FB_LANG_FB )
+			end if
+		end if
+
+		if( (procdef->options and FB_RTL_OPT_REQUIRED) = 0 ) then
+			if( env.clopt.nobuiltins ) then
+				doadd = FALSE
 			end if
 		end if
 
@@ -255,9 +261,14 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 				palias = pname
 			end if
 
+			dim symb_opts as FB_SYMBOPT = FB_SYMBOPT_NONE
+			if( env.clopt.nobuiltins = FALSE ) then
+				symb_opts or= FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL
+			end if
+
 			proc = symbAddProc( proc, pname, palias, _
 			                    procdef->dtype, NULL, attrib, pattrib, callconv, _
-			                    FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
+			                    symb_opts )
 
 			if( proc <> NULL ) then
 				symbSetProcCallback( proc, procdef->callback )
@@ -284,21 +295,21 @@ function rtlProcLookup _
 		byval pidx as integer _
 	) as FBSYMBOL ptr
 
-    dim as FBSYMCHAIN ptr chain_ = any
+	dim as FBSYMCHAIN ptr chain_ = any
 
-    '' not cached yet? -- this won't work if #undef is used
-    '' what is pretty unlikely with internal fb_* procs
+	'' not cached yet? -- this won't work if #undef is used
+	'' what is pretty unlikely with internal fb_* procs
 	if( rtlLookupTB( pidx ) = NULL ) then
 		chain_ = symbLookupAt( @symbGetGlobalNamespc( ), pname, FALSE, FALSE )
 		if( chain_ = NULL ) then
 			'' try to prefix it with a '__' if in -lang qb mode
 			if( fbLangIsSet( FB_LANG_QB ) ) then
-        		static as string tmp_name
-        		tmp_name = "__" + *pname
-        		pname = strptr( tmp_name )
-        		chain_ = symbLookupAt( @symbGetGlobalNamespc( ), pname, FALSE, FALSE )
-        		if( chain_ = NULL ) then
-					errReportEx( FB_ERRMSG_UNDEFINEDSYMBOL, *pname )
+				static as string tmp_name
+				tmp_name = "__" + *pname
+				pname = strptr( tmp_name )
+				chain_ = symbLookupAt( @symbGetGlobalNamespc( ), pname, FALSE, FALSE )
+				if( chain_ = NULL ) then
+					errReportEx( FB_ERRMSG_UNDEFINEDBUILTINSYMBOL, *pname )
 					rtlLookupTB( pidx ) = NULL
 				else
 					rtlLookupTB( pidx ) = chain_->sym
@@ -325,9 +336,9 @@ function rtlOvlProcCall _
 		byval param2 as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as FB_ERRMSG err_num = any
-    dim as integer args = 0
-    dim as FB_CALL_ARG_LIST arg_list = ( 0, NULL, NULL )
+	dim as FB_ERRMSG err_num = any
+	dim as integer args = 0
+	dim as FB_CALL_ARG_LIST arg_list = ( 0, NULL, NULL )
 
 	var arg = symbAllocOvlCallArg( @ctx.arglist, @arg_list, FALSE )
 	arg->expr = param1
@@ -341,7 +352,7 @@ function rtlOvlProcCall _
 		args += 1
 	end if
 
-	var proc = symbFindClosestOvlProc( sym, args, arg_list.head, @err_num, FB_SYMBLOOKUPOPT_NONE )
+	var proc = symbFindClosestOvlProc( sym, args, arg_list.head, @err_num, FB_SYMBFINDOPT_NONE )
 
 	if( proc = NULL ) then
 		symbFreeOvlCallArgs( @ctx.arglist, @arg_list )
@@ -350,10 +361,10 @@ function rtlOvlProcCall _
 
 	var procexpr = astNewCALL( proc, NULL )
 
-    '' add to tree
+	'' add to tree
 	arg = arg_list.head
 	do while( arg <> NULL )
-        var nxt = arg->next
+		var nxt = arg->next
 
 		if( astNewARG( procexpr, arg->expr, , arg->mode ) = NULL ) then
 			return NULL
@@ -388,11 +399,11 @@ end function
 
 '':::::
 '' note: this function must be called *before* astNewARG(e) because the
-''		 expression 'e' can be changed inside the former (address-of string's etc)
+''       expression 'e' can be changed inside the former (address-of string's etc)
 '' !!!TODO!!! - in places where rtlCalcStrLen() is called, if it is a UDT
 '' that overloads operator len(), then the value returned by operator len() should
 '' be prefered to calculating length in the run-time based on the null terminated
-'' length.  Many fb_Wstr* functions will need alternate versions that accept a length 
+'' length.  Many fb_Wstr* functions will need alternate versions that accept a length
 '' parameter.
 function rtlCalcStrLen _
 	( _
@@ -415,7 +426,15 @@ function rtlCalcStrLen _
 			if( symbGetType( s ) <> typeGetDtAndPtrOnly( dtype ) ) then
 				function = 0
 			else
-				function = symbGetStrLen( s )
+				if( typeGet( dtype ) = FB_DATATYPE_FIXSTR ) then
+					if( fbIs64bit() ) then
+						function = symbGetStrLength( s ) or &h8000000000000000ull
+					else
+						function = symbGetStrLength( s ) or &h80000000ul
+					end if
+				else
+					function = symbGetStrLength( s ) + 1
+				end if
 			end if
 		end if
 
@@ -428,12 +447,14 @@ function rtlCalcStrLen _
 			if( symbGetType( s ) <> typeGetDtAndPtrOnly( dtype ) ) then
 				function = 0
 			else
-				function = symbGetWStrLen( s )
+				function = symbGetWStrLength( s ) + 1
 			end if
 		end if
 
 	case else
+		'' var-len STRING
 		function = -1
+
 	end select
 
 end function

@@ -92,6 +92,11 @@ sub cWithStmtBegin( )
 		end if
 	end if
 
+	'' Turn TYPEINI trees into real assignments.  Since TYPEINIs will be assigned
+	'' to temporary variables, this must be done before we extend the lifetime
+	'' of the temporary variables below.
+	expr = astTypeIniUpdate( expr )
+
 	''
 	'' Turn the vars in the given scope from TEMPs into normal (but still
 	'' implicit) vars, remove them from the AST dtor list, and build a DECL

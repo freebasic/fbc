@@ -87,6 +87,28 @@
 
 #define SWAP(a,b)		((a) ^= (b), (b) ^= (a), (a) ^= (b))
 
+#define ARRAY_SIZE(a) ((sizeof (a)) / sizeof ((a)[0]))
+
+/* Use C11/C++11 static assertion keyword if possible (safer and better error messages) */
+#if defined __cplusplus
+	#if __cplusplus >= 201103L
+		#define STATIC_ASSERT(predicate) static_assert(predicate, #predicate)
+	#endif
+#elif defined __STDC_VERSION__
+	#if __STDC_VERSION__ >= 201112L
+		#define STATIC_ASSERT(predicate) _Static_assert(predicate, #predicate)
+	#endif
+#endif
+
+/* Fall back for older compilers */
+#define STATIC_ASSERT_LEGACY_LINE2(predicate, line) typedef char static_assertion_on_line_##line[(predicate) ? 1 : -1] __attribute__((unused));
+#define STATIC_ASSERT_LEGACY_LINE1(predicate, line) STATIC_ASSERT_LEGACY_LINE2(predicate, line)
+#define STATIC_ASSERT_LEGACY(predicate) STATIC_ASSERT_LEGACY_LINE1(predicate, __LINE__)
+
+#ifndef STATIC_ASSERT
+#define STATIC_ASSERT(predicate) STATIC_ASSERT_LEGACY(predicate)
+#endif
+
 #if defined HOST_DOS
 	#include "dos/fb_dos.h"
 #elif defined HOST_UNIX
@@ -255,7 +277,7 @@
     }
 
 	#define RORW(num, bits) __asm__ __volatile__("rorw %1, %0" : "=m"(num) : "c"(bits) : "memory")
-	#define RORW1(num)      __asm__ __volatile__("rorw $1, %0" : "=m"(bit) : : "memory");
+	#define RORW1(num)      __asm__ __volatile__("rorw $1, %0" : "=m"(num) : : "memory");
 #else
 	/* We use memcmp from C because the compiler might replace this by a built-in
 	 * function which will definately be faster than our own implementation in C. */
@@ -281,7 +303,7 @@
 		return 0;
 	}
 
-	#define RORW(num, bits) num = ( (num) >> (bits) ) | (num << (16 - bits) )
+	#define RORW(num, bits) num = (( (num) >> (bits) ) | (num << (16 - bits) )) & 0xffff
 	#define RORW1(num)      RORW(num, 1)
 #endif
 

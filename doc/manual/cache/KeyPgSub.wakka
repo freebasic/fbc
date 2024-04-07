@@ -23,7 +23,7 @@ Defines a procedure
 		##//parameter//##: ##[[[KeyPgByref|ByRef]]|[[KeyPgByval|ByVal]]] //identifier// [[[KeyPgAs|As]] //type//] [= //default_value//]##
 			##//identifier//##: the name of the variable referenced in the subroutine. If the argument is an array then the identifier must be followed by an empty parenthesis.
 			##//type//##: the type of variable
-			##//default_value//##: the value of the argument if none is specified in the call
+			##//default_value//##: the value of the argument if none is specified in the call (##//default_value//## can be a literal, or a constant, or a shared variable)
 		##//statements//##: one or more statements that make up the subroutine body
 
 {{fbdoc item="desc"}}
@@ -41,12 +41,15 @@ Defines a procedure
 	A subroutine can also specify how parameters are passed, either as "##[[KeyPgByref|Byref]]##" or "##[[KeyPgByval|Byval]]##", as shown in the syntax definition. If a parameter is "##[[KeyPgByref|Byref]]##", the parameter name literally becomes a reference to the original variable passed to the subroutine. Any changes made to that variable will be reflected outside of the subroutine. If a parameter is passed "##[[KeyPgByval|Byval]]##", however, the value of any passed variable is copied into a new variable, and any changes made to it will not affect the original.
 	
 	The ##[[KeyPgStatic|Static]]## specifier indicates that the values of all local variables defined in the sub should be preserved between calls. To specify individual local variables as static see the ##[[KeyPgStatic|Static]]## keyword.
+	To access duplicated symbols defined as global outside the subroutine body, add one or preferably two dot(s) as prefix: ##.""SomeSymbol""## or preferably ##..""SomeSymbol""## (or only ##..""SomeSymbol""## if inside a [[KeyPgWith|With..End With]] block).
 	
 	Sub is the same as ##[[KeyPgFunction|Function]]##, except it does not allow a value to be returned.
 	
 	When calling a subroutine, parentheses after the subroutine name (surrounding the argument list if any) are optional.
 	
 	The second syntax defines either a constructor or destructor using the ##[[KeyPgModuleConstructor|Constructor]]## and ##[[KeyPgModuleDestructor|Destructor]]## keywords, respectively. Constructor subroutines are executed before the first line of code in the module, while destructors execute on module exit. Note the public access specifier and empty parameter list for both constructors and destructors.
+	
+	**Warning for 64-bit compiler only:** See the [[ProPgIdentifierRules|Identifier Rules]] page for the choice of user procedure identifier names (and specially the 'Platform Differences' paragraph).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/sub-1.bas"}}%%(freebasic)

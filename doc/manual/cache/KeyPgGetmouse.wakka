@@ -2,7 +2,8 @@
 Retrieves the status of the mouse pointing device
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Getmouse** ( [[KeyPgByref|byref]] //x// [[KeyPgAs|as]] [[KeyPgInteger|integer]], [[KeyPgByref|byref]] //y// [[KeyPgAs|as]] [[KeyPgInteger|integer]], [[KeyPgByref|byref]] //wheel// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //buttons// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //clip// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Getmouse** ( [[KeyPgByref|byref]] //x// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByref|byref]] //y// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByref|byref]] //wheel// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //buttons// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //clip// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Getmouse** ( [[KeyPgByref|byref]] //x// [[KeyPgAs|as]] [[KeyPgLongint|longint]], [[KeyPgByref|byref]] //y// [[KeyPgAs|as]] [[KeyPgLongint|longint]], [[KeyPgByref|byref]] //wheel// [[KeyPgAs|as]] [[KeyPgLongint|longint]] = 0, [[KeyPgByref|byref]] //buttons// [[KeyPgAs|as]] [[KeyPgLongint|longint]] = 0, [[KeyPgByref|byref]] //clip// [[KeyPgAs|as]] [[KeyPgLongint|longint]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Getmouse** (//x//, //y// [, [ //wheel// ] [, [ //buttons// ] [, [ //clip// ]]]])
@@ -30,7 +31,7 @@ Retrieves the status of the mouse pointing device
 	If in graphics mode, ##//x//## and ##//y//## will always be returned in pixel coordinates still relative to the upper left corner of the screen, which is at 0,0 in this case; custom coordinates system set via ##[[KeyPgViewgraphics|View]]## or ##[[KeyPgWindow|Window]]## do not affect the coordinates returned by ##**Getmouse**##.
 	If the mouse runs off the graphic window, all values are set to ##-1## and the return value of the function is set to ##1##. This may result in misinterpretation for the buttons and wheel if the return value of the function is not also tested.
 	
-	##//Wheel//## is the mouse wheel counter; rotating the wheel away from you makes the count to increase, rotating the wheel toward you makes it to decrease. At program startup or when a new graphics mode is set via ##[[KeyPgScreengraphics|Screen]]##, wheel position is reset to 0. ""FreeBASIC"" may not always support mouse wheels for a given platform, in which case 0 is always returned.
+	##//Wheel//## is the mouse wheel counter; rotating the wheel away from you makes the count to increase, rotating the wheel toward you makes it to decrease. At program startup or when a new graphics mode is set via ##[[KeyPgScreengraphics|Screen (Graphics)]]##, wheel position is reset to 0. ""FreeBASIC"" may not always support mouse wheels for a given platform, in which case 0 is always returned.
 	
 	##//Buttons//## stores the buttons status as a bitmask: bit 0 is set if left mouse button is down; bit 1 is set if right mouse button is down; bit 2 is set if middle mouse button / wheel is down.
 	
@@ -41,9 +42,9 @@ Retrieves the status of the mouse pointing device
 	**Warning:** When the flag GFX_SHAPED_WINDOW is set (see ##[[KeyPgScreenres|Screenres]]##), ##**Getmouse**## is only active in any colored area, ie there where color <> RGBA(255, 0, 255, alpha).
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/input/getmouse.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/input/getmouse.bas"}}%%(freebasic)
 
-DIM AS INTEGER x, y, buttons, res 
+DIM AS LONG x, y, buttons, res 
 ' Set video mode and enter loop
 SCREENRES 640, 480, 8
 DO
@@ -68,17 +69,17 @@ DO
 LOOP WHILE INKEY = ""
 END
 %%
-{{fbdoc item="filename" value="examples/manual/input/getmouse2.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/input/getmouse2.bas"}}%%(freebasic)
 'Example 2: type-union-type structure
 type mouse
-	as integer res
-	as integer x, y, wheel, clip
+	as long res
+	as long x, y, wheel, clip
 	union
-		buttons as integer
+		buttons as long
 		type
-			left:1 as integer
-			right:1 as integer
-			middle:1 as integer
+			left:1 as long
+			right:1 as long
+			middle:1 as long
 		end type
 	end union
 end type
@@ -97,12 +98,11 @@ do
 	sleep 10, 1
 loop while inkey = ""
 %%
-
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Getmouse""**##.  The variables passed must also be of type ##[[KeyPgLong|Long]]## instead of ##[[KeyPgInteger|Integer]]##.
 
 {{fbdoc item="target"}}
-	- On ""Win32"", scroll wheel changes are not guaranteed to be detected in full-screen console mode. 
+	- On ""Win32"", scroll wheel changes are not guaranteed to be detected in full-screen console mode.  Confirmed on ""WinXP"": In windowed mode, mouse wheel changes are seen, but in full-screen console mode they are not.
 	- In DOS, the "clip" value has no relevance.  Additionally the wheel and middle button will not work unless supported and enabled by the mouse driver. See also [[FaqDOS]].
 
 {{fbdoc item="diff"}}

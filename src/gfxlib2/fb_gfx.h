@@ -23,28 +23,76 @@
 #define EVENT_LOCK()		{ fb_MutexLock(__fb_gfx->event_mutex); }
 #define EVENT_UNLOCK()		{ fb_MutexUnlock(__fb_gfx->event_mutex); }
 
-#define DRIVER_NULL				-1
-#define DRIVER_FULLSCREEN		0x00000001
-#define DRIVER_OPENGL			0x00000002
-#define DRIVER_NO_SWITCH		0x00000004
-#define DRIVER_NO_FRAME			0x00000008
-#define DRIVER_SHAPED_WINDOW	0x00000010
-#define DRIVER_ALWAYS_ON_TOP	0x00000020
-#define DRIVER_ALPHA_PRIMITIVES	0x00000040
-#define DRIVER_HIGH_PRIORITY	0x00000080
-#define DRIVER_OPENGL_OPTIONS	0x000F0000
-#define HAS_STENCIL_BUFFER		0x00010000
-#define HAS_ACCUMULATION_BUFFER	0x00020000
-#define HAS_MULTISAMPLE			0x00040000
+/*
+gfx driver flags and gfx context flags
 
-#define HAS_MMX					0x01000000
-#define SCREEN_EXIT				((int)0x80000000)
-#define PRINT_SCROLL_WAS_OFF	0x00000004
-#define ALPHA_PRIMITIVES		0x00000008
-#define OPENGL_PRIMITIVES		0x00000010
-#define HIGH_PRIORITY			0x00000020
-#define QB_COMPATIBILITY		0x10000000
-#define OPENGL_SUPPORT			0x20000000
+mod = mode
+ctx = __fb_gfx->flags
+drv = driver->flags
+get = screencontrol (get)
+set = screencontrol (set)
+
+constant                value         mod  ctx  drv  get  set
+----------------------  ----------    ---  ---  ---  ---  ---
+
+gfx driver flags passed by user through SCREEN[RES]
+- set_mode() passes these flags to driver->init()
+
+DRIVER_NULL             -1            yes  no   no   no   no
+DRIVER_FULLSCREEN       0x00000001    yes  yes  yes  no   no
+DRIVER_OPENGL           0x00000002    yes  yes  yes  no   no
+DRIVER_NO_SWITCH        0x00000004    no   no   yes  no   no
+DRIVER_NO_FRAME         0x00000008    no   no   yes  no   no
+DRIVER_SHAPED_WINDOW    0x00000010    yes  no   yes  no   no
+DRIVER_ALWAYS_ON_TOP    0x00000020    no   no   yes  no   no
+DRIVER_ALPHA_PRIMITIVES 0x00000040    yes  no   no   no   no
+DRIVER_HIGH_PRIORITY    0x00000080    yes  no   yes  no   no
+DRIVER_NO_X86_MMX       0x00000100    yes  no   yes  no   no
+DRIVER_OPENGL_OPTIONS   0x000F0000    no   no   yes  no   no
+HAS_STENCIL_BUFFER      0x00010000    no   no   yes  no   no
+HAS_ACCUMULATION_BUFFER 0x00020000    no   no   yes  no   no
+HAS_MULTISAMPLE         0x00040000    no   no   yes  no   no
+
+gfx context flags stored in __fb_gfx->flags
+- should not interfere with the driver flags.
+- careful, some flags re-use DRIVER constants
+- DRIVER_FULLSCREEN reused by __fb_gfx->flags
+- DRIVER_OPENGL reused by __fb_gfx->flags
+
+X86_MMX_ENABLED         0x01000000    no   yes  no   yes  yes
+SCREEN_EXIT             0x80000000    yes  no   no   no   no
+PRINT_SCROLL_WAS_OFF    0x00000004    no   yes  no   no   no
+ALPHA_PRIMITIVES        0x00000008    no   yes  no   yes  yes
+OPENGL_PRIMITIVES       0x00000010    no   no   no   no   no
+HIGH_PRIORITY           0x00000020    no   yes  no   yes  yes
+QB_COMPATIBILITY        0x10000000    no   no   no   no   no
+OPENGL_SUPPORT          0x20000000    no   yes  no   yes  yes
+
+*/
+
+#define DRIVER_NULL             -1
+#define DRIVER_FULLSCREEN       0x00000001
+#define DRIVER_OPENGL           0x00000002
+#define DRIVER_NO_SWITCH        0x00000004
+#define DRIVER_NO_FRAME         0x00000008
+#define DRIVER_SHAPED_WINDOW    0x00000010
+#define DRIVER_ALWAYS_ON_TOP    0x00000020
+#define DRIVER_ALPHA_PRIMITIVES 0x00000040
+#define DRIVER_HIGH_PRIORITY    0x00000080
+#define DRIVER_NO_X86_MMX       0x00000100
+#define DRIVER_OPENGL_OPTIONS   0x000F0000
+#define HAS_STENCIL_BUFFER      0x00010000
+#define HAS_ACCUMULATION_BUFFER 0x00020000
+#define HAS_MULTISAMPLE         0x00040000
+
+#define X86_MMX_ENABLED         0x01000000
+#define SCREEN_EXIT             ((int)0x80000000)
+#define PRINT_SCROLL_WAS_OFF    0x00000004
+#define ALPHA_PRIMITIVES        0x00000008
+#define OPENGL_PRIMITIVES       0x00000010
+#define HIGH_PRIORITY           0x00000020
+#define QB_COMPATIBILITY        0x10000000
+#define OPENGL_SUPPORT          0x20000000
 
 #define CTX_BUFFER_INIT			0x00000001
 #define CTX_BUFFER_SET			0x00000002
@@ -92,87 +140,110 @@
 
 #define WINDOW_TITLE_SIZE	128
 
-#define GET_WINDOW_POS				0
-#define GET_WINDOW_TITLE			1
-#define GET_WINDOW_HANDLE			2
-#define GET_DESKTOP_SIZE			3
-#define GET_SCREEN_SIZE				4
-#define GET_SCREEN_DEPTH			5
-#define GET_SCREEN_BPP				6
-#define GET_SCREEN_PITCH			7
-#define GET_SCREEN_REFRESH			8
-#define GET_DRIVER_NAME				9
-#define GET_TRANSPARENT_COLOR		10
-#define GET_VIEWPORT				11
-#define GET_PEN_POS					12
-#define GET_COLOR					13
-#define GET_ALPHA_PRIMITIVES		14
-#define GET_GL_EXTENSIONS			15
-#define GET_HIGH_PRIORITY			16
+#define GET_WINDOW_POS              0
+#define GET_WINDOW_TITLE            1
+#define GET_WINDOW_HANDLE           2
+#define GET_DESKTOP_SIZE            3
+#define GET_SCREEN_SIZE             4
+#define GET_SCREEN_DEPTH            5
+#define GET_SCREEN_BPP              6
+#define GET_SCREEN_PITCH            7
+#define GET_SCREEN_REFRESH          8
+#define GET_DRIVER_NAME             9
+#define GET_TRANSPARENT_COLOR       10
+#define GET_VIEWPORT                11
+#define GET_PEN_POS                 12
+#define GET_COLOR                   13
+#define GET_ALPHA_PRIMITIVES        14
+#define GET_GL_EXTENSIONS           15
+#define GET_HIGH_PRIORITY           16
+#define GET_SCANLINE_SIZE           17
+#define GET_X86_MMX_ENABLED         18
 
-#define SET_FIRST_SETTER			100
-#define SET_WINDOW_POS				100
-#define SET_WINDOW_TITLE			101
-#define SET_PEN_POS					102
-#define SET_DRIVER_NAME				103
-#define SET_ALPHA_PRIMITIVES		104
-#define SET_GL_COLOR_BITS			105
-#define SET_GL_COLOR_RED_BITS		106
-#define SET_GL_COLOR_GREEN_BITS		107
-#define SET_GL_COLOR_BLUE_BITS		108
-#define SET_GL_COLOR_ALPHA_BITS		109
-#define SET_GL_DEPTH_BITS			110
-#define SET_GL_STENCIL_BITS			111
-#define SET_GL_ACCUM_BITS			112
-#define SET_GL_ACCUM_RED_BITS		113
-#define SET_GL_ACCUM_GREEN_BITS		114
-#define SET_GL_ACCUM_BLUE_BITS		115
-#define SET_GL_ACCUM_ALPHA_BITS		116
-#define SET_GL_NUM_SAMPLES			117
-#define SET_GL_2D_MODE				150
-#define SET_GL_SCALE				151
+#define GET_GL_COLOR_BITS           37
+#define GET_GL_COLOR_RED_BITS       38
+#define GET_GL_COLOR_GREEN_BITS     39
+#define GET_GL_COLOR_BLUE_BITS      40
+#define GET_GL_COLOR_ALPHA_BITS     41
+#define GET_GL_DEPTH_BITS           42
+#define GET_GL_STENCIL_BITS         43
+#define GET_GL_ACCUM_BITS           44
+#define GET_GL_ACCUM_RED_BITS       45
+#define GET_GL_ACCUM_GREEN_BITS     46
+#define GET_GL_ACCUM_BLUE_BITS      47
+#define GET_GL_ACCUM_ALPHA_BITS     48
+#define GET_GL_NUM_SAMPLES          49
 
-#define POLL_EVENTS					200
+#define GET_GL_2D_MODE              82
+#define GET_GL_SCALE                83
+
+#define SET_FIRST_SETTER            100
+
+#define SET_WINDOW_POS              100
+#define SET_WINDOW_TITLE            101
+#define SET_PEN_POS                 102
+#define SET_DRIVER_NAME             103
+#define SET_ALPHA_PRIMITIVES        104
+
+#define SET_GL_COLOR_BITS           105
+#define SET_GL_COLOR_RED_BITS       106
+#define SET_GL_COLOR_GREEN_BITS     107
+#define SET_GL_COLOR_BLUE_BITS      108
+#define SET_GL_COLOR_ALPHA_BITS     109
+#define SET_GL_DEPTH_BITS           110
+#define SET_GL_STENCIL_BITS         111
+#define SET_GL_ACCUM_BITS           112
+#define SET_GL_ACCUM_RED_BITS       113
+#define SET_GL_ACCUM_GREEN_BITS     114
+#define SET_GL_ACCUM_BLUE_BITS      115
+#define SET_GL_ACCUM_ALPHA_BITS     116
+#define SET_GL_NUM_SAMPLES          117
+#define SET_X86_MMX_ENABLED         118
+
+#define SET_GL_2D_MODE              150
+#define SET_GL_SCALE                151
+
+#define POLL_EVENTS                 200
 
 typedef void (BLITTER)(unsigned char *, int);
 
 typedef struct _GFX_CHAR_CELL {
-    FB_WCHAR ch;
-    unsigned fg, bg;
+	FB_WCHAR ch;
+	unsigned fg, bg;
 } GFX_CHAR_CELL;
 
 typedef struct FBGFX
 {
-	int id;									/**< Mode id number for contexts identification */
-    int mode_num;							/**< Current mode number */
-    unsigned char **page;					/**< Pages memory */
-    int num_pages;							/**< Number of requested pages */
-    int visible_page;						/**< Current visible page number */
-    unsigned char *framebuffer;				/**< Our current visible framebuffer */
-    int w, h;								/**< Current mode width and height */
-    int depth;								/**< Current mode depth in bits per pixel */
-    int bpp;								/**< Bytes per pixel */
-    int pitch;								/**< Width of a framebuffer line in bytes */
-    unsigned int *palette;					/**< Current RGB color values for each palette index */
-    unsigned int *device_palette;			/**< Current RGB color values of visible device palette */
-    unsigned char *color_association;		/**< Palette color index associations for CGA/EGA emulation */
-    char *dirty;							/**< Dirty lines buffer */
-    const struct GFXDRIVER *driver;			/**< Gfx driver in use */
-    int color_mask;							/**< Color bit mask for colordepth emulation */
-    const struct PALETTE *default_palette;	/**< Default palette for current mode */
-    int scanline_size;						/**< Vertical size of a single scanline in pixels */
-    int cursor_x, cursor_y;					/**< Current graphical text cursor position (in chars, 0 based) */
-    const struct FONT *font;				/**< Current font */
-    int text_w, text_h;						/**< Graphical text console size in characters */
-    float aspect;							/**< Aspect ratio (used in CIRCLE) */
-    char *key;								/**< Keyboard states */
-	int refresh_rate;						/**< Driver refresh rate */
-	GFX_CHAR_CELL **con_pages;				/**< Character information for all pages */
-    EVENT *event_queue;						/**< The OS events queue array */
-    int event_head, event_tail;				/**< Indices for the head and tail event in the array */
-	FBMUTEX *event_mutex;			/**< Mutex lock for accessing the events queue */
-	volatile int flags;						/**< Status flags */
-	int lock_count;							/**<Reference count for SCREENLOCK/UNLOCK */
+	int id;                                 /**< Mode id number for contexts identification */
+	int mode_num;                           /**< Current mode number */
+	unsigned char **page;                   /**< Pages memory */
+	int num_pages;                          /**< Number of requested pages */
+	int visible_page;                       /**< Current visible page number */
+	unsigned char *framebuffer;             /**< Our current visible framebuffer */
+	int w, h;                               /**< Current mode width and height */
+	int depth;                              /**< Current mode depth in bits per pixel */
+	int bpp;                                /**< Bytes per pixel */
+	int pitch;                              /**< Width of a framebuffer line in bytes */
+	unsigned int *palette;                  /**< Current RGB color values for each palette index */
+	unsigned int *device_palette;           /**< Current RGB color values of visible device palette */
+	unsigned char *color_association;       /**< Palette color index associations for CGA/EGA emulation */
+	char *dirty;                            /**< Dirty lines buffer */
+	const struct GFXDRIVER *driver;         /**< Gfx driver in use */
+	int color_mask;                         /**< Color bit mask for colordepth emulation */
+	const struct PALETTE *default_palette;  /**< Default palette for current mode */
+	int scanline_size;                      /**< Vertical size of a single scanline in pixels */
+	int cursor_x, cursor_y;                 /**< Current graphical text cursor position (in chars, 0 based) */
+	const struct FONT *font;                /**< Current font */
+	int text_w, text_h;                     /**< Graphical text console size in characters */
+	float aspect;                           /**< Aspect ratio (used in CIRCLE) */
+	char *key;                              /**< Keyboard states */
+	int refresh_rate;                       /**< Driver refresh rate */
+	GFX_CHAR_CELL **con_pages;              /**< Character information for all pages */
+	EVENT *event_queue;                     /**< The OS events queue array */
+	int event_head, event_tail;             /**< Indices for the head and tail event in the array */
+	FBMUTEX *event_mutex;                   /**< Mutex lock for accessing the events queue */
+	volatile int flags;                     /**< Status flags */
+	int lock_count;                         /**<Reference count for SCREENLOCK/UNLOCK */
 } FBGFX;
 
 typedef struct GFXDRIVER
@@ -326,6 +397,12 @@ typedef struct GFXDRIVER
 	 * It is only needed for OpenGL drivers and can be NULL otherwise.
 	 */
 	void (*poll_events)(void);
+
+	/** Driver page update function pointer.
+	 *
+	 * Manually refresh the screen by copying from gfxlib2 memory to video memory
+	 */
+	void (*update)(void);
 } GFXDRIVER;
 
 typedef struct PALETTE
@@ -336,8 +413,8 @@ typedef struct PALETTE
 
 typedef struct FONT
 {
-    const int w;
-    const int h;
+	const int w;
+	const int h;
 	const unsigned char *data;
 } FONT;
 
@@ -491,7 +568,7 @@ extern FBCALL int fb_GfxStrigQB( int n );
 int fb_GfxGetkey(void);
 FBSTRING *fb_GfxInkey(void);
 int fb_GfxKeyHit(void);
-int fb_GfxColor(int fg_color, int bg_color, int flags);
+unsigned int fb_GfxColor(unsigned int fg_color, unsigned int bg_color, int flags);
 void fb_GfxClear(int mode);
 int fb_GfxWidth(int w, int h);
 int fb_GfxLocateRaw(int y, int x, int cursor);

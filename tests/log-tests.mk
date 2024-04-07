@@ -203,20 +203,36 @@ $(LOGLIST_COMPILE_ONLY_OK) : %.log : %.bas
 endif
 
 # ------------------------------------------------------------------------
+# COMPILE_ONLY_FAIL tests test that fbc prints an error and returns a non-zero exit code.
+# To differentiate between expected errors and unexpected errors such as fbc crashes,
+# we can check the fbc exit code. It's not perfect but better than nothing.
+# Typical fbc exit codes:
+#    0: normal success
+#    1: normal error
+#    1-17: FB runtime errors, can occur if fbc was built with -e/-ex/-exx runtime error checking.
+#          Typically fbc is built at least with -e.
+#          The most important cases are probably 7 (FB_RTERROR_NULLPTR) and 12 (FB_RTERROR_SIGSEGV).
+#          Unfortunately, value 1 (FB_RTERROR_ILLEGALFUNCTIONCALL) overlaps with the normal error case.
+#    139: 128 + SIGSEGV(11) produced by the Linux shell, if fbc crashes with SIGSEGV and was built without -e.
 ifneq ($(LOGLIST_COMPILE_ONLY_FAIL),)
 $(LOGLIST_COMPILE_ONLY_FAIL) : %.log : %.bas
 	@$(ECHO) "$< : TEST_MODE=COMPILE_ONLY_FAIL"
 	@$(ECHO) "$< : TEST_MODE=COMPILE_ONLY_FAIL" > $@
-	@if $(FBC) $(FBC_CFLAGS) -c $< \
-	; then \
-		$(ECHO) "$< : RESULT=FAILED" && \
-		$(RM) -f $(patsubst %.bas,%.o,$<) && \
-		$(ECHO) "SRCLIST_COMPILE_ONLY_FAIL += $<" >> $(FAILED_LOG_TESTS_INC) && \
-		$(ABORT_CMD) \
-	; else \
-		$(ECHO) "$< : RESULT=PASSED" && \
-		true \
-	; fi >> $@ 2>&1
+	@$(FBC) $(FBC_CFLAGS) -c $< >> $@ 2>&1; \
+		exitcode=$$?; \
+		if [ $$exitcode -eq 0 ]; then \
+			$(ECHO) "$< : RESULT=FAILED" >> $@; \
+			$(RM) -f $(patsubst %.bas,%.o,$<); \
+			$(ECHO) "SRCLIST_COMPILE_ONLY_FAIL += $<" >> $(FAILED_LOG_TESTS_INC); \
+			$(ABORT_CMD); \
+		elif [ $$exitcode -eq 1 ]; then \
+			$(ECHO) "$< : RESULT=PASSED" >> $@; \
+		else \
+			$(ECHO) "$< : RESULT=FAILED (unexpected fbc exit code $$exitcode)" >> $@; \
+			$(RM) -f $(patsubst %.bas,%.o,$<); \
+			$(ECHO) "SRCLIST_COMPILE_ONLY_FAIL += $<" >> $(FAILED_LOG_TESTS_INC); \
+			$(ABORT_CMD); \
+		fi
 endif
 
 # ------------------------------------------------------------------------

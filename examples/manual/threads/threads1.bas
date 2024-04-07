@@ -1,7 +1,7 @@
 '' examples/manual/threads/threads1.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'THREADCREATE'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgThreadCreate
 '' --------
@@ -16,7 +16,7 @@ Const MAX_THREADS = 10
 Dim Shared As Any Ptr ttylock
 
 '' Teletype unfurls some text across the screen at a given location
-Sub teletype( ByRef text As String, ByVal x As Integer, ByVal y As Integer )
+Sub teletype( ByRef text As String, ByVal x As Long, ByVal y As Long )
 	''
 	'' This MutexLock makes simultaneously running threads wait for each
 	'' other, so only one at a time can continue and print output.

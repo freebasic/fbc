@@ -4,7 +4,9 @@
 
 static const char *pszDefaultQuestion = "? ";
 
-#if defined( HOST_WIN32 ) || defined( HOST_DOS ) || defined( HOST_LINUX )
+// Neither version works correctly on android...
+
+#if defined( HOST_WIN32 ) || defined( HOST_DOS )
 
 int fb_ConsoleLineInput
 	(

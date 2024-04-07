@@ -1,7 +1,7 @@
 '' examples/manual/datatype/boolean-false.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'FALSE'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgFalse
 '' --------

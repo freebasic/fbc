@@ -1,0 +1,1 @@
+fb_query_symbol-error-3.bas(101) error 42: Variable not declared, SomeUndefinedSymbol

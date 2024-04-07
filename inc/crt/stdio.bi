@@ -27,8 +27,12 @@
 #include once "crt/dos/stdio.bi"
 #elseif defined(__FB_LINUX__)
 #include once "crt/linux/stdio.bi"
+#elseif defined(__FB_ANDROID__)
+#include once "crt/android/stdio.bi"
 #elseif defined(__FB_FREEBSD__)
 #include once "crt/freebsd/stdio.bi"
+#elseif defined(__FB_DARWIN__)
+#include once "crt/darwin/stdio.bi"
 #elseif defined(__FB_UNIX__)
 '' Other Unices are likely to be BSD variants. stdio.bi is the most important
 '' crt header, so try to make FB work on other OSes.

@@ -1,12 +1,12 @@
 '' examples/manual/fileio/access.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'ACCESS'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgAccess
 '' --------
 
-Dim As Integer o
+Dim As Long o
 
   '' get an open file number.
   o = FreeFile

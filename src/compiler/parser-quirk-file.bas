@@ -9,7 +9,7 @@
 #include once "ast.bi"
 
 '':::::
-'' PrintStmt	  =   (PRINT|'?') ('#' Expression ',')? (USING Expression{str} ';')? (Expression? ';'|"," )*
+'' PrintStmt      =   (PRINT|'?') ('#' Expression ',')? (USING Expression{str} ';')? (Expression? ';'|"," )*
 ''
 function cPrintStmt  _
 	( _
@@ -44,7 +44,7 @@ function cPrintStmt  _
 	else
 		'' ('#' Expression)?
 		if( hMatch( CHAR_SHARP ) ) then
-			hMatchExpressionEx( filexpr, FB_DATATYPE_INTEGER )
+			hMatchFileNumberExpression( filexpr, FB_DATATYPE_INTEGER )
 			hMatchCOMMA( )
 		else
 			filexpr = astNewCONSTi( 0 )
@@ -72,7 +72,7 @@ function cPrintStmt  _
 #endif
 				filexprcopy = astCloneTree( filexpr )
 				if( rtlPrintUsingEnd( filexprcopy, _
-				                      islprint ) = FALSE ) then
+					islprint ) = FALSE ) then
 					exit function
 				end if
 			end if
@@ -108,10 +108,10 @@ function cPrintStmt  _
 		iscomma = FALSE
 		issemicolon = FALSE
 		if( hMatch( CHAR_COMMA ) ) then
-            if( usingexpr <> NULL ) then
+			if( usingexpr <> NULL ) then
 				'' QB automatically converted them to semi-colons in the editor.
-                errReport( FB_ERRMSG_EXPECTEDSEMICOLON )
-            end if
+				errReport( FB_ERRMSG_EXPECTEDSEMICOLON )
+			end if
 			iscomma = TRUE
 		elseif( hMatch( CHAR_SEMICOLON ) ) then
 			issemicolon = TRUE
@@ -132,31 +132,31 @@ function cPrintStmt  _
 		if( isspc or istab ) then
 			filexprcopy = astCloneTree( filexpr )
 			if( rtlPrintSPCTab( filexprcopy, _
-							 expr, _
-							 istab, _
-							 islprint ) = FALSE ) then
+				expr, _
+				istab, _
+				islprint ) = FALSE ) then
 				exit function
 			end if
 		else
 			if( usingexpr = NULL /'or expr = NULL'/ ) then
 			/' (commented check allows multiple consecutive commas/semicolons in USING statements.
-			   QB doesn't support it though, so I'm not sure we should. '/
+			QB doesn't support it though, so I'm not sure we should. '/
 				filexprcopy = astCloneTree( filexpr )
 				if( rtlPrint( filexprcopy, _
-							  iscomma, _
-							  issemicolon, _
-							  expr, _
-							  islprint ) = FALSE ) then
+					iscomma, _
+					issemicolon, _
+					expr, _
+					islprint ) = FALSE ) then
 					errReport( FB_ERRMSG_INVALIDDATATYPES )
 				end if
 
 			else
 				filexprcopy = astCloneTree( filexpr )
 				if( rtlPrintUsing( filexprcopy, _
-								   expr, _
-								   iscomma, _
-								   issemicolon, _
-								   islprint ) = FALSE ) then
+					expr, _
+					iscomma, _
+					issemicolon, _
+					islprint ) = FALSE ) then
 					errReport( FB_ERRMSG_INVALIDDATATYPES )
 				end if
 			end if
@@ -169,17 +169,17 @@ function cPrintStmt  _
 		if( expressions = 0 ) then
 			filexprcopy = astCloneTree( filexpr )
 			if( rtlPrint( filexprcopy, _
-						  FALSE, _
-						  FALSE, _
-						  NULL, _
-						  islprint ) = FALSE ) then
+				FALSE, _
+				FALSE, _
+				NULL, _
+				islprint ) = FALSE ) then
 				exit function
 			end if
 		end if
 	else
 		filexprcopy = astCloneTree( filexpr )
 		if( rtlPrintUsingEnd( filexprcopy, _
-							  islprint ) = FALSE ) then
+			islprint ) = FALSE ) then
 			exit function
 		end if
 	end if
@@ -192,11 +192,11 @@ function cPrintStmt  _
 end function
 
 '':::::
-'' WriteStmt	  =   WRITE ('#' Expression)? (Expression? "," )*
+'' WriteStmt      =   WRITE ('#' Expression)? (Expression? "," )*
 ''
 function cWriteStmt() as integer
-    dim as ASTNODE ptr filexpr, filexprcopy, expr
-    dim as integer expressions, iscomma
+	dim as ASTNODE ptr filexpr, filexprcopy, expr
+	dim as integer expressions, iscomma
 
 	function = FALSE
 
@@ -205,11 +205,11 @@ function cWriteStmt() as integer
 
 	'' ('#' Expression)?
 	if( hMatch( CHAR_SHARP ) ) then
-		hMatchExpressionEx( filexpr, FB_DATATYPE_INTEGER )
+		hMatchFileNumberExpression( filexpr, FB_DATATYPE_INTEGER )
 
 		hMatchCOMMA( )
 
-    else
+	else
 		filexpr = astNewCONSTi( 0 )
 	end if
 
@@ -219,53 +219,54 @@ function cWriteStmt() as integer
 		astAdd( astRemSideFx( filexpr ) )
 	end if
 
-    '' (Expression? "," )*
-    expressions = 0
-    do
+	'' (Expression? "," )*
+	expressions = 0
+	do
 		expr = cExpression( )
 		if( expr = NULL ) then
-        	expr = NULL
-        end if
+			expr = NULL
+		end if
 
 		iscomma = FALSE
 		if( hMatch( CHAR_COMMA ) ) then
 			iscomma = TRUE
 		end if
 
-    	filexprcopy = astCloneTree( filexpr )
+		filexprcopy = astCloneTree( filexpr )
 
-    	'' handle WRITE w/o expressions
-    	if( (iscomma = FALSE) and (expr = NULL) ) then
-    		if( expressions = 0 ) then
-    			rtlWrite( filexprcopy, FALSE, NULL )
-    		end if
+		'' handle WRITE w/o expressions
+		if( (iscomma = FALSE) and (expr = NULL) ) then
+			if( expressions = 0 ) then
+				rtlWrite( filexprcopy, FALSE, NULL )
+			end if
 
-    		exit do
-    	end if
+			exit do
+		end if
 
-    	if( rtlWrite( filexprcopy, iscomma, expr ) = FALSE ) then
+		if( rtlWrite( filexprcopy, iscomma, expr ) = FALSE ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
-    	end if
+		end if
 
-    	expressions += 1
-    loop while( iscomma )
+		expressions += 1
+	loop while( iscomma )
 
-    ''
-    astDelTree( filexpr )
+	''
+	astDelTree( filexpr )
 
 	function = TRUE
 end function
 
 '':::::
-'' LineInputStmt	  =   LINE INPUT ';'? ('#' Expression| Expression{str}?) (','|';')? Variable? .
+'' LineInputStmt      =   LINE INPUT ';'? ('#' Expression| Expression{str}?) (','|';')? Variable? .
 ''
 function cLineInputStmt _
 	( _
 		_
 	) as integer
 
-    dim as ASTNODE ptr expr, dstexpr
-    dim as integer isfile, addnewline, issep, addquestion
+	dim as ASTNODE ptr filestrexpr = NULL, dstexpr = NULL, maxlenexpr = NULL
+	dim as integer isfile = FALSE, addnewline = FALSE, issep = FALSE, addquestion = FALSE
+	dim as integer dtype = any
 
 	function = FALSE
 
@@ -284,85 +285,106 @@ function cLineInputStmt _
 	addnewline = (hMatch( CHAR_SEMICOLON ) = FALSE)
 
 	'' '#'?
-	isfile = FALSE
 	if( hMatch( CHAR_SHARP ) ) then
 		isfile = TRUE
-	end if
+		'' Expression
+		hMatchFileNumberExpression( filestrexpr, FB_DATATYPE_INTEGER )
 
-	'' Expression?
-	expr = cExpression( )
-	if( expr = NULL ) then
-		if( isfile ) then
-			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-			expr = astNewCONSTi( 0 )
-		else
-			expr = NULL
-		end if
+	else
+		'' could be a prompt or variable, we don't know until we get the next delimiter
+		dstexpr = cExpression( )
+
 	end if
 
 	'' ','|';'?
-	issep = TRUE
 	if( hMatch( CHAR_COMMA ) = FALSE ) then
 		if( hMatch( CHAR_SEMICOLON ) = FALSE ) then
-			issep = FALSE
-			if( (expr = NULL) or (isfile) ) then
-				errReport( FB_ERRMSG_EXPECTEDCOMMA )
+
+			'' only show an error if we didn't get a dstexpr, which means we may not
+			'' expect a delimiter here if we read in a variable below
+			if( dstexpr = NULL ) then
+				'' fbc allows both comma and semicolon following the file number
+				'' but should probably only be comma
+				if( isfile ) then
+					errReport( FB_ERRMSG_EXPECTEDCOMMA )
+				else
+					errReport( FB_ERRMSG_EXPECTEDCOMMAORSEMICOLON )
+				end if
 			end if
-        else
-        	addquestion = TRUE
+		else
+			addquestion = TRUE
+			issep = TRUE
 		end if
-    else
-        addquestion = FALSE
+	else
+		issep = TRUE
 	end if
 
-    '' Variable?
-	dstexpr = cVarOrDeref( )
+	'' if we got a separator and dstexpr, then it must be a prompt
+	if( issep = TRUE ) then
+		if( dstexpr ) then
+			assert( isfile = FALSE )
+			filestrexpr = dstexpr
+			dstexpr = NULL
+		end if
+	end if
+
+	'' Variable? - but only if we don't have it yet
 	if( dstexpr = NULL ) then
-		if( (expr = NULL) or (isfile) ) then
+		dstexpr = cVarOrDeref( )
+		if( dstexpr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			hSkipStmt( )
 			return TRUE
-		else
-			dstexpr = expr
-			expr = NULL
-		end if
-	else
-		if( issep = FALSE ) then
-			errReport( FB_ERRMSG_EXPECTEDCOMMA )
 		end if
 	end if
 
 	'' dest can't be a top-level const
 	if( typeIsConst( astGetFullType( dstexpr ) ) ) then
 		errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
+	elseif( astGetStrLitSymbol( dstexpr ) ) then
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )
 	end if
 
-    select case astGetDataType( dstexpr )
-    case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-    	function = rtlFileLineInput( isfile, expr, dstexpr, addquestion, addnewline )
+	'' string variable length unknown? allow specifying a max length
+	if( rtlCalcStrLen( dstexpr, astGetDataType( dstexpr ) ) = 0 ) then
+		'' ',' max_chars
+		if( hMatch( CHAR_COMMA ) ) then
+			maxlenexpr = cExpression( )
+			if( maxlenexpr = NULL ) then
+				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+				'' error recovery: none rtlFileLineInput[Wstr] will handle it
+			end if
+		else
+			errReport( FB_ERRMSG_EXPECTEDCOMMA )
+		end if
+	end if
 
-    case FB_DATATYPE_WCHAR
-    	function = rtlFileLineInputWstr( isfile, expr, dstexpr, addquestion, addnewline )
+	select case astGetDataType( dstexpr )
+	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+		function = rtlFileLineInput( isfile, filestrexpr, dstexpr, maxlenexpr, addquestion, addnewline )
 
-    '' not a string?
-    case else
+	case FB_DATATYPE_WCHAR
+		function = rtlFileLineInputWstr( isfile, filestrexpr, dstexpr, maxlenexpr, addquestion, addnewline )
+
+	'' not a string?
+	case else
 		astDelTree( dstexpr )
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
 		return TRUE
-    end select
+	end select
 
 end function
 
 '':::::
-'' InputStmt	  =   INPUT ';'? (('#' Expression| STRING_LIT) (','|';'))? Variable (',' Variable)*
+'' InputStmt      =   INPUT ';'? (('#' Expression| STRING_LIT) (','|';'))? Variable (',' Variable)*
 ''
 function cInputStmt _
 	( _
 		_
 	) as integer
 
-    dim as ASTNODE ptr filestrexpr, dstexpr
-	dim as integer islast, isfile, addnewline, addquestion
+	dim as ASTNODE ptr filestrexpr = NULL, dstexpr = NULL
+	dim as integer islast = FALSE, isfile = FALSE, addnewline = FALSE, addquestion = FALSE
 
 	function = FALSE
 
@@ -373,29 +395,33 @@ function cInputStmt _
 	addnewline = (hMatch( CHAR_SEMICOLON ) = FALSE)
 
 	'' '#'?
-	addquestion = FALSE
 	if( hMatch( CHAR_SHARP ) ) then
 		isfile = TRUE
 		'' Expression
-		hMatchExpressionEx( filestrexpr, FB_DATATYPE_INTEGER )
+		hMatchFileNumberExpression( filestrexpr, FB_DATATYPE_INTEGER )
 
-    else
-    	isfile = FALSE
-    	'' STRING_LIT?
-    	if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
+	else
+		'' STRING_LIT?
+		if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
 			filestrexpr = astNewVAR( symbAllocStrConst( *lexGetText( ), lexGetTextLen( ) ) )
 			lexSkipToken( )
-    	else
-    		filestrexpr = NULL
+		else
+			filestrexpr = NULL
 			addquestion = TRUE
-    	end if
+		end if
 	end if
 
-	'' ','|';'
+	'' ','|';'?
 	if( (isfile) or (filestrexpr <> NULL) ) then
 		if( hMatch( CHAR_COMMA ) = FALSE ) then
 			if( hMatch( CHAR_SEMICOLON ) = FALSE ) then
-				errReport( FB_ERRMSG_EXPECTEDCOMMA )
+				'' fbc allows both comma and semicolon following the file number
+				'' but should probably only be comma
+				if( isfile ) then
+					errReport( FB_ERRMSG_EXPECTEDCOMMA )
+				else
+					errReport( FB_ERRMSG_EXPECTEDCOMMAORSEMICOLON )
+				end if
 			else
 				addquestion = TRUE
 			end if
@@ -407,13 +433,22 @@ function cInputStmt _
 		exit function
 	end if
 
-    '' Variable (',' Variable)*
-    do
+	'' Variable (',' Variable)*
+	do
 		dstexpr = cVarOrDeref( )
 		if( dstexpr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			dstexpr = NULL
 			hSkipUntil( CHAR_COMMA )
+		end if
+
+		if( dstexpr <> NULL ) then
+			'' dest can't be a top-level const
+			if( typeIsConst( astGetFullType( dstexpr ) ) ) then
+				errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
+			elseif( astGetStrLitSymbol( dstexpr ) ) then
+				errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )
+			end if
 		end if
 
 		if( hMatch( CHAR_COMMA ) ) then
@@ -423,19 +458,14 @@ function cInputStmt _
 		end if
 
 		if( dstexpr <> NULL ) then
-			'' dest can't be a top-level const
-			if( typeIsConst( astGetFullType( dstexpr ) ) ) then
-				errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
-			end if
-
 			if( rtlFileInputGet( dstexpr ) = FALSE ) then
 				exit function
 			end if
 		end if
 
-    loop until( islast )
+	loop until( islast )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -462,12 +492,12 @@ private function hFileClose _
 	do
 		hMatch( CHAR_SHARP )
 
-    	filenum = cExpression( )
-    	if( filenum = NULL ) then
+		filenum = cExpression( )
+		if( filenum = NULL ) then
 			if( cnt = 0 ) then
 				'' pass NULL to rtlFileClose to get close-all function
 			else
-				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+				errReport( FB_ERRMSG_EXPECTEDFILENUMBEREXPRESSION )
 				filenum = astNewCONSTi( 0 )
 			end if
 		end if
@@ -495,7 +525,7 @@ private function hFileClose _
 end function
 
 '':::::
-'' Put			= PUT '#' Expression ',' Expression? ',' Expression{str|int|float|array} (',' Expression)?
+'' Put          = PUT '#' Expression ',' Expression? ',' Expression{str|int|float|array} (',' Expression)?
 ''
 private function hFilePut _
 	( _
@@ -513,7 +543,7 @@ private function hFilePut _
 		lexSkipToken( )
 	end if
 
-	hMatchExpressionEx( fileexpr, FB_DATATYPE_INTEGER )
+	hMatchFileNumberExpression( fileexpr, FB_DATATYPE_INTEGER )
 
 	'' ',' offset
 	hMatchCOMMA( )
@@ -542,32 +572,21 @@ private function hFilePut _
 	end if
 
 	isarray = FALSE
-	if( lexGetToken( ) = CHAR_LPRNT ) then
-    	if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
-
-    		s = astGetSymbol( srcexpr )
-    		if( s <> NULL ) then
-    			isarray = symbIsArray( s )
-    			if( isarray ) then
-
-    				'' don't allow var-len strings
-    				if( symbGetType( s ) = FB_DATATYPE_STRING ) then
-						astDelTree( srcexpr )
-						errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-						if( isfunc ) then
-							hSkipUntil( CHAR_RPRNT )
-						else
-							hSkipStmt( )
-						end if
-						return astNewCONSTi( 0 )
-    				end if
-
-    				lexSkipToken( )
-    				lexSkipToken( )
-
-				end if
-    		end if
-    	end if
+	if( astIsNIDXARRAY( srcexpr ) ) then
+		s = astGetSymbol( srcexpr )
+		assert( s )
+		assert( symbIsArray( s ) )
+		isarray = TRUE
+		'' don't allow var-len strings
+		if( symbGetType( s ) = FB_DATATYPE_STRING ) then
+			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+			if( isfunc ) then
+				hSkipUntil( CHAR_RPRNT )
+			else
+				hSkipStmt( )
+			end if
+			return astNewCONSTi( 0 )
+		end if
 	end if
 
 	'' (',' elements)?
@@ -624,7 +643,7 @@ private function hFilePut _
 end function
 
 '':::::
-'' Get			= GET '#' Expression ',' Expression? ',' Variable{str|int|float|array}
+'' Get          = GET '#' Expression ',' Expression? ',' Variable{str|int|float|array}
 ''                (',' Expression)? (',' variable)?
 ''
 private function hFileGet _
@@ -643,7 +662,7 @@ private function hFileGet _
 		lexSkipToken( )
 	end if
 
-	hMatchExpressionEx( fileexpr, FB_DATATYPE_INTEGER )
+	hMatchFileNumberExpression( fileexpr, FB_DATATYPE_INTEGER )
 
 	'' ',' offset
 	hMatchCOMMA( )
@@ -665,27 +684,21 @@ private function hFileGet _
 	end if
 
 	isarray = FALSE
-	if( lexGetToken( ) = CHAR_LPRNT ) then
-    	if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
-    		s = astGetSymbol( dstexpr )
-    		if( s <> NULL ) then
-    			isarray = symbIsArray( s )
-    			if( isarray ) then
-    				'' don't allow var-len strings
-    				if( symbGetType( s ) = FB_DATATYPE_STRING ) then
-						errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-						if( isfunc ) then
-							hSkipUntil( CHAR_RPRNT )
-						else
-							hSkipStmt( )
-						end if
-						return astNewCONSTi( 0 )
-    				end if
-    				lexSkipToken( )
-    				lexSkipToken( )
-    			end if
-    		end if
-    	end if
+	if( astIsNIDXARRAY( dstexpr ) ) then
+		s = astGetSymbol( dstexpr )
+		assert( s )
+		assert( symbIsArray( s ) )
+		isarray = TRUE
+		'' don't allow var-len strings
+		if( symbGetType( s ) = FB_DATATYPE_STRING ) then
+			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+			if( isfunc ) then
+				hSkipUntil( CHAR_RPRNT )
+			else
+				hSkipStmt( )
+			end if
+			return astNewCONSTi( 0 )
+		end if
 	end if
 
 	'' (',' elements)?
@@ -741,8 +754,8 @@ private function hFileGet _
 				'' arguments don't match up)
 				var dtype = symbGetType( s )
 				if( (typeGetSize( dtype ) <> env.pointersize) or _
-				    (typeGetClass( dtype ) <> FB_DATACLASS_INTEGER) or _
-				    typeIsPtr( dtype ) ) then
+					(typeGetClass( dtype ) <> FB_DATACLASS_INTEGER) or _
+					typeIsPtr( dtype ) ) then
 					errReport( FB_ERRMSG_INVALIDDATATYPES )
 				end if
 			end if
@@ -774,14 +787,14 @@ private function hFileGet _
 end function
 
 '':::::
-'' FileOpen		=	OPEN Expression{str}
-''						 (FOR Expression)? (ENCODING Expression)?
-''						 (ACCESS Expression)?
-''						 (SHARED|LOCK (READ|WRITE|READ WRITE))?
-''						 AS '#'? Expression
-''						 (LEN '=' Expression)?
+'' FileOpen     =   OPEN Expression{str}
+''                       (FOR Expression)? (ENCODING Expression)?
+''                       (ACCESS Expression)?
+''                       (SHARED|LOCK (READ|WRITE|READ WRITE))?
+''                       AS '#'? Expression
+''                       (LEN '=' Expression)?
 ''
-'' 					OPEN ("O"|"I"|"B"|"R"|"A")',' '#'? Expression{int}',' Expression{str} (',' Expression{int})?
+''                  OPEN ("O"|"I"|"B"|"R"|"A")',' '#'? Expression{int}',' Expression{str} (',' Expression{int})?
 ''
 private function hFileOpen _
 	( _
@@ -789,59 +802,59 @@ private function hFileOpen _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr filenum, filename, fmode, faccess, flock, flen, fencoding
-    dim as integer short_form
+	dim as integer short_form
 	dim as integer file_mode, access_mode, lock_mode, record_len
-    dim as FBOPENKIND open_kind
+	dim as FBOPENKIND open_kind
 
 	function = NULL
 
-    open_kind = FB_FILE_TYPE_FILE
+	open_kind = FB_FILE_TYPE_FILE
 
-    short_form = FALSE
+	short_form = FALSE
 
-    '' if it's a qb-style open, we only get an identifier, or a literal
-    if( fbLangIsSet( FB_LANG_QB ) = FALSE ) then
+	'' if it's a qb-style open, we only get an identifier, or a literal
+	if( fbLangIsSet( FB_LANG_QB ) = FALSE ) then
 		'' special devices
 		select case ucase( *lexGetText( ) )
-	    case "CONS"
+		case "CONS"
 			'' not a symbol?
 			if( lexGetSymChain( ) = NULL ) then
 				lexSkipToken( LEXCHECK_POST_SUFFIX )
-	    		open_kind = FB_FILE_TYPE_CONS
-	    	end if
+				open_kind = FB_FILE_TYPE_CONS
+			end if
 
-	    case "ERR"
+		case "ERR"
 			lexSkipToken( LEXCHECK_POST_SUFFIX )
-	        open_kind = FB_FILE_TYPE_ERR
+			open_kind = FB_FILE_TYPE_ERR
 
-	    case "PIPE"
+		case "PIPE"
 			'' not a symbol?
 			if( lexGetSymChain( ) = NULL ) then
 				lexSkipToken( LEXCHECK_POST_SUFFIX )
-	        	open_kind = FB_FILE_TYPE_PIPE
-	        end if
+				open_kind = FB_FILE_TYPE_PIPE
+			end if
 
-	    case "SCRN"
+		case "SCRN"
 			'' not a symbol?
 			if( lexGetSymChain( ) = NULL ) then
 				lexSkipToken( LEXCHECK_POST_SUFFIX )
-	        	open_kind = FB_FILE_TYPE_SCRN
-	        end if
+				open_kind = FB_FILE_TYPE_SCRN
+			end if
 
-	    case "LPT"
+		case "LPT"
 			'' not a symbol?
 			if( lexGetSymChain( ) = NULL ) then
 				lexSkipToken( LEXCHECK_POST_SUFFIX )
-	    		open_kind = FB_FILE_TYPE_LPT
-	    	end if
+				open_kind = FB_FILE_TYPE_LPT
+			end if
 
-	    case "COM"
+		case "COM"
 			'' not a symbol?
 			if( lexGetSymChain( ) = NULL ) then
 				lexSkipToken( LEXCHECK_POST_SUFFIX )
-	    		open_kind = FB_FILE_TYPE_COM
-	    	end if
-	    end select
+				open_kind = FB_FILE_TYPE_COM
+			end if
+		end select
 
 	end if
 
@@ -850,100 +863,100 @@ private function hFileOpen _
 		hMatchLPRNT( )
 	end if
 
-    '' if it's a qb-style open, we only get an identifier, or a literal
-    if( fbLangIsSet( FB_LANG_QB ) ) then
-    	open_kind = FB_FILE_TYPE_QB
+	'' if it's a qb-style open, we only get an identifier, or a literal
+	if( fbLangIsSet( FB_LANG_QB ) ) then
+		open_kind = FB_FILE_TYPE_QB
 	end if
 
-    select case as const open_kind
-    case FB_FILE_TYPE_FILE, FB_FILE_TYPE_PIPE, FB_FILE_TYPE_LPT, _
-    	 FB_FILE_TYPE_COM, FB_FILE_TYPE_QB
+	select case as const open_kind
+	case FB_FILE_TYPE_FILE, FB_FILE_TYPE_PIPE, FB_FILE_TYPE_LPT, _
+		FB_FILE_TYPE_COM, FB_FILE_TYPE_QB
 
-        '' a filename is only valid for some file types
+		'' a filename is only valid for some file types
 
 		hMatchExpressionEx( filename, FB_DATATYPE_STRING )
 
-        if( isfunc ) then
-            '' ','?
-            hMatch( CHAR_COMMA )
-        end if
+		if( isfunc ) then
+			'' ','?
+			hMatch( CHAR_COMMA )
+		end if
 
-        ' only test for short OPEN form when using the "normal" OPEN
-        select case open_kind
-        case FB_FILE_TYPE_FILE, FB_FILE_TYPE_QB
-	        if( isfunc ) then
-                select case lexGetToken( )
-                case FB_TK_FOR, FB_TK_ACCESS, FB_TK_AS
-                case else
-                    short_form = TRUE
-                end select
-	        else
-	            if( hMatch( CHAR_COMMA ) ) then
-	                '' ',' -> indicates the short form
-	                short_form = TRUE
-	            end if
-            end if
-        end select
+		' only test for short OPEN form when using the "normal" OPEN
+		select case open_kind
+		case FB_FILE_TYPE_FILE, FB_FILE_TYPE_QB
+			if( isfunc ) then
+				select case lexGetToken( )
+				case FB_TK_FOR, FB_TK_ACCESS, FB_TK_AS
+				case else
+					short_form = TRUE
+				end select
+			else
+				if( hMatch( CHAR_COMMA ) ) then
+					'' ',' -> indicates the short form
+					short_form = TRUE
+				end if
+			end if
+		end select
 
-    case else
+	case else
 
-        ' no file name provided for this kind of OPEN statmenets
-    	filename = astNewCONSTstr( "" )
+		' no file name provided for this kind of OPEN statmenets
+		filename = astNewCONSTstr( "" )
 
-    end select
+	end select
 
-    if( short_form ) then
-        '' file mode ("I"|"O"|"A"|"B"|"R")
-        fmode = filename
-        filename = NULL
+	if( short_form ) then
+		'' file mode ("I"|"O"|"A"|"B"|"R")
+		fmode = filename
+		filename = NULL
 
-        '' '#'? file number
-        hMatch( CHAR_SHARP )
-        hMatchExpressionEx( filenum, FB_DATATYPE_INTEGER )
+		'' '#'? file number
+		hMatch( CHAR_SHARP )
+		hMatchFileNumberExpression( filenum, FB_DATATYPE_INTEGER )
 
-        hMatchCOMMA( )
-        '' file name
-        hMatchExpressionEx( filename, FB_DATATYPE_STRING )
+		hMatchCOMMA( )
+		'' file name
+		hMatchExpressionEx( filename, FB_DATATYPE_STRING )
 
-        '' record length
-        if( hMatch( CHAR_COMMA ) ) then
-            if( lexGetToken( ) <> CHAR_COMMA ) then
-            	hMatchExpressionEx( flen, FB_DATATYPE_INTEGER )
-            end if
-            '' access mode
-            if( hMatch( CHAR_COMMA ) ) then
-                if( lexGetToken( ) <> CHAR_COMMA ) then
-                    hMatchExpressionEx( faccess, FB_DATATYPE_STRING )
-                end if
-                '' lock mode
-                if( hMatch( CHAR_COMMA ) ) then
-                	hMatchExpressionEx( flock, FB_DATATYPE_STRING )
-                end if
-            end if
-        end if
+		'' record length
+		if( hMatch( CHAR_COMMA ) ) then
+			if( lexGetToken( ) <> CHAR_COMMA ) then
+				hMatchExpressionEx( flen, FB_DATATYPE_INTEGER )
+			end if
+			'' access mode
+			if( hMatch( CHAR_COMMA ) ) then
+				if( lexGetToken( ) <> CHAR_COMMA ) then
+					hMatchExpressionEx( faccess, FB_DATATYPE_STRING )
+				end if
+				'' lock mode
+				if( hMatch( CHAR_COMMA ) ) then
+					hMatchExpressionEx( flock, FB_DATATYPE_STRING )
+				end if
+			end if
+		end if
 
-        if( flen = NULL ) then
+		if( flen = NULL ) then
 			flen = astNewCONSTi( 0 )
-        end if
+		end if
 
-        if( faccess = NULL ) then
-        	faccess = astNewCONSTstr( "" )
-        end if
+		if( faccess = NULL ) then
+			faccess = astNewCONSTstr( "" )
+		end if
 
-        if( flock = NULL ) then
-        	flock = astNewCONSTstr( "" )
-        end if
+		if( flock = NULL ) then
+			flock = astNewCONSTstr( "" )
+		end if
 
-    	if( isfunc ) then
-        	'' ')'
-        	hMatchRPRNT( )
-    	end if
+		if( isfunc ) then
+			'' ')'
+			hMatchRPRNT( )
+		end if
 
 		return rtlFileOpenShort( filename, fmode, faccess, flock, _
-								 filenum, flen, isfunc )
-    end if
+								filenum, flen, isfunc )
+	end if
 
-    '' long form..
+	'' long form..
 
 	'' (FOR (INPUT|OUTPUT|BINARY|RANDOM|APPEND))?
 	if( hMatch( FB_TK_FOR, LEXCHECK_POST_SUFFIX ) ) then
@@ -1047,7 +1060,7 @@ private function hFileOpen _
 
 	hMatch( CHAR_SHARP )
 
-	hMatchExpressionEx( filenum, FB_DATATYPE_INTEGER )
+	hMatchFileNumberExpression( filenum, FB_DATATYPE_INTEGER )
 
 	if( isfunc ) then
 		'' ','?
@@ -1066,10 +1079,10 @@ private function hFileOpen _
 		flen = astNewCONSTi( 0 )
 	end if
 
-    if( isfunc ) then
-        '' ')'
-        hMatchRPRNT( )
-    end if
+	if( isfunc ) then
+		'' ')'
+		hMatchRPRNT( )
+	end if
 
 	''
 	function = rtlFileOpen( filename, fmode, faccess, flock, _
@@ -1089,12 +1102,12 @@ private function hFileRename _
 	function = NULL
 
 	'' '('
-    if( isfunc ) then
+	if( isfunc ) then
 		hMatchLPRNT( )
-    else
+	else
 		'' '('?
-       	matchprnt = hMatch( CHAR_LPRNT )
-    end if
+		matchprnt = hMatch( CHAR_LPRNT )
+	end if
 
 	hMatchExpressionEx( filename_old, FB_DATATYPE_STRING )
 
@@ -1122,18 +1135,18 @@ private function hFileRename _
 end function
 
 '':::::
-'' FileStmt		  =	   OPEN ...
-''				  |	   CLOSE ...
-''				  |	   SEEK ...
-''				  |    LOCK ...
-''				  |	   ...
+'' FileStmt       =    OPEN ...
+''                |    CLOSE ...
+''                |    SEEK ...
+''                |    LOCK ...
+''                |    ...
 function cFileStmt _
 	( _
 		byval tk as FB_TOKEN _
 	) as integer
 
-    dim as ASTNODE ptr filenum, expr1, expr2
-    dim as integer islock
+	dim as ASTNODE ptr filenum, expr1, expr2
+	dim as integer islock
 
 	function = FALSE
 
@@ -1154,7 +1167,7 @@ function cFileStmt _
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		hMatch( CHAR_SHARP )
 
-		hMatchExpressionEx( filenum, FB_DATATYPE_INTEGER )
+		hMatchFileNumberExpression( filenum, FB_DATATYPE_INTEGER )
 
 		hMatchCOMMA( )
 
@@ -1194,7 +1207,7 @@ function cFileStmt _
 
 		hMatch( CHAR_SHARP )
 
-		hMatchExpressionEx( filenum, FB_DATATYPE_INTEGER )
+		hMatchFileNumberExpression( filenum, FB_DATATYPE_INTEGER )
 
 		hMatchCOMMA( )
 
@@ -1208,8 +1221,8 @@ function cFileStmt _
 
 		function = rtlFileLock( islock, filenum, expr1, expr2 )
 
-    '' NAME oldfilespec$ AS newfilespec$
-    case FB_TK_NAME
+	'' NAME oldfilespec$ AS newfilespec$
+	case FB_TK_NAME
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		function = (hFileRename( FALSE ) <> NULL)
@@ -1220,7 +1233,7 @@ end function
 
 '':::::
 '' FileFunct =   SEEK '(' Expression ')' |
-''				 INPUT '(' Expr, (',' '#'? Expr)? ')'.
+''               INPUT '(' Expr, (',' '#'? Expr)? ')'.
 ''
 function cFileFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	dim as ASTNODE ptr filenum, expr
@@ -1243,7 +1256,7 @@ function cFileFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 		if( hMatch( CHAR_COMMA ) ) then
 			hMatch( CHAR_SHARP )
-			hMatchExpressionEx( filenum, FB_DATATYPE_INTEGER )
+			hMatchFileNumberExpression( filenum, FB_DATATYPE_INTEGER )
 		else
 			filenum = astNewCONSTi( 0 )
 		end if

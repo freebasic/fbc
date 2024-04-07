@@ -1,13 +1,15 @@
 '' examples/manual/fileio/put-buffer.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'PUT (File I/O)'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPutfileio
 '' --------
 
 Dim As Byte Ptr lpBuffer
-Dim As Integer hFile, Counter, Size
+Dim As Long hFile
+Dim As Integer Counter
+Dim As UInteger Size
 
 Size = 256
 

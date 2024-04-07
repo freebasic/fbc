@@ -11,22 +11,24 @@
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 static int *driver_fetch_modes(int depth, int *size);
 
-GFXDRIVER fb_gfxDriverGDI =
+/* GFXDRIVER */
+const GFXDRIVER fb_gfxDriverGDI =
 {
-	"GDI",			/* char *name; */
-	driver_init,		/* int (*init)(int w, int h, char *title, int fullscreen); */
-	fb_hWin32Exit,		/* void (*exit)(void); */
-	fb_hWin32Lock,		/* void (*lock)(void); */
-	fb_hWin32Unlock,	/* void (*unlock)(void); */
-	fb_hWin32SetPalette,	/* void (*set_palette)(int index, int r, int g, int b); */
-	fb_hWin32WaitVSync,	/* void (*wait_vsync)(void); */
-	fb_hWin32GetMouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons, int *clip); */
-	fb_hWin32SetMouse,	/* void (*set_mouse)(int x, int y, int cursor, int clip); */
+	"GDI",                  /* char *name; */
+	driver_init,            /* int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags); */
+	fb_hWin32Exit,          /* void (*exit)(void); */
+	fb_hWin32Lock,          /* void (*lock)(void); */
+	fb_hWin32Unlock,        /* void (*unlock)(void); */
+	fb_hWin32SetPalette,    /* void (*set_palette)(int index, int r, int g, int b); */
+	fb_hWin32WaitVSync,     /* void (*wait_vsync)(void); */
+	fb_hWin32GetMouse,      /* int (*get_mouse)(int *x, int *y, int *z, int *buttons, int *clip); */
+	fb_hWin32SetMouse,      /* void (*set_mouse)(int x, int y, int cursor, int clip); */
 	fb_hWin32SetWindowTitle,/* void (*set_window_title)(char *title); */
-	fb_hWin32SetWindowPos,	/* int (*set_window_pos)(int x, int y); */
-	driver_fetch_modes,	/* int *(*fetch_modes)(int depth, int *size); */
-	NULL,			/* void (*flip)(void); */
-	NULL			/* void (*poll_events)(void); */
+	fb_hWin32SetWindowPos,  /* int (*set_window_pos)(int x, int y); */
+	driver_fetch_modes,     /* int *(*fetch_modes)(int depth, int *size); */
+	NULL,                   /* void (*flip)(void); */
+	NULL,                   /* void (*poll_events)(void); */
+	NULL                    /* void (*update)(void); */
 };
 
 static BITMAPINFO *bitmap_info;

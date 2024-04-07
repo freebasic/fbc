@@ -8,6 +8,9 @@
 /bin/*
 /lib/*/i386go32.x
 /lib/*/fbextra.x
+/lib/*/fb_rtlib.js
+/lib/*/termlib_min.js
+/lib/*/fb_shell.html
 /lib/freebas/*
 /lib/freebasic/*
 /lib64/freebasic/*
@@ -17,3 +20,8 @@
 /doc/fbdoc/fbdoc
 /doc/makefbhelp/makefbhelp
 /doc/fbchkdoc/fbchkdoc.ini
+
+.vscode
+
+/lib/dos/libfb.dxe
+/lib/dos/libfblst.txt

@@ -1,7 +1,7 @@
 '' examples/manual/input/getjoystick.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'GETJOYSTICK'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgGetjoystick
 '' --------
@@ -11,7 +11,7 @@ Screen 12
 Dim x As Single
 Dim y As Single
 Dim buttons As Integer
-Dim result As Integer
+Dim result As Long
 Dim a As Integer
 
 Const JoystickID = 0

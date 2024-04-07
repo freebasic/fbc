@@ -1,5 +1,5 @@
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2008-2020 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2008-2022 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -132,7 +132,17 @@ function ReadExampleFile( byref path as string, byref filename as string, byval 
 end function
 
 ''
-function WriteExampleFile( byref sPage as string, byref path as string, byref filename as string, byref text as string, byval CompareFirst as integer, byref RefID as string, byval force as boolean ) as integer
+function WriteExampleFile _
+	( _
+		byref sPage as string, _
+		byref path as string, _
+		byref filename as string, _
+		byref text as string, _
+		byval CompareFirst as integer, _
+		byref RefID as string, _
+		byval force as boolean, _
+		byref title as string _
+	) as integer
 	
 	dim x as string, b as buffer, idx as integer, text2 as string, b2 as buffer
 
@@ -167,8 +177,8 @@ function WriteExampleFile( byref sPage as string, byref path as string, byref fi
 		idx = b.insert( idx, "'' $$REF:" & RefID )
 	end if
 	idx = b.insert( idx, "''" )
-	idx = b.insert( idx, "'' NOTICE: This file is part of the FreeBASIC Compiler package and can't" )
-	idx = b.insert( idx, "''         be included in other distributions without authorization." )
+	idx = b.insert( idx, "'' Example extracted from the FreeBASIC Manual" )
+	idx = b.insert( idx, "'' from topic '" & title & "'" )
 	idx = b.insert( idx, "''" )
 	idx = b.insert( idx, "'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=" & sPage )
 	idx = b.insert( idx, "'' --------" )

@@ -10,7 +10,7 @@
 #include once "ast.bi"
 
 '':::::
-'' ViewStmt	  =   VIEW (PRINT (Expression TO Expression)?) .
+'' ViewStmt   =   VIEW (PRINT (Expression TO Expression)?) .
 ''
 function cViewStmt(byval is_func as integer) as ASTNODE ptr
 	dim as ASTNODE ptr expr1, expr2
@@ -99,7 +99,7 @@ function cWidthStmt(byval isfunc as integer) as ASTNODE ptr
 	elseif( hMatch( CHAR_SHARP ) ) then
 		' fb_WidthFile
 
-		hMatchExpressionEx( fnum, FB_DATATYPE_INTEGER )
+		hMatchFileNumberExpression( fnum, FB_DATATYPE_INTEGER )
 
 		if( hMatch( CHAR_COMMA ) ) then
 			hMatchExpressionEx( width_arg, FB_DATATYPE_INTEGER )
@@ -195,7 +195,7 @@ end function
 
 '':::::
 '' ScreenFunct   =   SCREEN '(' expr ',' expr ( ',' expr )? ')'
-''				 |   SCREEN ( '(' ')' )? -- returns the current active/visible pages
+''               |   SCREEN ( '(' ')' )? -- returns the current active/visible pages
 ''
 function cScreenFunct() as ASTNODE ptr
 	function = NULL

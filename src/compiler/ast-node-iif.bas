@@ -185,10 +185,12 @@ function astNewIIF _
 		'' treated as a var-len string, and there is no temp var...
 		if( astConstEqZero( condexpr ) ) then
 			astDelTree( truexpr )
+			astDtorListScopeDelete( truecookie )
 			function = falsexpr
 			astDtorListUnscope( falsecookie )
 		else
 			astDelTree( falsexpr )
+			astDtorListScopeDelete( falsecookie )
 			function = truexpr
 			astDtorListUnscope( truecookie )
 		end if
@@ -270,7 +272,7 @@ function astNewIIF _
 
 		'' dim temp as wstring ptr (doesn't need to be cleared)
 		temp = symbAddTempVar( typeAddrOf( FB_DATATYPE_WCHAR ) )
-		symbSetIsWstring( temp )
+		symbSetIsTemporary( temp )
 
 		'' Register for cleanup at the end of the statement
 		astDtorListAdd( temp )
@@ -410,7 +412,9 @@ function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 	dim as FBSYMBOL ptr exitlabel = any
 
 	assert( n->r->class = AST_NODECLASS_LINK )
-	assert( n->r->r->class = AST_NODECLASS_LINK )
+
+	'' exect a link or temporary variable assignment
+	assert( (n->r->r->class = AST_NODECLASS_LINK) or (n->r->r->class = AST_NODECLASS_ASSIGN) )
 
 	condexpr = n->r->l
 	truexpr  = n->r->r->l

@@ -1,13 +1,13 @@
 '' examples/manual/gfx/screenptr.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'SCREENPTR'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgScreenptr
 '' --------
 
 Const SCREEN_WIDTH = 640, SCREEN_HEIGHT = 480
-Dim As Integer w, h, bypp, pitch
+Dim As Long w, h, bypp, pitch
 
 '' Make 8-bit screen.
 ScreenRes SCREEN_WIDTH, SCREEN_HEIGHT, 8

@@ -30,7 +30,7 @@
 ''    ****************************************************************************/
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2021 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 
@@ -83,7 +83,7 @@ const NCURSES_TPARM_VARARGS = 1
 #undef NCURSES_CH_T
 
 type NCURSES_CH_T as chtype
-type chtype as ulong
+type chtype as culong
 type mmask_t as culong
 #undef NCURSES_WIDECHAR
 #ifndef CTRUE
@@ -417,26 +417,26 @@ type NCURSES_SP_OUTC as NCURSES_OUTC
 
 const NCURSES_ATTR_SHIFT = 8
 #define NCURSES_BITS(mask, shift) ((mask) shl ((shift) + NCURSES_ATTR_SHIFT))
-const A_NORMAL = culng(1u - 1u)
+const A_NORMAL = cast(culong, 1) - cast(culong, 1)
 const WA_NORMAL = A_NORMAL
-#define A_ATTRIBUTES NCURSES_BITS(culng(not culng(1u - 1u)), 0)
-#define A_CHARTEXT (NCURSES_BITS(1u, 0) - 1u)
-#define A_COLOR NCURSES_BITS(culng(culng(1u shl 8) - 1u), 0)
-#define A_STANDOUT NCURSES_BITS(1u, 8)
-#define A_UNDERLINE NCURSES_BITS(1u, 9)
-#define A_REVERSE NCURSES_BITS(1u, 10)
-#define A_BLINK NCURSES_BITS(1u, 11)
-#define A_DIM NCURSES_BITS(1u, 12)
-#define A_BOLD NCURSES_BITS(1u, 13)
-#define A_ALTCHARSET NCURSES_BITS(1u, 14)
-#define A_INVIS NCURSES_BITS(1u, 15)
-#define A_PROTECT NCURSES_BITS(1u, 16)
-#define A_HORIZONTAL NCURSES_BITS(1u, 17)
-#define A_LEFT NCURSES_BITS(1u, 18)
-#define A_LOW NCURSES_BITS(1u, 19)
-#define A_RIGHT NCURSES_BITS(1u, 20)
-#define A_TOP NCURSES_BITS(1u, 21)
-#define A_VERTICAL NCURSES_BITS(1u, 22)
+#define A_ATTRIBUTES NCURSES_BITS(not (cast(culong, 1) - cast(culong, 1)), 0)
+#define A_CHARTEXT (NCURSES_BITS(cast(culong, 1), 0) - cast(culong, 1))
+#define A_COLOR NCURSES_BITS((cast(culong, 1) shl 8) - cast(culong, 1), 0)
+#define A_STANDOUT NCURSES_BITS(cast(culong, 1), 8)
+#define A_UNDERLINE NCURSES_BITS(cast(culong, 1), 9)
+#define A_REVERSE NCURSES_BITS(cast(culong, 1), 10)
+#define A_BLINK NCURSES_BITS(cast(culong, 1), 11)
+#define A_DIM NCURSES_BITS(cast(culong, 1), 12)
+#define A_BOLD NCURSES_BITS(cast(culong, 1), 13)
+#define A_ALTCHARSET NCURSES_BITS(cast(culong, 1), 14)
+#define A_INVIS NCURSES_BITS(cast(culong, 1), 15)
+#define A_PROTECT NCURSES_BITS(cast(culong, 1), 16)
+#define A_HORIZONTAL NCURSES_BITS(cast(culong, 1), 17)
+#define A_LEFT NCURSES_BITS(cast(culong, 1), 18)
+#define A_LOW NCURSES_BITS(cast(culong, 1), 19)
+#define A_RIGHT NCURSES_BITS(cast(culong, 1), 20)
+#define A_TOP NCURSES_BITS(cast(culong, 1), 21)
+#define A_VERTICAL NCURSES_BITS(cast(culong, 1), 22)
 #macro getyx(win, y, x)
 	scope
 		y = getcury(win)

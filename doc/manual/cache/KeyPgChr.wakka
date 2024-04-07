@@ -9,7 +9,7 @@ Returns a string of characters from one or more ASCII integer values
 ##
 {{fbdoc item="param"}}
 	##//ch//##
-		The [[CptAscii|ASCII]] integer value of a character.
+		The [[CptAscii|ASCII]] integer value of a character (up to 32 characters).
 
 {{fbdoc item="ret"}}
 	Returns a string containing the character(s).

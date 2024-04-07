@@ -1,7 +1,7 @@
 ' TEST_MODE : MULTI_MODULE_TEST
 
 '' test mapping of mangling and calling convention
-'' of global overloaded operators 
+'' of global overloaded operators
 '' between c/c++ and fbc
 
 '' helper macro to track progress

@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="TYPE"}}----
+{{fbdoc item="title" value="TYPE (UDT)"}}----
 Declares a user-defined type.
 
 {{fbdoc item="syntax"}}##
@@ -35,6 +35,11 @@ Declares a user-defined type.
 			...
 		[[KeyPgUnion|End Union]]
 		
+				
+		**Type** //typename2// ...
+			...
+		**End Type**
+		
 		...
 	**End Type**
 ##
@@ -42,13 +47,25 @@ Declares a user-defined type.
 	##**Type**## is used to declare custom data types containing one or more data fields, including integer types, floating point types, fixed-size or variable-length (dynamic) arrays, fixed-size or variable-length strings, bitfields, or other user-defined types.
 	
 	Types support various functionality related to object-oriented programming:
-		- Inheritance through the use of the [[KeyPgExtends|Extends]] keyword
-		- Member procedures such as [[KeyPgMemberSub|subs]] or [[KeyPgMemberFunction|functions]], including ##[[KeyPgAbstract|Abstract]]## or ##[[KeyPgVirtual|Virtual]]## ones
-		- Member procedures with special semantic meaning such as [[KeyPgConstructor|constructors]] or a [[KeyPgDestructor|destructor]]
-		- ##[[KeyPgStatic|Static]]## member variables
-		- Member visibility specifiers: ##[[KeyPgVisPublic|Public:]]##, ##[[KeyPgVisPrivate|Private:]]##, ##[[KeyPgVisProtected|Protected:]]##
-	
-	Types may also contain nested types or unions, allowing data members to be grouped as desired. Nested types/unions are not allowed to contain member procedures or static member variables (same restriction for local types/unions).
+		- Inheritance through the use of the [[KeyPgExtends|Extends]] keyword.
+		- Member procedures such as [[KeyPgMemberSub|subs]] or [[KeyPgMemberFunction|functions]], including ##[[KeyPgAbstract|Abstract]]## or ##[[KeyPgVirtual|Virtual]]## ones.
+		- Member procedures with special semantic meaning such as [[KeyPgConstructor|constructors]] or a [[KeyPgDestructor|destructor]].
+		- ##[[KeyPgStatic|Static]]## member variables.
+		- Member visibility specifiers: ##[[KeyPgVisPublic|Public:]]##, ##[[KeyPgVisPrivate|Private:]]##, ##[[KeyPgVisProtected|Protected:]]##.
+		
+
+	A ##**Type**## can also contain nested Types or Unions, of different kinds:
+		- Nested Anonymous Type/Union:
+				**""-""** Nested Anonymous Type/Union allows data members to be grouped as desired.
+				**""-""** Anonymous Type or Anonymous Union can be nested on condition of alternating their nesting.
+				**""-""** Nested Anonymous Type/Union can not have procedure members or static data members (same restriction than for a local scope named Type/Union).
+		- Nested Named Type/Union:
+				**""-""** Nested Named Type/Union allows declaration of an inner structure inside a (named) Type/Union namespace and according to the access right of the place
+				**""-""** Mostly everything it can be done in a Named Type/Union can also be done in a Nested Named Type/Union.
+				**""-""** When there are circular dependencies between Types/Unions, Nested Named Type/Union usage can avoid using type aliases and forward referencing.
+		- Nested Type-Def:
+				**""-""** Nested Type-Def allows declaration of an inner Type (Alias) inside a Type/Union and according to the access right of the place.
+	The main structure (Type/Union) must be always named, the other (nested) structures can be anonymous or named.
 	
 	##[[KeyPgAlias|Alias]] "alternatename"## specifies that if ##//typename//## must be encoded (mangled) in to a public symbol (as in an object module or library), then specifically use ##//alternate//## name instead of the usual encoding (mangling) of ##//typename//##.
 	
@@ -67,12 +84,14 @@ Declares a user-defined type.
 	Currently, fixed-length string fields of ##[[KeyPgString|String]] * //N//## type have an extra null terminator at their end, for compatibility with C strings, making them incompatible with QB strings inside Types, because they actually use up ##//N//+1## bytes, instead of just ##N## bytes. A possible work-around is to declare the field ##As [[KeyPgString|String]] * (//N//-1)##, though this will not work in future releases if the null terminator is removed.  Another alternative is to use a ##[[KeyPgByte|Byte]]## or ##[[KeyPgUbyte|UByte]]## array with the proper size.
 	
 	//Note on bitfields ( ##//fieldname// : //bits//## )//
-	Bitfields can only be declared inside a type or a union, and allow to specify some very small objects of a given number of bits in length. Each field is accessed and manipulated as if it were an ordinary member of the structure. Only integer data-types (up to 32-bit for 32-bit development or 64-bit for 64-bit development) are valid. The sizes of the declared data-types, large enough to contain the bit patterns, affect how the bitfields are placed in memory.
+	Bitfields can only be declared inside a type or a union, and allow to specify some very small objects of a given number of bits in length. Each field is accessed and manipulated as if it were an ordinary member of the structure.
+	Only integer data-types (up to 32-bit for 32-bit development or 64-bit for 64-bit development) are valid. The sizes of the declared data-types, large enough to contain the bit patterns, affect how the bitfields are placed in memory.
+	Bitfield members in a type are packed together, unless the next member is a non-bitfield (nested union is considered a non-bitfield).
 	A bitfield does not have any address (one cannot get a pointer to it and its offset inside the structure).
 
 {{fbdoc item="ex"}}
-This is an example of a QB-style type, not including procedure definitions
-{{fbdoc item="filename" value="examples/manual/udt/type1.bas"}}%%(freebasic)
+	This is an example of a QB-style type, not including procedure definitions
+		{{fbdoc item="filename" value="examples/manual/udt/type1.bas"}}%%(freebasic)
 TYPE clr
 	red AS UBYTE
 	green AS UBYTE
@@ -84,8 +103,8 @@ c.red = 255
 c.green = 128
 c.blue = 64
 %%
-And this is an example of a type working as an object:
-{{fbdoc item="filename" value="examples/manual/udt/type2.bas"}}%%(freebasic)
+	And this is an example of a type working as an object:
+		{{fbdoc item="filename" value="examples/manual/udt/type2.bas"}}%%(freebasic)
 '' Example showing the problems with fixed length string fields in UDTs
 '' Suppose we have read a GIF header from a file
 ''                        signature         width        height
@@ -131,8 +150,8 @@ dim as hdr2 ptr h2 = cptr(hdr2 ptr, @z)
 print ub2str(h2->sig()), h2->wid, h2->hei '' Prints GIF89a  10  11 (ok)
 if ub2str(h2->sig()) = "GIF89a" then print "ok" else print "error" '' Prints ok
 %%
-This is an example of conversion from an Ubyte to a digit string in base 8 (octal string), by using bitfields in a local UDT (conversion equivalent to 'Oct(x, 3)'):
-{{fbdoc item="filename" value="examples/manual/udt/type3.bas"}}%%(freebasic)
+	This is an example of conversion from an Ubyte to a digit string in base 8 (octal string), by using bitfields in a local UDT (conversion equivalent to 'Oct(x, 3)'):
+		{{fbdoc item="filename" value="examples/manual/udt/type3.bas"}}%%(freebasic)
 Function UbyteToOctalString (Byval b As Ubyte) As String
  
 	Union UbyteOctal
@@ -160,6 +179,56 @@ Print
 
 Sleep
 %%
+	This is an example with Nested Named Type:
+		{{fbdoc item="filename" value="examples/manual/udt/type4.bas"}}%%(freebasic)
+Type Parent
+	Private:
+		Dim As String nameParent
+		Declare Constructor()
+		Declare Constructor(Byref As Parent)
+		Type Child
+			Dim As String nameChild
+			Dim As Parent Ptr ptrParent
+			Declare Sub kinship()
+		End Type
+		Dim As Child listChild(Any)
+	Public:
+		Declare Constructor(Byref _nameParent As String)
+		Declare Sub addChild(Byref _nameChild As String)
+		Declare Sub kinship()
+End Type
+
+Constructor Parent(Byref _nameParent As String)
+	This.nameParent = _nameParent
+End Constructor
+
+Sub Parent.addChild(Byref _nameChild As String)
+	Redim Preserve This.listChild(Ubound(This.listChild) + 1)
+	This.listChild(Ubound(This.listChild)).nameChild = _nameChild
+	This.listChild(Ubound(This.listChild)).ptrParent = @This
+End Sub
+
+Sub Parent.Child.kinship()
+	Print "'" & This.nameChild & "'" & " is child of " & "'" & This.ptrParent->nameParent & "'"
+End Sub
+
+Sub Parent.kinship()
+	For i As Integer = 0 To Ubound(This.listChild)
+		This.listChild(i).kinship()
+	Next i
+End Sub
+
+
+Dim As Parent p = Parent("Kennedy")
+p.addChild("John Jr.")
+p.addChild("Caroline")
+p.addChild("Patrick")
+p.kinship()
+
+Sleep
+%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.10.0: Nested Named Type/Union capability added.
 
 {{fbdoc item="target"}}
 	- The default ##**Field**## alignment parameter is 4 bytes for DOS and Linux targets.
@@ -187,6 +256,7 @@ Sleep
 	- ##[[KeyPgExtendsZstring|Extends Zstring]]##
 	- ##[[KeyPgExtendsWstring|Extends Wstring]]##
 	- ##[[KeyPgWith|With]]##
+	- ##[[TblVarTypes|Standard Data Type Limits]]##
 	- [[ProPgDataConversion|Coercion and Conversion]]
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

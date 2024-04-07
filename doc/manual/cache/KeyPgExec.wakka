@@ -20,11 +20,11 @@ Temporarily transfers execution to an external program
 	Transfers control over to an external program. When the program exits, execution resumes immediately after the call to ##**Exec**##.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/system/exec.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/system/exec.bas"}}%%(freebasic)
 'A Windows based example but the same idea applies to Linux
 CONST exename = "NoSuchProgram.exe"
 CONST cmdline = "arg1 arg2 arg3"
-DIM result AS INTEGER
+DIM result AS LONG
 result = EXEC( exename, cmdline )
 IF result = -1 THEN
 	PRINT "Error running "; exename

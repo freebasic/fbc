@@ -33,11 +33,11 @@ void resetChecks() {
 	val3 = 0;
 }
 
-const void* getPtr1() { 
+const void* getPtr1() {
 	return ptr1;
 }
 
-const void* getPtr2() { 
+const void* getPtr2() {
 	return ptr2;
 }
 
@@ -49,11 +49,11 @@ int getVal1() {
 	return val1;
 }
 
-int getVal2() { 
+int getVal2() {
 	return val2;
 }
 
-int getVal3() { 
+int getVal3() {
 	return val3;
 }
 
@@ -70,7 +70,7 @@ class UDT
 	UDT( UDT const& rhs );
 	UDT( int const& rhs );
 	~UDT();
-	void method( int const& rhs );	
+	void method( int const& rhs );
 
 	// assignment
 	UDT& operator=( UDT const& rhs );
@@ -88,7 +88,7 @@ UDT operator-( int const& lhs, UDT const& rhs );
 
 // constructor UDT()
 UDT::UDT()
-{ 
+{
 	if( initial ) {
 		ptr1 = this;
 		ptr2 = NULL;
@@ -102,7 +102,7 @@ UDT::UDT()
 
 // constructor UDT( byref rhs as const UDT )
 UDT::UDT( UDT const& rhs )
-{ 
+{
 	if( initial ) {
 		ptr1 = this;
 		ptr2 = &rhs;
@@ -111,7 +111,7 @@ UDT::UDT( UDT const& rhs )
 		val2 = rhs.value;
 		val3 = rhs.value;
 	}
-	value = rhs.value; 
+	value = rhs.value;
 }
 
 // constructor UDT( byref rhs as const long )
@@ -165,7 +165,7 @@ UDT& UDT::operator=( UDT const& rhs )
 		val1 = value;
 		val2 = rhs.value;
 		val3 = rhs.value;
-	}	
+	}
 	value = rhs.value;
 	return *this;
 }
@@ -180,7 +180,7 @@ UDT& UDT::operator+( int const& rhs )
 	val1 = value;
 	val2 = rhs;
 	val3 = value + rhs;
-	
+
 	value += rhs;
 	return *this;
 }
@@ -194,7 +194,7 @@ UDT& UDT::operator-( int const& rhs )
 	val1 = value;
 	val2 = rhs;
 	val3 = value - rhs;
-	
+
 	value -= rhs;
 	return *this;
 }
@@ -209,7 +209,7 @@ UDT operator+( UDT const& lhs, UDT const& rhs )
 	val1 = lhs.value;
 	val2 = rhs.value;
 	val3 = lhs.value + rhs.value;
-	
+
 	return UDT(lhs.value + rhs.value);
 }
 
@@ -222,7 +222,7 @@ UDT operator-( UDT const& lhs, UDT const& rhs )
 	val1 = lhs.value;
 	val2 = rhs.value;
 	val3 = lhs.value - rhs.value;
-	
+
 	return UDT(lhs.value - rhs.value);
 }
 
@@ -235,7 +235,7 @@ UDT operator+( int const& lhs, UDT const& rhs )
 	val1 = lhs;
 	val2 = rhs.value;
 	val3 = lhs + rhs.value;
-	
+
 	return UDT(lhs + rhs.value);
 }
 
@@ -248,6 +248,6 @@ UDT operator-( int const& lhs, UDT const& rhs )
 	val1 = lhs;
 	val2 = rhs.value;
 	val3 = lhs - rhs.value;
-	
+
 	return UDT(lhs - rhs.value);
 }

@@ -5,7 +5,14 @@ Intrinsic define set by the compiler
 	""__FB_FPU__""
 ##
 {{fbdoc item="desc"}}
-	Defined as ##"sse"## if SSE floating point arithmetics is enabled, or ##"x87"## otherwise.
+	For ##x86## and ##x86_64## targets:
+		- Defined as ##"sse"## if SSE floating point arithmetics is enabled, and
+		- defined as ##"x87"## otherwise
+		
+
+	For ##arm## and ##aarch64## targets:
+		- Defined as ##"neon"## if Advanced SIMD (Neon) extension is enabled, and
+		- defined as ##"x87"## otherwise
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/defines/fbfpu.bas"}}%%(freebasic)
@@ -15,6 +22,8 @@ Intrinsic define set by the compiler
   ' ... instructions not for SSE ...
 #endif
 %%
+{{fbdoc item="ver"}}
+	- ##""__FB_FPU__ = neon""## added in fbc 1.20.0
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""

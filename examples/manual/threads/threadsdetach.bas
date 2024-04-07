@@ -1,7 +1,7 @@
 '' examples/manual/threads/threadsdetach.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'THREADDETACH'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgThreadDetach
 '' --------
@@ -12,9 +12,9 @@ Sub mythread( ByVal param As Any Ptr )
 	Print "hi!"
 End Sub
 
-Var thread = ThreadCreate( @mythread )
+Dim As Any Ptr thread = ThreadCreate( @mythread )
 ThreadDetach( thread )
-
+'' or
 ThreadDetach( ThreadCreate( @mythread ) )
 
 Sleep

@@ -1,6 +1,6 @@
 {{fbdoc item="title" value="Manage Reusable Procedures by Including Source vs Compiled Modules"}}----
 How to **manage** ""FreeBASIC"" **reusable procedures** by **including source modules** versus **including compiled modules**.
-**##//(written with help of Josep Roca's posts)//##**
+##//(written with help of Josep Roca's posts)//##
 
 **Preamble:**
 

@@ -22,7 +22,14 @@ Stops execution of current thread until some condition becomes true
 	
 	**Note:** It is a good habit to use ##**Condwait**## in a protected way against eventual spurious wakeups.
 	For that, ##**Condwait**## is put within a loop for checking that a Boolean predicate is indeed true (predicate set true by another thread just before executing ##[[KeyPgCondSignal|Condsignal]]## or ##[[KeyPgCondBroadcast|Condbroadcast]]##) when the thread has finished waiting:
-		##While predicate <> true : Condwait(//handle//, //mutex//) : Wend [ : predicate = false ]##
+		signal-caller:
+			##predicate = true
+			Condsignal(//handle//)##
+		waiting-called:
+			##While predicate <> true
+				Condwait(//handle//, //mutex//)
+			Wend
+			predicate = false##
 		the loop can terminate only when the predicate is true.
 	On the other hand, if the predicate is already true before the thread reaches the loop, ##**Condwait**## is downright skipped (allowing to take into account a case of ##[[KeyPgCondSignal|Condsignal]]## or ##[[KeyPgCondBroadcast|Condbroadcast]]## that would have been lost otherwise, because prematurely executed in a second thread before the first thread is really waiting for this).
 	See example below for detailed coding.

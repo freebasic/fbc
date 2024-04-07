@@ -88,10 +88,11 @@ private sub hTypeProtoDecl _
 	case FB_TK_SUB, FB_TK_FUNCTION, _
 	     FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR, _
 	     FB_TK_OPERATOR, FB_TK_PROPERTY
+
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		cProcHeader( attrib, pattrib, is_nested, _
-				FB_PROCOPT_ISPROTO or FB_PROCOPT_HASPARENT, tk )
+		             FB_PROCOPT_ISPROTO or FB_PROCOPT_HASPARENT, tk )
 
 	case else
 		errReport( FB_ERRMSG_SYNTAXERROR )
@@ -172,7 +173,7 @@ private sub hFieldInit _
 					'' Does it have a default constructor?
 					defctor = symbGetCompDefCtor( subtype )
 					if( defctor ) then
-						'' Check whether we have access
+						'' Check visibility of the default constructor
 						if( symbCheckAccess( defctor ) = FALSE ) then
 							errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
 						end if
@@ -185,7 +186,7 @@ private sub hFieldInit _
 				'' Does it have a destructor?
 				defctor = symbGetCompDtor1( subtype )
 				if( defctor ) then
-					'' Check whether we have access
+					'' Check visibility of the default constructor
 					if( symbCheckAccess( defctor ) = FALSE ) then
 						errReport( FB_ERRMSG_NOACCESSTODTOR )
 					end if
@@ -233,7 +234,7 @@ private sub hFieldInit _
 	'' constructor, if no constructor was specified.
 	symbSetUDTHasInitedField( parent )
 
-    '' ANY?
+	'' ANY?
 	if( lexGetToken( ) = FB_TK_ANY ) then
 		'' don't allow var-len strings
 		if( symbGetType( sym ) = FB_DATATYPE_STRING ) then
@@ -259,6 +260,15 @@ private sub hFieldType _
 
 	'' SymbolType
 	hSymbolType( dtype, subtype, lgt )
+
+	'' check that field type is not a parent struct namespace
+	if( symbIsParentNamespace( dtype, subtype ) ) then
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
+		'' error recovery: fake a type
+		dtype = FB_DATATYPE_INTEGER
+		subtype = NULL
+		lgt = typeGetSize( dtype )
+	end if
 
 	'' Disallow creating objects of abstract classes
 	hComplainIfAbstractClass( dtype, subtype )
@@ -500,7 +510,7 @@ private sub hTypeMultElementDecl _
 		byval attrib as FB_SYMBATTRIB _
 	)
 
-    static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
+	static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
 	dim as zstring ptr id = any
 	dim as FBSYMBOL ptr subtype = any
 	dim as integer dtype = any, bits = any, dims = any, fieldattrib = any
@@ -540,7 +550,7 @@ private sub hTypeElementDecl _
 		byval attrib as FB_SYMBATTRIB _
 	)
 
-    static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
+	static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
 	dim as zstring ptr id = any
 	dim as FBSYMBOL ptr subtype = any
 	dim as integer dtype = any, bits = any, dims = any
@@ -615,8 +625,8 @@ sub hTypeStaticVarDecl _
 	'' at its declaration in the TYPE compound, only at the DIM later.
 
 	attrib or= FB_SYMBATTRIB_EXTERN or _
-			FB_SYMBATTRIB_SHARED or _
-			FB_SYMBATTRIB_STATIC
+	           FB_SYMBATTRIB_SHARED or _
+	           FB_SYMBATTRIB_STATIC
 
 	cVarDecl( attrib, FALSE, FB_TK_EXTERN, FALSE )
 
@@ -750,7 +760,7 @@ private sub hTypeBody( byval s as FBSYMBOL ptr )
 
 	do
 		select case as const lexGetToken( )
-        '' visibility?
+		'' visibility?
 		case FB_TK_PRIVATE, FB_TK_PUBLIC, FB_TK_PROTECTED
 			if( symbGetUDTIsUnion( s ) ) then
 				errReport( FB_ERRMSG_SYNTAXERROR )
@@ -776,7 +786,7 @@ private sub hTypeBody( byval s as FBSYMBOL ptr )
 
 		'' single-line comment?
 		case FB_TK_COMMENT, FB_TK_REM
-		    cComment( )
+			cComment( )
 
 		'' newline?
 		case FB_TK_EOL
@@ -807,7 +817,8 @@ private sub hTypeBody( byval s as FBSYMBOL ptr )
 			case FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENT, FB_TK_REM, _
 			     FB_TK_FIELD
 
-decl_inner:		'' it's an anonymous inner UDT
+decl_inner:
+				'' it's an anonymous inner UDT
 				isunion = lexGetToken( ) = FB_TK_UNION
 				if( symbGetUDTIsUnion( s ) = isunion ) then
 					errReport( FB_ERRMSG_SYNTAXERROR )
@@ -852,9 +863,26 @@ decl_inner:		'' it's an anonymous inner UDT
 				'' bitfield..
 				hTypeElementDecl( FB_TK_DIM, s, attrib )
 
-			'' it's a field, parse it
-			case else
+			'' it's a field, parse it, 'AS' is a reserved word
+			'' so it's probably OK we don't allow 'TYPE AS' to start
+			'' an inner type declaration and instead expect this is
+			'' going to be 'TYPE AS <datatype>'
+			case FB_TK_AS
 				hTypeElementDecl( FB_TK_DIM, s, attrib )
+
+			'' Otherwise TYPE|UNION maybe starts an inner declaration
+			case else
+				'' Inside an anonymous type|union?  Don't allow named types
+				if( symbIsStruct( s ) andalso symbGetUDTIsAnon( s ) ) then
+					hTypeElementDecl( FB_TK_DIM, s, attrib )
+
+				'' allow named UNION|TYPE to be nested in another UNION|TYPE
+				else
+					hBeginNesting( s )
+					symbSetUdtHasNested( s )
+					cTypeDecl( attrib )
+
+				end if
 
 			end select
 
@@ -935,7 +963,7 @@ end sub
 ''  END (TYPE|UNION) .
 sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
 
-	static as zstring * FB_MAXNAMELEN+1 id
+	dim as zstring * FB_MAXNAMELEN+1 id
 	dim as integer isunion = any, checkid = any
 	dim as FBSYMBOL ptr sym = any
 	dim as FB_CMPSTMTSTK ptr stk = any
@@ -955,7 +983,7 @@ sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
 			'' AS?
 			if( lexGetToken( ) = FB_TK_AS ) then
 				'' (Note: the typedef parser will skip the AS)
-				cTypedefMultDecl( )
+				cTypedefMultDecl( attrib )
 				exit sub
 			end if
 		end if
@@ -966,11 +994,11 @@ sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
 
 	case FB_TKCLASS_QUIRKWD
 
-    case else
+	case else
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake an ID
 		checkid = FALSE
-    end select
+	end select
 
 	if( checkid ) then
 		'' Namespace identifier if it matches the current namespace
@@ -979,8 +1007,8 @@ sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
 		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
 			'' if inside a namespace, symbols can't contain periods (.)'s
 			if( symbIsGlobalNamespc( ) = FALSE ) then
-  				if( lexGetPeriodPos( ) > 0 ) then
-  					errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
+				if( lexGetPeriodPos( ) > 0 ) then
+					errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
 				end if
 			end if
 		end if
@@ -997,7 +1025,7 @@ sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
 		end if
 
 		'' (Note: the typedef parser will skip the AS)
-		cTypedefSingleDecl( id )
+		cTypedefSingleDecl( attrib, id )
 		exit sub
 	end if
 
@@ -1018,11 +1046,12 @@ sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' SymbolType
+		'' - on error hSymbolType() will return [integer] in baseDType
 		hSymbolType( baseDType, baseSubtype, 0, FALSE, TRUE )
 
-		'' is the base type a struct?
+		'' is the base type a zstring, wstring, or something else (error)?
 		if( baseDType <> FB_DATATYPE_STRUCT ) then
-			
+
 			'' allow extending WSTRING and ZSTRING, the UDT
 			'' will use different rules for conversions,
 			if (baseDType = FB_DATATYPE_WCHAR) or (baseDType = FB_DATATYPE_CHAR) then
@@ -1057,6 +1086,13 @@ sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
 			end if
 		end if
 
+		'' check that the base type is not a parent struct namespace
+		if( symbIsParentNamespace( baseDType, baseSubtype ) ) then
+			baseDType = 0
+			baseSubtype = NULL
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+		end if
+
 		'' base type? check if z|wstring was already extended
 		if( baseSubType ) then
 			select case stringType
@@ -1089,8 +1125,8 @@ sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
 	'' start a new compound, or any EXTERN..END EXTERN used around this struct
 	'' would turn-off function mangling depending on the mode passed
 	cCompStmtPush( FB_TK_TYPE, _
-	 		   	   FB_CMPSTMT_MASK_ALL and (not FB_CMPSTMT_MASK_CODE) _
-	 					 			        and (not FB_CMPSTMT_MASK_DATA) )
+	               FB_CMPSTMT_MASK_ALL and (not FB_CMPSTMT_MASK_CODE) _
+	               and (not FB_CMPSTMT_MASK_DATA) )
 
 	'' we have to store some contextual information,
 	'' while there's no proper scope stack
@@ -1100,6 +1136,10 @@ sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
 	dim as integer scope_depth = parser.scope
 
 	sym = hTypeAdd( NULL, id, palias, isunion, align, baseDType, baseSubtype, stringType )
+
+	'' set visibility flags
+	sym->attrib or= (attrib and FB_SYMBATTRIB_VIS_PRIVATE)
+	sym->attrib or= (attrib and FB_SYMBATTRIB_VIS_PROTECTED)
 
 	'' restore the context
 	ast.proc.curr = currproc
@@ -1120,10 +1160,13 @@ sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
 	'' has methods? must be unique..
 	if( symbGetIsUnique( sym ) ) then
 		'' any preview declaration than itself?
-		dim as FBSYMCHAIN ptr chain_ = symbLookupAt( symbGetCurrentNamespc( ), _
-													 id, _
-													 FALSE, _
-													 FALSE )
+		dim as FBSYMCHAIN ptr chain_ = _
+			symbLookupAt( _
+				symbGetCurrentNamespc( ), _
+				id, _
+				FALSE, _
+				FALSE _
+			)
 		'' could be NULL, because error recovery
 		if( chain_ <> NULL ) then
 			if( chain_->sym <> sym ) then
@@ -1161,9 +1204,8 @@ private sub hPatchByvalParamsToSelf( byval parent as FBSYMBOL ptr )
 			param = symbGetProcHeadParam( sym )
 			while( param )
 				'' BYVAL AS ParentUDT?
-				if( (symbGetType( param ) = FB_DATATYPE_STRUCT) and _
-				    (symbGetSubtype( param ) = parent)                ) then
-					if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
+				if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
+					if( symbIsParentNamespace( symbGetType( param ), symbGetSubtype( param ), parent) ) then
 						symbRecalcLen( param )
 					end if
 				end if
@@ -1175,24 +1217,51 @@ private sub hPatchByvalParamsToSelf( byval parent as FBSYMBOL ptr )
 		sym = sym->next
 	wend
 
+	'' recurse in to nested types only if the type
+	'' is expected to have nested types
+	if( symbGetUdtHasNested( parent ) ) then
+		sym = symbGetUDTSymbtb( parent ).head
+		while( sym )
+			if( symbIsStruct( sym ) ) then
+				hPatchByvalParamsToSelf( sym )
+			end if
+			sym = sym->next
+		wend
+	end if
+
 end sub
 
 private sub hPatchByvalResultToSelf( byval parent as FBSYMBOL ptr )
-	var sym = symbGetUDTSymbtb( parent ).head
+	dim as FBSYMBOL ptr sym = any
+
+	sym = symbGetUDTSymbtb( parent ).head
 	while( sym )
 
 		'' Function or static variable? Using parent UDT as Byval (result) data type?
-		if( (symbGetType( sym ) = FB_DATATYPE_STRUCT) and _
-		    (symbGetSubtype( sym ) = parent) and _
-		    (not symbIsRef( sym )) ) then
-			if( symbIsProc( sym ) ) then
-				symbProcRecalcRealType( sym )
-				'' (FBSYMBOL->lgt is 0 for procedures anyways, no need to update)
-			elseif( symbIsVar( sym ) ) then
-				symbRecalcLen( sym )
+		if( not symbIsRef( sym ) ) then
+			if( symbIsParentNamespace( symbGetType( sym ), symbGetSubtype( sym ), parent ) ) then
+				if( symbIsProc( sym ) ) then
+					symbProcRecalcRealType( sym )
+					'' (FBSYMBOL->lgt is 0 for procedures anyways, no need to update)
+				elseif( symbIsVar( sym ) ) then
+					symbRecalcLen( sym )
+				end if
 			end if
 		end if
 
 		sym = sym->next
 	wend
+
+	'' recurse in to nested types only if the type
+	'' is expected to have nested types
+	if( symbGetUdtHasNested( parent ) ) then
+		sym = symbGetUDTSymbtb( parent ).head
+		while( sym )
+			if( symbIsStruct( sym ) ) then
+				hPatchByvalResultToSelf( sym )
+			end if
+			sym = sym->next
+		wend
+	end if
+
 end sub

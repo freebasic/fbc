@@ -7,92 +7,92 @@
 
 '' compound statements permissions
 enum FB_CMPSTMT_MASK
-	FB_CMPSTMT_MASK_NOTHING		= &h00000000
-	FB_CMPSTMT_MASK_CODE		= &h00000001
-	FB_CMPSTMT_MASK_PROC		= &h00000002
-	FB_CMPSTMT_MASK_NAMESPC		= &h00000004
-	FB_CMPSTMT_MASK_DECL		= &h00000008
-	FB_CMPSTMT_MASK_EXTERN		= &h00000010
-	FB_CMPSTMT_MASK_DATA		= &h00000020
-	FB_CMPSTMT_MASK_ALL 		= &hFFFFFFFF
-	FB_CMPSTMT_MASK_DEFAULT		= FB_CMPSTMT_MASK_CODE
+	FB_CMPSTMT_MASK_NOTHING     = &h00000000
+	FB_CMPSTMT_MASK_CODE        = &h00000001
+	FB_CMPSTMT_MASK_PROC        = &h00000002
+	FB_CMPSTMT_MASK_NAMESPC     = &h00000004
+	FB_CMPSTMT_MASK_DECL        = &h00000008
+	FB_CMPSTMT_MASK_EXTERN      = &h00000010
+	FB_CMPSTMT_MASK_DATA        = &h00000020
+	FB_CMPSTMT_MASK_ALL         = &hFFFFFFFF
+	FB_CMPSTMT_MASK_DEFAULT     = FB_CMPSTMT_MASK_CODE
 end enum
 
 '' compound statements stats
 type FB_CMPSTMTSTK_ as FB_CMPSTMTSTK
 
 type FB_CMPSTMT_DO
-	attop			as integer
-	inilabel		as FBSYMBOL ptr
-	cmplabel		as FBSYMBOL ptr
-	endlabel		as FBSYMBOL ptr
-	last			as FB_CMPSTMTSTK_ ptr
+	attop           as integer
+	inilabel        as FBSYMBOL ptr
+	cmplabel        as FBSYMBOL ptr
+	endlabel        as FBSYMBOL ptr
+	last            as FB_CMPSTMTSTK_ ptr
 end type
 
 type FB_CMPSTMT_WHILE
-	cmplabel		as FBSYMBOL ptr
-	endlabel		as FBSYMBOL ptr
-	last			as FB_CMPSTMTSTK_ ptr
+	cmplabel        as FBSYMBOL ptr
+	endlabel        as FBSYMBOL ptr
+	last            as FB_CMPSTMTSTK_ ptr
 end type
 
 type FB_CMPSTMT_FORELM
-	sym				as FBSYMBOL ptr				'' if sym = null, value will be used
-	value			as FBVALUE
-	dtype			as integer
+	sym             as FBSYMBOL ptr             '' if sym = null, value will be used
+	value           as FBVALUE
+	dtype           as integer
 end type
 
 type FB_CMPSTMT_FOR
-	outerscopenode	as ASTNODE ptr
-	cnt				as FB_CMPSTMT_FORELM
-	end            	as FB_CMPSTMT_FORELM
-	stp				as FB_CMPSTMT_FORELM
-	ispos			as FB_CMPSTMT_FORELM
-	testlabel		as FBSYMBOL ptr
-	inilabel		as FBSYMBOL ptr
-	cmplabel		as FBSYMBOL ptr
-	endlabel		as FBSYMBOL ptr
-	last			as FB_CMPSTMTSTK_ ptr
+	outerscopenode  as ASTNODE ptr
+	cnt             as FB_CMPSTMT_FORELM
+	end             as FB_CMPSTMT_FORELM
+	stp             as FB_CMPSTMT_FORELM
+	ispos           as FB_CMPSTMT_FORELM
+	testlabel       as FBSYMBOL ptr
+	inilabel        as FBSYMBOL ptr
+	cmplabel        as FBSYMBOL ptr
+	endlabel        as FBSYMBOL ptr
+	last            as FB_CMPSTMTSTK_ ptr
 	explicit_step   as integer
 end type
 
 type FB_CMPSTMT_IF
-	issingle		as integer
-	nxtlabel		as FBSYMBOL ptr
-	endlabel		as FBSYMBOL ptr
-	elsecnt			as integer
+	issingle        as integer
+	nxtlabel        as FBSYMBOL ptr
+	endlabel        as FBSYMBOL ptr
+	elsecnt         as integer
 end type
 
 type FB_CMPSTMT_PROC
-	tkn				as FB_TOKEN
-	is_nested		as integer
-	endlabel		as FBSYMBOL ptr
-	last			as FB_CMPSTMTSTK_ ptr
+	tkn             as FB_TOKEN
+	is_nested       as integer
+	endlabel        as FBSYMBOL ptr
+	last            as FB_CMPSTMTSTK_ ptr
 end type
 
 type FB_CMPSTMT_SELCONST
-	base			as integer
-	deflabel 		as FBSYMBOL ptr
-	dtype			as integer  '' original data type SELECT CASE AS CONST converts sym to u(long)int
-	bias			as ulongint '' bias (distance to zero)
+	base            as integer
+	deflabel        as FBSYMBOL ptr
+	dtype           as integer  '' original data type SELECT CASE AS CONST converts sym to u(long)int
+	bias            as ulongint '' bias (distance to zero)
 end type
 
 type FB_CMPSTMT_SELECT
-	isconst			as integer
-	sym				as FBSYMBOL ptr
-	casecnt			as integer
-	const_			as FB_CMPSTMT_SELCONST
-	cmplabel		as FBSYMBOL ptr
-	endlabel		as FBSYMBOL ptr
-	last			as FB_CMPSTMTSTK_ ptr
-	outerscopenode		as ASTNODE ptr '' Big scope around the whole SELECT compound (to destroy its temp var)
+	isconst         as integer
+	sym             as FBSYMBOL ptr
+	casecnt         as integer
+	const_          as FB_CMPSTMT_SELCONST
+	cmplabel        as FBSYMBOL ptr
+	endlabel        as FBSYMBOL ptr
+	last            as FB_CMPSTMTSTK_ ptr
+	outerscopenode      as ASTNODE ptr '' Big scope around the whole SELECT compound (to destroy its temp var)
 end type
 
 type FB_CMPSTMT_WITH
 	'' The WITH temp var (if it needed to use a pointer), or the variable
 	'' (if a simple VAR access was given to the WITH)
-	sym		as FBSYMBOL ptr
-	is_ptr		as integer
-	last		as FB_CMPSTMTSTK_ ptr  '' Previous WITH node on the stack; so parser.stmt.with can be restored in cCompStmtPop()
+	sym         as FBSYMBOL ptr
+	is_ptr      as integer
+	last        as FB_CMPSTMTSTK_ ptr  '' Previous WITH node on the stack; so parser.stmt.with can be restored in cCompStmtPop()
 end type
 
 type FB_CMPSTMT_NAMESPACE
@@ -101,147 +101,158 @@ type FB_CMPSTMT_NAMESPACE
 end type
 
 type FB_CMPSTMT_EXTERN
-	lastmang		as FB_MANGLING
+	lastmang        as FB_MANGLING
 end type
 
 type FB_CMPSTMT_SCOPE
-	lastis_scope	as integer
+	lastis_scope    as integer
 end type
 
 type FB_CMPSTMTSTK
-	id			as integer
-	allowmask	as FB_CMPSTMT_MASK
-	scopenode	as ASTNODE ptr
+	id          as integer
+	allowmask   as FB_CMPSTMT_MASK
+	scopenode   as ASTNODE ptr
 	union
-		for		as FB_CMPSTMT_FOR
-		do		as FB_CMPSTMT_DO
-		while	as FB_CMPSTMT_WHILE
-		if		as FB_CMPSTMT_IF
-		proc	as FB_CMPSTMT_PROC
-		select	as FB_CMPSTMT_SELECT
-		with	as FB_CMPSTMT_WITH
-		nspc	as FB_CMPSTMT_NAMESPACE
-		ext		as FB_CMPSTMT_EXTERN
-		scp		as FB_CMPSTMT_SCOPE
+		for     as FB_CMPSTMT_FOR
+		do      as FB_CMPSTMT_DO
+		while   as FB_CMPSTMT_WHILE
+		if      as FB_CMPSTMT_IF
+		proc    as FB_CMPSTMT_PROC
+		select  as FB_CMPSTMT_SELECT
+		with    as FB_CMPSTMT_WITH
+		nspc    as FB_CMPSTMT_NAMESPACE
+		ext     as FB_CMPSTMT_EXTERN
+		scp     as FB_CMPSTMT_SCOPE
 	end union
 end type
 
 type FB_LETSTMT_NODE
-	expr			as ASTNODE ptr
+	expr            as ASTNODE ptr
 end type
 
 type FBPARSER_STMT_LET
-	list			as TLIST					'' of FB_LETSTMT_NODE
+	list            as TLIST                    '' of FB_LETSTMT_NODE
 end type
 
 '' parser context
 type FBPARSER_STMT
-	stk				as TSTACK
-	id				as FB_TOKEN					'' current compound stmt id
+	stk             as TSTACK
+	id              as FB_TOKEN                 '' current compound stmt id
 
-	cnt				as integer		            '' keep track of :'s to help scope break's
+	cnt             as integer                  '' keep track of :'s to help scope break's
 
-	for				as FB_CMPSTMTSTK ptr
-	do				as FB_CMPSTMTSTK ptr
-	while			as FB_CMPSTMTSTK ptr
-	select			as FB_CMPSTMTSTK ptr
-	proc			as FB_CMPSTMTSTK ptr
-	with			as FB_CMPSTMTSTK ptr
-	let				as FBPARSER_STMT_LET
+	for             as FB_CMPSTMTSTK ptr
+	do              as FB_CMPSTMTSTK ptr
+	while           as FB_CMPSTMTSTK ptr
+	select          as FB_CMPSTMTSTK ptr
+	proc            as FB_CMPSTMTSTK ptr
+	with            as FB_CMPSTMTSTK ptr
+	let             as FBPARSER_STMT_LET
 end type
 
 enum FB_PARSEROPT
-	FB_PARSEROPT_NONE			= &h00000000
-	FB_PARSEROPT_PRNTOPT		= &h00000001
-	FB_PARSEROPT_CHKARRAY		= &h00000002	'' used by LEN() to handle expr's and ()-less arrays (while set, there will be "array access, index expected" errors, unsetting allows to have no-index arrays, e.g. as bydesc arguments, or in l/ubound())
-	FB_PARSEROPT_ISEXPR			= &h00000004	'' parsing an expression?
-	FB_PARSEROPT_ISSCOPE		= &h00000008
-	FB_PARSEROPT_ISFUNC			= &h00000010
-	FB_PARSEROPT_OPTONLY		= &h00000020
-	FB_PARSEROPT_HASINSTPTR		= &h00000040
-	FB_PARSEROPT_ISPROPGET		= &h00000080
-	FB_PARSEROPT_EQINPARENSONLY	= &h00000100	'' only check for '=' if inside parentheses
-	FB_PARSEROPT_GTINPARENSONLY	= &h00000200	'' only check for '>' if inside parentheses
-	FB_PARSEROPT_ISPP               = &h00000400  '' PP expression? (e.g. #if condition)
-	FB_PARSEROPT_EXPLICITBASE       = &h00000800  '' Used to tell cProcArgList() & co about explicit BASE accesses from hBaseMemberAccess() functions
-	FB_PARSEROPT_IDXINPARENSONLY    = &h00001000  '' Only parse array index if inside parentheses (used by REDIM, so it can handle 'expr(1 to 2)', where the expression parser should parse 'expr' but not the '(1 to 2)' part)
+	FB_PARSEROPT_NONE             = &h00000000
+	FB_PARSEROPT_PRNTOPT          = &h00000001  '' Used to determine if parenthesis are optional and if the next ')' should end the expression for highest precedence operators
+	FB_PARSEROPT_CHKARRAY         = &h00000002  '' used by LEN() to handle expr's and ()-less arrays (while set, there will be "array access, index expected" errors, unsetting allows to have no-index arrays, e.g. as bydesc arguments, or in l/ubound())
+	FB_PARSEROPT_ISEXPR           = &h00000004  '' parsing an expression?
+	FB_PARSEROPT_ISSCOPE          = &h00000008
+	FB_PARSEROPT_ISFUNC           = &h00000010
+	FB_PARSEROPT_OPTONLY          = &h00000020
+	FB_PARSEROPT_HASINSTPTR       = &h00000040
+	FB_PARSEROPT_ISPROPGET        = &h00000080
+	FB_PARSEROPT_EQINPARENSONLY   = &h00000100  '' only check for '=' if inside parentheses
+	FB_PARSEROPT_GTINPARENSONLY   = &h00000200  '' only check for '>' if inside parentheses
+	FB_PARSEROPT_ISPP             = &h00000400  '' PP expression? (e.g. #if condition)
+	FB_PARSEROPT_EXPLICITBASE     = &h00000800  '' Used to tell cProcArgList() & co about explicit BASE accesses from hBaseMemberAccess() functions
+	FB_PARSEROPT_IDXINPARENSONLY  = &h00001000  '' Only parse array index if inside parentheses (used by REDIM, so it can handle 'expr(1 to 2)', where the expression parser should parse 'expr' but not the '(1 to 2)' part)
 end enum
 
 type PARSERCTX
 	'' stmt recursion
-	stmt			as FBPARSER_STMT
-	nspcrec			as integer					'' namespace recursion
-	nsprefix		as FBSYMCHAIN ptr			'' used by cTypeOrExpression() & cIdentifier()
+	stmt            as FBPARSER_STMT
+	nspcrec         as integer                  '' namespace recursion
+	nsprefix        as FBSYMCHAIN ptr           '' used by cTypeOrExpression() & cIdentifier()
 
 	'' globals
-	scope			as uinteger					'' current scope (0=main module)
+	stage           as uinteger                 '' current stage (0=preprocessor, 1=executable)
+	scope           as uinteger                 '' current scope (0=main module)
 
-	mangling		as FB_MANGLING				'' current EXTERN's mangling
+	mangling        as FB_MANGLING              '' current EXTERN's mangling
 
-	currproc 		as FBSYMBOL ptr				'' current proc
-	currblock 		as FBSYMBOL ptr				'' current scope block (= proc if outside any block)
+	currproc        as FBSYMBOL ptr             '' current proc
+	currblock       as FBSYMBOL ptr             '' current scope block (= proc if outside any block)
 
-	ovlarglist		as TLIST					'' used to resolve calls to overloaded functions
+	ovlarglist      as TLIST                    '' used to resolve calls to overloaded functions
 
 	'' hacks
-	prntcnt			as integer					'' ()'s count, to allow optional ()'s on SUB's
-	options			as FB_PARSEROPT
+	prntcnt         as integer                  '' ()'s count, to allow optional ()'s on SUB's
+	options         as FB_PARSEROPT
 	ctx_dtype       as integer                  '' used to resolve the address of overloaded procs
-	ctxsym			as FBSYMBOL ptr				'' /
-	have_eq_outside_parens	as integer
+	ctxsym          as FBSYMBOL ptr             '' /
+	have_eq_outside_parens  as integer
 end type
 
 '' cSymbolType flags
 enum FB_SYMBTYPEOPT
-	FB_SYMBTYPEOPT_NONE			= &h00000000
+	FB_SYMBTYPEOPT_NONE         = &h00000000
 
-	FB_SYMBTYPEOPT_CHECKSTRPTR	= &h00000001
-	FB_SYMBTYPEOPT_ALLOWFORWARD	= &h00000002
-	FB_SYMBTYPEOPT_ISBYREF		= &h00000004
+	FB_SYMBTYPEOPT_CHECKSTRPTR  = &h00000001
+	FB_SYMBTYPEOPT_ALLOWFORWARD = &h00000002
+	FB_SYMBTYPEOPT_ISBYREF      = &h00000004
 	FB_SYMBTYPEOPT_SAVENSPREFIX = &h00000008    '' used by cTypeOrExpression() & cIdentifier()
 
-	FB_SYMBTYPEOPT_DEFAULT		= FB_SYMBTYPEOPT_CHECKSTRPTR
+	FB_SYMBTYPEOPT_DEFAULT      = FB_SYMBTYPEOPT_CHECKSTRPTR
 end enum
 
 '' cIdentifier flags
 enum FB_IDOPT
-	FB_IDOPT_NONE				= &h00000000
+	FB_IDOPT_NONE               = &h00000000
 
-	FB_IDOPT_DONTCHKPERIOD		= &h00000001
-	FB_IDOPT_SHOWERROR			= &h00000002
-	FB_IDOPT_ISDECL				= &h00000004
-	FB_IDOPT_ISOPERATOR			= &h00000008
-	FB_IDOPT_ALLOWSTRUCT		= &h00000010
+	FB_IDOPT_DONTCHKPERIOD      = &h00000001
+	FB_IDOPT_SHOWERROR          = &h00000002
+	FB_IDOPT_ISDECL             = &h00000004
+	FB_IDOPT_ALLOWOPERATOR      = &h00000008  '' allow operators in identifier
+	FB_IDOPT_ALLOWSTRUCT        = &h00000010
 	FB_IDOPT_CHECKSTATIC        = &h00000020
 	FB_IDOPT_ISVAR              = &h00000040  '' parsing namespace prefix for variable declaration?
+	FB_IDOPT_NOSKIP             = &h00000080  '' don't skip unused token, caller will do it
+	FB_IDOPT_ISDEFN             = &h00000100  '' is definition (i,e, procedure definition), ignore some access checks
+	FB_IDOPT_ALLOWMEMBERS       = &h00000200  '' allow operators / constructors / destructors in identifier
 
-	FB_IDOPT_DEFAULT			= FB_IDOPT_SHOWERROR or FB_IDOPT_CHECKSTATIC
+	FB_IDOPT_DEFAULT            = FB_IDOPT_SHOWERROR or FB_IDOPT_CHECKSTATIC
 end enum
 
 '' cInitializer flags
 enum FB_INIOPT
-	FB_INIOPT_NONE              = &h00000000
-	FB_INIOPT_ISINI             = &h00000001
-	FB_INIOPT_ISOBJ             = &h00000002
+	FB_INIOPT_NONE              = &h00000000  '' expression
+	FB_INIOPT_ISINI             = &h00000001  '' initializer (not an expression)
+	FB_INIOPT_ISOBJ             = &h00000002  '' object with constructor
+	FB_INIOPT_NOUPCAST          = &h00000004  '' don't allow upcasting (base types initialized from derived types)
 end enum
 
 '' cProcHeader() flags
 enum FB_PROCOPT
-	FB_PROCOPT_NONE			= &h00000000
-	FB_PROCOPT_ISPROTO		= &h00000001
-	FB_PROCOPT_HASPARENT		= &h00000002
+	FB_PROCOPT_NONE         = &h00000000
+	FB_PROCOPT_ISPROTO      = &h00000001
+	FB_PROCOPT_HASPARENT    = &h00000002
 end enum
 
 '' cVarOrDeref flags
 enum FB_VAREXPROPT
-	FB_VAREXPROPT_NONE         = &h00000000
-	FB_VAREXPROPT_NOARRAYCHECK = &h00000001
-	FB_VAREXPROPT_ALLOWALLCASTS = &h00000002
-	FB_VAREXPROPT_ISEXPR       = &h00000004
-	FB_VAREXPROPT_ISASSIGN     = &h00000010  '' Used by SWAP to disallow CALLs etc.
+	FB_VAREXPROPT_NONE            = &h00000000
+	FB_VAREXPROPT_NOARRAYCHECK    = &h00000001
+	FB_VAREXPROPT_ALLOWALLCASTS   = &h00000002
+	FB_VAREXPROPT_ISEXPR          = &h00000004
+	FB_VAREXPROPT_ISASSIGN        = &h00000010  '' Used by SWAP to disallow CALLs etc.
 end enum
 
-declare sub parserInlineAsmEnd( )
+declare sub parserAsmInit( )
+declare sub parserAsmEnd( )
+
+declare function parserInlineAsmAddKeyword( byval id as const zstring ptr ) as integer
+
+declare function parserGlobalAsmAddKeyword( byval id as const zstring ptr ) as integer
+declare function parserIsGlobalAsmKeyword( byval id as const zstring ptr ) as integer
 
 declare sub cProgram()
 
@@ -269,8 +280,8 @@ declare function cDeclaration _
 
 declare sub cConstDecl( byval attrib as FB_SYMBATTRIB )
 declare sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
-declare sub cTypedefMultDecl( )
-declare sub cTypedefSingleDecl( byval pid as zstring ptr )
+declare sub cTypedefMultDecl( byval attrib as FB_SYMBATTRIB )
+declare sub cTypedefSingleDecl( byval attrib as FB_SYMBATTRIB, byval pid as zstring ptr )
 declare sub cEnumDecl( byval attrib as FB_SYMBATTRIB )
 declare function hCheckScope() as integer
 
@@ -308,7 +319,8 @@ declare sub cTypeOf _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as longint, _
-		byref is_fixlenstr as integer _
+		byref is_fixlenstr as integer, _
+		byref ret_sym as FBSYMBOL ptr = NULL _
 	)
 
 declare function cSymbolType _
@@ -332,6 +344,13 @@ declare function cParentId _
 	) as FBSYMBOL ptr
 
 declare sub cCurrentParentId( )
+
+declare function cIdentifierOrUDTMember _
+	( _
+		byref parent as FBSYMBOL ptr = NULL, _
+		byval chain_ as FBSYMCHAIN ptr = NULL _
+	) as FBSYMBOL ptr
+
 declare sub cProcDecl( )
 
 declare function cProcHeader _
@@ -512,6 +531,13 @@ declare function cHighestPrecExpr _
 	) as ASTNODE ptr
 
 declare function cDerefExpression( ) as ASTNODE ptr
+
+declare function cProcPtrBody _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
 declare function cAddrOfExpression( ) as ASTNODE ptr
 
 declare function cTypeConvExpr _
@@ -636,7 +662,8 @@ declare function cProcReturnMethod _
 
 declare function cProcCallingConv _
 	( _
-		byval default as FB_FUNCMODE = FB_FUNCMODE_FBCALL _
+		byval default as FB_FUNCMODE = FB_FUNCMODE_FBCALL, _
+		byref is_explicit as integer = FALSE _
 	) as FB_FUNCMODE
 
 declare sub cByrefAttribute( byref pattrib as FB_PROCATTRIB, byval is_func as integer )
@@ -651,12 +678,12 @@ declare function cFunctionCall _
 	) as ASTNODE ptr
 
 declare sub hMethodCallAddInstPtrOvlArg _
-    ( _
-        byval proc as FBSYMBOL ptr, _
-        byval thisexpr as ASTNODE ptr, _
-        byval arg_list as FB_CALL_ARG_LIST ptr, _
-        byval options as FB_PARSEROPT ptr _
-    )
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval thisexpr as ASTNODE ptr, _
+		byval arg_list as FB_CALL_ARG_LIST ptr, _
+		byval options as FB_PARSEROPT ptr _
+	)
 
 declare function cMaybeIgnoreCallResult( byval expr as ASTNODE ptr ) as integer
 
@@ -696,7 +723,8 @@ declare sub cUdtTypeMember _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as longint, _
-		byref is_fixlenstr as integer _
+		byref is_fixlenstr as integer, _
+		byref ret_sym as FBSYMBOL ptr = NULL _
 	)
 
 declare function cMemberAccess _
@@ -729,7 +757,6 @@ declare function cStrIdxOrMemberDeref _
 	) as ASTNODE ptr
 
 declare sub cAssignment(byval assgexpr as ASTNODE ptr)
-declare function cBydescArrayArgParens( byval arg as ASTNODE ptr ) as FB_PARAMMODE
 declare function cAssignFunctResult( byval is_return as integer ) as integer
 
 declare function cGfxStmt _
@@ -957,6 +984,20 @@ declare function hIntegerTypeFromBitSize _
 	e = hMatchExpr( dtype )
 	if( e = NULL ) then
 		exit function
+	end if
+#endmacro
+
+'':::::
+#macro hMatchFileNumberExpression(e, dtype)
+	e = cExpression( )
+	if( e = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDFILENUMBEREXPRESSION )
+		'' error recovery: fake an expr
+		if( dtype = FB_DATATYPE_INVALID ) then
+			return NULL
+		end if
+
+		e = astNewCONSTz( dtype )
 	end if
 #endmacro
 

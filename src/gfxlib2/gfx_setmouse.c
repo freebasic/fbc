@@ -12,6 +12,9 @@ int fb_GfxSetMouse(int x, int y, int cursor, int clip)
 	}
 
 	DRIVER_LOCK();
+	if( __fb_gfx->scanline_size != 1 ) {
+		y *= __fb_gfx->scanline_size;
+	}
 	__fb_gfx->driver->set_mouse(x, y, cursor, clip);
 	DRIVER_UNLOCK();
 

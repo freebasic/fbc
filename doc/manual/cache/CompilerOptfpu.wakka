@@ -1,21 +1,26 @@
 {{fbdoc item="title" value="Compiler Option: -fpu"}}----
-Sets the math unit to be used for floating point arithmetics.
+Sets the math unit to be used for floating point arithmetic.
 
 {{fbdoc item="syntax"}}##
 	**-fpu** < //type// >
 ##
 {{fbdoc item="param"}}
 	##//type//##
-		The floating point unit: ##X87## | ##SSE##.
+		The floating point unit: ##X87## | ##SSE## | ##NEON##.
 
 {{fbdoc item="desc"}}
-	The ##-fpu## compiler option sets the math unit to be used for floating point arithmetics.  If this option is not specified, the default is ##-fpu X87##.
+	The ##-fpu## compiler option sets the math unit to be used for floating point arithmetic.  If this option is not specified, the default is ##-fpu X87##.
 	
 	##-fpu X87## will generate floating point instructions for the 387.
 	
 	##-fpu SSE## will generate floating point instructions for SSE and SSE2 with some math support still done by the 387.
 	
+	##-fpu NEON## will generate floating point instructions for ##""ARMv7-A""## Advanced SIMD (Neon) extension.  Specifying this option will automatically set the arch to at least ##armv7-a## if not already set to a later processor.
+	
 	Functions normally return a floating point value (##[[KeyPgSingle|Single]]## or ##[[KeyPgDouble|Double]]##) in the ##st(0)## register.  Sometimes, this may be optimized by returning the value in the ##xmm0## register instead.  This can be specified with ##[[KeyPgOption|Option("SSE")]]## after the return type in a function's declaration or definition.  ##[[KeyPgOption|Option("SSE")]]## is ignored unless the source is compiled with the ##-fpu SSE## command line option.
+
+{{fbdoc item="ver"}}
+	- ##-fpu NEON## added in fbc-1.20.0
 
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]

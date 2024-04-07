@@ -1,7 +1,7 @@
 '' examples/manual/system/exec.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'EXEC'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgExec
 '' --------
@@ -9,7 +9,7 @@
 'A Windows based example but the same idea applies to Linux
 Const exename = "NoSuchProgram.exe"
 Const cmdline = "arg1 arg2 arg3"
-Dim result As Integer
+Dim result As Long
 result = Exec( exename, cmdline )
 If result = -1 Then
 	Print "Error running "; exename

@@ -24,6 +24,10 @@ Commands that control the preprocessor.
 		Compiles the following code block if a symbol is not defined.
 	=={{fbdoc item="keyword" value="KeyPgPpelseif|#ELSEIF"}}==
 		Compiles the following code block if a condition is true and the previous conditions was false.
+	=={{fbdoc item="keyword" value="KeyPgPpelseifdef|#ELSEIFDEF"}}==
+		Compiles the following code block if a symbol is defined and the previous conditions was false.
+	=={{fbdoc item="keyword" value="KeyPgPpelseifndef|#ELSEIFNDEF"}}==
+		Compiles the following code block if a symbol is not defined and the previous conditions was false.
 	=={{fbdoc item="keyword" value="KeyPgPpelse|#ELSE"}}==
 		Compiles the following code block if previous conditions were false.
 	=={{fbdoc item="keyword" value="KeyPgPpendif|#ENDIF"}}==
@@ -55,8 +59,12 @@ Commands that control the preprocessor.
 		Includes a path to search for libraries in the linking process.
 
 {{anchor name="CONTROL"}}{{fbdoc item="section" value="Control Directives"}}
-	=={{fbdoc item="keyword" value="KeyPgPragma|#PRAGMA"}}==
+	=={{fbdoc item="keyword" value="KeyPgPpPragma|#PRAGMA"}}==
 		Sets compiling options.
+	=={{fbdoc item="keyword" value="KeyPgPpPragmaReserve|#PRAGMA RESERVE"}}==
+		Reserves symbol name.
+	=={{fbdoc item="keyword" value="KeyPgPpcmdline|#CMDLINE"}}==
+		Sets compiler command options from source.
 	=={{fbdoc item="keyword" value="KeyPgPplang|#LANG"}}==
 		Sets dialect from source.
 	=={{fbdoc item="keyword" value="KeyPgPpprint|#PRINT"}}==
@@ -69,7 +77,7 @@ Commands that control the preprocessor.
 		Sets the current line number and file name.
 
 {{anchor name="METACOMMAND"}}{{fbdoc item="section" value="Metacommands"}}
-	=={{fbdoc item="keyword" value="KeyPgInclude|'$INCLUDE"}}==
+	=={{fbdoc item="keyword" value="KeyPgMetaInclude|'$INCLUDE"}}==
 		Alternate form of the [[KeyPgInclude|#INCLUDE]] directive.
 	=={{fbdoc item="keyword" value="KeyPgMetaDynamic|'$DYNAMIC"}}==
 		Alternate form of the [[KeyPgOptiondynamic|OPTION DYNAMIC]] statement.

@@ -20,22 +20,24 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 static void driver_exit(void);
 static void driver_flip(void);
 
-GFXDRIVER fb_gfxDriverOpenGL =
+/* GFXDRIVER */
+const GFXDRIVER fb_gfxDriverOpenGL =
 {
-	"OpenGL",		/* char *name; */
-	driver_init,		/* int (*init)(int w, int h, char *title, int fullscreen); */
-	driver_exit,		/* void (*exit)(void); */
-	fb_hX11Lock,		/* void (*lock)(void); */
-	fb_hX11Unlock,		/* void (*unlock)(void); */
-	fb_hGL_SetPalette,	/* void (*set_palette)(int index, int r, int g, int b); */
-	fb_hX11WaitVSync,	/* void (*wait_vsync)(void); */
-	fb_hX11GetMouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons, int *clip); */
-	fb_hX11SetMouse,	/* void (*set_mouse)(int x, int y, int cursor, int clip); */
-	fb_hX11SetWindowTitle,	/* void (*set_window_title)(char *title); */
-	fb_hX11SetWindowPos,	/* int (*set_window_pos)(int x, int y); */
-	fb_hX11FetchModes,	/* int *(*fetch_modes)(void); */
-	driver_flip,		/* void (*flip)(void); */
-	NULL			/* void (*poll_events)(void); */
+	"OpenGL",               /* char *name; */
+	driver_init,            /* int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags); */
+	driver_exit,            /* void (*exit)(void); */
+	fb_hX11Lock,            /* void (*lock)(void); */
+	fb_hX11Unlock,          /* void (*unlock)(void); */
+	fb_hGL_SetPalette,      /* void (*set_palette)(int index, int r, int g, int b); */
+	fb_hX11WaitVSync,       /* void (*wait_vsync)(void); */
+	fb_hX11GetMouse,        /* int (*get_mouse)(int *x, int *y, int *z, int *buttons, int *clip); */
+	fb_hX11SetMouse,        /* void (*set_mouse)(int x, int y, int cursor, int clip); */
+	fb_hX11SetWindowTitle,  /* void (*set_window_title)(char *title); */
+	fb_hX11SetWindowPos,    /* int (*set_window_pos)(int x, int y); */
+	fb_hX11FetchModes,      /* int *(*fetch_modes)(void); */
+	driver_flip,            /* void (*flip)(void); */
+	NULL,                   /* void (*poll_events)(void); */
+	NULL                    /* void (*update)(void); */
 };
 
 
@@ -139,7 +141,7 @@ static void opengl_window_update(void)
 
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
-	const char *glx_funcs[] = {
+	const char *const glx_funcs[] = {
 		"glXChooseVisual", "glXCreateContext", "glXDestroyContext",
 		"glXMakeCurrent", "glXSwapBuffers", NULL
 	};
@@ -220,10 +222,12 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 
 	__fb_gl_params.mode_2d = __fb_gl_params.init_mode_2d;
 
-	if (__fb_gl_params.init_scale>1){
+	if (__fb_gl_params.init_scale>=1){
 		__fb_gl_params.scale = __fb_gl_params.init_scale;
+	}
+	if (__fb_gl_params.scale>1){
 		free(__fb_gfx->dirty);
-		__fb_gfx->dirty = (char *)calloc(1, __fb_gfx->h * __fb_gfx->scanline_size* __fb_gl_params.scale);
+		__fb_gfx->dirty = (char *)calloc(1, __fb_gfx->h * __fb_gfx->scanline_size * __fb_gl_params.scale);
 	}
 
 	result = fb_hX11Init(title, w * __fb_gl_params.scale, h * __fb_gl_params.scale, info->depth, refresh_rate, flags);

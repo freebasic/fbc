@@ -1,7 +1,7 @@
 '' examples/manual/datatype/string-varlen.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'STRING'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgString
 '' --------
@@ -15,5 +15,5 @@ Print a
 a += ", world!"
 Print a
 
-Var b = "Welcome to FreeBASIC"
+Dim As String b = "Welcome to FreeBASIC"
 Print b + "! " + a

@@ -1,0 +1,20 @@
+n = sizeof( TOuter )
+OK
+n = sizeof( TOuter.a )
+OK
+n = sizeof( TOuter.TInner )
+OK
+n = sizeof( TOuter.TInner.a )
+OK
+n = sizeof( x )
+OK
+n = sizeof( x.a )
+OK
+n = sizeof( x.m )
+OK
+n = sizeof( x.m.a )
+OK
+n = sizeof( x.TInner )
+len-sizeof.bas(31) error 18: Element not defined, TInner in 't( 1, n = sizeof( x.TInner ) )'
+n = sizeof( x.TInner.a )
+len-sizeof.bas(32) error 9: Expected expression, found '.' in 't( 1, n = sizeof( x.TInner.a ) )'

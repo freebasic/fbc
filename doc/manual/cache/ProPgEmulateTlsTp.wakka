@@ -1,0 +1,2174 @@
+{{fbdoc item="title" value="Emulate a TLS (Thread Local Storage) and a TP (Thread Pooling) feature"}}----
+How **emulate** a kind of **TLS (Thread Local Storage)** and a kind of **TP (Thread Pooling) feature** with ""FreeBASIC"".
+
+**Preamble:**
+	
+	__TLS (Thread Local Storage)__
+		Static variables are normally shared across all the threads. If we modify a static variable, it is visible so modified to all the threads.
+		Unlike normal static variable, if we create a TLS static variable, every thread must have its own copy of the variable (but with the same access name), i.e. any change to the variable is local to the thread (locally stored).
+		This allows to create a thread-safe procedure, because each call to this procedure gets its own copy of the same declared static variables.
+		In normal procedure with static variables, the content of that variables can be updated by multiple threads, but with TLS, we can think of these as static data but local to each thread.
+		
+		TLS data is similar to static data, but the only difference is that TLS data are unique to each thread.
+		
+	__TP (Thread Pooling)__
+		A thread pool is a set of threads that can be used to run tasks based on user needs.
+		The thread pool is accessible via a Type structure.
+		
+		Creating a new thread is an expensive act in terms of resources, both from a processor (CPU) point of view and from a memory point of view.
+		Also, in the event that a program requires the execution of many tasks, the creation and deletion of a thread for each of them would greatly penalize the performance of the application.
+		Therefore, it would be interesting to be able to share the creation of threads so that a thread that has finished executing a task is available for the execution of a future task.
+
+{{fbdoc item="section" value="1. How emulate a kind of TLS (Thread Local Storage) feature with FreeBASIC"}}
+		The principle of this TLS emulation for ""FreeBASIC"" is to use a static array for each requested TLS variable, where each thread has its own unique index (hidden) to access the array element.
+		This unique index relating to the thread is deduced from the thread handle value:
+				**""-""** With fbc version >= 1.08, the thread handle value is simply returned from the ""'Threadself()'"" function calling (new function) from any thread.
+				**""-""** With fbc version < 1.08, the code is more twisted:
+						""-"" The thread handle value is only accessible from the ""'ThreadCreate()'"" return in the parent (or main) thread when creating it.
+						""-"" There is no way to properly emulate the ""'Threadself()'"" function, but only by a twisted method.
+						""-"" In the example below (for fbc version < 1.08), a ""'Threadself()'"" function (returning by reference) value is initialized before each use by the thread (with its own thread handle), and all of this (initialization + use) protected by a mutex as for its corresponding ""'ThreadCreate()'"".
+						
+		In the below example, the TLS static variable is an integer which is used in a single and generic counting procedure ('counter()') with none passed parameter). This counting procedure is called by each thread (thus each thread counts independently of each other but by calling the same single counting procedure).
+		A single macro allows to define any TLS variable (except array) of any type.
+		
+		- Code with preprocessor conditional directives depending on fbc version:
+				{{fbdoc item="filename" value="examples/manual/proguide/multithreading/emulatetls1.bas"}}%%(freebasic)
+#include once "crt/string.bi"
+
+#if __FB_VERSION__ < "1.08"
+	' Emulation of the function Threadself() of FreeBASIC
+	' Before each use, the thread must refresh this function value with its own thread handle,
+	' and all of this (refreshing + use) protected by a mutex.
+	Function Threadself () ByRef As Any Ptr
+		Static As Any Ptr handle
+		Return handle
+	End Function
+#else
+	#include once "fbthread.bi"
+#endif
+
+#macro CreateTLSdatatypeVariableFunction (variable_function_name, variable_datatype)
+' Creation of a "variable_function_name" function to emulate a static datatype variable (not an array),
+' with a value depending on the thread using it.
+	Namespace TLS
+		Function variable_function_name (ByVal cd As Boolean = True) ByRef As variable_datatype
+		' Function emulating (creation/access/destruction) a static datatype variable with value depending on thread using it:
+			' If calling without parameter (or with 'True') parameter, this allows to [create and] access the static datatype variable.
+			' If calling with the 'False' parameter, this allows to destroy the static datatype variable.
+			Dim As Integer bound = 0
+			Static As Any Ptr TLSindex(bound)
+			Static As variable_datatype TLSdata(bound)
+			Dim As Any Ptr Threadhandle = Threadself()
+			Dim As Integer index = 0
+			For I As Integer = 1 To UBound(TLSindex)  ' search existing TLS variable (existing array element) for the running thread
+				If TLSindex(I) = Threadhandle Then
+					index = I
+					Exit For
+				End If
+			Next I
+			If index = 0 And cd = True Then  ' create a new TLS variable (new array element) for a new thread
+				index = UBound(TLSindex) + 1
+				ReDim Preserve TLSindex(index)
+				TLSindex(index) = Threadhandle
+				ReDim Preserve TLSdata(index)
+			ElseIf index > 0 And cd = False Then  ' destroy a TLS variable (array element) and compact the array
+				If index < UBound(TLSindex) Then  ' reorder the array elements
+					memmove(@TLSindex(index), @TLSindex(index + 1), (UBound(TLSindex) - index) * SizeOf(Any Ptr))
+					Dim As variable_datatype Ptr p = Allocate(SizeOf(variable_datatype))  ' for compatibility to object with destructor
+					memmove(p, @TLSdata(index), SizeOf(variable_datatype))                ' for compatibility to object with destructor
+					memmove(@TLSdata(index), @TLSdata(index + 1), (UBound(TLSdata) - index) * SizeOf(variable_datatype))
+					memmove(@TLSdata(UBound(TLSdata)), p, SizeOf(variable_datatype))      ' for compatibility to object with destructor
+					Deallocate(p)                                                         ' for compatibility to object with destructor
+				End If
+				ReDim Preserve TLSindex(UBound(TLSindex) - 1)
+				ReDim Preserve TLSdata(UBound(TLSdata) - 1)
+				index = 0
+			End If
+			Return TLSdata(index)
+		End Function
+	End Namespace
+#endmacro
+
+'------------------------------------------------------------------------------
+
+Type threadData
+	Dim As Any Ptr handle
+	Dim As String prefix
+	Dim As String suffix
+	Dim As Double tempo
+	#if __FB_VERSION__ < "1.08"
+		Static As Any Ptr mutex
+	#endif
+End Type
+#if __FB_VERSION__ < "1.08"
+	Dim As Any Ptr threadData.mutex
+#endif
+
+CreateTLSdatatypeVariableFunction (count, Integer)  ' create a TLS static integer function
+
+Function counter() As Integer  ' definition of a generic counter with counting depending on thread calling it
+	TLS.count() += 1            ' increment the TLS static integer
+	Return TLS.count()          ' return the TLS static integer
+End Function
+
+Sub Thread(ByVal p As Any Ptr)
+	Dim As threadData Ptr ptd = p
+	Dim As UInteger c
+	Do
+		#if __FB_VERSION__ < "1.08"
+			MutexLock(threadData.mutex)
+			Threadself() = ptd->handle
+		#endif
+			c = counter()
+		#if __FB_VERSION__ < "1.08"
+			MutexUnlock(threadData.mutex)
+		#endif
+		Print ptd->prefix & c & ptd->suffix & " ";  ' single print with concatenated string avoids using a mutex
+		Sleep ptd->tempo, 1
+	Loop Until c = 12
+	#if __FB_VERSION__ < "1.08"
+		MutexLock(threadData.mutex)
+		Threadself() = ptd->handle
+	#endif
+	TLS.count(False)  ' destroy the TLS static integer
+	#if __FB_VERSION__ < "1.08"
+		MutexUnlock(threadData.mutex)
+	#endif
+End Sub
+
+'------------------------------------------------------------------------------
+
+Print "|x| : counting from thread a"
+Print "(x) : counting from thread b"
+Print "[x] : counting from thread c"
+Print
+
+#if __FB_VERSION__ < "1.08"
+	threadData.mutex = MutexCreate()
+#endif
+
+Dim As threadData mtlsa
+mtlsa.prefix = "|"
+mtlsa.suffix = "|"
+mtlsa.tempo = 100
+#if __FB_VERSION__ < "1.08"
+	MutexLock(threadData.mutex)
+#endif
+mtlsa.handle = ThreadCreate(@Thread, @mtlsa)
+#if __FB_VERSION__ < "1.08"
+	MutexUnlock(threadData.mutex)
+#endif
+
+Dim As threadData mtlsb
+mtlsb.prefix = "("
+mtlsb.suffix = ")"
+mtlsb.tempo = 150
+#if __FB_VERSION__ < "1.08"
+	MutexLock(threadData.mutex)
+#endif
+mtlsb.handle = ThreadCreate(@Thread, @mtlsb)
+#if __FB_VERSION__ < "1.08"
+	MutexUnlock(threadData.mutex)
+#endif
+
+Dim As threadData mtlsc
+mtlsc.prefix = "["
+mtlsc.suffix = "]"
+mtlsc.tempo = 250
+#if __FB_VERSION__ < "1.08"
+	MutexLock(threadData.mutex)
+#endif
+mtlsc.handle = ThreadCreate(@Thread, @mtlsc)
+#if __FB_VERSION__ < "1.08"
+	MutexUnlock(threadData.mutex)
+#endif
+
+ThreadWait(mtlsa.handle)
+ThreadWait(mtlsb.handle)
+ThreadWait(mtlsc.handle)
+#if __FB_VERSION__ < "1.08"
+	MutexDestroy(threadData.mutex)
+#endif
+
+Print
+Print
+Print "end of threads"
+
+Sleep
+				%%Output example
+					%%
+|x| : counting from thread a
+(x) : counting from thread b
+[x] : counting from thread c
+
+|1| (1) [1] |2| (2) |3| [2] (3) |4| |5| (4) [3] |6| (5) |7| [4] (6) |8| |9| (7) [5] |10| (8) |11| |12| (9) [6] (10) [7] (11) (12) [8] [9] [10] [11] [12]
+
+end of threads
+					%%
+{{fbdoc item="section" value="2. How emulate a kind of TP (Thread Pooling) feature with FreeBASIC"}}
+		The objective of thread pooling is to pool the threads in order to avoid untimely creation or deletion of threads, and thus allow their reuse.
+		So when a task needs to be executed, it will be more resource efficient to check if the thread pool contains an available thread.
+		If so, it will be used while the task is running, and then freed when the task is completed.
+		If there is no thread available, a new thread can be created, and at the end of the task, the thread would be in turn available in the pool of threads.
+		
+		Two Type structures are first proposed below:
+				- {{anchor name="ProPgEmulateTlsTp1|ThreadInitThenMultiStart"}}.
+				- {{anchor name="ProPgEmulateTlsTp2|ThreadPooling"}}.
+			These two structures make it possible to use one thread per instance created, and to chain on this dedicated thread the execution of user procedures one after the other, but without the thread stopping between each:
+					**""-""** The ""'ThreadInitThenMultiStart'"" structure requires a manual start after initialization (and manual wait for completion) for each user procedure to be executed in sequence in the thread.
+					**""-""** The ""'ThreadPooling'"" structure allows to register a sequence of user thread procedure submissions in a queue, while at same time the user procedures start to be executed in the thread without waiting (a last registered wait command is enough to test for full sequence completion).
+			By creating and using several instances, these two structures make it possible to execute sequences of user procedures in several threads, therefore executed in parallel (temporally).
+			
+		A last structure is finally proposed:
+				- {{anchor name="ProPgEmulateTlsTp3|ThreadDispatching"}}.
+			This last structure is an over-structure of the ""ThreadPooling structure"", dispatching user thread procedures over a given max number of secondary threads.
+			
+		These 3 different structures are then compared from the point of view:
+				- {{anchor name="ProPgEmulateTlsTp4|Execution time gain"}} (between them).
+				- {{anchor name="ProPgEmulateTlsTp5|Time wasted when running a user task"}} (among themselves and in relation to other methods).
+				{{anchor name="ProPgEmulateTlsTp1"}}
+		- **""ThreadInitThenMultiStart""** Type:
+				- Principle:
+						The ""'ThreadInitThenMultiStart'"" Type below operationally provides to user 3 (4 actually) main public methods (plus a constructor and a destructor), and internally uses 9 private data members plus 1 private subroutine (static) member.
+						
+						The public methods are:
+							**""-""** ""ThreadInit"" : Initialize the instance with the parameters of the requested user procedure to be executed in a thread.
+							**""-""** ""ThreadStart"" : Start the user procedure execution in the thread (2 overload methods).
+							**""-""** ""ThreadWait"" : Wait for the completion of the user procedure in the thread.
+							
+						By creating several instances each associated with a thread, we can obtain a kind of thread pooling feature.
+						The ""'ThreadInitThenMultiStart'"" Type does not manage any pending thread queue.
+						It is up to the user to choose an existing instance or to create a new instance with which to run his thread procedure.
+						
+				- Description:
+						Each user procedure (to be executed in a thread) must be available under the following function signature:
+							##Function userproc (Byval puserdata As Any Ptr) As String##
+						in order to be compatible with the parameters of the ""'ThreadInit'"" method:
+							##""Declare Sub ThreadInit (Byval pThread As Function (Byval As Any Ptr) As String, Byval p As Any Ptr = 0)""##
+						and perform the instance ('t') initialization by:
+							##""t.ThreadInit(@userproc [, puserdata])""##
+							
+						The other methods are called on the instance ('t'):
+							##""t.ThreadStart()""## or ##""t.ThreadStart(puserdata)""##
+							##""t.ThreadWait()""##
+							
+						The different methods must be called respecting the order of the following sequence:
+							##""ThreadInit, [user code,] ThreadStart, [user code,] ThreadWait, [user code,] ThreadStart, [user code,] ThreadWait, [user code,] .....""##
+							
+						After any ""'ThreadStart'...'ThreadWait'"" sequence, a new user thread procedure can be initialized by calling the ""'ThreadInit'"" method again on the same instance.
+						On the other hand, ""'ThreadStart'...'ThreadWait'"" sequences can also be chained on different instances already initialized.
+						If using several instances (so several threads), the ordered sequences on each instance can be interlaced between instances because calling methods on different instances.
+						The overload method ""'ThreadStart(Byval p As Any Ptr)'"" allows to start the user thread procedure by specifying a new parameter value, without having to call ""'ThreadInit'"" first. The overload method ""'ThreadStart()'"" starts the user thread procedure without modifying the parameter value.
+						
+						The ""'ThreadWait'"" method returns a 'As String' Type (by value), like the user thread function is declared (a string variable return allows to also pass a numeric value).
+						
+						This user data return from the user function is accessed through the ""'ThreadWait'"" return. It is always safe (because in this case, the user thread function has been always fully executed).
+						If the user doesn't want to use the return value of his thread function (to be used like for a subroutine):
+							**""-""** He ends his user thread function with ##Return ####"####"## for example.
+							**""-""** He calls ""'ThreadWait'"" as a subroutine and not as a function (not accessing the value potentially returned by ""'ThreadWait'"").
+						If the user want to use an existing thread subroutine, he can define a wrapper function (with an "any pointer" as parameter, calling the thread subroutine, and returning a string), and pass this function to ""'ThreadInit'"".
+						
+						**Warning:** The information supplied to the user thread procedure via the passed pointer (by ""'ThreadInit'"" or ""'ThreadStart'"") should not be changed between ""'ThreadStart'"" and ""'ThreadWait'"" due to the time uncertainty on the real call of the user thread procedure in this interval.
+						
+				- Under the hood:
+						In fact, each instance is associated with an internal thread that runs continuously in a loop as soon as a first initialization (""'ThreadInit'"") has taken place. This internal thread runs the private subroutine (static) member.
+						It is this private subroutine (static) member that will call (on a ""'ThreadStart'"") the user procedure to be executed, like a classic function call. The value returned by the user function is stored to be subsequently returned to the user through the returned value by ""'ThreadWait'"".
+						
+						So, for each new ""'ThreadInitThenMultiStart'"" instance, an internal thread is started on the first ""'ThreadInit'"" method (calling the ""'ThreadCreate'"" ""FreeBASIC"" keyword), then the user thread procedure is started on the ""'ThreadStart'"" method request.
+						As each initialized instance is associated with a running internal thread, using local scopes or dynamic instances allow to stop internal threads that are no longer used.
+						
+						In the ""'ThreadInitThenMultiStart'"" Type, an additional property ""'ThreadState'"" is available to returns (in a Ubyte) the current internal state of the process.
+						This property allows to sample at any time the state of the internal thread.
+						This property can also be used during the debugging phase (allowing in addition to identify the case of blocking in the user thread procedure running).
+						
+						""ThreadState"" flags:
+							0 -> disabled (internal thread stopped, waiting for ""'ThreadInit'"")
+							1 -> available (waiting for ""'ThreadStart'"" or another ""'ThreadInit'"")
+							2 -> busy (user thread procedure running)
+							4 -> completing (user thread procedure completed, but waiting for ""'ThreadWait'"")
+							(possible Ubyte values : 0, 1, 2, 4)
+							
+						Internally, the Type uses 3 mutexes (by self locking and mutual unlocking) to ensure the ordered sequence of methods called as defined above and wait for the end of the user thread function or for a new user thread function to call.
+						So, no waiting loop is used in the methods coding but only mutexes locking/unlocking requests, so that the halted thread (on a mutex to be locked) has its execution suspended and does not consume any CPU time until the mutex is unlocked.
+						The constructor is responsible for creating and locking the 3 mutexes, while the destructor stops the thread (if it exists) then destroys the 3 mutexes.
+						
+						**Note:** An advised user can stop the internal thread (linked to instance 't') by using the non-breaking sequence: ##t.Destructor() : t.Constructor()##. Then a ##""t.ThreadInit(...)""## is necessary to start a new internal thread.
+						
+				- Example:
+						Chronology of the user code:
+							**""-""** A single ""'ThreadInitThenMultiStart'"" instance is created in order to use a single thread.
+							**""-""** The instance is initialized (""'ThreadInit'"") with a first user thread function: ""'UserThreadS'"" (internal thread creation by using the ""'ThreadCreate'"" ""FreeBASIC"" keyword).
+							**""-""** A sequence of 9 ""'ThreadStart...ThreadWait'"" is requested for this first user thread function, used like a thread subroutine.
+							**""-""** The same instance is reinitialized (""'ThreadInit'"") with a second user thread function: ""'UserThreadF'"" (the previous pending thread will be reused).
+							**""-""** A sequence of 9 ""'ThreadStart...ThreadWait'"" is also requested for this second user thread function, used like a thread function.
+							
+						Full code with the ""'ThreadInitThenMultiStart'"" Type:
+							{{fbdoc item="filename" value="examples/manual/proguide/multithreading/emulatetp1.bas"}}%%(freebasic)
+Type ThreadInitThenMultiStartData
+	Dim As Function(ByVal p As Any Ptr) As String _pThread
+	Dim As Any Ptr _p
+	Dim As Any Ptr _mutex1
+	Dim As Any Ptr _mutex2
+	Dim As Any Ptr _mutex3
+	Dim As Any Ptr _pt
+	Dim As Byte _end
+	Dim As String _returnF
+	Dim As UByte _state
+End Type
+
+Type ThreadInitThenMultiStart
+	Public:
+		Declare Constructor()
+		Declare Sub ThreadInit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
+		Declare Sub ThreadStart()
+		Declare Sub ThreadStart(ByVal p As Any Ptr)
+		Declare Function ThreadWait() As String
+
+		Declare Property ThreadState() As UByte
+
+		Declare Destructor()
+	Private:
+		Dim As ThreadInitThenMultiStartData Ptr _pdata
+		Declare Static Sub _Thread(ByVal p As Any Ptr)
+		Declare Constructor(Byref t As ThreadInitThenMultiStart)
+		Declare Operator Let(Byref t As ThreadInitThenMultiStart)
+End Type
+
+Constructor ThreadInitThenMultiStart()
+	This._pdata = New ThreadInitThenMultiStartData
+	With *This._pdata
+		._mutex1 = MutexCreate()
+		MutexLock(._mutex1)
+		._mutex2 = MutexCreate()
+		MutexLock(._mutex2)
+		._mutex3 = MutexCreate()
+		MutexLock(._mutex3)
+	End With
+End Constructor
+
+Sub ThreadInitThenMultiStart.ThreadInit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
+	With *This._pdata
+		._pThread = pThread
+		._p = p
+		If ._pt = 0 Then
+			._pt= ThreadCreate(@ThreadInitThenMultiStart._Thread, This._pdata)
+			MutexUnlock(._mutex3)
+			._state = 1
+		End If
+	End With
+End Sub
+
+Sub ThreadInitThenMultiStart.ThreadStart()
+	With *This._pdata
+		MutexLock(._mutex3)
+		MutexUnlock(._mutex1)
+	End With
+End Sub
+
+Sub ThreadInitThenMultiStart.ThreadStart(ByVal p As Any Ptr)
+	With *This._pdata
+		MutexLock(._mutex3)
+		._p = p
+		MutexUnlock(._mutex1)
+	End With
+End Sub
+
+Function ThreadInitThenMultiStart.ThreadWait() As String
+	With *This._pdata
+		MutexLock(._mutex2)
+		MutexUnlock(._mutex3)
+		._state = 1
+		Return ._returnF
+	End With
+End Function
+
+Property ThreadInitThenMultiStart.ThreadState() As UByte
+	Return This._pdata->_state
+End Property
+
+Sub ThreadInitThenMultiStart._Thread(ByVal p As Any Ptr)
+	Dim As ThreadInitThenMultiStartData Ptr pdata = p
+	With *pdata
+		Do
+			MutexLock(._mutex1)
+			If ._end = 1 Then Exit Sub
+			._state = 2
+			._returnF = ._pThread(._p)
+			._state = 4
+			MutexUnlock(._mutex2)
+		Loop
+	End With
+End Sub
+
+Destructor ThreadInitThenMultiStart()
+	With *This._pdata
+		If ._pt > 0 Then
+			._end = 1
+			MutexUnlock(._mutex1)
+			..ThreadWait(._pt)
+		End If
+		MutexDestroy(._mutex1)
+		MutexDestroy(._mutex2)
+		MutexDestroy(._mutex3)
+	End With
+	Delete This._pdata
+End Destructor
+
+'---------------------------------------------------
+
+Function UserThreadS(ByVal p As Any Ptr) As String
+	Dim As UInteger Ptr pui = p
+	Print *pui * *pui
+	Return ""
+End Function
+
+Function UserThreadF(ByVal p As Any Ptr) As String
+	Dim As UInteger Ptr pui = p
+	Dim As UInteger c = (*pui) * (*pui)
+	Return Str(c)
+End Function
+
+Dim As ThreadInitThenMultiStart t
+
+Print "First user function executed like a thread subroutine:"
+t.ThreadInit(@UserThreadS)  '' initializes the user thread function (used as subroutine)
+For I As UInteger = 1 To 9
+	Print I & "^2 = ";
+	t.ThreadStart(@I)       '' starts the user thread procedure code body
+	t.ThreadWait()          '' waits for the user thread procedure code end
+Next I
+Print
+
+Print "Second user function executed like a thread function:"
+t.ThreadInit(@UserThreadF)  '' initializes the user thread function (used as function)
+For I As UInteger = 1 To 9
+	Print I & "^2 = ";
+	t.ThreadStart(@I)       '' starts the user thread procedure code body
+	Print t.ThreadWait()    '' waits for the user thread procedure code end and prints result
+Next I
+Print
+
+Sleep
+							%%Output:
+								%%
+First user function executed like a thread subroutine:
+1^2 = 1
+2^2 = 4
+3^2 = 9
+4^2 = 16
+5^2 = 25
+6^2 = 36
+7^2 = 49
+8^2 = 64
+9^2 = 81
+
+Second user function executed like a thread function:
+1^2 = 1
+2^2 = 4
+3^2 = 9
+4^2 = 16
+5^2 = 25
+6^2 = 36
+7^2 = 49
+8^2 = 64
+9^2 = 81
+								%%{{anchor name="ProPgEmulateTlsTp2"}}
+		- **""ThreadPooling""** Type:
+				- Principle:
+						The ""'ThreadPooling'"" Type below operationally provides to user 2 (3 actually) main public methods (plus a constructor and a destructor), and internally uses 11 private data members plus 1 private subroutine (static) member.
+						
+						The public methods are:
+							**""-""** ""PoolingSubmit"" : Enter a user thread procedure in the queue.
+							**""-""** ""PoolingWait"" : Wait for full emptying of the queue (with last user procedure executed).
+							
+						By creating several instances each associated with a thread, we can obtain a kind of thread pooling feature.
+						The ""'ThreadPooling'"" Type manages a pending thread queue by instance (so, by thread).
+						It is up to the user to choose an existing instance or to create a new instance with which to run his thread procedure sequence.
+						
+						On each ""'ThreadPooling'"" Type instance, the submitted user thread procedures are immediately entered in a queue specific to the instance.
+						These buffered user thread procedures are sequentially as soon as possible executed in the thread dedicated to the instance.
+						
+				- Description:
+						Each user procedure (to be executed in a thread) must be available under the following function signature:
+						##Function userproc (Byval puserdata As Any Ptr) As String##
+						in order to be compatible with the parameters of the ""'PoolingSubmit()'"" method:
+						##""Declare Sub PoolingSubmit (Byval pThread As Function (Byval As Any Ptr) As String, Byval p As Any Ptr = 0)""##
+						and perform the instance ('t') submission in the queue by:
+						##""t.PoolingSubmit(@userproc [, puserdata])""##
+						
+						The other method is called on the instance ('t'):
+						##""t.PoolingWait() or t.PoolingWait(returndata())""##
+						
+						The different methods must be called respecting the order of the following sequence:
+						##""PoolingSubmit, [user code,] [PoolingSubmit, [user code,] [PoolingSubmit, [user code, ...]] PoolingWait, [user code,] ...""##
+						
+						After any ""'PoolingSubmit'...'PoolingWait'"" sequence, a new user thread procedure sequence can be submitted by calling another ""'PoolingSubmit'...'PoolingWait'"" sequence again on the same instance.
+						On the other hand, ""'PoolingSubmit'...'PoolingWait'"" sequences can also be chained on different instances already initialized.
+						If using several instances (so several threads), the ordered sequences on each instance can be interlaced between instances because calling methods on different instances.
+						
+						The ""'PoolingWait(returndata())'"" method fills in a String array with the user thread function returns (a string variable return allows to also pass a numeric value).
+						These user data returns from the user functions is accessed through the argument of ""'PoolingWait(returndata())'"" method. It is always safe (because in this case, the user thread functions has been always fully executed).
+						If the user doesn't want to use the return values of his thread functions (to be used like for subroutines):
+							**""-""** He ends his user thread functions with ##Return ####"####"## for example.
+							**""-""** He calls the ""'PoolingWait()'"" method without parameter.
+						If the user want to use an existing thread subroutine, he can define a wrapper function (with an "any pointer" as parameter, calling the thread subroutine, and returning a string), and pass this function to ""'PoolingSubmit()'"".
+						
+						**Warning:** The information supplied to the user thread procedure via the passed pointer (by ""'PoolingSubmit'"") should not be changed between ""'PoolingSubmit'"" and ""'PoolingWait'"" due to the time uncertainty on the real call of the user thread procedure in this interval.
+						
+				- Under the hood:
+						In fact, each instance is associated with an internal thread that runs continuously in a loop as soon as the instance is constructed. This internal thread runs the private subroutine (static) member.
+						It is this private subroutine (static) member that will call the user procedures of the sequence to be executed, like classic function calls. The value returned by each user function is stored in an internal string array to be finally returned to the user through the argument of ""'PoolingWait(returndata())'"".
+						
+						So, for each new ""'ThreadPooling'"" instance, an internal thread is started by the constructor, then each user thread procedure is started on each dequeuing of the registered submissions.
+						As each initialized instance is associated with a running internal thread, using local scopes or dynamic instances allow to stop internal threads that are no longer used.
+						
+						In the ""'ThreadPooling'"" Type, an additional property ""'PoolingState'"" is available to returns (in a Ubyte) the current internal state of the process.
+						This property allows to sample at any time the state of the internal thread.
+						This property can also be used during the debugging phase (allowing in addition to identify the case of blocking in the user thread procedure running).
+						
+						""PoolingState"" flags:
+							0 -> User thread procedures sequence execution completed (after ""'PoolingWait'"" acknowledge or new instance creation)
+							1 -> Beginning of user thread procedure sequence submitted but no still executing (after first ""'PoolingSubmit'"")
+							2 -> User thread procedure running
+							4 -> User thread procedure sequence execution pending (for ""'PoolingWait'"" acknowledge or new user thread procedure submission)
+							8 -> User thread procedure submission queue not empty
+							(possible Ubyte values : 0, 1, 2, 4, 9, 10)
+							
+						An overload method ""'PoolingWait(values() As String)'"" is added.
+						""'PoolingWait(values()'"" As String) fills out a user-supplied dynamic array with the return value sequence from the latest user thread functions (then internally clear these same supplied return data).
+						The other overload method ""'PoolingWait()'"" (without passed parameter) also clears the internal return values.
+						
+						""'ThreadPooling'"" Type allows to manage kind of "FIFOs" (First In First Out) via dynamic arrays:
+							**""-""** Arrays are filled in as user submissions (from the main thread).
+							**""-""** Arrays are automatically emptied on the fly by the secondary thread which executes their requests as and when.
+							**""-""** So, the inputs and outputs of the "FIFOs" are therefore asynchronous with an optimized throughput on each side.
+							
+						With ""'ThreadPooling'"" the execution time of a ""'PoolingSubmit'"" method in the main thread, corresponds only to the time spent to register the user procedure submission.
+						
+						It is necessary to be able to do (for the ""'PoolingSubmit'"", ""'PoolingWait'"" and 'Destructeur' methods, all in competition with '_Thread' subroutine) atomic mutex unlockings, which is not possible with simple mutexlocks / mutexunlocks.
+						This therefore requires the use of conditional variables (condwait / condsignal).
+						
+						The constructor is responsible for creating the 2 conditional variables and the associated mutex, while the destructor stops the thread then destroys the 2 conditional variables and the associated mutex.
+						
+				- Example:
+						Chronology of the user code:
+							**""-""** A single ""'ThreadPooling'"" instance is created in order to use a single thread.
+							**""-""** A first sequence (a) of 3 ""'PoolingSubmit'"" is requested for the first three user thread functions, ended by a ""'PoolingWait'"" without parameter.
+							**""-""** A second sequence (b) of 3 ""'PoolingSubmit'"" is requested for the last three user thread functions, ended by a ""'PoolingWait'"" with a dynamic string array as argument (so, only the returns from the last three user thread functions will fill out in the dynamic string array).
+							
+						Full code with the ""'ThreadPooling'"" Type:
+							{{fbdoc item="filename" value="examples/manual/proguide/multithreading/emulatetp2.bas"}}%%(freebasic)
+#include once "crt/string.bi"
+
+Type ThreadPoolingData
+	Dim As Function(ByVal p As Any Ptr) As String _pThread0
+	Dim As Any Ptr _p0
+	Dim As Function(ByVal p As Any Ptr) As String _pThread(Any)
+	Dim As Any Ptr _p(Any)
+	Dim As Any Ptr _mutex
+	Dim As Any Ptr _cond1
+	Dim As Any Ptr _cond2
+	Dim As Any Ptr _pt
+	Dim As Byte _end
+	Dim As String _returnF(Any)
+	Dim As UByte _state
+End Type
+
+Type ThreadPooling
+	Public:
+		Declare Constructor()
+		Declare Sub PoolingSubmit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
+		Declare Sub PoolingWait()
+		Declare Sub PoolingWait(values() As String)
+
+		Declare Property PoolingState() As UByte
+
+		Declare Destructor()
+	Private:
+		Dim As ThreadPoolingData Ptr _pdata
+		Declare Static Sub _Thread(ByVal p As Any Ptr)
+		Declare Constructor(Byref t As ThreadPooling)
+		Declare Operator Let(Byref t As ThreadPooling)
+End Type
+
+Constructor ThreadPooling()
+	This._pdata = New ThreadPoolingData
+	With *This._pdata
+		ReDim ._pThread(0)
+		ReDim ._p(0)
+		ReDim ._returnF(0)
+		._mutex = MutexCreate()
+		._cond1 = CondCreate()
+		._cond2 = CondCreate()
+		._pt= ThreadCreate(@ThreadPooling._Thread, This._pdata)
+	End With
+End Constructor
+
+Sub ThreadPooling.PoolingSubmit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
+	With *This._pdata
+		MutexLock(._mutex)
+		ReDim Preserve ._pThread(UBound(._pThread) + 1)
+		._pThread(UBound(._pThread)) = pThread
+		ReDim Preserve ._p(UBound(._p) + 1)
+		._p(UBound(._p)) = p
+		CondSignal(._cond2)
+		._state = 1
+		MutexUnlock(._mutex)
+	End With
+End Sub
+
+Sub ThreadPooling.PoolingWait()
+	With *This._pdata
+		MutexLock(._mutex)
+		While (._state And 11) > 0
+			CondWait(._Cond1, ._mutex)
+		Wend
+		ReDim ._returnF(0)
+		._state = 0
+		MutexUnlock(._mutex)
+	End With
+End Sub
+
+Sub ThreadPooling.PoolingWait(values() As String)
+	With *This._pdata
+		MutexLock(._mutex)
+		While (._state And 11) > 0
+			CondWait(._Cond1, ._mutex)
+		Wend
+		If UBound(._returnF) > 0 Then
+			ReDim values(1 To UBound(._returnF))
+			For I As Integer = 1 To UBound(._returnF)
+				values(I) = ._returnF(I)
+			Next I
+			ReDim ._returnF(0)
+		Else
+			Erase values
+		End If
+		._state = 0
+		MutexUnlock(._mutex)
+	End With
+End Sub
+
+Property ThreadPooling.PoolingState() As UByte
+	With *This._pdata
+		If UBound(._p) > 0 Then
+			Return 8 + ._state
+		Else
+			Return ._state
+		End If
+	End With
+End Property
+
+Sub ThreadPooling._Thread(ByVal p As Any Ptr)
+	Dim As ThreadPoolingData Ptr pdata = p
+	With *pdata
+		Do
+			MutexLock(._mutex)
+			If UBound(._pThread) = 0 Then
+				._state = 4
+				CondSignal(._cond1)
+				While UBound(._pThread) = 0
+					If ._end = 1 Then Exit Sub
+					CondWait(._cond2, ._mutex)
+				Wend
+			End If
+			._pThread0 = ._pThread(1)
+			._p0 = ._p(1)
+			If UBound(._pThread) > 1 Then
+				memmove(@._pThread(1), @._pThread(2), (UBound(._pThread) - 1) * SizeOf(._pThread))
+				memmove(@._p(1), @._p(2), (UBound(._p) - 1) * SizeOf(._p))
+			End If
+			ReDim Preserve ._pThread(UBound(._pThread) - 1)
+			ReDim Preserve ._p(UBound(._p) - 1)
+			MutexUnlock(._mutex)
+			ReDim Preserve ._ReturnF(UBound(._returnF) + 1)
+			._state = 2
+			._returnF(UBound(._returnF)) = ._pThread0(._p0)
+		Loop
+	End With
+End Sub
+
+Destructor ThreadPooling()
+	With *This._pdata
+		MutexLock(._mutex)
+		._end = 1
+		CondSignal(._cond2)
+		MutexUnlock(._mutex)
+		..ThreadWait(._pt)
+		MutexDestroy(._mutex)
+		CondDestroy(._cond1)
+		CondDestroy(._cond2)
+	End With
+	Delete This._pdata
+End Destructor
+
+'---------------------------------------------------
+
+Sub Prnt (ByRef s As String, ByVal p As Any Ptr)
+	Dim As String Ptr ps = p
+	If ps > 0 Then Print *ps;
+	For I As Integer = 1 To 10
+		Print s;
+		Sleep 100, 1
+	Next I
+End Sub
+
+Function UserCode1 (ByVal p As Any Ptr) As String
+	Prnt("1", p)
+	Return "UserCode #1"
+End Function
+
+Function UserCode2 (ByVal p As Any Ptr) As String
+	Prnt("2", p)
+	Return "UserCode #2"
+End Function
+
+Function UserCode3 (ByVal p As Any Ptr) As String
+	Prnt("3", p)
+	Return "UserCode #3"
+End Function
+
+Function UserCode4 (ByVal p As Any Ptr) As String
+	Prnt("4", p)
+	Return "UserCode #4"
+End Function
+
+Function UserCode5 (ByVal p As Any Ptr) As String
+	Prnt("5", p)
+	Return "UserCode #5"
+End Function
+
+Function UserCode6 (ByVal p As Any Ptr) As String
+	Prnt("6", p)
+	Return "UserCode #6"
+End Function
+
+Dim As String sa = "  Sequence #a: "
+Dim As String sb = "  Sequence #b: "
+Dim As String s()
+
+Dim As ThreadPooling t
+
+t.PoolingSubmit(@UserCode1, @sa)
+t.PoolingSubmit(@UserCode2)
+t.PoolingSubmit(@UserCode3)
+Print " Sequence #a of 3 user thread functions fully submitted "
+t.PoolingWait()
+Print
+Print " Sequence #a completed"
+Print
+
+t.PoolingSubmit(@UserCode4, @sb)
+t.PoolingSubmit(@UserCode5)
+t.PoolingSubmit(@UserCode6)
+Print " Sequence #b of 3 user thread functions fully submitted "
+t.PoolingWait(s())
+Print
+Print " Sequence #b completed"
+Print
+
+Print " List of returned values from sequence #b only"
+For I As Integer = LBound(s) To UBound(s)
+	Print "  " & I & ": " & s(I)
+Next I
+Print
+
+Sleep
+							%%Output example
+								%%
+ Sequence #a of 3 user thread functions fully submitted
+  Sequence #a: 111111111122222222223333333333
+ Sequence #a completed
+
+ Sequence #b of 3 user thread functions fully submitted
+  Sequence #b: 444444444455555555556666666666
+ Sequence #b completed
+
+ List of returned values from sequence #b only
+  1: UserCode #4
+  2: UserCode #5
+  3: UserCode #6
+								%%Note: If the first user thread procedure of each sequence starts very quickly, the acknowledgement message of each sequence of 3 submissions may appear inserted after the beginning of the text printed by the first user procedure of the sequence.
+								That is not the case here.
+								{{anchor name="ProPgEmulateTlsTp3"}}
+		- **""ThreadDispatching""** Type, over-structure of **""ThreadPooling""** Type, dispatching user thread procedures over a given max number of secondary threads:
+				- Principle:
+						The maximum number of secondary threads that can be used is fixed when constructing the ""'ThreadDispatching'"" instance (1 secondary thread by default), and also the minimum number of initialized secondary threads (0 secondary thread by default).
+						""'ThreadDispatching'"" manages an internal dynamic array of pointers to ""'ThreadPooling'"" instances.
+						
+						If a secondary thread is available (already existing instance of ""'ThreadPooling'"" pending), it is used to submit the user thread procedure.
+						Otherwise, a new secondary thread is created (new instance of ""'ThreadPooling'"" created) by respecting the number of secondary threads allowed.
+						As long as all potential secondary threads are already in use, each new user thread procedure is distributed evenly over them.
+						
+				- Description:
+						Methods:
+							**""-""** Constructor : Construct a ""'ThreadDispatching'"" instance and set the maximum number of usable secondary threads (1 by default) and set the minimum number of initialized secondary thread (0 by default).
+							**""-""** ""DispatchingSubmit"" : Enter a user thread procedure in the queue of the "best" secondary thread among the usable ones.
+							**""-""** ""DispatchingWait"" : Wait for the complete emptying of the queues of all secondary threads used (with all last user procedures executed).
+							**""-""** ""DispatchingThread"" : Return the number of internal threads really started.
+							**""-""** Destructor : Stop and complete the secondary threads used.
+							
+						In the ""'ThreadDispatching'"" Type, an additional sub ""'DispatchingState(state() As Ubyte)'"" is available to returns (in a Ubyte array) the current state of each internal thread started.
+						This sub allows to sample at any time the state of the internal threads started.
+						This sub can also be used during the debugging phase (allowing in addition to identify the case of blocking in the user thread procedure running).
+						
+						""DispatchingState"" flags (a Ubyte for each internal thread started):
+							0 -> User thread procedures sequence execution completed (after ""'DispatchingWait'"" acknowledge or new instance creation)
+							1 -> Beginning of user thread procedure sequence submitted but no still executing (after first ""'DispatchingSubmit'"")
+							2 -> User thread procedure running
+							4 -> User thread procedure sequence execution pending (for ""'DispatchingWait'"" acknowledge or new user thread procedure submission)
+							8 -> User thread procedure submission queue not empty
+							(possible Ubyte values : 0, 1, 2, 4, 9, 10)
+							
+						The ""'DispatchingWait(returndata())'"" method fills in a String array with the user thread function returns (a string variable return allows to also pass a numeric value). In the array, the user thread function returns are grouped by internal threads really used, in the order they were started.
+						These user data returns from the user functions is accessed through the argument of ""'DispatchingWait(returndata())'"" method. It is always safe (because in this case, the user thread functions has been always fully executed).
+						If the user doesn't want to use the return values of his thread functions (to be used like for subroutines):
+							**""-""** He ends his user thread functions with ##Return ####"####"## for example.
+							**""-""** He calls the ""'DispatchingWait()'"" method without parameter.
+						If the user want to use an existing thread subroutine, he can define a wrapper function (with an "any pointer" as parameter, calling the thread subroutine, and returning a string), and pass this function to ""'DispatchingSubmit()'"".
+						
+				- Example:
+						Example of use of ""'ThreadDispatching'"" (whatever the allowed number of secondary threads, the submission sequence syntax is always the same):
+							{{fbdoc item="filename" value="examples/manual/proguide/multithreading/emulatetp3.bas"}}%%(freebasic)
+#include once "crt/string.bi"
+
+Type ThreadPoolingData
+	Dim As Function(ByVal p As Any Ptr) As String _pThread0
+	Dim As Any Ptr _p0
+	Dim As Function(ByVal p As Any Ptr) As String _pThread(Any)
+	Dim As Any Ptr _p(Any)
+	Dim As Any Ptr _mutex
+	Dim As Any Ptr _cond1
+	Dim As Any Ptr _cond2
+	Dim As Any Ptr _pt
+	Dim As Byte _end
+	Dim As String _returnF(Any)
+	Dim As UByte _state
+End Type
+
+Type ThreadPooling
+	Public:
+		Declare Constructor()
+		Declare Sub PoolingSubmit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
+		Declare Sub PoolingWait()
+		Declare Sub PoolingWait(values() As String)
+
+		Declare Property PoolingState() As UByte
+
+		Declare Destructor()
+	Private:
+		Dim As ThreadPoolingData Ptr _pdata
+		Declare Static Sub _Thread(ByVal p As Any Ptr)
+		Declare Constructor(Byref t As ThreadPooling)
+		Declare Operator Let(Byref t As ThreadPooling)
+End Type
+
+Constructor ThreadPooling()
+	This._pdata = New ThreadPoolingData
+	With *This._pdata
+		ReDim ._pThread(0)
+		ReDim ._p(0)
+		ReDim ._returnF(0)
+		._mutex = MutexCreate()
+		._cond1 = CondCreate()
+		._cond2 = CondCreate()
+		._pt= ThreadCreate(@ThreadPooling._Thread, This._pdata)
+	End With
+End Constructor
+
+Sub ThreadPooling.PoolingSubmit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
+	With *This._pdata
+		MutexLock(._mutex)
+		ReDim Preserve ._pThread(UBound(._pThread) + 1)
+		._pThread(UBound(._pThread)) = pThread
+		ReDim Preserve ._p(UBound(._p) + 1)
+		._p(UBound(._p)) = p
+		CondSignal(._cond2)
+		._state = 1
+		MutexUnlock(._mutex)
+	End With
+End Sub
+
+Sub ThreadPooling.PoolingWait()
+	With *This._pdata
+		MutexLock(._mutex)
+		While (._state And 11) > 0
+			CondWait(._Cond1, ._mutex)
+		Wend
+		ReDim ._returnF(0)
+		._state = 0
+		MutexUnlock(._mutex)
+	End With
+End Sub
+
+Sub ThreadPooling.PoolingWait(values() As String)
+	With *This._pdata
+		MutexLock(._mutex)
+		While (._state And 11) > 0
+			CondWait(._Cond1, ._mutex)
+		Wend
+		If UBound(._returnF) > 0 Then
+			ReDim values(1 To UBound(._returnF))
+			For I As Integer = 1 To UBound(._returnF)
+				values(I) = ._returnF(I)
+			Next I
+			ReDim ._returnF(0)
+		Else
+			Erase values
+		End If
+		._state = 0
+		MutexUnlock(._mutex)
+	End With
+End Sub
+
+Property ThreadPooling.PoolingState() As UByte
+	With *This._pdata
+		If UBound(._p) > 0 Then
+			Return 8 + ._state
+		Else
+			Return ._state
+		End If
+	End With
+End Property
+
+Sub ThreadPooling._Thread(ByVal p As Any Ptr)
+	Dim As ThreadPoolingData Ptr pdata = p
+	With *pdata
+		Do
+			MutexLock(._mutex)
+			If UBound(._pThread) = 0 Then
+				._state = 4
+				CondSignal(._cond1)
+				While UBound(._pThread) = 0
+					If ._end = 1 Then Exit Sub
+					CondWait(._cond2, ._mutex)
+				Wend
+			End If
+			._pThread0 = ._pThread(1)
+			._p0 = ._p(1)
+			If UBound(._pThread) > 1 Then
+				memmove(@._pThread(1), @._pThread(2), (UBound(._pThread) - 1) * SizeOf(._pThread))
+				memmove(@._p(1), @._p(2), (UBound(._p) - 1) * SizeOf(._p))
+			End If
+			ReDim Preserve ._pThread(UBound(._pThread) - 1)
+			ReDim Preserve ._p(UBound(._p) - 1)
+			MutexUnlock(._mutex)
+			ReDim Preserve ._ReturnF(UBound(._returnF) + 1)
+			._state = 2
+			._returnF(UBound(._returnF)) = ._pThread0(._p0)
+		Loop
+	End With
+End Sub
+
+Destructor ThreadPooling()
+	With *This._pdata
+		MutexLock(._mutex)
+		._end = 1
+		CondSignal(._cond2)
+		MutexUnlock(._mutex)
+		..ThreadWait(._pt)
+		MutexDestroy(._mutex)
+		CondDestroy(._cond1)
+		CondDestroy(._cond2)
+	End With
+	Delete This._pdata
+End Destructor
+
+'---------------------------------------------------
+
+Type ThreadDispatching
+	Public:
+		Declare Constructor(ByVal nbMaxSecondaryThread As Integer = 1, ByVal nbMinSecondaryThread As Integer = 0)
+		Declare Sub DispatchingSubmit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
+		Declare Sub DispatchingWait()
+		Declare Sub DispatchingWait(values() As String)
+
+		Declare Property DispatchingThread() As Integer
+		Declare Sub DispatchingState(state() As Ubyte)
+
+		Declare Destructor()
+	Private:
+		Dim As Integer _nbmst
+		Dim As Integer _dstnb
+		Dim As ThreadPooling Ptr _tp(Any)
+		Declare Constructor(Byref t As ThreadDispatching)
+		Declare Operator Let(Byref t As ThreadDispatching)
+End Type
+
+Constructor ThreadDispatching(ByVal nbMaxSecondaryThread As Integer = 1, ByVal nbMinSecondaryThread As Integer = 0)
+	This._nbmst = nbMaxSecondaryThread
+	If nbMinSecondaryThread > nbMaxSecondaryThread Then
+		nbMinSecondaryThread = nbMaxSecondaryThread
+	End If
+	If nbMinSecondaryThread > 0 Then
+		ReDim This._tp(nbMinSecondaryThread - 1)
+		For I As Integer = 0 To nbMinSecondaryThread - 1
+			This._tp(I) = New ThreadPooling
+		Next I
+	End If
+End Constructor
+
+Sub ThreadDispatching.DispatchingSubmit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
+	For I As Integer = 0 To UBound(This._tp)
+		If (This._tp(I)->PoolingState And 11) = 0 Then
+			This._tp(I)->PoolingSubmit(pThread, p)
+			Exit Sub
+		End If
+	Next I
+	If UBound(This._tp) < This._nbmst - 1 Then
+		ReDim Preserve This._tp(UBound(This._tp) + 1)
+		This._tp(UBound(This._tp)) = New ThreadPooling
+		This._tp(UBound(This._tp))->PoolingSubmit(pThread, p)
+	ElseIf UBound(This._tp) >= 0 Then
+		This._tp(This._dstnb)->PoolingSubmit(pThread, p)
+		This._dstnb = (This._dstnb + 1) Mod This._nbmst
+	End If
+End Sub
+
+Sub ThreadDispatching.DispatchingWait()
+	For I As Integer = 0 To UBound(This._tp)
+		This._tp(I)->PoolingWait()
+	Next I
+End Sub
+
+Sub ThreadDispatching.DispatchingWait(values() As String)
+	Dim As String s()
+	For I As Integer = 0 To UBound(This._tp)
+		This._tp(I)->PoolingWait(s())
+		If UBound(s) >= 1 Then
+			If UBound(values) = -1 Then
+				ReDim Preserve values(1 To UBound(values) + UBound(s) + 1)
+			Else
+				ReDim Preserve values(1 To UBound(values) + UBound(s))
+			End If
+			For I As Integer = 1 To UBound(s)
+				values(UBound(values) - UBound(s) + I) = s(I)
+			Next I
+		End If
+	Next I
+End Sub
+
+Property ThreadDispatching.DispatchingThread() As Integer
+	Return UBound(This._tp) + 1
+End Property
+
+Sub ThreadDispatching.DispatchingState(state() As Ubyte)
+	If UBound(This._tp) >= 0 Then
+		Redim state(1 To UBound(This._tp) + 1)
+		For I As Integer = 0 To UBound(This._tp)
+			state(I + 1) = This._tp(I)->PoolingState
+		Next I
+	End If
+End Sub
+
+Destructor ThreadDispatching()
+	For I As Integer = 0 To UBound(This._tp)
+		Delete This._tp(I)
+	Next I
+End Destructor
+
+'---------------------------------------------------
+
+Sub Prnt (ByRef s As String, ByVal p As Any Ptr)
+	Dim As String Ptr ps = p
+	If ps > 0 Then Print *ps;
+	For I As Integer = 1 To 10
+		Print s;
+		Sleep 100, 1
+	Next I
+End Sub
+
+Function UserCode1 (ByVal p As Any Ptr) As String
+	Prnt("1", p)
+	Return "UserCode #1"
+End Function
+
+Function UserCode2 (ByVal p As Any Ptr) As String
+	Prnt("2", p)
+	Return "UserCode #2"
+End Function
+
+Function UserCode3 (ByVal p As Any Ptr) As String
+	Prnt("3", p)
+	Return "UserCode #3"
+End Function
+
+Function UserCode4 (ByVal p As Any Ptr) As String
+	Prnt("4", p)
+	Return "UserCode #4"
+End Function
+
+Function UserCode5 (ByVal p As Any Ptr) As String
+	Prnt("5", p)
+	Return "UserCode #5"
+End Function
+
+Function UserCode6 (ByVal p As Any Ptr) As String
+	Prnt("6", p)
+	Return "UserCode #6"
+End Function
+
+Sub SubmitSequence(ByRef t As ThreadDispatching, ByVal ps As String Ptr)
+	t.DispatchingSubmit(@UserCode1, ps)
+	t.DispatchingSubmit(@UserCode2)
+	t.DispatchingSubmit(@UserCode3)
+	t.DispatchingSubmit(@UserCode4)
+	t.DispatchingSubmit(@UserCode5)
+	t.DispatchingSubmit(@UserCode6)
+End Sub  
+
+Dim As String sa = "  Sequence #a: "
+Dim As String sb = "  Sequence #b: "
+Dim As String sc = "  Sequence #c: "
+Dim As String sd = "  Sequence #d: "
+Dim As String se = "  Sequence #e: "
+Dim As String sf = "  Sequence #f: "
+Dim As String s()
+
+Dim As ThreadDispatching t1, t2 = 2, t3 = 3, t4 = 4, t5 = 5, t6 = 6
+
+Print " Sequence #a of 6 user thread functions dispatched over 1 secondary thread:"
+SubmitSequence(t1, @sa)
+t1.DispatchingWait()
+Print
+Print
+
+Print " Sequence #b of 6 user thread functions dispatched over 2 secondary threads:"
+SubmitSequence(t2, @sb)
+t2.DispatchingWait()
+Print
+Print
+
+Print " Sequence #c of 6 user thread functions dispatched over 3 secondary threads:"
+SubmitSequence(t3, @sc)
+t3.DispatchingWait()
+Print
+Print
+
+Print " Sequence #d of 6 user thread functions dispatched over 4 secondary threads:"
+SubmitSequence(t4, @sd)
+t4.DispatchingWait()
+Print
+Print
+
+Print " Sequence #e of 6 user thread functions dispatched over 5 secondary threads:"
+SubmitSequence(t5, @se)
+t5.DispatchingWait()
+Print
+Print
+
+Print " Sequence #f of 6 user thread functions dispatched over 6 secondary threads:"
+SubmitSequence(t6, @sf)
+t6.DispatchingWait(s())
+Print
+
+Print "  List of returned values from sequence #f:"
+For I As Integer = LBound(s) To UBound(s)
+	Print "   " & I & ": " & s(I)
+Next I
+
+Sleep
+							%%Output example:
+								%%
+ Sequence #a of 6 user thread functions dispatched over 1 secondary thread:
+  Sequence #a: 111111111122222222223333333333444444444455555555556666666666
+
+ Sequence #b of 6 user thread functions dispatched over 2 secondary threads:
+  Sequence #b: 122112121212122112213434344343344343344356566565565656565665
+
+ Sequence #c of 6 user thread functions dispatched over 3 secondary threads:
+  Sequence #c: 123123312321213132321231213321465654546465546546456654654564
+
+ Sequence #d of 6 user thread functions dispatched over 4 secondary threads:
+  Sequence #d: 134243211234432114322341413241233124413256655656566556655656
+
+ Sequence #e of 6 user thread functions dispatched over 5 secondary threads:
+  Sequence #e: 134255243141235325415143215234342511524343521251346666666666
+
+ Sequence #f of 6 user thread functions dispatched over 6 secondary threads:
+  Sequence #f: 534126216354456132241365563142421365316524245613361245365421
+  List of returned values from sequence #f:
+   1: UserCode #1
+   2: UserCode #2
+   3: UserCode #3
+   4: UserCode #4
+   5: UserCode #5
+   6: UserCode #6
+								%%{{anchor name="ProPgEmulateTlsTp4"}}
+		- **Execution time gain checking** with **""ThreadInitThenMultiStart""**, **""ThreadPooling""**, and **""ThreadDispatching""** Types:
+				- Execution time gain checking with different multi-threading configurations:
+						A user task is defined:
+							**""-""** Display 64 characters (2*32) on the screen, each separated by an identical time achieved by a ##[For ... Next]## loop (no Sleep keyword so as not to free up CPU resources).
+							**""-""** For ""'ThreadInitThenMultiStart'"" and ""'ThreadPooling'"": Depending on the number of threads chosen 1/2/4/8/16/32, this same user task is split in 1/2/4/8/16/32 sub-tasks, each being executed on a thread.
+							**""-""** For ""'ThreadDispatching'"": 32 sub-tasks are always used and the distribution of these sub-tasks over the available threads (max = 1/2/4/8/16/32) is automatic.
+							
+						Full code with the ""'ThreadInitThenMultiStart'"", ""'ThreadPooling'"", and ""'ThreadDispatching'"" Types:
+							{{fbdoc item="filename" value="examples/manual/proguide/multithreading/emulatetp4.bas"}}%%(freebasic)
+Type ThreadInitThenMultiStartData
+	Dim As Function(ByVal p As Any Ptr) As String _pThread
+	Dim As Any Ptr _p
+	Dim As Any Ptr _mutex1
+	Dim As Any Ptr _mutex2
+	Dim As Any Ptr _mutex3
+	Dim As Any Ptr _pt
+	Dim As Byte _end
+	Dim As String _returnF
+	Dim As UByte _state
+End Type
+
+Type ThreadInitThenMultiStart
+	Public:
+		Declare Constructor()
+		Declare Sub ThreadInit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
+		Declare Sub ThreadStart()
+		Declare Sub ThreadStart(ByVal p As Any Ptr)
+		Declare Function ThreadWait() As String
+
+		Declare Property ThreadState() As UByte
+
+		Declare Destructor()
+	Private:
+		Dim As ThreadInitThenMultiStartData Ptr _pdata
+		Declare Static Sub _Thread(ByVal p As Any Ptr)
+		Declare Constructor(Byref t As ThreadInitThenMultiStart)
+		Declare Operator Let(Byref t As ThreadInitThenMultiStart)
+End Type
+
+Constructor ThreadInitThenMultiStart()
+	This._pdata = New ThreadInitThenMultiStartData
+	With *This._pdata
+		._mutex1 = MutexCreate()
+		MutexLock(._mutex1)
+		._mutex2 = MutexCreate()
+		MutexLock(._mutex2)
+		._mutex3 = MutexCreate()
+		MutexLock(._mutex3)
+	End With
+End Constructor
+
+Sub ThreadInitThenMultiStart.ThreadInit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
+	With *This._pdata
+		._pThread = pThread
+		._p = p
+		If ._pt = 0 Then
+			._pt= ThreadCreate(@ThreadInitThenMultiStart._Thread, This._pdata)
+			MutexUnlock(._mutex3)
+			._state = 1
+		End If
+	End With
+End Sub
+
+Sub ThreadInitThenMultiStart.ThreadStart()
+	With *This._pdata
+		MutexLock(._mutex3)
+		MutexUnlock(._mutex1)
+	End With
+End Sub
+
+Sub ThreadInitThenMultiStart.ThreadStart(ByVal p As Any Ptr)
+	With *This._pdata
+		MutexLock(._mutex3)
+		._p = p
+		MutexUnlock(._mutex1)
+	End With
+End Sub
+
+Function ThreadInitThenMultiStart.ThreadWait() As String
+	With *This._pdata
+		MutexLock(._mutex2)
+		MutexUnlock(._mutex3)
+		._state = 1
+		Return ._returnF
+	End With
+End Function
+
+Property ThreadInitThenMultiStart.ThreadState() As UByte
+	Return This._pdata->_state
+End Property
+
+Sub ThreadInitThenMultiStart._Thread(ByVal p As Any Ptr)
+	Dim As ThreadInitThenMultiStartData Ptr pdata = p
+	With *pdata
+		Do
+			MutexLock(._mutex1)
+			If ._end = 1 Then Exit Sub
+			._state = 2
+			._returnF = ._pThread(._p)
+			._state = 4
+			MutexUnlock(._mutex2)
+		Loop
+	End With
+End Sub
+
+Destructor ThreadInitThenMultiStart()
+	With *This._pdata
+		If ._pt > 0 Then
+			._end = 1
+			MutexUnlock(._mutex1)
+			..ThreadWait(._pt)
+		End If
+		MutexDestroy(._mutex1)
+		MutexDestroy(._mutex2)
+		MutexDestroy(._mutex3)
+	End With
+	Delete This._pdata
+End Destructor
+
+'---------------------------------------------------
+
+#include once "crt/string.bi"
+
+Type ThreadPoolingData
+	Dim As Function(ByVal p As Any Ptr) As String _pThread0
+	Dim As Any Ptr _p0
+	Dim As Function(ByVal p As Any Ptr) As String _pThread(Any)
+	Dim As Any Ptr _p(Any)
+	Dim As Any Ptr _mutex
+	Dim As Any Ptr _cond1
+	Dim As Any Ptr _cond2
+	Dim As Any Ptr _pt
+	Dim As Byte _end
+	Dim As String _returnF(Any)
+	Dim As UByte _state
+End Type
+
+Type ThreadPooling
+	Public:
+		Declare Constructor()
+		Declare Sub PoolingSubmit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
+		Declare Sub PoolingWait()
+		Declare Sub PoolingWait(values() As String)
+
+		Declare Property PoolingState() As UByte
+
+		Declare Destructor()
+	Private:
+		Dim As ThreadPoolingData Ptr _pdata
+		Declare Static Sub _Thread(ByVal p As Any Ptr)
+		Declare Constructor(Byref t As ThreadPooling)
+		Declare Operator Let(Byref t As ThreadPooling)
+End Type
+
+Constructor ThreadPooling()
+	This._pdata = New ThreadPoolingData
+	With *This._pdata
+		ReDim ._pThread(0)
+		ReDim ._p(0)
+		ReDim ._returnF(0)
+		._mutex = MutexCreate()
+		._cond1 = CondCreate()
+		._cond2 = CondCreate()
+		._pt= ThreadCreate(@ThreadPooling._Thread, This._pdata)
+	End With
+End Constructor
+
+Sub ThreadPooling.PoolingSubmit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
+	With *This._pdata
+		MutexLock(._mutex)
+		ReDim Preserve ._pThread(UBound(._pThread) + 1)
+		._pThread(UBound(._pThread)) = pThread
+		ReDim Preserve ._p(UBound(._p) + 1)
+		._p(UBound(._p)) = p
+		CondSignal(._cond2)
+		._state = 1
+		MutexUnlock(._mutex)
+	End With
+End Sub
+
+Sub ThreadPooling.PoolingWait()
+	With *This._pdata
+		MutexLock(._mutex)
+		While (._state And 11) > 0
+			CondWait(._Cond1, ._mutex)
+		Wend
+		ReDim ._returnF(0)
+		._state = 0
+		MutexUnlock(._mutex)
+	End With
+End Sub
+
+Sub ThreadPooling.PoolingWait(values() As String)
+	With *This._pdata
+		MutexLock(._mutex)
+		While (._state And 11) > 0
+			CondWait(._Cond1, ._mutex)
+		Wend
+		If UBound(._returnF) > 0 Then
+			ReDim values(1 To UBound(._returnF))
+			For I As Integer = 1 To UBound(._returnF)
+				values(I) = ._returnF(I)
+			Next I
+			ReDim ._returnF(0)
+		Else
+			Erase values
+		End If
+		._state = 0
+		MutexUnlock(._mutex)
+	End With
+End Sub
+
+Property ThreadPooling.PoolingState() As UByte
+	With *This._pdata
+		If UBound(._p) > 0 Then
+			Return 8 + ._state
+		Else
+			Return ._state
+		End If
+	End With
+End Property
+
+Sub ThreadPooling._Thread(ByVal p As Any Ptr)
+	Dim As ThreadPoolingData Ptr pdata = p
+	With *pdata
+		Do
+			MutexLock(._mutex)
+			If UBound(._pThread) = 0 Then
+				._state = 4
+				CondSignal(._cond1)
+				While UBound(._pThread) = 0
+					If ._end = 1 Then Exit Sub
+					CondWait(._cond2, ._mutex)
+				Wend
+			End If
+			._pThread0 = ._pThread(1)
+			._p0 = ._p(1)
+			If UBound(._pThread) > 1 Then
+				memmove(@._pThread(1), @._pThread(2), (UBound(._pThread) - 1) * SizeOf(._pThread))
+				memmove(@._p(1), @._p(2), (UBound(._p) - 1) * SizeOf(._p))
+			End If
+			ReDim Preserve ._pThread(UBound(._pThread) - 1)
+			ReDim Preserve ._p(UBound(._p) - 1)
+			MutexUnlock(._mutex)
+			ReDim Preserve ._ReturnF(UBound(._returnF) + 1)
+			._state = 2
+			._returnF(UBound(._returnF)) = ._pThread0(._p0)
+		Loop
+	End With
+End Sub
+
+Destructor ThreadPooling()
+	With *This._pdata
+		MutexLock(._mutex)
+		._end = 1
+		CondSignal(._cond2)
+		MutexUnlock(._mutex)
+		..ThreadWait(._pt)
+		MutexDestroy(._mutex)
+		CondDestroy(._cond1)
+		CondDestroy(._cond2)
+	End With
+	Delete This._pdata
+End Destructor
+
+'---------------------------------------------------
+
+Type ThreadDispatching
+	Public:
+		Declare Constructor(ByVal nbMaxSecondaryThread As Integer = 1, ByVal nbMinSecondaryThread As Integer = 0)
+		Declare Sub DispatchingSubmit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
+		Declare Sub DispatchingWait()
+		Declare Sub DispatchingWait(values() As String)
+
+		Declare Property DispatchingThread() As Integer
+		Declare Sub DispatchingState(state() As Ubyte)
+
+		Declare Destructor()
+	Private:
+		Dim As Integer _nbmst
+		Dim As Integer _dstnb
+		Dim As ThreadPooling Ptr _tp(Any)
+		Declare Constructor(Byref t As ThreadDispatching)
+		Declare Operator Let(Byref t As ThreadDispatching)
+End Type
+
+Constructor ThreadDispatching(ByVal nbMaxSecondaryThread As Integer = 1, ByVal nbMinSecondaryThread As Integer = 0)
+	This._nbmst = nbMaxSecondaryThread
+	If nbMinSecondaryThread > nbMaxSecondaryThread Then
+		nbMinSecondaryThread = nbMaxSecondaryThread
+	End If
+	If nbMinSecondaryThread > 0 Then
+		ReDim This._tp(nbMinSecondaryThread - 1)
+		For I As Integer = 0 To nbMinSecondaryThread - 1
+			This._tp(I) = New ThreadPooling
+		Next I
+	End If
+End Constructor
+
+Sub ThreadDispatching.DispatchingSubmit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
+	For I As Integer = 0 To UBound(This._tp)
+		If (This._tp(I)->PoolingState And 11) = 0 Then
+			This._tp(I)->PoolingSubmit(pThread, p)
+			Exit Sub
+		End If
+	Next I
+	If UBound(This._tp) < This._nbmst - 1 Then
+		ReDim Preserve This._tp(UBound(This._tp) + 1)
+		This._tp(UBound(This._tp)) = New ThreadPooling
+		This._tp(UBound(This._tp))->PoolingSubmit(pThread, p)
+	ElseIf UBound(This._tp) >= 0 Then
+		This._tp(This._dstnb)->PoolingSubmit(pThread, p)
+		This._dstnb = (This._dstnb + 1) Mod This._nbmst
+	End If
+End Sub
+
+Sub ThreadDispatching.DispatchingWait()
+	For I As Integer = 0 To UBound(This._tp)
+		This._tp(I)->PoolingWait()
+	Next I
+End Sub
+
+Sub ThreadDispatching.DispatchingWait(values() As String)
+	Dim As String s()
+	For I As Integer = 0 To UBound(This._tp)
+		This._tp(I)->PoolingWait(s())
+		If UBound(s) >= 1 Then
+			If UBound(values) = -1 Then
+				ReDim Preserve values(1 To UBound(values) + UBound(s) + 1)
+			Else
+				ReDim Preserve values(1 To UBound(values) + UBound(s))
+			End If
+			For I As Integer = 1 To UBound(s)
+				values(UBound(values) - UBound(s) + I) = s(I)
+			Next I
+		End If
+	Next I
+End Sub
+
+Property ThreadDispatching.DispatchingThread() As Integer
+	Return UBound(This._tp) + 1
+End Property
+
+Sub ThreadDispatching.DispatchingState(state() As Ubyte)
+	If UBound(This._tp) >= 0 Then
+		Redim state(1 To UBound(This._tp) + 1)
+		For I As Integer = 0 To UBound(This._tp)
+			state(I + 1) = This._tp(I)->PoolingState
+		Next I
+	End If
+End Sub
+
+Destructor ThreadDispatching()
+	For I As Integer = 0 To UBound(This._tp)
+		Delete This._tp(I)
+	Next I
+End Destructor
+
+'---------------------------------------------------
+
+Dim Shared As Double array(1 To 800000)  '' only used by the [For...Next] waiting loop in UserCode()
+
+Function UserCode (ByVal p As Any Ptr) As String
+	Dim As String Ptr ps = p
+	For I As Integer = 1 To 2
+		Print *ps;
+		For J As Integer = 1 To 800000
+			array(J) = Tan(J) * Atn(J) * Exp(J) * Log(J)  '' [For...Next] waiting loop not freeing any CPU resource
+		Next J
+	Next I
+	Return ""
+End Function
+
+Dim As String s(0 To 31)
+For I As Integer = 0 To 15
+	s(I) = Str(Hex(I))
+Next I
+For I As Integer = 16 To 31
+	s(I) = Chr(55 + I)
+Next I
+
+'---------------------------------------------------
+
+#macro ThreadInitThenMultiStartSequence(nbThread)
+Scope
+	ReDim As ThreadInitThenMultiStart ts(nbThread - 1)
+	Print "   ";
+	Dim As Double t = Timer
+	For I As Integer = 0 To 32 - nbThread Step nbThread
+		For J As Integer = 0 To nbThread - 1
+			ts(J).ThreadInit(@UserCode, @s(I + J))
+			ts(J).ThreadStart()
+		Next J
+		For J As Integer = 0 To nbThread - 1
+			ts(J).ThreadWait()
+		Next J
+	Next I
+	t = Timer - t
+	Print Using " : ####.## s"; t
+End Scope
+#endmacro
+
+#macro ThreadPoolingSequence(nbThread)
+Scope
+	ReDim As ThreadPooling tp(nbThread - 1)
+	Print "   ";
+	Dim As Double t = Timer
+	For I As Integer = 0 To 32 - nbThread Step nbThread
+		For J As Integer = 0 To nbThread - 1
+			tp(J).PoolingSubmit(@UserCode, @s(I + J))
+		Next J
+	Next I
+	For I As Integer = 0 To nbThread - 1
+		tp(I).PoolingWait()
+	Next I
+	t = Timer - t
+	Print Using " : ####.## s"; t
+End Scope
+#endmacro
+
+#macro ThreadDispatchingSequence(nbThreadmax)
+Scope
+	Dim As ThreadDispatching td##nbThreadmax = nbThreadmax
+	Print "   ";
+	Dim As Double t = Timer
+	For I As Integer = 0 To 31
+		td##nbThreadmax.DispatchingSubmit(@UserCode, @s(I))
+	Next I
+	td##nbThreadmax.DispatchingWait()
+	t = Timer - t
+	Print Using " : ####.## s"; t
+End Scope
+#endmacro
+   
+'---------------------------------------------------
+
+Print "'ThreadInitThenMultiStart' with 1 secondary thread:"
+ThreadInitThenMultiStartSequence(1)
+
+Print "'ThreadPooling' with 1 secondary thread:"
+ThreadPoolingSequence(1)
+
+Print "'ThreadDispatching' with 1 secondary thread max:"
+ThreadDispatchingSequence(1)
+Print
+
+'---------------------------------------------------
+
+Print "'ThreadInitThenMultiStart' with 2 secondary threads:"
+ThreadInitThenMultiStartSequence(2)
+
+Print "'ThreadPooling' with 2 secondary threads:"
+ThreadPoolingSequence(2)
+
+Print "'ThreadDispatching' with 2 secondary threads max:"
+ThreadDispatchingSequence(2)
+Print
+
+'---------------------------------------------------
+
+Print "'ThreadInitThenMultiStart' with 4 secondary threads:"
+ThreadInitThenMultiStartSequence(4)
+
+Print "'ThreadPooling' with 4 secondary threads:"
+ThreadPoolingSequence(4)
+
+Print "'ThreadDispatching' with 4 secondary threads max:"
+ThreadDispatchingSequence(4)
+Print
+
+'---------------------------------------------------
+
+Print "'ThreadInitThenMultiStart' with 8 secondary threads:"
+ThreadInitThenMultiStartSequence(8)
+
+Print "'ThreadPooling' with 8 secondary threads:"
+ThreadPoolingSequence(8)
+
+Print "'ThreadDispatching' with 8 secondary threads max:"
+ThreadDispatchingSequence(8)
+Print
+
+'---------------------------------------------------
+
+Print "'ThreadInitThenMultiStart' with 16 secondary threads:"
+ThreadInitThenMultiStartSequence(16)
+
+Print "'ThreadPooling' with 16 secondary threads:"
+ThreadPoolingSequence(16)
+
+Print "'ThreadDispatching' with 16 secondary threads max:"
+ThreadDispatchingSequence(16)
+Print
+
+'---------------------------------------------------
+
+Print "'ThreadInitThenMultiStart' with 32 secondary threads:"
+ThreadInitThenMultiStartSequence(32)
+
+Print "'ThreadPooling' with 32 secondary threads:"
+ThreadPoolingSequence(32)
+
+Print "'ThreadDispatching' with 32 secondary threads max:"
+ThreadDispatchingSequence(32)
+Print
+
+Sleep
+							%%Output example:
+								%%
+'ThreadInitThenMultiStart' with 1 secondary thread:
+   00112233445566778899AABBCCDDEEFFGGHHIIJJKKLLMMNNOOPPQQRRSSTTUUVV :    5.40 s
+'ThreadPooling' with 1 secondary thread:
+   00112233445566778899AABBCCDDEEFFGGHHIIJJKKLLMMNNOOPPQQRRSSTTUUVV :    5.39 s
+'ThreadDispatching' with 1 secondary thread max:
+   00112233445566778899AABBCCDDEEFFGGHHIIJJKKLLMMNNOOPPQQRRSSTTUUVV :    5.42 s
+
+'ThreadInitThenMultiStart' with 2 secondary threads:
+   01012323454567768998ABABCDCDEFEFGHGHIJJIKLKLMNNMOPOPQRRQSTSTUVVU :    2.88 s
+'ThreadPooling' with 2 secondary threads:
+   01012323455476769898BAABCDCDFEFEHGHGJIJILKLKNMNMPOPORQRQTSTSVUVU :    2.83 s
+'ThreadDispatching' with 2 secondary threads max:
+   01103232545476769898BABADCDCFEFHEGHJGJILILKNKNMPMPORORQTQTSVSVUU :    2.96 s
+
+'ThreadInitThenMultiStart' with 4 secondary threads:
+   012312304576645789ABA98BCEDFCEFDGIHJGIJHLKMNNLKMOQPRPOQRSTVUTSUV :    1.72 s
+'ThreadPooling' with 4 secondary threads:
+   012313204576457689AB89ABCDFECFDEGJHIGJHINKLMNKMLROPQROQPVSUTVSUT :    1.71 s
+'ThreadDispatching' with 4 secondary threads max:
+   012320316475674A5B89AB98EFDCEFDCIJHGIJHMGNLKMNLKQRPORQPOVTUSVTUS :    1.76 s
+
+'ThreadInitThenMultiStart' with 8 secondary threads:
+   01324567706415328B9ACDEFBE8D9CAFGHIJKNMLGNLMKHIJOQRPSVUTVOQRUTPS :    1.19 s
+'ThreadPooling' with 8 secondary threads:
+   01234567032415678BAEC9DF8BEA9CDFGJIHLMKNGJIHLMKNORQTPSUVORTPQSUV :    1.05 s
+'ThreadDispatching' with 8 secondary threads max:
+   0123456776415032FE9CABD8FE9ACB8DNMIHKJLGMNIHKGLJVUQPSTORVUQPSOTR :    1.09 s
+
+'ThreadInitThenMultiStart' with 16 secondary threads:
+   013A4567892BCDEF1A2B7903C8465DEFGHIJKNMLPOQRSTVULJGKNMIRHTSOPUQV :    1.14 s
+'ThreadPooling' with 16 secondary threads:
+   0124356789ABCDEF512A04D639E7B8CKJNGILHFQTPMOURSGJNQHLTKIVORPUMSV :    1.10 s
+'ThreadDispatching' with 16 secondary threads max:
+   0123456B897ACDEFFEDA798031C56B42TPOGJQNUKVMSILRHJQGTUOPKLMINSVHR :    1.11 s
+
+'ThreadInitThenMultiStart' with 32 secondary threads:
+   01243675AB89ECFDGHIJKLMNOPQ146RSTGVBA3IEFJTSNM5082CDHU7KLO9RQPVU :    1.06 s
+'ThreadPooling' with 32 secondary threads:
+   0I32456789ABCDEFHG1JKLMNOPRSQTVUN7260534FKBEGIHCD98A1OJLQTSRUPVM :    1.07 s
+'ThreadDispatching' with 32 secondary threads max:
+   012345A7896BCDFGE4C89D76B5A0321EGHIJKLMNOQRUVPSTFLKHMIJNOTSPVUQR :    1.07 s%%Note: From a certain number of threads used, the gain in execution time becomes more or less constant (even slightly decreasing), which corresponds roughly to the number of threads the used CPU really has (8 in the case above).
+								
+					""'ThreadInitThenMultiStart'"" and ""'ThreadPooling'"":
+						From fbc 1.10.0, and in order to have a single structure (for ""'ThreadInitThenMultiStart'"" or ""'ThreadPooling'""), the additional Type of data (""'ThreadInitThenMultiStartData'"" or ""'ThreadPoolingData'"") can be nested as is in its main Type, just above the declaration of its pointer.
+						
+					""'ThreadDispatching'"" versus ""'ThreadPooling'"":
+						**""-""** The ""'ThreadDispatching'"" Type allows to best and automatically distribute user tasks over a given number of secondary threads.
+						**""-""** But if the user wants complete control of the distribution per secondary thread, he can instead use a ""'ThreadPooling'"" array with the desired number of secondary threads as the size.
+						
+					""'ThreadInitThenMultiStart'"" / ""'ThreadPooling'"" / ""'ThreadDispatching'"", and CPU time with pending secondary threads (waiting for user tasks):
+						Once a secondary thread is created and initialized (by creating an instance of ""'ThreadInitThenMultiStart'""+""'ThreadInit'"" or ""'ThreadPooling'"" or ""'ThreadDispatching)'"", it no longer consumes CPU time as long as it is pending (waiting for a user task):
+							**""-""** This is because the thread code of ""'ThreadInitThenMultiStart._Thread()'"" is in the ""'MutexLock(pThis->_mutex1)'"" state and it will only wake after a ""'MutexUnlock(This._mutex1)'"" triggered by a user task submission from ""'ThreadInitThenMultiStart.ThreadStart()'"".
+							**""-""** This is because the thread code of ""'ThreadPooling._Thread()'"" is in the ""'CondWait(pThis->_cond2, pThis->_mutex)'"" state and it will only wake after a ""'CondSignal(This._cond2)'"" triggered by a user task submission from ""'ThreadPooling.PoolingSubmit()'"".
+							
+						So the only interest of the 2nd optional parameter of the ""'ThreadDispatching'"" constructor which allows to set the minimum number of secondary threads (0 by default) is only to start these secondary threads at the earliest at the time of the instance construction, in order to have greater responsiveness at the time of the first user task submissions.
+						{{anchor name="ProPgEmulateTlsTp5"}}
+		- **Time wasted when running a user task** either **by procedure calling method**, **by elementary threading method**, or **by various thread pooling methods**:
+				Creating a new thread is a costly act in terms of resources, both from a processor (CPU) and memory point of view.
+				Also, if a program requires the execution of many tasks, the creation and deletion of a thread for each of them would strongly penalize the performance of the application.
+				It would therefore be interesting to be able to share the creation of threads so that a thread that has finished executing a task is available for the execution of a future task.
+				
+				The objective of thread pooling (""ThreadInitThenMultiStart"", ""ThreadPooling"", ""ThreadDispatching"" methods) is to pool threads in order to avoid the untimely creation or deletion of threads, and thus allow their reuse.
+				
+				Test code to evaluate the different times wasted depending on the feature used:
+					{{fbdoc item="filename" value="examples/manual/proguide/multithreading/emulatetp5.bas"}}%%(freebasic)
+Type ThreadInitThenMultiStart
+	Public:
+		Declare Constructor()
+		Declare Sub ThreadInit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
+		Declare Sub ThreadStart()
+		Declare Sub ThreadStart(ByVal p As Any Ptr)
+		Declare Function ThreadWait() As String
+
+		Declare Property ThreadState() As UByte
+
+		Declare Destructor()
+	Private:
+		Dim As Function(ByVal p As Any Ptr) As String _pThread
+		Dim As Any Ptr _p
+		Dim As Any Ptr _mutex1
+		Dim As Any Ptr _mutex2
+		Dim As Any Ptr _mutex3
+		Dim As Any Ptr _pt
+		Dim As Byte _end
+		Dim As String _returnF
+		Dim As UByte _state
+		Declare Static Sub _Thread(ByVal p As Any Ptr)
+End Type
+
+Constructor ThreadInitThenMultiStart()
+	This._mutex1 = MutexCreate()
+	MutexLock(This._mutex1)
+	This._mutex2 = MutexCreate()
+	MutexLock(This._mutex2)
+	This._mutex3 = MutexCreate()
+	MutexLock(This._mutex3)
+End Constructor
+
+Sub ThreadInitThenMultiStart.ThreadInit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
+	This._pThread = pThread
+	This._p = p
+	If This._pt = 0 Then
+		This._pt= ThreadCreate(@ThreadInitThenMultiStart._Thread, @This)
+		MutexUnlock(This._mutex3)
+		This._state = 1
+	End If
+End Sub
+
+Sub ThreadInitThenMultiStart.ThreadStart()
+	MutexLock(This._mutex3)
+	MutexUnlock(This._mutex1)
+End Sub
+
+Sub ThreadInitThenMultiStart.ThreadStart(ByVal p As Any Ptr)
+	MutexLock(This._mutex3)
+	This._p = p
+	MutexUnlock(This._mutex1)
+End Sub
+
+Function ThreadInitThenMultiStart.ThreadWait() As String
+	MutexLock(This._mutex2)
+	MutexUnlock(This._mutex3)
+	This._state = 1
+	Return This._returnF
+End Function
+
+Property ThreadInitThenMultiStart.ThreadState() As UByte
+	Return This._state
+End Property
+
+Sub ThreadInitThenMultiStart._Thread(ByVal p As Any Ptr)
+	Dim As ThreadInitThenMultiStart Ptr pThis = p
+	Do
+		MutexLock(pThis->_mutex1)
+		If pThis->_end = 1 Then Exit Sub
+		pThis->_state = 2
+		pThis->_returnF = pThis->_pThread(pThis->_p)
+		pThis->_state = 4
+		MutexUnlock(pThis->_mutex2)
+	Loop
+End Sub
+
+Destructor ThreadInitThenMultiStart()
+	If This._pt > 0 Then
+		This._end = 1
+		MutexUnlock(This._mutex1)
+		.ThreadWait(This._pt)
+	End If
+	MutexDestroy(This._mutex1)
+	MutexDestroy(This._mutex2)
+	MutexDestroy(This._mutex3)
+End Destructor
+
+'---------------------------------------------------
+
+#include once "crt/string.bi"
+Type ThreadPooling
+	Public:
+		Declare Constructor()
+		Declare Sub PoolingSubmit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
+		Declare Sub PoolingWait()
+		Declare Sub PoolingWait(values() As String)
+
+		Declare Property PoolingState() As UByte
+
+		Declare Destructor()
+	Private:
+		Dim As Function(ByVal p As Any Ptr) As String _pThread0
+		Dim As Any Ptr _p0
+		Dim As Function(ByVal p As Any Ptr) As String _pThread(Any)
+		Dim As Any Ptr _p(Any)
+		Dim As Any Ptr _mutex
+		Dim As Any Ptr _cond1
+		Dim As Any Ptr _cond2
+		Dim As Any Ptr _pt
+		Dim As Byte _end
+		Dim As String _returnF(Any)
+		Dim As UByte _state
+		Declare Static Sub _Thread(ByVal p As Any Ptr)
+End Type
+
+Constructor ThreadPooling()
+	ReDim This._pThread(0)
+	ReDim This._p(0)
+	ReDim This._returnF(0)
+	This._mutex = MutexCreate()
+	This._cond1 = CondCreate()
+	This._cond2 = CondCreate()
+	This._pt= ThreadCreate(@ThreadPooling._Thread, @This)
+End Constructor
+
+Sub ThreadPooling.PoolingSubmit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
+	MutexLock(This._mutex)
+	ReDim Preserve This._pThread(UBound(This._pThread) + 1)
+	This._pThread(UBound(This._pThread)) = pThread
+	ReDim Preserve This._p(UBound(This._p) + 1)
+	This._p(UBound(This._p)) = p
+	CondSignal(This._cond2)
+	This._state = 1
+	MutexUnlock(This._mutex)
+End Sub
+
+Sub ThreadPooling.PoolingWait()
+	MutexLock(This._mutex)
+	While (This._state And 11) > 0
+		CondWait(This._Cond1, This._mutex)
+	Wend
+	ReDim This._returnF(0)
+	This._state = 0
+	MutexUnlock(This._mutex)
+End Sub
+
+Sub ThreadPooling.PoolingWait(values() As String)
+	MutexLock(This._mutex)
+	While (This._state And 11) > 0
+		CondWait(This._Cond1, This._mutex)
+	Wend
+	If UBound(This._returnF) > 0 Then
+		ReDim values(1 To UBound(This._returnF))
+		For I As Integer = 1 To UBound(This._returnF)
+			values(I) = This._returnF(I)
+		Next I
+		ReDim This._returnF(0)
+	Else
+		Erase values
+	End If
+	This._state = 0
+	MutexUnlock(This._mutex)
+End Sub
+
+Property ThreadPooling.PoolingState() As UByte
+	If UBound(This._p) > 0 Then
+		Return 8 + This._state
+	Else
+		Return This._state
+	End If
+End Property
+
+Sub ThreadPooling._Thread(ByVal p As Any Ptr)
+	Dim As ThreadPooling Ptr pThis = p
+	Do
+		MutexLock(pThis->_mutex)
+		If UBound(pThis->_pThread) = 0 Then
+			pThis->_state = 4
+			CondSignal(pThis->_cond1)
+			While UBound(pThis->_pThread) = 0
+				CondWait(pThis->_cond2, pThis->_mutex)
+				If pThis->_end = 1 Then Exit Sub
+			Wend
+		End If
+		pThis->_pThread0 = pThis->_pThread(1)
+		pThis->_p0 = pThis->_p(1)
+		If UBound(pThis->_pThread) > 1 Then
+			memmove(@pThis->_pThread(1), @pThis->_pThread(2), (UBound(pThis->_pThread) - 1) * SizeOf(pThis->_pThread))
+			memmove(@pThis->_p(1), @pThis->_p(2), (UBound(pThis->_p) - 1) * SizeOf(pThis->_p))
+		End If
+		ReDim Preserve pThis->_pThread(UBound(pThis->_pThread) - 1)
+		ReDim Preserve pThis->_p(UBound(pThis->_p) - 1)
+		MutexUnlock(pThis->_mutex)
+		ReDim Preserve pThis->_ReturnF(UBound(pThis->_returnF) + 1)
+		pThis->_state = 2
+		pThis->_returnF(UBound(pThis->_returnF)) = pThis->_pThread0(pThis->_p0)
+	Loop
+End Sub
+
+Destructor ThreadPooling()
+	MutexLock(This._mutex)
+	This._end = 1
+	CondSignal(This._cond2)
+	MutexUnlock(This._mutex)
+	.ThreadWait(This._pt)
+	MutexDestroy(This._mutex)
+	CondDestroy(This._cond1)
+	CondDestroy(This._cond2)
+End Destructor
+
+'---------------------------------------------------
+
+Type ThreadDispatching
+	Public:
+		Declare Constructor(ByVal nbMaxSecondaryThread As Integer = 1, ByVal nbMinSecondaryThread As Integer = 0)
+		Declare Sub DispatchingSubmit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
+		Declare Sub DispatchingWait()
+		Declare Sub DispatchingWait(values() As String)
+
+		Declare Property DispatchingThread() As Integer
+		Declare Sub DispatchingState(state() As Ubyte)
+
+		Declare Destructor()
+	Private:
+		Dim As Integer _nbmst
+		Dim As Integer _dstnb
+		Dim As ThreadPooling Ptr _tp(Any)
+End Type
+
+Constructor ThreadDispatching(ByVal nbMaxSecondaryThread As Integer = 1, ByVal nbMinSecondaryThread As Integer = 0)
+	This._nbmst = nbMaxSecondaryThread
+	If nbMinSecondaryThread > nbMaxSecondaryThread Then
+		nbMinSecondaryThread = nbMaxSecondaryThread
+	End If
+	If nbMinSecondaryThread > 0 Then
+		ReDim This._tp(nbMinSecondaryThread - 1)
+		For I As Integer = 0 To nbMinSecondaryThread - 1
+			This._tp(I) = New ThreadPooling
+		Next I
+	End If
+End Constructor
+
+Sub ThreadDispatching.DispatchingSubmit(ByVal pThread As Function(ByVal As Any Ptr) As String, ByVal p As Any Ptr = 0)
+	For I As Integer = 0 To UBound(This._tp)
+		If (This._tp(I)->PoolingState And 11) = 0 Then
+			This._tp(I)->PoolingSubmit(pThread, p)
+			Exit Sub
+		End If
+	Next I
+	If UBound(This._tp) < This._nbmst - 1 Then
+		ReDim Preserve This._tp(UBound(This._tp) + 1)
+		This._tp(UBound(This._tp)) = New ThreadPooling
+		This._tp(UBound(This._tp))->PoolingSubmit(pThread, p)
+	ElseIf UBound(This._tp) >= 0 Then
+		This._tp(This._dstnb)->PoolingSubmit(pThread, p)
+		This._dstnb = (This._dstnb + 1) Mod This._nbmst
+	End If
+End Sub
+
+Sub ThreadDispatching.DispatchingWait()
+	For I As Integer = 0 To UBound(This._tp)
+		This._tp(I)->PoolingWait()
+	Next I
+End Sub
+
+Sub ThreadDispatching.DispatchingWait(values() As String)
+	Dim As String s()
+	For I As Integer = 0 To UBound(This._tp)
+		This._tp(I)->PoolingWait(s())
+		If UBound(s) >= 1 Then
+			If UBound(values) = -1 Then
+				ReDim Preserve values(1 To UBound(values) + UBound(s) + 1)
+			Else
+				ReDim Preserve values(1 To UBound(values) + UBound(s))
+			End If
+			For I As Integer = 1 To UBound(s)
+				values(UBound(values) - UBound(s) + I) = s(I)
+			Next I
+		End If
+	Next I
+End Sub
+
+Property ThreadDispatching.DispatchingThread() As Integer
+	Return UBound(This._tp) + 1
+End Property
+
+Sub ThreadDispatching.DispatchingState(state() As Ubyte)
+	If UBound(This._tp) >= 0 Then
+		Redim state(1 To UBound(This._tp) + 1)
+		For I As Integer = 0 To UBound(This._tp)
+			state(I + 1) = This._tp(I)->PoolingState
+		Next I
+	End If
+End Sub
+
+Destructor ThreadDispatching()
+	For I As Integer = 0 To UBound(This._tp)
+		Delete This._tp(I)
+	Next I
+End Destructor
+
+'---------------------------------------------------
+
+Sub s(Byval p As Any Ptr)
+	'' user task
+End Sub
+
+Function f(Byval p As Any Ptr) As String
+	'' user task
+	Return ""
+End Function
+
+'---------------------------------------------------
+'Time wasted when running a user task either by procedure calling or by various threading methods
+Print "Mean time wasted when running a user task :"
+Print "   either by procedure calling method,"
+Print "   or by various threading methods."
+Print
+
+Scope
+	Dim As Double t = Timer
+	For I As Integer = 1 To 1000000
+		s(0)
+	Next I
+	t = Timer - t
+	Print Using "      - Using procedure calling method        : ###.###### ms"; t / 1000
+	Print
+End Scope
+
+Scope
+	Dim As Any Ptr P
+	Dim As Double t = Timer
+	For I As Integer = 1 To 1000
+		p = Threadcreate(@s)
+		Threadwait(p)
+	Next I
+	t = Timer - t
+	Print Using "      - Using elementary threading method     : ###.###### ms"; t
+	Print
+End Scope
+
+Scope
+	Dim As ThreadInitThenMultiStart ts
+	Dim As Double t = Timer
+	ts.ThreadInit(@f)
+	For I As Integer = 1 To 10000
+		ts.ThreadStart()
+		ts.ThreadWait()
+	Next I
+	t = Timer - t
+	Print Using "      - Using ThreadInitThenMultiStart method : ###.###### ms"; t / 10
+End Scope
+
+Scope
+	Dim As ThreadPooling tp
+	Dim As Double t = Timer
+	For I As Integer = 1 To 10000
+		tp.PoolingSubmit(@f)
+	Next I
+	tp.PoolingWait()
+	t = Timer - t
+	Print Using "      - Using ThreadPooling method            : ###.###### ms"; t / 10
+End Scope
+
+Scope
+	Dim As ThreadDispatching td
+	Dim As Double t = Timer
+	For I As Integer = 1 To 10000
+		td.DispatchingSubmit(@f)
+	Next I
+	td.DispatchingWait()
+	t = Timer - t
+	Print Using "      - Using ThreadDispatching method        : ###.###### ms"; t / 10
+End Scope
+
+Print
+Sleep
+					%%Output:
+						%%
+Mean time wasted when running a user task :
+   either by procedure calling method,
+   or by various threading methods.
+
+	  - Using procedure calling method        :   0.000033 ms
+
+	  - Using elementary threading method     :   0.146337 ms
+
+	  - Using ThreadInitThenMultiStart method :   0.007382 ms
+	  - Using ThreadPooling method            :   0.006873 ms
+	  - Using ThreadDispatching method        :   0.007066 ms
+						%%
+				The above results with my PC show that a thread pooling method allows to gain about 140 µs by user task compared to a elementary threading method, but it remains about 7 µs to compare to 0.03 µs for a simple calling method.
+
+{{fbdoc item="section" value="See also"}}
+	- [[ProPgMultiThreading|Multi-Threading Overview]]
+	- [[ProPgMtThreads|Threads]]
+	- [[ProPgMtMutualExclusion|Mutual Exclusion]]
+	- [[ProPgMtConditionalVariables|Conditional Variables]]
+	- [[ProPgMtCriticalSections|Critical Sections]]
+	- [[ProPgMtCriticalSectionsFAQ|Critical Sections FAQ]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

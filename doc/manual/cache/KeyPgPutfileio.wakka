@@ -17,10 +17,10 @@ Writes data from a buffer to a file
 		Is the position where ##Put## must start in the file. If the file was opened ##For Random##, the position is in records, else it is given in bytes. If omitted, writing starts at the present file pointer position.  The position is 1-based: i.e. the first record or byte of a file is at position ##1##.
 		If ##//position//## is omitted or zero (##0##), file writing will start from the current file position.
 	##//data//##
-		Is the buffer where data is written from. It can be a numeric variable, a string, an array or a user-defined type. The operation will try to transfer to disk the complete variable, unless ##//amount//## is given.
+		Is the buffer where data is written from. It can be a numeric variable, a string, an array or a user-defined type (including referenced by ##[[KeyPgThis|This]]##). The operation will try to transfer to disk the complete variable, unless ##//amount//## is given. For a user-defined type instance, the data impacted is only the non-static data members.
 		When putting arrays, ##//data//## should be followed by an empty pair of brackets: '##()##'.  ##**Put**## will write all of the data in the array.  ##//amount//## is not allowed.
 		When putting ##[[KeyPgString|String]]##s, the number of bytes written is the same as the number of bytes in the string data.  ##//amount//## is not allowed.
-		Note: If you want to write values from a buffer, you should NOT pass a pointer to the buffer; instead you should pass the first variable in the buffer.  (This can be done by dereferencing the pointer with ##[[KeyPgOpValueOf|Operator * (Value of)]]##.) If you pass a pointer directly, then ##**Put**## will put the memory from the pointer variable, not the memory it points to.
+		Note: If you want to write values from a buffer, you should NOT pass a pointer to the buffer; instead you should pass the first variable in the buffer (this can be done by dereferencing the pointer with ##[[KeyPgOpValueOf|Operator * (Value of)]]##). If you pass a pointer directly, then ##**Put**## will put the memory from the pointer variable, not the memory it points to.
 	##//amount//##
 		Makes ##Put## write to file ##//amount//## consecutive variables to the file - i.e. it writes ##( //amount// * [[KeyPgSizeof|Sizeof]](//data//) )## bytes of data, starting at ##//data//##'s location in memory, into the file.  If ##//amount//## is omitted it defaults to ##1##, meaning that ##**Put**## just writes a single variable.
 
@@ -33,11 +33,16 @@ Writes data from a buffer to a file
 	##**Put**## can be used as a function, and will return ##0## on success or an error code on failure.	
 	
 	For files opened in ##[[KeyPgRandom|Random]]## mode, the size in bytes of the data to write must match the specified record size.
+	
+	//Note:
+		""-"" If a real [w/z]string variable is passed to ##**Put**##, the ##amount## parameter should be forbidden as it is when passing a string. Do not use. Otherwise, it is dangerously used to multiply the string length to be written to the file, but possibly by overflowing outside the provided [w/z]string buffer.
+		""-"" If a dereferenced [w/z]string pointer is passed to ##**Put**##, the ##amount## parameter is not taken into account as it is when passing a dereferenced numeric pointer. Do not use. But instead of respecting the ##amount## parameter, the pointed buffer is written to the file up to the zero element (terminal element which is excluded).
+		""-"" For finer granularity, any [w/z]string variable can be safely passed to ##**Put**## as numeric buffer by providing the first numeric element (an indexed [w/z]string variable, or a dereferenced [w/z]string pointer then indexed) and the number of numeric elements to be processed.//
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/fileio/put.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/fileio/put.bas"}}%%(freebasic)
 ' Create variables for the file number, and the number to put
-Dim As Integer f
+Dim As Long f
 Dim As Long value
 
 ' Find the first free file number
@@ -56,7 +61,7 @@ Open "file.ext" For Binary As #f
 Close #f
 %%
 
-{{fbdoc item="filename" value="examples/manual/fileio/put-array.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/fileio/put-array.bas"}}%%(freebasic)
 ' Create an integer array
 Dim buffer(1 To 10) As Integer
 For i As Integer = 1 To 10
@@ -64,7 +69,7 @@ For i As Integer = 1 To 10
 Next
 
 ' Find the first free file file number
-Dim f As Integer
+Dim f As Long
 f = Freefile()
 
 ' Open the file "file.ext" for binary usage, using the file number "f"
@@ -77,9 +82,11 @@ Put #f, 1, buffer()
 Close #f
 %%
 
-{{fbdoc item="filename" value="examples/manual/fileio/put-buffer.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/fileio/put-buffer.bas"}}%%(freebasic)
 Dim As Byte Ptr lpBuffer
-Dim As Integer hFile, Counter, Size
+Dim As Long hFile
+Dim As Integer Counter
+Dim As Uinteger Size
 
 Size = 256
 
@@ -102,6 +109,43 @@ Close #hFile
 
 ' Free the allocated memory
 Deallocate lpBuffer
+%%
+
+	{{fbdoc item="filename" value="examples/manual/fileio/put-udt.bas"}}%%(freebasic)
+' 'THIS' can be used as argument for writing/filling all non-static data of an UDT instance to/from a file
+
+Type UDT
+	Dim As String * 32 s
+	Dim As Double d
+	Declare Sub Save(Byref filename As String)
+	Declare Sub Load(Byref filename As String)
+End Type
+
+Sub UDT.Save(Byref filename As String)
+	Dim As Integer f
+	f = Freefile()
+	Open filename For Binary As #f
+	Put #f, , This  '' writes all non-static data of the UDT instance to the file
+	Close #f
+End Sub
+
+SUB UDT.Load(Byref filename As String)
+	Dim As Integer f
+	f = Freefile()
+	Open filename For Binary As #f
+	Get #f, , This  '' fills all non-static data of the UDT instance from the file
+	Close #f
+End Sub
+
+Dim As UDT u1
+u1.s = "PI number"
+u1.d = 3.14159
+u1.Save("file.ext")
+
+Dim As UDT u2
+u2.Load("file.ext")
+Print u2.s
+Print u2.d
 %%
 {{fbdoc item="diff"}}
 	- ##**Put**## can write full arrays as in VB or, alternatively, write a multiple of the data size from ##//buffer//##'s memory location.

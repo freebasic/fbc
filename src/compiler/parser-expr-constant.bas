@@ -8,32 +8,32 @@
 #include once "ast.bi"
 
 function cConstant( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
-	'' check visibility
+	'' Check visibility of constant
 	if( symbCheckAccess( sym ) = FALSE ) then
 		errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 	end if
 
-  	'' ID
-  	lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
+	'' ID
+	lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
 
 	function = astBuildConst( sym )
 end function
 
 '':::::
-'' LitString	= 	STR_LITERAL STR_LITERAL* .
+'' LitString    =   STR_LITERAL STR_LITERAL* .
 ''
 function cStrLiteral( byval skiptoken as integer ) as ASTNODE ptr
 	dim as FBSYMBOL ptr sym = any
-    dim as integer lgt = any, isunicode = any
-    dim as zstring ptr zs = any
+	dim as integer lgt = any, isunicode = any
+	dim as zstring ptr zs = any
 	dim as wstring ptr ws = any
 
-    dim as ASTNODE ptr expr = NULL
+	dim as ASTNODE ptr expr = NULL
 
 	do
 		lgt = lexGetTextLen( )
 
-  		if( lexGetType( ) <> FB_DATATYPE_WCHAR ) then
+		if( lexGetType( ) <> FB_DATATYPE_WCHAR ) then
 			'' escaped? convert to internal format..
 			if( lexGetToken( ) = FB_TK_STRLIT_ESC ) then
 				zs = hReEscape( lexGetText( ), lgt, isunicode )
@@ -46,8 +46,8 @@ function cStrLiteral( byval skiptoken as integer ) as ASTNODE ptr
 						if( lexGetToken( ) <> FB_TK_STRLIT_NOESC ) then
 							if( hHasEscape( zs ) ) then
 								errReportWarn( FB_WARNINGMSG_POSSIBLEESCSEQ, _
-										   	   zs, _
-										   	   FB_ERRMSGOPT_ADDCOLON or FB_ERRMSGOPT_ADDQUOTES )
+								               zs, _
+								               FB_ERRMSGOPT_ADDCOLON or FB_ERRMSGOPT_ADDQUOTES )
 							end if
 						end if
 					end if
@@ -57,13 +57,13 @@ function cStrLiteral( byval skiptoken as integer ) as ASTNODE ptr
 			end if
 
 			if( isunicode = FALSE ) then
-               	sym = symbAllocStrConst( zs, lgt )
+				sym = symbAllocStrConst( zs, lgt )
 			'' convert to unicode..
 			else
 				sym = symbAllocWstrConst( wstr( *zs ), lgt )
 			end if
 
-  		else
+		else
 			'' escaped? convert to internal format..
 			if( lexGetToken( ) = FB_TK_STRLIT_ESC ) then
 				ws = hReEscapeW( lexGetTextW( ), lgt )
@@ -94,8 +94,8 @@ function cStrLiteral( byval skiptoken as integer ) as ASTNODE ptr
 		if( skiptoken ) then
 			lexSkipToken( )
 
-  			'' not another literal string?
-  			if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
+			'' not another literal string?
+			if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
 				exit do
 			end if
 
@@ -109,26 +109,32 @@ end function
 
 function cNumLiteral( byval skiptoken as integer ) as ASTNODE ptr
 	dim as integer dtype = any
+	dim as ASTNODE ptr expr = any
 
 	dtype = lexGetType( )
 
 	select case( dtype )
 	case FB_DATATYPE_DOUBLE
-		function = astNewCONSTf( val( *lexGetText( ) ), dtype )
+		expr = astNewCONSTf( val( *lexGetText( ) ), dtype )
 
 	case FB_DATATYPE_SINGLE
 		dim fval as single = val( *lexGetText( ) )
-		function = astNewCONSTf( fval , dtype )
+		expr = astNewCONSTf( fval , dtype )
 
 	case else
 		if( typeIsSigned( dtype ) ) then
-			function = astNewCONSTi( clngint( *lexGetText( ) ), dtype )
+			expr = astNewCONSTi( clngint( *lexGetText( ) ), dtype )
 		else
-			function = astNewCONSTi( culngint( *lexGetText( ) ), dtype )
+			expr = astNewCONSTi( culngint( *lexGetText( ) ), dtype )
 		end if
 	end select
+
+	'' record that it is a suffixed constant
+	expr->val.hassuffix = lexGetLiteralHasSuffix()
 
 	if( skiptoken ) then
 		lexSkipToken( )
 	end if
+
+	function = expr
 end function

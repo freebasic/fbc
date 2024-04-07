@@ -29,8 +29,9 @@ To introduce the **expressions and statements** (syntactic entities) in ""FreeBA
 		**""-""** Declaration statements: these are the statements where the user names a variable, constant, or procedure, and can also initialize it.
 		**""-""** Executable statements: these are the statements which initiate actions. These statements can call a procedure, loop or branch through blocks of code or assign values or expression to a variable or constant. In the last case, it is called an expression statement. The most common expression statements are assignments and function calls.
 		
-	Statements normally take up a single line with no terminator. Statements can be stacked by using a colon (:) to separate them.
-	If a statement is very long, it may be continued to the next line using the continuation character, an underscore (_).
+	A statements normally takes up one line with no terminator character, but:
+		**""-""** several statements can also be stacked on a same line by using the separator character, a colon (:) to delimit them,
+		**""-""** or a statement may also be continued to the next line using the continuation character, an underscore (_) to extend the statement from one line to the next.
 
 {{fbdoc item="section" value="Basic examples of expressions / statements"}}
 	Some basic examples just to illustrate the definitions above.
@@ -85,6 +86,7 @@ To introduce the **expressions and statements** (syntactic entities) in ""FreeBA
 				if the expression following the If statement evaluates to a truth value, statement 1 is executed else statement 2 is executed.
 
 {{fbdoc item="see"}}
+	- [[ProPgConstantExpressions|Constant Expressions]]
 	- [[ProPgAssignments|Assignments]]
 	- [[CatPgOperators|Operator list]]
 	- [[OpPrecedence|Operator Precedence]]

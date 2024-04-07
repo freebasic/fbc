@@ -1,7 +1,7 @@
 '' examples/manual/console/winput.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'WINPUT()'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgWinput
 '' --------
@@ -9,7 +9,7 @@
 Dim char As WString * 2
 
 Dim filename As String, enc As String
-Dim f As Integer
+Dim f As Long
 
 Line Input "Please enter a file name: ", filename
 Line Input "Please enter an encoding type (optional): ", enc

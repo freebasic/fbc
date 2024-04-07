@@ -132,6 +132,6 @@ sleep
 	- The background color parameter supported by QB is not supported by the ""FreeBASIC"" version
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgScreengraphics|Screen]]##
+	- ##[[KeyPgScreengraphics|Screen (Graphics)]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

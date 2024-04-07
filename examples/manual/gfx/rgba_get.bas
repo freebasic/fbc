@@ -1,7 +1,7 @@
 '' examples/manual/gfx/rgba_get.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'RGBA'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgRgba
 '' --------
@@ -29,3 +29,4 @@ Print Using "Red:         _&H\\ = ###"; Hex(r, 2); r
 Print Using "Green:       _&H\\ = ###"; Hex(g, 2); g
 Print Using "Blue:        _&H\\ = ###"; Hex(b, 2); b
 Print Using "Alpha:       _&H\\ = ###"; Hex(a, 2); a
+	

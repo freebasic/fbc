@@ -2,28 +2,19 @@
 Sets or gets internal graphics library settings
 
 {{fbdoc item="syntax"}}##
-	for fbc version < 1.08:
-		[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param1 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param2 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param3 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param4 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0 )
-		[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param [[KeyPgAs|as]] [[KeyPgString|string]] = ##"####"## )
-	for fbc version >= 1.08:
-		[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param1 [[KeyPgAs|as]] [[KeyPgLong|long]] = &h80000000, [[KeyPgByref|byref]] param2 [[KeyPgAs|as]] [[KeyPgLong|long]] = &h80000000, [[KeyPgByref|byref]] param3 [[KeyPgAs|as]] [[KeyPgLong|long]] = &h80000000, [[KeyPgByref|byref]] param4 [[KeyPgAs|as]] [[KeyPgLong|long]] = &h80000000 )
-		[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param1 [[KeyPgAs|as]] [[KeyPgLongint|longint]], [[KeyPgByref|byref]] param2 [[KeyPgAs|as]] [[KeyPgLongint|longint]] = &h80000000, [[KeyPgByref|byref]] param3 [[KeyPgAs|as]] [[KeyPgLongint|longint]] = &h80000000, [[KeyPgByref|byref]] param4 [[KeyPgAs|as]] [[KeyPgLongint|longint]] = &h80000000 )
-		[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param [[KeyPgAs|as]] [[KeyPgString|string]])
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param1 [[KeyPgAs|as]] [[KeyPgLong|long]] = &h80000000, [[KeyPgByref|byref]] param2 [[KeyPgAs|as]] [[KeyPgLong|long]] = &h80000000, [[KeyPgByref|byref]] param3 [[KeyPgAs|as]] [[KeyPgLong|long]] = &h80000000, [[KeyPgByref|byref]] param4 [[KeyPgAs|as]] [[KeyPgLong|long]] = &h80000000 )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param1 [[KeyPgAs|as]] [[KeyPgLongint|longint]], [[KeyPgByref|byref]] param2 [[KeyPgAs|as]] [[KeyPgLongint|longint]] = &h80000000, [[KeyPgByref|byref]] param3 [[KeyPgAs|as]] [[KeyPgLongint|longint]] = &h80000000, [[KeyPgByref|byref]] param4 [[KeyPgAs|as]] [[KeyPgLongint|longint]] = &h80000000 )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param [[KeyPgAs|as]] [[KeyPgString|string]])
 ##
 {{fbdoc item="usage"}}##
-	for fbc version < 1.08:
-		**""ScreenControl""**( //what// [, [ //param1// ] [, [ //param2// ] [, [ //param3// ] [, [ //param4// ]]]]] )
+	in the LONG (or INTEGER<32>) version of the sub:
+		**""ScreenControl""**( //what// [, [ //param1// ] [, [ //param2// ] [, [ //param3// ] [, //param4// ]]]] )
 			or,
-		**""ScreenControl""**( //what// [, //param// ] )
-	for fbc version >= 1.08:
-		in the LONG (or INTEGER<32>) version of the sub:
-			**""ScreenControl""**( //what// [, [ //param1// ] [, [ //param2// ] [, [ //param3// ] [, //param4// ]]]] )
-				or,
-			**""ScreenControl""**( //what// , //param// )
-		in the LONGINT (or INTEGER<64>) version of the sub:
-			**""ScreenControl""**( //what// , //param1// [, [ //param2// ] [, [ //param3// ] [, //param4// ]]] )
-				or,
-			**""ScreenControl""**( //what// , //param// )
+		**""ScreenControl""**( //what// , //param// )
+	in the LONGINT (or INTEGER<64>) version of the sub:
+		**""ScreenControl""**( //what// , //param1// [, [ //param2// ] [, [ //param3// ] [, //param4// ]]] )
+			or,
+		**""ScreenControl""**( //what// , //param// )
 ##
 {{fbdoc item="param"}}
 	##//what//##
@@ -93,8 +84,43 @@ Sets or gets internal graphics library settings
 		[OUT] ##//param1//## ##TRUE## (##-1##) if alpha primitives is enabled, ##FALSE## (##0##) otherwise
 	- ##GET_GL_EXTENSIONS## Returns a string holding all supported GL extensions, or the empty string if not in ""OpenGL"" mode.
 		[OUT] ##//param//## supported GL extensions
-	- ##GET_HIGH_PRIORITY## Returns if ##GFX_HIGH_PRIORITY## was specified in the flags passed to ##[[KeyPgScreengraphics|Screen]]## or ##[[KeyPgScreenres|Screenres]]##.
+	- ##GET_HIGH_PRIORITY## Returns if ##GFX_HIGH_PRIORITY## was specified in the flags passed to ##[[KeyPgScreengraphics|Screen (Graphics)]]## or ##[[KeyPgScreenres|Screenres]]##.
 		[OUT] ##//param1//## higher priority graphics processing enabled
+	- ##GET_SCANLINE_SIZE## Returns how currently many scan lines each row of fbgfx video memory should occupy on the screen
+		[OUT] ##//param1//## scan line size multiplier
+	- ##GET_GL_COLOR_BITS## Returns the current number of bits dedicated to the ""OpenGL"" color buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_COLOR_RED_BITS## Returns the current number of bits dedicated to the red component of the ""OpenGL"" color buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_COLOR_GREEN_BITS## Returns the current number of bits dedicated to the green component of the ""OpenGL"" color buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_COLOR_BLUE_BITS## Returns the current number of bits dedicated to the blue component of the ""OpenGL"" color buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_COLOR_ALPHA_BITS## Returns the current number of bits dedicated to the alpha component of the ""OpenGL"" color buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_DEPTH_BITS## Returns the current number of bits dedicated to the ""OpenGL"" depth buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_STENCIL_BITS## Returns the current number of bits dedicated to the ""OpenGL"" stencil buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_ACCUM_BITS## Returns the current number of bits dedicated to the ""OpenGL"" accumulation buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_ACCUM_RED_BITS## Returns the current number of bits dedicated to the red component of the ""OpenGL"" accumulation buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_ACCUM_GREEN_BITS## Returns the current number of bits dedicated to the green component of the ""OpenGL"" accumulation buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_ACCUM_BLUE_BITS## Returns the current number of bits dedicated to the blue component of the ""OpenGL"" accumulation buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_ACCUM_ALPHA_BITS## Returns the current number of bits dedicated to the alpha component of the ""OpenGL"" accumulation buffer
+		[OUT] ##//param1//## bits
+	- ##GET_GL_NUM_SAMPLES## Returns the current number of samples to be used for ""OpenGL"" multisampling
+		[OUT] ##//param1//## samples
+	- ##GET_GL_2D_MODE## Returns the current OpenGL 2D render
+		[OUT] ##//param1//##:
+			##OGL_2D_NONE## No rendering
+			##OGL_2D_MANUAL_SYNC## Manual rendering (when ##[[KeyPgFlip|Flip]]## is called)
+			##OGL_2D_AUTO_SYNC## Automatic rendering
+	- ##GET_GL_SCALE## Returns the current zoom factor on OpenGL 2D render (only allowed if OpenGL 2D render mode has yet been activated via ##SET_GL_2D_MODE##)
+		[OUT] ##//param1//## zoom factor (0: no rendering)
 		
 		**Set operations**
 	- ##SET_WINDOW_POS## Sets the current program window position, in desktop coordinates.
@@ -105,7 +131,7 @@ Sets or gets internal graphics library settings
 	- ##SET_PEN_POS## Sets the current graphical pen position, in screen coordinates. This position is used in graphics functions supporting relative coordinates using the ##[[KeyPgStep|Step]]## keyword.
 		[IN] ##//param1//## x
 		[IN] ##//param2//## y
-	- (*) ##SET_DRIVER_NAME## Sets the name of the internal graphics driver to be used in subsequent calls to ##[[KeyPgScreengraphics|Screen]]## or ##[[KeyPgScreenres|ScreenRes]]##.
+	- (*) ##SET_DRIVER_NAME## Sets the name of the internal graphics driver to be used in subsequent calls to ##[[KeyPgScreengraphics|Screen (Graphics)]]## or ##[[KeyPgScreenres|ScreenRes]]##.
 		[IN] ##//param//## driver name
 	- ##SET_ALPHA_PRIMITIVES## Sets if primitives drawing should honor alpha channel.
 		[IN] ##//param1//## enabled
@@ -147,7 +173,7 @@ Sets or gets internal graphics library settings
 	- ##POLL_EVENTS## Cause the library to poll all events, ie to check the system event queue, specifically used for retrieving keyboard and mouse events.  This is most useful for ""OpenGL"" code where ##[[KeyPgFlip|Flip]]## is not used, as normally ##[[KeyPgFlip|Flip]]## will cause these events to be polled.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/gfx/screencontrol.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/gfx/screencontrol.bas"}}%%(freebasic)
 '' include fbgfx.bi for some useful definitions
 #include "fbgfx.bi"
 
@@ -155,7 +181,7 @@ Sets or gets internal graphics library settings
 using FB
 
 dim e as EVENT
-dim as integer x0, y0, x, y
+dim as long x0, y0, x, y
 dim as integer shakes = 0
 dim as any ptr img
 
@@ -215,16 +241,16 @@ do
 	sleep 5
 
 loop
-%%
+	%%
 
-{{fbdoc item="filename" value="examples/manual/gfx/screencontrol2.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/gfx/screencontrol2.bas"}}%%(freebasic)
 '' include fbgfx.bi for some useful definitions
 #include "fbgfx.bi"
 
 dim as string driver
 
 #ifdef __FB_WIN32__
-'' set graphics driver to GDI (Win32 only), before calling ScreenRes
+'' set graphics driver to GDI (Windows only), before calling ScreenRes
 screencontrol FB.SET_DRIVER_NAME, "GDI"
 #endif
 
@@ -236,7 +262,17 @@ print "Graphics driver name: " & driver
 
 '' wait for a keypress before closing the window
 sleep
-%%
+	%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.10.0: 16 getters from ##GET_SCANLINE_SIZE## to ##GET_GL_SCALE## added.
+	- Before fbc 1.08.0:
+			Syntax:
+				##[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param1 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param2 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param3 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param4 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0 )
+				[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param [[KeyPgAs|as]] [[KeyPgString|string]] = ##"####"## )##
+			Usage:
+				##**""ScreenControl""**( //what// [, [ //param1// ] [, [ //param2// ] [, [ //param3// ] [, [ //param4// ]]]]] )
+					or,
+				**""ScreenControl""**( //what// [, //param// ] )##
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Screencontrol""**##.

@@ -69,7 +69,7 @@ draw string ( 0.1, 0.8 ), "Y"
 
 dim as single x, y, s
 
-'' compute step size
+'' compute step size (corresponds to a step of 1 pixel on x coordinate)
 s = 2 / pmap( 1, 0 )
 
 '' plot the function

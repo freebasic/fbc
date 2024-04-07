@@ -24,15 +24,15 @@ void resetChecks() {
 	setMsg( "" );
 }
 
-const void* getPtr1() { 
+const void* getPtr1() {
 	return ptr1;
 }
 
-const void* getPtr2() { 
+const void* getPtr2() {
 	return ptr2;
 }
 
-const void* getPtr3() { 
+const void* getPtr3() {
 	return ptr3;
 }
 
@@ -132,21 +132,21 @@ void sub1_c_stdcall( UDT const& a ) {
 }
 
 UDT func1_c_default( UDT const& a ) {
-	UDT ret = UDT(0);
+	UDT ret = UDT(1);
 	ptr1 = &a;
 	setMsg( "func1_c_default" );
 	return ret;
 }
 
 UDT func1_c_cdecl( UDT const& a ) {
-	UDT ret = UDT(0);
+	UDT ret = UDT(1);
 	ptr1 = &a;
 	setMsg( "func1_c_cdecl" );
 	return ret;
 }
 
 UDT func1_c_stdcall( UDT const& a ) {
-	UDT ret = UDT(0);
+	UDT ret = UDT(1);
 	ptr1 = &a;
 	setMsg( "func1_c_stdcall" );
 	return ret;
@@ -171,7 +171,7 @@ void sub2_c_stdcall( UDT const& a, UDT const& b ) {
 }
 
 UDT func2_c_default( UDT const& a, UDT const& b ) {
-	UDT ret = UDT(0);
+	UDT ret = UDT(1);
 	ptr1 = &a;
 	ptr2 = &b;
 	setMsg( "func2_c_default" );
@@ -179,7 +179,7 @@ UDT func2_c_default( UDT const& a, UDT const& b ) {
 }
 
 UDT func2_c_cdecl( UDT const& a, UDT const& b ) {
-	UDT ret = UDT(0);
+	UDT ret = UDT(1);
 	ptr1 = &a;
 	ptr2 = &b;
 	setMsg( "func2_c_cdecl" );
@@ -187,7 +187,7 @@ UDT func2_c_cdecl( UDT const& a, UDT const& b ) {
 }
 
 UDT func2_c_stdcall( UDT const& a, UDT const& b ) {
-	UDT ret = UDT(0);
+	UDT ret = UDT(1);
 	ptr1 = &a;
 	ptr2 = &b;
 	setMsg( "func2_c_stdcall" );
@@ -216,7 +216,7 @@ void sub3_c_stdcall( UDT const& a, UDT const& b, UDT const& c ) {
 }
 
 UDT func3_c_default( UDT const& a, UDT const& b, UDT const& c ) {
-	UDT ret = UDT(0);
+	UDT ret = UDT(1);
 	ptr1 = &a;
 	ptr2 = &b;
 	ptr3 = &c;
@@ -225,7 +225,7 @@ UDT func3_c_default( UDT const& a, UDT const& b, UDT const& c ) {
 }
 
 UDT func3_c_cdecl( UDT const& a, UDT const& b, UDT const& c ) {
-	UDT ret = UDT(0);
+	UDT ret = UDT(1);
 	ptr1 = &a;
 	ptr2 = &b;
 	ptr3 = &c;
@@ -234,7 +234,7 @@ UDT func3_c_cdecl( UDT const& a, UDT const& b, UDT const& c ) {
 }
 
 UDT func3_c_stdcall( UDT const& a, UDT const& b, UDT const& c ) {
-	UDT ret = UDT(0);
+	UDT ret = UDT(1);
 	ptr1 = &a;
 	ptr2 = &b;
 	ptr3 = &c;
@@ -259,21 +259,21 @@ void sub1_cpp_stdcall( UDT const& a ) {
 }
 
 UDT func1_cpp_default( UDT const& a ) {
-	UDT ret = UDT(0);
+	UDT ret = UDT(1);
 	ptr1 = &a;
 	setMsg( "func1_cpp_default" );
 	return ret;
 }
 
 UDT func1_cpp_cdecl( UDT const& a ) {
-	UDT ret = UDT(0);
+	UDT ret = UDT(1);
 	ptr1 = &a;
 	setMsg( "func1_cpp_cdecl" );
 	return ret;
 }
 
 UDT func1_cpp_stdcall( UDT const& a ) {
-	UDT ret = UDT(0);
+	UDT ret = UDT(1);
 	ptr1 = &a;
 	setMsg( "func1_cpp_stdcall" );
 	return ret;
@@ -298,7 +298,7 @@ void sub2_cpp_stdcall( UDT const& a, UDT const& b ) {
 }
 
 UDT func2_cpp_default( UDT const& a, UDT const& b ) {
-	UDT ret = UDT(0);
+	UDT ret = UDT(1);
 	ptr1 = &a;
 	ptr2 = &b;
 	setMsg( "func2_cpp_default" );
@@ -306,7 +306,7 @@ UDT func2_cpp_default( UDT const& a, UDT const& b ) {
 }
 
 UDT func2_cpp_cdecl( UDT const& a, UDT const& b ) {
-	UDT ret = UDT(0);
+	UDT ret = UDT(1);
 	ptr1 = &a;
 	ptr2 = &b;
 	setMsg( "func2_cpp_cdecl" );
@@ -314,7 +314,7 @@ UDT func2_cpp_cdecl( UDT const& a, UDT const& b ) {
 }
 
 UDT func2_cpp_stdcall( UDT const& a, UDT const& b ) {
-	UDT ret = UDT(0);
+	UDT ret = UDT(1);
 	ptr1 = &a;
 	ptr2 = &b;
 	setMsg( "func2_cpp_stdcall" );
@@ -343,7 +343,7 @@ void sub3_cpp_stdcall( UDT const& a, UDT const& b, UDT const& c ) {
 }
 
 UDT func3_cpp_default( UDT const& a, UDT const& b, UDT const& c ) {
-	UDT ret = UDT(0);
+	UDT ret = UDT(1);
 	ptr1 = &a;
 	ptr2 = &b;
 	ptr3 = &c;
@@ -352,7 +352,7 @@ UDT func3_cpp_default( UDT const& a, UDT const& b, UDT const& c ) {
 }
 
 UDT func3_cpp_cdecl( UDT const& a, UDT const& b, UDT const& c ) {
-	UDT ret = UDT(0);
+	UDT ret = UDT(1);
 	ptr1 = &a;
 	ptr2 = &b;
 	ptr3 = &c;
@@ -361,7 +361,7 @@ UDT func3_cpp_cdecl( UDT const& a, UDT const& b, UDT const& c ) {
 }
 
 UDT func3_cpp_stdcall( UDT const& a, UDT const& b, UDT const& c ) {
-	UDT ret = UDT(0);
+	UDT ret = UDT(1);
 	ptr1 = &a;
 	ptr2 = &b;
 	ptr3 = &c;

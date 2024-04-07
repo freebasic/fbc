@@ -427,5 +427,6 @@ Sleep
 	- [[ProPgMtMutualExclusion|Mutual Exclusion]]
 	- [[ProPgMtConditionalVariables|Conditional Variables]]
 	- [[ProPgMtCriticalSectionsFAQ|Critical Sections FAQ]]
+	- [[ProPgEmulateTlsTp|Emulate a TLS (Thread Local Storage) and a TP (Thread Pooling) feature]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

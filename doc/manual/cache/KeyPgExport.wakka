@@ -15,7 +15,7 @@ Definition specifier to indicate that a procedure in a DLL should be visible fro
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Export""**##.
 
 {{fbdoc item="target"}}
-	- Dynamic link libraries are not available in DOS, as the OS doesn't support them.
+	- ##**""Export""**## has no effect in DOS dynamic link libraries (DXE's); all public procedures are exported.
 
 {{fbdoc item="diff"}}
 	- New to Freebasic

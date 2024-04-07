@@ -2,27 +2,20 @@
 
 #include "fb.h"
 
-void fb_hArrayDtorStr( FBARRAY *array, FB_DEFCTOR dtor, size_t base_idx )
+void fb_hArrayDtorStr( FBARRAY *array, FB_DEFCTOR dtor, size_t keep_idx )
 {
-    size_t i;
-	ssize_t elements;
-	FBARRAYDIM *dim;
+	size_t elements;
 	FBSTRING *this_;
 
 	if( array->ptr == NULL )
 		return;
 
-    dim = &array->dimTB[0];
-    elements = dim->elements - base_idx;
-    ++dim;
+	elements = fb_ArrayLen( array );
 
-    for( i = 1; i < array->dimensions; i++, dim++ )
-        elements *= dim->elements;
+	/* call dtors in the inverse order */
+	this_ = (FBSTRING *)array->ptr + (elements-1);
 
-    /* call dtors in the inverse order */
-    this_ = (FBSTRING *)array->ptr + (base_idx + (elements-1));
-
-	while( elements > 0 ) {
+	while( elements > keep_idx ) {
 		if( this_->data != NULL )
 			fb_StrDelete( this_ );
 		--this_;

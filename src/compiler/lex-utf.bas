@@ -9,19 +9,19 @@
 #include once "fbint.bi"
 #include once "lex.bi"
 
-#define UTF16_MAX_BMP 		 &h0000FFFF
-#define	UTF16_SUR_HIGH_START &hD800
-#define	UTF16_SUR_HIGH_END	 &hDBFF
-#define	UTF16_SUR_LOW_START	 &hDC00
-#define	UTF16_SUR_LOW_END	 &hDFFF
-#define	UTF16_HALFSHIFT		 10
-#define	UTF16_HALFBASE 		 &h0010000UL
-#define	UTF16_HALFMASK 		 &h3FFUL
+#define UTF16_MAX_BMP        &h0000FFFF
+#define UTF16_SUR_HIGH_START &hD800
+#define UTF16_SUR_HIGH_END   &hDBFF
+#define UTF16_SUR_LOW_START  &hDC00
+#define UTF16_SUR_LOW_END    &hDFFF
+#define UTF16_HALFSHIFT      10
+#define UTF16_HALFBASE       &h0010000UL
+#define UTF16_HALFMASK       &h3FFUL
 
 #define U16_SWAP(c) (((c) shr 8) or ((c) shl 8) and &hFF00)
 
 #define U32_SWAP(c) (((c) shr 24) or (((c) shl 8) and &h00FF0000) or _
-			 		(((c) shr 8) and &h0000FF00) or ((c) shl 24))
+					(((c) shr 8) and &h0000FF00) or ((c) shl 24))
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' UTF-8
@@ -46,11 +46,11 @@
 
 '':::::
 private function hUTF8ToChar( ) as integer static
-    dim as ubyte src(0 to 6)
-    dim as ubyte ptr p
-    dim as uinteger c
-    dim as ubyte ptr dst
-    dim as integer chars, extbytes, i
+	dim as ubyte src(0 to 6)
+	dim as ubyte ptr p
+	dim as uinteger c
+	dim as ubyte ptr dst
+	dim as integer chars, extbytes, i
 
 	dst = cast( ubyte ptr, @lex.ctx->buffw )
 	chars = 0
@@ -78,8 +78,8 @@ private function hUTF8ToChar( ) as integer static
 				c += *p
 				p += 1
 				c shl= 6
-        		i -= 1
-        	loop while( i > 0 )
+				i -= 1
+			loop while( i > 0 )
 		end if
 
 		c += *p
@@ -101,11 +101,11 @@ end function
 
 '':::::
 private function hUTF8ToUTF16LE( ) as integer static
-    dim as ubyte src(0 to 6)
-    dim as ubyte ptr p
-    dim as uinteger c
-    dim as ushort ptr dst
-    dim as integer chars, extbytes, i
+	dim as ubyte src(0 to 6)
+	dim as ubyte ptr p
+	dim as uinteger c
+	dim as ushort ptr dst
+	dim as integer chars, extbytes, i
 
 	dst = cast( ushort ptr, @lex.ctx->buffw )
 	chars = 0
@@ -133,8 +133,8 @@ private function hUTF8ToUTF16LE( ) as integer static
 				c += *p
 				p += 1
 				c shl= 6
-        		i -= 1
-        	loop while( i > 0 )
+				i -= 1
+			loop while( i > 0 )
 		end if
 
 		c += *p
@@ -163,11 +163,11 @@ end function
 
 '':::::
 private function hUTF8ToUTF32LE( ) as integer static
-    dim as ubyte src(0 to 6)
-    dim as ubyte ptr p
-    dim as uinteger c
-    dim as ulong ptr dst
-    dim as integer chars, extbytes, i
+	dim as ubyte src(0 to 6)
+	dim as ubyte ptr p
+	dim as uinteger c
+	dim as ulong ptr dst
+	dim as integer chars, extbytes, i
 
 	dst = cast( ulong ptr, @lex.ctx->buffw )
 	chars = 0
@@ -195,8 +195,8 @@ private function hUTF8ToUTF32LE( ) as integer static
 				c += *p
 				p += 1
 				c shl= 6
-        		i -= 1
-        	loop while( i > 0 )
+				i -= 1
+			loop while( i > 0 )
 		end if
 
 		c += *p
@@ -214,9 +214,9 @@ end function
 
 '':::::
 private function hUTF8ToUTF32BE( ) as integer static
-    dim as ulong ptr dst
-    dim as uinteger c
-    dim as integer i, chars
+	dim as ulong ptr dst
+	dim as uinteger c
+	dim as integer i, chars
 
 	chars = hUTF8ToUTF32LE( )
 
@@ -258,9 +258,9 @@ end sub
 
 '':::::
 private function hUTF16LEToChar( ) as integer static
-    dim as ushort c
-    dim as ubyte ptr dst
-    dim as integer chars
+	dim as ushort c
+	dim as ubyte ptr dst
+	dim as integer chars
 
 	dst = cast( ubyte ptr, @lex.ctx->buffw )
 	chars = 0
@@ -300,7 +300,8 @@ end function
 private function hUTF16LEToUTF16LE( ) as integer static
 
 	if( get( #env.inf.num, , lex.ctx->buffw ) = 0 ) then
-		function = cunsg(seek( env.inf.num ) - lex.ctx->filepos) \ len( ushort )
+		lex.ctx->physfilepos = seek( env.inf.num )
+		function = cunsg(lex.ctx->physfilepos - lex.ctx->filepos) \ len( ushort )
 	else
 		function = 0
 	end if
@@ -309,10 +310,10 @@ end function
 
 '':::::
 private function hUTF16LEToUTF32LE( ) as integer static
-    dim as ushort c
-    dim as uinteger wc
-    dim as ulong ptr dst
-    dim as integer chars
+	dim as ushort c
+	dim as uinteger wc
+	dim as ulong ptr dst
+	dim as integer chars
 
 	dst = cast( ulong ptr, @lex.ctx->buffw )
 	chars = 0
@@ -335,7 +336,7 @@ private function hUTF16LEToUTF32LE( ) as integer static
 				end if
 
 				wc = ((wc - UTF16_SUR_HIGH_START) shl UTF16_HALFSHIFT) + _
-			     	  (cuint( c ) - UTF16_SUR_LOW_START) + UTF16_HALFBASE
+				      (cuint( c ) - UTF16_SUR_LOW_START) + UTF16_HALFBASE
 			end if
 		end if
 
@@ -350,9 +351,9 @@ end function
 
 '':::::
 private function hUTF16LEToUTF32BE( ) as integer static
-    dim as ulong ptr dst
-    dim as uinteger c
-    dim as integer i, chars
+	dim as ulong ptr dst
+	dim as uinteger c
+	dim as integer i, chars
 
 	chars = hUTF16LEToUTF32LE( )
 
@@ -394,9 +395,9 @@ end sub
 
 '':::::
 private function hUTF16BEToChar( ) as integer static
-    dim as ushort c
-    dim as ubyte ptr dst
-    dim as integer chars
+	dim as ushort c
+	dim as ubyte ptr dst
+	dim as integer chars
 
 	dst = cast( ubyte ptr, @lex.ctx->buffw )
 	chars = 0
@@ -436,9 +437,9 @@ end function
 
 '':::::
 private function hUTF16BEToUTF16LE( ) as integer static
-    dim as ushort ptr dst
-    dim as ushort c
-    dim as integer i, chars
+	dim as ushort ptr dst
+	dim as ushort c
+	dim as integer i, chars
 
 	chars = hUTF16LEToUTF16LE( )
 
@@ -455,10 +456,10 @@ end function
 
 '':::::
 private function hUTF16BEToUTF32LE( ) as integer static
-    dim as ushort c
-    dim as uinteger wc
-    dim as ulong ptr dst
-    dim as integer chars
+	dim as ushort c
+	dim as uinteger wc
+	dim as ulong ptr dst
+	dim as integer chars
 
 	dst = cast( ulong ptr, @lex.ctx->buffw )
 	chars = 0
@@ -482,7 +483,7 @@ private function hUTF16BEToUTF32LE( ) as integer static
 				end if
 
 				wc = ((wc - UTF16_SUR_HIGH_START) shl UTF16_HALFSHIFT) + _
-			     	  (cuint( U16_SWAP( c ) ) - UTF16_SUR_LOW_START) + UTF16_HALFBASE
+				      (cuint( U16_SWAP( c ) ) - UTF16_SUR_LOW_START) + UTF16_HALFBASE
 			end if
 		end if
 
@@ -529,9 +530,9 @@ end sub
 
 '':::::
 private function hUTF32LEToChar( ) as integer static
-    dim as uinteger c
-    dim as ubyte ptr dst
-    dim as integer chars
+	dim as uinteger c
+	dim as ubyte ptr dst
+	dim as integer chars
 
 	dst = cast( ubyte ptr, @lex.ctx->buffw )
 	chars = 0
@@ -560,9 +561,9 @@ end function
 
 '':::::
 private function hUTF32LEToUTF16LE( ) as integer static
-    dim as uinteger c
-    dim as ushort ptr dst
-    dim as integer chars
+	dim as uinteger c
+	dim as ushort ptr dst
+	dim as integer chars
 
 	dst = cast( ushort ptr, @lex.ctx->buffw )
 	chars = 0
@@ -600,7 +601,8 @@ end function
 private function hUTF32LEToUTF32LE( ) as integer static
 
 	if( get( #env.inf.num, , lex.ctx->buffw ) = 0 ) then
-		function = cunsg(seek( env.inf.num ) - lex.ctx->filepos) \ sizeof( ulong )
+		lex.ctx->physfilepos = seek( env.inf.num )
+		function = cunsg(lex.ctx->physfilepos - lex.ctx->filepos) \ sizeof( ulong )
 	else
 		function = 0
 	end if
@@ -609,9 +611,9 @@ end function
 
 '':::::
 private function hUTF32LEToUTF32BE( ) as integer static
-    dim as ulong ptr dst
-    dim as uinteger c
-    dim as integer i, chars
+	dim as ulong ptr dst
+	dim as uinteger c
+	dim as integer i, chars
 
 	chars = hUTF32LEToUTF32LE( )
 
@@ -653,9 +655,9 @@ end sub
 
 '':::::
 private function hUTF32BEToChar( ) as integer static
-    dim as uinteger c
-    dim as ubyte ptr dst
-    dim as integer chars
+	dim as uinteger c
+	dim as ubyte ptr dst
+	dim as integer chars
 
 	dst = cast( ubyte ptr, @lex.ctx->buffw )
 	chars = 0
@@ -686,9 +688,9 @@ end function
 
 '':::::
 private function hUTF32BEToUTF16LE( ) as integer static
-    dim as uinteger c
-    dim as ushort ptr dst
-    dim as integer chars
+	dim as uinteger c
+	dim as ushort ptr dst
+	dim as integer chars
 
 	dst = cast( ushort ptr, @lex.ctx->buffw )
 	chars = 0
@@ -726,9 +728,9 @@ end function
 
 '':::::
 private function hUTF32BEToUTF32LE( ) as integer static
-    dim as ulong ptr dst
-    dim as uinteger c
-    dim as integer i, chars
+	dim as ulong ptr dst
+	dim as uinteger c
+	dim as integer i, chars
 
 	chars = hUTF32LEToUTF32LE( )
 

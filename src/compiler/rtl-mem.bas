@@ -21,9 +21,9 @@
 			NULL, FB_RTL_OPT_CANBECLONED, _
 			3, _
 			{ _
-				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ),FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ),FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
 		/' sub fb_MemSwap( byref dst as any, byref src as any, byval bytes as const integer ) '/ _
@@ -33,8 +33,8 @@
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE, 0 ), _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
@@ -51,9 +51,9 @@
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
-				( typeSetIsConst( FB_DATATYPE_UINT ),FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, FALSE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
@@ -81,7 +81,7 @@
 		( _
 			@"callocate", @"calloc", _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
- 			NULL, FB_RTL_OPT_NOQB, _
+			NULL, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _
@@ -95,8 +95,8 @@
 			NULL, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
-				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ),FB_PARAMMODE_BYVAL, FALSE, 0, TRUE ), _
-				( typeSetIsConst( FB_DATATYPE_UINT ),FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
 		/' sub deallocate cdecl( byval p as const any ptr ) '/ _
@@ -106,7 +106,7 @@
 			NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
-				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ),FB_PARAMMODE_BYVAL, FALSE, 0, TRUE ) _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE, 0 ) _
 			} _
 		), _
 		/' function clear cdecl _
@@ -121,7 +121,7 @@
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
@@ -138,8 +138,8 @@
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
-				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
@@ -155,8 +155,8 @@
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
-				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
@@ -188,11 +188,11 @@ function rtlNullPtrCheck _
 		byval module as zstring ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
-   	function = NULL
+	function = NULL
 
-   	proc = astNewCALL( PROCLOOKUP( NULLPTRCHK ) )
+	proc = astNewCALL( PROCLOOKUP( NULLPTRCHK ) )
 
 	'' ptr
 	'' we are forcing a CAST to any ptr, so quiet the const checks with AST_CONVOPT_DONTWARNCONST
@@ -207,12 +207,12 @@ function rtlNullPtrCheck _
 		exit function
 	end if
 
-    '' module
+	'' module
 	if( astNewARG( proc, astNewCONSTstr( module ) ) = NULL ) then
-    	exit function
-    end if
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -259,37 +259,37 @@ function rtlMemCopyClear _
 		byval srclen as longint _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
 	''
-    proc = astNewCALL( PROCLOOKUP( MEMCOPYCLEAR ) )
+	proc = astNewCALL( PROCLOOKUP( MEMCOPYCLEAR ) )
 
-    '' dst as any
-    if( astNewARG( proc, dstexpr ) = NULL ) then
-    	exit function
-    end if
+	'' dst as any
+	if( astNewARG( proc, dstexpr ) = NULL ) then
+		exit function
+	end if
 
 	'' byval dstlen as integer
 	if( astNewARG( proc, astNewCONSTi( dstlen ) ) = NULL ) then
 		exit function
 	end if
 
-    '' src as any
-    if( astNewARG( proc, srcexpr ) = NULL ) then
-    	exit function
-    end if
+	'' src as any
+	if( astNewARG( proc, srcexpr ) = NULL ) then
+		exit function
+	end if
 
 	'' byval srclen as integer
 	if( astNewARG( proc, astNewCONSTi( srclen ) ) = NULL ) then
 		exit function
 	end if
 
-    ''
-    astAdd( proc )
+	''
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -309,6 +309,7 @@ function rtlMemNewOp _
 		assert( (astGetOpSelfVer( op ) = AST_OP_NEW_SELF) or (astGetOpSelfVer( op ) = AST_OP_NEW_VEC_SELF) )
 		sym = symbGetCompOpOvlHead( subtype, astGetOpSelfVer( op ) )
 		if( sym ) then
+			'' Check visibility of the new operator
 			if( symbCheckAccess( sym ) = FALSE ) then
 				errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 			end if
@@ -321,8 +322,8 @@ function rtlMemNewOp _
 	if( sym = NULL ) then
 
 		sym = rtlProcLookup( @"allocate", FB_RTL_IDX_ALLOCATE )
-		
-		'' maybe had '#undef allocate'? 
+
+		'' maybe had '#undef allocate'?
 		if( sym = NULL ) then
 			'' rtlProcLookup() already reported the error
 			return NULL
@@ -355,6 +356,7 @@ function rtlMemDeleteOp _
 		assert( (astGetOpSelfVer( op ) = AST_OP_DEL_SELF) or (astGetOpSelfVer( op ) = AST_OP_DEL_VEC_SELF) )
 		sym = symbGetCompOpOvlHead( subtype, astGetOpSelfVer( op ) )
 		if( sym ) then
+			'' Check visibility of the delete operator
 			if( symbCheckAccess( sym ) = FALSE ) then
 				errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 			end if
@@ -367,7 +369,7 @@ function rtlMemDeleteOp _
 	if( sym = NULL ) then
 		sym = rtlProcLookup( @"deallocate", FB_RTL_IDX_DEALLOCATE )
 
-		'' maybe had '#undef deallocate'? 
+		'' maybe had '#undef deallocate'?
 		if( sym = NULL ) then
 			'' rtlProcLookup() already reported the error
 			return NULL

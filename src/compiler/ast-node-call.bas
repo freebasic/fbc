@@ -26,10 +26,10 @@ function astNewCALL _
 		byval ptrexpr as ASTNODE ptr = NULL _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
-    dim as FBRTLCALLBACK callback = any
-    dim as integer dtype = any
-    dim as FBSYMBOL ptr subtype = any
+	dim as ASTNODE ptr n = any
+	dim as FBRTLCALLBACK callback = any
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
 
 	'' sym might be null if user undefined a builtin rtl proc
 	'' and it was undefined.  rtlLookUpProc() a.k.a. PROCLOOKUP()
@@ -82,7 +82,7 @@ function astNewCALL _
 	n->call.args = 0
 
 	if( sym <> NULL ) then
-		n->call.currarg	= symbGetProcHeadParam( sym )
+		n->call.currarg = symbGetProcHeadParam( sym )
 		n->call.isrtl = symbGetIsRTL( sym )
 
 		callback = symbGetProcCallback( sym )
@@ -90,7 +90,7 @@ function astNewCALL _
 			callback( sym )
 		end if
 	else
-		n->call.currarg	= NULL
+		n->call.currarg = NULL
 		n->call.isrtl = FALSE
 	end if
 
@@ -129,8 +129,8 @@ end function
 
 '' Copy-back any fixed-length strings that were passed to BYREF parameters
 private sub hCopyStringsBack( byval f as ASTNODE ptr )
-    dim as ASTNODE ptr t = any
-    dim as AST_TMPSTRLIST_ITEM ptr n = any, p = any
+	dim as ASTNODE ptr t = any
+	dim as AST_TMPSTRLIST_ITEM ptr n = any, p = any
 
 	n = f->call.strtail
 	do while( n <> NULL )
@@ -155,7 +155,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	dim as FBSYMBOL ptr proc = any
 	dim as integer bytestopop = any, bytestoalign = any, argbytes = any
 	dim as integer prev_totalstackbytes = totalstackbytes
-	dim as IRVREG ptr vr = any, v1 = any
+	dim as IRVREG ptr vr = any, v1 = any, lreg = NULL
 
 	'' ARGs can contain CALLs themselves, then astLoadCALL() will recurse
 	reclevel += 1
@@ -172,7 +172,9 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		arg = n->r
 		while( arg )
 			l = arg->l
-			argbytes += symbCalcArgLen( l->dtype, l->subtype, arg->arg.mode )
+			if( arg->sym->param.regnum = 0 ) then
+				argbytes += symbCalcArgLen( l->dtype, l->subtype, arg->arg.mode )
+			end if
 			arg = arg->r
 		wend
 
@@ -196,6 +198,24 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	'' Count up the size for the caller's stack clean up (after the call)
 	bytestopop = bytestoalign
 
+	'' FB_BACKEND_GAS: THISCALL & FASTCALL
+	'' ECX is always loaded last before the function call
+	'' so we don't need to worry about preserving it
+	'' EDX might get trashed if we have nested function calls
+	'' !!!FIXME!!! we maybe need to preserve EDX before we
+	'' start pushing arguments to the function call and restore
+	'' EDX after the call completes.
+	'' if( (env.clopt.backend = FB_BACKEND_GAS) then
+	''     arg = n->r
+	''     while( arg )
+	''         if( arg->sym->param.regnum = 2 ) then
+	''             save_edx = TRUE
+	''             exit while
+	''          end if
+	''         arg = arg->r
+	''     wend
+	'' end if
+
 	'' Push each argument
 	arg = n->r
 	while( arg )
@@ -204,10 +224,16 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 
 		'' cdecl: pushed arguments must be popped by caller
 		'' pascal/stdcall: callee does it instead
-		'' thiscall: could be either depending on target !!!TODO!!!
-		argbytes = symbCalcArgLen( l->dtype, l->subtype, arg->arg.mode )
-		if( symbGetProcMode( proc ) = FB_FUNCMODE_CDECL ) then
-			bytestopop += argbytes
+		'' thiscall: callee does it in gcc 32-bit win32
+		'' fastcall: callee does it in gcc 32-bit win32
+		'' don't add bytes if argument is passed in a register
+		if( arg->sym->param.regnum <> 0 ) then
+			argbytes = 0
+		else
+			argbytes = symbCalcArgLen( l->dtype, l->subtype, arg->arg.mode )
+			if( symbGetProcMode( proc ) = FB_FUNCMODE_CDECL ) then
+				bytestopop += argbytes
+			end if
 		end if
 
 		if( l->class = AST_NODECLASS_CONV ) then
@@ -219,7 +245,15 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		astDelNode( l )
 
 		if( ast.doemit ) then
-			irEmitPUSHARG( arg->sym, v1, arg->arg.lgt, reclevel )
+			if( arg->sym->param.regnum <> 0 ) then
+				lreg = irAllocVREG( typeGetDtAndPtrOnly( l->dtype ), l->subtype )
+				'' regFamily should be irrelevent for thiscall/fastcall
+				'' lreg->regFamily = IR_REG_FPU_STACK | IR_REG_SSE
+				lreg->dtype = l->dtype
+			else
+				lreg = NULL
+			end if
+			irEmitPUSHARG( arg->sym, v1, arg->arg.lgt, reclevel, lreg )
 		end if
 		totalstackbytes += argbytes
 
@@ -229,12 +263,14 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	'' Hidden param for functions returning big structs on stack
 	if( symbProcReturnsOnStack( proc ) ) then
-		'' Pop hidden ptr if cdecl and target doesn't want the callee
-		'' to do it, despite it being cdecl.
-		if( ((symbGetProcMode( proc ) = FB_FUNCMODE_CDECL) or (symbGetProcMode( proc ) = FB_FUNCMODE_THISCALL)) and _
-		    ((env.target.options and FB_TARGETOPT_CALLEEPOPSHIDDENPTR) = 0) ) then
-			bytestopop += env.pointersize
-		end if
+		'' Pop hidden ptr if cdecl/thiscall/fastcall and target doesn't
+		'' want the callee to do it, despite it being cdecl/thiscall/fastcall.
+		select case symbGetProcMode( proc )
+		case FB_FUNCMODE_CDECL, FB_FUNCMODE_THISCALL, FB_FUNCMODE_FASTCALL
+			if( (env.target.options and FB_TARGETOPT_CALLEEPOPSHIDDENPTR) = 0) then
+				bytestopop += env.pointersize
+			end if
+		end select
 		if( ast.doemit ) then
 			'' Clear the temp struct (so the function can safely
 			'' do assignments to it in case it includes STRINGs),
@@ -250,7 +286,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 			v1 = astLoad( l )
 			'' (passing NULL param, because no PARAM symbol exists
 			'' for the hidden struct result param)
-			irEmitPUSHARG( NULL, v1, 0, reclevel )
+			irEmitPUSHARG( NULL, v1, 0, reclevel, NULL )
 		end if
 		totalstackbytes += env.pointersize
 	end if
@@ -261,7 +297,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 			vr = NULL
 		else
 
-			'' va_list 
+			'' va_list
 			if( typeGetMangleDt( astGetFullType( n ) ) = FB_DATATYPE_VA_LIST ) then
 				'' if dtype has a mangle modifier, let the emitter
 				'' handle the remapping
@@ -328,19 +364,19 @@ sub astCloneCALL _
 	)
 
 	'' copy-back list
-    scope
-    	dim as AST_TMPSTRLIST_ITEM ptr sn = any, sc = any
+	scope
+		dim as AST_TMPSTRLIST_ITEM ptr sn = any, sc = any
 
 		c->call.strtail = NULL
 		sn = n->call.strtail
 		do while( sn <> NULL )
-        	sc = listNewNode( @ast.call.tmpstrlist )
+			sc = listNewNode( @ast.call.tmpstrlist )
 
-        	sc->sym = sn->sym
-        	sc->srctree = astCloneTree( sn->srctree )
-        	sc->prev = c->call.strtail
+			sc->sym = sn->sym
+			sc->srctree = astCloneTree( sn->srctree )
+			sc->prev = c->call.strtail
 
-        	c->call.strtail = sc
+			c->call.strtail = sc
 
 			sn = sn->prev
 		loop
@@ -366,7 +402,7 @@ sub astDelCALL _
 	)
 
 	'' copy-back list
-    scope
+	scope
 	    dim as AST_TMPSTRLIST_ITEM ptr s = any, p = any
 		s = n->call.strtail
 		do while( s <> NULL )
@@ -376,8 +412,8 @@ sub astDelCALL _
 
 			listDelNode( @ast.call.tmpstrlist, s )
 			s = p
-    	loop
-    end scope
+		loop
+	end scope
 
 end sub
 

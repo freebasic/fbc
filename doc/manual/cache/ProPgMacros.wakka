@@ -48,7 +48,7 @@ Print MUL2(5-3, 1+2)^2  '' 18 (incorrect result)
 Print MUL3(5-3, 1+2)^2  '' 36 (correct result)
 
 Sleep
-		%%Thus, the parentheses ensure a consistent behavior of the macro (parentheses can add to macro definitions, but they are absolutely necessary).
+%%		Thus, the parentheses ensure a consistent behavior of the macro (parentheses can add to macro definitions, but they are absolutely necessary).
 
 {{fbdoc item="section" value="Macros debug"}}
 	Using macros can be extremely unsafe and they hide a lot of pitfalls which are very hard to find.
@@ -96,7 +96,7 @@ Print
 SECOND(test2)
 
 Sleep
-				%%**Compiler output:**
+%%				**Compiler output:**
 					...\FBIDETEMP.bas(18) error 20: Type mismatch, found '+' in 'SECOND(test2)'
 					
 		- Pre-processed file (*.pp.bas):
@@ -119,7 +119,7 @@ Print
  Print test2(Ubound(test2))
 
 Sleep
-				%%**Compiler output:**
+%%				**Compiler output:**
 					...\FBIDETEMP.bas(14) error 20: Type mismatch, found '+' in 'Print " " + test2(index) + ",";'
 					
 		- Example macro correction in source code (*.bas):
@@ -144,14 +144,14 @@ Print
 SECOND(test2)
 
 Sleep
-				%%Output:
+%%				Output:
 					%%
 test1:
  First, Second,Third
 
 test2:
  1, 2, 3
-					%%
+%%
 		**Note:** Another solution could be a more detailed error message from compiler, relating to the call of the macro (proposal of improved error message already filled in in a feature request).
 
 {{fbdoc item="section" value="Variadic macros"}}
@@ -165,8 +165,8 @@ test2:
 	So, it is possible to pass any number of arguments through the ##//variadic_parameter//##, which can be used in the body as if it was a normal macro parameter.
 	During macro expansion each occurrence of the ##//variadic_parameter//## in the macro replacement list is replaced by the passed arguments. The ##//variadic_parameter//## will expand to the full list of arguments passed to it, including commas, and can also be completely empty.
 	
-	No direct means is provided to access individual arguments in the variable argument list, nor to find out how many were passed.
-	To distinguish between the different arguments passed by the ##//variadic_parameter//##, one can first convert the ##//variadic_parameter//## to a string literal using the ##[[KeyPgOpPpStringize|# stringize]]## operator, then differentiate in this string literal (##//#variadic_parameter//##) each passed argument by locating the separators (usually a comma).
+	No direct means is provided to recursively access individual arguments in the variable argument list.
+	To distinguish between the different arguments passed by the ##//variadic_parameter//##, one can first convert the ##//variadic_parameter//## to a string literal using the ##[[KeyPgOpPpStringize|# stringize]]## operator, then differentiate in this string literal (##//#variadic_parameter//##) each passed argument by locating the separators (a comma).
 
 {{fbdoc item="section" value="Examples"}}
 	Example with one-line and multi-line macros:

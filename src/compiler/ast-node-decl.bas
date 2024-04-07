@@ -43,15 +43,16 @@ private function hCtorList _
 end function
 
 private function hDefaultInit( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
-    '' static, shared (includes extern/public) or common? do nothing..
-    if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
-       	 						   FB_SYMBATTRIB_SHARED or _
-       	 						   FB_SYMBATTRIB_COMMON or _
-       	 						   FB_SYMBATTRIB_DYNAMIC)) <> 0 ) then
-    	exit function
-    end if
+	'' static, shared (includes extern/public) or common? do nothing..
+	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
+		                           FB_SYMBATTRIB_SHARED or _
+		                           FB_SYMBATTRIB_COMMON or _
+		                           FB_SYMBATTRIB_DYNAMIC)) <> 0 ) then
+		exit function
+	end if
 
-    '' local..
+	'' local..
+	dim as long fillchar = 0
 
 	'' Do not initialize?
 	if( symbGetDontInit( sym ) ) then
@@ -78,8 +79,26 @@ private function hDefaultInit( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 		exit function
 	end if
 
-	function = astNewMEM( AST_OP_MEMCLEAR, astNewVAR( sym ), _
-	                      astNewCONSTi( symbGetLen( sym ) * symbGetArrayElements( sym ) ) )
+
+	select case symbGetType( sym )
+
+	'' fixed string? initialize to spaces
+	case FB_DATATYPE_FIXSTR
+		fillchar = 32
+
+	'' UDT containing only fixed length string?
+	'' optimize to a memory fill instead of implicit constructor
+	case FB_DATATYPE_STRUCT
+		if( symbGetUDTHasFilledField( sym->subtype ) ) then
+			fillchar = 32
+		end if
+
+	end select
+
+	function = astNewMEM( AST_OP_MEMFILL, astNewVAR( sym ), _
+	                      astNewCONSTi( symbGetSizeOf( sym ) _
+	                      * symbGetArrayElements( sym ) ) _
+	                      , 0, fillchar )
 end function
 
 function astNewDECL _
@@ -88,7 +107,7 @@ function astNewDECL _
 		byval do_defaultinit as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
+	dim as ASTNODE ptr n = any
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_DECL, FB_DATATYPE_INVALID )

@@ -23,10 +23,10 @@ Tests if a string can be converted to a [[ProPgDates|Date Serial]]
 	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/dates/isdate.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/dates/isdate.bas"}}%%(freebasic)
 #include "vbcompat.bi"
 
-dim s as string, d as integer
+dim s as string, d as long
 
 do
   print
@@ -47,7 +47,6 @@ do
 
 loop
 %%
-
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 

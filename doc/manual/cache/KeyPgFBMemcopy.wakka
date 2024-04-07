@@ -55,6 +55,9 @@ Sleep
 		%%
 Pierre de Fermat             46
 		%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.08.0
+
 {{fbdoc item="diff"}}
 	- The behavior and usage is new to ""FreeBASIC"".
 

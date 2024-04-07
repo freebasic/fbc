@@ -13,6 +13,7 @@ Generally, when compiling FB, care should be taken to never mix compiler and rtl
 There are two ways to build FB: [[DevNormalVsStandalone|normal or standalone]]. The normal version is intended for integration with an existing gcc toolchain, while the standalone version makes fbc act more like a self-contained tool. Most importantly, the two use slightly different directory layouts. For example, in the normal version the fbc program is located at ##bin/fbc[.exe]##, while in the standalone version, ##fbc[.exe]## is put into the toplevel directory, instead of the ##bin/## directory. Furthermore, the directory layout for include files and libraries differs. Traditionally, the FB-linux release is a normal build, while the FB-win32 and FB-dos builds are standalone versions.
 
 {{fbdoc item="keyword" value="DevGettingTheSourceCode|Getting the source code"}}
+{{fbdoc item="keyword" value="DevBuildOptions|Build Options"}}
 {{fbdoc item="keyword" value="DevBuildDos|Compiling FB for DOS"}}
 {{fbdoc item="keyword" value="DevBuildLinux|Compiling FB on Linux"}}
 {{fbdoc item="keyword" value="DevBuildWindows|Compiling FB on Windows"}}

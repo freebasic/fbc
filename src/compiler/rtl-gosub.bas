@@ -13,47 +13,47 @@
 		/' function fb_GosubPush( byval ctx as any ptr ptr ) as any ptr '/ _
 		( _
 			@FB_RTL_GOSUBPUSH, NULL, _
-	 		typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		1, _
-	 		{ _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
 				( typeMultAddrOf( FB_DATATYPE_VOID, 2 ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function fb_GosubPop( byval ctx as any ptr ptr ) as long '/ _
 		( _
 			@FB_RTL_GOSUBPOP, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		1, _
-	 		{ _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
 				( typeMultAddrOf( FB_DATATYPE_VOID, 2 ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function fb_GosubReturn( byval ctx as any ptr ptr ) as long '/ _
 		( _
 			@FB_RTL_GOSUBRETURN, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		1, _
-	 		{ _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
 				( typeMultAddrOf( FB_DATATYPE_VOID, 2 ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' sub fb_GosubExit( byval ctx as any ptr ptr ) '/ _
 		( _
 			@FB_RTL_GOSUBEXIT, NULL, _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
 				( typeMultAddrOf( FB_DATATYPE_VOID, 2 ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-	 	), _
-	 	/' EOL '/ _
-	 	( _
-	 		NULL _
-	 	) _
+			} _
+		), _
+		/' EOL '/ _
+		( _
+			NULL _
+		) _
 	 }
 
 	'' Win32 _setjmp()
@@ -63,16 +63,16 @@
 		( _
 			@FB_RTL_SETJMP, @"_setjmp", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		1, _
-	 		{ _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-	 	), _
-	 	/' EOL '/ _
-	 	( _
-	 		NULL _
-	 	) _
+			} _
+		), _
+		/' EOL '/ _
+		( _
+			NULL _
+		) _
 	 }
 
 	'' Win64 _setjmp()
@@ -82,17 +82,17 @@
 		( _
 			@FB_RTL_SETJMP, @"_setjmp", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		2, _
-	 		{ _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-	 	), _
-	 	/' EOL '/ _
-	 	( _
-	 		NULL _
-	 	) _
+			} _
+		), _
+		/' EOL '/ _
+		( _
+			NULL _
+		) _
 	 }
 
 	'' Linux/DOS setjmp()
@@ -102,16 +102,16 @@
 		( _
 			@FB_RTL_SETJMP, @"setjmp", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		1, _
-	 		{ _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-	 	), _
-	 	/' EOL '/ _
-	 	( _
-	 		NULL _
-	 	) _
+			} _
+		), _
+		/' EOL '/ _
+		( _
+			NULL _
+		) _
 	 }
 
 '':::::
@@ -149,16 +149,16 @@ function rtlGosubPush _
 		byval ctx as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
-    proc = astNewCALL( PROCLOOKUP( GOSUBPUSH ) )
+	proc = astNewCALL( PROCLOOKUP( GOSUBPUSH ) )
 
-    '' byval ctx as any ptr ptr
-    if( astNewARG( proc, ctx ) = NULL ) then
-    	exit function
-    end if
+	'' byval ctx as any ptr ptr
+	if( astNewARG( proc, ctx ) = NULL ) then
+		exit function
+	end if
 
 	function = proc
 
@@ -170,30 +170,30 @@ function rtlGosubPop _
 		byval ctx as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
-    proc = astNewCALL( PROCLOOKUP( GOSUBPOP ) )
+	proc = astNewCALL( PROCLOOKUP( GOSUBPOP ) )
 
-    '' byval ctx as any ptr ptr
-    if( astNewARG( proc, ctx ) = NULL ) then
-    	exit function
-    end if
+	'' byval ctx as any ptr ptr
+	if( astNewARG( proc, ctx ) = NULL ) then
+		exit function
+	end if
 
 	function = proc
 
 end function
 
 function rtlGosubReturn( byval ctx as ASTNODE ptr ) as integer
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
-    proc = astNewCALL( PROCLOOKUP( GOSUBRETURN ) )
+	proc = astNewCALL( PROCLOOKUP( GOSUBRETURN ) )
 
-    '' byval ctx as any ptr ptr
-    if( astNewARG( proc, ctx ) = NULL ) then
-    	exit function
-    end if
+	'' byval ctx as any ptr ptr
+	if( astNewARG( proc, ctx ) = NULL ) then
+		exit function
+	end if
 
 	astAdd( rtlErrorCheck( proc ) )
 	function = TRUE
@@ -205,16 +205,16 @@ function rtlGosubExit _
 		byval ctx as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
-    proc = astNewCALL( PROCLOOKUP( GOSUBEXIT ) )
+	proc = astNewCALL( PROCLOOKUP( GOSUBEXIT ) )
 
-    '' byval ctx as any ptr ptr
-    if( astNewARG( proc, ctx ) = NULL ) then
-    	exit function
-    end if
+	'' byval ctx as any ptr ptr
+	if( astNewARG( proc, ctx ) = NULL ) then
+		exit function
+	end if
 
 	function = proc
 
@@ -226,21 +226,21 @@ function rtlSetJmp _
 		byval ctx as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
-    proc = astNewCALL( PROCLOOKUP( SETJMP ) )
+	proc = astNewCALL( PROCLOOKUP( SETJMP ) )
 
-    '' byval ctx as any ptr ptr
-    if( astNewARG( proc, ctx ) = NULL ) then
-    	exit function
-    end if
+	'' byval ctx as any ptr ptr
+	if( astNewARG( proc, ctx ) = NULL ) then
+		exit function
+	end if
 
 	'' mingw 64bit takes 2 arguments
 	'' see also ast-gosub.bas:astGosubAddJump()
 	''
-	'' from win64 setjmp.h it looks like mingw_getsp() is needed for the second 
+	'' from win64 setjmp.h it looks like mingw_getsp() is needed for the second
 	'' parameter, but this causes the longjmp() to fail later in msvcrt/ntdll.
 	'' It appears that when the second parameter is NULL, then there is no
 	'' extra actions taken in the stack unwind and gosub 'works'.  Maybe the

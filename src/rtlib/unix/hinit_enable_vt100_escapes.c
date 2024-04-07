@@ -1,3 +1,5 @@
+#include "../fb.h"
+
 /* Global variable for disabling hard-coded VT100 escape sequences in
    fb_hTermOut().
 

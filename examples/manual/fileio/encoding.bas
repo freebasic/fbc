@@ -1,7 +1,7 @@
 '' examples/manual/fileio/encoding.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'ENCODING'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgEncoding
 '' --------
@@ -39,7 +39,7 @@ End Scope
 
 ''
 Scope
-  Dim s As String, n As Integer
+  Dim s As String, n As LongInt
 
   '' open the same file for binary and read all the bytes
   Open f For Binary As #1

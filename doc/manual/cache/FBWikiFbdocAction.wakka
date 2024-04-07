@@ -41,6 +41,9 @@ Where ##//item//## and ##//value//## are used as follows:
 	item="**ex**"
 		Inserts an **Examples:** section header on a page
 	
+	item="**ver**"
+		Inserts a **Version:** section header on a page
+	
 	item="**lang**"
 		Inserts a **Dialect Differences:** section header on a page
 	
@@ -93,6 +96,9 @@ Where ##//item//## and ##//value//## are used as follows:
 ----
 ##""{{fbdoc item="ex"}}""##
 {{fbdoc item="ex"}}
+----
+##""{{fbdoc item="ver"}}""##
+{{fbdoc item="ver"}}
 ----
 ##""{{fbdoc item="lang"}}""##
 {{fbdoc item="lang"}}

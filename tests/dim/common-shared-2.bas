@@ -1,5 +1,8 @@
 #include "fbcunit.bi"
 
+'' Emscripten (and wasm) doesn't support common symbols
+#ifndef __FB_JS__
+
 #include "common-shared.bi"
 
 '' COMMON SHARED in the global namespace test
@@ -16,3 +19,5 @@ sub commonShared2Checks( )
 	CU_ASSERT( lbound( arrayi5 ) = 5 ) : CU_ASSERT( ubound( arrayi5 ) = 5 )
 	CU_ASSERT( lbound( arrayi6 ) = 6 ) : CU_ASSERT( ubound( arrayi6 ) = 6 )
 end sub
+
+#endif

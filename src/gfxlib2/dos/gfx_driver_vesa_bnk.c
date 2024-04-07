@@ -12,7 +12,8 @@ static void fb_dos_vesa_set_bank_int_end(void);
 extern void fb_dos_vesa_set_bank_pm(void);
 extern void fb_dos_vesa_set_bank_pm_end(void);
 
-GFXDRIVER fb_gfxDriverVESA =
+/* GFXDRIVER */
+const GFXDRIVER fb_gfxDriverVESA =
 {
 	"VESA banked",           /* char *name; */
 	driver_init,             /* int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags); */
@@ -27,7 +28,8 @@ GFXDRIVER fb_gfxDriverVESA =
 	NULL,                    /* int (*set_window_pos)(int x, int y); */
 	fb_dos_vesa_fetch_modes, /* int *(*fetch_modes)(int depth, int *size); */
 	NULL,                    /* void (*flip)(void); */
-	NULL                     /* void (*poll_events)(void); */
+	NULL,                    /* void (*poll_events)(void); */
+	NULL                     /* void (*update)(void); */
 };
 
 static int data_locked = FALSE;

@@ -16,12 +16,12 @@
 #endmacro
 
 '':::::
-''QuirkStmt   	  =   GotoStmt
-''				  |   ArrayStmt
-''				  |	  PrintStmt
-''				  |   MidStmt
-''				  |   DataStmt
-''				  |   etc .
+''QuirkStmt       =   GotoStmt
+''                |   ArrayStmt
+''                |   PrintStmt
+''                |   MidStmt
+''                |   DataStmt
+''                |   etc .
 ''
 function cQuirkStmt _
 	( _
@@ -35,15 +35,16 @@ function cQuirkStmt _
 
 		select case lexGetClass( )
 		case FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
-    		'' QB mode?
-    		if( env.clopt.lang = FB_LANG_QB ) then
-    			if( lexGetType() <> FB_DATATYPE_INVALID ) then
-    				return FALSE
-    			end if
-    		end if
+			'' QB mode?
+			if( env.clopt.lang = FB_LANG_QB ) then
+				if( lexGetType() <> FB_DATATYPE_INVALID ) then
+					return FALSE
+				end if
+			end if
 
 		case else
-			if( tk = CHAR_QUESTION ) then	'' PRINT as '?', can't be a keyword..
+			'' PRINT as '?', can't be a keyword..
+			if( tk = CHAR_QUESTION ) then
 				CHECK_CODEMASK( )
 				function = cPrintStmt( tk )
 			end if
@@ -237,7 +238,7 @@ function cQuirkFunction(byval sym as FBSYMBOL ptr) as ASTNODE ptr
 
 	case FB_TK_THREADCALL
 		funcexpr = cThreadCallFunc()
-        
+
 	end select
 
 	if( funcexpr = NULL ) then

@@ -19,6 +19,7 @@ Standard data type: 8 bit character string
 	
 	A ##**String**## declared with a ##//fixed size//## (numeric constant, or expression that can be evaluated at compile time) is a QB-style fixed length string, with the exception that unused characters are set to 0, regardless of what "-lang" compiler option is used. It has no descriptor and it is not resized to fit its contents. As in QB, if data overflows the size of the string, it is truncated on the right side.
 	Fixed length strings are also terminated with a ##NULL## character, and so they use ##//size// + 1## bytes of space.  This ##NULL## terminator may be removed in future, to prevent the redundant character complicating data layout in user-defined ##[[KeyPgType|Type]]##s.
+	**Note:** It is not recommended to use explicit ##NULL## character (##[[KeyPgChr|chr]](0)##) in a string expression involving a fixed length string variable because this can lead to different unexpected results depending on usage context (initialization, assignment, concatenation, ...).
 	
 	String variable names need not end in a dollar sign ##$## as in other dialects of BASIC.  In //[[CompilerDialects|lang fb]]// variable suffixes, including the dollar sign, are disallowed entirely.
 
@@ -34,7 +35,7 @@ Print a
 a += ", world!"
 Print a
 
-Var b = "Welcome to FreeBASIC"
+Dim As String b = "Welcome to FreeBASIC"
 Print b + "! " + a
 %%
 
@@ -57,7 +58,7 @@ print a$ + b$
 
 '' Reserving space for a string,
 '' using Space() to produce lots of space characters (ASCII 32)
-Var mybigstring = Space(1024)
+Dim As String mybigstring = Space(1024)
 Print "buffer address: &h" & Hex( StrPtr( mybigstring ), 8 ) & ", length: " & Len( mybigstring )
 
 '' Explicitly destroying a string
@@ -75,7 +76,7 @@ Sub silly_print( ByRef printme As Const String )
 	'printme = "silly printed"
 End Sub
 
-Var status = "OK"
+Dim As String status = "OK"
 
 silly_print( "Hello FreeBASIC!" )
 silly_print( "Status: " + status )

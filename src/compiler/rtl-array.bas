@@ -154,6 +154,17 @@
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ) _
 			} _
 		), _
+		/' function fb_ArrayFill( array() as any, byval value as const long ) as long '/ _
+		( _
+			@FB_RTL_ARRAYFILL, NULL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+			{ _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function fb_ArrayClearObj _
 			( _
 				array() as any, _
@@ -246,7 +257,7 @@
 				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE, 0, TRUE ) _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE, 0 ) _
 			} _
 		), _
 		/' function fb_ArrayBoundChk _
@@ -267,7 +278,7 @@
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE, 0, TRUE ) _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE, 0 ) _
 			} _
 		), _
 		/' EOL '/ _
@@ -303,6 +314,7 @@ private sub hCheckDefCtor _
 	assert( symbIsConstructor( ctor ) )
 
 	if( check_access ) then
+		'' Check visibility of the default constructor
 		if( symbCheckAccess( ctor ) = FALSE ) then
 			errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
 		end if
@@ -334,6 +346,7 @@ private sub hCheckDtor _
 	assert( symbIsDestructor1( dtor ) )
 
 	if( check_access ) then
+		'' Check visibility of the default destructor
 		if( symbCheckAccess( dtor ) = FALSE ) then
 			errReport( FB_ERRMSG_NOACCESSTODTOR )
 		end if
@@ -349,11 +362,11 @@ private sub hCheckDtor _
 
 end sub
 
-'' fb_ArrayClear* 
+'' fb_ArrayClear*
 '' destruct elements if needed and then re-initialize
 ''
 '' fb_ArrayClear* rtlib functions are called when it is known at
-'' compile time that array is static (fixed length).  It it is unknown
+'' compile time that array is static (fixed length).  If it is unknown
 '' at compile time, then rtlArrayErase() should be used instead and
 '' the runtime library will do a run time check on the array's
 '' descriptor flags to determine if it is static or dynamic.
@@ -361,7 +374,8 @@ end sub
 function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr proc = any
 	dim as integer dtype = any
-	dim as FBSYMBOL ptr ctor = any, dtor = any, subtype = any
+	dim as FBSYMBOL ptr ctor = NULL, dtor = NULL, subtype = any
+	dim as integer fillchar = 0
 
 	function = NULL
 
@@ -377,9 +391,14 @@ function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
 		if( (ctor = NULL) and (symbGetCompCtorHead( subtype ) <> NULL) ) then
 			errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
 		end if
-	else
-		ctor = NULL
-		dtor = NULL
+
+		if( symbGetUDTHasFilledField( subtype ) ) then
+			fillchar = 32
+		end if
+
+	elseif( dtype = FB_DATATYPE_FIXSTR ) then
+		fillchar = 32
+
 	end if
 
 	if( (ctor <> NULL) or (dtor <> NULL) ) then
@@ -405,7 +424,7 @@ function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
 		end if
 
 	elseif( dtype = FB_DATATYPE_STRING ) then
-		'' fb_ArrayDestructStr() to clear the string array 
+		'' fb_ArrayDestructStr() to clear the string array
 		'' - there is no fb_ArrayClearStr() in rtlib
 		proc = astNewCALL( PROCLOOKUP( ARRAYDESTRUCTSTR ) )
 
@@ -413,6 +432,21 @@ function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
 		if( astNewARG( proc, arrayexpr, dtype ) = NULL ) then
 			exit function
 		end if
+
+	elseif( fillchar <> 0 ) then
+		'' fb_ArrayFill()
+		proc = astNewCALL( PROCLOOKUP( ARRAYFILL ) )
+
+		'' array() as any
+		if( astNewARG( proc, arrayexpr, dtype ) = NULL ) then
+			exit function
+		end if
+
+		'' byval fillchar as long
+		if( astNewARG( proc, astNewCONSTi( fillchar ) ) = NULL ) then
+			exit function
+		end if
+
 	else
 		'' fb_ArrayClear()
 		proc = astNewCALL( PROCLOOKUP( ARRAYCLEAR ) )
@@ -555,22 +589,22 @@ function rtlArrayRedim _
 		byval dopreserve as integer, _
 		byval doclear as integer _
 	) as ASTNODE ptr
-	
+
 	'' no const filtering needed... dynamic arrays can't be const
-	
-    dim as ASTNODE ptr proc = any, expr = any
+
+	dim as ASTNODE ptr proc = any, expr = any
 	dim as FBSYMBOL ptr f = any, sym = any, subtype = any
 	dim as FBSYMBOL ptr ctor = any, dtor = any
-    dim as integer dtype = any
+	dim as integer dtype = any
 	dim as longint elementlen = any
 
 	sym = astGetSymbol( arrayexpr )
 	dtype = symbGetFullType( sym )
-	elementlen = symbGetLen( sym )
+	elementlen = symbGetSizeOf( sym )
 
 	hGetCtorDtorForRedim( dtype, symbGetSubtype( sym ), ctor, dtor )
 
-    if( (ctor = NULL) and (dtor = NULL) ) then
+	if( (ctor = NULL) and (dtor = NULL) ) then
 		if( dopreserve = FALSE ) then
 			f = PROCLOOKUP( ARRAYREDIM )
 		else
@@ -584,7 +618,7 @@ function rtlArrayRedim _
 		end if
 	end if
 
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
 	'' array() as ANY
 	if( astNewARG( proc, arrayexpr ) = NULL ) then
@@ -598,6 +632,15 @@ function rtlArrayRedim _
 
 	if( (ctor = NULL) and (dtor = NULL) ) then
 		'' byval doclear as integer
+
+		if( doclear ) then
+			if( (dtype = FB_DATATYPE_FIXSTR) orelse _
+			    ((dtype = FB_DATATYPE_STRUCT) andalso _
+			    (symbGetUDTHasFilledField( symbGetSubtype( sym ) ))) ) then
+				doclear = 32
+			end if
+		end if
+
 		if( astNewARG( proc, astNewCONSTi( doclear ) ) = NULL ) then
 			exit function
 		end if
@@ -631,10 +674,15 @@ function rtlArrayRedim _
 		'' lbound
 		expr = exprTB(i, 0)
 
-    	'' convert to int
-    	if( astGetDataType( expr ) <> FB_DATATYPE_INTEGER ) then
-    		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
-    	end if
+		'' convert to int
+		if( astGetDataType( expr ) <> FB_DATATYPE_INTEGER ) then
+			expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
+
+			if( expr = NULL ) then
+				exit function
+			end if
+
+		end if
 
 		if( astNewARG( proc, expr ) = NULL ) then
 			exit function
@@ -643,10 +691,15 @@ function rtlArrayRedim _
 		'' ubound
 		expr = exprTB(i, 1)
 
-    	'' convert to int
-    	if( astGetDataType( expr ) <> FB_DATATYPE_INTEGER ) then
-    		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
-    	end if
+		'' convert to int
+		if( astGetDataType( expr ) <> FB_DATATYPE_INTEGER ) then
+			expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
+
+			if( expr = NULL ) then
+				exit function
+			end if
+
+		end if
 
 		if( astNewARG( proc, expr ) = NULL ) then
 			exit function
@@ -715,8 +768,8 @@ function rtlArrayBound _
 	function = NULL
 
 	proc = astNewCALL( iif( islbound, _
-				PROCLOOKUP( ARRAYLBOUND ), _
-				PROCLOOKUP( ARRAYUBOUND ) ) )
+	                   PROCLOOKUP( ARRAYLBOUND ), _
+	                   PROCLOOKUP( ARRAYUBOUND ) ) )
 
 	'' array() as ANY
 	if( astNewARG( proc, arrayexpr ) = NULL ) then
@@ -741,19 +794,19 @@ function rtlArrayBoundsCheck _
 		byval module as zstring ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
 
-   	function = NULL
+	function = NULL
 
-   	'' lbound 0? do a single check
-   	if( lb = NULL ) then
+	'' lbound 0? do a single check
+	if( lb = NULL ) then
 		f = PROCLOOKUP( ARRAYSNGBOUNDCHK )
 	else
-    	f = PROCLOOKUP( ARRAYBOUNDCHK )
+		f = PROCLOOKUP( ARRAYBOUNDCHK )
 	end if
 
-   	proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
 	'' idx
 	if( astNewARG( proc, astNewCONV( FB_DATATYPE_INTEGER, NULL, idx, AST_CONVOPT_DONTWARNCONST ) ) = NULL ) then
@@ -777,11 +830,11 @@ function rtlArrayBoundsCheck _
 		exit function
 	end if
 
-    '' module
+	'' module
 	if( astNewARG( proc, astNewCONSTstr( module ) ) = NULL ) then
-    	exit function
-    end if
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function

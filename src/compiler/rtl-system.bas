@@ -8,8 +8,8 @@
 #include once "ast.bi"
 #include once "rtl.bi"
 
-declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
-declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
+declare function    hMultithread_cb     ( byval sym as FBSYMBOL ptr ) as integer
+declare function    hThreadCall_cb      ( byval sym as FBSYMBOL ptr ) as integer
 
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
@@ -18,222 +18,222 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 			@FB_RTL_CPUDETECT, NULL, _
 			FB_DATATYPE_ULONG, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_X86ONLY, _
-	   	 	0 _
+			0 _
 		), _
 		/' sub fb_Init( byval argc as long, byval argv as zstring ptr ptr, byval lang as long ) '/ _
 		( _
 			@FB_RTL_INIT, NULL, _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		3, _
-	 		{ _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_REQUIRED, _
+			3, _
+			{ _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' sub fb_InitSignals( ) '/ _
 		( _
 			@FB_RTL_INITSIGNALS, NULL, _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		0 _
-	 	), _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_REQUIRED, _
+			0 _
+		), _
 		/' sub __main cdecl( ) '/ _
 		( _
 			@FB_RTL_INITCRTCTOR, @"__main", _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		0 _
-	 	), _
+			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_REQUIRED, _
+			0 _
+		), _
 		/' sub fb_End( byval errlevel as const long ) '/ _
 		( _
 			@FB_RTL_END, NULL, _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_REQUIRED, _
+			1, _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function atexit cdecl( byval proc as sub cdecl() ) as long '/ _
 		( _
 			@FB_RTL_ATEXIT, @"atexit", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		1, _
-	 		{ _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function command( byval argc as const long = -1 ) as string '/ _
 		( _
 			@"command", @"fb_Command", _
-	 		FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_STRSUFFIX, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_STRSUFFIX, _
+			1, _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function curdir( ) as string '/ _
 		( _
 			@"curdir", @"fb_CurDir", _
-	 		FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NOQB, _
-	 		0 _
-	 	), _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NOQB, _
+			0 _
+		), _
 		/' function exepath( ) as string '/ _
 		( _
 			@"exepath", @"fb_ExePath", _
-	 		FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NOQB, _
-	 		0 _
-	 	), _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NOQB, _
+			0 _
+		), _
 		/' function timer( ) as double '/ _
 		( _
 			@"timer", @"fb_Timer", _
-	 		FB_DATATYPE_DOUBLE, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		0 _
-	 	), _
+			FB_DATATYPE_DOUBLE, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			0 _
+		), _
 		/' function time( ) as string '/ _
 		( _
 			@"time", @"fb_Time", _
-	 		FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_STRSUFFIX, _
-	 		0 _
-	 	), _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_STRSUFFIX, _
+			0 _
+		), _
 		/' function date( ) as string '/ _
 		( _
 			@"date", @"fb_Date", _
-	 		FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_STRSUFFIX, _
-	 		0 _
-	 	), _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_STRSUFFIX, _
+			0 _
+		), _
 		/' function shell( byref program as const string = "" ) as long '/ _
 		( _
 			@"shell", @"fb_Shell", _
-	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, TRUE, NULL ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' sub system( byval errlevel as const long = 0 ) '/ _
 		( _
 			@"system", @"fb_End", _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' sub stop( byval errlevel as const long = 0 ) '/ _
 		( _
 			@"stop", @"fb_End", _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function run( byref program as const string, byref arguments as const string = "" ) as long '/ _
 		( _
 			@"run", @"fb_Run", _
-	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		2, _
-	 		{ _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, TRUE, NULL ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function chain( byref program as const string ) as long '/ _
 		( _
 			@"chain", @"fb_Chain", _
-	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function exec( byref program as const string, byref args as const string ) as long '/ _
 		( _
 			@"exec", @"fb_Exec", _
-	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NOQB, _
-	 		2, _
-	 		{ _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NOQB, _
+			2, _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function environ( byref varname as const string ) as string '/ _
 		( _
 			@"environ", @"fb_GetEnviron", _
-	 		FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_STRSUFFIX, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_STRSUFFIX, _
+			1, _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function setenviron( byref varname as const string ) as long '/ _
 		( _
 			@"setenviron", @"fb_SetEnviron", _
-	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' sub sleep overload( byval msecs as const long ) '/ _
 		( _
 			@"sleep", @"fb_Sleep", _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-	 		1, _
-	 		{ _
+			1, _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' sub sleep overload( byval secs as const long ) '/ _
 		( _
 			@"sleep", @"fb_SleepQB", _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_QBONLY, _
-	 		1, _
-	 		{ _
+			1, _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function sleep overload( byval msecs as const long, byval kind as const long ) as long '/ _
 		( _
 			@"sleep", @"fb_SleepEx", _
-	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_ERROR, _
-	 		2, _
-	 		{ _
+			2, _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function dir overload( byval out_attrib as long ptr = NULL ) as string '/ _
 		( _
 			@"dir", @"fb_DirNext", _
-	 		FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
 				( typeAddrOf( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, NULL ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function dir overload( byval out_attrib as longint ptr ) as string '/ _
 		( _
 			@"dir", @"fb_DirNext64", _
@@ -247,13 +247,13 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 		/' function dir overload( byref out_attrib as long ) as string '/ _
 		( _
 			@"dir", @"fb_DirNext", _
-	 		FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function dir overload( byref out_attrib as longint ) as string '/ _
 		( _
 			@"dir", @"fb_DirNext64", _
@@ -269,15 +269,15 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 				byval out_attrib as long ptr = NULL ) as string '/ _
 		( _
 			@"dir", @"fb_Dir", _
-	 		FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-	 		3, _
-	 		{ _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			3, _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, &h21 ), _
 				( typeAddrOf( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, NULL ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function dir overload( byref mask as const string, _
 				byval attrib_mask as const long = &h21, _
 				byval out_attrib as longint ptr ) as string '/ _
@@ -297,15 +297,15 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 				byref out_attrib as long ) as string '/ _
 		( _
 			@"dir", @"fb_Dir", _
-	 		FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-	 		3, _
-	 		{ _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			3, _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, &h21 ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function dir overload( byref mask as const string, _
 				byval attrib_mask as const long = &h21, _
 				byref out_attrib as longint ) as string '/ _
@@ -323,23 +323,23 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 		/' function settime( byref time as const string ) as long '/ _
 		( _
 			@"settime", @"fb_SetTime", _
-	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function setdate( byref date as const string ) as long '/ _
 		( _
 			@"setdate", @"fb_SetDate", _
-	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function threadcreate _
 			( _
 				byval proc as sub( byval param as any ptr ),
@@ -348,27 +348,27 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 			) as any ptr '/ _
 		( _
 			@"threadcreate", @"fb_ThreadCreate", _
-	 		typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
-	 		@hMultithread_cb, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
-	 		5, _
-	 		{ _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
+			@hMultithread_cb, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
+			5, _
+			{ _
 				( typeAddrOf( FB_DATATYPE_FUNCTION ), FB_PARAMMODE_BYVAL, TRUE, 1 ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_VOID, NULL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' sub threadwait( byval thread as any ptr ) '/ _
 		( _
 			@"threadwait", @"fb_ThreadWait", _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@hMultithread_cb, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			@hMultithread_cb, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function fb_ThreadCall cdecl( byval proc as any ptr, byval abi as const long, _
 				byval stack_size as const integer, byval num_args as const long, ... ) as any ptr '/ _
 		( _
@@ -387,171 +387,171 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 		/' function mutexcreate( ) as any ptr '/ _
 		( _
 			@"mutexcreate", @"fb_MutexCreate", _
-	 		typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
-	 		0 _
-	 	), _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
+			0 _
+		), _
 		/' sub mutexdestroy( byval mutex as any ptr ) '/ _
 		( _
 			@"mutexdestroy", @"fb_MutexDestroy", _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' sub mutexlock( byval mutex as any ptr ) '/ _
 		( _
 			@"mutexlock", @"fb_MutexLock", _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' sub mutexunlock( byval mutex as any ptr ) '/ _
 		( _
 			@"mutexunlock", @"fb_MutexUnlock", _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function condcreate( ) as any ptr '/ _
 		( _
 			@"condcreate", @"fb_CondCreate", _
-	 		typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
-	 		0 _
-	 	), _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
+			0 _
+		), _
 		/' sub conddestroy( byval cond as any ptr ) '/ _
 		( _
 			@"conddestroy", @"fb_CondDestroy", _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' sub condsignal( byval cond as any ptr ) '/ _
 		( _
 			@"condsignal", @"fb_CondSignal", _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' sub condbroadcast( byval cond as any ptr ) '/ _
 		( _
 			@"condbroadcast", @"fb_CondBroadcast", _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' sub condwait( byval cond as any ptr, byval mutex as any ptr ) '/ _
 		( _
 			@"condwait", @"fb_CondWait", _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
-	 		2, _
-	 		{ _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
+			2, _
+			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function dylibload( byref filename as const string ) as any ptr '/ _
 		( _
 			@"dylibload", @"fb_DylibLoad", _
-	 		typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NOQB, _
-	 		1, _
-	 		{ _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function dylibsymbol overload( byval library as any ptr, byref symbol as const string ) as any ptr '/ _
 		( _
 			@"dylibsymbol", @"fb_DylibSymbol", _
-	 		typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-	 		2, _
-	 		{ _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			2, _
+			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function dylibsymbol overload( byval library as any ptr, byval symbol as const short ) as any ptr '/ _
 		( _
 			@"dylibsymbol", @"fb_DylibSymbolByOrd", _
-	 		typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-	 		2, _
-	 		{ _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			2, _
+			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_SHORT ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' sub dylibfree( byval library as any ptr ) '/ _
 		( _
 			@"dylibfree", @"fb_DylibFree", _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NOQB, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub beep( ) '/ _
 		( _
 			@"beep", @"fb_Beep", _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		0 _
-	 	), _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			0 _
+		), _
 		/' function mkdir( byref path as const string ) as long '/ _
 		( _
 			@"mkdir", @"fb_MkDir", _
-	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
-	 		} _
-	 	), _
+			} _
+		), _
 		/' function rmdir( byref path as const string ) as long '/ _
 		( _
 			@"rmdir", @"fb_RmDir", _
-	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		1, _
-	 		{ _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
 			} _
 		), _
 		/' function chdir( byref path as const string ) as long '/ _
 		( _
 			@"chdir", @"fb_ChDir", _
-	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		1, _
-	 		{ _
-				( typeSetIsConst( FB_DATATYPE_STRING ),FB_PARAMMODE_BYREF, FALSE ) _
-	 		} _
-	 	), _
-	 	/' EOL '/ _
-	 	( _
-	 		NULL _
-	 	) _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
+			} _
+		), _
+		/' EOL '/ _
+		( _
+			NULL _
+		) _
 	 }
 
 '':::::
@@ -660,14 +660,17 @@ function rtlInitApp _
 	is_exe = (env.clopt.outtype <> FB_OUTTYPE_DYNAMICLIB)
 
 	if( env.clopt.backend = FB_BACKEND_GAS ) then
-		'' call __monstartup() on win32/cygwin if profiling
-		select case( env.clopt.target )
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-			if( env.clopt.profile ) then
-				'' __monstartup()
-				rtlProfileCall_monstartup( )
-			end if
-		end select
+
+		if( env.clopt.nobuiltins = FALSE ) then
+			'' call __monstartup() on win32/cygwin if profiling
+			select case( env.clopt.target )
+			case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+				if( env.clopt.profile ) then
+					'' __monstartup()
+					rtlProfileCall_monstartup( )
+				end if
+			end select
+		end if
 
 		'' call default CRT0 constructors (only required for Win32)
 		if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
@@ -683,15 +686,17 @@ function rtlInitApp _
 	astNewARG( proc, astNewCONSTi( env.clopt.lang ) )
 	astAdd( proc )
 
-	'' Error checking enabled and not a DLL?
-	if( env.clopt.errorcheck and is_exe ) then
-		'' fb_InitSignals( )
-		astAdd( astNewCALL( PROCLOOKUP( INITSIGNALS ), NULL ) )
+	if( env.clopt.nobuiltins = FALSE ) then
+		'' Error checking enabled and not a DLL? And emscripten doesn't have signals
+		if( env.clopt.errorcheck andalso is_exe andalso ( env.clopt.target <> FB_COMPTARGET_JS ) ) then
+			'' fb_InitSignals( )
+			astAdd( astNewCALL( PROCLOOKUP( INITSIGNALS ), NULL ) )
 
-		'' Checking the CPU for features on x86
-		if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
-			'' Check CPU type
-			rtlX86CpuCheck( )
+			'' Checking the CPU for features on x86
+			if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
+				'' Check CPU type
+				rtlX86CpuCheck( )
+			end if
 		end if
 	end if
 
@@ -724,6 +729,13 @@ private function hMultithread_cb _
 		byval sym as FBSYMBOL ptr _
 	) as integer
 
+	if( env.clopt.multithreaded = FALSE ) then
+		'' restart the parser so __FB_MT__ can be checked on the next pass
+		if( ( env.restart_status and FB_RESTART_PARSER_MT ) = 0 ) then
+			fbRestartBeginRequest( FB_RESTART_PARSER_MT )
+		end if
+	end if
+
 	env.clopt.multithreaded = TRUE
 
 	return TRUE
@@ -736,14 +748,15 @@ private function hThreadCall_cb _
 		byval sym as FBSYMBOL ptr _
 	) as integer
 
-    static as integer libsAdded = FALSE
+	'' minor optimization to avoid having to lookup env.libs hash
+	fbRestartableStaticVariable( integer, libsAdded, FALSE )
 
 	if( libsadded = FALSE ) then
 		libsAdded = TRUE
 		fbAddLib( "ffi" )
 	end if
 
-        return hMultithread_cb( sym )
+	return hMultithread_cb( sym )
 end function
 
 '':::::
@@ -752,18 +765,18 @@ function rtlAtExit _
 		byval procexpr as ASTNODE ptr _
 	) as ASTNODE ptr static
 
-    dim as ASTNODE ptr proc
+	dim as ASTNODE ptr proc
 
 	function = NULL
 
 	'' atexit( proc )
-    proc = astNewCALL( PROCLOOKUP( ATEXIT ) )
+	proc = astNewCALL( PROCLOOKUP( ATEXIT ) )
 
-    if( astNewARG( proc, procexpr ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, procexpr ) = NULL ) then
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function
 

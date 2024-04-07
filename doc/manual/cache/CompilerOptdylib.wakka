@@ -5,16 +5,18 @@ Create a DLL and import library
 	**-dylib**
 ##
 {{fbdoc item="desc"}}
-	The ##-dylib## compiler option creates a dynamic link library. This creates a DLL under Windows (including the import library), and creates a .so under Linux.
+	The ##-dylib## compiler option creates a dynamic link library. This creates a DLL under Windows (including the import library), creates a .so under Linux, and a DXE under DOS.
 	
 	The intrinsic macro ##[[KeyPgDdfboutdll|__FB_OUT_DLL__]]## is set to non-zero (-1) if the ##-dll## option was specified, and set to zero (0) otherwise.
 
 {{fbdoc item="target"}}
-	- Not supported on the DOS platform.
+	- See [[CompilerOptdll|Compiler Option: -dll]]
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfboutdll|__FB_OUT_DLL__]]##
 	- [[ProPgSharedLibraries|Shared Libraries]]
 	- [[CompilerCmdLine|Using the Command Line]]
+	- [[CompilerOptdll|Compiler Option: -dll]]
+
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

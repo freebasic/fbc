@@ -45,8 +45,8 @@
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( typeAddrOf( FB_DATATYPE_WCHAR ),FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_INTEGER ),FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
 		/' sub fb_DataReadBool( byref dst as boolean ) '/ _
@@ -185,12 +185,12 @@ function rtlDataRead _
 		byval varexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
 	dim as integer args = any, dtype = any
 	dim as longint lgt = any
 
-    function = FALSE
+	function = FALSE
 
 	f = NULL
 	args = 1
@@ -232,29 +232,29 @@ function rtlDataRead _
 		f = PROCLOOKUP( DATAREADDOUBLE )
 
 	case FB_DATATYPE_STRUCT
-		exit function						'' illegal
+		exit function                       '' illegal
 
 	case else
 		exit function
 	end select
 
-    if( f = NULL ) then
-    	exit function
-    end if
+	if( f = NULL ) then
+		exit function
+	end if
 
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
-    if( args > 1 ) then
-    	'' always calc len before pushing the param
+	if( args > 1 ) then
+		'' always calc len before pushing the param
 		lgt = rtlCalcStrLen( varexpr, dtype )
 	else
 		lgt = 0
 	end if
 
-    '' byref var as any
-    if( astNewARG( proc, varexpr ) = NULL ) then
- 		exit function
- 	end if
+	'' byref var as any
+	if( astNewARG( proc, varexpr ) = NULL ) then
+		exit function
+	end if
 
 	if( args > 1 ) then
 		'' byval dst_size as integer
@@ -270,10 +270,10 @@ function rtlDataRead _
 		end if
 	end if
 
-    ''
-    astAdd( proc )
+	''
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -283,12 +283,12 @@ function rtlDataRestore _
 		byval afternode as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc = any, expr = any
-    dim as FBSYMBOL ptr sym = any
+	dim as ASTNODE ptr proc = any, expr = any
+	dim as FBSYMBOL ptr sym = any
 
-    function = FALSE
+	function = FALSE
 
-    proc = astNewCALL( PROCLOOKUP( DATARESTORE ), NULL )
+	proc = astNewCALL( PROCLOOKUP( DATARESTORE ), NULL )
 
 	'' byval labeladdrs as void ptr
 	if( label = NULL ) then

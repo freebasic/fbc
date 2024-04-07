@@ -20,7 +20,7 @@
 #   rtlib:
 #     src/rtlib/static/fbrt0.c
 #     -> fbrt0.o
-#     -> fbrt0pic.o, -fPIC version (non-x86 Linux etc.)
+#     -> fbrt0pic.o, -fPIC version (Unixes)
 #
 #     all *.c and *.s files in
 #     src/rtlib/
@@ -28,8 +28,8 @@
 #     src/rtlib/$(TARGET_ARCH)
 #     -> libfb.a
 #     -> libfbmt.a, -DENABLE_MT (threadsafe) version (except for DOS)
-#     -> libfbpic.a, -fPIC version (non-x86 Linux etc.)
-#     -> libfbmtpic.a, threadsafe and -fPIC (non-x86 Linux etc.)
+#     -> libfbpic.a, -fPIC version (Unixes)
+#     -> libfbmtpic.a, threadsafe and -fPIC (Unixes)
 #
 #     contrib/djgpp/libc/...
 #     -> libc.a, fixed libc for DOS/DJGPP (see contrib/djgpp/ for more info)
@@ -38,9 +38,9 @@
 #     src/fbrt/*.bas -> src/fbrt/obj/$(FBTARGET)/*.o
 #     src/fbrt/*.bas -> src/fbrt/obj/$(FBTARGET)/mt/*.o
 #     combine missing object modules from:
-#     src/rtlib/obj/$(FBTARGET)/*.o -> src/fbrt/obj/$(FBTARGET)/*.o 
+#     src/rtlib/obj/$(FBTARGET)/*.o -> src/fbrt/obj/$(FBTARGET)/*.o
 #     src/rtlib/obj/$(FBTARGET)/mt/*.o -> src/fbrt/obj/$(FBTARGET)/mt/*.o
-#     -> libfbrt.a     
+#     -> libfbrt.a
 #     -> libfbrtmt.a
 #     -> libfbrtpic.a
 #     -> libfbrtmtpic.a
@@ -52,8 +52,8 @@
 #     src/gfxlib2/$(TARGET_ARCH)
 #     -> libfbgfx.a
 #     -> libfbgfxmt.a, -DENABLE_MT (threadsafe) version (except for DOS)
-#     -> libfbgfxpic.a, -fPIC version (non-x86 Linux etc.)
-#     -> libfbgfxmtpic.a, threadsafe and -fPIC (non-x86 Linux etc.)
+#     -> libfbgfxpic.a, -fPIC version (Unixes)
+#     -> libfbgfxmtpic.a, threadsafe and -fPIC (Unixes)
 #
 # commands:
 #
@@ -77,6 +77,7 @@
 #   clean-tests
 #
 #   bootstrap-dist      Create source package with precompiled fbc sources
+#   bootstrap-dist-arm  Create source package with precompiled fbc sources for arm and aarach64 only
 #   bootstrap           Build fbc from the precompiled sources (only if precompiled sources exist)
 #   bootstrap-minimal   Build fbc from the precompiled sources (only if precompiled sources exist) with only the minimal features needed to compile another fbc
 #
@@ -97,12 +98,18 @@
 #   ENABLE_STRIPALL=0      disable "-d ENABLE_STRIPALL" with all targets
 #   FBSHA1=1               determine the sha-1 of the current commit in repo and store it in the compiler
 #   FBSHA1=some-sha-1      explicitly indicate the sha-1 to store in the compiler
+#   FBFORKID=name          tells fbc to set a custom value for __FB_BUILD_FORK_ID__
 #   FBPACKAGE     bindist: The package/archive file name without path or extension
 #   FBPACKSUFFIX  bindist: Allows adding a custom suffix to the normal package name (and the toplevel dir in the archive)
 #   FBMANIFEST    bindist: The manifest file name without path or extension
 #   FBVERSION     bindist/gitdist: FB version number
 #   DISABLE_DOCS  bindist: Don't package readme/changelog/manpage/examples
-#
+#   BUILD_PREFIX     automatically set depending on the target but can override for special builds where the
+#                    build tools have different file naming than the target to build (i.e. cross compiling)
+#   DISABLE_GAS64_DEBUG    use "-d DISABLE_GAS64_DEBUG" (see below)
+#   DISABLE_STDCXX_PATH    tells fbc to not search for some libstdc++/libc++ depending on target platform
+#   DEFAULT_CPUTYPE_X86=<FB_CPUTYPE>    set default x86 cpu type to one of FB_CPU_TYPE
+#   DEFAULT_CPUTYPE_ARM=<FB_CPUTYPE>    set default arm cpu type to one of FB_CPUTYPE
 # compiler source code configuration (FBCFLAGS, FBLFLAGS):
 #   -d ENABLE_STANDALONE     build for a self-contained installation
 #   -d ENABLE_SUFFIX=-0.24   assume FB's lib dir uses the given suffix (non-standalone only)
@@ -110,16 +117,31 @@
 #   -d ENABLE_LIB64          use prefix/lib64/ instead of prefix/lib/ for 64bit libs (non-standalone only)
 #   -d ENABLE_STRIPALL       configure fbc to pass down '--strip-all' to linker by default
 #   -d FBSHA1=some-sha-1     store 'some-sha-1' in the compiler for version information
+#   -d DISABLE_GAS64_DEBUG   disable gas64 debugging comments in asm files even if __FB_DEBUG__ is defined (-g)
+#   -d DISABLE_STDCXX_PATH    tells fbc to not search for some libstdc++/libc++ depending on target platform
+#   -d BUILD_FB_DEFAULT_CPUTYPE_X86=<FB_CPUTYPE>    set default x86 cpu type to one of FB_CPUTYPE
+#   -d BUILD_FB_DEFAULT_CPUTYPE_ARM=<FB_CPUTYPE>    set default arm cpu type to one of FB_CPUTYPE
+#   -d FBFORKID="name"     tells fbc to set a custom value for __FB_BUILD_FORK_ID__ 
+#
+# internal makefile configuration (but can override):
+#   libsubdir       override the library directory - default is set depending on TARGET
+#   objsubdir       override object file directory - default is set depending on TARGET
+#   fbcobjdir       override compiler object directory - default is set depending on TARGET
 #
 # fbrt source code configuration (FBRTCFLAGS, FBRTLFLAGS)
 #
 # rtlib/gfxlib2 source code configuration (CFLAGS):
-#   -DDISABLE_X11    build without X11 headers (disables X11 gfx driver)
-#   -DDISABLE_GPM    build without gpm.h (disables Linux GetMouse)
-#   -DDISABLE_FFI    build without ffi.h (disables ThreadCall)
-#   -DDISABLE_OPENGL build without OpenGL headers (disables OpenGL gfx drivers)
-#   -DDISABLE_FBDEV  build without Linux framebuffer device headers (disables Linux fbdev gfx driver)
-#   -DDISABLE_D3D10  build without DirectX 10 driver(disable D2D driver in windows)
+#   -DDISABLE_X11      build without X11 headers (disables X11 gfx driver)
+#   -DDISABLE_GPM      build without gpm.h (disables GetMouse in the Linux terminal (TERM=linux),
+#                      although the TERM=xterm variant keeps working)
+#   -DDISABLE_FFI      build without ffi.h (disables ThreadCall)
+#   -DDISABLE_OPENGL   build without OpenGL headers (disables OpenGL gfx drivers)
+#   -DDISABLE_FBDEV    build without Linux framebuffer device headers (disables Linux fbdev gfx driver)
+#   -DDISABLE_D3D10    build without DirectX 10 driver(disable D2D driver in windows)
+#   -DDISABLE_NCURSES  build without libtinfo or ncurses (disables console commands)
+#   -DDISABLE_LANGINFO build without locale info (affects Unix only; makes no difference unless you
+#                      call setlocale() manually). Does not remove setlocale(LC_CTYPE, "") call.
+#   -DDISABLE_WCHAR    build without wchar_t type or functions. wstring becomes ASCII only (fbc needs to match this).
 #
 # makefile variables may either be set on the make command line,
 # or (in a more permanent way) inside a 'config.mk' file before
@@ -148,9 +170,9 @@ CFLAGS := -Wfatal-errors -O2
 # Avoid gcc exception handling bloat
 CFLAGS += -fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables
 FBFLAGS := -maxerr 1
-AS = $(TARGET_PREFIX)as
-AR = $(TARGET_PREFIX)ar
-CC = $(TARGET_PREFIX)gcc
+AS = $(BUILD_PREFIX)as
+AR = $(BUILD_PREFIX)ar
+CC = $(BUILD_PREFIX)gcc
 prefix := /usr/local
 
 # Determine the makefile's directory, this may be a relative path when
@@ -180,10 +202,14 @@ include $(rootdir)version.mk
 ifdef TARGET
   # Parse TARGET
   triplet := $(subst -, ,$(TARGET))
-  TARGET_PREFIX := $(TARGET)-
+  ifeq ($(BUILD_PREFIX),)
+  BUILD_PREFIX := $(TARGET)-
+  endif
 
   ifndef TARGET_OS
-    ifneq ($(filter cygwin%,$(triplet)),)
+    ifneq ($(filter android%,$(triplet)),)
+      TARGET_OS := android
+    else ifneq ($(filter cygwin%,$(triplet)),)
       TARGET_OS := cygwin
     else ifneq ($(filter darwin%,$(triplet)),)
       TARGET_OS := darwin
@@ -196,6 +222,7 @@ ifdef TARGET
     else ifneq ($(filter dragonfly%,$(triplet)),)
       TARGET_OS := dragonfly
     else ifneq ($(filter linux%,$(triplet)),)
+      # GNU/Linux. arm-linux-androideabi is not.
       TARGET_OS := linux
     else ifneq ($(filter mingw%,$(triplet)),)
       TARGET_OS := win32
@@ -210,9 +237,9 @@ ifdef TARGET
     endif
     ifneq ($(filter emscripten%,$(triplet)),)
       TARGET_OS := js
-	  AS = llvm-as
-	  AR = emar
-	  CC = emcc
+      AS = llvm-as
+      AR = emar
+      CC = emcc
     endif
   endif
 
@@ -313,6 +340,21 @@ ifneq ($(filter arm%,$(TARGET_ARCH)),)
   TARGET_ARCH := arm
 endif
 
+# Normalize TARGET_ARCH to powerpc
+ifneq ($(filter ppc powerpc,$(TARGET_ARCH)),)
+  TARGET_ARCH := powerpc
+endif
+
+# Normalize TARGET_ARCH to powerpc64
+ifneq ($(filter ppc% powerpc%,$(TARGET_ARCH)),)
+  TARGET_ARCH := powerpc64
+endif
+
+# Normalize TARGET_ARCH to powerpc64le
+ifneq ($(filter ppc%le powerpc%le,$(TARGET_ARCH)),)
+  TARGET_ARCH := powerpc64le
+endif
+
 # Normalize TARGET_ARCH to x86_64 (e.g., FreeBSD's uname -m returns "amd64"
 # instead of "x86_64" like Linux)
 ifneq ($(filter amd64 x86-64,$(TARGET_ARCH)),)
@@ -338,12 +380,22 @@ else
   FB_LDSCRIPT := fbextra.x
 endif
 
-# ENABLE_PIC for non-x86 Linux etc. (for every system where we need separate
-# -fPIC versions of FB libs besides the normal ones)
-ifneq ($(filter freebsd dragonfly linux netbsd openbsd solaris,$(TARGET_OS)),)
-  ifneq ($(TARGET_ARCH),x86)
-    ENABLE_PIC := YesPlease
-  endif
+# ENABLE_PIC for every system where we need separate
+# -fPIC versions of FB libs besides the normal ones
+ifneq ($(filter android freebsd dragonfly freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+  ENABLE_PIC := YesPlease
+endif
+ifneq ($(TARGET_OS),android)
+  # Everything is PIC on Android by default, so don't produce two sets of libraries
+  ENABLE_NONPIC := YesPlease
+endif
+
+# disable .ident directive on windows targets
+# when present, identification strings are added to every object module and
+# each .ident instance adds to the resulting executable even if the strings
+# are identical
+ifneq ($(filter win32 win64,$(TARGET_OS)),)
+  CFLAGS += -fno-ident
 endif
 
 ifneq ($(filter cygwin dos win32,$(TARGET_OS)),)
@@ -381,7 +433,13 @@ endif
 #
 # Determine directory layout for .o files and final binaries.
 #
-libsubdir := $(FBTARGET)
+ifeq ($(libsubdir),)
+  libsubdir := $(FBTARGET)
+endif
+ifeq ($(objsubdir),)
+  objsubdir := $(libsubdir)
+endif
+
 ifdef ENABLE_STANDALONE
   # Traditional standalone layout: fbc.exe at toplevel, libs in lib/<fbtarget>/,
   # includes in inc/
@@ -413,20 +471,22 @@ else
   prefixincdir   := $(prefix)/include/$(FBNAME)
   prefixlibdir   := $(prefix)/$(libdir)
 endif
+ifeq ($(fbcobjdir),)
 fbcobjdir           := src/compiler/obj/$(FBTARGET)
-libfbobjdir         := src/rtlib/obj/$(libsubdir)
-libfbpicobjdir      := src/rtlib/obj/$(libsubdir)/pic
-libfbmtobjdir       := src/rtlib/obj/$(libsubdir)/mt
-libfbmtpicobjdir    := src/rtlib/obj/$(libsubdir)/mt/pic
-libfbrtobjdir       := src/fbrt/obj/$(libsubdir)
-libfbrtpicobjdir    := src/fbrt/obj/$(libsubdir)/pic
-libfbrtmtobjdir     := src/fbrt/obj/$(libsubdir)/mt
-libfbrtmtpicobjdir  := src/fbrt/obj/$(libsubdir)/mt/pic
-libfbgfxobjdir      := src/gfxlib2/obj/$(libsubdir)
-libfbgfxpicobjdir   := src/gfxlib2/obj/$(libsubdir)/pic
-libfbgfxmtobjdir    := src/gfxlib2/obj/$(libsubdir)/mt
-libfbgfxmtpicobjdir := src/gfxlib2/obj/$(libsubdir)/mt/pic
-djgpplibcobjdir     := contrib/djgpp/libc/crt0/obj/$(libsubdir)
+endif
+libfbobjdir         := src/rtlib/obj/$(objsubdir)
+libfbpicobjdir      := src/rtlib/obj/$(objsubdir)/pic
+libfbmtobjdir       := src/rtlib/obj/$(objsubdir)/mt
+libfbmtpicobjdir    := src/rtlib/obj/$(objsubdir)/mt/pic
+libfbrtobjdir       := src/fbrt/obj/$(objsubdir)
+libfbrtpicobjdir    := src/fbrt/obj/$(objsubdir)/pic
+libfbrtmtobjdir     := src/fbrt/obj/$(objsubdir)/mt
+libfbrtmtpicobjdir  := src/fbrt/obj/$(objsubdir)/mt/pic
+libfbgfxobjdir      := src/gfxlib2/obj/$(objsubdir)
+libfbgfxpicobjdir   := src/gfxlib2/obj/$(objsubdir)/pic
+libfbgfxmtobjdir    := src/gfxlib2/obj/$(objsubdir)/mt
+libfbgfxmtpicobjdir := src/gfxlib2/obj/$(objsubdir)/mt/pic
+djgpplibcobjdir     := contrib/djgpp/libc/crt0/obj/$(objsubdir)
 
 # If cross-compiling, use -target
 ifdef TARGET
@@ -440,7 +500,9 @@ ifdef MULTILIB
   ALLFBLFLAGS += -arch $(MULTILIB)
   ALLFBRTCFLAGS += -arch $(MULTILIB)
   ALLFBRTLFLAGS += -arch $(MULTILIB)
-  ALLCFLAGS   += -m$(MULTILIB)
+  ifneq ($(TARGET_ARCH),arm)
+    ALLCFLAGS += -m$(MULTILIB)
+  endif
 endif
 
 ALLFBCFLAGS += -e -m fbc -w pedantic
@@ -452,6 +514,18 @@ ALLCFLAGS += -Wall -Wextra -Wno-unused-parameter -Werror-implicit-function-decla
 ifneq ($(filter bootstrap-minimal, $(MAKECMDGOALS)),)
   # Disable features not needed to compile a minimal bootstrap fbc
   ALLCFLAGS += -DDISABLE_GPM -DDISABLE_FFI -DDISABLE_X11
+endif
+
+ifeq ($(TARGET_OS),dos)
+  ALLCFLAGS += -DDISABLE_WCHAR -DDISABLE_FFI
+endif
+
+ifeq ($(TARGET_OS),android)
+  # These aren't available
+  # Android has very limited locale support in the NDK -- only the C locale is supported.
+  # Locale information is available from Java. The CrystaX alternative NDK has locale support.
+
+  ALLCFLAGS += -DDISABLE_NCURSES -DDISABLE_X11 -DDISABLE_FFI -DDISABLE_LANGINFO
 endif
 
 ifeq ($(TARGET_OS),xbox)
@@ -487,7 +561,7 @@ endif
 
 ifeq ($(TARGET_OS),darwin)
   ALLCFLAGS += -I/opt/X11/include -I/usr/include/ffi
-  
+
   ifdef ENABLE_XQUARTZ
     ALLFBCFLAGS += -d ENABLE_XQUARTZ
   else
@@ -511,8 +585,16 @@ endif
 ifdef FBSHA1
   ifeq ($(FBSHA1),1)
     ALLFBCFLAGS += -d 'FBSHA1="$(shell git rev-parse HEAD)"'
+    BOOTFBCFLAGS += -d 'FBSHA1="$(shell git rev-parse HEAD)"'
   else
     ALLFBCFLAGS += -d 'FBSHA1="$(FBSHA1)"'
+    BOOTFBCFLAGS += -d 'FBSHA1="$(FBSHA1)"'
+  endif
+endif
+ifdef FBFORKID
+  ifneq ($(FBFORKID),)
+    ALLFBCFLAGS += -d 'FBFORKID=$(FBFORKID)'
+    BOOTFBCFLAGS += -d 'FBFORKID=$(FBFORKID)'
   endif
 endif
 ifdef ENABLE_SUFFIX
@@ -534,6 +616,21 @@ else
     ALLFBCFLAGS += -d ENABLE_STRIPALL
   endif
 endif
+ifdef DISABLE_GAS64_DEBUG
+  ALLFBCFLAGS += -d DISABLE_GAS64_DEBUG
+endif
+ifdef DEFAULT_CPUTYPE_X86
+  ALLFBCFLAGS += -d BUILD_FB_DEFAULT_CPUTYPE_X86=$(DEFAULT_CPUTYPE_X86)
+  BOOTFBCFLAGS += -d BUILD_FB_DEFAULT_CPUTYPE_X86=$(DEFAULT_CPUTYPE_X86)
+endif
+ifdef DEFAULT_CPUTYPE_ARM
+  ALLFBCFLAGS += -d BUILD_FB_DEFAULT_CPUTYPE_ARM=$(DEFAULT_CPUTYPE_ARM)
+  BOOTFBCFLAGS += -d BUILD_FB_DEFAULT_CPUTYPE_ARM=$(DEFAULT_CPUTYPE_ARM)
+endif
+
+ifdef DISABLE_STDCXX_PATH
+  ALLFBCFLAGS += -d DISABLE_STDCXX_PATH
+endif
 
 ALLFBCFLAGS += $(FBCFLAGS) $(FBFLAGS)
 ALLFBLFLAGS += $(FBLFLAGS) $(FBFLAGS)
@@ -551,7 +648,7 @@ RTLIB_DIRS := $(srcdir)/rtlib $(srcdir)/rtlib/$(TARGET_OS) $(srcdir)/rtlib/$(TAR
 ifeq ($(TARGET_OS),cygwin)
   RTLIB_DIRS += $(srcdir)/rtlib/win32
 endif
-ifneq ($(filter darwin freebsd dragonfly linux netbsd openbsd solaris,$(TARGET_OS)),)
+ifneq ($(filter android darwin freebsd dragonfly linux netbsd openbsd solaris,$(TARGET_OS)),)
   RTLIB_DIRS += $(srcdir)/rtlib/unix
 endif
 GFXLIB2_DIRS := $(patsubst $(srcdir)/rtlib%,$(srcdir)/gfxlib2%,$(RTLIB_DIRS))
@@ -569,9 +666,11 @@ LIBFB_H := $(sort $(foreach i,$(RTLIB_DIRS),$(wildcard $(i)/*.h)))
 LIBFB_C := $(sort $(foreach i,$(RTLIB_DIRS),$(patsubst $(i)/%.c,$(libfbobjdir)/%.o,$(wildcard $(i)/*.c))))
 LIBFB_S := $(sort $(foreach i,$(RTLIB_DIRS),$(patsubst $(i)/%.s,$(libfbobjdir)/%.o,$(wildcard $(i)/*.s))))
 LIBFBPIC_C   := $(patsubst $(libfbobjdir)/%,$(libfbpicobjdir)/%,$(LIBFB_C))
+LIBFBPIC_S   := $(patsubst $(libfbobjdir)/%,$(libfbpicobjdir)/%,$(LIBFB_S))
 LIBFBMT_C    := $(patsubst $(libfbobjdir)/%,$(libfbmtobjdir)/%,$(LIBFB_C))
 LIBFBMT_S    := $(patsubst $(libfbobjdir)/%,$(libfbmtobjdir)/%,$(LIBFB_S))
 LIBFBMTPIC_C := $(patsubst $(libfbobjdir)/%,$(libfbmtpicobjdir)/%,$(LIBFB_C))
+LIBFBMTPIC_S := $(patsubst $(libfbobjdir)/%,$(libfbmtpicobjdir)/%,$(LIBFB_S))
 
 # LIBFBRT_BI     - src/fbrt/*.bi - include files
 # LIBFBRT_BAS    - src/fbrt/obj/<target>/*.o files sourced from *.bas
@@ -585,7 +684,6 @@ LIBFBRT_BI  := $(sort $(foreach i,$(FBRT_DIRS),$(wildcard $(i)/*.bi)))
 LIBFBRT_BAS := $(sort $(foreach i,$(FBRT_DIRS),$(patsubst $(i)/%.bas,$(libfbrtobjdir)/%.o,$(wildcard $(i)/*.bas))))
 LIBFBRT_S   := $(sort $(foreach i,$(FBRT_DIRS),$(patsubst $(i)/%.s,$(libfbrtobjdir)/%.o,$(wildcard $(i)/*.s))))
 
-LIBFBRT_BAS := $(filter-out $(libfbrtobjdir)/signals.o, $(LIBFBRT_BAS))
 LIBFBRTPIC_BAS   := $(patsubst $(libfbrtobjdir)/%,$(libfbrtpicobjdir)/%,$(LIBFBRT_BAS))
 LIBFBRTMT_BAS    := $(patsubst $(libfbrtobjdir)/%,$(libfbrtmtobjdir)/%,$(LIBFBRT_BAS))
 LIBFBRTMT_S      := $(patsubst $(libfbrtobjdir)/%,$(libfbrtmtobjdir)/%,$(LIBFBRT_S))
@@ -605,18 +703,24 @@ LIBFBGFXMT_C    := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtobjdir)/%,$(LIBFBG
 LIBFBGFXMT_S    := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtobjdir)/%,$(LIBFBGFX_S))
 LIBFBGFXMTPIC_C := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtpicobjdir)/%,$(LIBFBGFX_C))
 
-RTL_LIBS := $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a
-FBRTL_LIBS := $(libdir)/libfbrt.a
-GFX_LIBS := $(libdir)/libfbgfx.a
+
+RTL_LIBS := $(libdir)/$(FB_LDSCRIPT)
+ifdef ENABLE_NONPIC
+  RTL_LIBS += $(libdir)/fbrt0.o $(libdir)/libfb.a
+  FBRTL_LIBS += $(libdir)/libfbrt.a
+  GFX_LIBS += $(libdir)/libfbgfx.a
+endif
 ifdef ENABLE_PIC
   RTL_LIBS += $(libdir)/fbrt0pic.o $(libdir)/libfbpic.a
   FBRTL_LIBS += $(libdir)/libfbrtpic.a
   GFX_LIBS += $(libdir)/libfbgfxpic.a
 endif
 ifndef DISABLE_MT
-  RTL_LIBS += $(libdir)/libfbmt.a
-  FBRTL_LIBS += $(libdir)/libfbrtmt.a
-  GFX_LIBS += $(libdir)/libfbgfxmt.a
+  ifdef ENABLE_NONPIC
+    RTL_LIBS += $(libdir)/libfbmt.a
+    FBRTL_LIBS += $(libdir)/libfbrtmt.a
+    GFX_LIBS += $(libdir)/libfbgfxmt.a
+  endif
   ifdef ENABLE_PIC
     RTL_LIBS += $(libdir)/libfbmtpic.a
     FBRTL_LIBS += $(libdir)/libfbrtmtpic.a
@@ -706,16 +810,16 @@ $(libdir)/fbrt0pic.o: $(srcdir)/rtlib/static/fbrt0.c $(LIBFB_H) | $(libdir)
 	$(QUIET_CC)$(CC) -fPIC $(ALLCFLAGS) -c $< -o $@
 
 $(libdir)/libfb.a: $(LIBFB_C) $(LIBFB_S) | $(libdir)
-$(libdir)/termlib_min.js: $(rootdir)lib/termlib_min.js
+$(libdir)/termlib_min.js: $(rootdir)lib/termlib_min.js | $(libdir)
 	cp $< $@
 
-$(libdir)/fb_rtlib.js: $(rootdir)lib/fb_rtlib.js
+$(libdir)/fb_rtlib.js: $(rootdir)lib/fb_rtlib.js | $(libdir)
 	cp $< $@
-	
-$(libdir)/fb_shell.html: $(rootdir)lib/fb_shell.html
+
+$(libdir)/fb_shell.html: $(rootdir)lib/fb_shell.html | $(libdir)
 	cp $< $@
-	
-$(libdir)/libfb.a: $(LIBFB_C) $(LIBFB_S)
+
+$(libdir)/libfb.a: $(LIBFB_C) $(LIBFB_S) | $(libdir)
 ifeq ($(TARGET_OS),dos)
   # Avoid hitting the command line length limit (the libfb.a ar command line
   # is very long...)
@@ -732,10 +836,12 @@ $(LIBFB_C): $(libfbobjdir)/%.o: %.c $(LIBFB_H) | $(libfbobjdir)
 $(LIBFB_S): $(libfbobjdir)/%.o: %.s $(LIBFB_H) | $(libfbobjdir)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
-$(libdir)/libfbpic.a: $(LIBFBPIC_C) | $(libdir)
+$(libdir)/libfbpic.a: $(LIBFBPIC_C) $(LIBFBPIC_S) | $(libdir)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
 $(LIBFBPIC_C): $(libfbpicobjdir)/%.o: %.c $(LIBFB_H) | $(libfbpicobjdir)
 	$(QUIET_CC)$(CC) -fPIC $(ALLCFLAGS) -c $< -o $@
+$(LIBFBPIC_S): $(libfbpicobjdir)/%.o: %.s $(LIBFB_H) | $(libfbpicobjdir)
+	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp -DENABLE_PIC $(ALLCFLAGS) -c $< -o $@
 
 $(libdir)/libfbmt.a: $(LIBFBMT_C) $(LIBFBMT_S) | $(libdir)
 ifeq ($(TARGET_OS),dos)
@@ -754,10 +860,12 @@ $(LIBFBMT_C): $(libfbmtobjdir)/%.o: %.c $(LIBFB_H) | $(libfbmtobjdir)
 $(LIBFBMT_S): $(libfbmtobjdir)/%.o: %.s $(LIBFB_H) | $(libfbmtobjdir)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
-$(libdir)/libfbmtpic.a: $(LIBFBMTPIC_C) | $(libdir)
+$(libdir)/libfbmtpic.a: $(LIBFBMTPIC_C) $(LIBFBMTPIC_S) | $(libdir)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
 $(LIBFBMTPIC_C): $(libfbmtpicobjdir)/%.o: %.c $(LIBFB_H) | $(libfbmtpicobjdir)
 	$(QUIET_CC)$(CC) -DENABLE_MT -fPIC $(ALLCFLAGS) -c $< -o $@
+$(LIBFBMTPIC_S): $(libfbmtpicobjdir)/%.o: %.s $(LIBFB_H) | $(libfbmtpicobjdir)
+	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp -DENABLE_MT -DENABLE_PIC $(ALLCFLAGS) -c $< -o $@
 
 ifeq ($(TARGET_OS),dos)
 djgpplibc := $(shell $(CC) -print-file-name=libc.a)
@@ -776,19 +884,27 @@ endif
 .PHONY: fbrt
 fbrt: $(RTL_LIBS) $(FBRTL_LIBS)
 
-$(libdir)/libfbrt.a: $(LIBFBRT_BAS) $(LIBFBRT_S) $(LIBFBRT_C)
+$(libdir)/libfbrt.a: $(LIBFBRT_BAS) $(LIBFBRT_S) $(LIBFBRT_C) | $(libdir)
 ifeq ($(TARGET_OS),dos)
   # Avoid hitting the command line length limit (the libfbrt.a ar command line
   # is very long...)
 	$(QUIET)rm -f $@
+ifneq ($(LIBFBRT_C),)
 	$(QUIET)cp $(LIBFBRT_C) $(libfbrtobjdir)
+endif
 	$(QUIET_AR)$(AR) rcs $@ $(libfbrtobjdir)/*.o
 else ifneq ($(findstring MSYS_NT,$(shell uname)),)
 	$(QUIET)rm -f $@
+ifneq ($(LIBFBRT_C),)
 	$(QUIET)cp $(LIBFBRT_C) $(libfbrtobjdir)
+endif
 	$(QUIET_AR)$(AR) rcs $@ $(libfbrtobjdir)/*.o
 else
+ifneq ($(LIBFBRT_C),)
 	$(QUIET_AR)rm -f $@; cp $(LIBFBRT_C) $(libfbrtobjdir); $(AR) rcs $@ $^
+else
+	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
+endif
 endif
 $(LIBFBRT_BAS): $(libfbrtobjdir)/%.o: %.bas $(LIBFBRT_BI) | $(libfbrtobjdir)
 	$(QUIET_FBC)$(FBC) $(ALLFBRTCFLAGS) -c $< -o $@
@@ -805,14 +921,22 @@ ifeq ($(TARGET_OS),dos)
   # Avoid hitting the command line length limit (the libfbrt.a ar command line
   # is very long...)
 	$(QUIET)rm -f $@
+ifneq ($(LIBFBRTMT_C),)
 	$(QUIET)cp $(LIBFBRTMT_C) $(libfbrtmtobjdir)
+endif
 	$(QUIET_AR)$(AR) rcs $@ $(libfbrtmtobjdir)/*.o
 else ifneq ($(findstring MSYS_NT,$(shell uname)),)
 	$(QUIET)rm -f $@
+ifneq ($(LIBFBRTMT_C),)
 	$(QUIET)cp $(LIBFBRTMT_C) $(libfbrtmtobjdir)
+endif
 	$(QUIET_AR)$(AR) rcs $@ $(libfbrtmtobjdir)/*.o
 else
+ifneq ($(LIBFBRTMT_C),)
 	$(QUIET_AR)rm -f $@; cp $(LIBFBRTMT_C) $(libfbrtmtobjdir); $(AR) rcs $@ $^
+else
+	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
+endif
 endif
 $(LIBFBRTMT_BAS): $(libfbrtmtobjdir)/%.o: %.bas $(LIBFBRT_BI) | $(libfbrtmtobjdir)
 	$(QUIET_FBC)$(FBC) -mt -d ENABLE_MT $(ALLFBRTCFLAGS) -c $< -o $@
@@ -1015,6 +1139,9 @@ bindist:
 	mkdir -p $(FBPACKAGE)/bin/$(FBTARGET)
 	cp bin/$(FBTARGET)/* $(FBPACKAGE)/bin/$(FBTARGET)
 	cp lib/$(FBTARGET)/*.a lib/$(FBTARGET)/*.o lib/$(FBTARGET)/*.x $(packlib)
+	if [ -f lib/$(FBTARGET)/dxe.ld ]; then \
+		cp lib/$(FBTARGET)/dxe.ld $(packlib); \
+	fi
 	if [ -d bin/libexec ]; then \
 		cp -R bin/libexec $(FBPACKAGE)/bin; \
 	fi
@@ -1122,7 +1249,7 @@ bindist:
 	# Docs
 	cp $(rootdir)changelog.txt $(rootdir)readme.txt $(FBPACKAGE)
 	mkdir $(FBPACKAGE)/doc
-	cp $(rootdir)doc/fbc.1 $(rootdir)doc/gpl.txt $(rootdir)doc/lgpl.txt $(FBPACKAGE)/doc
+	cp $(rootdir)doc/fbc.1 $(rootdir)doc/gpl.txt $(rootdir)doc/lgpl.txt $(rootdir)doc/fdl-1.2.txt $(FBPACKAGE)/doc
     ifneq ($(filter win32 win64,$(TARGET_OS)),)
       ifdef ENABLE_STANDALONE
 	cp $(rootdir)doc/GoRC.txt $(rootdir)doc/libffi-license.txt $(FBPACKAGE)/doc
@@ -1271,35 +1398,47 @@ bootstrap-dist:
 	mkdir -p bootstrap/dos
 	mkdir -p bootstrap/freebsd-x86
 	mkdir -p bootstrap/freebsd-x86_64
+	mkdir -p bootstrap/freebsd-powerpc
+	mkdir -p bootstrap/freebsd-powerpc64
+	mkdir -p bootstrap/freebsd-powerpc64le
 	mkdir -p bootstrap/dragonfly-x86_64
 	mkdir -p bootstrap/solaris-x86_64
 	mkdir -p bootstrap/linux-x86
 	mkdir -p bootstrap/linux-x86_64
+	mkdir -p bootstrap/cygwin-x86_64
 	mkdir -p bootstrap/win32
 	mkdir -p bootstrap/win64
 	mkdir -p bootstrap/linux-arm
 	mkdir -p bootstrap/linux-aarch64
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target dos            && mv src/compiler/*.asm bootstrap/dos
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-x86    && mv src/compiler/*.asm bootstrap/freebsd-x86
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target freebsd-x86_64 && mv src/compiler/*.c   bootstrap/freebsd-x86_64
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target dragonfly-x86_64 && mv src/compiler/*.c bootstrap/dragonfly-x86_64
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target solaris-x86_64 && mv src/compiler/*.c   bootstrap/solaris-x86_64
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-x86      && mv src/compiler/*.asm bootstrap/linux-x86
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-x86_64   && mv src/compiler/*.c   bootstrap/linux-x86_64
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target win32          && mv src/compiler/*.asm bootstrap/win32
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target win64          && mv src/compiler/*.c   bootstrap/win64
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-arm      && mv src/compiler/*.c   bootstrap/linux-arm
-	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-aarch64  && mv src/compiler/*.c   bootstrap/linux-aarch64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target dos                 && mv src/compiler/*.asm bootstrap/dos
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target freebsd-x86         && mv src/compiler/*.asm bootstrap/freebsd-x86
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target freebsd-x86_64      && mv src/compiler/*.c   bootstrap/freebsd-x86_64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target freebsd-powerpc     && mv src/compiler/*.c   bootstrap/freebsd-powerpc
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target freebsd-powerpc64   && mv src/compiler/*.c   bootstrap/freebsd-powerpc64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target freebsd-powerpc64le && mv src/compiler/*.c   bootstrap/freebsd-powerpc64le
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target dragonfly-x86_64    && mv src/compiler/*.c   bootstrap/dragonfly-x86_64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target solaris-x86_64      && mv src/compiler/*.c   bootstrap/solaris-x86_64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target linux-x86           && mv src/compiler/*.asm bootstrap/linux-x86
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target linux-x86_64        && mv src/compiler/*.c   bootstrap/linux-x86_64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target cygwin-x86_64       && mv src/compiler/*.c   bootstrap/cygwin-x86_64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target win32               && mv src/compiler/*.asm bootstrap/win32
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target win64               && mv src/compiler/*.c   bootstrap/win64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target linux-arm           && mv src/compiler/*.c   bootstrap/linux-arm
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target linux-aarch64       && mv src/compiler/*.c   bootstrap/linux-aarch64
 
 	# Ensure to have LFs regardless of host system (LFs will probably work
 	# on DOS/Win32, but CRLFs could cause issues on Linux)
 	dos2unix bootstrap/dos/*
 	dos2unix bootstrap/freebsd-x86/*
 	dos2unix bootstrap/freebsd-x86_64/*
+	dos2unix bootstrap/freebsd-powerpc/*
+	dos2unix bootstrap/freebsd-powerpc64/*
+	dos2unix bootstrap/freebsd-powerpc64le/*
 	dos2unix bootstrap/dragonfly-x86_64/*
 	dos2unix bootstrap/solaris-x86_64/*
 	dos2unix bootstrap/linux-x86/*
 	dos2unix bootstrap/linux-x86_64/*
+	dos2unix bootstrap/cygwin-x86_64/*
 	dos2unix bootstrap/win32/*
 	dos2unix bootstrap/win64/*
 	dos2unix bootstrap/linux-arm/*
@@ -1311,6 +1450,25 @@ bootstrap-dist:
 	mv bootstrap $(FBBOOTSTRAPTITLE)
 	tar -cJf "$(FBBOOTSTRAPTITLE).tar.xz" "$(FBBOOTSTRAPTITLE)"
 	rm -rf "$(FBBOOTSTRAPTITLE)"
+
+FBBOOTSTRAPTITLEARM := $(FBSOURCETITLE)-bootstrap-arm
+.PHONY: bootstrap-dist-arm
+bootstrap-dist-arm:
+	# Precompile fbc sources for various targets
+	rm -rf bootstrap
+	mkdir -p bootstrap/linux-arm
+	mkdir -p bootstrap/linux-aarch64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target linux-arm           && mv src/compiler/*.c   bootstrap/linux-arm
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target linux-aarch64       && mv src/compiler/*.c   bootstrap/linux-aarch64
+	dos2unix bootstrap/linux-arm/*
+	dos2unix bootstrap/linux-aarch64/*
+
+	# Package FB sources (similar to our "gitdist" command), and add the bootstrap/ directory
+	# Making a .tar.xz should be good enough for now.
+	git -c core.autocrlf=false archive --format tar --prefix "$(FBBOOTSTRAPTITLEARM)/" HEAD | tar xf -
+	mv bootstrap $(FBBOOTSTRAPTITLEARM)
+	tar -cJf "$(FBBOOTSTRAPTITLEARM).tar.xz" "$(FBBOOTSTRAPTITLEARM)"
+	rm -rf "$(FBBOOTSTRAPTITLEARM)"
 
 #
 # Build the fbc[.exe] binary from the precompiled sources in the bootstrap/
@@ -1334,7 +1492,7 @@ else
   BOOTSTRAP_CFLAGS := -nostdinc
   BOOTSTRAP_CFLAGS += -Wall -Wno-unused-label -Wno-unused-function -Wno-unused-variable
   BOOTSTRAP_CFLAGS += -Wno-unused-but-set-variable -Wno-main
-  BOOTSTRAP_CFLAGS += -fno-strict-aliasing -frounding-math -fwrapv
+  BOOTSTRAP_CFLAGS += -fno-strict-aliasing -frounding-math -fwrapv -fno-ident
   BOOTSTRAP_CFLAGS += -Wfatal-errors
   BOOTSTRAP_OBJ := $(patsubst %.c,%.o,$(sort $(wildcard bootstrap/$(FBTARGET)/*.c)))
   $(BOOTSTRAP_OBJ): %.o: %.c

@@ -1,7 +1,7 @@
 '' examples/manual/gfx/point.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'POINT'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPoint
 '' --------
@@ -17,3 +17,4 @@ Print Point(20,20)
 
 ' Sleep before the program closes
 Sleep
+	

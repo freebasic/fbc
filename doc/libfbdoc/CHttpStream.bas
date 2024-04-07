@@ -1,5 +1,5 @@
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006-2019 The FreeBASIC development team.
+''	Copyright (C) 2006-2022 The FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 #include once "CHttpStream.bi"
 #include once "curl.bi"
 #include once "crt/string.bi"
+#include once "fbdoc_trace.bi"
 
 namespace fb
 
@@ -147,8 +148,9 @@ namespace fb
  			curl_easy_reset( curl )
  		end if
 
-		'' !!! TODO add verbose option for user
-		''curl_easy_setopt( curl, CURLOPT_VERBOSE, TRUE )
+		if( fbdoc.get_trace() ) then
+			curl_easy_setopt( curl, CURLOPT_VERBOSE, TRUE )
+		end if
 
 		curl_easy_setopt( curl, CURLOPT_URL, url )
 
@@ -250,6 +252,7 @@ namespace fb
 		) as integer
 
 		dim as CURL ptr curl
+		dim as CURLcode ret
 		
 		if( ctx = NULL ) then
 			return FALSE
@@ -282,7 +285,18 @@ namespace fb
  		if( doreset ) then
  			curl_easy_reset( curl )
  		end if
+
+		if( fbdoc.get_trace() ) then
+			curl_easy_setopt( curl, CURLOPT_VERBOSE, TRUE )
+		end if
+
 		curl_easy_setopt( curl, CURLOPT_URL, url )
+
+		curl_easy_setopt( curl, CURLOPT_FOLLOWLOCATION, 2 )
+		curl_easy_setopt( curl, CURLOPT_MAXREDIRS, 2 )
+
+		curl_easy_setopt( curl, CURLOPT_POSTREDIR, CURL_REDIR_POST_ALL )
+
 		curl_easy_setopt( curl, CURLOPT_READFUNCTION, @send_cb )
 		curl_easy_setopt( curl, CURLOPT_READDATA, @ctx->stream )
 
@@ -290,7 +304,13 @@ namespace fb
 			curl_easy_setopt( curl, CURLOPT_CAINFO, ca_file )
 		end if
 
- 		if( curl_easy_perform( curl ) <> 0 ) then
+		ret = curl_easy_perform( curl )
+		if( ret = CURLE_COULDNT_RESOLVE_HOST ) then
+			'' Retry
+			ret = curl_easy_perform( curl )
+		end if
+
+ 		if( ret <> 0 ) then
  			return FALSE
  		end if
  		

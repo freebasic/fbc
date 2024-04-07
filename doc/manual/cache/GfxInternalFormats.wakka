@@ -3,7 +3,7 @@ Information on the internal formats used by ""FreeBASIC"" to represent graphics.
 
 **Pixel formats**
 	
-	When a graphics mode is set via the ##[[KeyPgScreengraphics|Screen]]## or ##[[KeyPgScreenres|ScreenRes]]## functions, GfxLib creates also a framebuffer in standard system memory and sets an appropriate internal pixel format for the mode. There are basically three internal pixel formats, selected depending on the screen depth, as described in the following table:
+	When a graphics mode is set via the ##[[KeyPgScreengraphics|Screen (Graphics)]]## or ##[[KeyPgScreenres|ScreenRes]]## functions, GfxLib creates also a framebuffer in standard system memory and sets an appropriate internal pixel format for the mode. There are basically three internal pixel formats, selected depending on the screen depth, as described in the following table:
 	
 	{{table columns="4" cellpadding="1" cells="Screen depth;Internal bytes per pixel;Range bitmask;Pixel format;1bpp; 1; &h1;palette color index;2bpp; 1; &h3;palette color index;4bpp; 1; &hF;palette color index;8bpp; 1; &hFF;palette color index;15/16bpp; 2; &hFFFF;RRRRRGGGGGGBBBBB;24/32bpp; 4; &hFFFFFFFF;AAAAAAAARRRRRRRRGGGGGGGGBBBBBBBB"}}
 	

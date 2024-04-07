@@ -53,4 +53,10 @@ redim array(10 to 19)
 	
 	By default, element values of a variable-length array are lost when resized. To retain the previous element values during a resize, use the ##[[KeyPgPreserve|Preserve]]## keyword.
 
+{{fbdoc item="see"}}
+	- [[ProPgFixLenArrays|Fixed-length Arrays]]
+	- [[ProPgPassingArguments|Passing Arguments to Procedures]]
+	- [[ProPgPassingArrays|Passing Arrays to Procedures]]
+	- [[KeyPgDots|... (Ellipsis)]]
+
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

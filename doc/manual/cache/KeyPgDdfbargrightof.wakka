@@ -14,6 +14,7 @@ Intrinsic define (macro) performed by the compiler.
 
 {{fbdoc item="desc"}}
 	Returns the right token of the argument (##//arg//##), based on the separator (##//sep//##).
+	(in the expression of the argument, the tokens and the separator must be spaced)
 	
 	By default, if the default return (##//ret//##) is not given, the macro returns nothing (empty token) if the separator (##//sep//##) is not found.
 	Otherwise, if the default return (##//ret//##) is given, the macro returns the default return (##//ret//##) if the separator (##//sep//##) is not found.
@@ -38,7 +39,8 @@ Sleep
 right-side
 Not found 'versus'
 '/
- 	%%
+%%
+
 	{{fbdoc item="filename" value="examples/manual/defines/fbargrightof2.bas"}}%%(freebasic)
 #macro count( range )
 	Scope
@@ -75,7 +77,10 @@ Counting 7 to 2
  3
  2
 '/
-	%%
+%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.08.0
+
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 

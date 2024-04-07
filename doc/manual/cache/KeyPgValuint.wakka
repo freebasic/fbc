@@ -25,18 +25,15 @@ Converts a string to an unsigned 32bit integer
 	If you want to convert a number into string format, use the ##[[KeyPgStr|Str]]## function.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/strings/valuint.bas"}}%%(freebasic)
-dim a as string, b as uinteger
+	{{fbdoc item="filename" value="examples/manual/strings/valuint.bas"}}%%(freebasic)
+dim a as string, b as ulong
 a = "20xa211"
 b = valuint(a)
 print a, b
 %%
-
-%%
+	%%
 20xa211   20
 %%
-
-
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Valuint""**##.
 

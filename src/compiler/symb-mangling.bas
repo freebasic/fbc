@@ -10,19 +10,19 @@
 #include once "ir.bi"
 
 type FB_MANGLEABBR
-	idx				as integer
-	dtype			as integer
-	subtype			as FBSYMBOL ptr
+	idx             as integer
+	dtype           as integer
+	subtype         as FBSYMBOL ptr
 end type
 
 type FB_MANGLECTX
-	flist			as TFLIST					'' of FB_MANGLEABBR
-	cnt				as integer
+	flist               as TFLIST                   '' of FB_MANGLEABBR
+	cnt                 as integer
 
-	tempstr			as zstring * 6 + 10 + 1
-	uniqueidcount		as integer
-	uniquelabelcount	as integer
-	profilelabelcount	as integer
+	tempstr             as zstring * 6 + 10 + 1
+	uniqueidcount       as integer
+	uniquelabelcount    as integer
+	profilelabelcount   as integer
 end type
 
 const FB_INITMANGARGS = 96
@@ -63,7 +63,9 @@ sub symbMangleEnd( )
 end sub
 
 function symbUniqueId( byval validfbname as boolean ) as zstring ptr
-	if( (env.clopt.backend = FB_BACKEND_GCC) and (validfbname = false) ) then
+	if( ((env.clopt.backend = FB_BACKEND_GCC) orelse _
+	    (env.clopt.backend = FB_BACKEND_CLANG)) andalso _
+	    (validfbname = false) ) then
 		ctx.tempstr = "tmp$"
 		ctx.tempstr += str( ctx.uniqueidcount )
 	else
@@ -77,11 +79,12 @@ function symbUniqueId( byval validfbname as boolean ) as zstring ptr
 end function
 
 function symbUniqueLabel( ) as zstring ptr
-	if( env.clopt.backend = FB_BACKEND_GCC ) then
+	select case env.clopt.backend
+	case FB_BACKEND_GCC, FB_BACKEND_CLANG
 		ctx.tempstr = "label$"
 		ctx.tempstr += str( ctx.uniquelabelcount )
 		ctx.uniquelabelcount += 1
-	else
+	case else
 		if( env.clopt.target = FB_COMPTARGET_DARWIN ) then
 			ctx.tempstr = "L_"
 		else
@@ -89,7 +92,7 @@ function symbUniqueLabel( ) as zstring ptr
 		end if
 		ctx.tempstr += *hHexUInt( ctx.uniqueidcount )
 		ctx.uniqueidcount += 1
-	end if
+	end select
 
 	function = @ctx.tempstr
 end function
@@ -101,12 +104,12 @@ function symbMakeProfileLabelName( ) as zstring ptr
 end function
 
 function symbGetDBGName( byval sym as FBSYMBOL ptr ) as zstring ptr
-    '' GDB will demangle the symbols automatically
+	'' GDB will demangle the symbols automatically
 	if( hDoCppMangling( sym ) ) then
 		select case as const symbGetClass( sym )
 		'' but UDT's, they shouldn't include any mangling at all..
 		case FB_SYMBCLASS_ENUM, FB_SYMBCLASS_STRUCT, _
-			 FB_SYMBCLASS_CLASS, FB_SYMBCLASS_NAMESPACE
+		     FB_SYMBCLASS_CLASS, FB_SYMBCLASS_NAMESPACE
 
 			'' check if an alias wasn't given
 			dim as zstring ptr res = sym->id.alias
@@ -163,12 +166,32 @@ private sub hMangleUdtId( byref mangled as string, byval sym as FBSYMBOL ptr )
 
 	'' Itanium C++ ABI: All identifiers are encoded as:
 	'' <length><id>
-	if( sym->id.alias ) then
-		mangled += str( len( *sym->id.alias ) )
-		mangled += *sym->id.alias
+
+	if symbIsLocal( sym ) then
+		'' If the symbol is local, then the internally mangled name needs to be
+		'' unique so we avoid collisions between structs that have the same name
+		'' in different scopes regardless if the types are actually the same or not
+
+		'' !!!TODO!!! should localUDTcounter reset between modules and on restarts with fbRestartableStaticVariable()?
+		static localUDTcounter as integer = 1
+		dim tmp as string
+		if( sym->id.alias ) then
+			tmp = *sym->id.alias
+		else
+			tmp = *sym->id.name
+		end if
+		tmp += "$" + str(localUDTcounter)
+		mangled += str( len(tmp) )
+		mangled += tmp
+		localUDTcounter += 1
 	else
-		mangled += str( len( *sym->id.name ) )
-		mangled += *sym->id.name
+		if( sym->id.alias ) then
+			mangled += str( len( *sym->id.alias ) )
+			mangled += *sym->id.alias
+		else
+			mangled += str( len( *sym->id.name ) )
+			mangled += *sym->id.name
+		end if
 	end if
 
 	''
@@ -221,11 +244,12 @@ function symbGetMangledName( byval sym as FBSYMBOL ptr ) as zstring ptr
 	symbMangleResetAbbrev( )
 
 	'' Periods in symbol names?  not allowed in C, must be replaced.
-	if( env.clopt.backend = FB_BACKEND_GCC ) then
+	select case env.clopt.backend
+	case FB_BACKEND_GCC, FB_BACKEND_CLANG
 		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
 			hReplaceChar( sym->id.mangled, asc( "." ), asc( "$" ) )
 		end if
-	end if
+	end select
 
 	function = sym->id.mangled
 end function
@@ -277,15 +301,15 @@ private function hAbbrevAdd _
 
 	dim as FB_MANGLEABBR ptr n = any
 
-    n = flistNewItem( @ctx.flist )
-    n->idx = ctx.cnt
+	n = flistNewItem( @ctx.flist )
+	n->idx = ctx.cnt
 
-    n->dtype = dtype
-    n->subtype = subtype
+	n->dtype = dtype
+	n->subtype = subtype
 
-    ctx.cnt += 1
+	ctx.cnt += 1
 
-    function = n
+	function = n
 end function
 
 private sub hAbbrevGet( byref mangled as string, byval idx as integer )
@@ -467,7 +491,7 @@ sub symbMangleType _
 		mangled += "R"
 
 		symbMangleType( mangled, typeUnsetIsRef( dtype ), subtype, _
-			options or FB_MANGLEOPT_HASREF or FB_MANGLEOPT_KEEPTOPCONST)
+		                options or FB_MANGLEOPT_HASREF or FB_MANGLEOPT_KEEPTOPCONST)
 
 		hAbbrevAdd( dtype, subtype )
 		exit sub
@@ -475,24 +499,23 @@ sub symbMangleType _
 
 	'' const?
 	if( typeIsConst( dtype ) ) then
-
-		'' The type has some CONST bits. For C++ mangling we remove the
-		'' toplevel one and recursively mangle the rest of the type.
+		'' If mangling a pointed-to type of a reference or pointer,
+		'' the CONST is included in the mangling (FB_MANGLEOPT_KEEPTOPCONST).
 		''
-		'' It could be a BYVAL x as CONST foo type. In this case the
-		'' CONST is not encoded in the C++ mangling, because it makes no
-		'' difference. It's not allowed to have overloads that differ
-		'' only in BYVAL CONSTness. The CONST only matters if it's a
-		'' pointer or BYREF type.
+		'' But, if the CONST is at toplevel, it's not included,
+		'' because "byval x as const type" is effectively the same as a "byval x as type".
+		'' C++ and FB do not allow overloads that differ only in BYVAL CONSTness.
 
 		if( (options and FB_MANGLEOPT_KEEPTOPCONST) <> 0 ) then
 			mangled += "K"
 		end if
 
-		symbMangleType( mangled, typeUnsetIsConst( dtype ), subtype, _
-			options and not FB_MANGLEOPT_KEEPTOPCONST )
+		symbMangleType( mangled, typeUnsetIsConst( dtype ), subtype, options )
 
-		hAbbrevAdd( dtype, subtype )
+		'' Skipped toplevel CONSTs are not considered for abbreviation.
+		if( (options and FB_MANGLEOPT_KEEPTOPCONST) <> 0 ) then
+			hAbbrevAdd( dtype, subtype )
+		end if
 		exit sub
 	end if
 
@@ -501,7 +524,7 @@ sub symbMangleType _
 		mangled += "P"
 
 		symbMangleType( mangled, typeDeref( dtype ), subtype, _
-			options or FB_MANGLEOPT_HASPTR or FB_MANGLEOPT_KEEPTOPCONST )
+		                options or FB_MANGLEOPT_HASPTR or FB_MANGLEOPT_KEEPTOPCONST )
 
 		hAbbrevAdd( dtype, subtype )
 		exit sub
@@ -551,10 +574,14 @@ sub symbMangleType _
 		if( ns = @symbGetGlobalNamespc( ) ) then
 			hMangleUdtId( mangled, subtype )
 		else
-			mangled += "N"
-			symbMangleType( mangled, symbGetFullType( ns ), ns )
+			if( (options and FB_MANGLEOPT_NESTED) = 0 ) then
+				mangled += "N"
+			end if
+			symbMangleType( mangled, symbGetFullType( ns ), ns, FB_MANGLEOPT_NESTED )
 			hMangleUdtId( mangled, subtype )
-			mangled += "E"
+			if( (options and FB_MANGLEOPT_NESTED) = 0 ) then
+				mangled += "E"
+			end if
 		end if
 
 		hAbbrevAdd( dtype, subtype )
@@ -625,12 +652,13 @@ end sub
 
 private function hAddUnderscore( ) as integer
 	'' C backend? don't add underscores; gcc will already do it.
-	if( env.clopt.backend = FB_BACKEND_GCC ) then
+	select case env.clopt.backend
+	case FB_BACKEND_GCC, FB_BACKEND_CLANG
 		function = FALSE
-	else
+	case else
 		'' For ASM, add underscores if the target requires it
 		function = env.underscoreprefix
-	end if
+	end select
 end function
 
 private function hDoCppMangling( byval sym as FBSYMBOL ptr ) as integer
@@ -640,9 +668,28 @@ private function hDoCppMangling( byval sym as FBSYMBOL ptr ) as integer
 	end if
 
 	'' RTL or exclude parent?
-	if( ( (symbGetStats( sym ) and (FB_SYMBSTATS_RTL or FB_SYMBSTATS_EXCLPARENT)) <> 0 ) _
-		or ( symbGetMangling( sym ) = FB_MANGLING_RTLIB ) ) then
+	if( (symbGetStats( sym ) and (FB_SYMBSTATS_RTL or FB_SYMBSTATS_EXCLPARENT)) <> 0 ) then
 		return FALSE
+	end if
+
+	'' extern "rtlib"? disable cpp mangling
+	if( (symbGetMangling( sym ) = FB_MANGLING_RTLIB) _
+	    andalso (sym->id.alias <> NULL) ) then
+
+		select case env.clopt.backend
+		case FB_BACKEND_GCC, FB_BACKEND_CLANG
+		case else
+			'' disable cpp mangling only if it's not internally generated:
+			'' Internally generated symbols:
+			''   - vtable
+			''   - rtti
+			''   - default constructor / copy constructor
+			''   - default assignment operator
+			''   - default complete destructor / deleting constructor
+			if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_INTERNAL)) = 0 ) then
+				return FALSE
+			end if
+		end select
 	end if
 
 	'' inside a namespace or class?
@@ -653,7 +700,7 @@ private function hDoCppMangling( byval sym as FBSYMBOL ptr ) as integer
 	if( sym->class = FB_SYMBCLASS_PROC ) then
 		'' overloaded? (this will handle operators too)
 		if( symbIsOverloaded( sym ) ) then
-    		return TRUE
+			return TRUE
 		end if
 	end if
 
@@ -709,7 +756,10 @@ private sub hMangleNamespace _
 end sub
 
 private sub hMangleVariable( byval sym as FBSYMBOL ptr )
+	'' local optimization for 'id' allocation - it's always initialized by logic below
 	static as string id
+
+	'' !!!TODO!!! should varcounter reset between modules and on restarts with fbRestartableStaticVariable()?
 	static as integer varcounter
 	dim as string mangled
 	dim as zstring ptr p = any
@@ -727,6 +777,7 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 	if( sym->attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN or _
 	                     FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_COMMON or _
 	                     FB_SYMBATTRIB_STATIC) ) then
+
 		'' LLVM: @ prefix for global symbols
 		if( env.clopt.backend = FB_BACKEND_LLVM ) then
 			mangled += "@"
@@ -788,9 +839,11 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 			'' BASIC? use the upper-cased name
 			if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
 				id = *sym->id.name
-				if( ( env.clopt.backend = FB_BACKEND_GCC ) or (env.clopt.backend = FB_BACKEND_GAS64) ) then
+				'' !!! TODO !!! - if backend is gas, then can't mix gcc and gas globals
+				select case env.clopt.backend
+				case FB_BACKEND_GCC, FB_BACKEND_CLANG, FB_BACKEND_GAS64
 					id += "$"
-				end if
+				end select
 			'' else, the case-sensitive name saved in the alias..
 			else
 				id = *sym->id.alias
@@ -799,13 +852,14 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 			'' suffixed?
 			if( symbIsSuffixed( sym ) ) then
 				id += *hMangleBuiltInType( symbGetType( sym ) )
-				if( env.clopt.backend = FB_BACKEND_GCC ) then
+				select case env.clopt.backend
+				case FB_BACKEND_GCC, FB_BACKEND_CLANG
 					id += "$"
-				end if
+				end select
 			end if
 		else
 			select case( env.clopt.backend )
-			case FB_BACKEND_GCC
+			case FB_BACKEND_GCC, FB_BACKEND_CLANG
 				'' ir-hlc emits statics with dtors as globals,
 				'' so they need a unique name. Other statics are
 				'' still emitted locally, so they can keep their
@@ -1204,14 +1258,20 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 	docpp = hDoCppMangling( sym )
 
 	'' Should the @N win32 stdcall suffix be added for this procedure?
-	'' * only for stdcall, not stdcallms/cdecl/pascal
+	'' * only for stdcall/fastcall, not stdcallms/cdecl/pascal/thiscall
 	''   (that also makes it win32-only)
+	'' *
 	'' * only on x86, since these calling conventions matter there only
 	'' * only for ASM/LLVM backends, but not for the C backend, because gcc
 	''   will do it already
-	add_stdcall_suffix = (sym->proc.mode = FB_FUNCMODE_STDCALL) and _
-				(fbGetCpuFamily( ) = FB_CPUFAMILY_X86) and _
-				(env.clopt.backend <> FB_BACKEND_GCC)
+	add_stdcall_suffix = ((sym->proc.mode = FB_FUNCMODE_STDCALL) or _
+	                     ((sym->proc.mode = FB_FUNCMODE_FASTCALL) and _
+	                     ((env.clopt.target = FB_COMPTARGET_WIN32) or _
+	                      (env.clopt.target = FB_COMPTARGET_CYGWIN) or _
+	                      (env.clopt.target = FB_COMPTARGET_XBOX)))) and _
+	                     (fbGetCpuFamily( ) = FB_CPUFAMILY_X86) and _
+	                     ((env.clopt.backend <> FB_BACKEND_GCC) and _
+	                     (env.clopt.backend <> FB_BACKEND_CLANG))
 
 	'' LLVM: @ prefix for global symbols
 	if( env.clopt.backend = FB_BACKEND_LLVM ) then
@@ -1235,7 +1295,7 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 		'' not just the ones with @N suffix due the leading underscore handling
 		select case( env.clopt.target )
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
-			if(	quote_mangled_name = false ) then
+			if( quote_mangled_name = false ) then
 				mangled += """"
 				quote_mangled_name = true
 			end if
@@ -1243,12 +1303,21 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 			'' chr(1) will escape the name so it's passed through to assembler as-is
 			mangled += chr(1)
 		end select
-		
+
 	end if
 
 	'' Win32 underscore prefix
 	if( hAddUnderscore( ) ) then
-		mangled += "_"
+		if( sym->proc.mode = FB_FUNCMODE_FASTCALL ) then
+			select case( env.clopt.target )
+			case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
+				mangled += "@"
+			case else
+				mangled += "_"
+			end select
+		else
+			mangled += "_"
+		end if
 	end if
 
 	'' C++ prefix

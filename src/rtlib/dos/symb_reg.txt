@@ -33,7 +33,6 @@ extern_asm(_fb_hEnd);
 extern_asm(_fb_DevScrnEof);
 extern_asm(_fb_StrSwap);
 extern_asm(_fb_ConsoleSleep);
-extern_asm(_fb_hArrayFreeTmpDesc);
 extern_asm(_fb_CVLONGINTFROMD);
 extern_asm(_fb_MKL);
 extern_asm(_fb_PrintByte);
@@ -68,9 +67,8 @@ extern_asm(_fb_I18nGet);
 extern_asm(_fb_StrLen);
 extern_asm(_fb_ErrorSetModName);
 extern_asm(_fb_Time);
-extern_asm(_fb_ArrayAllocTempDesc);
-extern_asm(_fb_BIN_l);
 extern_asm(_fb_WstrConcat);
+extern_asm(_fb_BIN_l);
 extern_asm(_fb_BINEx_b);
 extern_asm(_fb_PrinterClose);
 extern_asm(_fb_Dir64);
@@ -88,6 +86,7 @@ extern_asm(_fb_WriteUByte);
 extern_asm(_fb_FileOpenEx);
 extern_asm(___fb_hDrvIntHandler_start);
 extern_asm(_fb_GetMouse);
+extern_asm(_fb_ArraySize);
 extern_asm(_fb_dos_lock_data);
 extern_asm(_fb_dos_cli);
 extern_asm(_fb_PrintBuffer);
@@ -123,6 +122,7 @@ extern_asm(_fb_TlsDelCtx);
 extern_asm(_fb_TRIM);
 extern_asm(_fb_StrFill1);
 extern_asm(_fb_FileKill);
+extern_asm(_fb_hStrCopyN);
 extern_asm(_fb_FileTell);
 extern_asm(_fb_hFilePrintBufferWstr);
 extern_asm(_fb_WstrValULng);
@@ -146,6 +146,7 @@ extern_asm(_fb_hArrayDtorStr);
 extern_asm(_fb_HEXEx_b);
 extern_asm(_fb_PrintLongint);
 extern_asm(_fb_KeyHit);
+extern_asm(_fb_hStrAllocTempDesc);
 extern_asm(_fb_DevConsOpen);
 extern_asm(_fb_ArrayErase);
 extern_asm(_fb_DataReadDouble);
@@ -170,6 +171,7 @@ extern_asm(_fb_DevFileWriteWstr);
 extern_asm(_fb_StrConcatByref);
 extern_asm(_fb_WstrTrimAny);
 extern_asm(_fb_WstrInstrRev);
+extern_asm(_fb_StrLsetANA);
 extern_asm(_fb_PrintUsingULongint);
 extern_asm(_fb_PrinterOpen);
 extern_asm(_fb_LongintToStr);
@@ -211,8 +213,8 @@ extern_asm(_fb_PrintUsingLongint);
 extern_asm(_fb_dos_lock_code);
 extern_asm(_fb_PrintBool);
 extern_asm(_fb_IsTypeOf);
-extern_asm(_fb_Year);
 extern_asm(_fb_WstrLeft);
+extern_asm(_fb_Year);
 extern_asm(_fb_PageSet);
 extern_asm(_fb_InputInt);
 extern_asm(_fb_VALINT);
@@ -232,6 +234,7 @@ extern_asm(_fb_LPrintUShort);
 extern_asm(_fb_FileDateTime);
 extern_asm(_fb_DevLptClose);
 extern_asm(_fb_WriteUShort);
+extern_asm(_fb_ArrayLen);
 extern_asm(_fb_FileResetEx);
 extern_asm(_fb_FileOpenVfsEx);
 extern_asm(_fb_SleepQB);
@@ -304,12 +307,12 @@ extern_asm(_fb_WriteSingle);
 extern_asm(_fb_GosubPush);
 extern_asm(_fb_LPrintFixString);
 extern_asm(_fb_FileGet);
+extern_asm(_fb_AtomicSetThreadFlags);
 extern_asm(_fb_DevStdIoClose);
 extern_asm(___fb_dos_cli_level);
 extern_asm(_fb_Minute);
 extern_asm(_fb_Rnd);
 extern_asm(_fb_InputUbyte);
-extern_asm(_end_comm_handler_irq_4);
 extern_asm(_fb_FileGetWstr);
 extern_asm(_fb_GosubExit);
 extern_asm(_fb_wstr_ConvToA);
@@ -328,8 +331,8 @@ extern_asm(_fb_ConsoleLocate_BIOS);
 extern_asm(_fb_DateValue);
 extern_asm(_fb_PrintUInt);
 extern_asm(_fb_DataReadBool);
-extern_asm(_fb_BIN_i);
 extern_asm(_fb_WstrLTrimAny);
+extern_asm(_fb_BIN_i);
 extern_asm(_fb_SleepEx);
 extern_asm(_fb_WstrOctEx_b);
 extern_asm(_fb_ConReadLine);
@@ -346,8 +349,8 @@ extern_asm(_fb_FileOpenLpt);
 extern_asm(_fb_StrAssign);
 extern_asm(_fb_StrRset);
 extern_asm(_fb_WriteInt);
-extern_asm(_fb_MKI);
 extern_asm(_fb_WstrAlloc);
+extern_asm(_fb_MKI);
 extern_asm(_fb_WstrTrimEx);
 extern_asm(_fb_WstrFill1);
 extern_asm(_fb_RIGHT);
@@ -379,7 +382,6 @@ extern_asm(_fb_FilePut);
 extern_asm(_fb_WstrToBool);
 extern_asm(_fb_hTimeLeap);
 extern_asm(_fb_ConsoleInkey);
-extern_asm(_fb_hStrAllocTmpDesc);
 extern_asm(_fb_FileGetDataEx);
 extern_asm(_fb_WstrLTrimEx);
 extern_asm(_fb_ErrorGetModName);
@@ -413,7 +415,6 @@ extern_asm(_fb_WstrOct_l);
 extern_asm(_fb_hFilePrintBufferWstrEx);
 extern_asm(_fb_hTimeGetIntervalType);
 extern_asm(_fb_hListAllocElem);
-extern_asm(_fb_hArrayAllocTmpDesc);
 extern_asm(_fb_BoolToStr);
 extern_asm(_fb_StrFormat);
 extern_asm(_fb_GetXY);
@@ -468,6 +469,7 @@ extern_asm(_fb_Now);
 extern_asm(_fb_ConsoleGetTopRow);
 extern_asm(_fb_OCTEx_b);
 extern_asm(_fb_SetDate);
+extern_asm(___fb_dos_no_dpmi_yield);
 extern_asm(_fb_WstrHexEx_l);
 extern_asm(_fb_DatePart);
 extern_asm(_fb_InputDouble);
@@ -493,7 +495,7 @@ extern_asm(_fb_ExePath);
 extern_asm(_fb_SGNDouble);
 extern_asm(_fb_ConsoleLocate);
 extern_asm(_fb_hFarMemSet);
-extern_asm(_fb_ArrayFreeTempDesc);
+extern_asm(_fb_StrRsetANA);
 extern_asm(_fb_hOut);
 extern_asm(_fb_WstrLcase);
 extern_asm(_fb_hStrSkipChar);
@@ -517,7 +519,6 @@ extern_asm(_fb_FileAttr);
 extern_asm(_fb_DevScrnFillInput);
 extern_asm(_fb_DataRestore);
 extern_asm(_fb_RTRIM);
-extern_asm(_end_comm_handler_irq_6);
 extern_asm(_fb_ErrorResume);
 extern_asm(_fb_UIntToWstr);
 extern_asm(_fb_DevPipeOpen);
@@ -639,8 +640,8 @@ extern_asm(_fb_DevScrnClose);
 extern_asm(_fb_hBoolToStr);
 extern_asm(_fb_PrintString);
 extern_asm(_fb_ConsoleSetMouse);
-extern_asm(_fb_StrConcat);
 extern_asm(_fb_WstrBin_b);
+extern_asm(_fb_StrConcat);
 extern_asm(_fb_hTimeDecodeSerial);
 extern_asm(_fb_SetPos);
 extern_asm(_fb_hGetWeekOfYear);
@@ -667,7 +668,6 @@ extern_asm(_fb_PrintWstrEx);
 extern_asm(___fb_hDrvIntHandler_PIC2);
 extern_asm(_fb_DrvIntlGetMonthName);
 extern_asm(_fb_DevLptWriteWstr);
-extern_asm(_end_comm_handler_irq_3);
 extern_asm(_fb_DylibFree);
 extern_asm(_fb_DrvIntlGetWeekdayName);
 extern_asm(_fb_RmDir);
@@ -681,7 +681,6 @@ extern_asm(_fb_ArrayRedimPresvEx);
 extern_asm(_fb_SerialClose);
 extern_asm(_fb_ConsoleGetY);
 extern_asm(_fb_IsRedirected);
-extern_asm(_fb_ArraySetDesc);
 extern_asm(_fb_PrintTab);
 extern_asm(_fb_WidthFile);
 extern_asm(_fb_FileOpenQB);
@@ -689,7 +688,6 @@ extern_asm(_fb_DoubleToWstr);
 extern_asm(_fb_StrInstrAny);
 extern_asm(_fb_FileInputNextToken);
 extern_asm(_fb_WstrToULongint);
-extern_asm(_end_comm_handler_irq_7);
 extern_asm(_fb_FileSeekLarge);
 extern_asm(_fb_FileOpenCons);
 extern_asm(_fb_ConsoleViewUpdate);
@@ -773,7 +771,6 @@ extern_asm(_fb_DataReadByte);
 extern_asm(_comm_bytes_remaining);
 extern_asm(_fb_FileLineInput);
 extern_asm(_fb_FRACf);
-extern_asm(_end_comm_handler_irq_5);
 extern_asm(_fb_CpuDetect);
 extern_asm(_fb_LPrintString);
 extern_asm(_fb_IntToStr);
@@ -781,6 +778,7 @@ extern_asm(_fb_LocateEx);
 extern_asm(_fb_ExecEx);
 extern_asm(_fb_StrUcase2);
 extern_asm(_fb_WriteLongint);
+extern_asm(_fb_ArrayFill);
 extern_asm(_fb_FilePutData);
 extern_asm(_fb_DateAdd);
 extern_asm(_fb_Delay);
@@ -877,7 +875,6 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_DevScrnEof)
     DXE_EXPORT_ASM (_fb_StrSwap)
     DXE_EXPORT_ASM (_fb_ConsoleSleep)
-    DXE_EXPORT_ASM (_fb_hArrayFreeTmpDesc)
     DXE_EXPORT_ASM (_fb_CVLONGINTFROMD)
     DXE_EXPORT_ASM (_fb_MKL)
     DXE_EXPORT_ASM (_fb_PrintByte)
@@ -912,9 +909,8 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_StrLen)
     DXE_EXPORT_ASM (_fb_ErrorSetModName)
     DXE_EXPORT_ASM (_fb_Time)
-    DXE_EXPORT_ASM (_fb_ArrayAllocTempDesc)
-    DXE_EXPORT_ASM (_fb_BIN_l)
     DXE_EXPORT_ASM (_fb_WstrConcat)
+    DXE_EXPORT_ASM (_fb_BIN_l)
     DXE_EXPORT_ASM (_fb_BINEx_b)
     DXE_EXPORT_ASM (_fb_PrinterClose)
     DXE_EXPORT_ASM (_fb_Dir64)
@@ -932,6 +928,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_FileOpenEx)
     DXE_EXPORT_ASM (___fb_hDrvIntHandler_start)
     DXE_EXPORT_ASM (_fb_GetMouse)
+    DXE_EXPORT_ASM (_fb_ArraySize)
     DXE_EXPORT_ASM (_fb_dos_lock_data)
     DXE_EXPORT_ASM (_fb_dos_cli)
     DXE_EXPORT_ASM (_fb_PrintBuffer)
@@ -967,6 +964,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_TRIM)
     DXE_EXPORT_ASM (_fb_StrFill1)
     DXE_EXPORT_ASM (_fb_FileKill)
+    DXE_EXPORT_ASM (_fb_hStrCopyN)
     DXE_EXPORT_ASM (_fb_FileTell)
     DXE_EXPORT_ASM (_fb_hFilePrintBufferWstr)
     DXE_EXPORT_ASM (_fb_WstrValULng)
@@ -990,6 +988,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_HEXEx_b)
     DXE_EXPORT_ASM (_fb_PrintLongint)
     DXE_EXPORT_ASM (_fb_KeyHit)
+    DXE_EXPORT_ASM (_fb_hStrAllocTempDesc)
     DXE_EXPORT_ASM (_fb_DevConsOpen)
     DXE_EXPORT_ASM (_fb_ArrayErase)
     DXE_EXPORT_ASM (_fb_DataReadDouble)
@@ -1014,6 +1013,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_StrConcatByref)
     DXE_EXPORT_ASM (_fb_WstrTrimAny)
     DXE_EXPORT_ASM (_fb_WstrInstrRev)
+    DXE_EXPORT_ASM (_fb_StrLsetANA)
     DXE_EXPORT_ASM (_fb_PrintUsingULongint)
     DXE_EXPORT_ASM (_fb_PrinterOpen)
     DXE_EXPORT_ASM (_fb_LongintToStr)
@@ -1055,8 +1055,8 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_dos_lock_code)
     DXE_EXPORT_ASM (_fb_PrintBool)
     DXE_EXPORT_ASM (_fb_IsTypeOf)
-    DXE_EXPORT_ASM (_fb_Year)
     DXE_EXPORT_ASM (_fb_WstrLeft)
+    DXE_EXPORT_ASM (_fb_Year)
     DXE_EXPORT_ASM (_fb_PageSet)
     DXE_EXPORT_ASM (_fb_InputInt)
     DXE_EXPORT_ASM (_fb_VALINT)
@@ -1076,6 +1076,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_FileDateTime)
     DXE_EXPORT_ASM (_fb_DevLptClose)
     DXE_EXPORT_ASM (_fb_WriteUShort)
+    DXE_EXPORT_ASM (_fb_ArrayLen)
     DXE_EXPORT_ASM (_fb_FileResetEx)
     DXE_EXPORT_ASM (_fb_FileOpenVfsEx)
     DXE_EXPORT_ASM (_fb_SleepQB)
@@ -1148,12 +1149,12 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_GosubPush)
     DXE_EXPORT_ASM (_fb_LPrintFixString)
     DXE_EXPORT_ASM (_fb_FileGet)
+    DXE_EXPORT_ASM (_fb_AtomicSetThreadFlags)
     DXE_EXPORT_ASM (_fb_DevStdIoClose)
     DXE_EXPORT_ASM (___fb_dos_cli_level)
     DXE_EXPORT_ASM (_fb_Minute)
     DXE_EXPORT_ASM (_fb_Rnd)
     DXE_EXPORT_ASM (_fb_InputUbyte)
-    DXE_EXPORT_ASM (_end_comm_handler_irq_4)
     DXE_EXPORT_ASM (_fb_FileGetWstr)
     DXE_EXPORT_ASM (_fb_GosubExit)
     DXE_EXPORT_ASM (_fb_wstr_ConvToA)
@@ -1172,8 +1173,8 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_DateValue)
     DXE_EXPORT_ASM (_fb_PrintUInt)
     DXE_EXPORT_ASM (_fb_DataReadBool)
-    DXE_EXPORT_ASM (_fb_BIN_i)
     DXE_EXPORT_ASM (_fb_WstrLTrimAny)
+    DXE_EXPORT_ASM (_fb_BIN_i)
     DXE_EXPORT_ASM (_fb_SleepEx)
     DXE_EXPORT_ASM (_fb_WstrOctEx_b)
     DXE_EXPORT_ASM (_fb_ConReadLine)
@@ -1190,8 +1191,8 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_StrAssign)
     DXE_EXPORT_ASM (_fb_StrRset)
     DXE_EXPORT_ASM (_fb_WriteInt)
-    DXE_EXPORT_ASM (_fb_MKI)
     DXE_EXPORT_ASM (_fb_WstrAlloc)
+    DXE_EXPORT_ASM (_fb_MKI)
     DXE_EXPORT_ASM (_fb_WstrTrimEx)
     DXE_EXPORT_ASM (_fb_WstrFill1)
     DXE_EXPORT_ASM (_fb_RIGHT)
@@ -1223,7 +1224,6 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_WstrToBool)
     DXE_EXPORT_ASM (_fb_hTimeLeap)
     DXE_EXPORT_ASM (_fb_ConsoleInkey)
-    DXE_EXPORT_ASM (_fb_hStrAllocTmpDesc)
     DXE_EXPORT_ASM (_fb_FileGetDataEx)
     DXE_EXPORT_ASM (_fb_WstrLTrimEx)
     DXE_EXPORT_ASM (_fb_ErrorGetModName)
@@ -1257,7 +1257,6 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_hFilePrintBufferWstrEx)
     DXE_EXPORT_ASM (_fb_hTimeGetIntervalType)
     DXE_EXPORT_ASM (_fb_hListAllocElem)
-    DXE_EXPORT_ASM (_fb_hArrayAllocTmpDesc)
     DXE_EXPORT_ASM (_fb_BoolToStr)
     DXE_EXPORT_ASM (_fb_StrFormat)
     DXE_EXPORT_ASM (_fb_GetXY)
@@ -1312,6 +1311,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_ConsoleGetTopRow)
     DXE_EXPORT_ASM (_fb_OCTEx_b)
     DXE_EXPORT_ASM (_fb_SetDate)
+    DXE_EXPORT_ASM (___fb_dos_no_dpmi_yield)
     DXE_EXPORT_ASM (_fb_WstrHexEx_l)
     DXE_EXPORT_ASM (_fb_DatePart)
     DXE_EXPORT_ASM (_fb_InputDouble)
@@ -1337,7 +1337,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_SGNDouble)
     DXE_EXPORT_ASM (_fb_ConsoleLocate)
     DXE_EXPORT_ASM (_fb_hFarMemSet)
-    DXE_EXPORT_ASM (_fb_ArrayFreeTempDesc)
+    DXE_EXPORT_ASM (_fb_StrRsetANA)
     DXE_EXPORT_ASM (_fb_hOut)
     DXE_EXPORT_ASM (_fb_WstrLcase)
     DXE_EXPORT_ASM (_fb_hStrSkipChar)
@@ -1361,7 +1361,6 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_DevScrnFillInput)
     DXE_EXPORT_ASM (_fb_DataRestore)
     DXE_EXPORT_ASM (_fb_RTRIM)
-    DXE_EXPORT_ASM (_end_comm_handler_irq_6)
     DXE_EXPORT_ASM (_fb_ErrorResume)
     DXE_EXPORT_ASM (_fb_UIntToWstr)
     DXE_EXPORT_ASM (_fb_DevPipeOpen)
@@ -1483,8 +1482,8 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_hBoolToStr)
     DXE_EXPORT_ASM (_fb_PrintString)
     DXE_EXPORT_ASM (_fb_ConsoleSetMouse)
-    DXE_EXPORT_ASM (_fb_StrConcat)
     DXE_EXPORT_ASM (_fb_WstrBin_b)
+    DXE_EXPORT_ASM (_fb_StrConcat)
     DXE_EXPORT_ASM (_fb_hTimeDecodeSerial)
     DXE_EXPORT_ASM (_fb_SetPos)
     DXE_EXPORT_ASM (_fb_hGetWeekOfYear)
@@ -1511,7 +1510,6 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (___fb_hDrvIntHandler_PIC2)
     DXE_EXPORT_ASM (_fb_DrvIntlGetMonthName)
     DXE_EXPORT_ASM (_fb_DevLptWriteWstr)
-    DXE_EXPORT_ASM (_end_comm_handler_irq_3)
     DXE_EXPORT_ASM (_fb_DylibFree)
     DXE_EXPORT_ASM (_fb_DrvIntlGetWeekdayName)
     DXE_EXPORT_ASM (_fb_RmDir)
@@ -1525,7 +1523,6 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_SerialClose)
     DXE_EXPORT_ASM (_fb_ConsoleGetY)
     DXE_EXPORT_ASM (_fb_IsRedirected)
-    DXE_EXPORT_ASM (_fb_ArraySetDesc)
     DXE_EXPORT_ASM (_fb_PrintTab)
     DXE_EXPORT_ASM (_fb_WidthFile)
     DXE_EXPORT_ASM (_fb_FileOpenQB)
@@ -1533,7 +1530,6 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_StrInstrAny)
     DXE_EXPORT_ASM (_fb_FileInputNextToken)
     DXE_EXPORT_ASM (_fb_WstrToULongint)
-    DXE_EXPORT_ASM (_end_comm_handler_irq_7)
     DXE_EXPORT_ASM (_fb_FileSeekLarge)
     DXE_EXPORT_ASM (_fb_FileOpenCons)
     DXE_EXPORT_ASM (_fb_ConsoleViewUpdate)
@@ -1617,7 +1613,6 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_comm_bytes_remaining)
     DXE_EXPORT_ASM (_fb_FileLineInput)
     DXE_EXPORT_ASM (_fb_FRACf)
-    DXE_EXPORT_ASM (_end_comm_handler_irq_5)
     DXE_EXPORT_ASM (_fb_CpuDetect)
     DXE_EXPORT_ASM (_fb_LPrintString)
     DXE_EXPORT_ASM (_fb_IntToStr)
@@ -1625,6 +1620,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_ExecEx)
     DXE_EXPORT_ASM (_fb_StrUcase2)
     DXE_EXPORT_ASM (_fb_WriteLongint)
+    DXE_EXPORT_ASM (_fb_ArrayFill)
     DXE_EXPORT_ASM (_fb_FilePutData)
     DXE_EXPORT_ASM (_fb_DateAdd)
     DXE_EXPORT_ASM (_fb_Delay)

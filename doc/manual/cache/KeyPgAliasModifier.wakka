@@ -24,7 +24,10 @@ Modifies the data type name mangling (decoration) of a public symbol
 	The same rules for mapping data types is used regardless of which backend (gas or gcc) code emitter is used,  And the intent is that FB's compiled code can link consistently with it's own object modules and object modules (or libraries) compiled from other languages.
 	
 	__Supported Modifiers__
-	
+		##[[KeyPgByte|byte]] alias "char"##
+		##[[KeyPgUbyte|ubyte]] alias "char"##
+			Used to map FB's 8-bit byte types to ""c/c++""'s 8-bit ##char## type.
+			
 		##[[KeyPgLong|long]] alias "long"##
 		##[[KeyPgUlong|ulong]] alias "long"##
 			On Win 64-bit targets, used to map FB's 32-bit ##[[KeyPgLong|long]]## and ##[[KeyPgUlong|ulong]]## types to ""c/c++""'s 32-bit ##long [int]## type, instead of the 32-bit ##int## type.
@@ -35,25 +38,29 @@ Modifies the data type name mangling (decoration) of a public symbol
 			- ##[[KeyPgByte|ubyte]] [[KeyPgPtr|ptr]]## maps to ##unsigned char *##
 			- On some platforms the variable argument list ##va_list## type is a typed as a ##char *##, but FB does not have an equivalent type, therefore ##[[KeyPgAny|any]] [[KeyPgPtr|ptr]]## is used instead.  Linking with names encoded with this type will fail since, normally, FB encodes ##void *## data type instead of ##char *##.
 			- ##alias "char"## keeps the ##any ptr## behaviour in FB but then encodes the public name as ##char *## for linking.
-		
+			
+
 		##any alias """__builtin_va_list""" ptr##
 			Maps the data type to gcc's ""__builtin_va_list"" type
 			- expected that gcc's built-in type is a pointer type
 			- used on dos, win32, win64, linux-x86, targets
 			- see ##[[KeyPgCvaList|cvalist]]## for default usage in the ##cva_list## data type
-		
+			
+
 		##alias """__builtin_va_list"""##
 			Maps the data type to gcc's ""__builtin_va_list"" type
 			- expected that gcc's built-in type is a ##struct## type
 			- used on aarch64 target
 			- see ##[[KeyPgCvaList|cvalist]]## for default usage in the ##cva_list## data type
-		
+			
+
 		##alias """__builtin_va_list[]"""##
 			Maps the data type to gcc's ""__builtin_va_list"" type
 			- expected that gcc's built-in type is a ##struct## array type
 			- used on linux-x86_64 target
 			- see ##[[KeyPgCvaList|cvalist]]## for default usage in the ##cva_list## data type
-	
+			
+
 	__Data Type Mapping Details__
 	
 	//On all targets, FB to ""c/c++""://
@@ -66,17 +73,20 @@ Modifies the data type name mangling (decoration) of a public symbol
 		- 32-bit ##[[KeyPgUlong|ulong]]## maps to ##unsigned int##
 		- 64-bit ##[[KeyPgLongint|longint]]## maps to ##long long [int]##
 		- 64-bit ##[[KeyPgUlongint|ulongint]]## maps to ##unsigned long long [int]##
-	
+		
+
 	//On Dos/Win/Linux 32-bit targets, FB to ""c/c++""://
 	##[[KeyPgInteger|integer]]## on 32-bit targets is 32-bits wide
 		- 32-bit ##[[KeyPgInteger|integer]]## maps to ##long [int]##
 		- 32-bit ##[[KeyPgUinteger|uinteger]]## maps to ##unsigned long [int]##
-	
+		
+
 	//On Linux 64-bit targets, FB to ""c/c++""://
 	##[[KeyPgInteger|integer]]## on 64-bit targets is 64-bits wide
 		- 64-bit ##[[KeyPgInteger|integer]]## maps to ##long [int]##
 		- 64-bit ##[[KeyPgUinteger|uinteger]]## maps to ##unsigned long [int]##
-	
+		
+
 	//On Win 64-bit targets, FB to ""c/c++""://
 	##[[KeyPgInteger|integer]]## on 64-bit targets is 64-bits wide.  However, on Win target, ""c/c++""'s ##long int## type is 32-bit, not 64-bit, and we can't use the ##long long int## mangling because it's already used by FB's ##[[KeyPgLongint|longint]]## type.  Reusing the same mangling (decoration) for two different data types would cause function overloading to fail or have duplicate definitions.  To preserve FB's behaviour that ##Integer## on 64-bit targets is always 64-bits, we mangle (decorate) the symbol with a custom datatype and keep the size at 64-bit.
 		- 64-bit ##[[KeyPgInteger|integer]]## maps to custom ##INTEGER##
@@ -84,11 +94,16 @@ Modifies the data type name mangling (decoration) of a public symbol
 		To create a data type in FB that will map to ""c/c++""'s ##long [int]## 32-bit on win, we must use ##alias## modifier.
 		- 32-bit ##[[KeyPgLong|long]] alias "long"##  maps to ##long [int]##
 		- 32-bit ##[[KeyPgUlong|ulong]] alias "long"##  maps to ##unsigned long [int]##
-	
+		
+
 		For example ##extern ""c+""""+"" : declare sub proc( byval as long **alias "long"** ) : end extern##.  This allows FreeBASIC to call external ""c++"" procedures (on win-64) requiring a 32-bit ##long int## type.  Usage of ##Alias## in this way affects win-64 targets only, and is ignored on all other targets.
 
 {{fbdoc item="ex"}}
 	See example at ##[[KeyPgAlias|Alias (Name)]]##.
+
+{{fbdoc item="ver"}}
+	- Before fbc 1.10.0, the ##[u]byte alias "char"## modifier was not supported.
+	- Since fbc 1.06.0
 
 {{fbdoc item="diff"}}
 	- In QB, ##Alias## only worked with ##[[KeyPgDeclare|Declare]]##.

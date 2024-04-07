@@ -57,6 +57,12 @@
 		chk = procptr( fb_ArrayClear )
 	end scope
 
+	ID( function fb_ArrayFill )
+	scope
+		dim chk as function fbcall ( bydesc as any, byval as const long ) as long
+		chk = procptr( fb_ArrayFill )
+	end scope
+
 	ID( function fb_ArrayClearObj )
 	scope
 		dim chk as function fbcall ( bydesc as any, byval as any ptr, byval as any ptr ) as long
@@ -83,13 +89,13 @@
 
 	ID( function fb_ArrayLBound )
 	scope
-		dim chk as function fbcall ( bydesc as any, byval as const integer ) as integer
+		dim chk as function fbcall ( bydesc as const any, byval as const integer ) as integer
 		chk = procptr( fb_ArrayLBound )
 	end scope
 
 	ID( function fb_ArrayUBound )
 	scope
-		dim chk as function fbcall ( bydesc as any, byval as const integer ) as integer
+		dim chk as function fbcall ( bydesc as const any, byval as const integer ) as integer
 		chk = procptr( fb_ArrayUBound )
 	end scope
 
@@ -169,7 +175,7 @@
 
 	ID( function fb_Color )
 	scope
-		dim chk as function fbcall ( byval as const long, byval as const long, byval as const long ) as long
+		dim chk as function fbcall ( byval as const ulong, byval as const ulong, byval as const long ) as ulong
 		chk = procptr( fb_Color )
 	end scope
 
@@ -1141,7 +1147,7 @@
 
 	ID( function imageinfo alias "fb_GfxImageInfo32" )
 	scope
-		dim chk as function fbcall ( byval as const any ptr, byref as long = 0, byref as long = 0, byref as long = 0, byref as long = 0, byref as any ptr = 0, byref as longint = 0 ) as long
+		dim chk as function fbcall ( byval as const any ptr, byref as long = 0, byref as long = 0, byref as long = 0, byref as long = 0, byref as any ptr = 0, byref as long = 0 ) as long
 		chk = procptr( imageinfo )
 	end scope
 
@@ -1489,7 +1495,7 @@
 
 	ID( sub fb_MemCopyClear )
 	scope
-		dim chk as sub fbcall ( byref as any, byval as const integer, byref as const any, byval as const integer )
+		dim chk as sub fbcall ( byref as any, byval as const uinteger, byref as const any, byval as const uinteger )
 		chk = procptr( fb_MemCopyClear )
 	end scope
 
@@ -1959,6 +1965,12 @@
 		chk = procptr( fb_StrConcat )
 	end scope
 
+	ID( function fb_StrConcatByref )
+	scope
+		dim chk as function fbcall ( byref as any, byval as const integer, byref as const any, byval as const integer, byval as const long = 1 ) as string
+		chk = procptr( fb_StrConcatByref )
+	end scope
+
 	ID( function fb_WstrConcat )
 	scope
 		dim chk as function fbcall ( byval as const wchar ptr, byval as const wchar ptr ) as wchar_ret
@@ -1993,12 +2005,6 @@
 	scope
 		dim chk as function fbcall ( byref as any, byval as const integer, byref as const any, byval as const integer, byval as const long = 1 ) as string
 		chk = procptr( fb_StrConcatAssign )
-	end scope
-
-	ID( function fb_StrConcatByref )
-	scope
-		dim chk as function fbcall ( byref as any, byval as const integer, byref as const any, byval as const integer, byval as const long = 1 ) as string
-		chk = procptr( fb_StrConcatByref )
 	end scope
 
 	ID( function fb_WstrConcatAssign )
@@ -2085,7 +2091,7 @@
 
 	ID( function fb_UIntToWstr )
 	scope
-		dim chk as function fbcall ( byval as ulong ) as wchar_ret
+		dim chk as function fbcall ( byval as const ulong ) as wchar_ret
 		chk = procptr( fb_UIntToWstr )
 	end scope
 
@@ -2247,6 +2253,12 @@
 		chk = procptr( fb_StrLset )
 	end scope
 
+	ID( sub fb_StrLsetANA )
+	scope
+		dim chk as sub fbcall ( byref as any, byval as const integer, byref as const string )
+		chk = procptr( fb_StrLsetANA )
+	end scope
+
 	ID( sub fb_WstrLset )
 	scope
 		dim chk as sub fbcall ( byval as wchar ptr, byval as const wchar ptr )
@@ -2257,6 +2269,12 @@
 	scope
 		dim chk as sub fbcall ( byref as string, byref as const string )
 		chk = procptr( fb_StrRset )
+	end scope
+
+	ID( sub fb_StrRsetANA )
+	scope
+		dim chk as sub fbcall ( byref as any, byval as const integer, byref as const string )
+		chk = procptr( fb_StrRsetANA )
 	end scope
 
 	ID( sub fb_WstrRset )
@@ -2931,16 +2949,16 @@
 		chk = procptr( left )
 	end scope
 
-	ID( function fb_leftself alias "fb_LEFTSELF" )
-	scope
-		dim chk as sub fbcall ( byref as const string, byval as const integer )
-		chk = procptr( fb_leftself )
-	end scope
-
 	ID( function left alias "fb_WstrLeft" )
 	scope
 		dim chk as function fbcall ( byref as const wchar, byval as const integer ) as wchar_ret
 		chk = procptr( left )
+	end scope
+
+	ID( sub fb_LeftSelf alias "fb_LEFTSELF" )
+	scope
+		dim chk as sub fbcall ( byref as string, byval as const integer )
+		chk = procptr( fb_LeftSelf )
 	end scope
 
 	ID( function right alias "fb_RIGHT" )
@@ -3416,9 +3434,9 @@
 #print "---- rtlGosub_other"
 
 #if 0
-	ID( function fb_SetJmp alias "setjmp" )
+	ID( function fb_SetJmp alias "_setjmp" )
 	scope
-		dim chk as function cdecl ( byval as any ptr ) as long
+		dim chk as function cdecl ( byval as any ptr, byval as any ptr ) as long
 		chk = procptr( fb_SetJmp )
 	end scope
 #endif

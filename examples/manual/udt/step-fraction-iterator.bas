@@ -1,7 +1,7 @@
 '' examples/manual/udt/step-fraction-iterator.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'Operator Step (Iteration)'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOpStep
 '' --------
@@ -29,14 +29,14 @@ Type fraction
 End Type
 
 Constructor fraction( ByVal n As Integer, ByVal d As Integer )
-	this.num = n : this.den = d
+	This.num = n : This.den = d
 End Constructor
 
-Operator fraction.cast( ) As Double
+Operator fraction.Cast( ) As Double
 	Operator = num / den
 End Operator
 
-Operator fraction.cast( ) As String
+Operator fraction.Cast( ) As String
 	Operator = num & "/" & den
 End Operator
 
@@ -57,57 +57,56 @@ End Function
 
 ''
 '' Implicit step versions
-'' 
+''
 '' In this example, we interpret implicit step
 '' to mean 1
 ''
-Operator fraction.for( )
+Operator fraction.For( )
 	Print "implicit step"
 End Operator
 
-Operator fraction.step( )
-	Var lowest = lcd( this.den, 1 )
-
-	Var mult_factor = this.den / lowest
+Operator fraction.Step( )
+	Dim As Integer lowest = lcd( This.den, 1 )
+	Dim As Double mult_factor = This.den / lowest
 	Dim As fraction step_temp = fraction( 1, 1 )
-	
-	this.num *= mult_factor
-	this.den *= mult_factor
-	
+   
+	This.num *= mult_factor
+	This.den *= mult_factor
+   
 	step_temp.num *= lowest
 	step_temp.den *= lowest
-	
-	this.num += step_temp.num
-End Operator 
+   
+	This.num += step_temp.num
+End Operator
 
-Operator fraction.next( ByRef end_cond As fraction ) As Integer
+Operator fraction.Next( ByRef end_cond As fraction ) As Integer
 	Return This <= end_cond
 End Operator
 
 ''
 '' Explicit step versions
-'' 
-Operator fraction.for( ByRef step_var As fraction )
+''
+Operator fraction.For( ByRef step_var As fraction )
 	Print "explicit step"
 End Operator
 
-Operator fraction.step( ByRef step_var As fraction )
-	Var lowest = lcd( this.den, step_var.den )
-	Var mult_factor = this.den / lowest
+Operator fraction.Step( ByRef step_var As fraction )
+	Dim As Integer lowest = lcd( This.den, step_var.den )
+	Dim As Double mult_factor = This.den / lowest
 	Dim As fraction step_temp = step_var
 
-	this.num *= mult_factor
-	this.den *= mult_factor
+	This.num *= mult_factor
+	This.den *= mult_factor
 
 	mult_factor = step_temp.den / lowest
 
 	step_temp.num *= mult_factor
 	step_temp.den *= mult_factor
 
-	this.num += step_temp.num
-End Operator 
+	This.num += step_temp.num
+End Operator
 
-Operator fraction.next( ByRef end_cond As fraction, ByRef step_var As fraction ) As Integer
+Operator fraction.Next( ByRef end_cond As fraction, ByRef step_var As fraction ) As Integer
 	If(( step_var.num < 0 ) Or ( step_var.den < 0 ) ) Then
 		Return This >= end_cond
 	Else
@@ -134,3 +133,4 @@ For i As fraction = fraction(4,4) To fraction(1,4)
 	Print i; " ";
 Next
 Print "done"
+	

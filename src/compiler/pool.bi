@@ -4,13 +4,13 @@
 #include once "list.bi"
 
 type TPOOLITEM
-	idx			as integer
+	idx         as integer
 end type
 
 type TPOOL
-	chunks		as integer
+	chunks      as integer
 	chunksize   as integer
-	chunkTb		as TLIST ptr
+	chunkTb     as TLIST ptr
 end type
 
 declare sub poolInit _

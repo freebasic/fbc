@@ -9,7 +9,7 @@ Returns a wide-character string containing one or more Unicode characters
 ##
 {{fbdoc item="param"}}
 	##//ch//##
-		The Unicode integer value of a character.
+		The Unicode integer value of a character (up to 32 characters).
 
 {{fbdoc item="ret"}}
 	Returns a wide-character string.

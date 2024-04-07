@@ -1,5 +1,5 @@
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006-2020 The FreeBASIC development team.
+''	Copyright (C) 2006-2022 The FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@ namespace fb.fbdoc
 		FBDOC_ITEM_RET
 		FBDOC_ITEM_DESC
 		FBDOC_ITEM_EX
+		FBDOC_ITEM_VER
 		FBDOC_ITEM_LANG
 		FBDOC_ITEM_TARGET
 		FBDOC_ITEM_DIFF
@@ -555,6 +556,7 @@ namespace fb.fbdoc
 			( @"ret"      , true , @"{#fb_sect_ret}"    ), _
 			( @"desc"     , true , @"{#fb_sect_desc}"   ), _
 			( @"ex"       , true , @"{#fb_sect_ex}"     ), _
+			( @"ver"      , true , @"{#fb_sect_ver}"    ), _
 			( @"lang"     , true , @"{#fb_sect_lang}"   ), _
 			( @"target"   , true , @"{#fb_sect_target}" ), _
 			( @"diff"     , true , @"{#fb_sect_diff}"   ), _
@@ -565,8 +567,8 @@ namespace fb.fbdoc
 		'' "filename" and "tag" are also valid, but have no output, 
 		'' so they aren't in the table above
 
-		dim as string res, strItem, strValue, strName, strPage, ext
-		dim as integer isblock, itemidx
+		dim as string res, strItem, strValue, strVisible, strName, strPage, ext
+		dim as integer isblock, itemidx, isVisible
 
 		strItem = paramsTb->GetParam( "item" )
 		strValue = paramsTb->GetParam( "value" )
@@ -586,11 +588,17 @@ namespace fb.fbdoc
 
 		select case lcase( strItem )
 		case "title":
-			if( ctx->tagGenTb(WIKI_TOKEN_SECT_ITEM) ) then
-				return res + "<div class=""fb_header"">" + strValue + "</div>"
-			else
-				return res
+
+			strVisible = paramsTb->GetParam( "visible", "1" )
+			isVisible = cbool( strVisible )
+
+			if( isVisible ) then
+				if( ctx->tagGenTb(WIKI_TOKEN_SECT_ITEM) ) then
+					return res + "<div class=""fb_header"">" + strValue + "</div>"
+				end if
 			end if
+
+			return res
 
 		case "section":
 			
@@ -1127,6 +1135,12 @@ namespace fb.fbdoc
 					end if
 			end if
 			res += token->text
+			'' !!! TODO : we should be converting text to HTML, but that will
+			'' currently break pages that have HTML directly on them.  HTML
+			'' injection has been used to try and work around the fact that
+			'' fbdoc doesn't handle unicode properly and fbc is missing a
+			'' var-len w-string
+			'' res += Text2Html( token->text )
 			return res
 
 		case WIKI_TOKEN_ACTION:
@@ -1188,6 +1202,12 @@ namespace fb.fbdoc
 		
 		case WIKI_TOKEN_PRE:
 			res += "<pre " + cssclass + ">" + token->text + "</pre>"
+			'' !!! TODO : we should be converting text to HTML, but that will
+			'' currently break pages that have HTML directly on them.  HTML
+			'' injection has been used to try and work around the fact that
+			'' fbdoc doesn't handle unicode properly and fbc is missing a
+			'' var-len w-string
+			'' res += "<pre " + cssclass + ">" + Text2Html( token->text ) + "</pre>"
 			return res
 		
 		case WIKI_TOKEN_CODE:

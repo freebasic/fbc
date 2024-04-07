@@ -1,5 +1,5 @@
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2008-2020 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2008-2022 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -38,28 +38,14 @@ using fbdoc
 
 '':::::
 function ReadTextFile( byref sFile as string ) as string
-	dim ret as string, h as integer
-	h = freefile
-	if( open( sFile for input access read as #h ) = 0 ) then
-		close #h
-		open sFile for binary access read as #h
-		ret = space(lof(h))
-		get #h,,ret
-		close #h
-	end if
-	return ret
+	'' !!!TODO!!! refactor
+	return ReadFileAsText( sFile )
 end function
 
 '':::::
 sub WriteTextFile( byref sFile as string, byref text as string )
-	dim h as integer
-	h = freefile
-	if( open( sFile for output as #h ) = 0 ) then
-		close #h
-		open sFile for binary as #h
-		put #h,,text
-		close #h
-	end if
+	'' !!!TODO!!! refactor
+	WriteFileAsText( sFile, text, TRUE )
 end sub
 
 

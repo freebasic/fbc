@@ -48,7 +48,7 @@ void fb_hPutPReset(unsigned char *src, unsigned char *dest, int w, int h, int sr
 	
 	if (!context->putter[PUT_MODE_PRESET]) {
 #ifdef HOST_X86
-		if (__fb_gfx->flags & HAS_MMX)
+		if (__fb_gfx->flags & X86_MMX_ENABLED)
 			context->putter[PUT_MODE_PRESET] = &all_putters[4];
 		else
 #endif

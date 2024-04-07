@@ -127,6 +127,9 @@ test2( 5,6, 7, , 9, 10, ,,13, 14 )
 '14'
 '/
 	%%
+{{fbdoc item="ver"}}
+	- Before fbc 1.08.0, the optional question mark (?) was not available.
+
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 

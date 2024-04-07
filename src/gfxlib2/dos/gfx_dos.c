@@ -9,11 +9,11 @@
 #define TIMER_HZ 1000
 
 /* driver list */
-extern GFXDRIVER fb_gfxDriverVESAlinear;
-extern GFXDRIVER fb_gfxDriverVESA;
-extern GFXDRIVER fb_gfxDriverBIOS;
-extern GFXDRIVER fb_gfxDriverVGA;
-extern GFXDRIVER fb_gfxDriverModeX;
+extern const GFXDRIVER fb_gfxDriverVESAlinear;
+extern const GFXDRIVER fb_gfxDriverVESA;
+extern const GFXDRIVER fb_gfxDriverBIOS;
+extern const GFXDRIVER fb_gfxDriverVGA;
+extern const GFXDRIVER fb_gfxDriverModeX;
 
 const GFXDRIVER *__fb_gfx_drivers_list[] = {
 	&fb_gfxDriverVESAlinear,
@@ -267,11 +267,11 @@ int fb_dos_get_mouse(int *x, int *y, int *z, int *buttons, int *clip)
 {
 	if (!fb_dos.mouse_ok) return -1;
 	
-	*x = fb_dos_mouse_x;
-	*y = fb_dos_mouse_y;
-	*z = (fb_dos.mouse_wheel_ok ? fb_dos_mouse_z : 0);
-	*buttons = fb_dos_mouse_buttons;
-	*clip = fb_dos.mouse_clip;
+	if (x) *x = fb_dos_mouse_x;
+	if (y) *y = fb_dos_mouse_y;
+	if (z) *z = (fb_dos.mouse_wheel_ok ? fb_dos_mouse_z : 0);
+	if (buttons) *buttons = fb_dos_mouse_buttons;
+	if (clip) *clip = fb_dos.mouse_clip;
 	
 	return 0;
 }
@@ -354,12 +354,19 @@ static int fb_dos_timer_handler(unsigned irq)
 	
 	mouse_x = fb_dos_mouse_x;
 	mouse_y = fb_dos_mouse_y;
+
+	if ( fb_dos.mouse_ok ) {
+		if( __fb_gfx->scanline_size != 1 ) {
+			mouse_y /= __fb_gfx->scanline_size;
+		}
+	}
+
 	if ( fb_dos.mouse_ok && fb_dos.mouse_cursor ) {
 		fb_hSoftCursorPut(mouse_x, mouse_y);
 	}
 	
 	fb_dos.update();
-	fb_hMemSet(__fb_gfx->dirty, FALSE, fb_dos.h);
+	fb_hMemSet(__fb_gfx->dirty, FALSE, __fb_gfx->h * __fb_gfx->scanline_size);
 
 	if ( fb_dos.mouse_ok && fb_dos.mouse_cursor ) {
 		fb_hSoftCursorUnput(mouse_x, mouse_y);
@@ -367,7 +374,7 @@ static int fb_dos_timer_handler(unsigned irq)
 	
 	e.type = 0;
 
-	if ( fb_dos.mouse_ok ) {	
+	if ( fb_dos.mouse_ok ) {
 	
 		if ( (fb_dos.mouse_x_old != mouse_x) || (fb_dos.mouse_y_old != mouse_y) ) {
 			e.type = EVENT_MOUSE_MOVE;
@@ -569,7 +576,7 @@ int fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	if (!fb_dos_timer_init(TIMER_HZ))
 		return -1;
 	
-	fb_hMemSet(__fb_gfx->dirty, TRUE, __fb_gfx->h);
+	fb_hMemSet(__fb_gfx->dirty, TRUE, __fb_gfx->h * __fb_gfx->scanline_size);
 	
 	fb_dos.locked = 0;
 	

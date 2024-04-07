@@ -1,14 +1,14 @@
 '' examples/manual/dates/isdate.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'ISDATE'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgIsDate
 '' --------
 
 #include "vbcompat.bi"
 
-Dim s As String, d As Integer
+Dim s As String, d As Long
 
 Do
   Print

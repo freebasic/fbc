@@ -91,13 +91,13 @@ Wend
 Print "Value of 'i' after all operations performed: " & i
 		%%
 {{fbdoc item="section" value="Pointers to member procedures"}}
-	Method pointers are not implemented yet, but it is possible to work-around that by using a static wrapper:
+	Before fbc 1.10.0, method pointers are not implemented yet, but it is possible to work-around that by using a static wrapper:
 		{{fbdoc item="filename" value="examples/manual/proguide/procptrs/method-ptr.bas"}}%%(freebasic)
 /''
- ' This example shows how you can simulate getting a class method pointer, 
+ ' This example shows, before fbc 1.10.0, how you can simulate getting a class method pointer, 
  ' until support is properly implemented in the compiler.
  '
- ' When this is supported, you will only need to remove the static wrapper
+ ' When this is supported (since fbc 1.10.0), you will only need to remove the static wrapper
  ' function presented here, to maintain compatibility. 
  '/
 
@@ -121,6 +121,28 @@ p = @T.test
 dim as T obj
 
 print p(obj, 69) '' prints 489
+	%%
+	Since fbc 1.10.0, method pointers are implemented via updating the 'Procptr' operator:
+		{{fbdoc item="filename" value="examples/manual/proguide/procptrs/method-ptr2.bas"}}%%(freebasic)
+/''
+ ' This example shows, since fbc 1.10.0, how to directly obtain a class method pointer,
+ '/
+
+Type T
+	Declare Function test(ByVal number As Integer) As Integer
+	Dim As Integer i = 420
+End Type
+
+Function T.test(ByVal number As Integer) As Integer
+	Return i + number
+End Function
+
+Dim p As Function(ByRef As T, ByVal As Integer) As Integer
+p = Procptr(T.test)  '' or 'p = @T.test'
+
+Dim As T obj
+
+Print p(obj, 69) '' prints 489
 	%%
 {{fbdoc item="section" value="Typing rule for procedure pointer declaration"}}
 	The procedure pointer declaration allows to assign to the pointer:

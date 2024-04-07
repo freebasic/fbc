@@ -11,30 +11,57 @@ Intrinsic define (macro value) set by the compiler
 	
 	##""__FB_ERR__""## indicates if //[[CompilerOptedebug|-edebug]]//, //[[CompilerOptedebuginfo|-edebuginfo]]//, or //[[CompilerOpteassert|-eassert]]// was specified on the compiler command line, or implied by use of //[[CompilerOptg|-g]]//, at the time of compilation of a module.
 	
-	Returns bit-wise ##OR## of the following values:
-		{{table columns="2" cellpadding="1" cells="value;description;0;'-e', '-ex', '-exx' and other error options not specified;1;'-e' was specified;3;'-ex' was specified (implies '-e');7;'-exx' was specified (implies '-e, -ex');8;'-earray' was specified (or implied by '-exx');16;'-enullptr' was specified (or implied by '-exx');32;'-eassert' was specified (or implied by '-g');64;'-edebuginfo' was specified (or implied by '-g');128;'-edebug' was specified (or implied by '-g');256;'-elocation' was specified (or implied by '-exx')"}}
+	##""__FB_ERR__""## indicates if //[[CompilerOpteunwind|-eunwind]]// was specified on the compiler command line, or implied by use of //[[CompilerOpte|-e]]//, //[[CompilerOptex|-ex]]//, or //[[CompilerOptexx|-exx]]//, at the time of compilation of a module.
 	
+	Returns bit-wise ##OR## of the following values:
+		{{table columns="3" cellpadding="1" cells="value;flag;description;0;no flag;;1;errorcheck;implied by '-e', '-ex', '-exx';2;resumeerr;implied by '-ex', '-exx';4;extraerrchk;implied by '-exx';8;arrayboundchk;implied by '-earray', '-exx';16;nullptrchk;implied by '-enullptr', '-exx';32;assertions;implied by '-eassert', '-g';64;debuginfo;implied by '-edebuginfo', '-g';128;debug;implied by '-edebug', '-g';256;errlocation;implied by '-elocation', '-exx';512;unwindinfo;implied by '-eunwind', '-e', '-ex', '-exx'"}}
+		
 	##""__FB_ERR__""## is always defined.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/defines/fberr.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/defines/fberr.bas"}}%%(freebasic)
 'Example code to demonstrate a use of __FB_ERR__
-dim err_command_line as ubyte
-err_command_line = __FB_ERR__
-select case err_command_line
-case 0
-print "No Error Checking enabled on the Command Line!"
-case 1
-print "Some Error Checking enabled on the Command Line!"
-case 3
-print "QBasic style Error Checking enabled on the Command Line!"
-case 7
-print "Extreme Error Checking enabled on the Command Line!"
-case else
-print "Some Unknown Error level has been set!"
-end select
 
+Dim fb_err_value As Integer
+fb_err_value = __FB_ERR__
+If fb_err_value = 0 Then
+	Print "no flag enabled"
+Else
+	If fb_err_value And 1 Then
+		Print "'errorcheck' flag enabled"
+	End If
+	If fb_err_value And 2 Then
+		Print "'resumeerr' flag enabled"
+	End If
+	If fb_err_value And 4 Then
+		Print "'extraerrchk' flag enabled"
+	End If
+	If fb_err_value And 8 Then
+		Print "'arrayboundchk' flag enabled"
+	End If
+	If fb_err_value And 16 Then
+		Print "'nullptrchk' flag enabled"
+	End If
+	If fb_err_value And 32 Then
+		Print "'assertions' flag enabled"
+	End If
+	If fb_err_value And 64 Then
+		Print "'debuginfo' flag enabled"
+	End If
+	If fb_err_value And 128 Then
+		Print "'debug' flag enabled"
+	End If
+	If fb_err_value And 256 Then
+		Print "'errlocation' flag enabled"
+	End If
+	If fb_err_value And 512 Then
+		Print "'unwindinfo' flag enabled"
+	End If
+End If
 %%
+{{fbdoc item="ver"}}
+	- Since fbc 1.10.0: //[[CompilerOpteunwind|-eunwind]]// indication.
+	- Since fbc 1.07.0: //[[CompilerOptearray|-earray]]//, //[[CompilerOptenullptr|-enullptr]]//, //[[CompilerOptelocation|-elocation]]//, //[[CompilerOptedebug|-edebug]]//, //[[CompilerOptedebuginfo|-edebuginfo]]//, and //[[CompilerOpteassert|-eassert]]// indications.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
@@ -45,6 +72,7 @@ end select
 	- [[CompilerOpte|Compiler Option: -e]]
 	- [[CompilerOptex|Compiler Option: -ex]]
 	- [[CompilerOptexx|Compiler Option: -exx]]
+	- [[CompilerOpteunwind|Compiler Option: -eunwind]]
 	- [[ProPgErrorHandling|Error Handling]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

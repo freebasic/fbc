@@ -1,13 +1,13 @@
 '' examples/manual/input/getmouse.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'GETMOUSE'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgGetmouse
 '' --------
 
 
-Dim As Integer x, y, buttons, res 
+Dim As Long x, y, buttons, res 
 ' Set video mode and enter loop
 ScreenRes 640, 480, 8
 Do

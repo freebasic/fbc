@@ -1,7 +1,7 @@
 '' examples/manual/gfx/screencontrol2.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'SCREENCONTROL'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgScreencontrol
 '' --------
@@ -12,7 +12,7 @@
 Dim As String driver
 
 #ifdef __FB_WIN32__
-'' set graphics driver to GDI (Win32 only), before calling ScreenRes
+'' set graphics driver to GDI (Windows only), before calling ScreenRes
 ScreenControl FB.SET_DRIVER_NAME, "GDI"
 #endif
 
@@ -24,3 +24,4 @@ Print "Graphics driver name: " & driver
 
 '' wait for a keypress before closing the window
 Sleep
+	

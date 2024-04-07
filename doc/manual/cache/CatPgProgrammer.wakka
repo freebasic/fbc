@@ -18,7 +18,8 @@
 	{{fbdoc item="keyword" value="ProPgIdentifierRules|Identifier Rules"}}
 	{{fbdoc item="keyword" value="ProPgLiterals|Literals"}}
 	{{fbdoc item="keyword" value="ProPgLabels|Labels"}}
-	{{fbdoc item="keyword" value="ProPgLineContinuation|Line continuation"}}
+	{{fbdoc item="keyword" value="ProPgLineContinuation|Line Continuation"}}
+	{{fbdoc item="keyword" value="ProPgLineSeparator|Line Separator"}}
 
 {{fbdoc item="section" value="Variables and Datatypes"}}
 	{{fbdoc item="keyword" value="ProPgEnumerations|Constants and Enumerations"}}
@@ -57,6 +58,7 @@
 	{{fbdoc item="keyword" value="ProPgUDTs|Overview"}}
 	{{fbdoc item="keyword" value="ProPgTypeAliases|Type Aliases"}}
 	{{fbdoc item="keyword" value="KeyPgTypeTemp|Temporary Types"}}
+	{{fbdoc item="keyword" value="ProPgTypeUnion|Type (UDT/Alias/Temporary) and Union"}}
 	{{fbdoc item="keyword" value="ProPgCtorsDtors|Constructors and Destructors (basics)"}}
 	{{fbdoc item="keyword" value="ProPgMemberProcedures|Member Procedures"}}
 	{{fbdoc item="keyword" value="ProPgProperties|Properties"}}
@@ -72,6 +74,7 @@
 	{{fbdoc item="keyword" value="ProPgCtorsAssignDtors2|Constructors, '=' Assignment-Operators, and Destructors (advanced, part #2)"}}
 <<>>{{fbdoc item="section" value="Statements and Expressions"}}
 	{{fbdoc item="keyword" value="ProPgExpressionsStatements|Differences between Expressions and Statements"}}
+	{{fbdoc item="keyword" value="ProPgConstantExpressions|Constant Expressions"}}
 	{{fbdoc item="keyword" value="ProPgAssignments|Assignments"}}
 	{{fbdoc item="keyword" value="CatPgOperators|Operator List"}}
 	{{fbdoc item="keyword" value="OpPrecedence|Operator Precedence"}}
@@ -80,7 +83,7 @@
 {{fbdoc item="section" value="Procedures"}}
 	{{fbdoc item="keyword" value="ProPgProcedures|Procedures Overview"}}
 	{{fbdoc item="keyword" value="ProPgPassingArguments|Passing Arguments to Procedures"}}
-	{{fbdoc item="keyword" value="ProPgReturnValue|Returning a Value"}}
+	{{fbdoc item="keyword" value="ProPgReturnValue|Returning Values"}}
 	{{fbdoc item="keyword" value="ProPgProcedureScopes|Procedure Scopes"}}
 	{{fbdoc item="keyword" value="ProPgCallingConventions|Calling Conventions"}}
 	{{fbdoc item="keyword" value="ProPgRecursion|Recursion"}}
@@ -94,6 +97,8 @@
 	{{fbdoc item="keyword" value="ProPgAntiFlickering|Graphics Mode Refresh and Anti-Flickering"}}
 	{{fbdoc item="keyword" value="GfxInternalFormats|Internal Graphics Formats"}}
 	{{fbdoc item="keyword" value="ProPgExternalFormats|External Graphics File Formats"}} ##(page to fill in)##
+	{{fbdoc item="keyword" value="ProPgLiteRegulate|Lite regulation function to be integrated into user loop for FPS control"}}
+	{{fbdoc item="keyword" value="ProPgDelayRegulate|Fine-grain procedure for waiting and in-loop procedure for fine-regulating FPS"}}
 
 {{fbdoc item="section" value="Multi-Threading"}}
 	{{fbdoc item="keyword" value="ProPgMultiThreading|Overview"}}
@@ -114,14 +119,6 @@
 	{{fbdoc item="keyword" value="ProPgConditionalCompilation|Conditional Compilation"}}
 	{{fbdoc item="keyword" value="ProPgMacros|Macros"}}
 
-{{fbdoc item="section" value="Technical Articles"}}
-	{{fbdoc item="keyword" value="KeyPgAsm|Inline ASM"}}
-	{{fbdoc item="keyword" value="ProPgCruntime|C Standard Library Functions"}}
-	{{fbdoc item="keyword" value="ProPgFileIO|File I/O with FreeBASIC"}}
-	{{fbdoc item="keyword" value="ProPgDynamicMemory|Dynamic memory management with FreeBASIC"}}
-	{{fbdoc item="keyword" value="ProPgRecursionIteration|Replace Recursion with Iteration"}}
-	{{fbdoc item="keyword" value="ProPgObjectRtti|OBJECT built-in and RTTI info"}}
-
 {{fbdoc item="section" value="Other Topics"}}
 (And topics that need to get placed elsewhere)
 	{{fbdoc item="keyword" value="CptAscii|ASCII"}}
@@ -130,6 +127,18 @@
 	{{fbdoc item="keyword" value="ProPgErrorHandling|Error Handling"}}
 	{{fbdoc item="keyword" value="ProPgEventHandling|Event Handling"}}
 	{{fbdoc item="keyword" value="CatPgDddefines|Intrinsic Defines"}}
+	{{fbdoc item="keyword" value="ProPgIdentifierLookup|Identifier Look-ups in namespaces and types"}}
+
+{{fbdoc item="section" value="Technical Articles"}}
+	{{fbdoc item="keyword" value="KeyPgAsm|Inline ASM"}}
+	{{fbdoc item="keyword" value="ProPgCruntime|C Standard Library Functions"}}
+	{{fbdoc item="keyword" value="ProPgFileIO|File I/O with FreeBASIC"}}
+	{{fbdoc item="keyword" value="ProPgDynamicMemory|Dynamic memory management with FreeBASIC"}}
+	{{fbdoc item="keyword" value="ProPgRecursionIteration|Replace Recursion with Iteration"}}
+	{{fbdoc item="keyword" value="ProPgObjectRtti|OBJECT built-in and RTTI info"}}
+	{{fbdoc item="keyword" value="ProPgDataExecutable|Embed and Access binary Data in Executable"}}
+	{{fbdoc item="keyword" value="ProPgUseNewDelete|Use Implicit / Overload New([]) and Delete([]) Operators with Inheritance Polymorphism"}}
+	{{fbdoc item="keyword" value="ProPgEmulateTlsTp|Emulate a TLS (Thread Local Storage) and a TP (Thread Pooling) feature"}}
 
 NOTE: Existing ""CatPg"" pages should be recreated as ""ProPg"" pages providing a general overview to the grouping of keywords.
 >>::c::

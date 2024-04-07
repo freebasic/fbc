@@ -1,5 +1,5 @@
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006-2020 The FreeBASIC development team.
+''	Copyright (C) 2006-2022 The FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -108,7 +108,7 @@ namespace fb.fbdoc
 	end function
 
 	''
-	function cmpPageName cdecl ( byval x as any ptr, byval y as any ptr ) as long
+	function cmpPageName cdecl ( byval x as const any ptr, byval y as const any ptr ) as long
 		function = _stricmp( *cast(zstring ptr ptr,x), *cast(zstring ptr ptr,y) )
 	end function
 
@@ -163,12 +163,13 @@ namespace fb.fbdoc
 	function CWikiConDir.LoadIndex _
 		( _
 			byval page as zstring ptr, _
-			byref body as string _
+			byref body as string, _
+			byval format as CWikiCon.IndexFormat _
 		) as boolean
 
 		function = FALSE
 		body = ""
-		
+
 		if( ctx = NULL ) then
 			exit function
 		end if
@@ -179,6 +180,8 @@ namespace fb.fbdoc
 
 		ctx->pageid = -1
 		ZSet @ctx->pagename, page
+
+		'' !!! TODO : how can we put / get revision for tracking?
 
 		scan_cache_dir( *ctx->path, body )
 

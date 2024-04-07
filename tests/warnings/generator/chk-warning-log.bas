@@ -4,7 +4,7 @@ chk-warning-log.bas
 -------------------
 
 Checks to see if our expectation for warnings matches the results
-from the compiler.  This help with the first time we add the test
+from the compiler.  This source helps with the first time we add the test
 result because we can't diff new results with any previous results.
 
 For this to work, run independantly of warnings ./test.sh script
@@ -33,8 +33,8 @@ Input File:
 		<EOF>
 
 	The input file is scanned for first "----".  File is then examined 
-	line by line.  If the log file see "warning expected" then the next 
-	line is expected to be a compiler generator warning.
+	line by line.  If the log file sees "warning expected" then the next 
+	line is expected to be a compiler generated warning.
 
 
 Output: 

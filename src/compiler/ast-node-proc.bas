@@ -3,8 +3,8 @@
 '' l = head node; r = tail node
 ''
 '' note: an implicit scope block isn't created, because the
-''		 implicit main() function (inside scope blocks only
-''		 non-decl statements are allowed)
+''       implicit main() function (inside scope blocks only
+''       non-decl statements are allowed)
 ''
 
 
@@ -18,9 +18,9 @@
 #include once "ast.bi"
 
 type FB_GLOBINSTANCE
-	sym				as FBSYMBOL_ ptr			'' for symbol
-	initree			as ASTNODE ptr				'' can't store in sym, or emit will use it
-	call_dtor		as integer
+	sym             as FBSYMBOL_ ptr            '' for symbol
+	initree         as ASTNODE ptr              '' can't store in sym, or emit will use it
+	call_dtor       as integer
 end type
 
 declare function hModLevelIsEmpty( byval p as ASTNODE ptr ) as integer
@@ -538,10 +538,10 @@ private function hCheckErrHnd _
 	'' or constructor's field would be initialized and break ctor chaining)
 	if( env.clopt.errlocation ) then
 		head_node = astAddAfter( rtlErrorSetModName( sym, _
-			astNewCONSTstr( @env.inf.name ) ), head_node )
+		                         astNewCONSTstr( @env.inf.name ) ), head_node )
 
 		head_node = astAddAfter( rtlErrorSetFuncName( sym, _
-			astNewCONSTstr( symbGetName( sym ) ) ), head_node )
+		                         astNewCONSTstr( symbGetName( sym ) ) ), head_node )
 	end if
 
 	with sym->proc.ext->err
@@ -622,11 +622,16 @@ private function hCallProfiler _
 		byval head_node as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	'' on all ports except dos _mcount() is just a normal call
 	if( env.clopt.profile ) then
-		if( env.clopt.target <> FB_COMPTARGET_DOS ) then
-			head_node = astAddAfter( rtlProfileCall_mcount(), head_node )
-		end if
+		select case fbGetOption( FB_COMPOPT_BACKEND )
+		case FB_BACKEND_GCC, FB_BACKEND_CLANG
+			'' _mcount call is inserted by the C compiler
+		case else
+			'' On all ports except dos _mcount() is just a normal call
+			if( env.clopt.target <> FB_COMPTARGET_DOS ) then
+				head_node = astAddAfter( rtlProfileCall_mcount(), head_node )
+			end if
+		end select
 	end if
 
 	function = head_node
@@ -666,14 +671,14 @@ function astProcEnd( byval callrtexit as integer ) as integer
 		astScopeDestroyVars(symbGetProcSymbTb(sym).tail)
 	end if
 
-   	''
-   	astAdd( astNewLABEL( n->block.exitlabel ) )
+	''
+	astAdd( astNewLABEL( n->block.exitlabel ) )
 
 	'' Check for any undefined labels (labels can be forward references)
 	res = (symbCheckLabels(symbGetProcSymbTbHead(parser.currproc)) = 0)
 
 	if( res ) then
-		'' Complete Destructor? (D1) 
+		'' Complete Destructor? (D1)
 		if( symbIsDestructor1( sym ) and enable_implicit_code ) then
 			'' Call destructors, behind the exit label, so they'll
 			'' always be called, even with early returns.
@@ -835,16 +840,17 @@ private sub hLoadProcResult( byval proc as FBSYMBOL ptr )
 	'' set as temp, so any assignment or when passed as parameter to another proc
 	'' will deallocate this string)
 	if( (symbGetType( proc ) = FB_DATATYPE_STRING) and (not symbIsReturnByRef( proc )) ) then
-		n = rtlStrAllocTmpResult( astNewVAR( s ) )
+		n = rtlStrAllocTempResult( astNewVAR( s ) )
 
-		if( ( env.clopt.backend = FB_BACKEND_GCC ) or ( env.clopt.backend = FB_BACKEND_LLVM ) or ( env.clopt.backend = FB_BACKEND_GAS64 ) ) then
+		select case env.clopt.backend
+		case FB_BACKEND_GCC, FB_BACKEND_CLANG, FB_BACKEND_LLVM, FB_BACKEND_GAS64
 			n = astNewLOAD( n, symbGetFullType( proc ), TRUE )
-		end if
+		end select
 	else
 		'' Use the real type, in case it's BYREF return or a UDT result
 		n = astNewLOAD( astNewVAR( s, 0, symbGetProcRealType( proc ), _
-					symbGetProcRealSubtype( proc ) ), _
-				symbGetProcRealType( proc ), TRUE )
+		                symbGetProcRealSubtype( proc ) ), _
+		                symbGetProcRealType( proc ), TRUE )
 	end if
 
 	astAdd( n )
@@ -916,7 +922,7 @@ private function hCallCtorList _
 			fldexpr = astBuildVarField( this_, fld )
 		else
 			'' iter = @this.field(elements-1)
-			fldexpr = astBuildVarField( this_, fld, (elements - 1) * symbGetLen( fld ) )
+			fldexpr = astBuildVarField( this_, fld, (elements - 1) * symbGetSizeOf( fld ) )
 		end if
 	else
 		if( is_ctor ) then
@@ -924,7 +930,7 @@ private function hCallCtorList _
 			fldexpr = astBuildVarField( this_, NULL, 0 )
 		else
 			'' iter = @symbol(0) + (elements - 1)
-			fldexpr = astBuildVarField( this_, NULL, (elements - 1) * symbGetLen( subtype ) )
+			fldexpr = astBuildVarField( this_, NULL, (elements - 1) * symbGetSizeOf( subtype ) )
 		end if
 	end if
 	tree = astBuildVarAssign( iter, astNewADDROF( fldexpr ), AST_OPOPT_ISINI )
@@ -988,9 +994,10 @@ private function hCallFieldCtor _
 		                         astNewCONSTi( 0, FB_DATATYPE_UINT ), _
 		                         AST_OPOPT_ISINI )
 	else
-		function = astNewMEM( AST_OP_MEMCLEAR, _
+		function = astNewMEM( AST_OP_MEMFILL, _
 		                      astBuildVarField( this_, fld ), _
-		                      astNewCONSTi( symbGetRealSize( fld ) ) )
+		                      astNewCONSTi( symbGetRealSize( fld ) ), _
+		                      0, iif( (symbGetType( fld ) = FB_DATATYPE_FIXSTR), 32, 0 ) )
 	end if
 end function
 
@@ -1022,7 +1029,7 @@ private function hClearUnionFields _
 	*pfinalfield = fld
 
 	'' clear all them at once
-	function = astNewMEM( AST_OP_MEMCLEAR, _
+	function = astNewMEM( AST_OP_MEMFILL, _
 	                      astBuildVarField( this_, base_fld ), _
 	                      astNewCONSTi( bytes ) )
 end function
@@ -1068,7 +1075,7 @@ private function hInitDynamicArrayField _
 	astDelTree( boundstypeini )
 
 	'' Build the REDIM CALL with the bounds expressions
-	function = rtlArrayRedim( astBuildVarField( this_, fld ), dimensions, exprTB(), FALSE, (not symbGetDontInit( fld )) )
+	function = rtlArrayRedim( astNewNIDXARRAY( astBuildVarField( this_, fld ) ), dimensions, exprTB(), FALSE, (not symbGetDontInit( fld )) )
 end function
 
 private function hCallFieldCtors _
@@ -1108,9 +1115,9 @@ private function hCallFieldCtors _
 						'' Note: flushing the field's TYPEINI against the whole "THIS" instance,
 						'' not against "THIS.thefield", because the TYPEINI contains absolute offsets.
 						tree = astNewLINK( tree, _
-							astTypeIniFlush( astBuildVarField( this_ ), _
-								astTypeIniClone( symbGetTypeIniTree( fld ) ), _
-								FALSE, AST_OPOPT_ISINI ), AST_LINK_RETURN_NONE )
+						                   astTypeIniFlush( astBuildVarField( this_ ), _
+						                   astTypeIniClone( symbGetTypeIniTree( fld ) ), _
+						                   FALSE, AST_OPOPT_ISINI ), AST_LINK_RETURN_NONE )
 					end if
 				end if
 			end if
@@ -1154,6 +1161,7 @@ private function hCallBaseCtor _
 	if( defctor ) then
 		'' Check access here, because (unlike fields) it's not done
 		'' during the TYPE compound parsing
+		'' Check visibility of the default construtor
 		if( symbCheckAccess( defctor ) = FALSE ) then
 			errReport( FB_ERRMSG_NOACCESSTOBASEDEFCTOR )
 		end if
@@ -1184,10 +1192,10 @@ private function hInitVptr _
 
 	'' this.vptr = cast( any ptr, (cast(byte ptr, @vtable) + sizeof(void *) * 2) )
 	'' assuming that everything with a vptr extends fb_Object
-	function = astNewASSIGN( _ 
+	function = astNewASSIGN( _
 		astBuildVarField( this_, symbUdtGetFirstField( symb.rtti.fb_object ) ), _
-		astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-			astNewADDROF( astNewVAR( parent->udt.ext->vtable, env.pointersize * 2 ) ) ), _
+		                  astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
+		                  astNewADDROF( astNewVAR( parent->udt.ext->vtable, env.pointersize * 2 ) ) ), _
 		AST_OPOPT_ISINI )
 end function
 
@@ -1227,7 +1235,7 @@ private sub hCallFieldDtor _
 	'' Dynamic array field?
 	if( symbIsDynamic( fld ) ) then
 		'' Always needs clean up, regardless of dtype
-		astAdd( rtlArrayErase( astBuildVarField( this_, fld ), TRUE, FALSE ) )
+		astAdd( rtlArrayErase( astNewNIDXARRAY( astBuildVarField( this_, fld ) ), TRUE, FALSE ) )
 	elseif( symbGetArrayDimensions( fld ) = 0 ) then
 		'' Normal field
 		if( symbGetType( fld ) = FB_DATATYPE_STRING ) then
@@ -1239,7 +1247,7 @@ private sub hCallFieldDtor _
 	else
 		'' Fixed-size array field
 		if( symbGetType( fld ) = FB_DATATYPE_STRING ) then
-			astAdd( rtlArrayErase( astBuildVarField( this_, fld ), FALSE, FALSE ) )
+			astAdd( rtlArrayErase( astNewNIDXARRAY( astBuildVarField( this_, fld ) ), FALSE, FALSE ) )
 		elseif( symbHasDtor( fld ) ) then
 			astAdd( hCallCtorList( FALSE, this_, fld ) )
 		end if
@@ -1329,6 +1337,7 @@ private sub hCallBaseDtor _
 
 	'' Check access here, because (unlike fields) it's not done
 	'' during the TYPE compound parsing
+	'' Check visibility of the default destructor
 	if( symbCheckAccess( dtor ) = FALSE ) then
 		errReport( FB_ERRMSG_NOACCESSTOBASEDTOR )
 	end if
@@ -1341,8 +1350,8 @@ private sub hCallBaseDtor _
 
 	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
 	astAdd( astBuildDtorCall( symbGetSubtype( base_ ), _
-				astBuildVarField( this_, base_ ), _
-				TRUE ) )
+	        astBuildVarField( this_, base_ ), _
+	        TRUE ) )
 end sub
 
 private sub hCallDtors( byval proc as FBSYMBOL ptr )
@@ -1373,7 +1382,7 @@ private sub hCallStaticDtor( byval sym as FBSYMBOL ptr )
 
 	'' dynamic?
 	if( symbIsDynamic( sym ) ) then
-		astAdd( rtlArrayErase( astBuildVarField( sym, NULL, 0 ), TRUE, FALSE ) )
+		astAdd( rtlArrayErase( astNewNIDXARRAY( astBuildVarField( sym, NULL, 0 ) ), TRUE, FALSE ) )
 	else
 		'' not an array?
 		if( symbGetArrayDimensions( sym ) = 0 ) then

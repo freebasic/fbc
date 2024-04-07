@@ -2,20 +2,14 @@
 Retrieves information about current video mode or the desktop.
 
 {{fbdoc item="syntax"}}##
-	for fbc version < 1.08:
-		[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Screeninfo** ( [[KeyPgByref|byref]] //w// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //h// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //depth// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //bpp// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //pitch// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //rate// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //driver// [[KeyPgAs|as]] [[KeyPgString|string]] = "####" )
-	for fbc version >= 1.08:
-		[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Screeninfo** ( [[KeyPgByref|byref]] //w// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //h// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //depth// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //bpp// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //pitch// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //rate// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //driver// [[KeyPgAs|as]] [[KeyPgString|string]] = "####" )
-		[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Screeninfo** ( [[KeyPgByref|byref]] //w// [[KeyPgAs|as]] [[KeyPgLongint|longint]], [[KeyPgByref|byref]] //h// [[KeyPgAs|as]] [[KeyPgLongint|longint]], [[KeyPgByref|byref]] //depth// [[KeyPgAs|as]] [[KeyPgLongint|longint]] = 0, [[KeyPgByref|byref]] //bpp// [[KeyPgAs|as]] [[KeyPgLongint|longint]] = 0, [[KeyPgByref|byref]] //pitch// [[KeyPgAs|as]] [[KeyPgLongint|longint]] = 0, [[KeyPgByref|byref]] //rate// [[KeyPgAs|as]] [[KeyPgLongint|longint]] = 0, [[KeyPgByref|byref]] //driver// [[KeyPgAs|as]] [[KeyPgString|string]] = "####" )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Screeninfo** ( [[KeyPgByref|byref]] //w// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //h// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //depth// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //bpp// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //pitch// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //rate// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByref|byref]] //driver// [[KeyPgAs|as]] [[KeyPgString|string]] = "####" )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Screeninfo** ( [[KeyPgByref|byref]] //w// [[KeyPgAs|as]] [[KeyPgLongint|longint]], [[KeyPgByref|byref]] //h// [[KeyPgAs|as]] [[KeyPgLongint|longint]], [[KeyPgByref|byref]] //depth// [[KeyPgAs|as]] [[KeyPgLongint|longint]] = 0, [[KeyPgByref|byref]] //bpp// [[KeyPgAs|as]] [[KeyPgLongint|longint]] = 0, [[KeyPgByref|byref]] //pitch// [[KeyPgAs|as]] [[KeyPgLongint|longint]] = 0, [[KeyPgByref|byref]] //rate// [[KeyPgAs|as]] [[KeyPgLongint|longint]] = 0, [[KeyPgByref|byref]] //driver// [[KeyPgAs|as]] [[KeyPgString|string]] = "####" )
 ##
 {{fbdoc item="usage"}}##
-	for fbc version < 1.08:
-		**Screeninfo** [ //w// ] [, [ //h// ] [, [ //depth// ] [ , [ //bpp// ] [ , [ //pitch// ] [ , [ //rate// ] [, //driver// ]]]]]]
-	for fbc version >= 1.08:
-		in the LONG (or INTEGER<32>) version of the sub:
-			**Screeninfo** [ //w// ] [, [ //h// ] [, [ //depth// ] [, [ //bpp// ] [, [ //pitch// ] [, [ //rate// ] [, //driver// ]]]]]]
-		in the LONGINT (or INTEGER<64>) version of the sub:
-			**Screeninfo** //w// , //h// [, [ //depth// ] [, [ //bpp// ] [, [ //pitch// ] [, [ //rate// ] [, //driver// ]]]]]
+	in the LONG (or INTEGER<32>) version of the sub:
+		**Screeninfo** [ //w// ] [, [ //h// ] [, [ //depth// ] [, [ //bpp// ] [, [ //pitch// ] [, [ //rate// ] [, //driver// ]]]]]]
+	in the LONGINT (or INTEGER<64>) version of the sub:
+		**Screeninfo** //w// , //h// [, [ //depth// ] [, [ //bpp// ] [, [ //pitch// ] [, [ //rate// ] [, //driver// ]]]]]
 ##
 {{fbdoc item="param"}}
 	##//w//##
@@ -43,9 +37,9 @@ Retrieves information about current video mode or the desktop.
 	{{table columns="2" cellpadding="1" cells="w;Width of the screen in pixels;h;Height of the screen in pixels;depth;Current pixel format bits per pixel: this can be 1, 2, 4, 8, 16, or 32;bpp;Bytes per pixel;pitch;Size of a framebuffer row in bytes;rate;Current refresh rate, or 0 if unknown;driver;Name of current graphics driver in use, like DirectX (Direct2D added on new systems) or X11"}}
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/gfx/screeninfo.bas"}}%%(freebasic)
-dim w as integer, h as integer
-dim depth as integer
+	{{fbdoc item="filename" value="examples/manual/gfx/screeninfo.bas"}}%%(freebasic)
+dim w as long, h as long
+dim depth as long
 dim driver_name as string
 
 SCREEN 15, 32 
@@ -59,6 +53,12 @@ SCREEN 0
 SCREENINFO w, h, depth 
 PRINT "Desktop running at " + STR(w) + "x" + STR(h) + "x" + STR(depth); 
 %%
+{{fbdoc item="ver"}}
+	- Before fbc 1.08.0:
+			Syntax:
+				##[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Screeninfo** ( [[KeyPgByref|byref]] //w// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //h// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //depth// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //bpp// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //pitch// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //rate// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //driver// [[KeyPgAs|as]] [[KeyPgString|string]] = "####" )##
+			Usage:
+				##**Screeninfo** [ //w// ] [, [ //h// ] [, [ //depth// ] [ , [ //bpp// ] [ , [ //pitch// ] [ , [ //rate// ] [, //driver// ]]]]]]##
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Screeninfo""**##.

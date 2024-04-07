@@ -1,13 +1,13 @@
 '' examples/manual/console/locate-getmouse.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'LOCATE'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgLocate
 '' --------
 
 '' Text cursor + mouse tracking
-Dim As Integer x = 0, y = 0, dx, dy
+Dim As Long x = 0, y = 0, dx, dy
 
 Cls
 Locate , , 1

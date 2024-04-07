@@ -11,7 +11,7 @@
 ''   warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 
@@ -34,11 +34,13 @@ type SOCKET as UINT_PTR
 const INVALID_SOCKET = cast(SOCKET, not 0)
 const SOCKET_ERROR = -1
 #define ___WSA_FD_TYPES_H
-const FD_SETSIZE = 64
 
+#ifndef FD_SETSIZE
+	#define FD_SETSIZE 64
+#endif
 type FD_SET
 	fd_count as u_int
-	fd_array(0 to 63) as SOCKET
+	fd_array(0 to (FD_SETSIZE-1)) as SOCKET
 end type
 
 declare function __WSAFDIsSet(byval as SOCKET, byval as FD_SET ptr) as long

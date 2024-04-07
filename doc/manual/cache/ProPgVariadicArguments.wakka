@@ -12,7 +12,7 @@ Allows a procedure to accept a **variable** number of **arguments**.
 	Variadic procedures can expose type-safety problems because the language support for variadic procedures is not type-safe:
 		""-"" it allows to extract any number of arguments from the stack or elsewhere,
 		""-"" and this while defining their types from entered user parameters.
-	If the variable arguments are all of same type or compatible with the same type, a dynamically sized array can be passed instead, but this requires slightly more work at the caller level.
+	If the variable arguments are all of same type or compatible with the same type, a sized array can be passed instead, but this requires slightly more work at the caller level.
 	
 	__Table of Contents__
 		**{{anchor name="ProPgVariadicArguments1|1. Syntax for using variadic procedures"}}**
@@ -24,7 +24,7 @@ Allows a procedure to accept a **variable** number of **arguments**.
 {{fbdoc item="section" value="1. Syntax for using variadic procedures"}}
 	The ellipsis ##"..."## (three dots), as last parameter, is used in procedure declarations (and definitions) to indicate a variable length argument list:
 		**""-""** A first fixed parameter (at least) must always be specified:
-				The fixed parameters(s) can provide information about how many variadic arguments there are, by an unspecified mechanism.
+				The fixed parameters(s) can provide information about how many variadic arguments there are, by any mechanism not imposed on the user.
 				Otherwise a terminal argument can be added in the variable length argument list, but this reserves a special argument value forbidden to the useful variadic arguments.
 					(if one choose to pass the variable arguments all by pointer, in this case an obvious terminal argument is the null pointer)
 		**""-""** The procedure must be called with the C calling convention ##[[KeyPgCdecl|cdecl]]##.
@@ -53,7 +53,7 @@ Allows a procedure to accept a **variable** number of **arguments**.
 			**""-""** ##[[KeyPgString|String]]##s ##(or [[KeyPgWstring|Wstring]]##s##)## can be directly passed by user, in which case a ##[[KeyPgZstring|Zstring]] [[KeyPgPtr|Ptr]]## ##(or a [[KeyPgWstring|Wstring]] [[KeyPgPtr|Ptr]])## to the string (or the wstring) data is taken into account as internal passed argument.
 			
 	__Retrieving variable arguments__
-		Variable arguments my use the stack, or registers, as per the normal conventions for the compiler:
+		Variable arguments may use the stack, or registers, as per the normal conventions for the compiler:
 			**""-""** For some compilers in the past, while registers were used for normal procedures, stack was (always) used for variadic procedures.
 			**""-""** The gcc compiler family all seem to agree that the call signatures for variadic procedures are exactly the same as properly specified procedures. This means that some of the variable arguments may be in registers and some may be on the stack if there are too many.
 			

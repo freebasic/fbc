@@ -24,5 +24,6 @@ Preprocessor statement to add a search path for libraries
 	- ##[[KeyPgInclib|#inclib]]##
 	- ##[[KeyPgInclude|#include]]##
 	- [[CompilerOptp|Compiler Option: -p]]
+	- ##[[KeyPgPpcmdline|#cmdline]]##
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

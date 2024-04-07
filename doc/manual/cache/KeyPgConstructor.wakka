@@ -20,7 +20,8 @@ Called automatically when a class or user defined type is created
 	
 	##//typename//## is the name of the type for which the ##**Constructor**## method is declared and defined.  Name resolution for ##//typename//## follows the same rules as procedures when used in a ##[[KeyPgNamespace|Namespace]]##.
 	
-	More than one constructor may exist for a type or class.  The exact constructor method called depends on the ##//parameter//## signature matched when the variable is initialized.  More than one ##//parameter//## may exist in a constructor method declaration.
+	More than one constructor may exist for a ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##, but only one will be called when a user defined ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## variable is created, and the exact constructor method called depends on the ##//parameter//## signature matched when the variable is initialized.
+	More than one ##//parameter//## may exist in a constructor method declaration.
 	
 	A constructor method is passed a hidden ##[[KeyPgThis|this]]## parameter having the same type as ##//typename//##.  ##[[KeyPgThis|this]]## is optionally used to access the fields of the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## which is to be initialized in the ##**Constructor**## method.
 	
@@ -30,15 +31,16 @@ Called automatically when a class or user defined type is created
 		Note: When an object is returned from a function by value, but by using ##**Function** = //x//## (or ##//function_identifier// = //x//##) assignment, the ##**Constructor**## is called once at first, and then the ##[[KeyPgOpLet|Let (Assign)]]## operator at each assignment.
 	A copy ##**Constructor**## must be defined if the shallow implicit copy constructor is not sufficient. This happens in cases when the object manages dynamically allocated memory or other resources which need to be specially constructed or copied (for example if a member pointer points to dynamically allocated memory, the implicit copy constructor will simply do an implicit pointer construction and a copy of value instead of allocate memory and then perform the copy of data).
 		Note: Even if is defined an explicit default ##**Constructor**##, it is never called by the implicit copy constructor.
-		
+	A copy ##**Constructor**## can not declare its parameter (the object to clone) by value.
+	
 	Chaining of constructors in nested types is supported.  Any fields that have their own default constructor are called first.
 	Chaining together constructors of a same type is allowed by using the keyword ##**Constructor**(//parameters//)## at the top of constructor. It prevents the compiler from emitting field initialization code (instead, it relies on the chained constructor to initialize everything).
 	
 	##**Constructor**## can be also called directly from the ##//typename//## instance like the other member methods (##[[KeyPgSub|Sub]]##) and with the same syntax, i.e. using a member access operator, e.g. ##//obj//.**Constructor**(//parameters//)##. In particular, doing ##//this//.**Constructor**(//parameters//)## is not treated as chaining together constructors of a same type, and it is allowed anywhere (not only at the top of constructors). In general it's not safe to manually call the constructor on an object, because no ##[[KeyPgDestructor|destructor]]## is called, and the old object state - if any - is overwritten without any of its old members being destroyed, which could cause memory/resource leaks.
 
 {{fbdoc item="ex"}}
-Simple constructor example for beginners.
-{{fbdoc item="filename" value="examples/manual/udt/constructor-ptr.bas"}}%%(freebasic)
+	Simple constructor example for beginners:
+		{{fbdoc item="filename" value="examples/manual/udt/constructor-ptr.bas"}}%%(freebasic)
 Type MyObj
   Foo As Integer Ptr
   
@@ -84,8 +86,8 @@ End Scope
   '' Because our objects are being deleted.
 Sleep
 %%
-More advanced construction example, showing constructor overloading among other things.
-{{fbdoc item="filename" value="examples/manual/udt/constructor.bas"}}%%(freebasic)
+	More advanced construction example, showing constructor overloading among other things:
+		{{fbdoc item="filename" value="examples/manual/udt/constructor.bas"}}%%(freebasic)
 type sample
 
   _text as string
@@ -149,8 +151,8 @@ print "  x2 = "; x2
 print "  x3 = "; x3
 print "  x4 = "; x4
 %%
-Example of copy constructor.
-{{fbdoc item="filename" value="examples/manual/udt/copyconstructor.bas"}}%%(freebasic)
+	Example of copy constructor:
+		{{fbdoc item="filename" value="examples/manual/udt/copyconstructor.bas"}}%%(freebasic)
 Type UDT
   Dim As String Ptr p                     ''pointer to string
   Declare Constructor ()                  ''default constructor

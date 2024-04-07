@@ -17,10 +17,10 @@ Reads data from a file to a buffer
 		The position where the read must start. If the file was opened ##[[KeyPgRandom|For Random]]##, the position is in records; otherwise, it is in bytes. If omitted, reading starts at the present file pointer position.  The position is 1-based: i.e. first record or byte of a file is at position ##1##.
 		If ##//position//## is omitted or zero (##0##), file reading will start from the current file position.
 	##//data//##
-		The buffer where data is written. It can be a numeric variable, a string, an array, a user defined type or a dereferenced pointer. The read operation will try to fill completely the variable, unless the ##[[KeyPgEof|EOF]]## is reached.
+		The buffer where data is written. It can be a numeric variable, a string, an array, a user defined type (including referenced by ##[[KeyPgThis|This]]##), or a dereferenced pointer. The read operation will try to fill completely the variable, unless the ##[[KeyPgEof|EOF]]## is reached. For a user-defined type instance, the data impacted is only the non-static data members.
 		When getting arrays, ##//data//## should be followed by an empty pair of brackets: "##()##".  ##**Get**## will read data for all of the values in the array.  ##//amount//## is not allowed.
 		When getting ##[[KeyPgString|String]]##s, the number of bytes read is the same as the number of bytes in the string data. ##//amount//## is not allowed.
-		Note: If you want to read values into a buffer, you should NOT pass a pointer to the buffer; instead you should pass the first variable in the buffer. (This can be done by dereferencing the pointer with ##[[KeyPgOpValueOf|Operator * (Value of)]]##.) If you pass a pointer directly, then ##**Get**## will overwrite the pointer variable, not the memory it points to.
+		Note: If you want to read values into a buffer, you should NOT pass a pointer to the buffer; instead you should pass the first variable in the buffer (this can be done by dereferencing the pointer with ##[[KeyPgOpValueOf|Operator * (Value of)]]##). If you pass a pointer directly, then ##**Get**## will overwrite the pointer variable, not the memory it points to.
 	##//amount//##
 		Makes ##**Get**## read ##//amount//## consecutive variables from file to memory, i.e. it reads ##(//amount// * [[KeyPgSizeof|Sizeof]](//data//) )## bytes of data from file into the memory starting at ##//data//##'s memory location.  If ##//amount//## is omitted it defaults to ##1##, meaning that ##**Get**## just reads a single variable.
 	##//bytesread//##
@@ -37,10 +37,13 @@ Reads data from a file to a buffer
 	
 	For files opened in ##[[KeyPgRandom|Random]]## mode, the size in bytes of the data to read must match the specified record size.
 	
-	//Note: If a dereferenced [w/z]string pointer is passed to ##**Get**##, the ##//amount//## parameter is not taken into account as it is by passing a dereferenced numeric pointer. But instead, the pointed buffer must begin with at least as many non-zero elements as the number of elements to read.//
+	//Note:
+		""-"" If a real [w/z]string variable is passed to ##**Get**##, the ##amount## parameter should be forbidden as it is when passing a string. Do not use. Otherwise, it is ignored (except for the '0' value).
+		""-"" If a dereferenced [w/z]string pointer is passed to ##**Get**##, the ##amount## parameter is not taken into account as it is when passing a dereferenced numeric pointer. Do not use. But instead of respecting the ##amount## parameter, the pointed buffer must begin with at least as many non-zero elements as the number of elements to read.
+		""-"" For finer granularity, any [w/z]string variable can be safely passed to ##**Get**## as a numeric buffer by providing the first numeric element (an indexed [w/z]string variable, or a dereferenced [w/z]string pointer then indexed) and the number of numeric elements to be processed.//
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/fileio/get.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/fileio/get.bas"}}%%(freebasic)
 Dim Shared f As Integer
 
 Sub get_long()
@@ -108,7 +111,7 @@ Open "file.ext" For Binary As #f
 Close #f
 %%
 
-{{fbdoc item="filename" value="examples/manual/fileio/get-file.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/fileio/get-file.bas"}}%%(freebasic)
 ' Load a small text file to a string
 
 Function LoadFile(byref filename As string) As String
@@ -138,6 +141,42 @@ ExampleStr = LoadFile("smallfile.txt")
 Print ExampleStr
 %%
 
+	{{fbdoc item="filename" value="examples/manual/fileio/get-udt.bas"}}%%(freebasic)
+' 'THIS' can be used as argument for writing/filling all non-static data of an UDT instance to/from a file
+
+Type UDT
+	Dim As String * 32 s
+	Dim As Double d
+	Declare Sub Save(Byref filename As String)
+	Declare Sub Load(Byref filename As String)
+End Type
+
+Sub UDT.Save(Byref filename As String)
+	Dim As Integer f
+	f = Freefile()
+	Open filename For Binary As #f
+	Put #f, , This  '' writes all non-static data of the UDT instance to the file
+	Close #f
+End Sub
+
+SUB UDT.Load(Byref filename As String)
+	Dim As Integer f
+	f = Freefile()
+	Open filename For Binary As #f
+	Get #f, , This  '' fills all non-static data of the UDT instance from the file
+	Close #f
+End Sub
+
+Dim As UDT u1
+u1.s = "PI number"
+u1.d = 3.14159
+u1.Save("file.ext")
+
+Dim As UDT u2
+u2.Load("file.ext")
+Print u2.s
+Print u2.d
+%%
 {{fbdoc item="diff"}}
 	- ##**Get**## in FB can read full arrays as in VB or, alternatively, read a multiple of the data size into the memory.
 	- ##**Get**## can be used as a function in FB, to find the success/error code returned without having to use error handling procedures.

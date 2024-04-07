@@ -1,0 +1,51 @@
+{{fbdoc item="title" value="__FB_IIF__"}}----
+Intrinsic define (macro) performed by the compiler.
+
+{{fbdoc item="syntax"}}##
+	""__FB_IIF__( compare-expr, true-expr, false-expr )""
+##
+{{fbdoc item="param"}}
+	##//compare-expr//##
+		The comparison expression to test.
+		A non-zero value evaluates as true, while a value of zero evaluates as false.
+	##//true-expr//##
+		Source code to return if ##//compare-expr//## is true.
+	##//false-expr//##
+		Source code to return if ##//compare-expr//## is false.
+
+{{fbdoc item="desc"}}
+	##**""__FB_IIF__""**## returns source code text depending on the result of a comparison expression evaluated at preprocessing-time.
+	Its typical use is in the middle of an expression; it avoids splitting it to put a conditional in the middle.
+	
+	This intrinsic define (macro) differs from the ##[[KeyPgIif|IIF]]## conditional statement in that ##**""__FB_IIF__""**## is evaluated at compile-time only and returns source code text.  ##[[KeyPgIif|IIF]]## is evaluated at compile-time only if the ##//compare-expr//## is a constant.  Otherwise ##[[KeyPgIif|IIF]]## expressions are evaluated at run-time.
+
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/defines/fbiif.bas"}}%%(freebasic)
+' From the example of the '#ELSE' documentation page:
+	'#DEFINE MODULE_VERSION 1
+	'Dim a As String
+	'#IF (MODULE_VERSION > 0)
+	'    a = "Release"
+	'#ELSE
+	'    a = "Beta"
+	'#ENDIF
+	'Print "Program is "; a
+
+' Simpler code using '__FB_IIF__':
+	#DEFINE MODULE_VERSION 1
+	Dim a As String
+	a = __FB_IIF__( MODULE_VERSION > 0, "Release", "Beta" )
+	Print "Program is "; a
+%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.10.0
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPpif|#if]]##
+	- ##[[KeyPgPpelse|#else]]##
+	- ##[[KeyPgPpendif|#endif]]##
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

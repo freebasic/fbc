@@ -1,7 +1,7 @@
 '' examples/manual/gfx/imageinfo.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'IMAGEINFO'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgImageInfo
 '' --------
@@ -35,3 +35,4 @@ Put (10, 10), image
 ImageDestroy( image )
 
 Sleep
+	

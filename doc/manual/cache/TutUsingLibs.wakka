@@ -21,15 +21,15 @@ TinyPTC is primarily a graphics library, the simplest one available. It does lit
 The first step in getting any of these libraries to work is including their header files in your project.
 For SDL, it's simply
 %%
- '$INCLUDE: "SDL\SDL.bi"
+ #Include "SDL\SDL.bi"
 %%
 For FMOD, it's 
 %%
- '$Include: 'fmod.bi'
+ #Include "fmod.bi"
 %%
 and for tinyPTC, you'll want
 %%
- '$INCLUDE: 'tinyptc.bi'
+ #Include "tinyptc.bi"
 %%
 '''2. Initilizing the library, loading a file'''
 

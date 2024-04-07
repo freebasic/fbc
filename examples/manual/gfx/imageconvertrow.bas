@@ -1,7 +1,7 @@
 '' examples/manual/gfx/imageconvertrow.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'IMAGECONVERTROW'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgImageConvertRow
 '' --------
@@ -11,7 +11,7 @@
 Using FB
 #endif
 
-Const As Integer w = 64, h = 64
+Const As Long w = 64, h = 64
 Dim As IMAGE Ptr img8, img32
 Dim As Integer x, y
 

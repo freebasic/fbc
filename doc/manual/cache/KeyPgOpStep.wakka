@@ -41,7 +41,7 @@ Increments the iterator of a ##[[KeyPgFornext|For...Next]]## loop
 			**""-""** Similarly the other parameters ##//end_value//##, and ##//step_value//## must be able to be converted into objects of the same type as the ##//iterator//##.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/udt/step.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/udt/step.bas"}}%%(freebasic)
 '' Example Type
 Type T
   '' value is set by the constructor
@@ -81,9 +81,9 @@ End Operator
 For i As T = 10 To 1 Step -1
   Print i.value;
 Next i
-%%
-A more practical example demonstrating file iteration based on [[http://www.freebasic.net/forum/viewtopic.php?p=83564|cha0s' file iteration class]].
-{{fbdoc item="filename" value="examples/manual/udt/stepFileIteration.bas"}}%%(freebasic)
+	%%
+	A more practical example demonstrating file iteration based on [[http://www.freebasic.net/forum/viewtopic.php?p=83564|cha0s' file iteration class]]:
+	{{fbdoc item="filename" value="examples/manual/udt/stepFileIteration.bas"}}%%(freebasic)
 '' a class which iterates through files
 type FileIter
 	as string pathName, fileName
@@ -116,9 +116,9 @@ End Operator
 For i As FileIter = "./" To ""
 	print i.fileName
 Next
-%%
-Another example working with strings:
-{{fbdoc item="filename" value="examples/manual/udt/step-char-iterator.bas"}}%%(freebasic)
+	%%
+	Another example working with strings:
+	{{fbdoc item="filename" value="examples/manual/udt/step-char-iterator.bas"}}%%(freebasic)
 type CharIterator
 	'' used to build a step var
 	declare constructor( byval r as zstring ptr )
@@ -220,45 +220,45 @@ for i as CharIterator = "z" to "a" step "up"
 	print i; " ";
 next
 print "done"
-%%
-Iterating with fractions:
-{{fbdoc item="filename" value="examples/manual/udt/step-fraction-iterator.bas"}}%%(freebasic)
-type fraction
+	%%
+	Iterating with fractions:
+	{{fbdoc item="filename" value="examples/manual/udt/step-fraction-iterator.bas"}}%%(freebasic)
+Type fraction
 	'' Used to build a step var
-	declare constructor( byval n as integer, byval d as integer )
+	Declare Constructor( ByVal n As Integer, ByVal d As Integer )
 
 	'' Implicit step versions
-	declare operator for ( )
-	declare operator step( )
-	declare operator next( byref end_cond as fraction ) as integer
+	Declare Operator For ( )
+	Declare Operator Step( )
+	Declare Operator Next( ByRef end_cond As fraction ) As Integer
 
 	'' Explicit step versions
-	declare operator for ( byref step_var as fraction )
-	declare operator step( byref step_var as fraction )
-	declare operator next( byref end_cond as fraction, byref step_var as fraction ) as integer
+	Declare Operator For ( ByRef step_var As fraction )
+	Declare Operator Step( ByRef step_var As fraction )
+	Declare Operator Next( ByRef end_cond As fraction, ByRef step_var As fraction ) As Integer
 
 	'' Give the current "value"    
-	declare operator cast( ) as double
-	declare operator cast( ) as string
+	Declare Operator Cast( ) As Double
+	Declare Operator Cast( ) As String
 
-	private:
-		as integer num, den
-end type
+	Private:
+		As Integer num, den
+End Type
 
-constructor fraction( byval n as integer, byval d as integer )
-	this.num = n : this.den = d
-end constructor
+Constructor fraction( ByVal n As Integer, ByVal d As Integer )
+	This.num = n : This.den = d
+End Constructor
 
-operator fraction.cast( ) as double
-	operator = num / den
-end operator
+Operator fraction.Cast( ) As Double
+	Operator = num / den
+End Operator
 
-operator fraction.cast( ) as string
-	operator = num & "/" & den
-end operator
+Operator fraction.Cast( ) As String
+	Operator = num & "/" & den
+End Operator
 
 '' Some fraction functions
-Function gcd( Byval n As Integer, Byval m As Integer ) As Integer
+Function gcd( ByVal n As Integer, ByVal m As Integer ) As Integer
 	Dim As Integer t
 		While m <> 0
 			t = m
@@ -268,90 +268,89 @@ Function gcd( Byval n As Integer, Byval m As Integer ) As Integer
 	Return n
 End Function
 
-Function lcd( Byval n As Integer, Byval m As Integer ) As Integer
+Function lcd( ByVal n As Integer, ByVal m As Integer ) As Integer
 	Return (n * m) / gcd( n, m )
 End Function
 
 ''
 '' Implicit step versions
-'' 
+''
 '' In this example, we interpret implicit step
 '' to mean 1
 ''
-operator fraction.for( )
-	print "implicit step"
-end operator
+Operator fraction.For( )
+	Print "implicit step"
+End Operator
 
-operator fraction.step( )
-	var lowest = lcd( this.den, 1 )
-
-	var mult_factor = this.den / lowest
-	dim as fraction step_temp = fraction( 1, 1 )
-	
-	this.num *= mult_factor
-	this.den *= mult_factor
-	
+Operator fraction.Step( )
+	Dim As Integer lowest = lcd( This.den, 1 )
+	Dim As Double mult_factor = This.den / lowest
+	Dim As fraction step_temp = fraction( 1, 1 )
+   
+	This.num *= mult_factor
+	This.den *= mult_factor
+   
 	step_temp.num *= lowest
 	step_temp.den *= lowest
-	
-	this.num += step_temp.num
-end operator 
+   
+	This.num += step_temp.num
+End Operator
 
-operator fraction.next( byref end_cond as fraction ) as integer
-	return this <= end_cond
-end operator
+Operator fraction.Next( ByRef end_cond As fraction ) As Integer
+	Return This <= end_cond
+End Operator
 
 ''
 '' Explicit step versions
-'' 
-operator fraction.for( byref step_var as fraction )
-	print "explicit step"
-end operator
+''
+Operator fraction.For( ByRef step_var As fraction )
+	Print "explicit step"
+End Operator
 
-operator fraction.step( byref step_var as fraction )
-	var lowest = lcd( this.den, step_var.den )
-	var mult_factor = this.den / lowest
-	dim as fraction step_temp = step_var
+Operator fraction.Step( ByRef step_var As fraction )
+	Dim As Integer lowest = lcd( This.den, step_var.den )
+	Dim As Double mult_factor = This.den / lowest
+	Dim As fraction step_temp = step_var
 
-	this.num *= mult_factor
-	this.den *= mult_factor
+	This.num *= mult_factor
+	This.den *= mult_factor
 
 	mult_factor = step_temp.den / lowest
 
 	step_temp.num *= mult_factor
 	step_temp.den *= mult_factor
 
-	this.num += step_temp.num
-end operator 
+	This.num += step_temp.num
+End Operator
 
-operator fraction.next( byref end_cond as fraction, byref step_var as fraction ) as integer
-	if(( step_var.num < 0 ) or ( step_var.den < 0 ) ) then
-		return this >= end_cond
-	else
-		return this <= end_cond
-	end if
-end operator
+Operator fraction.Next( ByRef end_cond As fraction, ByRef step_var As fraction ) As Integer
+	If(( step_var.num < 0 ) Or ( step_var.den < 0 ) ) Then
+		Return This >= end_cond
+	Else
+		Return This <= end_cond
+	End If
+End Operator
 
-for i as fraction = fraction(1,1) to fraction(4,1)
-	print i; " ";
-next
-print "done"
+For i As fraction = fraction(1,1) To fraction(4,1)
+	Print i; " ";
+Next
+Print "done"
 
-for i as fraction = fraction(1,4) to fraction(1,1) step fraction(1,4)
-	print i; " ";
-next
-print "done"
+For i As fraction = fraction(1,4) To fraction(1,1) Step fraction(1,4)
+	Print i; " ";
+Next
+Print "done"
 
-for i as fraction = fraction(4,4) to fraction(1,4) step fraction(-1,4)
-	print i; " ";
-next
-print "done"
+For i As fraction = fraction(4,4) To fraction(1,4) Step fraction(-1,4)
+	Print i; " ";
+Next
+Print "done"
 
-for i as fraction = fraction(4,4) to fraction(1,4)
-	print i; " ";
-next
-print "done"
-%%
+For i As fraction = fraction(4,4) To fraction(1,4)
+	Print i; " ";
+Next
+Print "done"
+	%%
 {{fbdoc item="lang"}}
 	- Only available in the //[[CompilerOptlang|-lang fb]]// dialect.
 

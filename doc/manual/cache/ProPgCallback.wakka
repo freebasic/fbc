@@ -6,6 +6,7 @@ Callback procedures
 
 {{fbdoc item="ex"}}
 	Example where a mathematical function is an argument in plot function call:
+	(the invocation is implemented by calling the ""'PlotF()'"" procedure, and the callback function is the 'Linear()', 'Sinusoidal()', or 'Quadratic()' function)
 		{{fbdoc item="filename" value="examples/manual/proguide/callback/callback1.bas"}}%%(freebasic)
 Type MathFunction As Function( Byval x As Double ) As Double
 
@@ -36,7 +37,8 @@ PlotF( @Sinusoidal )
 PlotF( @Quadratic )
 
 Sleep
-		%%
+		%%The three callback processes are synchronous because each callback function is completely executed before ""'PlotF()'"" returns to the caller code.
+		
 	Similar plotting example (as above) but with a asynchronous callback. Here an artificial delay is added. A more realistic case would be if the data to be plotted is retrieved form a web-server with a response time larger than acceptable for the main loop of our program (prevent blocking behavior):
 		{{fbdoc item="filename" value="examples/manual/proguide/callback/callback2.bas"}}%%(freebasic)
 #Include "fbthread.bi"
@@ -87,8 +89,10 @@ Print
 Print "Main program finished"
 
 Sleep
-		%%
+		%%The three callback processes are asynchronous because the ""'PlotF()'"" function returns immediately, and each callback function is executed in parallel with the caller's next code, from a ""'ThreadPlot()'"" thread created (previously) by ""'PlotF()'"" for each of them.
+		
 	Example of a callback function for comparing values in a array to be sorted by the qsort algorithm:
+	(the invocation is implemented by calling the 'qsort()' procedure, and the callback function is the ""'CmpVarLenStr()'"" function)
 		{{fbdoc item="filename" value="examples/manual/proguide/callback/callback_qsort.bas"}}%%(freebasic)
 #include "crt/stdlib.bi"
 
@@ -123,7 +127,8 @@ Print "LIST OF SORTED FORENAMES:"
 PrintList( forename() )
 
 Sleep
-		%%
+		%%The callback process is synchronous because the callback function is completely executed (several times), (successively) called by 'qsort()', before 'qsort()' returns to the caller code.
+
 {{fbdoc item="see"}}
 	- [[KeyPgSubPtr|SUB Pointer]]
 	- [[KeyPgFunctionPtr|FUNCTION Pointer]]

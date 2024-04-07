@@ -11,6 +11,11 @@ Intrinsic define (macro) performed by the compiler.
 {{fbdoc item="desc"}}
 	Evaluates the argument (constant-expression) at compile time.
 	
+	When the argument evaluation produces a string, ##**""__FB_EVAL__""**## returns a string formatted with a preprocessor operator:
+		**""-""** a ##[[KeyPgOpPpNoescape|Non-Escaped String Literal]]## (of form: ##$"text"##),
+		**""-""** or an ##[[KeyPgOpPpEscape|Escaped String Literal]]## (of form: ##!"text"##) if needed.
+	For other datatypes produced, simple ##[[ProPgLiterals|Literals]]## (of Integers, Floating Points, Booleans) without prefix/suffix are returned.
+	
 	##**""__FB_EVAL__""**## macro is useful where there is any of the following:
 		**""-""** non functional expression (i.e. side-effects),
 		**""-""** needs to be evaluated (i.e. simplified, respecting the operator precedence) before passing it on,
@@ -68,6 +73,9 @@ hellohello
 '/
 	%%
 	See also ##[[KeyPgDdfbargextract|__FB_ARG_EXTRACT__]]## example.
+
+{{fbdoc item="ver"}}
+	- Since fbc 1.08.0
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""

@@ -75,12 +75,14 @@ declare function hReEscapeW _
 
 declare function hEscape _
 	( _
-		byval text as const zstring ptr _
+		byval text as const zstring ptr, _
+		byval maxlen as integer = 0 _
 	) as const zstring ptr
 
 declare function hEscapeW _
 	( _
-		byval text as const wstring ptr _
+		byval text as const wstring ptr, _
+		byval maxlen as integer = 0 _
 	) as zstring ptr
 
 declare function hUnescape _
@@ -133,6 +135,8 @@ declare function hCharNeedsEscaping _
 	) as integer
 
 declare function hIsValidHexDigit( byval ch as integer ) as integer
+
+declare function hStr2long( byref txt as string, byref value as long ) as integer
 
 declare sub hSplitStr(byref txt as string, byref del as string, res() as string)
 

@@ -62,6 +62,28 @@ SUITE( fbc_tests.overload_.bydesc )
 			CU_ASSERT( proc( scalar_single ) = RESULT_SCALAR_SINGLE )
 			CU_ASSERT( proc( scalar_intptr ) = RESULT_SCALAR_INTPTR )
 		END_TEST
+
+		type udt_with_arrays
+			dim as integer array_int(any), scalar_int
+			dim as uinteger array_uint(any), scalar_uint
+			dim as single array_single(any), scalar_single
+			dim as integer ptr array_intptr(any), scalar_intptr
+		end type
+
+
+		TEST( udt )
+			dim x as udt_with_arrays
+
+			CU_ASSERT( proc( x.array_int() ) = RESULT_ARRAY_INT )
+			CU_ASSERT( proc( x.array_uint() ) = RESULT_ARRAY_UINT )
+			CU_ASSERT( proc( x.array_single() ) = RESULT_ARRAY_SINGLE )
+			CU_ASSERT( proc( x.array_intptr() ) = RESULT_ARRAY_INTPTR )
+
+			CU_ASSERT( proc( x.scalar_int ) = RESULT_SCALAR_INT )
+			CU_ASSERT( proc( x.scalar_uint ) = RESULT_SCALAR_UINT )
+			CU_ASSERT( proc( x.scalar_single ) = RESULT_SCALAR_SINGLE )
+			CU_ASSERT( proc( x.scalar_intptr ) = RESULT_SCALAR_INTPTR )
+		END_TEST
 	END_TEST_GROUP
 
 	TEST_GROUP( dimensions1vs2 )

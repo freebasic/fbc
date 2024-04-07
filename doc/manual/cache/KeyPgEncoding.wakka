@@ -22,7 +22,7 @@ Specifies character format of a text file
 		-"ascii" (the default)
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/fileio/encoding.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/fileio/encoding.bas"}}%%(freebasic)
 '' This example will:
 '' 1) Write a string to a text file with utf-16 encoding
 '' 2) Display the byte contents of the file
@@ -56,7 +56,7 @@ end scope
 
 ''
 scope
-  dim s as string, n as integer
+  dim s as string, n as longint
 
   '' open the same file for binary and read all the bytes
   open f for binary as #1
@@ -92,8 +92,8 @@ scope
   print
 end scope
 %%
-Output:
-%%
+	Output:
+	%%
 Text to write to sample.txt:
 FreeBASIC
 
@@ -103,7 +103,6 @@ FF FE 46 00 72 00 65 00 65 00 42 00 41 00 53 00 49 00 43 00 0D 00 0A 00
 Text read from sample.txt:
 FreeBASIC
 %%
-
 {{fbdoc item="target"}}
 	- Unicode (w)strings are not supported in the DOS port of FreeBASIC
 

@@ -5,10 +5,11 @@
 
 #include once "stack.bi"
 
-declare function hAllocTB		( _
-									byval stk as TSTACK ptr, _
-					  	   		  	byval nodes as integer _
-						 		) as integer
+declare function hAllocTB _
+	( _
+		byval stk as TSTACK ptr, _
+		byval nodes as integer _
+	) as integer
 
 '':::::
 function stackNew _
@@ -20,12 +21,12 @@ function stackNew _
 	) as integer
 
 	'' fill ctrl struct
-	stk->tbhead 	= NULL
-	stk->tbtail 	= NULL
-	stk->nodes 		= 0
-	stk->nodelen	= nodelen + len( TSTACKNODE )
-	stk->tos		= NULL
-	stk->clear		= doclear
+	stk->tbhead     = NULL
+	stk->tbtail     = NULL
+	stk->nodes      = 0
+	stk->nodelen    = nodelen + len( TSTACKNODE )
+	stk->tos        = NULL
+	stk->clear      = doclear
 
 	'' allocate the initial pool
 	function = hAllocTB( stk, nodes )
@@ -38,7 +39,7 @@ function stackFree _
 		byval stk as TSTACK ptr _
 	) as integer
 
-    dim as TSTACKTB ptr tb, nxt
+	dim as TSTACKTB ptr tb, nxt
 
 	'' for each pool, free the mem block and the pool ctrl struct
 	tb = stk->tbhead
@@ -49,9 +50,9 @@ function stackFree _
 		tb = nxt
 	loop
 
-	stk->tbhead 	= NULL
-	stk->tbtail 	= NULL
-	stk->nodes		= 0
+	stk->tbhead     = NULL
+	stk->tbtail     = NULL
+	stk->nodes      = 0
 
 	function = TRUE
 
@@ -129,8 +130,8 @@ function stackPush _
 
 	'' move up
 	if( stk->tos = NULL ) then
-    	stk->tos = stk->tbhead->nodetb
-    else
+		stk->tos = stk->tbhead->nodetb
+	else
 		'' alloc new node if there are no free nodes
 		if( stk->tos->next = NULL ) Then
 			hAllocTB( stk, cunsg(stk->nodes) \ 4 )

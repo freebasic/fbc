@@ -1,3736 +1,3736 @@
-b =ub, no warning:
-ub =b, no warning:
-b =z, no warning:
-z =b, no warning:
-ub =z, no warning:
-z =ub, no warning:
-sh =ush, no warning:
-ush =sh, no warning:
-l =ul, no warning:
-ul =l, no warning:
-ll =ull, no warning:
-ull =ll, no warning:
-i =ui, no warning:
-ui =i, no warning:
-pb =pub, no warning:
-pub =pb, no warning:
-pb =pz, no warning:
-pz =pb, no warning:
-pub =pz, no warning:
-pz =pub, no warning:
-psh =push, no warning:
-push =psh, no warning:
-pl =pul, no warning:
-pul =pl, no warning:
-pll =pull, no warning:
-pull =pll, no warning:
-pi =pui, no warning:
-pui =pi, no warning:
-l =i, no warning:
-i =l, no warning:
-l =ui, no warning:
-ui =l, no warning:
-ul =i, no warning:
-i =ul, no warning:
-ul =ui, no warning:
-ui =ul, no warning:
-pl =pi, no warning:
-pi =pl, no warning:
-pl =pui, no warning:
-pui =pl, no warning:
-pul =pi, no warning:
-pi =pul, no warning:
-pul =pui, no warning:
-pui =pul, no warning:
-b =w, no warning:
-w =b, no warning:
-ub =w, no warning:
-w =ub, no warning:
-z =w, no warning:
-w =z, no warning:
-pb =pw, no warning:
-pw =pb, no warning:
-pub =pw, no warning:
-pw =pub, no warning:
-pz =pw, no warning:
-pw =pz, no warning:
-ppsub =ppfi, 2 warning:
+b = ub, no warning:
+ub = b, no warning:
+b = z, no warning:
+z = b, no warning:
+ub = z, no warning:
+z = ub, no warning:
+sh = ush, no warning:
+ush = sh, no warning:
+l = ul, no warning:
+ul = l, no warning:
+ll = ull, no warning:
+ull = ll, no warning:
+i = ui, no warning:
+ui = i, no warning:
+pb = pub, no warning:
+pub = pb, no warning:
+pb = pz, no warning:
+pz = pb, no warning:
+pub = pz, no warning:
+pz = pub, no warning:
+psh = push, no warning:
+push = psh, no warning:
+pl = pul, no warning:
+pul = pl, no warning:
+pll = pull, no warning:
+pull = pll, no warning:
+pi = pui, no warning:
+pui = pi, no warning:
+l = i, no warning:
+i = l, no warning:
+l = ui, no warning:
+ui = l, no warning:
+ul = i, no warning:
+i = ul, no warning:
+ul = ui, no warning:
+ui = ul, no warning:
+pl = pi, no warning:
+pi = pl, no warning:
+pl = pui, no warning:
+pui = pl, no warning:
+pul = pi, no warning:
+pi = pul, no warning:
+pul = pui, no warning:
+pui = pul, no warning:
+b = w, no warning:
+w = b, no warning:
+ub = w, no warning:
+w = ub, no warning:
+z = w, no warning:
+w = z, no warning:
+pb = pw, no warning:
+pw = pb, no warning:
+pub = pw, no warning:
+pw = pub, no warning:
+pz = pw, no warning:
+pw = pz, no warning:
+ppsub = ppfi, 2 warning:
 	Suspicious pointer assignment
 	Return type mismatch in function pointer
-ppfi =ppsub, 2 warning:
+ppfi = ppsub, 2 warning:
 	Suspicious pointer assignment
 	Return type mismatch in function pointer
-byrefany =b, 1 warning:
+byrefany = b, 1 warning:
 	Suspicious pointer assignment
-byrefany =ub, 1 warning:
+byrefany = ub, 1 warning:
 	Suspicious pointer assignment
-byrefany =sh, 1 warning:
+byrefany = sh, 1 warning:
 	Suspicious pointer assignment
-byrefany =ush, 1 warning:
+byrefany = ush, 1 warning:
 	Suspicious pointer assignment
-byrefany =l, 1 warning:
+byrefany = l, 1 warning:
 	Suspicious pointer assignment
-byrefany =ul, 1 warning:
+byrefany = ul, 1 warning:
 	Suspicious pointer assignment
-byrefany =ll, 1 warning:
+byrefany = ll, 1 warning:
 	Suspicious pointer assignment
-byrefany =ull, 1 warning:
+byrefany = ull, 1 warning:
 	Suspicious pointer assignment
-byrefany =i, 1 warning:
+byrefany = i, 1 warning:
 	Suspicious pointer assignment
-byrefany =ui, 1 warning:
+byrefany = ui, 1 warning:
 	Suspicious pointer assignment
-byrefany =f, 1 warning:
+byrefany = f, 1 warning:
 	Suspicious pointer assignment
-byrefany =d, 1 warning:
+byrefany = d, 1 warning:
 	Suspicious pointer assignment
-byrefany =s, 1 warning:
+byrefany = s, 1 warning:
 	Suspicious pointer assignment
-byrefany =z, 1 warning:
+byrefany = z, 1 warning:
 	Suspicious pointer assignment
-byrefany =w, 1 warning:
+byrefany = w, 1 warning:
 	Suspicious pointer assignment
-byrefany =udt1, 1 warning:
+byrefany = udt1, 1 warning:
 	Suspicious pointer assignment
-byrefany =udt2, 1 warning:
+byrefany = udt2, 1 warning:
 	Suspicious pointer assignment
-byrefany =fwd1, 1 warning:
+byrefany = fwd1, 1 warning:
 	Suspicious pointer assignment
-byrefany =fwd2, 1 warning:
+byrefany = fwd2, 1 warning:
 	Suspicious pointer assignment
-byrefany =psub, 1 warning:
+byrefany = psub, 1 warning:
 	Suspicious pointer assignment
-byrefany =pfi, 1 warning:
+byrefany = pfi, 1 warning:
 	Suspicious pointer assignment
-byrefany =pany, 1 warning:
+byrefany = pany, 1 warning:
 	Suspicious pointer assignment
-byrefany =pb, 1 warning:
+byrefany = pb, 1 warning:
 	Suspicious pointer assignment
-byrefany =pub, 1 warning:
+byrefany = pub, 1 warning:
 	Suspicious pointer assignment
-byrefany =psh, 1 warning:
+byrefany = psh, 1 warning:
 	Suspicious pointer assignment
-byrefany =push, 1 warning:
+byrefany = push, 1 warning:
 	Suspicious pointer assignment
-byrefany =pl, 1 warning:
+byrefany = pl, 1 warning:
 	Suspicious pointer assignment
-byrefany =pul, 1 warning:
+byrefany = pul, 1 warning:
 	Suspicious pointer assignment
-byrefany =pll, 1 warning:
+byrefany = pll, 1 warning:
 	Suspicious pointer assignment
-byrefany =pull, 1 warning:
+byrefany = pull, 1 warning:
 	Suspicious pointer assignment
-byrefany =pi, 1 warning:
+byrefany = pi, 1 warning:
 	Suspicious pointer assignment
-byrefany =pui, 1 warning:
+byrefany = pui, 1 warning:
 	Suspicious pointer assignment
-byrefany =pf, 1 warning:
+byrefany = pf, 1 warning:
 	Suspicious pointer assignment
-byrefany =pd, 1 warning:
+byrefany = pd, 1 warning:
 	Suspicious pointer assignment
-byrefany =ps, 1 warning:
+byrefany = ps, 1 warning:
 	Suspicious pointer assignment
-byrefany =pz, 1 warning:
+byrefany = pz, 1 warning:
 	Suspicious pointer assignment
-byrefany =pw, 1 warning:
+byrefany = pw, 1 warning:
 	Suspicious pointer assignment
-byrefany =pudt1, 1 warning:
+byrefany = pudt1, 1 warning:
 	Suspicious pointer assignment
-byrefany =pudt2, 1 warning:
+byrefany = pudt2, 1 warning:
 	Suspicious pointer assignment
-byrefany =pfwd1, 1 warning:
+byrefany = pfwd1, 1 warning:
 	Suspicious pointer assignment
-byrefany =pdwf2, 1 warning:
+byrefany = pdwf2, 1 warning:
 	Suspicious pointer assignment
-byrefany =ppsub, 1 warning:
+byrefany = ppsub, 1 warning:
 	Suspicious pointer assignment
-byrefany =ppfi, 1 warning:
+byrefany = ppfi, 1 warning:
 	Suspicious pointer assignment
-b =byrefany, 1 warning:
+b = byrefany, 1 warning:
 	Suspicious pointer assignment
-b =sh, 1 warning:
+b = sh, 1 warning:
 	Suspicious pointer assignment
-b =ush, 1 warning:
+b = ush, 1 warning:
 	Suspicious pointer assignment
-b =l, 1 warning:
+b = l, 1 warning:
 	Suspicious pointer assignment
-b =ul, 1 warning:
+b = ul, 1 warning:
 	Suspicious pointer assignment
-b =ll, 1 warning:
+b = ll, 1 warning:
 	Suspicious pointer assignment
-b =ull, 1 warning:
+b = ull, 1 warning:
 	Suspicious pointer assignment
-b =i, 1 warning:
+b = i, 1 warning:
 	Suspicious pointer assignment
-b =ui, 1 warning:
+b = ui, 1 warning:
 	Suspicious pointer assignment
-b =f, 1 warning:
+b = f, 1 warning:
 	Suspicious pointer assignment
-b =d, 1 warning:
+b = d, 1 warning:
 	Suspicious pointer assignment
-b =s, 1 warning:
+b = s, 1 warning:
 	Suspicious pointer assignment
-b =udt1, 1 warning:
+b = udt1, 1 warning:
 	Suspicious pointer assignment
-b =udt2, 1 warning:
+b = udt2, 1 warning:
 	Suspicious pointer assignment
-b =fwd1, 1 warning:
+b = fwd1, 1 warning:
 	Suspicious pointer assignment
-b =fwd2, 1 warning:
+b = fwd2, 1 warning:
 	Suspicious pointer assignment
-b =psub, 1 warning:
+b = psub, 1 warning:
 	Suspicious pointer assignment
-b =pfi, 1 warning:
+b = pfi, 1 warning:
 	Suspicious pointer assignment
-b =pany, 1 warning:
+b = pany, 1 warning:
 	Suspicious pointer assignment
-b =pb, 1 warning:
+b = pb, 1 warning:
 	Suspicious pointer assignment
-b =pub, 1 warning:
+b = pub, 1 warning:
 	Suspicious pointer assignment
-b =psh, 1 warning:
+b = psh, 1 warning:
 	Suspicious pointer assignment
-b =push, 1 warning:
+b = push, 1 warning:
 	Suspicious pointer assignment
-b =pl, 1 warning:
+b = pl, 1 warning:
 	Suspicious pointer assignment
-b =pul, 1 warning:
+b = pul, 1 warning:
 	Suspicious pointer assignment
-b =pll, 1 warning:
+b = pll, 1 warning:
 	Suspicious pointer assignment
-b =pull, 1 warning:
+b = pull, 1 warning:
 	Suspicious pointer assignment
-b =pi, 1 warning:
+b = pi, 1 warning:
 	Suspicious pointer assignment
-b =pui, 1 warning:
+b = pui, 1 warning:
 	Suspicious pointer assignment
-b =pf, 1 warning:
+b = pf, 1 warning:
 	Suspicious pointer assignment
-b =pd, 1 warning:
+b = pd, 1 warning:
 	Suspicious pointer assignment
-b =ps, 1 warning:
+b = ps, 1 warning:
 	Suspicious pointer assignment
-b =pz, 1 warning:
+b = pz, 1 warning:
 	Suspicious pointer assignment
-b =pw, 1 warning:
+b = pw, 1 warning:
 	Suspicious pointer assignment
-b =pudt1, 1 warning:
+b = pudt1, 1 warning:
 	Suspicious pointer assignment
-b =pudt2, 1 warning:
+b = pudt2, 1 warning:
 	Suspicious pointer assignment
-b =pfwd1, 1 warning:
+b = pfwd1, 1 warning:
 	Suspicious pointer assignment
-b =pdwf2, 1 warning:
+b = pdwf2, 1 warning:
 	Suspicious pointer assignment
-b =ppsub, 1 warning:
+b = ppsub, 1 warning:
 	Suspicious pointer assignment
-b =ppfi, 1 warning:
+b = ppfi, 1 warning:
 	Suspicious pointer assignment
-ub =byrefany, 1 warning:
+ub = byrefany, 1 warning:
 	Suspicious pointer assignment
-ub =sh, 1 warning:
+ub = sh, 1 warning:
 	Suspicious pointer assignment
-ub =ush, 1 warning:
+ub = ush, 1 warning:
 	Suspicious pointer assignment
-ub =l, 1 warning:
+ub = l, 1 warning:
 	Suspicious pointer assignment
-ub =ul, 1 warning:
+ub = ul, 1 warning:
 	Suspicious pointer assignment
-ub =ll, 1 warning:
+ub = ll, 1 warning:
 	Suspicious pointer assignment
-ub =ull, 1 warning:
+ub = ull, 1 warning:
 	Suspicious pointer assignment
-ub =i, 1 warning:
+ub = i, 1 warning:
 	Suspicious pointer assignment
-ub =ui, 1 warning:
+ub = ui, 1 warning:
 	Suspicious pointer assignment
-ub =f, 1 warning:
+ub = f, 1 warning:
 	Suspicious pointer assignment
-ub =d, 1 warning:
+ub = d, 1 warning:
 	Suspicious pointer assignment
-ub =s, 1 warning:
+ub = s, 1 warning:
 	Suspicious pointer assignment
-ub =udt1, 1 warning:
+ub = udt1, 1 warning:
 	Suspicious pointer assignment
-ub =udt2, 1 warning:
+ub = udt2, 1 warning:
 	Suspicious pointer assignment
-ub =fwd1, 1 warning:
+ub = fwd1, 1 warning:
 	Suspicious pointer assignment
-ub =fwd2, 1 warning:
+ub = fwd2, 1 warning:
 	Suspicious pointer assignment
-ub =psub, 1 warning:
+ub = psub, 1 warning:
 	Suspicious pointer assignment
-ub =pfi, 1 warning:
+ub = pfi, 1 warning:
 	Suspicious pointer assignment
-ub =pany, 1 warning:
+ub = pany, 1 warning:
 	Suspicious pointer assignment
-ub =pb, 1 warning:
+ub = pb, 1 warning:
 	Suspicious pointer assignment
-ub =pub, 1 warning:
+ub = pub, 1 warning:
 	Suspicious pointer assignment
-ub =psh, 1 warning:
+ub = psh, 1 warning:
 	Suspicious pointer assignment
-ub =push, 1 warning:
+ub = push, 1 warning:
 	Suspicious pointer assignment
-ub =pl, 1 warning:
+ub = pl, 1 warning:
 	Suspicious pointer assignment
-ub =pul, 1 warning:
+ub = pul, 1 warning:
 	Suspicious pointer assignment
-ub =pll, 1 warning:
+ub = pll, 1 warning:
 	Suspicious pointer assignment
-ub =pull, 1 warning:
+ub = pull, 1 warning:
 	Suspicious pointer assignment
-ub =pi, 1 warning:
+ub = pi, 1 warning:
 	Suspicious pointer assignment
-ub =pui, 1 warning:
+ub = pui, 1 warning:
 	Suspicious pointer assignment
-ub =pf, 1 warning:
+ub = pf, 1 warning:
 	Suspicious pointer assignment
-ub =pd, 1 warning:
+ub = pd, 1 warning:
 	Suspicious pointer assignment
-ub =ps, 1 warning:
+ub = ps, 1 warning:
 	Suspicious pointer assignment
-ub =pz, 1 warning:
+ub = pz, 1 warning:
 	Suspicious pointer assignment
-ub =pw, 1 warning:
+ub = pw, 1 warning:
 	Suspicious pointer assignment
-ub =pudt1, 1 warning:
+ub = pudt1, 1 warning:
 	Suspicious pointer assignment
-ub =pudt2, 1 warning:
+ub = pudt2, 1 warning:
 	Suspicious pointer assignment
-ub =pfwd1, 1 warning:
+ub = pfwd1, 1 warning:
 	Suspicious pointer assignment
-ub =pdwf2, 1 warning:
+ub = pdwf2, 1 warning:
 	Suspicious pointer assignment
-ub =ppsub, 1 warning:
+ub = ppsub, 1 warning:
 	Suspicious pointer assignment
-ub =ppfi, 1 warning:
+ub = ppfi, 1 warning:
 	Suspicious pointer assignment
-sh =byrefany, 1 warning:
+sh = byrefany, 1 warning:
 	Suspicious pointer assignment
-sh =b, 1 warning:
+sh = b, 1 warning:
 	Suspicious pointer assignment
-sh =ub, 1 warning:
+sh = ub, 1 warning:
 	Suspicious pointer assignment
-sh =l, 1 warning:
+sh = l, 1 warning:
 	Suspicious pointer assignment
-sh =ul, 1 warning:
+sh = ul, 1 warning:
 	Suspicious pointer assignment
-sh =ll, 1 warning:
+sh = ll, 1 warning:
 	Suspicious pointer assignment
-sh =ull, 1 warning:
+sh = ull, 1 warning:
 	Suspicious pointer assignment
-sh =i, 1 warning:
+sh = i, 1 warning:
 	Suspicious pointer assignment
-sh =ui, 1 warning:
+sh = ui, 1 warning:
 	Suspicious pointer assignment
-sh =f, 1 warning:
+sh = f, 1 warning:
 	Suspicious pointer assignment
-sh =d, 1 warning:
+sh = d, 1 warning:
 	Suspicious pointer assignment
-sh =s, 1 warning:
+sh = s, 1 warning:
 	Suspicious pointer assignment
-sh =z, 1 warning:
+sh = z, 1 warning:
 	Suspicious pointer assignment
-sh =w, 1 warning:
+sh = w, 1 warning:
 	Suspicious pointer assignment
-sh =udt1, 1 warning:
+sh = udt1, 1 warning:
 	Suspicious pointer assignment
-sh =udt2, 1 warning:
+sh = udt2, 1 warning:
 	Suspicious pointer assignment
-sh =fwd1, 1 warning:
+sh = fwd1, 1 warning:
 	Suspicious pointer assignment
-sh =fwd2, 1 warning:
+sh = fwd2, 1 warning:
 	Suspicious pointer assignment
-sh =psub, 1 warning:
+sh = psub, 1 warning:
 	Suspicious pointer assignment
-sh =pfi, 1 warning:
+sh = pfi, 1 warning:
 	Suspicious pointer assignment
-sh =pany, 1 warning:
+sh = pany, 1 warning:
 	Suspicious pointer assignment
-sh =pb, 1 warning:
+sh = pb, 1 warning:
 	Suspicious pointer assignment
-sh =pub, 1 warning:
+sh = pub, 1 warning:
 	Suspicious pointer assignment
-sh =psh, 1 warning:
+sh = psh, 1 warning:
 	Suspicious pointer assignment
-sh =push, 1 warning:
+sh = push, 1 warning:
 	Suspicious pointer assignment
-sh =pl, 1 warning:
+sh = pl, 1 warning:
 	Suspicious pointer assignment
-sh =pul, 1 warning:
+sh = pul, 1 warning:
 	Suspicious pointer assignment
-sh =pll, 1 warning:
+sh = pll, 1 warning:
 	Suspicious pointer assignment
-sh =pull, 1 warning:
+sh = pull, 1 warning:
 	Suspicious pointer assignment
-sh =pi, 1 warning:
+sh = pi, 1 warning:
 	Suspicious pointer assignment
-sh =pui, 1 warning:
+sh = pui, 1 warning:
 	Suspicious pointer assignment
-sh =pf, 1 warning:
+sh = pf, 1 warning:
 	Suspicious pointer assignment
-sh =pd, 1 warning:
+sh = pd, 1 warning:
 	Suspicious pointer assignment
-sh =ps, 1 warning:
+sh = ps, 1 warning:
 	Suspicious pointer assignment
-sh =pz, 1 warning:
+sh = pz, 1 warning:
 	Suspicious pointer assignment
-sh =pw, 1 warning:
+sh = pw, 1 warning:
 	Suspicious pointer assignment
-sh =pudt1, 1 warning:
+sh = pudt1, 1 warning:
 	Suspicious pointer assignment
-sh =pudt2, 1 warning:
+sh = pudt2, 1 warning:
 	Suspicious pointer assignment
-sh =pfwd1, 1 warning:
+sh = pfwd1, 1 warning:
 	Suspicious pointer assignment
-sh =pdwf2, 1 warning:
+sh = pdwf2, 1 warning:
 	Suspicious pointer assignment
-sh =ppsub, 1 warning:
+sh = ppsub, 1 warning:
 	Suspicious pointer assignment
-sh =ppfi, 1 warning:
+sh = ppfi, 1 warning:
 	Suspicious pointer assignment
-ush =byrefany, 1 warning:
+ush = byrefany, 1 warning:
 	Suspicious pointer assignment
-ush =b, 1 warning:
+ush = b, 1 warning:
 	Suspicious pointer assignment
-ush =ub, 1 warning:
+ush = ub, 1 warning:
 	Suspicious pointer assignment
-ush =l, 1 warning:
+ush = l, 1 warning:
 	Suspicious pointer assignment
-ush =ul, 1 warning:
+ush = ul, 1 warning:
 	Suspicious pointer assignment
-ush =ll, 1 warning:
+ush = ll, 1 warning:
 	Suspicious pointer assignment
-ush =ull, 1 warning:
+ush = ull, 1 warning:
 	Suspicious pointer assignment
-ush =i, 1 warning:
+ush = i, 1 warning:
 	Suspicious pointer assignment
-ush =ui, 1 warning:
+ush = ui, 1 warning:
 	Suspicious pointer assignment
-ush =f, 1 warning:
+ush = f, 1 warning:
 	Suspicious pointer assignment
-ush =d, 1 warning:
+ush = d, 1 warning:
 	Suspicious pointer assignment
-ush =s, 1 warning:
+ush = s, 1 warning:
 	Suspicious pointer assignment
-ush =z, 1 warning:
+ush = z, 1 warning:
 	Suspicious pointer assignment
-ush =w, 1 warning:
+ush = w, 1 warning:
 	Suspicious pointer assignment
-ush =udt1, 1 warning:
+ush = udt1, 1 warning:
 	Suspicious pointer assignment
-ush =udt2, 1 warning:
+ush = udt2, 1 warning:
 	Suspicious pointer assignment
-ush =fwd1, 1 warning:
+ush = fwd1, 1 warning:
 	Suspicious pointer assignment
-ush =fwd2, 1 warning:
+ush = fwd2, 1 warning:
 	Suspicious pointer assignment
-ush =psub, 1 warning:
+ush = psub, 1 warning:
 	Suspicious pointer assignment
-ush =pfi, 1 warning:
+ush = pfi, 1 warning:
 	Suspicious pointer assignment
-ush =pany, 1 warning:
+ush = pany, 1 warning:
 	Suspicious pointer assignment
-ush =pb, 1 warning:
+ush = pb, 1 warning:
 	Suspicious pointer assignment
-ush =pub, 1 warning:
+ush = pub, 1 warning:
 	Suspicious pointer assignment
-ush =psh, 1 warning:
+ush = psh, 1 warning:
 	Suspicious pointer assignment
-ush =push, 1 warning:
+ush = push, 1 warning:
 	Suspicious pointer assignment
-ush =pl, 1 warning:
+ush = pl, 1 warning:
 	Suspicious pointer assignment
-ush =pul, 1 warning:
+ush = pul, 1 warning:
 	Suspicious pointer assignment
-ush =pll, 1 warning:
+ush = pll, 1 warning:
 	Suspicious pointer assignment
-ush =pull, 1 warning:
+ush = pull, 1 warning:
 	Suspicious pointer assignment
-ush =pi, 1 warning:
+ush = pi, 1 warning:
 	Suspicious pointer assignment
-ush =pui, 1 warning:
+ush = pui, 1 warning:
 	Suspicious pointer assignment
-ush =pf, 1 warning:
+ush = pf, 1 warning:
 	Suspicious pointer assignment
-ush =pd, 1 warning:
+ush = pd, 1 warning:
 	Suspicious pointer assignment
-ush =ps, 1 warning:
+ush = ps, 1 warning:
 	Suspicious pointer assignment
-ush =pz, 1 warning:
+ush = pz, 1 warning:
 	Suspicious pointer assignment
-ush =pw, 1 warning:
+ush = pw, 1 warning:
 	Suspicious pointer assignment
-ush =pudt1, 1 warning:
+ush = pudt1, 1 warning:
 	Suspicious pointer assignment
-ush =pudt2, 1 warning:
+ush = pudt2, 1 warning:
 	Suspicious pointer assignment
-ush =pfwd1, 1 warning:
+ush = pfwd1, 1 warning:
 	Suspicious pointer assignment
-ush =pdwf2, 1 warning:
+ush = pdwf2, 1 warning:
 	Suspicious pointer assignment
-ush =ppsub, 1 warning:
+ush = ppsub, 1 warning:
 	Suspicious pointer assignment
-ush =ppfi, 1 warning:
+ush = ppfi, 1 warning:
 	Suspicious pointer assignment
-l =byrefany, 1 warning:
+l = byrefany, 1 warning:
 	Suspicious pointer assignment
-l =b, 1 warning:
+l = b, 1 warning:
 	Suspicious pointer assignment
-l =ub, 1 warning:
+l = ub, 1 warning:
 	Suspicious pointer assignment
-l =sh, 1 warning:
+l = sh, 1 warning:
 	Suspicious pointer assignment
-l =ush, 1 warning:
+l = ush, 1 warning:
 	Suspicious pointer assignment
-l =ll, 1 warning:
+l = ll, 1 warning:
 	Suspicious pointer assignment
-l =ull, 1 warning:
+l = ull, 1 warning:
 	Suspicious pointer assignment
-l =f, 1 warning:
+l = f, 1 warning:
 	Suspicious pointer assignment
-l =d, 1 warning:
+l = d, 1 warning:
 	Suspicious pointer assignment
-l =s, 1 warning:
+l = s, 1 warning:
 	Suspicious pointer assignment
-l =z, 1 warning:
+l = z, 1 warning:
 	Suspicious pointer assignment
-l =w, 1 warning:
+l = w, 1 warning:
 	Suspicious pointer assignment
-l =udt1, 1 warning:
+l = udt1, 1 warning:
 	Suspicious pointer assignment
-l =udt2, 1 warning:
+l = udt2, 1 warning:
 	Suspicious pointer assignment
-l =fwd1, 1 warning:
+l = fwd1, 1 warning:
 	Suspicious pointer assignment
-l =fwd2, 1 warning:
+l = fwd2, 1 warning:
 	Suspicious pointer assignment
-l =psub, 1 warning:
+l = psub, 1 warning:
 	Suspicious pointer assignment
-l =pfi, 1 warning:
+l = pfi, 1 warning:
 	Suspicious pointer assignment
-l =pany, 1 warning:
+l = pany, 1 warning:
 	Suspicious pointer assignment
-l =pb, 1 warning:
+l = pb, 1 warning:
 	Suspicious pointer assignment
-l =pub, 1 warning:
+l = pub, 1 warning:
 	Suspicious pointer assignment
-l =psh, 1 warning:
+l = psh, 1 warning:
 	Suspicious pointer assignment
-l =push, 1 warning:
+l = push, 1 warning:
 	Suspicious pointer assignment
-l =pl, 1 warning:
+l = pl, 1 warning:
 	Suspicious pointer assignment
-l =pul, 1 warning:
+l = pul, 1 warning:
 	Suspicious pointer assignment
-l =pll, 1 warning:
+l = pll, 1 warning:
 	Suspicious pointer assignment
-l =pull, 1 warning:
+l = pull, 1 warning:
 	Suspicious pointer assignment
-l =pi, 1 warning:
+l = pi, 1 warning:
 	Suspicious pointer assignment
-l =pui, 1 warning:
+l = pui, 1 warning:
 	Suspicious pointer assignment
-l =pf, 1 warning:
+l = pf, 1 warning:
 	Suspicious pointer assignment
-l =pd, 1 warning:
+l = pd, 1 warning:
 	Suspicious pointer assignment
-l =ps, 1 warning:
+l = ps, 1 warning:
 	Suspicious pointer assignment
-l =pz, 1 warning:
+l = pz, 1 warning:
 	Suspicious pointer assignment
-l =pw, 1 warning:
+l = pw, 1 warning:
 	Suspicious pointer assignment
-l =pudt1, 1 warning:
+l = pudt1, 1 warning:
 	Suspicious pointer assignment
-l =pudt2, 1 warning:
+l = pudt2, 1 warning:
 	Suspicious pointer assignment
-l =pfwd1, 1 warning:
+l = pfwd1, 1 warning:
 	Suspicious pointer assignment
-l =pdwf2, 1 warning:
+l = pdwf2, 1 warning:
 	Suspicious pointer assignment
-l =ppsub, 1 warning:
+l = ppsub, 1 warning:
 	Suspicious pointer assignment
-l =ppfi, 1 warning:
+l = ppfi, 1 warning:
 	Suspicious pointer assignment
-ul =byrefany, 1 warning:
+ul = byrefany, 1 warning:
 	Suspicious pointer assignment
-ul =b, 1 warning:
+ul = b, 1 warning:
 	Suspicious pointer assignment
-ul =ub, 1 warning:
+ul = ub, 1 warning:
 	Suspicious pointer assignment
-ul =sh, 1 warning:
+ul = sh, 1 warning:
 	Suspicious pointer assignment
-ul =ush, 1 warning:
+ul = ush, 1 warning:
 	Suspicious pointer assignment
-ul =ll, 1 warning:
+ul = ll, 1 warning:
 	Suspicious pointer assignment
-ul =ull, 1 warning:
+ul = ull, 1 warning:
 	Suspicious pointer assignment
-ul =f, 1 warning:
+ul = f, 1 warning:
 	Suspicious pointer assignment
-ul =d, 1 warning:
+ul = d, 1 warning:
 	Suspicious pointer assignment
-ul =s, 1 warning:
+ul = s, 1 warning:
 	Suspicious pointer assignment
-ul =z, 1 warning:
+ul = z, 1 warning:
 	Suspicious pointer assignment
-ul =w, 1 warning:
+ul = w, 1 warning:
 	Suspicious pointer assignment
-ul =udt1, 1 warning:
+ul = udt1, 1 warning:
 	Suspicious pointer assignment
-ul =udt2, 1 warning:
+ul = udt2, 1 warning:
 	Suspicious pointer assignment
-ul =fwd1, 1 warning:
+ul = fwd1, 1 warning:
 	Suspicious pointer assignment
-ul =fwd2, 1 warning:
+ul = fwd2, 1 warning:
 	Suspicious pointer assignment
-ul =psub, 1 warning:
+ul = psub, 1 warning:
 	Suspicious pointer assignment
-ul =pfi, 1 warning:
+ul = pfi, 1 warning:
 	Suspicious pointer assignment
-ul =pany, 1 warning:
+ul = pany, 1 warning:
 	Suspicious pointer assignment
-ul =pb, 1 warning:
+ul = pb, 1 warning:
 	Suspicious pointer assignment
-ul =pub, 1 warning:
+ul = pub, 1 warning:
 	Suspicious pointer assignment
-ul =psh, 1 warning:
+ul = psh, 1 warning:
 	Suspicious pointer assignment
-ul =push, 1 warning:
+ul = push, 1 warning:
 	Suspicious pointer assignment
-ul =pl, 1 warning:
+ul = pl, 1 warning:
 	Suspicious pointer assignment
-ul =pul, 1 warning:
+ul = pul, 1 warning:
 	Suspicious pointer assignment
-ul =pll, 1 warning:
+ul = pll, 1 warning:
 	Suspicious pointer assignment
-ul =pull, 1 warning:
+ul = pull, 1 warning:
 	Suspicious pointer assignment
-ul =pi, 1 warning:
+ul = pi, 1 warning:
 	Suspicious pointer assignment
-ul =pui, 1 warning:
+ul = pui, 1 warning:
 	Suspicious pointer assignment
-ul =pf, 1 warning:
+ul = pf, 1 warning:
 	Suspicious pointer assignment
-ul =pd, 1 warning:
+ul = pd, 1 warning:
 	Suspicious pointer assignment
-ul =ps, 1 warning:
+ul = ps, 1 warning:
 	Suspicious pointer assignment
-ul =pz, 1 warning:
+ul = pz, 1 warning:
 	Suspicious pointer assignment
-ul =pw, 1 warning:
+ul = pw, 1 warning:
 	Suspicious pointer assignment
-ul =pudt1, 1 warning:
+ul = pudt1, 1 warning:
 	Suspicious pointer assignment
-ul =pudt2, 1 warning:
+ul = pudt2, 1 warning:
 	Suspicious pointer assignment
-ul =pfwd1, 1 warning:
+ul = pfwd1, 1 warning:
 	Suspicious pointer assignment
-ul =pdwf2, 1 warning:
+ul = pdwf2, 1 warning:
 	Suspicious pointer assignment
-ul =ppsub, 1 warning:
+ul = ppsub, 1 warning:
 	Suspicious pointer assignment
-ul =ppfi, 1 warning:
+ul = ppfi, 1 warning:
 	Suspicious pointer assignment
-ll =byrefany, 1 warning:
+ll = byrefany, 1 warning:
 	Suspicious pointer assignment
-ll =b, 1 warning:
+ll = b, 1 warning:
 	Suspicious pointer assignment
-ll =ub, 1 warning:
+ll = ub, 1 warning:
 	Suspicious pointer assignment
-ll =sh, 1 warning:
+ll = sh, 1 warning:
 	Suspicious pointer assignment
-ll =ush, 1 warning:
+ll = ush, 1 warning:
 	Suspicious pointer assignment
-ll =l, 1 warning:
+ll = l, 1 warning:
 	Suspicious pointer assignment
-ll =ul, 1 warning:
+ll = ul, 1 warning:
 	Suspicious pointer assignment
-ll =i, 1 warning:
+ll = i, 1 warning:
 	Suspicious pointer assignment
-ll =ui, 1 warning:
+ll = ui, 1 warning:
 	Suspicious pointer assignment
-ll =f, 1 warning:
+ll = f, 1 warning:
 	Suspicious pointer assignment
-ll =d, 1 warning:
+ll = d, 1 warning:
 	Suspicious pointer assignment
-ll =s, 1 warning:
+ll = s, 1 warning:
 	Suspicious pointer assignment
-ll =z, 1 warning:
+ll = z, 1 warning:
 	Suspicious pointer assignment
-ll =w, 1 warning:
+ll = w, 1 warning:
 	Suspicious pointer assignment
-ll =udt1, 1 warning:
+ll = udt1, 1 warning:
 	Suspicious pointer assignment
-ll =udt2, 1 warning:
+ll = udt2, 1 warning:
 	Suspicious pointer assignment
-ll =fwd1, 1 warning:
+ll = fwd1, 1 warning:
 	Suspicious pointer assignment
-ll =fwd2, 1 warning:
+ll = fwd2, 1 warning:
 	Suspicious pointer assignment
-ll =psub, 1 warning:
+ll = psub, 1 warning:
 	Suspicious pointer assignment
-ll =pfi, 1 warning:
+ll = pfi, 1 warning:
 	Suspicious pointer assignment
-ll =pany, 1 warning:
+ll = pany, 1 warning:
 	Suspicious pointer assignment
-ll =pb, 1 warning:
+ll = pb, 1 warning:
 	Suspicious pointer assignment
-ll =pub, 1 warning:
+ll = pub, 1 warning:
 	Suspicious pointer assignment
-ll =psh, 1 warning:
+ll = psh, 1 warning:
 	Suspicious pointer assignment
-ll =push, 1 warning:
+ll = push, 1 warning:
 	Suspicious pointer assignment
-ll =pl, 1 warning:
+ll = pl, 1 warning:
 	Suspicious pointer assignment
-ll =pul, 1 warning:
+ll = pul, 1 warning:
 	Suspicious pointer assignment
-ll =pll, 1 warning:
+ll = pll, 1 warning:
 	Suspicious pointer assignment
-ll =pull, 1 warning:
+ll = pull, 1 warning:
 	Suspicious pointer assignment
-ll =pi, 1 warning:
+ll = pi, 1 warning:
 	Suspicious pointer assignment
-ll =pui, 1 warning:
+ll = pui, 1 warning:
 	Suspicious pointer assignment
-ll =pf, 1 warning:
+ll = pf, 1 warning:
 	Suspicious pointer assignment
-ll =pd, 1 warning:
+ll = pd, 1 warning:
 	Suspicious pointer assignment
-ll =ps, 1 warning:
+ll = ps, 1 warning:
 	Suspicious pointer assignment
-ll =pz, 1 warning:
+ll = pz, 1 warning:
 	Suspicious pointer assignment
-ll =pw, 1 warning:
+ll = pw, 1 warning:
 	Suspicious pointer assignment
-ll =pudt1, 1 warning:
+ll = pudt1, 1 warning:
 	Suspicious pointer assignment
-ll =pudt2, 1 warning:
+ll = pudt2, 1 warning:
 	Suspicious pointer assignment
-ll =pfwd1, 1 warning:
+ll = pfwd1, 1 warning:
 	Suspicious pointer assignment
-ll =pdwf2, 1 warning:
+ll = pdwf2, 1 warning:
 	Suspicious pointer assignment
-ll =ppsub, 1 warning:
+ll = ppsub, 1 warning:
 	Suspicious pointer assignment
-ll =ppfi, 1 warning:
+ll = ppfi, 1 warning:
 	Suspicious pointer assignment
-ull =byrefany, 1 warning:
+ull = byrefany, 1 warning:
 	Suspicious pointer assignment
-ull =b, 1 warning:
+ull = b, 1 warning:
 	Suspicious pointer assignment
-ull =ub, 1 warning:
+ull = ub, 1 warning:
 	Suspicious pointer assignment
-ull =sh, 1 warning:
+ull = sh, 1 warning:
 	Suspicious pointer assignment
-ull =ush, 1 warning:
+ull = ush, 1 warning:
 	Suspicious pointer assignment
-ull =l, 1 warning:
+ull = l, 1 warning:
 	Suspicious pointer assignment
-ull =ul, 1 warning:
+ull = ul, 1 warning:
 	Suspicious pointer assignment
-ull =i, 1 warning:
+ull = i, 1 warning:
 	Suspicious pointer assignment
-ull =ui, 1 warning:
+ull = ui, 1 warning:
 	Suspicious pointer assignment
-ull =f, 1 warning:
+ull = f, 1 warning:
 	Suspicious pointer assignment
-ull =d, 1 warning:
+ull = d, 1 warning:
 	Suspicious pointer assignment
-ull =s, 1 warning:
+ull = s, 1 warning:
 	Suspicious pointer assignment
-ull =z, 1 warning:
+ull = z, 1 warning:
 	Suspicious pointer assignment
-ull =w, 1 warning:
+ull = w, 1 warning:
 	Suspicious pointer assignment
-ull =udt1, 1 warning:
+ull = udt1, 1 warning:
 	Suspicious pointer assignment
-ull =udt2, 1 warning:
+ull = udt2, 1 warning:
 	Suspicious pointer assignment
-ull =fwd1, 1 warning:
+ull = fwd1, 1 warning:
 	Suspicious pointer assignment
-ull =fwd2, 1 warning:
+ull = fwd2, 1 warning:
 	Suspicious pointer assignment
-ull =psub, 1 warning:
+ull = psub, 1 warning:
 	Suspicious pointer assignment
-ull =pfi, 1 warning:
+ull = pfi, 1 warning:
 	Suspicious pointer assignment
-ull =pany, 1 warning:
+ull = pany, 1 warning:
 	Suspicious pointer assignment
-ull =pb, 1 warning:
+ull = pb, 1 warning:
 	Suspicious pointer assignment
-ull =pub, 1 warning:
+ull = pub, 1 warning:
 	Suspicious pointer assignment
-ull =psh, 1 warning:
+ull = psh, 1 warning:
 	Suspicious pointer assignment
-ull =push, 1 warning:
+ull = push, 1 warning:
 	Suspicious pointer assignment
-ull =pl, 1 warning:
+ull = pl, 1 warning:
 	Suspicious pointer assignment
-ull =pul, 1 warning:
+ull = pul, 1 warning:
 	Suspicious pointer assignment
-ull =pll, 1 warning:
+ull = pll, 1 warning:
 	Suspicious pointer assignment
-ull =pull, 1 warning:
+ull = pull, 1 warning:
 	Suspicious pointer assignment
-ull =pi, 1 warning:
+ull = pi, 1 warning:
 	Suspicious pointer assignment
-ull =pui, 1 warning:
+ull = pui, 1 warning:
 	Suspicious pointer assignment
-ull =pf, 1 warning:
+ull = pf, 1 warning:
 	Suspicious pointer assignment
-ull =pd, 1 warning:
+ull = pd, 1 warning:
 	Suspicious pointer assignment
-ull =ps, 1 warning:
+ull = ps, 1 warning:
 	Suspicious pointer assignment
-ull =pz, 1 warning:
+ull = pz, 1 warning:
 	Suspicious pointer assignment
-ull =pw, 1 warning:
+ull = pw, 1 warning:
 	Suspicious pointer assignment
-ull =pudt1, 1 warning:
+ull = pudt1, 1 warning:
 	Suspicious pointer assignment
-ull =pudt2, 1 warning:
+ull = pudt2, 1 warning:
 	Suspicious pointer assignment
-ull =pfwd1, 1 warning:
+ull = pfwd1, 1 warning:
 	Suspicious pointer assignment
-ull =pdwf2, 1 warning:
+ull = pdwf2, 1 warning:
 	Suspicious pointer assignment
-ull =ppsub, 1 warning:
+ull = ppsub, 1 warning:
 	Suspicious pointer assignment
-ull =ppfi, 1 warning:
+ull = ppfi, 1 warning:
 	Suspicious pointer assignment
-i =byrefany, 1 warning:
+i = byrefany, 1 warning:
 	Suspicious pointer assignment
-i =b, 1 warning:
+i = b, 1 warning:
 	Suspicious pointer assignment
-i =ub, 1 warning:
+i = ub, 1 warning:
 	Suspicious pointer assignment
-i =sh, 1 warning:
+i = sh, 1 warning:
 	Suspicious pointer assignment
-i =ush, 1 warning:
+i = ush, 1 warning:
 	Suspicious pointer assignment
-i =ll, 1 warning:
+i = ll, 1 warning:
 	Suspicious pointer assignment
-i =ull, 1 warning:
+i = ull, 1 warning:
 	Suspicious pointer assignment
-i =f, 1 warning:
+i = f, 1 warning:
 	Suspicious pointer assignment
-i =d, 1 warning:
+i = d, 1 warning:
 	Suspicious pointer assignment
-i =s, 1 warning:
+i = s, 1 warning:
 	Suspicious pointer assignment
-i =z, 1 warning:
+i = z, 1 warning:
 	Suspicious pointer assignment
-i =w, 1 warning:
+i = w, 1 warning:
 	Suspicious pointer assignment
-i =udt1, 1 warning:
+i = udt1, 1 warning:
 	Suspicious pointer assignment
-i =udt2, 1 warning:
+i = udt2, 1 warning:
 	Suspicious pointer assignment
-i =fwd1, 1 warning:
+i = fwd1, 1 warning:
 	Suspicious pointer assignment
-i =fwd2, 1 warning:
+i = fwd2, 1 warning:
 	Suspicious pointer assignment
-i =psub, 1 warning:
+i = psub, 1 warning:
 	Suspicious pointer assignment
-i =pfi, 1 warning:
+i = pfi, 1 warning:
 	Suspicious pointer assignment
-i =pany, 1 warning:
+i = pany, 1 warning:
 	Suspicious pointer assignment
-i =pb, 1 warning:
+i = pb, 1 warning:
 	Suspicious pointer assignment
-i =pub, 1 warning:
+i = pub, 1 warning:
 	Suspicious pointer assignment
-i =psh, 1 warning:
+i = psh, 1 warning:
 	Suspicious pointer assignment
-i =push, 1 warning:
+i = push, 1 warning:
 	Suspicious pointer assignment
-i =pl, 1 warning:
+i = pl, 1 warning:
 	Suspicious pointer assignment
-i =pul, 1 warning:
+i = pul, 1 warning:
 	Suspicious pointer assignment
-i =pll, 1 warning:
+i = pll, 1 warning:
 	Suspicious pointer assignment
-i =pull, 1 warning:
+i = pull, 1 warning:
 	Suspicious pointer assignment
-i =pi, 1 warning:
+i = pi, 1 warning:
 	Suspicious pointer assignment
-i =pui, 1 warning:
+i = pui, 1 warning:
 	Suspicious pointer assignment
-i =pf, 1 warning:
+i = pf, 1 warning:
 	Suspicious pointer assignment
-i =pd, 1 warning:
+i = pd, 1 warning:
 	Suspicious pointer assignment
-i =ps, 1 warning:
+i = ps, 1 warning:
 	Suspicious pointer assignment
-i =pz, 1 warning:
+i = pz, 1 warning:
 	Suspicious pointer assignment
-i =pw, 1 warning:
+i = pw, 1 warning:
 	Suspicious pointer assignment
-i =pudt1, 1 warning:
+i = pudt1, 1 warning:
 	Suspicious pointer assignment
-i =pudt2, 1 warning:
+i = pudt2, 1 warning:
 	Suspicious pointer assignment
-i =pfwd1, 1 warning:
+i = pfwd1, 1 warning:
 	Suspicious pointer assignment
-i =pdwf2, 1 warning:
+i = pdwf2, 1 warning:
 	Suspicious pointer assignment
-i =ppsub, 1 warning:
+i = ppsub, 1 warning:
 	Suspicious pointer assignment
-i =ppfi, 1 warning:
+i = ppfi, 1 warning:
 	Suspicious pointer assignment
-ui =byrefany, 1 warning:
+ui = byrefany, 1 warning:
 	Suspicious pointer assignment
-ui =b, 1 warning:
+ui = b, 1 warning:
 	Suspicious pointer assignment
-ui =ub, 1 warning:
+ui = ub, 1 warning:
 	Suspicious pointer assignment
-ui =sh, 1 warning:
+ui = sh, 1 warning:
 	Suspicious pointer assignment
-ui =ush, 1 warning:
+ui = ush, 1 warning:
 	Suspicious pointer assignment
-ui =ll, 1 warning:
+ui = ll, 1 warning:
 	Suspicious pointer assignment
-ui =ull, 1 warning:
+ui = ull, 1 warning:
 	Suspicious pointer assignment
-ui =f, 1 warning:
+ui = f, 1 warning:
 	Suspicious pointer assignment
-ui =d, 1 warning:
+ui = d, 1 warning:
 	Suspicious pointer assignment
-ui =s, 1 warning:
+ui = s, 1 warning:
 	Suspicious pointer assignment
-ui =z, 1 warning:
+ui = z, 1 warning:
 	Suspicious pointer assignment
-ui =w, 1 warning:
+ui = w, 1 warning:
 	Suspicious pointer assignment
-ui =udt1, 1 warning:
+ui = udt1, 1 warning:
 	Suspicious pointer assignment
-ui =udt2, 1 warning:
+ui = udt2, 1 warning:
 	Suspicious pointer assignment
-ui =fwd1, 1 warning:
+ui = fwd1, 1 warning:
 	Suspicious pointer assignment
-ui =fwd2, 1 warning:
+ui = fwd2, 1 warning:
 	Suspicious pointer assignment
-ui =psub, 1 warning:
+ui = psub, 1 warning:
 	Suspicious pointer assignment
-ui =pfi, 1 warning:
+ui = pfi, 1 warning:
 	Suspicious pointer assignment
-ui =pany, 1 warning:
+ui = pany, 1 warning:
 	Suspicious pointer assignment
-ui =pb, 1 warning:
+ui = pb, 1 warning:
 	Suspicious pointer assignment
-ui =pub, 1 warning:
+ui = pub, 1 warning:
 	Suspicious pointer assignment
-ui =psh, 1 warning:
+ui = psh, 1 warning:
 	Suspicious pointer assignment
-ui =push, 1 warning:
+ui = push, 1 warning:
 	Suspicious pointer assignment
-ui =pl, 1 warning:
+ui = pl, 1 warning:
 	Suspicious pointer assignment
-ui =pul, 1 warning:
+ui = pul, 1 warning:
 	Suspicious pointer assignment
-ui =pll, 1 warning:
+ui = pll, 1 warning:
 	Suspicious pointer assignment
-ui =pull, 1 warning:
+ui = pull, 1 warning:
 	Suspicious pointer assignment
-ui =pi, 1 warning:
+ui = pi, 1 warning:
 	Suspicious pointer assignment
-ui =pui, 1 warning:
+ui = pui, 1 warning:
 	Suspicious pointer assignment
-ui =pf, 1 warning:
+ui = pf, 1 warning:
 	Suspicious pointer assignment
-ui =pd, 1 warning:
+ui = pd, 1 warning:
 	Suspicious pointer assignment
-ui =ps, 1 warning:
+ui = ps, 1 warning:
 	Suspicious pointer assignment
-ui =pz, 1 warning:
+ui = pz, 1 warning:
 	Suspicious pointer assignment
-ui =pw, 1 warning:
+ui = pw, 1 warning:
 	Suspicious pointer assignment
-ui =pudt1, 1 warning:
+ui = pudt1, 1 warning:
 	Suspicious pointer assignment
-ui =pudt2, 1 warning:
+ui = pudt2, 1 warning:
 	Suspicious pointer assignment
-ui =pfwd1, 1 warning:
+ui = pfwd1, 1 warning:
 	Suspicious pointer assignment
-ui =pdwf2, 1 warning:
+ui = pdwf2, 1 warning:
 	Suspicious pointer assignment
-ui =ppsub, 1 warning:
+ui = ppsub, 1 warning:
 	Suspicious pointer assignment
-ui =ppfi, 1 warning:
+ui = ppfi, 1 warning:
 	Suspicious pointer assignment
-f =byrefany, 1 warning:
+f = byrefany, 1 warning:
 	Suspicious pointer assignment
-f =b, 1 warning:
+f = b, 1 warning:
 	Suspicious pointer assignment
-f =ub, 1 warning:
+f = ub, 1 warning:
 	Suspicious pointer assignment
-f =sh, 1 warning:
+f = sh, 1 warning:
 	Suspicious pointer assignment
-f =ush, 1 warning:
+f = ush, 1 warning:
 	Suspicious pointer assignment
-f =l, 1 warning:
+f = l, 1 warning:
 	Suspicious pointer assignment
-f =ul, 1 warning:
+f = ul, 1 warning:
 	Suspicious pointer assignment
-f =ll, 1 warning:
+f = ll, 1 warning:
 	Suspicious pointer assignment
-f =ull, 1 warning:
+f = ull, 1 warning:
 	Suspicious pointer assignment
-f =i, 1 warning:
+f = i, 1 warning:
 	Suspicious pointer assignment
-f =ui, 1 warning:
+f = ui, 1 warning:
 	Suspicious pointer assignment
-f =d, 1 warning:
+f = d, 1 warning:
 	Suspicious pointer assignment
-f =s, 1 warning:
+f = s, 1 warning:
 	Suspicious pointer assignment
-f =z, 1 warning:
+f = z, 1 warning:
 	Suspicious pointer assignment
-f =w, 1 warning:
+f = w, 1 warning:
 	Suspicious pointer assignment
-f =udt1, 1 warning:
+f = udt1, 1 warning:
 	Suspicious pointer assignment
-f =udt2, 1 warning:
+f = udt2, 1 warning:
 	Suspicious pointer assignment
-f =fwd1, 1 warning:
+f = fwd1, 1 warning:
 	Suspicious pointer assignment
-f =fwd2, 1 warning:
+f = fwd2, 1 warning:
 	Suspicious pointer assignment
-f =psub, 1 warning:
+f = psub, 1 warning:
 	Suspicious pointer assignment
-f =pfi, 1 warning:
+f = pfi, 1 warning:
 	Suspicious pointer assignment
-f =pany, 1 warning:
+f = pany, 1 warning:
 	Suspicious pointer assignment
-f =pb, 1 warning:
+f = pb, 1 warning:
 	Suspicious pointer assignment
-f =pub, 1 warning:
+f = pub, 1 warning:
 	Suspicious pointer assignment
-f =psh, 1 warning:
+f = psh, 1 warning:
 	Suspicious pointer assignment
-f =push, 1 warning:
+f = push, 1 warning:
 	Suspicious pointer assignment
-f =pl, 1 warning:
+f = pl, 1 warning:
 	Suspicious pointer assignment
-f =pul, 1 warning:
+f = pul, 1 warning:
 	Suspicious pointer assignment
-f =pll, 1 warning:
+f = pll, 1 warning:
 	Suspicious pointer assignment
-f =pull, 1 warning:
+f = pull, 1 warning:
 	Suspicious pointer assignment
-f =pi, 1 warning:
+f = pi, 1 warning:
 	Suspicious pointer assignment
-f =pui, 1 warning:
+f = pui, 1 warning:
 	Suspicious pointer assignment
-f =pf, 1 warning:
+f = pf, 1 warning:
 	Suspicious pointer assignment
-f =pd, 1 warning:
+f = pd, 1 warning:
 	Suspicious pointer assignment
-f =ps, 1 warning:
+f = ps, 1 warning:
 	Suspicious pointer assignment
-f =pz, 1 warning:
+f = pz, 1 warning:
 	Suspicious pointer assignment
-f =pw, 1 warning:
+f = pw, 1 warning:
 	Suspicious pointer assignment
-f =pudt1, 1 warning:
+f = pudt1, 1 warning:
 	Suspicious pointer assignment
-f =pudt2, 1 warning:
+f = pudt2, 1 warning:
 	Suspicious pointer assignment
-f =pfwd1, 1 warning:
+f = pfwd1, 1 warning:
 	Suspicious pointer assignment
-f =pdwf2, 1 warning:
+f = pdwf2, 1 warning:
 	Suspicious pointer assignment
-f =ppsub, 1 warning:
+f = ppsub, 1 warning:
 	Suspicious pointer assignment
-f =ppfi, 1 warning:
+f = ppfi, 1 warning:
 	Suspicious pointer assignment
-d =byrefany, 1 warning:
+d = byrefany, 1 warning:
 	Suspicious pointer assignment
-d =b, 1 warning:
+d = b, 1 warning:
 	Suspicious pointer assignment
-d =ub, 1 warning:
+d = ub, 1 warning:
 	Suspicious pointer assignment
-d =sh, 1 warning:
+d = sh, 1 warning:
 	Suspicious pointer assignment
-d =ush, 1 warning:
+d = ush, 1 warning:
 	Suspicious pointer assignment
-d =l, 1 warning:
+d = l, 1 warning:
 	Suspicious pointer assignment
-d =ul, 1 warning:
+d = ul, 1 warning:
 	Suspicious pointer assignment
-d =ll, 1 warning:
+d = ll, 1 warning:
 	Suspicious pointer assignment
-d =ull, 1 warning:
+d = ull, 1 warning:
 	Suspicious pointer assignment
-d =i, 1 warning:
+d = i, 1 warning:
 	Suspicious pointer assignment
-d =ui, 1 warning:
+d = ui, 1 warning:
 	Suspicious pointer assignment
-d =f, 1 warning:
+d = f, 1 warning:
 	Suspicious pointer assignment
-d =s, 1 warning:
+d = s, 1 warning:
 	Suspicious pointer assignment
-d =z, 1 warning:
+d = z, 1 warning:
 	Suspicious pointer assignment
-d =w, 1 warning:
+d = w, 1 warning:
 	Suspicious pointer assignment
-d =udt1, 1 warning:
+d = udt1, 1 warning:
 	Suspicious pointer assignment
-d =udt2, 1 warning:
+d = udt2, 1 warning:
 	Suspicious pointer assignment
-d =fwd1, 1 warning:
+d = fwd1, 1 warning:
 	Suspicious pointer assignment
-d =fwd2, 1 warning:
+d = fwd2, 1 warning:
 	Suspicious pointer assignment
-d =psub, 1 warning:
+d = psub, 1 warning:
 	Suspicious pointer assignment
-d =pfi, 1 warning:
+d = pfi, 1 warning:
 	Suspicious pointer assignment
-d =pany, 1 warning:
+d = pany, 1 warning:
 	Suspicious pointer assignment
-d =pb, 1 warning:
+d = pb, 1 warning:
 	Suspicious pointer assignment
-d =pub, 1 warning:
+d = pub, 1 warning:
 	Suspicious pointer assignment
-d =psh, 1 warning:
+d = psh, 1 warning:
 	Suspicious pointer assignment
-d =push, 1 warning:
+d = push, 1 warning:
 	Suspicious pointer assignment
-d =pl, 1 warning:
+d = pl, 1 warning:
 	Suspicious pointer assignment
-d =pul, 1 warning:
+d = pul, 1 warning:
 	Suspicious pointer assignment
-d =pll, 1 warning:
+d = pll, 1 warning:
 	Suspicious pointer assignment
-d =pull, 1 warning:
+d = pull, 1 warning:
 	Suspicious pointer assignment
-d =pi, 1 warning:
+d = pi, 1 warning:
 	Suspicious pointer assignment
-d =pui, 1 warning:
+d = pui, 1 warning:
 	Suspicious pointer assignment
-d =pf, 1 warning:
+d = pf, 1 warning:
 	Suspicious pointer assignment
-d =pd, 1 warning:
+d = pd, 1 warning:
 	Suspicious pointer assignment
-d =ps, 1 warning:
+d = ps, 1 warning:
 	Suspicious pointer assignment
-d =pz, 1 warning:
+d = pz, 1 warning:
 	Suspicious pointer assignment
-d =pw, 1 warning:
+d = pw, 1 warning:
 	Suspicious pointer assignment
-d =pudt1, 1 warning:
+d = pudt1, 1 warning:
 	Suspicious pointer assignment
-d =pudt2, 1 warning:
+d = pudt2, 1 warning:
 	Suspicious pointer assignment
-d =pfwd1, 1 warning:
+d = pfwd1, 1 warning:
 	Suspicious pointer assignment
-d =pdwf2, 1 warning:
+d = pdwf2, 1 warning:
 	Suspicious pointer assignment
-d =ppsub, 1 warning:
+d = ppsub, 1 warning:
 	Suspicious pointer assignment
-d =ppfi, 1 warning:
+d = ppfi, 1 warning:
 	Suspicious pointer assignment
-s =byrefany, 1 warning:
+s = byrefany, 1 warning:
 	Suspicious pointer assignment
-s =b, 1 warning:
+s = b, 1 warning:
 	Suspicious pointer assignment
-s =ub, 1 warning:
+s = ub, 1 warning:
 	Suspicious pointer assignment
-s =sh, 1 warning:
+s = sh, 1 warning:
 	Suspicious pointer assignment
-s =ush, 1 warning:
+s = ush, 1 warning:
 	Suspicious pointer assignment
-s =l, 1 warning:
+s = l, 1 warning:
 	Suspicious pointer assignment
-s =ul, 1 warning:
+s = ul, 1 warning:
 	Suspicious pointer assignment
-s =ll, 1 warning:
+s = ll, 1 warning:
 	Suspicious pointer assignment
-s =ull, 1 warning:
+s = ull, 1 warning:
 	Suspicious pointer assignment
-s =i, 1 warning:
+s = i, 1 warning:
 	Suspicious pointer assignment
-s =ui, 1 warning:
+s = ui, 1 warning:
 	Suspicious pointer assignment
-s =f, 1 warning:
+s = f, 1 warning:
 	Suspicious pointer assignment
-s =d, 1 warning:
+s = d, 1 warning:
 	Suspicious pointer assignment
-s =z, 1 warning:
+s = z, 1 warning:
 	Suspicious pointer assignment
-s =w, 1 warning:
+s = w, 1 warning:
 	Suspicious pointer assignment
-s =udt1, 1 warning:
+s = udt1, 1 warning:
 	Suspicious pointer assignment
-s =udt2, 1 warning:
+s = udt2, 1 warning:
 	Suspicious pointer assignment
-s =fwd1, 1 warning:
+s = fwd1, 1 warning:
 	Suspicious pointer assignment
-s =fwd2, 1 warning:
+s = fwd2, 1 warning:
 	Suspicious pointer assignment
-s =psub, 1 warning:
+s = psub, 1 warning:
 	Suspicious pointer assignment
-s =pfi, 1 warning:
+s = pfi, 1 warning:
 	Suspicious pointer assignment
-s =pany, 1 warning:
+s = pany, 1 warning:
 	Suspicious pointer assignment
-s =pb, 1 warning:
+s = pb, 1 warning:
 	Suspicious pointer assignment
-s =pub, 1 warning:
+s = pub, 1 warning:
 	Suspicious pointer assignment
-s =psh, 1 warning:
+s = psh, 1 warning:
 	Suspicious pointer assignment
-s =push, 1 warning:
+s = push, 1 warning:
 	Suspicious pointer assignment
-s =pl, 1 warning:
+s = pl, 1 warning:
 	Suspicious pointer assignment
-s =pul, 1 warning:
+s = pul, 1 warning:
 	Suspicious pointer assignment
-s =pll, 1 warning:
+s = pll, 1 warning:
 	Suspicious pointer assignment
-s =pull, 1 warning:
+s = pull, 1 warning:
 	Suspicious pointer assignment
-s =pi, 1 warning:
+s = pi, 1 warning:
 	Suspicious pointer assignment
-s =pui, 1 warning:
+s = pui, 1 warning:
 	Suspicious pointer assignment
-s =pf, 1 warning:
+s = pf, 1 warning:
 	Suspicious pointer assignment
-s =pd, 1 warning:
+s = pd, 1 warning:
 	Suspicious pointer assignment
-s =ps, 1 warning:
+s = ps, 1 warning:
 	Suspicious pointer assignment
-s =pz, 1 warning:
+s = pz, 1 warning:
 	Suspicious pointer assignment
-s =pw, 1 warning:
+s = pw, 1 warning:
 	Suspicious pointer assignment
-s =pudt1, 1 warning:
+s = pudt1, 1 warning:
 	Suspicious pointer assignment
-s =pudt2, 1 warning:
+s = pudt2, 1 warning:
 	Suspicious pointer assignment
-s =pfwd1, 1 warning:
+s = pfwd1, 1 warning:
 	Suspicious pointer assignment
-s =pdwf2, 1 warning:
+s = pdwf2, 1 warning:
 	Suspicious pointer assignment
-s =ppsub, 1 warning:
+s = ppsub, 1 warning:
 	Suspicious pointer assignment
-s =ppfi, 1 warning:
+s = ppfi, 1 warning:
 	Suspicious pointer assignment
-z =byrefany, 1 warning:
+z = byrefany, 1 warning:
 	Suspicious pointer assignment
-z =sh, 1 warning:
+z = sh, 1 warning:
 	Suspicious pointer assignment
-z =ush, 1 warning:
+z = ush, 1 warning:
 	Suspicious pointer assignment
-z =l, 1 warning:
+z = l, 1 warning:
 	Suspicious pointer assignment
-z =ul, 1 warning:
+z = ul, 1 warning:
 	Suspicious pointer assignment
-z =ll, 1 warning:
+z = ll, 1 warning:
 	Suspicious pointer assignment
-z =ull, 1 warning:
+z = ull, 1 warning:
 	Suspicious pointer assignment
-z =i, 1 warning:
+z = i, 1 warning:
 	Suspicious pointer assignment
-z =ui, 1 warning:
+z = ui, 1 warning:
 	Suspicious pointer assignment
-z =f, 1 warning:
+z = f, 1 warning:
 	Suspicious pointer assignment
-z =d, 1 warning:
+z = d, 1 warning:
 	Suspicious pointer assignment
-z =s, 1 warning:
+z = s, 1 warning:
 	Suspicious pointer assignment
-z =udt1, 1 warning:
+z = udt1, 1 warning:
 	Suspicious pointer assignment
-z =udt2, 1 warning:
+z = udt2, 1 warning:
 	Suspicious pointer assignment
-z =fwd1, 1 warning:
+z = fwd1, 1 warning:
 	Suspicious pointer assignment
-z =fwd2, 1 warning:
+z = fwd2, 1 warning:
 	Suspicious pointer assignment
-z =psub, 1 warning:
+z = psub, 1 warning:
 	Suspicious pointer assignment
-z =pfi, 1 warning:
+z = pfi, 1 warning:
 	Suspicious pointer assignment
-z =pany, 1 warning:
+z = pany, 1 warning:
 	Suspicious pointer assignment
-z =pb, 1 warning:
+z = pb, 1 warning:
 	Suspicious pointer assignment
-z =pub, 1 warning:
+z = pub, 1 warning:
 	Suspicious pointer assignment
-z =psh, 1 warning:
+z = psh, 1 warning:
 	Suspicious pointer assignment
-z =push, 1 warning:
+z = push, 1 warning:
 	Suspicious pointer assignment
-z =pl, 1 warning:
+z = pl, 1 warning:
 	Suspicious pointer assignment
-z =pul, 1 warning:
+z = pul, 1 warning:
 	Suspicious pointer assignment
-z =pll, 1 warning:
+z = pll, 1 warning:
 	Suspicious pointer assignment
-z =pull, 1 warning:
+z = pull, 1 warning:
 	Suspicious pointer assignment
-z =pi, 1 warning:
+z = pi, 1 warning:
 	Suspicious pointer assignment
-z =pui, 1 warning:
+z = pui, 1 warning:
 	Suspicious pointer assignment
-z =pf, 1 warning:
+z = pf, 1 warning:
 	Suspicious pointer assignment
-z =pd, 1 warning:
+z = pd, 1 warning:
 	Suspicious pointer assignment
-z =ps, 1 warning:
+z = ps, 1 warning:
 	Suspicious pointer assignment
-z =pz, 1 warning:
+z = pz, 1 warning:
 	Suspicious pointer assignment
-z =pw, 1 warning:
+z = pw, 1 warning:
 	Suspicious pointer assignment
-z =pudt1, 1 warning:
+z = pudt1, 1 warning:
 	Suspicious pointer assignment
-z =pudt2, 1 warning:
+z = pudt2, 1 warning:
 	Suspicious pointer assignment
-z =pfwd1, 1 warning:
+z = pfwd1, 1 warning:
 	Suspicious pointer assignment
-z =pdwf2, 1 warning:
+z = pdwf2, 1 warning:
 	Suspicious pointer assignment
-z =ppsub, 1 warning:
+z = ppsub, 1 warning:
 	Suspicious pointer assignment
-z =ppfi, 1 warning:
+z = ppfi, 1 warning:
 	Suspicious pointer assignment
-w =byrefany, 1 warning:
+w = byrefany, 1 warning:
 	Suspicious pointer assignment
-w =sh, 1 warning:
+w = sh, 1 warning:
 	Suspicious pointer assignment
-w =ush, 1 warning:
+w = ush, 1 warning:
 	Suspicious pointer assignment
-w =l, 1 warning:
+w = l, 1 warning:
 	Suspicious pointer assignment
-w =ul, 1 warning:
+w = ul, 1 warning:
 	Suspicious pointer assignment
-w =ll, 1 warning:
+w = ll, 1 warning:
 	Suspicious pointer assignment
-w =ull, 1 warning:
+w = ull, 1 warning:
 	Suspicious pointer assignment
-w =i, 1 warning:
+w = i, 1 warning:
 	Suspicious pointer assignment
-w =ui, 1 warning:
+w = ui, 1 warning:
 	Suspicious pointer assignment
-w =f, 1 warning:
+w = f, 1 warning:
 	Suspicious pointer assignment
-w =d, 1 warning:
+w = d, 1 warning:
 	Suspicious pointer assignment
-w =s, 1 warning:
+w = s, 1 warning:
 	Suspicious pointer assignment
-w =udt1, 1 warning:
+w = udt1, 1 warning:
 	Suspicious pointer assignment
-w =udt2, 1 warning:
+w = udt2, 1 warning:
 	Suspicious pointer assignment
-w =fwd1, 1 warning:
+w = fwd1, 1 warning:
 	Suspicious pointer assignment
-w =fwd2, 1 warning:
+w = fwd2, 1 warning:
 	Suspicious pointer assignment
-w =psub, 1 warning:
+w = psub, 1 warning:
 	Suspicious pointer assignment
-w =pfi, 1 warning:
+w = pfi, 1 warning:
 	Suspicious pointer assignment
-w =pany, 1 warning:
+w = pany, 1 warning:
 	Suspicious pointer assignment
-w =pb, 1 warning:
+w = pb, 1 warning:
 	Suspicious pointer assignment
-w =pub, 1 warning:
+w = pub, 1 warning:
 	Suspicious pointer assignment
-w =psh, 1 warning:
+w = psh, 1 warning:
 	Suspicious pointer assignment
-w =push, 1 warning:
+w = push, 1 warning:
 	Suspicious pointer assignment
-w =pl, 1 warning:
+w = pl, 1 warning:
 	Suspicious pointer assignment
-w =pul, 1 warning:
+w = pul, 1 warning:
 	Suspicious pointer assignment
-w =pll, 1 warning:
+w = pll, 1 warning:
 	Suspicious pointer assignment
-w =pull, 1 warning:
+w = pull, 1 warning:
 	Suspicious pointer assignment
-w =pi, 1 warning:
+w = pi, 1 warning:
 	Suspicious pointer assignment
-w =pui, 1 warning:
+w = pui, 1 warning:
 	Suspicious pointer assignment
-w =pf, 1 warning:
+w = pf, 1 warning:
 	Suspicious pointer assignment
-w =pd, 1 warning:
+w = pd, 1 warning:
 	Suspicious pointer assignment
-w =ps, 1 warning:
+w = ps, 1 warning:
 	Suspicious pointer assignment
-w =pz, 1 warning:
+w = pz, 1 warning:
 	Suspicious pointer assignment
-w =pw, 1 warning:
+w = pw, 1 warning:
 	Suspicious pointer assignment
-w =pudt1, 1 warning:
+w = pudt1, 1 warning:
 	Suspicious pointer assignment
-w =pudt2, 1 warning:
+w = pudt2, 1 warning:
 	Suspicious pointer assignment
-w =pfwd1, 1 warning:
+w = pfwd1, 1 warning:
 	Suspicious pointer assignment
-w =pdwf2, 1 warning:
+w = pdwf2, 1 warning:
 	Suspicious pointer assignment
-w =ppsub, 1 warning:
+w = ppsub, 1 warning:
 	Suspicious pointer assignment
-w =ppfi, 1 warning:
+w = ppfi, 1 warning:
 	Suspicious pointer assignment
-udt1 =byrefany, 1 warning:
+udt1 = byrefany, 1 warning:
 	Suspicious pointer assignment
-udt1 =b, 1 warning:
+udt1 = b, 1 warning:
 	Suspicious pointer assignment
-udt1 =ub, 1 warning:
+udt1 = ub, 1 warning:
 	Suspicious pointer assignment
-udt1 =sh, 1 warning:
+udt1 = sh, 1 warning:
 	Suspicious pointer assignment
-udt1 =ush, 1 warning:
+udt1 = ush, 1 warning:
 	Suspicious pointer assignment
-udt1 =l, 1 warning:
+udt1 = l, 1 warning:
 	Suspicious pointer assignment
-udt1 =ul, 1 warning:
+udt1 = ul, 1 warning:
 	Suspicious pointer assignment
-udt1 =ll, 1 warning:
+udt1 = ll, 1 warning:
 	Suspicious pointer assignment
-udt1 =ull, 1 warning:
+udt1 = ull, 1 warning:
 	Suspicious pointer assignment
-udt1 =i, 1 warning:
+udt1 = i, 1 warning:
 	Suspicious pointer assignment
-udt1 =ui, 1 warning:
+udt1 = ui, 1 warning:
 	Suspicious pointer assignment
-udt1 =f, 1 warning:
+udt1 = f, 1 warning:
 	Suspicious pointer assignment
-udt1 =d, 1 warning:
+udt1 = d, 1 warning:
 	Suspicious pointer assignment
-udt1 =s, 1 warning:
+udt1 = s, 1 warning:
 	Suspicious pointer assignment
-udt1 =z, 1 warning:
+udt1 = z, 1 warning:
 	Suspicious pointer assignment
-udt1 =w, 1 warning:
+udt1 = w, 1 warning:
 	Suspicious pointer assignment
-udt1 =udt2, 1 warning:
+udt1 = udt2, 1 warning:
 	Suspicious pointer assignment
-udt1 =fwd1, 1 warning:
+udt1 = fwd1, 1 warning:
 	Suspicious pointer assignment
-udt1 =fwd2, 1 warning:
+udt1 = fwd2, 1 warning:
 	Suspicious pointer assignment
-udt1 =psub, 1 warning:
+udt1 = psub, 1 warning:
 	Suspicious pointer assignment
-udt1 =pfi, 1 warning:
+udt1 = pfi, 1 warning:
 	Suspicious pointer assignment
-udt1 =pany, 1 warning:
+udt1 = pany, 1 warning:
 	Suspicious pointer assignment
-udt1 =pb, 1 warning:
+udt1 = pb, 1 warning:
 	Suspicious pointer assignment
-udt1 =pub, 1 warning:
+udt1 = pub, 1 warning:
 	Suspicious pointer assignment
-udt1 =psh, 1 warning:
+udt1 = psh, 1 warning:
 	Suspicious pointer assignment
-udt1 =push, 1 warning:
+udt1 = push, 1 warning:
 	Suspicious pointer assignment
-udt1 =pl, 1 warning:
+udt1 = pl, 1 warning:
 	Suspicious pointer assignment
-udt1 =pul, 1 warning:
+udt1 = pul, 1 warning:
 	Suspicious pointer assignment
-udt1 =pll, 1 warning:
+udt1 = pll, 1 warning:
 	Suspicious pointer assignment
-udt1 =pull, 1 warning:
+udt1 = pull, 1 warning:
 	Suspicious pointer assignment
-udt1 =pi, 1 warning:
+udt1 = pi, 1 warning:
 	Suspicious pointer assignment
-udt1 =pui, 1 warning:
+udt1 = pui, 1 warning:
 	Suspicious pointer assignment
-udt1 =pf, 1 warning:
+udt1 = pf, 1 warning:
 	Suspicious pointer assignment
-udt1 =pd, 1 warning:
+udt1 = pd, 1 warning:
 	Suspicious pointer assignment
-udt1 =ps, 1 warning:
+udt1 = ps, 1 warning:
 	Suspicious pointer assignment
-udt1 =pz, 1 warning:
+udt1 = pz, 1 warning:
 	Suspicious pointer assignment
-udt1 =pw, 1 warning:
+udt1 = pw, 1 warning:
 	Suspicious pointer assignment
-udt1 =pudt1, 1 warning:
+udt1 = pudt1, 1 warning:
 	Suspicious pointer assignment
-udt1 =pudt2, 1 warning:
+udt1 = pudt2, 1 warning:
 	Suspicious pointer assignment
-udt1 =pfwd1, 1 warning:
+udt1 = pfwd1, 1 warning:
 	Suspicious pointer assignment
-udt1 =pdwf2, 1 warning:
+udt1 = pdwf2, 1 warning:
 	Suspicious pointer assignment
-udt1 =ppsub, 1 warning:
+udt1 = ppsub, 1 warning:
 	Suspicious pointer assignment
-udt1 =ppfi, 1 warning:
+udt1 = ppfi, 1 warning:
 	Suspicious pointer assignment
-udt2 =byrefany, 1 warning:
+udt2 = byrefany, 1 warning:
 	Suspicious pointer assignment
-udt2 =b, 1 warning:
+udt2 = b, 1 warning:
 	Suspicious pointer assignment
-udt2 =ub, 1 warning:
+udt2 = ub, 1 warning:
 	Suspicious pointer assignment
-udt2 =sh, 1 warning:
+udt2 = sh, 1 warning:
 	Suspicious pointer assignment
-udt2 =ush, 1 warning:
+udt2 = ush, 1 warning:
 	Suspicious pointer assignment
-udt2 =l, 1 warning:
+udt2 = l, 1 warning:
 	Suspicious pointer assignment
-udt2 =ul, 1 warning:
+udt2 = ul, 1 warning:
 	Suspicious pointer assignment
-udt2 =ll, 1 warning:
+udt2 = ll, 1 warning:
 	Suspicious pointer assignment
-udt2 =ull, 1 warning:
+udt2 = ull, 1 warning:
 	Suspicious pointer assignment
-udt2 =i, 1 warning:
+udt2 = i, 1 warning:
 	Suspicious pointer assignment
-udt2 =ui, 1 warning:
+udt2 = ui, 1 warning:
 	Suspicious pointer assignment
-udt2 =f, 1 warning:
+udt2 = f, 1 warning:
 	Suspicious pointer assignment
-udt2 =d, 1 warning:
+udt2 = d, 1 warning:
 	Suspicious pointer assignment
-udt2 =s, 1 warning:
+udt2 = s, 1 warning:
 	Suspicious pointer assignment
-udt2 =z, 1 warning:
+udt2 = z, 1 warning:
 	Suspicious pointer assignment
-udt2 =w, 1 warning:
+udt2 = w, 1 warning:
 	Suspicious pointer assignment
-udt2 =udt1, 1 warning:
+udt2 = udt1, 1 warning:
 	Suspicious pointer assignment
-udt2 =fwd1, 1 warning:
+udt2 = fwd1, 1 warning:
 	Suspicious pointer assignment
-udt2 =fwd2, 1 warning:
+udt2 = fwd2, 1 warning:
 	Suspicious pointer assignment
-udt2 =psub, 1 warning:
+udt2 = psub, 1 warning:
 	Suspicious pointer assignment
-udt2 =pfi, 1 warning:
+udt2 = pfi, 1 warning:
 	Suspicious pointer assignment
-udt2 =pany, 1 warning:
+udt2 = pany, 1 warning:
 	Suspicious pointer assignment
-udt2 =pb, 1 warning:
+udt2 = pb, 1 warning:
 	Suspicious pointer assignment
-udt2 =pub, 1 warning:
+udt2 = pub, 1 warning:
 	Suspicious pointer assignment
-udt2 =psh, 1 warning:
+udt2 = psh, 1 warning:
 	Suspicious pointer assignment
-udt2 =push, 1 warning:
+udt2 = push, 1 warning:
 	Suspicious pointer assignment
-udt2 =pl, 1 warning:
+udt2 = pl, 1 warning:
 	Suspicious pointer assignment
-udt2 =pul, 1 warning:
+udt2 = pul, 1 warning:
 	Suspicious pointer assignment
-udt2 =pll, 1 warning:
+udt2 = pll, 1 warning:
 	Suspicious pointer assignment
-udt2 =pull, 1 warning:
+udt2 = pull, 1 warning:
 	Suspicious pointer assignment
-udt2 =pi, 1 warning:
+udt2 = pi, 1 warning:
 	Suspicious pointer assignment
-udt2 =pui, 1 warning:
+udt2 = pui, 1 warning:
 	Suspicious pointer assignment
-udt2 =pf, 1 warning:
+udt2 = pf, 1 warning:
 	Suspicious pointer assignment
-udt2 =pd, 1 warning:
+udt2 = pd, 1 warning:
 	Suspicious pointer assignment
-udt2 =ps, 1 warning:
+udt2 = ps, 1 warning:
 	Suspicious pointer assignment
-udt2 =pz, 1 warning:
+udt2 = pz, 1 warning:
 	Suspicious pointer assignment
-udt2 =pw, 1 warning:
+udt2 = pw, 1 warning:
 	Suspicious pointer assignment
-udt2 =pudt1, 1 warning:
+udt2 = pudt1, 1 warning:
 	Suspicious pointer assignment
-udt2 =pudt2, 1 warning:
+udt2 = pudt2, 1 warning:
 	Suspicious pointer assignment
-udt2 =pfwd1, 1 warning:
+udt2 = pfwd1, 1 warning:
 	Suspicious pointer assignment
-udt2 =pdwf2, 1 warning:
+udt2 = pdwf2, 1 warning:
 	Suspicious pointer assignment
-udt2 =ppsub, 1 warning:
+udt2 = ppsub, 1 warning:
 	Suspicious pointer assignment
-udt2 =ppfi, 1 warning:
+udt2 = ppfi, 1 warning:
 	Suspicious pointer assignment
-fwd1 =byrefany, 1 warning:
+fwd1 = byrefany, 1 warning:
 	Suspicious pointer assignment
-fwd1 =b, 1 warning:
+fwd1 = b, 1 warning:
 	Suspicious pointer assignment
-fwd1 =ub, 1 warning:
+fwd1 = ub, 1 warning:
 	Suspicious pointer assignment
-fwd1 =sh, 1 warning:
+fwd1 = sh, 1 warning:
 	Suspicious pointer assignment
-fwd1 =ush, 1 warning:
+fwd1 = ush, 1 warning:
 	Suspicious pointer assignment
-fwd1 =l, 1 warning:
+fwd1 = l, 1 warning:
 	Suspicious pointer assignment
-fwd1 =ul, 1 warning:
+fwd1 = ul, 1 warning:
 	Suspicious pointer assignment
-fwd1 =ll, 1 warning:
+fwd1 = ll, 1 warning:
 	Suspicious pointer assignment
-fwd1 =ull, 1 warning:
+fwd1 = ull, 1 warning:
 	Suspicious pointer assignment
-fwd1 =i, 1 warning:
+fwd1 = i, 1 warning:
 	Suspicious pointer assignment
-fwd1 =ui, 1 warning:
+fwd1 = ui, 1 warning:
 	Suspicious pointer assignment
-fwd1 =f, 1 warning:
+fwd1 = f, 1 warning:
 	Suspicious pointer assignment
-fwd1 =d, 1 warning:
+fwd1 = d, 1 warning:
 	Suspicious pointer assignment
-fwd1 =s, 1 warning:
+fwd1 = s, 1 warning:
 	Suspicious pointer assignment
-fwd1 =z, 1 warning:
+fwd1 = z, 1 warning:
 	Suspicious pointer assignment
-fwd1 =w, 1 warning:
+fwd1 = w, 1 warning:
 	Suspicious pointer assignment
-fwd1 =udt1, 1 warning:
+fwd1 = udt1, 1 warning:
 	Suspicious pointer assignment
-fwd1 =udt2, 1 warning:
+fwd1 = udt2, 1 warning:
 	Suspicious pointer assignment
-fwd1 =fwd2, 1 warning:
+fwd1 = fwd2, 1 warning:
 	Suspicious pointer assignment
-fwd1 =psub, 1 warning:
+fwd1 = psub, 1 warning:
 	Suspicious pointer assignment
-fwd1 =pfi, 1 warning:
+fwd1 = pfi, 1 warning:
 	Suspicious pointer assignment
-fwd1 =pany, 1 warning:
+fwd1 = pany, 1 warning:
 	Suspicious pointer assignment
-fwd1 =pb, 1 warning:
+fwd1 = pb, 1 warning:
 	Suspicious pointer assignment
-fwd1 =pub, 1 warning:
+fwd1 = pub, 1 warning:
 	Suspicious pointer assignment
-fwd1 =psh, 1 warning:
+fwd1 = psh, 1 warning:
 	Suspicious pointer assignment
-fwd1 =push, 1 warning:
+fwd1 = push, 1 warning:
 	Suspicious pointer assignment
-fwd1 =pl, 1 warning:
+fwd1 = pl, 1 warning:
 	Suspicious pointer assignment
-fwd1 =pul, 1 warning:
+fwd1 = pul, 1 warning:
 	Suspicious pointer assignment
-fwd1 =pll, 1 warning:
+fwd1 = pll, 1 warning:
 	Suspicious pointer assignment
-fwd1 =pull, 1 warning:
+fwd1 = pull, 1 warning:
 	Suspicious pointer assignment
-fwd1 =pi, 1 warning:
+fwd1 = pi, 1 warning:
 	Suspicious pointer assignment
-fwd1 =pui, 1 warning:
+fwd1 = pui, 1 warning:
 	Suspicious pointer assignment
-fwd1 =pf, 1 warning:
+fwd1 = pf, 1 warning:
 	Suspicious pointer assignment
-fwd1 =pd, 1 warning:
+fwd1 = pd, 1 warning:
 	Suspicious pointer assignment
-fwd1 =ps, 1 warning:
+fwd1 = ps, 1 warning:
 	Suspicious pointer assignment
-fwd1 =pz, 1 warning:
+fwd1 = pz, 1 warning:
 	Suspicious pointer assignment
-fwd1 =pw, 1 warning:
+fwd1 = pw, 1 warning:
 	Suspicious pointer assignment
-fwd1 =pudt1, 1 warning:
+fwd1 = pudt1, 1 warning:
 	Suspicious pointer assignment
-fwd1 =pudt2, 1 warning:
+fwd1 = pudt2, 1 warning:
 	Suspicious pointer assignment
-fwd1 =pfwd1, 1 warning:
+fwd1 = pfwd1, 1 warning:
 	Suspicious pointer assignment
-fwd1 =pdwf2, 1 warning:
+fwd1 = pdwf2, 1 warning:
 	Suspicious pointer assignment
-fwd1 =ppsub, 1 warning:
+fwd1 = ppsub, 1 warning:
 	Suspicious pointer assignment
-fwd1 =ppfi, 1 warning:
+fwd1 = ppfi, 1 warning:
 	Suspicious pointer assignment
-fwd2 =byrefany, 1 warning:
+fwd2 = byrefany, 1 warning:
 	Suspicious pointer assignment
-fwd2 =b, 1 warning:
+fwd2 = b, 1 warning:
 	Suspicious pointer assignment
-fwd2 =ub, 1 warning:
+fwd2 = ub, 1 warning:
 	Suspicious pointer assignment
-fwd2 =sh, 1 warning:
+fwd2 = sh, 1 warning:
 	Suspicious pointer assignment
-fwd2 =ush, 1 warning:
+fwd2 = ush, 1 warning:
 	Suspicious pointer assignment
-fwd2 =l, 1 warning:
+fwd2 = l, 1 warning:
 	Suspicious pointer assignment
-fwd2 =ul, 1 warning:
+fwd2 = ul, 1 warning:
 	Suspicious pointer assignment
-fwd2 =ll, 1 warning:
+fwd2 = ll, 1 warning:
 	Suspicious pointer assignment
-fwd2 =ull, 1 warning:
+fwd2 = ull, 1 warning:
 	Suspicious pointer assignment
-fwd2 =i, 1 warning:
+fwd2 = i, 1 warning:
 	Suspicious pointer assignment
-fwd2 =ui, 1 warning:
+fwd2 = ui, 1 warning:
 	Suspicious pointer assignment
-fwd2 =f, 1 warning:
+fwd2 = f, 1 warning:
 	Suspicious pointer assignment
-fwd2 =d, 1 warning:
+fwd2 = d, 1 warning:
 	Suspicious pointer assignment
-fwd2 =s, 1 warning:
+fwd2 = s, 1 warning:
 	Suspicious pointer assignment
-fwd2 =z, 1 warning:
+fwd2 = z, 1 warning:
 	Suspicious pointer assignment
-fwd2 =w, 1 warning:
+fwd2 = w, 1 warning:
 	Suspicious pointer assignment
-fwd2 =udt1, 1 warning:
+fwd2 = udt1, 1 warning:
 	Suspicious pointer assignment
-fwd2 =udt2, 1 warning:
+fwd2 = udt2, 1 warning:
 	Suspicious pointer assignment
-fwd2 =fwd1, 1 warning:
+fwd2 = fwd1, 1 warning:
 	Suspicious pointer assignment
-fwd2 =psub, 1 warning:
+fwd2 = psub, 1 warning:
 	Suspicious pointer assignment
-fwd2 =pfi, 1 warning:
+fwd2 = pfi, 1 warning:
 	Suspicious pointer assignment
-fwd2 =pany, 1 warning:
+fwd2 = pany, 1 warning:
 	Suspicious pointer assignment
-fwd2 =pb, 1 warning:
+fwd2 = pb, 1 warning:
 	Suspicious pointer assignment
-fwd2 =pub, 1 warning:
+fwd2 = pub, 1 warning:
 	Suspicious pointer assignment
-fwd2 =psh, 1 warning:
+fwd2 = psh, 1 warning:
 	Suspicious pointer assignment
-fwd2 =push, 1 warning:
+fwd2 = push, 1 warning:
 	Suspicious pointer assignment
-fwd2 =pl, 1 warning:
+fwd2 = pl, 1 warning:
 	Suspicious pointer assignment
-fwd2 =pul, 1 warning:
+fwd2 = pul, 1 warning:
 	Suspicious pointer assignment
-fwd2 =pll, 1 warning:
+fwd2 = pll, 1 warning:
 	Suspicious pointer assignment
-fwd2 =pull, 1 warning:
+fwd2 = pull, 1 warning:
 	Suspicious pointer assignment
-fwd2 =pi, 1 warning:
+fwd2 = pi, 1 warning:
 	Suspicious pointer assignment
-fwd2 =pui, 1 warning:
+fwd2 = pui, 1 warning:
 	Suspicious pointer assignment
-fwd2 =pf, 1 warning:
+fwd2 = pf, 1 warning:
 	Suspicious pointer assignment
-fwd2 =pd, 1 warning:
+fwd2 = pd, 1 warning:
 	Suspicious pointer assignment
-fwd2 =ps, 1 warning:
+fwd2 = ps, 1 warning:
 	Suspicious pointer assignment
-fwd2 =pz, 1 warning:
+fwd2 = pz, 1 warning:
 	Suspicious pointer assignment
-fwd2 =pw, 1 warning:
+fwd2 = pw, 1 warning:
 	Suspicious pointer assignment
-fwd2 =pudt1, 1 warning:
+fwd2 = pudt1, 1 warning:
 	Suspicious pointer assignment
-fwd2 =pudt2, 1 warning:
+fwd2 = pudt2, 1 warning:
 	Suspicious pointer assignment
-fwd2 =pfwd1, 1 warning:
+fwd2 = pfwd1, 1 warning:
 	Suspicious pointer assignment
-fwd2 =pdwf2, 1 warning:
+fwd2 = pdwf2, 1 warning:
 	Suspicious pointer assignment
-fwd2 =ppsub, 1 warning:
+fwd2 = ppsub, 1 warning:
 	Suspicious pointer assignment
-fwd2 =ppfi, 1 warning:
+fwd2 = ppfi, 1 warning:
 	Suspicious pointer assignment
-psub =byrefany, 1 warning:
+psub = byrefany, 1 warning:
 	Suspicious pointer assignment
-psub =b, 1 warning:
+psub = b, 1 warning:
 	Suspicious pointer assignment
-psub =ub, 1 warning:
+psub = ub, 1 warning:
 	Suspicious pointer assignment
-psub =sh, 1 warning:
+psub = sh, 1 warning:
 	Suspicious pointer assignment
-psub =ush, 1 warning:
+psub = ush, 1 warning:
 	Suspicious pointer assignment
-psub =l, 1 warning:
+psub = l, 1 warning:
 	Suspicious pointer assignment
-psub =ul, 1 warning:
+psub = ul, 1 warning:
 	Suspicious pointer assignment
-psub =ll, 1 warning:
+psub = ll, 1 warning:
 	Suspicious pointer assignment
-psub =ull, 1 warning:
+psub = ull, 1 warning:
 	Suspicious pointer assignment
-psub =i, 1 warning:
+psub = i, 1 warning:
 	Suspicious pointer assignment
-psub =ui, 1 warning:
+psub = ui, 1 warning:
 	Suspicious pointer assignment
-psub =f, 1 warning:
+psub = f, 1 warning:
 	Suspicious pointer assignment
-psub =d, 1 warning:
+psub = d, 1 warning:
 	Suspicious pointer assignment
-psub =s, 1 warning:
+psub = s, 1 warning:
 	Suspicious pointer assignment
-psub =z, 1 warning:
+psub = z, 1 warning:
 	Suspicious pointer assignment
-psub =w, 1 warning:
+psub = w, 1 warning:
 	Suspicious pointer assignment
-psub =udt1, 1 warning:
+psub = udt1, 1 warning:
 	Suspicious pointer assignment
-psub =udt2, 1 warning:
+psub = udt2, 1 warning:
 	Suspicious pointer assignment
-psub =fwd1, 1 warning:
+psub = fwd1, 1 warning:
 	Suspicious pointer assignment
-psub =fwd2, 1 warning:
+psub = fwd2, 1 warning:
 	Suspicious pointer assignment
-psub =pfi, 1 warning:
+psub = pfi, 1 warning:
 	Suspicious pointer assignment
 	Return type mismatch in function pointer
-psub =pany, 1 warning:
+psub = pany, 1 warning:
 	Suspicious pointer assignment
-psub =pb, 1 warning:
+psub = pb, 1 warning:
 	Suspicious pointer assignment
-psub =pub, 1 warning:
+psub = pub, 1 warning:
 	Suspicious pointer assignment
-psub =psh, 1 warning:
+psub = psh, 1 warning:
 	Suspicious pointer assignment
-psub =push, 1 warning:
+psub = push, 1 warning:
 	Suspicious pointer assignment
-psub =pl, 1 warning:
+psub = pl, 1 warning:
 	Suspicious pointer assignment
-psub =pul, 1 warning:
+psub = pul, 1 warning:
 	Suspicious pointer assignment
-psub =pll, 1 warning:
+psub = pll, 1 warning:
 	Suspicious pointer assignment
-psub =pull, 1 warning:
+psub = pull, 1 warning:
 	Suspicious pointer assignment
-psub =pi, 1 warning:
+psub = pi, 1 warning:
 	Suspicious pointer assignment
-psub =pui, 1 warning:
+psub = pui, 1 warning:
 	Suspicious pointer assignment
-psub =pf, 1 warning:
+psub = pf, 1 warning:
 	Suspicious pointer assignment
-psub =pd, 1 warning:
+psub = pd, 1 warning:
 	Suspicious pointer assignment
-psub =ps, 1 warning:
+psub = ps, 1 warning:
 	Suspicious pointer assignment
-psub =pz, 1 warning:
+psub = pz, 1 warning:
 	Suspicious pointer assignment
-psub =pw, 1 warning:
+psub = pw, 1 warning:
 	Suspicious pointer assignment
-psub =pudt1, 1 warning:
+psub = pudt1, 1 warning:
 	Suspicious pointer assignment
-psub =pudt2, 1 warning:
+psub = pudt2, 1 warning:
 	Suspicious pointer assignment
-psub =pfwd1, 1 warning:
+psub = pfwd1, 1 warning:
 	Suspicious pointer assignment
-psub =pdwf2, 1 warning:
+psub = pdwf2, 1 warning:
 	Suspicious pointer assignment
-psub =ppsub, 1 warning:
+psub = ppsub, 1 warning:
 	Suspicious pointer assignment
-psub =ppfi, 1 warning:
-	Suspicious pointer assignment
-	Return type mismatch in function pointer
-pfi =byrefany, 1 warning:
-	Suspicious pointer assignment
-pfi =b, 1 warning:
-	Suspicious pointer assignment
-pfi =ub, 1 warning:
-	Suspicious pointer assignment
-pfi =sh, 1 warning:
-	Suspicious pointer assignment
-pfi =ush, 1 warning:
-	Suspicious pointer assignment
-pfi =l, 1 warning:
-	Suspicious pointer assignment
-pfi =ul, 1 warning:
-	Suspicious pointer assignment
-pfi =ll, 1 warning:
-	Suspicious pointer assignment
-pfi =ull, 1 warning:
-	Suspicious pointer assignment
-pfi =i, 1 warning:
-	Suspicious pointer assignment
-pfi =ui, 1 warning:
-	Suspicious pointer assignment
-pfi =f, 1 warning:
-	Suspicious pointer assignment
-pfi =d, 1 warning:
-	Suspicious pointer assignment
-pfi =s, 1 warning:
-	Suspicious pointer assignment
-pfi =z, 1 warning:
-	Suspicious pointer assignment
-pfi =w, 1 warning:
-	Suspicious pointer assignment
-pfi =udt1, 1 warning:
-	Suspicious pointer assignment
-pfi =udt2, 1 warning:
-	Suspicious pointer assignment
-pfi =fwd1, 1 warning:
-	Suspicious pointer assignment
-pfi =fwd2, 1 warning:
-	Suspicious pointer assignment
-pfi =psub, 1 warning:
+psub = ppfi, 1 warning:
 	Suspicious pointer assignment
 	Return type mismatch in function pointer
-pfi =pany, 1 warning:
+pfi = byrefany, 1 warning:
 	Suspicious pointer assignment
-pfi =pb, 1 warning:
+pfi = b, 1 warning:
 	Suspicious pointer assignment
-pfi =pub, 1 warning:
+pfi = ub, 1 warning:
 	Suspicious pointer assignment
-pfi =psh, 1 warning:
+pfi = sh, 1 warning:
 	Suspicious pointer assignment
-pfi =push, 1 warning:
+pfi = ush, 1 warning:
 	Suspicious pointer assignment
-pfi =pl, 1 warning:
+pfi = l, 1 warning:
 	Suspicious pointer assignment
-pfi =pul, 1 warning:
+pfi = ul, 1 warning:
 	Suspicious pointer assignment
-pfi =pll, 1 warning:
+pfi = ll, 1 warning:
 	Suspicious pointer assignment
-pfi =pull, 1 warning:
+pfi = ull, 1 warning:
 	Suspicious pointer assignment
-pfi =pi, 1 warning:
+pfi = i, 1 warning:
 	Suspicious pointer assignment
-pfi =pui, 1 warning:
+pfi = ui, 1 warning:
 	Suspicious pointer assignment
-pfi =pf, 1 warning:
+pfi = f, 1 warning:
 	Suspicious pointer assignment
-pfi =pd, 1 warning:
+pfi = d, 1 warning:
 	Suspicious pointer assignment
-pfi =ps, 1 warning:
+pfi = s, 1 warning:
 	Suspicious pointer assignment
-pfi =pz, 1 warning:
+pfi = z, 1 warning:
 	Suspicious pointer assignment
-pfi =pw, 1 warning:
+pfi = w, 1 warning:
 	Suspicious pointer assignment
-pfi =pudt1, 1 warning:
+pfi = udt1, 1 warning:
 	Suspicious pointer assignment
-pfi =pudt2, 1 warning:
+pfi = udt2, 1 warning:
 	Suspicious pointer assignment
-pfi =pfwd1, 1 warning:
+pfi = fwd1, 1 warning:
 	Suspicious pointer assignment
-pfi =pdwf2, 1 warning:
+pfi = fwd2, 1 warning:
 	Suspicious pointer assignment
-pfi =ppsub, 1 warning:
+pfi = psub, 1 warning:
 	Suspicious pointer assignment
 	Return type mismatch in function pointer
-pfi =ppfi, 1 warning:
+pfi = pany, 1 warning:
 	Suspicious pointer assignment
-pany =byrefany, 1 warning:
+pfi = pb, 1 warning:
 	Suspicious pointer assignment
-pany =b, 1 warning:
+pfi = pub, 1 warning:
 	Suspicious pointer assignment
-pany =ub, 1 warning:
+pfi = psh, 1 warning:
 	Suspicious pointer assignment
-pany =sh, 1 warning:
+pfi = push, 1 warning:
 	Suspicious pointer assignment
-pany =ush, 1 warning:
+pfi = pl, 1 warning:
 	Suspicious pointer assignment
-pany =l, 1 warning:
+pfi = pul, 1 warning:
 	Suspicious pointer assignment
-pany =ul, 1 warning:
+pfi = pll, 1 warning:
 	Suspicious pointer assignment
-pany =ll, 1 warning:
+pfi = pull, 1 warning:
 	Suspicious pointer assignment
-pany =ull, 1 warning:
+pfi = pi, 1 warning:
 	Suspicious pointer assignment
-pany =i, 1 warning:
+pfi = pui, 1 warning:
 	Suspicious pointer assignment
-pany =ui, 1 warning:
+pfi = pf, 1 warning:
 	Suspicious pointer assignment
-pany =f, 1 warning:
+pfi = pd, 1 warning:
 	Suspicious pointer assignment
-pany =d, 1 warning:
+pfi = ps, 1 warning:
 	Suspicious pointer assignment
-pany =s, 1 warning:
+pfi = pz, 1 warning:
 	Suspicious pointer assignment
-pany =z, 1 warning:
+pfi = pw, 1 warning:
 	Suspicious pointer assignment
-pany =w, 1 warning:
+pfi = pudt1, 1 warning:
 	Suspicious pointer assignment
-pany =udt1, 1 warning:
+pfi = pudt2, 1 warning:
 	Suspicious pointer assignment
-pany =udt2, 1 warning:
+pfi = pfwd1, 1 warning:
 	Suspicious pointer assignment
-pany =fwd1, 1 warning:
+pfi = pdwf2, 1 warning:
 	Suspicious pointer assignment
-pany =fwd2, 1 warning:
-	Suspicious pointer assignment
-pany =psub, 1 warning:
-	Suspicious pointer assignment
-pany =pfi, 1 warning:
-	Suspicious pointer assignment
-pany =pb, 1 warning:
-	Suspicious pointer assignment
-pany =pub, 1 warning:
-	Suspicious pointer assignment
-pany =psh, 1 warning:
-	Suspicious pointer assignment
-pany =push, 1 warning:
-	Suspicious pointer assignment
-pany =pl, 1 warning:
-	Suspicious pointer assignment
-pany =pul, 1 warning:
-	Suspicious pointer assignment
-pany =pll, 1 warning:
-	Suspicious pointer assignment
-pany =pull, 1 warning:
-	Suspicious pointer assignment
-pany =pi, 1 warning:
-	Suspicious pointer assignment
-pany =pui, 1 warning:
-	Suspicious pointer assignment
-pany =pf, 1 warning:
-	Suspicious pointer assignment
-pany =pd, 1 warning:
-	Suspicious pointer assignment
-pany =ps, 1 warning:
-	Suspicious pointer assignment
-pany =pz, 1 warning:
-	Suspicious pointer assignment
-pany =pw, 1 warning:
-	Suspicious pointer assignment
-pany =pudt1, 1 warning:
-	Suspicious pointer assignment
-pany =pudt2, 1 warning:
-	Suspicious pointer assignment
-pany =pfwd1, 1 warning:
-	Suspicious pointer assignment
-pany =pdwf2, 1 warning:
-	Suspicious pointer assignment
-pany =ppsub, 1 warning:
-	Suspicious pointer assignment
-pany =ppfi, 1 warning:
-	Suspicious pointer assignment
-pb =byrefany, 1 warning:
-	Suspicious pointer assignment
-pb =b, 1 warning:
-	Suspicious pointer assignment
-pb =ub, 1 warning:
-	Suspicious pointer assignment
-pb =sh, 1 warning:
-	Suspicious pointer assignment
-pb =ush, 1 warning:
-	Suspicious pointer assignment
-pb =l, 1 warning:
-	Suspicious pointer assignment
-pb =ul, 1 warning:
-	Suspicious pointer assignment
-pb =ll, 1 warning:
-	Suspicious pointer assignment
-pb =ull, 1 warning:
-	Suspicious pointer assignment
-pb =i, 1 warning:
-	Suspicious pointer assignment
-pb =ui, 1 warning:
-	Suspicious pointer assignment
-pb =f, 1 warning:
-	Suspicious pointer assignment
-pb =d, 1 warning:
-	Suspicious pointer assignment
-pb =s, 1 warning:
-	Suspicious pointer assignment
-pb =z, 1 warning:
-	Suspicious pointer assignment
-pb =w, 1 warning:
-	Suspicious pointer assignment
-pb =udt1, 1 warning:
-	Suspicious pointer assignment
-pb =udt2, 1 warning:
-	Suspicious pointer assignment
-pb =fwd1, 1 warning:
-	Suspicious pointer assignment
-pb =fwd2, 1 warning:
-	Suspicious pointer assignment
-pb =psub, 1 warning:
-	Suspicious pointer assignment
-pb =pfi, 1 warning:
-	Suspicious pointer assignment
-pb =pany, 1 warning:
-	Suspicious pointer assignment
-pb =psh, 1 warning:
-	Suspicious pointer assignment
-pb =push, 1 warning:
-	Suspicious pointer assignment
-pb =pl, 1 warning:
-	Suspicious pointer assignment
-pb =pul, 1 warning:
-	Suspicious pointer assignment
-pb =pll, 1 warning:
-	Suspicious pointer assignment
-pb =pull, 1 warning:
-	Suspicious pointer assignment
-pb =pi, 1 warning:
-	Suspicious pointer assignment
-pb =pui, 1 warning:
-	Suspicious pointer assignment
-pb =pf, 1 warning:
-	Suspicious pointer assignment
-pb =pd, 1 warning:
-	Suspicious pointer assignment
-pb =ps, 1 warning:
-	Suspicious pointer assignment
-pb =pudt1, 1 warning:
-	Suspicious pointer assignment
-pb =pudt2, 1 warning:
-	Suspicious pointer assignment
-pb =pfwd1, 1 warning:
-	Suspicious pointer assignment
-pb =pdwf2, 1 warning:
-	Suspicious pointer assignment
-pb =ppsub, 1 warning:
-	Suspicious pointer assignment
-pb =ppfi, 1 warning:
-	Suspicious pointer assignment
-pub =byrefany, 1 warning:
-	Suspicious pointer assignment
-pub =b, 1 warning:
-	Suspicious pointer assignment
-pub =ub, 1 warning:
-	Suspicious pointer assignment
-pub =sh, 1 warning:
-	Suspicious pointer assignment
-pub =ush, 1 warning:
-	Suspicious pointer assignment
-pub =l, 1 warning:
-	Suspicious pointer assignment
-pub =ul, 1 warning:
-	Suspicious pointer assignment
-pub =ll, 1 warning:
-	Suspicious pointer assignment
-pub =ull, 1 warning:
-	Suspicious pointer assignment
-pub =i, 1 warning:
-	Suspicious pointer assignment
-pub =ui, 1 warning:
-	Suspicious pointer assignment
-pub =f, 1 warning:
-	Suspicious pointer assignment
-pub =d, 1 warning:
-	Suspicious pointer assignment
-pub =s, 1 warning:
-	Suspicious pointer assignment
-pub =z, 1 warning:
-	Suspicious pointer assignment
-pub =w, 1 warning:
-	Suspicious pointer assignment
-pub =udt1, 1 warning:
-	Suspicious pointer assignment
-pub =udt2, 1 warning:
-	Suspicious pointer assignment
-pub =fwd1, 1 warning:
-	Suspicious pointer assignment
-pub =fwd2, 1 warning:
-	Suspicious pointer assignment
-pub =psub, 1 warning:
-	Suspicious pointer assignment
-pub =pfi, 1 warning:
-	Suspicious pointer assignment
-pub =pany, 1 warning:
-	Suspicious pointer assignment
-pub =psh, 1 warning:
-	Suspicious pointer assignment
-pub =push, 1 warning:
-	Suspicious pointer assignment
-pub =pl, 1 warning:
-	Suspicious pointer assignment
-pub =pul, 1 warning:
-	Suspicious pointer assignment
-pub =pll, 1 warning:
-	Suspicious pointer assignment
-pub =pull, 1 warning:
-	Suspicious pointer assignment
-pub =pi, 1 warning:
-	Suspicious pointer assignment
-pub =pui, 1 warning:
-	Suspicious pointer assignment
-pub =pf, 1 warning:
-	Suspicious pointer assignment
-pub =pd, 1 warning:
-	Suspicious pointer assignment
-pub =ps, 1 warning:
-	Suspicious pointer assignment
-pub =pudt1, 1 warning:
-	Suspicious pointer assignment
-pub =pudt2, 1 warning:
-	Suspicious pointer assignment
-pub =pfwd1, 1 warning:
-	Suspicious pointer assignment
-pub =pdwf2, 1 warning:
-	Suspicious pointer assignment
-pub =ppsub, 1 warning:
-	Suspicious pointer assignment
-pub =ppfi, 1 warning:
-	Suspicious pointer assignment
-psh =byrefany, 1 warning:
-	Suspicious pointer assignment
-psh =b, 1 warning:
-	Suspicious pointer assignment
-psh =ub, 1 warning:
-	Suspicious pointer assignment
-psh =sh, 1 warning:
-	Suspicious pointer assignment
-psh =ush, 1 warning:
-	Suspicious pointer assignment
-psh =l, 1 warning:
-	Suspicious pointer assignment
-psh =ul, 1 warning:
-	Suspicious pointer assignment
-psh =ll, 1 warning:
-	Suspicious pointer assignment
-psh =ull, 1 warning:
-	Suspicious pointer assignment
-psh =i, 1 warning:
-	Suspicious pointer assignment
-psh =ui, 1 warning:
-	Suspicious pointer assignment
-psh =f, 1 warning:
-	Suspicious pointer assignment
-psh =d, 1 warning:
-	Suspicious pointer assignment
-psh =s, 1 warning:
-	Suspicious pointer assignment
-psh =z, 1 warning:
-	Suspicious pointer assignment
-psh =w, 1 warning:
-	Suspicious pointer assignment
-psh =udt1, 1 warning:
-	Suspicious pointer assignment
-psh =udt2, 1 warning:
-	Suspicious pointer assignment
-psh =fwd1, 1 warning:
-	Suspicious pointer assignment
-psh =fwd2, 1 warning:
-	Suspicious pointer assignment
-psh =psub, 1 warning:
-	Suspicious pointer assignment
-psh =pfi, 1 warning:
-	Suspicious pointer assignment
-psh =pany, 1 warning:
-	Suspicious pointer assignment
-psh =pb, 1 warning:
-	Suspicious pointer assignment
-psh =pub, 1 warning:
-	Suspicious pointer assignment
-psh =pl, 1 warning:
-	Suspicious pointer assignment
-psh =pul, 1 warning:
-	Suspicious pointer assignment
-psh =pll, 1 warning:
-	Suspicious pointer assignment
-psh =pull, 1 warning:
-	Suspicious pointer assignment
-psh =pi, 1 warning:
-	Suspicious pointer assignment
-psh =pui, 1 warning:
-	Suspicious pointer assignment
-psh =pf, 1 warning:
-	Suspicious pointer assignment
-psh =pd, 1 warning:
-	Suspicious pointer assignment
-psh =ps, 1 warning:
-	Suspicious pointer assignment
-psh =pz, 1 warning:
-	Suspicious pointer assignment
-psh =pw, 1 warning:
-	Suspicious pointer assignment
-psh =pudt1, 1 warning:
-	Suspicious pointer assignment
-psh =pudt2, 1 warning:
-	Suspicious pointer assignment
-psh =pfwd1, 1 warning:
-	Suspicious pointer assignment
-psh =pdwf2, 1 warning:
-	Suspicious pointer assignment
-psh =ppsub, 1 warning:
-	Suspicious pointer assignment
-psh =ppfi, 1 warning:
-	Suspicious pointer assignment
-push =byrefany, 1 warning:
-	Suspicious pointer assignment
-push =b, 1 warning:
-	Suspicious pointer assignment
-push =ub, 1 warning:
-	Suspicious pointer assignment
-push =sh, 1 warning:
-	Suspicious pointer assignment
-push =ush, 1 warning:
-	Suspicious pointer assignment
-push =l, 1 warning:
-	Suspicious pointer assignment
-push =ul, 1 warning:
-	Suspicious pointer assignment
-push =ll, 1 warning:
-	Suspicious pointer assignment
-push =ull, 1 warning:
-	Suspicious pointer assignment
-push =i, 1 warning:
-	Suspicious pointer assignment
-push =ui, 1 warning:
-	Suspicious pointer assignment
-push =f, 1 warning:
-	Suspicious pointer assignment
-push =d, 1 warning:
-	Suspicious pointer assignment
-push =s, 1 warning:
-	Suspicious pointer assignment
-push =z, 1 warning:
-	Suspicious pointer assignment
-push =w, 1 warning:
-	Suspicious pointer assignment
-push =udt1, 1 warning:
-	Suspicious pointer assignment
-push =udt2, 1 warning:
-	Suspicious pointer assignment
-push =fwd1, 1 warning:
-	Suspicious pointer assignment
-push =fwd2, 1 warning:
-	Suspicious pointer assignment
-push =psub, 1 warning:
-	Suspicious pointer assignment
-push =pfi, 1 warning:
-	Suspicious pointer assignment
-push =pany, 1 warning:
-	Suspicious pointer assignment
-push =pb, 1 warning:
-	Suspicious pointer assignment
-push =pub, 1 warning:
-	Suspicious pointer assignment
-push =pl, 1 warning:
-	Suspicious pointer assignment
-push =pul, 1 warning:
-	Suspicious pointer assignment
-push =pll, 1 warning:
-	Suspicious pointer assignment
-push =pull, 1 warning:
-	Suspicious pointer assignment
-push =pi, 1 warning:
-	Suspicious pointer assignment
-push =pui, 1 warning:
-	Suspicious pointer assignment
-push =pf, 1 warning:
-	Suspicious pointer assignment
-push =pd, 1 warning:
-	Suspicious pointer assignment
-push =ps, 1 warning:
-	Suspicious pointer assignment
-push =pz, 1 warning:
-	Suspicious pointer assignment
-push =pw, 1 warning:
-	Suspicious pointer assignment
-push =pudt1, 1 warning:
-	Suspicious pointer assignment
-push =pudt2, 1 warning:
-	Suspicious pointer assignment
-push =pfwd1, 1 warning:
-	Suspicious pointer assignment
-push =pdwf2, 1 warning:
-	Suspicious pointer assignment
-push =ppsub, 1 warning:
-	Suspicious pointer assignment
-push =ppfi, 1 warning:
-	Suspicious pointer assignment
-pl =byrefany, 1 warning:
-	Suspicious pointer assignment
-pl =b, 1 warning:
-	Suspicious pointer assignment
-pl =ub, 1 warning:
-	Suspicious pointer assignment
-pl =sh, 1 warning:
-	Suspicious pointer assignment
-pl =ush, 1 warning:
-	Suspicious pointer assignment
-pl =l, 1 warning:
-	Suspicious pointer assignment
-pl =ul, 1 warning:
-	Suspicious pointer assignment
-pl =ll, 1 warning:
-	Suspicious pointer assignment
-pl =ull, 1 warning:
-	Suspicious pointer assignment
-pl =i, 1 warning:
-	Suspicious pointer assignment
-pl =ui, 1 warning:
-	Suspicious pointer assignment
-pl =f, 1 warning:
-	Suspicious pointer assignment
-pl =d, 1 warning:
-	Suspicious pointer assignment
-pl =s, 1 warning:
-	Suspicious pointer assignment
-pl =z, 1 warning:
-	Suspicious pointer assignment
-pl =w, 1 warning:
-	Suspicious pointer assignment
-pl =udt1, 1 warning:
-	Suspicious pointer assignment
-pl =udt2, 1 warning:
-	Suspicious pointer assignment
-pl =fwd1, 1 warning:
-	Suspicious pointer assignment
-pl =fwd2, 1 warning:
-	Suspicious pointer assignment
-pl =psub, 1 warning:
-	Suspicious pointer assignment
-pl =pfi, 1 warning:
-	Suspicious pointer assignment
-pl =pany, 1 warning:
-	Suspicious pointer assignment
-pl =pb, 1 warning:
-	Suspicious pointer assignment
-pl =pub, 1 warning:
-	Suspicious pointer assignment
-pl =psh, 1 warning:
-	Suspicious pointer assignment
-pl =push, 1 warning:
-	Suspicious pointer assignment
-pl =pll, 1 warning:
-	Suspicious pointer assignment
-pl =pull, 1 warning:
-	Suspicious pointer assignment
-pl =pf, 1 warning:
-	Suspicious pointer assignment
-pl =pd, 1 warning:
-	Suspicious pointer assignment
-pl =ps, 1 warning:
-	Suspicious pointer assignment
-pl =pz, 1 warning:
-	Suspicious pointer assignment
-pl =pw, 1 warning:
-	Suspicious pointer assignment
-pl =pudt1, 1 warning:
-	Suspicious pointer assignment
-pl =pudt2, 1 warning:
-	Suspicious pointer assignment
-pl =pfwd1, 1 warning:
-	Suspicious pointer assignment
-pl =pdwf2, 1 warning:
-	Suspicious pointer assignment
-pl =ppsub, 1 warning:
-	Suspicious pointer assignment
-pl =ppfi, 1 warning:
-	Suspicious pointer assignment
-pul =byrefany, 1 warning:
-	Suspicious pointer assignment
-pul =b, 1 warning:
-	Suspicious pointer assignment
-pul =ub, 1 warning:
-	Suspicious pointer assignment
-pul =sh, 1 warning:
-	Suspicious pointer assignment
-pul =ush, 1 warning:
-	Suspicious pointer assignment
-pul =l, 1 warning:
-	Suspicious pointer assignment
-pul =ul, 1 warning:
-	Suspicious pointer assignment
-pul =ll, 1 warning:
-	Suspicious pointer assignment
-pul =ull, 1 warning:
-	Suspicious pointer assignment
-pul =i, 1 warning:
-	Suspicious pointer assignment
-pul =ui, 1 warning:
-	Suspicious pointer assignment
-pul =f, 1 warning:
-	Suspicious pointer assignment
-pul =d, 1 warning:
-	Suspicious pointer assignment
-pul =s, 1 warning:
-	Suspicious pointer assignment
-pul =z, 1 warning:
-	Suspicious pointer assignment
-pul =w, 1 warning:
-	Suspicious pointer assignment
-pul =udt1, 1 warning:
-	Suspicious pointer assignment
-pul =udt2, 1 warning:
-	Suspicious pointer assignment
-pul =fwd1, 1 warning:
-	Suspicious pointer assignment
-pul =fwd2, 1 warning:
-	Suspicious pointer assignment
-pul =psub, 1 warning:
-	Suspicious pointer assignment
-pul =pfi, 1 warning:
-	Suspicious pointer assignment
-pul =pany, 1 warning:
-	Suspicious pointer assignment
-pul =pb, 1 warning:
-	Suspicious pointer assignment
-pul =pub, 1 warning:
-	Suspicious pointer assignment
-pul =psh, 1 warning:
-	Suspicious pointer assignment
-pul =push, 1 warning:
-	Suspicious pointer assignment
-pul =pll, 1 warning:
-	Suspicious pointer assignment
-pul =pull, 1 warning:
-	Suspicious pointer assignment
-pul =pf, 1 warning:
-	Suspicious pointer assignment
-pul =pd, 1 warning:
-	Suspicious pointer assignment
-pul =ps, 1 warning:
-	Suspicious pointer assignment
-pul =pz, 1 warning:
-	Suspicious pointer assignment
-pul =pw, 1 warning:
-	Suspicious pointer assignment
-pul =pudt1, 1 warning:
-	Suspicious pointer assignment
-pul =pudt2, 1 warning:
-	Suspicious pointer assignment
-pul =pfwd1, 1 warning:
-	Suspicious pointer assignment
-pul =pdwf2, 1 warning:
-	Suspicious pointer assignment
-pul =ppsub, 1 warning:
-	Suspicious pointer assignment
-pul =ppfi, 1 warning:
-	Suspicious pointer assignment
-pll =byrefany, 1 warning:
-	Suspicious pointer assignment
-pll =b, 1 warning:
-	Suspicious pointer assignment
-pll =ub, 1 warning:
-	Suspicious pointer assignment
-pll =sh, 1 warning:
-	Suspicious pointer assignment
-pll =ush, 1 warning:
-	Suspicious pointer assignment
-pll =l, 1 warning:
-	Suspicious pointer assignment
-pll =ul, 1 warning:
-	Suspicious pointer assignment
-pll =ll, 1 warning:
-	Suspicious pointer assignment
-pll =ull, 1 warning:
-	Suspicious pointer assignment
-pll =i, 1 warning:
-	Suspicious pointer assignment
-pll =ui, 1 warning:
-	Suspicious pointer assignment
-pll =f, 1 warning:
-	Suspicious pointer assignment
-pll =d, 1 warning:
-	Suspicious pointer assignment
-pll =s, 1 warning:
-	Suspicious pointer assignment
-pll =z, 1 warning:
-	Suspicious pointer assignment
-pll =w, 1 warning:
-	Suspicious pointer assignment
-pll =udt1, 1 warning:
-	Suspicious pointer assignment
-pll =udt2, 1 warning:
-	Suspicious pointer assignment
-pll =fwd1, 1 warning:
-	Suspicious pointer assignment
-pll =fwd2, 1 warning:
-	Suspicious pointer assignment
-pll =psub, 1 warning:
-	Suspicious pointer assignment
-pll =pfi, 1 warning:
-	Suspicious pointer assignment
-pll =pany, 1 warning:
-	Suspicious pointer assignment
-pll =pb, 1 warning:
-	Suspicious pointer assignment
-pll =pub, 1 warning:
-	Suspicious pointer assignment
-pll =psh, 1 warning:
-	Suspicious pointer assignment
-pll =push, 1 warning:
-	Suspicious pointer assignment
-pll =pl, 1 warning:
-	Suspicious pointer assignment
-pll =pul, 1 warning:
-	Suspicious pointer assignment
-pll =pi, 1 warning:
-	Suspicious pointer assignment
-pll =pui, 1 warning:
-	Suspicious pointer assignment
-pll =pf, 1 warning:
-	Suspicious pointer assignment
-pll =pd, 1 warning:
-	Suspicious pointer assignment
-pll =ps, 1 warning:
-	Suspicious pointer assignment
-pll =pz, 1 warning:
-	Suspicious pointer assignment
-pll =pw, 1 warning:
-	Suspicious pointer assignment
-pll =pudt1, 1 warning:
-	Suspicious pointer assignment
-pll =pudt2, 1 warning:
-	Suspicious pointer assignment
-pll =pfwd1, 1 warning:
-	Suspicious pointer assignment
-pll =pdwf2, 1 warning:
-	Suspicious pointer assignment
-pll =ppsub, 1 warning:
-	Suspicious pointer assignment
-pll =ppfi, 1 warning:
-	Suspicious pointer assignment
-pull =byrefany, 1 warning:
-	Suspicious pointer assignment
-pull =b, 1 warning:
-	Suspicious pointer assignment
-pull =ub, 1 warning:
-	Suspicious pointer assignment
-pull =sh, 1 warning:
-	Suspicious pointer assignment
-pull =ush, 1 warning:
-	Suspicious pointer assignment
-pull =l, 1 warning:
-	Suspicious pointer assignment
-pull =ul, 1 warning:
-	Suspicious pointer assignment
-pull =ll, 1 warning:
-	Suspicious pointer assignment
-pull =ull, 1 warning:
-	Suspicious pointer assignment
-pull =i, 1 warning:
-	Suspicious pointer assignment
-pull =ui, 1 warning:
-	Suspicious pointer assignment
-pull =f, 1 warning:
-	Suspicious pointer assignment
-pull =d, 1 warning:
-	Suspicious pointer assignment
-pull =s, 1 warning:
-	Suspicious pointer assignment
-pull =z, 1 warning:
-	Suspicious pointer assignment
-pull =w, 1 warning:
-	Suspicious pointer assignment
-pull =udt1, 1 warning:
-	Suspicious pointer assignment
-pull =udt2, 1 warning:
-	Suspicious pointer assignment
-pull =fwd1, 1 warning:
-	Suspicious pointer assignment
-pull =fwd2, 1 warning:
-	Suspicious pointer assignment
-pull =psub, 1 warning:
-	Suspicious pointer assignment
-pull =pfi, 1 warning:
-	Suspicious pointer assignment
-pull =pany, 1 warning:
-	Suspicious pointer assignment
-pull =pb, 1 warning:
-	Suspicious pointer assignment
-pull =pub, 1 warning:
-	Suspicious pointer assignment
-pull =psh, 1 warning:
-	Suspicious pointer assignment
-pull =push, 1 warning:
-	Suspicious pointer assignment
-pull =pl, 1 warning:
-	Suspicious pointer assignment
-pull =pul, 1 warning:
-	Suspicious pointer assignment
-pull =pi, 1 warning:
-	Suspicious pointer assignment
-pull =pui, 1 warning:
-	Suspicious pointer assignment
-pull =pf, 1 warning:
-	Suspicious pointer assignment
-pull =pd, 1 warning:
-	Suspicious pointer assignment
-pull =ps, 1 warning:
-	Suspicious pointer assignment
-pull =pz, 1 warning:
-	Suspicious pointer assignment
-pull =pw, 1 warning:
-	Suspicious pointer assignment
-pull =pudt1, 1 warning:
-	Suspicious pointer assignment
-pull =pudt2, 1 warning:
-	Suspicious pointer assignment
-pull =pfwd1, 1 warning:
-	Suspicious pointer assignment
-pull =pdwf2, 1 warning:
-	Suspicious pointer assignment
-pull =ppsub, 1 warning:
-	Suspicious pointer assignment
-pull =ppfi, 1 warning:
-	Suspicious pointer assignment
-pi =byrefany, 1 warning:
-	Suspicious pointer assignment
-pi =b, 1 warning:
-	Suspicious pointer assignment
-pi =ub, 1 warning:
-	Suspicious pointer assignment
-pi =sh, 1 warning:
-	Suspicious pointer assignment
-pi =ush, 1 warning:
-	Suspicious pointer assignment
-pi =l, 1 warning:
-	Suspicious pointer assignment
-pi =ul, 1 warning:
-	Suspicious pointer assignment
-pi =ll, 1 warning:
-	Suspicious pointer assignment
-pi =ull, 1 warning:
-	Suspicious pointer assignment
-pi =i, 1 warning:
-	Suspicious pointer assignment
-pi =ui, 1 warning:
-	Suspicious pointer assignment
-pi =f, 1 warning:
-	Suspicious pointer assignment
-pi =d, 1 warning:
-	Suspicious pointer assignment
-pi =s, 1 warning:
-	Suspicious pointer assignment
-pi =z, 1 warning:
-	Suspicious pointer assignment
-pi =w, 1 warning:
-	Suspicious pointer assignment
-pi =udt1, 1 warning:
-	Suspicious pointer assignment
-pi =udt2, 1 warning:
-	Suspicious pointer assignment
-pi =fwd1, 1 warning:
-	Suspicious pointer assignment
-pi =fwd2, 1 warning:
-	Suspicious pointer assignment
-pi =psub, 1 warning:
-	Suspicious pointer assignment
-pi =pfi, 1 warning:
-	Suspicious pointer assignment
-pi =pany, 1 warning:
-	Suspicious pointer assignment
-pi =pb, 1 warning:
-	Suspicious pointer assignment
-pi =pub, 1 warning:
-	Suspicious pointer assignment
-pi =psh, 1 warning:
-	Suspicious pointer assignment
-pi =push, 1 warning:
-	Suspicious pointer assignment
-pi =pll, 1 warning:
-	Suspicious pointer assignment
-pi =pull, 1 warning:
-	Suspicious pointer assignment
-pi =pf, 1 warning:
-	Suspicious pointer assignment
-pi =pd, 1 warning:
-	Suspicious pointer assignment
-pi =ps, 1 warning:
-	Suspicious pointer assignment
-pi =pz, 1 warning:
-	Suspicious pointer assignment
-pi =pw, 1 warning:
-	Suspicious pointer assignment
-pi =pudt1, 1 warning:
-	Suspicious pointer assignment
-pi =pudt2, 1 warning:
-	Suspicious pointer assignment
-pi =pfwd1, 1 warning:
-	Suspicious pointer assignment
-pi =pdwf2, 1 warning:
-	Suspicious pointer assignment
-pi =ppsub, 1 warning:
-	Suspicious pointer assignment
-pi =ppfi, 1 warning:
-	Suspicious pointer assignment
-pui =byrefany, 1 warning:
-	Suspicious pointer assignment
-pui =b, 1 warning:
-	Suspicious pointer assignment
-pui =ub, 1 warning:
-	Suspicious pointer assignment
-pui =sh, 1 warning:
-	Suspicious pointer assignment
-pui =ush, 1 warning:
-	Suspicious pointer assignment
-pui =l, 1 warning:
-	Suspicious pointer assignment
-pui =ul, 1 warning:
-	Suspicious pointer assignment
-pui =ll, 1 warning:
-	Suspicious pointer assignment
-pui =ull, 1 warning:
-	Suspicious pointer assignment
-pui =i, 1 warning:
-	Suspicious pointer assignment
-pui =ui, 1 warning:
-	Suspicious pointer assignment
-pui =f, 1 warning:
-	Suspicious pointer assignment
-pui =d, 1 warning:
-	Suspicious pointer assignment
-pui =s, 1 warning:
-	Suspicious pointer assignment
-pui =z, 1 warning:
-	Suspicious pointer assignment
-pui =w, 1 warning:
-	Suspicious pointer assignment
-pui =udt1, 1 warning:
-	Suspicious pointer assignment
-pui =udt2, 1 warning:
-	Suspicious pointer assignment
-pui =fwd1, 1 warning:
-	Suspicious pointer assignment
-pui =fwd2, 1 warning:
-	Suspicious pointer assignment
-pui =psub, 1 warning:
-	Suspicious pointer assignment
-pui =pfi, 1 warning:
-	Suspicious pointer assignment
-pui =pany, 1 warning:
-	Suspicious pointer assignment
-pui =pb, 1 warning:
-	Suspicious pointer assignment
-pui =pub, 1 warning:
-	Suspicious pointer assignment
-pui =psh, 1 warning:
-	Suspicious pointer assignment
-pui =push, 1 warning:
-	Suspicious pointer assignment
-pui =pll, 1 warning:
-	Suspicious pointer assignment
-pui =pull, 1 warning:
-	Suspicious pointer assignment
-pui =pf, 1 warning:
-	Suspicious pointer assignment
-pui =pd, 1 warning:
-	Suspicious pointer assignment
-pui =ps, 1 warning:
-	Suspicious pointer assignment
-pui =pz, 1 warning:
-	Suspicious pointer assignment
-pui =pw, 1 warning:
-	Suspicious pointer assignment
-pui =pudt1, 1 warning:
-	Suspicious pointer assignment
-pui =pudt2, 1 warning:
-	Suspicious pointer assignment
-pui =pfwd1, 1 warning:
-	Suspicious pointer assignment
-pui =pdwf2, 1 warning:
-	Suspicious pointer assignment
-pui =ppsub, 1 warning:
-	Suspicious pointer assignment
-pui =ppfi, 1 warning:
-	Suspicious pointer assignment
-pf =byrefany, 1 warning:
-	Suspicious pointer assignment
-pf =b, 1 warning:
-	Suspicious pointer assignment
-pf =ub, 1 warning:
-	Suspicious pointer assignment
-pf =sh, 1 warning:
-	Suspicious pointer assignment
-pf =ush, 1 warning:
-	Suspicious pointer assignment
-pf =l, 1 warning:
-	Suspicious pointer assignment
-pf =ul, 1 warning:
-	Suspicious pointer assignment
-pf =ll, 1 warning:
-	Suspicious pointer assignment
-pf =ull, 1 warning:
-	Suspicious pointer assignment
-pf =i, 1 warning:
-	Suspicious pointer assignment
-pf =ui, 1 warning:
-	Suspicious pointer assignment
-pf =f, 1 warning:
-	Suspicious pointer assignment
-pf =d, 1 warning:
-	Suspicious pointer assignment
-pf =s, 1 warning:
-	Suspicious pointer assignment
-pf =z, 1 warning:
-	Suspicious pointer assignment
-pf =w, 1 warning:
-	Suspicious pointer assignment
-pf =udt1, 1 warning:
-	Suspicious pointer assignment
-pf =udt2, 1 warning:
-	Suspicious pointer assignment
-pf =fwd1, 1 warning:
-	Suspicious pointer assignment
-pf =fwd2, 1 warning:
-	Suspicious pointer assignment
-pf =psub, 1 warning:
-	Suspicious pointer assignment
-pf =pfi, 1 warning:
-	Suspicious pointer assignment
-pf =pany, 1 warning:
-	Suspicious pointer assignment
-pf =pb, 1 warning:
-	Suspicious pointer assignment
-pf =pub, 1 warning:
-	Suspicious pointer assignment
-pf =psh, 1 warning:
-	Suspicious pointer assignment
-pf =push, 1 warning:
-	Suspicious pointer assignment
-pf =pl, 1 warning:
-	Suspicious pointer assignment
-pf =pul, 1 warning:
-	Suspicious pointer assignment
-pf =pll, 1 warning:
-	Suspicious pointer assignment
-pf =pull, 1 warning:
-	Suspicious pointer assignment
-pf =pi, 1 warning:
-	Suspicious pointer assignment
-pf =pui, 1 warning:
-	Suspicious pointer assignment
-pf =pd, 1 warning:
-	Suspicious pointer assignment
-pf =ps, 1 warning:
-	Suspicious pointer assignment
-pf =pz, 1 warning:
-	Suspicious pointer assignment
-pf =pw, 1 warning:
-	Suspicious pointer assignment
-pf =pudt1, 1 warning:
-	Suspicious pointer assignment
-pf =pudt2, 1 warning:
-	Suspicious pointer assignment
-pf =pfwd1, 1 warning:
-	Suspicious pointer assignment
-pf =pdwf2, 1 warning:
-	Suspicious pointer assignment
-pf =ppsub, 1 warning:
-	Suspicious pointer assignment
-pf =ppfi, 1 warning:
-	Suspicious pointer assignment
-pd =byrefany, 1 warning:
-	Suspicious pointer assignment
-pd =b, 1 warning:
-	Suspicious pointer assignment
-pd =ub, 1 warning:
-	Suspicious pointer assignment
-pd =sh, 1 warning:
-	Suspicious pointer assignment
-pd =ush, 1 warning:
-	Suspicious pointer assignment
-pd =l, 1 warning:
-	Suspicious pointer assignment
-pd =ul, 1 warning:
-	Suspicious pointer assignment
-pd =ll, 1 warning:
-	Suspicious pointer assignment
-pd =ull, 1 warning:
-	Suspicious pointer assignment
-pd =i, 1 warning:
-	Suspicious pointer assignment
-pd =ui, 1 warning:
-	Suspicious pointer assignment
-pd =f, 1 warning:
-	Suspicious pointer assignment
-pd =d, 1 warning:
-	Suspicious pointer assignment
-pd =s, 1 warning:
-	Suspicious pointer assignment
-pd =z, 1 warning:
-	Suspicious pointer assignment
-pd =w, 1 warning:
-	Suspicious pointer assignment
-pd =udt1, 1 warning:
-	Suspicious pointer assignment
-pd =udt2, 1 warning:
-	Suspicious pointer assignment
-pd =fwd1, 1 warning:
-	Suspicious pointer assignment
-pd =fwd2, 1 warning:
-	Suspicious pointer assignment
-pd =psub, 1 warning:
-	Suspicious pointer assignment
-pd =pfi, 1 warning:
-	Suspicious pointer assignment
-pd =pany, 1 warning:
-	Suspicious pointer assignment
-pd =pb, 1 warning:
-	Suspicious pointer assignment
-pd =pub, 1 warning:
-	Suspicious pointer assignment
-pd =psh, 1 warning:
-	Suspicious pointer assignment
-pd =push, 1 warning:
-	Suspicious pointer assignment
-pd =pl, 1 warning:
-	Suspicious pointer assignment
-pd =pul, 1 warning:
-	Suspicious pointer assignment
-pd =pll, 1 warning:
-	Suspicious pointer assignment
-pd =pull, 1 warning:
-	Suspicious pointer assignment
-pd =pi, 1 warning:
-	Suspicious pointer assignment
-pd =pui, 1 warning:
-	Suspicious pointer assignment
-pd =pf, 1 warning:
-	Suspicious pointer assignment
-pd =ps, 1 warning:
-	Suspicious pointer assignment
-pd =pz, 1 warning:
-	Suspicious pointer assignment
-pd =pw, 1 warning:
-	Suspicious pointer assignment
-pd =pudt1, 1 warning:
-	Suspicious pointer assignment
-pd =pudt2, 1 warning:
-	Suspicious pointer assignment
-pd =pfwd1, 1 warning:
-	Suspicious pointer assignment
-pd =pdwf2, 1 warning:
-	Suspicious pointer assignment
-pd =ppsub, 1 warning:
-	Suspicious pointer assignment
-pd =ppfi, 1 warning:
-	Suspicious pointer assignment
-ps =byrefany, 1 warning:
-	Suspicious pointer assignment
-ps =b, 1 warning:
-	Suspicious pointer assignment
-ps =ub, 1 warning:
-	Suspicious pointer assignment
-ps =sh, 1 warning:
-	Suspicious pointer assignment
-ps =ush, 1 warning:
-	Suspicious pointer assignment
-ps =l, 1 warning:
-	Suspicious pointer assignment
-ps =ul, 1 warning:
-	Suspicious pointer assignment
-ps =ll, 1 warning:
-	Suspicious pointer assignment
-ps =ull, 1 warning:
-	Suspicious pointer assignment
-ps =i, 1 warning:
-	Suspicious pointer assignment
-ps =ui, 1 warning:
-	Suspicious pointer assignment
-ps =f, 1 warning:
-	Suspicious pointer assignment
-ps =d, 1 warning:
-	Suspicious pointer assignment
-ps =s, 1 warning:
-	Suspicious pointer assignment
-ps =z, 1 warning:
-	Suspicious pointer assignment
-ps =w, 1 warning:
-	Suspicious pointer assignment
-ps =udt1, 1 warning:
-	Suspicious pointer assignment
-ps =udt2, 1 warning:
-	Suspicious pointer assignment
-ps =fwd1, 1 warning:
-	Suspicious pointer assignment
-ps =fwd2, 1 warning:
-	Suspicious pointer assignment
-ps =psub, 1 warning:
-	Suspicious pointer assignment
-ps =pfi, 1 warning:
-	Suspicious pointer assignment
-ps =pany, 1 warning:
-	Suspicious pointer assignment
-ps =pb, 1 warning:
-	Suspicious pointer assignment
-ps =pub, 1 warning:
-	Suspicious pointer assignment
-ps =psh, 1 warning:
-	Suspicious pointer assignment
-ps =push, 1 warning:
-	Suspicious pointer assignment
-ps =pl, 1 warning:
-	Suspicious pointer assignment
-ps =pul, 1 warning:
-	Suspicious pointer assignment
-ps =pll, 1 warning:
-	Suspicious pointer assignment
-ps =pull, 1 warning:
-	Suspicious pointer assignment
-ps =pi, 1 warning:
-	Suspicious pointer assignment
-ps =pui, 1 warning:
-	Suspicious pointer assignment
-ps =pf, 1 warning:
-	Suspicious pointer assignment
-ps =pd, 1 warning:
-	Suspicious pointer assignment
-ps =pz, 1 warning:
-	Suspicious pointer assignment
-ps =pw, 1 warning:
-	Suspicious pointer assignment
-ps =pudt1, 1 warning:
-	Suspicious pointer assignment
-ps =pudt2, 1 warning:
-	Suspicious pointer assignment
-ps =pfwd1, 1 warning:
-	Suspicious pointer assignment
-ps =pdwf2, 1 warning:
-	Suspicious pointer assignment
-ps =ppsub, 1 warning:
-	Suspicious pointer assignment
-ps =ppfi, 1 warning:
-	Suspicious pointer assignment
-pz =byrefany, 1 warning:
-	Suspicious pointer assignment
-pz =b, 1 warning:
-	Suspicious pointer assignment
-pz =ub, 1 warning:
-	Suspicious pointer assignment
-pz =sh, 1 warning:
-	Suspicious pointer assignment
-pz =ush, 1 warning:
-	Suspicious pointer assignment
-pz =l, 1 warning:
-	Suspicious pointer assignment
-pz =ul, 1 warning:
-	Suspicious pointer assignment
-pz =ll, 1 warning:
-	Suspicious pointer assignment
-pz =ull, 1 warning:
-	Suspicious pointer assignment
-pz =i, 1 warning:
-	Suspicious pointer assignment
-pz =ui, 1 warning:
-	Suspicious pointer assignment
-pz =f, 1 warning:
-	Suspicious pointer assignment
-pz =d, 1 warning:
-	Suspicious pointer assignment
-pz =s, 1 warning:
-	Suspicious pointer assignment
-pz =z, 1 warning:
-	Suspicious pointer assignment
-pz =w, 1 warning:
-	Suspicious pointer assignment
-pz =udt1, 1 warning:
-	Suspicious pointer assignment
-pz =udt2, 1 warning:
-	Suspicious pointer assignment
-pz =fwd1, 1 warning:
-	Suspicious pointer assignment
-pz =fwd2, 1 warning:
-	Suspicious pointer assignment
-pz =psub, 1 warning:
-	Suspicious pointer assignment
-pz =pfi, 1 warning:
-	Suspicious pointer assignment
-pz =pany, 1 warning:
-	Suspicious pointer assignment
-pz =psh, 1 warning:
-	Suspicious pointer assignment
-pz =push, 1 warning:
-	Suspicious pointer assignment
-pz =pl, 1 warning:
-	Suspicious pointer assignment
-pz =pul, 1 warning:
-	Suspicious pointer assignment
-pz =pll, 1 warning:
-	Suspicious pointer assignment
-pz =pull, 1 warning:
-	Suspicious pointer assignment
-pz =pi, 1 warning:
-	Suspicious pointer assignment
-pz =pui, 1 warning:
-	Suspicious pointer assignment
-pz =pf, 1 warning:
-	Suspicious pointer assignment
-pz =pd, 1 warning:
-	Suspicious pointer assignment
-pz =ps, 1 warning:
-	Suspicious pointer assignment
-pz =pudt1, 1 warning:
-	Suspicious pointer assignment
-pz =pudt2, 1 warning:
-	Suspicious pointer assignment
-pz =pfwd1, 1 warning:
-	Suspicious pointer assignment
-pz =pdwf2, 1 warning:
-	Suspicious pointer assignment
-pz =ppsub, 1 warning:
-	Suspicious pointer assignment
-pz =ppfi, 1 warning:
-	Suspicious pointer assignment
-pw =byrefany, 1 warning:
-	Suspicious pointer assignment
-pw =b, 1 warning:
-	Suspicious pointer assignment
-pw =ub, 1 warning:
-	Suspicious pointer assignment
-pw =sh, 1 warning:
-	Suspicious pointer assignment
-pw =ush, 1 warning:
-	Suspicious pointer assignment
-pw =l, 1 warning:
-	Suspicious pointer assignment
-pw =ul, 1 warning:
-	Suspicious pointer assignment
-pw =ll, 1 warning:
-	Suspicious pointer assignment
-pw =ull, 1 warning:
-	Suspicious pointer assignment
-pw =i, 1 warning:
-	Suspicious pointer assignment
-pw =ui, 1 warning:
-	Suspicious pointer assignment
-pw =f, 1 warning:
-	Suspicious pointer assignment
-pw =d, 1 warning:
-	Suspicious pointer assignment
-pw =s, 1 warning:
-	Suspicious pointer assignment
-pw =z, 1 warning:
-	Suspicious pointer assignment
-pw =w, 1 warning:
-	Suspicious pointer assignment
-pw =udt1, 1 warning:
-	Suspicious pointer assignment
-pw =udt2, 1 warning:
-	Suspicious pointer assignment
-pw =fwd1, 1 warning:
-	Suspicious pointer assignment
-pw =fwd2, 1 warning:
-	Suspicious pointer assignment
-pw =psub, 1 warning:
-	Suspicious pointer assignment
-pw =pfi, 1 warning:
-	Suspicious pointer assignment
-pw =pany, 1 warning:
-	Suspicious pointer assignment
-pw =psh, 1 warning:
-	Suspicious pointer assignment
-pw =push, 1 warning:
-	Suspicious pointer assignment
-pw =pl, 1 warning:
-	Suspicious pointer assignment
-pw =pul, 1 warning:
-	Suspicious pointer assignment
-pw =pll, 1 warning:
-	Suspicious pointer assignment
-pw =pull, 1 warning:
-	Suspicious pointer assignment
-pw =pi, 1 warning:
-	Suspicious pointer assignment
-pw =pui, 1 warning:
-	Suspicious pointer assignment
-pw =pf, 1 warning:
-	Suspicious pointer assignment
-pw =pd, 1 warning:
-	Suspicious pointer assignment
-pw =ps, 1 warning:
-	Suspicious pointer assignment
-pw =pudt1, 1 warning:
-	Suspicious pointer assignment
-pw =pudt2, 1 warning:
-	Suspicious pointer assignment
-pw =pfwd1, 1 warning:
-	Suspicious pointer assignment
-pw =pdwf2, 1 warning:
-	Suspicious pointer assignment
-pw =ppsub, 1 warning:
-	Suspicious pointer assignment
-pw =ppfi, 1 warning:
-	Suspicious pointer assignment
-pudt1 =byrefany, 1 warning:
-	Suspicious pointer assignment
-pudt1 =b, 1 warning:
-	Suspicious pointer assignment
-pudt1 =ub, 1 warning:
-	Suspicious pointer assignment
-pudt1 =sh, 1 warning:
-	Suspicious pointer assignment
-pudt1 =ush, 1 warning:
-	Suspicious pointer assignment
-pudt1 =l, 1 warning:
-	Suspicious pointer assignment
-pudt1 =ul, 1 warning:
-	Suspicious pointer assignment
-pudt1 =ll, 1 warning:
-	Suspicious pointer assignment
-pudt1 =ull, 1 warning:
-	Suspicious pointer assignment
-pudt1 =i, 1 warning:
-	Suspicious pointer assignment
-pudt1 =ui, 1 warning:
-	Suspicious pointer assignment
-pudt1 =f, 1 warning:
-	Suspicious pointer assignment
-pudt1 =d, 1 warning:
-	Suspicious pointer assignment
-pudt1 =s, 1 warning:
-	Suspicious pointer assignment
-pudt1 =z, 1 warning:
-	Suspicious pointer assignment
-pudt1 =w, 1 warning:
-	Suspicious pointer assignment
-pudt1 =udt1, 1 warning:
-	Suspicious pointer assignment
-pudt1 =udt2, 1 warning:
-	Suspicious pointer assignment
-pudt1 =fwd1, 1 warning:
-	Suspicious pointer assignment
-pudt1 =fwd2, 1 warning:
-	Suspicious pointer assignment
-pudt1 =psub, 1 warning:
-	Suspicious pointer assignment
-pudt1 =pfi, 1 warning:
-	Suspicious pointer assignment
-pudt1 =pany, 1 warning:
-	Suspicious pointer assignment
-pudt1 =pb, 1 warning:
-	Suspicious pointer assignment
-pudt1 =pub, 1 warning:
-	Suspicious pointer assignment
-pudt1 =psh, 1 warning:
-	Suspicious pointer assignment
-pudt1 =push, 1 warning:
-	Suspicious pointer assignment
-pudt1 =pl, 1 warning:
-	Suspicious pointer assignment
-pudt1 =pul, 1 warning:
-	Suspicious pointer assignment
-pudt1 =pll, 1 warning:
-	Suspicious pointer assignment
-pudt1 =pull, 1 warning:
-	Suspicious pointer assignment
-pudt1 =pi, 1 warning:
-	Suspicious pointer assignment
-pudt1 =pui, 1 warning:
-	Suspicious pointer assignment
-pudt1 =pf, 1 warning:
-	Suspicious pointer assignment
-pudt1 =pd, 1 warning:
-	Suspicious pointer assignment
-pudt1 =ps, 1 warning:
-	Suspicious pointer assignment
-pudt1 =pz, 1 warning:
-	Suspicious pointer assignment
-pudt1 =pw, 1 warning:
-	Suspicious pointer assignment
-pudt1 =pudt2, 1 warning:
-	Suspicious pointer assignment
-pudt1 =pfwd1, 1 warning:
-	Suspicious pointer assignment
-pudt1 =pdwf2, 1 warning:
-	Suspicious pointer assignment
-pudt1 =ppsub, 1 warning:
-	Suspicious pointer assignment
-pudt1 =ppfi, 1 warning:
-	Suspicious pointer assignment
-pudt2 =byrefany, 1 warning:
-	Suspicious pointer assignment
-pudt2 =b, 1 warning:
-	Suspicious pointer assignment
-pudt2 =ub, 1 warning:
-	Suspicious pointer assignment
-pudt2 =sh, 1 warning:
-	Suspicious pointer assignment
-pudt2 =ush, 1 warning:
-	Suspicious pointer assignment
-pudt2 =l, 1 warning:
-	Suspicious pointer assignment
-pudt2 =ul, 1 warning:
-	Suspicious pointer assignment
-pudt2 =ll, 1 warning:
-	Suspicious pointer assignment
-pudt2 =ull, 1 warning:
-	Suspicious pointer assignment
-pudt2 =i, 1 warning:
-	Suspicious pointer assignment
-pudt2 =ui, 1 warning:
-	Suspicious pointer assignment
-pudt2 =f, 1 warning:
-	Suspicious pointer assignment
-pudt2 =d, 1 warning:
-	Suspicious pointer assignment
-pudt2 =s, 1 warning:
-	Suspicious pointer assignment
-pudt2 =z, 1 warning:
-	Suspicious pointer assignment
-pudt2 =w, 1 warning:
-	Suspicious pointer assignment
-pudt2 =udt1, 1 warning:
-	Suspicious pointer assignment
-pudt2 =udt2, 1 warning:
-	Suspicious pointer assignment
-pudt2 =fwd1, 1 warning:
-	Suspicious pointer assignment
-pudt2 =fwd2, 1 warning:
-	Suspicious pointer assignment
-pudt2 =psub, 1 warning:
-	Suspicious pointer assignment
-pudt2 =pfi, 1 warning:
-	Suspicious pointer assignment
-pudt2 =pany, 1 warning:
-	Suspicious pointer assignment
-pudt2 =pb, 1 warning:
-	Suspicious pointer assignment
-pudt2 =pub, 1 warning:
-	Suspicious pointer assignment
-pudt2 =psh, 1 warning:
-	Suspicious pointer assignment
-pudt2 =push, 1 warning:
-	Suspicious pointer assignment
-pudt2 =pl, 1 warning:
-	Suspicious pointer assignment
-pudt2 =pul, 1 warning:
-	Suspicious pointer assignment
-pudt2 =pll, 1 warning:
-	Suspicious pointer assignment
-pudt2 =pull, 1 warning:
-	Suspicious pointer assignment
-pudt2 =pi, 1 warning:
-	Suspicious pointer assignment
-pudt2 =pui, 1 warning:
-	Suspicious pointer assignment
-pudt2 =pf, 1 warning:
-	Suspicious pointer assignment
-pudt2 =pd, 1 warning:
-	Suspicious pointer assignment
-pudt2 =ps, 1 warning:
-	Suspicious pointer assignment
-pudt2 =pz, 1 warning:
-	Suspicious pointer assignment
-pudt2 =pw, 1 warning:
-	Suspicious pointer assignment
-pudt2 =pudt1, 1 warning:
-	Suspicious pointer assignment
-pudt2 =pfwd1, 1 warning:
-	Suspicious pointer assignment
-pudt2 =pdwf2, 1 warning:
-	Suspicious pointer assignment
-pudt2 =ppsub, 1 warning:
-	Suspicious pointer assignment
-pudt2 =ppfi, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =byrefany, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =b, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =ub, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =sh, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =ush, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =l, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =ul, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =ll, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =ull, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =i, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =ui, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =f, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =d, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =s, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =z, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =w, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =udt1, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =udt2, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =fwd1, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =fwd2, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =psub, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =pfi, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =pany, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =pb, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =pub, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =psh, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =push, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =pl, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =pul, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =pll, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =pull, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =pi, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =pui, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =pf, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =pd, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =ps, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =pz, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =pw, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =pudt1, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =pudt2, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =pdwf2, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =ppsub, 1 warning:
-	Suspicious pointer assignment
-pfwd1 =ppfi, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =byrefany, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =b, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =ub, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =sh, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =ush, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =l, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =ul, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =ll, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =ull, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =i, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =ui, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =f, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =d, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =s, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =z, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =w, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =udt1, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =udt2, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =fwd1, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =fwd2, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =psub, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =pfi, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =pany, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =pb, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =pub, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =psh, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =push, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =pl, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =pul, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =pll, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =pull, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =pi, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =pui, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =pf, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =pd, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =ps, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =pz, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =pw, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =pudt1, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =pudt2, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =pfwd1, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =ppsub, 1 warning:
-	Suspicious pointer assignment
-pdwf2 =ppfi, 1 warning:
-	Suspicious pointer assignment
-ppsub =byrefany, 1 warning:
-	Suspicious pointer assignment
-ppsub =b, 1 warning:
-	Suspicious pointer assignment
-ppsub =ub, 1 warning:
-	Suspicious pointer assignment
-ppsub =sh, 1 warning:
-	Suspicious pointer assignment
-ppsub =ush, 1 warning:
-	Suspicious pointer assignment
-ppsub =l, 1 warning:
-	Suspicious pointer assignment
-ppsub =ul, 1 warning:
-	Suspicious pointer assignment
-ppsub =ll, 1 warning:
-	Suspicious pointer assignment
-ppsub =ull, 1 warning:
-	Suspicious pointer assignment
-ppsub =i, 1 warning:
-	Suspicious pointer assignment
-ppsub =ui, 1 warning:
-	Suspicious pointer assignment
-ppsub =f, 1 warning:
-	Suspicious pointer assignment
-ppsub =d, 1 warning:
-	Suspicious pointer assignment
-ppsub =s, 1 warning:
-	Suspicious pointer assignment
-ppsub =z, 1 warning:
-	Suspicious pointer assignment
-ppsub =w, 1 warning:
-	Suspicious pointer assignment
-ppsub =udt1, 1 warning:
-	Suspicious pointer assignment
-ppsub =udt2, 1 warning:
-	Suspicious pointer assignment
-ppsub =fwd1, 1 warning:
-	Suspicious pointer assignment
-ppsub =fwd2, 1 warning:
-	Suspicious pointer assignment
-ppsub =psub, 1 warning:
-	Suspicious pointer assignment
-ppsub =pfi, 1 warning:
+pfi = ppsub, 1 warning:
 	Suspicious pointer assignment
 	Return type mismatch in function pointer
-ppsub =pany, 1 warning:
+pfi = ppfi, 1 warning:
 	Suspicious pointer assignment
-ppsub =pb, 1 warning:
+pany = byrefany, 1 warning:
 	Suspicious pointer assignment
-ppsub =pub, 1 warning:
+pany = b, 1 warning:
 	Suspicious pointer assignment
-ppsub =psh, 1 warning:
+pany = ub, 1 warning:
 	Suspicious pointer assignment
-ppsub =push, 1 warning:
+pany = sh, 1 warning:
 	Suspicious pointer assignment
-ppsub =pl, 1 warning:
+pany = ush, 1 warning:
 	Suspicious pointer assignment
-ppsub =pul, 1 warning:
+pany = l, 1 warning:
 	Suspicious pointer assignment
-ppsub =pll, 1 warning:
+pany = ul, 1 warning:
 	Suspicious pointer assignment
-ppsub =pull, 1 warning:
+pany = ll, 1 warning:
 	Suspicious pointer assignment
-ppsub =pi, 1 warning:
+pany = ull, 1 warning:
 	Suspicious pointer assignment
-ppsub =pui, 1 warning:
+pany = i, 1 warning:
 	Suspicious pointer assignment
-ppsub =pf, 1 warning:
+pany = ui, 1 warning:
 	Suspicious pointer assignment
-ppsub =pd, 1 warning:
+pany = f, 1 warning:
 	Suspicious pointer assignment
-ppsub =ps, 1 warning:
+pany = d, 1 warning:
 	Suspicious pointer assignment
-ppsub =pz, 1 warning:
+pany = s, 1 warning:
 	Suspicious pointer assignment
-ppsub =pw, 1 warning:
+pany = z, 1 warning:
 	Suspicious pointer assignment
-ppsub =pudt1, 1 warning:
+pany = w, 1 warning:
 	Suspicious pointer assignment
-ppsub =pudt2, 1 warning:
+pany = udt1, 1 warning:
 	Suspicious pointer assignment
-ppsub =pfwd1, 1 warning:
+pany = udt2, 1 warning:
 	Suspicious pointer assignment
-ppsub =pdwf2, 1 warning:
+pany = fwd1, 1 warning:
 	Suspicious pointer assignment
-ppfi =byrefany, 1 warning:
+pany = fwd2, 1 warning:
 	Suspicious pointer assignment
-ppfi =b, 1 warning:
+pany = psub, 1 warning:
 	Suspicious pointer assignment
-ppfi =ub, 1 warning:
+pany = pfi, 1 warning:
 	Suspicious pointer assignment
-ppfi =sh, 1 warning:
+pany = pb, 1 warning:
 	Suspicious pointer assignment
-ppfi =ush, 1 warning:
+pany = pub, 1 warning:
 	Suspicious pointer assignment
-ppfi =l, 1 warning:
+pany = psh, 1 warning:
 	Suspicious pointer assignment
-ppfi =ul, 1 warning:
+pany = push, 1 warning:
 	Suspicious pointer assignment
-ppfi =ll, 1 warning:
+pany = pl, 1 warning:
 	Suspicious pointer assignment
-ppfi =ull, 1 warning:
+pany = pul, 1 warning:
 	Suspicious pointer assignment
-ppfi =i, 1 warning:
+pany = pll, 1 warning:
 	Suspicious pointer assignment
-ppfi =ui, 1 warning:
+pany = pull, 1 warning:
 	Suspicious pointer assignment
-ppfi =f, 1 warning:
+pany = pi, 1 warning:
 	Suspicious pointer assignment
-ppfi =d, 1 warning:
+pany = pui, 1 warning:
 	Suspicious pointer assignment
-ppfi =s, 1 warning:
+pany = pf, 1 warning:
 	Suspicious pointer assignment
-ppfi =z, 1 warning:
+pany = pd, 1 warning:
 	Suspicious pointer assignment
-ppfi =w, 1 warning:
+pany = ps, 1 warning:
 	Suspicious pointer assignment
-ppfi =udt1, 1 warning:
+pany = pz, 1 warning:
 	Suspicious pointer assignment
-ppfi =udt2, 1 warning:
+pany = pw, 1 warning:
 	Suspicious pointer assignment
-ppfi =fwd1, 1 warning:
+pany = pudt1, 1 warning:
 	Suspicious pointer assignment
-ppfi =fwd2, 1 warning:
+pany = pudt2, 1 warning:
 	Suspicious pointer assignment
-ppfi =psub, 1 warning:
+pany = pfwd1, 1 warning:
+	Suspicious pointer assignment
+pany = pdwf2, 1 warning:
+	Suspicious pointer assignment
+pany = ppsub, 1 warning:
+	Suspicious pointer assignment
+pany = ppfi, 1 warning:
+	Suspicious pointer assignment
+pb = byrefany, 1 warning:
+	Suspicious pointer assignment
+pb = b, 1 warning:
+	Suspicious pointer assignment
+pb = ub, 1 warning:
+	Suspicious pointer assignment
+pb = sh, 1 warning:
+	Suspicious pointer assignment
+pb = ush, 1 warning:
+	Suspicious pointer assignment
+pb = l, 1 warning:
+	Suspicious pointer assignment
+pb = ul, 1 warning:
+	Suspicious pointer assignment
+pb = ll, 1 warning:
+	Suspicious pointer assignment
+pb = ull, 1 warning:
+	Suspicious pointer assignment
+pb = i, 1 warning:
+	Suspicious pointer assignment
+pb = ui, 1 warning:
+	Suspicious pointer assignment
+pb = f, 1 warning:
+	Suspicious pointer assignment
+pb = d, 1 warning:
+	Suspicious pointer assignment
+pb = s, 1 warning:
+	Suspicious pointer assignment
+pb = z, 1 warning:
+	Suspicious pointer assignment
+pb = w, 1 warning:
+	Suspicious pointer assignment
+pb = udt1, 1 warning:
+	Suspicious pointer assignment
+pb = udt2, 1 warning:
+	Suspicious pointer assignment
+pb = fwd1, 1 warning:
+	Suspicious pointer assignment
+pb = fwd2, 1 warning:
+	Suspicious pointer assignment
+pb = psub, 1 warning:
+	Suspicious pointer assignment
+pb = pfi, 1 warning:
+	Suspicious pointer assignment
+pb = pany, 1 warning:
+	Suspicious pointer assignment
+pb = psh, 1 warning:
+	Suspicious pointer assignment
+pb = push, 1 warning:
+	Suspicious pointer assignment
+pb = pl, 1 warning:
+	Suspicious pointer assignment
+pb = pul, 1 warning:
+	Suspicious pointer assignment
+pb = pll, 1 warning:
+	Suspicious pointer assignment
+pb = pull, 1 warning:
+	Suspicious pointer assignment
+pb = pi, 1 warning:
+	Suspicious pointer assignment
+pb = pui, 1 warning:
+	Suspicious pointer assignment
+pb = pf, 1 warning:
+	Suspicious pointer assignment
+pb = pd, 1 warning:
+	Suspicious pointer assignment
+pb = ps, 1 warning:
+	Suspicious pointer assignment
+pb = pudt1, 1 warning:
+	Suspicious pointer assignment
+pb = pudt2, 1 warning:
+	Suspicious pointer assignment
+pb = pfwd1, 1 warning:
+	Suspicious pointer assignment
+pb = pdwf2, 1 warning:
+	Suspicious pointer assignment
+pb = ppsub, 1 warning:
+	Suspicious pointer assignment
+pb = ppfi, 1 warning:
+	Suspicious pointer assignment
+pub = byrefany, 1 warning:
+	Suspicious pointer assignment
+pub = b, 1 warning:
+	Suspicious pointer assignment
+pub = ub, 1 warning:
+	Suspicious pointer assignment
+pub = sh, 1 warning:
+	Suspicious pointer assignment
+pub = ush, 1 warning:
+	Suspicious pointer assignment
+pub = l, 1 warning:
+	Suspicious pointer assignment
+pub = ul, 1 warning:
+	Suspicious pointer assignment
+pub = ll, 1 warning:
+	Suspicious pointer assignment
+pub = ull, 1 warning:
+	Suspicious pointer assignment
+pub = i, 1 warning:
+	Suspicious pointer assignment
+pub = ui, 1 warning:
+	Suspicious pointer assignment
+pub = f, 1 warning:
+	Suspicious pointer assignment
+pub = d, 1 warning:
+	Suspicious pointer assignment
+pub = s, 1 warning:
+	Suspicious pointer assignment
+pub = z, 1 warning:
+	Suspicious pointer assignment
+pub = w, 1 warning:
+	Suspicious pointer assignment
+pub = udt1, 1 warning:
+	Suspicious pointer assignment
+pub = udt2, 1 warning:
+	Suspicious pointer assignment
+pub = fwd1, 1 warning:
+	Suspicious pointer assignment
+pub = fwd2, 1 warning:
+	Suspicious pointer assignment
+pub = psub, 1 warning:
+	Suspicious pointer assignment
+pub = pfi, 1 warning:
+	Suspicious pointer assignment
+pub = pany, 1 warning:
+	Suspicious pointer assignment
+pub = psh, 1 warning:
+	Suspicious pointer assignment
+pub = push, 1 warning:
+	Suspicious pointer assignment
+pub = pl, 1 warning:
+	Suspicious pointer assignment
+pub = pul, 1 warning:
+	Suspicious pointer assignment
+pub = pll, 1 warning:
+	Suspicious pointer assignment
+pub = pull, 1 warning:
+	Suspicious pointer assignment
+pub = pi, 1 warning:
+	Suspicious pointer assignment
+pub = pui, 1 warning:
+	Suspicious pointer assignment
+pub = pf, 1 warning:
+	Suspicious pointer assignment
+pub = pd, 1 warning:
+	Suspicious pointer assignment
+pub = ps, 1 warning:
+	Suspicious pointer assignment
+pub = pudt1, 1 warning:
+	Suspicious pointer assignment
+pub = pudt2, 1 warning:
+	Suspicious pointer assignment
+pub = pfwd1, 1 warning:
+	Suspicious pointer assignment
+pub = pdwf2, 1 warning:
+	Suspicious pointer assignment
+pub = ppsub, 1 warning:
+	Suspicious pointer assignment
+pub = ppfi, 1 warning:
+	Suspicious pointer assignment
+psh = byrefany, 1 warning:
+	Suspicious pointer assignment
+psh = b, 1 warning:
+	Suspicious pointer assignment
+psh = ub, 1 warning:
+	Suspicious pointer assignment
+psh = sh, 1 warning:
+	Suspicious pointer assignment
+psh = ush, 1 warning:
+	Suspicious pointer assignment
+psh = l, 1 warning:
+	Suspicious pointer assignment
+psh = ul, 1 warning:
+	Suspicious pointer assignment
+psh = ll, 1 warning:
+	Suspicious pointer assignment
+psh = ull, 1 warning:
+	Suspicious pointer assignment
+psh = i, 1 warning:
+	Suspicious pointer assignment
+psh = ui, 1 warning:
+	Suspicious pointer assignment
+psh = f, 1 warning:
+	Suspicious pointer assignment
+psh = d, 1 warning:
+	Suspicious pointer assignment
+psh = s, 1 warning:
+	Suspicious pointer assignment
+psh = z, 1 warning:
+	Suspicious pointer assignment
+psh = w, 1 warning:
+	Suspicious pointer assignment
+psh = udt1, 1 warning:
+	Suspicious pointer assignment
+psh = udt2, 1 warning:
+	Suspicious pointer assignment
+psh = fwd1, 1 warning:
+	Suspicious pointer assignment
+psh = fwd2, 1 warning:
+	Suspicious pointer assignment
+psh = psub, 1 warning:
+	Suspicious pointer assignment
+psh = pfi, 1 warning:
+	Suspicious pointer assignment
+psh = pany, 1 warning:
+	Suspicious pointer assignment
+psh = pb, 1 warning:
+	Suspicious pointer assignment
+psh = pub, 1 warning:
+	Suspicious pointer assignment
+psh = pl, 1 warning:
+	Suspicious pointer assignment
+psh = pul, 1 warning:
+	Suspicious pointer assignment
+psh = pll, 1 warning:
+	Suspicious pointer assignment
+psh = pull, 1 warning:
+	Suspicious pointer assignment
+psh = pi, 1 warning:
+	Suspicious pointer assignment
+psh = pui, 1 warning:
+	Suspicious pointer assignment
+psh = pf, 1 warning:
+	Suspicious pointer assignment
+psh = pd, 1 warning:
+	Suspicious pointer assignment
+psh = ps, 1 warning:
+	Suspicious pointer assignment
+psh = pz, 1 warning:
+	Suspicious pointer assignment
+psh = pw, 1 warning:
+	Suspicious pointer assignment
+psh = pudt1, 1 warning:
+	Suspicious pointer assignment
+psh = pudt2, 1 warning:
+	Suspicious pointer assignment
+psh = pfwd1, 1 warning:
+	Suspicious pointer assignment
+psh = pdwf2, 1 warning:
+	Suspicious pointer assignment
+psh = ppsub, 1 warning:
+	Suspicious pointer assignment
+psh = ppfi, 1 warning:
+	Suspicious pointer assignment
+push = byrefany, 1 warning:
+	Suspicious pointer assignment
+push = b, 1 warning:
+	Suspicious pointer assignment
+push = ub, 1 warning:
+	Suspicious pointer assignment
+push = sh, 1 warning:
+	Suspicious pointer assignment
+push = ush, 1 warning:
+	Suspicious pointer assignment
+push = l, 1 warning:
+	Suspicious pointer assignment
+push = ul, 1 warning:
+	Suspicious pointer assignment
+push = ll, 1 warning:
+	Suspicious pointer assignment
+push = ull, 1 warning:
+	Suspicious pointer assignment
+push = i, 1 warning:
+	Suspicious pointer assignment
+push = ui, 1 warning:
+	Suspicious pointer assignment
+push = f, 1 warning:
+	Suspicious pointer assignment
+push = d, 1 warning:
+	Suspicious pointer assignment
+push = s, 1 warning:
+	Suspicious pointer assignment
+push = z, 1 warning:
+	Suspicious pointer assignment
+push = w, 1 warning:
+	Suspicious pointer assignment
+push = udt1, 1 warning:
+	Suspicious pointer assignment
+push = udt2, 1 warning:
+	Suspicious pointer assignment
+push = fwd1, 1 warning:
+	Suspicious pointer assignment
+push = fwd2, 1 warning:
+	Suspicious pointer assignment
+push = psub, 1 warning:
+	Suspicious pointer assignment
+push = pfi, 1 warning:
+	Suspicious pointer assignment
+push = pany, 1 warning:
+	Suspicious pointer assignment
+push = pb, 1 warning:
+	Suspicious pointer assignment
+push = pub, 1 warning:
+	Suspicious pointer assignment
+push = pl, 1 warning:
+	Suspicious pointer assignment
+push = pul, 1 warning:
+	Suspicious pointer assignment
+push = pll, 1 warning:
+	Suspicious pointer assignment
+push = pull, 1 warning:
+	Suspicious pointer assignment
+push = pi, 1 warning:
+	Suspicious pointer assignment
+push = pui, 1 warning:
+	Suspicious pointer assignment
+push = pf, 1 warning:
+	Suspicious pointer assignment
+push = pd, 1 warning:
+	Suspicious pointer assignment
+push = ps, 1 warning:
+	Suspicious pointer assignment
+push = pz, 1 warning:
+	Suspicious pointer assignment
+push = pw, 1 warning:
+	Suspicious pointer assignment
+push = pudt1, 1 warning:
+	Suspicious pointer assignment
+push = pudt2, 1 warning:
+	Suspicious pointer assignment
+push = pfwd1, 1 warning:
+	Suspicious pointer assignment
+push = pdwf2, 1 warning:
+	Suspicious pointer assignment
+push = ppsub, 1 warning:
+	Suspicious pointer assignment
+push = ppfi, 1 warning:
+	Suspicious pointer assignment
+pl = byrefany, 1 warning:
+	Suspicious pointer assignment
+pl = b, 1 warning:
+	Suspicious pointer assignment
+pl = ub, 1 warning:
+	Suspicious pointer assignment
+pl = sh, 1 warning:
+	Suspicious pointer assignment
+pl = ush, 1 warning:
+	Suspicious pointer assignment
+pl = l, 1 warning:
+	Suspicious pointer assignment
+pl = ul, 1 warning:
+	Suspicious pointer assignment
+pl = ll, 1 warning:
+	Suspicious pointer assignment
+pl = ull, 1 warning:
+	Suspicious pointer assignment
+pl = i, 1 warning:
+	Suspicious pointer assignment
+pl = ui, 1 warning:
+	Suspicious pointer assignment
+pl = f, 1 warning:
+	Suspicious pointer assignment
+pl = d, 1 warning:
+	Suspicious pointer assignment
+pl = s, 1 warning:
+	Suspicious pointer assignment
+pl = z, 1 warning:
+	Suspicious pointer assignment
+pl = w, 1 warning:
+	Suspicious pointer assignment
+pl = udt1, 1 warning:
+	Suspicious pointer assignment
+pl = udt2, 1 warning:
+	Suspicious pointer assignment
+pl = fwd1, 1 warning:
+	Suspicious pointer assignment
+pl = fwd2, 1 warning:
+	Suspicious pointer assignment
+pl = psub, 1 warning:
+	Suspicious pointer assignment
+pl = pfi, 1 warning:
+	Suspicious pointer assignment
+pl = pany, 1 warning:
+	Suspicious pointer assignment
+pl = pb, 1 warning:
+	Suspicious pointer assignment
+pl = pub, 1 warning:
+	Suspicious pointer assignment
+pl = psh, 1 warning:
+	Suspicious pointer assignment
+pl = push, 1 warning:
+	Suspicious pointer assignment
+pl = pll, 1 warning:
+	Suspicious pointer assignment
+pl = pull, 1 warning:
+	Suspicious pointer assignment
+pl = pf, 1 warning:
+	Suspicious pointer assignment
+pl = pd, 1 warning:
+	Suspicious pointer assignment
+pl = ps, 1 warning:
+	Suspicious pointer assignment
+pl = pz, 1 warning:
+	Suspicious pointer assignment
+pl = pw, 1 warning:
+	Suspicious pointer assignment
+pl = pudt1, 1 warning:
+	Suspicious pointer assignment
+pl = pudt2, 1 warning:
+	Suspicious pointer assignment
+pl = pfwd1, 1 warning:
+	Suspicious pointer assignment
+pl = pdwf2, 1 warning:
+	Suspicious pointer assignment
+pl = ppsub, 1 warning:
+	Suspicious pointer assignment
+pl = ppfi, 1 warning:
+	Suspicious pointer assignment
+pul = byrefany, 1 warning:
+	Suspicious pointer assignment
+pul = b, 1 warning:
+	Suspicious pointer assignment
+pul = ub, 1 warning:
+	Suspicious pointer assignment
+pul = sh, 1 warning:
+	Suspicious pointer assignment
+pul = ush, 1 warning:
+	Suspicious pointer assignment
+pul = l, 1 warning:
+	Suspicious pointer assignment
+pul = ul, 1 warning:
+	Suspicious pointer assignment
+pul = ll, 1 warning:
+	Suspicious pointer assignment
+pul = ull, 1 warning:
+	Suspicious pointer assignment
+pul = i, 1 warning:
+	Suspicious pointer assignment
+pul = ui, 1 warning:
+	Suspicious pointer assignment
+pul = f, 1 warning:
+	Suspicious pointer assignment
+pul = d, 1 warning:
+	Suspicious pointer assignment
+pul = s, 1 warning:
+	Suspicious pointer assignment
+pul = z, 1 warning:
+	Suspicious pointer assignment
+pul = w, 1 warning:
+	Suspicious pointer assignment
+pul = udt1, 1 warning:
+	Suspicious pointer assignment
+pul = udt2, 1 warning:
+	Suspicious pointer assignment
+pul = fwd1, 1 warning:
+	Suspicious pointer assignment
+pul = fwd2, 1 warning:
+	Suspicious pointer assignment
+pul = psub, 1 warning:
+	Suspicious pointer assignment
+pul = pfi, 1 warning:
+	Suspicious pointer assignment
+pul = pany, 1 warning:
+	Suspicious pointer assignment
+pul = pb, 1 warning:
+	Suspicious pointer assignment
+pul = pub, 1 warning:
+	Suspicious pointer assignment
+pul = psh, 1 warning:
+	Suspicious pointer assignment
+pul = push, 1 warning:
+	Suspicious pointer assignment
+pul = pll, 1 warning:
+	Suspicious pointer assignment
+pul = pull, 1 warning:
+	Suspicious pointer assignment
+pul = pf, 1 warning:
+	Suspicious pointer assignment
+pul = pd, 1 warning:
+	Suspicious pointer assignment
+pul = ps, 1 warning:
+	Suspicious pointer assignment
+pul = pz, 1 warning:
+	Suspicious pointer assignment
+pul = pw, 1 warning:
+	Suspicious pointer assignment
+pul = pudt1, 1 warning:
+	Suspicious pointer assignment
+pul = pudt2, 1 warning:
+	Suspicious pointer assignment
+pul = pfwd1, 1 warning:
+	Suspicious pointer assignment
+pul = pdwf2, 1 warning:
+	Suspicious pointer assignment
+pul = ppsub, 1 warning:
+	Suspicious pointer assignment
+pul = ppfi, 1 warning:
+	Suspicious pointer assignment
+pll = byrefany, 1 warning:
+	Suspicious pointer assignment
+pll = b, 1 warning:
+	Suspicious pointer assignment
+pll = ub, 1 warning:
+	Suspicious pointer assignment
+pll = sh, 1 warning:
+	Suspicious pointer assignment
+pll = ush, 1 warning:
+	Suspicious pointer assignment
+pll = l, 1 warning:
+	Suspicious pointer assignment
+pll = ul, 1 warning:
+	Suspicious pointer assignment
+pll = ll, 1 warning:
+	Suspicious pointer assignment
+pll = ull, 1 warning:
+	Suspicious pointer assignment
+pll = i, 1 warning:
+	Suspicious pointer assignment
+pll = ui, 1 warning:
+	Suspicious pointer assignment
+pll = f, 1 warning:
+	Suspicious pointer assignment
+pll = d, 1 warning:
+	Suspicious pointer assignment
+pll = s, 1 warning:
+	Suspicious pointer assignment
+pll = z, 1 warning:
+	Suspicious pointer assignment
+pll = w, 1 warning:
+	Suspicious pointer assignment
+pll = udt1, 1 warning:
+	Suspicious pointer assignment
+pll = udt2, 1 warning:
+	Suspicious pointer assignment
+pll = fwd1, 1 warning:
+	Suspicious pointer assignment
+pll = fwd2, 1 warning:
+	Suspicious pointer assignment
+pll = psub, 1 warning:
+	Suspicious pointer assignment
+pll = pfi, 1 warning:
+	Suspicious pointer assignment
+pll = pany, 1 warning:
+	Suspicious pointer assignment
+pll = pb, 1 warning:
+	Suspicious pointer assignment
+pll = pub, 1 warning:
+	Suspicious pointer assignment
+pll = psh, 1 warning:
+	Suspicious pointer assignment
+pll = push, 1 warning:
+	Suspicious pointer assignment
+pll = pl, 1 warning:
+	Suspicious pointer assignment
+pll = pul, 1 warning:
+	Suspicious pointer assignment
+pll = pi, 1 warning:
+	Suspicious pointer assignment
+pll = pui, 1 warning:
+	Suspicious pointer assignment
+pll = pf, 1 warning:
+	Suspicious pointer assignment
+pll = pd, 1 warning:
+	Suspicious pointer assignment
+pll = ps, 1 warning:
+	Suspicious pointer assignment
+pll = pz, 1 warning:
+	Suspicious pointer assignment
+pll = pw, 1 warning:
+	Suspicious pointer assignment
+pll = pudt1, 1 warning:
+	Suspicious pointer assignment
+pll = pudt2, 1 warning:
+	Suspicious pointer assignment
+pll = pfwd1, 1 warning:
+	Suspicious pointer assignment
+pll = pdwf2, 1 warning:
+	Suspicious pointer assignment
+pll = ppsub, 1 warning:
+	Suspicious pointer assignment
+pll = ppfi, 1 warning:
+	Suspicious pointer assignment
+pull = byrefany, 1 warning:
+	Suspicious pointer assignment
+pull = b, 1 warning:
+	Suspicious pointer assignment
+pull = ub, 1 warning:
+	Suspicious pointer assignment
+pull = sh, 1 warning:
+	Suspicious pointer assignment
+pull = ush, 1 warning:
+	Suspicious pointer assignment
+pull = l, 1 warning:
+	Suspicious pointer assignment
+pull = ul, 1 warning:
+	Suspicious pointer assignment
+pull = ll, 1 warning:
+	Suspicious pointer assignment
+pull = ull, 1 warning:
+	Suspicious pointer assignment
+pull = i, 1 warning:
+	Suspicious pointer assignment
+pull = ui, 1 warning:
+	Suspicious pointer assignment
+pull = f, 1 warning:
+	Suspicious pointer assignment
+pull = d, 1 warning:
+	Suspicious pointer assignment
+pull = s, 1 warning:
+	Suspicious pointer assignment
+pull = z, 1 warning:
+	Suspicious pointer assignment
+pull = w, 1 warning:
+	Suspicious pointer assignment
+pull = udt1, 1 warning:
+	Suspicious pointer assignment
+pull = udt2, 1 warning:
+	Suspicious pointer assignment
+pull = fwd1, 1 warning:
+	Suspicious pointer assignment
+pull = fwd2, 1 warning:
+	Suspicious pointer assignment
+pull = psub, 1 warning:
+	Suspicious pointer assignment
+pull = pfi, 1 warning:
+	Suspicious pointer assignment
+pull = pany, 1 warning:
+	Suspicious pointer assignment
+pull = pb, 1 warning:
+	Suspicious pointer assignment
+pull = pub, 1 warning:
+	Suspicious pointer assignment
+pull = psh, 1 warning:
+	Suspicious pointer assignment
+pull = push, 1 warning:
+	Suspicious pointer assignment
+pull = pl, 1 warning:
+	Suspicious pointer assignment
+pull = pul, 1 warning:
+	Suspicious pointer assignment
+pull = pi, 1 warning:
+	Suspicious pointer assignment
+pull = pui, 1 warning:
+	Suspicious pointer assignment
+pull = pf, 1 warning:
+	Suspicious pointer assignment
+pull = pd, 1 warning:
+	Suspicious pointer assignment
+pull = ps, 1 warning:
+	Suspicious pointer assignment
+pull = pz, 1 warning:
+	Suspicious pointer assignment
+pull = pw, 1 warning:
+	Suspicious pointer assignment
+pull = pudt1, 1 warning:
+	Suspicious pointer assignment
+pull = pudt2, 1 warning:
+	Suspicious pointer assignment
+pull = pfwd1, 1 warning:
+	Suspicious pointer assignment
+pull = pdwf2, 1 warning:
+	Suspicious pointer assignment
+pull = ppsub, 1 warning:
+	Suspicious pointer assignment
+pull = ppfi, 1 warning:
+	Suspicious pointer assignment
+pi = byrefany, 1 warning:
+	Suspicious pointer assignment
+pi = b, 1 warning:
+	Suspicious pointer assignment
+pi = ub, 1 warning:
+	Suspicious pointer assignment
+pi = sh, 1 warning:
+	Suspicious pointer assignment
+pi = ush, 1 warning:
+	Suspicious pointer assignment
+pi = l, 1 warning:
+	Suspicious pointer assignment
+pi = ul, 1 warning:
+	Suspicious pointer assignment
+pi = ll, 1 warning:
+	Suspicious pointer assignment
+pi = ull, 1 warning:
+	Suspicious pointer assignment
+pi = i, 1 warning:
+	Suspicious pointer assignment
+pi = ui, 1 warning:
+	Suspicious pointer assignment
+pi = f, 1 warning:
+	Suspicious pointer assignment
+pi = d, 1 warning:
+	Suspicious pointer assignment
+pi = s, 1 warning:
+	Suspicious pointer assignment
+pi = z, 1 warning:
+	Suspicious pointer assignment
+pi = w, 1 warning:
+	Suspicious pointer assignment
+pi = udt1, 1 warning:
+	Suspicious pointer assignment
+pi = udt2, 1 warning:
+	Suspicious pointer assignment
+pi = fwd1, 1 warning:
+	Suspicious pointer assignment
+pi = fwd2, 1 warning:
+	Suspicious pointer assignment
+pi = psub, 1 warning:
+	Suspicious pointer assignment
+pi = pfi, 1 warning:
+	Suspicious pointer assignment
+pi = pany, 1 warning:
+	Suspicious pointer assignment
+pi = pb, 1 warning:
+	Suspicious pointer assignment
+pi = pub, 1 warning:
+	Suspicious pointer assignment
+pi = psh, 1 warning:
+	Suspicious pointer assignment
+pi = push, 1 warning:
+	Suspicious pointer assignment
+pi = pll, 1 warning:
+	Suspicious pointer assignment
+pi = pull, 1 warning:
+	Suspicious pointer assignment
+pi = pf, 1 warning:
+	Suspicious pointer assignment
+pi = pd, 1 warning:
+	Suspicious pointer assignment
+pi = ps, 1 warning:
+	Suspicious pointer assignment
+pi = pz, 1 warning:
+	Suspicious pointer assignment
+pi = pw, 1 warning:
+	Suspicious pointer assignment
+pi = pudt1, 1 warning:
+	Suspicious pointer assignment
+pi = pudt2, 1 warning:
+	Suspicious pointer assignment
+pi = pfwd1, 1 warning:
+	Suspicious pointer assignment
+pi = pdwf2, 1 warning:
+	Suspicious pointer assignment
+pi = ppsub, 1 warning:
+	Suspicious pointer assignment
+pi = ppfi, 1 warning:
+	Suspicious pointer assignment
+pui = byrefany, 1 warning:
+	Suspicious pointer assignment
+pui = b, 1 warning:
+	Suspicious pointer assignment
+pui = ub, 1 warning:
+	Suspicious pointer assignment
+pui = sh, 1 warning:
+	Suspicious pointer assignment
+pui = ush, 1 warning:
+	Suspicious pointer assignment
+pui = l, 1 warning:
+	Suspicious pointer assignment
+pui = ul, 1 warning:
+	Suspicious pointer assignment
+pui = ll, 1 warning:
+	Suspicious pointer assignment
+pui = ull, 1 warning:
+	Suspicious pointer assignment
+pui = i, 1 warning:
+	Suspicious pointer assignment
+pui = ui, 1 warning:
+	Suspicious pointer assignment
+pui = f, 1 warning:
+	Suspicious pointer assignment
+pui = d, 1 warning:
+	Suspicious pointer assignment
+pui = s, 1 warning:
+	Suspicious pointer assignment
+pui = z, 1 warning:
+	Suspicious pointer assignment
+pui = w, 1 warning:
+	Suspicious pointer assignment
+pui = udt1, 1 warning:
+	Suspicious pointer assignment
+pui = udt2, 1 warning:
+	Suspicious pointer assignment
+pui = fwd1, 1 warning:
+	Suspicious pointer assignment
+pui = fwd2, 1 warning:
+	Suspicious pointer assignment
+pui = psub, 1 warning:
+	Suspicious pointer assignment
+pui = pfi, 1 warning:
+	Suspicious pointer assignment
+pui = pany, 1 warning:
+	Suspicious pointer assignment
+pui = pb, 1 warning:
+	Suspicious pointer assignment
+pui = pub, 1 warning:
+	Suspicious pointer assignment
+pui = psh, 1 warning:
+	Suspicious pointer assignment
+pui = push, 1 warning:
+	Suspicious pointer assignment
+pui = pll, 1 warning:
+	Suspicious pointer assignment
+pui = pull, 1 warning:
+	Suspicious pointer assignment
+pui = pf, 1 warning:
+	Suspicious pointer assignment
+pui = pd, 1 warning:
+	Suspicious pointer assignment
+pui = ps, 1 warning:
+	Suspicious pointer assignment
+pui = pz, 1 warning:
+	Suspicious pointer assignment
+pui = pw, 1 warning:
+	Suspicious pointer assignment
+pui = pudt1, 1 warning:
+	Suspicious pointer assignment
+pui = pudt2, 1 warning:
+	Suspicious pointer assignment
+pui = pfwd1, 1 warning:
+	Suspicious pointer assignment
+pui = pdwf2, 1 warning:
+	Suspicious pointer assignment
+pui = ppsub, 1 warning:
+	Suspicious pointer assignment
+pui = ppfi, 1 warning:
+	Suspicious pointer assignment
+pf = byrefany, 1 warning:
+	Suspicious pointer assignment
+pf = b, 1 warning:
+	Suspicious pointer assignment
+pf = ub, 1 warning:
+	Suspicious pointer assignment
+pf = sh, 1 warning:
+	Suspicious pointer assignment
+pf = ush, 1 warning:
+	Suspicious pointer assignment
+pf = l, 1 warning:
+	Suspicious pointer assignment
+pf = ul, 1 warning:
+	Suspicious pointer assignment
+pf = ll, 1 warning:
+	Suspicious pointer assignment
+pf = ull, 1 warning:
+	Suspicious pointer assignment
+pf = i, 1 warning:
+	Suspicious pointer assignment
+pf = ui, 1 warning:
+	Suspicious pointer assignment
+pf = f, 1 warning:
+	Suspicious pointer assignment
+pf = d, 1 warning:
+	Suspicious pointer assignment
+pf = s, 1 warning:
+	Suspicious pointer assignment
+pf = z, 1 warning:
+	Suspicious pointer assignment
+pf = w, 1 warning:
+	Suspicious pointer assignment
+pf = udt1, 1 warning:
+	Suspicious pointer assignment
+pf = udt2, 1 warning:
+	Suspicious pointer assignment
+pf = fwd1, 1 warning:
+	Suspicious pointer assignment
+pf = fwd2, 1 warning:
+	Suspicious pointer assignment
+pf = psub, 1 warning:
+	Suspicious pointer assignment
+pf = pfi, 1 warning:
+	Suspicious pointer assignment
+pf = pany, 1 warning:
+	Suspicious pointer assignment
+pf = pb, 1 warning:
+	Suspicious pointer assignment
+pf = pub, 1 warning:
+	Suspicious pointer assignment
+pf = psh, 1 warning:
+	Suspicious pointer assignment
+pf = push, 1 warning:
+	Suspicious pointer assignment
+pf = pl, 1 warning:
+	Suspicious pointer assignment
+pf = pul, 1 warning:
+	Suspicious pointer assignment
+pf = pll, 1 warning:
+	Suspicious pointer assignment
+pf = pull, 1 warning:
+	Suspicious pointer assignment
+pf = pi, 1 warning:
+	Suspicious pointer assignment
+pf = pui, 1 warning:
+	Suspicious pointer assignment
+pf = pd, 1 warning:
+	Suspicious pointer assignment
+pf = ps, 1 warning:
+	Suspicious pointer assignment
+pf = pz, 1 warning:
+	Suspicious pointer assignment
+pf = pw, 1 warning:
+	Suspicious pointer assignment
+pf = pudt1, 1 warning:
+	Suspicious pointer assignment
+pf = pudt2, 1 warning:
+	Suspicious pointer assignment
+pf = pfwd1, 1 warning:
+	Suspicious pointer assignment
+pf = pdwf2, 1 warning:
+	Suspicious pointer assignment
+pf = ppsub, 1 warning:
+	Suspicious pointer assignment
+pf = ppfi, 1 warning:
+	Suspicious pointer assignment
+pd = byrefany, 1 warning:
+	Suspicious pointer assignment
+pd = b, 1 warning:
+	Suspicious pointer assignment
+pd = ub, 1 warning:
+	Suspicious pointer assignment
+pd = sh, 1 warning:
+	Suspicious pointer assignment
+pd = ush, 1 warning:
+	Suspicious pointer assignment
+pd = l, 1 warning:
+	Suspicious pointer assignment
+pd = ul, 1 warning:
+	Suspicious pointer assignment
+pd = ll, 1 warning:
+	Suspicious pointer assignment
+pd = ull, 1 warning:
+	Suspicious pointer assignment
+pd = i, 1 warning:
+	Suspicious pointer assignment
+pd = ui, 1 warning:
+	Suspicious pointer assignment
+pd = f, 1 warning:
+	Suspicious pointer assignment
+pd = d, 1 warning:
+	Suspicious pointer assignment
+pd = s, 1 warning:
+	Suspicious pointer assignment
+pd = z, 1 warning:
+	Suspicious pointer assignment
+pd = w, 1 warning:
+	Suspicious pointer assignment
+pd = udt1, 1 warning:
+	Suspicious pointer assignment
+pd = udt2, 1 warning:
+	Suspicious pointer assignment
+pd = fwd1, 1 warning:
+	Suspicious pointer assignment
+pd = fwd2, 1 warning:
+	Suspicious pointer assignment
+pd = psub, 1 warning:
+	Suspicious pointer assignment
+pd = pfi, 1 warning:
+	Suspicious pointer assignment
+pd = pany, 1 warning:
+	Suspicious pointer assignment
+pd = pb, 1 warning:
+	Suspicious pointer assignment
+pd = pub, 1 warning:
+	Suspicious pointer assignment
+pd = psh, 1 warning:
+	Suspicious pointer assignment
+pd = push, 1 warning:
+	Suspicious pointer assignment
+pd = pl, 1 warning:
+	Suspicious pointer assignment
+pd = pul, 1 warning:
+	Suspicious pointer assignment
+pd = pll, 1 warning:
+	Suspicious pointer assignment
+pd = pull, 1 warning:
+	Suspicious pointer assignment
+pd = pi, 1 warning:
+	Suspicious pointer assignment
+pd = pui, 1 warning:
+	Suspicious pointer assignment
+pd = pf, 1 warning:
+	Suspicious pointer assignment
+pd = ps, 1 warning:
+	Suspicious pointer assignment
+pd = pz, 1 warning:
+	Suspicious pointer assignment
+pd = pw, 1 warning:
+	Suspicious pointer assignment
+pd = pudt1, 1 warning:
+	Suspicious pointer assignment
+pd = pudt2, 1 warning:
+	Suspicious pointer assignment
+pd = pfwd1, 1 warning:
+	Suspicious pointer assignment
+pd = pdwf2, 1 warning:
+	Suspicious pointer assignment
+pd = ppsub, 1 warning:
+	Suspicious pointer assignment
+pd = ppfi, 1 warning:
+	Suspicious pointer assignment
+ps = byrefany, 1 warning:
+	Suspicious pointer assignment
+ps = b, 1 warning:
+	Suspicious pointer assignment
+ps = ub, 1 warning:
+	Suspicious pointer assignment
+ps = sh, 1 warning:
+	Suspicious pointer assignment
+ps = ush, 1 warning:
+	Suspicious pointer assignment
+ps = l, 1 warning:
+	Suspicious pointer assignment
+ps = ul, 1 warning:
+	Suspicious pointer assignment
+ps = ll, 1 warning:
+	Suspicious pointer assignment
+ps = ull, 1 warning:
+	Suspicious pointer assignment
+ps = i, 1 warning:
+	Suspicious pointer assignment
+ps = ui, 1 warning:
+	Suspicious pointer assignment
+ps = f, 1 warning:
+	Suspicious pointer assignment
+ps = d, 1 warning:
+	Suspicious pointer assignment
+ps = s, 1 warning:
+	Suspicious pointer assignment
+ps = z, 1 warning:
+	Suspicious pointer assignment
+ps = w, 1 warning:
+	Suspicious pointer assignment
+ps = udt1, 1 warning:
+	Suspicious pointer assignment
+ps = udt2, 1 warning:
+	Suspicious pointer assignment
+ps = fwd1, 1 warning:
+	Suspicious pointer assignment
+ps = fwd2, 1 warning:
+	Suspicious pointer assignment
+ps = psub, 1 warning:
+	Suspicious pointer assignment
+ps = pfi, 1 warning:
+	Suspicious pointer assignment
+ps = pany, 1 warning:
+	Suspicious pointer assignment
+ps = pb, 1 warning:
+	Suspicious pointer assignment
+ps = pub, 1 warning:
+	Suspicious pointer assignment
+ps = psh, 1 warning:
+	Suspicious pointer assignment
+ps = push, 1 warning:
+	Suspicious pointer assignment
+ps = pl, 1 warning:
+	Suspicious pointer assignment
+ps = pul, 1 warning:
+	Suspicious pointer assignment
+ps = pll, 1 warning:
+	Suspicious pointer assignment
+ps = pull, 1 warning:
+	Suspicious pointer assignment
+ps = pi, 1 warning:
+	Suspicious pointer assignment
+ps = pui, 1 warning:
+	Suspicious pointer assignment
+ps = pf, 1 warning:
+	Suspicious pointer assignment
+ps = pd, 1 warning:
+	Suspicious pointer assignment
+ps = pz, 1 warning:
+	Suspicious pointer assignment
+ps = pw, 1 warning:
+	Suspicious pointer assignment
+ps = pudt1, 1 warning:
+	Suspicious pointer assignment
+ps = pudt2, 1 warning:
+	Suspicious pointer assignment
+ps = pfwd1, 1 warning:
+	Suspicious pointer assignment
+ps = pdwf2, 1 warning:
+	Suspicious pointer assignment
+ps = ppsub, 1 warning:
+	Suspicious pointer assignment
+ps = ppfi, 1 warning:
+	Suspicious pointer assignment
+pz = byrefany, 1 warning:
+	Suspicious pointer assignment
+pz = b, 1 warning:
+	Suspicious pointer assignment
+pz = ub, 1 warning:
+	Suspicious pointer assignment
+pz = sh, 1 warning:
+	Suspicious pointer assignment
+pz = ush, 1 warning:
+	Suspicious pointer assignment
+pz = l, 1 warning:
+	Suspicious pointer assignment
+pz = ul, 1 warning:
+	Suspicious pointer assignment
+pz = ll, 1 warning:
+	Suspicious pointer assignment
+pz = ull, 1 warning:
+	Suspicious pointer assignment
+pz = i, 1 warning:
+	Suspicious pointer assignment
+pz = ui, 1 warning:
+	Suspicious pointer assignment
+pz = f, 1 warning:
+	Suspicious pointer assignment
+pz = d, 1 warning:
+	Suspicious pointer assignment
+pz = s, 1 warning:
+	Suspicious pointer assignment
+pz = z, 1 warning:
+	Suspicious pointer assignment
+pz = w, 1 warning:
+	Suspicious pointer assignment
+pz = udt1, 1 warning:
+	Suspicious pointer assignment
+pz = udt2, 1 warning:
+	Suspicious pointer assignment
+pz = fwd1, 1 warning:
+	Suspicious pointer assignment
+pz = fwd2, 1 warning:
+	Suspicious pointer assignment
+pz = psub, 1 warning:
+	Suspicious pointer assignment
+pz = pfi, 1 warning:
+	Suspicious pointer assignment
+pz = pany, 1 warning:
+	Suspicious pointer assignment
+pz = psh, 1 warning:
+	Suspicious pointer assignment
+pz = push, 1 warning:
+	Suspicious pointer assignment
+pz = pl, 1 warning:
+	Suspicious pointer assignment
+pz = pul, 1 warning:
+	Suspicious pointer assignment
+pz = pll, 1 warning:
+	Suspicious pointer assignment
+pz = pull, 1 warning:
+	Suspicious pointer assignment
+pz = pi, 1 warning:
+	Suspicious pointer assignment
+pz = pui, 1 warning:
+	Suspicious pointer assignment
+pz = pf, 1 warning:
+	Suspicious pointer assignment
+pz = pd, 1 warning:
+	Suspicious pointer assignment
+pz = ps, 1 warning:
+	Suspicious pointer assignment
+pz = pudt1, 1 warning:
+	Suspicious pointer assignment
+pz = pudt2, 1 warning:
+	Suspicious pointer assignment
+pz = pfwd1, 1 warning:
+	Suspicious pointer assignment
+pz = pdwf2, 1 warning:
+	Suspicious pointer assignment
+pz = ppsub, 1 warning:
+	Suspicious pointer assignment
+pz = ppfi, 1 warning:
+	Suspicious pointer assignment
+pw = byrefany, 1 warning:
+	Suspicious pointer assignment
+pw = b, 1 warning:
+	Suspicious pointer assignment
+pw = ub, 1 warning:
+	Suspicious pointer assignment
+pw = sh, 1 warning:
+	Suspicious pointer assignment
+pw = ush, 1 warning:
+	Suspicious pointer assignment
+pw = l, 1 warning:
+	Suspicious pointer assignment
+pw = ul, 1 warning:
+	Suspicious pointer assignment
+pw = ll, 1 warning:
+	Suspicious pointer assignment
+pw = ull, 1 warning:
+	Suspicious pointer assignment
+pw = i, 1 warning:
+	Suspicious pointer assignment
+pw = ui, 1 warning:
+	Suspicious pointer assignment
+pw = f, 1 warning:
+	Suspicious pointer assignment
+pw = d, 1 warning:
+	Suspicious pointer assignment
+pw = s, 1 warning:
+	Suspicious pointer assignment
+pw = z, 1 warning:
+	Suspicious pointer assignment
+pw = w, 1 warning:
+	Suspicious pointer assignment
+pw = udt1, 1 warning:
+	Suspicious pointer assignment
+pw = udt2, 1 warning:
+	Suspicious pointer assignment
+pw = fwd1, 1 warning:
+	Suspicious pointer assignment
+pw = fwd2, 1 warning:
+	Suspicious pointer assignment
+pw = psub, 1 warning:
+	Suspicious pointer assignment
+pw = pfi, 1 warning:
+	Suspicious pointer assignment
+pw = pany, 1 warning:
+	Suspicious pointer assignment
+pw = psh, 1 warning:
+	Suspicious pointer assignment
+pw = push, 1 warning:
+	Suspicious pointer assignment
+pw = pl, 1 warning:
+	Suspicious pointer assignment
+pw = pul, 1 warning:
+	Suspicious pointer assignment
+pw = pll, 1 warning:
+	Suspicious pointer assignment
+pw = pull, 1 warning:
+	Suspicious pointer assignment
+pw = pi, 1 warning:
+	Suspicious pointer assignment
+pw = pui, 1 warning:
+	Suspicious pointer assignment
+pw = pf, 1 warning:
+	Suspicious pointer assignment
+pw = pd, 1 warning:
+	Suspicious pointer assignment
+pw = ps, 1 warning:
+	Suspicious pointer assignment
+pw = pudt1, 1 warning:
+	Suspicious pointer assignment
+pw = pudt2, 1 warning:
+	Suspicious pointer assignment
+pw = pfwd1, 1 warning:
+	Suspicious pointer assignment
+pw = pdwf2, 1 warning:
+	Suspicious pointer assignment
+pw = ppsub, 1 warning:
+	Suspicious pointer assignment
+pw = ppfi, 1 warning:
+	Suspicious pointer assignment
+pudt1 = byrefany, 1 warning:
+	Suspicious pointer assignment
+pudt1 = b, 1 warning:
+	Suspicious pointer assignment
+pudt1 = ub, 1 warning:
+	Suspicious pointer assignment
+pudt1 = sh, 1 warning:
+	Suspicious pointer assignment
+pudt1 = ush, 1 warning:
+	Suspicious pointer assignment
+pudt1 = l, 1 warning:
+	Suspicious pointer assignment
+pudt1 = ul, 1 warning:
+	Suspicious pointer assignment
+pudt1 = ll, 1 warning:
+	Suspicious pointer assignment
+pudt1 = ull, 1 warning:
+	Suspicious pointer assignment
+pudt1 = i, 1 warning:
+	Suspicious pointer assignment
+pudt1 = ui, 1 warning:
+	Suspicious pointer assignment
+pudt1 = f, 1 warning:
+	Suspicious pointer assignment
+pudt1 = d, 1 warning:
+	Suspicious pointer assignment
+pudt1 = s, 1 warning:
+	Suspicious pointer assignment
+pudt1 = z, 1 warning:
+	Suspicious pointer assignment
+pudt1 = w, 1 warning:
+	Suspicious pointer assignment
+pudt1 = udt1, 1 warning:
+	Suspicious pointer assignment
+pudt1 = udt2, 1 warning:
+	Suspicious pointer assignment
+pudt1 = fwd1, 1 warning:
+	Suspicious pointer assignment
+pudt1 = fwd2, 1 warning:
+	Suspicious pointer assignment
+pudt1 = psub, 1 warning:
+	Suspicious pointer assignment
+pudt1 = pfi, 1 warning:
+	Suspicious pointer assignment
+pudt1 = pany, 1 warning:
+	Suspicious pointer assignment
+pudt1 = pb, 1 warning:
+	Suspicious pointer assignment
+pudt1 = pub, 1 warning:
+	Suspicious pointer assignment
+pudt1 = psh, 1 warning:
+	Suspicious pointer assignment
+pudt1 = push, 1 warning:
+	Suspicious pointer assignment
+pudt1 = pl, 1 warning:
+	Suspicious pointer assignment
+pudt1 = pul, 1 warning:
+	Suspicious pointer assignment
+pudt1 = pll, 1 warning:
+	Suspicious pointer assignment
+pudt1 = pull, 1 warning:
+	Suspicious pointer assignment
+pudt1 = pi, 1 warning:
+	Suspicious pointer assignment
+pudt1 = pui, 1 warning:
+	Suspicious pointer assignment
+pudt1 = pf, 1 warning:
+	Suspicious pointer assignment
+pudt1 = pd, 1 warning:
+	Suspicious pointer assignment
+pudt1 = ps, 1 warning:
+	Suspicious pointer assignment
+pudt1 = pz, 1 warning:
+	Suspicious pointer assignment
+pudt1 = pw, 1 warning:
+	Suspicious pointer assignment
+pudt1 = pudt2, 1 warning:
+	Suspicious pointer assignment
+pudt1 = pfwd1, 1 warning:
+	Suspicious pointer assignment
+pudt1 = pdwf2, 1 warning:
+	Suspicious pointer assignment
+pudt1 = ppsub, 1 warning:
+	Suspicious pointer assignment
+pudt1 = ppfi, 1 warning:
+	Suspicious pointer assignment
+pudt2 = byrefany, 1 warning:
+	Suspicious pointer assignment
+pudt2 = b, 1 warning:
+	Suspicious pointer assignment
+pudt2 = ub, 1 warning:
+	Suspicious pointer assignment
+pudt2 = sh, 1 warning:
+	Suspicious pointer assignment
+pudt2 = ush, 1 warning:
+	Suspicious pointer assignment
+pudt2 = l, 1 warning:
+	Suspicious pointer assignment
+pudt2 = ul, 1 warning:
+	Suspicious pointer assignment
+pudt2 = ll, 1 warning:
+	Suspicious pointer assignment
+pudt2 = ull, 1 warning:
+	Suspicious pointer assignment
+pudt2 = i, 1 warning:
+	Suspicious pointer assignment
+pudt2 = ui, 1 warning:
+	Suspicious pointer assignment
+pudt2 = f, 1 warning:
+	Suspicious pointer assignment
+pudt2 = d, 1 warning:
+	Suspicious pointer assignment
+pudt2 = s, 1 warning:
+	Suspicious pointer assignment
+pudt2 = z, 1 warning:
+	Suspicious pointer assignment
+pudt2 = w, 1 warning:
+	Suspicious pointer assignment
+pudt2 = udt1, 1 warning:
+	Suspicious pointer assignment
+pudt2 = udt2, 1 warning:
+	Suspicious pointer assignment
+pudt2 = fwd1, 1 warning:
+	Suspicious pointer assignment
+pudt2 = fwd2, 1 warning:
+	Suspicious pointer assignment
+pudt2 = psub, 1 warning:
+	Suspicious pointer assignment
+pudt2 = pfi, 1 warning:
+	Suspicious pointer assignment
+pudt2 = pany, 1 warning:
+	Suspicious pointer assignment
+pudt2 = pb, 1 warning:
+	Suspicious pointer assignment
+pudt2 = pub, 1 warning:
+	Suspicious pointer assignment
+pudt2 = psh, 1 warning:
+	Suspicious pointer assignment
+pudt2 = push, 1 warning:
+	Suspicious pointer assignment
+pudt2 = pl, 1 warning:
+	Suspicious pointer assignment
+pudt2 = pul, 1 warning:
+	Suspicious pointer assignment
+pudt2 = pll, 1 warning:
+	Suspicious pointer assignment
+pudt2 = pull, 1 warning:
+	Suspicious pointer assignment
+pudt2 = pi, 1 warning:
+	Suspicious pointer assignment
+pudt2 = pui, 1 warning:
+	Suspicious pointer assignment
+pudt2 = pf, 1 warning:
+	Suspicious pointer assignment
+pudt2 = pd, 1 warning:
+	Suspicious pointer assignment
+pudt2 = ps, 1 warning:
+	Suspicious pointer assignment
+pudt2 = pz, 1 warning:
+	Suspicious pointer assignment
+pudt2 = pw, 1 warning:
+	Suspicious pointer assignment
+pudt2 = pudt1, 1 warning:
+	Suspicious pointer assignment
+pudt2 = pfwd1, 1 warning:
+	Suspicious pointer assignment
+pudt2 = pdwf2, 1 warning:
+	Suspicious pointer assignment
+pudt2 = ppsub, 1 warning:
+	Suspicious pointer assignment
+pudt2 = ppfi, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = byrefany, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = b, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = ub, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = sh, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = ush, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = l, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = ul, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = ll, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = ull, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = i, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = ui, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = f, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = d, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = s, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = z, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = w, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = udt1, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = udt2, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = fwd1, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = fwd2, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = psub, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = pfi, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = pany, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = pb, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = pub, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = psh, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = push, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = pl, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = pul, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = pll, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = pull, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = pi, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = pui, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = pf, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = pd, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = ps, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = pz, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = pw, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = pudt1, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = pudt2, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = pdwf2, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = ppsub, 1 warning:
+	Suspicious pointer assignment
+pfwd1 = ppfi, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = byrefany, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = b, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = ub, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = sh, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = ush, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = l, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = ul, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = ll, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = ull, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = i, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = ui, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = f, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = d, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = s, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = z, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = w, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = udt1, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = udt2, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = fwd1, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = fwd2, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = psub, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = pfi, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = pany, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = pb, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = pub, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = psh, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = push, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = pl, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = pul, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = pll, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = pull, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = pi, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = pui, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = pf, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = pd, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = ps, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = pz, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = pw, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = pudt1, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = pudt2, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = pfwd1, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = ppsub, 1 warning:
+	Suspicious pointer assignment
+pdwf2 = ppfi, 1 warning:
+	Suspicious pointer assignment
+ppsub = byrefany, 1 warning:
+	Suspicious pointer assignment
+ppsub = b, 1 warning:
+	Suspicious pointer assignment
+ppsub = ub, 1 warning:
+	Suspicious pointer assignment
+ppsub = sh, 1 warning:
+	Suspicious pointer assignment
+ppsub = ush, 1 warning:
+	Suspicious pointer assignment
+ppsub = l, 1 warning:
+	Suspicious pointer assignment
+ppsub = ul, 1 warning:
+	Suspicious pointer assignment
+ppsub = ll, 1 warning:
+	Suspicious pointer assignment
+ppsub = ull, 1 warning:
+	Suspicious pointer assignment
+ppsub = i, 1 warning:
+	Suspicious pointer assignment
+ppsub = ui, 1 warning:
+	Suspicious pointer assignment
+ppsub = f, 1 warning:
+	Suspicious pointer assignment
+ppsub = d, 1 warning:
+	Suspicious pointer assignment
+ppsub = s, 1 warning:
+	Suspicious pointer assignment
+ppsub = z, 1 warning:
+	Suspicious pointer assignment
+ppsub = w, 1 warning:
+	Suspicious pointer assignment
+ppsub = udt1, 1 warning:
+	Suspicious pointer assignment
+ppsub = udt2, 1 warning:
+	Suspicious pointer assignment
+ppsub = fwd1, 1 warning:
+	Suspicious pointer assignment
+ppsub = fwd2, 1 warning:
+	Suspicious pointer assignment
+ppsub = psub, 1 warning:
+	Suspicious pointer assignment
+ppsub = pfi, 1 warning:
 	Suspicious pointer assignment
 	Return type mismatch in function pointer
-ppfi =pfi, 1 warning:
+ppsub = pany, 1 warning:
 	Suspicious pointer assignment
-ppfi =pany, 1 warning:
+ppsub = pb, 1 warning:
 	Suspicious pointer assignment
-ppfi =pb, 1 warning:
+ppsub = pub, 1 warning:
 	Suspicious pointer assignment
-ppfi =pub, 1 warning:
+ppsub = psh, 1 warning:
 	Suspicious pointer assignment
-ppfi =psh, 1 warning:
+ppsub = push, 1 warning:
 	Suspicious pointer assignment
-ppfi =push, 1 warning:
+ppsub = pl, 1 warning:
 	Suspicious pointer assignment
-ppfi =pl, 1 warning:
+ppsub = pul, 1 warning:
 	Suspicious pointer assignment
-ppfi =pul, 1 warning:
+ppsub = pll, 1 warning:
 	Suspicious pointer assignment
-ppfi =pll, 1 warning:
+ppsub = pull, 1 warning:
 	Suspicious pointer assignment
-ppfi =pull, 1 warning:
+ppsub = pi, 1 warning:
 	Suspicious pointer assignment
-ppfi =pi, 1 warning:
+ppsub = pui, 1 warning:
 	Suspicious pointer assignment
-ppfi =pui, 1 warning:
+ppsub = pf, 1 warning:
 	Suspicious pointer assignment
-ppfi =pf, 1 warning:
+ppsub = pd, 1 warning:
 	Suspicious pointer assignment
-ppfi =pd, 1 warning:
+ppsub = ps, 1 warning:
 	Suspicious pointer assignment
-ppfi =ps, 1 warning:
+ppsub = pz, 1 warning:
 	Suspicious pointer assignment
-ppfi =pz, 1 warning:
+ppsub = pw, 1 warning:
 	Suspicious pointer assignment
-ppfi =pw, 1 warning:
+ppsub = pudt1, 1 warning:
 	Suspicious pointer assignment
-ppfi =pudt1, 1 warning:
+ppsub = pudt2, 1 warning:
 	Suspicious pointer assignment
-ppfi =pudt2, 1 warning:
+ppsub = pfwd1, 1 warning:
 	Suspicious pointer assignment
-ppfi =pfwd1, 1 warning:
+ppsub = pdwf2, 1 warning:
 	Suspicious pointer assignment
-ppfi =pdwf2, 1 warning:
+ppfi = byrefany, 1 warning:
+	Suspicious pointer assignment
+ppfi = b, 1 warning:
+	Suspicious pointer assignment
+ppfi = ub, 1 warning:
+	Suspicious pointer assignment
+ppfi = sh, 1 warning:
+	Suspicious pointer assignment
+ppfi = ush, 1 warning:
+	Suspicious pointer assignment
+ppfi = l, 1 warning:
+	Suspicious pointer assignment
+ppfi = ul, 1 warning:
+	Suspicious pointer assignment
+ppfi = ll, 1 warning:
+	Suspicious pointer assignment
+ppfi = ull, 1 warning:
+	Suspicious pointer assignment
+ppfi = i, 1 warning:
+	Suspicious pointer assignment
+ppfi = ui, 1 warning:
+	Suspicious pointer assignment
+ppfi = f, 1 warning:
+	Suspicious pointer assignment
+ppfi = d, 1 warning:
+	Suspicious pointer assignment
+ppfi = s, 1 warning:
+	Suspicious pointer assignment
+ppfi = z, 1 warning:
+	Suspicious pointer assignment
+ppfi = w, 1 warning:
+	Suspicious pointer assignment
+ppfi = udt1, 1 warning:
+	Suspicious pointer assignment
+ppfi = udt2, 1 warning:
+	Suspicious pointer assignment
+ppfi = fwd1, 1 warning:
+	Suspicious pointer assignment
+ppfi = fwd2, 1 warning:
+	Suspicious pointer assignment
+ppfi = psub, 1 warning:
+	Suspicious pointer assignment
+	Return type mismatch in function pointer
+ppfi = pfi, 1 warning:
+	Suspicious pointer assignment
+ppfi = pany, 1 warning:
+	Suspicious pointer assignment
+ppfi = pb, 1 warning:
+	Suspicious pointer assignment
+ppfi = pub, 1 warning:
+	Suspicious pointer assignment
+ppfi = psh, 1 warning:
+	Suspicious pointer assignment
+ppfi = push, 1 warning:
+	Suspicious pointer assignment
+ppfi = pl, 1 warning:
+	Suspicious pointer assignment
+ppfi = pul, 1 warning:
+	Suspicious pointer assignment
+ppfi = pll, 1 warning:
+	Suspicious pointer assignment
+ppfi = pull, 1 warning:
+	Suspicious pointer assignment
+ppfi = pi, 1 warning:
+	Suspicious pointer assignment
+ppfi = pui, 1 warning:
+	Suspicious pointer assignment
+ppfi = pf, 1 warning:
+	Suspicious pointer assignment
+ppfi = pd, 1 warning:
+	Suspicious pointer assignment
+ppfi = ps, 1 warning:
+	Suspicious pointer assignment
+ppfi = pz, 1 warning:
+	Suspicious pointer assignment
+ppfi = pw, 1 warning:
+	Suspicious pointer assignment
+ppfi = pudt1, 1 warning:
+	Suspicious pointer assignment
+ppfi = pudt2, 1 warning:
+	Suspicious pointer assignment
+ppfi = pfwd1, 1 warning:
+	Suspicious pointer assignment
+ppfi = pdwf2, 1 warning:
 	Suspicious pointer assignment

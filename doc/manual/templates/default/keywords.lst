@@ -2,6 +2,8 @@
 #define
 #else
 #elseif
+#elseifdef
+#elseifndef
 #endif
 #endmacro
 #error
@@ -486,6 +488,7 @@ ZString
 __DATE__
 __DATE_ISO__
 __FB_64BIT__
+__FB_ANDROID__
 __FB_ARG_COUNT__
 __FB_ARG_EXTRACT__
 __FB_ARG_LEFTOF__
@@ -498,6 +501,7 @@ __FB_BACKEND__
 __FB_BIGENDIAN__
 __FB_BUILD_DATE__
 __FB_BUILD_DATE_ISO__
+__FB_BUILD_FORK_ID__
 __FB_BUILD_SHA1__
 __FB_CYGWIN__
 __FB_DARWIN__
@@ -510,7 +514,9 @@ __FB_FPU__
 __FB_FREEBSD__
 __FB_GCC__
 __FB_GUI__
+__FB_IIF__
 __FB_JOIN__
+__FB_JS__
 __FB_LANG__
 __FB_LINUX__
 __FB_MAIN__
@@ -518,6 +524,7 @@ __FB_MIN_VERSION__
 __FB_MT__
 __FB_NETBSD__
 __FB_OPENBSD__
+__FB_OPTIMIZE__
 __FB_OPTION_BYVAL__
 __FB_OPTION_DYNAMIC__
 __FB_OPTION_ESCAPE__
@@ -529,6 +536,7 @@ __FB_OUT_EXE__
 __FB_OUT_LIB__
 __FB_OUT_OBJ__
 __FB_PCOS__
+__FB_PPC__
 __FB_QUOTE__
 __FB_SIGNATURE__
 __FB_SSE__
@@ -543,6 +551,7 @@ __FB_VER_MAJOR__
 __FB_VER_MINOR__
 __FB_VER_PATCH__
 __FB_WIN32__
+__FB_X86__
 __FB_XBOX__
 __FILE__
 __FILE_NQ__

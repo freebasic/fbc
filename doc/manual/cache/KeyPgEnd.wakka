@@ -19,7 +19,7 @@ Control flow statement to end the program.
 	For this reason, it is discouraged to use ##**End**## simply to mark the end of a program; the program will come to an end automatically, and in a cleaner fashion, when the last line of module-level code has executed.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/control/end.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/control/end.bas"}}%%(freebasic)
 '' This program requests a string from the user, and returns an error
 '' code to the OS if the string was empty
 
@@ -46,6 +46,8 @@ end function
 '' call main() and return the error code to the OS
 end main()
 %%
+{{fbdoc item="target"}}
+	- In Linux, the ##//retval//## parameter is a ##[[KeyPgByte|byte]]##.
 
 {{fbdoc item="diff"}}
 	- The END statement supports specifying a custom return value to be returned to the operating system.
@@ -54,5 +56,6 @@ end main()
 	- ##[[KeyPgEndblock|End (Block)]]##
 	- ##[[KeyPgReturn|Return (from procedure)]]##
 	- ##[[KeyPgReturnGosub|Return (from Gosub)]]##
+	- ##[[KeyPgSystem|System]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

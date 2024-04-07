@@ -1,10 +1,10 @@
-'' FreeBASIC binding for postgresql-12.0
+'' FreeBASIC binding for postgresql-14.0
 ''
 '' based on the C header files:
 ''   PostgreSQL Database Management System
 ''   (formerly known as Postgres, then as Postgres95)
 ''
-''   Portions Copyright (c) 1996-2019, PostgreSQL Global Development Group
+''   Portions Copyright (c) 1996-2021, PostgreSQL Global Development Group
 ''
 ''   Portions Copyright (c) 1994, The Regents of the University of California
 ''
@@ -26,7 +26,7 @@
 ''   PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2019 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 
@@ -38,6 +38,8 @@
 extern "C"
 
 #define LIBPQ_FE_H
+const LIBPQ_HAS_PIPELINING = 1
+const LIBPQ_HAS_TRACE_FLAGS = 1
 const PG_COPYRES_ATTRS = &h01
 const PG_COPYRES_TUPLES = &h02
 const PG_COPYRES_EVENTS = &h04
@@ -57,6 +59,8 @@ enum
 	CONNECTION_CHECK_WRITABLE
 	CONNECTION_CONSUME
 	CONNECTION_GSS_STARTUP
+	CONNECTION_CHECK_TARGET
+	CONNECTION_CHECK_STANDBY
 end enum
 
 type PostgresPollingStatusType as long
@@ -80,6 +84,8 @@ enum
 	PGRES_FATAL_ERROR
 	PGRES_COPY_BOTH
 	PGRES_SINGLE_TUPLE
+	PGRES_PIPELINE_SYNC
+	PGRES_PIPELINE_ABORTED
 end enum
 
 type PGTransactionStatusType as long
@@ -112,6 +118,13 @@ enum
 	PQPING_REJECT
 	PQPING_NO_RESPONSE
 	PQPING_NO_ATTEMPT
+end enum
+
+type PGpipelineStatus as long
+enum
+	PQ_PIPELINE_OFF
+	PQ_PIPELINE_ON
+	PQ_PIPELINE_ABORTED
 end enum
 
 type PGconn as pg_conn
@@ -212,6 +225,7 @@ declare function PQserverVersion(byval conn as const PGconn ptr) as long
 declare function PQerrorMessage(byval conn as const PGconn ptr) as zstring ptr
 declare function PQsocket(byval conn as const PGconn ptr) as long
 declare function PQbackendPID(byval conn as const PGconn ptr) as long
+declare function PQpipelineStatus(byval conn as const PGconn ptr) as PGpipelineStatus
 declare function PQconnectionNeedsPassword(byval conn as const PGconn ptr) as long
 declare function PQconnectionUsedPassword(byval conn as const PGconn ptr) as long
 declare function PQclientEncoding(byval conn as const PGconn ptr) as long
@@ -227,16 +241,20 @@ declare function PQgssEncInUse(byval conn as PGconn ptr) as long
 declare function PQgetgssctx(byval conn as PGconn ptr) as any ptr
 declare function PQsetErrorVerbosity(byval conn as PGconn ptr, byval verbosity as PGVerbosity) as PGVerbosity
 declare function PQsetErrorContextVisibility(byval conn as PGconn ptr, byval show_context as PGContextVisibility) as PGContextVisibility
-declare sub PQtrace(byval conn as PGconn ptr, byval debug_port as FILE ptr)
-declare sub PQuntrace(byval conn as PGconn ptr)
 declare function PQsetNoticeReceiver(byval conn as PGconn ptr, byval proc as PQnoticeReceiver, byval arg as any ptr) as PQnoticeReceiver
 declare function PQsetNoticeProcessor(byval conn as PGconn ptr, byval proc as PQnoticeProcessor, byval arg as any ptr) as PQnoticeProcessor
 type pgthreadlock_t as sub(byval acquire as long)
 declare function PQregisterThreadLock(byval newhandler as pgthreadlock_t) as pgthreadlock_t
+declare sub PQtrace(byval conn as PGconn ptr, byval debug_port as FILE ptr)
+declare sub PQuntrace(byval conn as PGconn ptr)
+const PQTRACE_SUPPRESS_TIMESTAMPS = 1 shl 0
+const PQTRACE_REGRESS_MODE = 1 shl 1
+declare sub PQsetTraceFlags(byval conn as PGconn ptr, byval flags as long)
 declare function PQexec(byval conn as PGconn ptr, byval query as const zstring ptr) as PGresult ptr
 declare function PQexecParams(byval conn as PGconn ptr, byval command as const zstring ptr, byval nParams as long, byval paramTypes as const Oid ptr, byval paramValues as const zstring const ptr ptr, byval paramLengths as const long ptr, byval paramFormats as const long ptr, byval resultFormat as long) as PGresult ptr
 declare function PQprepare(byval conn as PGconn ptr, byval stmtName as const zstring ptr, byval query as const zstring ptr, byval nParams as long, byval paramTypes as const Oid ptr) as PGresult ptr
 declare function PQexecPrepared(byval conn as PGconn ptr, byval stmtName as const zstring ptr, byval nParams as long, byval paramValues as const zstring const ptr ptr, byval paramLengths as const long ptr, byval paramFormats as const long ptr, byval resultFormat as long) as PGresult ptr
+const PQ_QUERY_PARAM_MAX_LIMIT = 65535
 declare function PQsendQuery(byval conn as PGconn ptr, byval query as const zstring ptr) as long
 declare function PQsendQueryParams(byval conn as PGconn ptr, byval command as const zstring ptr, byval nParams as long, byval paramTypes as const Oid ptr, byval paramValues as const zstring const ptr ptr, byval paramLengths as const long ptr, byval paramFormats as const long ptr, byval resultFormat as long) as long
 declare function PQsendPrepare(byval conn as PGconn ptr, byval stmtName as const zstring ptr, byval query as const zstring ptr, byval nParams as long, byval paramTypes as const Oid ptr) as long
@@ -245,6 +263,10 @@ declare function PQsetSingleRowMode(byval conn as PGconn ptr) as long
 declare function PQgetResult(byval conn as PGconn ptr) as PGresult ptr
 declare function PQisBusy(byval conn as PGconn ptr) as long
 declare function PQconsumeInput(byval conn as PGconn ptr) as long
+declare function PQenterPipelineMode(byval conn as PGconn ptr) as long
+declare function PQexitPipelineMode(byval conn as PGconn ptr) as long
+declare function PQpipelineSync(byval conn as PGconn ptr) as long
+declare function PQsendFlushRequest(byval conn as PGconn ptr) as long
 declare function PQnotifies(byval conn as PGconn ptr) as PGnotify ptr
 declare function PQputCopyData(byval conn as PGconn ptr, byval buffer as const zstring ptr, byval nbytes as long) as long
 declare function PQputCopyEnd(byval conn as PGconn ptr, byval errormsg as const zstring ptr) as long
@@ -309,7 +331,7 @@ declare function PQescapeString(byval to as zstring ptr, byval from as const zst
 declare function PQescapeBytea(byval from as const ubyte ptr, byval from_length as uinteger, byval to_length as uinteger ptr) as ubyte ptr
 declare sub PQprint(byval fout as FILE ptr, byval res as const PGresult ptr, byval ps as const PQprintOpt ptr)
 declare sub PQdisplayTuples(byval res as const PGresult ptr, byval fp as FILE ptr, byval fillAlign as long, byval fieldSep as const zstring ptr, byval printHeader as long, byval quiet as long)
-declare sub PQprintTuples(byval res as const PGresult ptr, byval fout as FILE ptr, byval printAttName as long, byval terseOutput as long, byval width as long)
+declare sub PQprintTuples(byval res as const PGresult ptr, byval fout as FILE ptr, byval PrintAttNames as long, byval TerseOutput as long, byval colWidth as long)
 declare function lo_open(byval conn as PGconn ptr, byval lobjId as Oid, byval mode as long) as long
 declare function lo_close(byval conn as PGconn ptr, byval fd as long) as long
 declare function lo_read(byval conn as PGconn ptr, byval fd as long, byval buf as zstring ptr, byval len as uinteger) as long
@@ -328,6 +350,7 @@ declare function lo_import_with_oid(byval conn as PGconn ptr, byval filename as 
 declare function lo_export(byval conn as PGconn ptr, byval lobjId as Oid, byval filename as const zstring ptr) as long
 declare function PQlibVersion() as long
 declare function PQmblen(byval s as const zstring ptr, byval encoding as long) as long
+declare function PQmblenBounded(byval s as const zstring ptr, byval encoding as long) as long
 declare function PQdsplen(byval s as const zstring ptr, byval encoding as long) as long
 declare function PQenv2encoding() as long
 declare function PQencryptPassword(byval passwd as const zstring ptr, byval user as const zstring ptr) as zstring ptr
@@ -335,5 +358,9 @@ declare function PQencryptPasswordConn(byval conn as PGconn ptr, byval passwd as
 declare function pg_char_to_encoding(byval name as const zstring ptr) as long
 declare function pg_encoding_to_char(byval encoding as long) as const zstring ptr
 declare function pg_valid_server_encoding_id(byval encoding as long) as long
+type PQsslKeyPassHook_OpenSSL_type as function(byval buf as zstring ptr, byval size as long, byval conn as PGconn ptr) as long
+declare function PQgetSSLKeyPassHook_OpenSSL() as PQsslKeyPassHook_OpenSSL_type
+declare sub PQsetSSLKeyPassHook_OpenSSL(byval hook as PQsslKeyPassHook_OpenSSL_type)
+declare function PQdefaultSSLKeyPassHook_OpenSSL(byval buf as zstring ptr, byval size as long, byval conn as PGconn ptr) as long
 
 end extern

@@ -42,7 +42,7 @@ The library supports various drivers depending on the platform:
 
 {{fbdoc item="see"}}
 	- [[CatPgGfx|GFX Functions Index]]
-	- ##[[KeyPgScreengraphics|Screen]]## The QB-like way to set graphics mode
+	- ##[[KeyPgScreengraphics|Screen (Graphics)]]## The QB-like way to set graphics mode
 	- ##[[KeyPgScreenres|Screenres]]## More flexible alternative to ##**Screen**##
 	- ##[[KeyPgScreenlist|Screenlist]]## Check display modes available for FB ""GfxLib"" to use
 	- ##[[KeyPgScreencontrol|Screencontrol]]## Select driver and more 

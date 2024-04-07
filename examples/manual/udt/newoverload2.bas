@@ -1,7 +1,7 @@
 '' examples/manual/udt/newoverload2.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'Operator New Overload'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOpNewOverload
 '' --------
@@ -112,13 +112,13 @@ End Operator
 Print "Message",, "Address" & Space(SizeOf(Any Ptr)), "Size", "Total"
 Print
 Randomize
-Dim As UDTmanager Ptr pu1 = New UDTmanager[cuint(Rnd() * 256 + 1)]
-Dim As UDTmanager Ptr pu2 = New UDTmanager[cuint(Rnd() * 256 + 1)]
+Dim As UDTmanager Ptr pu1 = New UDTmanager[CUInt(Rnd() * 256 + 1)]
+Dim As UDTmanager Ptr pu2 = New UDTmanager[CUInt(Rnd() * 256 + 1)]
 Dim As UDTmanager Ptr pu3 = Cast(UDTmanager Ptr, 1)
 Delete[] pu2
 Delete[] pu3
 Delete[] pu2
 Delete[] pu1
 Do
-  Dim As UDTmanager Ptr pu = New UDTmanager[cuint(Rnd() * 512 + 1)]
+  Dim As UDTmanager Ptr pu = New UDTmanager[CUInt(Rnd() * 512 + 1)]
 Loop

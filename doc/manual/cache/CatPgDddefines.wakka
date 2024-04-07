@@ -48,8 +48,14 @@ Preprocessor symbols defined by the compiler.
 		Defined if compiling for a 64bit target.
 	=={{fbdoc item="keyword" value="KeyPgDdfbarm|__FB_ARM__"}}==
 		Defined if compiling for the ARM architecture.
+	=={{fbdoc item="keyword" value="KeyPgDdfbppc|__FB_PPC__"}}==
+		Defined if compiling for the ""PowerPC"" architecture.
 	=={{fbdoc item="keyword" value="KeyPgDdfbx86|__FB_X86__"}}==
 		Defined if compiling for the X86 / X86_64 architecture.
+	=={{fbdoc item="keyword" value="KeyPgDdfbjs|__FB_JS__"}}==
+		Defined if compiling for emscripten target.
+	=={{fbdoc item="keyword" value="KeyPgDdfbandroid|__FB_ANDROID__"}}==
+		Defined if compiling for android target.
 
 {{anchor name="VERSION"}}{{fbdoc item="section" value="Version Information"}}
 	=={{fbdoc item="keyword" value="KeyPgDdfbversion|__FB_VERSION__"}}==
@@ -78,6 +84,8 @@ Preprocessor symbols defined by the compiler.
 		Defined to either ##"gas"## or ##"gcc"## depending on [[CompilerOptgen|-gen]].
 	=={{fbdoc item="keyword" value="KeyPgDdfbgcc|__FB_GCC__"}}==
 		True (##-1##) if -gen gcc is used, false (##0##) otherwise.
+	=={{fbdoc item="keyword" value="KeyPgDdfboptimize|__FB_OPTIMIZE__"}}==
+		Defined to the optimization level depending on [[CompilerOptoptimization|-O]].
 	=={{fbdoc item="keyword" value="KeyPgDdfbgui|__FB_GUI__"}}==
 		True (##-1##) if the ##"-s gui"## switch was used, false (##0##) otherwise.
 	=={{fbdoc item="keyword" value="KeyPgDdFBMain|__FB_MAIN__"}}==
@@ -151,8 +159,12 @@ Preprocessor symbols defined by the compiler.
 		Returns right token based on separator.
 	=={{fbdoc item="keyword" value="KeyPgDdfbeval|__FB_EVAL__"}}==
 		Evaluates an argument (expression) at compile time.
+	=={{fbdoc item="keyword" value="KeyPgDdfbiif|__FB_IIF__"}}==
+		Returns an expression depending on the result of a comparison expression evaluated at compile time.
 	=={{fbdoc item="keyword" value="KeyPgDdfbjoin|__FB_JOIN__"}}==
 		Joins two token arguments together as one.
+	=={{fbdoc item="keyword" value="KeyPgDdfbquerysymbol|__FB_QUERY_SYMBOL__"}}==
+		Queries a ##**fbc**##'s symbol internals.
 	=={{fbdoc item="keyword" value="KeyPgDdfbquote|__FB_QUOTE__"}}==
 		Converts the argument to a string.
 	=={{fbdoc item="keyword" value="KeyPgDdfbuniqueid|__FB_UNIQUEID__"}}==

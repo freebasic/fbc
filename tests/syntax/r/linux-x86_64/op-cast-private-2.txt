@@ -1,0 +1,5 @@
+no error for invalid return
+no error for invalid return
+no error for invalid data type
+no error for invalid assignment
+no error for type mismatch

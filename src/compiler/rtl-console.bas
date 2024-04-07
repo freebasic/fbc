@@ -8,8 +8,8 @@
 #include once "lex.bi"
 #include once "rtl.bi"
 
-#define FB_COLOR_FG_DEFAULT		&h00000001
-#define FB_COLOR_BG_DEFAULT		&h00000002
+#define FB_COLOR_FG_DEFAULT     &h00000001
+#define FB_COLOR_BG_DEFAULT     &h00000002
 
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
@@ -139,19 +139,19 @@
 		), _
 		/' function fb_Color _
 			( _
-				byval fc as const long, _
-				byval bc as const long, _
+				byval fc as const ulong, _
+				byval bc as const ulong, _
 				byval flags as const long _
-			) as long '/ _
+			) as ulong '/ _
 		( _
 			@FB_RTL_COLOR, NULL, _
-			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			FB_DATATYPE_ULONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
 		/' function inkey( ) as string '/ _
@@ -224,24 +224,24 @@ function rtlConsoleView _
 		byval botexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
 	''
-    proc = astNewCALL( PROCLOOKUP( CONSOLEVIEW ) )
+	proc = astNewCALL( PROCLOOKUP( CONSOLEVIEW ) )
 
-    '' byval toprow as integer
-    if( astNewARG( proc, topexpr ) = NULL ) then
-    	exit function
-    end if
+	'' byval toprow as integer
+	if( astNewARG( proc, topexpr ) = NULL ) then
+		exit function
+	end if
 
-    '' byval botrow as integer
-    if( astNewARG( proc, botexpr ) = NULL ) then
-    	exit function
-    end if
+	'' byval botrow as integer
+	if( astNewARG( proc, botexpr ) = NULL ) then
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -250,31 +250,31 @@ function rtlWidthScreen _
 	( _
 		byval width_arg as ASTNODE ptr, _
 		byval height_arg as ASTNODE ptr, _
-        byval isfunc as integer _
-    ) as ASTNODE ptr
+		byval isfunc as integer _
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
 	''
-    proc = astNewCALL( PROCLOOKUP( WIDTH ) )
+	proc = astNewCALL( PROCLOOKUP( WIDTH ) )
 
-    '' byval width_arg as integer
-    if( width_arg = NULL ) then
+	'' byval width_arg as integer
+	if( width_arg = NULL ) then
 		width_arg = astNewCONSTi( -1 )
-    end if
-    if( astNewARG( proc, width_arg ) = NULL ) then
-    	exit function
-    end if
+	end if
+	if( astNewARG( proc, width_arg ) = NULL ) then
+		exit function
+	end if
 
-    '' byval height_arg as integer
-    if( height_arg = NULL ) then
+	'' byval height_arg as integer
+	if( height_arg = NULL ) then
 		height_arg = astNewCONSTi( -1 )
-    end if
-    if( astNewARG( proc, height_arg ) = NULL ) then
-    	exit function
-    end if
+	end if
+	if( astNewARG( proc, height_arg ) = NULL ) then
+		exit function
+	end if
 
 	if( isfunc = FALSE ) then
 		astAdd( rtlErrorCheck( proc ) )
@@ -298,25 +298,25 @@ function rtlColor _
 	flags = 0
 
 	''
-    proc = astNewCALL( PROCLOOKUP( COLOR ) )
+	proc = astNewCALL( PROCLOOKUP( COLOR ) )
 
-    '' byval fore_color as integer
-    if( fexpr = NULL ) then
+	'' byval fore_color as integer
+	if( fexpr = NULL ) then
 		fexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    	flags or= FB_COLOR_FG_DEFAULT
-    end if
-    if( astNewARG( proc, fexpr ) = NULL ) then
-    	exit function
-    end if
+		flags or= FB_COLOR_FG_DEFAULT
+	end if
+	if( astNewARG( proc, fexpr ) = NULL ) then
+		exit function
+	end if
 
-    '' byval back_color as integer
-    if( bexpr = NULL ) then
+	'' byval back_color as integer
+	if( bexpr = NULL ) then
 		bexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    	flags or= FB_COLOR_BG_DEFAULT
-    end if
-    if( astNewARG( proc, bexpr ) = NULL ) then
-    	exit function
-    end if
+		flags or= FB_COLOR_BG_DEFAULT
+	end if
+	if( astNewARG( proc, bexpr ) = NULL ) then
+		exit function
+	end if
 
 	'' byval flags as integer
 	if( astNewARG( proc, astNewCONSTi( flags ) ) = NULL ) then
@@ -344,23 +344,23 @@ function rtlPageSet _
 	function = NULL
 
 	''
-    proc = astNewCALL( PROCLOOKUP( PAGESET ) )
+	proc = astNewCALL( PROCLOOKUP( PAGESET ) )
 
-    '' byval active as integer = -1
-    if( active = NULL ) then
+	'' byval active as integer = -1
+	if( active = NULL ) then
 		active = astNewCONSTi( -1 )
-    end if
-    if( astNewARG( proc, active ) = NULL ) then
-    	exit function
-    end if
+	end if
+	if( astNewARG( proc, active ) = NULL ) then
+		exit function
+	end if
 
-    '' byval visible as integer = -1
-    if( visible = NULL ) then
+	'' byval visible as integer = -1
+	if( visible = NULL ) then
 		visible = astNewCONSTi( -1 )
-    end if
-    if( astNewARG( proc, visible ) = NULL ) then
-    	exit function
-    end if
+	end if
+	if( astNewARG( proc, visible ) = NULL ) then
+		exit function
+	end if
 
 	if( isfunc = FALSE ) then
 		astAdd( proc )
@@ -387,21 +387,21 @@ function rtlConsoleReadXY _
 
 	'' byval column as integer
 	if( astNewARG( proc, columnexpr ) = NULL ) then
-    	exit function
-    end if
+		exit function
+	end if
 
 	'' byval row as integer
 	if( astNewARG( proc, rowexpr ) = NULL ) then
-    	exit function
-    end if
+		exit function
+	end if
 
 	'' byval colorflag as integer
 	if( colorflagexpr = NULL ) then
 		colorflagexpr = astNewCONSTi( 0 )
 	end if
 	if( astNewARG( proc, colorflagexpr ) = NULL ) then
-    	exit function
-    end if
+		exit function
+	end if
 
 	function = proc
 

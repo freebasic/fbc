@@ -1,9 +1,41 @@
+#!/usr/bin/make -f
+#
+# top level makefile that will run other makefiles for documentation 
+# and wiki tools
+#   ./libfbdoc/makefile
+#   ./fbdoc/makefile
+#   ./fbhelp/makefile
+#   ./fbchkdoc/makefile
+#
+# define's that can override build options
+#
+#   'HAVE_MYSQL=1' to indicate that mysql library is available
+#   'HAVE_ASPELL=1' to indicate that spell check library is available
+#   'USE_PCRE_STATIC=1' to indicate we should link with static version of libpcre
+#   'FBC=d:/path/fbc to' to override path to execute fbc compiler 
+
 OS := $(shell uname)
 ifeq ($(OS),Linux)
-	EXEEXT :=
+    EXEEXT :=
 else
-	EXEEXT := .exe
+    EXEEXT := .exe
 endif
+
+ifndef MAKE
+    MAKE := make
+endif
+
+# when we build in sub directories, make sure we pass on the options
+MAKEOPTS :=
+ifdef HAVE_MYSQL
+    MAKEOPTS += HAVE_MYSQL=1
+endif 
+ifdef HAVE_ASPELL
+    MAKEOPTS += HAVE_ASPELL=1
+endif 
+ifdef USE_PCRE_STATIC
+    MAKEOPTS += USE_PCRE_STATIC=1
+endif 
 
 FBC := fbc
 
@@ -31,8 +63,12 @@ FBCHKDOC_BINS += fbchkdoc/mkerrlst$(EXEEXT)
 FBCHKDOC_BINS += fbchkdoc/delextra$(EXEEXT)
 FBCHKDOC_BINS += fbchkdoc/mkimglst$(EXEEXT)
 FBCHKDOC_BINS += fbchkdoc/getimage$(EXEEXT)
+
+#ifdef HAVE_APSPELL
 FBCHKDOC_BINS += fbchkdoc/spellit$(EXEEXT)
 FBCHKDOC_BINS += fbchkdoc/spell$(EXEEXT)
+#endif
+
 FBCHKDOC_BINS += fbchkdoc/samps$(EXEEXT)
 FBCHKDOC_BINS += fbchkdoc/pretty$(EXEEXT)
 
@@ -45,20 +81,20 @@ MAKEFBHELP_BINS := makefbhelp/makefbhelp$(EXEEXT)
 all: $(FBDOC_BINS) $(FBCHKDOC_BINS) $(MAKEFBHELP_BINS)
 
 $(FBDOC_BINS): $(FBDOC_SRCS) $(FBDOC_HDRS) $(FBDOC_MAKE) $(LIBFBDOC_BINS) 
-	cd fbdoc && make FBC=$(FBC)
+	cd fbdoc && $(MAKE) FBC="$(FBC)" $(MAKEOPTS)
 
 $(LIBFBDOC_BINS): $(LIBFBDOC_SRCS) $(LIBFBDOC_HDRS) $(LIBFBDOC_MAKE) 
-	cd libfbdoc && make FBC=$(FBC)
+	cd libfbdoc && $(MAKE) FBC="$(FBC)" $(MAKEOPTS)
 
 $(FBCHKDOC_BINS): $(FBCHKDOC_SRCS) $(FBCHKDOC_HDRS) $(FBCHKDOC_MAKE) $(LIBFBDOC_BINS)
-	cd fbchkdoc && make FBC=$(FBC)
+	cd fbchkdoc && make FBC="$(FBC)" $(MAKEOPTS)
 
 $(MAKEFBHELP_BINS): $(MAKEFBHELP_SRCS) $(MAKEFBHELP_HDRS) $(MAKEFBHELP_MAKE)
-	cd makefbhelp && make FBC=$(FBC)
+	cd makefbhelp && $(MAKE) FBC="$(FBC)" $(MAKEOPTS)
 
 .PHONY: clean
 clean:
-	cd fbdoc && make clean
-	cd fbchkdoc && make clean
-	cd makefbhelp && make clean
-	cd libfbdoc && make clean
+	cd fbdoc && $(MAKE) clean HAVE_ASPELL=1 HAVE_MYSQL=1
+	cd fbchkdoc && $(MAKE) clean HAVE_ASPELL=1 HAVE_MYSQL=1
+	cd makefbhelp && $(MAKE) clean HAVE_ASPELL=1 HAVE_MYSQL=1
+	cd libfbdoc && $(MAKE) clean HAVE_ASPELL=1 HAVE_MYSQL=1

@@ -19,7 +19,7 @@ Sets a system environment variable
 	Modifies system environment variables.  There are several variables available for editing other than the default ones on your system.  An example of this would be fbgfx, where you can choose the form of graphics driver the ""FreeBASIC"" graphics library will use.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/system/setenviron.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/system/setenviron.bas"}}%%(freebasic)
 'e.g. to set the system variable "path" to "c:":
 
 shell "set path" 'shows the value of path
@@ -27,14 +27,14 @@ setenviron "path=c:"
 shell "set path" 'shows the new value of path
 %%
 
-{{fbdoc item="filename" value="examples/manual/system/setenviron2.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/system/setenviron2.bas"}}%%(freebasic)
   '' WINDOWS ONLY EXAMPLE! - We just set the graphics method to use
   '' GDI rather than DirectX (or Direct2D added on new systems).
   '' You may note a difference in FPS.
 SetEnviron("fbgfx=GDI")
 
   '' Desktop width/height
-Dim As Integer ScrW, ScrH, BPP
+Dim As Long ScrW, ScrH, BPP
 ScreenInfo ScrW, ScrH, BPP
 
   '' Create a screen at the half width/height of your monitor.

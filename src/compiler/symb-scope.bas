@@ -16,17 +16,17 @@ function symbAddScope _
 		byval backnode as ASTNODE ptr _
 	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr s
+	dim as FBSYMBOL ptr s
 
-    s = symbNewSymbol( FB_SYMBOPT_NONE, _
-    				   NULL, _
-    				   symb.symtb, NULL, _
-    				   FB_SYMBCLASS_SCOPE, _
-    				   NULL, NULL, _
-    				   FB_DATATYPE_INVALID, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
+	s = symbNewSymbol( FB_SYMBOPT_NONE, _
+	                   NULL, _
+	                   symb.symtb, NULL, _
+	                   FB_SYMBCLASS_SCOPE, _
+	                   NULL, NULL, _
+	                   FB_DATATYPE_INVALID, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
 
 	symbSymbTbInit( s->scp.symtb, s )
-    s->scp.backnode = backnode
+	s->scp.backnode = backnode
 
 	function = s
 
@@ -38,12 +38,12 @@ sub symbDelScope _
 		byval scp as FBSYMBOL ptr _
 	)
 
-    if( scp = NULL ) then
-    	exit sub
-    end if
+	if( scp = NULL ) then
+		exit sub
+	end if
 
-    '' del all symbols inside the scope block
-    do
+	'' del all symbols inside the scope block
+	do
 		'' starting from last because of the USING's that could be
 		'' referencing a namespace in the same scope block
 		dim as FBSYMBOL ptr s = scp->scp.symtb.tail
@@ -67,17 +67,17 @@ sub symbDelScopeTb _
 
 	'' for each symbol declared inside the SCOPE block..
 	dim as FBSYMBOL ptr s = scp->scp.symtb.tail
-    do while( s <> NULL )
-    	'' remove from hash only
+	do while( s <> NULL )
+		'' remove from hash only
 
-    	'' not a namespace import (USING)?
-    	if( s->class <> FB_SYMBCLASS_NSIMPORT ) then
-    		symbDelFromHash( s )
-    	else
-    		symbNamespaceRemove( s, TRUE )
-    	end if
+		'' not a namespace import (USING)?
+		if( s->class <> FB_SYMBCLASS_NSIMPORT ) then
+			symbDelFromHash( s )
+		else
+			symbNamespaceRemove( s, TRUE )
+		end if
 
-    	s = s->prev
-    loop
+		s = s->prev
+	loop
 
 end sub

@@ -11,7 +11,7 @@
 
 '' EraseStmt = ERASE ID (',' ID)*
 function cEraseStmt() as integer
-	
+
 	'' ERASE
 	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
@@ -21,8 +21,6 @@ function cEraseStmt() as integer
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			hSkipUntil( CHAR_COMMA )
 		else
-			expr = astRemoveNIDXARRAY( expr )
-
 			'' array?
 			var s = astGetSymbol( expr )
 			if( s <> NULL ) then
@@ -142,8 +140,8 @@ private function hScopedSwap( ) as integer
 	'' Must check both l = r and r = l due to inheritance with UDTs which
 	'' can allow one but not the other (and perhaps there even are other
 	'' cases with similar effect).
-	if( (astCheckASSIGN( l, r ) = FALSE) or _
-	    (astCheckASSIGN( r, l ) = FALSE) ) then
+	if( (astCheckASSIGN( l, r, TRUE ) = FALSE) or _
+	    (astCheckASSIGN( r, l, TRUE ) = FALSE) ) then
 		errReport( FB_ERRMSG_TYPEMISMATCH )
 		exit function
 	end if
@@ -256,8 +254,6 @@ function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 			hSkipUntil( CHAR_RPRNT, TRUE )
 			return astNewCONSTi( 0 )
 		end if
-
-		arrayexpr = astRemoveNIDXARRAY( arrayexpr )
 
 		'' array?
 		s = astGetSymbol( arrayexpr )

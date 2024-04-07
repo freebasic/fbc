@@ -1,0 +1,12 @@
+-- 1 error expected
+err-expected-udt.bas(11) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before 'invalid' in 'print x[0].invalid'
+-- 1 error expected
+err-expected-udt.bas(23) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print x.i.i'
+-- 1 error expected
+err-expected-udt.bas(31) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print x.invalid'
+-- 1 error expected
+err-expected-udt.bas(43) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print peek(@x).invalid'
+-- 1 error expected
+err-expected-udt.bas(54) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print f().invalid'
+-- 1 error expected
+err-expected-udt.bas(67) error 265: Symbol not a CLASS, ENUM, TYPE or UNION type, before '.' in 'print px->i.i'

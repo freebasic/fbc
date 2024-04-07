@@ -2,6 +2,8 @@
 List of ""FreeBASIC"" keywords sorted by the function they perform.
 
 <<{{fbdoc item="section" value="Arrays"}}
+	- {{fbdoc item="keyword" value="KeyPgArrayLen|ARRAYLEN"}}
+	- {{fbdoc item="keyword" value="KeyPgArraySize|ARRAYSIZE"}}
 	- {{fbdoc item="keyword" value="KeyPgErase|ERASE"}}
 	- {{fbdoc item="keyword" value="KeyPgFBArray|FBARRAY (array descriptor structure and access)"}}
 	- {{fbdoc item="keyword" value="KeyPgLbound|LBOUND"}}
@@ -211,7 +213,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgPutgraphics|PUT (Graphics)"}}
 	- {{fbdoc item="keyword" value="KeyPgRgb|RGB"}}
 	- {{fbdoc item="keyword" value="KeyPgRgba|RGBA"}}
-	- {{fbdoc item="keyword" value="KeyPgScreengraphics|SCREEN"}}
+	- {{fbdoc item="keyword" value="KeyPgScreengraphics|SCREEN (Graphics)"}}
 	- {{fbdoc item="keyword" value="KeyPgScreencontrol|SCREENCONTROL"}}
 	- {{fbdoc item="keyword" value="KeyPgScreencopy|SCREENCOPY"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenevent|SCREENEVENT"}}
@@ -408,6 +410,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDddate|__DATE__"}} 
 	- {{fbdoc item="keyword" value="KeyPgDddateiso|__DATE_ISO__"}} 
 	- {{fbdoc item="keyword" value="KeyPgDdfb64bit|__FB_64BIT__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbandroid|__FB_ANDROID__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargcount|__FB_ARG_COUNT__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargextract|__FB_ARG_EXTRACT__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargleftof|__FB_ARG_LEFTOF__"}}
@@ -432,7 +435,9 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDdfbfreebsd|__FB_FREEBSD__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbgcc|__FB_GCC__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbgui|__FB_GUI__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbiif|__FB_IIF__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbjoin|__FB_JOIN__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbjs|__FB_JS__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfblang|__FB_LANG__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfblinux|__FB_LINUX__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBMain|__FB_MAIN__"}}
@@ -440,6 +445,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDdfbmt|__FB_MT__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbnetbsd|__FB_NETBSD__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbopenbsd|__FB_OPENBSD__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfboptimize|__FB_OPTIMIZE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptionbyval|__FB_OPTION_BYVAL__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptiondynamic|__FB_OPTION_DYNAMIC__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptionescape|__FB_OPTION_ESCAPE__"}}
@@ -451,6 +457,8 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDdfboutlib|__FB_OUT_LIB__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboutobj|__FB_OUT_OBJ__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbpcos|__FB_PCOS__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbppc|__FB_PPC__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbquerysymbol|__FB_QUERY_SYMBOL__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbquote|__FB_QUOTE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbsignature|__FB_SIGNATURE__"}} 
 	- {{fbdoc item="keyword" value="KeyPgDdfbsse|__FB_SSE__"}}
@@ -479,9 +487,12 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 
 {{fbdoc item="section" value="Preprocessor"}}
 	- {{fbdoc item="keyword" value="KeyPgPpassert|#ASSERT"}}
+	- {{fbdoc item="keyword" value="KeyPgPpcmdline|#CMDLINE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpdefine|#DEFINE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpelse|#ELSE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpelseif|#ELSEIF"}}
+	- {{fbdoc item="keyword" value="KeyPgPpelseifdef|#ELSEIFDEF"}}
+	- {{fbdoc item="keyword" value="KeyPgPpelseifndef|#ELSEIFNDEF"}}
 	- {{fbdoc item="keyword" value="KeyPgPpendif|#ENDIF"}}
 	- {{fbdoc item="keyword" value="KeyPgPpmacro|#ENDMACRO"}}
 	- {{fbdoc item="keyword" value="KeyPgPperror|#ERROR"}}
@@ -494,7 +505,8 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgPplang|#LANG"}}
 	- {{fbdoc item="keyword" value="KeyPgPpline|#LINE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpmacro|#MACRO"}}
-	- {{fbdoc item="keyword" value="KeyPgPragma|#PRAGMA"}}
+	- {{fbdoc item="keyword" value="KeyPgPpPragma|#PRAGMA"}}
+	- {{fbdoc item="keyword" value="KeyPgPpPragmaReserve|#PRAGMA RESERVE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpprint|#PRINT"}}
 	- {{fbdoc item="keyword" value="KeyPgPpundef|#UNDEF"}}
 	- {{fbdoc item="keyword" value="KeyPgDefined|DEFINED"}}
@@ -517,6 +529,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDestructor|DESTRUCTOR"}}
 	- {{fbdoc item="keyword" value="KeyPgModuleDestructor|DESTRUCTOR (Module)"}}
 	- {{fbdoc item="keyword" value="KeyPgDeclare|DECLARE"}}
+	- {{fbdoc item="keyword" value="KeyPgFastcall|FASTCALL"}}
 	- {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION"}}
 	- {{fbdoc item="keyword" value="KeyPgMemberFunction|FUNCTION (Member)"}}
 	- {{fbdoc item="keyword" value="KeyPgLib|LIB"}}

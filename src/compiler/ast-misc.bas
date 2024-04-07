@@ -47,14 +47,14 @@ function astIsTreeEqual _
 		byval r as ASTNODE ptr _
 	) as integer
 
-    function = FALSE
+	function = FALSE
 
-    if( (l = NULL) or (r = NULL) ) then
-    	if( l = r ) then
-    		function = TRUE
-    	end if
-    	exit function
-    end if
+	if( (l = NULL) or (r = NULL) ) then
+		if( l = r ) then
+			function = TRUE
+		end if
+		exit function
+	end if
 
 	if( l->class <> r->class ) then
 		exit function
@@ -162,7 +162,7 @@ function astIsTreeEqual _
 
 	end select
 
-    '' check childs
+	'' check childs
 	if( astIsTreeEqual( l->l, r->l ) = FALSE ) then
 		exit function
 	end if
@@ -171,7 +171,7 @@ function astIsTreeEqual _
 		exit function
 	end if
 
-    ''
+	''
 	function = TRUE
 
 end function
@@ -391,7 +391,7 @@ function astIsSymbolOnTree _
 
 		'' passed by ref or by desc? can't do any assumption..
 		if( s <> NULL ) then
-			if (symbIsParamBydescOrByref(s)) then
+			if (symbIsParamVarBydescOrByref(s)) then
 				return TRUE
 			end if
 		end if
@@ -516,9 +516,9 @@ function astGetStrLitSymbol _
 
 	dim as FBSYMBOL ptr s = any
 
-    function = NULL
+	function = NULL
 
-   	if( astIsVAR( n ) ) then
+	if( astIsVAR( n ) ) then
 		s = astGetSymbol( n )
 		if( s <> NULL ) then
 			if( symbGetIsLiteral( s ) ) then
@@ -579,10 +579,10 @@ sub astCheckConst _
 		case 0.0, 2e-45 to 3e+38 '' definitely no overflow: comfortably within SINGLE bounds
 			result = TRUE
 		case else '' might overflow - slower/more thorough test
-			
+
 			sval = csng( dval )
 
-		  	#define IS_INFINITY_OR_ZERO(x) ( (x) + (x) = (x) )
+			#define IS_INFINITY_OR_ZERO(x) ( (x) + (x) = (x) )
 			'' if sval is infinity or 0, then dval must also have been otherwise there was an overflow/underflow
 			if IS_INFINITY_OR_ZERO( sval ) then
 				result = IS_INFINITY_OR_ZERO( dval )
@@ -739,16 +739,16 @@ function astBuildBranch _
 	'' relied upon for x86 flag assumptions below
 	expr = astOptimizeTree( expr )
 
-	dtype = astGetDataType( expr )
+	dtype = astGetFullType( expr )
 
 	'' string? invalid..
 	if( typeGetClass( dtype ) = FB_DATACLASS_STRING ) then
 		return NULL
 	end if
 
-    '' CHAR and WCHAR literals are also from the INTEGER class
-    select case as const dtype
-    case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+	'' CHAR and WCHAR literals are also from the INTEGER class
+	select case as const typeGetDtAndPtrOnly( dtype )
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		'' don't allow, unless it's a deref pointer
 		if( astIsDEREF( expr ) = FALSE ) then
 			return NULL
@@ -779,7 +779,7 @@ function astBuildBranch _
 
 		'' build cast call
 		expr = astBuildCall( ovlProc, expr )
-		dtype = astGetDataType( expr )
+		dtype = astGetFullType( expr )
 
 	end select
 
@@ -833,9 +833,11 @@ function astBuildBranch _
 			'' Note: a CONST expression will never use temp vars.
 			'' Although the AST may have dtors registered from other parts
 			'' of the expression if it's an iif(), iif() will (currently)
-			'' optimize out itself when the condition is CONST, so this
-			'' case never happens.
-			assert( is_iif = FALSE )
+			'' optimize out itself when the condition is CONST.  However,
+			'' iif() won't apply optimizations from astOptimize(), so this
+			'' could still be an iif() after the astOptimize() earlier in
+			'' this procedure
+
 			assert( call_dtors = FALSE )
 
 			'' If the condition is...
@@ -867,7 +869,22 @@ function astBuildBranch _
 				'' Directly update this BOP to do the branch itself
 				n->op.ex = label
 				if( is_inverse = FALSE ) then
-					n->op.op = astGetInverseLogOp( n->op.op )
+					'' floating point? let the backend optimize the inverse
+					'' operation.  We can't simply swap for an inverse-op here
+					'' because of the expected handling of NaN's.
+					''   The comparison needs to occur first
+					''   Then apply logical not to do the inverse
+					'' To handle in AST we probably would need to implement
+					'' AST_OP_BOOLNOT for all backends or add inverse versions
+					'' of the relational ops - AST_OP_NEQ, NNE, NGT, etc)
+					'' if '-fpmode fast', then disregard
+
+					if( (typeGetClass( astGetDataType( expr->l )) = FB_DATACLASS_FPOINT) and _
+					    (env.clopt.fpmode = FB_FPMODE_PRECISE) ) then
+						n->op.options xor= AST_OPOPT_DOINVERSE
+					else
+						n->op.op = astGetInverseLogOp( n->op.op )
+					end if
 				end if
 
 			'' BOP that sets x86 flags?
@@ -883,7 +900,7 @@ function astBuildBranch _
 				if( typeGetClass( dtype ) = FB_DATACLASS_INTEGER ) then
 					doopt = irGetOption( IR_OPT_CPUBOPFLAGS )
 					if( doopt ) then
-						select case as const dtype
+						select case as const typeGetDtAndPtrOnly( dtype )
 						case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 							'' can't be done with longints either, as flag is set twice
 							doopt = irGetOption( IR_OPT_64BITCPUREGS )
@@ -936,9 +953,10 @@ function astBuildBranch _
 
 	'' Remap zstring/wstring types, we don't want the temp var to be a
 	'' string, or the comparison against zero to be a string comparison...
-	select case( dtype )
+	select case typeGetDtAndPtrOnly( dtype )
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-		dtype = typeRemap( dtype )
+		'' don't use typeRemap(), we are preserving const
+		dtype = typeJoin( dtype, symb_dtypeTB(typeGetDtAndPtrOnly( dtype )).remaptype )
 	end select
 
 	if( call_dtors ) then
@@ -953,11 +971,19 @@ function astBuildBranch _
 		expr = astNewVAR( temp )
 	end if
 
+	'' test floating point directly?  effectively convert to cbool(float-expression)
+	if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
+		if( env.clopt.fpmode = FB_FPMODE_PRECISE ) then
+			'' convert exrpression to boolean
+			expr = astNewCONV( FB_DATATYPE_BOOLEAN, NULL, expr )
+		end if
+	end if
+
 	'' Check expression against zero (= FALSE)
 	n = astNewLINK( n, _
-		astNewBOP( iif( is_inverse, AST_OP_NE, AST_OP_EQ ), _
-			expr, astNewCONSTz( dtype, expr->subtype ), _
-			label, AST_OPOPT_NONE ), AST_LINK_RETURN_NONE )
+	    astNewBOP( iif( is_inverse, AST_OP_NE, AST_OP_EQ ), _
+	        expr, astNewCONSTz( dtype, expr->subtype ), _
+	        label, AST_OPOPT_NONE ), AST_LINK_RETURN_NONE )
 
 	function = n
 end function
@@ -979,7 +1005,7 @@ private function hHasDtor( byval sym as FBSYMBOL ptr ) as integer
 		function = TRUE
 
 	case typeAddrOf( FB_DATATYPE_WCHAR )
-		if( symbGetIsWstring( sym ) ) then
+		if( symbGetIsTemporary( sym ) ) then
 			function = TRUE
 		end if
 
@@ -993,7 +1019,11 @@ sub astDtorListDump( )
 	print "-------------- dtorlist: ------------------"
 	i = listGetTail( @ast.dtorlist )
 	while( i )
-		print "    ";symbDumpToStr( i->sym );" cookie: ";i->cookie;" refcount: ";i->refcount;" has dtor? ";hHasDtor( i->sym )
+		if( i->cookie = -1 ) then
+			print "    "; "*deleted*"; " cookie: ";i->cookie;" refcount: ";i->refcount
+		else
+			print "    ";symbDumpToStr( i->sym );" cookie: ";i->cookie;" refcount: ";i->refcount;" has dtor? ";hHasDtor( i->sym )
+		end if
 		i = listGetPrev( i )
 	wend
 end sub
@@ -1069,7 +1099,7 @@ sub astDtorListRemoveRef( byval sym as FBSYMBOL ptr )
 end sub
 
 function astDtorListFlush( byval cookie as integer ) as ASTNODE ptr
-    dim as AST_DTORLIST_ITEM ptr n = any, p = any
+	dim as AST_DTORLIST_ITEM ptr n = any, p = any
 	dim as ASTNODE ptr t = any
 
 	'' call the dtors in the reverse order
@@ -1078,14 +1108,24 @@ function astDtorListFlush( byval cookie as integer ) as ASTNODE ptr
 	while( n )
 		p = listGetPrev( n )
 
-		'' astDtorListFlush() shouldn't be called without cookie
-		'' while there still are entries registered with cookies,
-		'' they probably should have been flushed first.
-		assert( iif( cookie = 0, n->cookie = 0, TRUE ) )
+		'' astDtorListFlush(0) shouldn't be called without a cookie
+		'' while there still are entries registered with cookies.
+		'' Any scopes should have either called:
+		''    - astDtorListScopeDelete(cookie) to delete the dtors
+		''    - astDtorListUnscope(cookie) to move the dtors to after the
+		''      expression
+		'' Or if a cookie was given (>0) then only flush dtors for
+		'' the cookie number given
 
-		'' Only call dtors for the given cookie number
+		assert( iif( cookie = 0, (n->cookie = 0) or (n->cookie = -1), TRUE ) )
+
+		'' Only flush dtors for the given cookie number
 		if( n->cookie = cookie ) then
 			t = astNewLINK( t, astBuildVarDtorCall( n->sym ), AST_LINK_RETURN_NONE )
+			listDelNode( @ast.dtorlist, n )
+
+		'' or delete the cookie was marked for delete
+		elseif( n->cookie = -1 ) then
 			listDelNode( @ast.dtorlist, n )
 		end if
 
@@ -1151,20 +1191,39 @@ function astDtorListScopeEnd( ) as integer
 end function
 
 '' Remove cookie markers from the dtor list entries for the given scope,
-'' indicating that they should be destroyed by the next toplevel
+'' indicating that they should be handled by the next toplevel
 '' astDtorListFlush(0).
-'' This is useful if an expression was at first parsed with a dtor list scope,
-'' but then it turns out that that's not needed, and can be undone using this
-'' function.
-sub astDtorListUnscope( byval cookie as integer )
+''
+'' if cookie = 0 then emit the dtor at the next astDtorListFlush(0)
+''    This is useful if an expression was at first parsed with a,
+''    dtor list scope, but then it turns out that it's needed but
+''    only after the expression is fully composed.
+''
+'' if cookie = -1 then delete the dtor at next astDtorListFlush(0)
+''    This is useful if an expression was at first parsed with a,
+''    dtor list scope, but then it turns out that it's not needed,
+''    and can be undone using this function
+''
+private sub hastDtorListRescope( byval cookie as integer, byval newcookie as integer )
 	dim as AST_DTORLIST_ITEM ptr i = any
 	i = listGetTail( @ast.dtorlist )
 	while( i )
 		if( i->cookie = cookie ) then
-			i->cookie = 0
+			i->cookie = newcookie
 		end if
 		i = listGetPrev( i )
 	wend
+end sub
+
+sub astDtorListUnscope( byval cookie as integer )
+	'' Unscope dtors and emit after the expression
+	hastDtorListRescope( cookie, 0 )
+end sub
+
+sub astDtorListScopeDelete( byval cookie as integer )
+	'' Delete dtors
+	'' use a cookie of '-1' to indicate delete
+	hastDtorListRescope( cookie, -1 )
 end sub
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1191,8 +1250,8 @@ sub astSetType _
 	end if
 #endif
 
-    astGetFullType( n ) = dtype
-    n->subtype = subtype
+	astGetFullType( n ) = dtype
+	n->subtype = subtype
 
 	select case n->class
 	case AST_NODECLASS_LINK
@@ -1233,7 +1292,7 @@ function astSizeOf( byval n as ASTNODE ptr, byref is_fixlenstr as integer ) as l
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, FB_DATATYPE_FIXSTR
 		if( n->sym ) then
 			is_fixlenstr = TRUE
-			function = symbGetLen( n->sym )
+			function = symbGetSizeOf( n->sym )
 		end if
 	end select
 end function
@@ -1255,7 +1314,7 @@ function astIsAccessToLocal( byval expr as ASTNODE ptr ) as integer
 	case AST_NODECLASS_IDX
 		'' Disallow local array accesses, unless it's a bydesc param
 		'' (accesses to them also have an IDX at the top)
-		if( symbIsParamBydesc( expr->sym ) = FALSE ) then
+		if( symbIsParamVarBydesc( expr->sym ) = FALSE ) then
 			function = hSymbIsOnLocalStack( expr->sym )
 		end if
 

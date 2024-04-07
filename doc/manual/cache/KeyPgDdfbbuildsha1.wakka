@@ -12,6 +12,9 @@ Intrinsic define (macro string) set by the compiler
 PRINT __FB_BUILD_SHA1__
 %%
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.07.1
+
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 

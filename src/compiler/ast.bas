@@ -3,7 +3,7 @@
 '' obs: 1) each AST only stores a single expression and its atoms (inc. arrays and functions)
 ''      2) after the AST is optimized (constants folding, arithmetic associations, etc),
 ''         its sent to IR, where the expression becomes three-address-codes
-''		3) AST optimizations don't include common-sub-expression/dead-code elimination,
+''      3) AST optimizations don't include common-sub-expression/dead-code elimination,
 ''         that must be done by the DAG module
 ''
 '' chng: sep/2004 written [v1ctor]
@@ -125,6 +125,7 @@ dim shared ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPINFO => _
 	(AST_NODECLASS_COMP  , AST_OPFLAGS_NONE or AST_OPFLAGS_RELATIONAL, @"<=" ), _ '' AST_OP_LE
 	(AST_NODECLASS_COMP  , AST_OPFLAGS_NONE, @"is"      ), _ '' AST_OP_IS
 	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"not"     ), _ '' AST_OP_NOT
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"boolnot" ), _ '' AST_OP_BOOLNOT
 	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"+"       ), _ '' AST_OP_PLUS
 	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"-"       ), _ '' AST_OP_NEG
 	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"HADD"    ), _ '' AST_OP_HADD
@@ -179,7 +180,7 @@ dim shared ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPINFO => _
 	(AST_NODECLASS_CALL  , AST_OPFLAGS_NONE, @"jmpp"    ), _ '' AST_OP_JUMPPTR
 	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"mmov"    ), _ '' AST_OP_MEMMOVE
 	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"mswp"    ), _ '' AST_OP_MEMSWAP
-	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"mclr"    ), _ '' AST_OP_MEMCLEAR
+	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"mfill"   ), _ '' AST_OP_MEMFILL
 	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"stkc"    ), _ '' AST_OP_STKCLEAR
 	(AST_NODECLASS_MACRO , AST_OPFLAGS_NONE, @"va_start"), _ '' AST_OP_VA_START
 	(AST_NODECLASS_MACRO , AST_OPFLAGS_NONE, @"va_end"  ), _ '' AST_OP_VA_END
@@ -194,18 +195,18 @@ dim shared ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPINFO => _
 }
 
 sub astInit( )
-    listInit( @ast.astTB, AST_INITNODES, len( ASTNODE ), LIST_FLAGS_NOCLEAR )
+	listInit( @ast.astTB, AST_INITNODES, len( ASTNODE ), LIST_FLAGS_NOCLEAR )
 
-    ast.doemit = TRUE
+	ast.doemit = TRUE
 	ast.typeinicount = 0
 	ast.bitfieldcount = 0
-    ast.currblock = NULL
+	ast.currblock = NULL
 	ast.hidewarningslevel = 0
 
-    astCallInit( )
-    astProcListInit( )
-    astDataStmtInit( )
-    astMiscInit( )
+	astCallInit( )
+	astProcListInit( )
+	astDataStmtInit( )
+	astMiscInit( )
 
 	listInit( @ast.asmtoklist, 16, sizeof( ASTASMTOK ), LIST_FLAGS_NOCLEAR )
 end sub
@@ -215,7 +216,7 @@ sub astEnd( )
 
 	astMiscEnd( )
 	astProcListEnd( )
-    astCallEnd( )
+	astCallEnd( )
 
 	listEnd( @ast.astTB )
 end sub

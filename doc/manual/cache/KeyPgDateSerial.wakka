@@ -23,14 +23,13 @@ Creates a [[ProPgDates|date serial]]
 	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/dates/dateserial.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/dates/dateserial.bas"}}%%(freebasic)
 #include "vbcompat.bi"
 
-dim a as double = dateserial(2005, 11, 28)
+dim a as long = dateserial(2005, 11, 28)
 
 print format(a, "yyyy/mm/dd hh:mm:ss") 
 %%
-
 {{fbdoc item="diff"}}
 	- Did not exist in QB. This function appeared in PDS and VBDOS
 

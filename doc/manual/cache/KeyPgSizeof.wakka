@@ -5,11 +5,9 @@ Returns the size of a variable or type in bytes.
 	**Sizeof** ( //variable// | [[DataType|DataType]] )
 ##
 {{fbdoc item="desc"}}
-	The ##**Sizeof**## operator returns an ##[[KeyPgInteger|Integer]]## value: the number of bytes taken up by a ##//variable//## or ##[[DataType|DataType]]## (and the data fields of a UDT for fbc version >= 1.08).
+	The ##**Sizeof**## operator returns an ##[[KeyPgInteger|Integer]]## value: the number of bytes taken up by a ##//variable//## or ##[[DataType|DataType]]## (including the data fields of a UDT).
 	
 	Different from ##[[KeyPgLen|Len]]##, when used with fixed-length strings (including fixed-length ##[[KeyPgZstring|Zstring]]##s and ##[[KeyPgWstring|Wstring]]##s) it will return the number of bytes they use, and when used with variable-length strings, it will return the size of the string descriptor.
-	
-	For fbc version < 1.08: When a variable from a given namespace is accessed with the namespace's name prefix, wrap the argument to ##**Sizeof**## with parentheses to force it to be seen as an expression. For example ##Sizeof((namespace_name.variable))##.
 	
 	If there is both a user defined type and a variable visible with the same name in the current scope, the user defined type takes precedence over the variable.  To ensure that the ##**Sizeof**## takes the variable instead of the user defined type, wrap the argument to ##**Sizeof**## with parentheses to force it to be seen as an expression.  For example ##Sizeof((variable))##.
 	
@@ -19,17 +17,21 @@ Returns the size of a variable or type in bytes.
 	Remark: When used with a dereferenced z/wstring pointer, ##**Sizeof**## always returns the number of bytes taken up by one z/wstring character.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/misc/sizeof.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/misc/sizeof.bas"}}%%(freebasic)
 Print SizeOf(Byte) ' returns 1
-%%
-{{fbdoc item="filename" value="examples/manual/misc/sizeof-udt.bas"}}%%(freebasic)
+	%%
+	{{fbdoc item="filename" value="examples/manual/misc/sizeof-udt.bas"}}%%(freebasic)
 Type bar
 	a As Integer
 	b As Double
 End Type
 Dim foo As bar
 Print SizeOf(foo)
-%%
+	%%
+{{fbdoc item="ver"}}
+	- Before fbc 1.08.0:
+			##**Sizeof**## was not returning the size of the data fields of a UDT.
+			When a variable from a given namespace was accessed with the namespace's name prefix, the argument to ##**Sizeof**## had to be wrapped with parentheses to force it to be seen as an expression. For example ##Sizeof((namespace_name.variable))##.
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Sizeof""**##.

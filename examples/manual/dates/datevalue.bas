@@ -1,14 +1,14 @@
 '' examples/manual/dates/datevalue.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'DATEVALUE'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDateValue
 '' --------
 
 #include "vbcompat.bi"
 
-Dim As Integer v1, v2
+Dim As Long v1, v2
 Dim As String  s1, s2
 
 Print "Enter first date: ";

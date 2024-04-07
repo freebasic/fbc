@@ -15,11 +15,21 @@ Standard variable types and limits.
 ~&[*] //Unicode, or "wide", characters vary in both size and availability with platform.//
 ~&[""**""] //All runtime library string procedures take and produce ##[[KeyPgInteger|Integer]]## values for sizes and positions. The actual maximum size will vary (smaller) with storage location and/or platform.//
 
+{{fbdoc item="section" value="Boolean Type"}}
+
+~~{{table columns="3" cellpadding="2" cells=" Type ; Internal size in bits ; Value; Boolean ; 1-bit wide data (in a Byte) ; 'False' or 'True' "}}
+
 {{fbdoc item="section" value="Arrays"}}
 
 ~~{{table columns="5" cellpadding="2" cells="Platform ; Maximum Subscript Range ; Maximum Elements per Dimension ; Minimum/Maximum Dimensions ; Maximum Size (in bytes) ; 32bit ; [*][-2147483648, +2147483647] ; [*]+2147483647 ; 1/8 ; [*]+2147483647 ; 64bit ; [*][-9223372036854775808, +9223372036854775807] ; [*]+9223372036854775807 ; 1/8 ; [*]+9223372036854775807"}}
 
 ~&[*] //All runtime library array procedures take and produce ##[[KeyPgInteger|Integer]]## values for subscripts and indexes. The actual limits will vary (smaller) with the number of dimensions, element size, storage location and/or platform.//
+
+{{fbdoc item="section" value="UDTs"}}
+
+~~{{table columns="2" cellpadding="2" cells="Platform ; Maximum Size (in bytes) ; 32bit ; [*]+2147483647 ; 64bit ; [*]+2147483647"}}
+
+~&[""*""] //The actual maximum size will vary (smaller) with storage location and/or platform.//
 
 {{fbdoc item="see"}}
 	[[ProPgIdentifierRules|Usage of suffixes for variables]]

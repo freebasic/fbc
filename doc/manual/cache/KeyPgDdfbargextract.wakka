@@ -39,6 +39,9 @@ print_last( 7, 89.78, "Postman" )
 Postman
 '/
 	%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.08.0
+
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 

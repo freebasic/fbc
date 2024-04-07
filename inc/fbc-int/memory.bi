@@ -1,4 +1,4 @@
-#ifndef __FBC_INT_MEMORY_BI__ 
+#ifndef __FBC_INT_MEMORY_BI__
 #define __FBC_INT_MEMORY_BI__
 
 # if __FB_LANG__ = "qb"
@@ -15,7 +15,7 @@
 ''        to be more aligned with already long existing CLEAR statemnt
 ''      - this header file uses BYVAL AS ANY PTR parameters to be more aligned with actual rtlib
 ''        definitions and use of pointers
-'' 
+''
 
 
 '' undefine the memory operations so we can attempt a source only definition (no tricky fbc built-in magic)

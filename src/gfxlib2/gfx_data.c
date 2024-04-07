@@ -23,7 +23,7 @@ const PALETTE __fb_palette[FB_PALETTE_COUNT] =
 	{ 256, &internal_data[DATA_PAL_256] }
 };
 
-/* Caller is expected to hold FB_GRAPHICSLOCK() */
+/* Caller is expected to hold FB_GRAPHICS_LOCK() */
 void fb_hSetupData()
 {
 	static int inited = FALSE;

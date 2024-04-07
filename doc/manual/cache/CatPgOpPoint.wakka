@@ -7,7 +7,7 @@ The pointer operators provide the ability to retrieve the addresses in memory of
 	Returns the memory address of a variable.
 =={{fbdoc item="keyword" value="KeyPgOpStrptr|Operator Strptr (String pointer)"}}==
 	Returns the memory address of a string's character data.
-=={{fbdoc item="keyword" value="KeyPgOpProcptr|Operator Procptr (Procedure pointer)"}}==
+=={{fbdoc item="keyword" value="KeyPgOpProcptr|Operator Procptr (Procedure pointer and vtable index)"}}==
 	Returns the memory address of a procedure.
 <<>>=={{fbdoc item="keyword" value="KeyPgOpAt|Operator @ (Address of)"}}==
 	Returns the memory address of a variable, object or procedure.

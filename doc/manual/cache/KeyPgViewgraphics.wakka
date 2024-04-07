@@ -17,7 +17,7 @@ Sets new physical coordinate mapping and clipping region for graphics keywords
 		The color of the border to draw around the new viewport.
 
 {{fbdoc item="desc"}}
-	The //viewport//, or clipping region, is a rectangular area of the graphics screen, outside of which no graphics drawing will be done. That is, only graphics drawing done within this area will be shown. A graphics screen must be created with ##[[KeyPgScreengraphics|Screen]]## or ##[[KeyPgScreenres|ScreenRes]]## before calling ##**View**## or ##**View Screen**##.
+	The //viewport//, or clipping region, is a rectangular area of the graphics screen, outside of which no graphics drawing will be done. That is, only graphics drawing done within this area will be shown. A graphics screen must be created with ##[[KeyPgScreengraphics|Screen (Graphics)]]## or ##[[KeyPgScreenres|ScreenRes]]## before calling ##**View**## or ##**View Screen**##.
 	
 	The first statement (##**View**##) sets the viewport to encompass the entire screen, which is the default viewport for a new graphics screen.
 	

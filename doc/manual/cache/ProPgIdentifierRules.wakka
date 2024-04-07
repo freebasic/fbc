@@ -22,6 +22,11 @@ Naming conventions for ""FreeBASIC"" symbols.
 	
 	In the //[[CompilerOptlang|-lang qb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, identifiers may contain one or more periods (##.##).
 
+{{fbdoc item="target"}}
+	- Warning:
+			**""-""** For 64-bit compiler only and regarding the choice of user module level procedure identifier names, an additional restriction to the above normal 'Identifier Rules' should also exclude in the global namespace all register names or other symbols issued from the only 'intel' format assembler when it is used (the one by default, no problem with 'att' format), because they causes assembler errors or runtime bugs (due to the 64-bit compiler not decorating module level procedure names).
+			**""-""** Since fbc version 1.09.0, for x86 and x86_64 only (with any assembler format), the use of an inline asm symbol or a global/external/backend symbol induces a warning if such a symbol is used for a module level procedure or a shared variable in the global namespace.
+
 {{fbdoc item="lang"}}
 	- Periods in symbol names are only supported in the //[[CompilerOptlang|-lang qb]]// and //[[CompilerOptlang|-lang fblite]]// dialects.
 
@@ -30,5 +35,6 @@ Naming conventions for ""FreeBASIC"" symbols.
 
 {{fbdoc item="see"}}
 	- [[ProPgVariables|Variables]]
+	- [[ProPgIdentifierLookup|Identifier Look-ups in namespaces and types]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

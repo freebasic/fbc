@@ -27,12 +27,12 @@ end sub
 
 '' NamespaceStmtBegin  =  NAMESPACE (ID (ALIAS LITSTR)?)? .
 sub cNamespaceStmtBegin( )
-    static as zstring * FB_MAXNAMELEN+1 id
-    dim as zstring ptr palias = any
-    dim as FBSYMBOL ptr sym = any
-    dim as FBSYMCHAIN ptr chain_ = any
-    dim as FB_CMPSTMTSTK ptr stk = any
-    dim as integer levels = any
+	static as zstring * FB_MAXNAMELEN+1 id
+	dim as zstring ptr palias = any
+	dim as FBSYMBOL ptr sym = any
+	dim as FBSYMCHAIN ptr chain_ = any
+	dim as FB_CMPSTMTSTK ptr stk = any
+	dim as integer levels = any
 
 	if( fbLangOptIsSet( FB_LANG_OPT_NAMESPC ) = FALSE ) then
 		errReportNotAllowed(FB_LANG_OPT_NAMESPC )
@@ -72,11 +72,11 @@ sub cNamespaceStmtBegin( )
 			exit sub
 		end if
 
-        levels += 1
+		levels += 1
 
-    	'' not an id?
-    	select case lexGetClass( )
-    	case FB_TKCLASS_IDENTIFIER
+		'' not an id?
+		select case lexGetClass( )
+		case FB_TKCLASS_IDENTIFIER
 			id = *lexGetText( )
 			chain_ = lexGetSymChain( )
 
@@ -84,7 +84,7 @@ sub cNamespaceStmtBegin( )
 			'' only if inside another ns
 			if( symbIsGlobalNamespc( ) ) then
 				errReport( FB_ERRMSG_DUPDEFINITION )
-				id[0] = 0							'' id = ""
+				id[0] = 0                       '' id = ""
 				chain_ = NULL
 			else
 				id = *lexGetText( )
@@ -93,7 +93,7 @@ sub cNamespaceStmtBegin( )
 
 		case else
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-			id[0] = 0							'' id = ""
+			id[0] = 0                           '' id = ""
 			chain_ = NULL
 		end select
 

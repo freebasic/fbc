@@ -50,7 +50,7 @@ print i
 
 {{fbdoc item="see"}}
 	- [[ProPgPassingArguments|Passing Arguments to Procedures]]
-	- [[ProPgReturnValue|Returning a Value]]
+	- [[ProPgReturnValue|Returning Values]]
 	- ##[[KeyPgDeclare|Declare]]##
 	- ##[[KeyPgSub|Sub]]##
 	- ##[[KeyPgFunction|Function]]##

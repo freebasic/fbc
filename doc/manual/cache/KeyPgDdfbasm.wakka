@@ -21,6 +21,9 @@ dim a as long
 #endif
 %%
 
+{{fbdoc item="ver"}}
+	- Since fbc 1.02.0
+
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 

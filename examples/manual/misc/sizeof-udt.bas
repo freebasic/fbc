@@ -1,7 +1,7 @@
 '' examples/manual/misc/sizeof-udt.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'SIZEOF'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgSizeof
 '' --------
@@ -12,3 +12,4 @@ Type bar
 End Type
 Dim foo As bar
 Print SizeOf(foo)
+	

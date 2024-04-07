@@ -1,4 +1,4 @@
-'' FreeBASIC binding for SQLite 3.34.0
+'' FreeBASIC binding for SQLite 3.39.4
 ''
 '' based on the C header files:
 ''   * 2006 June 7
@@ -18,7 +18,7 @@
 ''   * sqlite3.h.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2020 FreeBASIC development team
+''   FreeBASIC development team
 
 #pragma once
 
@@ -282,6 +282,18 @@ type sqlite3_api_routines
 	free_filename as sub(byval as zstring ptr)
 	database_file_object as function(byval as const zstring ptr) as sqlite3_file ptr
 	txn_state as function(byval as sqlite3 ptr, byval as const zstring ptr) as long
+	changes64 as function(byval as sqlite3 ptr) as sqlite3_int64
+	total_changes64 as function(byval as sqlite3 ptr) as sqlite3_int64
+	autovacuum_pages as function(byval as sqlite3 ptr, byval as function(byval as any ptr, byval as const zstring ptr, byval as ulong, byval as ulong, byval as ulong) as ulong, byval as any ptr, byval as sub(byval as any ptr)) as long
+	error_offset as function(byval as sqlite3 ptr) as long
+	vtab_rhs_value as function(byval as sqlite3_index_info ptr, byval as long, byval as sqlite3_value ptr ptr) as long
+	vtab_distinct as function(byval as sqlite3_index_info ptr) as long
+	vtab_in as function(byval as sqlite3_index_info ptr, byval as long, byval as long) as long
+	vtab_in_first as function(byval as sqlite3_value ptr, byval as sqlite3_value ptr ptr) as long
+	vtab_in_next as function(byval as sqlite3_value ptr, byval as sqlite3_value ptr ptr) as long
+	deserialize as function(byval as sqlite3 ptr, byval as const zstring ptr, byval as ubyte ptr, byval as sqlite3_int64, byval as sqlite3_int64, byval as ulong) as long
+	serialize as function(byval as sqlite3 ptr, byval as const zstring ptr, byval as sqlite3_int64 ptr, byval as ulong) as ubyte ptr
+	db_name as function(byval as sqlite3 ptr, byval as long) as const zstring ptr
 end type
 
 type sqlite3_loadext_entry as function(byval db as sqlite3 ptr, byval pzErrMsg as zstring ptr ptr, byval pThunk as const sqlite3_api_routines ptr) as long
@@ -797,6 +809,18 @@ type sqlite3_loadext_entry as function(byval db as sqlite3 ptr, byval pzErrMsg a
 #define sqlite3_database_file_object sqlite3_api->database_file_object
 #undef sqlite3_txn_state
 #define sqlite3_txn_state sqlite3_api->txn_state
+#define sqlite3_changes64 sqlite3_api->changes64
+#define sqlite3_total_changes64 sqlite3_api->total_changes64
+#define sqlite3_autovacuum_pages sqlite3_api->autovacuum_pages
+#define sqlite3_error_offset sqlite3_api->error_offset
+#define sqlite3_vtab_rhs_value sqlite3_api->vtab_rhs_value
+#define sqlite3_vtab_distinct sqlite3_api->vtab_distinct
+#define sqlite3_vtab_in sqlite3_api->vtab_in
+#define sqlite3_vtab_in_first sqlite3_api->vtab_in_first
+#define sqlite3_vtab_in_next sqlite3_api->vtab_in_next
+#define sqlite3_deserialize sqlite3_api->deserialize
+#define sqlite3_serialize sqlite3_api->serialize
+#define sqlite3_db_name sqlite3_api->db_name
 #define SQLITE_EXTENSION_INIT1 dim shared as const sqlite3_api_routines ptr sqlite3_api = 0
 #define SQLITE_EXTENSION_INIT2(v) sqlite3_api = v
 #define SQLITE_EXTENSION_INIT3 extern as const sqlite3_api_routines ptr sqlite3_api

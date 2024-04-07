@@ -1,7 +1,7 @@
 '' examples/manual/libraries/libxml.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'libxml2'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ExtLiblibxml
 '' --------
@@ -23,8 +23,8 @@ End If
 
 Dim As Integer ret = xmlTextReaderRead( reader )
 Do While( ret = 1 )
-	Dim As const ZString Ptr constname = xmlTextReaderConstName( reader )
-	Dim As const ZString Ptr value = xmlTextReaderConstValue( reader )
+	Dim As Const ZString Ptr constname = xmlTextReaderConstName( reader )
+	Dim As Const ZString Ptr value = xmlTextReaderConstValue( reader )
 
 	Print xmlTextReaderDepth( reader ); _
 		xmlTextReaderNodeType( reader ); _

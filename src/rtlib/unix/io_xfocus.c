@@ -26,7 +26,7 @@ static Window xterm_window;
 int fb_hXTermInitFocus(void)
 {
 #ifndef DISABLE_X11
-	const char *funcs[] = { "XOpenDisplay", "XCloseDisplay", "XGetInputFocus", NULL };
+	const char *const funcs[] = { "XOpenDisplay", "XCloseDisplay", "XGetInputFocus", NULL };
 	int dummy;
 
 	ref_count++;

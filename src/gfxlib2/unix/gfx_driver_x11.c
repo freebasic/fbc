@@ -8,22 +8,24 @@
 
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 
-GFXDRIVER fb_gfxDriverX11 =
+/* GFXDRIVER */
+const GFXDRIVER fb_gfxDriverX11 =
 {
-	"X11",			/* char *name; */
-	driver_init,		/* int (*init)(int w, int h, char *title, int fullscreen); */
-	fb_hX11Exit,		/* void (*exit)(void); */
-	fb_hX11Lock,		/* void (*lock)(void); */
-	fb_hX11Unlock,		/* void (*unlock)(void); */
-	fb_hX11SetPalette,	/* void (*set_palette)(int index, int r, int g, int b); */
-	fb_hX11WaitVSync,	/* void (*wait_vsync)(void); */
-	fb_hX11GetMouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons, int *clip); */
-	fb_hX11SetMouse,	/* void (*set_mouse)(int x, int y, int cursor, int clip); */
-	fb_hX11SetWindowTitle,	/* void (*set_window_title)(char *title); */
-	fb_hX11SetWindowPos,	/* int (*set_window_pos)(int x, int y); */
-	fb_hX11FetchModes,	/* int *(*fetch_modes)(void); */
-	NULL,			/* void (*flip)(void); */
-	NULL			/* void (*poll_events)(void); */
+	"X11",                  /* char *name; */
+	driver_init,            /* int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags); */
+	fb_hX11Exit,            /* void (*exit)(void); */
+	fb_hX11Lock,            /* void (*lock)(void); */
+	fb_hX11Unlock,          /* void (*unlock)(void); */
+	fb_hX11SetPalette,      /* void (*set_palette)(int index, int r, int g, int b); */
+	fb_hX11WaitVSync,       /* void (*wait_vsync)(void); */
+	fb_hX11GetMouse,        /* int (*get_mouse)(int *x, int *y, int *z, int *buttons, int *clip); */
+	fb_hX11SetMouse,        /* void (*set_mouse)(int x, int y, int cursor, int clip); */
+	fb_hX11SetWindowTitle,  /* void (*set_window_title)(char *title); */
+	fb_hX11SetWindowPos,    /* int (*set_window_pos)(int x, int y); */
+	fb_hX11FetchModes,      /* int *(*fetch_modes)(void); */
+	NULL,                   /* void (*flip)(void); */
+	NULL,                   /* void (*poll_events)(void); */
+	NULL                    /* void (*update)(void); */
 };
 
 static XImage *image, *shape_image;

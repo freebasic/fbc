@@ -35,6 +35,68 @@ SUITE( fbc_tests.structs.field_init )
 		END_TEST
 	END_TEST_GROUP
 
+	TEST_GROUP( fixedstrings )
+		type T1
+			as string * 10 a
+		end type
+
+		type T2
+			as string * 10 a = ""
+		end type
+
+		type T3
+			as string * 10 a = "abc"
+		end type
+
+		type T4
+			as zstring * 2  a1
+			as string * 3   a2
+			as zstring * 4  a3
+			as string * 5   a4
+			as zstring * 6  a5
+		end type
+
+		union U1
+			c(0 to 9) as ubyte
+			f as string * 10
+		end union
+
+		union U2
+			f as string * 10
+			c(0 to 9) as ubyte
+		end union
+
+		TEST( default )
+			dim x1 as T1
+			CU_ASSERT( x1.a = space( 10 ) )
+			print asc( x1.a, 0 )
+
+			dim x2 as T2
+			CU_ASSERT( x2.a = space( 10 ) )
+
+			dim x3 as T3
+			CU_ASSERT( x3.a = "abc       " )
+
+			dim x4 as T4
+			CU_ASSERT( x4.a1 = "" )
+			CU_ASSERT( x4.a2 = space(3) )
+			CU_ASSERT( x4.a3 = "" )
+			CU_ASSERT( x4.a4 = space(5) )
+			CU_ASSERT( x4.a5 = "" )
+
+			dim x5 as U1 '' first field is byte array
+			CU_ASSERT( x5.c(0) = 0 )
+			CU_ASSERT( x5.c(9) = 0 )
+			CU_ASSERT( x5.f = string(10, 0) )
+
+			dim x6 as U2 '' first field is fixed length string
+			CU_ASSERT( x6.f = string(10, 32) )
+			CU_ASSERT( x6.c(0) = 32 )
+			CU_ASSERT( x6.c(9) = 32 )
+
+		END_TEST
+	END_TEST_GROUP
+
 	'' Complex field init
 	TEST_GROUP( complex )
 		type A
@@ -237,9 +299,9 @@ SUITE( fbc_tests.structs.field_init )
 
 		type foo field = 1
 			pad as integer
-			f1(0 to 2) as ubyte 
-			f2(0 to 2) as ushort 
-			f3(0 to 1) as uinteger 
+			f1(0 to 2) as ubyte
+			f2(0 to 2) as ushort
+			f3(0 to 1) as uinteger
 		end type
 
 		type bar field = 1

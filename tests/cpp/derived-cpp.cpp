@@ -33,11 +33,11 @@ void resetChecks() {
 	val3 = 0;
 }
 
-const void* getPtr1() { 
+const void* getPtr1() {
 	return ptr1;
 }
 
-const void* getPtr2() { 
+const void* getPtr2() {
 	return ptr2;
 }
 
@@ -49,11 +49,11 @@ int getVal1() {
 	return val1;
 }
 
-int getVal2() { 
+int getVal2() {
 	return val2;
 }
 
-int getVal3() { 
+int getVal3() {
 	return val3;
 }
 
@@ -67,7 +67,7 @@ class UDT_BASE
 	UDT_BASE();
 	UDT_BASE( UDT_BASE const& rhs );
 	UDT_BASE( int const& rhs );
-	virtual ~UDT_BASE();	
+	virtual ~UDT_BASE();
 	virtual void method( int const& rhs );
 
 	// assignment
@@ -85,7 +85,7 @@ class UDT_DERIVED : public UDT_BASE
 	UDT_DERIVED();
 	UDT_DERIVED( UDT_DERIVED const& rhs );
 	UDT_DERIVED( int const& rhs );
-	virtual ~UDT_DERIVED();	
+	virtual ~UDT_DERIVED();
 	virtual void method( int const& rhs );
 
 	// assignment
@@ -110,7 +110,7 @@ UDT_DERIVED operator-( int const& lhs, UDT_DERIVED const& rhs );
 
 // constructor UDT_BASE()
 UDT_BASE::UDT_BASE()
-{ 
+{
 	if( initial ) {
 		ptr1 = this;
 		ptr2 = NULL;
@@ -124,7 +124,7 @@ UDT_BASE::UDT_BASE()
 
 // constructor UDT_BASE( byref rhs as const UDT_BASE )
 UDT_BASE::UDT_BASE( UDT_BASE const& rhs )
-{ 
+{
 	if( initial ) {
 		ptr1 = this;
 		ptr2 = &rhs;
@@ -133,7 +133,7 @@ UDT_BASE::UDT_BASE( UDT_BASE const& rhs )
 		val2 = rhs.value;
 		val3 = rhs.value;
 	}
-	value = rhs.value; 
+	value = rhs.value;
 }
 
 // constructor UDT_BASE( byref rhs as const long )
@@ -187,7 +187,7 @@ UDT_BASE& UDT_BASE::operator=( UDT_BASE const& rhs )
 		val1 = value;
 		val2 = rhs.value;
 		val3 = rhs.value;
-	}	
+	}
 	value = rhs.value;
 	return *this;
 }
@@ -200,7 +200,7 @@ UDT_BASE& UDT_BASE::operator+( int const& rhs )
 	val1 = value;
 	val2 = rhs;
 	val3 = value + rhs;
-	
+
 	value += rhs;
 	return *this;
 }
@@ -214,7 +214,7 @@ UDT_BASE& UDT_BASE::operator-( int const& rhs )
 	val1 = value;
 	val2 = rhs;
 	val3 = value - rhs;
-	
+
 	value -= rhs;
 	return *this;
 }
@@ -228,7 +228,7 @@ UDT_BASE operator+( UDT_BASE const& lhs, UDT_BASE const& rhs )
 	val1 = lhs.value;
 	val2 = rhs.value;
 	val3 = lhs.value + rhs.value;
-	
+
 	return UDT_BASE(lhs.value + rhs.value);
 }
 
@@ -241,7 +241,7 @@ UDT_BASE operator-( UDT_BASE const& lhs, UDT_BASE const& rhs )
 	val1 = lhs.value;
 	val2 = rhs.value;
 	val3 = lhs.value - rhs.value;
-	
+
 	return UDT_BASE(lhs.value - rhs.value);
 }
 
@@ -254,7 +254,7 @@ UDT_BASE operator+( int const& lhs, UDT_BASE const& rhs )
 	val1 = lhs;
 	val2 = rhs.value;
 	val3 = lhs + rhs.value;
-	
+
 	return UDT_BASE(lhs + rhs.value);
 }
 
@@ -267,13 +267,13 @@ UDT_BASE operator-( int const& lhs, UDT_BASE const& rhs )
 	val1 = lhs;
 	val2 = rhs.value;
 	val3 = lhs - rhs.value;
-	
+
 	return UDT_BASE(lhs - rhs.value);
 }
 
 // constructor UDT_DERIVED()
 UDT_DERIVED::UDT_DERIVED()
-{ 
+{
 	if( initial ) {
 		ptr1 = this;
 		ptr2 = NULL;
@@ -287,7 +287,7 @@ UDT_DERIVED::UDT_DERIVED()
 
 // constructor UDT_DERIVED( byref rhs as const UDT_DERIVED )
 UDT_DERIVED::UDT_DERIVED( UDT_DERIVED const& rhs )
-{ 
+{
 	if( initial ) {
 		ptr1 = this;
 		ptr2 = &rhs;
@@ -296,7 +296,7 @@ UDT_DERIVED::UDT_DERIVED( UDT_DERIVED const& rhs )
 		val2 = rhs.value;
 		val3 = rhs.value;
 	}
-	value = rhs.value; 
+	value = rhs.value;
 }
 
 // constructor UDT_DERIVED( byref rhs as const long )
@@ -350,7 +350,7 @@ UDT_DERIVED& UDT_DERIVED::operator=( UDT_DERIVED const& rhs )
 		val1 = value;
 		val2 = rhs.value;
 		val3 = rhs.value;
-	}	
+	}
 	value = rhs.value;
 	return *this;
 }
@@ -365,7 +365,7 @@ UDT_DERIVED& UDT_DERIVED::operator+( int const& rhs )
 	val1 = value;
 	val2 = rhs;
 	val3 = value + rhs;
-	
+
 	value += rhs;
 	return *this;
 }
@@ -379,7 +379,7 @@ UDT_DERIVED& UDT_DERIVED::operator-( int const& rhs )
 	val1 = value;
 	val2 = rhs;
 	val3 = value - rhs;
-	
+
 	value -= rhs;
 	return *this;
 }
@@ -394,7 +394,7 @@ UDT_DERIVED operator+( UDT_DERIVED const& lhs, UDT_DERIVED const& rhs )
 	val1 = lhs.value;
 	val2 = rhs.value;
 	val3 = lhs.value + rhs.value;
-	
+
 	return UDT_DERIVED(lhs.value + rhs.value);
 }
 
@@ -407,7 +407,7 @@ UDT_DERIVED operator-( UDT_DERIVED const& lhs, UDT_DERIVED const& rhs )
 	val1 = lhs.value;
 	val2 = rhs.value;
 	val3 = lhs.value - rhs.value;
-	
+
 	return UDT_DERIVED(lhs.value - rhs.value);
 }
 
@@ -420,7 +420,7 @@ UDT_DERIVED operator+( int const& lhs, UDT_DERIVED const& rhs )
 	val1 = lhs;
 	val2 = rhs.value;
 	val3 = lhs + rhs.value;
-	
+
 	return UDT_DERIVED(lhs + rhs.value);
 }
 
@@ -433,6 +433,6 @@ UDT_DERIVED operator-( int const& lhs, UDT_DERIVED const& rhs )
 	val1 = lhs;
 	val2 = rhs.value;
 	val3 = lhs - rhs.value;
-	
+
 	return UDT_DERIVED(lhs - rhs.value);
 }

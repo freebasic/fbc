@@ -12,7 +12,11 @@ Returns the ascii code of the first key in the keyboard buffer
 
 {{fbdoc item="desc"}}
 	It returns the ascii code of the first key in the keyboard buffer. The key is removed from the buffer. If no key is present, ##**Getkey**## waits for it.
-	For extended keys (returning two characters), the extended code is returned in the first byte, and the regular code is returned in the second byte (the third and fourth bytes always being null at least in console mode).
+	
+	For extended keys (returning two characters), the extended code is returned in the first byte (255), and the scancode for keyboard is returned in the second byte (the third and fourth bytes always being null at least in console mode).
+	
+	For FB's built-in functionality of getting keyboard input, see ##[[DevRtlInkey|Keyboard Input]] (Basics)##.
+	
 	WARNING: In graphics mode and depending on the key pressed, ## ** Getkey ** ## may not always return the exact same value as in console mode (for a non-extended key, the most significant bit of the ascii code byte may be propagated to the higher 3 bytes of the return value, such as a sign bit).
 	For a compatible code of the 2 screen modes, see the example below.
 	
@@ -21,7 +25,7 @@ Returns the ascii code of the first key in the keyboard buffer
 	For a keyword not stopping the program if no key is at the buffer see ##[[KeyPgInkey|Inkey]]## or ##[[KeyPgMultikey|Multikey]]##.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/input/getkey.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/input/getkey.bas"}}%%(freebasic)
 dim as long foo
 do
 	foo = getkey
@@ -36,8 +40,6 @@ do
 	print 
 loop until foo = 27
 %%
-
-
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Getkey""**##.
 
@@ -49,5 +51,7 @@ loop until foo = 27
 	- ##[[KeyPgInkey|Inkey]]##
 	- ##[[KeyPgInputnum|Input()]]##
 	- ##[[KeyPgMultikey|Multikey]]##
+	- [[GfxScancodes|Keyboard scancodes]]
+	- [[DevRtlInkey|Keyboard Input]]
 
 {{fbdoc item="back" value="CatPgInput|User Input"}}

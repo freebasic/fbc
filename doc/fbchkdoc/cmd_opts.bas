@@ -1,5 +1,5 @@
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2019-2020 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2019-2022 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ using fbdoc
 #include once "fbchkdoc.bi"
 #include once "funcs.bi"
 #include once "cmd_opts.bi"
+#include once "fbdoc_trace.bi"
 
 '' ------------------------------------
 '' command line options
@@ -56,6 +57,7 @@ type CMD_OPTS_PRIVATE
 	enable_pagelist as boolean   '' enable reading in a text file with a list of page names
 	enable_manual as boolean     '' enable the manual dir option
 	enable_database as boolean   '' enable db_* options
+	enable_trace as boolean      '' enable communication tracing (libcurl verbose)
 
 	print as boolean             '' -printopts option on command line
 
@@ -124,11 +126,13 @@ sub cmd_opts_init( byval opts_flags as const CMD_OPTS_ENABLE_FLAGS )
 	cmd_opt.enable_pagelist = cbool( opts_flags and CMD_OPTS_ENABLE_PAGELIST )
 	cmd_opt.enable_manual = cbool( opts_flags and CMD_OPTS_ENABLE_MANUAL )
 	cmd_opt.enable_database = cbool( opts_flags and CMD_OPTS_ENABLE_DATABASE )
+	cmd_opt.enable_trace = cbool( opts_flags and CMD_OPTS_ENABLE_TRACE )
 
 	'' general options
 
 	app_opt.help = false     '' -h, -help given on command line
 	app_opt.verbose = false  '' -v given on command line
+	app_opt.trace = false    '' -trace given on command line
 
 	cmd_opt.print = false    '' -printopts options given
 	cmd_opt.ini = false      '' -ini given on command line
@@ -199,6 +203,7 @@ sub cmd_opts_init( byval opts_flags as const CMD_OPTS_ENABLE_FLAGS )
 	app_opt.pageCount = 0
 	redim app_opt.pageList(1 to 1) as string
 	redim app_opt.pageComments(1 to 1) as string
+	redim app_opt.pageRevision(1 to 1) as long
 
 	if( command(1) = "" ) then
 		app_opt.help = true
@@ -228,15 +233,22 @@ sub cmd_opts_unexpected_die( byval i as const integer )
 end sub
 
 ''
-sub cmd_opts_add_page( byref pagename as const string, byref cmt as const string )
+sub cmd_opts_missingarg_die( byval i as const integer )
+	cmd_opts_die( "Missing argument after '" + command(i) + "'" )
+end sub
+
+''
+sub cmd_opts_add_page( byref pagename as const string, byref cmt as const string, byval revision as long )
 	with app_opt
 		.pageCount += 1
 		if( .pageCount > ubound(.pageList) ) then
 			redim preserve .pageList(1 to Ubound(.pageList) * 2)
 			redim preserve .pageComments(1 to Ubound(.pageComments) * 2)
+			redim preserve .pageRevision(1 to Ubound(.pageRevision) * 2)
 		end if
 		.pageList(.pageCount) = pagename
 		.pageComments(.pageCount) = cmt
+		.pageRevision(.pageCount) = revision
 	end with
 end sub
 
@@ -250,11 +262,19 @@ function cmd_opts_read( byref i as integer ) as boolean
 	if( left( command(i), 1 ) = "-" ) then
 
 		select case lcase(command(i))
-		case "-h", "-help"
+		case "-h", "-help", "--help"
 			app_opt.help = true
 
 		case "-v"
 			app_opt.verbose = true
+
+		case "-trace"
+			if( cmd_opt.enable_trace ) then
+				app_opt.trace = true
+				fbdoc.set_trace( true )
+			else
+				return false
+			end if
 
 		case "-printopts"
 			cmd_opt.print = true
@@ -481,23 +501,23 @@ function cmd_opts_read( byref i as integer ) as boolean
 		if( cmd_opt.enable_pagelist ) then
 			if left( command(i), 1) = "@" then
 				scope
-					dim h as integer, x as string, cmt as string
+					dim h as integer, x as string, cmt as string, rev as long
 					h = freefile
 					if open( mid(command(i),2) for input access read as #h ) <> 0 then
 						print "Error reading '" + command(i) + "'"
 					else
 						while eof(h) = 0
 							line input #h, x
-							x = ParsePageName( x, cmt )
+							x = ParsePageName( x, cmt, rev )
 							if( x > "" ) then 
-								cmd_opts_add_page( x, cmt )
+								cmd_opts_add_page( x, cmt, rev )
 							end if
 						wend
 						close #h
 					end if
 				end scope
 			else
-				cmd_opts_add_page( command(i), "" )
+				cmd_opts_add_page( command(i), "", 0 )
 			end if
 
 		else
@@ -852,4 +872,7 @@ sub cmd_opts_show_help( byref action as const string = "", locations as boolean 
 		print "   -db_port         database port number"
 	end if
 
+	if( cmd_opt.enable_trace ) then
+		print "   -trace           enable tracing (libcurl verbose)"
+	end if
 end sub

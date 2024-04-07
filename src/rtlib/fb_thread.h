@@ -10,7 +10,7 @@ struct _FBCOND;
 typedef struct _FBCOND FBCOND;
 
 FBCALL FBTHREAD         *fb_ThreadCreate( FB_THREADPROC proc, void *param, ssize_t stack_size );
-FBCALL FBTHREAD		*fb_ThreadSelf  ( void );
+FBCALL FBTHREAD         *fb_ThreadSelf  ( void );
 FBCALL void              fb_ThreadWait  ( FBTHREAD *thread );
 FBCALL void              fb_ThreadDetach( FBTHREAD *thread );
 
@@ -45,7 +45,7 @@ typedef void ( *FB_TLS_DESTRUCTOR )( void* tlsData );
 
 typedef struct _FB_TLS_CTX_HEADER {
 
-    FB_TLS_DESTRUCTOR destructor;
+	FB_TLS_DESTRUCTOR destructor;
 
 } FB_TLS_CTX_HEADER;
 

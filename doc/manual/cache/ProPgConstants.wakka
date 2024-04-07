@@ -1,13 +1,15 @@
 {{fbdoc item="title" value="Constants"}}----
+Constants are identifiers that represent literals or constant expressions that can not be changed after they are defined.
 
-{{fbdoc item="desc"}}
-	Constants are numbers (including booleans) or strings which cannot be changed after they are defined. For example, 5 will always mean the same number.
+For example, ##Const PI = 3.1415926535897932## will always mean that the identifier ##PI## refers to the number ##3.1415926535897932##.  The identifier ##PI## can be used instead of repeating the full number in source.
 	
-	In FreeBASIC, a constant definition differs from a variable definition by usage of the ##[[KeyPgConst|Const]]## command.
+Global constants once defined, are available globally and the identifier can be used to refer to the constant anywhere in the source program. 
 	
-	Such constants are then available globally, meaning that once defined, you can use the word to refer to a constant anywhere in your program. 
-	
-	After being defined with the ##[[KeyPgConst|Const]]## command, constants cannot be altered. If code tries to alter a constant, an error message will result upon code compilation.
+After an identifier is defined with the ##[[KeyPgConst|Const]]## statement, the symbol cannot be altered. If code tries to alter a constant, an error message will result upon code compilation.
+
+Built-in constants include the ##[[KeyPgBoolean|boolean]]## data type values ##[[KeyPgTrue|true]]## and ##[[KeyPgFalse|false]]##.
+
+A constant definition differs from a variable definition.  Variables hold values that can be changed.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/proguide/constants/constants.bas"}}%%(freebasic)
@@ -34,6 +36,8 @@ End Sub
 %%
 
 {{fbdoc item="see"}}
+	- ##[[ProPgConstantExpressions|Constant Expressions]]##
+	- ##[[ProPgLiterals|Literals]]##
 	- ##[[KeyPgConst|Const]]##
 	- ##[[KeyPgEnum|Enum]]##
 

@@ -3,11 +3,11 @@
 #include "../fb.h"
 #include "fb_private_console.h"
 
-int fb_ConsoleColor( int fc, int bc, int flags )
+unsigned int fb_ConsoleColor( unsigned int fc, unsigned int bc, int flags )
 {
 	const char map[8] = { 0, 4, 2, 6, 1, 5, 3, 7 };
-	int old_fg = __fb_con.fg_color;
-	int old_bg = __fb_con.bg_color;
+	unsigned int old_fg = __fb_con.fg_color;
+	unsigned int old_bg = __fb_con.bg_color;
 	int force = FALSE;
 
 	if (!__fb_con.inited)
@@ -43,7 +43,7 @@ int fb_ConsoleColor( int fc, int bc, int flags )
 	return old_fg | (old_bg << 16);
 }
 
-int fb_ConsoleGetColorAtt( void )
+unsigned int fb_ConsoleGetColorAtt( void )
 {
 	return __fb_con.inited ? (__fb_con.fg_color | (__fb_con.bg_color << 4)) : 0x7;
 }

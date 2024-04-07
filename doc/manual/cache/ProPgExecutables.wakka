@@ -99,9 +99,9 @@ linking:      D:\fb.git\bin\win32\ld.exe -m i386pe -o "a.exe" -subsystem console
 		%%##
 
 	Tools:
-		""-"" [ fbc ] compiler translate *.bas in to *.a64 or *.asm or *.c files
+		""-"" [ fbc ] compiler translate *.bas in to *.asm or *.c files
 		""-"" [ gcc ] compiler translate *.c files in to *.asm files
-		""-"" [ as ] assembler translate *.asm/*.a64 files in to *.o object files
+		""-"" [ as ] assembler translate *.asm files in to *.o object files
 		""-"" [ ld ] linker join *.o files (and other files) in to executable files
 		""-"" emscripten backend has other tools
 		""-"" llvm backend has other tools
@@ -112,8 +112,8 @@ linking:      D:\fb.git\bin\win32\ld.exe -m i386pe -o "a.exe" -subsystem console
 			*.o => [ ld ] => *[.exe] link to executable##
 			
 	**""-""** GNU assembler 64-bit backend (-gen gas64):
-			##*.bas => [ fbc ] => *.a64 compile (first stage) to assembly (-r or -rr, -R or -RR)
-			*.a64 => [ as ] => *.o assemble to object file (-c, -C)
+			##*.bas => [ fbc ] => *.asm compile (first stage) to assembly (-r or -rr, -R or -RR)
+			*.asm => [ as ] => *.o assemble to object file (-c, -C)
 			*.o => [ ld ] => *[.exe] link to executable##
 			
 	**""-""** GCC compiler backend (-gen gcc):
@@ -126,12 +126,12 @@ linking:      D:\fb.git\bin\win32\ld.exe -m i386pe -o "a.exe" -subsystem console
 		There are a few options that can control what fbc does with the intermediate files and at what point the process may be stopped early.
 		
 		""-r"", ""-rr"", ""-c"" : stop the compile / assemble process sometime before the link stage
-			##[[CompilerOptr|Compiler Option -r]]## : compile up to first stage, keep file (*.asm/*.a64/*.c), and stop
+			##[[CompilerOptr|Compiler Option -r]]## : compile up to first stage, keep file (*.asm/*.c), and stop
 			##[[CompilerOptrr|Compiler Option -rr]]## : compile up to second stage, keep file (*.asm), and stop
 			##[[CompilerOptc|Compiler Option -c]]## : compile up to assembly stage, keep file (*.o), and stop
 			
 		""-R"", ""-RR"", ""-C"" : keep intermediate files at compile / assemble stages then continue to next stage
-			##[[CompilerOptrupp|Compiler Option -R]]## : don't delete compile (first stage) intermediate file (*.asm/*.a64/*.c)
+			##[[CompilerOptrupp|Compiler Option -R]]## : don't delete compile (first stage) intermediate file (*.asm/*.c)
 			##[[CompilerOptrrupp|Compiler Option -RR]]## : don't delete compile (second stage) intermediate file (*.asm)
 			##[[CompilerOptcupp|Compiler Option -C]]## : don't delete assemble stage intermediate file (*.o)
 			
@@ -142,6 +142,9 @@ linking:      D:\fb.git\bin\win32\ld.exe -m i386pe -o "a.exe" -subsystem console
 		
 		""-r"", ""-rr"", ""-c"" : override the default behaviour of creating an implicit "main" entry point, and no "main" function is created by default.
 		To have a "main" entry point when using the ""-r"", ""-rr"", ""-c"", options, then ""'-m module'"" option needs to be used to indicate which module should have an "main" function.
+		
+	__Note:__
+		Before fbc version 1.09.0, ##-gen gas64## generated a ##.a64## file extension for assembler (instead of ##.asm##).
 
 {{fbdoc item="section" value="Execution order of the different modules"}}
 	An executable program needs a "main" point of entry (in the main module user code).
@@ -165,5 +168,6 @@ linking:      D:\fb.git\bin\win32\ld.exe -m i386pe -o "a.exe" -subsystem console
 	- [[ProPgStaticLibraries|Static Libraries]]
 	- [[ProPgSharedLibraries|Shared Libraries (DLLs)]]
 	- [[ProPgProfiling|Profiling]]
+	- [[ProPgDataExecutable|Embed and Access binary Data in Executable]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

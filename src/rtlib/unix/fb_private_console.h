@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 #define INIT_CONSOLE 1
 #define INIT_X11     2
 
@@ -43,7 +45,10 @@ typedef struct FBCONSOLE
 	FILE *f_in;
 	struct termios old_term_out, old_term_in;
 	int old_in_flags;
-	int fg_color, bg_color;
+	bool saved_old_term_out;
+	bool saved_old_term_in;
+	bool saved_old_in_flags;
+	unsigned int fg_color, bg_color;
 	int cur_x, cur_y;
 	int w, h;
 	unsigned char *char_buffer, *attr_buffer;
@@ -65,9 +70,6 @@ typedef struct FBCONSOLE
 
 extern FBCONSOLE __fb_con;
 
-#ifdef HOST_LINUX
-int fb_hTermQuery( int code, int *val1, int *val2 );
-#endif
 void fb_hRecheckCursorPos( void );
 void fb_hRecheckConsoleSize( int requery_cursorpos );
 int fb_hTermOut(int code, int param1, int param2);

@@ -12,11 +12,11 @@
 #include once "hlp.bi"
 
 type IRTAC_CTX
-	tacTB			as TFLIST
-	taccnt			as integer
-	tacidx			as IRTAC ptr
+	tacTB           as TFLIST
+	taccnt          as integer
+	tacidx          as IRTAC ptr
 
-	vregTB			as TFLIST
+	vregTB          as TFLIST
 end type
 
 declare sub hFlushUOP _
@@ -40,7 +40,8 @@ declare sub hFlushCOMP _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval label as FBSYMBOL ptr _
+		byval label as FBSYMBOL ptr, _
+		byval options as IR_EMITOPT _
 	)
 
 declare sub hFlushSTORE _
@@ -83,6 +84,7 @@ declare sub hFlushSTACK _
 	( _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
+		byval vr as IRVREG ptr, _
 		byval ex as integer _
 	)
 
@@ -126,7 +128,7 @@ declare sub hFreeREG _
 
 declare sub hFreePreservedRegs _
 	( _
- 		_
+		_
 	)
 
 #if __FB_DEBUG__
@@ -197,12 +199,12 @@ private function _getOptionValue _
 		byval opt as IR_OPTIONVALUE _
 	) as integer
 
-    function = emitGetOptionValue( opt )
+	function = emitGetOptionValue( opt )
 
 end function
 
 private sub hLoadIDX( byval vreg as IRVREG ptr )
-    dim as IRVREG ptr vi = any
+	dim as IRVREG ptr vi = any
 
 	if( vreg = NULL ) then
 		exit sub
@@ -235,7 +237,7 @@ end sub
 
 		dt = typeGet( vreg->dtype )
 		if( dt = FB_DATATYPE_POINTER ) then
-			dt = FB_DATATYPE_ULONG
+			dt = FB_DATATYPE_UINT
 		end if
 
 		dc = symb_dtypeTB(dt).class
@@ -262,29 +264,29 @@ end sub
 '' Setup an IRTAC's vr, v1 or v2 fields for the given IRVREG and its idx/aux
 '' sub-IRVREGs.
 #macro hRelinkVreg(v,t)
-    t->v.reg.parent = NULL
-    t->v.reg.next = NULL
+	t->v.reg.parent = NULL
+	t->v.reg.next = NULL
 
-    if( v <> NULL ) then
-    	hRelink( v, @t->v.reg )
-    	v->taclast = t
+	if( v <> NULL ) then
+		hRelink( v, @t->v.reg )
+		v->taclast = t
 
-    	if( v->vidx <> NULL ) then
-    		t->v.idx.vreg = v->vidx
-    		t->v.idx.parent = v
-    		t->v.idx.next = NULL
-    		hRelink( v->vidx, @t->v.idx )
-    		v->vidx->taclast = t
-    	end if
+		if( v->vidx <> NULL ) then
+			t->v.idx.vreg = v->vidx
+			t->v.idx.parent = v
+			t->v.idx.next = NULL
+			hRelink( v->vidx, @t->v.idx )
+			v->vidx->taclast = t
+		end if
 
-    	if( v->vaux <> NULL ) then
-    		t->v.aux.vreg = v->vaux
-    		t->v.aux.parent = v
-    		t->v.aux.next = NULL
-    		hRelink( v->vaux, @t->v.aux )
-    		v->vaux->taclast = t
-    	end if
-    end if
+		if( v->vaux <> NULL ) then
+			t->v.aux.vreg = v->vaux
+			t->v.aux.parent = v
+			t->v.aux.next = NULL
+			hRelink( v->vaux, @t->v.aux )
+			v->vaux->taclast = t
+		end if
+	end if
 #endmacro
 
 '':::::
@@ -299,29 +301,29 @@ private sub _emit _
 		byval ex3 as zstring ptr = 0 _
 	) static
 
-    dim as IRTAC ptr t
+	dim as IRTAC ptr t
 
 	'' Add a new IRTAC node to represent the three operand vregs
-    t = flistNewItem( @ctx.tacTB )
+	t = flistNewItem( @ctx.tacTB )
 
-    t->pos = ctx.taccnt
+	t->pos = ctx.taccnt
 
-    t->op = op
+	t->op = op
 
-    t->v1.reg.vreg = v1
-    hRelinkVreg( v1, t )
+	t->v1.reg.vreg = v1
+	hRelinkVreg( v1, t )
 
-    t->v2.reg.vreg = v2
-    hRelinkVreg( v2, t )
+	t->v2.reg.vreg = v2
+	hRelinkVreg( v2, t )
 
-    t->vr.reg.vreg = vr
-    hRelinkVreg( vr, t )
+	t->vr.reg.vreg = vr
+	hRelinkVreg( vr, t )
 
-    t->ex1 = ex1
-    t->ex2 = ex2
-    t->ex3 = ex3
-   
-    ctx.taccnt += 1
+	t->ex1 = ex1
+	t->ex2 = ex2
+	t->ex3 = ex3
+
+	ctx.taccnt += 1
 
 end sub
 
@@ -482,10 +484,11 @@ private sub _emitBop _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval label as FBSYMBOL ptr _
+		byval label as FBSYMBOL ptr, _
+		byval options as IR_EMITOPT _
 	)
 
-	_emit( op, v1, v2, vr, label )
+	_emit( op, v1, v2, vr, label, options )
 
 end sub
 
@@ -552,10 +555,11 @@ end sub
 private sub _emitStack _
 	( _
 		byval op as integer, _
-		byval v1 as IRVREG ptr _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr _
 	)
 
-	_emit( op, v1, NULL, NULL )
+	_emit( op, v1, v2, NULL )
 
 end sub
 
@@ -565,11 +569,35 @@ private sub _emitPushArg _
 		byval param as FBSYMBOL ptr, _
 		byval vr as IRVREG ptr, _
 		byval udtlen as longint, _
-		byval level as integer _
+		byval level as integer, _
+		byval lreg as IRVREG ptr _
 	)
 
+	'' passing argument in register?
+	if( lreg <> NULL ) then
+		dim as integer vr_dclass = any, vr_dtype = any, vr_typ = any
+		dim as integer reg1 = INVALID
+
+		hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
+		emitGetArgReg( vr_dclass, vr_typ, param->param.regnum, reg1 )
+
+		if( reg1 <> INVALID ) then
+			lreg->reg = reg1
+			if( irIsREG( vr ) ) then
+				lreg->dtype = vr->dtype
+			end if
+			regTB(vr_dclass)->ensure( regTB(vr_dclass), lreg, NULL, typeGetSize( vr_dtype ) )
+
+			'' Even if the argument is to be passed in register, still use the AST_OP_PUSH operation:
+			'' The proper register will get allocated when we flush the argument stack
+			_emitStack( AST_OP_PUSH, vr, lreg )
+
+			exit sub
+		end if
+	end if
+
 	if( udtlen = 0 ) then
-		_emitStack( AST_OP_PUSH, vr )
+		_emitStack( AST_OP_PUSH, vr, NULL )
 	else
 		_emit( AST_OP_PUSHUDT, vr, NULL, NULL, NULL, udtlen )
 	end if
@@ -666,10 +694,21 @@ private sub _emitMem _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
-		byval bytes as longint _
+		byval bytes as longint, _
+		byval fillchar as integer _
 	)
 
-	_emit( op, v1, v2, NULL, 0, bytes )
+	'' current limitation of _emit() is that it can only
+	'' properly take one integer argument unless _emit()
+	'' is changed and underlying IRTAC stores more data.
+	''
+	'' Even though  _emitMem has 'bytes' and 'fillchar'
+	'' currently only one of the two should be set since
+	'' bytes is also passed in as v2.
+	assert( (bytes = 0) or (fillchar = 0) )
+
+	'' to keep both bytes and fillchar, pass the fillchar value in ex3
+	_emit( op, v1, v2, NULL, NULL, bytes, cast(any ptr, fillchar) )
 
 end sub
 
@@ -766,7 +805,8 @@ private sub _emitVarIniStr _
 	( _
 		byval totlgt as longint, _
 		byval litstr as zstring ptr, _
-		byval litlgt as longint _
+		byval litlgt as longint, _
+		byval noterm as integer _
 	)
 
 	dim as const zstring ptr s
@@ -780,17 +820,17 @@ private sub _emitVarIniStr _
 	''
 	if( litlgt > totlgt ) then
 		errReportWarn( FB_WARNINGMSG_LITSTRINGTOOBIG )
-		'' !!!FIXME!!! truncate will fail if it lies on an escape seq
-		s = hEscape( left( *litstr, totlgt ) )
+		s = hEscape( litstr, totlgt )
 	else
 		s = hEscape( litstr )
 	end if
 
 	''
-	emitVARINISTR( s )
+	emitVARINISTR( s, noterm )
 
 	if( litlgt < totlgt ) then
-		emitVARINIPAD( totlgt - litlgt )
+		'' pad with zero (0) or spaces (32)
+		emitVARINIPAD( totlgt - litlgt, iif(noterm,32,0) )
 	end if
 
 end sub
@@ -815,8 +855,7 @@ private sub _emitVarIniWstr _
 	''
 	if( litlgt > totlgt ) then
 		errReportWarn( FB_WARNINGMSG_LITSTRINGTOOBIG )
-		'' !!!FIXME!!! truncate will fail if it lies on an escape seq
-		s = hEscapeW( left( *litstr, totlgt ) )
+		s = hEscapeW( litstr, totlgt )
 	else
 		s = hEscapeW( litstr )
 	end if
@@ -827,13 +866,14 @@ private sub _emitVarIniWstr _
 	emitVARINIWSTR( s )
 
 	if( litlgt < totlgt ) then
-		emitVARINIPAD( (totlgt - litlgt) * wclen )
+		'' pad with zero (0)
+		emitVARINIPAD( (totlgt - litlgt) * wclen, 0 )
 	end if
 
 end sub
 
-private sub _emitVarIniPad( byval bytes as longint )
-	emitVARINIPAD( bytes )
+private sub _emitVarIniPad( byval bytes as longint, byval fillchar as integer )
+	emitVARINIPAD( bytes, fillchar )
 end sub
 
 private sub _emitVarIniScopeBegin( byval sym as FBSYMBOL ptr, byval is_array as integer )
@@ -883,8 +923,8 @@ private function hNewVR _
 	v->sym = NULL
 	v->ofs = 0
 	v->mult = 0
-	v->vidx	= NULL
-	v->vaux	= NULL
+	v->vidx = NULL
+	v->vaux = NULL
 	v->tacvhead = NULL
 	v->tacvtail = NULL
 	v->taclast = NULL
@@ -1105,7 +1145,7 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 #if __FB_DEBUG__
-private sub hDumpFreeIntRegs( )
+sub hDumpFreeIntRegs( )
 	dim as string free, used
 	dim as integer reg = any
 
@@ -1220,8 +1260,8 @@ private sub hRename _
 		byval vnew as IRVREG ptr _
 	)
 
-    dim as IRTACVREG ptr t = any
-    dim as IRVREG ptr v = any
+	dim as IRTACVREG ptr t = any
+	dim as IRVREG ptr v = any
 
 	'' reassign tac table vregs
 	'' (assuming res, v1 and v2 will never point to the same vreg!)
@@ -1252,11 +1292,11 @@ private sub hReuse _
 		byval t as IRTAC ptr _
 	)
 
-    dim as IRVREG ptr v1 = any, v2 = any, vr = any
-    dim as integer v1_dtype = any, v1_dclass = any, v1_typ = any
-    dim as integer v2_dtype = any, v2_dclass = any, v2_typ = any
-    dim as integer vr_dtype = any, vr_dclass = any, vr_typ = any
-    dim as integer op = any
+	dim as IRVREG ptr v1 = any, v2 = any, vr = any
+	dim as integer v1_dtype = any, v1_dclass = any, v1_typ = any
+	dim as integer v2_dtype = any, v2_dclass = any, v2_typ = any
+	dim as integer vr_dtype = any, vr_dclass = any, vr_typ = any
+	dim as integer op = any
 
 	op = t->op
 	v1 = t->v1.reg.vreg
@@ -1265,7 +1305,7 @@ private sub hReuse _
 
 	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
 	hGetVREG( v2, v2_dtype, v2_dclass, v2_typ )
-    hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
+	hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
 
 	'' Allow operand reg to be re-used as result reg (to avoid allocating yet another reg)
 	'' but only if the dtype is similar (same size, same signedness),
@@ -1275,10 +1315,10 @@ private sub hReuse _
 	case AST_NODECLASS_UOP
 		if( vr <> v1 ) then
 			if( typeGetSizeType( vr_dtype ) = typeGetSizeType( v1_dtype ) ) then
-           		if( irGetDistance( v1 ) = IR_MAXDIST ) then
-           			hRename( vr, v1 )
-           		end if
-           	end if
+				if( irGetDistance( v1 ) = IR_MAXDIST ) then
+					hRename( vr, v1 )
+				end if
+			end if
 		end if
 
 	case AST_NODECLASS_BOP, AST_NODECLASS_COMP
@@ -1296,10 +1336,10 @@ private sub hReuse _
 		v1rename = FALSE
 		if( vr <> v1 ) then
 			if( typeGetSizeType( vr_dtype ) = typeGetSizeType( v1_dtype ) ) then
-           		if( irGetDistance( v1 ) = IR_MAXDIST ) then
-           			v1rename = TRUE
-           		end if
-           	end if
+				if( irGetDistance( v1 ) = IR_MAXDIST ) then
+					v1rename = TRUE
+				end if
+			end if
 		end if
 
 		v2rename = FALSE
@@ -1307,25 +1347,25 @@ private sub hReuse _
 			if( vr <> v2 ) then
 				if( typeGetSizeType( vr_dtype ) = typeGetSizeType( v2_dtype ) ) then
 					if( v2_typ <> IR_VREGTYPE_IMM ) then
-           				if( irGetDistance( v2 ) = IR_MAXDIST ) then
-           					v2rename = TRUE
-           				end if
-           			end if
-           		end if
+						if( irGetDistance( v2 ) = IR_MAXDIST ) then
+							v2rename = TRUE
+						end if
+					end if
+				end if
 			end if
 		end if
 
 		if( v1rename and v2rename ) then
 			if( irIsREG( v1 ) = FALSE ) then
-           		v1rename = FALSE
+				v1rename = FALSE
 			end if
 		end if
 
 		if( v1rename ) then
-           	hRename( vr, v1 )
+			hRename( vr, v1 )
 
 		elseif( v2rename ) then
-		 	swap t->v1, t->v2
+			swap t->v1, t->v2
 
 			hRename( vr, v2 )
 		end if
@@ -1336,9 +1376,9 @@ end sub
 
 '':::::
 private sub _flush static
-    dim as integer op
-    dim as IRTAC ptr t
-    dim as IRVREG ptr v1, v2, vr
+	dim as integer op
+	dim as IRTAC ptr t
+	dim as IRVREG ptr v1, v2, vr
 
 	if( ctx.taccnt = 0 ) then
 		exit sub
@@ -1357,8 +1397,9 @@ private sub _flush static
 
 		''
 		'hDump( op, v1, v2, vr )
+		'hDumpFreeIntRegs()
 
-        ''
+		''
 		select case as const astGetOpClass( op )
 		case AST_NODECLASS_UOP
 			hFlushUOP( op, v1, vr )
@@ -1367,7 +1408,9 @@ private sub _flush static
 			hFlushBOP( op, v1, v2, vr )
 
 		case AST_NODECLASS_COMP
-			hFlushCOMP( op, v1, v2, vr, t->ex1 )
+			'' t->ex1 = NULL or label
+			'' t->ex2 = 0 | IR_EMITOPT_REL_DOINVERSE
+			hFlushCOMP( op, v1, v2, vr, t->ex1, t->ex2 )
 
 		case AST_NODECLASS_ASSIGN
 			hFlushSTORE( op, v1, v2 )
@@ -1379,7 +1422,7 @@ private sub _flush static
 			hFlushCONVERT( op, v1, v2 )
 
 		case AST_NODECLASS_STACK
-			hFlushSTACK( op, v1, t->ex2 )
+			hFlushSTACK( op, v1, v2, t->ex2 )
 
 		case AST_NODECLASS_CALL
 			hFlushCALL( op, t->ex1, t->ex2, v1, vr )
@@ -1391,7 +1434,7 @@ private sub _flush static
 			hFlushADDR( op, v1, vr )
 
 		case AST_NODECLASS_MEM
-			hFlushMEM( op, v1, v2, t->ex2, t->ex1 )
+			hFlushMEM( op, v1, v2, t->ex2, t->ex3 )
 
 		case AST_NODECLASS_DBG
 			hFlushDBG( op, t->ex1, t->ex2, t->ex3 )
@@ -1421,8 +1464,8 @@ private sub _flush static
 	''
 	flistReset( @ctx.vregTB )
 
-    ''
-    hFreePreservedRegs( )
+	''
+	hFreePreservedRegs( )
 
 end sub
 
@@ -1453,7 +1496,7 @@ end sub
 
 '':::::
 private sub hFreePreservedRegs( ) static
-    dim as integer class_, reg
+	dim as integer class_, reg
 
 	'' for each reg class
 	for class_ = 0 to EMIT_REGCLASSES-1
@@ -1464,15 +1507,15 @@ private sub hFreePreservedRegs( ) static
 			'' if not free
 			if( regTB(class_)->isFree( regTB(class_), reg ) = FALSE ) then
 
-        		assert( emitIsRegPreserved( class_, reg ) )
+				assert( emitIsRegPreserved( class_, reg ) )
 
-        		'' free reg
-        		regTB(class_)->free( regTB(class_), reg )
+				'' free reg
+				regTB(class_)->free( regTB(class_), reg )
 
 			end if
 
-        	'' next reg
-        	reg = regTB(class_)->getNext( regTB(class_), reg )
+			'' next reg
+			reg = regTB(class_)->getNext( regTB(class_), reg )
 		loop
 
 	next
@@ -1583,26 +1626,26 @@ private sub hPreserveRegs( byval ptrvreg as IRVREG ptr = NULL )
 
 	'' for each reg class
 	for class_ as integer = 0 to EMIT_REGCLASSES-1
-    	'' set the register that shouldn't be preserved (used for CALLPTR only)
+		'' set the register that shouldn't be preserved (used for CALLPTR only)
 
-    	npreg = INVALID
-    	if( class_ = FB_DATACLASS_INTEGER ) then
-    		if( ptrvreg <> NULL ) then
+		npreg = INVALID
+		if( class_ = FB_DATACLASS_INTEGER ) then
+			if( ptrvreg <> NULL ) then
 
-    			select case ptrvreg->typ
-    			case IR_VREGTYPE_REG
-    				npreg = ptrvreg->reg
+				select case ptrvreg->typ
+				case IR_VREGTYPE_REG
+					npreg = ptrvreg->reg
 
-    			case IR_VREGTYPE_IDX, IR_VREGTYPE_PTR
-    				ptrvreg = ptrvreg->vidx
-    				if( ptrvreg <> NULL ) then
-    					npreg = ptrvreg->reg
-    				end if
-    			end select
+				case IR_VREGTYPE_IDX, IR_VREGTYPE_PTR
+					ptrvreg = ptrvreg->vidx
+					if( ptrvreg <> NULL ) then
+						npreg = ptrvreg->reg
+					end if
+				end select
 
-    			ptrvreg = NULL
-    		end if
-    	end if
+				ptrvreg = NULL
+			end if
+		end if
 
 		'' for each register on that class
 		reg = regTB(class_)->getFirst( regTB(class_) )
@@ -1717,6 +1760,7 @@ private sub hFlushSTACK _
 	( _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
+		byval vr as IRVREG ptr, _
 		byval ex as integer _
 	) static
 
@@ -1733,6 +1777,7 @@ private sub hFlushSTACK _
 	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
 
 	hLoadIDX( v1 )
+	hLoadIDX( vr )
 
 	'' load only if it's a reg (x86 assumption)
 	if( v1_typ = IR_VREGTYPE_REG ) then
@@ -1748,14 +1793,18 @@ private sub hFlushSTACK _
 	''
 	select case op
 	case AST_OP_PUSH
-		emitPUSH( v1 )
+		if( vr ) then
+			emitLOAD( vr, v1 )
+		else
+			emitPUSH( v1 )
+		end if
 	case AST_OP_PUSHUDT
 		emitPUSHUDT( v1, ex )
 	case AST_OP_POP
 		emitPOP( v1 )
 	end select
 
-    ''
+	''
 	hFreeREG( v1 )
 
 end sub
@@ -1782,8 +1831,8 @@ private sub hFlushUOP _
 	hLoadIDX( v1 )
 	hLoadIDX( vr )
 
-    ''
-    if ( vr <> NULL ) then
+	''
+	if ( vr <> NULL ) then
 		if( v1 <> vr ) then
 			'' handle longint
 			if( ISLONGINT( vr_dtype ) ) then
@@ -1868,14 +1917,14 @@ private sub hFlushUOP _
 
 	end select
 
-    ''
-    if ( vr <> NULL ) then
+	''
+	if ( vr <> NULL ) then
 		if( v1 <> vr ) then
 			emitMOV( vr, v1 )
 		end if
 	end if
 
-    ''
+	''
 	hFreeREG( v1 )
 	hFreeREG( vr )
 
@@ -1906,7 +1955,7 @@ private sub hFlushBOP _
 
 	'' BOP to self? (x86 assumption at AST)
 	if( vr = NULL ) then
-		if( v2_typ <> IR_VREGTYPE_IMM ) then		'' x86 assumption
+		if( v2_typ <> IR_VREGTYPE_IMM ) then        '' x86 assumption
 			'' handle longint
 			if( ISLONGINT( v2_dtype ) ) then
 				va = v2->vaux
@@ -1916,7 +1965,7 @@ private sub hFlushBOP _
 			regTB(v2_dclass)->ensure( regTB(v2_dclass), v2, NULL, typeGetSize( v2_dtype ) )
 		end if
 	else
-		if( v2_typ = IR_VREGTYPE_REG ) then			'' x86 assumption
+		if( v2_typ = IR_VREGTYPE_REG ) then         '' x86 assumption
 			'' handle longint
 			if( ISLONGINT( v2_dtype ) ) then
 				va = v2->vaux
@@ -1936,7 +1985,7 @@ private sub hFlushBOP _
 		regTB(v1_dclass)->ensure( regTB(v1_dclass), v1, NULL, typeGetSize( v1_dtype ) )
 	end if
 
-    ''
+	''
 	select case as const op
 	case AST_OP_ADD
 		emitADD( v1, v2 )
@@ -1945,9 +1994,9 @@ private sub hFlushBOP _
 	case AST_OP_MUL
 		emitMUL( v1, v2 )
 	case AST_OP_DIV
-        emitDIV( v1, v2 )
+		emitDIV( v1, v2 )
 	case AST_OP_INTDIV
-        emitINTDIV( v1, v2 )
+		emitINTDIV( v1, v2 )
 	case AST_OP_MOD
 		emitMOD( v1, v2 )
 
@@ -1968,12 +2017,12 @@ private sub hFlushBOP _
 		emitIMP( v1, v2 )
 
 	case AST_OP_ATAN2
-        emitATN2( v1, v2 )
-    case AST_OP_POW
-    	emitPOW( v1, v2 )
+		emitATN2( v1, v2 )
+	case AST_OP_POW
+		emitPOW( v1, v2 )
 	end select
 
-    '' not BOP to self?
+	'' not BOP to self?
 	if ( vr <> NULL ) then
 		'' result not equal destine? (can happen with DAG optimizations)
 		if( (v1 <> vr) ) then
@@ -1988,7 +2037,7 @@ private sub hFlushBOP _
 		end if
 	end if
 
-    ''
+	''
 	hFreeREG( v1 )
 	hFreeREG( v2 )
 	hFreeREG( vr )
@@ -2002,7 +2051,8 @@ private sub hFlushCOMP _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval label as FBSYMBOL ptr _
+		byval label as FBSYMBOL ptr, _
+		byval options as IR_EMITOPT _
 	) static
 
 	dim as string lname
@@ -2023,9 +2073,9 @@ private sub hFlushCOMP _
 
 	'' load source if it's a reg, or if result was not allocated
 	doload = FALSE
-	if( vr = NULL ) then							'' x86 assumption
-		if( v2_dclass = FB_DATACLASS_INTEGER ) then	'' /
-			if( v2_typ <> IR_VREGTYPE_IMM ) then	'' /
+	if( vr = NULL ) then                            '' x86 assumption
+		if( v2_dclass = FB_DATACLASS_INTEGER ) then '' /
+			if( v2_typ <> IR_VREGTYPE_IMM ) then    '' /
 				if( v1_dclass <> FB_DATACLASS_FPOINT ) then
 					doload = TRUE
 				end if
@@ -2046,9 +2096,9 @@ private sub hFlushCOMP _
 
 	'' destine allocation comes *after* source, 'cause the FPU stack
 	doload = FALSE
-	if( (vr <> NULL) and (vr = v1) ) then			'' x86 assumption
+	if( (vr <> NULL) and (vr = v1) ) then           '' x86 assumption
 		doload = TRUE
-	elseif( v1_dclass = FB_DATACLASS_FPOINT ) then	'' /
+	elseif( v1_dclass = FB_DATACLASS_FPOINT ) then  '' /
 		doload = TRUE
 	elseif( v1_typ = IR_VREGTYPE_IMM) then          '' /
 		doload = TRUE
@@ -2083,20 +2133,20 @@ private sub hFlushCOMP _
 	''
 	select case as const op
 	case AST_OP_EQ
-		emitEQ( vr, label, v1, v2 )
+		emitEQ( vr, label, v1, v2, options )
 	case AST_OP_NE
-		emitNE( vr, label, v1, v2 )
+		emitNE( vr, label, v1, v2, options )
 	case AST_OP_GT
-		emitGT( vr, label, v1, v2 )
+		emitGT( vr, label, v1, v2, options )
 	case AST_OP_LT
-		emitLT( vr, label, v1, v2 )
+		emitLT( vr, label, v1, v2, options )
 	case AST_OP_LE
-		emitLE( vr, label, v1, v2 )
+		emitLE( vr, label, v1, v2, options )
 	case AST_OP_GE
-		emitGE( vr, label, v1, v2 )
+		emitGE( vr, label, v1, v2, options )
 	end select
 
-    ''
+	''
 	hFreeREG( v1 )
 	hFreeREG( v2 )
 	if( vr <> NULL ) then
@@ -2156,7 +2206,7 @@ private sub hFlushSTORE _
 	hLoadIDX( v1 )
 	hLoadIDX( v2 )
 
-    '' if dst is a fpoint, only load src if its a reg (x86 assumption)
+	'' if dst is a fpoint, only load src if its a reg (x86 assumption)
 	if( (v2_typ = IR_VREGTYPE_REG) or _
 		((v2_typ <> IR_VREGTYPE_IMM) and (v1_dclass = FB_DATACLASS_INTEGER)) ) then
 		'' handle longint
@@ -2171,7 +2221,7 @@ private sub hFlushSTORE _
 	''
 	emitSTORE( v1, v2 )
 
-    ''
+	''
 	hFreeREG( v1 )
 	hFreeREG( v2 )
 
@@ -2243,9 +2293,9 @@ private sub hFlushLOAD _
 			emitLOAD( vr, v1 )
 
 			''
-			hFreeREG( vr )						'' assuming this is the last operation
+			hFreeREG( vr )                      '' assuming this is the last operation
 		end if
-    end select
+	end select
 
 	''
 	hFreeREG( v1 )
@@ -2272,8 +2322,8 @@ private sub hFlushCONVERT _
 	hLoadIDX( v1 )
 	hLoadIDX( v2 )
 
-    '' x86 assumption: if src is a reg and if classes are the same and
-    ''                 src won't be used (DAG?), reuse src
+	'' x86 assumption: if src is a reg and if classes are the same and
+	''                 src won't be used (DAG?), reuse src
 	reuse = FALSE
 	if( (v1_dclass = v2_dclass) and (v2_typ = IR_VREGTYPE_REG) ) then
 
@@ -2313,7 +2363,7 @@ private sub hFlushCONVERT _
 		v1->typ = IR_VREGTYPE_REG
 		regTB(v1_dclass)->setOwner( regTB(v1_dclass), v1->reg, v1, NULL )
 	else
-		if( v2_typ = IR_VREGTYPE_REG ) then			'' x86 assumption
+		if( v2_typ = IR_VREGTYPE_REG ) then         '' x86 assumption
 			'' handle longint
 			if( ISLONGINT( v2_dtype ) ) then
 				va = v2->vaux
@@ -2368,7 +2418,7 @@ private sub hFlushADDR _
 	hLoadIDX( vr )
 
 	''
-	if( v1_typ = IR_VREGTYPE_REG ) then				'' x86 assumption
+	if( v1_typ = IR_VREGTYPE_REG ) then             '' x86 assumption
 		regTB(v1_dclass)->ensure( regTB(v1_dclass), v1, NULL, typeGetSize( v1_dtype ) )
 	end if
 
@@ -2384,7 +2434,7 @@ private sub hFlushADDR _
 		emitDEREF( vr, v1 )
 	end select
 
-    ''
+	''
 	hFreeREG( v1 )
 	hFreeREG( vr )
 
@@ -2412,14 +2462,14 @@ private sub hFlushMEM _
 	case AST_OP_MEMSWAP
 		emitMEMSWAP( v1, v2, bytes )
 
-	case AST_OP_MEMCLEAR
-		emitMEMCLEAR( v1, v2 )
+	case AST_OP_MEMFILL
+		emitMEMFILL( v1, v2, bytes, cint(extra) )
 
 	case AST_OP_STKCLEAR
 		emitSTKCLEAR( bytes, cint( extra ) )
 	end select
 
-    ''
+	''
 	hFreeREG( v1 )
 	hFreeREG( v2 )
 
@@ -2477,10 +2527,10 @@ private sub hFreeIDX _
 	end if
 
 	vidx = vreg->vidx
-    if( vidx <> NULL ) then
-    	if( vidx->reg <> INVALID ) then
-    		hFreeREG( vidx, force )				'' recursively
-    		vreg->vidx = NULL
+	if( vidx <> NULL ) then
+		if( vidx->reg <> INVALID ) then
+			hFreeREG( vidx, force )             '' recursively
+			vreg->vidx = NULL
 		end if
 	end if
 
@@ -2503,7 +2553,7 @@ private sub hFreeREG _
 	'' free any attached index
 	hFreeIDX( vreg, force )
 
-    ''
+	''
 	if( vreg->typ <> IR_VREGTYPE_REG ) then
 		exit sub
 	end if
@@ -2540,9 +2590,9 @@ private function _GetDistance _
 		byval vreg as IRVREG ptr _
 	) as uinteger
 
-    dim as IRVREG ptr v
-    dim as IRTAC ptr t
-    dim as integer dist
+	dim as IRVREG ptr v
+	dim as IRTAC ptr t
+	dim as integer dist
 
 	if( vreg = NULL ) then
 		return IR_MAXDIST
@@ -2581,19 +2631,19 @@ private sub _loadVR _
 		'' Don't load aux vregs now - they'll be loaded when their
 		'' parent vreg is loaded
 		if( vauxparent = NULL ) then
-			rvreg.typ 	= IR_VREGTYPE_REG
+			rvreg.typ   = IR_VREGTYPE_REG
 			rvreg.dtype = vreg->dtype
-			rvreg.reg	= reg
-			rvreg.vaux	= vreg->vaux
+			rvreg.reg   = reg
+			rvreg.vaux  = vreg->vaux
 			rvreg.regFamily = vreg->regFamily
 			emitLOAD( @rvreg, vreg )
 		end if
 
-    	'' free any attached reg, forcing if needed
-    	hFreeIDX( vreg, TRUE )
+		'' free any attached reg, forcing if needed
+		hFreeIDX( vreg, TRUE )
 
-    	vreg->typ = IR_VREGTYPE_REG
-    end if
+		vreg->typ = IR_VREGTYPE_REG
+	end if
 
 	vreg->reg = reg
 
@@ -2669,11 +2719,11 @@ private sub _xchgTOS _
 		byval reg as integer _
 	) static
 
-    dim as IRVREG rvreg
+	dim as IRVREG rvreg
 
-	rvreg.typ 	= IR_VREGTYPE_REG
+	rvreg.typ   = IR_VREGTYPE_REG
 	rvreg.dtype = FB_DATATYPE_DOUBLE
-	rvreg.reg	= reg
+	rvreg.reg   = reg
 
 	emitXchgTOS( @rvreg )
 

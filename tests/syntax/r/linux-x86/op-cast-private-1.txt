@@ -1,0 +1,10 @@
+1 error for invalid return
+op-cast-private-1.bas(61) error 181: Invalid assignment/conversion in 'Return v'
+1 error for invalid return
+op-cast-private-1.bas(67) error 181: Invalid assignment/conversion in 'Function = v'
+1 error for invalid data type
+op-cast-private-1.bas(73) error 24: Invalid data types in 'Dim As TU u = v'
+1 error for invalid assignment
+op-cast-private-1.bas(76) error 181: Invalid assignment/conversion in 'u = v'
+1 error for type mismatch
+op-cast-private-1.bas(79) error 58: Type mismatch, at parameter 1 (u) of S() in 's(v)'

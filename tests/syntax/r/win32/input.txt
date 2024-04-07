@@ -1,0 +1,2392 @@
+input
+input.bas(21) error 14: Expected identifier in 't( 1, input       )'
+input ;
+input.bas(22) error 14: Expected identifier in 't( 1, input  ;    )'
+input 
+input.bas(23) error 14: Expected identifier, found ''' in 't( 1, input    '' )'
+input ; 
+input.bas(24) error 14: Expected identifier, found ''' in 't( 1, input  ; '' )'
+input ,
+input.bas(25) error 14: Expected identifier, found ',' in 't( 1, input   ,     )'
+input ;,
+input.bas(26) error 14: Expected identifier, found ',' in 't( 1, input  ;,     )'
+input , 
+input.bas(27) error 14: Expected identifier, found ',' in 't( 1, input   ,  '' )'
+input ;, 
+input.bas(28) error 14: Expected identifier, found ',' in 't( 1, input  ;,  '' )'
+input , 1
+input.bas(29) error 14: Expected identifier, found ',' in 't( 1, input   ,  1     )'
+input ;, 1
+input.bas(30) error 14: Expected identifier, found ',' in 't( 1, input  ;,  1     )'
+input , 1 
+input.bas(31) error 14: Expected identifier, found ',' in 't( 1, input   ,  1  '' )'
+input ;, 1 
+input.bas(32) error 14: Expected identifier, found ',' in 't( 1, input  ;,  1  '' )'
+input , 1 ,
+input.bas(33) error 14: Expected identifier, found ',' in 't( 1, input   ,  1 ,     )'
+input ;, 1 ,
+input.bas(34) error 14: Expected identifier, found ',' in 't( 1, input  ;,  1 ,     )'
+input , 1 , 
+input.bas(35) error 14: Expected identifier, found ',' in 't( 1, input   ,  1 ,  '' )'
+input ;, 1 , 
+input.bas(36) error 14: Expected identifier, found ',' in 't( 1, input  ;,  1 ,  '' )'
+input , 1 ;
+input.bas(37) error 14: Expected identifier, found ',' in 't( 1, input   ,  1 ;     )'
+input ;, 1 ;
+input.bas(38) error 14: Expected identifier, found ',' in 't( 1, input  ;,  1 ;     )'
+input , 1 ; 
+input.bas(39) error 14: Expected identifier, found ',' in 't( 1, input   ,  1 ;  '' )'
+input ;, 1 ; 
+input.bas(40) error 14: Expected identifier, found ',' in 't( 1, input  ;,  1 ;  '' )'
+input , 1 ,,
+input.bas(41) error 14: Expected identifier, found ',' in 't( 1, input   ,  1 ,,    )'
+input ;, 1 ,,
+input.bas(42) error 14: Expected identifier, found ',' in 't( 1, input  ;,  1 ,,    )'
+input , 1 ,, 
+input.bas(43) error 14: Expected identifier, found ',' in 't( 1, input   ,  1 ,, '' )'
+input ;, 1 ,, 
+input.bas(44) error 14: Expected identifier, found ',' in 't( 1, input  ;,  1 ,, '' )'
+input , 1 ,;
+input.bas(45) error 14: Expected identifier, found ',' in 't( 1, input   ,  1 ,;    )'
+input ;, 1 ,;
+input.bas(46) error 14: Expected identifier, found ',' in 't( 1, input  ;,  1 ,;    )'
+input , 1 ,; 
+input.bas(47) error 14: Expected identifier, found ',' in 't( 1, input   ,  1 ,; '' )'
+input ;, 1 ,; 
+input.bas(48) error 14: Expected identifier, found ',' in 't( 1, input  ;,  1 ,; '' )'
+input , 1 ;,
+input.bas(49) error 14: Expected identifier, found ',' in 't( 1, input   ,  1 ;,    )'
+input ;, 1 ;,
+input.bas(50) error 14: Expected identifier, found ',' in 't( 1, input  ;,  1 ;,    )'
+input , 1 ;, 
+input.bas(51) error 14: Expected identifier, found ',' in 't( 1, input   ,  1 ;, '' )'
+input ;, 1 ;, 
+input.bas(52) error 14: Expected identifier, found ',' in 't( 1, input  ;,  1 ;, '' )'
+input , 1 ;;
+input.bas(53) error 14: Expected identifier, found ',' in 't( 1, input   ,  1 ;;    )'
+input ;, 1 ;;
+input.bas(54) error 14: Expected identifier, found ',' in 't( 1, input  ;,  1 ;;    )'
+input , 1 ;; 
+input.bas(55) error 14: Expected identifier, found ',' in 't( 1, input   ,  1 ;; '' )'
+input ;, 1 ;; 
+input.bas(56) error 14: Expected identifier, found ',' in 't( 1, input  ;,  1 ;; '' )'
+input , a
+input.bas(57) error 14: Expected identifier, found ',' in 't( 1, input   ,  a     )'
+input ;, a
+input.bas(58) error 14: Expected identifier, found ',' in 't( 1, input  ;,  a     )'
+input , a 
+input.bas(59) error 14: Expected identifier, found ',' in 't( 1, input   ,  a  '' )'
+input ;, a 
+input.bas(60) error 14: Expected identifier, found ',' in 't( 1, input  ;,  a  '' )'
+input , a ,
+input.bas(61) error 14: Expected identifier, found ',' in 't( 1, input   ,  a ,     )'
+input ;, a ,
+input.bas(62) error 14: Expected identifier, found ',' in 't( 1, input  ;,  a ,     )'
+input , a , 
+input.bas(63) error 14: Expected identifier, found ',' in 't( 1, input   ,  a ,  '' )'
+input ;, a , 
+input.bas(64) error 14: Expected identifier, found ',' in 't( 1, input  ;,  a ,  '' )'
+input , a ;
+input.bas(65) error 14: Expected identifier, found ',' in 't( 1, input   ,  a ;     )'
+input ;, a ;
+input.bas(66) error 14: Expected identifier, found ',' in 't( 1, input  ;,  a ;     )'
+input , a ; 
+input.bas(67) error 14: Expected identifier, found ',' in 't( 1, input   ,  a ;  '' )'
+input ;, a ; 
+input.bas(68) error 14: Expected identifier, found ',' in 't( 1, input  ;,  a ;  '' )'
+input , a ,,
+input.bas(69) error 14: Expected identifier, found ',' in 't( 1, input   ,  a ,,    )'
+input ;, a ,,
+input.bas(70) error 14: Expected identifier, found ',' in 't( 1, input  ;,  a ,,    )'
+input , a ,, 
+input.bas(71) error 14: Expected identifier, found ',' in 't( 1, input   ,  a ,, '' )'
+input ;, a ,, 
+input.bas(72) error 14: Expected identifier, found ',' in 't( 1, input  ;,  a ,, '' )'
+input , a ,;
+input.bas(73) error 14: Expected identifier, found ',' in 't( 1, input   ,  a ,;    )'
+input ;, a ,;
+input.bas(74) error 14: Expected identifier, found ',' in 't( 1, input  ;,  a ,;    )'
+input , a ,; 
+input.bas(75) error 14: Expected identifier, found ',' in 't( 1, input   ,  a ,; '' )'
+input ;, a ,; 
+input.bas(76) error 14: Expected identifier, found ',' in 't( 1, input  ;,  a ,; '' )'
+input , a ;,
+input.bas(77) error 14: Expected identifier, found ',' in 't( 1, input   ,  a ;,    )'
+input ;, a ;,
+input.bas(78) error 14: Expected identifier, found ',' in 't( 1, input  ;,  a ;,    )'
+input , a ;, 
+input.bas(79) error 14: Expected identifier, found ',' in 't( 1, input   ,  a ;, '' )'
+input ;, a ;, 
+input.bas(80) error 14: Expected identifier, found ',' in 't( 1, input  ;,  a ;, '' )'
+input , a ;;
+input.bas(81) error 14: Expected identifier, found ',' in 't( 1, input   ,  a ;;    )'
+input ;, a ;;
+input.bas(82) error 14: Expected identifier, found ',' in 't( 1, input  ;,  a ;;    )'
+input , a ;; 
+input.bas(83) error 14: Expected identifier, found ',' in 't( 1, input   ,  a ;; '' )'
+input ;, a ;; 
+input.bas(84) error 14: Expected identifier, found ',' in 't( 1, input  ;,  a ;; '' )'
+input , "T"
+input.bas(85) error 14: Expected identifier, found ',' in 't( 1, input   , "T"    )'
+input ;, "T"
+input.bas(86) error 14: Expected identifier, found ',' in 't( 1, input  ;, "T"    )'
+input , "T" 
+input.bas(87) error 14: Expected identifier, found ',' in 't( 1, input   , "T" '' )'
+input ;, "T" 
+input.bas(88) error 14: Expected identifier, found ',' in 't( 1, input  ;, "T" '' )'
+input , "T",
+input.bas(89) error 14: Expected identifier, found ',' in 't( 1, input   , "T",     )'
+input ;, "T",
+input.bas(90) error 14: Expected identifier, found ',' in 't( 1, input  ;, "T",     )'
+input , "T", 
+input.bas(91) error 14: Expected identifier, found ',' in 't( 1, input   , "T",  '' )'
+input ;, "T", 
+input.bas(92) error 14: Expected identifier, found ',' in 't( 1, input  ;, "T",  '' )'
+input , "T";
+input.bas(93) error 14: Expected identifier, found ',' in 't( 1, input   , "T";     )'
+input ;, "T";
+input.bas(94) error 14: Expected identifier, found ',' in 't( 1, input  ;, "T";     )'
+input , "T"; 
+input.bas(95) error 14: Expected identifier, found ',' in 't( 1, input   , "T";  '' )'
+input ;, "T"; 
+input.bas(96) error 14: Expected identifier, found ',' in 't( 1, input  ;, "T";  '' )'
+input , "T",,
+input.bas(97) error 14: Expected identifier, found ',' in 't( 1, input   , "T",,    )'
+input ;, "T",,
+input.bas(98) error 14: Expected identifier, found ',' in 't( 1, input  ;, "T",,    )'
+input , "T",, 
+input.bas(99) error 14: Expected identifier, found ',' in 't( 1, input   , "T",, '' )'
+input ;, "T",, 
+input.bas(100) error 14: Expected identifier, found ',' in 't( 1, input  ;, "T",, '' )'
+input , "T",;
+input.bas(101) error 14: Expected identifier, found ',' in 't( 1, input   , "T",;    )'
+input ;, "T",;
+input.bas(102) error 14: Expected identifier, found ',' in 't( 1, input  ;, "T",;    )'
+input , "T",; 
+input.bas(103) error 14: Expected identifier, found ',' in 't( 1, input   , "T",; '' )'
+input ;, "T",; 
+input.bas(104) error 14: Expected identifier, found ',' in 't( 1, input  ;, "T",; '' )'
+input , "T";,
+input.bas(105) error 14: Expected identifier, found ',' in 't( 1, input   , "T";,    )'
+input ;, "T";,
+input.bas(106) error 14: Expected identifier, found ',' in 't( 1, input  ;, "T";,    )'
+input , "T";, 
+input.bas(107) error 14: Expected identifier, found ',' in 't( 1, input   , "T";, '' )'
+input ;, "T";, 
+input.bas(108) error 14: Expected identifier, found ',' in 't( 1, input  ;, "T";, '' )'
+input , "T";;
+input.bas(109) error 14: Expected identifier, found ',' in 't( 1, input   , "T";;    )'
+input ;, "T";;
+input.bas(110) error 14: Expected identifier, found ',' in 't( 1, input  ;, "T";;    )'
+input , "T";; 
+input.bas(111) error 14: Expected identifier, found ',' in 't( 1, input   , "T";; '' )'
+input ;, "T";; 
+input.bas(112) error 14: Expected identifier, found ',' in 't( 1, input  ;, "T";; '' )'
+input , b
+input.bas(113) error 14: Expected identifier, found ',' in 't( 1, input   ,  b     )'
+input ;, b
+input.bas(114) error 14: Expected identifier, found ',' in 't( 1, input  ;,  b     )'
+input , b 
+input.bas(115) error 14: Expected identifier, found ',' in 't( 1, input   ,  b  '' )'
+input ;, b 
+input.bas(116) error 14: Expected identifier, found ',' in 't( 1, input  ;,  b  '' )'
+input , b ,
+input.bas(117) error 14: Expected identifier, found ',' in 't( 1, input   ,  b ,     )'
+input ;, b ,
+input.bas(118) error 14: Expected identifier, found ',' in 't( 1, input  ;,  b ,     )'
+input , b , 
+input.bas(119) error 14: Expected identifier, found ',' in 't( 1, input   ,  b ,  '' )'
+input ;, b , 
+input.bas(120) error 14: Expected identifier, found ',' in 't( 1, input  ;,  b ,  '' )'
+input , b ;
+input.bas(121) error 14: Expected identifier, found ',' in 't( 1, input   ,  b ;     )'
+input ;, b ;
+input.bas(122) error 14: Expected identifier, found ',' in 't( 1, input  ;,  b ;     )'
+input , b ; 
+input.bas(123) error 14: Expected identifier, found ',' in 't( 1, input   ,  b ;  '' )'
+input ;, b ; 
+input.bas(124) error 14: Expected identifier, found ',' in 't( 1, input  ;,  b ;  '' )'
+input , b ,,
+input.bas(125) error 14: Expected identifier, found ',' in 't( 1, input   ,  b ,,    )'
+input ;, b ,,
+input.bas(126) error 14: Expected identifier, found ',' in 't( 1, input  ;,  b ,,    )'
+input , b ,, 
+input.bas(127) error 14: Expected identifier, found ',' in 't( 1, input   ,  b ,, '' )'
+input ;, b ,, 
+input.bas(128) error 14: Expected identifier, found ',' in 't( 1, input  ;,  b ,, '' )'
+input , b ,;
+input.bas(129) error 14: Expected identifier, found ',' in 't( 1, input   ,  b ,;    )'
+input ;, b ,;
+input.bas(130) error 14: Expected identifier, found ',' in 't( 1, input  ;,  b ,;    )'
+input , b ,; 
+input.bas(131) error 14: Expected identifier, found ',' in 't( 1, input   ,  b ,; '' )'
+input ;, b ,; 
+input.bas(132) error 14: Expected identifier, found ',' in 't( 1, input  ;,  b ,; '' )'
+input , b ;,
+input.bas(133) error 14: Expected identifier, found ',' in 't( 1, input   ,  b ;,    )'
+input ;, b ;,
+input.bas(134) error 14: Expected identifier, found ',' in 't( 1, input  ;,  b ;,    )'
+input , b ;, 
+input.bas(135) error 14: Expected identifier, found ',' in 't( 1, input   ,  b ;, '' )'
+input ;, b ;, 
+input.bas(136) error 14: Expected identifier, found ',' in 't( 1, input  ;,  b ;, '' )'
+input , b ;;
+input.bas(137) error 14: Expected identifier, found ',' in 't( 1, input   ,  b ;;    )'
+input ;, b ;;
+input.bas(138) error 14: Expected identifier, found ',' in 't( 1, input  ;,  b ;;    )'
+input , b ;; 
+input.bas(139) error 14: Expected identifier, found ',' in 't( 1, input   ,  b ;; '' )'
+input ;, b ;; 
+input.bas(140) error 14: Expected identifier, found ',' in 't( 1, input  ;,  b ;; '' )'
+input ;
+input.bas(141) error 14: Expected identifier in 't( 1, input   ;     )'
+input ;;
+input.bas(142) error 14: Expected identifier, found ';' in 't( 1, input  ;;     )'
+input ; 
+input.bas(143) error 14: Expected identifier, found ''' in 't( 1, input   ;  '' )'
+input ;; 
+input.bas(144) error 14: Expected identifier, found ';' in 't( 1, input  ;;  '' )'
+input ; 1
+input.bas(145) error 24: Invalid data types in 't( 1, input   ;  1     )'
+input ;; 1
+input.bas(146) error 14: Expected identifier, found ';' in 't( 1, input  ;;  1     )'
+input ; 1 
+input.bas(147) error 24: Invalid data types, found ''' in 't( 1, input   ;  1  '' )'
+input ;; 1 
+input.bas(148) error 14: Expected identifier, found ';' in 't( 1, input  ;;  1  '' )'
+input ; 1 ,
+input.bas(149) error 24: Invalid data types, found ',' in 't( 1, input   ;  1 ,     )'
+input ;; 1 ,
+input.bas(150) error 14: Expected identifier, found ';' in 't( 1, input  ;;  1 ,     )'
+input ; 1 , 
+input.bas(151) error 24: Invalid data types, found ',' in 't( 1, input   ;  1 ,  '' )'
+input ;; 1 , 
+input.bas(152) error 14: Expected identifier, found ';' in 't( 1, input  ;;  1 ,  '' )'
+input ; 1 ;
+input.bas(153) error 24: Invalid data types, found ';' in 't( 1, input   ;  1 ;     )'
+input ;; 1 ;
+input.bas(154) error 14: Expected identifier, found ';' in 't( 1, input  ;;  1 ;     )'
+input ; 1 ; 
+input.bas(155) error 24: Invalid data types, found ';' in 't( 1, input   ;  1 ;  '' )'
+input ;; 1 ; 
+input.bas(156) error 14: Expected identifier, found ';' in 't( 1, input  ;;  1 ;  '' )'
+input ; 1 ,,
+input.bas(157) error 24: Invalid data types, found ',' in 't( 1, input   ;  1 ,,    )'
+input ;; 1 ,,
+input.bas(158) error 14: Expected identifier, found ';' in 't( 1, input  ;;  1 ,,    )'
+input ; 1 ,, 
+input.bas(159) error 24: Invalid data types, found ',' in 't( 1, input   ;  1 ,, '' )'
+input ;; 1 ,, 
+input.bas(160) error 14: Expected identifier, found ';' in 't( 1, input  ;;  1 ,, '' )'
+input ; 1 ,;
+input.bas(161) error 24: Invalid data types, found ',' in 't( 1, input   ;  1 ,;    )'
+input ;; 1 ,;
+input.bas(162) error 14: Expected identifier, found ';' in 't( 1, input  ;;  1 ,;    )'
+input ; 1 ,; 
+input.bas(163) error 24: Invalid data types, found ',' in 't( 1, input   ;  1 ,; '' )'
+input ;; 1 ,; 
+input.bas(164) error 14: Expected identifier, found ';' in 't( 1, input  ;;  1 ,; '' )'
+input ; 1 ;,
+input.bas(165) error 24: Invalid data types, found ';' in 't( 1, input   ;  1 ;,    )'
+input ;; 1 ;,
+input.bas(166) error 14: Expected identifier, found ';' in 't( 1, input  ;;  1 ;,    )'
+input ; 1 ;, 
+input.bas(167) error 24: Invalid data types, found ';' in 't( 1, input   ;  1 ;, '' )'
+input ;; 1 ;, 
+input.bas(168) error 14: Expected identifier, found ';' in 't( 1, input  ;;  1 ;, '' )'
+input ; 1 ;;
+input.bas(169) error 24: Invalid data types, found ';' in 't( 1, input   ;  1 ;;    )'
+input ;; 1 ;;
+input.bas(170) error 14: Expected identifier, found ';' in 't( 1, input  ;;  1 ;;    )'
+input ; 1 ;; 
+input.bas(171) error 24: Invalid data types, found ';' in 't( 1, input   ;  1 ;; '' )'
+input ;; 1 ;; 
+input.bas(172) error 14: Expected identifier, found ';' in 't( 1, input  ;;  1 ;; '' )'
+input ; a
+OK
+input ;; a
+input.bas(174) error 14: Expected identifier, found ';' in 't( 1, input  ;;  a     )'
+input ; a 
+OK
+input ;; a 
+input.bas(176) error 14: Expected identifier, found ';' in 't( 1, input  ;;  a  '' )'
+input ; a ,
+input.bas(177) error 14: Expected identifier in 't( 1, input   ;  a ,     )'
+input ;; a ,
+input.bas(178) error 14: Expected identifier, found ';' in 't( 1, input  ;;  a ,     )'
+input ; a , 
+input.bas(179) error 14: Expected identifier, found ''' in 't( 1, input   ;  a ,  '' )'
+input ;; a , 
+input.bas(180) error 14: Expected identifier, found ';' in 't( 1, input  ;;  a ,  '' )'
+input ; a ;
+input.bas(181) error 3: Expected End-of-Line, found ';' in 't( 1, input   ;  a ;     )'
+input ;; a ;
+input.bas(182) error 14: Expected identifier, found ';' in 't( 1, input  ;;  a ;     )'
+input ; a ; 
+input.bas(183) error 3: Expected End-of-Line, found ';' in 't( 1, input   ;  a ;  '' )'
+input ;; a ; 
+input.bas(184) error 14: Expected identifier, found ';' in 't( 1, input  ;;  a ;  '' )'
+input ; a ,,
+input.bas(185) error 14: Expected identifier, found ',' in 't( 1, input   ;  a ,,    )'
+input ;; a ,,
+input.bas(186) error 14: Expected identifier, found ';' in 't( 1, input  ;;  a ,,    )'
+input ; a ,, 
+input.bas(187) error 14: Expected identifier, found ',' in 't( 1, input   ;  a ,, '' )'
+input ;; a ,, 
+input.bas(188) error 14: Expected identifier, found ';' in 't( 1, input  ;;  a ,, '' )'
+input ; a ,;
+input.bas(189) error 14: Expected identifier, found ';' in 't( 1, input   ;  a ,;    )'
+input ;; a ,;
+input.bas(190) error 14: Expected identifier, found ';' in 't( 1, input  ;;  a ,;    )'
+input ; a ,; 
+input.bas(191) error 14: Expected identifier, found ';' in 't( 1, input   ;  a ,; '' )'
+input ;; a ,; 
+input.bas(192) error 14: Expected identifier, found ';' in 't( 1, input  ;;  a ,; '' )'
+input ; a ;,
+input.bas(193) error 3: Expected End-of-Line, found ';' in 't( 1, input   ;  a ;,    )'
+input ;; a ;,
+input.bas(194) error 14: Expected identifier, found ';' in 't( 1, input  ;;  a ;,    )'
+input ; a ;, 
+input.bas(195) error 3: Expected End-of-Line, found ';' in 't( 1, input   ;  a ;, '' )'
+input ;; a ;, 
+input.bas(196) error 14: Expected identifier, found ';' in 't( 1, input  ;;  a ;, '' )'
+input ; a ;;
+input.bas(197) error 3: Expected End-of-Line, found ';' in 't( 1, input   ;  a ;;    )'
+input ;; a ;;
+input.bas(198) error 14: Expected identifier, found ';' in 't( 1, input  ;;  a ;;    )'
+input ; a ;; 
+input.bas(199) error 3: Expected End-of-Line, found ';' in 't( 1, input   ;  a ;; '' )'
+input ;; a ;; 
+input.bas(200) error 14: Expected identifier, found ';' in 't( 1, input  ;;  a ;; '' )'
+input ; "T"
+input.bas(201) error 326: Expected ',' or ';' in 't( 1, input   ; "T"    )'
+input ;; "T"
+input.bas(202) error 14: Expected identifier, found ';' in 't( 1, input  ;; "T"    )'
+input ; "T" 
+input.bas(203) error 326: Expected ',' or ';', found ''' in 't( 1, input   ; "T" '' )'
+input ;; "T" 
+input.bas(204) error 14: Expected identifier, found ';' in 't( 1, input  ;; "T" '' )'
+input ; "T",
+input.bas(205) error 14: Expected identifier in 't( 1, input   ; "T",     )'
+input ;; "T",
+input.bas(206) error 14: Expected identifier, found ';' in 't( 1, input  ;; "T",     )'
+input ; "T", 
+input.bas(207) error 14: Expected identifier, found ''' in 't( 1, input   ; "T",  '' )'
+input ;; "T", 
+input.bas(208) error 14: Expected identifier, found ';' in 't( 1, input  ;; "T",  '' )'
+input ; "T";
+input.bas(209) error 14: Expected identifier in 't( 1, input   ; "T";     )'
+input ;; "T";
+input.bas(210) error 14: Expected identifier, found ';' in 't( 1, input  ;; "T";     )'
+input ; "T"; 
+input.bas(211) error 14: Expected identifier, found ''' in 't( 1, input   ; "T";  '' )'
+input ;; "T"; 
+input.bas(212) error 14: Expected identifier, found ';' in 't( 1, input  ;; "T";  '' )'
+input ; "T",,
+input.bas(213) error 14: Expected identifier, found ',' in 't( 1, input   ; "T",,    )'
+input ;; "T",,
+input.bas(214) error 14: Expected identifier, found ';' in 't( 1, input  ;; "T",,    )'
+input ; "T",, 
+input.bas(215) error 14: Expected identifier, found ',' in 't( 1, input   ; "T",, '' )'
+input ;; "T",, 
+input.bas(216) error 14: Expected identifier, found ';' in 't( 1, input  ;; "T",, '' )'
+input ; "T",;
+input.bas(217) error 14: Expected identifier, found ';' in 't( 1, input   ; "T",;    )'
+input ;; "T",;
+input.bas(218) error 14: Expected identifier, found ';' in 't( 1, input  ;; "T",;    )'
+input ; "T",; 
+input.bas(219) error 14: Expected identifier, found ';' in 't( 1, input   ; "T",; '' )'
+input ;; "T",; 
+input.bas(220) error 14: Expected identifier, found ';' in 't( 1, input  ;; "T",; '' )'
+input ; "T";,
+input.bas(221) error 14: Expected identifier, found ',' in 't( 1, input   ; "T";,    )'
+input ;; "T";,
+input.bas(222) error 14: Expected identifier, found ';' in 't( 1, input  ;; "T";,    )'
+input ; "T";, 
+input.bas(223) error 14: Expected identifier, found ',' in 't( 1, input   ; "T";, '' )'
+input ;; "T";, 
+input.bas(224) error 14: Expected identifier, found ';' in 't( 1, input  ;; "T";, '' )'
+input ; "T";;
+input.bas(225) error 14: Expected identifier, found ';' in 't( 1, input   ; "T";;    )'
+input ;; "T";;
+input.bas(226) error 14: Expected identifier, found ';' in 't( 1, input  ;; "T";;    )'
+input ; "T";; 
+input.bas(227) error 14: Expected identifier, found ';' in 't( 1, input   ; "T";; '' )'
+input ;; "T";; 
+input.bas(228) error 14: Expected identifier, found ';' in 't( 1, input  ;; "T";; '' )'
+input ; b
+OK
+input ;; b
+input.bas(230) error 14: Expected identifier, found ';' in 't( 1, input  ;;  b     )'
+input ; b 
+OK
+input ;; b 
+input.bas(232) error 14: Expected identifier, found ';' in 't( 1, input  ;;  b  '' )'
+input ; b ,
+input.bas(233) error 14: Expected identifier in 't( 1, input   ;  b ,     )'
+input ;; b ,
+input.bas(234) error 14: Expected identifier, found ';' in 't( 1, input  ;;  b ,     )'
+input ; b , 
+input.bas(235) error 14: Expected identifier, found ''' in 't( 1, input   ;  b ,  '' )'
+input ;; b , 
+input.bas(236) error 14: Expected identifier, found ';' in 't( 1, input  ;;  b ,  '' )'
+input ; b ;
+input.bas(237) error 3: Expected End-of-Line, found ';' in 't( 1, input   ;  b ;     )'
+input ;; b ;
+input.bas(238) error 14: Expected identifier, found ';' in 't( 1, input  ;;  b ;     )'
+input ; b ; 
+input.bas(239) error 3: Expected End-of-Line, found ';' in 't( 1, input   ;  b ;  '' )'
+input ;; b ; 
+input.bas(240) error 14: Expected identifier, found ';' in 't( 1, input  ;;  b ;  '' )'
+input ; b ,,
+input.bas(241) error 14: Expected identifier, found ',' in 't( 1, input   ;  b ,,    )'
+input ;; b ,,
+input.bas(242) error 14: Expected identifier, found ';' in 't( 1, input  ;;  b ,,    )'
+input ; b ,, 
+input.bas(243) error 14: Expected identifier, found ',' in 't( 1, input   ;  b ,, '' )'
+input ;; b ,, 
+input.bas(244) error 14: Expected identifier, found ';' in 't( 1, input  ;;  b ,, '' )'
+input ; b ,;
+input.bas(245) error 14: Expected identifier, found ';' in 't( 1, input   ;  b ,;    )'
+input ;; b ,;
+input.bas(246) error 14: Expected identifier, found ';' in 't( 1, input  ;;  b ,;    )'
+input ; b ,; 
+input.bas(247) error 14: Expected identifier, found ';' in 't( 1, input   ;  b ,; '' )'
+input ;; b ,; 
+input.bas(248) error 14: Expected identifier, found ';' in 't( 1, input  ;;  b ,; '' )'
+input ; b ;,
+input.bas(249) error 3: Expected End-of-Line, found ';' in 't( 1, input   ;  b ;,    )'
+input ;; b ;,
+input.bas(250) error 14: Expected identifier, found ';' in 't( 1, input  ;;  b ;,    )'
+input ; b ;, 
+input.bas(251) error 3: Expected End-of-Line, found ';' in 't( 1, input   ;  b ;, '' )'
+input ;; b ;, 
+input.bas(252) error 14: Expected identifier, found ';' in 't( 1, input  ;;  b ;, '' )'
+input ; b ;;
+input.bas(253) error 3: Expected End-of-Line, found ';' in 't( 1, input   ;  b ;;    )'
+input ;; b ;;
+input.bas(254) error 14: Expected identifier, found ';' in 't( 1, input  ;;  b ;;    )'
+input ; b ;; 
+input.bas(255) error 3: Expected End-of-Line, found ';' in 't( 1, input   ;  b ;; '' )'
+input ;; b ;; 
+input.bas(256) error 14: Expected identifier, found ';' in 't( 1, input  ;;  b ;; '' )'
+input ,,
+input.bas(257) error 14: Expected identifier, found ',' in 't( 1, input   ,,    )'
+input ;,,
+input.bas(258) error 14: Expected identifier, found ',' in 't( 1, input  ;,,    )'
+input ,, 
+input.bas(259) error 14: Expected identifier, found ',' in 't( 1, input   ,, '' )'
+input ;,, 
+input.bas(260) error 14: Expected identifier, found ',' in 't( 1, input  ;,, '' )'
+input ,, 1
+input.bas(261) error 14: Expected identifier, found ',' in 't( 1, input   ,, 1     )'
+input ;,, 1
+input.bas(262) error 14: Expected identifier, found ',' in 't( 1, input  ;,, 1     )'
+input ,, 1 
+input.bas(263) error 14: Expected identifier, found ',' in 't( 1, input   ,, 1  '' )'
+input ;,, 1 
+input.bas(264) error 14: Expected identifier, found ',' in 't( 1, input  ;,, 1  '' )'
+input ,, 1 ,
+input.bas(265) error 14: Expected identifier, found ',' in 't( 1, input   ,, 1 ,     )'
+input ;,, 1 ,
+input.bas(266) error 14: Expected identifier, found ',' in 't( 1, input  ;,, 1 ,     )'
+input ,, 1 , 
+input.bas(267) error 14: Expected identifier, found ',' in 't( 1, input   ,, 1 ,  '' )'
+input ;,, 1 , 
+input.bas(268) error 14: Expected identifier, found ',' in 't( 1, input  ;,, 1 ,  '' )'
+input ,, 1 ;
+input.bas(269) error 14: Expected identifier, found ',' in 't( 1, input   ,, 1 ;     )'
+input ;,, 1 ;
+input.bas(270) error 14: Expected identifier, found ',' in 't( 1, input  ;,, 1 ;     )'
+input ,, 1 ; 
+input.bas(271) error 14: Expected identifier, found ',' in 't( 1, input   ,, 1 ;  '' )'
+input ;,, 1 ; 
+input.bas(272) error 14: Expected identifier, found ',' in 't( 1, input  ;,, 1 ;  '' )'
+input ,, 1 ,,
+input.bas(273) error 14: Expected identifier, found ',' in 't( 1, input   ,, 1 ,,    )'
+input ;,, 1 ,,
+input.bas(274) error 14: Expected identifier, found ',' in 't( 1, input  ;,, 1 ,,    )'
+input ,, 1 ,, 
+input.bas(275) error 14: Expected identifier, found ',' in 't( 1, input   ,, 1 ,, '' )'
+input ;,, 1 ,, 
+input.bas(276) error 14: Expected identifier, found ',' in 't( 1, input  ;,, 1 ,, '' )'
+input ,, 1 ,;
+input.bas(277) error 14: Expected identifier, found ',' in 't( 1, input   ,, 1 ,;    )'
+input ;,, 1 ,;
+input.bas(278) error 14: Expected identifier, found ',' in 't( 1, input  ;,, 1 ,;    )'
+input ,, 1 ,; 
+input.bas(279) error 14: Expected identifier, found ',' in 't( 1, input   ,, 1 ,; '' )'
+input ;,, 1 ,; 
+input.bas(280) error 14: Expected identifier, found ',' in 't( 1, input  ;,, 1 ,; '' )'
+input ,, 1 ;,
+input.bas(281) error 14: Expected identifier, found ',' in 't( 1, input   ,, 1 ;,    )'
+input ;,, 1 ;,
+input.bas(282) error 14: Expected identifier, found ',' in 't( 1, input  ;,, 1 ;,    )'
+input ,, 1 ;, 
+input.bas(283) error 14: Expected identifier, found ',' in 't( 1, input   ,, 1 ;, '' )'
+input ;,, 1 ;, 
+input.bas(284) error 14: Expected identifier, found ',' in 't( 1, input  ;,, 1 ;, '' )'
+input ,, 1 ;;
+input.bas(285) error 14: Expected identifier, found ',' in 't( 1, input   ,, 1 ;;    )'
+input ;,, 1 ;;
+input.bas(286) error 14: Expected identifier, found ',' in 't( 1, input  ;,, 1 ;;    )'
+input ,, 1 ;; 
+input.bas(287) error 14: Expected identifier, found ',' in 't( 1, input   ,, 1 ;; '' )'
+input ;,, 1 ;; 
+input.bas(288) error 14: Expected identifier, found ',' in 't( 1, input  ;,, 1 ;; '' )'
+input ,, a
+input.bas(289) error 14: Expected identifier, found ',' in 't( 1, input   ,, a     )'
+input ;,, a
+input.bas(290) error 14: Expected identifier, found ',' in 't( 1, input  ;,, a     )'
+input ,, a 
+input.bas(291) error 14: Expected identifier, found ',' in 't( 1, input   ,, a  '' )'
+input ;,, a 
+input.bas(292) error 14: Expected identifier, found ',' in 't( 1, input  ;,, a  '' )'
+input ,, a ,
+input.bas(293) error 14: Expected identifier, found ',' in 't( 1, input   ,, a ,     )'
+input ;,, a ,
+input.bas(294) error 14: Expected identifier, found ',' in 't( 1, input  ;,, a ,     )'
+input ,, a , 
+input.bas(295) error 14: Expected identifier, found ',' in 't( 1, input   ,, a ,  '' )'
+input ;,, a , 
+input.bas(296) error 14: Expected identifier, found ',' in 't( 1, input  ;,, a ,  '' )'
+input ,, a ;
+input.bas(297) error 14: Expected identifier, found ',' in 't( 1, input   ,, a ;     )'
+input ;,, a ;
+input.bas(298) error 14: Expected identifier, found ',' in 't( 1, input  ;,, a ;     )'
+input ,, a ; 
+input.bas(299) error 14: Expected identifier, found ',' in 't( 1, input   ,, a ;  '' )'
+input ;,, a ; 
+input.bas(300) error 14: Expected identifier, found ',' in 't( 1, input  ;,, a ;  '' )'
+input ,, a ,,
+input.bas(301) error 14: Expected identifier, found ',' in 't( 1, input   ,, a ,,    )'
+input ;,, a ,,
+input.bas(302) error 14: Expected identifier, found ',' in 't( 1, input  ;,, a ,,    )'
+input ,, a ,, 
+input.bas(303) error 14: Expected identifier, found ',' in 't( 1, input   ,, a ,, '' )'
+input ;,, a ,, 
+input.bas(304) error 14: Expected identifier, found ',' in 't( 1, input  ;,, a ,, '' )'
+input ,, a ,;
+input.bas(305) error 14: Expected identifier, found ',' in 't( 1, input   ,, a ,;    )'
+input ;,, a ,;
+input.bas(306) error 14: Expected identifier, found ',' in 't( 1, input  ;,, a ,;    )'
+input ,, a ,; 
+input.bas(307) error 14: Expected identifier, found ',' in 't( 1, input   ,, a ,; '' )'
+input ;,, a ,; 
+input.bas(308) error 14: Expected identifier, found ',' in 't( 1, input  ;,, a ,; '' )'
+input ,, a ;,
+input.bas(309) error 14: Expected identifier, found ',' in 't( 1, input   ,, a ;,    )'
+input ;,, a ;,
+input.bas(310) error 14: Expected identifier, found ',' in 't( 1, input  ;,, a ;,    )'
+input ,, a ;, 
+input.bas(311) error 14: Expected identifier, found ',' in 't( 1, input   ,, a ;, '' )'
+input ;,, a ;, 
+input.bas(312) error 14: Expected identifier, found ',' in 't( 1, input  ;,, a ;, '' )'
+input ,, a ;;
+input.bas(313) error 14: Expected identifier, found ',' in 't( 1, input   ,, a ;;    )'
+input ;,, a ;;
+input.bas(314) error 14: Expected identifier, found ',' in 't( 1, input  ;,, a ;;    )'
+input ,, a ;; 
+input.bas(315) error 14: Expected identifier, found ',' in 't( 1, input   ,, a ;; '' )'
+input ;,, a ;; 
+input.bas(316) error 14: Expected identifier, found ',' in 't( 1, input  ;,, a ;; '' )'
+input ,,"T"
+input.bas(317) error 14: Expected identifier, found ',' in 't( 1, input   ,,"T"    )'
+input ;,,"T"
+input.bas(318) error 14: Expected identifier, found ',' in 't( 1, input  ;,,"T"    )'
+input ,,"T" 
+input.bas(319) error 14: Expected identifier, found ',' in 't( 1, input   ,,"T" '' )'
+input ;,,"T" 
+input.bas(320) error 14: Expected identifier, found ',' in 't( 1, input  ;,,"T" '' )'
+input ,,"T",
+input.bas(321) error 14: Expected identifier, found ',' in 't( 1, input   ,,"T",     )'
+input ;,,"T",
+input.bas(322) error 14: Expected identifier, found ',' in 't( 1, input  ;,,"T",     )'
+input ,,"T", 
+input.bas(323) error 14: Expected identifier, found ',' in 't( 1, input   ,,"T",  '' )'
+input ;,,"T", 
+input.bas(324) error 14: Expected identifier, found ',' in 't( 1, input  ;,,"T",  '' )'
+input ,,"T";
+input.bas(325) error 14: Expected identifier, found ',' in 't( 1, input   ,,"T";     )'
+input ;,,"T";
+input.bas(326) error 14: Expected identifier, found ',' in 't( 1, input  ;,,"T";     )'
+input ,,"T"; 
+input.bas(327) error 14: Expected identifier, found ',' in 't( 1, input   ,,"T";  '' )'
+input ;,,"T"; 
+input.bas(328) error 14: Expected identifier, found ',' in 't( 1, input  ;,,"T";  '' )'
+input ,,"T",,
+input.bas(329) error 14: Expected identifier, found ',' in 't( 1, input   ,,"T",,    )'
+input ;,,"T",,
+input.bas(330) error 14: Expected identifier, found ',' in 't( 1, input  ;,,"T",,    )'
+input ,,"T",, 
+input.bas(331) error 14: Expected identifier, found ',' in 't( 1, input   ,,"T",, '' )'
+input ;,,"T",, 
+input.bas(332) error 14: Expected identifier, found ',' in 't( 1, input  ;,,"T",, '' )'
+input ,,"T",;
+input.bas(333) error 14: Expected identifier, found ',' in 't( 1, input   ,,"T",;    )'
+input ;,,"T",;
+input.bas(334) error 14: Expected identifier, found ',' in 't( 1, input  ;,,"T",;    )'
+input ,,"T",; 
+input.bas(335) error 14: Expected identifier, found ',' in 't( 1, input   ,,"T",; '' )'
+input ;,,"T",; 
+input.bas(336) error 14: Expected identifier, found ',' in 't( 1, input  ;,,"T",; '' )'
+input ,,"T";,
+input.bas(337) error 14: Expected identifier, found ',' in 't( 1, input   ,,"T";,    )'
+input ;,,"T";,
+input.bas(338) error 14: Expected identifier, found ',' in 't( 1, input  ;,,"T";,    )'
+input ,,"T";, 
+input.bas(339) error 14: Expected identifier, found ',' in 't( 1, input   ,,"T";, '' )'
+input ;,,"T";, 
+input.bas(340) error 14: Expected identifier, found ',' in 't( 1, input  ;,,"T";, '' )'
+input ,,"T";;
+input.bas(341) error 14: Expected identifier, found ',' in 't( 1, input   ,,"T";;    )'
+input ;,,"T";;
+input.bas(342) error 14: Expected identifier, found ',' in 't( 1, input  ;,,"T";;    )'
+input ,,"T";; 
+input.bas(343) error 14: Expected identifier, found ',' in 't( 1, input   ,,"T";; '' )'
+input ;,,"T";; 
+input.bas(344) error 14: Expected identifier, found ',' in 't( 1, input  ;,,"T";; '' )'
+input ,, b
+input.bas(345) error 14: Expected identifier, found ',' in 't( 1, input   ,, b     )'
+input ;,, b
+input.bas(346) error 14: Expected identifier, found ',' in 't( 1, input  ;,, b     )'
+input ,, b 
+input.bas(347) error 14: Expected identifier, found ',' in 't( 1, input   ,, b  '' )'
+input ;,, b 
+input.bas(348) error 14: Expected identifier, found ',' in 't( 1, input  ;,, b  '' )'
+input ,, b ,
+input.bas(349) error 14: Expected identifier, found ',' in 't( 1, input   ,, b ,     )'
+input ;,, b ,
+input.bas(350) error 14: Expected identifier, found ',' in 't( 1, input  ;,, b ,     )'
+input ,, b , 
+input.bas(351) error 14: Expected identifier, found ',' in 't( 1, input   ,, b ,  '' )'
+input ;,, b , 
+input.bas(352) error 14: Expected identifier, found ',' in 't( 1, input  ;,, b ,  '' )'
+input ,, b ;
+input.bas(353) error 14: Expected identifier, found ',' in 't( 1, input   ,, b ;     )'
+input ;,, b ;
+input.bas(354) error 14: Expected identifier, found ',' in 't( 1, input  ;,, b ;     )'
+input ,, b ; 
+input.bas(355) error 14: Expected identifier, found ',' in 't( 1, input   ,, b ;  '' )'
+input ;,, b ; 
+input.bas(356) error 14: Expected identifier, found ',' in 't( 1, input  ;,, b ;  '' )'
+input ,, b ,,
+input.bas(357) error 14: Expected identifier, found ',' in 't( 1, input   ,, b ,,    )'
+input ;,, b ,,
+input.bas(358) error 14: Expected identifier, found ',' in 't( 1, input  ;,, b ,,    )'
+input ,, b ,, 
+input.bas(359) error 14: Expected identifier, found ',' in 't( 1, input   ,, b ,, '' )'
+input ;,, b ,, 
+input.bas(360) error 14: Expected identifier, found ',' in 't( 1, input  ;,, b ,, '' )'
+input ,, b ,;
+input.bas(361) error 14: Expected identifier, found ',' in 't( 1, input   ,, b ,;    )'
+input ;,, b ,;
+input.bas(362) error 14: Expected identifier, found ',' in 't( 1, input  ;,, b ,;    )'
+input ,, b ,; 
+input.bas(363) error 14: Expected identifier, found ',' in 't( 1, input   ,, b ,; '' )'
+input ;,, b ,; 
+input.bas(364) error 14: Expected identifier, found ',' in 't( 1, input  ;,, b ,; '' )'
+input ,, b ;,
+input.bas(365) error 14: Expected identifier, found ',' in 't( 1, input   ,, b ;,    )'
+input ;,, b ;,
+input.bas(366) error 14: Expected identifier, found ',' in 't( 1, input  ;,, b ;,    )'
+input ,, b ;, 
+input.bas(367) error 14: Expected identifier, found ',' in 't( 1, input   ,, b ;, '' )'
+input ;,, b ;, 
+input.bas(368) error 14: Expected identifier, found ',' in 't( 1, input  ;,, b ;, '' )'
+input ,, b ;;
+input.bas(369) error 14: Expected identifier, found ',' in 't( 1, input   ,, b ;;    )'
+input ;,, b ;;
+input.bas(370) error 14: Expected identifier, found ',' in 't( 1, input  ;,, b ;;    )'
+input ,, b ;; 
+input.bas(371) error 14: Expected identifier, found ',' in 't( 1, input   ,, b ;; '' )'
+input ;,, b ;; 
+input.bas(372) error 14: Expected identifier, found ',' in 't( 1, input  ;,, b ;; '' )'
+input ,;
+input.bas(373) error 14: Expected identifier, found ',' in 't( 1, input   ,;    )'
+input ;,;
+input.bas(374) error 14: Expected identifier, found ',' in 't( 1, input  ;,;    )'
+input ,; 
+input.bas(375) error 14: Expected identifier, found ',' in 't( 1, input   ,; '' )'
+input ;,; 
+input.bas(376) error 14: Expected identifier, found ',' in 't( 1, input  ;,; '' )'
+input ,; 1
+input.bas(377) error 14: Expected identifier, found ',' in 't( 1, input   ,; 1     )'
+input ;,; 1
+input.bas(378) error 14: Expected identifier, found ',' in 't( 1, input  ;,; 1     )'
+input ,; 1 
+input.bas(379) error 14: Expected identifier, found ',' in 't( 1, input   ,; 1  '' )'
+input ;,; 1 
+input.bas(380) error 14: Expected identifier, found ',' in 't( 1, input  ;,; 1  '' )'
+input ,; 1 ,
+input.bas(381) error 14: Expected identifier, found ',' in 't( 1, input   ,; 1 ,     )'
+input ;,; 1 ,
+input.bas(382) error 14: Expected identifier, found ',' in 't( 1, input  ;,; 1 ,     )'
+input ,; 1 , 
+input.bas(383) error 14: Expected identifier, found ',' in 't( 1, input   ,; 1 ,  '' )'
+input ;,; 1 , 
+input.bas(384) error 14: Expected identifier, found ',' in 't( 1, input  ;,; 1 ,  '' )'
+input ,; 1 ;
+input.bas(385) error 14: Expected identifier, found ',' in 't( 1, input   ,; 1 ;     )'
+input ;,; 1 ;
+input.bas(386) error 14: Expected identifier, found ',' in 't( 1, input  ;,; 1 ;     )'
+input ,; 1 ; 
+input.bas(387) error 14: Expected identifier, found ',' in 't( 1, input   ,; 1 ;  '' )'
+input ;,; 1 ; 
+input.bas(388) error 14: Expected identifier, found ',' in 't( 1, input  ;,; 1 ;  '' )'
+input ,; 1 ,,
+input.bas(389) error 14: Expected identifier, found ',' in 't( 1, input   ,; 1 ,,    )'
+input ;,; 1 ,,
+input.bas(390) error 14: Expected identifier, found ',' in 't( 1, input  ;,; 1 ,,    )'
+input ,; 1 ,, 
+input.bas(391) error 14: Expected identifier, found ',' in 't( 1, input   ,; 1 ,, '' )'
+input ;,; 1 ,, 
+input.bas(392) error 14: Expected identifier, found ',' in 't( 1, input  ;,; 1 ,, '' )'
+input ,; 1 ,;
+input.bas(393) error 14: Expected identifier, found ',' in 't( 1, input   ,; 1 ,;    )'
+input ;,; 1 ,;
+input.bas(394) error 14: Expected identifier, found ',' in 't( 1, input  ;,; 1 ,;    )'
+input ,; 1 ,; 
+input.bas(395) error 14: Expected identifier, found ',' in 't( 1, input   ,; 1 ,; '' )'
+input ;,; 1 ,; 
+input.bas(396) error 14: Expected identifier, found ',' in 't( 1, input  ;,; 1 ,; '' )'
+input ,; 1 ;,
+input.bas(397) error 14: Expected identifier, found ',' in 't( 1, input   ,; 1 ;,    )'
+input ;,; 1 ;,
+input.bas(398) error 14: Expected identifier, found ',' in 't( 1, input  ;,; 1 ;,    )'
+input ,; 1 ;, 
+input.bas(399) error 14: Expected identifier, found ',' in 't( 1, input   ,; 1 ;, '' )'
+input ;,; 1 ;, 
+input.bas(400) error 14: Expected identifier, found ',' in 't( 1, input  ;,; 1 ;, '' )'
+input ,; 1 ;;
+input.bas(401) error 14: Expected identifier, found ',' in 't( 1, input   ,; 1 ;;    )'
+input ;,; 1 ;;
+input.bas(402) error 14: Expected identifier, found ',' in 't( 1, input  ;,; 1 ;;    )'
+input ,; 1 ;; 
+input.bas(403) error 14: Expected identifier, found ',' in 't( 1, input   ,; 1 ;; '' )'
+input ;,; 1 ;; 
+input.bas(404) error 14: Expected identifier, found ',' in 't( 1, input  ;,; 1 ;; '' )'
+input ,; a
+input.bas(405) error 14: Expected identifier, found ',' in 't( 1, input   ,; a     )'
+input ;,; a
+input.bas(406) error 14: Expected identifier, found ',' in 't( 1, input  ;,; a     )'
+input ,; a 
+input.bas(407) error 14: Expected identifier, found ',' in 't( 1, input   ,; a  '' )'
+input ;,; a 
+input.bas(408) error 14: Expected identifier, found ',' in 't( 1, input  ;,; a  '' )'
+input ,; a ,
+input.bas(409) error 14: Expected identifier, found ',' in 't( 1, input   ,; a ,     )'
+input ;,; a ,
+input.bas(410) error 14: Expected identifier, found ',' in 't( 1, input  ;,; a ,     )'
+input ,; a , 
+input.bas(411) error 14: Expected identifier, found ',' in 't( 1, input   ,; a ,  '' )'
+input ;,; a , 
+input.bas(412) error 14: Expected identifier, found ',' in 't( 1, input  ;,; a ,  '' )'
+input ,; a ;
+input.bas(413) error 14: Expected identifier, found ',' in 't( 1, input   ,; a ;     )'
+input ;,; a ;
+input.bas(414) error 14: Expected identifier, found ',' in 't( 1, input  ;,; a ;     )'
+input ,; a ; 
+input.bas(415) error 14: Expected identifier, found ',' in 't( 1, input   ,; a ;  '' )'
+input ;,; a ; 
+input.bas(416) error 14: Expected identifier, found ',' in 't( 1, input  ;,; a ;  '' )'
+input ,; a ,,
+input.bas(417) error 14: Expected identifier, found ',' in 't( 1, input   ,; a ,,    )'
+input ;,; a ,,
+input.bas(418) error 14: Expected identifier, found ',' in 't( 1, input  ;,; a ,,    )'
+input ,; a ,, 
+input.bas(419) error 14: Expected identifier, found ',' in 't( 1, input   ,; a ,, '' )'
+input ;,; a ,, 
+input.bas(420) error 14: Expected identifier, found ',' in 't( 1, input  ;,; a ,, '' )'
+input ,; a ,;
+input.bas(421) error 14: Expected identifier, found ',' in 't( 1, input   ,; a ,;    )'
+input ;,; a ,;
+input.bas(422) error 14: Expected identifier, found ',' in 't( 1, input  ;,; a ,;    )'
+input ,; a ,; 
+input.bas(423) error 14: Expected identifier, found ',' in 't( 1, input   ,; a ,; '' )'
+input ;,; a ,; 
+input.bas(424) error 14: Expected identifier, found ',' in 't( 1, input  ;,; a ,; '' )'
+input ,; a ;,
+input.bas(425) error 14: Expected identifier, found ',' in 't( 1, input   ,; a ;,    )'
+input ;,; a ;,
+input.bas(426) error 14: Expected identifier, found ',' in 't( 1, input  ;,; a ;,    )'
+input ,; a ;, 
+input.bas(427) error 14: Expected identifier, found ',' in 't( 1, input   ,; a ;, '' )'
+input ;,; a ;, 
+input.bas(428) error 14: Expected identifier, found ',' in 't( 1, input  ;,; a ;, '' )'
+input ,; a ;;
+input.bas(429) error 14: Expected identifier, found ',' in 't( 1, input   ,; a ;;    )'
+input ;,; a ;;
+input.bas(430) error 14: Expected identifier, found ',' in 't( 1, input  ;,; a ;;    )'
+input ,; a ;; 
+input.bas(431) error 14: Expected identifier, found ',' in 't( 1, input   ,; a ;; '' )'
+input ;,; a ;; 
+input.bas(432) error 14: Expected identifier, found ',' in 't( 1, input  ;,; a ;; '' )'
+input ,;"T"
+input.bas(433) error 14: Expected identifier, found ',' in 't( 1, input   ,;"T"    )'
+input ;,;"T"
+input.bas(434) error 14: Expected identifier, found ',' in 't( 1, input  ;,;"T"    )'
+input ,;"T" 
+input.bas(435) error 14: Expected identifier, found ',' in 't( 1, input   ,;"T" '' )'
+input ;,;"T" 
+input.bas(436) error 14: Expected identifier, found ',' in 't( 1, input  ;,;"T" '' )'
+input ,;"T",
+input.bas(437) error 14: Expected identifier, found ',' in 't( 1, input   ,;"T",     )'
+input ;,;"T",
+input.bas(438) error 14: Expected identifier, found ',' in 't( 1, input  ;,;"T",     )'
+input ,;"T", 
+input.bas(439) error 14: Expected identifier, found ',' in 't( 1, input   ,;"T",  '' )'
+input ;,;"T", 
+input.bas(440) error 14: Expected identifier, found ',' in 't( 1, input  ;,;"T",  '' )'
+input ,;"T";
+input.bas(441) error 14: Expected identifier, found ',' in 't( 1, input   ,;"T";     )'
+input ;,;"T";
+input.bas(442) error 14: Expected identifier, found ',' in 't( 1, input  ;,;"T";     )'
+input ,;"T"; 
+input.bas(443) error 14: Expected identifier, found ',' in 't( 1, input   ,;"T";  '' )'
+input ;,;"T"; 
+input.bas(444) error 14: Expected identifier, found ',' in 't( 1, input  ;,;"T";  '' )'
+input ,;"T",,
+input.bas(445) error 14: Expected identifier, found ',' in 't( 1, input   ,;"T",,    )'
+input ;,;"T",,
+input.bas(446) error 14: Expected identifier, found ',' in 't( 1, input  ;,;"T",,    )'
+input ,;"T",, 
+input.bas(447) error 14: Expected identifier, found ',' in 't( 1, input   ,;"T",, '' )'
+input ;,;"T",, 
+input.bas(448) error 14: Expected identifier, found ',' in 't( 1, input  ;,;"T",, '' )'
+input ,;"T",;
+input.bas(449) error 14: Expected identifier, found ',' in 't( 1, input   ,;"T",;    )'
+input ;,;"T",;
+input.bas(450) error 14: Expected identifier, found ',' in 't( 1, input  ;,;"T",;    )'
+input ,;"T",; 
+input.bas(451) error 14: Expected identifier, found ',' in 't( 1, input   ,;"T",; '' )'
+input ;,;"T",; 
+input.bas(452) error 14: Expected identifier, found ',' in 't( 1, input  ;,;"T",; '' )'
+input ,;"T";,
+input.bas(453) error 14: Expected identifier, found ',' in 't( 1, input   ,;"T";,    )'
+input ;,;"T";,
+input.bas(454) error 14: Expected identifier, found ',' in 't( 1, input  ;,;"T";,    )'
+input ,;"T";, 
+input.bas(455) error 14: Expected identifier, found ',' in 't( 1, input   ,;"T";, '' )'
+input ;,;"T";, 
+input.bas(456) error 14: Expected identifier, found ',' in 't( 1, input  ;,;"T";, '' )'
+input ,;"T";;
+input.bas(457) error 14: Expected identifier, found ',' in 't( 1, input   ,;"T";;    )'
+input ;,;"T";;
+input.bas(458) error 14: Expected identifier, found ',' in 't( 1, input  ;,;"T";;    )'
+input ,;"T";; 
+input.bas(459) error 14: Expected identifier, found ',' in 't( 1, input   ,;"T";; '' )'
+input ;,;"T";; 
+input.bas(460) error 14: Expected identifier, found ',' in 't( 1, input  ;,;"T";; '' )'
+input ,; b
+input.bas(461) error 14: Expected identifier, found ',' in 't( 1, input   ,; b     )'
+input ;,; b
+input.bas(462) error 14: Expected identifier, found ',' in 't( 1, input  ;,; b     )'
+input ,; b 
+input.bas(463) error 14: Expected identifier, found ',' in 't( 1, input   ,; b  '' )'
+input ;,; b 
+input.bas(464) error 14: Expected identifier, found ',' in 't( 1, input  ;,; b  '' )'
+input ,; b ,
+input.bas(465) error 14: Expected identifier, found ',' in 't( 1, input   ,; b ,     )'
+input ;,; b ,
+input.bas(466) error 14: Expected identifier, found ',' in 't( 1, input  ;,; b ,     )'
+input ,; b , 
+input.bas(467) error 14: Expected identifier, found ',' in 't( 1, input   ,; b ,  '' )'
+input ;,; b , 
+input.bas(468) error 14: Expected identifier, found ',' in 't( 1, input  ;,; b ,  '' )'
+input ,; b ;
+input.bas(469) error 14: Expected identifier, found ',' in 't( 1, input   ,; b ;     )'
+input ;,; b ;
+input.bas(470) error 14: Expected identifier, found ',' in 't( 1, input  ;,; b ;     )'
+input ,; b ; 
+input.bas(471) error 14: Expected identifier, found ',' in 't( 1, input   ,; b ;  '' )'
+input ;,; b ; 
+input.bas(472) error 14: Expected identifier, found ',' in 't( 1, input  ;,; b ;  '' )'
+input ,; b ,,
+input.bas(473) error 14: Expected identifier, found ',' in 't( 1, input   ,; b ,,    )'
+input ;,; b ,,
+input.bas(474) error 14: Expected identifier, found ',' in 't( 1, input  ;,; b ,,    )'
+input ,; b ,, 
+input.bas(475) error 14: Expected identifier, found ',' in 't( 1, input   ,; b ,, '' )'
+input ;,; b ,, 
+input.bas(476) error 14: Expected identifier, found ',' in 't( 1, input  ;,; b ,, '' )'
+input ,; b ,;
+input.bas(477) error 14: Expected identifier, found ',' in 't( 1, input   ,; b ,;    )'
+input ;,; b ,;
+input.bas(478) error 14: Expected identifier, found ',' in 't( 1, input  ;,; b ,;    )'
+input ,; b ,; 
+input.bas(479) error 14: Expected identifier, found ',' in 't( 1, input   ,; b ,; '' )'
+input ;,; b ,; 
+input.bas(480) error 14: Expected identifier, found ',' in 't( 1, input  ;,; b ,; '' )'
+input ,; b ;,
+input.bas(481) error 14: Expected identifier, found ',' in 't( 1, input   ,; b ;,    )'
+input ;,; b ;,
+input.bas(482) error 14: Expected identifier, found ',' in 't( 1, input  ;,; b ;,    )'
+input ,; b ;, 
+input.bas(483) error 14: Expected identifier, found ',' in 't( 1, input   ,; b ;, '' )'
+input ;,; b ;, 
+input.bas(484) error 14: Expected identifier, found ',' in 't( 1, input  ;,; b ;, '' )'
+input ,; b ;;
+input.bas(485) error 14: Expected identifier, found ',' in 't( 1, input   ,; b ;;    )'
+input ;,; b ;;
+input.bas(486) error 14: Expected identifier, found ',' in 't( 1, input  ;,; b ;;    )'
+input ,; b ;; 
+input.bas(487) error 14: Expected identifier, found ',' in 't( 1, input   ,; b ;; '' )'
+input ;,; b ;; 
+input.bas(488) error 14: Expected identifier, found ',' in 't( 1, input  ;,; b ;; '' )'
+input ;,
+input.bas(489) error 14: Expected identifier, found ',' in 't( 1, input   ;,    )'
+input ;;,
+input.bas(490) error 14: Expected identifier, found ';' in 't( 1, input  ;;,    )'
+input ;, 
+input.bas(491) error 14: Expected identifier, found ',' in 't( 1, input   ;, '' )'
+input ;;, 
+input.bas(492) error 14: Expected identifier, found ';' in 't( 1, input  ;;, '' )'
+input ;, 1
+input.bas(493) error 14: Expected identifier, found ',' in 't( 1, input   ;, 1     )'
+input ;;, 1
+input.bas(494) error 14: Expected identifier, found ';' in 't( 1, input  ;;, 1     )'
+input ;, 1 
+input.bas(495) error 14: Expected identifier, found ',' in 't( 1, input   ;, 1  '' )'
+input ;;, 1 
+input.bas(496) error 14: Expected identifier, found ';' in 't( 1, input  ;;, 1  '' )'
+input ;, 1 ,
+input.bas(497) error 14: Expected identifier, found ',' in 't( 1, input   ;, 1 ,     )'
+input ;;, 1 ,
+input.bas(498) error 14: Expected identifier, found ';' in 't( 1, input  ;;, 1 ,     )'
+input ;, 1 , 
+input.bas(499) error 14: Expected identifier, found ',' in 't( 1, input   ;, 1 ,  '' )'
+input ;;, 1 , 
+input.bas(500) error 14: Expected identifier, found ';' in 't( 1, input  ;;, 1 ,  '' )'
+input ;, 1 ;
+input.bas(501) error 14: Expected identifier, found ',' in 't( 1, input   ;, 1 ;     )'
+input ;;, 1 ;
+input.bas(502) error 14: Expected identifier, found ';' in 't( 1, input  ;;, 1 ;     )'
+input ;, 1 ; 
+input.bas(503) error 14: Expected identifier, found ',' in 't( 1, input   ;, 1 ;  '' )'
+input ;;, 1 ; 
+input.bas(504) error 14: Expected identifier, found ';' in 't( 1, input  ;;, 1 ;  '' )'
+input ;, 1 ,,
+input.bas(505) error 14: Expected identifier, found ',' in 't( 1, input   ;, 1 ,,    )'
+input ;;, 1 ,,
+input.bas(506) error 14: Expected identifier, found ';' in 't( 1, input  ;;, 1 ,,    )'
+input ;, 1 ,, 
+input.bas(507) error 14: Expected identifier, found ',' in 't( 1, input   ;, 1 ,, '' )'
+input ;;, 1 ,, 
+input.bas(508) error 14: Expected identifier, found ';' in 't( 1, input  ;;, 1 ,, '' )'
+input ;, 1 ,;
+input.bas(509) error 14: Expected identifier, found ',' in 't( 1, input   ;, 1 ,;    )'
+input ;;, 1 ,;
+input.bas(510) error 14: Expected identifier, found ';' in 't( 1, input  ;;, 1 ,;    )'
+input ;, 1 ,; 
+input.bas(511) error 14: Expected identifier, found ',' in 't( 1, input   ;, 1 ,; '' )'
+input ;;, 1 ,; 
+input.bas(512) error 14: Expected identifier, found ';' in 't( 1, input  ;;, 1 ,; '' )'
+input ;, 1 ;,
+input.bas(513) error 14: Expected identifier, found ',' in 't( 1, input   ;, 1 ;,    )'
+input ;;, 1 ;,
+input.bas(514) error 14: Expected identifier, found ';' in 't( 1, input  ;;, 1 ;,    )'
+input ;, 1 ;, 
+input.bas(515) error 14: Expected identifier, found ',' in 't( 1, input   ;, 1 ;, '' )'
+input ;;, 1 ;, 
+input.bas(516) error 14: Expected identifier, found ';' in 't( 1, input  ;;, 1 ;, '' )'
+input ;, 1 ;;
+input.bas(517) error 14: Expected identifier, found ',' in 't( 1, input   ;, 1 ;;    )'
+input ;;, 1 ;;
+input.bas(518) error 14: Expected identifier, found ';' in 't( 1, input  ;;, 1 ;;    )'
+input ;, 1 ;; 
+input.bas(519) error 14: Expected identifier, found ',' in 't( 1, input   ;, 1 ;; '' )'
+input ;;, 1 ;; 
+input.bas(520) error 14: Expected identifier, found ';' in 't( 1, input  ;;, 1 ;; '' )'
+input ;, a
+input.bas(521) error 14: Expected identifier, found ',' in 't( 1, input   ;, a     )'
+input ;;, a
+input.bas(522) error 14: Expected identifier, found ';' in 't( 1, input  ;;, a     )'
+input ;, a 
+input.bas(523) error 14: Expected identifier, found ',' in 't( 1, input   ;, a  '' )'
+input ;;, a 
+input.bas(524) error 14: Expected identifier, found ';' in 't( 1, input  ;;, a  '' )'
+input ;, a ,
+input.bas(525) error 14: Expected identifier, found ',' in 't( 1, input   ;, a ,     )'
+input ;;, a ,
+input.bas(526) error 14: Expected identifier, found ';' in 't( 1, input  ;;, a ,     )'
+input ;, a , 
+input.bas(527) error 14: Expected identifier, found ',' in 't( 1, input   ;, a ,  '' )'
+input ;;, a , 
+input.bas(528) error 14: Expected identifier, found ';' in 't( 1, input  ;;, a ,  '' )'
+input ;, a ;
+input.bas(529) error 14: Expected identifier, found ',' in 't( 1, input   ;, a ;     )'
+input ;;, a ;
+input.bas(530) error 14: Expected identifier, found ';' in 't( 1, input  ;;, a ;     )'
+input ;, a ; 
+input.bas(531) error 14: Expected identifier, found ',' in 't( 1, input   ;, a ;  '' )'
+input ;;, a ; 
+input.bas(532) error 14: Expected identifier, found ';' in 't( 1, input  ;;, a ;  '' )'
+input ;, a ,,
+input.bas(533) error 14: Expected identifier, found ',' in 't( 1, input   ;, a ,,    )'
+input ;;, a ,,
+input.bas(534) error 14: Expected identifier, found ';' in 't( 1, input  ;;, a ,,    )'
+input ;, a ,, 
+input.bas(535) error 14: Expected identifier, found ',' in 't( 1, input   ;, a ,, '' )'
+input ;;, a ,, 
+input.bas(536) error 14: Expected identifier, found ';' in 't( 1, input  ;;, a ,, '' )'
+input ;, a ,;
+input.bas(537) error 14: Expected identifier, found ',' in 't( 1, input   ;, a ,;    )'
+input ;;, a ,;
+input.bas(538) error 14: Expected identifier, found ';' in 't( 1, input  ;;, a ,;    )'
+input ;, a ,; 
+input.bas(539) error 14: Expected identifier, found ',' in 't( 1, input   ;, a ,; '' )'
+input ;;, a ,; 
+input.bas(540) error 14: Expected identifier, found ';' in 't( 1, input  ;;, a ,; '' )'
+input ;, a ;,
+input.bas(541) error 14: Expected identifier, found ',' in 't( 1, input   ;, a ;,    )'
+input ;;, a ;,
+input.bas(542) error 14: Expected identifier, found ';' in 't( 1, input  ;;, a ;,    )'
+input ;, a ;, 
+input.bas(543) error 14: Expected identifier, found ',' in 't( 1, input   ;, a ;, '' )'
+input ;;, a ;, 
+input.bas(544) error 14: Expected identifier, found ';' in 't( 1, input  ;;, a ;, '' )'
+input ;, a ;;
+input.bas(545) error 14: Expected identifier, found ',' in 't( 1, input   ;, a ;;    )'
+input ;;, a ;;
+input.bas(546) error 14: Expected identifier, found ';' in 't( 1, input  ;;, a ;;    )'
+input ;, a ;; 
+input.bas(547) error 14: Expected identifier, found ',' in 't( 1, input   ;, a ;; '' )'
+input ;;, a ;; 
+input.bas(548) error 14: Expected identifier, found ';' in 't( 1, input  ;;, a ;; '' )'
+input ;,"T"
+input.bas(549) error 14: Expected identifier, found ',' in 't( 1, input   ;,"T"    )'
+input ;;,"T"
+input.bas(550) error 14: Expected identifier, found ';' in 't( 1, input  ;;,"T"    )'
+input ;,"T" 
+input.bas(551) error 14: Expected identifier, found ',' in 't( 1, input   ;,"T" '' )'
+input ;;,"T" 
+input.bas(552) error 14: Expected identifier, found ';' in 't( 1, input  ;;,"T" '' )'
+input ;,"T",
+input.bas(553) error 14: Expected identifier, found ',' in 't( 1, input   ;,"T",     )'
+input ;;,"T",
+input.bas(554) error 14: Expected identifier, found ';' in 't( 1, input  ;;,"T",     )'
+input ;,"T", 
+input.bas(555) error 14: Expected identifier, found ',' in 't( 1, input   ;,"T",  '' )'
+input ;;,"T", 
+input.bas(556) error 14: Expected identifier, found ';' in 't( 1, input  ;;,"T",  '' )'
+input ;,"T";
+input.bas(557) error 14: Expected identifier, found ',' in 't( 1, input   ;,"T";     )'
+input ;;,"T";
+input.bas(558) error 14: Expected identifier, found ';' in 't( 1, input  ;;,"T";     )'
+input ;,"T"; 
+input.bas(559) error 14: Expected identifier, found ',' in 't( 1, input   ;,"T";  '' )'
+input ;;,"T"; 
+input.bas(560) error 14: Expected identifier, found ';' in 't( 1, input  ;;,"T";  '' )'
+input ;,"T",,
+input.bas(561) error 14: Expected identifier, found ',' in 't( 1, input   ;,"T",,    )'
+input ;;,"T",,
+input.bas(562) error 14: Expected identifier, found ';' in 't( 1, input  ;;,"T",,    )'
+input ;,"T",, 
+input.bas(563) error 14: Expected identifier, found ',' in 't( 1, input   ;,"T",, '' )'
+input ;;,"T",, 
+input.bas(564) error 14: Expected identifier, found ';' in 't( 1, input  ;;,"T",, '' )'
+input ;,"T",;
+input.bas(565) error 14: Expected identifier, found ',' in 't( 1, input   ;,"T",;    )'
+input ;;,"T",;
+input.bas(566) error 14: Expected identifier, found ';' in 't( 1, input  ;;,"T",;    )'
+input ;,"T",; 
+input.bas(567) error 14: Expected identifier, found ',' in 't( 1, input   ;,"T",; '' )'
+input ;;,"T",; 
+input.bas(568) error 14: Expected identifier, found ';' in 't( 1, input  ;;,"T",; '' )'
+input ;,"T";,
+input.bas(569) error 14: Expected identifier, found ',' in 't( 1, input   ;,"T";,    )'
+input ;;,"T";,
+input.bas(570) error 14: Expected identifier, found ';' in 't( 1, input  ;;,"T";,    )'
+input ;,"T";, 
+input.bas(571) error 14: Expected identifier, found ',' in 't( 1, input   ;,"T";, '' )'
+input ;;,"T";, 
+input.bas(572) error 14: Expected identifier, found ';' in 't( 1, input  ;;,"T";, '' )'
+input ;,"T";;
+input.bas(573) error 14: Expected identifier, found ',' in 't( 1, input   ;,"T";;    )'
+input ;;,"T";;
+input.bas(574) error 14: Expected identifier, found ';' in 't( 1, input  ;;,"T";;    )'
+input ;,"T";; 
+input.bas(575) error 14: Expected identifier, found ',' in 't( 1, input   ;,"T";; '' )'
+input ;;,"T";; 
+input.bas(576) error 14: Expected identifier, found ';' in 't( 1, input  ;;,"T";; '' )'
+input ;, b
+input.bas(577) error 14: Expected identifier, found ',' in 't( 1, input   ;, b     )'
+input ;;, b
+input.bas(578) error 14: Expected identifier, found ';' in 't( 1, input  ;;, b     )'
+input ;, b 
+input.bas(579) error 14: Expected identifier, found ',' in 't( 1, input   ;, b  '' )'
+input ;;, b 
+input.bas(580) error 14: Expected identifier, found ';' in 't( 1, input  ;;, b  '' )'
+input ;, b ,
+input.bas(581) error 14: Expected identifier, found ',' in 't( 1, input   ;, b ,     )'
+input ;;, b ,
+input.bas(582) error 14: Expected identifier, found ';' in 't( 1, input  ;;, b ,     )'
+input ;, b , 
+input.bas(583) error 14: Expected identifier, found ',' in 't( 1, input   ;, b ,  '' )'
+input ;;, b , 
+input.bas(584) error 14: Expected identifier, found ';' in 't( 1, input  ;;, b ,  '' )'
+input ;, b ;
+input.bas(585) error 14: Expected identifier, found ',' in 't( 1, input   ;, b ;     )'
+input ;;, b ;
+input.bas(586) error 14: Expected identifier, found ';' in 't( 1, input  ;;, b ;     )'
+input ;, b ; 
+input.bas(587) error 14: Expected identifier, found ',' in 't( 1, input   ;, b ;  '' )'
+input ;;, b ; 
+input.bas(588) error 14: Expected identifier, found ';' in 't( 1, input  ;;, b ;  '' )'
+input ;, b ,,
+input.bas(589) error 14: Expected identifier, found ',' in 't( 1, input   ;, b ,,    )'
+input ;;, b ,,
+input.bas(590) error 14: Expected identifier, found ';' in 't( 1, input  ;;, b ,,    )'
+input ;, b ,, 
+input.bas(591) error 14: Expected identifier, found ',' in 't( 1, input   ;, b ,, '' )'
+input ;;, b ,, 
+input.bas(592) error 14: Expected identifier, found ';' in 't( 1, input  ;;, b ,, '' )'
+input ;, b ,;
+input.bas(593) error 14: Expected identifier, found ',' in 't( 1, input   ;, b ,;    )'
+input ;;, b ,;
+input.bas(594) error 14: Expected identifier, found ';' in 't( 1, input  ;;, b ,;    )'
+input ;, b ,; 
+input.bas(595) error 14: Expected identifier, found ',' in 't( 1, input   ;, b ,; '' )'
+input ;;, b ,; 
+input.bas(596) error 14: Expected identifier, found ';' in 't( 1, input  ;;, b ,; '' )'
+input ;, b ;,
+input.bas(597) error 14: Expected identifier, found ',' in 't( 1, input   ;, b ;,    )'
+input ;;, b ;,
+input.bas(598) error 14: Expected identifier, found ';' in 't( 1, input  ;;, b ;,    )'
+input ;, b ;, 
+input.bas(599) error 14: Expected identifier, found ',' in 't( 1, input   ;, b ;, '' )'
+input ;;, b ;, 
+input.bas(600) error 14: Expected identifier, found ';' in 't( 1, input  ;;, b ;, '' )'
+input ;, b ;;
+input.bas(601) error 14: Expected identifier, found ',' in 't( 1, input   ;, b ;;    )'
+input ;;, b ;;
+input.bas(602) error 14: Expected identifier, found ';' in 't( 1, input  ;;, b ;;    )'
+input ;, b ;; 
+input.bas(603) error 14: Expected identifier, found ',' in 't( 1, input   ;, b ;; '' )'
+input ;;, b ;; 
+input.bas(604) error 14: Expected identifier, found ';' in 't( 1, input  ;;, b ;; '' )'
+input ;;
+input.bas(605) error 14: Expected identifier, found ';' in 't( 1, input   ;;    )'
+input ;;;
+input.bas(606) error 14: Expected identifier, found ';' in 't( 1, input  ;;;    )'
+input ;; 
+input.bas(607) error 14: Expected identifier, found ';' in 't( 1, input   ;; '' )'
+input ;;; 
+input.bas(608) error 14: Expected identifier, found ';' in 't( 1, input  ;;; '' )'
+input ;; 1
+input.bas(609) error 14: Expected identifier, found ';' in 't( 1, input   ;; 1     )'
+input ;;; 1
+input.bas(610) error 14: Expected identifier, found ';' in 't( 1, input  ;;; 1     )'
+input ;; 1 
+input.bas(611) error 14: Expected identifier, found ';' in 't( 1, input   ;; 1  '' )'
+input ;;; 1 
+input.bas(612) error 14: Expected identifier, found ';' in 't( 1, input  ;;; 1  '' )'
+input ;; 1 ,
+input.bas(613) error 14: Expected identifier, found ';' in 't( 1, input   ;; 1 ,     )'
+input ;;; 1 ,
+input.bas(614) error 14: Expected identifier, found ';' in 't( 1, input  ;;; 1 ,     )'
+input ;; 1 , 
+input.bas(615) error 14: Expected identifier, found ';' in 't( 1, input   ;; 1 ,  '' )'
+input ;;; 1 , 
+input.bas(616) error 14: Expected identifier, found ';' in 't( 1, input  ;;; 1 ,  '' )'
+input ;; 1 ;
+input.bas(617) error 14: Expected identifier, found ';' in 't( 1, input   ;; 1 ;     )'
+input ;;; 1 ;
+input.bas(618) error 14: Expected identifier, found ';' in 't( 1, input  ;;; 1 ;     )'
+input ;; 1 ; 
+input.bas(619) error 14: Expected identifier, found ';' in 't( 1, input   ;; 1 ;  '' )'
+input ;;; 1 ; 
+input.bas(620) error 14: Expected identifier, found ';' in 't( 1, input  ;;; 1 ;  '' )'
+input ;; 1 ,,
+input.bas(621) error 14: Expected identifier, found ';' in 't( 1, input   ;; 1 ,,    )'
+input ;;; 1 ,,
+input.bas(622) error 14: Expected identifier, found ';' in 't( 1, input  ;;; 1 ,,    )'
+input ;; 1 ,, 
+input.bas(623) error 14: Expected identifier, found ';' in 't( 1, input   ;; 1 ,, '' )'
+input ;;; 1 ,, 
+input.bas(624) error 14: Expected identifier, found ';' in 't( 1, input  ;;; 1 ,, '' )'
+input ;; 1 ,;
+input.bas(625) error 14: Expected identifier, found ';' in 't( 1, input   ;; 1 ,;    )'
+input ;;; 1 ,;
+input.bas(626) error 14: Expected identifier, found ';' in 't( 1, input  ;;; 1 ,;    )'
+input ;; 1 ,; 
+input.bas(627) error 14: Expected identifier, found ';' in 't( 1, input   ;; 1 ,; '' )'
+input ;;; 1 ,; 
+input.bas(628) error 14: Expected identifier, found ';' in 't( 1, input  ;;; 1 ,; '' )'
+input ;; 1 ;,
+input.bas(629) error 14: Expected identifier, found ';' in 't( 1, input   ;; 1 ;,    )'
+input ;;; 1 ;,
+input.bas(630) error 14: Expected identifier, found ';' in 't( 1, input  ;;; 1 ;,    )'
+input ;; 1 ;, 
+input.bas(631) error 14: Expected identifier, found ';' in 't( 1, input   ;; 1 ;, '' )'
+input ;;; 1 ;, 
+input.bas(632) error 14: Expected identifier, found ';' in 't( 1, input  ;;; 1 ;, '' )'
+input ;; 1 ;;
+input.bas(633) error 14: Expected identifier, found ';' in 't( 1, input   ;; 1 ;;    )'
+input ;;; 1 ;;
+input.bas(634) error 14: Expected identifier, found ';' in 't( 1, input  ;;; 1 ;;    )'
+input ;; 1 ;; 
+input.bas(635) error 14: Expected identifier, found ';' in 't( 1, input   ;; 1 ;; '' )'
+input ;;; 1 ;; 
+input.bas(636) error 14: Expected identifier, found ';' in 't( 1, input  ;;; 1 ;; '' )'
+input ;; a
+input.bas(637) error 14: Expected identifier, found ';' in 't( 1, input   ;; a     )'
+input ;;; a
+input.bas(638) error 14: Expected identifier, found ';' in 't( 1, input  ;;; a     )'
+input ;; a 
+input.bas(639) error 14: Expected identifier, found ';' in 't( 1, input   ;; a  '' )'
+input ;;; a 
+input.bas(640) error 14: Expected identifier, found ';' in 't( 1, input  ;;; a  '' )'
+input ;; a ,
+input.bas(641) error 14: Expected identifier, found ';' in 't( 1, input   ;; a ,     )'
+input ;;; a ,
+input.bas(642) error 14: Expected identifier, found ';' in 't( 1, input  ;;; a ,     )'
+input ;; a , 
+input.bas(643) error 14: Expected identifier, found ';' in 't( 1, input   ;; a ,  '' )'
+input ;;; a , 
+input.bas(644) error 14: Expected identifier, found ';' in 't( 1, input  ;;; a ,  '' )'
+input ;; a ;
+input.bas(645) error 14: Expected identifier, found ';' in 't( 1, input   ;; a ;     )'
+input ;;; a ;
+input.bas(646) error 14: Expected identifier, found ';' in 't( 1, input  ;;; a ;     )'
+input ;; a ; 
+input.bas(647) error 14: Expected identifier, found ';' in 't( 1, input   ;; a ;  '' )'
+input ;;; a ; 
+input.bas(648) error 14: Expected identifier, found ';' in 't( 1, input  ;;; a ;  '' )'
+input ;; a ,,
+input.bas(649) error 14: Expected identifier, found ';' in 't( 1, input   ;; a ,,    )'
+input ;;; a ,,
+input.bas(650) error 14: Expected identifier, found ';' in 't( 1, input  ;;; a ,,    )'
+input ;; a ,, 
+input.bas(651) error 14: Expected identifier, found ';' in 't( 1, input   ;; a ,, '' )'
+input ;;; a ,, 
+input.bas(652) error 14: Expected identifier, found ';' in 't( 1, input  ;;; a ,, '' )'
+input ;; a ,;
+input.bas(653) error 14: Expected identifier, found ';' in 't( 1, input   ;; a ,;    )'
+input ;;; a ,;
+input.bas(654) error 14: Expected identifier, found ';' in 't( 1, input  ;;; a ,;    )'
+input ;; a ,; 
+input.bas(655) error 14: Expected identifier, found ';' in 't( 1, input   ;; a ,; '' )'
+input ;;; a ,; 
+input.bas(656) error 14: Expected identifier, found ';' in 't( 1, input  ;;; a ,; '' )'
+input ;; a ;,
+input.bas(657) error 14: Expected identifier, found ';' in 't( 1, input   ;; a ;,    )'
+input ;;; a ;,
+input.bas(658) error 14: Expected identifier, found ';' in 't( 1, input  ;;; a ;,    )'
+input ;; a ;, 
+input.bas(659) error 14: Expected identifier, found ';' in 't( 1, input   ;; a ;, '' )'
+input ;;; a ;, 
+input.bas(660) error 14: Expected identifier, found ';' in 't( 1, input  ;;; a ;, '' )'
+input ;; a ;;
+input.bas(661) error 14: Expected identifier, found ';' in 't( 1, input   ;; a ;;    )'
+input ;;; a ;;
+input.bas(662) error 14: Expected identifier, found ';' in 't( 1, input  ;;; a ;;    )'
+input ;; a ;; 
+input.bas(663) error 14: Expected identifier, found ';' in 't( 1, input   ;; a ;; '' )'
+input ;;; a ;; 
+input.bas(664) error 14: Expected identifier, found ';' in 't( 1, input  ;;; a ;; '' )'
+input ;;"T"
+input.bas(665) error 14: Expected identifier, found ';' in 't( 1, input   ;;"T"    )'
+input ;;;"T"
+input.bas(666) error 14: Expected identifier, found ';' in 't( 1, input  ;;;"T"    )'
+input ;;"T" 
+input.bas(667) error 14: Expected identifier, found ';' in 't( 1, input   ;;"T" '' )'
+input ;;;"T" 
+input.bas(668) error 14: Expected identifier, found ';' in 't( 1, input  ;;;"T" '' )'
+input ;;"T",
+input.bas(669) error 14: Expected identifier, found ';' in 't( 1, input   ;;"T",     )'
+input ;;;"T",
+input.bas(670) error 14: Expected identifier, found ';' in 't( 1, input  ;;;"T",     )'
+input ;;"T", 
+input.bas(671) error 14: Expected identifier, found ';' in 't( 1, input   ;;"T",  '' )'
+input ;;;"T", 
+input.bas(672) error 14: Expected identifier, found ';' in 't( 1, input  ;;;"T",  '' )'
+input ;;"T";
+input.bas(673) error 14: Expected identifier, found ';' in 't( 1, input   ;;"T";     )'
+input ;;;"T";
+input.bas(674) error 14: Expected identifier, found ';' in 't( 1, input  ;;;"T";     )'
+input ;;"T"; 
+input.bas(675) error 14: Expected identifier, found ';' in 't( 1, input   ;;"T";  '' )'
+input ;;;"T"; 
+input.bas(676) error 14: Expected identifier, found ';' in 't( 1, input  ;;;"T";  '' )'
+input ;;"T",,
+input.bas(677) error 14: Expected identifier, found ';' in 't( 1, input   ;;"T",,    )'
+input ;;;"T",,
+input.bas(678) error 14: Expected identifier, found ';' in 't( 1, input  ;;;"T",,    )'
+input ;;"T",, 
+input.bas(679) error 14: Expected identifier, found ';' in 't( 1, input   ;;"T",, '' )'
+input ;;;"T",, 
+input.bas(680) error 14: Expected identifier, found ';' in 't( 1, input  ;;;"T",, '' )'
+input ;;"T",;
+input.bas(681) error 14: Expected identifier, found ';' in 't( 1, input   ;;"T",;    )'
+input ;;;"T",;
+input.bas(682) error 14: Expected identifier, found ';' in 't( 1, input  ;;;"T",;    )'
+input ;;"T",; 
+input.bas(683) error 14: Expected identifier, found ';' in 't( 1, input   ;;"T",; '' )'
+input ;;;"T",; 
+input.bas(684) error 14: Expected identifier, found ';' in 't( 1, input  ;;;"T",; '' )'
+input ;;"T";,
+input.bas(685) error 14: Expected identifier, found ';' in 't( 1, input   ;;"T";,    )'
+input ;;;"T";,
+input.bas(686) error 14: Expected identifier, found ';' in 't( 1, input  ;;;"T";,    )'
+input ;;"T";, 
+input.bas(687) error 14: Expected identifier, found ';' in 't( 1, input   ;;"T";, '' )'
+input ;;;"T";, 
+input.bas(688) error 14: Expected identifier, found ';' in 't( 1, input  ;;;"T";, '' )'
+input ;;"T";;
+input.bas(689) error 14: Expected identifier, found ';' in 't( 1, input   ;;"T";;    )'
+input ;;;"T";;
+input.bas(690) error 14: Expected identifier, found ';' in 't( 1, input  ;;;"T";;    )'
+input ;;"T";; 
+input.bas(691) error 14: Expected identifier, found ';' in 't( 1, input   ;;"T";; '' )'
+input ;;;"T";; 
+input.bas(692) error 14: Expected identifier, found ';' in 't( 1, input  ;;;"T";; '' )'
+input ;; b
+input.bas(693) error 14: Expected identifier, found ';' in 't( 1, input   ;; b     )'
+input ;;; b
+input.bas(694) error 14: Expected identifier, found ';' in 't( 1, input  ;;; b     )'
+input ;; b 
+input.bas(695) error 14: Expected identifier, found ';' in 't( 1, input   ;; b  '' )'
+input ;;; b 
+input.bas(696) error 14: Expected identifier, found ';' in 't( 1, input  ;;; b  '' )'
+input ;; b ,
+input.bas(697) error 14: Expected identifier, found ';' in 't( 1, input   ;; b ,     )'
+input ;;; b ,
+input.bas(698) error 14: Expected identifier, found ';' in 't( 1, input  ;;; b ,     )'
+input ;; b , 
+input.bas(699) error 14: Expected identifier, found ';' in 't( 1, input   ;; b ,  '' )'
+input ;;; b , 
+input.bas(700) error 14: Expected identifier, found ';' in 't( 1, input  ;;; b ,  '' )'
+input ;; b ;
+input.bas(701) error 14: Expected identifier, found ';' in 't( 1, input   ;; b ;     )'
+input ;;; b ;
+input.bas(702) error 14: Expected identifier, found ';' in 't( 1, input  ;;; b ;     )'
+input ;; b ; 
+input.bas(703) error 14: Expected identifier, found ';' in 't( 1, input   ;; b ;  '' )'
+input ;;; b ; 
+input.bas(704) error 14: Expected identifier, found ';' in 't( 1, input  ;;; b ;  '' )'
+input ;; b ,,
+input.bas(705) error 14: Expected identifier, found ';' in 't( 1, input   ;; b ,,    )'
+input ;;; b ,,
+input.bas(706) error 14: Expected identifier, found ';' in 't( 1, input  ;;; b ,,    )'
+input ;; b ,, 
+input.bas(707) error 14: Expected identifier, found ';' in 't( 1, input   ;; b ,, '' )'
+input ;;; b ,, 
+input.bas(708) error 14: Expected identifier, found ';' in 't( 1, input  ;;; b ,, '' )'
+input ;; b ,;
+input.bas(709) error 14: Expected identifier, found ';' in 't( 1, input   ;; b ,;    )'
+input ;;; b ,;
+input.bas(710) error 14: Expected identifier, found ';' in 't( 1, input  ;;; b ,;    )'
+input ;; b ,; 
+input.bas(711) error 14: Expected identifier, found ';' in 't( 1, input   ;; b ,; '' )'
+input ;;; b ,; 
+input.bas(712) error 14: Expected identifier, found ';' in 't( 1, input  ;;; b ,; '' )'
+input ;; b ;,
+input.bas(713) error 14: Expected identifier, found ';' in 't( 1, input   ;; b ;,    )'
+input ;;; b ;,
+input.bas(714) error 14: Expected identifier, found ';' in 't( 1, input  ;;; b ;,    )'
+input ;; b ;, 
+input.bas(715) error 14: Expected identifier, found ';' in 't( 1, input   ;; b ;, '' )'
+input ;;; b ;, 
+input.bas(716) error 14: Expected identifier, found ';' in 't( 1, input  ;;; b ;, '' )'
+input ;; b ;;
+input.bas(717) error 14: Expected identifier, found ';' in 't( 1, input   ;; b ;;    )'
+input ;;; b ;;
+input.bas(718) error 14: Expected identifier, found ';' in 't( 1, input  ;;; b ;;    )'
+input ;; b ;; 
+input.bas(719) error 14: Expected identifier, found ';' in 't( 1, input   ;; b ;; '' )'
+input ;;; b ;; 
+input.bas(720) error 14: Expected identifier, found ';' in 't( 1, input  ;;; b ;; '' )'
+input 1
+input.bas(721) error 24: Invalid data types in 't( 1, input    1     )'
+input ; 1
+input.bas(722) error 24: Invalid data types in 't( 1, input  ; 1     )'
+input 1 
+input.bas(723) error 24: Invalid data types, found ''' in 't( 1, input    1  '' )'
+input ; 1 
+input.bas(724) error 24: Invalid data types, found ''' in 't( 1, input  ; 1  '' )'
+input 1 ,
+input.bas(725) error 24: Invalid data types, found ',' in 't( 1, input    1 ,     )'
+input ; 1 ,
+input.bas(726) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,     )'
+input 1 , 
+input.bas(727) error 24: Invalid data types, found ',' in 't( 1, input    1 ,  '' )'
+input ; 1 , 
+input.bas(728) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,  '' )'
+input 1 , 1
+input.bas(729) error 24: Invalid data types, found ',' in 't( 1, input    1 ,  1     )'
+input ; 1 , 1
+input.bas(730) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,  1     )'
+input 1 , 1 
+input.bas(731) error 24: Invalid data types, found ',' in 't( 1, input    1 ,  1  '' )'
+input ; 1 , 1 
+input.bas(732) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,  1  '' )'
+input 1 , a
+input.bas(733) error 24: Invalid data types, found ',' in 't( 1, input    1 ,  a     )'
+input ; 1 , a
+input.bas(734) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,  a     )'
+input 1 , a 
+input.bas(735) error 24: Invalid data types, found ',' in 't( 1, input    1 ,  a  '' )'
+input ; 1 , a 
+input.bas(736) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,  a  '' )'
+input 1 , "T"
+input.bas(737) error 24: Invalid data types, found ',' in 't( 1, input    1 , "T"    )'
+input ; 1 , "T"
+input.bas(738) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 , "T"    )'
+input 1 , "T" 
+input.bas(739) error 24: Invalid data types, found ',' in 't( 1, input    1 , "T" '' )'
+input ; 1 , "T" 
+input.bas(740) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 , "T" '' )'
+input 1 , b
+input.bas(741) error 24: Invalid data types, found ',' in 't( 1, input    1 ,  b     )'
+input ; 1 , b
+input.bas(742) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,  b     )'
+input 1 , b 
+input.bas(743) error 24: Invalid data types, found ',' in 't( 1, input    1 ,  b  '' )'
+input ; 1 , b 
+input.bas(744) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,  b  '' )'
+input 1 ;
+input.bas(745) error 24: Invalid data types, found ';' in 't( 1, input    1 ;     )'
+input ; 1 ;
+input.bas(746) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;     )'
+input 1 ; 
+input.bas(747) error 24: Invalid data types, found ';' in 't( 1, input    1 ;  '' )'
+input ; 1 ; 
+input.bas(748) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;  '' )'
+input 1 ; 1
+input.bas(749) error 24: Invalid data types, found ';' in 't( 1, input    1 ;  1     )'
+input ; 1 ; 1
+input.bas(750) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;  1     )'
+input 1 ; 1 
+input.bas(751) error 24: Invalid data types, found ';' in 't( 1, input    1 ;  1  '' )'
+input ; 1 ; 1 
+input.bas(752) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;  1  '' )'
+input 1 ; a
+input.bas(753) error 24: Invalid data types, found ';' in 't( 1, input    1 ;  a     )'
+input ; 1 ; a
+input.bas(754) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;  a     )'
+input 1 ; a 
+input.bas(755) error 24: Invalid data types, found ';' in 't( 1, input    1 ;  a  '' )'
+input ; 1 ; a 
+input.bas(756) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;  a  '' )'
+input 1 ; "T"
+input.bas(757) error 24: Invalid data types, found ';' in 't( 1, input    1 ; "T"    )'
+input ; 1 ; "T"
+input.bas(758) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ; "T"    )'
+input 1 ; "T" 
+input.bas(759) error 24: Invalid data types, found ';' in 't( 1, input    1 ; "T" '' )'
+input ; 1 ; "T" 
+input.bas(760) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ; "T" '' )'
+input 1 ; b
+input.bas(761) error 24: Invalid data types, found ';' in 't( 1, input    1 ;  b     )'
+input ; 1 ; b
+input.bas(762) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;  b     )'
+input 1 ; b 
+input.bas(763) error 24: Invalid data types, found ';' in 't( 1, input    1 ;  b  '' )'
+input ; 1 ; b 
+input.bas(764) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;  b  '' )'
+input 1 ,,
+input.bas(765) error 24: Invalid data types, found ',' in 't( 1, input    1 ,,    )'
+input ; 1 ,,
+input.bas(766) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,,    )'
+input 1 ,, 
+input.bas(767) error 24: Invalid data types, found ',' in 't( 1, input    1 ,, '' )'
+input ; 1 ,, 
+input.bas(768) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,, '' )'
+input 1 ,, 1
+input.bas(769) error 24: Invalid data types, found ',' in 't( 1, input    1 ,, 1     )'
+input ; 1 ,, 1
+input.bas(770) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,, 1     )'
+input 1 ,, 1 
+input.bas(771) error 24: Invalid data types, found ',' in 't( 1, input    1 ,, 1  '' )'
+input ; 1 ,, 1 
+input.bas(772) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,, 1  '' )'
+input 1 ,, a
+input.bas(773) error 24: Invalid data types, found ',' in 't( 1, input    1 ,, a     )'
+input ; 1 ,, a
+input.bas(774) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,, a     )'
+input 1 ,, a 
+input.bas(775) error 24: Invalid data types, found ',' in 't( 1, input    1 ,, a  '' )'
+input ; 1 ,, a 
+input.bas(776) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,, a  '' )'
+input 1 ,,"T"
+input.bas(777) error 24: Invalid data types, found ',' in 't( 1, input    1 ,,"T"    )'
+input ; 1 ,,"T"
+input.bas(778) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,,"T"    )'
+input 1 ,,"T" 
+input.bas(779) error 24: Invalid data types, found ',' in 't( 1, input    1 ,,"T" '' )'
+input ; 1 ,,"T" 
+input.bas(780) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,,"T" '' )'
+input 1 ,, b
+input.bas(781) error 24: Invalid data types, found ',' in 't( 1, input    1 ,, b     )'
+input ; 1 ,, b
+input.bas(782) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,, b     )'
+input 1 ,, b 
+input.bas(783) error 24: Invalid data types, found ',' in 't( 1, input    1 ,, b  '' )'
+input ; 1 ,, b 
+input.bas(784) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,, b  '' )'
+input 1 ,;
+input.bas(785) error 24: Invalid data types, found ',' in 't( 1, input    1 ,;    )'
+input ; 1 ,;
+input.bas(786) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,;    )'
+input 1 ,; 
+input.bas(787) error 24: Invalid data types, found ',' in 't( 1, input    1 ,; '' )'
+input ; 1 ,; 
+input.bas(788) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,; '' )'
+input 1 ,; 1
+input.bas(789) error 24: Invalid data types, found ',' in 't( 1, input    1 ,; 1     )'
+input ; 1 ,; 1
+input.bas(790) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,; 1     )'
+input 1 ,; 1 
+input.bas(791) error 24: Invalid data types, found ',' in 't( 1, input    1 ,; 1  '' )'
+input ; 1 ,; 1 
+input.bas(792) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,; 1  '' )'
+input 1 ,; a
+input.bas(793) error 24: Invalid data types, found ',' in 't( 1, input    1 ,; a     )'
+input ; 1 ,; a
+input.bas(794) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,; a     )'
+input 1 ,; a 
+input.bas(795) error 24: Invalid data types, found ',' in 't( 1, input    1 ,; a  '' )'
+input ; 1 ,; a 
+input.bas(796) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,; a  '' )'
+input 1 ,;"T"
+input.bas(797) error 24: Invalid data types, found ',' in 't( 1, input    1 ,;"T"    )'
+input ; 1 ,;"T"
+input.bas(798) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,;"T"    )'
+input 1 ,;"T" 
+input.bas(799) error 24: Invalid data types, found ',' in 't( 1, input    1 ,;"T" '' )'
+input ; 1 ,;"T" 
+input.bas(800) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,;"T" '' )'
+input 1 ,; b
+input.bas(801) error 24: Invalid data types, found ',' in 't( 1, input    1 ,; b     )'
+input ; 1 ,; b
+input.bas(802) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,; b     )'
+input 1 ,; b 
+input.bas(803) error 24: Invalid data types, found ',' in 't( 1, input    1 ,; b  '' )'
+input ; 1 ,; b 
+input.bas(804) error 24: Invalid data types, found ',' in 't( 1, input  ; 1 ,; b  '' )'
+input 1 ;,
+input.bas(805) error 24: Invalid data types, found ';' in 't( 1, input    1 ;,    )'
+input ; 1 ;,
+input.bas(806) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;,    )'
+input 1 ;, 
+input.bas(807) error 24: Invalid data types, found ';' in 't( 1, input    1 ;, '' )'
+input ; 1 ;, 
+input.bas(808) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;, '' )'
+input 1 ;, 1
+input.bas(809) error 24: Invalid data types, found ';' in 't( 1, input    1 ;, 1     )'
+input ; 1 ;, 1
+input.bas(810) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;, 1     )'
+input 1 ;, 1 
+input.bas(811) error 24: Invalid data types, found ';' in 't( 1, input    1 ;, 1  '' )'
+input ; 1 ;, 1 
+input.bas(812) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;, 1  '' )'
+input 1 ;, a
+input.bas(813) error 24: Invalid data types, found ';' in 't( 1, input    1 ;, a     )'
+input ; 1 ;, a
+input.bas(814) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;, a     )'
+input 1 ;, a 
+input.bas(815) error 24: Invalid data types, found ';' in 't( 1, input    1 ;, a  '' )'
+input ; 1 ;, a 
+input.bas(816) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;, a  '' )'
+input 1 ;,"T"
+input.bas(817) error 24: Invalid data types, found ';' in 't( 1, input    1 ;,"T"    )'
+input ; 1 ;,"T"
+input.bas(818) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;,"T"    )'
+input 1 ;,"T" 
+input.bas(819) error 24: Invalid data types, found ';' in 't( 1, input    1 ;,"T" '' )'
+input ; 1 ;,"T" 
+input.bas(820) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;,"T" '' )'
+input 1 ;, b
+input.bas(821) error 24: Invalid data types, found ';' in 't( 1, input    1 ;, b     )'
+input ; 1 ;, b
+input.bas(822) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;, b     )'
+input 1 ;, b 
+input.bas(823) error 24: Invalid data types, found ';' in 't( 1, input    1 ;, b  '' )'
+input ; 1 ;, b 
+input.bas(824) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;, b  '' )'
+input 1 ;;
+input.bas(825) error 24: Invalid data types, found ';' in 't( 1, input    1 ;;    )'
+input ; 1 ;;
+input.bas(826) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;;    )'
+input 1 ;; 
+input.bas(827) error 24: Invalid data types, found ';' in 't( 1, input    1 ;; '' )'
+input ; 1 ;; 
+input.bas(828) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;; '' )'
+input 1 ;; 1
+input.bas(829) error 24: Invalid data types, found ';' in 't( 1, input    1 ;; 1     )'
+input ; 1 ;; 1
+input.bas(830) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;; 1     )'
+input 1 ;; 1 
+input.bas(831) error 24: Invalid data types, found ';' in 't( 1, input    1 ;; 1  '' )'
+input ; 1 ;; 1 
+input.bas(832) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;; 1  '' )'
+input 1 ;; a
+input.bas(833) error 24: Invalid data types, found ';' in 't( 1, input    1 ;; a     )'
+input ; 1 ;; a
+input.bas(834) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;; a     )'
+input 1 ;; a 
+input.bas(835) error 24: Invalid data types, found ';' in 't( 1, input    1 ;; a  '' )'
+input ; 1 ;; a 
+input.bas(836) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;; a  '' )'
+input 1 ;;"T"
+input.bas(837) error 24: Invalid data types, found ';' in 't( 1, input    1 ;;"T"    )'
+input ; 1 ;;"T"
+input.bas(838) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;;"T"    )'
+input 1 ;;"T" 
+input.bas(839) error 24: Invalid data types, found ';' in 't( 1, input    1 ;;"T" '' )'
+input ; 1 ;;"T" 
+input.bas(840) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;;"T" '' )'
+input 1 ;; b
+input.bas(841) error 24: Invalid data types, found ';' in 't( 1, input    1 ;; b     )'
+input ; 1 ;; b
+input.bas(842) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;; b     )'
+input 1 ;; b 
+input.bas(843) error 24: Invalid data types, found ';' in 't( 1, input    1 ;; b  '' )'
+input ; 1 ;; b 
+input.bas(844) error 24: Invalid data types, found ';' in 't( 1, input  ; 1 ;; b  '' )'
+input a
+OK
+input ; a
+OK
+input a 
+OK
+input ; a 
+OK
+input a ,
+input.bas(849) error 14: Expected identifier in 't( 1, input    a ,     )'
+input ; a ,
+input.bas(850) error 14: Expected identifier in 't( 1, input  ; a ,     )'
+input a , 
+input.bas(851) error 14: Expected identifier, found ''' in 't( 1, input    a ,  '' )'
+input ; a , 
+input.bas(852) error 14: Expected identifier, found ''' in 't( 1, input  ; a ,  '' )'
+input a , 1
+input.bas(853) error 24: Invalid data types in 't( 1, input    a ,  1     )'
+input ; a , 1
+input.bas(854) error 24: Invalid data types in 't( 1, input  ; a ,  1     )'
+input a , 1 
+input.bas(855) error 24: Invalid data types, found ''' in 't( 1, input    a ,  1  '' )'
+input ; a , 1 
+input.bas(856) error 24: Invalid data types, found ''' in 't( 1, input  ; a ,  1  '' )'
+input a , a
+OK
+input ; a , a
+OK
+input a , a 
+OK
+input ; a , a 
+OK
+input a , "T"
+input.bas(861) error 14: Expected identifier in 't( 1, input    a , "T"    )'
+input ; a , "T"
+input.bas(862) error 14: Expected identifier in 't( 1, input  ; a , "T"    )'
+input a , "T" 
+input.bas(863) error 14: Expected identifier, before ''' in 't( 1, input    a , "T" '' )'
+input ; a , "T" 
+input.bas(864) error 14: Expected identifier, before ''' in 't( 1, input  ; a , "T" '' )'
+input a , b
+OK
+input ; a , b
+OK
+input a , b 
+OK
+input ; a , b 
+OK
+input a ;
+input.bas(869) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;     )'
+input ; a ;
+input.bas(870) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;     )'
+input a ; 
+input.bas(871) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;  '' )'
+input ; a ; 
+input.bas(872) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;  '' )'
+input a ; 1
+input.bas(873) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;  1     )'
+input ; a ; 1
+input.bas(874) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;  1     )'
+input a ; 1 
+input.bas(875) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;  1  '' )'
+input ; a ; 1 
+input.bas(876) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;  1  '' )'
+input a ; a
+input.bas(877) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;  a     )'
+input ; a ; a
+input.bas(878) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;  a     )'
+input a ; a 
+input.bas(879) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;  a  '' )'
+input ; a ; a 
+input.bas(880) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;  a  '' )'
+input a ; "T"
+input.bas(881) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ; "T"    )'
+input ; a ; "T"
+input.bas(882) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ; "T"    )'
+input a ; "T" 
+input.bas(883) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ; "T" '' )'
+input ; a ; "T" 
+input.bas(884) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ; "T" '' )'
+input a ; b
+input.bas(885) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;  b     )'
+input ; a ; b
+input.bas(886) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;  b     )'
+input a ; b 
+input.bas(887) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;  b  '' )'
+input ; a ; b 
+input.bas(888) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;  b  '' )'
+input a ,,
+input.bas(889) error 14: Expected identifier, found ',' in 't( 1, input    a ,,    )'
+input ; a ,,
+input.bas(890) error 14: Expected identifier, found ',' in 't( 1, input  ; a ,,    )'
+input a ,, 
+input.bas(891) error 14: Expected identifier, found ',' in 't( 1, input    a ,, '' )'
+input ; a ,, 
+input.bas(892) error 14: Expected identifier, found ',' in 't( 1, input  ; a ,, '' )'
+input a ,, 1
+input.bas(893) error 14: Expected identifier, found ',' in 't( 1, input    a ,, 1     )'
+input ; a ,, 1
+input.bas(894) error 14: Expected identifier, found ',' in 't( 1, input  ; a ,, 1     )'
+input a ,, 1 
+input.bas(895) error 14: Expected identifier, found ',' in 't( 1, input    a ,, 1  '' )'
+input ; a ,, 1 
+input.bas(896) error 14: Expected identifier, found ',' in 't( 1, input  ; a ,, 1  '' )'
+input a ,, a
+input.bas(897) error 14: Expected identifier, found ',' in 't( 1, input    a ,, a     )'
+input ; a ,, a
+input.bas(898) error 14: Expected identifier, found ',' in 't( 1, input  ; a ,, a     )'
+input a ,, a 
+input.bas(899) error 14: Expected identifier, found ',' in 't( 1, input    a ,, a  '' )'
+input ; a ,, a 
+input.bas(900) error 14: Expected identifier, found ',' in 't( 1, input  ; a ,, a  '' )'
+input a ,,"T"
+input.bas(901) error 14: Expected identifier, found ',' in 't( 1, input    a ,,"T"    )'
+input ; a ,,"T"
+input.bas(902) error 14: Expected identifier, found ',' in 't( 1, input  ; a ,,"T"    )'
+input a ,,"T" 
+input.bas(903) error 14: Expected identifier, found ',' in 't( 1, input    a ,,"T" '' )'
+input ; a ,,"T" 
+input.bas(904) error 14: Expected identifier, found ',' in 't( 1, input  ; a ,,"T" '' )'
+input a ,, b
+input.bas(905) error 14: Expected identifier, found ',' in 't( 1, input    a ,, b     )'
+input ; a ,, b
+input.bas(906) error 14: Expected identifier, found ',' in 't( 1, input  ; a ,, b     )'
+input a ,, b 
+input.bas(907) error 14: Expected identifier, found ',' in 't( 1, input    a ,, b  '' )'
+input ; a ,, b 
+input.bas(908) error 14: Expected identifier, found ',' in 't( 1, input  ; a ,, b  '' )'
+input a ,;
+input.bas(909) error 14: Expected identifier, found ';' in 't( 1, input    a ,;    )'
+input ; a ,;
+input.bas(910) error 14: Expected identifier, found ';' in 't( 1, input  ; a ,;    )'
+input a ,; 
+input.bas(911) error 14: Expected identifier, found ';' in 't( 1, input    a ,; '' )'
+input ; a ,; 
+input.bas(912) error 14: Expected identifier, found ';' in 't( 1, input  ; a ,; '' )'
+input a ,; 1
+input.bas(913) error 14: Expected identifier, found ';' in 't( 1, input    a ,; 1     )'
+input ; a ,; 1
+input.bas(914) error 14: Expected identifier, found ';' in 't( 1, input  ; a ,; 1     )'
+input a ,; 1 
+input.bas(915) error 14: Expected identifier, found ';' in 't( 1, input    a ,; 1  '' )'
+input ; a ,; 1 
+input.bas(916) error 14: Expected identifier, found ';' in 't( 1, input  ; a ,; 1  '' )'
+input a ,; a
+input.bas(917) error 14: Expected identifier, found ';' in 't( 1, input    a ,; a     )'
+input ; a ,; a
+input.bas(918) error 14: Expected identifier, found ';' in 't( 1, input  ; a ,; a     )'
+input a ,; a 
+input.bas(919) error 14: Expected identifier, found ';' in 't( 1, input    a ,; a  '' )'
+input ; a ,; a 
+input.bas(920) error 14: Expected identifier, found ';' in 't( 1, input  ; a ,; a  '' )'
+input a ,;"T"
+input.bas(921) error 14: Expected identifier, found ';' in 't( 1, input    a ,;"T"    )'
+input ; a ,;"T"
+input.bas(922) error 14: Expected identifier, found ';' in 't( 1, input  ; a ,;"T"    )'
+input a ,;"T" 
+input.bas(923) error 14: Expected identifier, found ';' in 't( 1, input    a ,;"T" '' )'
+input ; a ,;"T" 
+input.bas(924) error 14: Expected identifier, found ';' in 't( 1, input  ; a ,;"T" '' )'
+input a ,; b
+input.bas(925) error 14: Expected identifier, found ';' in 't( 1, input    a ,; b     )'
+input ; a ,; b
+input.bas(926) error 14: Expected identifier, found ';' in 't( 1, input  ; a ,; b     )'
+input a ,; b 
+input.bas(927) error 14: Expected identifier, found ';' in 't( 1, input    a ,; b  '' )'
+input ; a ,; b 
+input.bas(928) error 14: Expected identifier, found ';' in 't( 1, input  ; a ,; b  '' )'
+input a ;,
+input.bas(929) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;,    )'
+input ; a ;,
+input.bas(930) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;,    )'
+input a ;, 
+input.bas(931) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;, '' )'
+input ; a ;, 
+input.bas(932) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;, '' )'
+input a ;, 1
+input.bas(933) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;, 1     )'
+input ; a ;, 1
+input.bas(934) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;, 1     )'
+input a ;, 1 
+input.bas(935) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;, 1  '' )'
+input ; a ;, 1 
+input.bas(936) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;, 1  '' )'
+input a ;, a
+input.bas(937) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;, a     )'
+input ; a ;, a
+input.bas(938) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;, a     )'
+input a ;, a 
+input.bas(939) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;, a  '' )'
+input ; a ;, a 
+input.bas(940) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;, a  '' )'
+input a ;,"T"
+input.bas(941) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;,"T"    )'
+input ; a ;,"T"
+input.bas(942) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;,"T"    )'
+input a ;,"T" 
+input.bas(943) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;,"T" '' )'
+input ; a ;,"T" 
+input.bas(944) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;,"T" '' )'
+input a ;, b
+input.bas(945) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;, b     )'
+input ; a ;, b
+input.bas(946) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;, b     )'
+input a ;, b 
+input.bas(947) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;, b  '' )'
+input ; a ;, b 
+input.bas(948) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;, b  '' )'
+input a ;;
+input.bas(949) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;;    )'
+input ; a ;;
+input.bas(950) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;;    )'
+input a ;; 
+input.bas(951) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;; '' )'
+input ; a ;; 
+input.bas(952) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;; '' )'
+input a ;; 1
+input.bas(953) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;; 1     )'
+input ; a ;; 1
+input.bas(954) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;; 1     )'
+input a ;; 1 
+input.bas(955) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;; 1  '' )'
+input ; a ;; 1 
+input.bas(956) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;; 1  '' )'
+input a ;; a
+input.bas(957) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;; a     )'
+input ; a ;; a
+input.bas(958) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;; a     )'
+input a ;; a 
+input.bas(959) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;; a  '' )'
+input ; a ;; a 
+input.bas(960) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;; a  '' )'
+input a ;;"T"
+input.bas(961) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;;"T"    )'
+input ; a ;;"T"
+input.bas(962) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;;"T"    )'
+input a ;;"T" 
+input.bas(963) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;;"T" '' )'
+input ; a ;;"T" 
+input.bas(964) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;;"T" '' )'
+input a ;; b
+input.bas(965) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;; b     )'
+input ; a ;; b
+input.bas(966) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;; b     )'
+input a ;; b 
+input.bas(967) error 3: Expected End-of-Line, found ';' in 't( 1, input    a ;; b  '' )'
+input ; a ;; b 
+input.bas(968) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; a ;; b  '' )'
+input "T"
+input.bas(969) error 326: Expected ',' or ';' in 't( 1, input   "T"    )'
+input ;"T"
+input.bas(970) error 326: Expected ',' or ';' in 't( 1, input  ;"T"    )'
+input "T" 
+input.bas(971) error 326: Expected ',' or ';', found ''' in 't( 1, input   "T" '' )'
+input ;"T" 
+input.bas(972) error 326: Expected ',' or ';', found ''' in 't( 1, input  ;"T" '' )'
+input "T",
+input.bas(973) error 14: Expected identifier in 't( 1, input   "T",     )'
+input ;"T",
+input.bas(974) error 14: Expected identifier in 't( 1, input  ;"T",     )'
+input "T", 
+input.bas(975) error 14: Expected identifier, found ''' in 't( 1, input   "T",  '' )'
+input ;"T", 
+input.bas(976) error 14: Expected identifier, found ''' in 't( 1, input  ;"T",  '' )'
+input "T", 1
+input.bas(977) error 24: Invalid data types in 't( 1, input   "T",  1     )'
+input ;"T", 1
+input.bas(978) error 24: Invalid data types in 't( 1, input  ;"T",  1     )'
+input "T", 1 
+input.bas(979) error 24: Invalid data types, found ''' in 't( 1, input   "T",  1  '' )'
+input ;"T", 1 
+input.bas(980) error 24: Invalid data types, found ''' in 't( 1, input  ;"T",  1  '' )'
+input "T", a
+OK
+input ;"T", a
+OK
+input "T", a 
+OK
+input ;"T", a 
+OK
+input "T", "T"
+input.bas(985) error 14: Expected identifier in 't( 1, input   "T", "T"    )'
+input ;"T", "T"
+input.bas(986) error 14: Expected identifier in 't( 1, input  ;"T", "T"    )'
+input "T", "T" 
+input.bas(987) error 14: Expected identifier, before ''' in 't( 1, input   "T", "T" '' )'
+input ;"T", "T" 
+input.bas(988) error 14: Expected identifier, before ''' in 't( 1, input  ;"T", "T" '' )'
+input "T", b
+OK
+input ;"T", b
+OK
+input "T", b 
+OK
+input ;"T", b 
+OK
+input "T";
+input.bas(993) error 14: Expected identifier in 't( 1, input   "T";     )'
+input ;"T";
+input.bas(994) error 14: Expected identifier in 't( 1, input  ;"T";     )'
+input "T"; 
+input.bas(995) error 14: Expected identifier, found ''' in 't( 1, input   "T";  '' )'
+input ;"T"; 
+input.bas(996) error 14: Expected identifier, found ''' in 't( 1, input  ;"T";  '' )'
+input "T"; 1
+input.bas(997) error 24: Invalid data types in 't( 1, input   "T";  1     )'
+input ;"T"; 1
+input.bas(998) error 24: Invalid data types in 't( 1, input  ;"T";  1     )'
+input "T"; 1 
+input.bas(999) error 24: Invalid data types, found ''' in 't( 1, input   "T";  1  '' )'
+input ;"T"; 1 
+input.bas(1000) error 24: Invalid data types, found ''' in 't( 1, input  ;"T";  1  '' )'
+input "T"; a
+OK
+input ;"T"; a
+OK
+input "T"; a 
+OK
+input ;"T"; a 
+OK
+input "T"; "T"
+input.bas(1005) error 14: Expected identifier in 't( 1, input   "T"; "T"    )'
+input ;"T"; "T"
+input.bas(1006) error 14: Expected identifier in 't( 1, input  ;"T"; "T"    )'
+input "T"; "T" 
+input.bas(1007) error 14: Expected identifier, before ''' in 't( 1, input   "T"; "T" '' )'
+input ;"T"; "T" 
+input.bas(1008) error 14: Expected identifier, before ''' in 't( 1, input  ;"T"; "T" '' )'
+input "T"; b
+OK
+input ;"T"; b
+OK
+input "T"; b 
+OK
+input ;"T"; b 
+OK
+input "T",,
+input.bas(1013) error 14: Expected identifier, found ',' in 't( 1, input   "T",,    )'
+input ;"T",,
+input.bas(1014) error 14: Expected identifier, found ',' in 't( 1, input  ;"T",,    )'
+input "T",, 
+input.bas(1015) error 14: Expected identifier, found ',' in 't( 1, input   "T",, '' )'
+input ;"T",, 
+input.bas(1016) error 14: Expected identifier, found ',' in 't( 1, input  ;"T",, '' )'
+input "T",, 1
+input.bas(1017) error 14: Expected identifier, found ',' in 't( 1, input   "T",, 1     )'
+input ;"T",, 1
+input.bas(1018) error 14: Expected identifier, found ',' in 't( 1, input  ;"T",, 1     )'
+input "T",, 1 
+input.bas(1019) error 14: Expected identifier, found ',' in 't( 1, input   "T",, 1  '' )'
+input ;"T",, 1 
+input.bas(1020) error 14: Expected identifier, found ',' in 't( 1, input  ;"T",, 1  '' )'
+input "T",, a
+input.bas(1021) error 14: Expected identifier, found ',' in 't( 1, input   "T",, a     )'
+input ;"T",, a
+input.bas(1022) error 14: Expected identifier, found ',' in 't( 1, input  ;"T",, a     )'
+input "T",, a 
+input.bas(1023) error 14: Expected identifier, found ',' in 't( 1, input   "T",, a  '' )'
+input ;"T",, a 
+input.bas(1024) error 14: Expected identifier, found ',' in 't( 1, input  ;"T",, a  '' )'
+input "T",,"T"
+input.bas(1025) error 14: Expected identifier, found ',' in 't( 1, input   "T",,"T"    )'
+input ;"T",,"T"
+input.bas(1026) error 14: Expected identifier, found ',' in 't( 1, input  ;"T",,"T"    )'
+input "T",,"T" 
+input.bas(1027) error 14: Expected identifier, found ',' in 't( 1, input   "T",,"T" '' )'
+input ;"T",,"T" 
+input.bas(1028) error 14: Expected identifier, found ',' in 't( 1, input  ;"T",,"T" '' )'
+input "T",, b
+input.bas(1029) error 14: Expected identifier, found ',' in 't( 1, input   "T",, b     )'
+input ;"T",, b
+input.bas(1030) error 14: Expected identifier, found ',' in 't( 1, input  ;"T",, b     )'
+input "T",, b 
+input.bas(1031) error 14: Expected identifier, found ',' in 't( 1, input   "T",, b  '' )'
+input ;"T",, b 
+input.bas(1032) error 14: Expected identifier, found ',' in 't( 1, input  ;"T",, b  '' )'
+input "T",;
+input.bas(1033) error 14: Expected identifier, found ';' in 't( 1, input   "T",;    )'
+input ;"T",;
+input.bas(1034) error 14: Expected identifier, found ';' in 't( 1, input  ;"T",;    )'
+input "T",; 
+input.bas(1035) error 14: Expected identifier, found ';' in 't( 1, input   "T",; '' )'
+input ;"T",; 
+input.bas(1036) error 14: Expected identifier, found ';' in 't( 1, input  ;"T",; '' )'
+input "T",; 1
+input.bas(1037) error 14: Expected identifier, found ';' in 't( 1, input   "T",; 1     )'
+input ;"T",; 1
+input.bas(1038) error 14: Expected identifier, found ';' in 't( 1, input  ;"T",; 1     )'
+input "T",; 1 
+input.bas(1039) error 14: Expected identifier, found ';' in 't( 1, input   "T",; 1  '' )'
+input ;"T",; 1 
+input.bas(1040) error 14: Expected identifier, found ';' in 't( 1, input  ;"T",; 1  '' )'
+input "T",; a
+input.bas(1041) error 14: Expected identifier, found ';' in 't( 1, input   "T",; a     )'
+input ;"T",; a
+input.bas(1042) error 14: Expected identifier, found ';' in 't( 1, input  ;"T",; a     )'
+input "T",; a 
+input.bas(1043) error 14: Expected identifier, found ';' in 't( 1, input   "T",; a  '' )'
+input ;"T",; a 
+input.bas(1044) error 14: Expected identifier, found ';' in 't( 1, input  ;"T",; a  '' )'
+input "T",;"T"
+input.bas(1045) error 14: Expected identifier, found ';' in 't( 1, input   "T",;"T"    )'
+input ;"T",;"T"
+input.bas(1046) error 14: Expected identifier, found ';' in 't( 1, input  ;"T",;"T"    )'
+input "T",;"T" 
+input.bas(1047) error 14: Expected identifier, found ';' in 't( 1, input   "T",;"T" '' )'
+input ;"T",;"T" 
+input.bas(1048) error 14: Expected identifier, found ';' in 't( 1, input  ;"T",;"T" '' )'
+input "T",; b
+input.bas(1049) error 14: Expected identifier, found ';' in 't( 1, input   "T",; b     )'
+input ;"T",; b
+input.bas(1050) error 14: Expected identifier, found ';' in 't( 1, input  ;"T",; b     )'
+input "T",; b 
+input.bas(1051) error 14: Expected identifier, found ';' in 't( 1, input   "T",; b  '' )'
+input ;"T",; b 
+input.bas(1052) error 14: Expected identifier, found ';' in 't( 1, input  ;"T",; b  '' )'
+input "T";,
+input.bas(1053) error 14: Expected identifier, found ',' in 't( 1, input   "T";,    )'
+input ;"T";,
+input.bas(1054) error 14: Expected identifier, found ',' in 't( 1, input  ;"T";,    )'
+input "T";, 
+input.bas(1055) error 14: Expected identifier, found ',' in 't( 1, input   "T";, '' )'
+input ;"T";, 
+input.bas(1056) error 14: Expected identifier, found ',' in 't( 1, input  ;"T";, '' )'
+input "T";, 1
+input.bas(1057) error 14: Expected identifier, found ',' in 't( 1, input   "T";, 1     )'
+input ;"T";, 1
+input.bas(1058) error 14: Expected identifier, found ',' in 't( 1, input  ;"T";, 1     )'
+input "T";, 1 
+input.bas(1059) error 14: Expected identifier, found ',' in 't( 1, input   "T";, 1  '' )'
+input ;"T";, 1 
+input.bas(1060) error 14: Expected identifier, found ',' in 't( 1, input  ;"T";, 1  '' )'
+input "T";, a
+input.bas(1061) error 14: Expected identifier, found ',' in 't( 1, input   "T";, a     )'
+input ;"T";, a
+input.bas(1062) error 14: Expected identifier, found ',' in 't( 1, input  ;"T";, a     )'
+input "T";, a 
+input.bas(1063) error 14: Expected identifier, found ',' in 't( 1, input   "T";, a  '' )'
+input ;"T";, a 
+input.bas(1064) error 14: Expected identifier, found ',' in 't( 1, input  ;"T";, a  '' )'
+input "T";,"T"
+input.bas(1065) error 14: Expected identifier, found ',' in 't( 1, input   "T";,"T"    )'
+input ;"T";,"T"
+input.bas(1066) error 14: Expected identifier, found ',' in 't( 1, input  ;"T";,"T"    )'
+input "T";,"T" 
+input.bas(1067) error 14: Expected identifier, found ',' in 't( 1, input   "T";,"T" '' )'
+input ;"T";,"T" 
+input.bas(1068) error 14: Expected identifier, found ',' in 't( 1, input  ;"T";,"T" '' )'
+input "T";, b
+input.bas(1069) error 14: Expected identifier, found ',' in 't( 1, input   "T";, b     )'
+input ;"T";, b
+input.bas(1070) error 14: Expected identifier, found ',' in 't( 1, input  ;"T";, b     )'
+input "T";, b 
+input.bas(1071) error 14: Expected identifier, found ',' in 't( 1, input   "T";, b  '' )'
+input ;"T";, b 
+input.bas(1072) error 14: Expected identifier, found ',' in 't( 1, input  ;"T";, b  '' )'
+input "T";;
+input.bas(1073) error 14: Expected identifier, found ';' in 't( 1, input   "T";;    )'
+input ;"T";;
+input.bas(1074) error 14: Expected identifier, found ';' in 't( 1, input  ;"T";;    )'
+input "T";; 
+input.bas(1075) error 14: Expected identifier, found ';' in 't( 1, input   "T";; '' )'
+input ;"T";; 
+input.bas(1076) error 14: Expected identifier, found ';' in 't( 1, input  ;"T";; '' )'
+input "T";; 1
+input.bas(1077) error 14: Expected identifier, found ';' in 't( 1, input   "T";; 1     )'
+input ;"T";; 1
+input.bas(1078) error 14: Expected identifier, found ';' in 't( 1, input  ;"T";; 1     )'
+input "T";; 1 
+input.bas(1079) error 14: Expected identifier, found ';' in 't( 1, input   "T";; 1  '' )'
+input ;"T";; 1 
+input.bas(1080) error 14: Expected identifier, found ';' in 't( 1, input  ;"T";; 1  '' )'
+input "T";; a
+input.bas(1081) error 14: Expected identifier, found ';' in 't( 1, input   "T";; a     )'
+input ;"T";; a
+input.bas(1082) error 14: Expected identifier, found ';' in 't( 1, input  ;"T";; a     )'
+input "T";; a 
+input.bas(1083) error 14: Expected identifier, found ';' in 't( 1, input   "T";; a  '' )'
+input ;"T";; a 
+input.bas(1084) error 14: Expected identifier, found ';' in 't( 1, input  ;"T";; a  '' )'
+input "T";;"T"
+input.bas(1085) error 14: Expected identifier, found ';' in 't( 1, input   "T";;"T"    )'
+input ;"T";;"T"
+input.bas(1086) error 14: Expected identifier, found ';' in 't( 1, input  ;"T";;"T"    )'
+input "T";;"T" 
+input.bas(1087) error 14: Expected identifier, found ';' in 't( 1, input   "T";;"T" '' )'
+input ;"T";;"T" 
+input.bas(1088) error 14: Expected identifier, found ';' in 't( 1, input  ;"T";;"T" '' )'
+input "T";; b
+input.bas(1089) error 14: Expected identifier, found ';' in 't( 1, input   "T";; b     )'
+input ;"T";; b
+input.bas(1090) error 14: Expected identifier, found ';' in 't( 1, input  ;"T";; b     )'
+input "T";; b 
+input.bas(1091) error 14: Expected identifier, found ';' in 't( 1, input   "T";; b  '' )'
+input ;"T";; b 
+input.bas(1092) error 14: Expected identifier, found ';' in 't( 1, input  ;"T";; b  '' )'
+input b
+OK
+input ; b
+OK
+input b 
+OK
+input ; b 
+OK
+input b ,
+input.bas(1097) error 14: Expected identifier in 't( 1, input    b ,     )'
+input ; b ,
+input.bas(1098) error 14: Expected identifier in 't( 1, input  ; b ,     )'
+input b , 
+input.bas(1099) error 14: Expected identifier, found ''' in 't( 1, input    b ,  '' )'
+input ; b , 
+input.bas(1100) error 14: Expected identifier, found ''' in 't( 1, input  ; b ,  '' )'
+input b , 1
+input.bas(1101) error 24: Invalid data types in 't( 1, input    b ,  1     )'
+input ; b , 1
+input.bas(1102) error 24: Invalid data types in 't( 1, input  ; b ,  1     )'
+input b , 1 
+input.bas(1103) error 24: Invalid data types, found ''' in 't( 1, input    b ,  1  '' )'
+input ; b , 1 
+input.bas(1104) error 24: Invalid data types, found ''' in 't( 1, input  ; b ,  1  '' )'
+input b , a
+OK
+input ; b , a
+OK
+input b , a 
+OK
+input ; b , a 
+OK
+input b , "T"
+input.bas(1109) error 14: Expected identifier in 't( 1, input    b , "T"    )'
+input ; b , "T"
+input.bas(1110) error 14: Expected identifier in 't( 1, input  ; b , "T"    )'
+input b , "T" 
+input.bas(1111) error 14: Expected identifier, before ''' in 't( 1, input    b , "T" '' )'
+input ; b , "T" 
+input.bas(1112) error 14: Expected identifier, before ''' in 't( 1, input  ; b , "T" '' )'
+input b , b
+OK
+input ; b , b
+OK
+input b , b 
+OK
+input ; b , b 
+OK
+input b ;
+input.bas(1117) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;     )'
+input ; b ;
+input.bas(1118) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;     )'
+input b ; 
+input.bas(1119) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;  '' )'
+input ; b ; 
+input.bas(1120) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;  '' )'
+input b ; 1
+input.bas(1121) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;  1     )'
+input ; b ; 1
+input.bas(1122) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;  1     )'
+input b ; 1 
+input.bas(1123) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;  1  '' )'
+input ; b ; 1 
+input.bas(1124) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;  1  '' )'
+input b ; a
+input.bas(1125) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;  a     )'
+input ; b ; a
+input.bas(1126) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;  a     )'
+input b ; a 
+input.bas(1127) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;  a  '' )'
+input ; b ; a 
+input.bas(1128) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;  a  '' )'
+input b ; "T"
+input.bas(1129) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ; "T"    )'
+input ; b ; "T"
+input.bas(1130) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ; "T"    )'
+input b ; "T" 
+input.bas(1131) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ; "T" '' )'
+input ; b ; "T" 
+input.bas(1132) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ; "T" '' )'
+input b ; b
+input.bas(1133) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;  b     )'
+input ; b ; b
+input.bas(1134) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;  b     )'
+input b ; b 
+input.bas(1135) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;  b  '' )'
+input ; b ; b 
+input.bas(1136) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;  b  '' )'
+input b ,,
+input.bas(1137) error 14: Expected identifier, found ',' in 't( 1, input    b ,,    )'
+input ; b ,,
+input.bas(1138) error 14: Expected identifier, found ',' in 't( 1, input  ; b ,,    )'
+input b ,, 
+input.bas(1139) error 14: Expected identifier, found ',' in 't( 1, input    b ,, '' )'
+input ; b ,, 
+input.bas(1140) error 14: Expected identifier, found ',' in 't( 1, input  ; b ,, '' )'
+input b ,, 1
+input.bas(1141) error 14: Expected identifier, found ',' in 't( 1, input    b ,, 1     )'
+input ; b ,, 1
+input.bas(1142) error 14: Expected identifier, found ',' in 't( 1, input  ; b ,, 1     )'
+input b ,, 1 
+input.bas(1143) error 14: Expected identifier, found ',' in 't( 1, input    b ,, 1  '' )'
+input ; b ,, 1 
+input.bas(1144) error 14: Expected identifier, found ',' in 't( 1, input  ; b ,, 1  '' )'
+input b ,, a
+input.bas(1145) error 14: Expected identifier, found ',' in 't( 1, input    b ,, a     )'
+input ; b ,, a
+input.bas(1146) error 14: Expected identifier, found ',' in 't( 1, input  ; b ,, a     )'
+input b ,, a 
+input.bas(1147) error 14: Expected identifier, found ',' in 't( 1, input    b ,, a  '' )'
+input ; b ,, a 
+input.bas(1148) error 14: Expected identifier, found ',' in 't( 1, input  ; b ,, a  '' )'
+input b ,,"T"
+input.bas(1149) error 14: Expected identifier, found ',' in 't( 1, input    b ,,"T"    )'
+input ; b ,,"T"
+input.bas(1150) error 14: Expected identifier, found ',' in 't( 1, input  ; b ,,"T"    )'
+input b ,,"T" 
+input.bas(1151) error 14: Expected identifier, found ',' in 't( 1, input    b ,,"T" '' )'
+input ; b ,,"T" 
+input.bas(1152) error 14: Expected identifier, found ',' in 't( 1, input  ; b ,,"T" '' )'
+input b ,, b
+input.bas(1153) error 14: Expected identifier, found ',' in 't( 1, input    b ,, b     )'
+input ; b ,, b
+input.bas(1154) error 14: Expected identifier, found ',' in 't( 1, input  ; b ,, b     )'
+input b ,, b 
+input.bas(1155) error 14: Expected identifier, found ',' in 't( 1, input    b ,, b  '' )'
+input ; b ,, b 
+input.bas(1156) error 14: Expected identifier, found ',' in 't( 1, input  ; b ,, b  '' )'
+input b ,;
+input.bas(1157) error 14: Expected identifier, found ';' in 't( 1, input    b ,;    )'
+input ; b ,;
+input.bas(1158) error 14: Expected identifier, found ';' in 't( 1, input  ; b ,;    )'
+input b ,; 
+input.bas(1159) error 14: Expected identifier, found ';' in 't( 1, input    b ,; '' )'
+input ; b ,; 
+input.bas(1160) error 14: Expected identifier, found ';' in 't( 1, input  ; b ,; '' )'
+input b ,; 1
+input.bas(1161) error 14: Expected identifier, found ';' in 't( 1, input    b ,; 1     )'
+input ; b ,; 1
+input.bas(1162) error 14: Expected identifier, found ';' in 't( 1, input  ; b ,; 1     )'
+input b ,; 1 
+input.bas(1163) error 14: Expected identifier, found ';' in 't( 1, input    b ,; 1  '' )'
+input ; b ,; 1 
+input.bas(1164) error 14: Expected identifier, found ';' in 't( 1, input  ; b ,; 1  '' )'
+input b ,; a
+input.bas(1165) error 14: Expected identifier, found ';' in 't( 1, input    b ,; a     )'
+input ; b ,; a
+input.bas(1166) error 14: Expected identifier, found ';' in 't( 1, input  ; b ,; a     )'
+input b ,; a 
+input.bas(1167) error 14: Expected identifier, found ';' in 't( 1, input    b ,; a  '' )'
+input ; b ,; a 
+input.bas(1168) error 14: Expected identifier, found ';' in 't( 1, input  ; b ,; a  '' )'
+input b ,;"T"
+input.bas(1169) error 14: Expected identifier, found ';' in 't( 1, input    b ,;"T"    )'
+input ; b ,;"T"
+input.bas(1170) error 14: Expected identifier, found ';' in 't( 1, input  ; b ,;"T"    )'
+input b ,;"T" 
+input.bas(1171) error 14: Expected identifier, found ';' in 't( 1, input    b ,;"T" '' )'
+input ; b ,;"T" 
+input.bas(1172) error 14: Expected identifier, found ';' in 't( 1, input  ; b ,;"T" '' )'
+input b ,; b
+input.bas(1173) error 14: Expected identifier, found ';' in 't( 1, input    b ,; b     )'
+input ; b ,; b
+input.bas(1174) error 14: Expected identifier, found ';' in 't( 1, input  ; b ,; b     )'
+input b ,; b 
+input.bas(1175) error 14: Expected identifier, found ';' in 't( 1, input    b ,; b  '' )'
+input ; b ,; b 
+input.bas(1176) error 14: Expected identifier, found ';' in 't( 1, input  ; b ,; b  '' )'
+input b ;,
+input.bas(1177) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;,    )'
+input ; b ;,
+input.bas(1178) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;,    )'
+input b ;, 
+input.bas(1179) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;, '' )'
+input ; b ;, 
+input.bas(1180) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;, '' )'
+input b ;, 1
+input.bas(1181) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;, 1     )'
+input ; b ;, 1
+input.bas(1182) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;, 1     )'
+input b ;, 1 
+input.bas(1183) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;, 1  '' )'
+input ; b ;, 1 
+input.bas(1184) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;, 1  '' )'
+input b ;, a
+input.bas(1185) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;, a     )'
+input ; b ;, a
+input.bas(1186) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;, a     )'
+input b ;, a 
+input.bas(1187) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;, a  '' )'
+input ; b ;, a 
+input.bas(1188) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;, a  '' )'
+input b ;,"T"
+input.bas(1189) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;,"T"    )'
+input ; b ;,"T"
+input.bas(1190) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;,"T"    )'
+input b ;,"T" 
+input.bas(1191) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;,"T" '' )'
+input ; b ;,"T" 
+input.bas(1192) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;,"T" '' )'
+input b ;, b
+input.bas(1193) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;, b     )'
+input ; b ;, b
+input.bas(1194) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;, b     )'
+input b ;, b 
+input.bas(1195) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;, b  '' )'
+input ; b ;, b 
+input.bas(1196) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;, b  '' )'
+input b ;;
+input.bas(1197) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;;    )'
+input ; b ;;
+input.bas(1198) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;;    )'
+input b ;; 
+input.bas(1199) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;; '' )'
+input ; b ;; 
+input.bas(1200) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;; '' )'
+input b ;; 1
+input.bas(1201) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;; 1     )'
+input ; b ;; 1
+input.bas(1202) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;; 1     )'
+input b ;; 1 
+input.bas(1203) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;; 1  '' )'
+input ; b ;; 1 
+input.bas(1204) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;; 1  '' )'
+input b ;; a
+input.bas(1205) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;; a     )'
+input ; b ;; a
+input.bas(1206) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;; a     )'
+input b ;; a 
+input.bas(1207) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;; a  '' )'
+input ; b ;; a 
+input.bas(1208) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;; a  '' )'
+input b ;;"T"
+input.bas(1209) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;;"T"    )'
+input ; b ;;"T"
+input.bas(1210) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;;"T"    )'
+input b ;;"T" 
+input.bas(1211) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;;"T" '' )'
+input ; b ;;"T" 
+input.bas(1212) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;;"T" '' )'
+input b ;; b
+input.bas(1213) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;; b     )'
+input ; b ;; b
+input.bas(1214) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;; b     )'
+input b ;; b 
+input.bas(1215) error 3: Expected End-of-Line, found ';' in 't( 1, input    b ;; b  '' )'
+input ; b ;; b 
+input.bas(1216) error 3: Expected End-of-Line, found ';' in 't( 1, input  ; b ;; b  '' )'

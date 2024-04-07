@@ -1,0 +1,24 @@
+{{fbdoc item="title" value="__FB_JS__"}}----
+Intrinsic define set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FB_JS__""
+##
+{{fbdoc item="desc"}}
+	Define without a value created at compile time in the emscripten version of the compiler, when the ##-target js-asmjs## command line option is used. It can be used to compile parts of the program only for a such target.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/defines/fbjs.bas"}}%%(freebasic)
+#IFDEF __FB_JS__
+  '...instructions only for emscripten target...
+#ELSE
+  '...instructions not for emscripten target...
+#ENDIF 
+%%
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- [[DevBuildEmscripten|Compiling FB with Emscripten]]
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

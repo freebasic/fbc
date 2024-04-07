@@ -75,7 +75,7 @@ private function hConstAccumADDSUB _
 		return n
 	end if
 
-    o = n->op.op
+	o = n->op.op
 
 	select case o
 	case AST_OP_ADD, AST_OP_SUB
@@ -422,7 +422,7 @@ private sub hOptConstIdxMult( byval n as ASTNODE ptr )
 						'' but only when accessing a global symbol, instead of one on stack.
 						optimize = TRUE
 						dim as FBSYMBOL ptr s = astGetSymbol( n->r )
-						if( symbIsParam( s ) ) then
+						if( symbIsParamVar( s ) ) then
 							optimize = FALSE
 						elseif( symbIsLocal( s ) ) then
 							if( symbIsStatic( s ) = FALSE ) then
@@ -629,7 +629,7 @@ private function hOptAssocADD _
 		return NULL
 	end if
 
-    '' convert a+(b+c) to a+b+c and a-(b-c) to a-b+c
+	'' convert a+(b+c) to a+b+c and a-(b-c) to a-b+c
 	if( n->class = AST_NODECLASS_BOP ) then
 		op = n->op.op
 		select case op
@@ -888,6 +888,220 @@ private sub hOptToShift( byval n as ASTNODE ptr )
 	end if
 
 end sub
+
+private function hTryRemoveCAST( byval n as ASTNODE ptr, byval dtype as FB_DATATYPE ) as ASTNODE ptr
+	dim as ASTNODE ptr l = any
+	dim as integer op = any
+
+	assert( n <> NULL )
+
+	'' convert 'clng(a<long>)' -> 'a'
+	'' convert 'cint(a<long>)' -> 'a'
+	'' convert 'cint(a<any>)' -> 'clng(a)'
+
+	''   [cint()]    n
+	''     /
+	''  operand      l
+
+	'' only if there is a conversion
+	if( n->class <> AST_NODECLASS_CONV ) then
+		return n
+	end if
+
+	'' only if conversion is [U]LONG or larger
+	select case astGetDataType( n )
+	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
+	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+	case else
+		return n
+	end select
+
+	l = n->l
+
+	'' if operand is already [U]LONG, just remove the CONV node
+	select case astGetDataType( l )
+	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		astDelNode( n )
+		return l
+	end select
+
+	'' operand is something else .. keep the conversion but change to [U]LONG
+	n->dtype = typeJoin( n->dtype, dtype )
+
+	return n
+end function
+
+private function hGetOperandAs32bit( byval n as ASTNODE ptr ) as FB_DATATYPE
+
+	if( n = NULL ) then
+		return FB_DATATYPE_VOID
+	end if
+
+	'' only integers, don't allow floats
+	if( astGetDataClass( n ) <> FB_DATACLASS_INTEGER ) then
+		return FB_DATATYPE_VOID
+	end if
+
+	'' already 32-bit?
+	if( typeGetSize( astGetDataType(n) ) = 4 ) then
+		return iif( typeIsSigned( astGetDataType(n) ), _
+		            FB_DATATYPE_LONG, FB_DATATYPE_ULONG )
+	end if
+
+	'' otherwise only if a conversion already exists
+	if( n->class <> AST_NODECLASS_CONV ) then
+		return FB_DATATYPE_VOID
+	end if
+
+	'' only if conversion from another integer type
+	if( astGetDataClass( n->l ) <> FB_DATACLASS_INTEGER ) then
+		return FB_DATATYPE_VOID
+	end if
+
+	'' only if conversion from a 32-bit or smaller integer
+	if( typeGetSize( astGetDataType( n->l ) ) > 4 ) then
+		return FB_DATATYPE_VOID
+	end if
+
+	'' return sign based on conversion operand
+	return iif( typeIsSigned( astGetDataType(n->l) ), _
+	            FB_DATATYPE_LONG, FB_DATATYPE_ULONG )
+end function
+
+private function hOptBOP32 _
+	( _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr l = any
+	dim as FB_DATATYPE ldtype = any, rdtype = any
+	dim as integer op = any
+
+	if( n = NULL ) then
+		return n
+	end if
+
+	'' TODO: maybe should add to IR_OPT_* and let irGetOption()
+	'' control optimization of 32 bit operations on 64 bit target
+	if( fbGetCpuFamily() <> FB_CPUFAMILY_X86_64 ) then
+		return n
+	end if
+
+	'' walk
+	if( n->l <> NULL ) then
+		n->l = hOptBOP32( n->l )
+	end if
+
+	if( n->r <> NULL ) then
+		n->r = hOptBOP32( n->r )
+	end if
+
+	'' only integers
+	if( astGetDataClass( n ) <> FB_DATACLASS_INTEGER ) then
+		return n
+	end if
+
+	select case n->class
+	case AST_NODECLASS_BOP
+		'' check for both operands <= 32-bit and
+		'' convert 'cint(a<long>) BOP cint(b<long>)'
+		''      to 'cint(a<long> BOP32 b<long>)'
+		''
+		''           BOP                n = l = BOP
+		''        /     \
+		''   [cint()]    [cint()]       l->l, l->r
+		''     /         /
+		''  operand     operand
+
+		l = n
+
+	case AST_NODECLASS_CONV
+		'' check for both operands <= 32-bit and result <= 32-bit
+		'' convert 'clng( cint(a<long>) BOP cint(b<long>) )'
+		''      to 'a<long> BOP32 b<long>'
+		''
+		''            [clng()]          n
+		''             /
+		''           BOP                l = BOP
+		''        /     \
+		''   [cint()]    [cint()]       l->l, l->r
+		''     /         /
+		''  operand     operand
+
+		l = n->l
+
+	case else
+		return n
+	end select
+
+	op = l->op.op
+
+	select case op
+	case AST_OP_SHL
+		select case n->class
+		case AST_NODECLASS_CONV
+			'' can't optimize if result of CONV is larger than 32bit
+			if( typeGetSize( astGetDataType( n ) ) > 4 ) then
+				return n
+			end if
+		case else
+			return n
+		end select
+	case AST_OP_MOD, AST_OP_INTDIV
+	case else
+		return n
+	end select
+
+	'' BOP must not yet be optimized
+	if( typeGetSize( astGetDataType( l ) ) <= 4 ) then
+		return n
+	end if
+
+	'' left side of BOP must be 32 bit or be allowed to be 32 bit
+	ldtype = hGetOperandAs32bit( l->l )
+	if( ldtype = FB_DATATYPE_VOID ) then
+		return n
+	end if
+
+	'' right side of BOP must be 32 bit or be allowed to be 32 bit
+	rdtype = hGetOperandAs32bit( l->r )
+	if( rdtype = FB_DATATYPE_VOID ) then
+		return n
+	end if
+
+	'' only if ldtype and rdtype are same signed
+	if( typeIsSigned( ldtype ) <> typeIsSigned( rdtype ) ) then
+		return n
+	end if
+
+	select case n->class
+	case AST_NODECLASS_CONV
+		'' change BOP to return [U]LONG
+		if( typeGetSize( astGetDataType( n ) ) <= 4 ) then
+			l->dtype = typeJoin( l->dtype, ldtype )
+		end if
+
+		'' Remove top CONV node
+		astDelNode( n )
+		n = l
+
+	case AST_NODECLASS_BOP
+		'' change BOP to return [U]LONG
+		if( typeGetSize( astGetDataType( n ) ) >= 4 ) then
+			l->dtype = typeJoin( l->dtype, ldtype )
+		end if
+
+		'' Add top CONV node
+		n = astNewCONV( iif( typeIsSigned( astGetDataType( n ) ) , _
+		                FB_DATATYPE_INTEGER, FB_DATATYPE_UINT), NULL, n )
+	end select
+
+	'' Remove CONV to [U]LONG
+	l->l = hTryRemoveCAST( l->l, ldtype )
+	l->r = hTryRemoveCAST( l->r, rdtype )
+
+	return n
+end function
 
 ''::::
 private function hOptConstCONV _
@@ -1436,7 +1650,7 @@ private function hIsMultStrConcat _
 		case AST_NODECLASS_VAR, AST_NODECLASS_IDX
 			sym = astGetSymbol( l )
 			if( sym <> NULL ) then
-				if (symbIsParamBydescOrByref(sym) = FALSE) then
+				if (symbIsParamVarBydescOrByref(sym) = FALSE) then
 					function = (astIsSymbolOnTree( sym, r ) = FALSE)
 				end if
 			end if
@@ -1481,7 +1695,7 @@ private function hOptStrAssignment _
 			if( astIsTreeEqual( l, r->l ) ) then
 				sym = astGetSymbol( l )
 				if( sym <> NULL ) then
-					if (symbIsParamBydescOrByref(sym) = FALSE) then
+					if (symbIsParamVarBydescOrByref(sym) = FALSE) then
 						optimize = astIsSymbolOnTree( sym, r->r ) = FALSE
 					end if
 				end if
@@ -1489,15 +1703,16 @@ private function hOptStrAssignment _
 
 		case AST_NODECLASS_DEREF
 			'' check if we can optimize to fb_StrConcatByref()
-			'' looking specifically for a = a + b
-			'' where both a & b are STRINGS but we possibly
-			'' don't know until run time if a and b could 
-			'' be the same descriptor.
+			'' - look specifically for a = a + b where both a & b are STRINGS where we
+			''   won't necessarily know until run time if a & b could be the same descriptor
+			'' - but don't optimize a = a + a since we must make a copy anyway
+			''
+			''
 			if( astIsTreeEqual( l, r->l ) ) then
 				sym = astGetSymbol( l->l )
 				if( sym <> NULL ) then
 					if( astGetDataType( l ) = FB_DATATYPE_STRING ) then
-						optimize = TRUE
+						optimize = astIsSymbolOnTree( sym, r->r ) = FALSE
 						is_byref = TRUE
 					end if
 				end if
@@ -1511,11 +1726,9 @@ private function hOptStrAssignment _
 					sym = astGetSymbol( l )
 					if( sym <> NULL ) then
 						if( astGetDataType( l ) = FB_DATATYPE_STRING ) then
-							optimize = TRUE
 							is_byref = TRUE
-						else
-							optimize = astIsSymbolOnTree( sym, r->r ) = FALSE
 						end if
+						optimize = astIsSymbolOnTree( sym, r->r ) = FALSE
 					end if
 				end if
 
@@ -1535,7 +1748,7 @@ private function hOptStrAssignment _
 		if( hIsMultStrConcat( l, r ) ) then
 			function = hOptStrMultConcat( l, l, r, is_wstr )
 		else
-			''	=            f() -- concatassign | concatbyref
+			''  =            f() -- concatassign | concatbyref
 			'' / \           / \
 			''a   +    =>   a   expr
 			''   / \
@@ -1547,11 +1760,21 @@ private function hOptStrAssignment _
 			end if
 		end if
 	else
+		'' !!!TODO!!! - fixed length string can be optimized this
+		'' this way with multiple concatassign, so just disable
+		'' for now.  Maybe could optimize with a different
+		'' concatassign just for fixed length strings - TODO
+		select case astGetDataType( l )
+		case FB_DATATYPE_FIXSTR
+		case else
+			optimize = hIsMultStrConcat( l, r )
+		end select
+
 		'' convert "a = b + c + d" to "a = b: a += c: a += d"
-		if( hIsMultStrConcat( l, r ) ) then
+		if( optimize ) then
 			function = hOptStrMultConcat( NULL, l, r, is_wstr )
 		else
-			''	=            f() -- assign
+			''  =            f() -- assign
 			'' / \           / \
 			''a   +    =>   a   f() -- concat (done by UpdStrConcat)
 			''   / \           / \
@@ -1613,8 +1836,8 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr
 	else
 		if( irGetOption( IR_OPT_FPUSELFBOPS ) = FALSE ) then
 			'' try to optimize if a constant is being assigned to a float var
-  			if( astIsCONST( r ) ) then
-  				if( dclass = FB_DATACLASS_FPOINT ) then
+			if( astIsCONST( r ) ) then
+				if( dclass = FB_DATACLASS_FPOINT ) then
 					if( typeGetClass( astGetDataType( r ) ) <> FB_DATACLASS_FPOINT ) then
 						n->r = astNewCONV( dtype, NULL, r )
 					end if
@@ -1689,13 +1912,13 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr
 	'' delete assign node and alert UOP/BOP to not allocate a result (IR is aware)
 	rnocast->op.options and= not AST_OPOPT_ALLOCRES
 
-	''	=             o
+	''  =             o
 	'' / \           / \
 	''d   o     =>  d   expr
 	''   / \
 	''  d   expr
 
-    astDelNode( n )
+	astDelNode( n )
 	astDelTree( l )
 	if( r <> rnocast ) then
 		'' If r had a noconv cast, delete that too, so the UOP/BOP ends up at toplevel
@@ -1703,7 +1926,7 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr
 		r = rnocast
 	end if
 
-    function = r
+	function = r
 
 end function
 
@@ -1770,13 +1993,32 @@ function hOptSelfCompare _
 		exit function
 	end if
 
+	'' take care, trees are equal, but if either tree has side effects
+	'' like function calls that mutate state, we optimize those calls out
+
+	'' don't optimize if we want precise math and operands are floating point
+	if( env.clopt.fpmode = FB_FPMODE_PRECISE ) then
+		if( (typeGetClass( astGetDataType( l ) ) = FB_DATACLASS_FPOINT) or _
+			(typeGetClass( astGetDataType( r ) ) = FB_DATACLASS_FPOINT) ) then
+			exit function
+		end if
+	end if
+
 	dim as integer c
 
 	select case as const n->op.op
 	case AST_OP_EQ, AST_OP_LE, AST_OP_GE
-		c = -1
+		if( (n->op.options and AST_OPOPT_DOINVERSE) <> 0 ) then
+			c = 0
+		else
+			c = -1
+		end if
 	case AST_OP_NE, AST_OP_GT, AST_OP_LT
-		c = 0
+		if( (n->op.options and AST_OPOPT_DOINVERSE) <> 0 ) then
+			c = -1
+		else
+			c = 0
+		end if
 	case else
 		exit function
 	end select
@@ -1862,6 +2104,8 @@ function astOptimizeTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 	n = hOptConstIDX( n )
 
 	hOptToShift( n )
+
+	n = hOptBOP32( n )
 
 	n = hOptLogic( n )
 

@@ -37,7 +37,7 @@ function astBuildVarAssign _
 end function
 
 function astBuildFakeWstringAccess( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
-	assert( symbGetIsWstring( sym ) )
+	assert( symbGetIsTemporary( sym ) )
 	function = astNewDEREF( astNewVAR( sym ) )
 end function
 
@@ -50,7 +50,7 @@ function astBuildFakeWstringAssign _
 
 	dim as ASTNODE ptr t = any
 
-	assert( symbGetIsWstring( sym ) )
+	assert( symbGetIsTemporary( sym ) )
 	t = NULL
 
 	'' side-effect?
@@ -62,13 +62,13 @@ function astBuildFakeWstringAssign _
 
 	'' wcharptr = WstrAlloc( WstrLen( expr ) )
 	t = astNewLINK( t, _
-		astBuildVarAssign( sym, rtlWstrAlloc( rtlWstrLen( astCloneTree( expr ) ) ), options ), _
-		AST_LINK_RETURN_NONE )
+	                astBuildVarAssign( sym, rtlWstrAlloc( rtlWstrLen( astCloneTree( expr ) ) ), options ), _
+	                AST_LINK_RETURN_NONE )
 
 	'' *wcharptr = expr
 	t = astNewLINK( t, _
-		astNewASSIGN( astBuildFakeWstringAccess( sym ), expr, options ), _
-		AST_LINK_RETURN_RIGHT )
+	                astNewASSIGN( astBuildFakeWstringAccess( sym ), expr, options ), _
+	                AST_LINK_RETURN_RIGHT )
 
 	function = t
 end function
@@ -96,7 +96,7 @@ function astBuildVarInc _
 	end if
 
 	function = astNewSelfBOP( op, astNewVAR( lhs ), _
-		astNewCONSTi( rhs ), NULL, options )
+	                          astNewCONSTi( rhs ), NULL, options )
 
 end function
 
@@ -135,7 +135,7 @@ function astBuildVarDtorCall overload _
 	'' array? dims can be -1 with "DIM foo()" arrays..
 	if( symbGetArrayDimensions( s ) <> 0 ) then
 		'' destruct and/or free array, if needed
-		function = rtlArrayErase( astNewVAR( s ), symbIsDynamic( s ), check_access )
+		function = rtlArrayErase( astNewNIDXARRAY( astNewVAR( s ) ), symbIsDynamic( s ), check_access )
 	else
 		select case symbGetType( s )
 		'' dyn string?
@@ -144,7 +144,7 @@ function astBuildVarDtorCall overload _
 
 		'' wchar ptr marked as "dynamic wstring"?
 		case typeAddrOf( FB_DATATYPE_WCHAR )
-			assert( symbGetIsWstring( s ) ) '' This check should be done in symbGetVarHasDtor() already
+			assert( symbGetIsTemporary( s ) ) '' This check should be done in symbGetVarHasDtor() already
 			'' It points to a dynamically allocated wchar buffer
 			'' that must be deallocated.
 			function = rtlStrDelete( astNewVAR( s ) )
@@ -153,6 +153,7 @@ function astBuildVarDtorCall overload _
 			'' UDT var with dtor?
 			if( symbHasDtor( s ) ) then
 				if( check_access ) then
+					'' Check visibility of the destructor
 					if( symbCheckAccess( symbGetCompDtor1( symbGetSubtype( s ) ) ) = FALSE ) then
 						errReport( FB_ERRMSG_NOACCESSTODTOR )
 					end if
@@ -190,17 +191,17 @@ function astBuildDerefAddrOf overload _
 		n = astNewBOP( AST_OP_ADD, n, offsetexpr )
 	end if
 
-	'' Don't warn on CONST qualifier changes, astBuildDerefAddrOf() is only 
+	'' Don't warn on CONST qualifier changes, astBuildDerefAddrOf() is only
 	'' called for internal expressions in:
-	''		- astBuildVarField(), 
-	''		- hShallowCopy()
-	''		- hCallCtorList()
-	''		- cDynamicArrayIndex()
-	''		- cVariableEx()
-	''		- hAssignDynamicArray()
+	''      - astBuildVarField(),
+	''      - hShallowCopy()
+	''      - hCallCtorList()
+	''      - cDynamicArrayIndex()
+	''      - cVariableEx()
+	''      - hAssignDynamicArray()
 	'' Except:
-	''		- astTypeIniFlush(), HOWEVER, astNewASSIGN() does it's own 
-	''		  checks and calls astNewCONV()
+	''      - astTypeIniFlush(), HOWEVER, astNewASSIGN() does it's own
+	''        checks and calls astNewCONV()
 
 	n = astNewCONV( typeAddrOf( dtype ), subtype, n, AST_CONVOPT_DONTCHKPTR or AST_CONVOPT_DONTWARNCONST )
 	n = astNewDEREF( n )
@@ -244,7 +245,7 @@ function astBuildVarField _
 	dim as ASTNODE ptr n = any
 
 	'' Do implicit DEREF if it's a byref symbol
-	if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
+	if( symbIsParamVarByRef( sym ) or symbIsImport( sym ) ) then
 		n = astNewDEREF( astNewVAR( sym, , typeAddrOf( symbGetFullType( sym ) ), symbGetSubtype( sym ) ) )
 	else
 		n = astNewVAR( sym )
@@ -276,8 +277,8 @@ function astBuildTempVarClear( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 	'' WITH compound).
 
 	'' Clear variable's memory
-	function = astNewMEM( AST_OP_MEMCLEAR, astNewVAR( sym ), _
-			astNewCONSTi( symbGetLen( sym ) ) )
+	function = astNewMEM( AST_OP_MEMFILL, astNewVAR( sym ), _
+	                      astNewCONSTi( symbGetSizeOf( sym ) ) )
 end function
 
 ''
@@ -340,7 +341,7 @@ function astBuildWhileCounterEnd _
 	function = tree
 end function
 
-'' For: 
+'' For:
 ''
 ''     CNT = INIVALUE
 ''     DO
@@ -508,27 +509,27 @@ function astBuildCtorCall _
 		byval thisexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr ctor = any
-    dim as ASTNODE ptr proc = any
-    dim as integer params = any
+	dim as FBSYMBOL ptr ctor = any
+	dim as ASTNODE ptr proc = any
+	dim as integer params = any
 
-    ctor = symbGetCompDefCtor( sym )
-    if( ctor = NULL ) then
-    	return NULL
-    end if
+	ctor = symbGetCompDefCtor( sym )
+	if( ctor = NULL ) then
+		return NULL
+	end if
 
-    proc = astNewCALL( ctor )
+	proc = astNewCALL( ctor )
 
-    astNewARG( proc, thisexpr )
+	astNewARG( proc, thisexpr )
 
-    '' add the optional params, if any
-    params = symbGetProcParams( ctor ) - 1
-    do while( params > 0 )
-    	astNewARG( proc, NULL )
-    	params -= 1
-    loop
+	'' add the optional params, if any
+	params = symbGetProcParams( ctor ) - 1
+	do while( params > 0 )
+		astNewARG( proc, NULL )
+		params -= 1
+	loop
 
-    function = proc
+	function = proc
 
 end function
 
@@ -622,8 +623,8 @@ function astBuildImplicitCtorCall _
 		byref is_ctorcall as integer _
 	) as ASTNODE ptr
 
- 	dim as integer err_num = any
-    dim as FBSYMBOL ptr proc = any
+	dim as integer err_num = any
+	dim as FBSYMBOL ptr proc = any
 
 	proc = symbFindCtorOvlProc( subtype, expr, arg_mode, @err_num )
 	if( proc = NULL ) then
@@ -635,33 +636,41 @@ function astBuildImplicitCtorCall _
 		end if
 
 		'' could be a shallow copy..
-        return expr
+		return expr
 	end if
 
-	'' check visibility
+	'' Check visibility of the constructor
 	if( symbCheckAccess( proc ) = FALSE ) then
 		errReport( FB_ERRMSG_NOACCESSTOCTOR )
 	end if
 
-    '' build a ctor call
-    dim as ASTNODE ptr procexpr = astNewCALL( proc )
+	'' build a ctor call
+	dim as ASTNODE ptr procexpr = astNewCALL( proc )
 
 	'' Use a fake THIS ptr for now,
 	'' a NULL ptr given BYVAL to the BYREF THIS param
 	astNewARG( procexpr, astFakeInstPtr( subtype ), , FB_PARAMMODE_BYVAL )
 
-    astNewARG( procexpr, expr, , arg_mode )
+	astNewARG( procexpr, expr, , arg_mode )
 
-    '' add the optional params, if any
-    dim as integer params = symbGetProcParams( proc ) - 2
-    do while( params > 0 )
-    	astNewARG( procexpr, NULL )
-    	params -= 1
-    loop
+	'' add the optional params, if any
+	dim as integer params = symbGetProcParams( proc ) - 2
+	do while( params > 0 )
+		astNewARG( procexpr, NULL )
+		params -= 1
+	loop
 
-    is_ctorcall = TRUE
-    function = procexpr
+	is_ctorcall = TRUE
+	function = procexpr
 
+end function
+
+'':::::
+function astBydescArrayArg( byval arg as ASTNODE ptr ) as FB_PARAMMODE
+	function = INVALID
+	if( astIsNIDXARRAY( arg ) ) then
+		function = FB_PARAMMODE_BYDESC
+	end if
 end function
 
 '':::::
@@ -673,21 +682,21 @@ function astBuildImplicitCtorCallEx _
 		byref is_ctorcall as integer _
 	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr subtype = any
+	dim as FBSYMBOL ptr subtype = any
 
 	subtype = symbGetSubType( sym )
 
-    '' check ctor call
-    if( astIsCALLCTOR( expr ) ) then
-    	if( symbGetSubtype( expr ) = subtype ) then
-    		is_ctorcall = TRUE
-    		'' remove the the anon/temp instance
-    		return astCALLCTORToCALL( expr )
-    	end if
-    end if
+	'' check ctor call
+	if( astIsCALLCTOR( expr ) ) then
+		if( symbGetSubtype( expr ) = subtype ) then
+			is_ctorcall = TRUE
+			'' remove the the anon/temp instance
+			return astCALLCTORToCALL( expr )
+		end if
+	end if
 
-    '' try calling any ctor with the expression
-    function = astBuildImplicitCtorCall( subtype, expr, arg_mode, is_ctorcall )
+	'' try calling any ctor with the expression
+	function = astBuildImplicitCtorCall( subtype, expr, arg_mode, is_ctorcall )
 
 end function
 
@@ -819,9 +828,9 @@ function astBuildArrayDescIniTree _
 		byval array_expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr tree = any
+	dim as ASTNODE ptr tree = any
 	dim as integer dtype = any, dimensions = any, max_dimensions = any, flags = 0
-    dim as FBSYMBOL ptr elm = any, dimtb = any, subtype = any
+	dim as FBSYMBOL ptr elm = any, dimtb = any, subtype = any
 
 	'' COMMON or EXTERN? Cannot be initialized
 	if( symbIsCommon( array ) or symbIsExtern( array ) ) then
@@ -831,13 +840,13 @@ function astBuildArrayDescIniTree _
 	assert( symbIsDescriptor( desc ) )
 	assert( symbGetType( desc ) = FB_DATATYPE_STRUCT )
 	assert( symbIsDescriptor( desc->subtype ) )
-	assert( symbIsParamBydesc( array ) = FALSE )
+	assert( symbIsParamVarBydesc( array ) = FALSE )
 	assert( symbIsVar( desc ) or symbIsField( desc ) )
 
 	tree = astTypeIniBegin( symbGetFullType( desc ), symbGetSubtype( desc ), not symbIsField( desc ), symbGetOfs( desc ) )
 
-    dtype = symbGetFullType( array )
-    subtype = symbGetSubType( array )
+	dtype = symbGetFullType( array )
+	subtype = symbGetSubType( array )
 
 	elm = symbGetUDTSymbTbHead( symbGetSubtype( desc ) )
 	assert( symbIsField( elm ) )
@@ -864,7 +873,7 @@ function astBuildArrayDescIniTree _
 
 	astTypeIniScopeBegin( tree, desc, FALSE )
 
-    '' .data = @array(0) + diff
+	'' .data = @array(0) + diff
 	astTypeIniAddAssign( tree, _
 		astNewBOP( AST_OP_ADD, astCloneTree( array_expr ), _
 			astNewCONSTi( _
@@ -875,22 +884,22 @@ function astBuildArrayDescIniTree _
 
 	elm = symbGetNext( elm )
 
-	'' .ptr	= @array(0)
+	'' .ptr = @array(0)
 	astTypeIniAddAssign( tree, array_expr, elm )
 
-    elm = symbGetNext( elm )
+	elm = symbGetNext( elm )
 
-    '' .size = len( array ) * elements( array )
+	'' .size = len( array ) * elements( array )
 	astTypeIniAddAssign( tree, _
-		astNewCONSTi( iif( symbIsDynamic( array ), 0ll, symbGetRealSize( array ) ) ), _
-		elm )
+	                     astNewCONSTi( iif( symbIsDynamic( array ), 0ll, symbGetRealSize( array ) ) ), _
+	                     elm )
 
-    elm = symbGetNext( elm )
+	elm = symbGetNext( elm )
 
-    '' .element_len	= len( array )
-	astTypeIniAddAssign( tree, astNewCONSTi( symbGetLen( array ) ), elm )
+	'' .element_len = len( array )
+	astTypeIniAddAssign( tree, astNewCONSTi( symbGetSizeOf( array ) ), elm )
 
-    elm = symbGetNext( elm )
+	elm = symbGetNext( elm )
 
 	'' .dimensions = dims( array )
 	dimensions = symbGetArrayDimensions( array )
@@ -910,22 +919,22 @@ function astBuildArrayDescIniTree _
 	assert( dimensions >= 0 )
 	astTypeIniAddAssign( tree, astNewCONSTi( dimensions ), elm )
 
-    elm = symbGetNext( elm )
+	elm = symbGetNext( elm )
 
 	'' .flags = flags
 	flags or= ( max_dimensions and FBARRAY_FLAGS_DIMENSIONS )
 	astTypeIniAddAssign( tree, astNewCONSTi( flags ), elm )
 
-    elm = symbGetNext( elm )
+	elm = symbGetNext( elm )
 
-    '' setup dimTB
+	'' setup dimTB
 	var dimtbfield = elm
-    dimtb = symbGetUDTSymbTbHead( symbGetSubtype( elm ) )
+	dimtb = symbGetUDTSymbTbHead( symbGetSubtype( elm ) )
 
 	astTypeIniScopeBegin( tree, dimtbfield, TRUE )
 
-    '' static array?
-    if( symbGetIsDynamic( array ) = FALSE ) then
+	'' static array?
+	if( symbGetIsDynamic( array ) = FALSE ) then
 		for i as integer = 0 to symbGetArrayDimensions( array ) - 1
 			elm = dimtb
 
@@ -956,14 +965,14 @@ function astBuildArrayDescIniTree _
 		end if
 		assert( dimensions > 0 )
 		assert( symbDescriptorHasRoomFor( desc, dimensions ) )
-		astTypeIniAddPad( tree, dimensions * symbGetLen( symb.fbarraydim ) )
+		astTypeIniAddPad( tree, dimensions * symbGetSizeOf( symb.fbarraydim ) )
 	end if
 
-    astTypeIniScopeEnd( tree, dimtbfield )
-    astTypeIniScopeEnd( tree, desc )
-    astTypeIniEnd( tree, TRUE )
+	astTypeIniScopeEnd( tree, dimtbfield )
+	astTypeIniScopeEnd( tree, desc )
+	astTypeIniEnd( tree, TRUE )
 
-    function = tree
+	function = tree
 end function
 
 private function hConstBound _
@@ -981,7 +990,7 @@ private function hConstBound _
 
 	'' We must know the array symbol, it's carrying the bounds information
 	select case( arrayexpr->class )
-	case AST_NODECLASS_VAR, AST_NODECLASS_FIELD
+	case AST_NODECLASS_VAR, AST_NODECLASS_FIELD, AST_NODECLASS_NIDXARRAY
 
 	case else
 		exit function

@@ -195,7 +195,7 @@ private function hCheckPtr _
 				if( typeGetDtOnly( expr_dtype ) <> FB_DATATYPE_VOID ) then
 					return FB_ERRMSG_CASTDERIVEDPTRFROMINCOMPATIBLE
 				end if
-			else			
+			else
 				'' not a upcasting?
 				if( symbGetUDTBaseLevel( expr->subtype, to_subtype ) = 0 ) then
 					'' try downcasting..
@@ -208,7 +208,7 @@ private function hCheckPtr _
 	End If
 
 	'' From derived pointer?
-	if( typeGetDtOnly( expr_dtype ) = FB_DATATYPE_STRUCT ) then		
+	if( typeGetDtOnly( expr_dtype ) = FB_DATATYPE_STRUCT ) then
 		if( expr->subtype->udt.base <> NULL ) then
 			if( typeGetDtOnly( to_dtype ) <> FB_DATATYPE_STRUCT ) then
 				if( typeGetDtOnly( to_dtype ) <> FB_DATATYPE_VOID ) then
@@ -244,9 +244,9 @@ function astCheckCONV _
 
 	'' to or from UDT? only upcasting supported by now
 	if( (typeGet( to_dtype ) = FB_DATATYPE_STRUCT) or _
-	    (typeGet( ldtype   ) = FB_DATATYPE_STRUCT)      ) then
+		(typeGet( ldtype   ) = FB_DATATYPE_STRUCT)) then
 		if( (typeGet( to_dtype ) = FB_DATATYPE_STRUCT) and _
-		    (typeGet( ldtype   ) = FB_DATATYPE_STRUCT)      ) then
+			(typeGet( ldtype   ) = FB_DATATYPE_STRUCT)) then
 			function = (symbGetUDTBaseLevel( l->subtype, to_subtype ) > 0)
 		end if
 		exit function
@@ -277,22 +277,39 @@ function astCheckCONV _
 end function
 
 '':::::
-#macro hDoGlobOpOverload( to_dtype, to_subtype, node )
-	scope
-		dim as FBSYMBOL ptr proc = any
-		dim as FB_ERRMSG err_num = any
+private function astTryOvlOpCastCONV _
+	( _
+		byref n as ASTNODE ptr, _
+		byval to_dtype as integer, _
+		byval to_subtype as FBSYMBOL ptr, _
+		byval node as ASTNODE ptr, _
+		byval options as AST_CONVOPT _
+	) as integer
 
-		proc = symbFindCastOvlProc( to_dtype, to_subtype, node, @err_num )
-		if( proc <> NULL ) then
-			'' build a proc call
-			return astBuildCall( proc, node )
-		else
-			if( err_num <> FB_ERRMSG_OK ) then
-				return NULL
-			end if
+	dim as FBSYMBOL ptr proc = any
+	dim as FB_ERRMSG err_num = any
+	dim as FB_SYMBFINDOPT find_options = FB_SYMBFINDOPT_NONE
+
+	if( (options and AST_CONVOPT_EXACT_CAST)<>0 ) then
+		find_options = FB_SYMBFINDOPT_EXPLICIT
+	end if
+
+	proc = symbFindCastOvlProc( to_dtype, to_subtype, node, @err_num, find_options )
+
+	if( proc <> NULL ) then
+		'' build a proc call
+		n = astBuildCall( proc, node )
+		return TRUE
+	else
+		if( err_num <> FB_ERRMSG_OK ) then
+			n = NULL
+			return TRUE
 		end if
-	end scope
-#endmacro
+	end if
+
+	return FALSE
+
+end function
 
 '':::::
 function astTryOvlStringCONV( byref expr as ASTNODE ptr ) as integer
@@ -367,7 +384,7 @@ function astNewCONV _
 
 					n->cast.doconv = FALSE
 					n->cast.do_convfd2fs = FALSE
-					
+
 					'' data types and levels of pointer inderection are the same,
 					'' always record this as const conversion
 					n->cast.convconst = TRUE
@@ -386,10 +403,7 @@ function astNewCONV _
 		end if
 	end if
 
-	'' UDT? check if it is z|wstring? 
-	'' !!!TODO!!! make this block in to a function
-	''              re-use in astNewOvlCONV()
-	''              rewrite hDoGlobOpOverload() as astTry* function
+	'' UDT? check if it is z|wstring?
 	if( typeGet( ldtype ) = FB_DATATYPE_STRUCT ) then
 		dim as FBSYMBOL ptr subtype = astGetSubtype( l )
 
@@ -398,7 +412,15 @@ function astNewCONV _
 			dim as FB_ERRMSG err_num = any
 
 			'' check exact casts
-			proc = symbFindCastOvlProc( to_dtype, to_subtype, l, @err_num, TRUE )
+			proc = symbFindCastOvlProc _
+				( _
+					to_dtype, _
+					to_subtype, _
+					l, _
+					@err_num, _
+					FB_SYMBFINDOPT_EXPLICIT _
+				)
+
 			if( proc <> NULL ) then
 				'' build a proc call
 				return astBuildCall( proc, l )
@@ -406,9 +428,23 @@ function astNewCONV _
 
 			'' check exact string pointer casts
 			if( symbGetUdtIsZstring( subtype ) ) then
-				proc = symbFindCastOvlProc( typeAddrof( FB_DATATYPE_CHAR ), NULL, l, @err_num, TRUE )
+				proc = symbFindCastOvlProc _
+					( _
+						typeAddrof( FB_DATATYPE_CHAR ), _
+						NULL, _
+						l, _
+						@err_num, _
+						FB_SYMBFINDOPT_EXPLICIT _
+					)
 			elseif( symbGetUdtIsWstring( subtype ) ) then
-				proc = symbFindCastOvlProc( typeAddrof( FB_DATATYPE_WCHAR ), NULL, l, @err_num, TRUE )
+				proc = symbFindCastOvlProc _
+					( _
+						typeAddrof( FB_DATATYPE_WCHAR ), _
+						NULL, _
+						l, _
+						@err_num, _
+						FB_SYMBFINDOPT_EXPLICIT _
+					)
 			end if
 			if( proc <> NULL ) then
 				'' build a proc call
@@ -425,11 +461,13 @@ function astNewCONV _
 	end if
 
 	'' try casting op overloading
-	hDoGlobOpOverload( to_dtype, to_subtype, l )
+	if( astTryOvlOpCastCONV( n, to_dtype, to_subtype, l, options ) ) then
+		return n
+	end if
 
 	select case as const typeGet( to_dtype )
 	case FB_DATATYPE_VOID, FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-	     FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		'' refuse void (used by uop/bop to cast to be most precise
 		'' possible) and strings, as op overloading already failed
 		exit function
@@ -441,6 +479,12 @@ function astNewCONV _
 			exit function
 		end if
 
+		'' don't allow cast to base types?
+		if( (options and AST_CONVOPT_NOCONVTOBASE) <> 0 ) then
+			exit function
+		end if
+
+		'' no valid cast to base type?
 		if( symbGetUDTBaseLevel( l->subtype, to_subtype ) = 0 ) then
 			exit function
 		end if
@@ -479,7 +523,7 @@ function astNewCONV _
 	if( options and AST_CONVOPT_CHECKSTR ) then
 		select case as const typeGet( ldtype )
 		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-			 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 			return rtlStrToVal( l, to_dtype )
 		end select
 	else
@@ -568,7 +612,7 @@ function astNewCONV _
 		n->cast.convconst = ( symbCheckConstAssign( to_dtype, ldtype, to_subtype, l->subtype, , , wrnmsg ) = FALSE )
 
 		'' -w funcptr  -w constness
-		''    no           no          don't warn anything         
+		''    no           no          don't warn anything
 		''    yes          yes         warn everything
 		''    yes          no          warn if wrnmsg<>0
 		''    no           yes         warn everything (-w constness implies -w funcptr)
@@ -595,7 +639,6 @@ function astNewCONV _
 			end if
 
 		end if
-	
 
 	end if
 
@@ -620,11 +663,14 @@ function astNewOvlCONV _
 		byval l as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	'' try casting op overloading only
-	hDoGlobOpOverload( to_dtype, to_subtype, l )
+	dim as ASTNODE ptr n = NULL
+
+	if( astTryOvlOpCastCONV( n, to_dtype, to_subtype, l, AST_CONVOPT_NONE ) ) then
+		return n
+	end if
 
 	'' nothing to do
-	function = l
+	return l
 
 end function
 

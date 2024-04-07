@@ -32,7 +32,7 @@ HANDLE fb_hConsoleGetHandle( int is_input )
 	return (is_input? __fb_con.inHandle : __fb_con.pgHandleTb[__fb_con.active]);
 }
 
-void fb_hConsoleResetHandles()
+void fb_hConsoleResetHandles(void)
 {
 	/* 
 		Called by fb_FileResetEx() to cause fb_hConsoleGetHandle() 

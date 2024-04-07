@@ -28,7 +28,7 @@
 	- Octal numbers are written ##&o...##, whereas in QB they could be written as ##&o...## or ##&...##.
 	- In FB ##FOR## loops in subs/functions do not accept arguments received ##byref## as counters. A local variable must be used. 
 	- FB's ##[[KeyPgLocate|LOCATE]]## does not respect the fourth and fifth arguments for cursor shape.
-	- FB's ##[[KeyPgScreengraphics|SCREEN]]## does not allow switching the visible or the work-page. Use ##[[KeyPgScreenset|SCREENSET]]## instead.
+	- FB's ##[[KeyPgScreengraphics|SCREEN (Graphics)]]## does not allow switching the visible or the work-page. Use ##[[KeyPgScreenset|SCREENSET]]## instead.
 	- FB's ##[[KeyPgColor|COLOR]]## does not allow a third argument for border color.
 	- FB's ##[[KeyPgTimer|TIMER]]## returns the number of seconds since the computer started, while QB's ##TIMER## returns the number of seconds since midnight. (""Win32"" and Linux only: No more wrapping at midnight! :))
 	- In QB a ##chr$(13)## inside a string did a ##CR+LF## when ##PRINT##ed. In FB the ##CHR(13)## prints just at what it is, a ##CR##.

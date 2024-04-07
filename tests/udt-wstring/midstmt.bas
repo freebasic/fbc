@@ -10,7 +10,7 @@
 '' and the garbage in the buffer will affect the tests
 #macro INIT_FIXED_STRING( s, dtype, size, value )
 	dim s as dtype * size
-	clear @s, 0, sizeof(s)
+	clear s, 0, sizeof(s)
 	s = value
 #endmacro
 

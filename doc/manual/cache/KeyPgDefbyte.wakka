@@ -14,7 +14,7 @@ Specifies a default data type for a range of variable names
 	##**Defbyte**## specifies that variables and arrays which aren't declared with a data type - or not declared at all - are implicitly declared of type ##[[KeyPgByte|Byte]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
 
 {{fbdoc item="ex"}}
-	This will make ##bNumber## a ##[[KeyPgByte|Byte]]## number since it's first letter starts with b:
+	This will make ##bNumber## a ##[[KeyPgByte|Byte]]## number since it's first letter starts with ##b##:
 {{fbdoc item="filename" value="examples/manual/switches/defbyte.bas"}}%%(freebasic)
 '' Compile with -lang fblite or qb
 

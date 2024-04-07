@@ -26,5 +26,6 @@ Equivalent to ##[[KeyPgUnsigned|Unsigned]] [[KeyPgShort|Short]]##.
 {{fbdoc item="see"}}
 	- ##[[KeyPgShort|Short]]##
 	- ##[[KeyPgCushort|Cushort]]##
+	- ##[[TblVarTypes|Table with variable types overview, limits and suffixes]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

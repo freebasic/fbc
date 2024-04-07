@@ -1,7 +1,7 @@
 '' examples/manual/console/width.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'WIDTH'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgWidth
 '' --------
@@ -10,7 +10,8 @@
 Const W = 320, H = 200
 ScreenRes W, H
 
-Dim As Integer twid, tw, th
+Dim As Long twid
+Dim As UInteger tw, th
 
 '' Fetch and print current text width/height:
 twid = Width()

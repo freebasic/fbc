@@ -96,10 +96,14 @@ The built-in procedures that create, wait-for/signal, and destroy **Conditional 
 		**Note:**
 			**""-""** It is a good habit to use ##[[KeyPgCondWait|CondWait]]## in a protected way against eventual spurious wake-ups.
 			**""-""** For that, ##[[KeyPgCondWait|CondWait]]## is put within a loop for checking that a Boolean predicate is indeed true (predicate set true by another thread just before executing ##[[KeyPgCondSignal|CondSignal]]## or ##[[KeyPgCondBroadcast|CondBroadCast]]##) when the thread has finished waiting:
-					**##While predicate <> True
-						Condwait(conditionalid, mutexid)
-					Wend
-					predicate = False##**
+					signal-caller:
+						**##predicate = True
+						Condsignal(conditionalid)##**
+					waiting-called:
+						**##While predicate <> True
+							Condwait(conditionalid, mutexid)
+						Wend
+						predicate = False##**
 			**""-""** The loop can terminate only when the predicate is true.
 			**""-""** On the other hand, if the predicate is already true before the thread reaches the loop, ##[[KeyPgCondWait|CondWait]]## is downright skipped (allowing to take into account a case of ##[[KeyPgCondSignal|CondSignal]]## or ##[[KeyPgCondBroadcast|CondBroadCast]]## that would have been lost otherwise, because prematurely executed in a second thread before the first thread is really waiting for this).
 			

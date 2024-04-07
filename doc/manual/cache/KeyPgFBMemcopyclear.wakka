@@ -57,6 +57,9 @@ after:
 src = FreeBASIC
 dst = Free
 		%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.08.0
+
 {{fbdoc item="diff"}}
 	- The behavior and usage is new to ""FreeBASIC"".
 

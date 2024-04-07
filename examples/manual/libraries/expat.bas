@@ -1,7 +1,7 @@
 '' examples/manual/libraries/expat.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'Expat'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ExtLibexpat
 '' --------
@@ -33,8 +33,8 @@ Dim Shared As Context ctx
 Sub elementBegin cdecl _
 	( _
 		ByVal userdata As Any Ptr, _
-		ByVal element As const XML_char Ptr, _
-		ByVal attributes As const XML_char Ptr Ptr _
+		ByVal element As Const XML_char Ptr, _
+		ByVal attributes As Const XML_char Ptr Ptr _
 	)
 
 	'' Show its name
@@ -58,7 +58,7 @@ Sub elementBegin cdecl _
 End Sub
 
 '' Callback called by libexpat when end of XML tag is found
-Sub elementEnd cdecl(ByVal userdata As Any Ptr, ByVal element As const XML_char Ptr)
+Sub elementEnd cdecl(ByVal userdata As Any Ptr, ByVal element As Const XML_char Ptr)
 	'' Show text collected in charData() callback below
 	Print Space(ctx.nesting);ctx.text
 	ctx.text[0] = 0
@@ -69,7 +69,7 @@ End Sub
 Sub charData cdecl _
 	( _
 		ByVal userdata As Any Ptr, _
-		ByVal chars As const XML_char Ptr, _  '' Note: not null-terminated
+		ByVal chars As Const XML_char Ptr, _  '' Note: not null-terminated
 		ByVal length As Integer _
 	)
 

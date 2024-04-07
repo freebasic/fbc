@@ -1,14 +1,14 @@
 '' examples/manual/fileio/openlpt2.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'OPEN LPT'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOpenLpt
 '' --------
 
 ' Sends contents of text file test.txt to Windows printer named "ReceiptPrinter"
 Dim RptInput As String
-Dim PrintFileNum As Integer, RptFileFileNum As Integer
+Dim PrintFileNum As Long, RptFileFileNum As Long
 
 RptFileFileNum = FreeFile
 Open "test.txt" For Input As #RptFileFileNum

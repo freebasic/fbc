@@ -1,5 +1,5 @@
 fbchkdoc - FreeBASIC Wiki Management Tools
-Copyright (C) 2008-2020 Jeffery R. Marshall (coder[at]execulink[dot]com)
+Copyright (C) 2008-2022 Jeffery R. Marshall (coder[at]execulink[dot]com)
 
     A collection of utilities to help maintain the FreeBASIC documentation
     at https://www.freebasic.net/wiki
@@ -220,25 +220,57 @@ utility is described in the following sub-sections.
 4.1 getindex
     --------
 
-    Typical usage:
+    Usage:
         $ ./getindex -web
-        $ ./getindex -web -local
 
     getindex reads a list of all pages from the wiki and saves the list to
 PageIndex.txt.  Type './getindex' without any command line arguments to see
 a full list of options.  The PageIndex.txt file that is generated is used by 
 other utilities.
 
-    Currently this utility downloads PageIndex from the wiki as HTML and
-extracts the page names.  A better solution would be having a query available
-in the wiki's PHP application that returns a plain list.  Even better would
-allowing a plain list that returns all pages changed since a certain date.
+    Usage:
+        $ ./getindex -web -recent
+
+    Retrieve the recent changes index and save the file to RecentChanges.txt.
+
+    Currently this utility downloads PageIndex from a plain list format from
+the wiki.  Use of the '-recent' option downloads an index in plain text format
+but has the last wiki page revision number prefixed on each line.
+
+    Usage:
+        $ ./getindex -web -local
 
     If the -local option is given, the cache directory is scanned for file
 names instead allowing the creation of PageIndex.txt without having to connect
-to the wiki server.  This is useful when using a snap shot of the wiki in the
+to the wiki server.  This is useful when using a snapshot of the wiki in the
 cache dir that is not the same as what is available on the wiki server.  (For
 example, checking an older version of the manual).
+
+    Full refresh on the cache
+        $ getindex -web
+        $ getpage -web @PageIndex.txt
+        $ copy PageIndex.txt CacheIndex.txt
+
+    We make a copy of PageIndex.txt because PageIndex.txt might get trashed
+doing other fbdoc activities and we want to keep an index that matches
+with the wakka files that are in the cache. 
+
+    Sometime later when we want to refresh the cache but not download the
+whole wiki.
+
+        $ getindex -web -recent
+
+    We now have:
+        - CacheIndex.txt - saved from last getindex & getpage use
+        - RecentChanges.txt - index of most recent changes 
+        - PageIndex.txt (maybe trashed from other fbdoc activities, so don't use)
+
+        $ getpage -web @RecentChanges.txt -diff CacheIndex.txt
+
+    No errors? Ok, make RecentChanges.txt the new CacheIndex.txt saved for 
+    next time.
+
+        $ copy RecentChanges.txt CacheIndex.txt
 
 
 4.2 getpage
@@ -261,7 +293,9 @@ file is fairly flexible.  (See funcs.bas::ParsePageName).  In general the
 expected format is one of the following:
 
     DocToc
+	2061 DocToc
     (10:05 EDT) [history] -  DocToc ? JeffMarshall [updated]
+	14:24 UTC [26061] [history] -  DocToc ? JeffMarshall [updated]
 
     The first form could have been a file that was either hand edited or
 generated from some other utility and simply has one page name per line.  The
@@ -295,7 +329,9 @@ file is fairly flexible.  (See funcs.bas::ParsePageName).  In general the
 expected format is one of the following:
 
     DocToc
+    20061 DocToc
     (10:05 EDT) [history] -  DocToc ? JeffMarshall [updated]
+    14:24 UTC [26061] [history] -  DocToc ? JeffMarshall [updated]
 
     The first form could have been a file that was either hand edited or
 generated from some other utility and simply has one page name per line.  The
@@ -567,12 +603,28 @@ at https://www.github.com/freebasic/fbc instead
 5.2 Downloading changed pages since last download
     ---------------------------------------------
 
-    Open your browser and go to 
+
+    Once ... some time in the past ...:
+
+    $ getindex -web -recent
+    $ getpage -web @RecentChanges.txt
+    $ copy RecentChanges.txt CacheIndex.txt
+
+    Refresh ... many days later ...:
+
+    $ getindex -web -recent
+    $ getpage -web @RecentChanges.txt -diff CacheIndex.txt
+    $ copy RecentChanges.txt CacheIndex.txt
+
+    Repeat Refresh as needed
+
+    Alternatively, to manually inspect the updates, open your browser and
+ go to:
     https://www.freebasic.net/wiki/wikka.php?wakka=RecentChanges
 
     Then highlight the pages that have changed since your last download and
-    copy the text to the clipboard.  Paste this in to an editor and save it
-    as an ascii text file.  For example 'list.txt'.  Then:
+copy the text to the clipboard.  Paste this in to an editor and save it
+as an ascii text file.  For example 'list.txt'.  Then:
 
     $ ./getpage -web @list.txt
 

@@ -40,7 +40,7 @@ FBCALL void *fb_StrConcatByref
 	ssize_t dst_len, src_len;
 
 	/* dst should always be var-len string */
-	DBG_ASSERT( dst_size == -1 );
+	DBG_ASSERT( dst_size == FB_STRSIZEVARLEN );
 
 	/* dst */
 	FB_STRSETUP_FIX( dst, dst_size, dst_ptr, dst_len );
@@ -69,9 +69,9 @@ FBCALL void *fb_StrConcatByref
 		}
 
 		/* delete temps? */
-		if( dst_size == -1 )
+		if( dst_size == FB_STRSIZEVARLEN )
 			fb_hStrDelTemp_NoLock( (FBSTRING *)dst );
-		if( src_size == -1 )
+		if( src_size == FB_STRSIZEVARLEN )
 			fb_hStrDelTemp_NoLock( (FBSTRING *)src );
 
 		FB_STRUNLOCK();

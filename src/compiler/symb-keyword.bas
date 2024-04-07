@@ -1,7 +1,7 @@
 '' symbol table module for keywords
 ''
 '' chng: sep/2004 written [v1ctor]
-''		 jan/2005 updated to use real linked-lists [v1ctor]
+''       jan/2005 updated to use real linked-lists [v1ctor]
 
 
 #include once "fb.bi"
@@ -10,17 +10,17 @@
 #include once "list.bi"
 
 enum KWD_OPTION
-    KWD_OPTION_DEFAULT 		= &h00000000
-	KWD_OPTION_NO_QB 		= &h00000001
-	KWD_OPTION_STRSUFFIX	= &h00000002
-	KWD_OPTION_QB_ONLY		= &h00000004
+	KWD_OPTION_DEFAULT      = &h00000000
+	KWD_OPTION_NO_QB        = &h00000001
+	KWD_OPTION_STRSUFFIX    = &h00000002
+	KWD_OPTION_QB_ONLY      = &h00000004
 end enum
 
 type SYMBKWD
-	name			as const zstring ptr
-	id				as integer
-    class			as integer
-    opt             as KWD_OPTION
+	name            as const zstring ptr
+	id              as integer
+	class           as integer
+	opt             as KWD_OPTION
 end type
 
 '' keywords: name, id (token), class, option
@@ -109,6 +109,7 @@ dim shared kwdTb( 0 to FB_TOKENS-1 ) as SYMBKWD => _
 	( @"CDECL"      , FB_TK_CDECL       , FB_TKCLASS_KEYWORD ), _
 	( @"STDCALL"    , FB_TK_STDCALL     , FB_TKCLASS_KEYWORD ), _
 	( @"__THISCALL" , FB_TK_THISCALL    , FB_TKCLASS_KEYWORD ), _
+	( @"__FASTCALL" , FB_TK_FASTCALL    , FB_TKCLASS_KEYWORD ), _
 	( @"PASCAL"     , FB_TK_PASCAL      , FB_TKCLASS_KEYWORD ), _
 	( @"ALIAS"      , FB_TK_ALIAS       , FB_TKCLASS_KEYWORD ), _
 	( @"LIB"        , FB_TK_LIB         , FB_TKCLASS_KEYWORD ), _
@@ -275,7 +276,7 @@ dim shared kwdTb( 0 to FB_TOKENS-1 ) as SYMBKWD => _
 	( NULL ) _
 }
 
-'' FALSE/TRUE are names of keyword constants but 
+'' FALSE/TRUE are names of keyword constants but
 '' don't exactly fit in purpose of the KwdTb().
 dim shared kwdFALSE as zstring * 6 = "FALSE"
 dim shared kwdTRUE as zstring * 5  = "TRUE"
@@ -332,24 +333,24 @@ function symbAddKeyword _
 		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr k = any
+	dim as FBSYMBOL ptr k = any
 
-    k = symbNewSymbol( FB_SYMBOPT_DOHASH or FB_SYMBOPT_PRESERVECASE, _
-    				   NULL, _
-    				   @symbGetGlobalTb( ), hashtb, _
-    				   FB_SYMBCLASS_KEYWORD, _
-    				   symbol, NULL, _
-    				   dtype, NULL, _
-    				   attrib, FB_PROCATTRIB_NONE )
-    if( k = NULL ) then
-    	return NULL
-    end if
+	k = symbNewSymbol( FB_SYMBOPT_DOHASH or FB_SYMBOPT_PRESERVECASE, _
+	                   NULL, _
+	                   @symbGetGlobalTb( ), hashtb, _
+	                   FB_SYMBCLASS_KEYWORD, _
+	                   symbol, NULL, _
+	                   dtype, NULL, _
+	                   attrib, FB_PROCATTRIB_NONE )
+	if( k = NULL ) then
+		return NULL
+	end if
 
-    ''
-    k->key.id = id
-    k->key.tkclass = class_
+	''
+	k->key.id = id
+	k->key.tkclass = class_
 
-    function = k
+	function = k
 
 end function
 
@@ -369,7 +370,7 @@ end function
 sub symbKeywordConstsInit( )
 
 	dim as FBVALUE v
-	dim id as string * 10
+	dim id as zstring * 10
 
 	dim as FB_SYMBATTRIB attrib = any
 	dim as FBSYMBOL ptr sym = any
@@ -406,14 +407,14 @@ end sub
 sub symbKeywordTypeInit( )
 
 	dim as FBSYMBOL ptr s = any
-	dim pid as zstring ptr = any 
+	dim pid as zstring ptr = any
 	dim dtype as integer = any
 
 
 	'' add the default cva_list type
 	''
 	''  #if (__FB_BACKEND__ = "gcc")
-	''      #if defined( __FB_64BIT__ ) 
+	''      #if defined( __FB_64BIT__ )
 	''          #if defined( __FB_ARM__ )
 	''              type __va_list alias "__va_list"
 	''                  as any ptr __stack
@@ -431,9 +432,9 @@ sub symbKeywordTypeInit( )
 	''                  as ulong fp_offset
 	''                  as any ptr overflow_arg_area
 	''                  as any ptr reg_save_area
-	''              end type  
+	''              end type
 	''              type cva_list as __va_list_tag alias "__builtin_va_list[]"
-	''          #endif  
+	''          #endif
 	''      #else
 	''          #if defined( __FB_ARM__ )
 	''              type __va_list alias "__va_list"
@@ -449,7 +450,7 @@ sub symbKeywordTypeInit( )
 	''  #endif
 
 	static as FBARRAYDIM dTB(0)
-	
+
 	if( fbLangIsSet( FB_LANG_QB ) ) then
 		pid = @"__cva_list"
 	else
@@ -466,12 +467,12 @@ sub symbKeywordTypeInit( )
 
 	case FB_CVA_LIST_BUILTIN_C_STD
 		'' cva_list is __builtin_va_list from C definition:
-		''	typedef struct __va_list_tag {
-		''		unsigned int gp_offset;
-		''		unsigned int fp_offset;
-		''		void *overflow_arg_area;
-		''		void *reg_save_area;
-		''	} va_list[1];
+		''  typedef struct __va_list_tag {
+		''      unsigned int gp_offset;
+		''      unsigned int fp_offset;
+		''      void *overflow_arg_area;
+		''      void *reg_save_area;
+		''  } va_list[1];
 
 		s = symbStructBegin( NULL, NULL, NULL, "__va_list_tag", "__va_list_tag", FALSE, 0, FALSE, 0, 0 )
 
@@ -496,17 +497,17 @@ sub symbKeywordTypeInit( )
 		symbSetUdtValistType( s, FB_CVA_LIST_BUILTIN_C_STD )
 
 		'' type cva_list as __va_list_tag alias "__builtin_va_list[]"
-		symbAddTypedef( pid, typeSetMangleDt( symbGetType( s ), FB_DATATYPE_VA_LIST ), s, symbGetLen( s ) )
+		symbAddTypedef( pid, typeSetMangleDt( symbGetType( s ), FB_DATATYPE_VA_LIST ), s, symbGetSizeOf( s ) )
 
 	case FB_CVA_LIST_BUILTIN_AARCH64
 		'' cva_list is from ARM64 definition:
-		''	typdef struct __va_list {
-		''		void *__stack; 
-		''		void *__gr_top; 
-		''		void *__vr_top; 
-		''		int   __gr_offs; 
-		''		int   __vr_offs; 
-		''	} va_list;
+		''  typdef struct __va_list {
+		''      void *__stack;
+		''      void *__gr_top;
+		''      void *__vr_top;
+		''      int   __gr_offs;
+		''      int   __vr_offs;
+		''  } va_list;
 
 		s = symbStructBegin( NULL, NULL, NULL, "__va_list", "__va_list", FALSE, 0, FALSE, 0, 0 )
 
@@ -534,13 +535,13 @@ sub symbKeywordTypeInit( )
 		symbSetUdtValistType( s, FB_CVA_LIST_BUILTIN_AARCH64 )
 
 		'' type cva_list as __va_list alias "__builtin_va_list"
-		symbAddTypedef( pid, typeSetMangleDt( symbGetType( s ), FB_DATATYPE_VA_LIST ), s, symbGetLen( s ) )
+		symbAddTypedef( pid, typeSetMangleDt( symbGetType( s ), FB_DATATYPE_VA_LIST ), s, symbGetSizeOf( s ) )
 
 	case FB_CVA_LIST_BUILTIN_ARM
 		'' cva_list is from ARM definition
-		''	typdef struct __va_list {
-		''		void *__ap; 
-		''	} va_list;
+		''  typdef struct __va_list {
+		''      void *__ap;
+		''  } va_list;
 
 		s = symbStructBegin( NULL, NULL, NULL, "__va_list", "__va_list", FALSE, 0, FALSE, 0, 0 )
 
@@ -556,7 +557,7 @@ sub symbKeywordTypeInit( )
 		symbSetUdtValistType( s, FB_CVA_LIST_BUILTIN_ARM )
 
 		'' type cva_list as __va_list alias "__builtin_va_list"
-		symbAddTypedef( pid, typeSetMangleDt( symbGetType( s ), FB_DATATYPE_VA_LIST ), s, symbGetLen( s ) )
+		symbAddTypedef( pid, typeSetMangleDt( symbGetType( s ), FB_DATATYPE_VA_LIST ), s, symbGetSizeOf( s ) )
 
 	case else
 		'' FB_CVA_LIST_POINTER

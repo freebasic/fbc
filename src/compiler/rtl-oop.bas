@@ -13,17 +13,17 @@
 		( _
 			@FB_RTL_ISTYPEOF, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ) _
-	 		} _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ) _
+			} _
 		), _
-	 	/' EOL '/ _
-	 	( _
-	 		NULL _
-	 	) _
+		/' EOL '/ _
+		( _
+			NULL _
+		) _
 	 }
 
 '':::::
@@ -46,20 +46,20 @@ function rtlOOPIsTypeOf _
 		byval inst as ASTNODE ptr, _
 		byval rtti as ASTNODE ptr _
 	) as ASTNODE ptr
-	
-    
-    var proc = astNewCALL( PROCLOOKUP( ISTYPEOF ) )
 
-    '' byref obj as any ptr
-    if( astNewARG( proc, inst ) = NULL ) then
-    	exit function
-    end if
 
-    '' byref rtti as any ptr
-    if( astNewARG( proc, rtti ) = NULL ) then
-    	exit function
-    end if
+	var proc = astNewCALL( PROCLOOKUP( ISTYPEOF ) )
 
-    function = proc
+	'' byref obj as any ptr
+	if( astNewARG( proc, inst ) = NULL ) then
+		exit function
+	end if
+
+	'' byref rtti as any ptr
+	if( astNewARG( proc, rtti ) = NULL ) then
+		exit function
+	end if
+
+	function = proc
 
 end function

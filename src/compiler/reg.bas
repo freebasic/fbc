@@ -4,7 +4,7 @@
 '' obs: only works locally, can't be used between blocks
 ''
 '' chng: sep/2004 written [v1ctor]
-'' 		 jan/2005 much more modular using fake classes [v1ctor]
+''       jan/2005 much more modular using fake classes [v1ctor]
 
 
 #include once "fb.bi"
@@ -36,7 +36,7 @@ function regNewClass _
 		byval isstack as integer _
 	) as REGCLASS ptr
 
-    dim as REGCLASS ptr this_
+	dim as REGCLASS ptr this_
 
 	this_ = xcallocate( len( REGCLASS ) )
 
@@ -107,12 +107,12 @@ private sub regPush _
 		byval n as integer _
 	) static
 
-    dim as REG_REG ptr r
+	dim as REG_REG ptr r
 
-    '' take from used list
-    r = this_->regctx.usedtail
+	'' take from used list
+	r = this_->regctx.usedtail
 
-    this_->regctx.usedtail = r->prev
+	this_->regctx.usedtail = r->prev
 
 	'' add to free list
 	r->prev = this_->regctx.freetail
@@ -126,10 +126,10 @@ end sub
 private function regPop _
 	( _
 		byval this_ as REGCLASS ptr, _
-		byval size as integer _					'' in bytes
+		byval size as integer _                 '' in bytes
 	) as integer static
 
-    dim as REG_REG ptr r, last
+	dim as REG_REG ptr r, last
 
 	r = this_->regctx.freetail
 	do while( r <> NULL )
@@ -164,7 +164,7 @@ private sub regPopReg _
 		byval n as integer _
 	) static
 
-    dim as REG_REG ptr r, last
+	dim as REG_REG ptr r, last
 
 	r = this_->regctx.freetail
 	do while( r <> NULL )
@@ -199,8 +199,8 @@ private sub regClear _
 		byval this_ as REGCLASS ptr _
 	) static
 
-    dim as REG_REG ptr r
-    dim as integer n
+	dim as REG_REG ptr r
+	dim as integer n
 
 	this_->regctx.freeTB = -1
 	this_->regctx.freetail = NULL
@@ -209,7 +209,7 @@ private sub regClear _
 	for n = 0 to this_->regs - 1
 		this_->vregTB(n) = NULL
 		this_->vauxparent(n) = NULL
-		this_->regctx.nextTB(n) = 0
+		this_->regctx.nextTB(n) = IR_INVALIDDIST
 
 		r = @this_->regctx.regTB(n)
 
@@ -237,7 +237,7 @@ private function regFindFarest _
 		if( i <> reservedreg ) then
 			'' valid bits?
 			if( this_->regctx.sizeTB(i) and size ) then
-				if( maxdist < this_->regctx.nextTB(i) ) then
+				if( maxdist <= this_->regctx.nextTB(i) ) then
 					maxdist = this_->regctx.nextTB(i)
 					r = i
 				end if
@@ -255,7 +255,7 @@ private function regAllocate _
 		byval this_ as REGCLASS ptr, _
 		byval vreg as IRVREG ptr, _
 		byval vauxparent as IRVREG ptr, _
-		byval size as uinteger _				'' in bytes
+		byval size as uinteger _                '' in bytes
 	) as integer
 
 	dim as integer r = any
@@ -324,13 +324,13 @@ private function regEnsure _
 
 	dim as integer r = any
 
-    r = vreg->reg
-    if( r = INVALID ) then
+	r = vreg->reg
+	if( r = INVALID ) then
 		r = regAllocate( this_, vreg, vauxparent, size )
 		irLoadVR( r, vreg, vauxparent )
-    end if
+	end if
 
-    function = r
+	function = r
 
 end function
 
@@ -361,7 +361,7 @@ private sub regFree _
 		REG_SETFREE( this_->regctx.freeTB, r )
 		this_->vregTB(r) = NULL
 		this_->vauxparent(r) = NULL
-		this_->regctx.nextTB(r) = 0
+		this_->regctx.nextTB(r) = IR_INVALIDDIST
 		regPush( this_, r )
 	end if
 
@@ -384,7 +384,7 @@ private function regGetMaxRegs _
 		byval this_ as REGCLASS ptr _
 	) as integer static
 
-    function = this_->regs
+	function = this_->regs
 
 end function
 
@@ -487,7 +487,7 @@ private sub regInitClass _
 	this_->getVreg = @regGetVreg
 	this_->getRealReg = @regGetRealReg
 	this_->clear = @regClear
-	this_->dump	= @regDump
+	this_->dump = @regDump
 
 end sub
 
@@ -527,7 +527,7 @@ private sub sregXchg _
 		byval r1 as integer _
 	) Static
 
-    dim as integer i, r2
+	dim as integer i, r2
 
 	irXchgTOS( r1 )
 
@@ -552,11 +552,11 @@ private function sregFindFreeReg _
 
 	dim as integer r
 
-    function = INVALID
+	function = INVALID
 
-    if( this_->stkctx.fregs = 0 ) then
-    	exit function
-    end if
+	if( this_->stkctx.fregs = 0 ) then
+		exit function
+	end if
 
 	for r = 0 to this_->regs - 1
 		if( this_->stkctx.regTB(r) = INVALID ) then
@@ -614,7 +614,7 @@ private function sregAllocate _
 		byval this_ as REGCLASS ptr, _
 		byval vreg as IRVREG ptr, _
 		byval vauxparent as IRVREG ptr, _
-		byval size as uinteger _				'' unused
+		byval size as uinteger _                '' unused
 	) as integer
 
 	dim as integer r = any
@@ -664,7 +664,7 @@ private function sregEnsure _
 		byval this_ as REGCLASS ptr, _
 		byval vreg as IRVREG ptr, _
 		byval vauxparent as IRVREG ptr, _
-		byval size as uinteger _				'' unused
+		byval size as uinteger _                '' unused
 	) as integer
 
 	dim as integer r = any
@@ -754,7 +754,7 @@ private function sregGetMaxRegs _
 		byval this_ as REGCLASS ptr _
 	) as integer static
 
-    function = this_->regs
+	function = this_->regs
 
 end function
 
@@ -846,17 +846,17 @@ private sub sregInitClass _
 	sregClear( this_ )
 
 	this_->ensure = @sregEnsure
-	this_->_allocate	= @sregAllocate
+	this_->_allocate    = @sregAllocate
 	this_->allocateReg = @sregAllocateReg
 	this_->free = @sregFree
 	this_->isFree = @sregIsFree
 	this_->setOwner = @sregSetOwner
 	this_->getMaxRegs = @sregGetMaxRegs
-	this_->getFirst	= @sregGetFirst
+	this_->getFirst = @sregGetFirst
 	this_->getNext = @sregGetNext
 	this_->getVreg = @sregGetVreg
 	this_->getRealReg = @sregGetRealReg
 	this_->clear = @sregClear
-	this_->dump	= @sregDump
+	this_->dump = @sregDump
 
 end sub

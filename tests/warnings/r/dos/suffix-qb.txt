@@ -1,11 +1,11 @@
-----parser-assignment.bas ----
+---- parser-assignment.bas ----
 none expected
 warning expected
 	Suffix ignored in 'let%'
 none expected
 warning expected
 	Suffix ignored in 'let%'
-----String Functions ----
+---- String Functions ----
 none expected
-----Procedure ----
+---- Procedure ----
 none expected

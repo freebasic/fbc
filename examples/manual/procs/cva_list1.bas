@@ -1,7 +1,7 @@
 '' examples/manual/procs/cva_list1.bas
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'CVA_LIST'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCvaList
 '' --------
@@ -11,12 +11,12 @@ Function average cdecl(count As Integer, ... ) As Double
 	Dim sum As Double = 0
 	Dim i As Integer
 
-	Dim args As cva_list '' argument list object
-	cva_start( args, count ) '' constructor
+	Dim args As Cva_List '' argument list object
+	Cva_Start( args, count ) '' constructor
 	For i = 1 To count
-		sum += cva_arg(args, Double)
+		sum += Cva_Arg(args, Double)
 	Next
-	cva_end( args ) '' destructor
+	Cva_End( args ) '' destructor
 	
 	Return sum / count
 End Function

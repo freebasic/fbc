@@ -14,7 +14,7 @@ static int reverse_mask(int mask)
 /* Assumes coordinates to be physical ones.
  * Also assumes color is already masked. */
 
-/* Caller is expected to hold FB_GRAPHICSLOCK() */
+/* Caller is expected to hold FB_GRAPHICS_LOCK() */
 void fb_GfxDrawLine(FB_GFXCTX *context, int x1, int y1, int x2, int y2, unsigned int color, unsigned int style)
 {
 	int x, y, d, dx, dy, ax, ay, skip, rot, bit;
