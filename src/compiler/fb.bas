@@ -462,10 +462,11 @@ sub fbInit _
 
 	env.opt.parammode       = FB_PARAMMODE_BYREF
 	env.opt.procpublic      = TRUE
+	env.opt.procprofile     = TRUE
 	env.opt.escapestr       = FALSE
 	env.opt.dynamic         = FALSE
-	env.opt.base = 0
-	env.opt.gosub = (env.clopt.lang = FB_LANG_QB)
+	env.opt.base            = 0
+	env.opt.gosub           = (env.clopt.lang = FB_LANG_QB)
 
 	env.fbctinf_started = FALSE
 
@@ -584,7 +585,7 @@ sub fbGlobalInit()
 	env.clopt.nullptrchk    = FALSE
 	env.clopt.unwindinfo    = FALSE
 	env.clopt.resumeerr     = FALSE
-	env.clopt.profile       = FALSE
+	env.clopt.profile       = FB_PROFILE_OPT_NONE
 
 	env.clopt.warninglevel  = FB_WARNINGMSGS_DEFAULT_LEVEL
 	env.clopt.showerror     = TRUE

@@ -665,7 +665,7 @@ function rtlInitApp _
 			'' call __monstartup() on win32/cygwin if profiling
 			select case( env.clopt.target )
 			case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-				if( env.clopt.profile ) then
+				if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_GMON ) then
 					'' __monstartup()
 					rtlProfileCall_monstartup( )
 				end if

@@ -590,6 +590,7 @@ type FBOPTION
 	parammode       as integer                  '' def    = byref
 	explicit        as integer                  '' def    = false
 	procpublic      as integer                  '' def    = true
+	procprofile     as integer                  '' def    = true
 	escapestr       as integer                  '' def    = false
 	dynamic         as integer                  '' def    = false
 	gosub           as integer                  '' def    = true in FB_LANG_QB, false in all other dialects
