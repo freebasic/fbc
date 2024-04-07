@@ -80,6 +80,7 @@ Version 1.20.0
 - sf.net #1003: symbol.bi typo in macro - should have been FB_DATACLASS_FPOINT
 - fbc: __FB_QUERY_SYMBOL__: evaluation contexts were reading past the end of the current buffer and in to the current file causing tokens to be consumed in the wrong context  
 - github #424: fbc: Invalid assignment/conversion, before 'Then' in function returned Const ZString Ptr
+- updated bindings: WinAPI: Allow FD_SETSIZE to be defined by user before including winsock.bi and winsock2.bi
 
 
 Version 1.10.3
