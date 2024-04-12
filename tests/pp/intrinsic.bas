@@ -82,6 +82,10 @@
 #error __FB_OPTION_GOSUB__ not defined
 #endif
 
+#ifndef __FB_OPTION_PROFILE__
+#error __FB_OPTION_PROFILE__ not defined
+#endif
+
 #ifndef __FB_OUT_DLL__
 #error __FB_OUT_DLL__ not defined
 #endif
@@ -148,6 +152,10 @@
 
 #ifndef __FB_OPTIMIZE__
 #error __FB_OPTIMIZE__ not defined
+#endif
+
+#ifndef __FB_PROFILE__
+#error __FB_PROFILE__ not defined
 #endif
 
 '' Always defined for this test
