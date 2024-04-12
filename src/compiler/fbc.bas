@@ -1147,10 +1147,12 @@ private function hLinkFiles( ) as integer
 			ldcline += hFindLib( "dllcrt2.o" )
 		else
 			ldcline += hFindLib( "crt2.o" )
+			#ifndef profsarg
 			'' additional support for gmon
 			if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_GMON  ) then
 				ldcline += hFindLib( "gcrt2.o" )
 			end if
+			#endif
 		end if
 
 		ldcline += hFindLib( "crtbegin.o" )
@@ -4374,10 +4376,12 @@ private sub hAddDefaultLibs( )
 			fbcAddDefLib( "gcc_eh" )
 		end if
 
+		#ifndef profsarg
 		'' profiling?
 		if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_GMON ) then
 			fbcAddDefLib( "gmon" )
 		end if
+		#endif
 
 	case FB_COMPTARGET_XBOX
 		fbcAddDefLib( "gcc" )

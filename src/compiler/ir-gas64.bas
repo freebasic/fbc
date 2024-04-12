@@ -303,6 +303,12 @@ type ASM64_CONTEXT
 	opereg    as integer
 	opepass   as integer
 	maxstack  as integer
+	#ifdef profsarg
+	''profiling
+	profile   as boolean
+	profprcname as string
+	profprcnb as integer
+	#endif
 end type
 
 type DBGCTX
@@ -888,6 +894,7 @@ private function pw2(byval num as integer)as integer ''return the first power of
 		return 2^(int(a)+1)
 	end if
 end function
+
 private sub asm_section(byref section as string)
 	static section_current as string
 	if section_current<>section then
@@ -895,6 +902,57 @@ private sub asm_section(byref section as string)
 		section_current=section
 	end if
 end sub
+
+#ifdef profsarg
+sub code_write_table()
+    dim as string lname
+    asm_section(".text")
+    asm_info("Special proc added to write cycle table")
+    ctx.indent +=1
+    asm_code(".globl write_table$")
+    asm_code("write_table$:")
+
+    asm_code("push rbp")
+    asm_code("mov  rbp,rsp")
+    asm_code("sub rsp, 176")
+    asm_code("call fb_FileFree")
+    asm_code("mov -120[rbp], eax") ''hfile
+    lname = *symbUniqueLabel( )
+    asm_code("lea rcx, "+lname+"[rip]")
+    asm_code("mov edx, 17")
+    asm_code("call fb_StrAllocTempDescZEx")
+ 
+    asm_code("mov rcx, rax")
+    asm_code("xor edx, edx")
+    asm_code("mov r8d, 2")
+    asm_code("xor r9d, r9d")
+    asm_code("mov eax, DWORD PTR -120[rbp]")
+    asm_code("mov 32[rsp], eax")
+    asm_code("mov QWORD PTR 40[rsp], 0")
+    asm_code("call fb_FileOpen")
+
+    asm_code("mov ecx, DWORD PTR -120[rbp]")
+    asm_code("xor edx, edx")
+    asm_code("lea r8, prof$[rip]")
+    asm_code("mov r9d, 40000")
+    asm_code("call fb_FilePutLarge")
+
+    asm_code("mov ecx, DWORD PTR -120[rbp]")
+    asm_code("call fb_FileClose")
+    asm_code("mov rsp,rbp")
+    asm_code("pop rbp")
+    asm_code("ret")
+    
+    asm_code(".section .data")
+    asm_code(".align 8")
+    asm_code(lname+":")
+    asm_code(".ascii ""profilecycles.prf\0""")
+    asm_code(".section .text")
+    
+    ctx.indent +=1
+end sub
+#EndIf
+
 private sub emitop3_op4(byref op as string)
 	if right(op,3)="#NO" then
 		asm_code(op,KNOOPTIM)
@@ -2375,6 +2433,9 @@ private function _emitbegin( ) as integer
 	ctx.dtorcount = 0
 	ctx.roundfloat=false
 	ctx.target=fbgetoption(FB_COMPOPT_TARGET) ''linux or windows
+	#ifdef profsarg
+	ctx.profile=fbgetoption(FB_COMPOPT_PROFILE) ''profiling 
+	#EndIf
 	select case ctx.target
 	case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD
 		ctx.systemv = true
@@ -2518,6 +2579,25 @@ private sub _emitend( )
 		asm_code("pop rbx")
 		asm_code("ret")
 	end if
+	
+	#ifdef profsarg
+	''profiling
+	if ctx.profile then
+        code_write_table
+        asm_code(".section .bss")
+        if ctx.target=FB_COMPTARGET_LINUX then
+        	asm_code(".local prof$")
+        	asm_code(".comm prof$,40000,8")
+        else
+        	asm_code(".lcomm prof$,40000,8") '' space for 1000 elements init0 / reinit / total time / nbr of passing
+        end if
+        dim as integer frf=freefile
+        Open "profileprcname.prf" For Output As frf
+        put #frf,,ctx.profprcname
+        close frf
+    end if 	
+	#EndIf
+	
 	''write dbg data
 	if( env.clopt.debuginfo = true ) then
 		dim as string lname = *symbUniqueLabel( )
@@ -6350,9 +6430,79 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 	end if
 
 	if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
-		asm_code("call " +pname+"@PLT",KNOALL)
+		''asm_code("call " +pname+"@PLT",KNOALL)
 	else
-		asm_code("call " +pname,KNOALL)
+		''asm_code("call " +pname,KNOALL)
+		''====== profiling
+		if ctx.profile then
+	        if pname<>"fb_End" then
+	        	
+	        	asm_info("Calculate split time for procedure ------------------------------------------------------")
+		        asm_code("push rax")
+		        'asm_code("push rbx")
+		        'asm_code("push rcx")
+		        asm_code("push rdx")
+		        asm_code("rdtsc")
+		        asm_code("shl rdx,32")
+		        asm_code("or rdx,rax")
+		        asm_code("mov rax, QWORD PTR prof$[rip+"+str(ctx.profprcnb*40+16)+"]") ''reinit
+		        asm_code("sub rdx, rax")
+		        asm_code("add QWORD PTR prof$[rip+"+str(ctx.profprcnb*40+24)+"], rdx") ''internal total
+		        'asm_code("cpuid")
+		        asm_code("pop rdx")
+		        'asm_code("pop rcx")
+		        'asm_code("pop rbx")
+		        asm_code("pop rax")
+		        asm_info("---------------------------------------------------------------")
+	        	
+	            asm_code("call " +pname,KNOALL)
+	            
+	            asm_info("init time returning in proc ---------------------------------------")
+		        asm_code("push rax")
+		        'asm_code("push rbx")
+		        'asm_code("push rcx")
+		        asm_code("push rdx")
+		        'asm_code("cpuid")
+		        asm_code("rdtsc")
+		        asm_code("shl rdx,32")
+		        asm_code("or rdx,rax")
+		        asm_code("mov QWORD ptr prof$[rip+"+str(ctx.profprcnb*40+16)+"], rdx")''reinit
+		        asm_code("pop rdx")
+		        'asm_code("pop rcx")
+		        'asm_code("pop rbx")
+		        asm_code("pop rax")
+		        asm_info("---------------------------------------------------------------")  
+	        else
+	            asm_info("Calculate time before end ------------------------------------------------------")
+	            asm_code("push rax")
+	            'asm_code("push rbx")
+	            asm_code("push rcx")
+	            asm_code("push rdx")
+	            asm_code("rdtsc")
+	            asm_code("shl rdx,32")
+	            asm_code("or rdx,rax")
+	            
+	            asm_code("mov rcx, rdx")
+		        asm_code("mov rax, QWORD PTR prof$[rip+"+str(ctx.profprcnb*40)+"]") ''init0
+		        asm_code("sub rcx, rax")
+		        asm_code("add QWORD PTR prof$[rip+"+str(ctx.profprcnb*40+8)+"], rcx") ''grand total
+	            
+	            asm_code("mov rax, QWORD PTR prof$[rip+"+str(ctx.profprcnb*40+16)+"]") ''reinit
+	            asm_code("sub rdx, rax")
+	            asm_code("add QWORD PTR prof$[rip+"+str(ctx.profprcnb*40+24)+"], rdx") ''internal total
+	            'asm_code("cpuid")
+	            asm_code("call write_table$")
+	            asm_code("pop rdx")
+	            asm_code("pop rcx")
+	            'asm_code("pop rbx")
+	            asm_code("pop rax")
+	            asm_code("call " +pname,KNOALL)    '' call fb_End
+	            asm_info("---------------------------------------------------------------")
+	        end if
+	    else
+	        asm_code("call " +pname,KNOALL)
+	    end if
+		''===========
 	end if
 
 	''for linux restoring the previous value of rsp in case of parameter put on the stack
@@ -7012,6 +7162,13 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 	ctx.argcptmax=0
 	ctx.usedreg=0 ''registers used
 	ctx.stkmax=0
+	#ifdef profsarg
+		if ctx.profile then
+			ctx.profprcname+=*symbGetMangledName( proc )+chr(13)+chr(10)
+    	end if
+	#EndIf
+	
+	
 	if( symbIsExport( proc ) ) then
 		asm_section(".drectve")
 		asm_code(".ascii "" -export:"+*symbGetMangledName( proc )+"""")
@@ -7072,7 +7229,28 @@ private sub _emitprocend _
 	asm_info("stk5="+Str(ctx.stk))
 	''--> PROLOG code select special area before writing
 	ctx.section=SECTION_PROLOG
-
+#ifdef profsarg
+	''profiling
+    if ctx.profile then
+        asm_info("init time entering proc ---------------------------------------")
+        asm_code("add QWORD ptr prof$[rip+"+str(ctx.profprcnb*40+32)+"], 1")
+        asm_code("push rax")
+        'asm_code("push rbx")
+        'asm_code("push rcx")
+        asm_code("push rdx")
+        'asm_code("cpuid")
+        asm_code("rdtsc")
+        asm_code("shl rdx,32")
+        asm_code("or rdx,rax")
+        asm_code("mov QWORD ptr prof$[rip+"+str(ctx.profprcnb*40)+"], rdx") ''put in init0
+        asm_code("mov QWORD ptr prof$[rip+"+str(ctx.profprcnb*40+16)+"], rdx") ''put in init
+        asm_code("pop rdx")
+        'asm_code("pop rcx")
+        'asm_code("pop rbx")
+        asm_code("pop rax")
+        asm_info("---------------------------------------------------------------")
+    end if
+#EndIf
 	if symbIsNaked(proc)=false then
 
 		asm_code("push rbp")
@@ -7144,7 +7322,29 @@ private sub _emitprocend _
 
 	''--> EPILOG code
 	ctx.section=SECTION_EPILOG
-
+#ifdef profsarg
+	''profiling total time + next proc
+    if ctx.profile then 
+        asm_info("Calculate final time for procedure ------------------------------------------------------")
+        asm_code("push rax") ''saving only rax if return value
+        asm_code("rdtsc")
+        asm_code("shl rdx,32")
+        asm_code("or rdx,rax")
+        asm_code("mov rcx, rdx")
+        asm_code("mov rax, QWORD PTR prof$[rip+"+str(ctx.profprcnb*40)+"]") ''init0
+        asm_code("sub rcx, rax")
+        asm_code("add QWORD PTR prof$[rip+"+str(ctx.profprcnb*40+8)+"], rcx") ''grand total
+        
+        asm_code("mov rax, QWORD PTR prof$[rip+"+str(ctx.profprcnb*40+16)+"]") ''reinit
+        asm_code("sub rdx, rax")
+        asm_code("add QWORD PTR prof$[rip+"+str(ctx.profprcnb*40+24)+"], rdx") ''internal total
+        'asm_code("cpuid")
+        asm_code("pop rax")
+        asm_info("---------------------------------------------------------------")
+        
+        ctx.profprcnb+=1
+    end if
+#EndIf
 	if( env.clopt.debuginfo = true ) then
 		lname = *symbUniqueLabel( )
 		dbg_addstab(,STAB_TYPE_RBRAC,,lname+"-"+*symbGetMangledName( ctxdbg.proc ))
