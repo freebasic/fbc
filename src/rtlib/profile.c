@@ -59,6 +59,7 @@ void fb_PROFILECTX_Destructor( void* );
 typedef struct _BIN
 {
 	FBPROC fbproc[BIN_SIZE];
+	int id;
 	int next_free;
 	struct _BIN *next;
 } BIN;
@@ -92,6 +93,10 @@ static FBPROC *alloc_proc( void )
 	if ( ( !bin_head ) || ( bin_head->next_free >= BIN_SIZE ) ) {
 		bin = (BIN *)calloc( 1, sizeof(BIN) );
 		bin->next = bin_head;
+		bin->id = 0;
+		if( bin_head ) {
+			bin->id = bin_head->id + 1;
+		}
 		bin_head = bin;
 	}
 
