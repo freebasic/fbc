@@ -135,12 +135,19 @@ static int time_sorter( const void *e1, const void *e2 )
 /*:::::*/
 static void add_proc( FBPROC ***array, int *size, FBPROC *proc )
 {
-	FBPROC **a = *array;
+	FBPROC **new_array = NULL;
 	int s = *size;
-	a = (FBPROC **)realloc( a, (s + 1) * sizeof(FBPROC *) );
-	a[s] = proc;
-	(*size)++;
-	*array = a;
+	if( *array ) {
+		new_array = (FBPROC **)realloc( *array, (s + 1) * sizeof(FBPROC *) );
+	} else {
+		new_array = (FBPROC **)calloc( (s + 1), sizeof(FBPROC *) );
+	}
+	
+	if( new_array ) {
+		new_array[s] = proc;
+		(*size)++;
+		*array = new_array;
+	}
 }
 
 /*:::::*/
@@ -223,26 +230,35 @@ FBCALL void *fb_ProfileBeginCall( const char *procname )
 			proc = parent_proc->child[hash];
 			if ( proc ) {
 				if ( !strcmp4( proc->name, procname ) ) {
-					goto fill_proc;
+					goto update_proc;
 				}
 				hash = ( hash + offset ) % MAX_CHILDREN;
-			}
-			else {
+			} else {
 				proc = alloc_proc();
-				proc->name = procname;
-				proc->total_time = 0.0;
-				proc->parent = orig_parent_proc;
-				parent_proc->child[hash] = proc;
 				goto fill_proc;
 			}
 		}
+
 		if ( !parent_proc->next ) {
 			parent_proc->next = alloc_proc();
+			proc = parent_proc->next;
+			if( proc ) {
+				proc->name = procname;
+				goto fill_proc;
+			}
 		}
+
 		parent_proc = parent_proc->next;
 	}
-fill_proc:
 
+fill_proc:
+	proc->name = procname;
+	proc->total_time = 0.0;
+	proc->call_count = 0;
+	proc->parent = orig_parent_proc;
+	parent_proc->child[hash] = proc;
+
+update_proc:
 	ctx->cur_proc = proc;
 
 	proc->time = fb_Timer();
