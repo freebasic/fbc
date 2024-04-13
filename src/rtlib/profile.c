@@ -5,10 +5,10 @@
  *       may/2005 rewritten to properly support recursive calls [lillo]
  *       apr/2024 use thread local storage (wip) [jeffm]
  *       apr/2024 add call counting [jeffm]
+ *       apr/2024 dynamic string table [jeffm]
+ *       apr/2024 remove NUL character padding requirement [jeffm]
  */
 
-/* TODO: dynamically allocate the list of procedure names */
-/* TODO: remove the NUL char padding requirement for names from fbc */
 /* TODO: allocate a high level hash array for a top level index */
 /* TODO: allocate bins in TLS: FB_PROFILECTX (fewer locks)*/
 /* TODO: merge thread data to the global data in fb_PROFILECTX_Destructor */
@@ -27,8 +27,8 @@
 #include "fb.h"
 #include <time.h>
 
-#define MAIN_PROC_NAME         "(main)\0\0"
-#define THREAD_PROC_NAME       "(thread)"
+#define MAIN_PROC_NAME         "(main)\0\0\0\0\0\0"
+#define THREAD_PROC_NAME       "(thread)\0\0\0\0"
 #define PROFILE_FILE           "profile.txt"
 #define MAX_CHILDREN           257
 #define BIN_SIZE               1024
@@ -38,6 +38,82 @@
 #else
 #define PATH_SEP               "\\"
 #endif
+
+/* ************************************
+** STRINGS
+*/
+
+#define STRING_BLOCK_SIZE 1024
+
+typedef struct _STRING_BLOCK
+{
+	char data[STRING_BLOCK_SIZE];
+	int used;
+	int reserved;
+	struct _STRING_BLOCK *next;
+} STRING_BLOCK;
+
+static STRING_BLOCK *string_head = NULL; 
+
+static char * alloc_string( int length )
+{
+	char *ret;
+	STRING_BLOCK *tmp;
+	int size;
+
+	/* 12 byte minumum per string (assuming 4 bytes per int)
+	** - space for size (4 bytes) and length (4 bytes) plus
+	** - round up length to mod 4 bytes 
+	** - and pad with additional 4 NUL bytes
+	** - example: ""  => 12, 0, !"\0\0\0\"
+	** - example: "A" => 16, 1, !"A\0\0\0\0\0\0\0"
+	*/
+	size = sizeof(int) + sizeof(int) + ((length + (sizeof(int)-1)) 
+	       & ~(sizeof(int)-1)) + sizeof(int);
+
+	if( size > STRING_BLOCK_SIZE ) {
+		return NULL;
+	}
+
+	if( ( !string_head ) ||
+	    (size > (STRING_BLOCK_SIZE - string_head->used)) ) {
+
+		tmp = (STRING_BLOCK*)calloc( 1, sizeof(STRING_BLOCK) );
+
+		if( !tmp ) {
+			return NULL;
+		}
+
+		tmp->used = 0;
+		tmp->reserved = 0;
+		tmp->next = string_head;
+		string_head = tmp;
+	}
+
+	ret = &string_head->data[string_head->used];
+	*(int *)ret = size;
+	ret += sizeof(int);
+	*(int *)ret = length;
+	ret += sizeof(int);
+
+	string_head->used += size;
+
+	return ret;
+}
+
+static char * store_string( const char *src )
+{
+	int length = strlen(src) + 1;
+	char *dst = (char *)alloc_string( length );
+	if( dst ) {
+		strncpy( dst, src, length ); 
+	}
+	return dst;
+}
+
+/* ************************************
+** PROCS
+*/
 
 typedef struct _FBPROC
 {
@@ -177,11 +253,42 @@ static void find_all_procs( FBPROC *proc, FBPROC ***array, int *size )
 }
 
 /*:::::*/
+static unsigned int hash4_compute( const char *p, unsigned int *out_hash )
+{
+	unsigned int hash = 0, len, out_len;
+
+	union {
+		int d;
+		char b[4];
+	} tmp = {0};
+
+	len = out_len = strlen( p );
+
+	while ( len > 3 ) {
+		hash = ( (hash << 3) | (hash >> 29) ) ^ ( *(unsigned int *)p );
+		len -= 4;
+	}
+
+	while ( len > 0 ) {
+		tmp.b[len] = p[len];
+		--len;
+	}
+
+	hash = ( (hash << 3) | (hash >> 29) ) ^ ( tmp.d );
+
+	*out_hash = hash;
+	return out_len; 
+}
+
+/* ************************************
+** PROFILING
+*/
+
+/*:::::*/
 FBCALL void *fb_ProfileBeginCall( const char *procname )
 {
 	FB_PROFILECTX *ctx = FB_TLSGETCTX(PROFILE);
 	FBPROC *orig_parent_proc, *parent_proc, *proc;
-	const char *p;
 	unsigned int i, hash = 0, offset = 1, len;
 
 	parent_proc = ctx->cur_proc;
@@ -203,18 +310,7 @@ FBCALL void *fb_ProfileBeginCall( const char *procname )
 
 	FB_LOCK();
 
-	for ( p = procname; *p; p += 4 ) {
-		hash = ( (hash << 3) | (hash >> 29) ) ^ ( *(unsigned int *)p );
-	}
-
-	if( p > procname ) {
-		while( *p == 0 ) {
-			--p;
-		}
-		len = (p + 1) - procname;
-	} else {
-		len = 0;
-	}
+	len = hash4_compute( procname, &hash );
 
 	if( len > max_len ) {
 		max_len = len;
@@ -243,7 +339,6 @@ FBCALL void *fb_ProfileBeginCall( const char *procname )
 			parent_proc->next = alloc_proc();
 			proc = parent_proc->next;
 			if( proc ) {
-				proc->name = procname;
 				goto fill_proc;
 			}
 		}
@@ -252,7 +347,7 @@ FBCALL void *fb_ProfileBeginCall( const char *procname )
 	}
 
 fill_proc:
-	proc->name = procname;
+	proc->name = store_string( procname );
 	proc->total_time = 0.0;
 	proc->call_count = 0;
 	proc->parent = orig_parent_proc;
@@ -454,6 +549,12 @@ FBCALL int fb_EndProfile( int errorlevel )
 		bin = bin_head->next;
 		free( bin_head );
 		bin_head = bin;
+	}
+
+	while ( string_head ) {
+		STRING_BLOCK *nxt = string_head->next;
+		free( string_head );
+		string_head = nxt;
 	}
 
 	return errorlevel;

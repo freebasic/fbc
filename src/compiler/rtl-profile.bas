@@ -110,7 +110,7 @@ private function hGetProcName _
 
 	dim as FBSYMBOL ptr s = any
 	dim as ASTNODE ptr expr = any
-	dim as integer lgt, i
+	dim as integer lgt
 
 	if( proc = NULL ) then
 		s = symbAllocStrConst( "(??)", -1 )
@@ -118,15 +118,7 @@ private function hGetProcName _
 	else
 		dim as string procname
 		procname = *symbGetDBGName( proc )
-
 		lgt = len( procname )
-		if( lgt and 3 ) then
-			for i = 1 to 4 - ( lgt and 3 )
-				procname += chr( FB_INTSCAPECHAR, CHAR_0 )
-			next
-			lgt += 4 - ( lgt and 3 )
-		end if
-
 		s = symbAllocStrConst( procname, lgt )
 	end if
 
