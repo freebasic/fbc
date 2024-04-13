@@ -7,13 +7,13 @@
  *       apr/2024 add call counting [jeffm]
  *       apr/2024 dynamic string table [jeffm]
  *       apr/2024 remove NUL character padding requirement [jeffm]
+ *       apr/2024 add API to set output file name
  */
 
 /* TODO: allocate a high level hash array for a top level index */
 /* TODO: allocate bins in TLS: FB_PROFILECTX (fewer locks)*/
 /* TODO: merge thread data to the global data in fb_PROFILECTX_Destructor */
 /* TODO: only LOCK/UNLOCK for global data, not individual thread data */
-/* TODO: add API to set output file name */
 /* TODO: add API to choose output options */
 /* TODO: add API to set analysis options */
 /* TODO: test the start-up and exit code more */
@@ -28,15 +28,17 @@
 
 #define MAIN_PROC_NAME         "(main)\0\0\0\0\0\0"
 #define THREAD_PROC_NAME       "(thread)\0\0\0\0"
-#define PROFILE_FILE           "profile.txt"
+#define DEFAULT_PROFILE_FILE   "profile.txt"
 #define MAX_CHILDREN           257
 #define BIN_SIZE               1024
 
-#if defined HOST_UNIX
+#if defined HOST_UNIX 
 #define PATH_SEP               "/"
 #else
 #define PATH_SEP               "\\"
 #endif
+
+static char profile_filename[MAX_PATH];
 
 /* ************************************
 ** STRINGS
@@ -430,6 +432,8 @@ FBCALL void fb_InitProfile( void )
 	ctx->main_proc->time = fb_Timer();
 
 	max_len = 0;
+
+	strcpy( profile_filename, DEFAULT_PROFILE_FILE );
 }
 
 /*:::::*/
@@ -437,7 +441,7 @@ FBCALL int fb_EndProfile( int errorlevel )
 {
 	FB_PROFILECTX *ctx = FB_TLSGETCTX(PROFILE);
 
-	char buffer[MAX_PATH], *p;
+	char buffer[MAX_PATH], *filename;
 	int i, j, len, skip_proc, col;
 	BIN *bin;
 	FILE *f;
@@ -451,14 +455,16 @@ FBCALL int fb_EndProfile( int errorlevel )
 
 	/* explicitly call destructor? */
 
-	p = fb_hGetExePath( buffer, MAX_PATH-1 );
-	if( !p )
-		p = PROFILE_FILE;
+	filename = fb_hGetExePath( buffer, MAX_PATH-1 );
+	if( !filename )
+		filename = profile_filename;
 	else {
-		strcat( buffer, PATH_SEP PROFILE_FILE );
-		p = buffer;
+		strcat( buffer, PATH_SEP );
+		strcat( buffer, profile_filename );
+		filename = buffer;
 	}
-	f = fopen( p, "w" );
+
+	f = fopen( filename, "w" );
 	fprintf( f, "Profiling results:\n"
 			    "------------------\n\n" );
 	fb_hGetExeName( buffer, MAX_PATH-1 );
@@ -585,4 +591,28 @@ void fb_PROFILECTX_Destructor( void* data )
 	/* FB_PROFILECTX *ctx = (FB_PROFILECTX *)data; */
 	/* TODO: merge the thread results with the (main)/(thread) results */
 	data = data;
+}
+
+/*:::::*/
+FBCALL int fb_ProfileSetFileName( const char * filename )
+{
+	int len;
+	
+	if( !filename ) {
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	}
+
+	len = strlen(filename);
+
+	if( len < 1 || len >= MAX_PATH-1 ) {
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	} 
+
+	FB_LOCK();
+
+	strcpy( profile_filename, filename ); 
+
+	FB_UNLOCK();
+
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

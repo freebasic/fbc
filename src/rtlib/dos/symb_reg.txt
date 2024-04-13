@@ -322,6 +322,7 @@ extern_asm(_fb_IntLog10_64);
 extern_asm(_fb_hFileLock);
 extern_asm(_fb_hListFreeElem);
 extern_asm(_fb_AssertWarn);
+extern_asm(_fb_ProfileSetFileName);
 extern_asm(_fb_DataReadSingle);
 extern_asm(_fb_WstrAssignFromA);
 extern_asm(_fb_HEX_l);
@@ -1169,6 +1170,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_hFileLock)
     DXE_EXPORT_ASM (_fb_hListFreeElem)
     DXE_EXPORT_ASM (_fb_AssertWarn)
+    DXE_EXPORT_ASM (_fb_ProfileSetFileName)
     DXE_EXPORT_ASM (_fb_DataReadSingle)
     DXE_EXPORT_ASM (_fb_WstrAssignFromA)
     DXE_EXPORT_ASM (_fb_HEX_l)

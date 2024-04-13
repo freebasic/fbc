@@ -12,9 +12,9 @@
 
 '' DISCLAIMER!!!
 ''
-''   1) this header documents runtime library internals and is subject to change without notice
+''   1) this header documents runtime library internals
+''      and is subject to change without notice
 ''
-
 '' declarations must follow ./src/rtlib/fb_math.h
 ''                          ./src/rtlib/fb_rnd.c
 
