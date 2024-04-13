@@ -17,7 +17,6 @@
 /* TODO: add API to choose output options */
 /* TODO: add API to set analysis options */
 /* TODO: test the start-up and exit code more */
-/* TODO: test and optimize the string comparisons */
 /* TODO: demangle procedure names */
 
 #include "fb.h"
@@ -124,6 +123,7 @@ typedef struct _FBPROC
 	long long int call_count;
 	struct _FBPROC *child[MAX_CHILDREN];
 	struct _FBPROC *next;
+	unsigned int hash;
 } FBPROC;
 
 typedef struct _FB_PROFILECTX
@@ -155,6 +155,22 @@ static int strcmp4(const char *s1, const char *s2)
 		}
 		s1 += 4;
 		s2 += 4;
+	}
+	if ((*s1) || (*s2)) {
+		return -1;
+	}
+	return 0;
+}
+
+/*:::::*/
+static int strcmp1(const char *s1, const char *s2)
+{
+	while ((*s1) && (*s2)) {
+		if (*s1 != *s2) {
+			return -1;
+		}
+		s1 += 1;
+		s2 += 1;
 	}
 	if ((*s1) || (*s2)) {
 		return -1;
@@ -289,7 +305,7 @@ FBCALL void *fb_ProfileBeginCall( const char *procname )
 {
 	FB_PROFILECTX *ctx = FB_TLSGETCTX(PROFILE);
 	FBPROC *orig_parent_proc, *parent_proc, *proc;
-	unsigned int i, hash = 0, offset = 1, len;
+	unsigned int i, full_hash = 0, hash_index, offset = 1, len;
 
 	parent_proc = ctx->cur_proc;
 	if( !parent_proc ) {
@@ -310,25 +326,27 @@ FBCALL void *fb_ProfileBeginCall( const char *procname )
 
 	FB_LOCK();
 
-	len = hash4_compute( procname, &hash );
+	len = hash4_compute( procname, &full_hash );
 
 	if( len > max_len ) {
 		max_len = len;
 	}
 
-	hash %= MAX_CHILDREN;
-	if ( hash ) {
-		offset = MAX_CHILDREN - hash;
+	hash_index = full_hash % MAX_CHILDREN;
+	if ( hash_index ) {
+		offset = MAX_CHILDREN - hash_index;
 	}
 
 	for (;;) {
 		for ( i = 0; i < MAX_CHILDREN; i++ ) {
-			proc = parent_proc->child[hash];
+			proc = parent_proc->child[hash_index];
 			if ( proc ) {
-				if ( !strcmp4( proc->name, procname ) ) {
-					goto update_proc;
+				if( proc->hash == full_hash ) {
+					if ( !strcmp1( proc->name, procname ) ) {
+						goto update_proc;
+					}
 				}
-				hash = ( hash + offset ) % MAX_CHILDREN;
+				hash_index = ( hash_index + offset ) % MAX_CHILDREN;
 			} else {
 				proc = alloc_proc();
 				goto fill_proc;
@@ -348,10 +366,11 @@ FBCALL void *fb_ProfileBeginCall( const char *procname )
 
 fill_proc:
 	proc->name = store_string( procname );
+	proc->hash = full_hash;
 	proc->total_time = 0.0;
 	proc->call_count = 0;
 	proc->parent = orig_parent_proc;
-	parent_proc->child[hash] = proc;
+	parent_proc->child[hash_index] = proc;
 
 update_proc:
 	ctx->cur_proc = proc;
