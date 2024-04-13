@@ -267,6 +267,13 @@ FBCALL void fb_ProfileEndCall( void *p )
 	FB_UNLOCK();
 }
 
+/*:::::*/
+static void pad_spaces( FILE *f, int len )
+{
+	for( ; len > 0; len-- ) {
+		fprintf( f, " " );
+	}
+}
 
 /*:::::*/
 FBCALL void fb_InitProfile( void )
@@ -326,9 +333,8 @@ FBCALL int fb_EndProfile( int errorlevel )
 
 	fprintf( f, "Per function timings:\n\n" );
 	len = col - fprintf( f, "        Function:" );
-	for( ; len > 0; len-- ) {
-		fprintf( f, " " );
-	}
+	pad_spaces( f, len );
+
 	fprintf( f, "Time:         Total%%:   Proc%%:" );
 
 	for( bin = bin_head; bin; bin = bin->next ) {
@@ -336,10 +342,12 @@ FBCALL int fb_EndProfile( int errorlevel )
 			proc = &bin->fbproc[i];
 			if( !proc->parent ) {
 				/* no parent; either main proc or a thread proc */
+
 				if( !proc->total_time ) {
 					/* thread execution time unknown, assume total program execution time */
 					proc->total_time = main_proc->total_time;
 				}
+
 				add_proc( &parent_proc_list, &parent_proc_size, proc );
 				find_all_procs( proc, &parent_proc_list, &parent_proc_size );
 			}
@@ -366,13 +374,12 @@ FBCALL int fb_EndProfile( int errorlevel )
 		}
 
 		len = col - (fprintf( f, "\n\n%s", parent_proc->name ) - 2);
-		for( ; len > 0; len-- ) {
-			fprintf( f, " " );
-		}
-		len = fprintf( f, "%5.5f", parent_proc->total_time );
-		for( len = 14 - len; len; len-- ) {
-			fprintf( f, " " );
-		}
+		pad_spaces( f, len );
+
+
+		len = 14 - fprintf( f, "%5.5f", parent_proc->total_time );
+		pad_spaces( f, len );
+
 		fprintf( f, "%03.2f%%\n\n", (parent_proc->total_time * 100.0) / main_proc->total_time );
 
 		qsort( proc_list, proc_size, sizeof(FBPROC *), time_sorter );
@@ -381,17 +388,14 @@ FBCALL int fb_EndProfile( int errorlevel )
 			proc = proc_list[j];
 
 			len = col - fprintf( f, "        %s", proc->name );
-			for( ; len > 0; len-- ) {
-				fprintf( f, " " );
-			}
-			len = fprintf( f, "%5.5f", proc->total_time );
-			for( len = 14 - len; len; len-- ) {
-				fprintf( f, " " );
-			}
-			len = fprintf( f, "%03.2f%%", ( proc->total_time * 100.0 ) / main_proc->total_time );
-			for( len = 10 - len; len; len-- ) {
-				fprintf( f, " " );
-			}
+			pad_spaces( f, len );
+
+			len = 14 - fprintf( f, "%5.5f", proc->total_time );
+			pad_spaces( f, len );
+
+			len = 10 - fprintf( f, "%03.2f%%", ( proc->total_time * 100.0 ) / main_proc->total_time );
+			pad_spaces( f, len );
+	
 			fprintf( f, "%03.2f%%\n", ( parent_proc_list[i]->total_time > 0.0 ) ?
 				( proc->total_time * 100.0 ) / parent_proc_list[i]->total_time : 0.0 );
 		}
@@ -406,10 +410,12 @@ FBCALL int fb_EndProfile( int errorlevel )
 	for( i = 0; i < parent_proc_size; i++ ) {
 		proc = parent_proc_list[i];
 		len = col - fprintf( f, "%s", proc->name );
-		for( ; len > 0; len-- ) {
-			fprintf( f, " " );
-		}
-		fprintf( f, "%5.5f  (%03.2f%%)\n", proc->total_time, ( proc->total_time * 100.0 ) / main_proc->total_time );
+		pad_spaces( f, len );
+
+		len = 14 - fprintf( f, "%5.5f", proc->total_time );
+		pad_spaces( f, len );
+
+		len = 10 - fprintf( f, "%03.2f%%\n", ( proc->total_time * 100.0 ) / main_proc->total_time );
 	}
 
 	free( parent_proc_list );
