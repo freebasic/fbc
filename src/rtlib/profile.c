@@ -4,7 +4,8 @@
  * chng: apr/2005 written [lillo]
  *       may/2005 rewritten to properly support recursive calls [lillo]
  *       apr/2024 use thread local storage (wip) [jeffm]
-*/
+ *       apr/2024 add call counting [jeffm]
+ */
 
 /* TODO: dynamically allocate the list of procedure names */
 /* TODO: remove the NUL char padding requirement for names from fbc */
@@ -44,6 +45,7 @@ typedef struct _FBPROC
 	struct _FBPROC *parent;
 	double time;
 	double total_time;
+	long long int call_count;
 	struct _FBPROC *child[MAX_CHILDREN];
 	struct _FBPROC *next;
 } FBPROC;
@@ -180,6 +182,7 @@ FBCALL void *fb_ProfileBeginCall( const char *procname )
 		/* First function call of a newly spawned thread has no parent proc set */
 		parent_proc = alloc_proc();
 		parent_proc->name = THREAD_PROC_NAME;
+		parent_proc->call_count = 1;
 		len = strlen( THREAD_PROC_NAME );
 	} else {
 		len = ( parent_proc->name != NULL? strlen( parent_proc->name ) : 0 );
@@ -262,6 +265,7 @@ FBCALL void fb_ProfileEndCall( void *p )
 
 	proc = (FBPROC *)p;
 	proc->total_time += ( end_time - proc->time );
+	proc->call_count += 1;
 	ctx->cur_proc = proc->parent;
 
 	FB_UNLOCK();
@@ -285,6 +289,7 @@ FBCALL void fb_InitProfile( void )
 
 	ctx->main_proc = alloc_proc();
 	ctx->main_proc->name = MAIN_PROC_NAME;
+	ctx->main_proc->call_count = 1;
 
 	ctx->cur_proc = ctx->main_proc;
 
@@ -310,7 +315,7 @@ FBCALL int fb_EndProfile( int errorlevel )
 	FBPROC *main_proc = ctx->main_proc;
 	int parent_proc_size = 0, proc_size = 0;
 
-	col = (max_len + 8 + 1 >= 50? max_len + 8 + 1: 50);
+	col = (max_len + 8 + 1 >= 20? max_len + 8 + 1: 20);
 
 	main_proc->total_time = fb_Timer() - ctx->main_proc->time;
 
@@ -335,7 +340,7 @@ FBCALL int fb_EndProfile( int errorlevel )
 	len = col - fprintf( f, "        Function:" );
 	pad_spaces( f, len );
 
-	fprintf( f, "Time:         Total%%:   Proc%%:" );
+	fprintf( f, "       Count:      Time:    Total%%:    Proc%%:" );
 
 	for( bin = bin_head; bin; bin = bin->next ) {
 		for( i = 0; i < bin->next_free; i++ ) {
@@ -376,11 +381,13 @@ FBCALL int fb_EndProfile( int errorlevel )
 		len = col - (fprintf( f, "\n\n%s", parent_proc->name ) - 2);
 		pad_spaces( f, len );
 
+		fprintf( f, "%12lld", parent_proc->call_count );
+		pad_spaces( f, 2 );
 
-		len = 14 - fprintf( f, "%5.5f", parent_proc->total_time );
+		len = 14 - fprintf( f, "%10.5f", parent_proc->total_time );
 		pad_spaces( f, len );
 
-		fprintf( f, "%03.2f%%\n\n", (parent_proc->total_time * 100.0) / main_proc->total_time );
+		fprintf( f, "%6.2f%%\n\n", (parent_proc->total_time * 100.0) / main_proc->total_time );
 
 		qsort( proc_list, proc_size, sizeof(FBPROC *), time_sorter );
 
@@ -390,13 +397,16 @@ FBCALL int fb_EndProfile( int errorlevel )
 			len = col - fprintf( f, "        %s", proc->name );
 			pad_spaces( f, len );
 
-			len = 14 - fprintf( f, "%5.5f", proc->total_time );
+			fprintf( f, "%12lld", proc->call_count );
+			pad_spaces( f, 2 );
+
+			len = 14 - fprintf( f, "%10.5f", proc->total_time );
 			pad_spaces( f, len );
 
-			len = 10 - fprintf( f, "%03.2f%%", ( proc->total_time * 100.0 ) / main_proc->total_time );
+			len = 10 - fprintf( f, "%6.2f%%", ( proc->total_time * 100.0 ) / main_proc->total_time );
 			pad_spaces( f, len );
 	
-			fprintf( f, "%03.2f%%\n", ( parent_proc_list[i]->total_time > 0.0 ) ?
+			fprintf( f, "%6.2f%%\n", ( parent_proc_list[i]->total_time > 0.0 ) ?
 				( proc->total_time * 100.0 ) / parent_proc_list[i]->total_time : 0.0 );
 		}
 
@@ -412,10 +422,13 @@ FBCALL int fb_EndProfile( int errorlevel )
 		len = col - fprintf( f, "%s", proc->name );
 		pad_spaces( f, len );
 
-		len = 14 - fprintf( f, "%5.5f", proc->total_time );
+		fprintf( f, "%12lld", proc->call_count );
+		pad_spaces( f, 2 );
+
+		len = 14 - fprintf( f, "%10.5f", proc->total_time );
 		pad_spaces( f, len );
 
-		len = 10 - fprintf( f, "%03.2f%%\n", ( proc->total_time * 100.0 ) / main_proc->total_time );
+		len = 10 - fprintf( f, "%6.2f%%\n", ( proc->total_time * 100.0 ) / main_proc->total_time );
 	}
 
 	free( parent_proc_list );
