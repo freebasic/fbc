@@ -3,12 +3,28 @@
  *
  * chng: apr/2005 written [lillo]
  *       may/2005 rewritten to properly support recursive calls [lillo]
+ *       apr/2024 use thread local storage (wip) [jeffm]
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+/* TODO: dynamically allocate the list of procedure names */
+/* TODO: remove the NUL char padding requirement for names from fbc */
+/* TODO: allocate a high level hash array for a top level index */
+/* TODO: allocate bins in TLS: FB_PROFILECTX (fewer locks)*/
+/* TODO: merge thread data to the global data in fb_PROFILECTX_Destructor */
+/* TODO: only LOCK/UNLOCK for global data, not individual thread data */
+/* TODO: add API to set output file name */
+/* TODO: add API to choose output options */
+/* TODO: add API to set analysis options */
+/* TODO: test the start-up and exit code more */
+/* TODO: test and optimize the string comparisons */
+/* TODO: demangle procedure names */
+
 #include "fb.h"
+#ifdef HOST_WIN32
+	#include <windows.h>
+#endif
+#include "fb.h"
+#include <time.h>
 
 #define MAIN_PROC_NAME		"(main)\0\0"
 #define THREAD_PROC_NAME	"(thread)"
@@ -22,7 +38,6 @@
 #define PATH_SEP		"\\"
 #endif
 
-
 typedef struct _FBPROC {
 	const char *name;
 	struct _FBPROC *parent;
@@ -32,24 +47,29 @@ typedef struct _FBPROC {
 	struct _FBPROC *next;
 } FBPROC;
 
-typedef struct _BIN {
+typedef struct _FB_PROFILECTX
+{
+	FBPROC *main_proc;
+	FBPROC *cur_proc;
+} FB_PROFILECTX;
+
+void fb_PROFILECTX_Destructor( void* );
+
+typedef struct _BIN
+{
 	FBPROC fbproc[BIN_SIZE];
 	int next_free;
 	struct _BIN *next;
 } BIN;
 
-
 static BIN *bin_head = NULL;
-static FB_TLSENTRY cur_proc;
-static FBPROC *main_proc;
 static char launch_time[32];
-static int max_len = 0;
+static unsigned int max_len = 0;
 
 
 /*:::::*/
 static int strcmp4(const char *s1, const char *s2)
 {
-
 	while ((*s1) && (*s2)) {
 		if (*(int *)s1 != *(int *)s2)
 			return -1;
@@ -140,15 +160,15 @@ static void find_all_procs( FBPROC *proc, FBPROC ***array, int *size )
 	}
 }
 
-
 /*:::::*/
 FBCALL void *fb_ProfileBeginCall( const char *procname )
 {
+	FB_PROFILECTX *ctx = FB_TLSGETCTX(PROFILE);
 	FBPROC *orig_parent_proc, *parent_proc, *proc;
 	const char *p;
 	unsigned int i, hash = 0, offset = 1, len;
 
-	parent_proc = (FBPROC *)FB_TLSGET( cur_proc );
+	parent_proc = ctx->cur_proc;
 	if( !parent_proc )
 	{
 		/* First function call of a newly spawned thread has no parent proc set */
@@ -207,7 +227,7 @@ FBCALL void *fb_ProfileBeginCall( const char *procname )
 	}
 fill_proc:
 
-	FB_TLSSET( cur_proc, proc );
+	ctx->cur_proc = proc;
 
 	proc->time = fb_Timer();
 
@@ -220,6 +240,7 @@ fill_proc:
 /*:::::*/
 FBCALL void fb_ProfileEndCall( void *p )
 {
+	FB_PROFILECTX *ctx = FB_TLSGETCTX(PROFILE);
 	FBPROC *proc;
 	double end_time;
 
@@ -229,7 +250,7 @@ FBCALL void fb_ProfileEndCall( void *p )
 
 	proc = (FBPROC *)p;
 	proc->total_time += ( end_time - proc->time );
-	FB_TLSSET( cur_proc, proc->parent );
+	ctx->cur_proc = proc->parent;
 
 	FB_UNLOCK();
 }
@@ -238,53 +259,43 @@ FBCALL void fb_ProfileEndCall( void *p )
 /*:::::*/
 FBCALL void fb_InitProfile( void )
 {
+	FB_PROFILECTX *ctx = FB_TLSGETCTX(PROFILE);
+
 	time_t rawtime = { 0 };
-  	struct tm *ptm = { 0 };
+	struct tm *ptm = { 0 };
 
-#ifdef MULTITHREADED
-#ifdef TARGET_WIN32
-	cur_proc = TlsAlloc();
-#elif defined(TARGET_LINUX)
-	pthread_key_create( &cur_proc, NULL );
-#endif
-#endif
+	ctx->main_proc = alloc_proc();
+	ctx->main_proc->name = MAIN_PROC_NAME;
 
-	main_proc = alloc_proc();
-	main_proc->name = MAIN_PROC_NAME;
+	ctx->cur_proc = ctx->main_proc;
 
-	FB_TLSSET( cur_proc, main_proc );
-
-  	time( &rawtime );
-    ptm = localtime( &rawtime );
+	time( &rawtime );
+	ptm = localtime( &rawtime );
 	sprintf( launch_time, "%02d-%02d-%04d, %02d:%02d:%02d", 1+ptm->tm_mon, ptm->tm_mday, 1900+ptm->tm_year, ptm->tm_hour, ptm->tm_min, ptm->tm_sec );
 
-	main_proc->time = fb_Timer();
+	ctx->main_proc->time = fb_Timer();
 
 	max_len = 0;
 }
 
-
 /*:::::*/
 FBCALL int fb_EndProfile( int errorlevel )
 {
+	FB_PROFILECTX *ctx = FB_TLSGETCTX(PROFILE);
+
 	char buffer[MAX_PATH], *p;
 	int i, j, len, skip_proc, col;
 	BIN *bin;
 	FILE *f;
 	FBPROC **parent_proc_list = NULL, **proc_list = NULL, *proc, *parent_proc;
+	FBPROC *main_proc = ctx->main_proc;
 	int parent_proc_size = 0, proc_size = 0;
 
 	col = (max_len + 8 + 1 >= 50? max_len + 8 + 1: 50);
 
-	main_proc->total_time = fb_Timer() - main_proc->time;
+	main_proc->total_time = fb_Timer() - ctx->main_proc->time;
 
-#ifdef MULTITHREADED
-#ifdef TARGET_WIN32
-	TlsFree( cur_proc );
-#elif defined(TARGET_LINUX)
-	pthread_key_delete( cur_proc );
-#endif
-#endif
+	/* explicitly call destructor? */
 
 	p = fb_hGetExePath( buffer, MAX_PATH-1 );
 	if( !p )
@@ -390,4 +401,8 @@ FBCALL int fb_EndProfile( int errorlevel )
 	}
 
 	return errorlevel;
+}
+void fb_PROFILECTX_Destructor( void* data )
+{
+//	FB_PROFILECTX *ctx = (FB_PROFILECTX *)data;
 }
