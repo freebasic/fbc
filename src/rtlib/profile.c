@@ -7,7 +7,7 @@
  *       apr/2024 add call counting [jeffm]
  *       apr/2024 dynamic string table [jeffm]
  *       apr/2024 remove NUL character padding requirement [jeffm]
- *       apr/2024 add API to set output file name
+ *       apr/2024 add API to set output file name and report options [jeffm]
  */
 
 /* TODO: allocate a high level hash array for a top level index */
