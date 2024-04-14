@@ -722,7 +722,7 @@ function astLoadCONV _
 	) as IRVREG ptr
 
 	dim as ASTNODE ptr l = any
-	dim as IRVREG ptr vs = any, vr = any
+	dim as IRVREG ptr vs = any, vr = NULL
 
 	l = n->l
 
