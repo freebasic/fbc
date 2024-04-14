@@ -155,7 +155,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	dim as FBSYMBOL ptr proc = any
 	dim as integer bytestopop = any, bytestoalign = any, argbytes = any
 	dim as integer prev_totalstackbytes = totalstackbytes
-	dim as IRVREG ptr vr = any, v1 = any, lreg = NULL
+	dim as IRVREG ptr vr = NULL, v1 = any, lreg = NULL
 
 	'' ARGs can contain CALLs themselves, then astLoadCALL() will recurse
 	reclevel += 1
