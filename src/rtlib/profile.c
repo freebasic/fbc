@@ -256,8 +256,10 @@ static void find_all_procs( FBPROC *proc, FBPROC ***array, int *size )
 	for ( i = 0; i < *size; i++ ) {
 		if ( !strcmp4( a[i]->name, proc->name ) ) {
 			add_self = FALSE;
+			break;
 		}
 	}
+
 	if ( add_self ) {
 		add_proc( array, size, proc );
 	}
