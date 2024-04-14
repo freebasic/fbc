@@ -33,13 +33,22 @@
 #define MAX_CHILDREN           257
 #define BIN_SIZE               1024
 
-#if defined HOST_UNIX 
+#if defined HOST_UNIX
 #define PATH_SEP               "/"
 #else
 #define PATH_SEP               "\\"
 #endif
 
 static char profile_filename[MAX_PATH];
+
+enum PROFILE_OPTIONS
+{
+	PROFILE_OPTION_REPORT_DEFAULT = 0,
+	PROFILE_OPTION_REPORT_RAWLIST = 1,
+	PROFILE_OPTION_REPORT_MASK = 255
+};
+
+static enum PROFILE_OPTIONS fb_profile_options = PROFILE_OPTION_REPORT_DEFAULT;
 
 /* ************************************
 ** STRINGS
@@ -55,7 +64,7 @@ typedef struct _STRING_BLOCK
 	struct _STRING_BLOCK *next;
 } STRING_BLOCK;
 
-static STRING_BLOCK *string_head = NULL; 
+static STRING_BLOCK *string_head = NULL;
 
 static char * alloc_string( int length )
 {
@@ -65,12 +74,12 @@ static char * alloc_string( int length )
 
 	/* 12 byte minumum per string (assuming 4 bytes per int)
 	** - space for size (4 bytes) and length (4 bytes) plus
-	** - round up length to mod 4 bytes 
+	** - round up length to mod 4 bytes
 	** - and pad with additional 4 NUL bytes
 	** - example: ""  => 12, 0, !"\0\0\0\"
 	** - example: "A" => 16, 1, !"A\0\0\0\0\0\0\0"
 	*/
-	size = sizeof(int) + sizeof(int) + ((length + (sizeof(int)-1)) 
+	size = sizeof(int) + sizeof(int) + ((length + (sizeof(int)-1))
 	       & ~(sizeof(int)-1)) + sizeof(int);
 
 	if( size > STRING_BLOCK_SIZE ) {
@@ -108,7 +117,7 @@ static char * store_string( const char *src )
 	int length = strlen(src) + 1;
 	char *dst = (char *)alloc_string( length );
 	if( dst ) {
-		strncpy( dst, src, length ); 
+		strncpy( dst, src, length );
 	}
 	return dst;
 }
@@ -237,7 +246,7 @@ static void add_proc( FBPROC ***array, int *size, FBPROC *proc )
 	} else {
 		new_array = (FBPROC **)calloc( (s + 1), sizeof(FBPROC *) );
 	}
-	
+
 	if( new_array ) {
 		new_array[s] = proc;
 		(*size)++;
@@ -298,7 +307,7 @@ static unsigned int hash4_compute( const char *p, unsigned int *out_hash )
 	hash = ( (hash << 3) | (hash >> 29) ) ^ ( tmp.d );
 
 	*out_hash = hash;
-	return out_len; 
+	return out_len;
 }
 
 /* ************************************
@@ -439,41 +448,14 @@ FBCALL void fb_InitProfile( void )
 	strcpy( profile_filename, DEFAULT_PROFILE_FILE );
 }
 
-/*:::::*/
-FBCALL int fb_EndProfile( int errorlevel )
+static void hDefaultReport ( FB_PROFILECTX *ctx, FILE *f )
 {
-	FB_PROFILECTX *ctx = FB_TLSGETCTX(PROFILE);
-
-	char buffer[MAX_PATH], *filename;
 	int i, j, len, skip_proc, col;
 	BIN *bin;
-	FILE *f;
 	FBPROC **parent_proc_list = NULL, **proc_list = NULL, *proc, *parent_proc;
-	FBPROC *main_proc = ctx->main_proc;
 	int parent_proc_size = 0, proc_size = 0;
 
 	col = (max_len + 8 + 1 >= 20? max_len + 8 + 1: 20);
-
-	main_proc->total_time = fb_Timer() - ctx->main_proc->time;
-
-	/* explicitly call destructor? */
-
-	filename = fb_hGetExePath( buffer, MAX_PATH-1 );
-	if( !filename )
-		filename = profile_filename;
-	else {
-		strcat( buffer, PATH_SEP );
-		strcat( buffer, profile_filename );
-		filename = buffer;
-	}
-
-	f = fopen( filename, "w" );
-	fprintf( f, "Profiling results:\n"
-			    "------------------\n\n" );
-	fb_hGetExeName( buffer, MAX_PATH-1 );
-	fprintf( f, "Executable name: %s\n", buffer );
-	fprintf( f, "Launched on: %s\n", launch_time );
-	fprintf( f, "Total program execution time: %5.4g seconds\n\n", main_proc->total_time );
 
 	fprintf( f, "Per function timings:\n\n" );
 	len = col - fprintf( f, "        Function:" );
@@ -489,7 +471,7 @@ FBCALL int fb_EndProfile( int errorlevel )
 
 				if( !proc->total_time ) {
 					/* thread execution time unknown, assume total program execution time */
-					proc->total_time = main_proc->total_time;
+					proc->total_time = ctx->main_proc->total_time;
 				}
 
 				add_proc( &parent_proc_list, &parent_proc_size, proc );
@@ -526,7 +508,7 @@ FBCALL int fb_EndProfile( int errorlevel )
 		len = 14 - fprintf( f, "%10.5f", parent_proc->total_time );
 		pad_spaces( f, len );
 
-		fprintf( f, "%6.2f%%\n\n", (parent_proc->total_time * 100.0) / main_proc->total_time );
+		fprintf( f, "%6.2f%%\n\n", (parent_proc->total_time * 100.0) / ctx->main_proc->total_time );
 
 		qsort( proc_list, proc_size, sizeof(FBPROC *), time_sorter );
 
@@ -542,9 +524,9 @@ FBCALL int fb_EndProfile( int errorlevel )
 			len = 14 - fprintf( f, "%10.5f", proc->total_time );
 			pad_spaces( f, len );
 
-			len = 10 - fprintf( f, "%6.2f%%", ( proc->total_time * 100.0 ) / main_proc->total_time );
+			len = 10 - fprintf( f, "%6.2f%%", ( proc->total_time * 100.0 ) / ctx->main_proc->total_time );
 			pad_spaces( f, len );
-	
+
 			fprintf( f, "%6.2f%%\n", ( parent_proc_list[i]->total_time > 0.0 ) ?
 				( proc->total_time * 100.0 ) / parent_proc_list[i]->total_time : 0.0 );
 		}
@@ -567,16 +549,90 @@ FBCALL int fb_EndProfile( int errorlevel )
 		len = 14 - fprintf( f, "%10.5f", proc->total_time );
 		pad_spaces( f, len );
 
-		len = 10 - fprintf( f, "%6.2f%%\n", ( proc->total_time * 100.0 ) / main_proc->total_time );
+		len = 10 - fprintf( f, "%6.2f%%\n", ( proc->total_time * 100.0 ) / ctx->main_proc->total_time );
 	}
 
 	free( parent_proc_list );
+
+}
+
+static void hRawListReport ( FB_PROFILECTX *ctx, FILE *f )
+{
+	int len, col, i;
+	BIN *bin;
+	FBPROC *proc;
+
+	col = (max_len >= 20 ? max_len : 20);
+
+	for( bin = bin_head; bin; bin = bin->next ) {
+		for( i = 0; i < bin->next_free; i++ ) {
+			proc = &bin->fbproc[i];
+
+			if( !proc->parent ) {
+				len = col - fprintf( f, "(root)" );
+			} else {
+				len = col - fprintf( f, "%s", proc->parent->name );
+			}
+			pad_spaces( f, len );
+
+			len = col - fprintf( f, "%s", proc->name );
+			pad_spaces( f, len );
+
+			fprintf( f, "%12lld", proc->call_count );
+			pad_spaces( f, 2 );
+
+			len = 14 - fprintf( f, "%10.5f", proc->total_time );
+			pad_spaces( f, len );
+
+			fprintf( f, "\n" );
+		}
+	}
+}
+
+/*:::::*/
+FBCALL int fb_EndProfile( int errorlevel )
+{
+	FB_PROFILECTX *ctx = FB_TLSGETCTX(PROFILE);
+	FILE *f;
+
+	char buffer[MAX_PATH], *filename;
+
+	ctx->main_proc->total_time = fb_Timer() - ctx->main_proc->time;
+
+	/* explicitly call destructor? */
+
+	filename = fb_hGetExePath( buffer, MAX_PATH-1 );
+	if( !filename )
+		filename = profile_filename;
+	else {
+		strcat( buffer, PATH_SEP );
+		strcat( buffer, profile_filename );
+		filename = buffer;
+	}
+
+	f = fopen( filename, "w" );
+	fprintf( f, "Profiling results:\n"
+			    "------------------\n\n" );
+	fb_hGetExeName( buffer, MAX_PATH-1 );
+	fprintf( f, "Executable name: %s\n", buffer );
+	fprintf( f, "Launched on: %s\n", launch_time );
+	fprintf( f, "Total program execution time: %5.4g seconds\n\n", ctx->main_proc->total_time );
+
+	if( (fb_profile_options & PROFILE_OPTION_REPORT_MASK) == PROFILE_OPTION_REPORT_RAWLIST )
+	{
+		hRawListReport( ctx, f );
+	}
+	else
+	{
+		hDefaultReport( ctx, f );
+	}
+
 	fclose( f );
 
 	while ( bin_head ) {
-		bin = bin_head->next;
+		BIN *nxt = bin_head->next;
 		free( bin_head );
-		bin_head = bin;
+		bin_head = nxt;
 	}
 
 	while ( string_head ) {
@@ -600,7 +656,7 @@ void fb_PROFILECTX_Destructor( void* data )
 FBCALL int fb_ProfileSetFileName( const char * filename )
 {
 	int len;
-	
+
 	if( !filename ) {
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
@@ -609,13 +665,27 @@ FBCALL int fb_ProfileSetFileName( const char * filename )
 
 	if( len < 1 || len >= MAX_PATH-1 ) {
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	} 
+	}
 
 	FB_LOCK();
 
-	strcpy( profile_filename, filename ); 
+	strcpy( profile_filename, filename );
 
 	FB_UNLOCK();
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
+}
+
+/*:::::*/
+FBCALL unsigned int fb_ProfileGetOptions()
+{
+	return fb_profile_options;
+}
+
+/*:::::*/
+FBCALL int fb_ProfileSetOptions( unsigned int options )
+{
+	unsigned int previous_options = fb_profile_options;
+	fb_profile_options = options;
+	return previous_options;
 }

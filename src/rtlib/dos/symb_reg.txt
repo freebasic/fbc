@@ -648,6 +648,7 @@ extern_asm(_fb_PrintString);
 extern_asm(_fb_ConsoleSetMouse);
 extern_asm(_fb_WstrBin_b);
 extern_asm(_fb_StrConcat);
+extern_asm(_fb_ProfileSetOptions);
 extern_asm(_fb_hTimeDecodeSerial);
 extern_asm(_fb_SetPos);
 extern_asm(_fb_hGetWeekOfYear);
@@ -839,6 +840,7 @@ extern_asm(___fb_locale_info_count);
 extern_asm(_fb_AssertWarnW);
 extern_asm(_fb_dos_sti);
 extern_asm(_fb_Multikey);
+extern_asm(_fb_ProfileGetOptions);
 extern_asm(_fb_ArrayRedimTo);
 extern_asm(_fb_DevPrinterGetOffset);
 extern_asm(_fb_CVL);
@@ -1496,6 +1498,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_ConsoleSetMouse)
     DXE_EXPORT_ASM (_fb_WstrBin_b)
     DXE_EXPORT_ASM (_fb_StrConcat)
+    DXE_EXPORT_ASM (_fb_ProfileSetOptions)
     DXE_EXPORT_ASM (_fb_hTimeDecodeSerial)
     DXE_EXPORT_ASM (_fb_SetPos)
     DXE_EXPORT_ASM (_fb_hGetWeekOfYear)
@@ -1687,6 +1690,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_AssertWarnW)
     DXE_EXPORT_ASM (_fb_dos_sti)
     DXE_EXPORT_ASM (_fb_Multikey)
+    DXE_EXPORT_ASM (_fb_ProfileGetOptions)
     DXE_EXPORT_ASM (_fb_ArrayRedimTo)
     DXE_EXPORT_ASM (_fb_DevPrinterGetOffset)
     DXE_EXPORT_ASM (_fb_CVL)
