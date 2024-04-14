@@ -14,6 +14,7 @@
 /* TODO: allocate bins in TLS: FB_PROFILECTX (fewer locks)*/
 /* TODO: merge thread data to the global data in fb_PROFILECTX_Destructor */
 /* TODO: only LOCK/UNLOCK for global data, not individual thread data */
+/*       maybe add a lock just for profiler data */
 /* TODO: add API to choose output options */
 /* TODO: add API to set analysis options */
 /* TODO: test the start-up and exit code more */
