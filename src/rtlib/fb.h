@@ -133,6 +133,8 @@
 	FBCALL void fb_GraphicsUnlock( void );
 	FBCALL void fb_MathLock  ( void );
 	FBCALL void fb_MathUnlock( void );
+	FBCALL void fb_ProfileLock( void );
+	FBCALL void fb_ProfileUnlock( void );
 	/* NOTE: if both locks are acquired, FB_LOCK() must be called before
            FB_STRLOCK() in order to avoid deadlocking */
 	#define FB_LOCK()      fb_Lock()
@@ -145,6 +147,8 @@
 	#define FB_GRAPHICS_UNLOCK() fb_GraphicsUnlock()
 	#define FB_MATH_LOCK()   fb_MathLock()
 	#define FB_MATH_UNLOCK() fb_MathUnlock()
+	#define FB_PROFILE_LOCK()   fb_ProfileLock()
+	#define FB_PROFILE_UNLOCK() fb_ProfileUnlock()
 #else
 	#define FB_LOCK()
 	#define FB_UNLOCK()
@@ -154,6 +158,8 @@
 	#define FB_GRAPHICS_UNLOCK()
 	#define FB_MATH_LOCK()
 	#define FB_MATH_UNLOCK()
+	#define FB_PROFILE_LOCK()
+	#define FB_PROFILE_UNLOCK()
 #endif
 
 /* CPU-dependent macros and inline functions */

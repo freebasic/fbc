@@ -8,13 +8,13 @@
  *       apr/2024 dynamic string table [jeffm]
  *       apr/2024 remove NUL character padding requirement [jeffm]
  *       apr/2024 add API to set output file name and report options [jeffm]
+ *       apr/2024 add profiler lock (replacing fb lock) [jeffm]
  */
 
 /* TODO: allocate a high level hash array for a top level index */
 /* TODO: allocate bins in TLS: FB_PROFILECTX (fewer locks)*/
 /* TODO: merge thread data to the global data in fb_PROFILECTX_Destructor */
 /* TODO: only LOCK/UNLOCK for global data, not individual thread data */
-/*       maybe add a lock just for profiler data */
 /* TODO: add API to choose output options */
 /* TODO: add API to set analysis options */
 /* TODO: test the start-up and exit code more */
@@ -338,7 +338,7 @@ FBCALL void *fb_ProfileBeginCall( const char *procname )
 
 	orig_parent_proc = parent_proc;
 
-	FB_LOCK();
+	FB_PROFILE_LOCK();
 
 	len = hash4_compute( procname, &full_hash );
 
@@ -391,7 +391,7 @@ update_proc:
 
 	proc->time = fb_Timer();
 
-	FB_UNLOCK();
+	FB_PROFILE_UNLOCK();
 
 	return (void *)proc;
 }
@@ -405,14 +405,14 @@ FBCALL void fb_ProfileEndCall( void *p )
 
 	end_time = fb_Timer();
 
-	FB_LOCK();
+	FB_PROFILE_LOCK();
 
 	proc = (FBPROC *)p;
 	proc->total_time += ( end_time - proc->time );
 	proc->call_count += 1;
 	ctx->cur_proc = proc->parent;
 
-	FB_UNLOCK();
+	FB_PROFILE_UNLOCK();
 }
 
 /*:::::*/
@@ -667,11 +667,11 @@ FBCALL int fb_ProfileSetFileName( const char * filename )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
-	FB_LOCK();
+	FB_PROFILE_LOCK();
 
 	strcpy( profile_filename, filename );
 
-	FB_UNLOCK();
+	FB_PROFILE_UNLOCK();
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
@@ -679,13 +679,20 @@ FBCALL int fb_ProfileSetFileName( const char * filename )
 /*:::::*/
 FBCALL unsigned int fb_ProfileGetOptions()
 {
-	return fb_profile_options;
+	unsigned int options;
+	FB_PROFILE_LOCK();
+	options = fb_profile_options;
+	FB_PROFILE_UNLOCK();
+	return options;
 }
 
 /*:::::*/
 FBCALL int fb_ProfileSetOptions( unsigned int options )
 {
-	unsigned int previous_options = fb_profile_options;
+	unsigned int previous_options;
+	FB_PROFILE_LOCK();
+	previous_options = fb_profile_options;
 	fb_profile_options = options;
+	FB_PROFILE_UNLOCK();
 	return previous_options;
 }

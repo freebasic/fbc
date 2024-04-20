@@ -68,6 +68,7 @@ static pthread_mutex_t __fb_global_mutex;
 static pthread_mutex_t __fb_string_mutex;
 static pthread_mutex_t __fb_graphics_mutex;
 static pthread_mutex_t __fb_math_mutex;
+static pthread_mutex_t __fb_profile_mutex;
 FBCALL void fb_Lock     ( void ) { pthread_mutex_lock  ( &__fb_global_mutex ); }
 FBCALL void fb_Unlock   ( void ) { pthread_mutex_unlock( &__fb_global_mutex ); }
 FBCALL void fb_StrLock  ( void ) { pthread_mutex_lock  ( &__fb_string_mutex ); }
@@ -76,6 +77,8 @@ FBCALL void fb_GraphicsLock  ( void ) { pthread_mutex_lock  ( &__fb_graphics_mut
 FBCALL void fb_GraphicsUnlock( void ) { pthread_mutex_unlock( &__fb_graphics_mutex ); }
 FBCALL void fb_MathLock  ( void ) { pthread_mutex_lock  ( &__fb_math_mutex ); }
 FBCALL void fb_MathUnlock( void ) { pthread_mutex_unlock( &__fb_math_mutex ); }
+FBCALL void fb_ProfileLock  ( void ) { pthread_mutex_lock  ( &__fb_profile_mutex ); }
+FBCALL void fb_ProfileUnlock( void ) { pthread_mutex_unlock( &__fb_profile_mutex ); }
 #endif
 
 static void *bg_thread(void *arg)
@@ -590,6 +593,7 @@ static void hInit( void )
 	pthread_mutex_init(&__fb_string_mutex, &attr);
 	pthread_mutex_init(&__fb_graphics_mutex, &attr);
 	pthread_mutex_init(&__fb_math_mutex, &attr);
+	pthread_mutex_init(&__fb_profile_mutex, &attr);
 #endif
 
 	pthread_mutex_init(&__fb_bg_mutex, &attr);
@@ -706,5 +710,6 @@ void fb_hEnd( int unused )
 	pthread_mutex_destroy(&__fb_string_mutex);
 	pthread_mutex_destroy(&__fb_graphics_mutex);
 	pthread_mutex_destroy(&__fb_math_mutex);
+	pthread_mutex_destroy(&__fb_profile_mutex);
 #endif
 }
