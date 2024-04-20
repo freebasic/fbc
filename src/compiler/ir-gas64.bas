@@ -909,7 +909,6 @@ end sub
 
 #ifdef profsarg
 sub code_write_table()
-    dim as string lname
     asm_section(".text")
     asm_info("Special proc added to write cycle table")
     ctx.indent +=1
@@ -919,13 +918,14 @@ sub code_write_table()
     asm_code("push rbp")
     asm_code("mov  rbp,rsp")
     asm_code("sub rsp, 176")
+
     asm_code("call fb_FileFree")
     asm_code("mov -120[rbp], eax") ''hfile
-    lname = *symbUniqueLabel( )
-    asm_code("lea rcx, "+lname+"[rip]")
+
+    asm_code("lea rcx, $profcycles[rip]")
     asm_code("mov edx, 17")
     asm_code("call fb_StrAllocTempDescZEx")
- 
+
     asm_code("mov rcx, rax")
     asm_code("xor edx, edx")
     asm_code("mov r8d, 2")
@@ -936,24 +936,55 @@ sub code_write_table()
     asm_code("call fb_FileOpen")
 
     asm_code("mov ecx, DWORD PTR -120[rbp]")
-    asm_code("xor edx, edx")
-    asm_code("lea r8, $profdata[rip]")
-    asm_code("mov r9d, 40000")
+    asm_code("mov edx, 1")
+
+    asm_code("lea r8, "+ctx.profilelabel+"[rip]")
+    asm_code("mov r9d, 12000")
     asm_code("call fb_FilePutLarge")
 
     asm_code("mov ecx, DWORD PTR -120[rbp]")
     asm_code("call fb_FileClose")
+    '======= names
+
+    asm_code("call fb_FileFree")
+    asm_code("mov -120[rbp], eax") ''hfile
+
+    asm_code("lea rcx, $profnames[rip]")
+    asm_code("mov edx, 15")
+    asm_code("call fb_StrAllocTempDescZEx")
+
+    asm_code("mov rcx, rax")
+    asm_code("xor edx, edx")
+    asm_code("mov r8d, 2")
+    asm_code("xor r9d, r9d")
+    asm_code("mov eax, DWORD PTR -120[rbp]")
+    asm_code("mov 32[rsp], eax")
+    asm_code("mov QWORD PTR 40[rsp], 0")
+    asm_code("call fb_FileOpen")
+
+    asm_code("mov ecx, DWORD PTR -120[rbp]")
+    asm_code("mov edx, 1")
+    asm_code("lea r8, $profname[rip]")
+    asm_code("mov r9d, 120000")
+    asm_code("call fb_FilePutLarge")
+
+    asm_code("mov ecx, DWORD PTR -120[rbp]")
+    asm_code("call fb_FileClose")
+
     asm_code("mov rsp,rbp")
     asm_code("pop rbp")
     asm_code("ret")
-    
+
     asm_code(".section .data")
     asm_code(".align 8")
-    asm_code(lname+":")
-    'asm_code(".ascii ""profilecycles.prf"""+$"\0")
+    asm_code("$profcycles:")
     asm_code(".ascii ""profilecycles.prf"+$"\0""")
+
+    asm_code(".align 8")
+    asm_code("$profnames:")
+    asm_code(".ascii ""profilename.prf"+$"\0""")
     asm_code(".section .text")
-    
+
     ctx.indent +=1
 end sub
 #EndIf
@@ -2439,7 +2470,7 @@ private function _emitbegin( ) as integer
 	ctx.roundfloat=false
 	ctx.target=fbgetoption(FB_COMPOPT_TARGET) ''linux or windows
 	#ifdef profsarg
-	ctx.profile=fbgetoption(FB_COMPOPT_PROFILE) ''profiling 
+	ctx.profile=fbgetoption(FB_COMPOPT_PROFILE) ''profiling
 	ctx.profilelabel="prof$"+env.inf.name
 	#EndIf
 	select case ctx.target
@@ -2598,39 +2629,39 @@ private sub _emitend( )
 		else
 			asm_section(".prfstr,""dr""")
 		end if
-		
+
         if env.inf.ismain then
 			asm_code("$profname:") ''main label
         End If
-        
-		asm_code(".ascii """+env.inf.name+$"\0""") ''source name
-		asm_code(".quad "+str(ctx.profprcnb))		   ''number of procs
-
+        asm_code(".ascii ""#####"+$"\n""")
+		asm_code(".ascii """+env.inf.name+$"\n""") ''source name
+		asm_code(".ascii """+str(ctx.profprcnb)+$"\n""")
 		for iprc as integer = 0 to ctx.profprcnb-1
-			'asm_code(".ascii """+hReplace( dbgstr(istr).txt, "\", $"\\" )+$"\0""")
-			asm_code(".ascii """+profprcname(iprc)+$"\0""")
+			asm_code(".ascii """+profprcname(iprc)+$"\n""")
 		next
+		asm_code(".ascii ""$$$$$"+$"\n""")
 
 		if ctx.systemv then
 			asm_section(".prfdat,""a""")
+			if env.inf.ismain then
+				asm_code("$profdata:") ''main label
+			End If
 			asm_code(".local "+ctx.profilelabel)
-        	asm_code(".comm "+ctx.profilelabel+",20000,8")
+			asm_code(".comm "+ctx.profilelabel+",8000,8")
 		else
 			asm_section(".prfdat,""dr""")
-			asm_code(".lcomm "+ctx.profilelabel+",20000,8") '' space for 500 elements init0 / reinit / total time / nbr of passing
+			'if env.inf.ismain then
+				'asm_code("$profdata:") ''main label
+			'End If
+			'asm_code(".ascii """+env.inf.name+$"\n""") ''source name
+			asm_code(".lcomm "+ctx.profilelabel+",8000,8") '' space for 500 elements init0 / reinit / total time / nbr of passing
+			if env.inf.ismain then
+				asm_code("$profdata:") ''main label
+			End If
 		end if
-		
-		if env.inf.ismain then
-			asm_code("$profdata:") ''main label
-        End If
-
-        'dim as integer frf=freefile
-        'Open "profileprcname.prf" For Output As frf
-        'put #frf,,ctx.profprcname
-        'close frf
-    end if 	
+    end if
 	#EndIf
-	
+
 	''write dbg data
 	if( env.clopt.debuginfo = true ) then
 		dim as string lname = *symbUniqueLabel( )
@@ -6469,7 +6500,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 		''====== profiling
 		if ctx.profile then
 	        if pname<>"fb_End" then
-	        	
+
 	        	asm_info("Calculate split time for procedure ------------------------------------------------------")
 		        asm_code("push rax")
 		        'asm_code("push rbx")
@@ -6487,9 +6518,9 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 		        'asm_code("pop rbx")
 		        asm_code("pop rax")
 		        asm_info("---------------------------------------------------------------")
-	        	
+
 	            asm_code("call " +pname,KNOALL)
-	            
+
 	            asm_info("init time returning in proc ---------------------------------------")
 		        asm_code("push rax")
 		        'asm_code("push rbx")
@@ -6504,7 +6535,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 		        'asm_code("pop rcx")
 		        'asm_code("pop rbx")
 		        asm_code("pop rax")
-		        asm_info("---------------------------------------------------------------")  
+		        asm_info("---------------------------------------------------------------")
 	        else
 	            asm_info("Calculate time before end ------------------------------------------------------")
 	            asm_code("push rax")
@@ -6514,12 +6545,12 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 	            asm_code("rdtsc")
 	            asm_code("shl rdx,32")
 	            asm_code("or rdx,rax")
-	            
+
 	            asm_code("mov rcx, rdx")
 		        asm_code("mov rax, QWORD PTR "+ctx.profilelabel+"[rip+"+str(ctx.profprcnb*40)+"]") ''init0
 		        asm_code("sub rcx, rax")
 		        asm_code("add QWORD PTR "+ctx.profilelabel+"[rip+"+str(ctx.profprcnb*40+8)+"], rcx") ''grand total
-	            
+
 	            asm_code("mov rax, QWORD PTR "+ctx.profilelabel+"[rip+"+str(ctx.profprcnb*40+16)+"]") ''reinit
 	            asm_code("sub rdx, rax")
 	            asm_code("add QWORD PTR "+ctx.profilelabel+"[rip+"+str(ctx.profprcnb*40+24)+"], rdx") ''internal total
@@ -7198,11 +7229,11 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 	#ifdef profsarg
 		if ctx.profile then
 			'ctx.profprcname+=*symbGetMangledName( proc )  ''+chr(13)+chr(10)
-			profprcname(ctx.profprcnb)=*symbGetMangledName( proc ) 
+			profprcname(ctx.profprcnb)=*symbGetMangledName( proc )
     	end if
 	#EndIf
-	
-	
+
+
 	if( symbIsExport( proc ) ) then
 		asm_section(".drectve")
 		asm_code(".ascii "" -export:"+*symbGetMangledName( proc )+"""")
@@ -7358,7 +7389,7 @@ private sub _emitprocend _
 	ctx.section=SECTION_EPILOG
 #ifdef profsarg
 	''profiling total time + next proc
-    if ctx.profile then 
+    if ctx.profile then
         asm_info("Calculate final time for procedure ------------------------------------------------------")
         asm_code("push rax") ''saving only rax if return value
         asm_code("rdtsc")
@@ -7368,14 +7399,14 @@ private sub _emitprocend _
         asm_code("mov rax, QWORD PTR "+ctx.profilelabel+"[rip+"+str(ctx.profprcnb*40)+"]") ''init0
         asm_code("sub rcx, rax")
         asm_code("add QWORD PTR "+ctx.profilelabel+"[rip+"+str(ctx.profprcnb*40+8)+"], rcx") ''grand total
-        
+
         asm_code("mov rax, QWORD PTR "+ctx.profilelabel+"[rip+"+str(ctx.profprcnb*40+16)+"]") ''reinit
         asm_code("sub rdx, rax")
         asm_code("add QWORD PTR "+ctx.profilelabel+"[rip+"+str(ctx.profprcnb*40+24)+"], rdx") ''internal total
         'asm_code("cpuid")
         asm_code("pop rax")
         asm_info("---------------------------------------------------------------")
-        
+
         ctx.profprcnb+=1
     end if
 #EndIf
