@@ -110,13 +110,21 @@ function astNewCALL _
 	'' function profiling for proc calls
 	n->call.profbegin = NULL
 	n->call.profend = NULL
-	if( canprofile ) then
-		if( env.opt.procprofile ) then
+	if( env.opt.procprofile ) then
+		if( canprofile ) then
 			if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_CALLS ) then
-				n->call.profbegin = rtlProfileBeginCall( sym )
-				if( n->call.profbegin <> NULL ) then
-					n->call.profend = rtlProfileEndCall( )
-				end if
+				'' fb's call profiling will clobber registers and will mess
+				'' up register loadeding for THISCALL and FASTCALL calling
+				'' conventions, so must disable unless astLoadCALL() is
+				'' fixed for better handling of THISCALL and FASTCALL.
+				select case symbGetProcMode( sym )
+				case FB_FUNCMODE_THISCALL, FB_FUNCMODE_FASTCALL
+				case else
+					n->call.profbegin = rtlProfileBeginCall( sym )
+					if( n->call.profbegin <> NULL ) then
+						n->call.profend = rtlProfileEndCall( )
+					end if
+				end select
 			end if
 		end if
 	end if

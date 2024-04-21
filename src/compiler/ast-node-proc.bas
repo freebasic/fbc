@@ -846,6 +846,11 @@ private sub hLoadProcResult( byval proc as FBSYMBOL ptr )
 		select case env.clopt.backend
 		case FB_BACKEND_GCC, FB_BACKEND_CLANG, FB_BACKEND_LLVM, FB_BACKEND_GAS64
 			n = astNewLOAD( n, symbGetFullType( proc ), TRUE )
+		case FB_BACKEND_GAS
+			select case fbGetOption( FB_COMPOPT_PROFILE )
+			case FB_PROFILE_OPT_CALLS
+				n = astNewLOAD( n, symbGetFullType( proc ), TRUE )
+			end select
 		end select
 	else
 		'' Use the real type, in case it's BYREF return or a UDT result
