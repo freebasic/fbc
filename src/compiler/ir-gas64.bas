@@ -934,18 +934,41 @@ sub code_write_table()
     asm_code("mov 32[rsp], eax")
     asm_code("mov QWORD PTR 40[rsp], 0")
     asm_code("call fb_FileOpen")
+''
+	dim as string lname1 = *symbUniqueLabel( )
+	dim as string lname2 = *symbUniqueLabel( )
+	'asm_code("int3")
+	asm_code("lea rax, $profnbt[rip]") ''start address for getting data
+	asm_code("xor r11, r11") ''size of all names
+	asm_code("xor r12, r12") ''number of procs
+	asm_code(lname1+":")
+	asm_code("cmp qword ptr [rax], 0x999999")
+	asm_code("jne "+lname2)
+	asm_code("add rax, 8")
+	asm_code("cmp qword ptr [rax], 0x555555")
+	asm_code("jne "+lname2)
+
+	asm_code("add rax, 8")
+	asm_code("add r11, qword ptr [rax]") ''size names
+	asm_code("add rax, 8")
+	asm_code("add r12, qword ptr [rax]") ''size data
+	asm_code("add rax, 8")
+
+	asm_code("jmp "+lname1)
+	asm_code(lname2+":")
+	asm_code("push r11")
 
     asm_code("mov ecx, DWORD PTR -120[rbp]")
     asm_code("mov edx, 1")
 
     asm_code("lea r8, "+ctx.profilelabel+"[rip]")
-    asm_code("mov r9d, 12000")
+    asm_code("mov r9d, r12d")
     asm_code("call fb_FilePutLarge")
 
     asm_code("mov ecx, DWORD PTR -120[rbp]")
     asm_code("call fb_FileClose")
-    '======= names
 
+    '======= names
     asm_code("call fb_FileFree")
     asm_code("mov -120[rbp], eax") ''hfile
 
@@ -965,7 +988,10 @@ sub code_write_table()
     asm_code("mov ecx, DWORD PTR -120[rbp]")
     asm_code("mov edx, 1")
     asm_code("lea r8, $profname[rip]")
-    asm_code("mov r9d, 120000")
+    ''==
+	asm_code("pop r11")
+    ''==
+    asm_code("mov r9d, r11d")
     asm_code("call fb_FilePutLarge")
 
     asm_code("mov ecx, DWORD PTR -120[rbp]")
@@ -2633,13 +2659,34 @@ private sub _emitend( )
         if env.inf.ismain then
 			asm_code("$profname:") ''main label
         End If
+        dim as integer lentotal=12
         asm_code(".ascii ""#####"+$"\n""")
 		asm_code(".ascii """+env.inf.name+$"\n""") ''source name
+		lentotal+=len(env.inf.name)+1
 		asm_code(".ascii """+str(ctx.profprcnb)+$"\n""")
 		for iprc as integer = 0 to ctx.profprcnb-1
 			asm_code(".ascii """+profprcname(iprc)+$"\n""")
+			lentotal+=len(profprcname(iprc))+1
 		next
 		asm_code(".ascii ""$$$$$"+$"\n""")
+
+		if ctx.systemv then
+			asm_section(".prfnbt,""a""")
+		else
+			asm_section(".prfnbt,""dr""")
+		End If
+		if env.inf.ismain then
+			asm_code("$profnbt:") ''main label
+		End If
+		asm_code(".quad 0x999999")
+		asm_code(".quad 0x555555")
+		asm_code(".quad "+str(lentotal))
+
+		dim as integer sizealign= ctx.profprcnb*40
+		if sizealign mod 16 then
+			sizealign+=8  ''16 bytes aligned
+		End If
+		asm_code(".quad "+str(sizealign))
 
 		if ctx.systemv then
 			asm_section(".prfdat,""a""")
@@ -2647,17 +2694,14 @@ private sub _emitend( )
 				asm_code("$profdata:") ''main label
 			End If
 			asm_code(".local "+ctx.profilelabel)
-			asm_code(".comm "+ctx.profilelabel+",8000,8")
+			asm_code(".comm "+ctx.profilelabel+","+str(sizealign)+",8")
 		else
 			asm_section(".prfdat,""dr""")
-			'if env.inf.ismain then
-				'asm_code("$profdata:") ''main label
-			'End If
-			'asm_code(".ascii """+env.inf.name+$"\n""") ''source name
-			asm_code(".lcomm "+ctx.profilelabel+",8000,8") '' space for 500 elements init0 / reinit / total time / nbr of passing
+			asm_code(".lcomm "+ctx.profilelabel+","+str(sizealign)+",8") '' space for init0 / reinit / total time / nbr of passing
 			if env.inf.ismain then
 				asm_code("$profdata:") ''main label
 			End If
+
 		end if
     end if
 	#EndIf
