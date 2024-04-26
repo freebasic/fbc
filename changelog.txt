@@ -57,7 +57,7 @@ Version 1.20.0
 - fbc: intrinsic define __FB_PROFILE__ to indicate if profiling was enabled
 - fbc: allow user to optionally disable profiling code generation with '#pragma profile [=value]' or '#pragma push( profile [,value] )'
 - fbc: intrinsic define __FB_OPTION_PROFILE__ to indicate if profiling is currently enabled for code generation
-- rtlib: ./fbc-int/profile.bi - extra features for working with the built-in profiler; ProfileSetFileName(), ProfileGetOptions(), ProfileSetOptions()
+- rtlib: ./fbc-int/profile.bi - extra features for working with the built-in profiler; ProfileSetFileName(), ProfileGetOptions(), ProfileSetOptions(). ProfileIgnore()
 
 [fixed]
 - github #410: give consistent floating point comparisons results involving NaNs.

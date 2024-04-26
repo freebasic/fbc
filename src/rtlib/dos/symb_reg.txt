@@ -340,6 +340,7 @@ extern_asm(_fb_WstrOctEx_b);
 extern_asm(_fb_ConReadLine);
 extern_asm(_fb_Exec);
 extern_asm(_fb_PrintPadWstr);
+extern_asm(_fb_ProfileIgnore);
 extern_asm(_fb_WstrRadix2Longint);
 extern_asm(_fb_OCT_b);
 extern_asm(_fb_FileSetEofEx);
@@ -1190,6 +1191,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_ConReadLine)
     DXE_EXPORT_ASM (_fb_Exec)
     DXE_EXPORT_ASM (_fb_PrintPadWstr)
+    DXE_EXPORT_ASM (_fb_ProfileIgnore)
     DXE_EXPORT_ASM (_fb_WstrRadix2Longint)
     DXE_EXPORT_ASM (_fb_OCT_b)
     DXE_EXPORT_ASM (_fb_FileSetEofEx)

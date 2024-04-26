@@ -16,9 +16,21 @@
 namespace FBC
 
 enum PROFILE_OPTIONS
-	PROFILE_OPTION_REPORT_DEFAULT = 0
-	PROFILE_OPTION_REPORT_RAWLIST = 1
-	PROFILE_OPTION_REPORT_MASK = 255
+	PROFILE_OPTION_REPORT_DEFAULT    = &h0000
+	PROFILE_OPTION_REPORT_CALLS      = &h0001
+	PROFILE_OPTION_REPORT_CALLTREE   = &h0002
+	PROFILE_OPTION_REPORT_RAWLIST    = &h0004 
+	PROFILE_OPTION_REPORT_RAWDATA    = &h0008
+	PROFILE_OPTION_REPORT_RAWSTRINGS = &h0010
+
+	PROFILE_OPTION_REPORT_MASK       = &h00FF
+
+	PROFILE_OPTION_HIDE_HEADER       = &h0100
+	PROFILE_OPTION_HIDE_TITLES       = &h0200
+	PROFILE_OPTION_HIDE_COUNTS       = &h0400
+	PROFILE_OPTION_HIDE_TIMES        = &h0800
+	PROFILE_OPTION_SHOW_DEBUGGING    = &h1000
+	PROFILE_OPTION_GRAPHICS_CHARS    = &h2000
 end enum
 
 extern "rtlib"
@@ -26,6 +38,7 @@ extern "rtlib"
 	declare function ProfileSetFileName alias "fb_ProfileSetFileName" ( byval filename as const zstring ptr ) as long
 	declare function ProfileGetOptions alias "fb_ProfileSetOptions" ( ) as PROFILE_OPTIONS
 	declare function ProfileSetOptions alias "fb_ProfileSetOptions" ( byval options as PROFILE_OPTIONS ) as PROFILE_OPTIONS
+	declare sub ProfileIgnore alias "fb_ProfileIgnore" ( byval procedurename as zstring ptr ) 
 end extern
 
 #if __FB_MT__
