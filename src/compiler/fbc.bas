@@ -1147,12 +1147,10 @@ private function hLinkFiles( ) as integer
 			ldcline += hFindLib( "dllcrt2.o" )
 		else
 			ldcline += hFindLib( "crt2.o" )
-			#ifndef profsarg
 			'' additional support for gmon
 			if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_GMON  ) then
 				ldcline += hFindLib( "gcrt2.o" )
 			end if
-			#endif
 		end if
 
 		ldcline += hFindLib( "crtbegin.o" )
@@ -1222,19 +1220,26 @@ private function hLinkFiles( ) as integer
 		'' constructors and destructors are not supported by emscripten
 		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
 			ldcline += " """ + fbc.libpath + FB_HOST_PATHDIV
-			if( fbGetOption( FB_COMPOPT_PIC ) ) then
-				if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_CALLS ) then
+			select case fbGetOption( FB_COMPOPT_PROFILE )
+			case FB_PROFILE_OPT_CALLS
+				if( fbGetOption( FB_COMPOPT_PIC ) ) then
 					ldcline += "fbrt1pic.o"
 				else
-					ldcline += "fbrt0pic.o"
-				end if
-			else
-				if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_CALLS ) then
 					ldcline += "fbrt1.o"
+				end if
+			case FB_PROFILE_OPT_CYCLES
+				if( fbGetOption( FB_COMPOPT_PIC ) ) then
+					ldcline += "fbrt2pic.o"
+				else
+					ldcline += "fbrt2.o"
+				end if
+			case else
+				if( fbGetOption( FB_COMPOPT_PIC ) ) then
+					ldcline += "fbrt0pic.o"
 				else
 					ldcline += "fbrt0.o"
 				end if
-			end if
+			end select
 			ldcline += """"
 		end if
 	end if
@@ -2342,6 +2347,8 @@ private sub handleOpt _
 			fbSetOption( FB_COMPOPT_PROFILE, FB_PROFILE_OPT_GMON )
 		case "fb"
 			fbSetOption( FB_COMPOPT_PROFILE, FB_PROFILE_OPT_CALLS )
+		case "cycles"
+			fbSetOption( FB_COMPOPT_PROFILE, FB_PROFILE_OPT_CYCLES )
 		case else
 			hFatalInvalidOption( arg, is_source )
 		end select
@@ -4376,12 +4383,10 @@ private sub hAddDefaultLibs( )
 			fbcAddDefLib( "gcc_eh" )
 		end if
 
-		#ifndef profsarg
 		'' profiling?
 		if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_GMON ) then
 			fbcAddDefLib( "gmon" )
 		end if
-		#endif
 
 	case FB_COMPTARGET_XBOX
 		fbcAddDefLib( "gcc" )
@@ -4407,7 +4412,7 @@ private sub hExcludeLibsFromLink( )
 	dim as TSTRSETITEM ptr i = listGetHead(@fbc.excludedlibs.list)
 	while i
 		select case i->s
-		case "fbrt0.o", "fbrt0pic.o", "fbrt1.o", "fbrt1pic.o"
+		case "fbrt0.o", "fbrt0pic.o", "fbrt1.o", "fbrt1pic.o", "fbrt2.o", "fbrt2pic.o"
 			fbc.nofbrt0 = TRUE
 		case else
 			strsetDel(@fbc.finallibs, i->s)
@@ -4505,7 +4510,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -print sha-1     Display compiler's source code commit sha-1 (if known)"
 	end if
 	print "  -profile         Enable function profiling"
-	print "  -profgen         Set the profiling code generation type (gmon|fb)"
+	print "  -profgen         Set the profiling code generation type (gmon|fb|cycles)"
 	print "  -r               Write out .asm/.c/.ll (-gen gas/gcc/llvm) only"
 	print "  -rr              Write out the final .asm only"
 	print "  -R               Preserve temporary .asm/.c/.ll/.def files"

@@ -702,9 +702,7 @@ function astProcEnd( byval callrtexit as integer ) as integer
 		dim as ASTNODE ptr head_node = n->l
 
 		if( enable_implicit_code ) then
-			#ifndef profsarg
 			head_node = hCallProfiler( head_node )
-			#endif
 			head_node = hCheckErrHnd( head_node, sym )
 		end if
 

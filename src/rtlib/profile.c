@@ -20,7 +20,6 @@
 #ifdef HOST_WIN32
 	#include <windows.h>
 #endif
-#include "fb.h"
 #include <time.h>
 
 /* ************************************
@@ -1348,8 +1347,6 @@ FBCALL int fb_EndProfile( int errorlevel )
 	}
 
 	ctx->main_proc->total_time = fb_Timer() - ctx->main_proc->time;
-
-	/* explicitly call destructor? */
 
 	filename = fb_hGetExePath( buffer, MAX_PATH-1 );
 	if( !filename )
