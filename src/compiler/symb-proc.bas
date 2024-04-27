@@ -2256,7 +2256,7 @@ private function hCheckOvlProc _
 	) as integer
 
 	dim as FBSYMBOL ptr param = any
-	dim as FB_OVLPROC_MATCH_SCORE arg_matchscore = any, matchscore = any
+	dim as FB_OVLPROC_MATCH_SCORE arg_matchscore = any, matchscore = FB_OVLPROC_NO_MATCH
 	dim as integer matchcount = any
 	dim as FB_CALL_ARG ptr arg = any
 
@@ -2293,7 +2293,6 @@ private function hCheckOvlProc _
 			param = param->next
 		end if
 
-		matchscore = FB_OVLPROC_NO_MATCH
 		exact_matches = 0
 
 		'' for each arg..

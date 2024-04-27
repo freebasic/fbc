@@ -26,7 +26,7 @@ end function
 
 function astLoadIDX( byval n as ASTNODE ptr ) as IRVREG ptr
 	dim as ASTNODE ptr var_ = any, idx = any
-	dim as IRVREG ptr vidx = any, vr = any
+	dim as IRVREG ptr vidx = any, vr = NULL
 	dim as FBSYMBOL ptr s = any
 	dim as longint ofs = any
 

@@ -97,7 +97,7 @@ end function
 
 function astLoadDEREF( byval n as ASTNODE ptr ) as IRVREG ptr
 	dim as ASTNODE ptr l = any
-	dim as IRVREG ptr v1 = any, vp = any, vr = any
+	dim as IRVREG ptr v1 = any, vp = any, vr = NULL
 
 	l = n->l
 	'' no index? can happen with absolute addresses + ptr typecasting

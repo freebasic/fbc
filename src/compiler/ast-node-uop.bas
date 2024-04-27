@@ -325,7 +325,7 @@ function astLoadUOP _
 
 	dim as ASTNODE ptr o = any
 	dim as integer op = any
-	dim as IRVREG ptr v1 = any, vr = any
+	dim as IRVREG ptr v1 = any, vr = NULL
 
 	o = n->l
 	op = n->op.op

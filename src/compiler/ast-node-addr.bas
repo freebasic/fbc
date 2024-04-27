@@ -48,7 +48,7 @@ private function astNewOFFSET( byval l as ASTNODE ptr ) as ASTNODE ptr
 end function
 
 function astLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr
-	dim as IRVREG ptr vr = any
+	dim as IRVREG ptr vr = NULL
 	dim as FBSYMBOL ptr sym = any
 	dim as ASTNODE ptr l = any
 
@@ -231,7 +231,7 @@ end function
 
 function astLoadADDROF( byval n as ASTNODE ptr ) as IRVREG ptr
 	dim as ASTNODE ptr p = any
-	dim as IRVREG ptr v1 = any, vr = any
+	dim as IRVREG ptr v1 = any, vr = NULL
 
 	p  = n->l
 	if( p = NULL ) then
