@@ -280,7 +280,8 @@ end function
 function rtlDataRestore _
 	( _
 		byval label as FBSYMBOL ptr, _
-		byval afternode as ASTNODE ptr _
+		byval afternode as ASTNODE ptr, _
+		byval canprofile as integer = TRUE _
 	) as integer
 
 	dim as ASTNODE ptr proc = any, expr = any
@@ -288,7 +289,7 @@ function rtlDataRestore _
 
 	function = FALSE
 
-	proc = astNewCALL( PROCLOOKUP( DATARESTORE ), NULL )
+	proc = astNewCALL( PROCLOOKUP( DATARESTORE ), NULL, canprofile )
 
 	'' byval labeladdrs as void ptr
 	if( label = NULL ) then

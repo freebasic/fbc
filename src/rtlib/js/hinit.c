@@ -12,6 +12,10 @@ FBCALL void fb_StrLock( void )   { return; }
 FBCALL void fb_StrUnlock( void ) { return; }
 FBCALL void fb_GraphicsLock  ( void ) { return; }
 FBCALL void fb_GraphicsUnlock( void ) { return; }
+FBCALL void fb_MathLock  ( void ) { return; }
+FBCALL void fb_MathUnlock( void ) { return; }
+FBCALL void fb_ProfileLock  ( void ) { return; }
+FBCALL void fb_ProfileUnlock( void ) { return; }
 #endif
 
 static const char color_remap[16] =

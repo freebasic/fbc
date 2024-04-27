@@ -5,8 +5,13 @@
 # error not supported in qb dialect
 # endif
 
-'' declarations must follow ./src/rtlib/fb_system.h
-
+'' DISCLAIMER!!!
+''
+''   1) this header documents runtime library internals
+''      and is subject to change without notice
+''
+'' declarations must follow ./src/rtlib/fb.h
+''                          ./src/rtlib/fb_system.h
 
 namespace FBC
 
@@ -20,6 +25,17 @@ extern "rtlib"
 end extern
 
 #endif
+#endif
+
+#if __FB_MT__
+extern "rtlib"
+	declare sub fbLock alias "fb_Lock" ()
+	declare sub fbUnlock alias "fb_Unlock" ()
+	declare sub fbStrLock alias "fb_StrLock" ()
+	declare sub fbStrUnlock alias "fb_StrUnlock" ()
+	declare sub fbGraphicsLock alias "fb_GraphicsLock" ()
+	declare sub fbGraphicsUnlock alias "fb_GraphicsUnlock" ()
+end extern
 #endif
 
 end namespace

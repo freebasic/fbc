@@ -1153,7 +1153,7 @@ private sub hCreateFrame _
 			(proc->proc.ext->stk.argofs <> EMIT_ARGSTART) or _
 			symbGetIsMainProc( proc ) or _
 			env.clopt.debuginfo or _
-			env.clopt.profile ) then
+			(fbGetOption( FB_COMPOPT_PROFILE ) <> FB_PROFILE_OPT_NONE) ) then
 
 			hPUSH( "ebp" )
 			if( hasunwind ) then
@@ -1181,7 +1181,7 @@ private sub hCreateFrame _
 		end if
 
 		if( env.clopt.target = FB_COMPTARGET_DOS ) then
-			if( env.clopt.profile ) then
+			if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_GMON ) then
 				lprof = symbMakeProfileLabelName( )
 
 				outEx(".section .data" + NEWLINE )
@@ -1250,7 +1250,7 @@ private sub hDestroyFrame _
 			(proc->proc.ext->stk.argofs <> EMIT_ARGSTART) or _
 			symbGetIsMainProc( proc ) or _
 			env.clopt.debuginfo or _
-			env.clopt.profile ) then
+			(fbGetOption( FB_COMPOPT_PROFILE ) <> FB_PROFILE_OPT_NONE) ) then
 			outp( "mov esp, ebp" )
 			hPOP( "ebp" )
 			if hasunwind then

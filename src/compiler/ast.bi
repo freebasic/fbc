@@ -110,6 +110,8 @@ type AST_NODE_CALL
 	argtail         as ASTNODE_ ptr
 	strtail         as AST_TMPSTRLIST_ITEM ptr      '' fixed-length string argument copy-back list
 	tmpres          as FBSYMBOL ptr                 '' temp result structure, if needed
+	profbegin       as ASTNODE_ ptr
+	profend         as ASTNODE_ ptr
 end type
 
 type AST_NODE_ARG
@@ -699,7 +701,8 @@ declare function astNewDEREF _
 declare function astNewCALL _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval ptrexpr as ASTNODE ptr = NULL _
+		byval ptrexpr as ASTNODE ptr = NULL, _
+		byval canprofile as integer = TRUE _
 	) as ASTNODE ptr
 
 declare function astNewCALLCTOR _

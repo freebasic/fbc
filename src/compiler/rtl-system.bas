@@ -39,6 +39,13 @@ declare function    hThreadCall_cb      ( byval sym as FBSYMBOL ptr ) as integer
 			NULL, FB_RTL_OPT_REQUIRED, _
 			0 _
 		), _
+		/' sub fb_InitProfile ( ) '/ _
+		( _
+			@FB_RTL_INITPROFILE, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			0 _
+		), _
 		/' sub __main cdecl( ) '/ _
 		( _
 			@FB_RTL_INITCRTCTOR, @"__main", _
@@ -592,7 +599,7 @@ private function rtlX86CpuCheck( ) as integer
 	end select
 
 	''
-	proc = astNewCALL( PROCLOOKUP( CPUDETECT ), NULL )
+	proc = astNewCALL( PROCLOOKUP( CPUDETECT ), NULL, FALSE )
 
 	'' cpu = fb_CpuDetect shr 28
 	cpu = astNewBOP( AST_OP_SHR, proc, astNewCONSTi( 28, FB_DATATYPE_UINT ) )
@@ -606,7 +613,7 @@ private function rtlX86CpuCheck( ) as integer
 	rtlPrint( astNewCONSTi( 0 ), FALSE, FALSE, astNewVAR( s ) )
 
 	'' end 1
-	proc = astNewCALL( PROCLOOKUP( END ), NULL )
+	proc = astNewCALL( PROCLOOKUP( END ), NULL, FALSE )
 	if( astNewARG( proc, astNewCONSTi( 1 ) ) = NULL ) then
 		exit function
 	end if
@@ -634,7 +641,7 @@ private function rtlX86CpuCheck( ) as integer
 		rtlPrint( astNewCONSTi( 0 ), FALSE, FALSE, astNewVAR( s ) )
 
 		'' end 1
-		proc = astNewCALL( PROCLOOKUP( END ), NULL )
+		proc = astNewCALL( PROCLOOKUP( END ), NULL, FALSE )
 		if( astNewARG( proc, astNewCONSTi( 1 ) ) = NULL ) then
 			exit function
 		end if
@@ -645,6 +652,11 @@ private function rtlX86CpuCheck( ) as integer
 	end if
 
 	function = TRUE
+end function
+
+'':::::
+function rtlInitProfile( ) as ASTNODE ptr
+	function = astNewCALL( PROCLOOKUP( INITPROFILE ), NULL, FALSE )
 end function
 
 '':::::
@@ -665,11 +677,15 @@ function rtlInitApp _
 			'' call __monstartup() on win32/cygwin if profiling
 			select case( env.clopt.target )
 			case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-				if( env.clopt.profile ) then
+				if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_GMON ) then
 					'' __monstartup()
 					rtlProfileCall_monstartup( )
 				end if
 			end select
+
+			if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_CALLS) then
+				rtlInitProfile( )
+			end if
 		end if
 
 		'' call default CRT0 constructors (only required for Win32)
@@ -680,7 +696,7 @@ function rtlInitApp _
 	end if
 
 	'' fb_Init( argc, argv, lang )
-	proc = astNewCALL( PROCLOOKUP( INIT ), NULL )
+	proc = astNewCALL( PROCLOOKUP( INIT ), NULL, FALSE )
 	astNewARG( proc, argc )
 	astNewARG( proc, argv )
 	astNewARG( proc, astNewCONSTi( env.clopt.lang ) )
@@ -690,7 +706,7 @@ function rtlInitApp _
 		'' Error checking enabled and not a DLL? And emscripten doesn't have signals
 		if( env.clopt.errorcheck andalso is_exe andalso ( env.clopt.target <> FB_COMPTARGET_JS ) ) then
 			'' fb_InitSignals( )
-			astAdd( astNewCALL( PROCLOOKUP( INITSIGNALS ), NULL ) )
+			astAdd( astNewCALL( PROCLOOKUP( INITSIGNALS ), NULL, FALSE ) )
 
 			'' Checking the CPU for features on x86
 			if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
@@ -709,7 +725,7 @@ function rtlExitApp( byval errlevel as ASTNODE ptr ) as integer
 	function = FALSE
 
 	'' fb_End( errlevel )
-	proc = astNewCALL( PROCLOOKUP( END ), NULL )
+	proc = astNewCALL( PROCLOOKUP( END ), NULL, FALSE )
 
 	if( errlevel = NULL ) then
 		errlevel = astNewCONSTi( 0 )

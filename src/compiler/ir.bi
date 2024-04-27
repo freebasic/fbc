@@ -596,9 +596,9 @@ declare sub vregDump( byval v as IRVREG ptr )
 
 #define irEmitSTACK(op, v1, v2) ir.vtbl.emitStack( op, v1, v2 )
 
-#define irEmitPUSH(v1) ir.vtbl.emitStack( AST_OP_PUSH, v1 )
+#define irEmitPUSH(v1) ir.vtbl.emitStack( AST_OP_PUSH, v1, NULL )
 
-#define irEmitPOP(v1) ir.vtbl.emitStack( AST_OP_POP, v1 )
+#define irEmitPOP(v1) ir.vtbl.emitStack( AST_OP_POP, v1, NULL )
 
 #define irEmitADDR(op, v1, vr) ir.vtbl.emitAddr( op, v1, vr )
 

@@ -622,7 +622,8 @@ private function hCallProfiler _
 		byval head_node as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	if( env.clopt.profile ) then
+	select case fbGetOption( FB_COMPOPT_PROFILE )
+	case FB_PROFILE_OPT_GMON
 		select case fbGetOption( FB_COMPOPT_BACKEND )
 		case FB_BACKEND_GCC, FB_BACKEND_CLANG
 			'' _mcount call is inserted by the C compiler
@@ -632,7 +633,7 @@ private function hCallProfiler _
 				head_node = astAddAfter( rtlProfileCall_mcount(), head_node )
 			end if
 		end select
-	end if
+	end select
 
 	function = head_node
 
@@ -845,6 +846,11 @@ private sub hLoadProcResult( byval proc as FBSYMBOL ptr )
 		select case env.clopt.backend
 		case FB_BACKEND_GCC, FB_BACKEND_CLANG, FB_BACKEND_LLVM, FB_BACKEND_GAS64
 			n = astNewLOAD( n, symbGetFullType( proc ), TRUE )
+		case FB_BACKEND_GAS
+			select case fbGetOption( FB_COMPOPT_PROFILE )
+			case FB_PROFILE_OPT_CALLS
+				n = astNewLOAD( n, symbGetFullType( proc ), TRUE )
+			end select
 		end select
 	else
 		'' Use the real type, in case it's BYREF return or a UDT result

@@ -164,7 +164,7 @@ sub fbMainEnd( )
 		'' set default data label (def label isn't global as it could clash with other
 		'' modules, so DataRestore alone can't figure out where to start)
 		if( astGetFirstDataStmtSymbol( ) <> NULL ) then
-			rtlDataRestore( NULL, env.main.initnode )
+		rtlDataRestore( NULL, env.main.initnode, FALSE )
 		end if
 
 		callrtexit = (env.clopt.outtype <> FB_OUTTYPE_DYNAMICLIB)

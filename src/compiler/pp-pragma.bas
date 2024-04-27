@@ -24,7 +24,9 @@ enum LEXPP_PRAGMAFLAG_ENUM
 end enum
 
 enum FBOPTION_ENUM
-	FBOPTION_PROCPUBLIC = 1         '' env.opt.procpublic (fbint.bi:TYPE FBOPTION)
+	FBOPTION_NONE         = 0       '' fbint.bi:TYPE FBOPTION
+	FBOPTION_PROCPROFILE            '' env.opt.procprofile
+	FBOPTION_PROCPUBLIC             '' env.opt.procpublic
 end enum
 
 enum LEXPP_PRAGMAGRP
@@ -47,6 +49,7 @@ enum LEXPP_PRAGMAOPT_ENUM
 	LEXPP_PRAGMAOPT_WARNCONSTNESS
 	LEXPP_PRAGMAOPT_RESERVE
 	LEXPP_PRAGMAOPT_PRIVATE
+	LEXPP_PRAGMAOPT_PROFILE
 
 	LEXPP_PRAGMAS
 end enum
@@ -66,7 +69,8 @@ end type
 		("once"       , LEXPP_PRAGMAGRP_CALLBACK, 0                     , LEXPP_PRAGMAFLAG_HAS_CALLBACK ), _
 		("constness"  , LEXPP_PRAGMAGRP_PDCHECK , FB_PDCHECK_CONSTNESS  , LEXPP_PRAGMAFLAG_DEFAULT      ), _
 		("reserve"    , LEXPP_PRAGMAGRP_CALLBACK, 0                     , LEXPP_PRAGMAFLAG_HAS_CALLBACK ), _
-		("private"    , LEXPP_PRAGMAGRP_FBOPTION, FBOPTION_PROCPUBLIC   , LEXPP_PRAGMAFLAG_DEFAULT      ) _
+		("private"    , LEXPP_PRAGMAGRP_FBOPTION, FBOPTION_PROCPUBLIC   , LEXPP_PRAGMAFLAG_DEFAULT      ), _
+		("profile"    , LEXPP_PRAGMAGRP_FBOPTION, FBOPTION_PROCPROFILE  , LEXPP_PRAGMAFLAG_DEFAULT      ) _
 	}
 
 sub ppPragmaInit( )
@@ -344,6 +348,8 @@ sub ppPragma( )
 				case FBOPTION_PROCPUBLIC
 					'' #pragma private --> invert value for public
 					pragmaPush( p, (env.opt.procpublic = 0 ) )
+				case FBOPTION_PROCPROFILE
+					pragmaPush( p, (env.opt.procprofile <> 0) )
 				end select
 			end select
 
@@ -411,6 +417,8 @@ sub ppPragma( )
 				case FBOPTION_PROCPUBLIC
 					'' #pragma private --> invert value for public
 					env.opt.procpublic = ( value = 0 )
+				case FBOPTION_PROCPROFILE
+					env.opt.procprofile = ( value <> 0 )
 				end select
 			end select
 		end if

@@ -154,6 +154,10 @@ private function hDefOptPrivate_cb() as string
 	function = str( env.opt.procpublic = FALSE )
 end function
 
+private function hDefOptProfile_cb() as string
+	function = str( env.opt.procprofile = TRUE )
+end function
+
 private function hDefOptGosub_cb() as string
 	function = str( env.opt.gosub = TRUE )
 end function
@@ -164,6 +168,10 @@ end function
 
 private function hDefOptimize_cb () as string
 	function = str( fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) )
+end function
+
+private function hDefProfile_cb () as string
+	function = str( fbGetOption( FB_COMPOPT_PROFILE ) <> TRUE )
 end function
 
 private function hDefOutExe_cb() as string
@@ -1271,6 +1279,7 @@ dim shared defTb(0 to ...) as SYMBDEF => _
 	(@"__FB_OPTION_EXPLICIT__", NULL          , 0                  , @hDefOptExplicit_cb), _
 	(@"__FB_OPTION_PRIVATE__" , NULL          , 0                  , @hDefOptPrivate_cb ), _
 	(@"__FB_OPTION_GOSUB__"   , NULL          , 0                  , @hDefOptGosub_cb   ), _
+	(@"__FB_OPTION_PROFILE__" , NULL          , 0                  , @hDefOptProfile_cb ), _
 	(@"__FB_OUT_EXE__"        , NULL          , 0                  , @hDefOutExe_cb     ), _
 	(@"__FB_OUT_LIB__"        , NULL          , 0                  , @hDefOutLib_cb     ), _
 	(@"__FB_OUT_DLL__"        , NULL          , 0                  , @hDefOutDll_cb     ), _
@@ -1283,7 +1292,8 @@ dim shared defTb(0 to ...) as SYMBDEF => _
 	(@"__FB_FPMODE__"         , NULL          , FB_DEFINE_FLAGS_STR, @hDefFpmode_cb     ), _
 	(@"__FB_GCC__"            , NULL          , 0                  , @hDefGcc_cb        ), _
 	(@"__FB_GUI__"            , NULL          , 0                  , @hDefGui_cb        ), _
-	(@"__FB_OPTIMIZE__"       , NULL          , 0                  , @hDefoptimize_cb   )  _
+	(@"__FB_OPTIMIZE__"       , NULL          , 0                  , @hDefOptimize_cb   ),  _
+	(@"__FB_PROFILE__"        , NULL          , 0                  , @hDefProfile_cb    )  _
 }
 
 type SYMBMACRO

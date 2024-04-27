@@ -23,7 +23,8 @@ end sub
 function astNewCALL _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval ptrexpr as ASTNODE ptr = NULL _
+		byval ptrexpr as ASTNODE ptr = NULL, _
+		byval canprofile as integer = TRUE _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
@@ -106,6 +107,27 @@ function astNewCALL _
 		n->call.tmpres = NULL
 	end if
 
+	'' function profiling for proc calls
+	n->call.profbegin = NULL
+	n->call.profend = NULL
+	if( env.opt.procprofile ) then
+		if( canprofile ) then
+			if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_CALLS ) then
+				'' fb's call profiling will clobber registers and will mess
+				'' up register loadeding for THISCALL and FASTCALL calling
+				'' conventions, so must disable unless astLoadCALL() is
+				'' fixed for better handling of THISCALL and FASTCALL.
+				select case symbGetProcMode( sym )
+				case FB_FUNCMODE_THISCALL, FB_FUNCMODE_FASTCALL
+				case else
+					n->call.profbegin = rtlProfileBeginCall( sym )
+					if( n->call.profbegin <> NULL ) then
+						n->call.profend = rtlProfileEndCall( )
+					end if
+				end select
+			end if
+		end if
+	end if
 end function
 
 '':::::
@@ -155,7 +177,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	dim as FBSYMBOL ptr proc = any
 	dim as integer bytestopop = any, bytestoalign = any, argbytes = any
 	dim as integer prev_totalstackbytes = totalstackbytes
-	dim as IRVREG ptr vr = NULL, v1 = any, lreg = NULL
+	dim as IRVREG ptr vr = NULL, v1 = any, lreg = NULL, pcvr = NULL
 
 	'' ARGs can contain CALLs themselves, then astLoadCALL() will recurse
 	reclevel += 1
@@ -319,6 +341,13 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		end if
 	end if
 
+	'' signal function start for profiling
+	if( n->call.profbegin <> NULL ) then
+		pcvr = astLoad( n->call.profbegin )
+		astDelNode( n->call.profbegin )
+		n->call.profbegin = NULL
+	end if
+
 	'' function pointer?
 	l = n->l
 	if( l ) then
@@ -334,6 +363,18 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	end if
 
 	totalstackbytes = prev_totalstackbytes
+
+	'' signal function end for profiling
+	if( n->call.profend <> NULL ) then
+		if( pcvr ) then
+			if( ast.doemit ) then
+				irEmitPUSHARG( NULL, pcvr, 0, reclevel, NULL )
+				irEmitCALLFUNCT( n->call.profend->sym, 0, NULL, reclevel )
+			end if
+		end if
+		astDelTree( n->call.profend )
+		n->call.profend = NULL
+	end if
 
 	hCopyStringsBack( n )
 
@@ -362,6 +403,17 @@ sub astCloneCALL _
 		byval n as ASTNODE ptr, _
 		byval c as ASTNODE ptr _
 	)
+
+	'' profiled function have sub nodes
+	scope
+		dim as ASTNODE ptr t = any
+
+		t = n->call.profbegin
+		if( t <> NULL ) then
+			c->call.profbegin = astCloneTree( t )
+			c->call.profend = astCloneTree( n->call.profend )
+		end if
+	end scope
 
 	'' copy-back list
 	scope
@@ -401,6 +453,12 @@ sub astDelCALL _
 		byval n as ASTNODE ptr _
 	)
 
+	'' profiled function have sub nodes
+	if( n->call.profbegin <> NULL ) then
+		astDelTree( n->call.profbegin )
+		astDelTree( n->call.profend )
+	end if
+
 	'' copy-back list
 	scope
 	    dim as AST_TMPSTRLIST_ITEM ptr s = any, p = any
@@ -424,6 +482,12 @@ sub astReplaceSymbolOnCALL _
 		byval old_sym as FBSYMBOL ptr, _
 		byval new_sym as FBSYMBOL ptr _
 	)
+
+	'' profiled function have sub nodes
+	if( n->call.profbegin <> NULL ) then
+		astReplaceSymbolOnTree( n->call.profbegin, old_sym, new_sym )
+		astReplaceSymbolOnTree( n->call.profend, old_sym, new_sym )
+	end if
 
 	'' check temp res
 	if( n->call.tmpres = old_sym ) then

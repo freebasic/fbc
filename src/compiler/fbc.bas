@@ -1095,7 +1095,7 @@ private function hLinkFiles( ) as integer
 	end if
 
 	if( fbGetOption( FB_COMPOPT_DEBUGINFO ) = FALSE ) then
-		if( fbGetOption( FB_COMPOPT_PROFILE ) = FALSE ) then
+		if( fbGetOption( FB_COMPOPT_PROFILE ) <> FB_PROFILE_OPT_GMON ) then
 			if(( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN ) and _
 				( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS )) then
 
@@ -1137,7 +1137,7 @@ private function hLinkFiles( ) as integer
 			'' TODO
 			ldcline += hFindLib( "crt0.o" )
 			'' additional support for gmon
-			if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+			if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_GMON ) then
 				ldcline += hFindLib( "gcrt0.o" )
 			end if
 		end if
@@ -1148,7 +1148,7 @@ private function hLinkFiles( ) as integer
 		else
 			ldcline += hFindLib( "crt2.o" )
 			'' additional support for gmon
-			if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+			if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_GMON  ) then
 				ldcline += hFindLib( "gcrt2.o" )
 			end if
 		end if
@@ -1156,7 +1156,7 @@ private function hLinkFiles( ) as integer
 		ldcline += hFindLib( "crtbegin.o" )
 
 	case FB_COMPTARGET_DOS
-		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+		if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_GMON  ) then
 			ldcline += hFindLib( "gcrt0.o" )
 		else
 			ldcline += hFindLib( "crt0.o" )
@@ -1216,13 +1216,22 @@ private function hLinkFiles( ) as integer
 	end select
 
 	if( fbc.nofbrt0 = FALSE ) then
-		'' don't add the fbrt0 if compiling for javascript, because global constructors and destructors are not supported by emscripten
+		'' don't add the fbrt0|fbrt1 if compiling for javascript, because global
+		'' constructors and destructors are not supported by emscripten
 		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
 			ldcline += " """ + fbc.libpath + FB_HOST_PATHDIV
 			if( fbGetOption( FB_COMPOPT_PIC ) ) then
-				ldcline += "fbrt0pic.o"
+				if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_CALLS ) then
+					ldcline += "fbrt1pic.o"
+				else
+					ldcline += "fbrt0pic.o"
+				end if
 			else
-				ldcline += "fbrt0.o"
+				if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_CALLS ) then
+					ldcline += "fbrt1.o"
+				else
+					ldcline += "fbrt0.o"
+				end if
 			end if
 			ldcline += """"
 		end if
@@ -1906,6 +1915,7 @@ enum
 	OPT_PP
 	OPT_PREFIX
 	OPT_PRINT
+	OPT_PROFGEN
 	OPT_PROFILE
 	OPT_R
 	OPT_RKEEPASM
@@ -1990,6 +2000,7 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( FALSE, TRUE , FALSE, TRUE  ), _ '' OPT_PP           affects major initialization
 	( TRUE , TRUE , FALSE, TRUE  ), _ '' OPT_PREFIX       affects major initialization
 	( TRUE , FALSE, FALSE, FALSE ), _ '' OPT_PRINT        never allow, makes no sense to have in source
+	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_PROFGEN      affects major initialization, affects initialization, affects code generation, affects link
 	( FALSE, TRUE , TRUE , TRUE  ), _ '' OPT_PROFILE      affects major initialization, affects initialization, affects code generation, affects link
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_R            affects compile / assemble / link process, removal of temporary files
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_RKEEPASM     affects removal of temporary files
@@ -2321,7 +2332,17 @@ private sub handleOpt _
 		end select
 
 	case OPT_PROFILE
-		fbSetOption( FB_COMPOPT_PROFILE, TRUE )
+		fbSetOption( FB_COMPOPT_PROFILE, FB_PROFILE_OPT_GMON )
+
+	case OPT_PROFGEN
+		select case( arg )
+		case "default", "gmon"
+			fbSetOption( FB_COMPOPT_PROFILE, FB_PROFILE_OPT_GMON )
+		case "fb"
+			fbSetOption( FB_COMPOPT_PROFILE, FB_PROFILE_OPT_CALLS )
+		case else
+			hFatalInvalidOption( arg, is_source )
+		end select
 
 	case OPT_R
 		'' -r changes the output type to .o, like -c, i.e. -m may have
@@ -2615,6 +2636,7 @@ private function parseOption(byval opt as zstring ptr) as integer
 		CHECK("prefix", OPT_PREFIX)
 		CHECK("print", OPT_PRINT)
 		CHECK("profile", OPT_PROFILE)
+		CHECK("profgen", OPT_PROFGEN)
 
 	case asc("r")
 		ONECHAR(OPT_R)
@@ -3767,7 +3789,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			ln += "-g "
 		end if
 
-		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+		if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_GMON ) then
 			ln += "-pg "
 		end if
 
@@ -4248,7 +4270,7 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "user32" )
 
 		'' profiling?
-		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+		if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_GMON ) then
 			fbcAddDefLib( "gmon" )
 		end if
 
@@ -4353,7 +4375,7 @@ private sub hAddDefaultLibs( )
 		end if
 
 		'' profiling?
-		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+		if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_GMON ) then
 			fbcAddDefLib( "gmon" )
 		end if
 
@@ -4368,7 +4390,7 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "m" )
 
 		'' profiling?
-		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+		if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_GMON ) then
 			fbcAddDefLib( "gmon" )
 		end if
 
@@ -4381,7 +4403,7 @@ private sub hExcludeLibsFromLink( )
 	dim as TSTRSETITEM ptr i = listGetHead(@fbc.excludedlibs.list)
 	while i
 		select case i->s
-		case "fbrt0.o", "fbrt0pic.o"
+		case "fbrt0.o", "fbrt0pic.o", "fbrt1.o", "fbrt1pic.o"
 			fbc.nofbrt0 = TRUE
 		case else
 			strsetDel(@fbc.finallibs, i->s)
@@ -4479,6 +4501,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -print sha-1     Display compiler's source code commit sha-1 (if known)"
 	end if
 	print "  -profile         Enable function profiling"
+	print "  -profgen         Set the profiling code generation type (gmon|fb)"
 	print "  -r               Write out .asm/.c/.ll (-gen gas/gcc/llvm) only"
 	print "  -rr              Write out the final .asm only"
 	print "  -R               Preserve temporary .asm/.c/.ll/.def files"

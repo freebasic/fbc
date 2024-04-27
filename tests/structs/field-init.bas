@@ -69,7 +69,6 @@ SUITE( fbc_tests.structs.field_init )
 		TEST( default )
 			dim x1 as T1
 			CU_ASSERT( x1.a = space( 10 ) )
-			print asc( x1.a, 0 )
 
 			dim x2 as T2
 			CU_ASSERT( x2.a = space( 10 ) )

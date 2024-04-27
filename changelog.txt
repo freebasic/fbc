@@ -52,6 +52,12 @@ Version 1.20.0
 - fbc: '-z nobuiltins' command line option to disable all non-required built-in procedure definitions
 - sf.net feature #285 fbc: allow UDT operators (LET, +=, etc) to support array parameters
 - improved stabs debug information in -gen gas and -gen gas64 for STRING*N, ZSTRING*N, and WSTRING*N types
+- profiler: rtlib/static/fbrt1.c for profiler start-up and exit code, rtlib/profile.c support code
+- Add "-profgen fb|gmon" command line option to select different profiler code generation backends
+- fbc: intrinsic define __FB_PROFILE__ to indicate if profiling was enabled
+- fbc: allow user to optionally disable profiling code generation with '#pragma profile [=value]' or '#pragma push( profile [,value] )'
+- fbc: intrinsic define __FB_OPTION_PROFILE__ to indicate if profiling is currently enabled for code generation
+- rtlib: ./fbc-int/profile.bi - extra features for working with the built-in profiler; ProfileSetFileName(), ProfileGetOptions(), ProfileSetOptions(). ProfileIgnore()
 
 [fixed]
 - github #410: give consistent floating point comparisons results involving NaNs.
