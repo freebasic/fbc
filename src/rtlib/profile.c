@@ -1324,8 +1324,6 @@ FBCALL void fb_InitProfile( void )
 	sprintf( fb_profiler->launch_time, "%02d-%02d-%04d, %02d:%02d:%02d", 1+ptm->tm_mon, ptm->tm_mday, 1900+ptm->tm_year, ptm->tm_hour, ptm->tm_min, ptm->tm_sec );
 
 	ctx->main_proc->time = fb_Timer();
-
-	strcpy( fb_profiler->filename, DEFAULT_PROFILE_FILE );
 }
 
 /*:::::*/
@@ -1351,12 +1349,13 @@ FBCALL int fb_EndProfile( int errorlevel )
 
 	ctx->main_proc->total_time = fb_Timer() - ctx->main_proc->time;
 
-	filename = fb_hGetExePath( buffer, MAX_PATH-1 );
-	if( !filename )
+	filename = fb_hGetExeName( buffer, MAX_PATH-1 );
+	if( prof->filename[0] ) {
 		filename = prof->filename;
-	else {
-		strcat( buffer, PATH_SEP );
-		strcat( buffer, prof->filename );
+	} else if( !filename ) {
+		filename = DEFAULT_PROFILE_FILE;
+	} else {
+		strcat( buffer, ".prf" );
 		filename = buffer;
 	}
 

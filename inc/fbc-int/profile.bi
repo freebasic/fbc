@@ -41,7 +41,11 @@ enum PROFILE_OPTIONS
 end enum
 
 extern "rtlib"
-	declare sub InitProfile alias "fb_InitProfile" ()
+	declare sub ProfileInit alias "fb_InitProfile" ()
+	declare function ProfileEnd alias "fb_EndProfile" ( byval errorcode as long ) as long
+	declare function ProfileBeginCall alias "fb_ProfileBeginCall" ( byval procedurename as const zstring ptr ) as any ptr
+	declare sub ProfileEndCall alias "fb_ProfileEndCall" ( byval procctx as any ptr )
+
 	declare function ProfileSetFileName alias "fb_ProfileSetFileName" ( byval filename as const zstring ptr ) as long
 	declare function ProfileGetOptions alias "fb_ProfileSetOptions" ( ) as PROFILE_OPTIONS
 	declare function ProfileSetOptions alias "fb_ProfileSetOptions" ( byval options as PROFILE_OPTIONS ) as PROFILE_OPTIONS
