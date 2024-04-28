@@ -1,0 +1,39 @@
+{{fbdoc item="title" value="Profiling for fb's profiler (page to be completed)"}}----
+Profiling can be used to analyze the performance of an application.
+
+The performance of an application might be measured by how many times functions are called, how much time is spent executing those functions, and which functions are calling other functions. This can help to identify functions that might be taking too long to execute or executed too many times and that might be worth reviewing for optimization.
+
+""FreeBASIC"" can use fb's profiler for analyzing the execution of an application. The profiler information is collected while the program is running.
+This profiling feature may give an easy to use tool to help novice and experienced users analyze their programs.
+
+This feature is a reimplentation of Angelo Mottola's (lillo's) profiler from 2008, rewritten to fix some issues, and then some new features added on. This latest side quest started due to a desire to run some kind of profiling on the fbc compiler itself, and having no luck at all with gprof on windows. Years ago lillo's function call profiler was removed in favour of gmon/gprof.
+
+Some of the capabilities of this profiler implemented through fb:
+	- easy to use,
+	- no extra tools needed,
+	- can profile (analyze) calls to external libraries.
+	
+This tool is not suitable for high resolution timing profiling. However, it help identify potential problem areas in a program, or give a better understanding of procedures called as starting point for investigations.
+
+The three basic steps to profiling a program are:
+	- 1) Prepare the program for profiling by compiling source with the //[[CompilerOptprofgen|-profgen fb]]// option.
+	- 2) Run the program to build the profiling report ( stored by default in ##profile.txt## ).
+	- 3) Analyze directly the profiling report (text file).
+
+""FreeBASIC"" supports function profiling; not basic-block or line-by-line profiling.
+
+{{fbdoc item="section" value="Preparing a Program for Profiling (for fb's profiler)"}}
+	Only code that is compiled with the //[[CompilerOptprofgen|-profgen fb]]// command line option can be so profiled.
+	Pass the //[[CompilerOptprofgen|-profgen fb]]// option to the ""FreeBASIC"" compiler to prepare the program to be profiled.
+	For example:
+	%%
+fbc program.bas -profgen fb
+%%	 This will tell the compiler to insert special startup code at the beginning of the application as well as at the beginning of each function.
+
+{{fbdoc item="section" value="Profiling (for fb's profiler) the Program"}}
+	The information needed to analyze execution of the program is gathered while the program is running. Run the program to begin collecting the function call information. This profiling report is automatically stored in a file named by default ##profile.txt## in the same directory as the program.
+
+{{fbdoc item="section" value="Analyzing the profiling report"}}
+	
+.....
+.....

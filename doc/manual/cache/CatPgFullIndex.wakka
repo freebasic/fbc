@@ -30,6 +30,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgDdFBBigEndian|__FB_BIGENDIAN__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBBuildDate|__FB_BUILD_DATE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbbuilddateiso|__FB_BUILD_DATE_ISO__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbbuildforkid|__FB_BUILD_FORK_ID__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbbuildsha1|__FB_BUILD_SHA1__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbcygwin|__FB_CYGWIN__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdarwin|__FB_DARWIN__"}}

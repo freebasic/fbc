@@ -16,6 +16,8 @@ Declaration specifier to explicitly pass a parameter by reference
 	
 	**Note:** A constant or a literal expression can also be passed to such a procedure (which gets by reference), but they are obviously not modifiable from the procedure body. In that case, the compiler passes by reference a temporary variable initialized with the constant or the literal expression.
 	
+	**Note:** Since fbc version 1.20.0, arguments of STRING*N type are copied to a temporary variable when passed to BYREF ZSTRING (or BYVAL ZSTRING PTR) parameters (since there is no expectation that STRING*N will have it's own terminating null character) and copied back after the call.
+	
 	**Warning:** When passing by reference, it is recommended to pass an argument of the same type (or fully compatible, like a derived type for example) as that of the declared parameter. Although in some cases the compiler accepts to pass a different type, often the result is not the one expected.
 
 {{fbdoc item="ex"}}

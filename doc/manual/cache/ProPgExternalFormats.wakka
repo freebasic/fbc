@@ -1,10 +1,51 @@
-{{fbdoc item="title" value="External Graphics File Formats (page to fill in)"}}----
+{{fbdoc item="title" value="External Graphics File Formats (page to be completed)"}}----
 The **external graphics file formats** supported by rtlib through Bload and Bsave.
 
+Here is a rough starting point, though many bits still to add in... (from coderJeff)
+
+{{fbdoc item="section" value="Files used with BLOAD/BSAVE"}}
+	First byte of file:
+	%%
+&hFD  QB BSAVED BLOCK 
+&hFE  FB BSAVED BLOCK
+&h42  Windows Bitmap (&h42 = ASC("B"))
+%%	For the QB/FB saved block, &hFD and &hFE identify the file as a QB/FB format and the next bytes determine the SIZE of the data contained in the file, followed by DATA and optionally PALETTE.
+	
+	For the Windows Bitmap, should be binary compatible with standard Windows BMP files. When loading, &h42 only identifies the file as possibly a windows bitmap and other checks on the header may cause it to fail loading.
+
+{{fbdoc item="section" value="QB BSAVED Block"}}
+	%%
+OFS  LEN   DESCRIPTION
+0    1     QB BSAVED BLOCK Identifier (&hFD)
+1    4     Ignored
+5    2     unsigned 16 bit SIZE, little endian order
+7   ...    DATA (expected to be SIZE bytes long) 
+?   ...    PALETTE COLORS
+%%
+{{fbdoc item="section" value="BSAVE and QB/FB Save Block"}}
+	##**BSAVE**( //filename//, //source// [,[ //size// ][,{ //pal// | //pal//, //bitsperpixel// }]] )##
+	
+	BSAVE always writes using the FB format (&hFE)
+	DATA bytes written is the smaller of the SIZE parameter and screen * pitch
+	PALETTE is written either from pal parameter or from current screen's palette
+
+{{fbdoc item="section" value="BLOAD and QB/FB Save Block"}}
+	##**BLOAD** //filename// [, //dest// [, [//pal//]]]##
+	
+	If ##//dest//## is not given, then DATA is loaded directly to screen memory byte for byte. If SIZE exceeds the current screen * pitch, then DATA is truncated to fit the size of the current graphics mode.
+	
+	If ##//dest//## is given, then DATA is loaded directly to the memory location pointed to by 'dest'.
+	
+	RLE (Run-Length Encoding) not supported. So only uncompressed formats.
+
+{{fbdoc item="section" value="BLOAD/BSAVE and Windows bitmap"}}
+	BLOAD - if first byte is &H42 then file is attempted to be loaded as a bitmap
+	BSAVE - if filename has '.bmp' extension, then is saved as bitmap
+
 .....
 .....
 
-{{fbdoc item="see"}}
+{{fbdoc item="section" value="See also"}}
 	- ##[[KeyPgBload|Bload]]##
 	- ##[[KeyPgBsave|Bsave]]##
 	- .....

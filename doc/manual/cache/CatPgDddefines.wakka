@@ -76,6 +76,8 @@ Preprocessor symbols defined by the compiler.
 		Defined as a string literal of the compiler signature.
 	=={{fbdoc item="keyword" value="KeyPgDdfbbuildsha1|__FB_BUILD_SHA1__"}}== 
 		Defined as a string literal of the compiler's source revision sha-1.
+	=={{fbdoc item="keyword" value="KeyPgDdfbbuildforkid|__FB_BUILD_FORK_ID__"}}== 
+		Defined as a string literal of the custom defined project fork identifier name.
 
 {{anchor name="CMDLINE"}}{{fbdoc item="section" value="Command-line switches"}}
 	=={{fbdoc item="keyword" value="KeyPgDdfbasm|__FB_ASM__"}}==

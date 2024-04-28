@@ -116,6 +116,9 @@ make install-rtlib install-gfxlib2 TARGET=i686-w64-mingw32
 	- ##DEFAULT_CPUTYPE_ARM=<FB_CPUTYPE>##
 		Sets default arm cpu type to one of ##FB_CPUTYPE##
 		##make compiler DEFAULT_CPUTYPE_ARM=FB_CPUTYPE_ARM7A_FP##
+		
+	- ##FBFORKID=name##
+		Tells fbc to set a custom value for ##[[KeyPgDdfbbuildforkid|__FB_BUILD_FORK_ID__]]##
 
 {{fbdoc item="section" value="Compiler source code configuration (FBFLAGS)"}}
 
@@ -135,10 +138,10 @@ make install-rtlib install-gfxlib2 TARGET=i686-w64-mingw32
 		This makes the compiler search 64bit libraries in ##lib64/freebasic/## instead of ##lib/freebasic/##. This only affects the normal (non-standalone) build. 32bit libraries are still searched in ##lib/freebasic/##.
 	
 	- ##-d FBSHA1=some-sha-1##
-		This makes the compiler store 'some-sha-1' in the compiler for version information
+		This makes the compiler store 'some-sha-1' in the compiler for version information as built in define ##[[KeyPgDdfbbuildsha1|__FB_BUILD_SHA1__]]##
 	
 	- ##-d DISABLE_GAS64_DEBUG##
-		This makes the compiler disable gas64 debugging comments in asm files even if __FB_DEBUG__ is defined (-g)
+		This makes the compiler disable gas64 debugging comments in asm files even if ##[[KeyPgDdfbdebug|__FB_DEBUG__]]## is defined (-g)
 	
 	- ##-d DISABLE_STDCXX_PATH##
 		This makes the compiler to not search for some libstdc++/libc++ depending on target platform
@@ -148,6 +151,9 @@ make install-rtlib install-gfxlib2 TARGET=i686-w64-mingw32
 	
 	- ##-d BUILD_FB_DEFAULT_CPUTYPE_ARM=<FB_CPUTYPE>##
 		This make the compiler set default arm cpu type to one of FB_CPUTYPE
+		
+	##-d FBFORKID="name"##
+		This makes the compiler set a custom value for ##[[KeyPgDdfbbuildforkid|__FB_BUILD_FORK_ID__]]##
 
 {{fbdoc item="section" value="rtlib and gfxlib2 source code configuration (CFLAGS)"}}
 

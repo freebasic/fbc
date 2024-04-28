@@ -17,7 +17,7 @@ Destroys a multi-threading conditional variable when it is no more needed
 	**Conddestroy** destroys a condition variable, freeing the resources it might hold. No threads must be waiting on the condition variable on entrance to **Conddestroy**.
 
 {{fbdoc item="ex"}}
-	See ##[[KeyPgCondCreate|Condcreate]]##, ##[[KeyPgCondWait|Condwait]]## and ##[[KeyPgCondSignal|Condsignal]]##
+	See ##[[KeyPgCondCreate|Condcreate]]##, ##[[KeyPgCondWait|Condwait]]##, ##[[KeyPgCondSignal|Condsignal]]##, and ##[[KeyPgCondBroadcast|Condbroadcast]]##
 
 {{fbdoc item="target"}}
 	- **Conddestroy** is not available with the DOS version / target of FreeBASIC, because multithreading is not supported by DOS kernel nor the used extender.

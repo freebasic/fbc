@@ -1,14 +1,15 @@
 {{fbdoc item="title" value="Compiler Option: -profile"}}----
-Enable function profiling
+Enable function profiling for gmon/gprof
 
 {{fbdoc item="syntax"}}##
 	**-profile**
 ##
 {{fbdoc item="desc"}}
-	The ##-profile## compiler option enables function profiling. After running an executable compiled with this option, a gmon.out file will be created in the program directory, allowing use of GPROF for analysis of the program's execution.
+	The ##-profile## compiler option enables profiling code generation for gmon/gprof. After running an executable compiled with this option, a gmon.out file will be created in the program directory, allowing use of GPROF for analysis of the program's execution.
 
 {{fbdoc item="see"}}
-	- [[ProPgProfiling|Profiling]]
+	- [[CompilerOptprofgen|Compiler Option: -profgen]]
+	- [[ProPgProfilingGmonGprof|Profiling for gmon/gprof]]
 	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

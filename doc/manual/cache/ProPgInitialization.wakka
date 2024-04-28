@@ -116,7 +116,7 @@ Sleep
 				**""-""** otherwise for example, only a variable member with an initializer itself induces only an implicit default-constructor. but no implicit copy-constructor.
 				
 	__Description__
-		When a UDT has an implicit constructor (due to a string member, or a variable member with an initializer itself, or a data member with constructor, or UDT derived from [[KeyPgObject|Object]]) or an explicit constructor, then a simple initializer as ##'= ( //argument_list// )'##, the first initializer syntax in the list (1), becomes not valid.
+		When a UDT has an implicit constructor (due to a string member, or a variable member with an initializer itself, or a data member with constructor, or UDT derived from [[KeyPgObject|Object]], or since fbc version 1.20.0 containing a STRING*N field plus another data type field) or an explicit constructor, then a simple initializer as ##'= ( //argument_list// )'##, the first initializer syntax in the list (1), becomes not valid.
 		In that case, an advanced initialization can be applied by using a constructor matching the initialization expression of the last four syntaxes in the list (4 to 7).
 		
 		The simpler initializer syntax, the first in the list (1), can always be replaced by one of the last four initializer syntaxes in the list (4 to 7), but the contrary does not work.

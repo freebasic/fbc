@@ -98,8 +98,10 @@ Command line compiler options for the fbc compiler:
 		- Set the compiler prefix path
 	{{fbdoc item="keyword" value="CompilerOptprint|-print < option >"}}
 		- Let the compiler display certain information (##fblibdir##, ##host##, ##target##, ##x##)
+	{{fbdoc item="keyword" value="CompilerOptprofgen|-profgen < profiler >"}}
+		- Enable function profiling by selecting a specific profiler
 	{{fbdoc item="keyword" value="CompilerOptprofile|-profile"}}
-		- Enable function profiling
+		- Enable function profiling for gmon/gprof
 	{{fbdoc item="keyword" value="CompilerOptr|-r"}}
 		- Compile into ##*.asm / *.c / *.ll## file(s) only, do not assemble or link
 	{{fbdoc item="keyword" value="CompilerOptrupp|-R"}}

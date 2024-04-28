@@ -88,6 +88,8 @@ Sets or gets internal graphics library settings
 		[OUT] ##//param1//## higher priority graphics processing enabled
 	- ##GET_SCANLINE_SIZE## Returns how currently many scan lines each row of fbgfx video memory should occupy on the screen
 		[OUT] ##//param1//## scan line size multiplier
+	- (*) ##GET_X86_MMX_ENABLED## Returns if MMX specific blitters are enabled on X86.  fbgfx will select MMX blitters if MMX is enabled and available.
+		[OUT] ##//param1//## ##TRUE## (##-1##) if MMX is enabled, ##FALSE## (##0##) otherwise
 	- ##GET_GL_COLOR_BITS## Returns the current number of bits dedicated to the ""OpenGL"" color buffer
 		[OUT] ##//param1//## bits
 	- ##GET_GL_COLOR_RED_BITS## Returns the current number of bits dedicated to the red component of the ""OpenGL"" color buffer
@@ -161,6 +163,8 @@ Sets or gets internal graphics library settings
 		[IN] ##//param1//## bits
 	- (*) ##SET_GL_NUM_SAMPLES## Sets the number of samples to be used for ""OpenGL"" multisampling
 		[IN] ##//param1//## samples
+	- (*) ##SET_X86_MMX_ENABLED## Sets if MMX blitters should be used on X86
+		[IN] ##//param1//## enabled
 	- (""**"") ##SET_GL_2D_MODE## Sets OpenGL 2D render
 		[IN] ##//param1//##:
 			##OGL_2D_NONE## No rendering
@@ -264,6 +268,7 @@ print "Graphics driver name: " & driver
 sleep
 	%%
 {{fbdoc item="ver"}}
+	- Since fbc 1.20.0: ##GET_X86_MMX_ENABLED##, ##SET_X86_MMX_ENABLED##
 	- Since fbc 1.10.0: 16 getters from ##GET_SCANLINE_SIZE## to ##GET_GL_SCALE## added.
 	- Before fbc 1.08.0:
 			Syntax:

@@ -7,12 +7,13 @@ Returns the size of a variable or type in bytes.
 {{fbdoc item="desc"}}
 	The ##**Sizeof**## operator returns an ##[[KeyPgInteger|Integer]]## value: the number of bytes taken up by a ##//variable//## or ##[[DataType|DataType]]## (including the data fields of a UDT).
 	
-	Different from ##[[KeyPgLen|Len]]##, when used with fixed-length strings (including fixed-length ##[[KeyPgZstring|Zstring]]##s and ##[[KeyPgWstring|Wstring]]##s) it will return the number of bytes they use, and when used with variable-length strings, it will return the size of the string descriptor.
+	When used with fixed-length strings (including fixed-length ##[[KeyPgZstring|Zstring]]##s and ##[[KeyPgWstring|Wstring]]##s) it will return the number of bytes they use, and when used with variable-length strings, it will return the size of the string descriptor.
+	(it is equal to ##[[KeyPgLen|Len]]## only when used with fixed-length strings of STRING*N type and this since fbc version 1.20.0)
 	
 	If there is both a user defined type and a variable visible with the same name in the current scope, the user defined type takes precedence over the variable.  To ensure that the ##**Sizeof**## takes the variable instead of the user defined type, wrap the argument to ##**Sizeof**## with parentheses to force it to be seen as an expression.  For example ##Sizeof((variable))##.
 	
-	Note: When used with arrays, ##**Sizeof**## returns the size of a single element of the array.  This differs from its behavior in C, where arrays could only be a fixed size, and ##sizeof()## would return the number of it used.
-	For clarity, it is recommended that you avoid this potential confusion, and use ##**Sizeof**## directly on an array element or the array datatype doing ##**Sizeof**(//array//(//i//))## or ##**Sizeof**(//Typeof//(//array//))##, rather than the whole array doing ##**Sizeof**(//array//)##.
+	**Note:** When used with array names, ##**Sizeof**## returns the size of the array dadatype, but not the total size of the array. This differs from its behavior in C, where arrays could only be a fixed size, and ##sizeof()## would return the number of it used.
+	For clarity, it is recommended that you avoid this potential confusion, and use ##**Sizeof**## on the array datatype doing ##**Sizeof**(//Typeof//(//array//))##, rather than the array name only doing ##**Sizeof**(//array//)##.
 	
 	Remark: When used with a dereferenced z/wstring pointer, ##**Sizeof**## always returns the number of bytes taken up by one z/wstring character.
 

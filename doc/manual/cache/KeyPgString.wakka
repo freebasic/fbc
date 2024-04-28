@@ -17,9 +17,9 @@ Standard data type: 8 bit character string
 	
 	Despite the use of the descriptor, an implicit ##NULL## character (##[[KeyPgChr|chr]](0)##) is added to the end of the string, to allow passing them to functions in external libraries without making slow copies.  ""FreeBASIC""'s internal functions will ignore this character, and not treat it as part of the string.
 	
-	A ##**String**## declared with a ##//fixed size//## (numeric constant, or expression that can be evaluated at compile time) is a QB-style fixed length string, with the exception that unused characters are set to 0, regardless of what "-lang" compiler option is used. It has no descriptor and it is not resized to fit its contents. As in QB, if data overflows the size of the string, it is truncated on the right side.
-	Fixed length strings are also terminated with a ##NULL## character, and so they use ##//size// + 1## bytes of space.  This ##NULL## terminator may be removed in future, to prevent the redundant character complicating data layout in user-defined ##[[KeyPgType|Type]]##s.
-	**Note:** It is not recommended to use explicit ##NULL## character (##[[KeyPgChr|chr]](0)##) in a string expression involving a fixed length string variable because this can lead to different unexpected results depending on usage context (initialization, assignment, concatenation, ...).
+	A ##**String**## declared with a ##//fixed size//## (numeric constant, or expression that can be evaluated at compile time) is a QB-style fixed length string, with the exception that unused characters are set to 0 before fbc version 1.20.0, or set to space since fbc version 1.20.0, regardless of what "-lang" compiler option is used. It has no descriptor and it is not resized to fit its contents. As in QB, if data overflows the size of the string, it is truncated on the right side.
+	Only before fbc version 1.20.0, fixed length strings were also terminated with a ##NULL## character, and so they used ##//size// + 1## bytes of space. This ##NULL## terminator is removed since fbc version 1.20.0, to prevent the redundant character complicating data layout in user-defined ##[[KeyPgType|Type]]##s.
+	**Note:** Before fbc version 1.20.0, it was not recommended to use explicit ##NULL## character (##[[KeyPgChr|chr]](0)##) in a string expression involving a fixed length string variable because this could lead to different unexpected results depending on usage context (initialization, assignment, concatenation, ...).
 	
 	String variable names need not end in a dollar sign ##$## as in other dialects of BASIC.  In //[[CompilerDialects|lang fb]]// variable suffixes, including the dollar sign, are disallowed entirely.
 
@@ -81,11 +81,13 @@ Dim As String status = "OK"
 silly_print( "Hello FreeBASIC!" )
 silly_print( "Status: " + status )
 %%
+{{fbdoc item="ver"}}
+	- Before fbc 1.20.0, fixed length strings were terminated with a NULL character, and so they used size + 1 bytes of space.
 
 {{fbdoc item="diff"}}
 	- In QB the strings were limited to 32767 characters.
 	- In QB, the unused characters of a fixed-length string were initialized with 32 (space, or " ", in ASCII).
-	- In QB static or fixed-size strings were often used in records to represent a number of bytes of data;  for example, a string of 1 length to represent 1 byte in a UDT read from a file.  This is not possible in ""FreeBASIC"" since strings always have an ##NULL## character following.  When converting QBasic code that reads UDTs from files, make sure all instances of "##As String * //n//##" are replaced with "##As uByte (0 to //n// - 1)##" or your files will be incompatible.
+	- In QB static or fixed-size strings were often used in records to represent a number of bytes of data;  for example, a string of 1 length to represent 1 byte in a UDT read from a file.  This was not possible in ""FreeBASIC"" before fbc version 1.20.0 since strings always had an ##NULL## character following (when converting before fbc version 1.20.0 QBasic code that reads UDTs from files, make sure all instances of "##As String * //n//##" are replaced with "##As uByte (0 to //n// - 1)##" or your files will be incompatible).
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgStringFunction|String (Function)]]##

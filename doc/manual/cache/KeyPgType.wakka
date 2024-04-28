@@ -81,7 +81,8 @@ Declares a user-defined type.
 	Similarly, when maintaining dynamic data manually through the use of pointers within a Type, it does usually not make sense to save the Type to a file, because the address stored in the pointer field will be written to file, not the actual memory it points to. Addresses are meaningful to a specific process only though, and cannot be shared that way.
 	
 	//Special note on fixed-length strings//
-	Currently, fixed-length string fields of ##[[KeyPgString|String]] * //N//## type have an extra null terminator at their end, for compatibility with C strings, making them incompatible with QB strings inside Types, because they actually use up ##//N//+1## bytes, instead of just ##N## bytes. A possible work-around is to declare the field ##As [[KeyPgString|String]] * (//N//-1)##, though this will not work in future releases if the null terminator is removed.  Another alternative is to use a ##[[KeyPgByte|Byte]]## or ##[[KeyPgUbyte|UByte]]## array with the proper size.
+	Since fbc version 1.20.0, fixed-length string fields of ##[[KeyPgString|String]] * //N//## type no longer have extra null terminator at their end, making them compatible with QB strings inside Types, because they actually use just ##N## bytes.
+	Before fbc version 1.20.0, fixed-length string fields of ##[[KeyPgString|String]] * //N//## type had an extra null terminator at their end, for compatibility with C strings, making them incompatible with QB strings inside Types, because they actually used up ##//N//+1## bytes, instead of just ##N## bytes. A possible work-around was to declare the field ##As [[KeyPgString|String]] * (//N//-1)##, though this will not work in future releases if the null terminator is removed.  Another alternative was to use a ##[[KeyPgByte|Byte]]## or ##[[KeyPgUbyte|UByte]]## array with the proper size.
 	
 	//Note on bitfields ( ##//fieldname// : //bits//## )//
 	Bitfields can only be declared inside a type or a union, and allow to specify some very small objects of a given number of bits in length. Each field is accessed and manipulated as if it were an ordinary member of the structure.
@@ -105,50 +106,54 @@ c.blue = 64
 %%
 	And this is an example of a type working as an object:
 		{{fbdoc item="filename" value="examples/manual/udt/type2.bas"}}%%(freebasic)
-'' Example showing the problems with fixed length string fields in UDTs
+'' Example showing the problems with fixed length string fields in UDTs and fbc version < 1.20.0
 '' Suppose we have read a GIF header from a file
 ''                        signature         width        height
-dim as zstring*(10+1) z => "GIF89a" + mkshort(10) + mkshort(11)
+Dim As ZString*(10+1) z => "GIF89a" + MKShort(10) + MKShort(11)
 
-print "Using fixed-length string"
+Print "Using fixed-length string"
 
-type hdr1 field = 1
-   as string*(6-1) sig /' We have to dimension the string with 1 char
-						'  less to avoid misalignments '/
-   as ushort wid, hei
-end type
+Type hdr1 Field = 1
+   #if __FB_VERSION__ < "1.20.0"
+	  As String*(6-1) sig /' We have to dimension the string with 1 char
+						   '  less to avoid misalignments '/
+   #else
+	  As String*(6) sig
+   #endif
+   As UShort wid, hei
+End Type
 
-dim as hdr1 ptr h1 = cptr(hdr1 ptr, @z)
-print h1->sig, h1->wid, h1->hei '' Prints GIF89 (misses a char!)  10  11
+Dim As hdr1 Ptr h1 = CPtr(hdr1 Ptr, @z)
+Print h1->sig, h1->wid, h1->hei '' Prints GIF89 (misses a char!)  10  11
 
 '' We can do comparisons only with the 5 visible chars and creating a temporary string with LEFT
 
-if left(h1->sig, 5) = "GIF89" then print "ok" else print "error"
+If Left(h1->sig, 5) = "GIF89" Then Print "ok" Else Print "error"
 
 
 '' Using a ubyte array, we need an auxiliary function to convert it to a string
-function ub2str( ub() as ubyte ) as string
-	dim as string res = space(ubound(ub) - lbound(ub) + 1)
-	for i as integer = lbound(ub) to ubound(ub)
-		res[i - Lbound(ub)] = ub(i)
-	next
-	function = res
-end function
+Function ub2str( ub() As UByte ) As String
+	Dim As String res = Space(UBound(ub) - LBound(ub) + 1)
+	For i As Integer = LBound(ub) To UBound(ub)
+		res[i - LBound(ub)] = ub(i)
+	Next
+	Function = res
+End Function
 
 
-print
-print "Using an array of ubytes"
+Print
+Print "Using an array of ubytes"
 
-type hdr2 field = 1
-   sig(0 to 6-1) as ubyte '' Dimension 6
-   as ushort wid, hei
-end type
+Type hdr2 Field = 1
+   sig(0 To 6-1) As UByte '' Dimension 6
+   As UShort wid, hei
+End Type
 
-dim as hdr2 ptr h2 = cptr(hdr2 ptr, @z)
+Dim As hdr2 Ptr h2 = CPtr(hdr2 Ptr, @z)
 '' Viewing and comparing is correct but a conversion to string is required
 
-print ub2str(h2->sig()), h2->wid, h2->hei '' Prints GIF89a  10  11 (ok)
-if ub2str(h2->sig()) = "GIF89a" then print "ok" else print "error" '' Prints ok
+Print ub2str(h2->sig()), h2->wid, h2->hei '' Prints GIF89a  10  11 (ok)
+If ub2str(h2->sig()) = "GIF89a" Then Print "ok" Else Print "error" '' Prints ok
 %%
 	This is an example of conversion from an Ubyte to a digit string in base 8 (octal string), by using bitfields in a local UDT (conversion equivalent to 'Oct(x, 3)'):
 		{{fbdoc item="filename" value="examples/manual/udt/type3.bas"}}%%(freebasic)
@@ -241,7 +246,8 @@ Sleep
 	- To force byte alignment use ##FIELD=1##.
 
 {{fbdoc item="diff"}}
-	- At present, fixed-length strings have an extra, redundant character on the end, which means they take up one more byte than they do in QB.  For this reason, UDTs that use them are not compatible with QB when used for file I/O.
+	- Since fbc version 1.20.0, fixed-length strings of STRING*N type have no extra, redundant character on the end, which means they take same number of bytes than they do in QB.
+	- Before fbc version 1.20.0, all fixed-length strings have an extra, redundant character on the end, which means they take up one more byte than they do in QB. For this reason, UDTs that use them are not compatible with QB when used for file I/O.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgTypeAlias|Type (Alias)]]##

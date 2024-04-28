@@ -18,11 +18,11 @@
 	- String ##DATA## items must be enclosed in quotes in FB, in QB this was optional
 	- All functions must have been declared, even with a ##CALL## in ""FreeBASIC"". With ##CALL## it was possible to invoke prototype-less functions in ""QuickBASIC"". (to be supported in future with -lang qb)
 	- In ""FreeBASIC"" all arrays must be explicitly declared. (Interpreted ""QuickBASIC"" arrays are automatically created with up to 10 indices.)
-	- Strings use a null (char ##0##) terminator to be compatible with C libraries and the Windows API, fixed-length strings can't contain ##chr$(0)## chars for now.
+	- Strings, except fixed length strings of ##STRING*N## type since fbc version 1.20.0, use a null (char ##0##) terminator to be compatible with C libraries and the Windows API, so such fixed-length strings can't contain ##chr$(0)## chars.
 	- When ##INKEY##[##$##] reads an extended key (Num Pad, Arrows...) it returns a two character string. In FB the first character is ##CHR##[##$##]##(255)##, while in QB this first char is ##CHR$(0)##. 
-	- With fixed length strings ""FreeBASIC"" gives the real length as ##[[KeyPgLen|LEN]]## plus one (null-char), even on ##[[KeyPgType|TYPE]]## fields.
+	- With fixed length strings, except fixed length strings of ##STRING*N## type since fbc version 1.20.0, ""FreeBASIC"" gives the real length as ##[[KeyPgLen|LEN]]## plus one (null-char), even on ##[[KeyPgType|TYPE]]## fields.
 	- In ""FreeBASIC"", unused characters of fixed-length strings are set to ##0##, regardless of what "-lang" compiler option is used. In QB, unused characters are set to ##32## (space, or " ", in ASCII).
-	- When a fixed-length string is declared, but still not initialized, all characters are set to 0, both in ""FreeBASIC"" and QB.
+	- When a fixed-length string, except fixed length strings of ##STRING*N## type since fbc version 1.20.0, is declared, but still not initialized, all characters are set to 0, both in ""FreeBASIC"" and QB. Since fbc version 1.20.0, when a fixed-length string of ##STRING*N## type is declared, but still not initialized, all characters are set to space.
 	- The arrays are stored in row-major order in FB, they were stored in column-major order in QB by default. Row major order: data with consecutive last index are contiguous. Column-major order: data with consecutive first index are contiguous.  For example, if you have ##DIM A(1 TO 6, 1 TO 8)##, in row-major order the elements are stored such that ##A(3,5)## is followed in memory by ##A(3,6)##; in column-major order ##A(3,5)## is followed in memory by ##A(4,5)##.
 	- Programs don't stop anymore on runtime errors unless //[[CompilerOpte|-e]]//, //[[CompilerOptex|-ex]]// or //[[CompilerOptexx|-exx]]// option is used in the command line. Using these options allow the use of QB style error handling (##ON ERROR##, ##RESUME##...).
 	- Octal numbers are written ##&o...##, whereas in QB they could be written as ##&o...## or ##&...##.
