@@ -20,7 +20,6 @@
 #ifdef HOST_WIN32
 	#include <windows.h>
 #endif
-#include "fb.h"
 #include <time.h>
 
 /* ************************************
@@ -280,7 +279,7 @@ static STRING_INFO *PROFILER_new_string( const char *src, unsigned int full_hash
 	return info;
 }
 
-static STRING_HASH_TB* STRING_HASH_TB_new( )
+static STRING_HASH_TB* STRING_HASH_TB_new( void )
 {
 	STRING_HASH_TB *tb = (STRING_HASH_TB*)PROFILER_calloc( 1, sizeof( STRING_HASH_TB ) );
 	if( tb ) {
@@ -499,7 +498,7 @@ static PROFILER_METRICS *PROFILER_METRICS_new( FB_PROFILER_STATE *prof )
 	return prof->metrics;
 }
 
-static FB_PROFILER_STATE *PROFILER_new( )
+static FB_PROFILER_STATE *PROFILER_new( void )
 {
 	FB_PROFILER_STATE *prof = PROFILER_calloc( 1, sizeof( FB_PROFILER_STATE ) );
 	if( prof ) {
@@ -509,9 +508,12 @@ static FB_PROFILER_STATE *PROFILER_new( )
 			prof->strings->string_block_id = 1;
 			prof->strings->next = NULL;
 		}
+		prof->string_hash = STRING_HASH_TB_new( );
+		prof->ignore_hash = STRING_HASH_TB_new( );
+/*
 		prof->string_hash = STRING_HASH_TB_new( prof->strings );
 		prof->ignore_hash = STRING_HASH_TB_new( prof->strings );
-
+*/
 		/* initialized to zero by PROFILER_calloc 
 		prof->filename[0] = 0;
 		prof->launch_time[0] = 0;
@@ -555,7 +557,7 @@ static void PROFILER_delete( FB_PROFILER_STATE *prof )
 	PROFILER_free( prof );
 }
 
-static int PROFILER_new_proc_id( )
+static int PROFILER_new_proc_id( void )
 {
 	fb_profiler->proc_id += 1;
 	return fb_profiler->proc_id;
@@ -1322,8 +1324,6 @@ FBCALL void fb_InitProfile( void )
 	sprintf( fb_profiler->launch_time, "%02d-%02d-%04d, %02d:%02d:%02d", 1+ptm->tm_mon, ptm->tm_mday, 1900+ptm->tm_year, ptm->tm_hour, ptm->tm_min, ptm->tm_sec );
 
 	ctx->main_proc->time = fb_Timer();
-
-	strcpy( fb_profiler->filename, DEFAULT_PROFILE_FILE );
 }
 
 /*:::::*/
@@ -1349,14 +1349,13 @@ FBCALL int fb_EndProfile( int errorlevel )
 
 	ctx->main_proc->total_time = fb_Timer() - ctx->main_proc->time;
 
-	/* explicitly call destructor? */
-
-	filename = fb_hGetExePath( buffer, MAX_PATH-1 );
-	if( !filename )
+	filename = fb_hGetExeName( buffer, MAX_PATH-1 );
+	if( prof->filename[0] ) {
 		filename = prof->filename;
-	else {
-		strcat( buffer, PATH_SEP );
-		strcat( buffer, prof->filename );
+	} else if( !filename ) {
+		filename = DEFAULT_PROFILE_FILE;
+	} else {
+		strcat( buffer, ".prf" );
 		filename = buffer;
 	}
 

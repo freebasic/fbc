@@ -171,7 +171,7 @@ private function hDefOptimize_cb () as string
 end function
 
 private function hDefProfile_cb () as string
-	function = str( fbGetOption( FB_COMPOPT_PROFILE ) <> TRUE )
+	function = str( fbGetOption( FB_COMPOPT_PROFILE ) )
 end function
 
 private function hDefOutExe_cb() as string

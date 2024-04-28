@@ -24,6 +24,9 @@
 #     src/rtlib/static/fbrt1.c (profiling)
 #     -> fbrt1.o
 #     -> fbrt1pic.o, -fPIC version (Unixes)
+#     src/rtlib/static/fbrt2.c (profiling gas64)
+#     -> fbrt2.o
+#     -> fbrt2pic.o, -fPIC version (Unixes)
 #
 #     all *.c and *.s files in
 #     src/rtlib/
@@ -709,12 +712,12 @@ LIBFBGFXMTPIC_C := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtpicobjdir)/%,$(LIB
 
 RTL_LIBS := $(libdir)/$(FB_LDSCRIPT)
 ifdef ENABLE_NONPIC
-  RTL_LIBS += $(libdir)/fbrt0.o $(libdir)/fbrt1.o $(libdir)/libfb.a
+  RTL_LIBS += $(libdir)/fbrt0.o $(libdir)/fbrt1.o $(libdir)/fbrt2.o $(libdir)/libfb.a
   FBRTL_LIBS += $(libdir)/libfbrt.a
   GFX_LIBS += $(libdir)/libfbgfx.a
 endif
 ifdef ENABLE_PIC
-  RTL_LIBS += $(libdir)/fbrt0pic.o $(libdir)/fbrt1pic.o $(libdir)/libfbpic.a
+  RTL_LIBS += $(libdir)/fbrt0pic.o $(libdir)/fbrt1pic.o $(libdir)/fbrt2pic.o $(libdir)/libfbpic.a
   FBRTL_LIBS += $(libdir)/libfbrtpic.a
   GFX_LIBS += $(libdir)/libfbgfxpic.a
 endif
@@ -816,6 +819,12 @@ $(libdir)/fbrt1.o: $(srcdir)/rtlib/static/fbrt1.c $(LIBFB_H) | $(libdir)
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
 
 $(libdir)/fbrt1pic.o: $(srcdir)/rtlib/static/fbrt1.c $(LIBFB_H) | $(libdir)
+	$(QUIET_CC)$(CC) -fPIC $(ALLCFLAGS) -c $< -o $@
+
+$(libdir)/fbrt2.o: $(srcdir)/rtlib/static/fbrt2.c $(LIBFB_H) | $(libdir)
+	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
+
+$(libdir)/fbrt2pic.o: $(srcdir)/rtlib/static/fbrt2.c $(LIBFB_H) | $(libdir)
 	$(QUIET_CC)$(CC) -fPIC $(ALLCFLAGS) -c $< -o $@
 
 $(libdir)/libfb.a: $(LIBFB_C) $(LIBFB_S) | $(libdir)

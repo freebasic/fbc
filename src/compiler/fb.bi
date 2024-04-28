@@ -341,6 +341,7 @@ enum FB_PROFILE_OPT
 	FB_PROFILE_OPT_NONE
 	FB_PROFILE_OPT_GMON
 	FB_PROFILE_OPT_CALLS
+	FB_PROFILE_OPT_CYCLES
 end enum
 
 '' features allowed in the selected language

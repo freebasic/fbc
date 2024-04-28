@@ -53,8 +53,8 @@ Version 1.20.0
 - sf.net feature #285 fbc: allow UDT operators (LET, +=, etc) to support array parameters
 - improved stabs debug information in -gen gas and -gen gas64 for STRING*N, ZSTRING*N, and WSTRING*N types
 - profiler: rtlib/static/fbrt1.c for profiler start-up and exit code, rtlib/profile.c support code
-- Add "-profgen fb|gmon" command line option to select different profiler code generation backends
-- fbc: intrinsic define __FB_PROFILE__ to indicate if profiling was enabled
+- Add "-profgen fb|gmon" command line option to select different profiler code generation backends.  By default "-profgen fb" will generate a report output file named "<exename>.prf"
+- fbc: intrinsic define __FB_PROFILE__ to indicate if profiling was enabled - returns a numeric id for the profile generation method (0=gmon, 1=fb), or zero otherwise
 - fbc: allow user to optionally disable profiling code generation with '#pragma profile [=value]' or '#pragma push( profile [,value] )'
 - fbc: intrinsic define __FB_OPTION_PROFILE__ to indicate if profiling is currently enabled for code generation
 - rtlib: ./fbc-int/profile.bi - extra features for working with the built-in profiler; ProfileSetFileName(), ProfileGetOptions(), ProfileSetOptions(). ProfileIgnore()

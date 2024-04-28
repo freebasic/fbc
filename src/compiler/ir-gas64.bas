@@ -243,7 +243,30 @@ enum
 	'' instructions, etc between prolog and epilog .....
 	SECTION_PROC
 	SECTION_EPILOG
+	'' data outside of proc
+	SECTION_PROFILE
 end enum
+
+#define FB_PROFILE_SECT_DATA       "fb_profilecycledata"
+#define FB_PROFILE_SECT_STRS       "fb_profilestrings"
+#define FB_PROFILE_DATA_NAME       "Lfbprfdat$"
+#define FB_PROFILE_PROC_NAME       "Lfbprfprc$"
+#define FB_PROFILE_MODULE_NAME     "Lfbprfmod$"
+
+'' if the format of this record changes, then rtlib
+'' needs to change also
+#define PROFILE_REC_DATA_SIZE      80
+#define PROFILE_REC_DATA_ID        2
+''      PROFILE_REC_SIZE           proflbl+"[rip+0]"
+''      PROFILE_REC_ID             proflbl+"[rip+8]"
+#define PROFILE_REC_MODULENAME     proflbl+"[rip+16]"
+#define PROFILE_REC_PROCNAME       proflbl+"[rip+24]"
+#define PROFILE_REC_INIT0          proflbl+"[rip+32]"
+#define PROFILE_REC_GRANT_TOTAL    proflbl+"[rip+40]"
+#define PROFILE_REC_REINIT         proflbl+"[rip+48]"
+#define PROFILE_REC_INTERNAL_TOTAL proflbl+"[rip+56]"
+#define PROFILE_REC_COUNT          proflbl+"[rip+64]"
+#define PROFILE_REC_RESERVED3      proflbl+"[rip+72]"
 
 '' type for tracking the spilled registers
 type ASM64_SAVEDREG
@@ -264,6 +287,7 @@ type ASM64_CONTEXT
 	prolog_txt   as string
 	proc_txt     as string
 	epilog_txt   as string
+	profile_txt  as string
 	argcptmax    as integer
 	arginteg     as integer
 	argfloat     as integer
@@ -303,6 +327,8 @@ type ASM64_CONTEXT
 	opereg    as integer
 	opepass   as integer
 	maxstack  as integer
+	''profiling
+	profprcnb as integer
 end type
 
 type DBGCTX
@@ -888,6 +914,7 @@ private function pw2(byval num as integer)as integer ''return the first power of
 		return 2^(int(a)+1)
 	end if
 end function
+
 private sub asm_section(byref section as string)
 	static section_current as string
 	if section_current<>section then
@@ -895,6 +922,7 @@ private sub asm_section(byref section as string)
 		section_current=section
 	end if
 end sub
+
 private sub emitop3_op4(byref op as string)
 	if right(op,3)="#NO" then
 		asm_code(op,KNOOPTIM)
@@ -968,6 +996,8 @@ dim as string ln,lname
 			ctx.head_txt += ln
 		case SECTION_FOOT
 			ctx.foot_txt += ln
+		case SECTION_PROFILE
+			ctx.profile_txt += ln
 		case else
 			''to avoid the lost of information if a section is not already selected
 			ctx.head_txt += ln
@@ -2352,6 +2382,142 @@ private sub no_roundsd(byval size as zstring ptr)
 	asm_code("pop $mxcsr[rip]")
 	asm_code("ldmxcsr $mxcsr[rip]")
 end sub
+
+''=================== profiling ==============================================
+
+private sub hProfileEmitModuleName( byref filename as string )
+	dim as string modulelbl = FB_PROFILE_MODULE_NAME+"0"
+	if ctx.systemv then
+		asm_section(FB_PROFILE_SECT_STRS+",""a""")
+	else
+		asm_section(FB_PROFILE_SECT_STRS+",""dr""")
+	end if
+	asm_code( modulelbl+":" )
+	asm_code(".ascii """+*hEscape(filename)+$"\0""")
+	asm_section( ".text" )
+end sub
+
+private sub hProfileProcProlog()
+	dim as string proflbl = FB_PROFILE_DATA_NAME + str(ctx.profprcnb)
+
+	asm_info("init time entering proc ---------------------------------------")
+	asm_code("add QWORD ptr "+PROFILE_REC_COUNT+", 1")
+	asm_code("push rax")
+	'asm_code("push rbx")
+	'asm_code("push rcx")
+	asm_code("push rdx")
+	'asm_code("cpuid")
+	asm_code("rdtsc")
+	asm_code("shl rdx,32")
+	asm_code("or rdx,rax")
+	asm_code("mov QWORD ptr "+PROFILE_REC_INIT0+", rdx") ''put in init0
+	asm_code("mov QWORD ptr "+PROFILE_REC_REINIT+", rdx") ''put in init
+	asm_code("pop rdx")
+	'asm_code("pop rcx")
+	'asm_code("pop rbx")
+	asm_code("pop rax")
+	asm_info("---------------------------------------------------------------")
+end sub
+
+private sub hProfileProcEpilog()
+	dim as string proflbl = FB_PROFILE_DATA_NAME + str(ctx.profprcnb)
+
+	asm_info("Calculate final time for procedure ------------------------------------------------------")
+	asm_code("push rax") ''saving only rax if return value
+	asm_code("rdtsc")
+	asm_code("shl rdx,32")
+	asm_code("or rdx,rax")
+	asm_code("mov rcx, rdx")
+	asm_code("mov rax, QWORD PTR "+PROFILE_REC_INIT0) ''init0
+	asm_code("sub rcx, rax")
+	asm_code("add QWORD PTR "+PROFILE_REC_GRANT_TOTAL+", rcx") ''grand total
+
+	asm_code("mov rax, QWORD PTR "+PROFILE_REC_REINIT) ''reinit
+	asm_code("sub rdx, rax")
+	asm_code("add QWORD PTR "+PROFILE_REC_INTERNAL_TOTAL+", rdx") ''internal total
+	'asm_code("cpuid")
+	asm_code("pop rax")
+	asm_info("---------------------------------------------------------------")
+
+end sub
+
+sub hProfileDoCall( byref pname as string )
+	dim as string proflbl = FB_PROFILE_DATA_NAME + str(ctx.profprcnb)
+
+	asm_info("Calculate split time for procedure ------------------------------------------------------")
+	asm_code("push rax")
+	'asm_code("push rbx")
+	'asm_code("push rcx")
+	asm_code("push rdx")
+	asm_code("rdtsc")
+	asm_code("shl rdx,32")
+	asm_code("or rdx,rax")
+	asm_code("mov rax, QWORD PTR "+PROFILE_REC_REINIT) ''reinit
+	asm_code("sub rdx, rax")
+	asm_code("add QWORD PTR "+PROFILE_REC_INTERNAL_TOTAL+", rdx") ''internal total
+	'asm_code("cpuid")
+	asm_code("pop rdx")
+	'asm_code("pop rcx")
+	'asm_code("pop rbx")
+	asm_code("pop rax")
+	asm_info("---------------------------------------------------------------")
+
+	asm_code("call " +pname,KNOALL)
+
+	asm_info("init time returning in proc ---------------------------------------")
+	asm_code("push rax")
+	'asm_code("push rbx")
+	'asm_code("push rcx")
+	asm_code("push rdx")
+	'asm_code("cpuid")
+	asm_code("rdtsc")
+	asm_code("shl rdx,32")
+	asm_code("or rdx,rax")
+	asm_code("mov QWORD ptr "+PROFILE_REC_REINIT+", rdx")''reinit
+	asm_code("pop rdx")
+	'asm_code("pop rcx")
+	'asm_code("pop rbx")
+	asm_code("pop rax")
+	asm_info("---------------------------------------------------------------")
+end sub
+
+private sub hProfileProcEmitData( byval proc as FBSYMBOL ptr)
+	dim as string proflbl = FB_PROFILE_DATA_NAME + str(ctx.profprcnb)
+	dim as string proclbl = FB_PROFILE_PROC_NAME + str(ctx.profprcnb)
+	dim as string modulelbl = FB_PROFILE_MODULE_NAME+"0" 
+	dim as integer last_section = ctx.section
+	ctx.section = SECTION_PROFILE
+
+	if ctx.systemv then
+		asm_section(FB_PROFILE_SECT_STRS+",""a""")
+	else
+		asm_section(FB_PROFILE_SECT_STRS+",""dr""")
+	end if
+	asm_code( proclbl + ":" )
+	asm_code(".ascii """+*symbGetMangledName( proc )+$"\0""")
+
+	if ctx.systemv then
+		asm_section(FB_PROFILE_SECT_DATA+",""a""")
+	else
+		asm_section(FB_PROFILE_SECT_DATA+",""dw""")
+	end if
+	asm_code(".align 16")
+	asm_code(proflbl+":")
+
+	'' if the record size changes, this must change too 
+	asm_code( ".quad " + str(PROFILE_REC_DATA_SIZE) + ", " + str(PROFILE_REC_DATA_ID) )
+	asm_code( ".quad " + modulelbl )  
+	asm_code( ".quad " + proclbl )  
+	asm_code( ".quad 0, 0, 0, 0, 0, 0" ) 
+
+	asm_section(".text")
+	ctx.section = last_section
+
+	ctx.profprcnb+=1
+end sub
+
+''============================================================================
+
 private function _emitbegin( ) as integer
 
 	if( hFileExists( env.outf.name ) ) then
@@ -2518,6 +2684,11 @@ private sub _emitend( )
 		asm_code("pop rbx")
 		asm_code("ret")
 	end if
+
+	if( env.clopt.profile = FB_PROFILE_OPT_CYCLES ) then
+		hProfileEmitModuleName( env.inf.name )
+	end if
+
 	''write dbg data
 	if( env.clopt.debuginfo = true ) then
 		dim as string lname = *symbUniqueLabel( )
@@ -6350,9 +6521,18 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 	end if
 
 	if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
-		asm_code("call " +pname+"@PLT",KNOALL)
+		''asm_code("call " +pname+"@PLT",KNOALL)
 	else
-		asm_code("call " +pname,KNOALL)
+		''asm_code("call " +pname,KNOALL)
+
+		''====== profiling
+		if( env.clopt.profile = FB_PROFILE_OPT_CYCLES ) then
+			hProfileDoCall( pname )
+
+		else
+			asm_code("call " +pname,KNOALL)
+		end if
+		''===========
 	end if
 
 	''for linux restoring the previous value of rsp in case of parameter put on the stack
@@ -6981,6 +7161,7 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 
 	ctx.prolog_txt=""
 	ctx.epilog_txt=""
+	ctx.profile_txt=""
 
 	''useful ?
 	ctx.labelbranch2=0
@@ -7012,6 +7193,7 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 	ctx.argcptmax=0
 	ctx.usedreg=0 ''registers used
 	ctx.stkmax=0
+
 	if( symbIsExport( proc ) ) then
 		asm_section(".drectve")
 		asm_code(".ascii "" -export:"+*symbGetMangledName( proc )+"""")
@@ -7049,6 +7231,7 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 	ctx.section=SECTION_PROC
 
 end sub
+
 private sub _emitprocend _
 	( _
 	byval proc as FBSYMBOL ptr, _
@@ -7072,7 +7255,10 @@ private sub _emitprocend _
 	asm_info("stk5="+Str(ctx.stk))
 	''--> PROLOG code select special area before writing
 	ctx.section=SECTION_PROLOG
-
+	''profiling
+	if env.clopt.profile = FB_PROFILE_OPT_CYCLES then
+		hProfileProcProlog()
+	end if
 	if symbIsNaked(proc)=false then
 
 		asm_code("push rbp")
@@ -7144,7 +7330,11 @@ private sub _emitprocend _
 
 	''--> EPILOG code
 	ctx.section=SECTION_EPILOG
-
+	''profiling total time + next proc
+	if env.clopt.profile = FB_PROFILE_OPT_CYCLES then
+		hProfileProcEpilog()
+		hProfileProcEmitData( proc )
+	end if
 	if( env.clopt.debuginfo = true ) then
 		lname = *symbUniqueLabel( )
 		dbg_addstab(,STAB_TYPE_RBRAC,,lname+"-"+*symbGetMangledName( ctxdbg.proc ))
@@ -7177,8 +7367,8 @@ private sub _emitprocend _
 
 	irhlEmitProcEnd( ) ''just flistReset( @irhl.vregs )
 
-	ctx.body_txt+=ctx.prolog_txt+ctx.proc_txt+ctx.epilog_txt ''assembling all the parts
-	ctx.section=SECTION_HEAD ''to keep information that could be send after as ctx.epilog_txt will be erased
+	ctx.body_txt+=ctx.prolog_txt+ctx.proc_txt+ctx.epilog_txt+ctx.profile_txt ''assembling all the parts
+	ctx.section=SECTION_HEAD ''to keep information that could be send after as ctx.epilog_txt/ctx.profile_txt will be erased
 
 end sub
 private sub _emitvariniofs(byval sym as FBSYMBOL ptr,byval rhs as FBSYMBOL ptr,byval ofs as longint)
