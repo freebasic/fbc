@@ -279,7 +279,7 @@ static STRING_INFO *PROFILER_new_string( const char *src, unsigned int full_hash
 	return info;
 }
 
-static STRING_HASH_TB* STRING_HASH_TB_new( )
+static STRING_HASH_TB* STRING_HASH_TB_new( void )
 {
 	STRING_HASH_TB *tb = (STRING_HASH_TB*)PROFILER_calloc( 1, sizeof( STRING_HASH_TB ) );
 	if( tb ) {
@@ -498,7 +498,7 @@ static PROFILER_METRICS *PROFILER_METRICS_new( FB_PROFILER_STATE *prof )
 	return prof->metrics;
 }
 
-static FB_PROFILER_STATE *PROFILER_new( )
+static FB_PROFILER_STATE *PROFILER_new( void )
 {
 	FB_PROFILER_STATE *prof = PROFILER_calloc( 1, sizeof( FB_PROFILER_STATE ) );
 	if( prof ) {
@@ -508,9 +508,12 @@ static FB_PROFILER_STATE *PROFILER_new( )
 			prof->strings->string_block_id = 1;
 			prof->strings->next = NULL;
 		}
+		prof->string_hash = STRING_HASH_TB_new( );
+		prof->ignore_hash = STRING_HASH_TB_new( );
+/*
 		prof->string_hash = STRING_HASH_TB_new( prof->strings );
 		prof->ignore_hash = STRING_HASH_TB_new( prof->strings );
-
+*/
 		/* initialized to zero by PROFILER_calloc 
 		prof->filename[0] = 0;
 		prof->launch_time[0] = 0;
@@ -554,7 +557,7 @@ static void PROFILER_delete( FB_PROFILER_STATE *prof )
 	PROFILER_free( prof );
 }
 
-static int PROFILER_new_proc_id( )
+static int PROFILER_new_proc_id( void )
 {
 	fb_profiler->proc_id += 1;
 	return fb_profiler->proc_id;
