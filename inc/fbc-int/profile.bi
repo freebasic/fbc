@@ -15,6 +15,13 @@
 
 namespace FBC
 
+enum PROFGEN_ID
+	PROFGEN_ID_NONE                  = 0
+	PROFGEN_ID_GMON                  = 1
+	PROFGEN_ID_CALLS                 = 2
+	PROFGEN_ID_CYCLES                = 3
+end enum
+
 enum PROFILE_OPTIONS
 	PROFILE_OPTION_REPORT_DEFAULT    = &h0000
 	PROFILE_OPTION_REPORT_CALLS      = &h0001

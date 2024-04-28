@@ -54,7 +54,7 @@ Version 1.20.0
 - improved stabs debug information in -gen gas and -gen gas64 for STRING*N, ZSTRING*N, and WSTRING*N types
 - profiler: rtlib/static/fbrt1.c for profiler start-up and exit code, rtlib/profile.c support code
 - Add "-profgen fb|gmon" command line option to select different profiler code generation backends
-- fbc: intrinsic define __FB_PROFILE__ to indicate if profiling was enabled
+- fbc: intrinsic define __FB_PROFILE__ to indicate if profiling was enabled - returns a numeric id for the profile generation method (0=gmon, 1=fb), or zero otherwise
 - fbc: allow user to optionally disable profiling code generation with '#pragma profile [=value]' or '#pragma push( profile [,value] )'
 - fbc: intrinsic define __FB_OPTION_PROFILE__ to indicate if profiling is currently enabled for code generation
 - rtlib: ./fbc-int/profile.bi - extra features for working with the built-in profiler; ProfileSetFileName(), ProfileGetOptions(), ProfileSetOptions(). ProfileIgnore()
