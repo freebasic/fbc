@@ -254,7 +254,7 @@ end enum
 #define FB_PROFILE_MODULE_NAME     "Lfbprfmod$"
 
 '' if the format of this record changes, then rtlib
-'' needs to change alias
+'' needs to change also
 #define PROFILE_REC_DATA_SIZE      80
 #define PROFILE_REC_DATA_ID        2
 ''      PROFILE_REC_SIZE           proflbl+"[rip+0]"
@@ -2387,8 +2387,11 @@ end sub
 
 private sub hProfileEmitModuleName( byref filename as string )
 	dim as string modulelbl = FB_PROFILE_MODULE_NAME+"0"
-
-	asm_section( FB_PROFILE_SECT_STRS )
+	if ctx.systemv then
+		asm_section(FB_PROFILE_SECT_STRS+",""a""")
+	else
+		asm_section(FB_PROFILE_SECT_STRS+",""dr""")
+	end if
 	asm_code( modulelbl+":" )
 	asm_code(".ascii """+*hEscape(filename)+$"\0""")
 	asm_section( ".text" )
@@ -2485,14 +2488,18 @@ private sub hProfileProcEmitData( byval proc as FBSYMBOL ptr)
 	dim as integer last_section = ctx.section
 	ctx.section = SECTION_PROFILE
 
-	asm_section( FB_PROFILE_SECT_STRS )
+	if ctx.systemv then
+		asm_section(FB_PROFILE_SECT_STRS+",""a""")
+	else
+		asm_section(FB_PROFILE_SECT_STRS+",""dr""")
+	end if
 	asm_code( proclbl + ":" )
 	asm_code(".ascii """+*symbGetMangledName( proc )+$"\0""")
 
 	if ctx.systemv then
 		asm_section(FB_PROFILE_SECT_DATA+",""a""")
 	else
-		asm_section(FB_PROFILE_SECT_DATA+",""w""")
+		asm_section(FB_PROFILE_SECT_DATA+",""dw""")
 	end if
 	asm_code(".align 16")
 	asm_code(proflbl+":")
@@ -2678,7 +2685,9 @@ private sub _emitend( )
 		asm_code("ret")
 	end if
 
-	hProfileEmitModuleName( env.inf.name )
+	if( env.clopt.profile = FB_PROFILE_OPT_CYCLES ) then
+		hProfileEmitModuleName( env.inf.name )
+	end if
 
 	''write dbg data
 	if( env.clopt.debuginfo = true ) then
