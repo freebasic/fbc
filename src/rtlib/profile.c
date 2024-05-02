@@ -1,16 +1,16 @@
 /*
- * profile.c -- profiling functions
- *
- * chng: apr/2005 written [lillo]
- *       may/2005 rewritten to properly support recursive calls [lillo]
- *       apr/2024 use thread local storage (wip) [jeffm]
- *       apr/2024 add call counting [jeffm]
- *       apr/2024 dynamic string table [jeffm]
- *       apr/2024 remove NUL character padding requirement [jeffm]
- *       apr/2024 add API to set output file name and report options [jeffm]
- *       apr/2024 add profiler lock (replacing fb lock) [jeffm]
- *       apr/2024 add calltree report and API to ignore procedures [jeffm]
- */
+** profile.c -- profiling functions
+**
+** chng: apr/2005 written [lillo]
+**       may/2005 rewritten to properly support recursive calls [lillo]
+**       apr/2024 use thread local storage (wip) [jeffm]
+**       apr/2024 add call counting [jeffm]
+**       apr/2024 dynamic string table [jeffm]
+**       apr/2024 remove NUL character padding requirement [jeffm]
+**       apr/2024 add API to set output file name and report options [jeffm]
+**       apr/2024 add profiler lock (replacing fb lock) [jeffm]
+**       apr/2024 add calltree report and API to ignore procedures [jeffm]
+*/
 
 /* TODO: optionally merge main and thread data */
 /* TODO: test the start-up and exit code more */
@@ -26,14 +26,16 @@
 ** CONFIG
 */
 
+#define PROFILER_MAX_PATH      1024
 #define MAIN_PROC_NAME         "(main)"
 #define THREAD_PROC_NAME       "(thread)"
 #define UNNAMED_PROC_NAME      "(unnamed)"
 #define DEFAULT_PROFILE_FILE   "profile.txt"
+#define DEFAULT_PROFILE_EXT    ".prf"
 #define STRING_BLOCK_TB_SIZE   10240
 #define PROC_MAX_CHILDREN      257
 #define PROC_BLOCK_SIZE        1024
-#define PROC_HASH_TB_SIZE 257
+#define PROC_HASH_TB_SIZE      257
 
 #if defined HOST_UNIX
 #define PATH_SEP               "/"
@@ -95,24 +97,24 @@ typedef struct _STRING_HASH_TB
 #define PROC_MAX_CHILDREN 257
 #endif
 
-typedef struct _FBPROC
+typedef struct _FB_PROCINFO
 {
 	const char *name;
-	struct _FBPROC *parent;
+	struct _FB_PROCINFO *parent;
 	double time;
 	double total_time;
 	long long int call_count;
-	struct _FBPROC *child[PROC_MAX_CHILDREN];
-	struct _FBPROC *next;
+	struct _FB_PROCINFO *child[PROC_MAX_CHILDREN];
+	struct _FB_PROCINFO *next;
 	unsigned int children;
 	unsigned int full_hash;
-	unsigned int proc_id;
-	unsigned int visited;
-} FBPROC;
+	int proc_id;
+	int visited;
+} FB_PROCINFO;
 
 typedef struct _PROC_BLOCK_TB
 {
-	FBPROC fbproc[PROC_BLOCK_SIZE];
+	FB_PROCINFO FB_PROCINFO[PROC_BLOCK_SIZE];
 	int next_free;
 	int proc_block_id;
 	struct _PROC_BLOCK_TB *next;
@@ -124,17 +126,17 @@ typedef struct _PROC_BLOCK_TB
 
 typedef struct _PROC_HASH_TB
 {
-	FBPROC *proc[PROC_HASH_TB_SIZE];
+	FB_PROCINFO *proc[PROC_HASH_TB_SIZE];
 	struct _PROC_HASH_TB *next;
 } PROC_HASH_TB;
 
-typedef struct _FBPROCARRAY
+typedef struct _FB_PROCARRAY
 {
-	FBPROC **array;
+	FB_PROCINFO **array;
 	STRING_HASH_TB *hash;
 	int length;
 	int size;
-} FBPROCARRAY;
+} FB_PROCARRAY;
 
 /* profiler */
 
@@ -165,8 +167,8 @@ typedef struct _PROFILER_METRICS
 
 typedef struct _FB_PROFILECTX
 {
-	FBPROC *main_proc;
-	FBPROC *cur_proc;
+	FB_PROCINFO *main_proc;
+	FB_PROCINFO *cur_proc;
 } FB_PROFILECTX;
 
 void fb_PROFILECTX_Destructor( void* );
@@ -178,7 +180,7 @@ enum PROFILE_OPTIONS
 	PROFILE_OPTION_REPORT_DEFAULT    = 0x0000,
 	PROFILE_OPTION_REPORT_CALLS      = 0x0001,
 	PROFILE_OPTION_REPORT_CALLTREE   = 0x0002,
-	PROFILE_OPTION_REPORT_RAWLIST    = 0x0004, 
+	PROFILE_OPTION_REPORT_RAWLIST    = 0x0004,
 	PROFILE_OPTION_REPORT_RAWDATA    = 0x0008,
 	PROFILE_OPTION_REPORT_RAWSTRINGS = 0x0010,
 
@@ -196,7 +198,7 @@ enum PROFILE_OPTIONS
 
 typedef struct _FB_PROFILER_STATE
 {
-	char filename[MAX_PATH];
+	char filename[PROFILER_MAX_PATH];
 	char launch_time[32];
 	unsigned int proc_id;
 	enum PROFILE_OPTIONS options;
@@ -366,11 +368,11 @@ static int PROFILER_should_ignore( const char *src, unsigned int full_hash )
 ** procs
 */
 
-static FBPROC *PROC_BLOCK_TB_alloc_proc( void )
+static FB_PROCINFO *PROC_BLOCK_TB_alloc_proc( void )
 {
 	FB_PROFILER_STATE *prof = fb_profiler;
 	PROC_BLOCK_TB *tb;
-	FBPROC *proc;
+	FB_PROCINFO *proc;
 
 	if ( ( !prof->procs ) || ( prof->procs->next_free >= PROC_BLOCK_SIZE ) ) {
 		tb = (PROC_BLOCK_TB *)PROFILER_calloc( 1, sizeof(PROC_BLOCK_TB) );
@@ -379,7 +381,7 @@ static FBPROC *PROC_BLOCK_TB_alloc_proc( void )
 		prof->procs = tb;
 	}
 
-	proc = &prof->procs->fbproc[prof->procs->next_free];
+	proc = &prof->procs->FB_PROCINFO[prof->procs->next_free];
 	prof->procs->next_free += 1;
 
 	return proc;
@@ -389,7 +391,7 @@ static FBPROC *PROC_BLOCK_TB_alloc_proc( void )
 ** Proc Arrays
 */
 
-static void PROCARRAY_constructor( FBPROCARRAY *list )
+static void PROCARRAY_constructor( FB_PROCARRAY *list )
 {
 	list->array = NULL;
 	list->size = 0;
@@ -397,7 +399,7 @@ static void PROCARRAY_constructor( FBPROCARRAY *list )
 	list->hash = NULL;
 }
 
-static void PROCARRAY_destructor( FBPROCARRAY *list )
+static void PROCARRAY_destructor( FB_PROCARRAY *list )
 {
 	STRING_HASH_TB_delete( list->hash );
 	list->hash = NULL;
@@ -409,21 +411,21 @@ static void PROCARRAY_destructor( FBPROCARRAY *list )
 
 static int PROCARRAY_name_sorter( const void *e1, const void *e2 )
 {
-	FBPROC *p1 = *(FBPROC **)e1;
-	FBPROC *p2 = *(FBPROC **)e2;
+	FB_PROCINFO *p1 = *(FB_PROCINFO **)e1;
+	FB_PROCINFO *p2 = *(FB_PROCINFO **)e2;
 
 	return strcmp( p1->name, p2->name );
 }
 
-static void PROCARRAY_sort_by_name( FBPROCARRAY *list )
+static void PROCARRAY_sort_by_name( FB_PROCARRAY *list )
 {
-	qsort( list->array, list->length, sizeof(FBPROC *), PROCARRAY_name_sorter );
+	qsort( list->array, list->length, sizeof(FB_PROCINFO *), PROCARRAY_name_sorter );
 }
 
 static int PROCARRAY_time_sorter( const void *e1, const void *e2 )
 {
-	FBPROC *p1 = *(FBPROC **)e1;
-	FBPROC *p2 = *(FBPROC **)e2;
+	FB_PROCINFO *p1 = *(FB_PROCINFO **)e1;
+	FB_PROCINFO *p2 = *(FB_PROCINFO **)e2;
 
 	if ( p1->total_time > p2->total_time ) {
 		return -1;
@@ -434,23 +436,23 @@ static int PROCARRAY_time_sorter( const void *e1, const void *e2 )
 	}
 }
 
-static void PROCARRAY_sort_by_time( FBPROCARRAY *list )
+static void PROCARRAY_sort_by_time( FB_PROCARRAY *list )
 {
-	qsort( list->array, list->length, sizeof(FBPROC *), PROCARRAY_time_sorter );
+	qsort( list->array, list->length, sizeof(FB_PROCINFO *), PROCARRAY_time_sorter );
 }
 
-static void PROCARRAY_add_proc( FBPROCARRAY *list, FBPROC *proc )
+static void PROCARRAY_add_proc( FB_PROCARRAY *list, FB_PROCINFO *proc )
 {
-	FBPROC **new_array = NULL;
-    int s = list->size;
+	FB_PROCINFO **new_array = NULL;
+	int s = list->size;
 
 	if( s == 0 ) {
 		s = 16;
-		new_array = (FBPROC **)PROFILER_malloc( s * sizeof(FBPROC *) );
+		new_array = (FB_PROCINFO **)PROFILER_malloc( s * sizeof(FB_PROCINFO *) );
 		list->hash = STRING_HASH_TB_new( );
 	} else if ( list->length == s ) {
 		s *= 2;
-		new_array = (FBPROC **)PROFILER_realloc( list->array, s * sizeof(FBPROC *) );
+		new_array = (FB_PROCINFO **)PROFILER_realloc( list->array, s * sizeof(FB_PROCINFO *) );
 	} else {
 		new_array = list->array;
 	}
@@ -464,9 +466,9 @@ static void PROCARRAY_add_proc( FBPROCARRAY *list, FBPROC *proc )
 	}
 }
 
-static void PROCARRAY_find_all_procs( FBPROCARRAY *list, FBPROC *proc )
+static void PROCARRAY_find_all_procs( FB_PROCARRAY *list, FB_PROCINFO *proc )
 {
-	FBPROC *p;
+	FB_PROCINFO *p;
 	int j;
 
 	if( !STRING_HASH_find( list->hash, proc->name, proc->full_hash ) ) {
@@ -514,7 +516,7 @@ static FB_PROFILER_STATE *PROFILER_new( void )
 		prof->string_hash = STRING_HASH_TB_new( prof->strings );
 		prof->ignore_hash = STRING_HASH_TB_new( prof->strings );
 */
-		/* initialized to zero by PROFILER_calloc 
+		/* initialized to zero by PROFILER_calloc
 		prof->filename[0] = 0;
 		prof->launch_time[0] = 0;
 		prof->procs = NULL;
@@ -644,7 +646,7 @@ static PROFILER_METRICS *PROFILER_GetMetrics( FB_PROFILER_STATE *prof )
 
 			for( int i = 0; i < PROC_BLOCK_SIZE; i++ )
 			{
-				if( tb->fbproc[i].name ) {
+				if( tb->FB_PROCINFO[i].name ) {
 					metrics->procs_count_items += 1;
 				}
 				metrics->procs_count_slots += 1;
@@ -672,7 +674,7 @@ static void pad_spaces( FILE *f, int len )
 static void pad_section( FILE *f )
 {
 	static int started = 0;
-	if( started != 0 ) { 
+	if( started != 0 ) {
 		fprintf( f, "\n\n" );
 	} else {
 		started = 1;
@@ -682,30 +684,29 @@ static void pad_section( FILE *f )
 static void hResetProcVisted( FB_PROFILER_STATE *prof )
 {
 	PROC_BLOCK_TB *tb;
-	FBPROC *proc;
+	FB_PROCINFO *proc;
 	int i;
 
 	for( tb = prof->procs; tb; tb = tb->next ) {
 		for( i = 0; i < tb->next_free; i++ ) {
-			proc = &tb->fbproc[i];
+			proc = &tb->FB_PROCINFO[i];
 			proc->visited = 0;
 		}
 	}
 }
 
 /* PROFILE_OPTION_REPORT_CALLS */
-static void hProfilerReportCalls ( 
+static void hProfilerReportCalls (
 	FB_PROFILECTX *ctx, FILE *f )
 {
 	FB_PROFILER_STATE *prof = fb_profiler;
 	PROFILER_METRICS *metrics = PROFILER_GetMetrics( prof );
 	int i, j, len, skip_proc, col, max_len;
 	PROC_BLOCK_TB *tb;
-	FBPROCARRAY parent_proc_list, proc_list;
-	FBPROC *proc, *parent_proc;
+	FB_PROCARRAY parent_proc_list, proc_list;
+	FB_PROCINFO *proc, *parent_proc;
 
 	PROCARRAY_constructor( &parent_proc_list );
-	PROCARRAY_constructor( &proc_list );
 
 	max_len = metrics->string_max_len;
 
@@ -720,7 +721,7 @@ static void hProfilerReportCalls (
 		if( (prof->options & PROFILE_OPTION_HIDE_COUNTS) == 0 ) {
 			fprintf( f, "      Count:  " );
 		}
-	
+
 		if( (prof->options & PROFILE_OPTION_HIDE_TIMES) == 0 ) {
 			fprintf( f, "     Time:    " );
 			fprintf( f, "Total%%:    " );
@@ -734,7 +735,7 @@ static void hProfilerReportCalls (
 
 	for( tb = prof->procs; tb; tb = tb->next ) {
 		for( i = 0; i < tb->next_free; i++ ) {
-			proc = &tb->fbproc[i];
+			proc = &tb->FB_PROCINFO[i];
 			if( !proc->parent ) {
 				/* no parent; either main proc or a thread proc */
 
@@ -751,7 +752,10 @@ static void hProfilerReportCalls (
 
 	PROCARRAY_sort_by_name( &parent_proc_list );
 
-	for( i = 0; i < parent_proc_list.length; i++ ) {
+	for( i = 0; i < parent_proc_list.length; i++ )
+	{
+		PROCARRAY_constructor( &proc_list );
+
 		parent_proc = parent_proc_list.array[i];
 		skip_proc = TRUE;
 
@@ -879,23 +883,23 @@ static void hPopLeader( FB_PROFILER_STATE *prof )
 		if( prof->calltree_leader.len >= 3 ) {
 			prof->calltree_leader.len -= 3;
 		}
-		prof->calltree_leader.data[prof->calltree_leader.len] = 0; 		
+		prof->calltree_leader.data[prof->calltree_leader.len] = 0;
 	} else {
 		prof->calltree_leader.len = 0;
 	}
-} 
+}
 
 static void hProfilerReportCallTreeProc (
-	FB_PROFILECTX *ctx, FILE *f, 
-	FB_PROFILER_STATE *prof, FBPROC *proc, int isfirst, int islast )
+	FB_PROFILECTX *ctx, FILE *f,
+	FB_PROFILER_STATE *prof, FB_PROCINFO *proc, int isfirst, int islast )
 {
 	static char asc_chars[4] = { '|', '-', '|', '\\' };
 	static char gfx_chars[4] = { 179, 196, 195, 192  };
 	char * ch = asc_chars;
 
-	FBPROC *p;
-	int j;
-	unsigned int c = 0;
+	FB_PROCINFO *p;
+	int i, j;
+	FB_PROCARRAY lst;
 
 	if( (prof->options &PROFILE_OPTION_GRAPHICS_CHARS) != 0 ) {
 		ch = gfx_chars;
@@ -911,35 +915,44 @@ static void hProfilerReportCallTreeProc (
 
 	if( proc->children > 0 ) {
 		if( islast ) {
-			hPushLeader( prof, ' ' ); 
+			hPushLeader( prof, ' ' );
 		} else {
-			hPushLeader( prof, ch[0] ); 
+			hPushLeader( prof, ch[0] );
 		}
-		hPushLeader( prof, ' ' ); 
-		hPushLeader( prof, ' ' ); 
+		hPushLeader( prof, ' ' );
+		hPushLeader( prof, ' ' );
 	}
+
+	PROCARRAY_constructor( &lst );
 
 	for ( p = proc; p; p = p->next ) {
 		p->visited += 1;
 		for ( j = 0; j < PROC_MAX_CHILDREN; j++ ) {
 			if ( proc->child[j] ) {
-				c += 1;
-				hProfilerReportCallTreeProc( ctx, f, prof, p->child[j], (c == 1), (c == proc->children) );
+				PROCARRAY_add_proc( &lst, proc->child[j] );
 			}
 		}
 	}
+
+	PROCARRAY_sort_by_name( &lst );
+
+	for( i = 0; i < lst.length; i++ ) {
+		hProfilerReportCallTreeProc( ctx, f, prof, lst.array[i], (i == 0), (i == lst.length - 1) );
+	}
+
+	PROCARRAY_destructor( &lst );
 
 	if( proc->children > 0 ) {
 		hPopLeader( prof );
 	}
 }
- 
+
 static void hProfilerReportCallTree (
 	FB_PROFILECTX *ctx, FILE *f )
 {
 	FB_PROFILER_STATE *prof = fb_profiler;
 	PROC_BLOCK_TB *tb;
-	FBPROC *proc;
+	FB_PROCINFO *proc;
 	int i;
 
 	if( (prof->options & PROFILE_OPTION_HIDE_TITLES) == 0 )
@@ -952,11 +965,11 @@ static void hProfilerReportCallTree (
 
 	for( tb = prof->procs; tb; tb = tb->next ) {
 		for( i = 0; i < tb->next_free; i++ ) {
-			proc = &tb->fbproc[i];
+			proc = &tb->FB_PROCINFO[i];
 			if( proc->visited == 0 ) {
 				hProfilerReportCallTreeProc( ctx, f, prof, proc, TRUE, TRUE );
+				fprintf( f, "\n" );
 			}
-			fprintf( f, "\n\n" );
 		}
 	}
 }
@@ -969,7 +982,7 @@ static void hProfilerReportRawList (
 	PROFILER_METRICS *metrics = PROFILER_GetMetrics( prof );
 	int len, col, i, max_len;
 	PROC_BLOCK_TB *tb;
-	FBPROC *proc;
+	FB_PROCINFO *proc;
 
 	max_len = metrics->string_max_len;
 
@@ -999,7 +1012,7 @@ static void hProfilerReportRawList (
 
 	for( tb = prof->procs; tb; tb = tb->next ) {
 		for( i = 0; i < tb->next_free; i++ ) {
-			proc = &tb->fbproc[i];
+			proc = &tb->FB_PROCINFO[i];
 
 			if( !proc->parent ) {
 				fprintf( f, "%6d  ", 0 );
@@ -1031,8 +1044,8 @@ static void hProfilerReportRawList (
 
 /* PROFILE_OPTION_REPORT_RAWDATA */
 static void hProfilerReportRawDataProc (
-	FB_PROFILECTX *ctx, FILE *f, 
-	FBPROC *proc, int level, int max_len, int recursion )
+	FB_PROFILECTX *ctx, FILE *f,
+	FB_PROCINFO *proc, int level, int max_len, int recursion )
 {
 	FB_PROFILER_STATE *prof = fb_profiler;
 	int len, col, j;
@@ -1086,7 +1099,7 @@ static void hProfilerReportRawData (
 	PROFILER_METRICS *metrics = PROFILER_GetMetrics( prof );
 	int i, max_len, len, col;
 	PROC_BLOCK_TB *tb;
-	FBPROC *proc;
+	FB_PROCINFO *proc;
 
 	max_len = metrics->string_max_len;
 
@@ -1117,7 +1130,7 @@ static void hProfilerReportRawData (
 
 	for( tb = prof->procs; tb; tb = tb->next ) {
 		for( i = 0; i < tb->next_free; i++ ) {
-			proc = &tb->fbproc[i];
+			proc = &tb->FB_PROCINFO[i];
 			hProfilerReportRawDataProc( ctx, f, proc, 1, max_len, 1 );
 		}
 	}
@@ -1187,6 +1200,17 @@ static void hProfilerReportDebug (
 }
 
 /* ************************************
+** Profile Thread Context
+*/
+
+void fb_PROFILECTX_Destructor( void* data )
+{
+	/* FB_PROFILECTX *ctx = (FB_PROFILECTX *)data; */
+	/* TODO: merge the thread results with the (main)/(thread) results */
+	data = data;
+}
+
+/* ************************************
 ** Public API
 */
 
@@ -1194,7 +1218,7 @@ static void hProfilerReportDebug (
 FBCALL void *fb_ProfileBeginCall( const char *procname )
 {
 	FB_PROFILECTX *ctx = FB_TLSGETCTX(PROFILE);
-	FBPROC *orig_parent_proc, *parent_proc, *proc;
+	FB_PROCINFO *orig_parent_proc, *parent_proc, *proc;
 	unsigned int j, full_hash = 0, hash_index, offset;
 
 	FB_PROFILE_LOCK();
@@ -1278,7 +1302,7 @@ update_proc:
 FBCALL void fb_ProfileEndCall( void *p )
 {
 	FB_PROFILECTX *ctx = FB_TLSGETCTX(PROFILE);
-	FBPROC *proc;
+	FB_PROCINFO *proc;
 	double end_time;
 
 	if( !p ) {
@@ -1289,7 +1313,7 @@ FBCALL void fb_ProfileEndCall( void *p )
 
 	FB_PROFILE_LOCK();
 
-	proc = (FBPROC *)p;
+	proc = (FB_PROCINFO *)p;
 	proc->total_time += ( end_time - proc->time );
 	proc->call_count += 1;
 	ctx->cur_proc = proc->parent;
@@ -1327,21 +1351,13 @@ FBCALL void fb_InitProfile( void )
 }
 
 /*:::::*/
-void fb_PROFILECTX_Destructor( void* data )
-{
-	/* FB_PROFILECTX *ctx = (FB_PROFILECTX *)data; */
-	/* TODO: merge the thread results with the (main)/(thread) results */
-	data = data;
-}
-
-/*:::::*/
 FBCALL int fb_EndProfile( int errorlevel )
 {
 	FB_PROFILECTX *ctx = FB_TLSGETCTX(PROFILE);
 	FB_PROFILER_STATE *prof = fb_profiler;
 	FILE *f;
 
-	char buffer[MAX_PATH], *filename;
+	char buffer[PROFILER_MAX_PATH], *filename;
 
 	if( !prof ) {
 		return -1;
@@ -1349,13 +1365,13 @@ FBCALL int fb_EndProfile( int errorlevel )
 
 	ctx->main_proc->total_time = fb_Timer() - ctx->main_proc->time;
 
-	filename = fb_hGetExeName( buffer, MAX_PATH-1 );
+	filename = fb_hGetExeName( buffer, PROFILER_MAX_PATH-1 );
 	if( prof->filename[0] ) {
 		filename = prof->filename;
 	} else if( !filename ) {
 		filename = DEFAULT_PROFILE_FILE;
 	} else {
-		strcat( buffer, ".prf" );
+		strcat( buffer, DEFAULT_PROFILE_EXT );
 		filename = buffer;
 	}
 
@@ -1367,7 +1383,7 @@ FBCALL int fb_EndProfile( int errorlevel )
 		fprintf( f, "Profiling results:\n" );
 		fprintf( f, "------------------\n\n" );
 
-		fb_hGetExeName( buffer, MAX_PATH-1 );
+		fb_hGetExeName( buffer, PROFILER_MAX_PATH-1 );
 		fprintf( f, "Executable name: %s\n", buffer );
 		fprintf( f, "Launched on: %s\n", prof->launch_time );
 		fprintf( f, "Total program execution time: %5.4g seconds\n", ctx->main_proc->total_time );
@@ -1375,7 +1391,7 @@ FBCALL int fb_EndProfile( int errorlevel )
 
 	/* default report? */
 	if( (prof->options & PROFILE_OPTION_REPORT_MASK) == 0 ) {
-		prof->options |= PROFILE_OPTION_REPORT_CALLS; 
+		prof->options |= PROFILE_OPTION_REPORT_CALLS;
 	}
 
 	if( (prof->options & PROFILE_OPTION_REPORT_CALLS) != 0 ) {
@@ -1425,7 +1441,7 @@ FBCALL int fb_ProfileSetFileName( const char *filename )
 
 	len = strlen(filename);
 
-	if( len < 1 || len >= MAX_PATH-1 ) {
+	if( len < 1 || len >= PROFILER_MAX_PATH-1 ) {
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
@@ -1472,8 +1488,24 @@ FBCALL void fb_ProfileIgnore( const char * procname )
 	if( !fb_profiler || !procname ) {
 		return;
 	}
-	full_hash = hash_compute( procname );  
+	full_hash = hash_compute( procname );
 	FB_PROFILE_LOCK();
 	PROFILER_add_ignore( procname, full_hash );
 	FB_PROFILE_UNLOCK();
-} 
+}
+
+/*:::::*/
+FBCALL FB_PROFILER_STATE *fb_ProfileGetProfiler()
+{
+	return fb_profiler;
+}
+
+/*:::::*/
+FBCALL PROFILER_METRICS *fb_ProfileGetMetrics( int refresh )
+{
+	if( refresh && fb_profiler->metrics ) {
+		fb_profiler->metrics->inited = FALSE;
+	}
+
+	return PROFILER_GetMetrics( fb_profiler );
+}

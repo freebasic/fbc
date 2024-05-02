@@ -751,6 +751,7 @@ extern_asm(_fb_DevScrnInit_ReadLineWstr);
 extern_asm(_fb_HEX_p);
 extern_asm(_fb_WstrInstrRevAny);
 extern_asm(_fb_FilePutBackEx);
+extern_asm(_fb_ProfileGetProfiler);
 extern_asm(_fb_SGNl);
 extern_asm(_fb_SGNi);
 extern_asm(_fb_FileGetArrayLargeIOB);
@@ -803,6 +804,7 @@ extern_asm(_fb_TlsGetCtx);
 extern_asm(_fb_WstrValLng);
 extern_asm(_fb_InputBool);
 extern_asm(_fb_ArrayClear);
+extern_asm(_fb_ProfileGetMetrics);
 extern_asm(_fb_Weekday);
 extern_asm(_fb_Getkey);
 extern_asm(_fb_LineInput);
@@ -1602,6 +1604,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_HEX_p)
     DXE_EXPORT_ASM (_fb_WstrInstrRevAny)
     DXE_EXPORT_ASM (_fb_FilePutBackEx)
+    DXE_EXPORT_ASM (_fb_ProfileGetProfiler)
     DXE_EXPORT_ASM (_fb_SGNl)
     DXE_EXPORT_ASM (_fb_SGNi)
     DXE_EXPORT_ASM (_fb_FileGetArrayLargeIOB)
@@ -1654,6 +1657,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_WstrValLng)
     DXE_EXPORT_ASM (_fb_InputBool)
     DXE_EXPORT_ASM (_fb_ArrayClear)
+    DXE_EXPORT_ASM (_fb_ProfileGetMetrics)
     DXE_EXPORT_ASM (_fb_Weekday)
     DXE_EXPORT_ASM (_fb_Getkey)
     DXE_EXPORT_ASM (_fb_LineInput)
