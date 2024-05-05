@@ -23,21 +23,24 @@ enum PROFGEN_ID
 end enum
 
 enum PROFILE_OPTIONS
-	PROFILE_OPTION_REPORT_DEFAULT    = &h0000
-	PROFILE_OPTION_REPORT_CALLS      = &h0001
-	PROFILE_OPTION_REPORT_CALLTREE   = &h0002
-	PROFILE_OPTION_REPORT_RAWLIST    = &h0004 
-	PROFILE_OPTION_REPORT_RAWDATA    = &h0008
-	PROFILE_OPTION_REPORT_RAWSTRINGS = &h0010
+	PROFILE_OPTION_REPORT_DEFAULT    = &h00000000
+	PROFILE_OPTION_REPORT_CALLS      = &h00000001
+	PROFILE_OPTION_REPORT_CALLTREE   = &h00000002
+	PROFILE_OPTION_REPORT_RAWLIST    = &h00000004
+	PROFILE_OPTION_REPORT_RAWDATA    = &h00000008
+	PROFILE_OPTION_REPORT_RAWSTRINGS = &h00000010
 
-	PROFILE_OPTION_REPORT_MASK       = &h00FF
+	PROFILE_OPTION_REPORT_MASK       = &h000000FF
 
-	PROFILE_OPTION_HIDE_HEADER       = &h0100
-	PROFILE_OPTION_HIDE_TITLES       = &h0200
-	PROFILE_OPTION_HIDE_COUNTS       = &h0400
-	PROFILE_OPTION_HIDE_TIMES        = &h0800
-	PROFILE_OPTION_SHOW_DEBUGGING    = &h1000
-	PROFILE_OPTION_GRAPHICS_CHARS    = &h2000
+	PROFILE_OPTION_HIDE_HEADER       = &h00000100
+	PROFILE_OPTION_HIDE_TITLES       = &h00000200
+	PROFILE_OPTION_HIDE_COUNTS       = &h00000400
+	PROFILE_OPTION_HIDE_TIMES        = &h00000800
+	PROFILE_OPTION_HIDE_FUNCTIONS    = &h00001000
+	PROFILE_OPTION_HIDE_GLOBALS      = &h00002000
+
+	PROFILE_OPTION_SHOW_DEBUGGING    = &h01000000
+	PROFILE_OPTION_GRAPHICS_CHARS    = &h02000000
 end enum
 
 extern "rtlib"
@@ -49,7 +52,7 @@ extern "rtlib"
 	declare function ProfileSetFileName alias "fb_ProfileSetFileName" ( byval filename as const zstring ptr ) as long
 	declare function ProfileGetOptions alias "fb_ProfileSetOptions" ( ) as PROFILE_OPTIONS
 	declare function ProfileSetOptions alias "fb_ProfileSetOptions" ( byval options as PROFILE_OPTIONS ) as PROFILE_OPTIONS
-	declare sub ProfileIgnore alias "fb_ProfileIgnore" ( byval procedurename as zstring ptr ) 
+	declare sub ProfileIgnore alias "fb_ProfileIgnore" ( byval procedurename as zstring ptr )
 end extern
 
 #if __FB_MT__
@@ -71,62 +74,69 @@ end extern
 '' PROFILER INTERNALS
 '' ------------------------------------
 ''
-'' Please Note: this may change
 
 namespace Profiler
 	const PROFILER_MAX_PATH      = 1024
-	const STRING_BLOCK_TB_SIZE   = 10240
+	const STRING_INFO_TB_SIZE    = 10240
 	const STRING_HASH_TB_SIZE    = 997
 	const PROC_MAX_CHILDREN      = 257
-	const PROC_BLOCK_SIZE        = 1024
+	const PROC_INFO_TB_SIZE      = 1024
 	const PROC_HASH_TB_SIZE      = 257
-	const PROFILE_MAX_PATH       = 1024
 
 	'' information about a single string
 	type STRING_INFO
 		as long  size
 		as long  length
-		as ulong full_hash
+		as ulong hashkey
 	end type
 
 	'' block of memory to store strings
-	type STRING_BLOCK_TB
-		as ubyte data(0 to STRING_BLOCK_TB_SIZE-1)
+	type STRING_INFO_TB
+		as ubyte data(0 to STRING_INFO_TB_SIZE-1)
+		as STRING_INFO_TB ptr next
 		as long bytes_used
-		as long string_block_id
-		as STRING_BLOCK_TB ptr next
+		as long string_tb_id
 	end type
 
-	'' hash table for strings
+	'' first block in a list of string storage blocks
+	type STRING_TABLE
+		as STRING_INFO_TB ptr tb
+	end type
+
+	'' hash table block for strings
 	type STRING_HASH_TB
 		as STRING_INFO ptr items(0 to STRING_HASH_TB_SIZE-1)
 		as STRING_HASH_TB ptr next
+	end type
+
+	'' hash table for strings
+	type STRING_HASH
+		as STRING_TABLE ptr strings
+		as STRING_HASH_TB ptr tb
 	end type
 
 	'' procedure call information, and hash table for child procedures
 	type FB_PROCINFO
 		as const zstring ptr name
 		as FB_PROCINFO ptr parent
-		as double time
-		as double total_time
-		as longint call_count
+		as double start_time
+		as double local_time
+		as longint local_count
+		as ulong hashkey
+		as long proc_id
 		as FB_PROCINFO ptr child(0 to PROC_MAX_CHILDREN-1)
 		as FB_PROCINFO ptr next
-		as ulong children
-		as ulong full_hash
-		as long proc_id
-		as long visited
 	end type
 
 	'' block of memory to store procedure call information records
-	type PROC_BLOCK_TB
-		as FB_PROCINFO fbproc(0 to PROC_BLOCK_SIZE-1)
+	type FB_PROCINFO_TB
+		as FB_PROCINFO procinfo(0 to PROC_INFO_TB_SIZE-1)
+		as FB_PROCINFO_TB ptr next
 		as long next_free
-		as long proc_block_id
-		as PROC_BLOCK_TB ptr next
+		as long proc_tb_id
 	end type
 
-	'' hash table for procedures (by procedure name)
+	'' hash table block for procedures
 	type PROC_HASH_TB
 		as FB_PROCINFO ptr proc(0 to PROC_HASH_TB_SIZE-1)
 		as PROC_HASH_TB ptr next
@@ -135,62 +145,71 @@ namespace Profiler
 	'' array of pointers to procedure call information records
 	type FB_PROCARRAY
 		as FB_PROCINFO ptr ptr array
-		as STRING_HASH_TB ptr hash
+		as STRING_HASH hash
+		as STRING_HASH ptr ignores
 		as long length
 		as long size
 	end type
 
 	'' information about the profiler internals
-	type PROFILER_METRICS
-		as long inited
-	
+	type FB_PROFILER_METRICS
+		as long count_threads
+
 		as long string_bytes_allocated
 		as long string_bytes_used
 		as long string_bytes_free
 		as long string_count_blocks
 		as long string_count_strings
 		as long string_max_len
-	
+
 		as long hash_bytes_allocated
 		as long hash_count_blocks
 		as long hash_count_items
 		as long hash_count_slots
-	
+
 		as long procs_bytes_allocated
 		as long procs_count_blocks
 		as long procs_count_items
 		as long procs_count_slots
 	end type
 
-	'' global profiler state
-	type FB_PROFILER_STATE
-		as zstring * PROFILER_MAX_PATH filename
-		as zstring * 32 launch_time
-		as ulong proc_id
-		as PROFILE_OPTIONS options
-		as STRING_BLOCK_TB ptr strings
-		as STRING_HASH_TB ptr string_hash
-		as STRING_HASH_TB ptr ignore_hash
-		as PROC_BLOCK_TB ptr procs
-		as PROFILER_METRICS ptr metrics
-		as string calltree_leader
+	'' thread profiler state
+	type FB_PROFILER_THREAD
+		as FB_PROCINFO ptr thread_proc
+		as STRING_TABLE strings
+		as STRING_HASH strings_hash
+		as FB_PROCINFO_TB ptr proc_tb
+		as FB_PROFILER_THREAD ptr next
+		as long last_proc_id
 	end type
 
-	'' thread local storage profiler state
+	'' thread local storage
 	type FB_PROFILECTX
-		as FB_PROCINFO ptr main_proc
-		as FB_PROCINFO ptr cur_proc
+		as FB_PROFILER_THREAD ptr ctx
+	end type
+
+	'' global profiler state
+	type FB_PROFILER_GLOBAL
+		as zstring * PROFILER_MAX_PATH filename
+		as zstring * 32 launch_time
+		as STRING_INFO_TB ptr strings
+		as STRING_HASH_TB ptr strings_hash
+		as STRING_HASH_TB ptr ignores_hash
+		as FB_PROFILER_THREAD ptr main_thread
+		as FB_PROFILER_THREAD ptr threads
+		as string calltree_leader
+		as PROFILE_OPTIONS options
 	end type
 
 end namespace
 
 extern "rtlib"
 	declare function ProfileGetProfiler alias "fb_ProfileGetProfiler" _
-		() as Profiler.FB_PROFILER_STATE ptr
+		() as Profiler.FB_PROFILER_GLOBAL ptr
 
-	'' TODO: this should have a profiler object ptr as first parameter
-	declare function ProfileGetMetrics alias "fb_ProfileGetMetrics" _
-		 ( byval refresh as long ) as Profiler.PROFILER_METRICS ptr
+	declare sub ProfileGetMetrics alias "fb_ProfileGetMetrics" _
+		 ( byval metrics as Profiler.FB_PROFILER_METRICS ptr )
+
 end extern
 
 end namespace
