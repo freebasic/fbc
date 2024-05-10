@@ -46,6 +46,8 @@ end enum
 extern "rtlib"
 	declare sub ProfileInit alias "fb_InitProfile" ()
 	declare function ProfileEnd alias "fb_EndProfile" ( byval errorcode as long ) as long
+	declare function ProfileBeginProc alias "fb_ProfileBeginProc" ( byval procedurename as const zstring ptr ) as any ptr
+	declare sub ProfileEndProc alias "fb_ProfileEndProc" ( byval procctx as any ptr )
 	declare function ProfileBeginCall alias "fb_ProfileBeginCall" ( byval procedurename as const zstring ptr ) as any ptr
 	declare sub ProfileEndCall alias "fb_ProfileEndCall" ( byval procctx as any ptr )
 
@@ -75,6 +77,8 @@ end extern
 '' ------------------------------------
 ''
 
+#pragma push(profile, false)
+
 namespace Profiler
 	const PROFILER_MAX_PATH      = 1024
 	const STRING_INFO_TB_SIZE    = 10240
@@ -103,17 +107,32 @@ namespace Profiler
 		as STRING_INFO_TB ptr tb
 	end type
 
-	'' hash table block for strings
+	'' block of memory for hashes
 	type STRING_HASH_TB
 		as STRING_INFO ptr items(0 to STRING_HASH_TB_SIZE-1)
 		as STRING_HASH_TB ptr next
 	end type
 
-	'' hash table for strings
-	type STRING_HASH
+	'' first block of memory for hashes and associated string table
+	type STRING_HASH_TABLE
 		as STRING_TABLE ptr strings
 		as STRING_HASH_TB ptr tb
 	end type
+
+	'' hash table for strings
+	type STRING_HASH
+		as STRING_HASH_TABLE ptr strings
+		as STRING_HASH_TABLE ptr hash
+	end type
+
+	'' extra information about procinfo entry 
+	enum PROCINFO_FLAGS
+		PROCINFO_FLAGS_NONE     = 0
+		PROCINFO_FLAGS_MAIN     = 1
+		PROCINFO_FLAGS_THREAD   = 2
+		PROCINFO_FLAGS_CALLPTR  = 4
+		PROCINFO_FLAGS_FOREIGN  = 8
+	end enum
 
 	'' procedure call information, and hash table for child procedures
 	type FB_PROCINFO
@@ -142,11 +161,11 @@ namespace Profiler
 		as PROC_HASH_TB ptr next
 	end type
 
-	'' array of pointers to procedure call information records
+	'' array of procinfo entries and associated hash tables
 	type FB_PROCARRAY
 		as FB_PROCINFO ptr ptr array
 		as STRING_HASH hash
-		as STRING_HASH ptr ignores
+		as STRING_HASH_TABLE ptr ignores
 		as long length
 		as long size
 	end type
@@ -189,6 +208,7 @@ namespace Profiler
 	end type
 
 	'' global profiler state
+	'' use FB_PROFILE_LOCK()/FB_PROFILE_UNLOCK when accessing
 	type FB_PROFILER_GLOBAL
 		as zstring * PROFILER_MAX_PATH filename
 		as zstring * 32 launch_time
@@ -202,6 +222,8 @@ namespace Profiler
 	end type
 
 end namespace
+
+#pragma pop(profile)
 
 extern "rtlib"
 	declare function ProfileGetProfiler alias "fb_ProfileGetProfiler" _

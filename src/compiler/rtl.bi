@@ -377,6 +377,8 @@
 #define FB_RTL_GFXPUTADD                "fb_hPutAdd"
 #define FB_RTL_GFXPUTCUSTOM             "fb_hPutCustom"
 
+#define FB_RTL_PROFILEBEGINPROC         "fb_ProfileBeginProc"
+#define FB_RTL_PROFILEENDPROC           "fb_ProfileEndProc"
 #define FB_RTL_PROFILEBEGINCALL         "fb_ProfileBeginCall"
 #define FB_RTL_PROFILEENDCALL           "fb_ProfileEndCall"
 #define FB_RTL_PROFILEEND               "fb_EndProfile"
@@ -797,6 +799,8 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_GFXIMAGECREATE
 	FB_RTL_IDX_GFXIMAGECREATEQB
 
+	FB_RTL_IDX_PROFILEBEGINPROC
+	FB_RTL_IDX_PROFILEENDPROC
 	FB_RTL_IDX_PROFILEBEGINCALL
 	FB_RTL_IDX_PROFILEENDCALL
 	FB_RTL_IDX_PROFILEEND
@@ -1733,6 +1737,16 @@ declare function rtlGfxImageCreate _
 		byval cexpr as ASTNODE ptr, _
 		byval dexpr as ASTNODE ptr, _
 		byval flags as integer _
+	) as ASTNODE ptr
+
+declare function rtlProfileBeginProc _
+	( _
+		byval symbol as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+declare function rtlProfileEndProc _
+	( _
+		byval symbol as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 declare function rtlProfileBeginCall _

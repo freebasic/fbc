@@ -63,6 +63,7 @@
 
 /* String Storage */
 
+/* information about a single string */
 typedef struct _STRING_INFO
 {
 	int size;
@@ -70,6 +71,7 @@ typedef struct _STRING_INFO
 	unsigned int hashkey;
 } STRING_INFO;
 
+/* block of memory to store strings */
 typedef struct _STRING_INFO_TB
 {
 	unsigned char data[STRING_INFO_TB_SIZE];
@@ -78,23 +80,27 @@ typedef struct _STRING_INFO_TB
 	int string_tb_id;
 } STRING_INFO_TB;
 
+/* first block in a list of string storage blocks */
 typedef struct _STRING_TABLE
 {
 	STRING_INFO_TB *tb;
 } STRING_TABLE;
 
+/* block of memory for hashes */
 typedef struct _STRING_HASH_TB
 {
 	STRING_INFO *items[STRING_HASH_TB_SIZE];
 	struct _STRING_HASH_TB *next;
 } STRING_HASH_TB;
 
+/* first block of memory for hashes and associated string table */
 typedef struct _STRING_HASH_TABLE
 {
 	STRING_TABLE *strings;
 	STRING_HASH_TB *tb;
 } STRING_HASH_TABLE;
 
+/* hash table for strings */
 typedef struct _STRING_HASH
 {
 	STRING_HASH_TABLE *strings_hash;
@@ -103,6 +109,17 @@ typedef struct _STRING_HASH
 
 /* procs */
 
+/* extra information about procinfo entry */
+enum PROCINFO_FLAGS
+{
+	PROCINFO_FLAGS_NONE     = 0,
+	PROCINFO_FLAGS_MAIN     = 1,
+	PROCINFO_FLAGS_THREAD   = 2,
+	PROCINFO_FLAGS_CALLPTR  = 4,
+	PROCINFO_FLAGS_FOREIGN  = 8
+};
+
+/* procedure call information, and hash table for child procedures */
 typedef struct _FB_PROCINFO
 {
 	const char *name;
@@ -114,8 +131,10 @@ typedef struct _FB_PROCINFO
 	int proc_id;
 	struct _FB_PROCINFO *child[PROC_MAX_CHILDREN];
 	struct _FB_PROCINFO *next;
+	int flags;
 } FB_PROCINFO;
 
+/* block of memory to store procedure call information records */
 typedef struct _FB_PROCINFO_TB
 {
 	FB_PROCINFO procinfo[PROC_INFO_TB_SIZE];
@@ -124,12 +143,14 @@ typedef struct _FB_PROCINFO_TB
 	int proc_tb_id;
 } FB_PROCINFO_TB;
 
+/* hash table block for procedures */
 typedef struct _PROC_HASH_TB
 {
 	FB_PROCINFO *proc[PROC_HASH_TB_SIZE];
 	struct _PROC_HASH_TB *next;
 } PROC_HASH_TB;
 
+/* array of procinfo entries and associated hash tables */
 typedef struct _FB_PROCARRAY
 {
 	FB_PROCINFO **array;
@@ -141,6 +162,7 @@ typedef struct _FB_PROCARRAY
 
 /* profiler */
 
+/* information about the profiler internals */
 typedef struct _FB_PROFILER_METRICS
 {
 	int count_threads;
@@ -909,7 +931,7 @@ static void pad_section( FILE *f )
 /* PROFILE_OPTION_REPORT_CALLS */
 static void hProfilerReportCallsProc (
 	FB_PROFILER_GLOBAL *prof, FB_PROFILER_THREAD *ctx, FILE *f,
-	FB_PROCINFO *parent_proc, int col, int isthread )
+	FB_PROCINFO *parent_proc, int col )
 {
 	FB_PROCINFO *proc;
 	FB_PROCARRAY proc_list;
@@ -929,11 +951,13 @@ static void hProfilerReportCallsProc (
 
 	if( proc_list.length > 0 ) {
 
-		if( isthread ) {
-			len = col - (fprintf( f, "(thread) %s", parent_proc->name ) );
-		} else {
-			len = col - (fprintf( f, "%s", parent_proc->name ) );
+		if( (prof->options & PROFILE_OPTION_HIDE_TITLES) == 0 ) {
+			if( (parent_proc->flags & PROCINFO_FLAGS_THREAD) != 0 ) {
+				fprintf( f, "(thread)\n" );
+			}
 		}
+
+		len = col - (fprintf( f, "%s", parent_proc->name ) );
 		pad_spaces( f, len );
 
 		if( (prof->options & PROFILE_OPTION_HIDE_COUNTS) == 0 ) {
@@ -1031,7 +1055,7 @@ static void hProfilerReportCallsFunctions (
 	PROCARRAY_find_unique_procs( &list, ctx->proc_tb );
 	PROCARRAY_sort_by_name( &list );
 	for( i = 0; i < list.length; i++ ) {
-		hProfilerReportCallsProc( prof, ctx, f, list.array[i], col, FALSE );
+		hProfilerReportCallsProc( prof, ctx, f, list.array[i], col );
 	}
 
 	PROCARRAY_destructor( &list );
@@ -1494,39 +1518,34 @@ static void hProfilerReportThread (
 }
 
 /* ************************************
-** Public API
+** Call Stack
 */
 
-/*:::::*/
-FBCALL void *fb_ProfileBeginCall( const char *procname )
+static void hInitCall( FB_PROFILER_THREAD *ctx, FB_PROCINFO *proc, const char *procname )
 {
-	FB_PROFILECTX *tls = FB_TLSGETCTX(PROFILE);
-	FB_PROFILER_THREAD *ctx;
-	FB_PROCINFO *orig_parent_proc, *parent_proc, *proc;
-	unsigned int j, hashkey = 0, hash_index, offset;
+	unsigned int hashkey = hash_compute( procname );
 
-	if( !procname || !(*procname) ) {
-		procname = UNNAMED_PROC_NAME;
+	proc->name = PROFILER_THREAD_add_string( ctx, procname, hashkey );
+	proc->hashkey = hashkey;
+	proc->proc_id = PROFILER_new_proc_id( ctx );
+	proc->start_time = fb_Timer();
+	proc->local_time = 0.0;
+	proc->local_count = 0;
+	proc->parent = NULL;
+	if( strncmp( proc->name, "{fbfp}", 6 ) == 0 ) {
+		proc->flags = PROCINFO_FLAGS_CALLPTR;
+	} else {
+		proc->flags = PROCINFO_FLAGS_NONE;
 	}
+}
+
+static FB_PROCINFO *hPushCall( FB_PROFILER_THREAD *ctx, FB_PROCINFO *parent_proc, const char *procname )
+{
+	FB_PROCINFO *orig_parent_proc, *proc;
+	int j, hash_index, offset;
+	unsigned int hashkey;
 
 	hashkey = hash_compute( procname );
-
-	if( !tls->ctx ) {
-		fb_PROFILECTX_Constructor( tls );
-	}
-
-	ctx = tls->ctx;
-	parent_proc = ctx->thread_proc;
-
-	/* First function call of a newly spawned thread has no parent proc set */
-	if( !parent_proc ) {
-		parent_proc = FB_PROFILER_THREAD_alloc_proc( ctx );
-		parent_proc->name = THREAD_PROC_NAME;
-		parent_proc->hashkey = hash_compute( parent_proc->name );
-		parent_proc->local_count = 1;
-		parent_proc->proc_id = PROFILER_new_proc_id( ctx );
-		parent_proc->start_time = fb_Timer();
-	}
 
 	orig_parent_proc = parent_proc;
 
@@ -1557,42 +1576,24 @@ FBCALL void *fb_ProfileBeginCall( const char *procname )
 	}
 
 fill_proc:
-	proc->proc_id = PROFILER_new_proc_id( ctx );
-	proc->name = PROFILER_THREAD_add_string( ctx, procname, hashkey );
-	proc->hashkey = hashkey;
-	proc->local_time = 0.0;
-	proc->local_count = 0;
+	hInitCall( ctx, proc, procname );
 	proc->parent = orig_parent_proc;
 	parent_proc->child[hash_index] = proc;
 
 update_proc:
+	proc->start_time = fb_Timer();
+
 	/* set the current procedure pointer to the procedure about to be called */
 	ctx->thread_proc = proc;
 
-	proc->start_time = fb_Timer();
-
-	return (void *)proc;
+	return proc;
 }
 
-/*:::::*/
-FBCALL void fb_ProfileEndCall( void *p )
+static void hPopCall( FB_PROFILER_THREAD *ctx, FB_PROCINFO *proc )
 {
-	FB_PROFILECTX *tls;
-	FB_PROFILER_THREAD *ctx;
-	FB_PROCINFO *proc;
-
 	double end_time;
 
-	if( !p ) {
-		return;
-	}
-
 	end_time = fb_Timer();
-
-	tls = FB_TLSGETCTX(PROFILE);
-	ctx = tls->ctx;
-
-	proc = (FB_PROCINFO *)p;
 
 	/* accumulated time and call count is for all calls */
 	/* with the current parent */
@@ -1603,18 +1604,112 @@ FBCALL void fb_ProfileEndCall( void *p )
 	ctx->thread_proc = proc->parent;
 }
 
+/* ************************************
+** Public API
+*/
+
+/*:::::*/
+FBCALL void *fb_ProfileBeginProc( const char *procname )
+{
+	FB_PROFILECTX *tls = FB_TLSGETCTX(PROFILE);
+	FB_PROFILER_THREAD *ctx;
+	FB_PROCINFO *proc;
+
+	if( !tls->ctx ) {
+		fb_PROFILECTX_Constructor( tls );
+	}
+
+	ctx = tls->ctx;
+	proc = ctx->thread_proc;
+
+	/* First function call of a newly spawned thread has no proc set */
+	if( !proc ) {
+		if( !procname || !(*procname) ) {
+			procname = THREAD_PROC_NAME;
+		}
+		proc = FB_PROFILER_THREAD_alloc_proc( ctx );
+		hInitCall( ctx, proc, procname );
+		proc->flags |= PROCINFO_FLAGS_THREAD;
+	}
+
+	if( !procname || !(*procname) ) {
+		procname = UNNAMED_PROC_NAME;
+	}
+
+	/* set the current proc pointer to current procedure called */
+	ctx->thread_proc = proc;
+
+	if( (proc->flags & PROCINFO_FLAGS_CALLPTR) != 0 ) {
+		proc = hPushCall( ctx, proc, procname );
+		ctx->thread_proc = proc;
+	}
+
+	return (FB_PROCINFO *)proc;
+}
+
+FBCALL void fb_ProfileEndProc( void *p )
+{
+	if( p ) {
+		FB_PROFILECTX *tls = FB_TLSGETCTX(PROFILE);
+		FB_PROFILER_THREAD *ctx = tls->ctx;
+		FB_PROCINFO *proc = ctx->thread_proc;
+		if( proc->parent ) {
+			if( (proc->parent->flags & PROCINFO_FLAGS_CALLPTR) != 0 ) {
+				hPopCall( ctx, proc );
+			}
+		}
+	}
+}
+
+/*:::::*/
+FBCALL void *fb_ProfileBeginCall( const char *procname )
+{
+	FB_PROFILECTX *tls = FB_TLSGETCTX(PROFILE);
+	FB_PROFILER_THREAD *ctx;
+	FB_PROCINFO *parent_proc;
+
+	if( !tls->ctx ) {
+		fb_PROFILECTX_Constructor( tls );
+	}
+
+	ctx = tls->ctx;
+	parent_proc = ctx->thread_proc;
+
+	/* First function call of a newly spawned thread has no parent proc set */
+	if( !parent_proc ) {
+		if( !procname || !(*procname) ) {
+			procname = THREAD_PROC_NAME;
+		}
+		parent_proc = FB_PROFILER_THREAD_alloc_proc( ctx );
+		hInitCall( ctx, parent_proc, THREAD_PROC_NAME );
+		parent_proc->flags |= PROCINFO_FLAGS_THREAD;
+	}
+
+	if( !procname || !(*procname) ) {
+		procname = UNNAMED_PROC_NAME;
+	}
+
+	return (void *)hPushCall( ctx, parent_proc, procname );
+}
+
+/*:::::*/
+FBCALL void fb_ProfileEndCall( void *p )
+{
+	if( p ) {
+		FB_PROFILECTX *tls = FB_TLSGETCTX(PROFILE);
+		hPopCall( tls->ctx, (FB_PROCINFO *)p );
+	}
+}
+
 /*:::::*/
 FBCALL void fb_InitProfile( void )
 {
 	FB_PROFILECTX *tls = FB_TLSGETCTX(PROFILE);
 	FB_PROFILER_THREAD *ctx;
-	double start_time;
 
 	if( fb_profiler ) {
 		return;
 	}
-	start_time = fb_Timer();
-
 	fb_profiler = PROFILER_new( );
 
 	time_t rawtime = { 0 };
@@ -1629,11 +1724,9 @@ FBCALL void fb_InitProfile( void )
 
 	/* assume we are starting from MAIN procedure */
 	ctx->thread_proc = FB_PROFILER_THREAD_alloc_proc( ctx );
-	ctx->thread_proc->name = MAIN_PROC_NAME;
-	ctx->thread_proc->hashkey = hash_compute( ctx->thread_proc->name );
+	hInitCall( ctx, ctx->thread_proc, MAIN_PROC_NAME );
+	ctx->thread_proc->flags |= PROCINFO_FLAGS_MAIN;
 	ctx->thread_proc->local_count = 1;
-	ctx->thread_proc->proc_id = PROFILER_new_proc_id( ctx );
-	ctx->thread_proc->start_time = start_time;
 
 	/* assume that this must have been called from the main thread */
 	fb_profiler->main_thread = ctx;
