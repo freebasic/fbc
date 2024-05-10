@@ -1153,7 +1153,8 @@ declare function rtlArrayBoundsCheck _
 		byval lb as ASTNODE ptr, _
 		byval rb as ASTNODE ptr, _
 		byval linenum as integer, _
-		byval module as zstring ptr _
+		byval module as zstring ptr, _
+		byval vname as zstring ptr _
 	) as ASTNODE ptr
 
 declare function rtlNullPtrCheck _

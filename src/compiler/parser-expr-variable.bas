@@ -84,7 +84,7 @@ private function cFixedSizeArrayIndex( byval sym as FBSYMBOL ptr ) as ASTNODE pt
 
 		'' bounds checking
 		if( env.clopt.arrayboundchk ) then
-			dimexpr = astBuildBOUNDCHK( dimexpr, astNewCONSTi( lower ), astNewCONSTi( upper ) )
+			dimexpr = astBuildBOUNDCHK( dimexpr, astNewCONSTi( lower ), astNewCONSTi( upper ), sym )
 			if( dimexpr = NULL ) then
 				errReport( FB_ERRMSG_ARRAYOUTOFBOUNDS )
 				'' error recovery: fake an expr
@@ -898,7 +898,7 @@ private function cDynamicArrayIndex _
 		if( env.clopt.arrayboundchk ) then
 			dimexpr = astBuildBOUNDCHK( dimexpr, _
 			                            astBuildDerefAddrOf( astCloneTree( descexpr ), dimoffset + symb.fbarraydim_lbound, FB_DATATYPE_INTEGER, NULL ), _
-			                            astBuildDerefAddrOf( astCloneTree( descexpr ), dimoffset + symb.fbarraydim_ubound, FB_DATATYPE_INTEGER, NULL ) )
+			                            astBuildDerefAddrOf( astCloneTree( descexpr ), dimoffset + symb.fbarraydim_ubound, FB_DATATYPE_INTEGER, NULL ), sym )
 			assert( dimexpr )
 		end if
 
