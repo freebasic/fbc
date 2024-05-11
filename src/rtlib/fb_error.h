@@ -41,6 +41,8 @@ FBCALL void          fb_Assert          ( char *filename, int linenum, char *fun
 FBCALL void          fb_AssertWarn      ( char *filename, int linenum, char *funcname, char *expression );
 FBCALL void          fb_AssertW         ( char *filename, int linenum, char *funcname, FB_WCHAR *expression );
 FBCALL void          fb_AssertWarnW     ( char *filename, int linenum, char *funcname, FB_WCHAR *expression );
+       FB_ERRHANDLER fb_ErrorThrowMsg   ( int errnum, int linenum, const char *modname,
+                                          const char *msg, void *res_label, void *resnext_label );
        FB_ERRHANDLER fb_ErrorThrowEx    ( int errnum, int linenum, const char *fname,
                                           void *res_label, void *resnext_label );
        FB_ERRHANDLER fb_ErrorThrowAt    ( int line_num, const char *mod_name,

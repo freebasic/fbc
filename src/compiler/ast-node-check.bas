@@ -123,7 +123,6 @@ function astBuildBOUNDCHK _
 		byval ub as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr = 0 _
 	) as ASTNODE ptr
-	'function = astNewBOUNDCHK( expr, lb, ub, lexLineNum( ), env.inf.name )
 	function = astNewBOUNDCHK( expr, lb, ub, lexLineNum( ), env.inf.name, sym)
 end function
 

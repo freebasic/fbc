@@ -99,16 +99,16 @@
 		chk = procptr( fb_ArrayUBound )
 	end scope
 
-	ID( function fb_ArraySngBoundChk )
+	ID( function fb_ArraySngBoundChkEx )
 	scope
-		dim chk as function fbcall ( byval as const uinteger, byval as const uinteger, byval as const long, byval as const zstring ptr ) as any ptr
-		chk = procptr( fb_ArraySngBoundChk )
+		dim chk as function fbcall ( byval as const uinteger, byval as const uinteger, byval as const long, byval as const zstring ptr, byval as const zstring ptr ) as any ptr
+		chk = procptr( fb_ArraySngBoundChkEx )
 	end scope
 
-	ID( function fb_ArrayBoundChk )
+	ID( function fb_ArrayBoundChkEx )
 	scope
-		dim chk as function fbcall ( byval as const integer, byval as const integer, byval as const integer, byval as const long, byval as const zstring ptr ) as any ptr
-		chk = procptr( fb_ArrayBoundChk )
+		dim chk as function fbcall ( byval as const integer, byval as const integer, byval as const integer, byval as const long, byval as const zstring ptr, byval as const zstring ptr ) as any ptr
+		chk = procptr( fb_ArrayBoundChkEx )
 	end scope
 
 #print "---- rtlConsole"

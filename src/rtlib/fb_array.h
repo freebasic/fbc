@@ -24,7 +24,7 @@ typedef struct _FBARRAY {
 typedef void (*FB_DEFCTOR)( void *this_ );
 typedef void (*FB_DTORMULT) ( FBARRAY *array, FB_DEFCTOR dtor, size_t base_idx );
 
-FBCALL void *fb_ArrayBoundChk
+FBCALL void *fb_ArrayBoundChkEx
 	(
 		ssize_t idx,
 		ssize_t lbound,
@@ -34,7 +34,7 @@ FBCALL void *fb_ArrayBoundChk
 		const char *vname
 	);
 
-FBCALL void *fb_ArraySngBoundChk
+FBCALL void *fb_ArraySngBoundChkEx
 	(
 		size_t idx,
 		size_t ubound,
