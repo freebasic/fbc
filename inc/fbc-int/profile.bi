@@ -44,14 +44,22 @@ enum PROFILE_OPTIONS
 end enum
 
 extern "rtlib"
+	'' -profgen fb
 	declare sub ProfileInit alias "fb_InitProfile" ()
 	declare function ProfileEnd alias "fb_EndProfile" ( byval errorcode as long ) as long
+
 	declare function ProfileBeginProc alias "fb_ProfileBeginProc" ( byval procedurename as const zstring ptr ) as any ptr
 	declare sub ProfileEndProc alias "fb_ProfileEndProc" ( byval procctx as any ptr )
 	declare function ProfileBeginCall alias "fb_ProfileBeginCall" ( byval procedurename as const zstring ptr ) as any ptr
 	declare sub ProfileEndCall alias "fb_ProfileEndCall" ( byval procctx as any ptr )
 
+	'' -profgen cycles
+	declare sub ProfileCyclesInit alias "fb_InitProfileCycles" ()
+	declare function ProfileCyclesEnd alias "fb_EndProfileCycles" ( byval errorcode as long ) as long
+
+	'' options common to all profilers
 	declare function ProfileSetFileName alias "fb_ProfileSetFileName" ( byval filename as const zstring ptr ) as long
+	declare function ProfileGetFileName alias "fb_ProfileGetFileName" ( byval filename as zstring ptr, byval length as long ) as long
 	declare function ProfileGetOptions alias "fb_ProfileSetOptions" ( ) as PROFILE_OPTIONS
 	declare function ProfileSetOptions alias "fb_ProfileSetOptions" ( byval options as PROFILE_OPTIONS ) as PROFILE_OPTIONS
 	declare sub ProfileIgnore alias "fb_ProfileIgnore" ( byval procedurename as zstring ptr )
@@ -125,7 +133,41 @@ namespace Profiler
 		as STRING_HASH_TABLE ptr hash
 	end type
 
-	'' extra information about procinfo entry 
+	'' profiler global context
+	'' use FB_PROFILE_LOCK()/FB_PROFILE_UNLOCK when accessing
+	type FB_PROFILER_GLOBAL
+		as any ptr profiler_ctx
+		as STRING_TABLE strings
+		as STRING_HASH_TABLE strings_hash
+		as STRING_HASH_TABLE ignores_hash
+		as zstring * PROFILER_MAX_PATH filename
+		as zstring * 32 launch_time
+		as PROFILE_OPTIONS options
+	end type
+
+	'' information about the profiler internals
+	type FB_PROFILER_METRICS
+		as long count_threads
+
+		as long string_bytes_allocated
+		as long string_bytes_used
+		as long string_bytes_free
+		as long string_count_blocks
+		as long string_count_strings
+		as long string_max_len
+
+		as long hash_bytes_allocated
+		as long hash_count_blocks
+		as long hash_count_items
+		as long hash_count_slots
+
+		as long procs_bytes_allocated
+		as long procs_count_blocks
+		as long procs_count_items
+		as long procs_count_slots
+	end type
+
+	'' extra information about procinfo entry
 	enum PROCINFO_FLAGS
 		PROCINFO_FLAGS_NONE     = 0
 		PROCINFO_FLAGS_MAIN     = 1
@@ -170,28 +212,6 @@ namespace Profiler
 		as long size
 	end type
 
-	'' information about the profiler internals
-	type FB_PROFILER_METRICS
-		as long count_threads
-
-		as long string_bytes_allocated
-		as long string_bytes_used
-		as long string_bytes_free
-		as long string_count_blocks
-		as long string_count_strings
-		as long string_max_len
-
-		as long hash_bytes_allocated
-		as long hash_count_blocks
-		as long hash_count_items
-		as long hash_count_slots
-
-		as long procs_bytes_allocated
-		as long procs_count_blocks
-		as long procs_count_items
-		as long procs_count_slots
-	end type
-
 	'' thread profiler state
 	type FB_PROFILER_THREAD
 		as FB_PROCINFO ptr thread_proc
@@ -207,18 +227,20 @@ namespace Profiler
 		as FB_PROFILER_THREAD ptr ctx
 	end type
 
-	'' global profiler state
+	'' calls profiler
 	'' use FB_PROFILE_LOCK()/FB_PROFILE_UNLOCK when accessing
-	type FB_PROFILER_GLOBAL
-		as zstring * PROFILER_MAX_PATH filename
-		as zstring * 32 launch_time
-		as STRING_INFO_TB ptr strings
-		as STRING_HASH_TB ptr strings_hash
-		as STRING_HASH_TB ptr ignores_hash
+	type FB_PROFILER_CALLS
+		as FB_PROFILER_GLOBAL ptr global
 		as FB_PROFILER_THREAD ptr main_thread
 		as FB_PROFILER_THREAD ptr threads
 		as string calltree_leader
-		as PROFILE_OPTIONS options
+	end type
+
+	'' cycles profiler
+	'' use FB_PROFILE_LOCK()/FB_PROFILE_UNLOCK when accessing
+	type FB_PROFILER_CYCLES
+		as FB_PROFILER_GLOBAL ptr global
+		as double start_time
 	end type
 
 end namespace
@@ -226,10 +248,16 @@ end namespace
 #pragma pop(profile)
 
 extern "rtlib"
-	declare function ProfileGetProfiler alias "fb_ProfileGetProfiler" _
+	declare function ProfileGetGlobalProfiler alias "fb_ProfileGetGlobalProfiler" _
 		() as Profiler.FB_PROFILER_GLOBAL ptr
 
-	declare sub ProfileGetMetrics alias "fb_ProfileGetMetrics" _
+	declare function ProfileGetCallsProfiler alias "fb_ProfileGetCallsProfiler" _
+		() as Profiler.FB_PROFILER_CALLS ptr
+
+	declare function ProfileGetCyclesProfiler alias "fb_ProfileGetCyclesProfiler" _
+		() as Profiler.FB_PROFILER_CYCLES ptr
+
+	declare sub ProfileGetCallsMetrics alias "fb_ProfileGetCallsMetrics" _
 		 ( byval metrics as Profiler.FB_PROFILER_METRICS ptr )
 
 end extern

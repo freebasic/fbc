@@ -335,7 +335,6 @@ extern_asm(_fb_PrintUInt);
 extern_asm(_fb_DataReadBool);
 extern_asm(_fb_WstrLTrimAny);
 extern_asm(_fb_BIN_i);
-extern_asm(_fb_ProfileEndProc);
 extern_asm(_fb_SleepEx);
 extern_asm(_fb_WstrOctEx_b);
 extern_asm(_fb_ConReadLine);
@@ -442,7 +441,6 @@ extern_asm(_fb_ConsoleGetXY_BIOS);
 extern_asm(_fb_DrvIntlGet);
 extern_asm(_fb_hStrAllocTemp_NoLock);
 extern_asm(_fb_FileFlushEx);
-extern_asm(_fb_ProfileBeginProc);
 extern_asm(_fb_HEXEx_l);
 extern_asm(_fb_CharToUTF);
 extern_asm(_fb_DateParse);
@@ -455,6 +453,7 @@ extern_asm(_fb_FileSetEof);
 extern_asm(_fb_ConsoleReadXY);
 extern_asm(_fb_PrintUShort);
 extern_asm(_fb_ArrayRedimObj);
+extern_asm(_fb_ArrayBoundChkEx);
 extern_asm(_fb_LTRIM);
 extern_asm(_fb_WstrTrim);
 extern_asm(_fb_WstrBinEx_s);
@@ -545,6 +544,7 @@ extern_asm(_fb_hFileFlushEx);
 extern_asm(_fb_DevFileLock);
 extern_asm(_fb_hStr2ULongint);
 extern_asm(_fb_BINEx_s);
+extern_asm(_fb_ArraySngBoundChkEx);
 extern_asm(_fb_FileGetStrLargeIOB);
 extern_asm(_fb_Pos);
 extern_asm(_fb_InputShort);
@@ -577,6 +577,7 @@ extern_asm(_fb_FileLock);
 extern_asm(_fb_BINEx_l);
 extern_asm(_fb_ConsoleGetBotRow);
 extern_asm(_fb_FileCloseEx);
+extern_asm(_fb_ErrorThrowMsg);
 extern_asm(_fb_FileOpenPipe);
 extern_asm(_fb_PageCopy);
 extern_asm(_fb_hArrayAlloc);
@@ -753,7 +754,6 @@ extern_asm(_fb_DevScrnInit_ReadLineWstr);
 extern_asm(_fb_HEX_p);
 extern_asm(_fb_WstrInstrRevAny);
 extern_asm(_fb_FilePutBackEx);
-extern_asm(_fb_ProfileGetProfiler);
 extern_asm(_fb_SGNl);
 extern_asm(_fb_SGNi);
 extern_asm(_fb_FileGetArrayLargeIOB);
@@ -806,7 +806,6 @@ extern_asm(_fb_TlsGetCtx);
 extern_asm(_fb_WstrValLng);
 extern_asm(_fb_InputBool);
 extern_asm(_fb_ArrayClear);
-extern_asm(_fb_ProfileGetMetrics);
 extern_asm(_fb_Weekday);
 extern_asm(_fb_Getkey);
 extern_asm(_fb_LineInput);
@@ -1190,7 +1189,6 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_DataReadBool)
     DXE_EXPORT_ASM (_fb_WstrLTrimAny)
     DXE_EXPORT_ASM (_fb_BIN_i)
-    DXE_EXPORT_ASM (_fb_ProfileEndProc)
     DXE_EXPORT_ASM (_fb_SleepEx)
     DXE_EXPORT_ASM (_fb_WstrOctEx_b)
     DXE_EXPORT_ASM (_fb_ConReadLine)
@@ -1297,7 +1295,6 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_DrvIntlGet)
     DXE_EXPORT_ASM (_fb_hStrAllocTemp_NoLock)
     DXE_EXPORT_ASM (_fb_FileFlushEx)
-    DXE_EXPORT_ASM (_fb_ProfileBeginProc)
     DXE_EXPORT_ASM (_fb_HEXEx_l)
     DXE_EXPORT_ASM (_fb_CharToUTF)
     DXE_EXPORT_ASM (_fb_DateParse)
@@ -1310,6 +1307,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_ConsoleReadXY)
     DXE_EXPORT_ASM (_fb_PrintUShort)
     DXE_EXPORT_ASM (_fb_ArrayRedimObj)
+    DXE_EXPORT_ASM (_fb_ArrayBoundChkEx)
     DXE_EXPORT_ASM (_fb_LTRIM)
     DXE_EXPORT_ASM (_fb_WstrTrim)
     DXE_EXPORT_ASM (_fb_WstrBinEx_s)
@@ -1400,6 +1398,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_DevFileLock)
     DXE_EXPORT_ASM (_fb_hStr2ULongint)
     DXE_EXPORT_ASM (_fb_BINEx_s)
+    DXE_EXPORT_ASM (_fb_ArraySngBoundChkEx)
     DXE_EXPORT_ASM (_fb_FileGetStrLargeIOB)
     DXE_EXPORT_ASM (_fb_Pos)
     DXE_EXPORT_ASM (_fb_InputShort)
@@ -1432,6 +1431,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_BINEx_l)
     DXE_EXPORT_ASM (_fb_ConsoleGetBotRow)
     DXE_EXPORT_ASM (_fb_FileCloseEx)
+    DXE_EXPORT_ASM (_fb_ErrorThrowMsg)
     DXE_EXPORT_ASM (_fb_FileOpenPipe)
     DXE_EXPORT_ASM (_fb_PageCopy)
     DXE_EXPORT_ASM (_fb_hArrayAlloc)
@@ -1608,7 +1608,6 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_HEX_p)
     DXE_EXPORT_ASM (_fb_WstrInstrRevAny)
     DXE_EXPORT_ASM (_fb_FilePutBackEx)
-    DXE_EXPORT_ASM (_fb_ProfileGetProfiler)
     DXE_EXPORT_ASM (_fb_SGNl)
     DXE_EXPORT_ASM (_fb_SGNi)
     DXE_EXPORT_ASM (_fb_FileGetArrayLargeIOB)
@@ -1661,7 +1660,6 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_WstrValLng)
     DXE_EXPORT_ASM (_fb_InputBool)
     DXE_EXPORT_ASM (_fb_ArrayClear)
-    DXE_EXPORT_ASM (_fb_ProfileGetMetrics)
     DXE_EXPORT_ASM (_fb_Weekday)
     DXE_EXPORT_ASM (_fb_Getkey)
     DXE_EXPORT_ASM (_fb_LineInput)

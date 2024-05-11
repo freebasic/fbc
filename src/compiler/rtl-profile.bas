@@ -144,7 +144,7 @@ private function hGetProcName _
 
 		'' TODO: private subs should have a unique identifier
 		''       otherwise same named private subs will be
-		''       grouped togther across separate modules.  
+		''       grouped togther across separate modules.
 		'' if( symbIsPrivate( proc ) ) then
 		''     procname = module_identifier
 		'' else
