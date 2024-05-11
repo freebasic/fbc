@@ -81,7 +81,9 @@ typedef struct _FB_PROFILER_CYCLES
 */
 
 /* make sure there is at least one record in the profile data section */
-static FB_PROFILE_RECORD_VERSION prof_data_version __attribute__((section("fb_profilecycledata"), used)) =
+static FB_PROFILE_RECORD_VERSION
+__attribute__ ((aligned (16))) prof_data_version
+__attribute__((section("fb_profilecycledata"), used)) =
 	{
 		sizeof( FB_PROFILE_RECORD_VERSION ),
 		FB_PROFILE_RECORD_VERSION_ID,
@@ -222,13 +224,19 @@ static void hProfilerBuildArray (
 }
 
 static void hProfilerReport (
-	FILE *f,
+	FB_PROFILER_CYCLES *prof, FILE *f,
 	FB_PROFILE_RECORD_DATA **array, ssize_t count
 )
 {
 	FB_PROFILE_RECORD_DATA *rec;
 	char * last_module = NULL;
 	ssize_t index;
+
+	if( (prof->global->options & PROFILE_OPTION_HIDE_HEADER) == 0 )
+	{
+		fprintf( f, "module  function             total             inside         call count\n\n" );
+	}
+
 	for( index = 0; index < count; index ++ )
 	{
 		rec = array[index];
@@ -241,10 +249,8 @@ static void hProfilerReport (
 		}
 
 		fprintf( f, "        %s\n", rec->proc_name );
-		fprintf( f, "                %18zu %18zu %18zu %18zu %18zu\n",
-			rec->init0,
+		fprintf( f, "                %18zu %18zu %18zu\n",
 			rec->grand_total,
-			rec->reinit,
 			rec->internal_total,
 			rec->call_count
 		);
@@ -279,12 +285,12 @@ static void hProfilerWriteReport( FB_PROFILER_CYCLES *prof )
 
 	count = hProfilerCountProcs( data, length );
 	if( count ) {
-		array = malloc( sizeof(FB_PROFILE_RECORD_DATA*) * count );
+		array = PROFILER_malloc( sizeof(FB_PROFILE_RECORD_DATA*) * count );
 		if( array ) {
 			hProfilerBuildArray( array, count, data, length );
 			hProfilerSortArray( array, count );
-			hProfilerReport( f, array, count );
-			free( array );
+			hProfilerReport( prof, f, array, count );
+			PROFILER_free( array );
 		}
 	}
 

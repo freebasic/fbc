@@ -71,6 +71,18 @@
 				) _
 			} _
 		), _
+		/' function fb_EndProfileCycles ( byval errlevel as integer ) as integer '/ _
+		( _
+			@FB_RTL_PROFILEENDCYCLES, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+		), _
 		( NULL ) _
 	}
 

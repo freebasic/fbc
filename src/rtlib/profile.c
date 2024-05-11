@@ -102,7 +102,6 @@ void STRING_TABLE_destructor( STRING_TABLE *strings )
 			PROFILER_free( tb );
 			tb = tb_next;
 		}
-		PROFILER_free( strings );
 	}
 }
 
