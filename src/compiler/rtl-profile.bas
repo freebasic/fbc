@@ -11,6 +11,30 @@
 
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
+		/' function fb_ProfileBeginProc ( byval procname as const zstring ptr ) as const any ptr '/ _
+		( _
+			@FB_RTL_PROFILEBEGINPROC, NULL, _
+			typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( _
+					typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+		), _
+		/' sub fb_ProfileEndProc ( byval call as const any ptr )'/ _
+		( _
+			@FB_RTL_PROFILEENDPROC, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( _
+					typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+		), _
 		/' function fb_ProfileBeginCall ( byval procname as const zstring ptr ) as const any ptr '/ _
 		( _
 			@FB_RTL_PROFILEBEGINCALL, NULL, _
@@ -38,6 +62,18 @@
 		/' function fb_EndProfile ( byval errlevel as integer ) as integer '/ _
 		( _
 			@FB_RTL_PROFILEEND, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+		), _
+		/' function fb_EndProfileCycles ( byval errlevel as integer ) as integer '/ _
+		( _
+			@FB_RTL_PROFILEENDCYCLES, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
@@ -117,6 +153,17 @@ private function hGetProcName _
 
 	else
 		dim as string procname
+
+		'' TODO: private subs should have a unique identifier
+		''       otherwise same named private subs will be
+		''       grouped togther across separate modules.
+		'' if( symbIsPrivate( proc ) ) then
+		''     procname = module_identifier
+		'' else
+		''     procname = ""
+		'' end if
+		'' procname = *symbGetDBGName( proc )
+
 		procname = *symbGetDBGName( proc )
 		lgt = len( procname )
 		s = symbAllocStrConst( procname, lgt )
@@ -125,6 +172,60 @@ private function hGetProcName _
 	expr = astNewADDROF( astNewVAR( s, 0, FB_DATATYPE_CHAR ) )
 
 	function = expr
+
+end function
+
+'':::::
+function rtlProfileBeginProc _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr proc, expr
+
+	function = NULL
+
+	'' don't add profiling inside a ctor or dtor
+	if( (symbGetStats( parser.currproc ) and _
+		(FB_SYMBSTATS_GLOBALCTOR or FB_SYMBSTATS_GLOBALDTOR)) <> 0 ) then
+		exit function
+	end if
+
+	proc = astNewCALL( PROCLOOKUP( PROFILEBEGINPROC ), NULL, FALSE )
+
+	expr = hGetProcName( sym )
+	if( astNewARG( proc, expr ) = NULL ) then
+		exit function
+	end if
+
+	function = proc
+
+end function
+
+'':::::
+function rtlProfileEndProc _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr proc, expr
+
+	function = NULL
+
+	'' don't add profiling inside a ctor or dtor
+	if( (symbGetStats( parser.currproc ) and _
+		(FB_SYMBSTATS_GLOBALCTOR or FB_SYMBSTATS_GLOBALDTOR)) <> 0 ) then
+		exit function
+	end if
+
+	proc = astNewCALL( PROCLOOKUP( PROFILEENDPROC ), NULL, FALSE )
+
+	expr = astNewVAR( sym )
+	if( astNewARG( proc, expr ) = NULL ) then
+		exit function
+	end if
+
+	function = proc
 
 end function
 

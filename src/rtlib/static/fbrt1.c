@@ -5,9 +5,7 @@
    use the FB runtime from inside its own global ctors/dtors. */
 
 #include "../fb.h"
-
-FBCALL int fb_EndProfile( int errorlevel );
-FBCALL void fb_InitProfile( void );
+#include "../fb_profile.h"
 
 /* note: they must be static, or shared libraries in Linux would reuse the 
 		 same function */

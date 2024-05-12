@@ -244,7 +244,8 @@ enum
 	SECTION_PROC
 	SECTION_EPILOG
 	'' data outside of proc
-	SECTION_PROFILE
+	SECTION_PROFILE_STRINGS
+	SECTION_PROFILE_DATA
 end enum
 
 #define FB_PROFILE_SECT_DATA       "fb_profilecycledata"
@@ -287,7 +288,8 @@ type ASM64_CONTEXT
 	prolog_txt   as string
 	proc_txt     as string
 	epilog_txt   as string
-	profile_txt  as string
+	profile_str  as string
+	profile_dat  as string
 	argcptmax    as integer
 	arginteg     as integer
 	argfloat     as integer
@@ -996,8 +998,10 @@ dim as string ln,lname
 			ctx.head_txt += ln
 		case SECTION_FOOT
 			ctx.foot_txt += ln
-		case SECTION_PROFILE
-			ctx.profile_txt += ln
+		case SECTION_PROFILE_STRINGS
+			ctx.profile_str += ln
+		case SECTION_PROFILE_DATA
+			ctx.profile_dat += ln
 		case else
 			''to avoid the lost of information if a section is not already selected
 			ctx.head_txt += ln
@@ -2385,16 +2389,35 @@ end sub
 
 ''=================== profiling ==============================================
 
-private sub hProfileEmitModuleName( byref filename as string )
-	dim as string modulelbl = FB_PROFILE_MODULE_NAME+"0"
+private sub hProfileEmitSections()
+	dim as integer previous_section = ctx.section
+
+	ctx.section = SECTION_PROFILE_STRINGS
 	if ctx.systemv then
-		asm_section(FB_PROFILE_SECT_STRS+",""a""")
+		asm_code(".section "+FB_PROFILE_SECT_STRS+",""a""")
 	else
-		asm_section(FB_PROFILE_SECT_STRS+",""dr""")
+		asm_code(".section "+FB_PROFILE_SECT_STRS+",""dr""")
 	end if
+	asm_code(".align 16")
+
+	ctx.section = SECTION_PROFILE_DATA
+	if ctx.systemv then
+		asm_code(".section "+FB_PROFILE_SECT_DATA+",""a""")
+	else
+		asm_code(".section "+FB_PROFILE_SECT_DATA+",""dw""")
+	end if
+	asm_code(".align 16")
+
+	ctx.section = previous_section
+end sub
+
+private sub hProfileEmitModuleName( byref filename as string )
+	dim as integer previous_section = ctx.section
+	dim as string modulelbl = FB_PROFILE_MODULE_NAME+"0"
+
+	ctx.section = SECTION_PROFILE_STRINGS
 	asm_code( modulelbl+":" )
 	asm_code(".ascii """+*hEscape(filename)+$"\0""")
-	asm_section( ".text" )
 end sub
 
 private sub hProfileProcProlog()
@@ -2484,34 +2507,23 @@ end sub
 private sub hProfileProcEmitData( byval proc as FBSYMBOL ptr)
 	dim as string proflbl = FB_PROFILE_DATA_NAME + str(ctx.profprcnb)
 	dim as string proclbl = FB_PROFILE_PROC_NAME + str(ctx.profprcnb)
-	dim as string modulelbl = FB_PROFILE_MODULE_NAME+"0" 
-	dim as integer last_section = ctx.section
-	ctx.section = SECTION_PROFILE
+	dim as string modulelbl = FB_PROFILE_MODULE_NAME+"0"
+	dim as integer previous_section = ctx.section
 
-	if ctx.systemv then
-		asm_section(FB_PROFILE_SECT_STRS+",""a""")
-	else
-		asm_section(FB_PROFILE_SECT_STRS+",""dr""")
-	end if
+	ctx.section = SECTION_PROFILE_STRINGS
 	asm_code( proclbl + ":" )
 	asm_code(".ascii """+*symbGetMangledName( proc )+$"\0""")
 
-	if ctx.systemv then
-		asm_section(FB_PROFILE_SECT_DATA+",""a""")
-	else
-		asm_section(FB_PROFILE_SECT_DATA+",""dw""")
-	end if
-	asm_code(".align 16")
+	ctx.section = SECTION_PROFILE_DATA
 	asm_code(proflbl+":")
 
-	'' if the record size changes, this must change too 
+	'' if the record size changes, this must change too
 	asm_code( ".quad " + str(PROFILE_REC_DATA_SIZE) + ", " + str(PROFILE_REC_DATA_ID) )
-	asm_code( ".quad " + modulelbl )  
-	asm_code( ".quad " + proclbl )  
-	asm_code( ".quad 0, 0, 0, 0, 0, 0" ) 
+	asm_code( ".quad " + modulelbl )
+	asm_code( ".quad " + proclbl )
+	asm_code( ".quad 0, 0, 0, 0, 0, 0" )
 
-	asm_section(".text")
-	ctx.section = last_section
+	ctx.section = previous_section
 
 	ctx.profprcnb+=1
 end sub
@@ -2534,6 +2546,8 @@ private function _emitbegin( ) as integer
 	ctx.head_txt = ""
 	ctx.body_txt = ""
 	ctx.foot_txt = ""
+	ctx.profile_str=""
+	ctx.profile_dat=""
 	ctx.section = SECTION_HEAD
 	'ctx.ctors = "" ''kept if to be added
 	'ctx.dtors = ""
@@ -2589,6 +2603,11 @@ private function _emitbegin( ) as integer
 	cfi_windows_asm_code( ".cfi_sections .debug_frame")
 	asm_section(".text")
 	ctx.indent-=1
+
+	if env.clopt.profile = FB_PROFILE_OPT_CYCLES then
+		hProfileEmitSections()
+	end if
+
 	function = TRUE
 end function
 private sub hAddGlobalCtorDtor( byval proc as FBSYMBOL ptr )
@@ -2703,6 +2722,10 @@ private sub _emitend( )
 	if( put( #env.outf.num, , ctx.head_txt ) <> 0 ) then
 	end if
 	if( put( #env.outf.num, , ctx.body_txt ) <> 0 ) then
+	end if
+	if( put( #env.outf.num, , ctx.profile_str ) <> 0 ) then
+	end if
+	if( put( #env.outf.num, , ctx.profile_dat ) <> 0 ) then
 	end if
 	if( put( #env.outf.num, , ctx.foot_txt ) <> 0 ) then
 	end if
@@ -7161,7 +7184,6 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 
 	ctx.prolog_txt=""
 	ctx.epilog_txt=""
-	ctx.profile_txt=""
 
 	''useful ?
 	ctx.labelbranch2=0
@@ -7367,8 +7389,8 @@ private sub _emitprocend _
 
 	irhlEmitProcEnd( ) ''just flistReset( @irhl.vregs )
 
-	ctx.body_txt+=ctx.prolog_txt+ctx.proc_txt+ctx.epilog_txt+ctx.profile_txt ''assembling all the parts
-	ctx.section=SECTION_HEAD ''to keep information that could be send after as ctx.epilog_txt/ctx.profile_txt will be erased
+	ctx.body_txt+=ctx.prolog_txt+ctx.proc_txt+ctx.epilog_txt ''assembling all the parts
+	ctx.section=SECTION_HEAD ''to keep information that could be send after as ctx.epilog_txt will be erased
 
 end sub
 private sub _emitvariniofs(byval sym as FBSYMBOL ptr,byval rhs as FBSYMBOL ptr,byval ofs as longint)

@@ -619,7 +619,8 @@ end function
 '':::::
 private function hCallProfiler _
 	( _
-		byval head_node as ASTNODE ptr _
+		byval head_node as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 	select case fbGetOption( FB_COMPOPT_PROFILE )
@@ -633,6 +634,21 @@ private function hCallProfiler _
 				head_node = astAddAfter( rtlProfileCall_mcount(), head_node )
 			end if
 		end select
+	case FB_PROFILE_OPT_CALLS
+		if( env.opt.procprofile ) then
+			dim as FBSYMBOL ptr procinfosym = any
+
+			'' dim as const any ptr <PROCINFOCTX>
+			procinfosym = symbAddImplicitVar( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), NULL, FB_SYMBOPT_UNSCOPE )
+			symbSetIsDeclared( procinfosym )
+			head_node = astAddAfter( astNewDECL( procinfosym, FALSE ), head_node )
+
+			'' <PROCINFOCTX> = fb_ProfileBeginProc( <PROCNAME> )
+			head_node = astAddAfter( astNewAssign( astNewVar( procinfosym ), rtlProfileBeginProc( sym ) ), head_node )
+
+			'' fb_ProfileEndProc( <PROCINFOCTX> )
+			astAdd( rtlProfileEndProc( procinfosym ) )
+		end if
 	end select
 
 	function = head_node
@@ -702,7 +718,7 @@ function astProcEnd( byval callrtexit as integer ) as integer
 		dim as ASTNODE ptr head_node = n->l
 
 		if( enable_implicit_code ) then
-			head_node = hCallProfiler( head_node )
+			head_node = hCallProfiler( head_node, sym )
 			head_node = hCheckErrHnd( head_node, sym )
 		end if
 

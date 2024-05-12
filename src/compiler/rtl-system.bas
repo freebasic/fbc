@@ -46,6 +46,13 @@ declare function    hThreadCall_cb      ( byval sym as FBSYMBOL ptr ) as integer
 			NULL, FB_RTL_OPT_NONE, _
 			0 _
 		), _
+		/' sub fb_InitProfileCycles ( ) '/ _
+		( _
+			@FB_RTL_INITPROFILECYCLES, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			0 _
+		), _
 		/' sub __main cdecl( ) '/ _
 		( _
 			@FB_RTL_INITCRTCTOR, @"__main", _
@@ -660,6 +667,11 @@ function rtlInitProfile( ) as ASTNODE ptr
 end function
 
 '':::::
+function rtlInitProfileCycles( ) as ASTNODE ptr
+	function = astNewCALL( PROCLOOKUP( INITPROFILECYCLES ), NULL, FALSE )
+end function
+
+'':::::
 function rtlInitApp _
 	( _
 		byval argc as ASTNODE ptr, _
@@ -683,9 +695,12 @@ function rtlInitApp _
 				end if
 			end select
 
-			if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_CALLS) then
+			select case fbGetOption( FB_COMPOPT_PROFILE )
+			case FB_PROFILE_OPT_CALLS
 				rtlInitProfile( )
-			end if
+			case FB_PROFILE_OPT_CYCLES
+				rtlInitProfileCycles( )
+			end select
 		end if
 
 		'' call default CRT0 constructors (only required for Win32)
