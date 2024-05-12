@@ -376,7 +376,7 @@ void fb_hPROFILER_METRICS_Global( FB_PROFILER_METRICS *metrics, FB_PROFILER_GLOB
 ** Profiling
 */
 
-FB_PROFILER_GLOBAL *PROFILER_GLOBAL_create( ) {
+FB_PROFILER_GLOBAL *PROFILER_GLOBAL_create( void ) {
 	if( fb_profiler ) {
 		return fb_profiler;
 	}
@@ -399,7 +399,7 @@ FB_PROFILER_GLOBAL *PROFILER_GLOBAL_create( ) {
 	return fb_profiler;
 }
 
-void PROFILER_GLOBAL_destroy( ) {
+void PROFILER_GLOBAL_destroy( void ) {
 	if( fb_profiler ) {
 		STRING_HASH_TABLE_destructor( &fb_profiler->strings_hash );
 		STRING_HASH_TABLE_destructor( &fb_profiler->ignores_hash );
@@ -483,9 +483,9 @@ FBCALL int fb_ProfileGetFileName( char *filename, int length )
 }
 
 /*:::::*/
-FBCALL unsigned int fb_ProfileGetOptions()
+FBCALL int fb_ProfileGetOptions()
 {
-	unsigned int options = 0;
+	int options = 0;
 
 	FB_PROFILE_LOCK();
 
@@ -499,7 +499,7 @@ FBCALL unsigned int fb_ProfileGetOptions()
 }
 
 /*:::::*/
-FBCALL int fb_ProfileSetOptions( unsigned int options )
+FBCALL int fb_ProfileSetOptions( int options )
 {
 	int previous_options = 0;
 

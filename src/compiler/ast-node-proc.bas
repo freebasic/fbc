@@ -639,7 +639,7 @@ private function hCallProfiler _
 			dim as FBSYMBOL ptr procinfosym = any
 
 			'' dim as const any ptr <PROCINFOCTX>
-			procinfosym = symbAddImplicitVar( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), NULL, FB_SYMBOPT_UNSCOPE )
+			procinfosym = symbAddImplicitVar( typeAddrOf( FB_DATATYPE_VOID ), NULL, FB_SYMBOPT_UNSCOPE )
 			symbSetIsDeclared( procinfosym )
 			head_node = astAddAfter( astNewDECL( procinfosym, FALSE ), head_node )
 

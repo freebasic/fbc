@@ -405,7 +405,7 @@ static FB_PROFILER_CALLS *PROFILER_CALLS_create( void )
 	return fb_profiler;
 }
 
-static void PROFILER_CALLS_destroy(  )
+static void PROFILER_CALLS_destroy( void )
 {
 	if( fb_profiler ) {
 		PROFILER_free( fb_profiler->calltree_leader.data );
@@ -1219,15 +1219,17 @@ FBCALL void *fb_ProfileBeginProc( const char *procname )
 }
 
 /*:::::*/
-FBCALL void fb_ProfileEndProc( void *p )
+FBCALL void fb_ProfileEndProc( void *callid )
 {
-	if( p ) {
+	if( callid ) {
 		FB_PROFILECTX *tls = FB_TLSGETCTX(PROFILE);
 		FB_PROFILER_THREAD *ctx = tls->ctx;
 		FB_PROCINFO *proc = ctx->thread_proc;
 		if( (proc->flags & PROCINFO_FLAGS_THREAD) != 0 ) {
 			proc->local_count += 1;
 		}
+
+		/* TODO: check proc == callid */ 
 		if( proc->parent ) {
 			if( (proc->parent->flags & PROCINFO_FLAGS_CALLPTR) != 0 ) {
 				hPopCall( ctx, proc );
@@ -1268,11 +1270,11 @@ FBCALL void *fb_ProfileBeginCall( const char *procname )
 }
 
 /*:::::*/
-FBCALL void fb_ProfileEndCall( void *p )
+FBCALL void fb_ProfileEndCall( void *callid )
 {
-	if( p ) {
+	if( callid ) {
 		FB_PROFILECTX *tls = FB_TLSGETCTX(PROFILE);
-		hPopCall( tls->ctx, (FB_PROCINFO *)p );
+		hPopCall( tls->ctx, (FB_PROCINFO *)callid );
 	}
 }
 
@@ -1312,8 +1314,7 @@ FBCALL int fb_EndProfile( int errorlevel )
 
 	hProfilerWriteReport( prof );
 
-	PROFILER_CALLS_destroy( fb_profiler );
-	fb_profiler = NULL;
+	PROFILER_CALLS_destroy( );
 
 	return errorlevel;
 }

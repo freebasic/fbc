@@ -132,7 +132,7 @@ typedef struct _FB_PROFILER_GLOBAL
 	STRING_HASH_TABLE ignores_hash;
 	char filename[PROFILER_MAX_PATH];
 	char launch_time[32];
-	enum PROFILE_OPTIONS options;
+	int options; /* PROFILE_OPTIONS */
 } FB_PROFILER_GLOBAL;
 
 /* information about the profiler internals */
@@ -164,17 +164,24 @@ typedef struct _FB_PROFILER_METRICS
 FBCALL void fb_InitProfile( void );
 FBCALL int fb_EndProfile( int errorlevel );
 
+FBCALL void *fb_ProfileBeginProc( const char *procname );
+FBCALL void  fb_ProfileEndProc( void *callid );
+FBCALL void *fb_ProfileBeginCall( const char *procname );
+FBCALL void  fb_ProfileEndCall( void *callid );
+
 /* cycles profiles */
 
 FBCALL void fb_InitProfileCycles( void );
 FBCALL int fb_EndProfileCycles( int errorlevel );
 
+/* global profiler */
+
 FBCALL FB_PROFILER_GLOBAL *fb_ProfileGetGlobalProfiler();
 
 FBCALL int                 fb_ProfileSetFileName( const char *filename );
 FBCALL int                 fb_ProfileGetFileName( char *filename, int length );
-FBCALL unsigned int        fb_ProfileGetOptions();
-FBCALL int                 fb_ProfileSetOptions( unsigned int options );
+FBCALL int                 fb_ProfileGetOptions();
+FBCALL int                 fb_ProfileSetOptions( int options );
 FBCALL void                fb_ProfileIgnore( const char * procname );
 FBCALL void                fb_ProfileGetMetrics( FB_PROFILER_METRICS *metrics );
 
@@ -182,8 +189,8 @@ FBCALL void                fb_ProfileGetMetrics( FB_PROFILER_METRICS *metrics );
 ** Internals
 */
 
-FB_PROFILER_GLOBAL *PROFILER_GLOBAL_create( );
-void PROFILER_GLOBAL_destroy( );
+FB_PROFILER_GLOBAL *PROFILER_GLOBAL_create( void );
+void PROFILER_GLOBAL_destroy( void );
 
 char *PROFILER_add_ignore( FB_PROFILER_GLOBAL *prof, const char *src, unsigned int hashkey );
 void fb_hPROFILER_METRICS_Clear( FB_PROFILER_METRICS *metrics );
