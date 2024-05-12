@@ -221,7 +221,11 @@ Scope
 	Print
 	Print "Name:", "Object (real):         Hierarchy:"
 	For I As Integer = 0 To 2
-		PrintInfo(sp(I))
+		#if __FB_VERSION__ = "1.10.0" Or __FB_VERSION__ = "1.10.1"
+			PrintInfo(Cast(root Ptr, sp(I)))  '' bug workaround
+		#else
+			PrintInfo(sp(I))
+		#endif
 	Next I
 	Print
 End Scope
