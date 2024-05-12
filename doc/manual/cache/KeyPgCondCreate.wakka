@@ -14,7 +14,7 @@ Creates a conditional variable to be used in synchronizing threads
 	Once the conditional is **Condcreate**d and the threads are started, one or more of them (including the implicit main thread executing main program) can be set to ##[[KeyPgCondWait|Condwait]]## for the conditional, they will be stopped until some other thread ##[[KeyPgCondSignal|Condsignal]]##s that the waiting thread can restart. ##[[KeyPgCondBroadcast|Condbroadcast]]## can be used to restart all threads waiting for the conditional. At the end of the program ##[[KeyPgCondDestroy|Conddestroy]]## must be used to avoid leaking resources in the OS.
 
 {{fbdoc item="ex"}}
-	See also ##[[KeyPgCondWait|Condwait]]## and ##[[KeyPgCondSignal|Condsignal]]##
+	See also ##[[KeyPgCondWait|Condwait]]## and ##[[KeyPgCondSignal|Condsignal]]## and ##[[KeyPgCondBroadcast|Condbroadcast]]
 
 {{fbdoc item="filename" value="examples/manual/threads/condcreate.bas"}}%%(freebasic)
 ''

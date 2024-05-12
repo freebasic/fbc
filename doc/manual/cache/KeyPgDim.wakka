@@ -100,7 +100,7 @@ Dim array(1 To 2, 6, 3 To 5) As Single
 	See also //[[ProPgFixLenArrays|Fixed-Length Arrays]]// and //[[ProPgVarLenArrays|Variable-Length Arrays]]//.
 
 {{fbdoc item="section" value="Initializers"}}
-	Arrays, variables, strings, and user defined types (UDTs) are initialized to zero (or ##[[KeyPgFalse|False]]## for ##[[KeyPgBoolean|Boolean]]##) or null strings by default when they are created.
+	Arrays, variables, strings, and user defined types (UDTs) are initialized to zero (or ##[[KeyPgFalse|False]]## for ##[[KeyPgBoolean|Boolean]]##) or null strings by default when they are created, except since fbc version 1.20.0 where fixed-length strings of STRING*N type are padded with spaces (because such a string field no longer has terminal null character).
 	
 	To avoid the overhead of default variable initialization, the ##**Any**## initializer can be used with ##**Dim**## to tell the compiler to only reserve the place for the variable in memory but not initialize it, so the variable will contain garbage. In this case the programmer should not make assumptions about the initial values.
 	
@@ -194,6 +194,8 @@ Print "ZString: "; Len(*s3)
 
 Deallocate(s3)
 %%
+{{fbdoc item="ver"}}
+	- Since fbc version 1.20.0, fixed-length strings of STRING*N type are initialized to space value (zero value previously).
 
 {{fbdoc item="lang"}}
 	- In the //[[CompilerOptlang|-lang qb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, variables have procedure scope if the variable is defined inside a procedure, and for the entire module if the variable is defined with ##**Dim Shared**##.

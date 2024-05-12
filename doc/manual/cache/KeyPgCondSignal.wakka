@@ -17,7 +17,7 @@ Restarts a thread suspended by a call to ##[[KeyPgCondWait|Condwait]]##
 	**Condsignal** restarts one thread waiting. It should be called after ##//mutex//## is locked (using the same ##//mutex//## as one used with ##[[KeyPgCondWait|Condwait]]##). If no threads are waiting on the conditional, nothing happens (the signal is lost forever); if several are waiting, only one is restarted. The caller must then unlock ##//mutex//## in order for ##[[KeyPgCondWait|Condwait]]## subroutine to complete.
 
 {{fbdoc item="ex"}}
-	See also ##[[KeyPgCondCreate|Condcreate]]## and ##[[KeyPgCondWait|Condwait]]##
+	See also ##[[KeyPgCondCreate|Condcreate]]## and ##[[KeyPgCondWait|Condwait]]## and ##[[KeyPgCondBroadcast|Condbroadcast]]##
 
 {{fbdoc item="filename" value="examples/manual/threads/condsignal.bas"}}%%(freebasic)
 ' This very simple example code demonstrates the use of several condition variable routines.

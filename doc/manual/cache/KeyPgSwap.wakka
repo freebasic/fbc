@@ -16,6 +16,8 @@ Exchanges the values of two variables
 {{fbdoc item="desc"}}
 	Swaps the value of two variables, including UDT instances (swaps all data members).
 	
+	Since fbc version 1.20.0, because a fixed-length string fields of STRING*N type no longer has a terminal null character, ##**Swap**## will pad values with spaces where one of the arguments is of the STRING*N type.
+	
 	**Note:** When the data are referenced by a pointer, alone or within a descriptive structure (a UDT, for example), ##**Swap**## only exchanges the values of the pointers or the contents of the descriptive structures without accessing data themselves.
 	For var-len strings, ##**Swap**## only exchanges the descriptors of the strings rather than reallocate memory for exchange all strings data characters.
 	For UDTs, ##**Swap**## simply exchanges the contents of the structures, without any operators or methods being called.

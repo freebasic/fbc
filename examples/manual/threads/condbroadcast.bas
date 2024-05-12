@@ -1,25 +1,11 @@
-{{fbdoc item="title" value="CONDBROADCAST"}}----
-Restarts all threads ##[[KeyPgCondWait|Condwait]]##ing for the handle
+'' examples/manual/threads/condbroadcast.bas
+''
+'' Example extracted from the FreeBASIC Manual
+'' from topic 'CONDBROADCAST'
+''
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCondBroadcast
+'' --------
 
-{{fbdoc item="syntax"}}##
-	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Condbroadcast** ( [[KeyPgByval|byval]] //handle// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] )
-##
-{{fbdoc item="usage"}}##
-	**Condbroadcast** ( //handle// )
-##
-{{fbdoc item="param"}}
-	##//handle//##
-		The handle of a conditional variable.
-
-{{fbdoc item="desc"}}
-	Once the conditional is ##[[KeyPgCondCreate|Condcreate]]## and the threads are started, one of more of them (including the implicit main thread executing main program) can be set to ##[[KeyPgCondWait|Condwait]]## for the conditional, they will be stopped until some other thread ##[[KeyPgCondSignal|Condsignal]]##s that the waiting thread can restart. ##[[KeyPgCondBroadcast|Condbroadcast]]## can be used to restart all threads waiting for the conditional. At the end of the program ##[[KeyPgCondDestroy|Conddestroy]]## must be used to avoid leaking resources in the OS.
-	
-	**Condbroadcast** must be used instead of ##[[KeyPgCondSignal|Condsignal]]## to restart all threads waiting on the conditional.
-
-{{fbdoc item="ex"}}
-	See also ##[[KeyPgCondCreate|Condcreate]]##
-	
-	{{fbdoc item="filename" value="examples/manual/threads/condbroadcast.bas"}}%%(freebasic)
 '' How can all threads wait for each other before continuing to execute their concomitant sections of code ?
 ''
 '' This is the main code that manages the synchronization of concomitant sections of code:
@@ -135,22 +121,3 @@ MutexDestroy hmutexrestart
 CondDestroy hcondrestart
 
 Sleep
-%%
-{{fbdoc item="target"}}
-	- **Condbroadcast** is not available with the DOS version / target of FreeBASIC, because multithreading is not supported by DOS kernel nor the used extender.
-	- In Linux the threads are always started in the order they are created, this can't be assumed in Win32. It's an OS, not a FreeBASIC issue. 
-
-{{fbdoc item="lang"}}
-	- Threading is not allowed in //[[CompilerOptlang|-lang qb]]//
-
-{{fbdoc item="diff"}}
-	- New to ""FreeBASIC""
-
-{{fbdoc item="see"}}
-	- ##[[KeyPgCondCreate|Condcreate]]##
-	- ##[[KeyPgCondDestroy|Conddestroy]]##
-	- ##[[KeyPgCondSignal|Condsignal]]##
-	- ##[[KeyPgCondWait|Condwait]]##
-	- ##[[KeyPgThreadCreate|Threadcreate]]##
-
-{{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}

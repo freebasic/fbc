@@ -13,7 +13,7 @@ Returns the address of any procedure, and the index in the vtable for a virtual/
 		A procedure identifier.
 	##//user_proctype//##
 		Any user type of procedure (sub/function, static/member, normal/virtual).
-		(##//internal_proctype//## has a supplementary first parameter ##byref as udt_name## only for the member procedures)
+		(##//internal_proctype//## has a supplementary first parameter ##byref as udt_name## only for the member procedures of UDT ##udt_name##)
 
 {{fbdoc item="ret"}}
 	Returns the address of any procedure (first syntax), or the index in the vtable for a virtual/abstract member procedure (second syntax with additional qualifier ##virtual##).

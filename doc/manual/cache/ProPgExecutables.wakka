@@ -167,7 +167,8 @@ linking:      D:\fb.git\bin\win32\ld.exe -m i386pe -o "a.exe" -subsystem console
 	- [[CompilerCmdLine|fbc command-line]]
 	- [[ProPgStaticLibraries|Static Libraries]]
 	- [[ProPgSharedLibraries|Shared Libraries (DLLs)]]
-	- [[ProPgProfiling|Profiling]]
+	- [[ProPgProfilingFbProfiler|Profiling with fb's profiler]]
+	- [[ProPgProfilingGmonGprof|Profiling for gmon/gprof]]
 	- [[ProPgDataExecutable|Embed and Access binary Data in Executable]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

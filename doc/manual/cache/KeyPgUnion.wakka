@@ -26,6 +26,8 @@ Declares a union user defined type.
 	
 	A ##**Union**## supports member procedures including ##[[KeyPgConstructor|Constructor]]##, ##[[KeyPgDestructor|Destructor]]##, ##[[KeyPgMemberFunction|Function]]##, ##[[KeyPgOperator|Operator]]##, ##[[KeyPgProperty|Property]]## and ##[[KeyPgMemberSub|Sub]]##. All members of a ##**Union**## are public and access modifiers are not supported. 
 	
+	Initializer elements for UNION's should pair with only the first member of the UNION and skip the rest.
+	
 	A ##**Union**## can also contain nested Types or Unions, of different kinds:
 		- Nested Anonymous Type/Union:
 				**""-""** Nested Anonymous Type/Union allows data members to be grouped as desired.
@@ -44,6 +46,8 @@ Declares a union user defined type.
 	**Note:** When ##**Union**## extends a base, it can be confusing because no new fields are added to the base, but instead the base is added to the derived Union. This means that data elements in the derived Union can share the same memory space like the base (here it doesn't matter whether the base is a ##**Union**## or not). Of course it can be dangerous, but that is always the problem with Unions.
 	If only the base is a ##**Union**##, then it won't be affected by data elements from the derived UDT.
 	Since ##**Union**## is not allowed to have complex data elements (i.e. UDTs with constructor/destructor, or dynamic strings), a derived Union can not be allowed to have (contain) a complex base.
+	
+	**Note:** Since fbc version 1.20.0, unions containing STRING*N fields will initialize to spaces if the first field is a STRING*N type, otherwise will initialize to zero (as for a STRING*N field before fbc version 1.20.0).
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/udt/union.bas"}}%%(freebasic)

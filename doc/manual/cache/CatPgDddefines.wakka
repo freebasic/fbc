@@ -76,6 +76,8 @@ Preprocessor symbols defined by the compiler.
 		Defined as a string literal of the compiler signature.
 	=={{fbdoc item="keyword" value="KeyPgDdfbbuildsha1|__FB_BUILD_SHA1__"}}== 
 		Defined as a string literal of the compiler's source revision sha-1.
+	=={{fbdoc item="keyword" value="KeyPgDdfbbuildforkid|__FB_BUILD_FORK_ID__"}}== 
+		Defined as a string literal of the custom defined project fork identifier name.
 
 {{anchor name="CMDLINE"}}{{fbdoc item="section" value="Command-line switches"}}
 	=={{fbdoc item="keyword" value="KeyPgDdfbasm|__FB_ASM__"}}==
@@ -110,6 +112,8 @@ Preprocessor symbols defined by the compiler.
 		True (##-1##) in a module being compiled and linked into a static library, zero (##0##) otherwise.
 	=={{fbdoc item="keyword" value="KeyPgDdfboutobj|__FB_OUT_OBJ__"}}==
 		True (##-1##) in a module being compiled only, zero (##0##) otherwise.
+	=={{fbdoc item="keyword" value="KeyPgDdfbprofile|__FB_PROFILE__"}}==
+		Set to an integer to indicate the profiling method.
 	=={{fbdoc item="keyword" value="KeyPgDdfbsse|__FB_SSE__"}}==
 		Defined if compiling for SSE floating point unit.
 	=={{fbdoc item="keyword" value="KeyPgDdfbvectorize|__FB_VECTORIZE__"}}==
@@ -147,6 +151,8 @@ Preprocessor symbols defined by the compiler.
 		True (##-1##) if variables and objects need to be explicitly declared, zero (##0##) otherwise.
 	=={{fbdoc item="keyword" value="KeyPgDdfboptionprivate|__FB_OPTION_PRIVATE__"}}==
 		True (##-1##) if all procedures are private by default, zero (##0##) otherwise.
+	=={{fbdoc item="keyword" value="KeyPgDdfboptionprofile|__FB_OPTION_PROFILE__"}}==
+		True (##-1##) if profiling code is generated, zero (##0##) otherwise.
 
 {{anchor name="BASICMACROS"}}{{fbdoc item="section" value="Basic-macros"}}
 	=={{fbdoc item="keyword" value="KeyPgDdfbargcount|__FB_ARG_COUNT__"}}==

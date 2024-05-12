@@ -13,7 +13,7 @@ Returns a reference to the numeric value of a character in a string
 ##
 {{fbdoc item="param"}}
 	##//lhs//##
-		The string (a string reference, not a string returned as local copy).
+		The string variable or a string reference (not for example a constant or a string returned as a local copy).
 	##//rhs//##
 		A zero-based offset from the first character.
 	##//T//##

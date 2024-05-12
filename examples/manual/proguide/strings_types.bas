@@ -6,6 +6,8 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgStringsTypes
 '' --------
 
+'  Result depending on fbc version (before/since 1.20.0)
+
 Dim As String * 20 s20 = "FreeBASIC manual"
 
 Dim As ZString * 20 z20 = "FreeBASIC manual"
@@ -17,7 +19,9 @@ Dim As WString Ptr pw = @WStr("FreeBASIC manual")
 Dim As String s = "FreeBASIC manual"
 
 Print Using "'FIXED-LENGTH STRING * 20': ## bytes in total, ## useful characters available"; SizeOf(s20); Len(s20)
+#if __FB_VERSION__ < "1.20.0"
 Print Using "    containing ## user characters of # byte(s) each"; IIf(InStr(s20, Chr(0)) > 0, InStr(s20, Chr(0)) - 1, Len(s20)); SizeOf(s20[0])
+#endif
 Print
 Print Using "'FIXED-LENGTH ZSTRING * 20': ## bytes in total, ## useful characters available"; SizeOf(z20); SizeOf(z20) \ SizeOf(z20[0]) - 1
 Print Using "    containing ## user characters of # byte(s) each"; Len(z20); SizeOf(Z20[0])

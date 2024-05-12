@@ -67,8 +67,10 @@ Using the **fbc** command-line.
 		Override public exported name of implicit user main function
 	=={{fbdoc item="keyword" value="CompilerOptg|-g"}}==
 		Add debug info
+	=={{fbdoc item="keyword" value="CompilerOptprofgen|-profgen < profiler >"}}==
+		Enable function profiling by selecting a specific profiler
 	=={{fbdoc item="keyword" value="CompilerOptprofile|-profile"}}==
-		Enable function profiling
+		Enable function profiling for gmon/gprof
 	=={{fbdoc item="keyword" value="CompilerOpte|-e"}}==
 		Add error checking
 	=={{fbdoc item="keyword" value="CompilerOptex|-ex"}}==

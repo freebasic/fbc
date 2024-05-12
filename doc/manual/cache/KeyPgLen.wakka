@@ -33,6 +33,9 @@ Returns the length of an expression or data type
 	
 	If there is both a user defined type and a variable visible with the same name in the current scope, the user defined type takes precedence over the variable.  To ensure that the ##**Len**## takes the variable instead of the user defined type, wrap the argument to ##**Len**## with parentheses to force it to be seen as an expression.  For example ##Len((variable))##.
 	
+	**Note:** When used with array names, ##**Len**## returns the length of the array datatype, but not the total number of its elements.
+	For clarity, it is recommended that you avoid this potential confusion, and use ##**Len**## on the array datatype doing ##**Len**(//Typeof//(//array//))##, rather than the array name only doing ##**Len**(//array//)##.
+	
 	The ##**Len**## unary ##[[KeyPgOperator|operator]]## can be overloaded with user defined types.
 
 {{fbdoc item="ex"}}

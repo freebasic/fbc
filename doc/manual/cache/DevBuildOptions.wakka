@@ -58,6 +58,8 @@ Building FreeBASIC from sources uses a ##makefile## that is intended to be used 
 	##DEFAULT_CPUTYPE_ARM=<FB_CPUTYPE>##
 		Sets default arm cpu type to one of ##FB_CPUTYPE##
 		##make compiler DEFAULT_CPUTYPE_ARM=FB_CPUTYPE_ARM7A_FP##
+	##FBFORKID=name##
+		Tells fbc to set a custom value for ##[[KeyPgDdfbbuildforkid|__FB_BUILD_FORK_ID__]]##
 
 {{fbdoc item="section" value="compiler source code configuration (FBCFLAGS, FBLFLAGS)"}}
 	##-d ENABLE_STANDALONE##
@@ -71,15 +73,17 @@ Building FreeBASIC from sources uses a ##makefile## that is intended to be used 
 	##-d ENABLE_STRIPALL##
 		configure fbc to pass down '--strip-all' to linker by default
 	##-d FBSHA1=some-sha-1##
-		store 'some-sha-1' in the compiler for version information
+		store 'some-sha-1' in the compiler for version information as built in define ##[[KeyPgDdfbbuildsha1|__FB_BUILD_SHA1__]]##
 	##-d DISABLE_GAS64_DEBUG##
-		disable gas64 debugging comments in asm files even if __FB_DEBUG__ is defined (-g)
+		disable gas64 debugging comments in asm files even if ##[[KeyPgDdfbdebug|__FB_DEBUG__]]## is defined (-g)
 	##-d DISABLE_STDCXX_PATH##
 		tells fbc to not search for some libstdc++/libc++ depending on target platform
 	##-d BUILD_FB_DEFAULT_CPUTYPE_X86=<FB_CPUTYPE>##
-		This make the compiler set default x86 cpu type to one of FB_CPUTYPE
+		This make the compiler set default x86 cpu type to one of ##enum FB_CPUTYPE## as defined in fbc sources
 	##-d BUILD_FB_DEFAULT_CPUTYPE_ARM=<FB_CPUTYPE>##
-		This make the compiler set default arm cpu type to one of FB_CPUTYPE
+		This make the compiler set default arm cpu type to one of ##enum FB_CPUTYPE## as defined in fbc sources
+	##-d FBFORKID="name"##
+		This makes the compiler set a custom value for ##[[KeyPgDdfbbuildforkid|__FB_BUILD_FORK_ID__]]##
 
 {{fbdoc item="section" value="internal makefile configuration (but can override)"}}
 	##libsubdir##

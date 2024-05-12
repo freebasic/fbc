@@ -63,6 +63,7 @@ __##flags## details:__
 ~~Flags working in any mode, they activate special behaviors
 ~~-##GFX_ALPHA_PRIMITIVES##: Tells the graphics library to enable alpha channel support for all drawing primitives. This means the alpha specified in a color value (via either the ##[[KeyPgRgba|RGBA]]## macro or direct color in the form ##&h//AARRGGBB//##) will always be used by all primitives.
 ~~-##GFX_HIGH_PRIORITY##: Tells the graphics library to enable a higher priority for graphics processing.  Only has an effect on ##gdi## and ##""DirectX""## drivers on ""Win32"" platform and ##""Direct2D""## added on new platforms.
+~~-##GFX_NO_X86_MMX##: Tells the graphics library not to use MMX blitters on X86 even if MMX cpu instructions are available.
 		
 ~__OpenGL Buffer flags__
 ~~These flags work only in ""OpenGL"" graphics mode, must be combined with GFX_OPENGL
@@ -97,6 +98,9 @@ print "Hello world!!"
 ' Keep the window open until the user presses a key
 sleep
 %%
+{{fbdoc item="ver"}}
+	Since 1.20.0: ##GFX_NO_X86_MMX##
+
 {{fbdoc item="target"}}
 	- In DOS, Windowing and ""OpenGL"" related switches are not available, and other issues, see [[GfxLib|GfxLib overview]]
 

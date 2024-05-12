@@ -72,6 +72,7 @@
 	{{fbdoc item="keyword" value="ProPgPolymorphism|Inheritance Polymorphism"}}
 	{{fbdoc item="keyword" value="ProPgCtorsAssignDtors|Constructors, '=' Assignment-Operators, and Destructors (advanced, part #1)"}}
 	{{fbdoc item="keyword" value="ProPgCtorsAssignDtors2|Constructors, '=' Assignment-Operators, and Destructors (advanced, part #2)"}}
+
 <<>>{{fbdoc item="section" value="Statements and Expressions"}}
 	{{fbdoc item="keyword" value="ProPgExpressionsStatements|Differences between Expressions and Statements"}}
 	{{fbdoc item="keyword" value="ProPgConstantExpressions|Constant Expressions"}}
@@ -96,7 +97,7 @@
 	{{fbdoc item="keyword" value="GfxLib|FreeBASIC GfxLib overview"}}
 	{{fbdoc item="keyword" value="ProPgAntiFlickering|Graphics Mode Refresh and Anti-Flickering"}}
 	{{fbdoc item="keyword" value="GfxInternalFormats|Internal Graphics Formats"}}
-	{{fbdoc item="keyword" value="ProPgExternalFormats|External Graphics File Formats"}} ##(page to fill in)##
+	{{fbdoc item="keyword" value="ProPgExternalFormats|External Graphics File Formats"}} ##(page to be completed)##
 	{{fbdoc item="keyword" value="ProPgLiteRegulate|Lite regulation function to be integrated into user loop for FPS control"}}
 	{{fbdoc item="keyword" value="ProPgDelayRegulate|Fine-grain procedure for waiting and in-loop procedure for fine-regulating FPS"}}
 
@@ -112,7 +113,8 @@
 	{{fbdoc item="keyword" value="ProPgExecutables|Executables"}}
 	{{fbdoc item="keyword" value="ProPgStaticLibraries|Static Libraries"}}
 	{{fbdoc item="keyword" value="ProPgSharedLibraries|Shared Libraries (DLLs)"}}
-	{{fbdoc item="keyword" value="ProPgProfiling|Profiling"}}
+	{{fbdoc item="keyword" value="ProPgProfilingFbProfiler|Profiling with fb's profiler"}}
+	{{fbdoc item="keyword" value="ProPgProfilingGmonGprof|Profiling for gmon/gprof"}}
 
 {{fbdoc item="section" value="Preprocessor"}}
 	{{fbdoc item="keyword" value="ProPgPreprocessor|Overview"}}

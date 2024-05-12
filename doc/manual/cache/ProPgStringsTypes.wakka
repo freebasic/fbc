@@ -8,7 +8,8 @@ The fixed-length strings types (string, zstring and wstring) represent fixed-len
 	There are 3 types of fixed-length strings:
 		- Fixed-length string type for 8 bit character (QB-style fixed-length string):
 				**""-""** ##[[KeyPgString|STRING]] * //size//##
-						total length of the string: '//size//+1' characters = '//size//+1' bytes ##('//size//' useful characters + '1' final null character)##
+						since fbc version 1.20.0, total length of the string: '//size//' characters = '//size//' bytes ##('//size//' useful characters)##
+						before fbc version 1.20.0, total length of the string: '//size//+1' characters = '//size//+1' bytes ##('//size//' useful characters + '1' final null character)##
 		- Fixed-length zstring type for 8 bit character:
 				**""-""** ##[[KeyPgZstring|ZSTRING]] * //size//##
 						total length of the zstring: '//size//' characters = '//size//' bytes ##('//size-1//' useful characters + '1' final null character)##
@@ -34,38 +35,42 @@ The fixed-length strings types (string, zstring and wstring) represent fixed-len
 {{fbdoc item="section" value="Example"}}
 	Size (in bytes) of different strings from all types above:
 		{{fbdoc item="filename" value="examples/manual/proguide/strings_types.bas"}}%%(freebasic)
+'  Result depending on fbc version (before/since 1.20.0)
+
 Dim As String * 20 s20 = "FreeBASIC manual"
 
-Dim As Zstring * 20 z20 = "FreeBASIC manual"
-Dim As Zstring Ptr pz = @"FreeBASIC manual"
+Dim As ZString * 20 z20 = "FreeBASIC manual"
+Dim As ZString Ptr pz = @"FreeBASIC manual"
 
-Dim As Wstring * 20 w20 = "FreeBASIC manual"
-Dim As Wstring Ptr pw = @Wstr("FreeBASIC manual")
+Dim As WString * 20 w20 = "FreeBASIC manual"
+Dim As WString Ptr pw = @WStr("FreeBASIC manual")
 
 Dim As String s = "FreeBASIC manual"
 
-Print Using "'FIXED-LENGTH STRING * 20': ## bytes in total, ## useful characters available"; Sizeof(s20); Len(s20)
-Print Using "    containing ## user characters of # byte(s) each"; Iif(Instr(s20, Chr(0)) > 0, Instr(s20, Chr(0)) - 1, Len(s20)); Sizeof(s20[0])
+Print Using "'FIXED-LENGTH STRING * 20': ## bytes in total, ## useful characters available"; SizeOf(s20); Len(s20)
+#if __FB_VERSION__ < "1.20.0"
+Print Using "    containing ## user characters of # byte(s) each"; IIf(InStr(s20, Chr(0)) > 0, InStr(s20, Chr(0)) - 1, Len(s20)); SizeOf(s20[0])
+#endif
 Print
-Print Using "'FIXED-LENGTH ZSTRING * 20': ## bytes in total, ## useful characters available"; Sizeof(z20); Sizeof(z20) \ Sizeof(z20[0]) - 1
-Print Using "    containing ## user characters of # byte(s) each"; Len(z20); Sizeof(Z20[0])
+Print Using "'FIXED-LENGTH ZSTRING * 20': ## bytes in total, ## useful characters available"; SizeOf(z20); SizeOf(z20) \ SizeOf(z20[0]) - 1
+Print Using "    containing ## user characters of # byte(s) each"; Len(z20); SizeOf(Z20[0])
 Print "'ZSTRING PTR': dereferencing pointer -> "; """" & *pz & """"
-Print Using "    containing ## user characters of # byte(s) each"; Len(*pz); Sizeof((*pz)[0])
+Print Using "    containing ## user characters of # byte(s) each"; Len(*pz); SizeOf((*pz)[0])
 Print
-Print Using "'FIXED-LENGTH WSTRING * 20': ## bytes in total, ## useful characters available"; Sizeof(w20); Sizeof(w20) \ Sizeof(w20[0]) - 1
-Print Using "    containing ## user characters of # byte(s) each"; Len(w20); Sizeof(w20[0])
+Print Using "'FIXED-LENGTH WSTRING * 20': ## bytes in total, ## useful characters available"; SizeOf(w20); SizeOf(w20) \ SizeOf(w20[0]) - 1
+Print Using "    containing ## user characters of # byte(s) each"; Len(w20); SizeOf(w20[0])
 Print "'WSTRING PTR': dereferencing pointer -> "; """" & *pw & """"
-Print Using "    containing ## user characters of # byte(s) each"; Len(*pw); Sizeof((*pw)[0])
+Print Using "    containing ## user characters of # byte(s) each"; Len(*pw); SizeOf((*pw)[0])
 Print
-Type descriptor : Addr As Zstring Ptr : UC As Uinteger : AC As Uinteger : End Type
-Print Using "'STRING': ## bytes in descriptor, memory allocated for ## characters right now"; Sizeof(s); Cast(descriptor Ptr, @s)->AC
-Print Using "    containing ## user characters of # byte(s) each"; Len(s); Sizeof(s[0])
+Type descriptor : Addr As ZString Ptr : UC As UInteger : AC As UInteger : End Type
+Print Using "'STRING': ## bytes in descriptor, memory allocated for ## characters right now"; SizeOf(s); Cast(descriptor Ptr, @s)->AC
+Print Using "    containing ## user characters of # byte(s) each"; Len(s); SizeOf(s[0])
 
 Sleep
 		%%Note: For the fixed-length string type only (QB-style fixed-length string), the 'Len()' keyword always returns the declared constant number of characters, regardless of the number of characters assigned to it by user.
-		(hence the formula: ##'""user_characters_length = IIf(InStr(s, Chr(0)) > 0, InStr(s, Chr(0)) - 1, Len(s))""'##)
+		(hence the formula only for fixed-length string type before fbc version 1.20.0: ##'""user_characters_length = IIf(InStr(s, Chr(0)) > 0, InStr(s, Chr(0)) - 1, Len(s))""'##)
 		
-		Output example for win64 (a wstring character uses 2 bytes):
+		Output example before fbc version 1.20.0 and for win64 (a wstring character uses 2 bytes):
 			%%
 'FIXED-LENGTH STRING * 20': 21 bytes in total, 20 useful characters available
 	containing 16 user characters of 1 byte(s) each

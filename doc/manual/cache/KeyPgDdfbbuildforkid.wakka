@@ -1,0 +1,23 @@
+{{fbdoc item="title" value="__FB_BUILD_FORK_ID__"}}----
+Intrinsic define (macro string) set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FB_BUILD_FORK_ID__""
+##
+{{fbdoc item="desc"}}
+	Substituted by a string of the compiler's custom defined project fork identifier name if defined at fbc build time, or an empty string if it was not defined.
+	
+	This value is an empty string for releases made by the ""FreeBASIC"" Development Team.  Community developers and experimenters may define this value when building their own fbc packages using the makefile to help users identify that fbc may be a special build and may have specific features not in the main release packages.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/defines/fbbuildforkid.bas"}}%%(freebasic)
+PRINT "fbc fork id: "; __FB_BUILD_FORK_ID__
+%%
+
+{{fbdoc item="ver"}}
+	- Since fbc 1.20.0
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

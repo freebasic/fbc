@@ -1,12 +1,12 @@
 '' examples/manual/udt/type2.bas
 ''
 '' Example extracted from the FreeBASIC Manual
-'' from topic 'TYPE'
+'' from topic 'TYPE (UDT)'
 ''
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgType
 '' --------
 
-'' Example showing the problems with fixed length string fields in UDTs
+'' Example showing the problems with fixed length string fields in UDTs and fbc version < 1.20.0
 '' Suppose we have read a GIF header from a file
 ''                        signature         width        height
 Dim As ZString*(10+1) z => "GIF89a" + MKShort(10) + MKShort(11)
@@ -14,8 +14,12 @@ Dim As ZString*(10+1) z => "GIF89a" + MKShort(10) + MKShort(11)
 Print "Using fixed-length string"
 
 Type hdr1 Field = 1
-   As String*(6-1) sig /' We have to dimension the string with 1 char
-						'  less to avoid misalignments '/
+   #if __FB_VERSION__ < "1.20.0"
+	  As String*(6-1) sig /' We have to dimension the string with 1 char
+						   '  less to avoid misalignments '/
+   #else
+	  As String*(6) sig
+   #endif
    As UShort wid, hei
 End Type
 

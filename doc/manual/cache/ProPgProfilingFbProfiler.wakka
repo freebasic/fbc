@@ -1,0 +1,310 @@
+{{fbdoc item="title" value="Profiling with fb's profiler"}}----
+Profiling can be used to analyze the performance of an application.
+
+The performance of an application might be measured by how many times functions are called, how much time is spent executing those functions, and which functions are calling other functions.
+This can help to identify functions that might be taking too long to execute or executed too many times and that might be worth reviewing for optimization.
+
+Since fbc 1.20.0, ""FreeBASIC"" can use fb's profiler for analyzing the execution of an application. The profiler information is collected while the program is running.
+This profiling feature may give an easy to use tool to help novice and experienced users analyze their programs.
+
+This feature is a reimplentation of Angelo Mottola's (lillo's) profiler from 2008, rewritten to fix some issues, and then some new features added on. This latest side quest started due to a desire to run some kind of profiling on the fbc compiler itself, and having no luck at all with gprof on windows. Years ago lillo's function call profiler was removed in favor of gmon/gprof.
+
+Some of the capabilities of this profiler implemented through fb:
+		""-"" easy to use,
+		""-"" no extra tools needed,
+		""-"" can profile (analyze) calls to external libraries.
+		
+This profiling feature may give an easy to use tool to help novice and experienced users analyze their programs.
+This tool is not suitable for high resolution timing profiling. However, it helps identify potential problem areas in a program, or gives a better understanding of procedures called as starting point for investigations.
+
+The three basic steps to profiling a program are:
+		- 1) Prepare the program for profiling by compiling source with the //[[CompilerOptprofgen|-profgen fb]]// option or compile the program with '-profgen fb' //[[KeyPgPpcmdline|#Cmdline]]// option.
+		- 2) Run the program to build the profiling report (stored by default in ##<filename[.exe]>.prf## where ##<filename[.exe]>## is the name of the executable).
+		- 3) Analyze directly the profiling report (text file).
+		- 4) Advanced features for the fb's profiler.
+
+""FreeBASIC"" supports function profiling; not basic-block or line-by-line profiling.
+
+{{fbdoc item="section" value="Preparing a Program for Profiling (with fb's profiler)"}}
+	Only code that is compiled with the //[[CompilerOptprofgen|-profgen fb]]// command line option can be so profiled.
+	Pass the //[[CompilerOptprofgen|-profgen fb]]// option to the ""FreeBASIC"" compiler to prepare the program to be profiled or compile the program with '-profgen fb' //[[KeyPgPpcmdline|#Cmdline]]// option:
+		%%
+fbc program.bas -profgen fb
+' or
+#cmdline "-profgen fb"
+%%	 This will tell the compiler to insert special startup code at the beginning of the application as well as at the beginning of each function.
+
+{{fbdoc item="section" value="Profiling (with fb's profiler) the Program"}}
+	The information needed to analyze execution of the program is gathered while the program is running.
+	Run the program to begin collecting the function call information.
+	The profiling report is automatically stored in a file named by default ##<filename[.exe]>.prf## in the same directory as the program.
+
+{{fbdoc item="section" value="Analyzing the Profiling Report (from fb's profiler)"}}
+	After compiling and running the program, the user can open the default named profiling report ##<filename[.exe]>.prf## (text file).
+	
+	There are two sections:
+		1) per function results - profile of individual procedures and the procedures called
+		2) global results - profile of all procedures with respect to the whole program run time
+		
+
+		**##Function##:** the parent function / child function profiled. Parents are on the left, children are indented
+		**##Count##:** number of times the procedure was called
+		**##Time##:** number of seconds executing the procedure
+		**##Total%##:** the percentage of execution time versus the whole run time
+		**##Proc%##:** the percentage of execution time versus the procedure run time
+		
+	Times are based on fb's built-in TIMER function.
+	
+	- Simple example:
+		{{fbdoc item="filename" value="examples/manual/proguide/binaries/simple-fb-profiling.bas"}}%%(freebasic)
+#cmdline "-profgen fb"
+
+Sub Pause_100
+	Sleep 100, 1
+End Sub
+
+Sub Pause_200
+	Sleep 200, 1
+End Sub
+
+Sub Pause_400
+	Sleep 400, 1
+End Sub
+
+For i As Integer = 1 To 3
+	Pause_100
+Next i
+
+Pause_200
+
+Pause_400
+%%		Example of profiling report:
+			%%(freebasic)
+'	.....
+'	
+'	
+'	Per function results:
+'	
+'	        Function:         Count:       Time:    Total%:    Proc%:
+'	
+'	(main)                         1     0.92623    100.00%
+'	
+'	        PAUSE_400              1     0.40173     43.37%    43.37%
+'	        PAUSE_100              3     0.32333     34.91%    34.91%
+'	        PAUSE_200              1     0.20112     21.71%    21.71%
+'	        FB___MAIN              1     0.00000      0.00%     0.00%
+'	
+'	PAUSE_100                      3     0.32333     34.91%
+'	
+'	        SLEEP                  3     0.32332     34.91%   100.00%
+'	
+'	PAUSE_200                      1     0.20112     21.71%
+'	
+'	        SLEEP                  1     0.20112     21.71%   100.00%
+'	
+'	PAUSE_400                      1     0.40173     43.37%
+'	
+'	        SLEEP                  1     0.40171     43.37%   100.00%
+'	
+'	
+'	
+'	Global results:
+'	
+'	(main)                         1     0.92623    100.00%
+'	PAUSE_400                      1     0.40173     43.37%
+'	PAUSE_100                      3     0.32333     34.91%
+'	PAUSE_200                      1     0.20112     21.71%
+'	SLEEP                          1     0.20112     21.71%
+'	FB___MAIN                      1     0.00000      0.00%
+%%
+{{fbdoc item="section" value="Advanced Profiling Features (with fb's profiler)"}}
+	The following features allow the user to control the information collected by the profiler as well as modify the profiling report, compared to the default operating.
+	
+	__Advanced procedures in the ##./inc/fbc-int/profile.bi## include file__
+		The ##./inc/fbc-int/profile.bi## include file allows user to access some advanced procedures (declared inside Namespace: ##FBC##) for working with the fb's profiler.
+		These procedures expose fb's profiler as an API that can then be called directly and used to generate a profiling report based on whatever structure of call recording is made by the user:
+				**""-""** To set the output report file name at run-time:
+						##function ""ProfileSetFileName"" ( byval filename as const zstring ptr ) as long##
+				**""-""** To set/get options for the profiler:
+						##function ""ProfileSetOptions"" ( byval options as PROFILE_OPTIONS ) as PROFILE_OPTIONS##
+						##function ""ProfileGetOptions"" ( ) as PROFILE_OPTIONS##
+						both associated with the ##PROFILE_OPTIONS## Enum structure (see ##./inc/fbc-int/profile.bi## include file)
+				**""-""** To ignore a procedure when profiling:
+						##sub ""ProfileIgnore"" ( byval procedurename as zstring ptr )##
+				**""-""** To call fb's profiler directly to perform custom profiling and a report:
+						##sub ""ProfileInit"" () ""''"" //Initialize the profiler//##
+						##function ""ProfileEnd"" ( byval errorcode as long ) as long ""''"" //Generate the profiling report and terminate the profiler//##
+						##function ""ProfileBeginCall"" ( byval procedurename as const zstring ptr ) as any ptr ""''"" //Begin a call and return a caller_id pointer//##
+						##sub ""ProfileEndCall"" ( byval procctx as any ptr ) ""''"" //End a call//##
+						
+		- Example for setting the profiling report file name at run-time:
+				{{fbdoc item="filename" value="examples/manual/proguide/binaries/report-name-fb-profiling.bas"}}%%(freebasic)
+#cmdline "-profgen fb"
+#include once "fbc-int/profile.bi"
+Using FBC
+
+'' automatically change the profile report name
+Dim t As String = Time
+Dim n As String = Left(t, 2) & Mid(t, 4, 2) & Right(t, 2)
+ProfileSetFileName( "prof-" & n & ".txt" )
+%%
+		- Example for telling the profiler to generate a call tree instead of timings and counts:
+				{{fbdoc item="filename" value="examples/manual/proguide/binaries/call-tree-fb-profiling.bas"}}%%(freebasic)
+#cmdline "-profgen fb" 
+#include once "fbc-int/profile.bi"
+Using FBC
+
+ProfileSetOptions( PROFILE_OPTION_REPORT_CALLTREE ) 
+
+sub A
+	print "A"
+end sub
+
+sub B
+	print "B"
+end sub
+
+sub C
+	print "C"
+end sub
+
+sub D
+	print "D"
+	A
+	A
+	B
+	B
+	C
+	C
+end sub
+
+D
+%%				Example of profiling report:
+					%%
+'	.....
+'	
+'	
+'	Call Tree:
+'	
+'	\- (main)
+'	   |- PROFILESETOPTIONS
+'	   |- D
+'	   |  |- C
+'	   |  |  |- FB_STRALLOCTEMPDESCZEX
+'	   |  |  \- FB_PRINTSTRING
+'	   |  |- FB_STRALLOCTEMPDESCZEX
+'	   |  |- B
+'	   |  |  |- FB_STRALLOCTEMPDESCZEX
+'	   |  |  \- FB_PRINTSTRING
+'	   |  |- A
+'	   |  |  |- FB_STRALLOCTEMPDESCZEX
+'	   |  |  \- FB_PRINTSTRING
+'	   |  \- FB_PRINTSTRING
+'	   \- FB___MAIN
+%%
+		- Example for calling fb's profiler directly to perform custom profiling and a report:
+				{{fbdoc item="filename" value="examples/manual/proguide/binaries/directly-call-fb-profiling.bas"}}%%(freebasic)
+#include once "fbc-int/profile.bi"
+Using FBC
+
+#if __FB_PROFILE__ = PROFILE_OPTION_REPORT_CALLS
+#error Do not compile with -profgen fb
+#endif
+
+ProfileInit()
+
+Var ctx = ProfileBeginCall( @"Begin" )
+
+Scope
+	Var ctx = ProfileBeginCall( @"Step 1" )
+		Sleep 100, 1
+	ProfileEndCall( ctx )
+End Scope
+
+Scope
+	Var ctx = ProfileBeginCall( @"Step 2" )
+		Sleep 200, 1
+	ProfileEndCall( ctx )
+End Scope
+
+ProfileEndCall( ctx )
+
+ProfileEnd(0)
+%%				Example of profiling report:
+					%%(freebasic)
+'	.....
+'	
+'	
+'	Per function results:
+'	
+'	        Function:         Count:       Time:    Total%:    Proc%:
+'	
+'	(main)                         1     0.30183    100.00%
+'	
+'	        Begin                  1     0.30183    100.00%   100.00%
+'	
+'	Begin                          1     0.30183    100.00%
+'	
+'	        Step 2                 1     0.20057     66.45%    66.45%
+'	        Step 1                 1     0.10125     33.54%    33.54%
+'	
+'	
+'	
+'	Global results:
+'	
+'	(main)                         1     0.30183    100.00%
+'	Begin                          1     0.30183    100.00%
+'	Step 2                         1     0.20057     66.45%
+'	Step 1                         1     0.10125     33.54%
+%%
+	__Conditional generation of profiling code__
+		The user can also control a conditional generation of profiling code:
+			##[[KeyPgPpPragma|#pragma profile]]## controls the generation of profiling code.
+			This allows optionally including or excluding sections of source code to be profiled.
+			
+			User can optionally disable profiling code generation with ###pragma profile = false## or ###pragma push( profile , false )##
+			Profiling code generation can be reactivated with ###pragma profile = true## or ###pragma pop( profile )## respectively
+			
+			The ##[[KeyPgDdfboptionprofile|__FB_OPTION_PROFILE__]]## intrinsic define allows to indicate that the profiling code is generated or not:
+					##""__FB_OPTION_PROFILE__""## is set to non-zero when profiling code is generated
+					##""__FB_OPTION_PROFILE__""## is set to zero when profiling code is not generated
+					
+		- Purely academic example:
+				{{fbdoc item="filename" value="examples/manual/proguide/binaries/control-code-fb-profiling.bas"}}%%(freebasic)
+#cmdline "-profgen fb"
+
+Print "__FB_OPTION_PROFILE__ = " & __FB_OPTION_PROFILE__
+
+#pragma push( profile , false )
+Print "__FB_OPTION_PROFILE__ = " & __FB_OPTION_PROFILE__
+Sleep 100, 1
+#pragma pop( profile )
+
+Print "__FB_OPTION_PROFILE__ = " & __FB_OPTION_PROFILE__
+%%				Example of profiling report:
+					%%(freebasic)
+'	.....
+'	
+'	
+'	Per function results:
+'	
+'	        Function:                     Count:       Time:    Total%:    Proc%:
+'	
+'	(main)                                     1     0.11714    100.00%
+'	
+'	        FB_PRINTSTRING                     2     0.00517      4.42%     4.42%
+'	        FB_STRALLOCTEMPDESCZEX             2     0.00001      0.01%     0.01%
+'	        FB___MAIN                          1     0.00000      0.00%     0.00%
+'	
+'	
+'	
+'	Global results:
+'	
+'	(main)                                     1     0.11714    100.00%
+'	FB_PRINTSTRING                             2     0.00517      4.42%
+'	FB_STRALLOCTEMPDESCZEX                     2     0.00001      0.01%
+'	FB___MAIN                                  1     0.00000      0.00%
+%%					The code profiler only takes into account 2 PRINTs (instead of 3) and not the SLEEP.
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
