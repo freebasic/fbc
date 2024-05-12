@@ -1,0 +1,45 @@
+{{fbdoc item="title" value="__FB_PROFILE__"}}----
+Intrinsic define set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FB_PROFILE__""
+##
+{{fbdoc item="desc"}}
+	Intrinsic define set to an integer to indicate the profiling method.
+	The different value are defined in the ##./inc/fbc-int/profile.bi## include file (inside Namespace: ##FB## and Enum: ##PROFGEN_ID##):
+		- PROFGEN_ID_NONE: profiling is not enabled
+		- PROFGEN_ID_GMON: code is being generated for gmon/gprof
+		- PROFGEN_ID_CALLS: code is being generated for fb's function call profiler
+		- PROFGEN_ID_CYCLES: code is being generated for fb's cycle count call profiler
+
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/defines/fbprofile.bas"}}%%(freebasic)
+#cmdline "-profgen fb"
+#include once "fbc-int/profile.bi"
+Using FBC
+
+Print "__FB_PROFILE__ = ";
+
+Select Case __FB_PROFILE__
+Case PROFGEN_ID_NONE
+	Print "PROFGEN_ID_NONE"
+Case PROFGEN_ID_GMON
+	Print "PROFGEN_ID_GMON"
+Case PROFGEN_ID_CALLS
+	Print "PROFGEN_ID_CALLS"
+Case PROFGEN_ID_CYCLES
+	Print "PROFGEN_ID_CYCLES"
+End Select
+%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.20.0
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- [[CompilerOptprofgen|Compiler Option: -profgen]]
+	- [[ProPgProfilingGmonGprof|Profiling for gmon/gprof]]
+	- [[ProPgProfilingFbProfiler|Profiling with fb's profiler]]
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

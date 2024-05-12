@@ -54,12 +54,14 @@
 		[[KeyPgDdfboptionexplicit|__FB_OPTION_EXPLICIT__]]
 		[[KeyPgDdfboptiongosub|__FB_OPTION_GOSUB__]]
 		[[KeyPgDdfboptionprivate|__FB_OPTION_PRIVATE__]]
+		[[KeyPgDdfboptionprofile|__FB_OPTION_PROFILE__]]
 		[[KeyPgDdfboutdll|__FB_OUT_DLL__]]
 		[[KeyPgDdfboutexe|__FB_OUT_EXE__]]
 		[[KeyPgDdfboutlib|__FB_OUT_LIB__]]
 		[[KeyPgDdfboutobj|__FB_OUT_OBJ__]]
 		[[KeyPgDdfbpcos|__FB_PCOS__]]
 		[[KeyPgDdfbppc|__FB_PPC__]]
+		[[KeyPgDdfbprofile|__FB_PROFILE__]]
 		[[KeyPgDdfbquerysymbol|__FB_QUERY_SYMBOL__]]
 		[[KeyPgDdfbquote|__FB_QUOTE__]]
 		[[KeyPgDdfbsignature|__FB_SIGNATURE__]]
@@ -902,7 +904,7 @@
 		[[ProPgStaticLibraries|Static Libraries]]
 		[[ProPgSharedLibraries|Shared Libraries (DLLs)]]
 		[[ProPgProfilingGmonGprof|Profiling for gmon/gprof]]
-		[[ProPgProfilingFbProfiler|Profiling for fb's profiler]]
+		[[ProPgProfilingFbProfiler|Profiling with fb's profiler]]
 
 	{{fbdoc item="subsect" value="Preprocessor"}}
 		[[ProPgPreprocessor|Overview]]

@@ -1,0 +1,43 @@
+{{fbdoc item="title" value="__FB_OPTION_PROFILE__"}}----
+Intrinsic define set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FB_OPTION_PROFILE__""
+##
+{{fbdoc item="desc"}}
+	Intrinsic define set to an integer to indicate that the profiling code is generated:
+		**##""__FB_OPTION_PROFILE__""##** is set to non-zero when profiling code is generated
+		**##""__FB_OPTION_PROFILE__""##** is set to zero when profiling code is not generated
+		
+	##[[KeyPgPpPragma|#pragma profile]]## allows to control the generation of profiling code.
+	This allows optionally including or excluding sections of source code to be profiled:
+		when ###pragma profile = true##, then profiling code is generated
+		when ###pragma profile = false##, then profiling code is not generated
+
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/defines/fboptionprofile.bas"}}%%(freebasic)
+#cmdline "-profgen fb"
+' profiling code generated
+Print __FB_OPTION_PROFILE__
+
+#pragma profile = false
+' profiling code not generated
+Print __FB_OPTION_PROFILE__
+
+#pragma profile = true
+' profiling code generated
+Print __FB_OPTION_PROFILE__
+%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.20.0
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- [[CompilerOptprofgen|Compiler Option: -profgen]]
+	- [[ProPgProfilingGmonGprof|Profiling for gmon/gprof]]
+	- [[ProPgProfilingFbProfiler|Profiling with fb's profiler]]
+	- [[KeyPgPpPragma|#pragma]]
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}
