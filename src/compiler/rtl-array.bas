@@ -241,7 +241,7 @@
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
-		/' function fb_ArraySngBoundChk _
+		/' function fb_ArraySngBoundChkEx _
 			( _
 				byval idx as const uinteger, _
 				byval ubound as const uinteger, _
@@ -252,15 +252,16 @@
 			@FB_RTL_ARRAYSNGBOUNDCHK, NULL, _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_CANBECLONED, _
-			4, _
+			5, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE, 0 ), _
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE, 0 ) _
 			} _
 		), _
-		/' function fb_ArrayBoundChk _
+		/' function fb_ArrayBoundChkEx _
 			( _
 				byval idx as const integer, _
 				byval lbound as const integer, _
@@ -272,12 +273,13 @@
 			@FB_RTL_ARRAYBOUNDCHK, NULL, _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_CANBECLONED, _
-			5, _
+			6, _
 			{ _
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE, 0 ), _
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE, 0 ) _
 			} _
 		), _
@@ -791,7 +793,8 @@ function rtlArrayBoundsCheck _
 		byval lb as ASTNODE ptr, _
 		byval rb as ASTNODE ptr, _
 		byval linenum as integer, _
-		byval module as zstring ptr _
+		byval module as zstring ptr, _
+		byval vname as zstring ptr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr proc = any
@@ -832,6 +835,11 @@ function rtlArrayBoundsCheck _
 
 	'' module
 	if( astNewARG( proc, astNewCONSTstr( module ) ) = NULL ) then
+		exit function
+	end if
+
+	'' variable name
+	if( astNewARG( proc, astNewCONSTstr( vname ) ) = NULL ) then
 		exit function
 	end if
 

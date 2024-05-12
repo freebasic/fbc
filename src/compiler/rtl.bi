@@ -154,8 +154,8 @@
 #define FB_RTL_ARRAYREDIMTO             "fb_ArrayRedimTo"
 #define FB_RTL_ARRAYLBOUND              "fb_ArrayLBound"
 #define FB_RTL_ARRAYUBOUND              "fb_ArrayUBound"
-#define FB_RTL_ARRAYSNGBOUNDCHK         "fb_ArraySngBoundChk"
-#define FB_RTL_ARRAYBOUNDCHK            "fb_ArrayBoundChk"
+#define FB_RTL_ARRAYSNGBOUNDCHK         "fb_ArraySngBoundChkEx"
+#define FB_RTL_ARRAYBOUNDCHK            "fb_ArrayBoundChkEx"
 
 #define FB_RTL_NULLPTRCHK               "fb_NullPtrChk"
 
@@ -1153,7 +1153,8 @@ declare function rtlArrayBoundsCheck _
 		byval lb as ASTNODE ptr, _
 		byval rb as ASTNODE ptr, _
 		byval linenum as integer, _
-		byval module as zstring ptr _
+		byval module as zstring ptr, _
+		byval vname as zstring ptr _
 	) as ASTNODE ptr
 
 declare function rtlNullPtrCheck _

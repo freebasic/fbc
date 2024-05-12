@@ -20,7 +20,8 @@ Version 1.20.0
 - STRING*N/LSET/RSET will pad strings with spaces up to the size of the fixed length string
 - arguments of STRING*N type are copied to a temporary variable when passed to BYVAL ZSTRING PTR and BYREF ZSTRING parameters (since there is no expectaction that STRING*N will have it's own terminating null character) and copied back after the call
 - Allow ZSTRING*N and WSTRING*N arguments passed to BYREF AS STRING paremeters to be modified (copied back to original variable)
-- updated bindings: WinAPI: replace sdkddkver.bi with hand translated version, preserving the logic of the original  
+- updated bindings: WinAPI: replace sdkddkver.bi with hand translated version, preserving the logic of the original
+- rtlib: When array out of bounds check files, show variable/field name, index, lbound, and ubound in the error message  
 
 [added]
 - x86_64: optimize SHL MOD INTDIV to use 32-bit operation when result will be converted to long/ulong

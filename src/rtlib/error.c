@@ -24,11 +24,12 @@ static const char *messages[] = {
 };
 
 static void fb_Die
-	( 
-		int err_num, 
-		int line_num, 
+	(
+		int err_num,
+		int line_num,
 		const char *mod_name,
-		const char *fun_name
+		const char *fun_name,
+		const char *msg
 	)
 {
 	int pos = 0;
@@ -36,25 +37,33 @@ static void fb_Die
 	pos += snprintf( &__fb_errmsg[pos], FB_ERRMSG_SIZE - pos,
 	                 "\nAborting due to runtime error %d", err_num );
 
-	if( (err_num >= 0) && (err_num < FB_RTERROR_MAX) )
+	if( (err_num >= 0) && (err_num < FB_RTERROR_MAX) ) {
 		pos += snprintf( &__fb_errmsg[pos], FB_ERRMSG_SIZE - pos,
 						 " (%s)", messages[err_num] );
+	}
 
-	if( line_num > 0 )
+	if( line_num > 0 ) {
 		pos += snprintf( &__fb_errmsg[pos], FB_ERRMSG_SIZE - pos,
 						 " at line %d", line_num );
+	}
 
-	if( mod_name != NULL )
-		if( fun_name != NULL )
+	if( mod_name != NULL ) {
+		if( fun_name != NULL ) {
 			pos += snprintf( &__fb_errmsg[pos], FB_ERRMSG_SIZE - pos,
-			                 " %s %s::%s()\n\n", (char *)(line_num > 0? &"of" : &"in"),
+			                 " %s %s::%s()", (char *)(line_num > 0? &"of" : &"in"),
 			                 (char *)mod_name, (char *)fun_name );
-		else
+		} else {
 			pos += snprintf( &__fb_errmsg[pos], FB_ERRMSG_SIZE - pos,
-			                 " %s %s()\n\n", (char *)(line_num > 0? &"of" : &"in"),
+			                 " %s %s()", (char *)(line_num > 0? &"of" : &"in"),
 			                 (char *)mod_name );
-	else
-		pos += snprintf( &__fb_errmsg[pos], FB_ERRMSG_SIZE - pos, "\n\n" );
+		}
+	}
+
+	if( msg != NULL ) {
+		pos += snprintf( &__fb_errmsg[pos], FB_ERRMSG_SIZE - pos, ", %s", msg );
+	}
+
+	pos += snprintf( &__fb_errmsg[pos], FB_ERRMSG_SIZE - pos, "\n\n" );
 
 	__fb_errmsg[FB_ERRMSG_SIZE-1] = '\0';
 
@@ -64,44 +73,57 @@ static void fb_Die
 	fb_End( err_num );
 }
 
-FB_ERRHANDLER fb_ErrorThrowEx 
-	( 
-		int err_num, 
-		int line_num, 
+FB_ERRHANDLER fb_ErrorThrowMsg
+	(
+		int err_num,
+		int line_num,
 		const char *mod_name,
-		void *res_label, 
-		void *resnext_label 
+		const char *msg,
+		void *res_label,
+		void *resnext_label
 	)
 {
-    FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
+	FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
 
-    if( ctx->handler )
-    {
-    	ctx->err_num = err_num;
-    	ctx->line_num = line_num;
-    	if( mod_name != NULL )
-    		ctx->mod_name = mod_name;
-    	ctx->res_lbl = res_label;
-    	ctx->resnxt_lbl = resnext_label;
+	if( ctx->handler ) {
+		ctx->err_num = err_num;
+		ctx->line_num = line_num;
+		if( mod_name != NULL ) {
+			ctx->mod_name = mod_name;
+		}
+		ctx->res_lbl = res_label;
+		ctx->resnxt_lbl = resnext_label;
 
-    	return ctx->handler;
-    }
+		return ctx->handler;
+	}
 
 	/* if no user handler defined, die */
-	fb_Die( err_num, 
-			line_num, 
-			(mod_name != NULL? mod_name: ctx->mod_name),
-			ctx->fun_name );
+	fb_Die( err_num,
+	        line_num,
+	        (mod_name != NULL? mod_name: ctx->mod_name),
+	        ctx->fun_name, msg );
 
 	return NULL;
 }
 
-FB_ERRHANDLER fb_ErrorThrowAt 
-	( 
-		int line_num, 
+FB_ERRHANDLER fb_ErrorThrowEx
+	(
+		int err_num,
+		int line_num,
 		const char *mod_name,
-		void *res_label, 
-		void *resnext_label 
+		void *res_label,
+		void *resnext_label
+	)
+{
+	return fb_ErrorThrowMsg( err_num, line_num, mod_name, NULL, res_label, resnext_label );
+}
+
+FB_ERRHANDLER fb_ErrorThrowAt
+	(
+		int line_num,
+		const char *mod_name,
+		void *res_label,
+		void *resnext_label
 	)
 {
 	FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
@@ -115,21 +137,22 @@ FBCALL FB_ERRHANDLER fb_ErrorSetHandler( FB_ERRHANDLER newhandler )
 	FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
 	FB_ERRHANDLER oldhandler;
 
-    oldhandler = ctx->handler;
+	oldhandler = ctx->handler;
 
-    ctx->handler = newhandler;
+	ctx->handler = newhandler;
 
 	return oldhandler;
 }
 
 void *fb_ErrorResume( void )
 {
-    FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
-    void *label = ctx->res_lbl;
+	FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
+	void *label = ctx->res_lbl;
 
 	/* not defined? die */
-	if( label == NULL )
-		fb_Die( FB_RTERROR_ILLEGALRESUME, -1, ctx->mod_name, ctx->fun_name );
+	if( label == NULL ) {
+		fb_Die( FB_RTERROR_ILLEGALRESUME, -1, ctx->mod_name, ctx->fun_name, NULL );
+	}
 
 	/* don't loop forever */
 	ctx->res_lbl = NULL;
@@ -140,12 +163,13 @@ void *fb_ErrorResume( void )
 
 void *fb_ErrorResumeNext( void )
 {
-    FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
-    void *label = ctx->resnxt_lbl;
+	FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
+	void *label = ctx->resnxt_lbl;
 
 	/* not defined? die */
-	if( label == NULL )
-		fb_Die( FB_RTERROR_ILLEGALRESUME, -1, ctx->mod_name, ctx->fun_name );
+	if( label == NULL ) {
+		fb_Die( FB_RTERROR_ILLEGALRESUME, -1, ctx->mod_name, ctx->fun_name, NULL );
+	}
 
 	/* don't loop forever */
 	ctx->res_lbl = NULL;

@@ -14,8 +14,8 @@ function fb_ArrayEraseObj
 sub fb_ArrayStrErase
 function fb_ArrayLBound
 function fb_ArrayUBound
-function fb_ArraySngBoundChk
-function fb_ArrayBoundChk
+function fb_ArraySngBoundChkEx
+function fb_ArrayBoundChkEx
 ---- rtlConsole
 function fb_ConsoleView
 function fb_ReadXY

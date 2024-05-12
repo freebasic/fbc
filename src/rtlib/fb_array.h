@@ -24,21 +24,23 @@ typedef struct _FBARRAY {
 typedef void (*FB_DEFCTOR)( void *this_ );
 typedef void (*FB_DTORMULT) ( FBARRAY *array, FB_DEFCTOR dtor, size_t base_idx );
 
-FBCALL void *fb_ArrayBoundChk
+FBCALL void *fb_ArrayBoundChkEx
 	(
 		ssize_t idx,
 		ssize_t lbound,
 		ssize_t ubound,
 		int linenum,
-		const char *fname
+		const char *fname,
+		const char *vname
 	);
 
-FBCALL void *fb_ArraySngBoundChk
+FBCALL void *fb_ArraySngBoundChkEx
 	(
 		size_t idx,
 		size_t ubound,
 		int linenum,
-		const char *fname
+		const char *fname,
+		const char *vname
 	);
 
 FBCALL size_t     fb_ArrayLen          ( FBARRAY *array );

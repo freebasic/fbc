@@ -20,7 +20,8 @@ function astNewBOUNDCHK _
 		byval lb as ASTNODE ptr, _
 		byval ub as ASTNODE ptr, _
 		byval linenum as integer, _
-		byval filename as zstring ptr _
+		byval filename as zstring ptr, _
+		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
@@ -65,7 +66,7 @@ function astNewBOUNDCHK _
 	'' check must be done using a function because calling ErrorThrow
 	'' would spill used regs only if it was called, causing wrong
 	'' assumptions after the branches
-	n->r = rtlArrayBoundsCheck( astNewVAR( n->sym ), lb, ub, linenum, filename )
+	n->r = rtlArrayBoundsCheck( astNewVAR( n->sym ), lb, ub, linenum, filename, sym->id.name )
 
 end function
 
@@ -119,9 +120,10 @@ function astBuildBOUNDCHK _
 	( _
 		byval expr as ASTNODE ptr, _
 		byval lb as ASTNODE ptr, _
-		byval ub as ASTNODE ptr _
+		byval ub as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr = 0 _
 	) as ASTNODE ptr
-	function = astNewBOUNDCHK( expr, lb, ub, lexLineNum( ), env.inf.name )
+	function = astNewBOUNDCHK( expr, lb, ub, lexLineNum( ), env.inf.name, sym)
 end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
