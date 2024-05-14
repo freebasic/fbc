@@ -22,6 +22,8 @@ Version 1.20.0
 - Allow ZSTRING*N and WSTRING*N arguments passed to BYREF AS STRING paremeters to be modified (copied back to original variable)
 - updated bindings: WinAPI: replace sdkddkver.bi with hand translated version, preserving the logic of the original
 - rtlib: When array out of bounds check files, show variable/field name, index, lbound, and ubound in the error message  
+- fbc: '-exx' enables '-earraydims' by default to error on wrong number of array dimensions or unallocated arrays breaking previous use of @array(0,...) = NULL to detect unallocated arrays
+- fbc: set bit value '__FB_ERR__' = &h400 if '-earraydims' is enabled
 
 [added]
 - x86_64: optimize SHL MOD INTDIV to use 32-bit operation when result will be converted to long/ulong
@@ -59,6 +61,7 @@ Version 1.20.0
 - fbc: allow user to optionally disable profiling code generation with '#pragma profile [=value]' or '#pragma push( profile [,value] )'
 - fbc: intrinsic define __FB_OPTION_PROFILE__ to indicate if profiling is currently enabled for code generation
 - rtlib: ./fbc-int/profile.bi - extra features for working with the built-in profiler; ProfileSetFileName(), ProfileGetOptions(), ProfileSetOptions(). ProfileIgnore()
+- '-earraydims' command line option to enable array dimensions checking.  Enabled by default with '-exx' command line option.
 
 [fixed]
 - github #410: give consistent floating point comparisons results involving NaNs.
@@ -88,6 +91,7 @@ Version 1.20.0
 - fbc: __FB_QUERY_SYMBOL__: evaluation contexts were reading past the end of the current buffer and in to the current file causing tokens to be consumed in the wrong context  
 - github #424: fbc: Invalid assignment/conversion, before 'Then' in function returned Const ZString Ptr
 - updated bindings: WinAPI: Allow FD_SETSIZE to be defined by user before including winsock.bi and winsock2.bi
+- sf.net #469, sf.net #721: check for unallocated dynamic arrays and wrong number of dimensions at run time and throw an error if attempting to access an unallocated array or indexing with the wrong number of dimensions
 
 
 Version 1.10.3

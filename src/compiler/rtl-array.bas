@@ -283,6 +283,27 @@
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE, 0 ) _
 			} _
 		), _
+		/' function fb_ArrayDimensionChk _
+			( _
+				byval dimensions as const long
+				byval array() as any, _
+				byval linenum as const long, _
+				byval fname as const zstring ptr, _
+				byval variablename as const zstring ptr _
+			) as any ptr '/ _
+		( _
+			@FB_RTL_ARRAYDIMENSIONCHK, NULL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_CANBECLONED, _
+			5, _
+			{ _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYDESC, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE, 0 ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE, 0 ) _
+			} _
+		), _
 		/' EOL '/ _
 		( _
 			NULL _
@@ -790,11 +811,12 @@ end function
 function rtlArrayBoundsCheck _
 	( _
 		byval idx as ASTNODE ptr, _
+		byval arrayexpr as ASTNODE ptr, _
 		byval lb as ASTNODE ptr, _
-		byval rb as ASTNODE ptr, _
+		byval ub as ASTNODE ptr, _
 		byval linenum as integer, _
 		byval module as zstring ptr, _
-		byval vname as zstring ptr _
+		byval variablename as zstring ptr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr proc = any
@@ -802,8 +824,12 @@ function rtlArrayBoundsCheck _
 
 	function = NULL
 
+	'' array expression? use descriptor
+	if( arrayexpr ) then
+		f = PROCLOOKUP( ARRAYDIMENSIONCHK )
+
 	'' lbound 0? do a single check
-	if( lb = NULL ) then
+	elseif( lb = NULL ) then
 		f = PROCLOOKUP( ARRAYSNGBOUNDCHK )
 	else
 		f = PROCLOOKUP( ARRAYBOUNDCHK )
@@ -811,21 +837,28 @@ function rtlArrayBoundsCheck _
 
 	proc = astNewCALL( f )
 
-	'' idx
+	'' idx | dimensions
 	if( astNewARG( proc, astNewCONV( FB_DATATYPE_INTEGER, NULL, idx, AST_CONVOPT_DONTWARNCONST ) ) = NULL ) then
 		exit function
 	end if
 
-	'' lbound
-	if( lb <> NULL ) then
-		if( astNewARG( proc, lb, FB_DATATYPE_INTEGER ) = NULL ) then
+	if( arrayexpr ) then
+		'' array() as ANY
+		if( astNewARG( proc, arrayexpr ) = NULL ) then
 			exit function
 		end if
-	end if
+	else
+		'' lbound
+		if( lb <> NULL ) then
+			if( astNewARG( proc, lb, FB_DATATYPE_INTEGER ) = NULL ) then
+				exit function
+			end if
+		end if
 
-	'' rbound
-	if( astNewARG( proc, rb, FB_DATATYPE_INTEGER ) = NULL ) then
-		exit function
+		'' ubound
+		if( astNewARG( proc, ub, FB_DATATYPE_INTEGER ) = NULL ) then
+			exit function
+		end if
 	end if
 
 	'' linenum
@@ -839,7 +872,7 @@ function rtlArrayBoundsCheck _
 	end if
 
 	'' variable name
-	if( astNewARG( proc, astNewCONSTstr( vname ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTstr( variablename ) ) = NULL ) then
 		exit function
 	end if
 

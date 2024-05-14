@@ -16,6 +16,7 @@ function fb_ArrayLBound
 function fb_ArrayUBound
 function fb_ArraySngBoundChkEx
 function fb_ArrayBoundChkEx
+function fb_ArrayDimensionChk
 ---- rtlConsole
 function fb_ConsoleView
 function fb_ReadXY
