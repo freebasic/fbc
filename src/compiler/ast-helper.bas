@@ -1063,7 +1063,7 @@ function astBuildArrayBound _
 	expr = hConstBound( arrayexpr, dimexpr, (tk = FB_TK_LBOUND) )
 
 	if( expr = NULL ) then
-		'' Fall back to run-time ubound(), that will work for array
+		'' Fall back to run-time l/ubound(), that will work for array
 		'' declarations that can have non-const initializers, and cause
 		'' an error if a constant initializer was expected.
 		expr = rtlArrayBound( arrayexpr, dimexpr, (tk = FB_TK_LBOUND) )

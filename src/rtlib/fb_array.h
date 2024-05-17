@@ -30,8 +30,8 @@ FBCALL void *fb_ArrayBoundChkEx
 		ssize_t lbound,
 		ssize_t ubound,
 		int linenum,
-		const char *fname,
-		const char *vname
+		const char *filename,
+		const char *variablename
 	);
 
 FBCALL void *fb_ArraySngBoundChkEx
@@ -39,8 +39,17 @@ FBCALL void *fb_ArraySngBoundChkEx
 		size_t idx,
 		size_t ubound,
 		int linenum,
-		const char *fname,
-		const char *vname
+		const char *filename,
+		const char *variablename
+	);
+
+FBCALL void *fb_ArrayDimensionChk
+	(
+		ssize_t dimensions,
+		FBARRAY *array,
+		int linenum,
+		const char *filename,
+		const char *variablename
 	);
 
 FBCALL size_t     fb_ArrayLen          ( FBARRAY *array );

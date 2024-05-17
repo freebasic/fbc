@@ -24,34 +24,47 @@ function astNewBOUNDCHK _
 		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr n = any
+	dim as ASTNODE ptr n = any, arrayexpr = NULL
 
-	'' If one of lbound/ubound is CONST, the other should be too -- either
-	'' both are known at compile-time, or neither is.
-	assert( astIsCONST( lb ) = astIsCONST( ub ) )
-
-	'' CONST l/ubound?
-	if( astIsCONST( lb ) ) then
-		'' CONST index?
-		if( astIsCONST( l ) ) then
-			'' i < lbound?
-			if( astConstGetInt( l ) < astConstGetInt( lb ) ) then
-				return NULL
-			end if
-			'' i > ubound?
-			if( astConstGetInt( l ) > astConstGetInt( ub ) ) then
-				return NULL
-			end if
-
-			astDelNode( lb )
-			astDelNode( ub )
+	'' no lower / upper bound? then it's a dimensions check
+	if( lb = NULL andalso ub = NULL ) then
+		'' Field? don't check dimension at runtime because
+		'' dimension mismatch should have been caught
+		'' at compile time
+		if( symbIsField( sym )  ) then
 			return l
+		else
+			arrayexpr = astNewNIDXARRAY( astNewVAR( sym ) )
 		end if
 
-		'' 0? Delete it so rtlArrayBoundsCheck() will use fb_ArraySngBoundChk()
-		if( astConstGetInt( lb ) = 0 ) then
-			astDelNode( lb )
-			lb = NULL
+	else
+		'' If one of lbound/ubound is CONST, the other should be too -- either
+		'' both are known at compile-time, or neither is.
+		assert( astIsCONST( lb ) = astIsCONST( ub ) )
+
+		'' CONST l/ubound?
+		if( astIsCONST( lb ) ) then
+			'' CONST index?
+			if( astIsCONST( l ) ) then
+				'' i < lbound?
+				if( astConstGetInt( l ) < astConstGetInt( lb ) ) then
+					return NULL
+				end if
+				'' i > ubound?
+				if( astConstGetInt( l ) > astConstGetInt( ub ) ) then
+					return NULL
+				end if
+
+				astDelNode( lb )
+				astDelNode( ub )
+				return l
+			end if
+
+			'' 0? Delete it so rtlArrayBoundsCheck() will use fb_ArraySngBoundChk()
+			if( astConstGetInt( lb ) = 0 ) then
+				astDelNode( lb )
+				lb = NULL
+			end if
 		end if
 	end if
 
@@ -66,7 +79,7 @@ function astNewBOUNDCHK _
 	'' check must be done using a function because calling ErrorThrow
 	'' would spill used regs only if it was called, causing wrong
 	'' assumptions after the branches
-	n->r = rtlArrayBoundsCheck( astNewVAR( n->sym ), lb, ub, linenum, filename, sym->id.name )
+	n->r = rtlArrayBoundsCheck( astNewVAR( n->sym ), arrayexpr, lb, ub, linenum, filename, sym->id.name )
 
 end function
 
@@ -121,9 +134,9 @@ function astBuildBOUNDCHK _
 		byval expr as ASTNODE ptr, _
 		byval lb as ASTNODE ptr, _
 		byval ub as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr = 0 _
+		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
-	function = astNewBOUNDCHK( expr, lb, ub, lexLineNum( ), env.inf.name, sym)
+	function = astNewBOUNDCHK( expr, lb, ub, lexLineNum( ), env.inf.name, sym )
 end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

@@ -156,6 +156,7 @@
 #define FB_RTL_ARRAYUBOUND              "fb_ArrayUBound"
 #define FB_RTL_ARRAYSNGBOUNDCHK         "fb_ArraySngBoundChkEx"
 #define FB_RTL_ARRAYBOUNDCHK            "fb_ArrayBoundChkEx"
+#define FB_RTL_ARRAYDIMENSIONCHK        "fb_ArrayDimensionChk"
 
 #define FB_RTL_NULLPTRCHK               "fb_NullPtrChk"
 
@@ -579,6 +580,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_ARRAYUBOUND
 	FB_RTL_IDX_ARRAYSNGBOUNDCHK
 	FB_RTL_IDX_ARRAYBOUNDCHK
+	FB_RTL_IDX_ARRAYDIMENSIONCHK
 
 	FB_RTL_IDX_NULLPTRCHK
 
@@ -1158,11 +1160,12 @@ declare function rtlArrayBound _
 declare function rtlArrayBoundsCheck _
 	( _
 		byval idx as ASTNODE ptr, _
+		byval arrayexpr as ASTNODE ptr, _
 		byval lb as ASTNODE ptr, _
 		byval rb as ASTNODE ptr, _
 		byval linenum as integer, _
 		byval module as zstring ptr, _
-		byval vname as zstring ptr _
+		byval variablename as zstring ptr _
 	) as ASTNODE ptr
 
 declare function rtlNullPtrCheck _

@@ -93,6 +93,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_NULLPTRCHECK         '' boolean: NULL pointer
 	FB_COMPOPT_UNWINDINFO           '' boolean: enable call stack unwind information
 	FB_COMPOPT_ARRAYBOUNDCHECK      '' boolean: array bounds checks
+	FB_COMPOPT_ARRAYDIMSCHECK       '' boolean: array dimensions checks
 	FB_COMPOPT_PROFILE              '' boolean: -profile
 
 	'' error/warning reporting behaviour
@@ -307,6 +308,7 @@ type FBCMMLINEOPT
 	extraerrchk     as integer              '' enable NULL pointer/array bounds checks?
 	errlocation     as integer              '' enable reporting of error location (default = false)
 	arrayboundchk   as integer              '' enable array bounds checks?
+	arraydimschk    as integer              '' enable array dimensions checks?
 	nullptrchk      as integer              '' enable NULL pointer checks?
 	unwindinfo      as integer              '' enable call stack unwind information
 	profile         as integer              '' build profiling code (default = false)

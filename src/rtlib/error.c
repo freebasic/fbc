@@ -20,7 +20,9 @@ static const char *messages[] = {
 	"\"abnormal termination\" signal",      /* FB_RTERROR_SIGTERM */
 	"\"quit request\" signal",              /* FB_RTERROR_SIGABRT */
 	"return without gosub",                 /* FB_RTERROR_RETURNWITHOUTGOSUB */
-	"end of file"                           /* FB_RTERROR_ENDOFFILE */
+	"end of file",                          /* FB_RTERROR_ENDOFFILE */
+	"array not dimensioned",                /* FB_RTERROR_NOTDIMENSIONED */
+	"wrong number of dimensions"            /* FB_RTERROR_WRONGDIMENSIONS */
 };
 
 static void fb_Die

@@ -1884,6 +1884,7 @@ enum
 	OPT_DYLIB
 	OPT_E
 	OPT_EARRAY
+	OPT_EARRAYDIMS
 	OPT_EASSERT
 	OPT_EDEBUG
 	OPT_EDEBUGINFO
@@ -1969,6 +1970,7 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( FALSE, TRUE , TRUE , TRUE  ), _ '' OPT_DYLIB        affects major initialization, affects output format
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_E            affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EARRAY       affects code generation
+	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EARRAYDIMS   affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EASSERT      affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EDEBUG       affects code generation
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_EDEBUGINFO   affects code generation, affects link
@@ -2089,6 +2091,9 @@ private sub handleOpt _
 	case OPT_EARRAY
 		fbSetOption( FB_COMPOPT_ARRAYBOUNDCHECK, TRUE )
 
+	case OPT_EARRAYDIMS
+		fbSetOption( FB_COMPOPT_ARRAYDIMSCHECK, TRUE )
+
 	case OPT_EASSERT
 		fbSetOption( FB_COMPOPT_ASSERTIONS, TRUE )
 
@@ -2121,6 +2126,7 @@ private sub handleOpt _
 		fbSetOption( FB_COMPOPT_EXTRAERRCHECK, TRUE )
 		fbSetOption( FB_COMPOPT_ERRLOCATION, TRUE )
 		fbSetOption( FB_COMPOPT_ARRAYBOUNDCHECK, TRUE )
+		fbSetOption( FB_COMPOPT_ARRAYDIMSCHECK, TRUE )
 		fbSetOption( FB_COMPOPT_NULLPTRCHECK, TRUE )
 		fbSetOption( FB_COMPOPT_UNWINDINFO, TRUE )
 
@@ -2587,6 +2593,7 @@ private function parseOption(byval opt as zstring ptr) as integer
 		ONECHAR(OPT_E)
 		CHECK("ex", OPT_EX)
 		CHECK("earray", OPT_EARRAY)
+		CHECK("earraydims", OPT_EARRAYDIMS)
 		CHECK("eassert", OPT_EASSERT)
 		CHECK("edebug", OPT_EDEBUG)
 		CHECK("edebuginfo", OPT_EDEBUGINFO)
@@ -4449,6 +4456,7 @@ private sub hPrintOptions( byval verbose as integer )
 
 	if( verbose ) then
 	print "  -earray          Enable array bounds checking"
+	print "  -earraydims      Enable array dimensions checking"
 	print "  -eassert         Enable assert() and assertwarn() checking"
 	print "  -edebug          Enable __FB_DEBUG__"
 	print "  -edebuginfo      Add debug info"

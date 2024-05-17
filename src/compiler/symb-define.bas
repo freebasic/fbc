@@ -237,6 +237,10 @@ private function hDefErr_cb() as string
 		res or= &h0200
 	end if
 
+	if( env.clopt.arraydimschk ) then
+		res or= &h0400
+	end if
+
 	function = str( res )
 end function
 
