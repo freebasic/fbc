@@ -11,10 +11,10 @@
 
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
-		/' function fb_ProfileBeginProc ( byval procname as const zstring ptr ) as const any ptr '/ _
+		/' function fb_ProfileBeginProc ( byval procname as const zstring ptr ) as any ptr '/ _
 		( _
 			@FB_RTL_PROFILEBEGINPROC, NULL, _
-			typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_FUNCMODE_FBCALL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -23,7 +23,7 @@
 				) _
 			} _
 		), _
-		/' sub fb_ProfileEndProc ( byval call as const any ptr )'/ _
+		/' sub fb_ProfileEndProc ( byval call as any ptr )'/ _
 		( _
 			@FB_RTL_PROFILEENDPROC, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
@@ -31,14 +31,14 @@
 			1, _
 			{ _
 				( _
-					typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
 		), _
-		/' function fb_ProfileBeginCall ( byval procname as const zstring ptr ) as const any ptr '/ _
+		/' function fb_ProfileBeginCall ( byval procname as const zstring ptr ) as any ptr '/ _
 		( _
 			@FB_RTL_PROFILEBEGINCALL, NULL, _
-			typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_FUNCMODE_FBCALL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -47,7 +47,7 @@
 				) _
 			} _
 		), _
-		/' sub fb_ProfileEndCall ( byval call as const any ptr ) '/ _
+		/' sub fb_ProfileEndCall ( byval call as any ptr ) '/ _
 		( _
 			@FB_RTL_PROFILEENDCALL, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
@@ -55,7 +55,7 @@
 			1, _
 			{ _
 				( _
-					typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
 		), _

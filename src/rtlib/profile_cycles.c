@@ -17,7 +17,6 @@
 #endif
 
 /* profile section data */
-
 extern int __start_fb_profilecycledata;
 extern int __stop_fb_profilecycledata;
 
@@ -114,7 +113,7 @@ static FB_PROFILER_CYCLES *PROFILER_CYCLES_create( void )
 	return fb_profiler;
 }
 
-static void PROFILER_CYCLES_destroy(  )
+static void PROFILER_CYCLES_destroy( void )
 {
 	if( fb_profiler ) {
 		PROFILER_GLOBAL_destroy( );
@@ -128,7 +127,7 @@ static void PROFILER_CYCLES_destroy(  )
 */
 
 #if 0
-static hProfilerReportBinary( )
+static hProfilerReportBinary( void )
 {
 	f1 = fopen( "profilename.prf", "w" );
 	f2 = fopen( "profilecycles.prf", "w" );
@@ -316,10 +315,8 @@ FBCALL void fb_InitProfileCycles( void )
 /*:::::*/
 FBCALL int fb_EndProfileCycles( int errorlevel )
 {
-	FB_PROFILER_CYCLES *prof = fb_profiler;
-	hProfilerWriteReport( prof );
-	PROFILER_CYCLES_destroy( fb_profiler );
-	fb_profiler = NULL;
+	hProfilerWriteReport( fb_profiler );
+	PROFILER_CYCLES_destroy( );
 	return errorlevel;
 }
 

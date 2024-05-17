@@ -80,6 +80,7 @@ typedef struct _FB_PROCARRAY
 
 typedef struct _FB_PROFILER_THREAD
 {
+	FB_PROCINFO *thread_entry;
 	FB_PROCINFO *thread_proc;
 	STRING_TABLE strings;
 	STRING_HASH_TABLE strings_hash;
@@ -287,6 +288,7 @@ static void PROCARRAY_find_unique_procs( FB_PROCARRAY *list, FB_PROCINFO_TB *pro
 static void PROFILER_THREAD_constructor( FB_PROFILER_THREAD *ctx )
 {
 	if( ctx ) {
+		ctx->thread_entry = NULL;
 		ctx->thread_proc = NULL;
 		STRING_TABLE_constructor( &ctx->strings );
 		STRING_HASH_TABLE_constructor( &ctx->strings_hash, &ctx->strings );
@@ -309,8 +311,14 @@ void fb_PROFILECTX_Destructor( void* data )
 	if( tls ) {
 		FB_PROFILER_THREAD *ctx = tls->ctx;
 		if( ctx ) {
-			if( ctx->thread_proc ) {
-				ctx->thread_proc->local_time = fb_Timer() - ctx->thread_proc->start_time;
+			FB_PROCINFO *lastproc;
+
+			/* walk the call stack and update times */
+			/* calculate time even if the thread ends from a called procedure */
+			lastproc = ctx->thread_proc;
+			while( lastproc ) {
+				lastproc->local_time = fb_Timer() - lastproc->start_time;
+				lastproc =  lastproc->parent;
 			}
 
 			/* don't actually delete the data, just */
@@ -405,7 +413,7 @@ static FB_PROFILER_CALLS *PROFILER_CALLS_create( void )
 	return fb_profiler;
 }
 
-static void PROFILER_CALLS_destroy(  )
+static void PROFILER_CALLS_destroy( void )
 {
 	if( fb_profiler ) {
 		PROFILER_free( fb_profiler->calltree_leader.data );
@@ -498,7 +506,7 @@ static void hProfilerReportCallsProc (
 			len = 14 - fprintf( f, "%10.5f", parent_proc->local_time );
 			pad_spaces( f, len );
 
-			fprintf( f, "%6.2f%%", (parent_proc->local_time * 100.0) / ctx->thread_proc->local_time );
+			fprintf( f, "%6.2f%%", (parent_proc->local_time * 100.0) / ctx->thread_entry->local_time );
 		}
 
 		fprintf( f, "\n\n" );
@@ -520,7 +528,7 @@ static void hProfilerReportCallsProc (
 				len = 14 - fprintf( f, "%10.5f", proc->local_time );
 				pad_spaces( f, len );
 
-				len = 10 - fprintf( f, "%6.2f%%", ( proc->local_time * 100.0 ) / ctx->thread_proc->local_time );
+				len = 10 - fprintf( f, "%6.2f%%", ( proc->local_time * 100.0 ) / ctx->thread_entry->local_time );
 				pad_spaces( f, len );
 
 				fprintf( f, "%6.2f%%", ( parent_proc->local_time > 0.0 ) ?
@@ -655,7 +663,7 @@ static void hProfilerReportCallsGlobals (
 			len = 14 - fprintf( f, "%10.5f", proc->local_time );
 			pad_spaces( f, len );
 
-			len = 10 - fprintf( f, "%6.2f%%", ( proc->local_time * 100.0 ) / ctx->thread_proc->local_time );
+			len = 10 - fprintf( f, "%6.2f%%", ( proc->local_time * 100.0 ) / ctx->thread_entry->local_time );
 		}
 
 		fprintf( f, "\n" );
@@ -781,7 +789,7 @@ static void hProfilerReportCallTree (
 		fprintf( f, "Call Tree:\n\n" );
 	}
 
-	hProfilerReportCallTreeProc( prof, ctx, f, ctx->thread_proc, TRUE, TRUE );
+	hProfilerReportCallTreeProc( prof, ctx, f, ctx->thread_entry, TRUE, TRUE );
 }
 
 /* PROFILE_OPTION_REPORT_RAWLIST */
@@ -1056,10 +1064,6 @@ static void hProfilerWriteReport( FB_PROFILER_CALLS *prof )
 		return;
 	}
 
-	/* fb_PROFILECTX_Destructor() won't be called for the main thread, */
-	/* until at least after the report is written, so update time now */
-	prof->main_thread->thread_proc->local_time = fb_Timer() - prof->main_thread->thread_proc->start_time;
-
 	fb_ProfileGetFileName( filename, PROFILER_MAX_PATH );
 
 	f = fopen( filename, "w" );
@@ -1073,7 +1077,7 @@ static void hProfilerWriteReport( FB_PROFILER_CALLS *prof )
 		fb_hGetExeName( filename, PROFILER_MAX_PATH-1 );
 		fprintf( f, "Executable name: %s\n", filename );
 		fprintf( f, "Launched on: %s\n", prof->global->launch_time );
-		fprintf( f, "Total program execution time: %5.4g seconds\n", prof->main_thread->thread_proc->local_time );
+		fprintf( f, "Total program execution time: %5.4g seconds\n", prof->main_thread->thread_entry->local_time );
 	}
 
 	hProfilerReportThread( prof, prof->main_thread, f );
@@ -1153,6 +1157,7 @@ fill_proc:
 
 update_proc:
 	proc->start_time = fb_Timer();
+	proc->local_count += 1;
 
 	/* set the current procedure pointer to the procedure about to be called */
 	ctx->thread_proc = proc;
@@ -1169,7 +1174,6 @@ static void hPopCall( FB_PROFILER_THREAD *ctx, FB_PROCINFO *proc )
 	/* accumulated time and call count is for all calls */
 	/* with the current parent */
 	proc->local_time += ( end_time - proc->start_time );
-	proc->local_count += 1;
 
 	/* return to the callee's parent */
 	ctx->thread_proc = proc->parent;
@@ -1201,6 +1205,8 @@ FBCALL void *fb_ProfileBeginProc( const char *procname )
 		proc = FB_PROFILER_THREAD_alloc_proc( ctx );
 		hInitCall( ctx, proc, procname );
 		proc->flags |= PROCINFO_FLAGS_THREAD;
+		ctx->thread_entry = proc;
+		proc->local_count += 1;
 	}
 
 	if( !procname || !(*procname) ) {
@@ -1219,15 +1225,14 @@ FBCALL void *fb_ProfileBeginProc( const char *procname )
 }
 
 /*:::::*/
-FBCALL void fb_ProfileEndProc( void *p )
+FBCALL void fb_ProfileEndProc( void *callid )
 {
-	if( p ) {
+	if( callid ) {
 		FB_PROFILECTX *tls = FB_TLSGETCTX(PROFILE);
 		FB_PROFILER_THREAD *ctx = tls->ctx;
 		FB_PROCINFO *proc = ctx->thread_proc;
-		if( (proc->flags & PROCINFO_FLAGS_THREAD) != 0 ) {
-			proc->local_count += 1;
-		}
+
+		/* TODO: check proc == callid */
 		if( proc->parent ) {
 			if( (proc->parent->flags & PROCINFO_FLAGS_CALLPTR) != 0 ) {
 				hPopCall( ctx, proc );
@@ -1268,11 +1273,11 @@ FBCALL void *fb_ProfileBeginCall( const char *procname )
 }
 
 /*:::::*/
-FBCALL void fb_ProfileEndCall( void *p )
+FBCALL void fb_ProfileEndCall( void *callid )
 {
-	if( p ) {
+	if( callid ) {
 		FB_PROFILECTX *tls = FB_TLSGETCTX(PROFILE);
-		hPopCall( tls->ctx, (FB_PROCINFO *)p );
+		hPopCall( tls->ctx, (FB_PROCINFO *)callid );
 	}
 }
 
@@ -1290,8 +1295,9 @@ FBCALL void fb_InitProfile( void )
 	ctx = tls->ctx;
 
 	/* assume we are starting from MAIN procedure */
-	ctx->thread_proc = FB_PROFILER_THREAD_alloc_proc( ctx );
-	hInitCall( ctx, ctx->thread_proc, MAIN_PROC_NAME );
+	ctx->thread_entry = FB_PROFILER_THREAD_alloc_proc( ctx );
+	hInitCall( ctx, ctx->thread_entry, MAIN_PROC_NAME );
+	ctx->thread_proc = ctx->thread_entry;
 	ctx->thread_proc->flags |= PROCINFO_FLAGS_MAIN;
 	ctx->thread_proc->local_count = 1;
 
@@ -1305,15 +1311,22 @@ FBCALL int fb_EndProfile( int errorlevel )
 	FB_PROFILECTX *tls = FB_TLSGETCTX(PROFILE);
 	FB_PROFILER_THREAD *ctx = tls->ctx;
 	FB_PROFILER_CALLS *prof = fb_profiler;
+	FB_PROCINFO *lastproc;
 
 	if( ctx != prof->main_thread ) {
-		/* TODO: Ending the profile from some other thread? */
+		/* TODO: Ending profiling from some other thread? */
+	}
+
+	/* walk up the call stack and update times */
+	lastproc = ctx->thread_proc;
+	while( lastproc ) {
+		lastproc->local_time = fb_Timer() - lastproc->start_time;
+		lastproc =  lastproc->parent;
 	}
 
 	hProfilerWriteReport( prof );
 
-	PROFILER_CALLS_destroy( fb_profiler );
-	fb_profiler = NULL;
+	PROFILER_CALLS_destroy( );
 
 	return errorlevel;
 }

@@ -176,6 +176,8 @@ namespace Profiler
 		PROCINFO_FLAGS_FOREIGN  = 8
 	end enum
 
+	'' '-profgen fb' data structure
+
 	'' procedure call information, and hash table for child procedures
 	type FB_PROCINFO
 		as const zstring ptr name
@@ -214,6 +216,7 @@ namespace Profiler
 
 	'' thread profiler state
 	type FB_PROFILER_THREAD
+		as FB_PROCINFO ptr thread_entry
 		as FB_PROCINFO ptr thread_proc
 		as STRING_TABLE strings
 		as STRING_HASH strings_hash
@@ -235,6 +238,8 @@ namespace Profiler
 		as FB_PROFILER_THREAD ptr threads
 		as string calltree_leader
 	end type
+
+	'' '-profgen cycles' data structure
 
 	'' cycles profiler
 	'' use FB_PROFILE_LOCK()/FB_PROFILE_UNLOCK when accessing
