@@ -340,13 +340,14 @@ void fb_PROFILECTX_Destructor( void* data )
 static void fb_hPROFILER_METRICS_Procs( FB_PROFILER_METRICS *metrics, FB_PROCINFO_TB *proc_tb )
 {
 	FB_PROCINFO_TB *tb;
+	int i;
 	if( metrics && proc_tb ) {
 		tb = proc_tb;
 		while( tb ) {
 			metrics->procs_bytes_allocated += sizeof( FB_PROCINFO_TB );
 			metrics->procs_count_blocks += 1;
 
-			for( int i = 0; i < PROC_INFO_TB_SIZE; i++ )
+			for( i = 0; i < PROC_INFO_TB_SIZE; i++ )
 			{
 				if( tb->procinfo[i].name ) {
 					metrics->procs_count_items += 1;

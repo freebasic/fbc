@@ -346,13 +346,14 @@ void fb_hPROFILER_METRICS_Strings( FB_PROFILER_METRICS *metrics, STRING_TABLE *s
 void fb_hPROFILER_METRICS_HashTable( FB_PROFILER_METRICS *metrics, STRING_HASH_TABLE *hash )
 {
 	STRING_HASH_TB *tb;
+	int i;
 	if( metrics && hash ) {
 		tb = hash->tb;
 		while( tb ) {
 			metrics->hash_bytes_allocated += sizeof( STRING_HASH_TB );
 			metrics->hash_count_blocks += 1;
 
-			for( int i=0; i < STRING_HASH_TB_SIZE; i++ )
+			for( i=0; i < STRING_HASH_TB_SIZE; i++ )
 			{
 				if( tb->items[i] ) {
 					metrics->hash_count_items += 1;
