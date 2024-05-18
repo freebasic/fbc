@@ -17,8 +17,8 @@
 #endif
 
 /* profile section data */
-extern int __start_fb_profilecycledata;
-extern int __stop_fb_profilecycledata;
+extern char __start_fb_profilecycledata;
+extern char __stop_fb_profilecycledata;
 
 /* profiler record ids - these indicate what the record is */
 enum FB_PROFILE_REDORD_ID

@@ -395,7 +395,11 @@ FB_PROFILER_GLOBAL *PROFILER_GLOBAL_create( void ) {
 
 		time( &rawtime );
 		ptm = localtime( &rawtime );
-		sprintf( fb_profiler->launch_time, "%02d-%02d-%04d, %02d:%02d:%02d", 1+ptm->tm_mon, ptm->tm_mday, 1900+ptm->tm_year, ptm->tm_hour, ptm->tm_min, ptm->tm_sec );
+		snprintf( fb_profiler->launch_time, sizeof(fb_profiler->launch_time),
+		         "%02d-%02d-%04d, %02d:%02d:%02d",
+		         (int)(1+ptm->tm_mon), (int)(ptm->tm_mday), (int)(1900+ptm->tm_year),
+		         (int)ptm->tm_hour, (int)ptm->tm_min, (int)ptm->tm_sec );
+		fb_profiler->launch_time[sizeof(fb_profiler->launch_time)-1] = '\0';
 	}
 	return fb_profiler;
 }
