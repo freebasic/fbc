@@ -77,7 +77,7 @@
 #   clean-tests
 #
 #   bootstrap-dist      Create source package with precompiled fbc sources
-#   bootstrap-dist-arm  Create source package with precompiled fbc sources for arm and aarach64 only
+#   bootstrap-dist-arm  Create source package with precompiled fbc sources for arm and aarch64 only
 #   bootstrap           Build fbc from the precompiled sources (only if precompiled sources exist)
 #   bootstrap-minimal   Build fbc from the precompiled sources (only if precompiled sources exist) with only the minimal features needed to compile another fbc
 #
