@@ -1431,6 +1431,28 @@ bootstrap-dist-arm:
 	tar -cJf "$(FBBOOTSTRAPTITLEARM).tar.xz" "$(FBBOOTSTRAPTITLEARM)"
 	rm -rf "$(FBBOOTSTRAPTITLEARM)"
 
+FBBOOTSTRAPTITLETARGET := $(FBSOURCETITLE)-bootstrap-$(FBPACKTARGET)
+ifeq ($(TARGET_ARCH),x86)
+  FBBOOTSTRAPFILEEXT=asm
+else
+  FBBOOTSTRAPFILEEXT=c
+endif
+.PHONY: bootstrap-dist-target
+bootstrap-dist-target:
+	# Precompile fbc sources for a single target
+	rm -rf bootstrap
+	mkdir -p bootstrap/$(FBTARGET)
+
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target $(FBTARGET) && mv src/compiler/*.$(FBBOOTSTRAPFILEEXT) bootstrap/$(FBTARGET)
+	dos2unix bootstrap/$(FBTARGET)/*
+
+	# Package FB sources (similar to our "gitdist" command), and add the bootstrap/ directory
+	# Making a .tar.xz should be good enough for now.
+	git -c core.autocrlf=false archive --format tar --prefix "$(FBBOOTSTRAPTITLETARGET)/" HEAD | tar xf -
+	mv bootstrap $(FBBOOTSTRAPTITLETARGET)
+	tar -cJf "$(FBBOOTSTRAPTITLETARGET).tar.xz" "$(FBBOOTSTRAPTITLETARGET)"
+	rm -rf "$(FBBOOTSTRAPTITLETARGET)"
+
 #
 # Build the fbc[.exe] binary from the precompiled sources in the bootstrap/
 # directory.
