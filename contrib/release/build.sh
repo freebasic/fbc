@@ -777,30 +777,60 @@ linux*)
 	;;
 esac
 
+# libffi-3.2.1
+#    mingw-w64-gcc-5.2
+#    mingw-w64-gcc-8.1
+
+# libffi-3.3
+#    winlibs-gcc-9.3.0
+
+# libffi-3.4.4
+#    mingw-w64-gcc-11.2.0
+#    mingw-w64-gcc-12.2.0
+#    mingw-w64-gcc-13.2.0
+
+if [ -z "$libffi_version" ]; then
+case "$target" in
+win32-mingworg)
+	libffi_version="3.3"
+	libffi_dir="https://github.com/libffi/libffi/releases/download/v${libffi_version}"
+	;;
+esac
+fi
+
+if [ -z "$libffi_version" ]; then
+case "$named_recipe" in
+# older mingw-w64 packages are distributed with headers for libffi-3.2.1
+# but libffi-3.3 below should work for them also
+#-mingw-w64-gcc-5.2.0|-gcc-5.2.0|-mingw-w64-gcc-8.1.0|-gcc-8.1.0)
+#	# libffi sources https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.2.1.tar.gz.
+#	libffi_version="3.2.1"
+#	libffi_dir="https://github.com/libffi/libffi/releases/download/v${libffi_version}"
+#	;;
+-mingw-w64-gcc-5.2.0|-gcc-5.2.0)
+	# - https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.3.tar.gz.
+	libffi_version="3.3"
+	libffi_dir="https://github.com/libffi/libffi/releases/download/v${libffi_version}"
+	;;
+*)
+	# - https://github.com/libffi/libffi/releases/download/v3.4.4/libffi-3.4.4.tar.gz
+	libffi_version="3.4.4"
+	libffi_dir="https://github.com/libffi/libffi/releases/download/v${libffi_version}"
+	;;
+esac
+fi
+
 case $fbtarget in
 win32)
-	# libffi sources https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.3.tar.gz. 
-	libffi_title=libffi-3.3
+	libffi_title=libffi-${libffi_version}
 	libffi_package="${libffi_title}.tar.gz"
-	download "$libffi_package" "ftp://sourceware.org/pub/libffi/$libffi_package"
+	download "$libffi_package" "${libffi_dir}/$libffi_package"
 	echo "extracting $libffi_package"
 	tar xf "../input/$libffi_package"
 	;;
-
 win64)
-	# libffi sources: 
-	# - ftp://sourceware.org/pub/libffi/libffi-3.4.3.tar.gz 
-	# - https://github.com/libffi/libffi/releases/download/v3.4.4/libffi-3.4.4.tar.gz
-	libffi_version=3.4.4
 	libffi_title=libffi-${libffi_version}
 	libffi_package="${libffi_title}.tar.gz"
-
-	# sourware:
-	# libffi_dir="ftp://sourceware.org/pub/libffi/"
-
-	# github:
-	libffi_dir="https://github.com/libffi/libffi/releases/download/v${libffi_version}/"
-
 	download "$libffi_package" "${libffi_dir}${libffi_package}"
 	echo "extracting ${libffi_package}"
 	tar xf "../input/${libffi_package}"
