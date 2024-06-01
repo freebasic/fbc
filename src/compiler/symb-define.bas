@@ -895,7 +895,7 @@ private function hDefArgLeft_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as
 
 end function
 
-private function hDefArgRight_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
+private function hDefArgRight_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
 
 	'' __FB_ARG_RIGHTOF__( ARG, SEP [, RET = ""] )
 
@@ -940,7 +940,7 @@ private function hDefArgRight_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 
 end function
 
-private function hDefJoinZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
+private function hDefJoinZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
 
 	'' __FB_JOIN__( L, R )
 
@@ -961,7 +961,7 @@ private function hDefJoinZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as i
 
 end function
 
-private function hDefJoinW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as wstring ptr
+private function hDefJoinW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as wstring ptr
 
 	'' __FB_JOIN__( L, R )
 
@@ -982,7 +982,7 @@ private function hDefJoinW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as i
 
 end function
 
-private function hDefQuoteZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
+private function hDefQuoteZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
 
 	'' __FB_QUOTE__( arg )
 
@@ -1005,7 +1005,7 @@ private function hDefQuoteZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as 
 
 end function
 
-private function hDefQuoteW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as wstring ptr
+private function hDefQuoteW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as wstring ptr
 
 	'' __FB_QUOTE__( arg )
 
@@ -1063,7 +1063,7 @@ private function hDefUnquoteZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 
 end function
 
-private function hDefUnquoteW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as wstring ptr
+private function hDefUnquoteW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as wstring ptr
 
 	'' __FB_UNQUOTE__( arg )
 
@@ -1487,7 +1487,7 @@ dim shared macroTb(0 to ...) as SYMBMACRO => _
 	(@"__FB_EVAL__"           , 0                       , @hDefEvalZ_cb       , @hDefEvalW_cb        , 1, { (@"ARG") } ), _
 	(@"__FB_IIF__"            , 0                       , @hDefIifZ_cb        , @hDefIifW_cb         , 3, { (@"CMPEXPR"), (@"TEXPR"), (@"FEXPR") } ), _
 	(@"__FB_QUERY_SYMBOL__"   , 0                       , @hDefQuerySymZ_cb   , NULL                 , 2, { (@"WHAT"), (@"SYM") } ), _
-	(@"__FB_ARG_LISTEXPAND__" , FB_DEFINE_FLAGS_VARIADIC , @hDefArgListExpandZ_cb   , @hDefArgListExpandW_cb , 3, { (@"MACRONAME"), (@"MACROARGCOUNT"), (@"ARGS") } ) _
+	(@"__FB_ARG_LISTEXPAND__" , FB_DEFINE_FLAGS_VARIADIC, @hDefArgListExpandZ_cb, @hDefArgListExpandW_cb , 3, { (@"MACRONAME"), (@"MACROARGCOUNT"), (@"ARGS") } ) _
 }
 
 sub symbDefineInit _
@@ -1513,7 +1513,7 @@ sub symbDefineInit _
 		end if
 
 		symbAddDefine( defTb(i).name, value, len( value ), _
-				 FALSE, defTb(i).proc, defTb(i).flags )
+		               FALSE, defTb(i).proc, defTb(i).flags )
 	next
 
 	'' Add __FB_<target>__ define
@@ -1616,11 +1616,11 @@ function symbAddDefine _
 
 	'' allocate new node (always on global hash, ns' won't work in lexer)
 	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-						 NULL, _
-						 NULL, @symbGetGlobalHashTb( ), _
-						 FB_SYMBCLASS_DEFINE, _
-						 symbol, NULL, _
-						 FB_DATATYPE_CHAR, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
+	                     NULL, _
+	                     NULL, @symbGetGlobalHashTb( ), _
+	                     FB_SYMBCLASS_DEFINE, _
+	                     symbol, NULL, _
+	                     FB_DATATYPE_CHAR, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
 	if( sym = NULL ) then
 		exit function
 	end if
@@ -1655,11 +1655,11 @@ function symbAddDefineW _
 
 	'' allocate new node (always on global hash, ns' won't work in lexer)
 	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-						 NULL, _
-						 NULL, @symbGetGlobalHashTb( ), _
-						 FB_SYMBCLASS_DEFINE, _
-						 symbol, NULL, _
-						 FB_DATATYPE_WCHAR, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
+	                     NULL, _
+	                     NULL, @symbGetGlobalHashTb( ), _
+	                     FB_SYMBCLASS_DEFINE, _
+	                     symbol, NULL, _
+	                     FB_DATATYPE_WCHAR, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
 	if( sym = NULL ) then
 		exit function
 	end if
@@ -1693,11 +1693,11 @@ function symbAddDefineMacro _
 
 	'' allocate new node (always on global hash, ns' won't work in lexer)
 	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-						 NULL, _
-						 NULL, @symbGetGlobalHashTb( ), _
-						 FB_SYMBCLASS_DEFINE, _
-						 symbol, NULL, _
-						 FB_DATATYPE_INVALID, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
+	                     NULL, _
+	                     NULL, @symbGetGlobalHashTb( ), _
+	                     FB_SYMBCLASS_DEFINE, _
+	                     symbol, NULL, _
+	                     FB_DATATYPE_INVALID, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
 	if( sym = NULL ) then
 		exit function
 	end if
