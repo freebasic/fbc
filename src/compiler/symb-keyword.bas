@@ -128,9 +128,9 @@ dim shared kwdTb( 0 to FB_TOKENS-1 ) as SYMBKWD => _
 	( @"IS"         , FB_TK_IS          , FB_TKCLASS_KEYWORD ), _
 	( @"USING"      , FB_TK_USING       , FB_TKCLASS_KEYWORD ), _
 	( @"LEN"        , FB_TK_LEN         , FB_TKCLASS_QUIRKWD ), _
-	( @"PEEK"       , FB_TK_PEEK        , FB_TKCLASS_KEYWORD ), _
-	( @"POKE"       , FB_TK_POKE        , FB_TKCLASS_KEYWORD ), _
-	( @"SWAP"       , FB_TK_SWAP        , FB_TKCLASS_KEYWORD ), _
+	( @"PEEK"       , FB_TK_PEEK        , FB_TKCLASS_QUIRKWD ), _
+	( @"POKE"       , FB_TK_POKE        , FB_TKCLASS_QUIRKWD ), _
+	( @"SWAP"       , FB_TK_SWAP        , FB_TKCLASS_QUIRKWD ), _
 	( @"COMMON"     , FB_TK_COMMON      , FB_TKCLASS_KEYWORD ), _
 	( @"ENUM"       , FB_TK_ENUM        , FB_TKCLASS_KEYWORD ), _
 	( @"ASM"        , FB_TK_ASM         , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
