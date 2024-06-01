@@ -100,12 +100,15 @@ Version 1.10.3
 [changed]
 - updated bindings: Windows API - refresh the existing windows headers after retranslating with addition of version 8.1 (&h0603) and windows 10 (&h0A00)
 - updated bindings: add machine translated versions of inc/win/excpt.bi and inc/win/sdkddkver.bi 
+- release: allowing using recipes in the build script to specify which arm bootstrap package to use.  Try to determine automatically the host operating system if a recipe is not explicitly given
 
 [added]
+- makefile: add bootstrap-dist-target to make only a single bootstrap-source-{fbtarget} package to allow variations on the bootstrap requirements for different systems 
 
 [fixed]
 - github #33: Bi include error in ntdef.bi 
 - bad code generation of operator cast() UDT ptr passed to byval UDT ptr parameter when matching constructors() are also present
+- rtlib/dos: ensure NUL terminating character is written on optimized conversion from ascii to wstring in the event that the copy is truncated - for example copying from a larger temporary string to a fixed length wstring and DISABLE_WCHAR is in use (previously HOST_DOS)
 
 
 Version 1.10.2
@@ -113,17 +116,18 @@ Version 1.10.2
 [changed]
 
 [added]
-fbc: add FB_CPUTYPE_ARMV6_FP for -march=armv6+fp
-fbc: add FB_CPUTYPE_ARMV7A_FP for -march=armv7-a+fp
-makefile: pass BOOTFBCFLAGS to bootstrap-dist target when making source boostrap
-makefile: add FBSHA1 to BOOTFBCFLAGS to allow setting fbc's sha-1 version in the bootstrap sources
-makefile:  DEFAULT_CPUTYPE_X86 build option to set the default X86 cpu; if given sets BUILD_FB_DEFAULT_CPUTYPE_X86 compiler configration option
-makefile: add BUILD_FB_DEFAULT_CPUTYPE_X86 to BOOTFBCFLAGS
-fbc: BUILD_FB_DEFAULT_CPUTYPE_X86 to set FB_DEFAULT_CPUTYPE_X86 in source code; if not given then default depends on host
-makefile:  DEFAULT_CPUTYPE_ARM build option to set the default ARM cpu; if given sets BUILD_FB_DEFAULT_CPUTYPE_ARM compiler configration option
-makefile: add BUILD_FB_DEFAULT_CPUTYPE_ARM to BOOTFBCFLAGS
-fbc: BUILD_FB_DEFAULT_CPUTYPE_ARM to set FB_DEFAULT_CPUTYPE_ARM in source code; if not given then default is FB_CPUTYPE_ARMV7A
-makefile: add bootstrap-dist-arm to make ARM/AARCH64 only bootstrap-source-arm package (convenience for different build requirements and not building every source bootstrap target)
+- fbc: add FB_CPUTYPE_ARMV6_FP for -march=armv6+fp
+- fbc: add FB_CPUTYPE_ARMV7A_FP for -march=armv7-a+fp
+- makefile: pass BOOTFBCFLAGS to bootstrap-dist target when making source boostrap
+- makefile: add FBSHA1 to BOOTFBCFLAGS to allow setting fbc's sha-1 version in the bootstrap sources 
+- makefile:  DEFAULT_CPUTYPE_X86 build option to set the default X86 cpu; if given sets BUILD_FB_DEFAULT_CPUTYPE_X86 compiler configration option
+- makefile: add BUILD_FB_DEFAULT_CPUTYPE_X86 to BOOTFBCFLAGS
+- fbc: BUILD_FB_DEFAULT_CPUTYPE_X86 to set FB_DEFAULT_CPUTYPE_X86 in source code; if not given then default depends on host
+- makefile:  DEFAULT_CPUTYPE_ARM build option to set the default ARM cpu; if given sets BUILD_FB_DEFAULT_CPUTYPE_ARM compiler configration option
+- makefile: add BUILD_FB_DEFAULT_CPUTYPE_ARM to BOOTFBCFLAGS
+- fbc: BUILD_FB_DEFAULT_CPUTYPE_ARM to set FB_DEFAULT_CPUTYPE_ARM in source code; if not given then default is FB_CPUTYPE_ARMV7A
+- makefile: add bootstrap-dist-arm to make ARM/AARCH64 only bootstrap-source-arm package (convenience for different build requirements and not building every source bootstrap target)
+- makefile: option FBPACKTARGET=name to set an alternate package name for releases without affecting the default behaviours of FBTARGET
 
 [fixed]
 - updated bindings: BASS to 2.4.17.0

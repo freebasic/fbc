@@ -83,7 +83,7 @@
 #   clean-tests
 #
 #   bootstrap-dist      Create source package with precompiled fbc sources
-#   bootstrap-dist-arm  Create source package with precompiled fbc sources for arm and aarach64 only
+#   bootstrap-dist-arm  Create source package with precompiled fbc sources for arm and aarch64 only
 #   bootstrap           Build fbc from the precompiled sources (only if precompiled sources exist)
 #   bootstrap-minimal   Build fbc from the precompiled sources (only if precompiled sources exist) with only the minimal features needed to compile another fbc
 #
@@ -106,6 +106,7 @@
 #   FBSHA1=some-sha-1      explicitly indicate the sha-1 to store in the compiler
 #   FBFORKID=name          tells fbc to set a custom value for __FB_BUILD_FORK_ID__
 #   FBPACKAGE     bindist: The package/archive file name without path or extension
+#   FBPACKTARGET  bindist: Override only the FBTARGET part used in package naming
 #   FBPACKSUFFIX  bindist: Allows adding a custom suffix to the normal package name (and the toplevel dir in the archive)
 #   FBMANIFEST    bindist: The manifest file name without path or extension
 #   FBVERSION     bindist/gitdist: FB version number
@@ -434,6 +435,18 @@ endif
 # The rest uses the <os>-<cpufamily> format
 ifndef FBTARGET
   FBTARGET := $(TARGET_OS)-$(TARGET_ARCH)
+endif
+
+# In newer fbc release versions we have more variants of packages built
+# for specific systems than was traditionally built for releases in the past.
+# FBPACKTARGET will alter the package name for the release without altering
+# the FBTARGET name used for sub directories and target identification
+# elsewhere in the makefile.  FBPACKTARGET allows us to build a package for a
+# specific system with an alternate package name without having to repack the
+# package for a different package name later.
+#
+ifndef FBPACKTARGET
+  FBPACKTARGET := $(FBTARGET)
 endif
 
 #
@@ -1117,18 +1130,24 @@ gitdist:
 # Windows/DOS standalone = FreeBASIC-x.xx.x-target
 # Windows/DOS normal     = fbc-x.xx.x-target (MinGW/DJGPP-style packages)
 #
+# By default FBPACKTARGET will have been set to FBTARGET.  FBPACKTARGET
+# can be used to override the default package naming allowing alternate
+# packages to be generated for specific systems while retaining all the
+# properties of an FBTARGET based release. 
+# If FBPACKAGE is defined then FBPACKTARGET has no effect.
+#
 ifndef FBPACKAGE
   ifneq ($(filter darwin freebsd dragonfly linux netbsd openbsd solaris,$(TARGET_OS)),)
     ifdef ENABLE_STANDALONE
-      FBPACKAGE := FreeBASIC-$(FBVERSION)-$(FBTARGET)-standalone
+      FBPACKAGE := FreeBASIC-$(FBVERSION)-$(FBPACKTARGET)-standalone
     else
-      FBPACKAGE := FreeBASIC-$(FBVERSION)-$(FBTARGET)
+      FBPACKAGE := FreeBASIC-$(FBVERSION)-$(FBPACKTARGET)
     endif
   else
     ifdef ENABLE_STANDALONE
-      FBPACKAGE := FreeBASIC-$(FBVERSION)-$(FBTARGET)
+      FBPACKAGE := FreeBASIC-$(FBVERSION)-$(FBPACKTARGET)
     else
-      FBPACKAGE := fbc-$(FBVERSION)-$(FBTARGET)
+      FBPACKAGE := fbc-$(FBVERSION)-$(FBPACKTARGET)
     endif
   endif
 endif
@@ -1487,6 +1506,28 @@ bootstrap-dist-arm:
 	mv bootstrap $(FBBOOTSTRAPTITLEARM)
 	tar -cJf "$(FBBOOTSTRAPTITLEARM).tar.xz" "$(FBBOOTSTRAPTITLEARM)"
 	rm -rf "$(FBBOOTSTRAPTITLEARM)"
+
+FBBOOTSTRAPTITLETARGET := $(FBSOURCETITLE)-bootstrap-$(FBPACKTARGET)
+ifeq ($(TARGET_ARCH),x86)
+  FBBOOTSTRAPFILEEXT=asm
+else
+  FBBOOTSTRAPFILEEXT=c
+endif
+.PHONY: bootstrap-dist-target
+bootstrap-dist-target:
+	# Precompile fbc sources for a single target
+	rm -rf bootstrap
+	mkdir -p bootstrap/$(FBTARGET)
+
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v $(BOOTFBCFLAGS) -target $(FBTARGET) && mv src/compiler/*.$(FBBOOTSTRAPFILEEXT) bootstrap/$(FBTARGET)
+	dos2unix bootstrap/$(FBTARGET)/*
+
+	# Package FB sources (similar to our "gitdist" command), and add the bootstrap/ directory
+	# Making a .tar.xz should be good enough for now.
+	git -c core.autocrlf=false archive --format tar --prefix "$(FBBOOTSTRAPTITLETARGET)/" HEAD | tar xf -
+	mv bootstrap $(FBBOOTSTRAPTITLETARGET)
+	tar -cJf "$(FBBOOTSTRAPTITLETARGET).tar.xz" "$(FBBOOTSTRAPTITLETARGET)"
+	rm -rf "$(FBBOOTSTRAPTITLETARGET)"
 
 #
 # Build the fbc[.exe] binary from the precompiled sources in the bootstrap/

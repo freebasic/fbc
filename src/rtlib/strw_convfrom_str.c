@@ -37,10 +37,13 @@ ssize_t fb_wstr_ConvFromA(FB_WCHAR *dst, ssize_t dst_chars, const char *src)
 
 #if defined DISABLE_WCHAR
 	ssize_t chars = strlen(src);
-	if (chars > dst_chars)
+	if (chars > dst_chars) {
 		chars = dst_chars;
-
+	}
 	memcpy(dst, src, chars + 1);
+
+	/* ensure that the null terminator is written, string may have been truncated */
+	dst[chars] = '\0';
 	return chars;
 #else
 	/* plus the null-term (note: "n" in chars, not bytes!) */
