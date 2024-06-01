@@ -747,6 +747,9 @@ private function hDefArgListExpandZ_cb( byval argtb as LEXPP_ARGTB ptr, byval er
 					numVarArgs = hStr2Args( argStr, varArgs() ) - 1
 					if ArgCount < 0 then ' Is Negate ?
 						for index = 0 to numVarArgs step -ArgCount
+							if( index > 0 ) then
+								res &= NEWLINE
+							end if
 							res &= *MacroNameStr & "("
 							for index2 = index to numVarArgs
 								res &= varArgs(index2)
@@ -754,10 +757,13 @@ private function hDefArgListExpandZ_cb( byval argtb as LEXPP_ARGTB ptr, byval er
 									res &=  ","
 								end if
 							next
-							res &= ")" & NEWLINE
+							res &= ")"
 						next
 					else
 						for index = 0 to numVarArgs step ArgCount
+							if( index > 0 ) then
+								res &= NEWLINE
+							end if
 							res &= *MacroNameStr & "("
 							MaxVarArgs = iif(ArgCount>numVarArgs-index,numVarArgs,index+ArgCount-1)
 							for index2 = index to MaxVarArgs
@@ -766,7 +772,7 @@ private function hDefArgListExpandZ_cb( byval argtb as LEXPP_ARGTB ptr, byval er
 									res &=  ","
 								end if
 							next
-							res &= ")" & NEWLINE
+							res &= ")"
 						next
 					end if
 				end if
@@ -812,6 +818,9 @@ private function hDefArgListExpandW_cb( byval argtb as LEXPP_ARGTB ptr, byval er
 					numVarArgs = hWStr2Args( argStr, varArgs() ) - 1
 					if ArgCount < 0 then ' Is Negate ?
 						for index = 0 to numVarArgs step -ArgCount
+							if( index > 0 ) then
+								DWstrConcatAssign(res, NEWLINE )
+							end if
 							DWstrConcatAssign(res, *MacroNameStr.data )
 							DWstrConcatAssign(res, "(" )
 							for index2 = index to numVarArgs
@@ -820,10 +829,13 @@ private function hDefArgListExpandW_cb( byval argtb as LEXPP_ARGTB ptr, byval er
 									DWstrConcatAssign(res,  "," )
 								end if
 							next
-							DWstrConcatAssign(res, ")" & NEWLINE )
+							DWstrConcatAssign(res, ")" )
 						next
 					else
 						for index = 0 to numVarArgs step ArgCount
+							if( index > 0 ) then
+								DWstrConcatAssign(res, NEWLINE )
+							end if
 							DWstrConcatAssign(res, *MacroNameStr.data )
 							DWstrConcatAssign(res, "(" )
 							MaxVarArgs = iif(ArgCount>numVarArgs-index,numVarArgs,index+ArgCount-1)
@@ -833,7 +845,7 @@ private function hDefArgListExpandW_cb( byval argtb as LEXPP_ARGTB ptr, byval er
 									DWstrConcatAssign(res,  "," )
 								end if
 							next
-							DWstrConcatAssign(res, ")" & NEWLINE )
+							DWstrConcatAssign(res, ")" )
 						next
 					end if
 				end if

@@ -62,6 +62,7 @@ Version 1.20.0
 - fbc: intrinsic define __FB_OPTION_PROFILE__ to indicate if profiling is currently enabled for code generation
 - rtlib: ./fbc-int/profile.bi - extra features for working with the built-in profiler; ProfileSetFileName(), ProfileGetOptions(), ProfileSetOptions(). ProfileIgnore()
 - '-earraydims' command line option to enable array dimensions checking.  Enabled by default with '-exx' command line option.
+- github #426: add __FB_ARG_LISTEXPAND__( macroname, macroargcount, args... ): expands to one or more 'macroname( .... )' depending on the value of macroargcount and number of arguments in the args... list (skyfish)   
 
 [fixed]
 - github #410: give consistent floating point comparisons results involving NaNs.

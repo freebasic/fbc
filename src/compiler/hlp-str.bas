@@ -7,6 +7,14 @@
 #include once "fbint.bi"
 #include once "dstr.bi"
 
+#if sizeof(wstring) = 4
+	type WSTRING_CHAR as ulong
+#elseif sizeof(wstring) = 2
+	type WSTRING_CHAR as ushort
+#else
+	type WSTRING_CHAR as ubyte
+#endif
+
 '':::::
 #macro ASSIGN_SETUP(dst, src, _type)
 	dim as integer dst_len, src_len
@@ -1333,7 +1341,7 @@ function hWStr2long( byref txt as wstring, byref value as long ) as integer
 		return FALSE
 	end if
 
-	dim s as ushort ptr = strptr(txt)
+	dim s as WSTRING_CHAR ptr = strptr(txt)
 
 	if( s = NULL orelse *s = CHAR_NULL ) then
 		return FALSE
@@ -1628,10 +1636,9 @@ end function
 '':::::
 function hWStr2Args( byval txt as const wstring ptr, res() as DWSTRING ) as integer
 
-	'' add the wstring version
-
 	dim as integer t = 0
-	dim as const ushort ptr s = cast(const ushort ptr, txt)
+	dim as const WSTRING_CHAR ptr s = cast(const WSTRING_CHAR ptr, txt)
+
 	dim as integer prntcnt = 0
 	dim as uinteger c = CHAR_NULL
 	dim as integer max_t = 10
