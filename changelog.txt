@@ -11,6 +11,7 @@ Version 1.10.3
 [fixed]
 - github #33: Bi include error in ntdef.bi 
 - bad code generation of operator cast() UDT ptr passed to byval UDT ptr parameter when matching constructors() are also present
+- rtlib/dos: ensure NUL terminating character is written on optimized conversion from ascii to wstring in the event that the copy is truncated - for example copying from a larger temporary string to a fixed length wstring and DISABLE_WCHAR is in use (previously HOST_DOS)
 
 
 Version 1.10.2
