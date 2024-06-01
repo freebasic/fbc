@@ -7,6 +7,14 @@
 #include once "fbint.bi"
 #include once "dstr.bi"
 
+#if sizeof(wstring) = 4
+	type WSTRING_CHAR as ulong
+#elseif sizeof(wstring) = 2
+	type WSTRING_CHAR as ushort
+#else
+	type WSTRING_CHAR as ubyte
+#endif
+
 '':::::
 #macro ASSIGN_SETUP(dst, src, _type)
 	dim as integer dst_len, src_len
@@ -1321,6 +1329,45 @@ function hStr2long( byref txt as string, byref value as long ) as integer
 	return (*s = CHAR_NULL)
 end function
 
+function hWStr2long( byref txt as wstring, byref value as long ) as integer
+	'' could we not use VALINT() or some variation from rtlib?
+
+	const CHAR_ZERO = asc("0")
+
+	dim nvalue as long = 0
+	dim nsign as long = 1
+
+	if( len( txt ) = 0 ) then
+		return FALSE
+	end if
+
+	dim s as WSTRING_CHAR ptr = strptr(txt)
+
+	if( s = NULL orelse *s = CHAR_NULL ) then
+		return FALSE
+	end if
+
+	if( *s = CHAR_MINUS ) then
+		nsign = -1
+		s += 1
+	end if
+
+	if( *s = CHAR_NULL ) then
+		return FALSE
+	end if
+
+	while( hIsCharNumeric(*s) )
+		nvalue *= 10
+		nvalue += (*s - CHAR_ZERO)
+		s += 1
+	wend
+
+	value = nvalue * nsign
+
+	'' return TRUE if we read the entire string
+	return (*s = CHAR_NULL)
+end function
+
 '':::::
 sub hSplitStr(byref txt as string, byref del as string, res() as string)
 
@@ -1424,7 +1471,7 @@ end function
 '':::::
 function hStr2Args( byval txt as const zstring ptr, res() as string ) as integer
 
-	'' !!!TODO!!! add the wstring version
+	'' add the string version
 
 	dim as integer t = 0
 	dim as const ubyte ptr s = cast(const ubyte ptr, txt)
@@ -1526,6 +1573,170 @@ function hStr2Args( byval txt as const zstring ptr, res() as string ) as integer
 					select case c
 					case CHAR_QUOTE, CHAR_RSLASH
 						'' '"' | '\'
+						ReadChar(c)
+					end select
+
+				end if
+			loop
+			continue do
+
+		case CHAR_SLASH
+
+			'' '/'
+			ReadChar(c)
+
+			c = PeekChar()
+			if( c <> CHAR_APOST ) then
+				continue do
+			end if
+
+			'' '''
+			ReadChar(c)
+
+			do
+				c = PeekChar()
+				if( c = CHAR_NULL ) then
+					exit do
+				end if
+
+				'' ''' | any other comment char
+				ReadChar(c)
+
+				if( c = CHAR_APOST ) then
+					c = PeekChar()
+					if( c = CHAR_SLASH ) then
+						'' '/'
+						ReadChar(c)
+						exit do
+					end if
+				end if
+
+			loop
+			continue do
+
+		case CHAR_APOST
+			while( c <> CHAR_NULL )
+				'' ''' or any comment char to end of line
+				ReadChar(c)
+				c = PeekChar()
+			wend
+			exit do
+
+		end select
+
+		'' any other char not handled above
+		ReadChar(c)
+
+	loop
+
+	function = t
+
+end function
+
+'':::::
+function hWStr2Args( byval txt as const wstring ptr, res() as DWSTRING ) as integer
+
+	dim as integer t = 0
+	dim as const WSTRING_CHAR ptr s = cast(const WSTRING_CHAR ptr, txt)
+
+	dim as integer prntcnt = 0
+	dim as uinteger c = CHAR_NULL
+	dim as integer max_t = 10
+
+	if( txt = NULl ) then
+		return 0
+	end if
+
+	#define PeekChar()   cast( uinteger, s[0] )
+	#define SkipChar()   s += 1
+	#define ReadChar(c)  DWstrConcatAssign( res(t-1), wchr(c) ) : s += 1
+
+	redim res( 0 to max_t-1 ) as DWSTRING
+
+	do
+		c = PeekChar()
+		if (c = CHAR_TAB) or (c = CHAR_SPACE) then
+			SkipChar()
+		else
+			exit do
+		end if
+	loop
+
+	'' no arguments?
+	if( c = CHAR_NULL ) then
+		return 0
+	end if
+
+	'' ok, there's at least one argument
+	t += 1
+
+	'' scan for arguments
+	do
+		c = PeekChar()
+		select case c
+		case CHAR_NULL
+			exit do
+
+		case CHAR_LPRNT
+			prntcnt += 1
+
+		case CHAR_RPRNT
+			if( prntcnt > 0 ) then
+				prntcnt -= 1
+			end if
+
+		case CHAR_COMMA
+			if( prntcnt = 0 ) then
+				t += 1
+				if( t > max_t ) then
+					max_t += 10
+					redim preserve res( 0 to max_t - 1 )
+				end if
+				SkipChar()
+				continue do
+			end if
+
+		case CHAR_QUOTE, CHAR_EXCL, CHAR_DOLAR
+			dim as integer escaped = env.opt.escapestr
+			if( c <> CHAR_QUOTE ) then
+				escaped = ( c = CHAR_EXCL )
+
+				'' '!' | '$'
+				ReadChar(c)
+				c = PeekChar()
+				if( c <> CHAR_QUOTE ) then
+					continue do
+				end if
+
+			end if
+
+			'' '"'
+			ReadChar(c)
+
+			do
+				c = PeekChar()
+				if( c = CHAR_NULL ) then
+					exit do
+				end if
+
+				'' '"' | '\\' | any other string char
+				ReadChar(c)
+				if( c = CHAR_QUOTE ) then
+
+					c = PeekChar()
+					if( c <> CHAR_QUOTE ) then
+						exit do
+					end if
+
+					'' '"'
+					ReadChar(c)
+
+				elseif( c = CHAR_RSLASH ) then
+
+					c = PeekChar()
+					select case c
+					case CHAR_QUOTE, CHAR_RSLASH
+						'' '"' | '\\'
 						ReadChar(c)
 					end select
 

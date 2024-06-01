@@ -687,7 +687,181 @@ private function hDefArgExtract_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum
 
 end function
 
-private function hDefArgLeft_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
+private function hDefArgListExpandZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
+
+	'' __FB_ARG_LISTEXPAND__(MACRONAME, MACROARGCOUNT, ARGS...)
+	'' Retuns empty string on invalid index, rather than compile error.
+	'' MacroName     : the name of the macro used for extension calls.
+	'' MacroArgCount : the number of parameters for the MacroName macro.Expand the parameter list Args according to the MacroArgCount value.
+	''                 1, MacroArgCount>0, pass MacroArgCount parameters each time;
+	'                  2, MacroArgCount=0, pass all parameters;
+	''                 3, MacroArgCount<0, for each parameter passed, the previous MacroArgCount parameters are automatically removed on the next pass.
+	'' args...       : argument list(The number of Args parameters passed may not be an integer multiple of MacroArgCount.)
+
+	/'
+	#macro m( arg... )
+	    #print "   "##arg
+	#endmacro
+
+	#print "1. MacroArgCount=0:"
+	__FB_ARG_LISTEXPAND__( m, 0, Hello1, Hello2, Hello3, Hello4)
+	#print "2. MacroArgCount>0:"
+	__FB_ARG_LISTEXPAND__( m, 1, Hello1, Hello2, Hello3, Hello4)
+	#print "3. MacroArgCount<0:"
+	__FB_ARG_LISTEXPAND__( m, -1, Hello1, Hello2, Hello3, Hello4)
+	'/
+
+	/' Compiler output:
+	   1. MacroArgCount=0:
+	      Hello1, Hello2, Hello3, Hello4
+	   2. MacroArgCount>0:
+	      Hello1
+	      Hello2
+	      Hello3
+	      Hello4
+	   3. MacroArgCount<0:
+	      Hello1, Hello2, Hello3, Hello4
+	      Hello2, Hello3, Hello4
+	      Hello3, Hello4
+	      Hello4
+	'/
+
+	var res = ""
+	var MacroNameStr = hMacro_getArgZ( argtb, 0 )
+	var numStr = hMacro_getArgZ( argtb, 1 )
+
+	if( MacroNameStr<>NULL andalso numStr <> NULL ) then
+		dim as string varstr = hMacro_EvalZ(numStr, errnum)
+
+		dim as long ArgCount, index, index2 = 0
+		If hStr2long(varstr, ArgCount) Then
+			dim As Long numVarArgs = argtb->count-2, MaxVarArgs = any
+			if numVarArgs>0 then
+				var argStr = hMacro_getArgZ( argtb, 2 )
+				dim varArgs() as string
+				if ArgCount = 0 then
+					res &= *MacroNameStr & "("
+					res &=  *argStr
+					res &= ")"
+				else
+					numVarArgs = hStr2Args( argStr, varArgs() ) - 1
+					if ArgCount < 0 then ' Is Negate ?
+						for index = 0 to numVarArgs step -ArgCount
+							if( index > 0 ) then
+								res &= NEWLINE
+							end if
+							res &= *MacroNameStr & "("
+							for index2 = index to numVarArgs
+								res &= varArgs(index2)
+								if index2 <> numVarArgs then
+									res &=  ","
+								end if
+							next
+							res &= ")"
+						next
+					else
+						for index = 0 to numVarArgs step ArgCount
+							if( index > 0 ) then
+								res &= NEWLINE
+							end if
+							res &= *MacroNameStr & "("
+							MaxVarArgs = iif(ArgCount>numVarArgs-index,numVarArgs,index+ArgCount-1)
+							for index2 = index to MaxVarArgs
+								res &= varArgs(index2)
+								if index2 <> MaxVarArgs then
+									res &=  ","
+								end if
+							next
+							res &= ")"
+						next
+					end if
+				end if
+				ZStrFree(argStr)
+			else '' No args
+				*errnum = FB_ERRMSG_ARGCNTMISMATCH
+			end if
+		end if
+
+	else '' No args
+		*errnum = FB_ERRMSG_ARGCNTMISMATCH
+	end if
+	ZStrFree(numStr)
+	ZStrFree(MacroNameStr)
+	return res
+
+end function
+
+private function hDefArgListExpandW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as wstring ptr
+
+	'' __FB_ARG_LISTEXPAND__(MACRONAME, MACROARGCOUNT, ARGS...)
+	'' Retuns empty string on invalid index, rather than compile error
+
+	static res as DWSTRING
+	DWstrAssign(res, "")
+	dim as DWSTRING MacroNameStr
+	DWstrAssign(MacroNameStr, hMacro_getArgW( argtb, 0 ))
+	var numStr = hMacro_getArgW( argtb, 1 )
+
+	if( MacroNameStr.len<>0 andalso numStr <> NULL ) then
+		dim as Wstring ptr pvarstr = hMacro_EvalW(numStr, errnum)
+
+		dim as long ArgCount, index, index2 = 0
+		If hWStr2long(*pvarstr, ArgCount) Then
+			dim As Long numVarArgs = argtb->count-2, MaxVarArgs = any
+			if numVarArgs>0 then
+				dim as Wstring ptr argStr = hMacro_getArgW( argtb, 2 )
+				if ArgCount = 0 then
+					DWstrAssign(res, *MacroNameStr.data )
+					DWstrConcatAssign(res, "(" & *argStr & ")" )
+				else
+					dim varArgs() as DWSTRING
+					numVarArgs = hWStr2Args( argStr, varArgs() ) - 1
+					if ArgCount < 0 then ' Is Negate ?
+						for index = 0 to numVarArgs step -ArgCount
+							if( index > 0 ) then
+								DWstrConcatAssign(res, NEWLINE )
+							end if
+							DWstrConcatAssign(res, *MacroNameStr.data )
+							DWstrConcatAssign(res, "(" )
+							for index2 = index to numVarArgs
+								DWstrConcatAssign(res, varArgs(index2).data )
+								if index2 <> numVarArgs then
+									DWstrConcatAssign(res,  "," )
+								end if
+							next
+							DWstrConcatAssign(res, ")" )
+						next
+					else
+						for index = 0 to numVarArgs step ArgCount
+							if( index > 0 ) then
+								DWstrConcatAssign(res, NEWLINE )
+							end if
+							DWstrConcatAssign(res, *MacroNameStr.data )
+							DWstrConcatAssign(res, "(" )
+							MaxVarArgs = iif(ArgCount>numVarArgs-index,numVarArgs,index+ArgCount-1)
+							for index2 = index to MaxVarArgs
+								DWstrConcatAssign(res, varArgs(index2).data )
+								if index2 <> MaxVarArgs then
+									DWstrConcatAssign(res,  "," )
+								end if
+							next
+							DWstrConcatAssign(res, ")" )
+						next
+					end if
+				end if
+			else '' No args
+				*errnum = FB_ERRMSG_ARGCNTMISMATCH
+			end if
+		end if
+
+	else '' No args
+		*errnum = FB_ERRMSG_ARGCNTMISMATCH
+	end if
+	return res.data
+
+end function
+
+private function hDefArgLeft_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
 
 	'' __FB_ARG_LEFTTOF__( ARG, SEP [, RET = ""] )
 
@@ -1324,7 +1498,8 @@ dim shared macroTb(0 to ...) as SYMBMACRO => _
 	(@"__FB_UNQUOTE__"        , 0                       , @hDefUnquoteZ_cb    , @hDefUnquoteW_cb     , 1, { (@"ARG") } ), _
 	(@"__FB_EVAL__"           , 0                       , @hDefEvalZ_cb       , @hDefEvalW_cb        , 1, { (@"ARG") } ), _
 	(@"__FB_IIF__"            , 0                       , @hDefIifZ_cb        , @hDefIifW_cb         , 3, { (@"CMPEXPR"), (@"TEXPR"), (@"FEXPR") } ), _
-	(@"__FB_QUERY_SYMBOL__"   , 0                       , @hDefQuerySymZ_cb   , NULL                 , 2, { (@"WHAT"), (@"SYM") } ) _
+	(@"__FB_QUERY_SYMBOL__"   , 0                       , @hDefQuerySymZ_cb   , NULL                 , 2, { (@"WHAT"), (@"SYM") } ), _
+	(@"__FB_ARG_LISTEXPAND__" , FB_DEFINE_FLAGS_VARIADIC, @hDefArgListExpandZ_cb, @hDefArgListExpandW_cb , 3, { (@"MACRONAME"), (@"MACROARGCOUNT"), (@"ARGS") } ) _
 }
 
 sub symbDefineInit _
@@ -1350,7 +1525,7 @@ sub symbDefineInit _
 		end if
 
 		symbAddDefine( defTb(i).name, value, len( value ), _
-			FALSE, defTb(i).proc, defTb(i).flags )
+		               FALSE, defTb(i).proc, defTb(i).flags )
 	next
 
 	'' Add __FB_<target>__ define
@@ -1453,11 +1628,11 @@ function symbAddDefine _
 
 	'' allocate new node (always on global hash, ns' won't work in lexer)
 	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-		NULL, _
-		NULL, @symbGetGlobalHashTb( ), _
-		FB_SYMBCLASS_DEFINE, _
-		symbol, NULL, _
-		FB_DATATYPE_CHAR, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
+	                     NULL, _
+	                     NULL, @symbGetGlobalHashTb( ), _
+	                     FB_SYMBCLASS_DEFINE, _
+	                     symbol, NULL, _
+	                     FB_DATATYPE_CHAR, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
 	if( sym = NULL ) then
 		exit function
 	end if
@@ -1492,11 +1667,11 @@ function symbAddDefineW _
 
 	'' allocate new node (always on global hash, ns' won't work in lexer)
 	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-		NULL, _
-		NULL, @symbGetGlobalHashTb( ), _
-		FB_SYMBCLASS_DEFINE, _
-		symbol, NULL, _
-		FB_DATATYPE_WCHAR, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
+	                     NULL, _
+	                     NULL, @symbGetGlobalHashTb( ), _
+	                     FB_SYMBCLASS_DEFINE, _
+	                     symbol, NULL, _
+	                     FB_DATATYPE_WCHAR, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
 	if( sym = NULL ) then
 		exit function
 	end if
@@ -1530,11 +1705,11 @@ function symbAddDefineMacro _
 
 	'' allocate new node (always on global hash, ns' won't work in lexer)
 	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-		NULL, _
-		NULL, @symbGetGlobalHashTb( ), _
-		FB_SYMBCLASS_DEFINE, _
-		symbol, NULL, _
-		FB_DATATYPE_INVALID, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
+	                     NULL, _
+	                     NULL, @symbGetGlobalHashTb( ), _
+	                     FB_SYMBCLASS_DEFINE, _
+	                     symbol, NULL, _
+	                     FB_DATATYPE_INVALID, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
 	if( sym = NULL ) then
 		exit function
 	end if
