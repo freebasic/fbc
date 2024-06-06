@@ -1758,6 +1758,7 @@ inc/lzo/lzo_asm.bi
 inc/lzo/lzoconf.bi
 inc/lzo/lzodefs.bi
 inc/lzo/lzoutil.bi
+inc/mariadb.bi
 inc/mxml.bi
 inc/pcre-common.bi
 inc/pcre.bi

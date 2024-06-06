@@ -956,6 +956,7 @@ include/freebasic/lzo/lzo_asm.bi
 include/freebasic/lzo/lzoconf.bi
 include/freebasic/lzo/lzodefs.bi
 include/freebasic/lzo/lzoutil.bi
+include/freebasic/mariadb.bi
 include/freebasic/modplug.bi
 include/freebasic/mpg123.bi
 include/freebasic/mxml.bi
@@ -1100,6 +1101,7 @@ include/freebasic/win/dxerr9.bi
 include/freebasic/win/edevdefs.bi
 include/freebasic/win/errors.bi
 include/freebasic/win/evcode.bi
+include/freebasic/win/excpt.bi
 include/freebasic/win/exdisp.bi
 include/freebasic/win/gdiplus-c.bi
 include/freebasic/win/guiddef.bi
@@ -1192,6 +1194,7 @@ include/freebasic/win/schannel.bi
 include/freebasic/win/schemadef.bi
 include/freebasic/win/schnlsp.bi
 include/freebasic/win/scrnsave.bi
+include/freebasic/win/sdkddkver.bi
 include/freebasic/win/secext.bi
 include/freebasic/win/security.bi
 include/freebasic/win/servprov.bi

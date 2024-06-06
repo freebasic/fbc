@@ -458,6 +458,7 @@ include/freebas/lzo/lzo_asm.bi
 include/freebas/lzo/lzoconf.bi
 include/freebas/lzo/lzodefs.bi
 include/freebas/lzo/lzoutil.bi
+include/freebas/mariadb.bi
 include/freebas/mxml.bi
 include/freebas/pcre-common.bi
 include/freebas/pcre.bi
