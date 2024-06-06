@@ -75,8 +75,15 @@
 #       -winlibs-gcc-10.2.0 (winlibs mingwrt 8.0.0r8)
 #       -winlibs-gcc-10.3.0 (winlibs mingwrt 8.0.0r1)
 #       -equation-gcc-8.3.0 (Equation - experimental)
+#     * -linux-arm
 #     * -raspbian9-arm
 #     * -debian12-armhf
+#     * -rpios10-arm
+#     * -rpios10-aarch64
+#     * -rpios11-arm
+#     * -rpios11-aarch64
+#     * -linux-aarch64
+#     * -ubuntu-22.04-aarch64
 #
 #   Not all recipes are supported on all targets.
 #
@@ -182,7 +189,8 @@ else
 fi
 
 # check recipe name
-# TODO: error on invalid combination of target and recipe
+# recipe_name is from the command line option, empty string if not given
+# user_recipe is either explicit (from command line) or automatic (below)
 if [ ! -z "$recipe_name" ]; then
 	user_recipe=$recipe_name
 else
@@ -207,21 +215,26 @@ else
 	esac
 fi
 
-# multiple recipe names specified by the user or automatically
-# determined above will map to recognized named recipes
-case $user_recipe in
-raspbian9-arm|linux-arm-raspbian9)
-	named_recipe=raspbian9-arm
+# user_recipe may be blank and optionally start with a dash '-'
+# named_recipe must be blank or start with a dash '-'
+
+case "$user_recipe" in
+""|-*)
+	named_recipe=$user_recipe
 	;;
 *)
-	named_recipe=$user_recipe
+	named_recipe=-$user_recipe
 	;;
 esac
 
 echo "building FB-$target (uname = `uname`, uname -m = `uname -m`)"
 echo "from repository: https://github.com/freebasic/fbc.git"
-echo "user gave recipe '$user_recipe'"
-echo "using named recipe '$named_recipe'"
+if [ ! -z "$user_recipe" ]; then
+	echo "user gave recipe '$user_recipe'"
+fi
+if [ ! -z "$named_recipe" ]; then
+	echo "using named recipe '$named_recipe'"
+fi
 if [ ! -z "$repo_url" ]; then
 	echo "from repository: $repo_url"
 fi
@@ -266,7 +279,11 @@ cd ../..
 
 cd build
 
+if [ ! -z "$named_recipe" ] ; then
+buildinfo=../output/buildinfo$named_recipe.txt
+else
 buildinfo=../output/buildinfo-$target.txt
+fi
 echo "fbc $fbccommit $target, build based on:" > $buildinfo
 echo "named recipe: $named_recipe" >> $buildinfo
 echo >> $buildinfo
@@ -709,39 +726,53 @@ win64)
 	;;
 esac
 
+BUILD_BOOTFBCFLAGS=
+AppendBOOTFBCFLAGS() {
+	if [ ! -z "$1" ]; then
+		if [ -z "$BUILD_BOOTFBCFLAGS" ]; then
+			BUILD_BOOTFBCFLAGS="$1"
+		else
+			BUILD_BOOTFBCFLAGS="$BUILD_BOOTFBCFLAGS $1"
+		fi
+	fi 
+}
+
 # choose a bootstrap source for the target
 # - the minimum needed to build the current release
 # - plus any options to build the current version from the bootstrap version
-case $named_recipe in
-debian12-armhf)
+case "$named_recipe" in
+-debian12-armhf)
 	# 1.10.2 for arm is a little weird because it depended on changes
 	# in fbc to make the 1.10.2 bootstrap on debian 12 with gcc 12.
 	# So, no matter what, we need some manual intervention for this release
 	# and should improve the automation in the next release
 	#   but it requires some manual intervention to set compile options
 	#
-	BUILD_BOOTFBCFLAGS=FBPACKTARGET=$named_recipe
-	BUILD_BOOTFBCFLAGS=$BUILD_BOOTFBCFLAGS DEFAULT_CPUTYPE_ARM=FB_CPUTYPE_ARMV7A_FP
-	bootfb_title=FreeBASIC-1.10.2-$fbtarget
+	AppendBOOTFBCFLAGS "DEFAULT_CPUTYPE_ARM=FB_CPUTYPE_ARMV7A_FP"
+	bootfb_title="FreeBASIC-1.10.2-$fbtarget"
 	;;
-raspbian9-arm)
-	BUILD_BOOTFBCFLAGS=FBPACKTARGET=$named_recipe
-	BUILD_BOOTFBCFLAGS=$BUILD_BOOTFBCFLAGS DEFAULT_CPUTYPE_ARM=FB_CPUTYPE_ARMV6
-	bootfb_title=FreeBASIC-1.10.1-$named_recipe
+-raspbian9-arm)
+	AppendBOOTFBCFLAGS "DEFAULT_CPUTYPE_ARM=FB_CPUTYPE_ARMV6"
+	bootfb_title="FreeBASIC-1.10.1$named_recipe"
 	;;
-linux-arm|rpios10-arm|rpios11-arm)
-	BUILD_BOOTFBCFLAGS=FBPACKTARGET=$named_recipe
-	BUILD_BOOTFBCFLAGS=$BUILD_BOOTFBCFLAGS DEFAULT_CPUTYPE_ARM=FB_CPUTYPE_ARMV7A
-	bootfb_title=FreeBASIC-1.10.1-$named_recipe
+-linux-arm|-rpios10-arm|-rpios11-arm)
+	AppendBOOTFBCFLAGS "DEFAULT_CPUTYPE_ARM=FB_CPUTYPE_ARMV7A"
+	bootfb_title="FreeBASIC-1.10.1$named_recipe"
 	;;
-linux-aarch64|rpios10-aarch64|rpios11-aarch64)
-	BUILD_BOOTFBCFLAGS=FBPACKTARGET=$named_recipe
-	bootfb_title=FreeBASIC-1.07.2-$named_recipe
+-rpios10-aarch64|-rpios11-aarch64)
+	bootfb_title="FreeBASIC-1.07.2$named_recipe"
+	;;
+-linux-aarch64|-ubuntu-22.04-aarch64)
+	bootfb_title="FreeBASIC-1.10.1$named_recipe"
 	;;
 *)
-	bootfb_title=FreeBASIC-1.06.0-$fbtarget
+	bootfb_title="FreeBASIC-1.06.0-$fbtarget"
 	;;
 esac
+
+if [ ! -z "$named_recipe" ]; then
+	AppendBOOTFBCFLAGS "FBPACKTARGET=${named_recipe#-}"
+fi
 
 case $fbtarget in
 linux*)
