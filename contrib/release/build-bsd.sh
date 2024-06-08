@@ -45,7 +45,7 @@
 #
 # Requirements:
 #   - gmake and other gnu tools
-# 
+#
 set -e
 
 usage() {
@@ -120,13 +120,22 @@ fi
 # recipe_name is from the command line option, empty string if not given
 # user_recipe is either explicit (from command line) or automatic (below)
 if [ ! -z "$recipe_name" ]; then
-	user_recipe=$recipe_name
+	# recipe_name may be blank and optionally start with a dash '-'
+	# user_recipe must be blank or start with a dash '-'
+	case "$recipe_name" in
+	""|-*)
+		user_recipe=$recipe_name
+		;;
+	*)
+		user_recipe=-$recipe_name
+		;;
+	esac
 else
 	# if no recipe given, set the default recipe for the main package
 	user_recipe=
 	case "$target" in
 	win32|win64)
-		user_recipe=-winlibs-gcc-9.3.0
+		named_recipe=-winlibs-gcc-9.3.0
 		;;
 	linux-arm)
 		# named recipe wasn't given, try and figure it out ...
@@ -136,24 +145,12 @@ else
 		fi
 		case "$host_os_id-$host_os_ver" in
 		raspbian-9)
-			user_recipe=raspbian9-arm
+			named_recipe=-raspbian9-arm
 			;;
 		esac
 		;;
 	esac
 fi
-
-# user_recipe may be blank and optionally start with a dash '-'
-# named_recipe must be blank or start with a dash '-'
-
-case "$user_recipe" in
-""|-*)
-	named_recipe=$user_recipe
-	;;
-*)
-	named_recipe=-$user_recipe
-	;;
-esac
 
 echo "building FB-$target (uname = `uname`, uname -m = `uname -m`)"
 echo "from repository: https://github.com/freebasic/fbc.git"
@@ -207,11 +204,8 @@ cd ../..
 
 cd build
 
-if [ ! -z "$named_recipe" ] ; then
-buildinfo=../output/buildinfo$named_recipe.txt
-else
-buildinfo=../output/buildinfo-$target.txt
-fi
+buildinfo=../output/buildinfo-$target$user_recipe.txt
+echo "buildinfo: $buildinfo"
 echo "fbc $fbccommit $target, build based on:" > $buildinfo
 echo "named recipe: $named_recipe" >> $buildinfo
 echo >> $buildinfo
@@ -267,7 +261,7 @@ AppendBOOTFBCFLAGS() {
 		else
 			BUILD_BOOTFBCFLAGS="$BUILD_BOOTFBCFLAGS $1"
 		fi
-	fi 
+	fi
 }
 
 # choose a bootstrap source for the target
