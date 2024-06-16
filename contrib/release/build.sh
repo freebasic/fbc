@@ -75,8 +75,15 @@
 #       -winlibs-gcc-10.2.0 (winlibs mingwrt 8.0.0r8)
 #       -winlibs-gcc-10.3.0 (winlibs mingwrt 8.0.0r1)
 #       -equation-gcc-8.3.0 (Equation - experimental)
+#     * -linux-arm
 #     * -raspbian9-arm
 #     * -debian12-armhf
+#     * -rpios10-arm
+#     * -rpios10-aarch64
+#     * -rpios11-arm
+#     * -rpios11-aarch64
+#     * -linux-aarch64
+#     * -ubuntu-22.04-aarch64
 #
 #   Not all recipes are supported on all targets.
 #
@@ -182,15 +189,26 @@ else
 fi
 
 # check recipe name
-# TODO: error on invalid combination of target and recipe
+# recipe_name is from the command line option, empty string if not given
+# user_recipe is either explicit (from command line) or automatic (below)
 if [ ! -z "$recipe_name" ]; then
-	user_recipe=$recipe_name
+	# recipe_name may be blank and optionally start with a dash '-'
+	# user_recipe must be blank or start with a dash '-'
+	case "$recipe_name" in
+	""|-*)
+		user_recipe=$recipe_name
+		;;
+	*)
+		user_recipe=-$recipe_name
+		;;
+	esac
+	named_recipe=$user_recipe
 else
 	# if no recipe given, set the default recipe for the main package
 	user_recipe=
 	case "$target" in
 	win32|win64)
-		user_recipe=-winlibs-gcc-9.3.0
+		named_recipe=-winlibs-gcc-9.3.0
 		;;
 	linux-arm)
 		# named recipe wasn't given, try and figure it out ...
@@ -200,28 +218,21 @@ else
 		fi
 		case "$host_os_id-$host_os_ver" in
 		raspbian-9)
-			user_recipe=raspbian9-arm
+			named_recipe=-raspbian9-arm
 			;;
 		esac
 		;;
 	esac
 fi
 
-# multiple recipe names specified by the user or automatically
-# determined above will map to recognized named recipes
-case $user_recipe in
-raspbian9-arm|linux-arm-raspbian9)
-	named_recipe=raspbian9-arm
-	;;
-*)
-	named_recipe=$user_recipe
-	;;
-esac
-
 echo "building FB-$target (uname = `uname`, uname -m = `uname -m`)"
 echo "from repository: https://github.com/freebasic/fbc.git"
-echo "user gave recipe '$user_recipe'"
-echo "using named recipe '$named_recipe'"
+if [ ! -z "$user_recipe" ]; then
+	echo "user gave recipe '$user_recipe'"
+fi
+if [ ! -z "$named_recipe" ]; then
+	echo "using named recipe '$named_recipe'"
+fi
 if [ ! -z "$repo_url" ]; then
 	echo "from repository: $repo_url"
 fi
@@ -266,7 +277,8 @@ cd ../..
 
 cd build
 
-buildinfo=../output/buildinfo-$target.txt
+buildinfo=../output/buildinfo-$target$user_recipe.txt
+echo "buildinfo: $buildinfo"
 echo "fbc $fbccommit $target, build based on:" > $buildinfo
 echo "named recipe: $named_recipe" >> $buildinfo
 echo >> $buildinfo
@@ -709,39 +721,53 @@ win64)
 	;;
 esac
 
+BUILD_BOOTFBCFLAGS=
+AppendBOOTFBCFLAGS() {
+	if [ ! -z "$1" ]; then
+		if [ -z "$BUILD_BOOTFBCFLAGS" ]; then
+			BUILD_BOOTFBCFLAGS="$1"
+		else
+			BUILD_BOOTFBCFLAGS="$BUILD_BOOTFBCFLAGS $1"
+		fi
+	fi
+}
+
 # choose a bootstrap source for the target
 # - the minimum needed to build the current release
 # - plus any options to build the current version from the bootstrap version
-case $named_recipe in
-debian12-armhf)
+case "$named_recipe" in
+-debian12-armhf)
 	# 1.10.2 for arm is a little weird because it depended on changes
 	# in fbc to make the 1.10.2 bootstrap on debian 12 with gcc 12.
 	# So, no matter what, we need some manual intervention for this release
 	# and should improve the automation in the next release
 	#   but it requires some manual intervention to set compile options
 	#
-	BUILD_BOOTFBCFLAGS=FBPACKTARGET=$named_recipe
-	BUILD_BOOTFBCFLAGS=$BUILD_BOOTFBCFLAGS DEFAULT_CPUTYPE_ARM=FB_CPUTYPE_ARMV7A_FP
-	bootfb_title=FreeBASIC-1.10.2-$fbtarget
+	AppendBOOTFBCFLAGS "DEFAULT_CPUTYPE_ARM=FB_CPUTYPE_ARMV7A_FP"
+	bootfb_title="FreeBASIC-1.10.2$named_recipe"
 	;;
-raspbian9-arm)
-	BUILD_BOOTFBCFLAGS=FBPACKTARGET=$named_recipe
-	BUILD_BOOTFBCFLAGS=$BUILD_BOOTFBCFLAGS DEFAULT_CPUTYPE_ARM=FB_CPUTYPE_ARMV6
-	bootfb_title=FreeBASIC-1.10.1-$named_recipe
+-raspbian9-arm)
+	AppendBOOTFBCFLAGS "DEFAULT_CPUTYPE_ARM=FB_CPUTYPE_ARMV6"
+	bootfb_title="FreeBASIC-1.10.1$named_recipe"
 	;;
-linux-arm|rpios10-arm|rpios11-arm)
-	BUILD_BOOTFBCFLAGS=FBPACKTARGET=$named_recipe
-	BUILD_BOOTFBCFLAGS=$BUILD_BOOTFBCFLAGS DEFAULT_CPUTYPE_ARM=FB_CPUTYPE_ARMV7A
-	bootfb_title=FreeBASIC-1.10.1-$named_recipe
+-linux-arm|-rpios10-arm|-rpios11-arm)
+	AppendBOOTFBCFLAGS "DEFAULT_CPUTYPE_ARM=FB_CPUTYPE_ARMV7A"
+	bootfb_title="FreeBASIC-1.10.1$named_recipe"
 	;;
-linux-aarch64|rpios10-aarch64|rpios11-aarch64)
-	BUILD_BOOTFBCFLAGS=FBPACKTARGET=$named_recipe
-	bootfb_title=FreeBASIC-1.07.2-$named_recipe
+-rpios10-aarch64|-rpios11-aarch64)
+	bootfb_title="FreeBASIC-1.07.2$named_recipe"
+	;;
+-linux-aarch64|-ubuntu-22.04-aarch64)
+	bootfb_title="FreeBASIC-1.10.1$named_recipe"
 	;;
 *)
-	bootfb_title=FreeBASIC-1.06.0-$fbtarget
+	bootfb_title="FreeBASIC-1.06.0-$fbtarget"
 	;;
 esac
+
+if [ ! -z "$named_recipe" ]; then
+	AppendBOOTFBCFLAGS "FBPACKTARGET=${named_recipe#-}"
+fi
 
 case $fbtarget in
 linux*)
@@ -751,7 +777,7 @@ linux*)
 	# Download & extract FB for bootstrapping
 	bootfb_package=$bootfb_title.tar.xz
 	download $bootfb_package "https://downloads.sourceforge.net/fbc/${bootfb_package}?download"
-	tar xf ../input/$bootfb_package
+	tar xf ../input/$bootfb_package || rm -f ../input/$bootfb_package
 
 	# fbc sources
 	cp -R ../input/fbc .
@@ -763,7 +789,7 @@ linux*)
 	# Download & extract FB for bootstrapping
 	bootfb_package=$bootfb_title.zip
 	download $bootfb_package "https://downloads.sourceforge.net/fbc/${bootfb_package}?download"
-	unzip -q ../input/$bootfb_package
+	unzip -q ../input/$bootfb_package || rm -f ../input/$bootfb_package
 
 	# fbc sources
 	cp -R ../input/fbc fbc
@@ -803,10 +829,10 @@ case "$named_recipe" in
 # older mingw-w64 packages are distributed with headers for libffi-3.2.1
 # but libffi-3.3 below should work for them also
 #-mingw-w64-gcc-5.2.0|-gcc-5.2.0|-mingw-w64-gcc-8.1.0|-gcc-8.1.0)
-#	# libffi sources https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.2.1.tar.gz.
-#	libffi_version="3.2.1"
-#	libffi_dir="https://github.com/libffi/libffi/releases/download/v${libffi_version}"
-#	;;
+#   # libffi sources https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.2.1.tar.gz.
+#   libffi_version="3.2.1"
+#   libffi_dir="https://github.com/libffi/libffi/releases/download/v${libffi_version}"
+#   ;;
 -mingw-w64-gcc-5.2.0|-gcc-5.2.0)
 	# - https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.3.tar.gz.
 	libffi_version="3.3"
@@ -944,15 +970,15 @@ libffibuild() {
 	# we might copy in the files directly if we unable to build libffi ourselves
 	# as was the case for libffi-3.2.1 and some gcc tool chains
 	# so just leave this section commented out for reference
-#	case "$named_recipe" in
-#	-gcc-7.1.0|-gcc-7.1.0r0|-gcc-7.1.0r2|-gcc-7.3.0|-gcc-8.1.0)
-#		mkdir -p ../input/$libffi_title/$target$named_recipe
-#		cp opt/lib/libffi-3.3/include/ffi.h       ../input/$libffi_title/$target$named_recipe
-#		cp opt/lib/libffi-3.3/include/ffitarget.h ../input/$libffi_title/$target$named_recipe
-#		cp opt/lib/libffi.a                       ../input/$libffi_title/$target$named_recipe
-#		return
-#		;;
-#	esac
+#   case "$named_recipe" in
+#   -gcc-7.1.0|-gcc-7.1.0r0|-gcc-7.1.0r2|-gcc-7.3.0|-gcc-8.1.0)
+#       mkdir -p ../input/$libffi_title/$target$named_recipe
+#       cp opt/lib/libffi-3.3/include/ffi.h       ../input/$libffi_title/$target$named_recipe
+#       cp opt/lib/libffi-3.3/include/ffitarget.h ../input/$libffi_title/$target$named_recipe
+#       cp opt/lib/libffi.a                       ../input/$libffi_title/$target$named_recipe
+#       return
+#       ;;
+#   esac
 
 	echo
 	echo "building libffi"
@@ -1049,11 +1075,11 @@ windowsbuild() {
 	cd ..
 
 	mkdir -p fbc/bin/$fbtarget
-	cp bin/ar.exe		fbc/bin/$fbtarget
-	cp bin/as.exe		fbc/bin/$fbtarget
-	cp bin/dlltool.exe	fbc/bin/$fbtarget
-	cp bin/gprof.exe	fbc/bin/$fbtarget
-	cp bin/ld.exe		fbc/bin/$fbtarget
+	cp bin/ar.exe       fbc/bin/$fbtarget
+	cp bin/as.exe       fbc/bin/$fbtarget
+	cp bin/dlltool.exe  fbc/bin/$fbtarget
+	cp bin/gprof.exe    fbc/bin/$fbtarget
+	cp bin/ld.exe       fbc/bin/$fbtarget
 
 	case "$named_recipe" in
 	-equation-gcc-8.3.0)
@@ -1090,7 +1116,7 @@ windowsbuild() {
 		# libgcc_s_sjlj-1.dll  - SJLJ win32 or win53
 		# libgcc_s_dw2.dll     - dwarf2 win32
 		# libgcc_s_seh.dll     - SEH win64
-		cp bin/libgcc_s_*-1.dll	fbc/bin/$fbtarget
+		cp bin/libgcc_s_*-1.dll fbc/bin/$fbtarget
 
 		case "$target" in
 		win32)
@@ -1164,7 +1190,7 @@ windowsbuild() {
 	cd fbc
 	case "$target" in
 	win32|win64)
-		make bindist DISABLE_DOCS=1 FBPACKSUFFIX=$named_recipe FBSHA1=$FBSHA1
+		make bindist DISABLE_DOCS=1 FBPACKSUFFIX=$user_recipe FBSHA1=$FBSHA1
 		make bindist ENABLE_STANDALONE=1 FBPACKSUFFIX=$user_recipe FBSHA1=$FBSHA1
 		;;
 	win32-mingworg)

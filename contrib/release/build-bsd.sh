@@ -24,28 +24,46 @@
 #       - a remote branch or tag name, must specify "remote-name/branch".
 #
 # --offline
-#   when given, build.sh will stop with exit code 1 if the file is not already in
+#   when given, build.sh will stop with exit code 1 if the file is not already
 #   in the download cache.
 #
 # --repo url
-#   specify an additional repo url to fetch in to the local repo other than the 
+#   specify an additional repo url to fetch in to the local repo other than the
 #   official https://github.com/freebasic/fbc.git repo.
 #
 # --remote name
-#   specifies the remote name to add and use when referring to the other repo url.
-#   remote name will default to 'other' if the --repo option was given.
+#   specifies the remote name to add and use when referring to the other repo
+#   url. remote name will default to 'other' if the --repo option was given.
 #   remote name will default to 'origin' if the --repo option was not given.
 #
 # --recipe name
-#   not used
+#   specify which build recipe to use:
+#     * -freebsd-13.0-x86
+#     * -freebsd-13.0-x86_64
+#
+#   Not all recipes are supported on all targets.
 #
 # Requirements:
 #   - gmake and other gnu tools
-# 
+#
 set -e
 
 usage() {
-	echo "usage: ./build-bsd.sh freebsd-x86|freebsd-x86_64 <fbc commit id> [--offline] [--repo url] [--remote name] [--recipe name]"
+	echo "usage: ./build.sh target <fbc commit id> [options]"
+	echo ""
+	echo "target:"
+	echo "   freebsd-x86|freebsd-x86_64"
+	echo ""
+	echo "<fbc commit id>:"
+	echo "   commit-id      hash value of the commit"
+	echo "   name-id        name of the branch or tag"
+	echo ""
+	echo "options:"
+	echo "   --offline      only use cached files, don't download from net"
+	echo "   --repo url     specify alternate name for repo to fetch from"
+	echo "                  in addition to origin repo"
+	echo "   --remote name  specify the name to use for the alternate remote"
+	echo "   --recipe name  specify a build recipe to use"
 	exit 1
 }
 
@@ -78,7 +96,7 @@ freebsd-x86|freebsd-x86_64)
 *)
 	fbccommit="$1"
 	shift
-	;;	
+	;;
 esac
 done
 
@@ -99,15 +117,49 @@ else
 fi
 
 # check recipe name
-# TODO: error on invalid combination of target and recipe
+# recipe_name is from the command line option, empty string if not given
+# user_recipe is either explicit (from command line) or automatic (below)
 if [ ! -z "$recipe_name" ]; then
-	recipe=$recipe_name
+	# recipe_name may be blank and optionally start with a dash '-'
+	# user_recipe must be blank or start with a dash '-'
+	case "$recipe_name" in
+	""|-*)
+		user_recipe=$recipe_name
+		;;
+	*)
+		user_recipe=-$recipe_name
+		;;
+	esac
 else
-	recipe=""
+	# if no recipe given, set the default recipe for the main package
+	user_recipe=
+	case "$target" in
+	win32|win64)
+		named_recipe=-winlibs-gcc-9.3.0
+		;;
+	linux-arm)
+		# named recipe wasn't given, try and figure it out ...
+		if [ -f /etc/os-release ]; then
+			host_os_id=$(grep -oP '(?<=^ID=).+' /etc/os-release | tr -d '"')
+			host_os_ver=$(grep -oP '(?<=^VERSION_ID=).+' /etc/os-release | tr -d '"')
+		fi
+		case "$host_os_id-$host_os_ver" in
+		raspbian-9)
+			named_recipe=-raspbian9-arm
+			;;
+		esac
+		;;
+	esac
 fi
 
 echo "building FB-$target (uname = `uname`, uname -m = `uname -m`)"
 echo "from repository: https://github.com/freebasic/fbc.git"
+if [ ! -z "$user_recipe" ]; then
+	echo "user gave recipe '$user_recipe'"
+fi
+if [ ! -z "$named_recipe" ]; then
+	echo "using named recipe '$named_recipe'"
+fi
 if [ ! -z "$repo_url" ]; then
 	echo "from repository: $repo_url"
 fi
@@ -152,14 +204,16 @@ cd ../..
 
 cd build
 
-buildinfo=../output/buildinfo-$target$recipe.txt
+buildinfo=../output/buildinfo-$target$user_recipe.txt
+echo "buildinfo: $buildinfo"
 echo "fbc $fbccommit $target, build based on:" > $buildinfo
+echo "named recipe: $named_recipe" >> $buildinfo
 echo >> $buildinfo
 
 copyfile() {
 	srcfile="$1"
 	dstfile="$2"
-	
+
 	if [ -f "$dstfile" ]; then
 		echo "cached      $dstfile"
 	else
@@ -191,7 +245,7 @@ download() {
 				echo "download failed"
 				rm -f "../input/$filename"
 				exit 1
-			fi	
+			fi
 		fi
 	fi
 
@@ -199,12 +253,27 @@ download() {
 }
 
 
+BUILD_BOOTFBCFLAGS=
+AppendBOOTFBCFLAGS() {
+	if [ ! -z "$1" ]; then
+		if [ -z "$BUILD_BOOTFBCFLAGS" ]; then
+			BUILD_BOOTFBCFLAGS="$1"
+		else
+			BUILD_BOOTFBCFLAGS="$BUILD_BOOTFBCFLAGS $1"
+		fi
+	fi
+}
+
 # choose a bootstrap source for the target
 case $fbtarget in
 freebsd-x86|freebsd-x86_64)
 	bootfb_title=FreeBASIC-1.09.0-$fbtarget
 	;;
 esac
+
+if [ ! -z "$named_recipe" ]; then
+	AppendBOOTFBCFLAGS "FBPACKTARGET=${named_recipe#-}"
+fi
 
 case $fbtarget in
 freebsd*)
@@ -229,34 +298,18 @@ freebsdbuild() {
 	echo
 	echo "bootstrapping normal fbc"
 	echo
-	gmake FBC=../$bootfb_title/bin/fbc FBSHA1=$FBSHA1
+	gmake FBC=../$bootfb_title/bin/fbc FBSHA1=$FBSHA1 $BUILD_BOOTFBCFLAGS
 	gmake install prefix=../tempinstall
 	echo
 	echo "rebuilding normal fbc"
 	echo
 	gmake clean-compiler
-	gmake FBC=../tempinstall/bin/fbc FBSHA1=$FBSHA1
+	gmake FBC=../tempinstall/bin/fbc FBSHA1=$FBSHA1 $BUILD_BOOTFBCFLAGS
 	cd ..
 
-	cd fbc && gmake bindist FBSHA1=$FBSHA1 && cd ..
+	cd fbc && gmake bindist FBSHA1=$FBSHA1 $BUILD_BOOTFBCFLAGS && cd ..
 	cp fbc/*.tar.* ../output
 	cp fbc/contrib/manifest/FreeBASIC-$fbtarget.lst ../output
-}
-
-libffibuild() {
-	echo
-	echo "building libffi"
-	echo
-	libffi_build="${libffi_title}-build"
-	mkdir "$libffi_build"
-	cd "$libffi_build"
-	CFLAGS=-O2 ../$libffi_title/configure --disable-shared --enable-static
-	gmake
-	# stash some files in the input folder to make rebuilding faster
-	mkdir -p ../../input/$libffi_title/$target$recipe
-	cp include/ffi.h include/ffitarget.h ../../input/$libffi_title/$target$recipe
-	cp .libs/libffi.a ../../input/$libffi_title/$target$recipe
-	cd ..
 }
 
 case $fbtarget in

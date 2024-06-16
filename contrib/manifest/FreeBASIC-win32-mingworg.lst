@@ -2723,6 +2723,7 @@ inc/lzo/lzo_asm.bi
 inc/lzo/lzoconf.bi
 inc/lzo/lzodefs.bi
 inc/lzo/lzoutil.bi
+inc/mariadb.bi
 inc/modplug.bi
 inc/mpg123.bi
 inc/mxml.bi
@@ -2885,6 +2886,7 @@ inc/win/dxerr9.bi
 inc/win/edevdefs.bi
 inc/win/errors.bi
 inc/win/evcode.bi
+inc/win/excpt.bi
 inc/win/exdisp.bi
 inc/win/gdiplus-c.bi
 inc/win/guiddef.bi
@@ -2986,6 +2988,7 @@ inc/win/schannel.bi
 inc/win/schemadef.bi
 inc/win/schnlsp.bi
 inc/win/scrnsave.bi
+inc/win/sdkddkver.bi
 inc/win/secext.bi
 inc/win/security.bi
 inc/win/servprov.bi
