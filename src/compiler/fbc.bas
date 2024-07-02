@@ -2548,6 +2548,8 @@ private sub handleOpt _
 			fbSetOption( FB_COMPOPT_RETURNINFLTS, TRUE )
 		case "nobuiltins"
 			fbSetOption( FB_COMPOPT_NOBUILTINS, TRUE )
+		case "optabstract"
+			fbSetOption( FB_COMPOPT_OPTABSTRACT, TRUE )
 		case else
 			hFatalInvalidOption( arg, is_source )
 		end select
@@ -4564,6 +4566,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -z no-fastcall   Don't use '__fastcall' calling convention"
 	print "  -z nobuiltins    Disable all non-required builtin procedure definitions"
 	print "  -z nocmdline     Disable #cmdline source directives"
+	print "  -z optabstract   Only supports optimizing purely abstract types"
 	print "  -z retinflts     Enable returning some types in floating point registers"
 	print "  -z valist-as-ptr Use pointer expressions to implement CVA_*() macros"
 	else

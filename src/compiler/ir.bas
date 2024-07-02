@@ -232,7 +232,9 @@ sub irForEachDataStmt( byval callback as sub( byval as FBSYMBOL ptr ) )
 end sub
 
 sub irhlFlushStaticInitializer( byval sym as FBSYMBOL ptr )
-	astLoadStaticInitializer( symbGetTypeIniTree( sym ), sym )
+	if not symbGetIsUnusedVtable( sym ) then
+		astLoadStaticInitializer( symbGetTypeIniTree( sym ), sym )
+	end if
 	symbSetTypeIniTree( sym, NULL )
 end sub
 

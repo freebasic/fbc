@@ -101,10 +101,52 @@ private sub hSetMinimumVtableSize( byval udt as FBSYMBOL ptr )
 	end if
 end sub
 
-private sub hBuildRtti( byval udt as FBSYMBOL ptr )
-	static as FBARRAYDIM dTB(0)
+private sub hReBuildRtti( byval udt as FBSYMBOL ptr )
 	dim as ASTNODE ptr initree = any, rttibase = any
 	dim as FBSYMBOL ptr rtti = any, fld = any
+	if udt then
+		fld = udt->udt.ext->vtable
+		if fld then
+			symbResetIsUnusedVtable( fld )
+		end if
+
+		rtti = udt->udt.ext->rtti
+		if rtti then
+			symbResetIsUnusedVtable( rtti )
+			' initializer
+			initree = astTypeIniBegin( FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, FALSE, 0 )
+			astTypeIniScopeBegin( initree, rtti, FALSE )
+
+			'' stdlibvtable = NULL
+			fld = symbUdtGetFirstField( symb.rtti.fb_rtti )
+			astTypeIniAddAssign( initree, astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ), NULL ), fld )
+
+			'' id = @"mangled name"
+			fld = symbUdtGetNextInitableField( fld )
+			astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( symbAllocStrConst( symbGetMangledName( udt ), -1 ) ) ), fld )
+
+			'' rttibase = @(base's RTTI data) or NULL if there is no base
+			fld = symbUdtGetNextInitableField( fld )
+			if( udt->udt.base ) then
+				rttibase = astNewADDROF( astNewVAR( udt->udt.base->subtype->udt.ext->rtti ) )
+			else
+				rttibase = astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ) )
+			end if
+			astTypeIniAddAssign( initree, rttibase, fld )
+
+			astTypeIniScopeEnd( initree, rtti )
+			astTypeIniEnd( initree, TRUE )
+
+			symbSetTypeIniTree( rtti, initree )
+		endif
+	endif
+end sub
+
+private function hBuildRtti( byval udt as FBSYMBOL ptr ) as Integer
+	static as FBARRAYDIM dTB(0)
+	dim as ASTNODE ptr initree = any
+	dim as SYMBDEFAULTMEMBERS default = any
+	dim as FBSYMBOL ptr rtti = any, baseudt = any
 
 	'' static shared UDT.rtti as fb_RTTI$
 	'' (real identifier given later during mangling)
@@ -116,32 +158,47 @@ private sub hBuildRtti( byval udt as FBSYMBOL ptr )
 	symbNestEnd( TRUE )
 	udt->udt.ext->rtti = rtti
 
-	'' initializer
-	initree = astTypeIniBegin( FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, FALSE, 0 )
-	astTypeIniScopeBegin( initree, rtti, FALSE )
+	if OptimizePureAbstractTypes( udt ) then
+		' No Operation(Placeholder). After that, if the structure is used,
+		' the specific initialization code will be regenerated.
+		symbSetIsUnusedVtable( rtti )
+		symbSetTypeIniTree( rtti, astNewNOP() )
+		return FALSE
+	else ' Not a pure abstract function type
+		hReBuildRtti( udt )
+		baseudt = udt
+		do while baseudt->udt.base <> NULL
+			baseudt = baseudt->udt.base->subtype
+			' Whether the base type is initialized.
+			if OptimizePureAbstractTypes( baseudt ) = FALSE then
+				' Not a pure abstract function type, initialization has been completed.
+				exit do
+			end if
 
-		'' stdlibvtable = NULL
-		fld = symbUdtGetFirstField( symb.rtti.fb_rtti )
-		astTypeIniAddAssign( initree, astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ), NULL ), fld )
+			'It is a pure abstract function type and needs to be initialized.
+			rtti = baseudt->udt.ext->rtti
+			if rtti andalso symbGetIsUnusedVtable( rtti ) then
+				if ( baseudt <> symb.rtti.fb_object ) then
+					initree = symbGetTypeIniTree( rtti )
+					if initree then
+						astDelNode( initree )
+						symbSetTypeIniTree( rtti, NULL )
+					end if
+					hReBuildRtti( baseudt )
 
-		'' id = @"mangled name"
-		fld = symbUdtGetNextInitableField( fld )
-		astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( symbAllocStrConst( symbGetMangledName( udt ), -1 ) ) ), fld )
-
-		'' rttibase = @(base's RTTI data) or NULL if there is no base
-		fld = symbUdtGetNextInitableField( fld )
-		if( udt->udt.base ) then
-			rttibase = astNewADDROF( astNewVAR( udt->udt.base->subtype->udt.ext->rtti ) )
-		else
-			rttibase = astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ) )
-		end if
-		astTypeIniAddAssign( initree, rttibase, fld )
-
-	astTypeIniScopeEnd( initree, rtti )
-	astTypeIniEnd( initree, TRUE )
-
-	symbSetTypeIniTree( rtti, initree )
-end sub
+					default.defctor = baseudt->udt.ext->defctor
+					default.copyctor = baseudt->udt.ext->copyctor
+					default.copyctorconst = baseudt->udt.ext->copyctorconst
+					default.copyletopconst = baseudt->udt.ext->copyletopconst
+					default.dtor1 = baseudt->udt.ext->dtor1
+					default.dtor0 = baseudt->udt.ext->dtor0
+					symbImplementDefaultMembers( default, baseudt )
+				end if
+			end if
+		loop
+		return TRUE
+	endif
+end function
 
 private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 	static as FBARRAYDIM dTB(0)
@@ -179,7 +236,17 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 	assert( symbIsField( udt->udt.base ) )
 	assert( symbGetType( udt->udt.base ) = FB_DATATYPE_STRUCT )
 	assert( symbIsStruct( udt->udt.base->subtype ) )
-	basevtableelements = udt->udt.base->subtype->udt.ext->vtableelements
+
+	if OptimizePureAbstractTypes( udt ) then
+		symbSetIsUnusedVtable( vtable )
+	end if
+
+	if OptimizePureAbstractTypes(udt->udt.base->subtype) then
+		'It has been optimized and cannot be copied.
+		basevtableelements = 0
+	else
+		basevtableelements = udt->udt.base->subtype->udt.ext->vtableelements
+	end if
 	'' Any virtuals (more than the default 2 elements)?
 	if( basevtableelements > 2 ) then
 		assert( symbIsVar( udt->udt.base->subtype->udt.ext->vtable ) )
@@ -695,6 +762,41 @@ end sub
 
 '' Implement the implicit members declared by symbUdtDeclareDefaultMembers(),
 '' add other implicit code (vtable/rtti global vars).
+sub symbImplementDefaultMembers _
+	( _
+		byref default as SYMBDEFAULTMEMBERS, _
+		byval udt as FBSYMBOL ptr _
+	)
+	''
+	'' Add bodies if any implicit ctor/dtor/let procs were declared above
+	''
+
+	if( default.defctor ) then
+		hAddCtorBody( udt, default.defctor, FALSE )
+	end if
+
+	if( default.copyletopconst ) then
+		hAddLetOpBody( udt, default.copyletopconst )
+	end if
+
+	if( default.copyctorconst ) then
+		hAddCtorBody( udt, default.copyctorconst, TRUE )
+	end if
+
+	if( default.copyctor ) then
+		hAddCtorBody( udt, default.copyctor, TRUE )
+	end if
+
+	if( default.dtor1 ) then
+		hAddCtorBody( udt, default.dtor1, FALSE )
+	end if
+
+	if( default.dtor0 ) then
+		hAddCtorBody( udt, default.dtor0, FALSE )
+	end if
+
+end sub
+
 sub symbUdtImplementDefaultMembers _
 	( _
 		byref default as SYMBDEFAULTMEMBERS, _
@@ -724,38 +826,13 @@ sub symbUdtImplementDefaultMembers _
 		'' only if it isn't FB's own Object base super class
 		'' (for which the rtlib already contains these declarations)
 		if( udt <> symb.rtti.fb_object ) then
-			hBuildRtti( udt )
-			hBuildVtable( udt )
+			dim as integer iRet = hBuildRtti( udt )
+			hBuildVtable( udt )	
+			if iRet = FALSE then return
 		end if
 	end if
 
-	''
-	'' Add bodies if any implicit ctor/dtor/let procs were declared above
-	''
-
-	if( default.defctor ) then
-		hAddCtorBody( udt, default.defctor, FALSE )
-	end if
-
-	if( default.copyletopconst ) then
-		hAddLetOpBody( udt, default.copyletopconst )
-	end if
-
-	if( default.copyctorconst ) then
-		hAddCtorBody( udt, default.copyctorconst, TRUE )
-	end if
-
-	if( default.copyctor ) then
-		hAddCtorBody( udt, default.copyctor, TRUE )
-	end if
-
-	if( default.dtor1 ) then
-		hAddCtorBody( udt, default.dtor1, FALSE )
-	end if
-
-	if( default.dtor0 ) then
-		hAddCtorBody( udt, default.dtor0, FALSE )
-	end if
+	symbImplementDefaultMembers(default, udt)
 
 end sub
 
@@ -1019,6 +1096,20 @@ function symbCompGetAbstractCount( byval udt as FBSYMBOL ptr ) as integer
 	if( udt->udt.ext ) then
 		function = udt->udt.ext->abstractcount
 	end if
+end function
+
+function OptimizePureAbstractTypes( byval udt as FBSYMBOL ptr ) as integer
+	assert( symbIsStruct( udt ) )
+	if env.clopt.optabstract then' Whether optimization is enabled?
+		if( udt->udt.ext ) then
+			dim as Integer abstractcount = udt->udt.ext->abstractcount
+			if abstractcount>0 andalso abstractcount+2 = udt->udt.ext->vtableelements then
+				' Only supports optimizing purely abstract types.
+				return TRUE
+			end if
+		end if
+	end if
+	return FALSE
 end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

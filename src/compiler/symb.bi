@@ -153,6 +153,7 @@ enum FB_SYMBSTATS
 	''                      ''= &h02000000  '' not-used
 	FB_SYMBSTATS_EMITTED      = &h04000000  '' needed by high-level IRs, to avoid emitting structs etc twice
 	FB_SYMBSTATS_BEINGEMITTED = &h08000000  '' ditto, for circular dependencies with structs
+	FB_SYMBSTATS_UNUSEDVTABLE = &h10000000
 
 	'' reuse - take care
 	FB_SYMBSTATS_PROCEMITTED  = FB_SYMBSTATS_UNIONFIELD  '' procs only
@@ -1916,6 +1917,12 @@ declare sub symbUdtDeclareDefaultMembers _
 		byval mode as FB_FUNCMODE _
 	)
 
+declare sub symbImplementDefaultMembers _
+	( _
+		byref default as SYMBDEFAULTMEMBERS, _
+		byval udt as FBSYMBOL ptr _
+	)
+
 declare sub symbUdtImplementDefaultMembers _
 	( _
 		byref default as SYMBDEFAULTMEMBERS, _
@@ -1950,6 +1957,7 @@ declare function symbCompAddVirtual( byval udt as FBSYMBOL ptr ) as integer
 declare function symbCompGetAbstractCount( byval udt as FBSYMBOL ptr ) as integer
 declare function symbAddGlobalCtor( byval proc as FBSYMBOL ptr ) as FB_GLOBCTORLIST_ITEM ptr
 declare function symbAddGlobalDtor( byval proc as FBSYMBOL ptr ) as FB_GLOBCTORLIST_ITEM ptr
+declare function OptimizePureAbstractTypes( byval udt as FBSYMBOL ptr ) as integer
 
 declare function symbCloneSymbol _
 	( _
@@ -2193,6 +2201,10 @@ declare function symbCloneSimpleStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL 
 
 #define symbGetIsTemporary(s) (((s)->stats and FB_SYMBSTATS_TEMPORARY) <> 0)
 #define symbSetIsTemporary(s) (s)->stats or= FB_SYMBSTATS_TEMPORARY
+
+#define symbGetIsUnusedVtable(s) ((s->stats and FB_SYMBSTATS_UNUSEDVTABLE) <> 0)
+#define symbSetIsUnusedVtable(s) s->stats or= FB_SYMBSTATS_UNUSEDVTABLE
+#define symbResetIsUnusedVtable(s) s->stats and= not FB_SYMBSTATS_UNUSEDVTABLE
 
 #define symbGetStats(s) s->stats
 
