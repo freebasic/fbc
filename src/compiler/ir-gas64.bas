@@ -5081,11 +5081,17 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 					end if
 
 				case FB_DATATYPE_LONG,FB_DATATYPE_ULONG
-					if v1dtype=FB_DATATYPE_DOUBLE then
+					if v2dtype=FB_DATATYPE_ULONG then
+						asm_code("mov eax, "+prefix2+op2)
+						asm_code("cvtsi2sd xmm0, rax")
+					else
 						asm_code("cvtsi2sd xmm0, "+prefix2+op2)
+					end if
+
+					if v1dtype=FB_DATATYPE_DOUBLE then
 						asm_code("movq "+op1+", xmm0")
 					else
-						asm_code("cvtsi2ss xmm0, "+prefix2+op2)
+						asm_code("cvtsd2ss xmm0, xmm0")
 						asm_code("movd "+op1+", xmm0")
 					end if
 
