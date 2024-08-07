@@ -1381,26 +1381,27 @@ private function hLinkFiles( ) as integer
 			exit function
 		end if
 	#elseif defined( __FB_WIN32__ )
+		dim forcefile As Long
+		dim targetprefixlen As ULong
 		#ifdef ENABLE_STANDALONE
 			'' "cross"-compiling? djgpp cross tools and emscripten
 			'' build tools can't seem to handle the long command line
 			'' created when linking ./tests/fbc-tests
 			select case fbGetOption( FB_COMPOPT_TARGET )
 			case FB_COMPTARGET_DOS, FB_COMPTARGET_JS
-				if( hPutLdArgsIntoFile( ldcline ) = FALSE ) then
-					exit function
-				end if
+				forcefile = 1
 			end select
 		#else
-			dim toolnamelen as integer = len( "ld.exe " ) + _
-				iif( len( fbc.targetprefix ) > len( fbc.buildprefix ), len( fbc.targetprefix ), len( fbc.buildprefix ) )
-			if( (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) or _
-				(len( ldcline ) > (2047 - toolnamelen)) ) then
-				if( hPutLdArgsIntoFile( ldcline ) = FALSE ) then
-					exit function
-				end if
-			end if
+			targetprefixlen = len( fbc.targetprefix )
 		#endif
+		dim toolnamelen as integer = len( "ld.exe " ) + _
+			iif( targetprefixlen > len( fbc.buildprefix ), targetprefixlen, len( fbc.buildprefix ) )
+		if( forcefile OrElse (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) or _
+			(len( ldcline ) > (2047 - toolnamelen)) ) then
+			if( hPutLdArgsIntoFile( ldcline ) = FALSE ) then
+				exit function
+			end if
+		end if
 	#endif
 
 	'' invoke ld
@@ -4161,6 +4162,22 @@ private function hArchiveFiles( ) as integer
 	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_JS ) then
 		ar = FBCTOOL_EMAR
 	end if
+
+'' See comment in hLinkFiles about command line lengths
+#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
+	dim targetprefixlen as ulong
+	#ifndef ENABLE_STANDALONE
+		targetprefixlen = len( fbc.targetprefix )
+	#endif
+	dim toolnamelen as integer = len( fbctoolTB( ar ).name + ".exe" ) + _
+		iif( targetprefixlen > len( fbc.buildprefix ), targetprefixlen, len( fbc.buildprefix ) )
+	if( (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) or _
+		(len( ln ) > (2047 - toolnamelen)) ) then
+		if( hPutLdArgsIntoFile( ln ) = FALSE ) then
+			exit function
+		end if
+	end if
+#endif
 
 	'' invoke ar
 	function = fbcRunBin( "archiving", ar, ln )
