@@ -711,8 +711,13 @@ private sub check_optim(byref code as string)
 
 	if part2=prevpart1 then
 		if part1=prevpart2 then
-			'asm_info("OPTIMIZATION 1")
-			code="#O1 "+code
+			if instr(part2,"[")<>0 and (right(part1,1)="d" or part1[0]=asc("e")) then
+				''to avoid issue if after 64bit register is used with xmm
+				writepos=len(ctx.proc_txt)+len(code)+9
+				code="#O1"+code+newline+string( ctx.indent*3, 32 )+"and "+part1+" ,0xFFFFFFFF"
+			else
+				code="#O1 "+code
+			End If
 		else
 			if prevpart2="" then ''todo remove me after fixed
 				asm_error("prev/part empty "+"part1="+part1+" part2="+part2+" prevpart1="+prevpart1+" prevpart2="+prevpart2)
