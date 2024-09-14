@@ -5,8 +5,6 @@
 
 #include once "expat.bi"
 
-#define FALSE 0
-#define NULL 0
 
 Const BUFFER_SIZE = 1024
 
@@ -90,8 +88,8 @@ End Sub
     End If
 
     ''XML_SetUserData(parser, userdata_pointer)
-    XML_SetElementHandler(parser, @elementBegin, @elementEnd)
-    XML_SetCharacterDataHandler(parser, @charData)
+    XML_SetElementHandler(parser, Cast(XML_StartElementHandler,@elementBegin),Cast(XML_EndElementHandler, @elementEnd))
+    XML_SetCharacterDataHandler(parser,Cast(XML_CharacterDataHandler, @charData))
 
 
     If (Open(filename, For Input, As #1)) Then
