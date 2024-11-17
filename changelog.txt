@@ -99,6 +99,7 @@ Version 1.20.0
 - gas64: fix casting ulong (with "negative value") to double/single (SARG)
 - gas64: fix optimization prevented converting 32bit memory/register (SARG)
 - fbc: #cmdline "-end" was not resetting the parser, hiding errors and producing a bad executable
+- sf.net #1009: Invalid symbol when accessing indexed PROPERTY arrays BYREF 
 
 
 Version 1.10.3

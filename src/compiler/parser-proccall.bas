@@ -302,6 +302,12 @@ function cProcCall _
 				end if
 			end if
 
+			'' ( '.' | '->' )? then assume is getter in the right hand side expression
+			select case lexGetToken()
+			case CHAR_DOT, FB_TK_FIELDDEREF
+				options or= FB_PARSEROPT_OPTONLY
+			end select
+
 			'' it's a property get call being deref'd or discarded
 		end if
 
