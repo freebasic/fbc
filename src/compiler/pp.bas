@@ -922,6 +922,7 @@ private sub ppCmdline( )
 		'' We don't have any clever way to auto-detect when all #cmdline's have been read
 		'' Check for '#cmdline "-end"' to begin a restart and not wait for end of file
 		'' The restart request will have been stored in env.restart_request
+		fbRestartBeginRequest( FB_RESTART_CMDLINE )
 		fbRestartAcceptRequest( FB_RESTART_CMDLINE )
 
 		'' and don't show any more errors until we've restarted

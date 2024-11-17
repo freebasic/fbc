@@ -98,6 +98,7 @@ Version 1.20.0
 - allow long ar and ld command lines in standalone windows builds (adeyblue)
 - gas64: fix casting ulong (with "negative value") to double/single (SARG)
 - gas64: fix optimization prevented converting 32bit memory/register (SARG)
+- fbc: #cmdline "-end" was not resetting the parser, hiding errors and producing a bad executable
 
 
 Version 1.10.3
