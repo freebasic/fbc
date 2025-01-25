@@ -94,6 +94,7 @@ Version 1.20.0
 - github #424: fbc: Invalid assignment/conversion, before 'Then' in function returned Const ZString Ptr
 - updated bindings: WinAPI: Allow FD_SETSIZE to be defined by user before including winsock.bi and winsock2.bi
 - sf.net #469, sf.net #721: check for unallocated dynamic arrays and wrong number of dimensions at run time and throw an error if attempting to access an unallocated array or indexing with the wrong number of dimensions
+- allow long ar and ld command lines in standalone windows builds (adeyblue)
 
 
 Version 1.10.3
