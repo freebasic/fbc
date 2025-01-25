@@ -711,8 +711,13 @@ private sub check_optim(byref code as string)
 
 	if part2=prevpart1 then
 		if part1=prevpart2 then
-			'asm_info("OPTIMIZATION 1")
-			code="#O1 "+code
+			if instr(part2,"[")<>0 and (right(part1,1)="d" or part1[0]=asc("e")) then
+				''to avoid issue if after 64bit register is used with xmm
+				writepos=len(ctx.proc_txt)+len(code)+9
+				code="#O1"+code+newline+string( ctx.indent*3, 32 )+"and "+part1+" ,0xFFFFFFFF"
+			else
+				code="#O1 "+code
+			End If
 		else
 			if prevpart2="" then ''todo remove me after fixed
 				asm_error("prev/part empty "+"part1="+part1+" part2="+part2+" prevpart1="+prevpart1+" prevpart2="+prevpart2)
@@ -5081,11 +5086,17 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 					end if
 
 				case FB_DATATYPE_LONG,FB_DATATYPE_ULONG
-					if v1dtype=FB_DATATYPE_DOUBLE then
+					if v2dtype=FB_DATATYPE_ULONG then
+						asm_code("mov eax, "+prefix2+op2)
+						asm_code("cvtsi2sd xmm0, rax")
+					else
 						asm_code("cvtsi2sd xmm0, "+prefix2+op2)
+					end if
+
+					if v1dtype=FB_DATATYPE_DOUBLE then
 						asm_code("movq "+op1+", xmm0")
 					else
-						asm_code("cvtsi2ss xmm0, "+prefix2+op2)
+						asm_code("cvtsd2ss xmm0, xmm0")
 						asm_code("movd "+op1+", xmm0")
 					end if
 
