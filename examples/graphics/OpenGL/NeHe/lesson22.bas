@@ -518,7 +518,7 @@ end sub
 ''
 ''    On http:'www.nvidia.com/marketing/Developer/DevRel.nsf/TechnicalDemosFrame?OpenPage
 ''    You Can Find A Demo Called GL_BUMP That Is A Little Bit More Complicated.
-''    GL_BUMP:   Copyright Diego Tártara, 1999.
+''    GL_BUMP:   Copyright Diego TÃ¡rtara, 1999.
 ''             -  diego_tartara@ciudad.com.ar  -
 ''
 ''    The Idea Behind GL_BUMP Is, That You Compute The Texture-Coordinate Offset As Follows:
