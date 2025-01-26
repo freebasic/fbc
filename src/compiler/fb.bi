@@ -120,6 +120,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_NOCMDLINE            '' boolean: -z nocmdline, disable #cmdline directives
 	FB_COMPOPT_RETURNINFLTS         '' boolean: -z retinflts, enable returning some structs in floating point registers
 	FB_COMPOPT_NOBUILTINS           '' boolean: -z nobuiltins, disable all non-required builtin procedure definitions
+	FB_COMPOPT_OPTABSTRACT          '' boolean: -z optabstract, only supports optimizing purely abstract types
 
 	FB_COMPOPTIONS
 end enum
@@ -337,6 +338,7 @@ type FBCMMLINEOPT
 	nocmdline       as integer              '' dissallow #cmdline directive? (default = false)
 	returninflts    as integer              '' enable returning some structs in floating point registers
 	nobuiltins      as integer              '' disable all non-required builtin procedure definitions
+	optabstract     as integer              '' only supports optimizing purely abstract types
 end type
 
 enum FB_PROFILE_OPT
