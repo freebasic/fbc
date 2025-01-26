@@ -65,13 +65,15 @@ declare function hReEscape _
 	( _
 		byval text as zstring ptr, _
 		byref textlen as integer, _
-		byref isunicode as integer _
+		byref isunicode as integer, _
+		byref wrnmsg as FB_WARNINGMSG = 0 _
 	) as zstring ptr
 
 declare function hReEscapeW _
 	( _
 		byval text as wstring ptr, _
-		byref textlen as integer _
+		byref textlen as integer, _
+		byref wrnmsg as FB_WARNINGMSG = 0 _
 	) as wstring ptr
 
 declare function hEscape _

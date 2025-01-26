@@ -26,6 +26,8 @@ Version 1.20.0
 - fbc: set bit value '__FB_ERR__' = &h400 if '-earraydims' is enabled
 - PEEK, POKE, and SWAP are now quirk words instead of keywords allowing these names to be used as member procedure names
 - fbdoc: change CRegex.bas to use pcre2 since the libpcre (a.k.a pcre3) is obsolete in favour of pcre2 by upstream (Ahmad Khalifa)
+- PEEK, POKE, and SWAP are now quirk words instead of keywords allowing these names to be used as member procedure names
+- "\Unnnnnnnn" escape sequence is mapped as follows: when within unicode BMP, "\unnnn", otherwise on linux "\Unnnnnnnn", or on windows "\uD8XX\uDCXX" surrogate pair.  
 
 [added]
 - x86_64: optimize SHL MOD INTDIV to use 32-bit operation when result will be converted to long/ulong
@@ -66,6 +68,7 @@ Version 1.20.0
 - '-earraydims' command line option to enable array dimensions checking.  Enabled by default with '-exx' command line option.
 - github #426: add __FB_ARG_LISTEXPAND__( macroname, macroargcount, args... ): expands to one or more 'macroname( .... )' depending on the value of macroargcount and number of arguments in the args... list (skyfish)
 - fbc: command line option '-z optabstract' to support optimizing purely abstract types, and only preserve used pure abstract types (skyfish)
+- fbc: warning when "\u" or "\U" escape sequences are invalid or truncated
 
 [fixed]
 - github #410: give consistent floating point comparisons results involving NaNs.
@@ -100,7 +103,8 @@ Version 1.20.0
 - gas64: fix casting ulong (with "negative value") to double/single (SARG)
 - gas64: fix optimization prevented converting 32bit memory/register (SARG)
 - fbc: #cmdline "-end" was not resetting the parser, hiding errors and producing a bad executable
-- sf.net #1009: Invalid symbol when accessing indexed PROPERTY arrays BYREF 
+- sf.net #1009: Invalid symbol when accessing indexed PROPERTY arrays BYREF
+- sf.net #795: unsupported \UNNNN escape sequence is miscompiled - expect "\Unnnnnnnn" escape to have 8 digits  
 
 
 Version 1.10.3

@@ -3,6 +3,7 @@
 '' chng: sep/2004 written [v1ctor]
 ''       jan/2005 updated to use real linked-lists [v1ctor]
 
+#include once "fb.bi"
 #include once "hash.bi"
 #include once "hlp.bi"
 

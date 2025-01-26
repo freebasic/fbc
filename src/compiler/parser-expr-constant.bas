@@ -27,6 +27,7 @@ function cStrLiteral( byval skiptoken as integer ) as ASTNODE ptr
 	dim as integer lgt = any, isunicode = any
 	dim as zstring ptr zs = any
 	dim as wstring ptr ws = any
+	dim as FB_WARNINGMSG wrnmsg = 0
 
 	dim as ASTNODE ptr expr = NULL
 
@@ -36,7 +37,10 @@ function cStrLiteral( byval skiptoken as integer ) as ASTNODE ptr
 		if( lexGetType( ) <> FB_DATATYPE_WCHAR ) then
 			'' escaped? convert to internal format..
 			if( lexGetToken( ) = FB_TK_STRLIT_ESC ) then
-				zs = hReEscape( lexGetText( ), lgt, isunicode )
+				zs = hReEscape( lexGetText( ), lgt, isunicode, wrnmsg )
+				if( wrnmsg <> 0 ) then
+					errReportWarn( wrnmsg )
+				end if
 			else
 				zs = lexGetText( )
 
@@ -66,7 +70,10 @@ function cStrLiteral( byval skiptoken as integer ) as ASTNODE ptr
 		else
 			'' escaped? convert to internal format..
 			if( lexGetToken( ) = FB_TK_STRLIT_ESC ) then
-				ws = hReEscapeW( lexGetTextW( ), lgt )
+				ws = hReEscapeW( lexGetTextW( ), lgt, wrnmsg )
+				if( wrnmsg <> 0 ) then
+					errReportWarn( wrnmsg )
+				end if
 			else
 				ws = lexGetTextW( )
 

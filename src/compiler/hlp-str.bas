@@ -303,11 +303,211 @@ function hReplaceChar _
 end function
 
 '':::::
+private function hRemapChar _
+	( _
+		byval char as integer _
+	) as integer static
+
+	select case as const char
+	case asc( "r" )
+		function = CHAR_CR
+
+	case asc( "l" ), asc( "n" )
+		function = CHAR_LF
+
+	case asc( "t" )
+		function = CHAR_TAB
+
+	case asc( "b" )
+		function = CHAR_BKSPC
+
+	case asc( "a" )
+		function = CHAR_BELL
+
+	case asc( "f" )
+		function = CHAR_FORMFEED
+
+	case asc( "v" )
+		function = CHAR_VTAB
+
+	case else
+		function = char
+	end select
+
+end function
+
+'':::::
+private function hHexChar( byval value as integer ) as integer
+	value and= &hF
+	value += CHAR_0
+	if( value > CHAR_9 ) then
+		value += CHAR_AUPP - CHAR_9 - 1
+	end if
+	function = value
+end function
+
+'':::::
+private function hUnicodeHexToCodePointW _
+	( _
+		byref src as const wstring ptr, _
+		byval digits as integer _
+	) as uinteger static
+
+	dim as uinteger char, c
+	dim as integer i
+
+	'' x86 little-endian assumption
+	char = 0
+
+	for i = 1 to digits
+		c = *src - CHAR_0
+		src += 1
+
+		if( c > 9 ) then
+			c -= (CHAR_AUPP - CHAR_9 - 1)
+		end if
+		if( c > 16 ) then
+			c -= (CHAR_ALOW - CHAR_AUPP)
+		end if
+
+		char = (char * 16) or c
+	next
+
+	function = char
+
+end function
+
+'':::::
+private sub hUnicodeCodePointCharToHex _
+	( _
+		byref char as uinteger, _
+		byref dst as zstring ptr, _
+		byval wcharlen as integer _
+	)
+
+	dim as integer i = any
+	dim as uinteger c = any
+
+	for i = 1 to wcharlen
+		*dst = CHAR_RSLASH
+		dst += 1
+
+		'' x86 little-endian assumption
+		c = char and 255
+		if( c < 8 ) then
+			dst[0] = CHAR_0 + c
+			dst += 1
+
+		elseif( c < 64 ) then
+			dst[0] = CHAR_0 + (c shr 3)
+			dst[1] = CHAR_0 + (c and 7)
+			dst += 2
+
+		else
+			dst[0] = CHAR_0 + (c shr 6)
+			dst[1] = CHAR_0 + ((c and &b00111000) shr 3)
+			dst[2] = CHAR_0 + (c and 7)
+			dst += 3
+		end if
+
+		char shr= 8
+	next
+
+end sub
+
+'':::::
+function hHasEscape _
+	( _
+		byval text as zstring ptr _
+	) as integer static
+
+	dim as uinteger char
+	dim as integer lgt
+
+	lgt = len( *text )
+	do while( lgt > 0 )
+		'' '\'?
+		if( *text = CHAR_RSLASH ) then
+			text += 1
+
+			char = *text
+			select case as const char
+			case asc( "r" ), _
+				asc( "l" ), _
+				asc( "n" ), _
+				asc( "t" ), _
+				asc( "b" ), _
+				asc( "a" ), _
+				asc( "f" ), _
+				asc( "v" ), _
+				CHAR_QUOTE, _
+				CHAR_0 to CHAR_9, _
+				CHAR_AMP, _
+				CHAR_ULOW, CHAR_UUPP, _
+				CHAR_RSLASH
+
+				return TRUE
+			end select
+		end if
+
+		text += 1
+		lgt -= 1
+	loop
+
+	function = FALSE
+
+end function
+
+'':::::
+function hHasEscapeW _
+	( _
+		byval text as wstring ptr _
+	) as integer static
+
+	dim as uinteger char
+	dim as integer lgt
+
+	lgt = len( *text )
+	do while( lgt > 0 )
+		'' '\'?
+		if( *text = CHAR_RSLASH ) then
+			text += 1
+
+			char = *text
+			select case as const char
+			case asc( "r" ), _
+				asc( "l" ), _
+				asc( "n" ), _
+				asc( "t" ), _
+				asc( "b" ), _
+				asc( "a" ), _
+				asc( "f" ), _
+				asc( "v" ), _
+				CHAR_QUOTE, _
+				CHAR_0 to CHAR_9, _
+				CHAR_AMP, _
+				CHAR_ULOW, CHAR_UUPP, _
+				CHAR_RSLASH
+
+				return TRUE
+			end select
+		end if
+
+		text += 1
+		lgt -= 1
+	loop
+
+	function = FALSE
+
+end function
+
+'':::::
 function hReEscape _
 	( _
 		byval text as zstring ptr, _
 		byref textlen as integer, _
-		byref isunicode as integer _
+		byref isunicode as integer, _
+		byref wrnmsg as FB_WARNINGMSG = 0 _
 	) as zstring ptr static
 
 	static as DZSTRING res
@@ -456,7 +656,24 @@ function hReEscape _
 				*dst = char
 				dst += 1
 
+				'' "\Unnnn" exactly 8 digits expected
 				for i = 1 to 4
+					if( src >= src_end ) then
+						wrnmsg = FB_WARNINGMSG_INVALIDUNICODESEQUENCE
+						exit for
+					end if
+
+					char = *src
+					select case char
+					case CHAR_0 to CHAR_9, _
+					     CHAR_ALOW to CHAR_FLOW, _
+					     CHAR_AUPP to CHAR_FUPP
+
+					case else
+						wrnmsg = FB_WARNINGMSG_INVALIDUNICODESEQUENCE
+						exit for
+
+					end select
 					*dst = *src
 					dst += 1
 					src += 1
@@ -470,30 +687,63 @@ function hReEscape _
 			case CHAR_UUPP
 				isunicode = TRUE
 
-				'' break in two 16-bit..
+				'' "\Unnnnnnnn" exactly 8 digits expected
+				for i = 1 to 8
+					if( src >= src_end ) then
+						wrnmsg = FB_WARNINGMSG_INVALIDUNICODESEQUENCE
+						exit for
+					end if
 
-				'' 'u'
-				*dst = CHAR_UUPP
-				dst += 1
-
-				for i = 1 to 4
-					*dst = *src
-					dst += 1
+					char = *src
+					select case char
+					case CHAR_0 to CHAR_9
+						value = (value * 16) + (char - CHAR_0)
+					case CHAR_ALOW to CHAR_FLOW
+						value = (value * 16) + (char - CHAR_ALOW) + 10
+					case CHAR_AUPP to CHAR_FUPP
+						value = (value * 16) + (char - CHAR_AUPP) + 10
+					case else
+						wrnmsg = FB_WARNINGMSG_INVALIDUNICODESEQUENCE
+						exit for
+					end select
 					src += 1
 				next
 
-				'' '\u'
-				dst[0] = FB_INTSCAPECHAR
-				dst[1] = CHAR_UUPP
-				dst += 2
+				if( value > &h0000FFFFul ) then
 
-				for i = 1 to 4
-					*dst = *src
+					'' 'U'
+					*dst = CHAR_UUPP
 					dst += 1
-					src += 1
-				next
 
-				textlen += 4
+					'' nnnnnnnn
+					dst[0] = hHexChar( value shr 28 )
+					dst[1] = hHexChar( value shr 24 )
+					dst[2] = hHexChar( value shr 20 )
+					dst[3] = hHexChar( value shr 16 )
+					dst[4] = hHexChar( value shr 12 )
+					dst[5] = hHexChar( value shr 8 )
+					dst[6] = hHexChar( value shr 4 )
+					dst[7] = hHexChar( value )
+					dst += 8
+
+					textlen += 4
+
+				else
+
+					'' 'u'
+					*dst = CHAR_ULOW
+					dst += 1
+
+					'' nnnn
+					dst[0] = hHexChar( value shr 12 )
+					dst[1] = hHexChar( value shr 8 )
+					dst[2] = hHexChar( value shr 4 )
+					dst[3] = hHexChar( value )
+					dst += 4
+
+					textlen += 2
+
+				end if
 
 				continue do
 
@@ -544,7 +794,8 @@ end function
 function hReEscapeW _
 	( _
 		byval text as wstring ptr, _
-		byref textlen as integer _
+		byref textlen as integer, _
+		byref wrnmsg as FB_WARNINGMSG = 0 _
 	) as wstring ptr static
 
 	static as DWSTRING res
@@ -686,7 +937,24 @@ function hReEscapeW _
 				*dst = char
 				dst += 1
 
+				'' "\Unnnn" exactly 8 digits expected
 				for i = 1 to 4
+					if( src >= src_end ) then
+						wrnmsg = FB_WARNINGMSG_INVALIDUNICODESEQUENCE
+						exit for
+					end if
+
+					char = *src
+					select case char
+					case CHAR_0 to CHAR_9, _
+					     CHAR_ALOW to CHAR_FLOW, _
+					     CHAR_AUPP to CHAR_FUPP
+
+					case else
+						wrnmsg = FB_WARNINGMSG_INVALIDUNICODESEQUENCE
+						exit for
+
+					end select
 					*dst = *src
 					dst += 1
 					src += 1
@@ -698,30 +966,64 @@ function hReEscapeW _
 
 			'' 32-bit unicode?
 			case CHAR_UUPP
-				'' break in two 16-bit..
 
-				'' 'u'
-				*dst = CHAR_UUPP
-				dst += 1
+				'' "\Unnnnnnnn" exactly 8 digits expected
+				for i = 1 to 8
+					if( src >= src_end ) then
+						wrnmsg = FB_WARNINGMSG_INVALIDUNICODESEQUENCE
+						exit for
+					end if
 
-				for i = 1 to 4
-					*dst = *src
-					dst += 1
+					char = *src
+					select case char
+					case CHAR_0 to CHAR_9
+						value = (value * 16) + (char - CHAR_0)
+					case CHAR_ALOW to CHAR_FLOW
+						value = (value * 16) + (char - CHAR_ALOW) + 10
+					case CHAR_AUPP to CHAR_FUPP
+						value = (value * 16) + (char - CHAR_AUPP) + 10
+					case else
+						wrnmsg = FB_WARNINGMSG_INVALIDUNICODESEQUENCE
+						exit for
+					end select
 					src += 1
 				next
 
-				'' '\u'
-				dst[0] = FB_INTSCAPECHAR
-				dst[1] = CHAR_UUPP
-				dst += 2
+				if( value > &h0000FFFFul ) then
 
-				for i = 1 to 4
-					*dst = *src
+					'' 'U'
+					*dst = CHAR_UUPP
 					dst += 1
-					src += 1
-				next
 
-				textlen += 4
+					'' nnnnnnnn
+					dst[0] = hHexChar( value shr 28 )
+					dst[1] = hHexChar( value shr 24 )
+					dst[2] = hHexChar( value shr 20 )
+					dst[3] = hHexChar( value shr 16 )
+					dst[4] = hHexChar( value shr 12 )
+					dst[5] = hHexChar( value shr 8 )
+					dst[6] = hHexChar( value shr 4 )
+					dst[7] = hHexChar( value )
+					dst += 8
+
+					textlen += 4
+
+				else
+
+					'' 'u'
+					*dst = CHAR_ULOW
+					dst += 1
+
+					'' nnnn
+					dst[0] = hHexChar( value shr 12 )
+					dst[1] = hHexChar( value shr 8 )
+					dst[2] = hHexChar( value shr 4 )
+					dst[3] = hHexChar( value )
+					dst += 4
+
+					textlen += 2
+
+				end if
 
 				continue do
 
@@ -871,157 +1173,6 @@ function hEscape _
 end function
 
 '':::::
-private function hRemapChar _
-	( _
-		byval char as integer _
-	) as integer static
-
-	select case as const char
-	case asc( "r" )
-		function = CHAR_CR
-
-	case asc( "l" ), asc( "n" )
-		function = CHAR_LF
-
-	case asc( "t" )
-		function = CHAR_TAB
-
-	case asc( "b" )
-		function = CHAR_BKSPC
-
-	case asc( "a" )
-		function = CHAR_BELL
-
-	case asc( "f" )
-		function = CHAR_FORMFEED
-
-	case asc( "v" )
-		function = CHAR_VTAB
-
-	case else
-		function = char
-	end select
-
-end function
-
-'':::::
-function hHasEscape _
-	( _
-		byval text as zstring ptr _
-	) as integer static
-
-	dim as uinteger char
-	dim as integer lgt
-
-	lgt = len( *text )
-	do while( lgt > 0 )
-		'' '\'?
-		if( *text = CHAR_RSLASH ) then
-			text += 1
-
-			char = *text
-			select case as const char
-			case asc( "r" ), _
-				asc( "l" ), _
-				asc( "n" ), _
-				asc( "t" ), _
-				asc( "b" ), _
-				asc( "a" ), _
-				asc( "f" ), _
-				asc( "v" ), _
-				CHAR_QUOTE, _
-				CHAR_0 to CHAR_9, _
-				CHAR_AMP, _
-				CHAR_ULOW, CHAR_UUPP, _
-				CHAR_RSLASH
-
-				return TRUE
-			end select
-		end if
-
-		text += 1
-		lgt -= 1
-	loop
-
-	function = FALSE
-
-end function
-
-'':::::
-function hHasEscapeW _
-	( _
-		byval text as wstring ptr _
-	) as integer static
-
-	dim as uinteger char
-	dim as integer lgt
-
-	lgt = len( *text )
-	do while( lgt > 0 )
-		'' '\'?
-		if( *text = CHAR_RSLASH ) then
-			text += 1
-
-			char = *text
-			select case as const char
-			case asc( "r" ), _
-				asc( "l" ), _
-				asc( "n" ), _
-				asc( "t" ), _
-				asc( "b" ), _
-				asc( "a" ), _
-				asc( "f" ), _
-				asc( "v" ), _
-				CHAR_QUOTE, _
-				CHAR_0 to CHAR_9, _
-				CHAR_AMP, _
-				CHAR_ULOW, CHAR_UUPP, _
-				CHAR_RSLASH
-
-				return TRUE
-			end select
-		end if
-
-		text += 1
-		lgt -= 1
-	loop
-
-	function = FALSE
-
-end function
-
-''::::
-private function hU16ToWchar _
-	( _
-		byval src as const wstring ptr _
-	) as uinteger static
-
-	dim as uinteger char, c
-	dim as integer i
-
-	'' x86 little-endian assumption
-	char = 0
-
-	for i = 1 to 4
-		c = *src - CHAR_0
-		src += 1
-
-		if( c > 9 ) then
-			c -= (CHAR_AUPP - CHAR_9 - 1)
-		end if
-		if( c > 16 ) then
-			c -= (CHAR_ALOW - CHAR_AUPP)
-		end if
-
-		char = (char * 16) or c
-	next
-
-	function = char
-
-end function
-
-
-'':::::
 function hEscapeW _
 	( _
 		byval text as const wstring ptr, _
@@ -1029,7 +1180,7 @@ function hEscapeW _
 	) as zstring ptr static
 
 	static as DZSTRING res
-	dim as uinteger char, c
+	dim as uinteger char
 	dim as integer lgt, i, wcharlen, n
 	dim as const wstring ptr src, src_end
 	dim as zstring ptr dst
@@ -1078,11 +1229,17 @@ function hEscapeW _
 				loop
 
 			else
-				'' unicode 16-bit?
+				'' unicode 16-bit? or 32-bit?
+
+				'' CHAR_ULOW
 				if( char = asc( "u" ) ) then
 					if( src + 4 > src_end ) then exit do
-					char = hU16ToWchar( src )
-					src += 4
+					char = hUnicodeHexToCodePointW( src, 4 )
+
+				'' CHAR_UUPP
+				elseif( char = asc( "U" ) ) then
+					if( src + 8 > src_end ) then exit do
+					char = hUnicodeHexToCodePointW( src, 8 )
 
 				'' remap char as they will become a octagonal seq
 				else
@@ -1094,30 +1251,14 @@ function hEscapeW _
 
 		'' convert every char to octagonal form as GAS can't
 		'' handle unicode literal strings
-		for i = 1 to wcharlen
-			*dst = CHAR_RSLASH
-			dst += 1
-
-			'' x86 little-endian assumption
-			c = char and 255
-			if( c < 8 ) then
-				dst[0] = CHAR_0 + c
-				dst += 1
-
-			elseif( c < 64 ) then
-				dst[0] = CHAR_0 + (c shr 3)
-				dst[1] = CHAR_0 + (c and 7)
-				dst += 2
-
-			else
-				dst[0] = CHAR_0 + (c shr 6)
-				dst[1] = CHAR_0 + ((c and &b00111000) shr 3)
-				dst[2] = CHAR_0 + (c and 7)
-				dst += 3
-			end if
-
-			char shr= 8
-		next
+		if( (wcharlen = 2) and (char >= &h00010000ul) ) then
+			'' create surrogate pair
+			char -= &h00010000ul
+			hUnicodeCodePointCharToHex( (char shr 10) + &h0000D800ul, dst, wcharlen )
+			hUnicodeCodePointCharToHex( (char and &h000003FFul) + &h0000DC00ul, dst, wcharlen )
+		else
+			hUnicodeCodePointCharToHex( char, dst, wcharlen )
+		end if
 
 		n += 1
 		if( (maxlen > 0) andalso (n >= maxlen) ) then exit do
@@ -1244,11 +1385,17 @@ function hUnescapeW _
 				loop
 
 			else
-				'' unicode 16-bit?
+				'' unicode 16-bit? or 32-bit?
+
+				'' CHAR_ULOW
 				if( char = asc( "u" ) ) then
 					if( src + 4 > src_end ) then exit do
-					char = hU16ToWchar( src )
-					src += 4
+					char = hUnicodeHexToCodePointW( src, 4 )
+
+				'' CHAR_UUPP
+				elseif( char = asc( "U" ) ) then
+					if( src + 8 > src_end ) then exit do
+					char = hUnicodeHexToCodePointW( src, 8 )
 
 				'' remap char as they will become a octagonal seq
 				else
@@ -1258,8 +1405,25 @@ function hUnescapeW _
 
 		end if
 
-		*dst = char
-		dst += 1
+		if( sizeof( wstring ) = 2 ) then
+
+			if( char > &h0000FFFFul ) then
+				char -= &h00010000ul
+				dst[0] = (char shr 10) + &h0000D800ul
+				dst[1] = (char and &h000003FFul) + &h0000DC00ul
+				dst += 2
+
+			else
+				*dst = char
+				dst += 1
+
+			end if
+
+		else
+			*dst = char
+			dst += 1
+
+		end if
 
 	loop
 
