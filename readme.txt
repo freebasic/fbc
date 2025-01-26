@@ -1,6 +1,6 @@
 
     FreeBASIC - A multi-platform BASIC Compiler
-    Copyright (C) 2004-2024 The FreeBASIC development team.
+    Copyright (C) 2004-2025 The FreeBASIC development team.
 
     Official site:      https://freebasic.net/
     Forum:              https://freebasic.net/forum/
