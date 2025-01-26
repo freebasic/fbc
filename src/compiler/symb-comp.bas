@@ -827,7 +827,7 @@ sub symbUdtImplementDefaultMembers _
 		'' (for which the rtlib already contains these declarations)
 		if( udt <> symb.rtti.fb_object ) then
 			dim as integer iRet = hBuildRtti( udt )
-			hBuildVtable( udt )	
+			hBuildVtable( udt )
 			if iRet = FALSE then return
 		end if
 	end if
