@@ -29,7 +29,6 @@
 #include once "cmd_opts.bi"
 
 '' libs
-#inclib "pcre"
 #inclib "curl"
 
 using fb
