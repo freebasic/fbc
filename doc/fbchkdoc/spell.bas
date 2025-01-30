@@ -33,7 +33,6 @@
 #include once "spellcheck.bi"
 
 '' libs
-#inclib "pcre"
 #inclib "curl"
 
 using fb

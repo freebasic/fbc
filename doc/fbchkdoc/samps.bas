@@ -38,7 +38,6 @@
 #include once "fbdoc_keywords.bi"
 
 #inclib "fbdoc"
-#inclib "pcre"
 
 using fb
 using fbdoc

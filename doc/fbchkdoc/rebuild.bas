@@ -29,7 +29,6 @@
 
 '' libs
 #inclib "fbdoc"
-#inclib "pcre"
 
 using fb
 using fbdoc

@@ -26,7 +26,8 @@ if [ "$FBTRAVIS_TARGET_BITS" = "32" ]; then
 		libcurl4-openssl-dev:i386 \
 		libmysqlclient-dev:i386 \
 		libaspell-dev:i386 \
-		libpcre3-dev:i386
+		libpcre3-dev:i386 \
+		libpcre2-dev:i386
 else
 	sudo apt-get -y --no-install-recommends install \
 		libncurses-dev \
@@ -40,7 +41,8 @@ else
 		libcurl4-openssl-dev \
 		libmysqlclient-dev \
 		libaspell-dev \
-		libpcre3-dev
+		libpcre3-dev \
+		libpcre2-dev
 fi
 
 source "$(dirname "$0")/bootstrap-settings.sh"
