@@ -1,5 +1,5 @@
 ''
-'' combo box example, translated from an C example written by Özcan Güngör
+'' combo box example, translated from an C example written by Ã–zcan GÃ¼ngÃ¶r
 ''
 ' Reviewed by TJF (2011)
 ' Details: http://developer.gnome.org/gtk/
