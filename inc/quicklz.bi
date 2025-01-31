@@ -67,7 +67,7 @@ type ui16 as ushort
 #endif
 
 ' Detect if pointer size is 64-bit. It's not fatal if some 64-bit target is not detected because this is only for adding an optional 64-bit optimization.
-#if __FB_64BIT__
+#if defined(__FB_64BIT__)
 	#define QLZ_PTR_64
 #endif
 

@@ -24,7 +24,7 @@ End Sub
 
 '' Asks libzip for information on file number 'i' in the .zip file,
 '' and then extracts it, while creating directories as needed.
-Private Sub unpack_zip_file(ByVal zip As zip Ptr, ByVal i As Integer)
+Private Sub unpack_zip_file(ByVal zip As zip_t Ptr, ByVal i As Integer)
     #define BUFFER_SIZE (1024 * 512)
     Static As UByte chunk(0 To (BUFFER_SIZE - 1))
     #define buffer (@chunk(0))
@@ -58,7 +58,7 @@ Private Sub unpack_zip_file(ByVal zip As zip Ptr, ByVal i As Integer)
     End If
 
     '' Input for the file comes from libzip
-    Dim As zip_file Ptr fi = zip_fopen_index(zip, i, 0)
+    Dim As zip_file_t Ptr fi = zip_fopen_index(zip, i, 0)
     Do
         '' Write out the file content as returned by zip_fread(), which
         '' also does the decoding and everything.
@@ -88,7 +88,7 @@ Private Sub unpack_zip_file(ByVal zip As zip Ptr, ByVal i As Integer)
 End Sub
 
 Sub unpack_zip(ByRef archive As String)
-    Dim As zip Ptr zip = zip_open(archive, ZIP_CHECKCONS, NULL)
+    Dim As zip_t Ptr zip = zip_open(archive, ZIP_CHECKCONS, NULL)
     If (zip = NULL) Then
         Print "could not open input file " & archive
         Return
