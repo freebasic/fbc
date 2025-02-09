@@ -101,7 +101,7 @@ SUB write_screen()
   SCREENRES S_W, S_H, 32
   VAR c_s_t = cairo_image_surface_create_for_data( _
                 SCREENPTR, CAIRO_FORMAT_ARGB32, _
-                S_W, S_H, S_W * LEN(INTEGER))
+                S_W, S_H, cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, S_W))
   SCREENLOCK
   DoDrawing(c_s_t)
   SCREENUNLOCK
