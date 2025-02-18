@@ -1,4 +1,4 @@
-' Copyright (C) 1995 DJ Delorie, see COPYING.DJ for details
+﻿' Copyright (C) 1995 DJ Delorie, see COPYING.DJ for details
 ' Copyright (c) 1995 DJ Delorie.  Permission granted to use for any
 '   purpose, provided this copyright remains attached and unmodified.
 
@@ -6,9 +6,9 @@
 '   IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
 '   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
-'╔═══════════════════════════════════════════════════════════════════════╗
-'║                    Far Pointer Simulation Functions                   ║
-'╚═══════════════════════════════════════════════════════════════════════╝
+'+-----------------------------------------------------------------------+
+'|                    Far Pointer Simulation Functions                   |
+'+-----------------------------------------------------------------------+
 '
 'This file attempts to make up for the lack of a "far" keyword in GCC. 
 'Although it doesn't provide access to far call APIs (like Windows), it
