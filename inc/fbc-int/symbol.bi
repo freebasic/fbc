@@ -112,8 +112,9 @@ enum FB_QUERY_SYMBOL explicit
 	dataclass  = &h0002     '' return the symbol's data class as FB_DATACLASS
 	typename   = &h0003     '' return the typename as text
 	typenameid = &h0004     '' return the typename as text with specical characters replaced with '_'
-	mangleid   = &h0005     '' return the decorated (mangled) type name (WIP)
-	exists     = &h0006     '' return if the symbol name / identifier is exists
+	mangletype = &h0005     '' return the decorated (mangled) type name (WIP)
+	mangleid   = &h0006     '' return the decorated (mangled) name (WIP)
+	exists     = &h0007     '' return if the symbol name / identifier is exists
 
 	querymask  = &h00ff     '' mask for query values
 

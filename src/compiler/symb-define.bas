@@ -1200,8 +1200,9 @@ enum FB_QUERY_SYMBOL explicit
 	dataclass  = &h0002     '' return the symbol's data class as FB_DATACLASS
 	typename   = &h0003     '' return the typename as text
 	typenameid = &h0004     '' return the typename as text with specical characters replaced with '_'
-	mangleid   = &h0005     '' return the decorated (mangled) type name (WIP)
-	exists     = &h0006     '' return if the symbol name / identifier is exists
+	mangletype = &h0005     '' return the decorated (mangled) type name (WIP)
+	mangleid   = &h0006     '' return the decorated (mangled) type name (WIP)
+	exists     = &h0007     '' return if the symbol name / identifier is exists
 	querymask  = &h00ff     '' mask for query values
 
 	'' filters
@@ -1261,6 +1262,7 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 				select case queryvalue
 				case FB_QUERY_SYMBOL.typename, _
 				     FB_QUERY_SYMBOL.typenameid, _
+				     FB_QUERY_SYMBOL.mangletype, _
 				     FB_QUERY_SYMBOL.mangleid, _
 				     FB_QUERY_SYMBOL.exists
 
@@ -1385,13 +1387,21 @@ private function hDefQuerySymZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum 
 					hReplaceChar( res, asc(")"), asc("_") )
 					hReplaceChar( res, asc("*"), asc("_") )
 				end if
-			case FB_QUERY_SYMBOL.mangleid
+			case FB_QUERY_SYMBOL.mangletype
 				if( sym ) then
 					symbMangleType( res, dtype, sym )
 					symbMangleResetAbbrev( )
 				elseif( subtype ) then
 					symbMangleType( res, dtype, subtype )
 					symbMangleResetAbbrev( )
+				else
+					res = str(0)
+				end if
+			case FB_QUERY_SYMBOL.mangleid
+				if( sym ) then
+					res = *symbGetMangledName( sym )
+				elseif( subtype ) then
+					res = *symbGetMangledName( subtype )
 				else
 					res = str(0)
 				end if

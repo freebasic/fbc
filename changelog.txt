@@ -28,6 +28,7 @@ Version 1.20.0
 - fbdoc: change CRegex.bas to use pcre2 since the libpcre (a.k.a pcre3) is obsolete in favour of pcre2 by upstream (Ahmad Khalifa)
 - PEEK, POKE, and SWAP are now quirk words instead of keywords allowing these names to be used as member procedure names
 - "\Unnnnnnnn" escape sequence is mapped as follows: when within unicode BMP, "\unnnn", otherwise on linux "\Unnnnnnnn", or on windows "\uD8XX\uDCXX" surrogate pair.  
+- __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.mangletype, symbol ) returns the mangled type name of symbol
 
 [added]
 - x86_64: optimize SHL MOD INTDIV to use 32-bit operation when result will be converted to long/ulong
@@ -69,6 +70,7 @@ Version 1.20.0
 - github #426: add __FB_ARG_LISTEXPAND__( macroname, macroargcount, args... ): expands to one or more 'macroname( .... )' depending on the value of macroargcount and number of arguments in the args... list (skyfish)
 - fbc: command line option '-z optabstract' to support optimizing purely abstract types, and only preserve used pure abstract types (skyfish)
 - fbc: warning when "\u" or "\U" escape sequences are invalid or truncated
+- fbc: __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.mangleid, symbol ) returns the mangled name of symbol
 
 [fixed]
 - github #410: give consistent floating point comparisons results involving NaNs.
