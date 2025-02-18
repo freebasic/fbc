@@ -108,7 +108,7 @@ namespace fb
 			ctx->code = NULL
 		end if
 		if( ctx->ccontext <> NULL ) then
-			pcre2_compile_context_create( ctx->ccontext )
+			pcre2_compile_context_free( ctx->ccontext )
 			ctx->ccontext = NULL
 		end if
 

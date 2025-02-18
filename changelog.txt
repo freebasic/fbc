@@ -24,7 +24,8 @@ Version 1.20.0
 - rtlib: When array out of bounds check files, show variable/field name, index, lbound, and ubound in the error message  
 - fbc: '-exx' enables '-earraydims' by default to error on wrong number of array dimensions or unallocated arrays breaking previous use of @array(0,...) = NULL to detect unallocated arrays
 - fbc: set bit value '__FB_ERR__' = &h400 if '-earraydims' is enabled
-- PEEK, POKE, and SWAP are now quirk words instead of keywords allowing these names to be used as member procedure names 
+- PEEK, POKE, and SWAP are now quirk words instead of keywords allowing these names to be used as member procedure names
+- fbdoc: change CRegex.bas to use pcre2 since the libpcre (a.k.a pcre3) is obsolete in favour of pcre2 by upstream (Ahmad Khalifa)
 
 [added]
 - x86_64: optimize SHL MOD INTDIV to use 32-bit operation when result will be converted to long/ulong
