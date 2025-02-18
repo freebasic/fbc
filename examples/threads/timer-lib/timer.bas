@@ -6,7 +6,7 @@
 
 #include once "timer.bi"
 
-sub CTimer.threadcb( byval ctx as CTimer ptr )
+sub CTimer.threadcb( byval ctx as CTimer ptr ) export
 	do
 		select case ctx->state
 		case TIMER_STATE_EXITING
@@ -43,7 +43,7 @@ constructor CTimer _
 		byval interval as integer, _
 		byval callback as TIMER_CALLBACK, _
 		byval userdata as integer = 0 _
-	)
+	) export
 	this.state      = TIMER_STATE_STOPPED
 	this.interval   = interval
 	this.callback   = callback
@@ -54,7 +54,7 @@ constructor CTimer _
 	this.waiting    = -1
 end constructor
 
-sub CTimer.on( )
+sub CTimer.on( ) export
 	if( this.state = TIMER_STATE_KILLED ) then
 		exit sub
 	end if
@@ -66,14 +66,14 @@ sub CTimer.on( )
 	mutexunlock( this.cond_mutex )
 end sub
 
-sub CTimer.off( )
+sub CTimer.off( ) export
 	if( this.state = TIMER_STATE_KILLED ) then
 		exit sub
 	end if
 	this.state = TIMER_STATE_STOPPED
 end sub
 
-destructor CTimer( )
+destructor CTimer( ) export
 	if( this.state = TIMER_STATE_KILLED ) then
 		return
 	end if

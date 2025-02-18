@@ -17,8 +17,10 @@
 OS := $(shell uname)
 ifeq ($(OS),Linux)
     EXEEXT :=
+    DLLEXT := .so
 else
     EXEEXT := .exe
+    DLLEXT := .dll
 endif
 
 FBC := fbc$(EXEEXT)
@@ -32,7 +34,7 @@ CONSOLE		:= $(subst .bas,,$(wildcard console/*.bas)) \
 			$(subst .bas,,$(wildcard console/curses/*.bas)) \
 			$(subst .bas,,$(wildcard console/caca/*.bas))
 DATABASE	:= $(subst .bas,,$(wildcard database/*.bas))
-DLL		:= dll/dylib dll/libmydll.so dll/test
+DLL		:= dll/dylib dll/libmydll$(DLLEXT) dll/test
 DOS		:= $(subst .bas,,$(wildcard DOS/*.bas))
 FILES		:= $(subst .bas,,$(wildcard files/*.bas files/*/*.bas))
 GRAPHICS	:= $(subst .bas,,$(wildcard graphics/*.bas graphics/*/*.bas))
@@ -46,7 +48,7 @@ NETWORK		:= $(subst .bas,,$(wildcard network/*.bas network/*/*.bas \
 #REGEX		:= $(subst .bas,,$(wildcard regex/*/*.bas))
 SOUND		:= $(subst .bas,,$(wildcard sound/*/*.bas))
 THREADS		:= $(subst .bas,,$(wildcard threads/*.bas)) \
-			threads/timer-lib/libtimer.so threads/timer-lib/test
+			threads/timer-lib/libtimer$(DLLEXT) threads/timer-lib/test
 UNICODE		:= $(subst .bas,,$(wildcard unicode/*.bas))
 #WIN32 := $(subst .bas,,$(wildcard sound/*/*.bas))
 XML		:= $(subst .bas,,$(wildcard xml/*.bas))
@@ -86,24 +88,29 @@ checklib.%:
 	@ldconfig -p | grep "lib$*.so" > /dev/null
 
 
-dll/libmydll.so: dll/mydll.bas
+dll/libmydll$(DLLEXT): dll/mydll.bas
 	$(FBC) -dylib $<
 
-dll/test: dll/test.bas dll/libmydll.so
+dll/test: dll/test.bas dll/libmydll$(DLLEXT)
 	$(FBC) -p dll dll/test.bas
 
 ifeq ($(OS),Linux)
 DOS/%: DOS/%.bas
 	@echo "SKIP $@ on Linux"
+else 
+ifeq ($(OS),Windows_NT)
+DOS/%: DOS/%.bas
+	@echo "SKIP $@ on Windows"
 else
 DOS/%: DOS/%.bas
 	$(FBC) $<
 endif
+endif
 
-threads/timer-lib/libtimer.so: threads/timer-lib/timer.bas
+threads/timer-lib/libtimer$(DLLEXT): threads/timer-lib/timer.bas
 	$(FBC) -dylib -mt $<
 
-threads/timer-lib/test: threads/timer-lib/test.bas threads/timer-lib/libtimer.so
+threads/timer-lib/test: threads/timer-lib/test.bas threads/timer-lib/libtimer$(DLLEXT)
 	$(FBC) -p $(dir $@) -mt $<
 
 %: %.bas
