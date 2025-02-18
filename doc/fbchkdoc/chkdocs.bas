@@ -38,7 +38,6 @@
 #include once "cmd_opts.bi"
 
 '' libs
-#inclib "pcre"
 #inclib "funcs"
 
 using fb

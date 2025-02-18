@@ -31,18 +31,20 @@
 	#endif
 #endif
 
-#include once "pcre.bi"
+#define PCRE2_CODE_UNIT_WIDTH 8
+#include once "pcre2.bi"
 
 namespace fb
 
 	type CRegexCtx_
-		as pcre ptr 		reg
-		as pcre_extra ptr extra
-		as long ptr 		vectb
-		as zstring ptr 		subject
-		as integer 			sublen
-		as integer 			substrcnt
-		as zstring ptr ptr	substrlist
+		as pcre2_code ptr		code
+		as pcre2_compile_context ptr ccontext
+		as pcre2_match_data ptr	matchdata
+		as PCRE2_SIZE ptr 		ovector
+		as zstring ptr 			subject
+		as integer 				sublen
+		as PCRE2_SIZE 			substrcnt
+		as zstring ptr ptr		substrlist
 	end type
 
 	'':::::
@@ -52,21 +54,23 @@ namespace fb
 			byval options as REGEX_OPT _
 		)
 		
-		dim as zstring ptr err_msg
-		dim as long err_ofs
-		
+		dim as ulong errorflag
+		dim as integer erroffset
+
 		ctx = new CRegexCtx
 
-		'' Support any CR/LF/CRLF, no matter how libpcre was compiled
-		options or= PCRE_NEWLINE_ANYCRLF
+		'' Support any CR/LF/CRLF line ending
+		ctx->ccontext = pcre2_compile_context_create( NULL )
+		pcre2_set_newline(ctx->ccontext, PCRE2_NEWLINE_ANYCRLF)
 
-		ctx->reg = pcre_compile( pattern, options, @err_msg, @err_ofs, NULL ) 
-		ctx->extra = pcre_study( ctx->reg, 0, @err_msg )
-		pcre_fullinfo( ctx->reg, ctx->extra, PCRE_INFO_CAPTURECOUNT, @ctx->substrcnt )
-		ctx->substrcnt += 1
-		ctx->vectb = allocate( sizeof( *ctx->vectb ) * (3 * ctx->substrcnt) )
+		ctx->code = pcre2_compile( pattern, PCRE2_ZERO_TERMINATED, _
+					options, @errorflag, @erroffset, ctx->ccontext )
+		ctx->matchdata = pcre2_match_data_create_from_pattern(ctx->code, NULL)
+
 		ctx->substrlist = NULL
+		ctx->substrcnt = NULL
 		ctx->subject = NULL
+		ctx->ovector = NULL
 		ctx->sublen = 0
     
 	end constructor
@@ -78,7 +82,7 @@ namespace fb
 		)
 		
 		if( ctx->substrlist <> NULL ) then
-			pcre_free_substring_list( ctx->substrlist )
+			pcre2_substring_list_free ( ctx->substrlist )
 			ctx->substrlist = NULL
 		end if
 
@@ -88,27 +92,26 @@ namespace fb
 	destructor CRegex _
 		( _
 		)
-		
+
 		if( ctx = NULL ) then
 			exit destructor
 		end if
 		
 		_ClearSubstrlist( ctx )
 		
-		if( ctx->vectb <> NULL ) then
-			deallocate( ctx->vectb )
-			ctx->vectb = NULL
+		if( ctx->matchdata <> NULL ) then
+			pcre2_match_data_free(ctx->matchdata)
+			ctx->matchdata = NULL
 		end if
-		
-		if( ctx->extra <> NULL ) then
-			pcre_free( ctx->extra )
-			ctx->extra = NULL
-		end if		
-		
-		if( ctx->reg <> NULL ) then
-			pcre_free( ctx->reg )
-			ctx->reg = NULL
-		end if		
+		if( ctx->code <> NULL ) then
+			pcre2_code_free(ctx->code)
+			ctx->code = NULL
+		end if
+		if( ctx->ccontext <> NULL ) then
+			pcre2_compile_context_free( ctx->ccontext )
+			ctx->ccontext = NULL
+		end if
+
 
 		delete ctx
 
@@ -134,24 +137,28 @@ namespace fb
 			byval lgt as integer, _
 			byval options as REGEX_OPT _
 		) as integer
-		
-		if( ctx = NULL ) then
+
+
+		if( ctx = NULL or ctx->code = NULL ) then
 			return FALSE
 		end if
 
 		_Clearsubstrlist( ctx )
-		
+
 		ctx->subject = subject
 		ctx->sublen = iif( lgt >= 0, lgt, len( *subject ) )
 
-		'' Support any CR/LF/CRLF, no matter how libpcre was compiled
-		options or= PCRE_NEWLINE_ANYCRLF
+		Dim as Integer rc
+		rc = pcre2_match(ctx->code, ctx->subject, _
+					PCRE2_ZERO_TERMINATED, 0, options, _
+					ctx->matchdata, NULL)
+		if rc < 0 then
+			return FALSE
+		end if
+		ctx->substrcnt = rc
+		ctx->ovector = pcre2_get_ovector_pointer(ctx->matchdata)
 
-		function = ( pcre_exec( ctx->reg, ctx->extra, _
-								subject, ctx->sublen, _
-								0, options, _
-								ctx->vectb, 3 * ctx->substrcnt ) > 0 )
-		
+		function = TRUE
 	end function
 
 	'':::::
@@ -160,20 +167,24 @@ namespace fb
 			byval options as REGEX_OPT _
 		) as integer
 
-		if( ctx = NULL ) then
+		if( ctx = NULL or ctx->code = NULL or ctx->ovector = NULL ) then
 			return FALSE
 		end if
 
 		_Clearsubstrlist( ctx )
-         
-		'' Support any CR/LF/CRLF, no matter how libpcre was compiled
-		options or= PCRE_NEWLINE_ANYCRLF
 
-		function = ( pcre_exec( ctx->reg, ctx->extra, _
-								ctx->subject, ctx->sublen, _
-								ctx->vectb[1], options, _
-								ctx->vectb, 3 * ctx->substrcnt ) > 0 )
+		Dim as Integer rc, startoffset, startchar
+		startoffset = ctx->ovector[1]
+		rc = pcre2_match(ctx->code, ctx->subject, _
+					PCRE2_ZERO_TERMINATED, startoffset, options, _
+					ctx->matchdata, NULL)
+		if rc < 0 then
+			return FALSE
+		end if
+		ctx->substrcnt = rc
+		ctx->ovector = pcre2_get_ovector_pointer(ctx->matchdata)
 
+		function = TRUE
 	end function
 
 	'':::::
@@ -191,7 +202,7 @@ namespace fb
 		end if
          
 		if( ctx->substrlist = NULL ) then
-			pcre_get_substring_list( ctx->subject, ctx->vectb, ctx->substrcnt, @ctx->substrlist )
+			pcre2_substring_list_get ( ctx->matchdata, @ctx->substrlist, NULL)
 		end if
     
 		function = ctx->substrlist[i]
@@ -211,8 +222,8 @@ namespace fb
 		if( i >= ctx->substrcnt ) then
 			return -1
 		end if
-		
-		function = ctx->vectb[i * 2 + 0]
+
+		function = ctx->ovector[i * 2 + 0]
 		
 	end function
 
@@ -230,8 +241,8 @@ namespace fb
 			return -1
 		end if
 		
-		function = ctx->vectb[i * 2 + 1] - ctx->vectb[i * 2 + 0]
-		
+		function = ctx->ovector[i * 2 + 1] - ctx->ovector[i * 2 + 0]
+
 	end function
 
 end namespace
