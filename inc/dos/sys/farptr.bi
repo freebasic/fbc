@@ -1,4 +1,4 @@
-﻿' Copyright (C) 1995 DJ Delorie, see COPYING.DJ for details
+' Copyright (C) 1995 DJ Delorie, see COPYING.DJ for details
 ' Copyright (c) 1995 DJ Delorie.  Permission granted to use for any
 '   purpose, provided this copyright remains attached and unmodified.
 
