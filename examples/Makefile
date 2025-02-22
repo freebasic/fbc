@@ -42,8 +42,8 @@ GUI		:= $(subst .bas,,$(wildcard GUI/*/*.bas GUI/*/*/*.bas))
 MANUAL		:= $(subst .bas,,$(wildcard manual/*.bas manual/*/*.bas))
 MATH		:= $(subst .bas,,$(wildcard math/*.bas math/*/*.bas))
 MISC		:= $(subst .bas,,$(wildcard misc/*/*.bas))
-NETWORK		:= $(subst .bas,,$(wildcard network/*.bas network/*/*.bas \
-			network/*/*/*.bas))
+NETWORK		:= $(subst .bas,,$(wildcard network/*.bas network/*/*.bas)) \
+			network/curl/CHttp/libCHttp.a network/curl/CHttp/test
 #OPTIMIZE	:= $(subst .bas,,$(wildcard OptimizePureAbstractTypes/*.bas))
 #REGEX		:= $(subst .bas,,$(wildcard regex/*/*.bas))
 SOUND		:= $(subst .bas,,$(wildcard sound/*/*.bas))
@@ -106,6 +106,13 @@ DOS/%: DOS/%.bas
 	$(FBC) $<
 endif
 endif
+
+network/curl/CHttp/libCHttp.a: network/curl/CHttp/CHttp.bas \
+		network/curl/CHttp/CHttpForm.bas network/curl/CHttp/CHttpStream.bas
+	$(FBC) -lib $^
+
+network/curl/CHttp/test: network/curl/CHttp/libCHttp.a
+	$(FBC) -p $(dir $@) $@.bas $<
 
 threads/timer-lib/libtimer$(DLLEXT): threads/timer-lib/timer.bas
 	$(FBC) -dylib -mt $<

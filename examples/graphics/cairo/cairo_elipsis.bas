@@ -90,7 +90,7 @@ VAR S_W = CUINT(Pag_W) + 1, S_H = CUINT(Pag_H) + 1
 SCREENRES S_W, S_H, 32
 VAR c_s_t = cairo_image_surface_create_for_data( _
               SCREENPTR, CAIRO_FORMAT_ARGB32, _
-              S_W, S_H, S_W * LEN(INTEGER))
+              S_W, S_H, cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, S_W))
 VAR wi = 0.0
 DO
   SCREENLOCK
