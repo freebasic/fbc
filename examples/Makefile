@@ -46,7 +46,8 @@ NETWORK		:= $(subst .bas,,$(wildcard network/*.bas network/*/*.bas \
 			network/*/*/*.bas))
 #OPTIMIZE	:= $(subst .bas,,$(wildcard OptimizePureAbstractTypes/*.bas))
 #REGEX		:= $(subst .bas,,$(wildcard regex/*/*.bas))
-SOUND		:= $(subst .bas,,$(wildcard sound/*/*.bas))
+SOUND		:= $(subst .bas,,$(wildcard sound/*.bas)) \
+			$(subst .bas,,$(wildcard sound/*/*.bas))
 THREADS		:= $(subst .bas,,$(wildcard threads/*.bas)) \
 			threads/timer-lib/libtimer$(DLLEXT) threads/timer-lib/test
 UNICODE		:= $(subst .bas,,$(wildcard unicode/*.bas))
