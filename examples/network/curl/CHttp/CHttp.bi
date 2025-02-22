@@ -10,7 +10,6 @@
 #define FALSE 0
 #endif
 
-#inclib "CHttp"
 #inclib "curl"
 
 type CHttp as CHttp_
