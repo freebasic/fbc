@@ -164,6 +164,8 @@ namespace fb
 
 		if( ca_file ) then
 			ret = curl_easy_setopt( curl, CURLOPT_CAINFO, ca_file )
+		else
+			curl_easy_setopt( curl, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NATIVE_CA )
 		end if
 
 		'' This option should not be needed.  It wasn't in earlier version
@@ -302,6 +304,8 @@ namespace fb
 
 		if( ca_file ) then
 			curl_easy_setopt( curl, CURLOPT_CAINFO, ca_file )
+		else
+			curl_easy_setopt( curl, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NATIVE_CA )
 		end if
 
 		ret = curl_easy_perform( curl )

@@ -175,12 +175,12 @@ the '-ini FILE' command line option to any of the tools.
         are given.  Set or override this url with the '-url URL' command
         line option
 
-    web_cert_file
+    web_certificate
         path and file name to the certificate for web url.  Selected when the
         '-web' or '-web+' command line option given.  Set or override this
         option with the '-certificate FILE' command line option.
 
-    dev_cert_file
+    dev_certificate
         path and file name to the certificate for dev url.  Selected when the
         '-dev' or '-dev+' command line option given.  Set or override this
         option with the '-certificate FILE' command line option.
