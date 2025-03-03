@@ -9,7 +9,7 @@
 #   - fbc sources are retrieved from Git; you have to specify the exact commit
 #     to build (or a tag/branch name).
 #
-# ./build-bsp.sh <target> <fbc-commit-id> [--offline] [--repo url] [--remote name]
+# ./build-bsd.sh <target> <fbc-commit-id> [--offline] [--repo url] [--remote name]
 #
 # <target> can be one of:
 #   freebsd-x86
@@ -130,6 +130,7 @@ if [ ! -z "$recipe_name" ]; then
 		user_recipe=-$recipe_name
 		;;
 	esac
+	named_recipe=$user_recipe
 else
 	# if no recipe given, set the default recipe for the main package
 	user_recipe=
@@ -283,7 +284,7 @@ freebsd*)
 	# Download & extract FB for bootstrapping
 	bootfb_package=$bootfb_title.tar.xz
 	download $bootfb_package "https://downloads.sourceforge.net/fbc/${bootfb_package}?download"
-	tar xf ../input/$bootfb_package
+	tar xf ../input/$bootfb_package || rm -f ../input/$bootfb_package
 
 	# fbc sources
 	cp -R ../input/fbc .
