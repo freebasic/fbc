@@ -13,7 +13,7 @@ Type PlayPayload
     frequency As Single
 End Type
 
-Function PlayCallback (InputBuff as Const Any Ptr, OutputBuff as Any Ptr, _
+Function PlayCallback cdecl (InputBuff as Const Any Ptr, OutputBuff as Any Ptr, _
                     FrameCount as CUlong, TimeInfo as Const PaStreamCallbackTimeInfo Ptr, _
                     StatusFlags as PaStreamCallbackFlags, UserData as Any ptr) as Long
 
@@ -35,14 +35,14 @@ Sub Play(Frequency as Single, Duration as Single)
 
     pe = Pa_OpenDefaultStream(@stream, 0, 1, paInt32, SampleRate, SineSamples, @PlayCallback, @payload)
     If pe <> paNoError Then
-        Print "Error: "; Pa_GetErrorText(pe)
+        Print "Error: "; *Pa_GetErrorText(pe)
         End 1
     End If
 
     Print "Playing "; Frequency; "Hz for "; Duration; "ms"
     pe = Pa_StartStream(stream)
     If pe <> paNoError Then
-        Print "Error: "; Pa_GetErrorText(pe)
+        Print "Error: "; *Pa_GetErrorText(pe)
         End 1
     End If
 
@@ -51,13 +51,13 @@ Sub Play(Frequency as Single, Duration as Single)
 
     pe = Pa_StopStream(stream)
     If pe <> paNoError Then
-        Print "Error: "; Pa_GetErrorText(pe)
+        Print "Error: "; *Pa_GetErrorText(pe)
         End 1
     End If
 
     pe = Pa_CloseStream(stream)
     If pe <> paNoError Then
-        Print "Error: "; Pa_GetErrorText(pe)
+        Print "Error: "; *Pa_GetErrorText(pe)
         End 1
     End If
 End Sub
@@ -67,13 +67,23 @@ Print "Initialize PortAudio ("; *Pa_GetVersionText(); ")"
 
 pe = Pa_Initialize()
 If pe <> paNoError Then
-    Print "Error: "; Pa_GetErrorText(pe)
+    Print "Error: "; *Pa_GetErrorText(pe)
     End 1
 End If
 
-'' Play from A4 (440Hz) for 44ms until A2 (220Hz) for 22ms
-For i as Integer = 440 to 220 Step -10
-    Play(i, i / 10)
+Dim defdevice as Integer = Pa_GetDefaultOutputDevice()
+If defdevice = paNoDevice Then
+    Print "Error: no default output device"
+    End 1
+End If
+
+Dim devinfo as const PaDeviceInfo Ptr = Pa_GetDeviceInfo(defdevice)
+Dim apiinfo as const PaHostApiInfo Ptr = Pa_GetHostApiInfo(Pa_GetDefaultHostApi())
+Print "Using "; *apiinfo->name; " api on default output device: "; *devinfo->name
+
+'' Play from A4 (440Hz) for 440ms until A3 (220Hz) for 220ms
+For i as Integer = 440 to 220 Step -110
+    Play(i, i)
 Next
 
 Print "Shutdown PortAudio"
