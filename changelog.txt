@@ -29,6 +29,7 @@ Version 1.20.0
 - PEEK, POKE, and SWAP are now quirk words instead of keywords allowing these names to be used as member procedure names
 - "\Unnnnnnnn" escape sequence is mapped as follows: when within unicode BMP, "\unnnn", otherwise on linux "\Unnnnnnnn", or on windows "\uD8XX\uDCXX" surrogate pair.  
 - __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.mangletype, symbol ) returns the mangled type name of symbol
+- headers: portaudio version 19.7.0 - based on pa_stable_v190700_20210406
 
 [added]
 - x86_64: optimize SHL MOD INTDIV to use 32-bit operation when result will be converted to long/ulong

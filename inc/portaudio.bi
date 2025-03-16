@@ -1,7 +1,7 @@
-'' FreeBASIC binding for pa_stable_v19_20140130
+'' FreeBASIC binding for pa_stable_v190700_20210406
 ''
 '' based on the C header files:
-''   $Id: portaudio.h 1859 2012-09-01 00:10:13Z philburk $
+''   $Id$
 ''   PortAudio Portable Real-Time Audio Library
 ''   PortAudio API Header File
 ''   Latest version available at: http://www.portaudio.com/
@@ -27,13 +27,13 @@
 ''   CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 ''   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ''
-''   The text above constitutes the entire PortAudio license; however, 
+''   The text above constitutes the entire PortAudio license; however,
 ''   the PortAudio community also makes the following non-binding requests:
 ''
 ''   Any person wishing to distribute modifications to the Software is
 ''   requested to send the modifications to the original developer so that
-''   they can be incorporated into the canonical version. It is also 
-''   requested that these non-binding requests be included along with the 
+''   they can be incorporated into the canonical version. It is also
+''   requested that these non-binding requests be included along with the
 ''   license above.
 ''
 '' translated to FreeBASIC by:
@@ -43,6 +43,13 @@
 
 #inclib "portaudio"
 
+#ifdef __FB_WIN32__
+	#inclib "winmm"
+	#inclib "ole32"
+	#inclib "setupapi"
+	#inclib "advapi32"
+#endif
+
 #include once "crt/long.bi"
 
 extern "C"
@@ -50,6 +57,17 @@ extern "C"
 #define PORTAUDIO_H
 declare function Pa_GetVersion() as long
 declare function Pa_GetVersionText() as const zstring ptr
+#define paMakeVersionNumber(major, minor, subminor) (((((major) and &hFF) shl 16) or (((minor) and &hFF) shl 8)) or ((subminor) and &hFF))
+
+type PaVersionInfo
+	versionMajor as long
+	versionMinor as long
+	versionSubMinor as long
+	versionControlRevision as const zstring ptr
+	versionText as const zstring ptr
+end type
+
+declare function Pa_GetVersionInfo() as const PaVersionInfo ptr
 type PaError as long
 
 type PaErrorCode as long
