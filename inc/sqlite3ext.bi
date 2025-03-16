@@ -809,17 +809,29 @@ type sqlite3_loadext_entry as function(byval db as sqlite3 ptr, byval pzErrMsg a
 #define sqlite3_database_file_object sqlite3_api->database_file_object
 #undef sqlite3_txn_state
 #define sqlite3_txn_state sqlite3_api->txn_state
+#undef sqlite3_changes64
 #define sqlite3_changes64 sqlite3_api->changes64
+#undef sqlite3_total_changes64
 #define sqlite3_total_changes64 sqlite3_api->total_changes64
+#undef sqlite3_autovacuum_pages
 #define sqlite3_autovacuum_pages sqlite3_api->autovacuum_pages
+#undef sqlite3_error_offset
 #define sqlite3_error_offset sqlite3_api->error_offset
+#undef sqlite3_vtab_rhs_value
 #define sqlite3_vtab_rhs_value sqlite3_api->vtab_rhs_value
+#undef sqlite3_vtab_distinct
 #define sqlite3_vtab_distinct sqlite3_api->vtab_distinct
+#undef sqlite3_vtab_in
 #define sqlite3_vtab_in sqlite3_api->vtab_in
+#undef sqlite3_vtab_in_first
 #define sqlite3_vtab_in_first sqlite3_api->vtab_in_first
+#undef sqlite3_vtab_in_next
 #define sqlite3_vtab_in_next sqlite3_api->vtab_in_next
+#undef sqlite3_deserialize
 #define sqlite3_deserialize sqlite3_api->deserialize
+#undef sqlite3_serialize
 #define sqlite3_serialize sqlite3_api->serialize
+#undef sqlite3_db_name
 #define sqlite3_db_name sqlite3_api->db_name
 #define SQLITE_EXTENSION_INIT1 dim shared as const sqlite3_api_routines ptr sqlite3_api = 0
 #define SQLITE_EXTENSION_INIT2(v) sqlite3_api = v
