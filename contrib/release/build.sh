@@ -828,12 +828,12 @@ if [ -z "$libffi_version" ]; then
 case "$named_recipe" in
 # older mingw-w64 packages are distributed with headers for libffi-3.2.1
 # but libffi-3.3 below should work for them also
-#-mingw-w64-gcc-5.2.0|-gcc-5.2.0|-mingw-w64-gcc-8.1.0|-gcc-8.1.0)
+#-mingw-w64-gcc-5.2.0|-gcc-5.2.0|-mingw-w64-gcc-7.1.0|-gcc-7.1.0|-mingw-w64-gcc-8.1.0|-gcc-8.1.0)
 #   # libffi sources https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.2.1.tar.gz.
 #   libffi_version="3.2.1"
 #   libffi_dir="https://github.com/libffi/libffi/releases/download/v${libffi_version}"
 #   ;;
--mingw-w64-gcc-5.2.0|-gcc-5.2.0)
+-mingw-w64-gcc-5.2.0|-gcc-5.2.0|-mingw-w64-gcc-7.1.0|-gcc-7.1.0|-mingw-w64-gcc-8.1.0|-gcc-8.1.0)
 	# - https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.3.tar.gz.
 	libffi_version="3.3"
 	libffi_dir="https://github.com/libffi/libffi/releases/download/v${libffi_version}"
