@@ -1,3 +1,5 @@
+#ifdef DISABLE_X11
+
 #include "../fb_gfx.h"
 #include "../fb_gfx_gl.h"
 #include "fb_gfx_cocoa.h"
@@ -20,25 +22,21 @@ static void driver_poll_events(void);
 
 /* GFXDRIVER */
 const GFXDRIVER fb_gfxDriverCocoaOpenGL = {
-    "Cocoa OpenGL",           /* char *name; */
-    driver_init,        /* int (*init)(char *title, int w, int h, int depth, int
-                           refresh_rate, int flags); */
-    driver_exit,        /* void (*exit)(void); */
-    fb_hCocoaLock,      /* void (*lock)(void); */
-    fb_hCocoaUnlock,    /* void (*unlock)(void); */
-    fb_hGL_SetPalette,  /* void (*set_palette)(int index, int r, int g, int b);
-                         */
-    fb_hCocoaWaitVSync, /* void (*wait_vsync)(void); */
-    fb_hCocoaGetMouse, /* int (*get_mouse)(int *x, int *y, int *z, int *buttons,
-                          int *clip); */
-    fb_hCocoaSetMouse, /* void (*set_mouse)(int x, int y, int cursor, int clip);
-                        */
+    "Cocoa OpenGL",          /* char *name; */
+    driver_init,             /* int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags); */
+    driver_exit,             /* void (*exit)(void); */
+    fb_hCocoaLock,           /* void (*lock)(void); */
+    fb_hCocoaUnlock,         /* void (*unlock)(void); */
+    fb_hGL_SetPalette,       /* void (*set_palette)(int index, int r, int g, int b); */
+    fb_hCocoaWaitVSync,      /* void (*wait_vsync)(void); */
+    fb_hCocoaGetMouse,       /* int (*get_mouse)(int *x, int *y, int *z, int *buttons, int *clip); */
+    fb_hCocoaSetMouse,       /* void (*set_mouse)(int x, int y, int cursor, int clip); */
     fb_hCocoaSetWindowTitle, /* void (*set_window_title)(char *title); */
     fb_hCocoaSetWindowPos,   /* int (*set_window_pos)(int x, int y); */
     fb_hCocoaFetchModes,     /* int *(*fetch_modes)(void); */
     driver_flip,             /* void (*flip)(void); */
-    driver_poll_events,                    /* void (*poll_events)(void); */
-    NULL                     /* void (*update)(void); */
+    driver_poll_events,      /* void (*poll_events)(void); */
+    NULL,                    /* void (*update)(void); */
 };
 
 static dispatch_semaphore_t vsyncSema = NULL;
@@ -251,40 +249,48 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate,
     	driver.frame = NSMakeRect(0, 0, w, h);
 
         fb_hGL_NormalizeParameters(flags);
-		NSOpenGLPixelFormatAttribute attrs[32] = {0};
-        NSOpenGLPixelFormatAttribute* attr = attrs;
-        *attr++ = NSOpenGLPFADoubleBuffer;
-		*attr++ = NSOpenGLPFAAccelerated;
-		*attr++ = NSOpenGLPFAOpenGLProfile;
-        *attr++ = NSOpenGLProfileVersionLegacy;
-		*attr++ = NSOpenGLPFAColorSize;
-        *attr++ = __fb_gl_params.color_bits;
-		*attr++ = NSOpenGLPFAAlphaSize;
-        *attr++ = __fb_gl_params.color_alpha_bits;
-		*attr++ = NSOpenGLPFADepthSize;
-        *attr++ = depth;
-		*attr++ = NSOpenGLPFAStencilSize;
-        *attr++ = __fb_gl_params.stencil_bits;
-		*attr++ = NSOpenGLPFAAccumSize;
-        *attr++ = __fb_gl_params.accum_bits;
-        if (flags & HAS_MULTISAMPLE) {
-			*attr++ = NSOpenGLPFAMultisample;
-            *attr++ = NSOpenGLPFASampleBuffers;
-            *attr++ = 1;
-            *attr++ = NSOpenGLPFASamples;
-            *attr++ = __fb_gl_params.num_samples;
+		NSOpenGLPixelFormatAttribute attribs[32] = {0};
+        NSOpenGLPixelFormatAttribute* attrib = attribs;
+        NSOpenGLPixelFormatAttribute* samples_attrib = NULL;
+
+        *attrib++ = NSOpenGLPFADoubleBuffer;
+		*attrib++ = NSOpenGLPFAAccelerated;
+		*attrib++ = NSOpenGLPFAOpenGLProfile;
+        *attrib++ = NSOpenGLProfileVersionLegacy;
+		*attrib++ = NSOpenGLPFAColorSize;
+        *attrib++ = __fb_gl_params.color_bits;
+		*attrib++ = NSOpenGLPFAAlphaSize;
+        *attrib++ = __fb_gl_params.color_alpha_bits;
+		*attrib++ = NSOpenGLPFADepthSize;
+        *attrib++ = depth;
+        if (__fb_gl_params.stencil_bits > 0) {
+            *attrib++ = NSOpenGLPFAStencilSize;
+            *attrib++ = __fb_gl_params.stencil_bits;
+        }
+        if (__fb_gl_params.accum_bits > 0) {
+            *attrib++ = NSOpenGLPFAAccumSize;
+            *attrib++ = __fb_gl_params.accum_bits;
+        }
+        if (__fb_gl_params.num_samples > 0) {
+			*attrib++ = NSOpenGLPFAMultisample;
+            *attrib++ = NSOpenGLPFASampleBuffers;
+            *attrib++ = 1;
+            *attrib++ = NSOpenGLPFASamples;
+            *attrib++ = __fb_gl_params.num_samples;
+            samples_attrib = attrib;
         }
 
 		if (!gl_lib) gl_lib = dlopen("/System/Library/Frameworks/OpenGL.framework/Versions/Current", RTLD_LAZY);
 		if (!gl_lib) gl_lib = dlopen("/System/Library/Frameworks/OpenGL.framework/Versions/Current/OpenGL", RTLD_LAZY);
 		if (!gl_lib) return -1;
 
-		NSOpenGLPixelFormat *format = [[NSOpenGLPixelFormat alloc] initWithAttributes:attrs];
+		NSOpenGLPixelFormat *format = [[NSOpenGLPixelFormat alloc] initWithAttributes:attribs];
 		driver.context = [[NSOpenGLContext alloc] initWithFormat:format shareContext:nil];
         if (!driver.context) return -1;
 		driver.view = [[OpenGLView alloc] initWithFrame:driver.frame];
         if (!driver.view) return -1;
 		[driver.view setOpenGLContext:driver.context];
+        [driver.view setWantsBestResolutionOpenGLSurface:YES];
 
     	driver.window =
     	    [[OpenGLWindow alloc] initWithContentRect:driver.frame
@@ -312,12 +318,30 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate,
 
 		[driver.context makeCurrentContext];
 
+        __fb_gl_params.mode_2d = __fb_gl_params.init_mode_2d;
+        if (__fb_gl_params.init_scale>=1){
+            __fb_gl_params.scale = __fb_gl_params.init_scale;
+        }
+
+        if (__fb_gl_params.scale>1){
+            free(__fb_gfx->dirty);
+            __fb_gfx->dirty = (char *)calloc(1, __fb_gfx->h * __fb_gfx->scanline_size * __fb_gl_params.scale);
+        }
+
         if (fb_hGL_Init(gl_lib, NULL)) return -1;
+
+        if ((samples_attrib) && (*samples_attrib > 0))
+            __fb_gl.Enable(GL_MULTISAMPLE_ARB);
+
+        if (__fb_gl_params.mode_2d != DRIVER_OGL_2D_NONE)
+		    fb_hGL_ScreenCreate();
 
         CGDirectDisplayID mainDisplay = CGMainDisplayID();
         CGDisplayModeRef mode = CGDisplayCopyDisplayMode(mainDisplay);
         __fb_gfx->refresh_rate = round(CGDisplayModeGetRefreshRate(mode));
         CFRelease(mode);
+
+        [driver.view createDisplayLink];
   	}
   	return 0;
 }
@@ -464,3 +488,5 @@ int fb_hCocoaScreenInfo(ssize_t *width, ssize_t *height, ssize_t *depth, ssize_t
 void* fb_hGL_GetProcAddress(const char *name) {
 	return dlsym(gl_lib, name);
 }
+
+#endif
