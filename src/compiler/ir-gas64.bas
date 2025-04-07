@@ -770,14 +770,10 @@ private sub check_optim(byref code as string)
 						else
 							instruc="movq"
 						end if
-					elseif previnstruc="movd" then
-						if part1[0]=asc("r") or part1[0]=asc("e") then
-						   instruc="movd"
-						else
-						   instruc="movss"
-						end if
+					elseif part1[0]=asc("r") or part1[0]=asc("e") then
+						instruc="movd"
 					else
-						asm_error("in check_optim 3-2 instruc unknown="+instruc)
+						instruc="movss"
 					end if
 				end if
 				writepos=len(ctx.proc_txt)+len(code)+9
@@ -4630,7 +4626,7 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 				asm_code("mov eax, 0x7FFFFFFF")
 				asm_code("movd xmm1, eax")
 				asm_code("andps xmm1, xmm0") ''result xmm1
-				asm_code("movd xmm0, xmm1")''just to keep a standard way after
+				asm_code("movss xmm0, xmm1")''just to keep a standard way after
 				restore_vrreg(vr,vrreg)
 			case AST_OP_SGN
 				save_call("fb_SGNSingle",vr,vrreg)
