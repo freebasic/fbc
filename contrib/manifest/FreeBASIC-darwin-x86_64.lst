@@ -115,6 +115,15 @@ examples/GUI/wx-c/fonts_and_colours.bas
 examples/GUI/wx-c/mdi.bas
 examples/GUI/wx-c/sizers.bas
 examples/GUI/wx-c/wx-c_demo.bas
+examples/Makefile
+examples/OptimizePureAbstractTypes/OptimizePureAbstractTypes.bas
+examples/OptimizePureAbstractTypes/PureAbstractTypes.bas
+examples/OptimizePureAbstractTypes/TestPureAbstractTypes.PNG
+examples/OptimizePureAbstractTypes/inc/EXCEL.bi
+examples/OptimizePureAbstractTypes/inc/FBCom.bi
+examples/OptimizePureAbstractTypes/inc/MSO.bi
+examples/OptimizePureAbstractTypes/inc/VBE6EXT.bi
+examples/OptimizePureAbstractTypes/inc/stdole2.bi
 examples/allocate.bas
 examples/arrays.bas
 examples/bitfield.bas
@@ -261,10 +270,13 @@ examples/graphics/OpenGL/NeHe/lesson34.bas
 examples/graphics/OpenGL/NeHe/lesson36.bas
 examples/graphics/OpenGL/NeHe/milkshapemodel.bi
 examples/graphics/OpenGL/NeHe/tgaloader.bi
+examples/graphics/OpenGL/fbgfx_opengl
 examples/graphics/OpenGL/fbgfx_opengl.bas
 examples/graphics/OpenGL/fbgfx_texture.bas
 examples/graphics/OpenGL/fbgl/fbgl.bas
 examples/graphics/OpenGL/fbgl/fbgl.bi
+examples/graphics/OpenGL/fbgl/libfbgl.a
+examples/graphics/OpenGL/fbgl/line
 examples/graphics/OpenGL/fbgl/line.bas
 examples/graphics/OpenGL/gl_test.bas
 examples/graphics/OpenGL/glext_test.bas
@@ -1590,6 +1602,7 @@ examples/sound/data/example.mo3
 examples/sound/data/example1.ogg
 examples/sound/data/example2.ogg
 examples/sound/data/prodigy.wav
+examples/sound/portaudio-sine.bas
 examples/structs.bas
 examples/threads/consumer-producer.bas
 examples/threads/threaddetach.bas

@@ -43,9 +43,20 @@ const GFXDRIVER fb_gfxDriverCocoaOpenGL = {
 static dispatch_semaphore_t vsyncSema = NULL;
 
 @interface OpenGLView : NSOpenGLView
+#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 140000
 @property (nonatomic, strong) CADisplayLink *displayLink;
+#endif
 @end
 
+#if __MAC_OS_X_VERSION_MIN_REQUIRED < 140000
+static CVDisplayLinkRef cvDisplayLink = NULL;
+static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink,
+									const CVTimeStamp *now,
+									const CVTimeStamp *outputTime,
+									CVOptionFlags flagsIn,
+									CVOptionFlags *flagsOut,
+									void *displayLinkContext);
+#endif
 @implementation OpenGLView
 - (BOOL)acceptsFirstResponder
 {
@@ -54,10 +65,14 @@ static dispatch_semaphore_t vsyncSema = NULL;
 - (void)createDisplayLink
 {
 	vsyncSema = dispatch_semaphore_create(0);
-	self.displayLink = [self displayLinkWithTarget:self
-													selector:@selector(waitVSync)];
-	[self.displayLink addToRunLoop:[NSRunLoop currentRunLoop]
-						   forMode:NSDefaultRunLoopMode];
+	#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 140000
+		self.displayLink = [self displayLinkWithTarget:self selector:@selector(waitVSync)];
+		[self.displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+	#else
+		CVDisplayLinkCreateWithActiveCGDisplays(&cvDisplayLink);
+		CVDisplayLinkSetOutputCallback(cvDisplayLink, &DisplayLinkCallback, (__bridge void *)self);
+		CVDisplayLinkStart(cvDisplayLink);
+	#endif
 }
 
 - (void)waitVSync
@@ -67,13 +82,32 @@ static dispatch_semaphore_t vsyncSema = NULL;
 
 - (void)dealloc
 {
-	[self.displayLink invalidate];
-	self.displayLink = nil;
+	#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 140000
+		[self.displayLink invalidate];
+		self.displayLink = nil;
+	#else
+		CVDisplayLinkStop(cvDisplayLink);
+		CVDisplayLinkRelease(cvDisplayLink);
+	#endif
 	dispatch_release(vsyncSema);
 	[super dealloc];
 }
 
 @end
+
+#if __MAC_OS_X_VERSION_MIN_REQUIRED < 140000
+static CVReturn DisplayLinkCallback(CVDisplayLinkRef displayLink,
+									const CVTimeStamp *now,
+									const CVTimeStamp *outputTime,
+									CVOptionFlags flagsIn,
+									CVOptionFlags *flagsOut,
+									void *displayLinkContext)
+{
+	OpenGLView *self = (__bridge OpenGLView *)displayLinkContext;
+	[self waitVSync];
+	return kCVReturnSuccess;
+}
+#endif
 
 extern char **_NSGetProgname(void);
 
