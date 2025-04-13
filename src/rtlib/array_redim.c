@@ -75,7 +75,7 @@ int fb_hArrayAlloc
 	/* Allocte new buffer */
 	/* Clearing is not needed if not requested, or if ctors will be called
 	   (ctors take care of clearing themselves) */
-	if( doclear == 32 && (ctor == NULL) )
+	if( (doclear == 32) && (ctor == NULL) )
 	{ 
 		array->ptr = malloc( size );
 		memset( array->ptr, 32, size );  
