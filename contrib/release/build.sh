@@ -760,6 +760,13 @@ case "$named_recipe" in
 -linux-aarch64|-ubuntu-22.04-aarch64)
 	bootfb_title="FreeBASIC-1.10.1$named_recipe"
 	;;
+-ubuntu-24.04-x86_64)
+	# ubuntu 24.04 drops support for libtinfo5 and there is no good
+	# work around for older fbc releases.  Instead bootrstrap from
+	# a package that was built for this version of ubuntu which will
+	# depend on libtinfo6 instead 
+	bootfb_title="FreeBASIC-1.10.3$named_recipe"
+	;;
 *)
 	bootfb_title="FreeBASIC-1.06.0-$fbtarget"
 	;;
