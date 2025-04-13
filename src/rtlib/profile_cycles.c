@@ -16,8 +16,23 @@
 	#include <windows.h>
 #endif
 
+/* choose a suitable size_t printf specifier */
+#if !defined(fmtsizet)
+	#if defined(HOST_CYGWIN)
+		#define fmtsizet "%18Iu"
+	#elif defined(HOST_WIN32)
+		#if defined(_UCRT) || __USE_MINGW_ANSI_STDIO
+			#define fmtsizet "%18zu"
+		#else
+			#define fmtsizet "%18Iu"
+		#endif
+	#else
+		#define fmtsizet "%18zu"
+	#endif
+#endif
+
 /* profile section data */
-extern char __start_fb_profilecycledata;
+extern char __start_fb_profilecycledata[];
 extern char __stop_fb_profilecycledata;
 
 /* profiler record ids - these indicate what the record is */
@@ -255,7 +270,7 @@ static void hProfilerReport (
 		}
 
 		fprintf( f, "        %s\n", rec->proc_name );
-		fprintf( f, "                %18zu %18zu %18zu\n",
+		fprintf( f, "                " fmtsizet " " fmtsizet " " fmtsizet "\n",
 			rec->grand_total,
 			rec->internal_total,
 			rec->call_count
@@ -286,8 +301,8 @@ static void hProfilerWriteReport( FB_PROFILER_CYCLES *prof )
 		fprintf( f, "Total program execution time: %5.4g seconds\n", fb_Timer() - prof->start_time );
 	}
 
-	data = (unsigned char *)&__start_fb_profilecycledata;
-	length = (ssize_t)&__stop_fb_profilecycledata - (ssize_t)&__start_fb_profilecycledata;
+	data = (unsigned char *)&__start_fb_profilecycledata[0];
+	length = (ssize_t)&__stop_fb_profilecycledata - (ssize_t)&__start_fb_profilecycledata[0];
 
 	count = hProfilerCountProcs( data, length );
 	if( count ) {

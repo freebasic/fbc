@@ -18,8 +18,20 @@
 
 #ifdef HOST_WIN32
 	#include <windows.h>
+	#include <inttypes.h>
 #endif
 #include <time.h>
+
+/* choose a suitable 64-bit decimal printf specifier */
+#if !defined(fmtlld)
+	#if defined(PRId64)
+		#define fmtlld PRId64
+	#elif defined(FB_LL_FMTMOD) 
+		#define fmtlld "%12" FB_LL_FMTMOD "d"
+	#else
+		#define fmtlld "%12lld"
+	#endif
+#endif
 
 /* procs */
 
@@ -499,7 +511,7 @@ static void hProfilerReportCallsProc (
 		pad_spaces( f, len );
 
 		if( (prof->global->options & PROFILE_OPTION_HIDE_COUNTS) == 0 ) {
-			len = 14 - fprintf( f, "%12lld", parent_proc->local_count );
+			len = 14 - fprintf( f, fmtlld, parent_proc->local_count );
 			pad_spaces( f, len );
 		}
 
@@ -521,7 +533,7 @@ static void hProfilerReportCallsProc (
 			pad_spaces( f, len );
 
 			if( (prof->global->options & PROFILE_OPTION_HIDE_COUNTS) == 0 ) {
-				len = 14 - fprintf( f, "%12lld", proc->local_count );
+				len = 14 - fprintf( f, fmtlld, proc->local_count );
 				pad_spaces( f, len );
 			}
 
@@ -656,7 +668,7 @@ static void hProfilerReportCallsGlobals (
 		pad_spaces( f, len );
 
 		if( (prof->global->options & PROFILE_OPTION_HIDE_COUNTS) == 0 ) {
-			len = 14 - fprintf( f, "%12lld", proc->local_count );
+			len = 14 - fprintf( f, fmtlld, proc->local_count );
 			pad_spaces( f, len );
 		}
 
@@ -845,7 +857,7 @@ static void hProfilerReportRawList (
 			pad_spaces( f, len );
 
 			if( (prof->global->options & PROFILE_OPTION_HIDE_COUNTS) == 0 ) {
-				len = 14 - fprintf( f, "%12lld", proc->local_count );
+				len = 14 - fprintf( f, fmtlld, proc->local_count );
 				pad_spaces( f, len );
 			}
 
@@ -888,7 +900,7 @@ static void hProfilerReportRawDataProc (
 	pad_spaces( f, len );
 
 	if( (prof->global->options & PROFILE_OPTION_HIDE_COUNTS) == 0 ) {
-		len = 14 - fprintf( f, "%12lld", proc->local_count );
+		len = 14 - fprintf( f, fmtlld, proc->local_count );
 		pad_spaces( f, len );
 	}
 
