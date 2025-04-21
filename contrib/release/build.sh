@@ -76,14 +76,18 @@
 #       -winlibs-gcc-10.3.0 (winlibs mingwrt 8.0.0r1)
 #       -equation-gcc-8.3.0 (Equation - experimental)
 #     * -linux-arm
-#     * -raspbian9-arm
+#     * -debian11-arm
 #     * -debian12-armhf
+#     * -raspbian9-arm
 #     * -rpios10-arm
 #     * -rpios10-aarch64
 #     * -rpios11-arm
 #     * -rpios11-aarch64
+#     * -rpios12-armhf
+#     * -rpios12-aarch64
 #     * -linux-aarch64
 #     * -ubuntu-22.04-aarch64
+#     * -ubuntu-24.04-aarch64
 #
 #   Not all recipes are supported on all targets.
 #
@@ -739,9 +743,9 @@ case "$named_recipe" in
 -debian12-armhf)
 	# 1.10.2 for arm is a little weird because it depended on changes
 	# in fbc to make the 1.10.2 bootstrap on debian 12 with gcc 12.
-	# So, no matter what, we need some manual intervention for this release
-	# and should improve the automation in the next release
-	#   but it requires some manual intervention to set compile options
+	# So, no matter what, we need some manual intervention for at least
+	# one release and should try to find a way to improve the automatic
+	# selection of a default arch in a future release
 	#
 	AppendBOOTFBCFLAGS "DEFAULT_CPUTYPE_ARM=FB_CPUTYPE_ARMV7A_FP"
 	bootfb_title="FreeBASIC-1.10.2$named_recipe"
@@ -754,11 +758,41 @@ case "$named_recipe" in
 	AppendBOOTFBCFLAGS "DEFAULT_CPUTYPE_ARM=FB_CPUTYPE_ARMV7A"
 	bootfb_title="FreeBASIC-1.10.1$named_recipe"
 	;;
+-debian11-arm)
+	# rpios11-arm should be similar enough to bootstrap debian11-arm
+	AppendBOOTFBCFLAGS "DEFAULT_CPUTYPE_ARM=FB_CPUTYPE_ARMV7A"
+	bootfb_title="FreeBASIC-1.10.1-rpios11-arm"
+	;;
+-rpios12-armhf)
+	# see note for '-debian12-armhf' above since rpios12 is based on debian 12
+	# build rpios12 using package for debian12
+	# and set the default arch for armhf
+	AppendBOOTFBCFLAGS "DEFAULT_CPUTYPE_ARM=FB_CPUTYPE_ARMV7A_FP"
+	bootfb_title="FreeBASIC-1.10.2-debian12-armhf"
+	;;	
 -rpios10-aarch64|-rpios11-aarch64)
-	bootfb_title="FreeBASIC-1.07.2$named_recipe"
+	# previously had used "FreeBASIC-1.07.2$named_recipe", but
+	# sourceforge does not seem to like solving the URL anymore
+	# seems to work with a newer version of the package 
+	bootfb_title="FreeBASIC-1.10.1$named_recipe"
+	;;
+-rpios12-aarch64)
+	# build rpios12 using package for rpios11
+	bootfb_title="FreeBASIC-1.10.1-rpios11-aarch64"
 	;;
 -linux-aarch64|-ubuntu-22.04-aarch64)
 	bootfb_title="FreeBASIC-1.10.1$named_recipe"
+	;;
+-ubuntu-24.04-aarch64)
+	# build on ubuntu 24.04 using package for ubuntu 22.04
+	bootfb_title="FreeBASIC-1.10.1-ubuntu-22.04-aarch64"
+	;;
+-ubuntu-24.04-x86_64)
+	# ubuntu 24.04 drops support for libtinfo5 and there is no good
+	# work around for older fbc releases.  Instead bootrstrap from
+	# a package that was built for this version of ubuntu which will
+	# depend on libtinfo6 instead 
+	bootfb_title="FreeBASIC-1.10.3$named_recipe"
 	;;
 *)
 	bootfb_title="FreeBASIC-1.06.0-$fbtarget"

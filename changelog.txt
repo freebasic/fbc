@@ -116,14 +116,17 @@ Version 1.10.3
 - updated bindings: Windows API - refresh the existing windows headers after retranslating with addition of version 8.1 (&h0603) and windows 10 (&h0A00)
 - updated bindings: add machine translated versions of inc/win/excpt.bi and inc/win/sdkddkver.bi 
 - release: allowing using recipes in the build script to specify which arm bootstrap package to use.  Try to determine automatically the host operating system if a recipe is not explicitly given
+- release: depend on libtinfo6 in debian 12 since it drops support for libtinfo5
 
 [added]
-- makefile: add bootstrap-dist-target to make only a single bootstrap-source-{fbtarget} package to allow variations on the bootstrap requirements for different systems 
+- makefile: add bootstrap-dist-target to make only a single bootstrap-source-{fbtarget} package to allow variations on the bootstrap requirements for different systems
+- release: build recipes for debian11-arm, debian11-armhf, rpios12-armhf, rpios12-aarch64, ubuntu-24.04-aarch64 
 
 [fixed]
 - github #33: Bi include error in ntdef.bi 
 - bad code generation of operator cast() UDT ptr passed to byval UDT ptr parameter when matching constructors() are also present
 - rtlib/dos: ensure NUL terminating character is written on optimized conversion from ascii to wstring in the event that the copy is truncated - for example copying from a larger temporary string to a fixed length wstring and DISABLE_WCHAR is in use (previously HOST_DOS)
+- gcc warnings on newer gcc 12 in rtlib source files  
 
 
 Version 1.10.2
