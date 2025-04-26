@@ -197,7 +197,10 @@ Sub ThreadPooling._Thread(ByVal p As Any Ptr)
 			memmove(@pThis->_pThread(1), @pThis->_pThread(2), (UBound(pThis->_pThread) - 1) * SizeOf(pThis->_pThread))
 			memmove(@pThis->_p(1), @pThis->_p(2), (UBound(pThis->_p) - 1) * SizeOf(pThis->_p))
 		End If
-		ReDim Preserve pThis->_pThread(UBound(pThis->_pThread) - 1)
+		'ReDim Preserve pThis->_pThread(UBound(pThis->_pThread) - 1)  '' bug in current fbc version 1.20
+		With *pThis                                                   '' workaround for the bug
+			ReDim Preserve ._pThread(UBound(pThis->_pThread) - 1)     '' workaround for the bug
+		End With                                                      '' workaround for the bug
 		ReDim Preserve pThis->_p(UBound(pThis->_p) - 1)
 		MutexUnlock(pThis->_mutex)
 		ReDim Preserve pThis->_ReturnF(UBound(pThis->_returnF) + 1)

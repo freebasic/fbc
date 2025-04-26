@@ -43,4 +43,7 @@ Else
 	If fb_err_value And 512 Then
 		Print "'unwindinfo' flag enabled"
 	End If
+	If fb_err_value And 1024 Then
+		Print "'arraydimscheck' flag enabled"
+	End If
 End If

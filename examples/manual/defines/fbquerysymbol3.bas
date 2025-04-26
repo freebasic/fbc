@@ -19,6 +19,6 @@ End Namespace
 
 Print "type name    : " & __FB_QUOTE__( __FB_QUERY_SYMBOL__( FB_QUERY_SYMBOL.typename, NS.T.pps ) )
 Print "type name id : " & __FB_QUOTE__( __FB_QUERY_SYMBOL__( FB_QUERY_SYMBOL.typenameid, NS.T.pps ) )
-Print "mangled id   : " & __FB_QUOTE__( __FB_QUERY_SYMBOL__( FB_QUERY_SYMBOL.mangleid, NS.T.pps ) )
+Print "mangled type : " & __FB_QUOTE__( __FB_QUERY_SYMBOL__( FB_QUERY_SYMBOL.mangletype, NS.T.pps ) )
 
 Sleep
