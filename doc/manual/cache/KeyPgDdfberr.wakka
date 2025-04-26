@@ -13,8 +13,10 @@ Intrinsic define (macro value) set by the compiler
 	
 	##""__FB_ERR__""## indicates if //[[CompilerOpteunwind|-eunwind]]// was specified on the compiler command line, or implied by use of //[[CompilerOpte|-e]]//, //[[CompilerOptex|-ex]]//, or //[[CompilerOptexx|-exx]]//, at the time of compilation of a module.
 	
+	##""__FB_ERR__""## indicates if //[[CompilerOptearraydims|-earraydims]]// was specified on the compiler command line, or implied by use of //[[CompilerOptexx|-exx]]//, at the time of compilation of a module.
+	
 	Returns bit-wise ##OR## of the following values:
-		{{table columns="3" cellpadding="1" cells="value;flag;description;0;no flag;;1;errorcheck;implied by '-e', '-ex', '-exx';2;resumeerr;implied by '-ex', '-exx';4;extraerrchk;implied by '-exx';8;arrayboundchk;implied by '-earray', '-exx';16;nullptrchk;implied by '-enullptr', '-exx';32;assertions;implied by '-eassert', '-g';64;debuginfo;implied by '-edebuginfo', '-g';128;debug;implied by '-edebug', '-g';256;errlocation;implied by '-elocation', '-exx';512;unwindinfo;implied by '-eunwind', '-e', '-ex', '-exx'"}}
+		{{table columns="3" cellpadding="1" cells="value;flag;description;0;no flag;;1;errorcheck;implied by '-e', '-ex', '-exx';2;resumeerr;implied by '-ex', '-exx';4;extraerrchk;implied by '-exx';8;arrayboundchk;implied by '-earray', '-exx';16;nullptrchk;implied by '-enullptr', '-exx';32;assertions;implied by '-eassert', '-g';64;debuginfo;implied by '-edebuginfo', '-g';128;debug;implied by '-edebug', '-g';256;errlocation;implied by '-elocation', '-exx';512;unwindinfo;implied by '-eunwind', '-e', '-ex', '-exx';1024;arraydimscheck;implied by '-earraydims', '-exx'"}}
 		
 	##""__FB_ERR__""## is always defined.
 
@@ -57,9 +59,13 @@ Else
 	If fb_err_value And 512 Then
 		Print "'unwindinfo' flag enabled"
 	End If
+	If fb_err_value And 1024 Then
+		Print "'arraydimscheck' flag enabled"
+	End If
 End If
 %%
 {{fbdoc item="ver"}}
+	- Since fbc 1.20.0: //[[CompilerOptearraydims|-earraydims]]// indication.
 	- Since fbc 1.10.0: //[[CompilerOpteunwind|-eunwind]]// indication.
 	- Since fbc 1.07.0: //[[CompilerOptearray|-earray]]//, //[[CompilerOptenullptr|-enullptr]]//, //[[CompilerOptelocation|-elocation]]//, //[[CompilerOptedebug|-edebug]]//, //[[CompilerOptedebuginfo|-edebuginfo]]//, and //[[CompilerOpteassert|-eassert]]// indications.
 

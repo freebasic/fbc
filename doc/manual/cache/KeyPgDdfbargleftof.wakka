@@ -53,5 +53,6 @@ Not found 'versus'
 	- ##[[KeyPgDdfbargrightof|__FB_ARG_RIGHTOF__]]##
 	- ##[[KeyPgDdfbargcount|__FB_ARG_COUNT__]]##
 	- ##[[KeyPgDdfbargextract|__FB_ARG_EXTRACT__]]##
+	- ##[[KeyPgDdfbarglistexpand|__FB_ARG_LISTEXPAND__]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

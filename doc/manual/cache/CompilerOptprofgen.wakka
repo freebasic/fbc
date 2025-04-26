@@ -10,6 +10,10 @@ Enable function profiling by selecting a specific profiler
 	{{fbdoc item="subsect" value="-profgen fb"}}
 		Enable function call profiling using fb's profiler. After running an executable compiled with this option, a ##<filename[.exe]>.prf## file containing the profiling report will be created in the program directory.
 		
+	{{fbdoc item="subsect" value="-profgen cycles"}}
+		Enable cycle count profiling on some targets using fb's profiler. After running an executable compiled with this option, it can generate a basic report of cycle counts.
+		(currently a work in progress on ##-gen gas64## only)
+		
 	{{fbdoc item="subsect" value="-profgen gmon"}}
 		Enable profiling code generation for gmon/gprof. After running an executable compiled with this option, a ##gmon.out## file will be created in the program directory, allowing use of GPROF for analysis of the program's execution.
 

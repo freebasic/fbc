@@ -17,7 +17,7 @@ Selects faster, less accurate or slower, more precise floating-point math.
 	
 	Currently, the only floating point operations that behave differently when using ##-fpmode FAST## are: ##[[KeyPgSin|sin]]()##, ##[[KeyPgCos|cos]]()##, reciprocal, and reciprocal [[KeyPgSqr|square root]], all of which must operate on ##[[KeyPgSingle|Single]]## precision values.
 	
-	Using ##-fpmode PRECISE## is dependent on the ##[[CompilerOptfpu|-fpu SSE]]## command line option. Using ##-fpmode PRECISE## without using ##[[CompilerOptfpu|-fpu SSE]]## will generate an error.
+	Using ##-fpmode FAST## is dependent on the ##[[CompilerOptfpu|-fpu SSE]]## command line option: Using ##-fpmode FAST## without using ##[[CompilerOptfpu|-fpu SSE]]## will generate an error.
 
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]

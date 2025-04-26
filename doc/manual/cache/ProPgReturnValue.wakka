@@ -42,6 +42,11 @@ Function myFunction () As Integer
 End Function
 %%
 	##Return## keyword mixed with ##Function=## keyword or ##function_identifier=## or ##Exit Function## keyword in a same function is unsupported when returning objects with constructors.
+	
+	**Note:**
+		When returning by value a UDT instance, ##Return## on the one hand, and ##Function=## or ##function_identifier=## on the other hand, do not treat the instance in the same way (in order to optimize execution time):
+			**""-""** When using ##Return##, the only executed ##'Return u'## directly calls the copy-constructor.
+			**""-""** When using ##Function=## or ##function_identifier=##, the constructor is always called once at the beginning of the function body, and then each executed ##'Function= u'## or ##'function_identifier= u'## only calls the let-operator.
 
 {{fbdoc item="section" value="Returning References"}}
 	Function results can also be returned by reference, rather than by value. The semantics are quite different.

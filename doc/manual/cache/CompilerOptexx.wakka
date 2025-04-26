@@ -1,21 +1,23 @@
 {{fbdoc item="title" value="Compiler Option: -exx"}}----
-Add error checking with ##[[KeyPgResume|Resume]]## support and array bounds and null-pointer checking, plus stack overflow checking with gas64 backend
+Add error checking with ##[[KeyPgResume|Resume]]## support and array bounds/dimensions and null-pointer checking, plus stack overflow checking with gas64 backend
 
 {{fbdoc item="syntax"}}##
 	**-exx**
 ##
 {{fbdoc item="desc"}}
-	The ##**-exx**## compiler option adds error checking with ##[[KeyPgResume|Resume]]## support, array bounds and null-pointer checking (including the procedure pointers), plus stack overflow checking with gas64 backend.
+	The ##**-exx**## compiler option adds error checking with ##[[KeyPgResume|Resume]]## support, array bounds and dimensions, and null-pointer checking (including the procedure pointers), plus stack overflow checking with gas64 backend.
 	
-	Use of the ##**-exx**## option automatically implies ##-e##, ##-exx##, ##-earray##, ##-elocation##, and ##-enullptr##, error checking and code generation options.
+	Use of the ##**-exx**## option automatically implies ##-e##, ##-exx##, ##-earray##, ##-earraydims##, ##-elocation##, and ##-enullptr##, error checking and code generation options.
 
 {{fbdoc item="ver"}}
+	- Before fbc 1.20.0, array dimensions were never checked.
 	- Before fbc 1.10.0, stack overflow was never checked.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfberr|__FB_ERR__]]##
 	- [[CompilerOpte|Compiler Option: -e]]
 	- [[CompilerOptearray|Compiler Option: -earray]]
+	- [[CompilerOptearraydims|Compiler Option: -earraydims]]
 	- [[CompilerOptelocation|Compiler Option: -elocation]]
 	- [[CompilerOptenullptr|Compiler Option: -enullptr]]
 	- [[CompilerOptex|Compiler Option: -ex]]

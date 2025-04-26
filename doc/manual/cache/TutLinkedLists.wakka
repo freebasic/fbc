@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="Linked Lists"}}----
+{{fbdoc item="title" value="Using Linked Lists"}}----
 
 A linked list is a structure that is easily expandable by using a single function, and it comes in very useful when you need an array of something but you have no idea how many. The concept behind a linked list is that each node structure has a pointer to the next and previous node structure. This is called a double linked list, as it links to two different nodes. By using a pointer to a structure, you can specify a null pointer if there is no next or previous node, and since the pointer stores a memory address, the amount of nodes you can store is limited only by memory.
 

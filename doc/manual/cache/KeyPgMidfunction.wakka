@@ -21,7 +21,7 @@ Returns a substring of a string
 {{fbdoc item="desc"}}
 	Returns a substring starting from ##//start//## in ##//str//##. If ##//str//## is empty then the null string (##"####"##) is returned. If ##//start// <= 0## or ##//start// > len(//str//)## then the null string (##"####"##) is returned.
 	
-	In the first form of ##**Mid**##, all of the remaining characters are returned. In the second form, if ##//n// < 0## or ##//n// >= len(//str//)## then all of the remaining characters are returned.
+	In the first form of ##**Mid**##, all of the remaining characters are returned. In the second form, if ##//n// < 0## or ##//n// > len(//str//) - //start//## then all of the remaining characters are returned.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/mid-func.bas"}}%%(freebasic)

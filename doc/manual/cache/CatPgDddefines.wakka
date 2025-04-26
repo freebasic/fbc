@@ -161,6 +161,8 @@ Preprocessor symbols defined by the compiler.
 		Returns nth argument from an argument list.
 	=={{fbdoc item="keyword" value="KeyPgDdfbargleftof|__FB_ARG_LEFTOF__"}}==
 		Returns left token based on separator.
+	=={{fbdoc item="keyword" value="KeyPgDdfbarglistexpand|__FB_ARG_LISTEXPAND__"}}==
+		Expands a macro one or more time on an argument list
 	=={{fbdoc item="keyword" value="KeyPgDdfbargrightof|__FB_ARG_RIGHTOF__"}}==
 		Returns right token based on separator.
 	=={{fbdoc item="keyword" value="KeyPgDdfbeval|__FB_EVAL__"}}==

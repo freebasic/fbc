@@ -88,5 +88,6 @@ Counting 7 to 2
 	- ##[[KeyPgDdfbargleftof|__FB_ARG_LEFTOF__]]##
 	- ##[[KeyPgDdfbargcount|__FB_ARG_COUNT__]]##
 	- ##[[KeyPgDdfbargextract|__FB_ARG_EXTRACT__]]##
+	- ##[[KeyPgDdfbarglistexpand|__FB_ARG_LISTEXPAND__]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

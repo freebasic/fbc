@@ -15,6 +15,7 @@
 		[[KeyPgDdfbargcount|__FB_ARG_COUNT__]]
 		[[KeyPgDdfbargextract|__FB_ARG_EXTRACT__]]
 		[[KeyPgDdfbargleftof|__FB_ARG_LEFTOF__]]
+		[[KeyPgDdfbarglistexpand|__FB_ARG_LISTEXPAND__]]
 		[[KeyPgDdfbargrightof|__FB_ARG_RIGHTOF__]]
 		[[KeyPgDdfbargc|__FB_ARGC__]]
 		[[KeyPgDdfbargv|__FB_ARGV__]]
@@ -903,8 +904,8 @@
 		[[ProPgExecutables|Executables]]
 		[[ProPgStaticLibraries|Static Libraries]]
 		[[ProPgSharedLibraries|Shared Libraries (DLLs)]]
-		[[ProPgProfilingGmonGprof|Profiling for gmon/gprof]]
 		[[ProPgProfilingFbProfiler|Profiling with fb's profiler]]
+		[[ProPgProfilingGmonGprof|Profiling for gmon/gprof]]
 
 	{{fbdoc item="subsect" value="Preprocessor"}}
 		[[ProPgPreprocessor|Overview]]
@@ -1070,6 +1071,7 @@
 		[[CompilerOptdylib|-dylib]]
 		[[CompilerOpte|-e]]
 		[[CompilerOptearray|-earray]]
+		[[CompilerOptearraydims|-earraydims]]
 		[[CompilerOpteassert|-eassert]]
 		[[CompilerOptedebug|-edebug]]
 		[[CompilerOptedebuginfo|-edebuginfo]]

@@ -26,6 +26,8 @@ Command line compiler options for the fbc compiler:
 		- Add error checking
 	{{fbdoc item="keyword" value="CompilerOptearray|-earray"}}
 		- Enable array bounds checking
+	{{fbdoc item="keyword" value="CompilerOptearraydims|-earraydims"}}
+		- Enable array dimensions checking
 	{{fbdoc item="keyword" value="CompilerOpteassert|-eassert"}}
 		- Enable assert() and assertwarn() checking
 	{{fbdoc item="keyword" value="CompilerOptedebug|-edebug"}}
@@ -43,7 +45,7 @@ Command line compiler options for the fbc compiler:
 	{{fbdoc item="keyword" value="CompilerOptex|-ex"}}
 		- Add error checking with RESUME support
 	{{fbdoc item="keyword" value="CompilerOptexx|-exx"}}
-		- Same as -ex, plus array bounds, null-pointer, and error location reporting
+		- Same as -ex, plus array bounds and dimensions, null-pointer, and error location reporting
 	{{fbdoc item="keyword" value="CompilerOptexport|-export"}}
 		- Export symbols for dynamic linkage
 	{{fbdoc item="keyword" value="CompilerOptforcelang|-forcelang <name>"}}
@@ -51,7 +53,7 @@ Command line compiler options for the fbc compiler:
 	{{fbdoc item="keyword" value="CompilerOptfpmode|-fpmode < type >"}}
 		- Select between fast and accurate floating-point operations (default: PRECISE)
 	{{fbdoc item="keyword" value="CompilerOptfpu|-fpu < type >"}}
-		- Set the floating point arithmetics unit (default: FPU)
+		- Set the floating point arithmetics unit (default: X87)
 	{{fbdoc item="keyword" value="CompilerOptg|-g"}}
 		- Add debug info, enable""##__FB_DEBUG__##"", and enable asserts
 	{{fbdoc item="keyword" value="CompilerOptgen|-gen < backend >"}}

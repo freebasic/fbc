@@ -28,7 +28,7 @@ Returns the lower bound of an array's dimension
 	Thus, for empty dynamic arrays, we get:
 		- ##Lbound(array) = 0## and ##Ubound(array) = -1## (dimension 1 does not exist)
 		- ##Lbound(array, 0) = 1## and ##Ubound(array, 0) = 0## (zero dimensions)
-		- ##@array(Lbound(array)) = 0## (no data buffer allocated)
+		- ##@array(Lbound(array)) = 0## (no data buffer allocated) - **Note: **No longer supported since fbc 1.20.0
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/array/lbound.bas"}}%%(freebasic)

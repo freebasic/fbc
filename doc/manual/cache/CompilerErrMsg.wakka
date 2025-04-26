@@ -391,6 +391,7 @@ During the program compilation three types of errors can arise:
 	- //329 Graphics routines were used, but the gfxlib has not been ported to this target//
 	- //330 -fpu sse option can only be used on x86 and x86_64 architectures//
 	- //331 -fpu neon option can only be used on arm architectures//
+	- //332 Undefined built-in symbol//
 
 
 ==Third party programs errors==

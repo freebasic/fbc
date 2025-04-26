@@ -52,7 +52,7 @@ Using the **fbc** command-line.
 	=={{fbdoc item="keyword" value="CompilerOptvec|-vec < level >"}}==
 		Set level of vector optimizations enabled by the compiler (default: ##0##)
 	=={{fbdoc item="keyword" value="CompilerOptfpu|-fpu < type >"}}==
-		Set the floating point arithmetics unit (default: ##FPU##)
+		Set the floating point arithmetics unit (default: ##X87##)
 	=={{fbdoc item="keyword" value="CompilerOptfpmode|-fpmode < type >"}}==
 		Select between fast and accurate floating-point operations (default: ##PRECISE##)
 	=={{fbdoc item="keyword" value="CompilerOptz|-z < value >"}}==
@@ -76,7 +76,7 @@ Using the **fbc** command-line.
 	=={{fbdoc item="keyword" value="CompilerOptex|-ex"}}==
 		Add error checking with RESUME support
 	=={{fbdoc item="keyword" value="CompilerOptexx|-exx"}}==
-		Same as ##-ex##, plus array bounds, null-pointer, and error location reporting
+		Same as ##-ex##, plus array bounds and dimensions, null-pointer, and error location reporting
 	=={{fbdoc item="keyword" value="CompilerOpteunwind|-eunwind"}}==
 		Enable stack unwind information
 	=={{fbdoc item="keyword" value="CompilerOptWa|-Wa < opt >"}}==
@@ -87,6 +87,8 @@ Using the **fbc** command-line.
 		Set object file path/name (must be passed after the .bas file)
 	=={{fbdoc item="keyword" value="CompilerOptearray|-earray"}}==
 		Enable array bounds checking
+	=={{fbdoc item="keyword" value="CompilerOptearraydims|-earraydims"}}==
+		Enable array dimensions checking
 	=={{fbdoc item="keyword" value="CompilerOpteassert|-eassert"}}==
 		Enable assert() and assertwarn() checking
 	=={{fbdoc item="keyword" value="CompilerOptedebug|-edebug"}}==

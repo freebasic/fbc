@@ -1,0 +1,17 @@
+{{fbdoc item="title" value="Compiler Option: -earraydims"}}----
+Enable array dimensions checking.
+
+{{fbdoc item="syntax"}}##
+	**-earraydims**
+##
+{{fbdoc item="desc"}}
+	The ##**-earraydims**## compiler option enables the array dimensions checking. Enabled by default with '-exx' command line option.
+
+{{fbdoc item="ver"}}
+	- Since fbc 1.20.0
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfberr|__FB_ERR__]]##
+	- [[CompilerCmdLine|Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

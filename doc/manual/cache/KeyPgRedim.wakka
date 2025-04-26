@@ -42,7 +42,7 @@ Defines or resizes a variable-length array
 			- This also includes fixed-length arrays passed as parameters in a procedure: ""FreeBASIC"" cannot prevent you trying this at compile-time, but generates an error at run-time.
 		- ##**Redim**## cannot be used inside a member procedure if the array contains as element the instance itself of the object, because that could cause horrible crashes:
 			- If the array data are moved into memory by ##**Redim**##, the passed ##[[KeyPgThis|This]]## reference becomes inconsistent, in the same way as a dangling pointer.
-			- In that case, all subsequent accesses to any non-static member data from this member procedure will be erroneous, except if the passed ##[[KeyPgThis|This]]## reference would be readjusted (by means of ##@This = @array(...)##) immediately after executing ##**Redim**## in the body of this member procedure.
+			- In that case, all subsequent accesses to any non-static member field from this member procedure will be erroneous, except if the passed ##[[KeyPgThis|This]]## reference would be readjusted (by means of ##@This = @array(...)##) immediately after executing ##**Redim**## in the body of this member procedure.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/array/redim.bas"}}%%(freebasic)

@@ -15,6 +15,11 @@ The "**Critical Sections**" related questions in multi-threading.
 	**{{anchor name="ProPgMtCriticalSectionsFAQ10|10. Is it better to take precautions when using the keyword 'Sleep' in threads?"}}**
 	**{{anchor name="ProPgMtCriticalSectionsFAQ11|11. Can all tools to handle multi-threading be encapsulated in a base Class (that the user extends with a derived Type for his own implementing)?"}}**
 	**{{anchor name="ProPgMtCriticalSectionsFAQ12|12. What is the execution delay of the code of a thread after the thread is created by 'ThreadCreate'?"}}**
+	**{{anchor name="ProPgMtCriticalSectionsFAQ13|13. What is the synchronization latency when synchronizing threads either by mutual exclusions or by conditional variables?"}}**
+	**{{anchor name="ProPgMtCriticalSectionsFAQ14|14. What happens when multiple threads are waiting on the same condition variable?"}}**
+	**{{anchor name="ProPgMtCriticalSectionsFAQ15|15. How to optimize sequencing of successive user tasks executed by threading?"}}**
+	**{{anchor name="ProPgMtCriticalSectionsFAQ16|16. Why is multi-threading performance penalized by many shared memory accesses (even more in writing mode)?"}}**
+	**{{anchor name="ProPgMtCriticalSectionsFAQ17|17. Why is multi-threading performance heavily penalized by many manipulation of var-len strings and var-len arrays?"}}**
 	
 ----
 
@@ -1867,6 +1872,954 @@ Mutexunlock(pMutexForThreadStart)
 Threadwait(pThread)
 MutexDestroy(pMutexForThreadStart)
 %%
+@@{{anchor name="ProPgMtCriticalSectionsFAQtop|Back to top"}}@@
+----
+{{anchor name="ProPgMtCriticalSectionsFAQ13"}}
+{{fbdoc item="section" value="13. What is the synchronization latency when synchronizing threads either by mutual exclusions or by conditional variables?"}}
+		The synchronization waiting phase of each thread should not consume any CPU resources like 'Sleep', which is the case of ""'MutexLock()'"" and ""'CondWait()'"" instructions.
+		Thread synchronization by mutual exclusions or by conditional variables adds latency to the initial execution time of the threads, but this latency (a few microseconds) is infinitely shorter than that of a simple simple wait loop (a few milliseconds at best) containing the shortest sleep ('Sleep 1, 1') with a flag test.
+		
+		The following code allows to estimate this synchronization latency between the main thread and a child thread, by using either simple flags, either mutual exclusions, or conditional variables:
+			{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq13-1.bas"}}%%(freebasic)
+Dim Shared As Any Ptr mutex0, mutex1, mutex2, mutex, cond1, cond2, pt
+Dim Shared As Integer flag1, flag2
+Dim As Double t
+
+'----------------------------------------------------------------------------------
+
+#if defined(__FB_WIN32__)
+Declare Function _setTimer Lib "winmm" Alias "timeBeginPeriod"(ByVal As Ulong = 1) As Long
+Declare Function _resetTimer Lib "winmm" Alias "timeEndPeriod"(ByVal As Ulong = 1) As Long
+#endif
+
+Sub ThreadFlag(ByVal p As Any Ptr)
+	Mutexunlock(mutex0)  '' unlock mutex for main thread
+	For I As Integer = 1 To 100
+		While flag1 = 0
+			Sleep 1, 1
+		Wend
+		flag1 = 0
+		' only child thread code runs (location for example)
+		flag2 = 1
+	Next I
+End Sub
+
+mutex0 = Mutexcreate()
+Mutexlock(mutex0)
+
+pt = ThreadCreate(@ThreadFlag)
+Mutexlock(mutex0)  '' wait for thread launch (mutex unlock from child thread)
+Print "Thread synchronization latency by simple flags:"
+#if defined(__FB_WIN32__)
+	_setTimer()
+	Print "(in high resolution OS cycle period)"
+#else
+	Print "(in normal resolution OS cycle period)"
+#endif
+t = Timer
+For I As Integer = 1 To 100
+	flag1 = 1
+	While flag2 = 0
+		sleep 1, 1
+	Wend
+	flag2 = 0
+	' only main thread code runs (location for example)
+Next I
+t = Timer - t
+#if defined(__FB_WIN32__)
+	_resetTimer()
+#endif
+Threadwait(pt)
+Print Using "####.## milliseconds per double synchronization (round trip)"; t * 10
+Print
+
+Mutexdestroy(mutex0)
+
+'----------------------------------------------------------------------------------
+
+Sub ThreadMutex(Byval p As Any Ptr)
+	Mutexunlock(mutex0)  '' unlock mutex for main thread
+	For I As Integer = 1 to 100000
+		Mutexlock(mutex1)    '' wait for mutex unlock from main thread
+		' only child thread code runs
+		Mutexunlock(mutex2)  '' unlock mutex for main thread
+	Next I
+End Sub
+
+mutex0 = Mutexcreate()
+mutex1 = Mutexcreate()
+mutex2 = Mutexcreate()
+Mutexlock(mutex0)
+Mutexlock(mutex1)
+Mutexlock(mutex2)
+
+pt = ThreadCreate(@ThreadMutex)
+Mutexlock(mutex0)  '' wait for thread launch (mutex unlock from child thread)
+Print "Thread synchronization latency by mutual exclusions:"
+t = Timer
+For I As Integer = 1 To 100000
+	Mutexunlock(mutex1)  '' mutex unlock for child thread
+	Mutexlock(mutex2)    '' wait for mutex unlock from child thread
+	' only main thread code runs
+Next I
+t = Timer - t
+Threadwait(pt)
+Print Using "####.## microseconds per double synchronization (round trip)"; t * 10
+Print
+
+Mutexdestroy(mutex0)
+Mutexdestroy(mutex1)
+Mutexdestroy(mutex2)
+
+'----------------------------------------------------------------------------------
+
+Sub ThreadCondVar(ByVal p As Any Ptr)
+	Mutexunlock(mutex0)  '' unlock mutex for main thread
+	For I As Integer = 1 To 100000
+		MutexLock(mutex)
+		While flag1 = 0
+			CondWait(cond1, mutex)  '' wait for conditional signal from main thread
+		Wend
+		flag1 = 0
+		' only child thread code runs (location for example)
+		flag2 = 1
+		CondSignal(cond2)  '' send conditional signal to main thread
+		MutexUnlock(mutex)
+	Next I
+End Sub
+
+mutex0 = Mutexcreate()
+mutex = Mutexcreate()
+Mutexlock(mutex0)
+cond1 = Condcreate()
+cond2 = Condcreate()
+
+pt = ThreadCreate(@ThreadCondVar)
+Mutexlock(mutex0)  '' wait for thread launch (mutex unlock from child thread)
+Print "Thread synchronization latency by conditional variables:"
+t = Timer
+For I As Integer = 1 To 100000
+	MutexLock(mutex)
+	flag1 = 1
+	CondSignal(cond1)  '' send conditional signal to main thread
+	While flag2 = 0
+		CondWait(Cond2, mutex)  '' wait for conditional signal from child thread
+	Wend
+	flag2 = 0
+	' only child thread code runs (location for example)
+	MutexUnlock(mutex)
+Next I
+t = Timer - t
+Threadwait(pt)
+Print Using "####.## microseconds per double synchronization (round trip)"; t * 10
+Print
+
+Mutexdestroy(mutex0)
+Mutexdestroy(mutex)
+Conddestroy(cond1)
+Conddestroy(cond2)
+
+'----------------------------------------------------------------------------------
+
+Sleep
+%%			Example of results:
+				%%
+Thread synchronization latency by simple flags:
+(in high resolution OS cycle period)
+   2.02 milliseconds per double synchronization (round trip)
+
+Thread synchronization latency by mutual exclusions:
+   5.93 microseconds per double synchronization (round trip)
+
+Thread synchronization latency by conditional variables:
+   7.54 microseconds per double synchronization (round trip)
+%%
+		Example of thread synchronization for executing in concurrent or exclusive mode by using conditional variable:
+			{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq13-2.bas"}}%%(freebasic)
+Dim Shared As Any Ptr pt, mutex1, mutex2, cond1, cond2
+Dim Shared As Integer quit, flag1, flag2
+
+Print "'1': Main thread procedure running (alone)"
+Print "'2': Child thread procedure running (alone)"
+Print "'-': Main thread procedure running (with the one of child thread)"
+Print "'=': Child thread procedure running (with the one of main thread)"
+Print
+
+Sub Prnt(Byref s As String, Byval n As Integer)
+	For I As Integer = 1 To n
+		Print s;
+		Sleep 20, 1
+	Next I
+End Sub
+
+Sub ThreadCondCond(Byval p As Any Ptr)
+	Do
+		Mutexlock(mutex1)
+		While flag1 = 0              '' test flag set from main thread
+			CondWait(cond1, mutex1)  '' wait for conditional signal from main thread
+		Wend
+		flag1 = 0                    '' reset flag
+		Mutexunlock(mutex1)
+		If quit = 1 Then Exit Sub    '' exit the threading loop
+		Prnt("=", 10)
+		Mutexlock(mutex2)
+		flag2 = 1                    '' set flag to main thread
+		CondSignal(cond2)            '' send conditional signal to main thread
+		Prnt("2", 10)
+		Mutexunlock(mutex2)
+	Loop
+End Sub
+
+mutex1 = Mutexcreate()
+mutex2 = Mutexcreate()
+cond1 = Condcreate()
+cond2 = Condcreate()
+
+pt = ThreadCreate(@ThreadCondCond)
+For I As Integer = 1 To 5
+	Mutexlock(mutex1)
+	flag1 = 1                    '' set flag to child thread
+	CondSignal(cond1)            '' send conditional signal to child thread
+	Mutexunlock(mutex1)
+	Prnt("-", 10)
+	Mutexlock(mutex2)
+	While flag2 = 0              '' test flag set from child thread
+		CondWait(Cond2, mutex2)  '' wait for conditional signal from child thread
+	Wend
+	flag2 = 0                    '' reset flag
+	Prnt("1", 10)
+	Mutexunlock(mutex2)
+Next I
+
+MutexLock(mutex1)
+quit = 1                         '' set quit for child thread
+flag1 = 1
+CondSignal(cond1)                '' send conditional signal to child thread
+Mutexunlock(mutex1)
+Threadwait(pt)                   '' wait for child thread to end
+Print
+
+Mutexdestroy(mutex1)
+Mutexdestroy(mutex2)
+Conddestroy(cond1)
+Conddestroy(cond2)
+
+Sleep
+%%			Output:
+				%%
+'1': Main thread procedure running (alone)
+'2': Child thread procedure running (alone)
+'-': Main thread procedure running (with the one of child thread)
+'=': Child thread procedure running (with the one of main thread)
+
+-==-=-=--==--==-=-=-22222222221111111111-=-=-=-==--==-=--==-22222222221111111111-=-=-==-=-=--=-=-==-22222222221111111111
+-=-=-=-=-=-=--==-=-=22222222221111111111-==--==--==-=-=--==-22222222221111111111
+%%
+@@{{anchor name="ProPgMtCriticalSectionsFAQtop|Back to top"}}@@
+----
+{{anchor name="ProPgMtCriticalSectionsFAQ14"}}
+{{fbdoc item="section" value="14. What happens when multiple threads are waiting on the same condition variable?"}}
+	- If ""'CondSignal()'"" is used:
+			The specification states that the thread scheduler arbitrarily notifies one of the threads waiting on the condition variable.
+			Since this method notifies an arbitrary thread, some documentation also states that it is therefore possible for a waiting thread to never be notified if it is never alone in the queue on the condition variable.
+			But my tests on Windows seem to show that the order of entry into the queue on a same condition variable determines the order of exit: first in, first out.
+			I have not tested this on Linux or any other platform, but in any case this behavior I observed is unspecified.
+			
+	- If ""'CondBroadcast()'"" is used:
+			The specification states that the thread scheduler notifies all threads waiting on the condition variable in an arbitrary order.
+			
+	The example below works with 6 threads (in addition to the main thread).
+	The first 3 threads (#1 to #3) are waiting on their own condition variable, while the last 3 threads (#4 to #6) are waiting on a same other condition variable.
+	These last 3 threads are awakened either on ""'CondSignal()'"" or on ""'CondBroadcast()'"".
+		{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq14.bas"}}%%(freebasic)
+Type ThreadData
+	Dim As Integer id
+	Dim As Any Ptr mutex
+	Dim As Any Ptr cond
+	Dim As Boolean flag
+	Dim As Boolean quit
+	Dim As Any Ptr handle
+	Declare Static Sub Thread(Byval p As Any Ptr)
+End Type
+
+Sub ThreadData.Thread(Byval p As Any Ptr)
+	Dim As ThreadData Ptr pdata = p
+	Print "   thread #" & pdata->id & " is running"
+	Do
+		Mutexlock(pdata->mutex)
+			While pdata->flag = False
+				Condwait(pdata->cond, pdata->mutex)
+			Wend
+			pdata->flag = False
+		Mutexunlock(pdata->mutex)
+		If pdata->quit = False Then
+			Print "   thread #" & pdata->id & " is signaled"
+		Else
+			Exit Do
+		End If
+	Loop
+	Print "   thread #" & pdata->id & " is finishing"
+End Sub
+
+
+Dim As Any Ptr mutex = Mutexcreate()
+Dim As Any Ptr cond(0 to 3) = {Condcreate(), Condcreate(), Condcreate(), Condcreate()}
+Dim As ThreadData mythreads(1 To 6) = {Type(1, mutex, cond(1)), Type(2, mutex, cond(2)), Type(3, mutex, cond(3)), _
+									   Type(4, mutex, cond(0)), Type(5, mutex, cond(0)), Type(6, mutex, cond(0))}
+
+Print "Threads from #1 to #6 are created:"
+For I As Integer = Lbound(mythreads) To Ubound(mythreads)
+	mythreads(I).handle = Threadcreate(@ThreadData.Thread, @mythreads(I))
+Next I
+Sleep 1000, 1  '' wait for all threads started
+Print
+Print "----------------------------------------------------------"
+Print
+
+For I As Integer = 3 To 1 Step -1
+	Print "Send a CondSignal to thread #" & I &":"
+	Mutexlock(mutex)
+		mythreads(I).flag = True
+		Condsignal(cond(I))
+	Mutexunlock(mutex)
+	Sleep 1000, 1  '' wait for the thread loop completed
+	Print
+Next I
+Print "----------------------------------------------------------"
+Print
+
+Print "Send a single CondBroadcast to all threads from #4 to #6:"
+Mutexlock(mutex)
+	For I As Integer = 4 To 6
+		mythreads(I).flag = True
+	Next I
+	Condbroadcast(cond(0))
+Mutexunlock(mutex)
+Sleep 1000, 1  '' wait for all thread loops completed
+Print "Send a single CondBroadcast to all threads from #4 to #6:"
+Mutexlock(mutex)
+	For I As Integer = 4 To 6
+		mythreads(I).flag = True
+	Next I
+	Condbroadcast(cond(0))
+Mutexunlock(mutex)
+Sleep 1000, 1  '' wait for all thread loops completed
+Print "Send a single CondBroadcast to all threads from #4 to #6:"
+Mutexlock(mutex)
+	For I As Integer = 4 To 6
+		mythreads(I).flag = True
+	Next I
+	Condbroadcast(cond(0))
+Mutexunlock(mutex)
+Sleep 1000, 1  '' wait for all thread loops completed
+Print
+Print "----------------------------------------------------------"
+Print
+
+Print "Send a CondSignal to any thread among #4 to #6:"
+Mutexlock(mutex)
+	For I As Integer = 4 To 6
+		mythreads(I).flag = True
+	Next I
+	Condsignal(cond(0))
+Mutexunlock(mutex)
+Sleep 1000, 1  '' wait for a thread loop completed
+Print "Send a CondSignal to any thread among #4 to #6:"
+Mutexlock(mutex)
+	For I As Integer = 4 To 6
+		mythreads(I).flag = True
+	Next I
+	Condsignal(cond(0))
+Mutexunlock(mutex)
+Sleep 1000, 1  '' wait for a thread loop completed
+Print "Send a CondSignal to any thread among #4 to #6:"
+Mutexlock(mutex)
+	For I As Integer = 4 To 6
+		mythreads(I).flag = True
+	Next I
+	Condsignal(cond(0))
+Mutexunlock(mutex)
+Sleep 1000, 1  '' wait for a thread loop completed
+Print
+
+Print "Send a CondSignal to any thread among #4 to #6:"
+Mutexlock(mutex)
+	For I As Integer = 4 To 6
+		mythreads(I).flag = True
+	Next I
+	Condsignal(cond(0))
+Mutexunlock(mutex)
+Sleep 1000, 1  '' wait for a thread loop completed
+Print "Send a CondSignal to any thread among #4 to #6:"
+Mutexlock(mutex)
+	For I As Integer = 4 To 6
+		mythreads(I).flag = True
+	Next I
+	Condsignal(cond(0))
+Mutexunlock(mutex)
+Sleep 1000, 1  '' wait for a thread loop completed
+Print "Send a CondSignal to any thread among #4 to #6:"
+Mutexlock(mutex)
+	For I As Integer = 4 To 6
+		mythreads(I).flag = True
+	Next I
+	Condsignal(cond(0))
+Mutexunlock(mutex)
+Sleep 1000, 1  '' wait for a thread loop completed
+Print
+
+Print "Send a CondSignal to any thread among #4 to #6:"
+Mutexlock(mutex)
+	For I As Integer = 4 To 6
+		mythreads(I).flag = True
+	Next I
+	Condsignal(cond(0))
+Mutexunlock(mutex)
+Sleep 1000, 1  '' wait for a thread loop completed
+Print "Send a CondSignal to any thread among #4 to #6:"
+Mutexlock(mutex)
+	For I As Integer = 4 To 6
+		mythreads(I).flag = True
+	Next I
+	Condsignal(cond(0))
+Mutexunlock(mutex)
+Sleep 1000, 1  '' wait for a thread loop completed
+Print "Send a CondSignal to any thread among #4 to #6:"
+Mutexlock(mutex)
+	For I As Integer = 4 To 6
+		mythreads(I).flag = True
+	Next I
+	Condsignal(cond(0))
+Mutexunlock(mutex)
+Sleep 1000, 1  '' wait for a thread loop completed
+Print
+Print "----------------------------------------------------------"
+Print
+
+For I As Integer = 1 To 3
+	Print "Send to finish a CondSignal to thread #" & I &":"
+	Mutexlock(mutex)
+		mythreads(I).flag = True
+		mythreads(I).quit = True
+		Condsignal(cond(I))
+	Mutexunlock(mutex)
+	Sleep 1000, 1  '' wait for the thread loop completed
+	Print
+Next I
+Print "----------------------------------------------------------"
+Print
+
+Print "Send to finish a single CondBroadcast to all threads from #4 to #6:"
+Mutexlock(mutex)
+	For I As Integer = 4 To 6
+		mythreads(I).flag = True
+		mythreads(I).quit = True
+	Next I
+	Condbroadcast(cond(0))
+Mutexunlock(mutex)
+Sleep 1000, 1  '' wait for all thread loops completed
+Print
+Print "----------------------------------------------------------"
+Print
+
+For I As Integer = 1 To 3
+	Threadwait(mythreads(I).handle)
+	Conddestroy(cond(I))
+Next I
+For I As Integer = 4 To 6
+	Threadwait(mythreads(I).handle)
+Next I
+Print "All threads from #1 to #6 are finished."
+Print
+
+Mutexdestroy(mutex)
+Conddestroy(cond(0))
+
+Sleep
+%%		Output (for example):
+			%%
+Threads from #1 to #6 are created:
+   thread #1 is running
+   thread #3 is running
+   thread #2 is running
+   thread #5 is running
+   thread #4 is running
+   thread #6 is running
+
+----------------------------------------------------------
+
+Send a CondSignal to thread #3:
+   thread #3 is signaled
+
+Send a CondSignal to thread #2:
+   thread #2 is signaled
+
+Send a CondSignal to thread #1:
+   thread #1 is signaled
+
+----------------------------------------------------------
+
+Send a single CondBroadcast to all threads from #4 to #6:
+   thread #5 is signaled
+   thread #6 is signaled
+   thread #4 is signaled
+Send a single CondBroadcast to all threads from #4 to #6:
+   thread #6 is signaled
+   thread #4 is signaled
+   thread #5 is signaled
+Send a single CondBroadcast to all threads from #4 to #6:
+   thread #5 is signaled
+   thread #4 is signaled
+   thread #6 is signaled
+
+----------------------------------------------------------
+
+Send a CondSignal to any thread among #4 to #6:
+   thread #5 is signaled
+Send a CondSignal to any thread among #4 to #6:
+   thread #4 is signaled
+Send a CondSignal to any thread among #4 to #6:
+   thread #6 is signaled
+
+Send a CondSignal to any thread among #4 to #6:
+   thread #5 is signaled
+Send a CondSignal to any thread among #4 to #6:
+   thread #4 is signaled
+Send a CondSignal to any thread among #4 to #6:
+   thread #6 is signaled
+
+Send a CondSignal to any thread among #4 to #6:
+   thread #5 is signaled
+Send a CondSignal to any thread among #4 to #6:
+   thread #4 is signaled
+Send a CondSignal to any thread among #4 to #6:
+   thread #6 is signaled
+
+----------------------------------------------------------
+
+Send to finish a CondSignal to thread #1:
+   thread #1 is finishing
+
+Send to finish a CondSignal to thread #2:
+   thread #2 is finishing
+
+Send to finish a CondSignal to thread #3:
+   thread #3 is finishing
+
+----------------------------------------------------------
+
+Send to finish a single CondBroadcast to all threads from #4 to #6:
+   thread #4 is finishing
+   thread #5 is finishing
+   thread #6 is finishing
+
+----------------------------------------------------------
+
+All threads from #1 to #6 are finished.
+%%
+@@{{anchor name="ProPgMtCriticalSectionsFAQtop|Back to top"}}@@
+----
+{{anchor name="ProPgMtCriticalSectionsFAQ15"}}
+{{fbdoc item="section" value="15. How to optimize sequencing of successive user tasks executed by threading?"}}
+	The delay between the return of ""'ThreadCreate()'"" and the start of the thread code (first line of thread code) can be estimated at about 50 microseconds on average, but can go up to a few milliseconds at worst.
+	(see FAQ {{anchor name="ProPgMtCriticalSectionsFAQ12|12. What is the execution delay of the code of a thread after the thread is created by 'ThreadCreate'?"}})
+	
+	This is why a child thread can be launched only once (by a constructor for example) and execute a permanent waiting loop of user tasks (to avoid a thread launch latency each time), then at end stopped (by a destructor).
+	The synchronization between the main thread and the child thread (start of each user task and user task completed) can be managed by means of 2 mutexes.
+	
+	Example to estimate the average time to execute a sequence of user tasks (with empty user procedure body):
+		**""-""** either launched by successive threads,
+		**""-""** or launched by a single thread. 
+		{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq15.bas"}}%%(freebasic)
+Sub userTask(Byval p As Any Ptr)   '' task to execute
+End Sub
+
+Dim As Double t
+
+'---------------------------------------------------------------------------
+
+Print "Successive (empty) user tasks executed by one thread for each:"
+t = Timer
+For i As Integer = 1 To 10000
+	Dim As Any Ptr p = Threadcreate(@userTask)
+	Threadwait(p)
+Next i
+t = Timer - t
+Print Using "######.### microdeconds per user task"; t * 100
+Print
+
+'---------------------------------------------------------------------------
+
+Type thread
+	Public:
+		Dim As Sub(Byval p As Any Ptr) task  '' pointer to user task
+		Declare Sub Launch()                 '' launch user task
+		Declare Sub Wait()                   '' wait for user task completed
+		Declare Constructor()
+		Declare Destructor()
+	Private:
+		Dim As Any Ptr mutex1
+		Dim As Any Ptr mutex2
+		Dim As Any Ptr handle
+		Dim As Boolean quit
+		Declare Static Sub proc(Byval pthread as thread Ptr)
+End Type
+
+Constructor thread()
+	This.mutex1 = MutexCreate
+	This.mutex2 = MutexCreate
+	Mutexlock(This.mutex1)
+	Mutexlock(This.mutex2)
+	This.handle = ThreadCreate(Cptr(Any Ptr, @thread.proc), @This)
+End Constructor
+
+Destructor thread()
+	This.quit = True
+	Mutexunlock(This.mutex1)
+	ThreadWait(This.handle)
+	Mutexdestroy(This.mutex1)
+	Mutexdestroy(This.mutex2)
+End Destructor
+
+Sub thread.proc(Byval pthread as thread Ptr)
+	Do
+		MutexLock(pthread->mutex1)    '' wait for launching task
+		If pthread->quit = True Then Exit Sub
+		pthread->task(pthread)
+		Mutexunlock(pthread->mutex2)  '' task completed
+	Loop
+End Sub
+
+Sub thread.Launch()
+	Mutexunlock(This.mutex1)
+End Sub
+
+Sub thread.Wait()
+	Mutexlock(This.mutex2)
+End Sub
+
+Print "Successive (empty) user tasks executed by a single thread for all:"
+t = Timer
+Dim As thread Ptr pThread = New Thread
+pThread->task = @userTask
+For i As Integer = 1 To 10000
+	pThread->Launch()
+	pThread->Wait()
+Next i
+Delete pThread
+t = timer - t
+Print Using "######.### microdeconds per user task"; t * 100
+Print
+
+Sleep
+%%		Output (for example):
+			%%
+Successive (empty) user tasks executed by one thread for each:
+   145.004 microdeconds per user task
+
+Successive (empty) user tasks executed by a single thread for all:
+	 6.691 microdeconds per user task
+%%
+@@{{anchor name="ProPgMtCriticalSectionsFAQtop|Back to top"}}@@
+----
+{{anchor name="ProPgMtCriticalSectionsFAQ16"}}
+{{fbdoc item="section" value="16. Why is multi-threading performance penalized by many shared memory accesses (even more in writing mode)?"}}
+	Each core has its own cache memory that allows to buffer the useful data (in read and write) of the shared memory.
+	Consequently, a cache coherence algorithm between cores is executed, to keep, in case of writing in the cache and for the common memory areas between caches, the most recent values ​​among all the caches concerned.
+	It is this algorithm which penalizes the performance of multi-threading in the case of multiple accesses in shared memory, even more particularly in write mode.
+	
+	It is therefore necessary to limit as much as possible the access of threads to shared memory, even more in writing.
+	For example, all intermediate results of threads could be performed in local memory, and only the final useful ones put in shared memory.
+	
+	Example of a member thread procedures computing the sum of the first N integers, by accumulation directly in the shared memory ('SumUpTo_1()') or internally in its local memory before copy back ('SumUpTo_2'()'): 
+		{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq16.bas"}}%%(freebasic)
+Type Thread
+	Dim As Uinteger valueIN
+	Dim As Double valueOUT
+	Dim As Any Ptr pHandle
+	Declare Static Sub SumUpTo_1(Byval pt As Thread Ptr)
+	Declare Static Sub SumUpTo_2(Byval pt As Thread Ptr)
+End type
+
+Sub Thread.SumUpTo_1(Byval pt As Thread Ptr)
+	pt->valueOut = 0
+	For I As Uinteger = 1 To pt->valueIN
+		pt->valueOUT += I
+	Next I
+End Sub
+
+Sub Thread.SumUpTo_2(Byval pt As Thread Ptr)
+	Dim As Double value = 0
+	For I As Uinteger = 1 To pt->valueIN
+		value += I
+	Next I
+	pt->valueOUT = value
+End Sub
+
+Sub MyThreads(Byval pThread As Any Ptr, Byval threadNB As Uinteger = 1)
+	Dim As Thread td(1 To threadNB)
+	Dim As Double t
+	
+	t = Timer
+	For i As Integer = 1 To threadNB
+		td(i).valueIN = 100000000 + i
+		td(i).pHandle = Threadcreate(pThread, @td(i))
+	Next I
+	For i As Integer = 1 To threadNB
+		ThreadWait(td(i).pHandle)
+	Next I
+	t = Timer - t
+
+	For i As Integer = 1 To threadNB
+		Print "   SumUpTo(" & td(i).valueIN & ") = " & td(i).valueOUT, _
+			  "(right result : " & (100000000# + i) * (100000000# + i + 1) / 2 & ")"
+	Next I
+	Print "      total time : " & t & " s"
+	Print
+End Sub
+
+Print
+For i As Integer = 1 To 4
+	Print "Each thread (in parallel) accumulating result directly in shared memory:"
+	Mythreads(@Thread.SumUpTo_1, I)
+	Print "Each thread (in parallel) accumulating result internally in its local memory:"
+	Mythreads(@Thread.SumUpTo_2, I)
+	Print "-----------------------------------------------------------------------------"
+	Print
+Next i
+
+Sleep
+%%		Output (for example):
+			%%
+Each thread (in parallel) accumulating result directly in shared memory:
+   SumUpTo(100000001) = 5000000150000001  (right result : 5000000150000001)
+	  total time : 1.668927300015184 s
+
+Each thread (in parallel) accumulating result internally in its local memory:
+   SumUpTo(100000001) = 5000000150000001  (right result : 5000000150000001)
+	  total time : 1.004467599958389 s
+
+-----------------------------------------------------------------------------
+
+Each thread (in parallel) accumulating result directly in shared memory:
+   SumUpTo(100000001) = 5000000150000001  (right result : 5000000150000001)
+   SumUpTo(100000002) = 5000000250000003  (right result : 5000000250000003)
+	  total time : 4.314032700025791 s
+
+Each thread (in parallel) accumulating result internally in its local memory:
+   SumUpTo(100000001) = 5000000150000001  (right result : 5000000150000001)
+   SumUpTo(100000002) = 5000000250000003  (right result : 5000000250000003)
+	  total time : 1.032165899962706 s
+
+-----------------------------------------------------------------------------
+
+Each thread (in parallel) accumulating result directly in shared memory:
+   SumUpTo(100000001) = 5000000150000001  (right result : 5000000150000001)
+   SumUpTo(100000002) = 5000000250000003  (right result : 5000000250000003)
+   SumUpTo(100000003) = 5000000350000006  (right result : 5000000350000006)
+	  total time : 6.727616399944395 s
+
+Each thread (in parallel) accumulating result internally in its local memory:
+   SumUpTo(100000001) = 5000000150000001  (right result : 5000000150000001)
+   SumUpTo(100000002) = 5000000250000003  (right result : 5000000250000003)
+   SumUpTo(100000003) = 5000000350000006  (right result : 5000000350000006)
+	  total time : 1.128656100041894 s
+
+-----------------------------------------------------------------------------
+
+Each thread (in parallel) accumulating result directly in shared memory:
+   SumUpTo(100000001) = 5000000150000001  (right result : 5000000150000001)
+   SumUpTo(100000002) = 5000000250000003  (right result : 5000000250000003)
+   SumUpTo(100000003) = 5000000350000006  (right result : 5000000350000006)
+   SumUpTo(100000004) = 5000000450000010  (right result : 5000000450000010)
+	  total time : 6.829728199980309 s
+
+Each thread (in parallel) accumulating result internally in its local memory:
+   SumUpTo(100000001) = 5000000150000001  (right result : 5000000150000001)
+   SumUpTo(100000002) = 5000000250000003  (right result : 5000000250000003)
+   SumUpTo(100000003) = 5000000350000006  (right result : 5000000350000006)
+   SumUpTo(100000004) = 5000000450000010  (right result : 5000000450000010)
+	  total time : 1.164915200012842 s
+
+-----------------------------------------------------------------------------
+%%
+		One can check that the multi-threading performance is strongly penalized by many shared memory accesses in write mode:
+			For the case where the thread accumulates the result in shared memory, there is no longer any gain from multi-threading (and even a little loss), whereas for the case where the thread accumulates the result in internal memory, the gain is almost at the theoretical maximum value.
+			
+	On the other hand, we observe a smaller degradation in multi-threading performance when accessing shared memory in read-only mode.
+
+@@{{anchor name="ProPgMtCriticalSectionsFAQtop|Back to top"}}@@
+----
+{{anchor name="ProPgMtCriticalSectionsFAQ17"}}
+{{fbdoc item="section" value="17. Why is multi-threading performance heavily penalized by many manipulation of var-len strings and var-len arrays?"}}
+	For all pseudo-objects like var-len strings and var-len arrays, only the descriptors can be put into local memory but not the data itself which is always on the heap (only fixed-length data can be put into local memory).
+	The heap is shared memory and this incurs penality on multi-threading performance as described in the above FAQ.
+	(see FAQ {{anchor name="ProPgMtCriticalSectionsFAQ16|16. Why is multi-threading performance penalized by many shared memory accesses (even more in writing mode)?"}})
+	
+	For var-len arrays, local fixed-len arrays can be used instead, since this array data is always placed in local scope memory.
+	Not only do you have to define a fixed maximum size to allocate for each array, but for each of them you have to associate an index variable (per dimension if necessary) that points to the last useful element ('Redim' is replaced by updating this index variable).
+	
+	For var-len strings, local fix-len [z]strings can be used instead, since these [z]string data are always placed in local scope memory.
+	All built-in string functions except 'Len()' and 'Asc()' and all string operators should also not be used on [z]strings since they work internally with var-len strings. Instead, use user code that only works on [z]string indexes.
+	__Note:__
+		But fix-len strings ('Dim As String * N') are less convenient to use than fix-len zstrings ('Dim As Zstring * N'), because the former cannot be passed by reference to a procedure (but only by copy), unlike the latter ('Byref As Zstring').
+		
+	Additionally, all dynamic memory allocation/reallocation/deallocation requests (to be thread-safe) are serialized internally using mutex locking and unlocking.
+	
+	The following example compares the multithreaded performance of two types of code:
+		**""-""** code with var-len strings using its built-in functions and operators like '= (assign)', 'Instr()', 'Mid()' and 'Ucase()',
+		**""-""** code with fix-len zstrings with user code equivalent to the previous built-in functions and operators, but operating only on zstring indexes.
+			("Asc()" and "Len()" are the only ones used because they have no impact on performance)
+		{{fbdoc item="filename" value="examples/manual/proguide/multithreading/criticalsectionfaq17.bas"}}%%(freebasic)
+Type Thread
+	Dim As UInteger value
+	Dim As Any Ptr pHandle
+	Declare Static Sub thread1(ByVal pt As Thread Ptr)
+	Declare Static Sub thread2(ByVal pt As Thread Ptr)
+End Type
+
+Sub Thread.thread1(ByVal pt As Thread Ptr)
+	Dim As Integer result
+	For n As Integer = 1 To pt->value
+		Dim As String s1
+		Dim As String s2
+		Dim As String s3
+		s1 = "FreeBASIC rev 1.20"
+		result = Instr(s1, "rev")
+		s2 = Mid(s1, result)
+		s3 = Ucase(s2)
+	Next n
+End Sub
+
+Sub Thread.thread2(ByVal pt As Thread Ptr)
+	Dim As Integer result
+	For n As Integer = 1 To pt->value
+		Dim As Zstring * 256 z1
+		Dim As Zstring * 256 z2
+		Dim As Zstring * 256 z3
+		' instead of: z1 = "FreeBASIC rev 1.20"
+		For i As Integer = 0 To Len("FreeBASIC rev 1.20")
+			z1[i] = ("FreeBASIC rev 1.20")[i]
+		Next i
+		' instead of: result = Instr(z1, "rev")
+		result = 0
+		For i As Integer = 0 To Len(z1) - Len("rev")
+			For j As Integer = 0 To Len("rev") - 1
+				If z1[i + j] <> ("rev")[j] Then Continue For, For
+			Next j
+			result = i + 1
+			Exit For
+		Next i
+		' instead of: z2 = Mid(z1, result)
+		For i As Integer = result - 1 to Len(z1)
+			z2[i - result + 1] = z1[i]
+		Next i
+		' instead of: z3 = Ucase(z2)
+		For i As Integer = 0 To Len(z2)
+			z3[i] = z2[i]
+			If z3[i] >= Asc("a") Andalso z3[i] <= Asc("z") Then z3[i] -= 32
+		Next i
+	Next n
+End Sub
+
+Sub MyThreads(ByVal pThread As Any Ptr, ByVal threadNB As UInteger = 1)
+	Dim As Thread td(1 To threadNB)
+	Dim As Double t
+   
+	t = Timer
+	For i As Integer = 1 To threadNB
+		td(i).value = 100000
+		td(i).pHandle = ThreadCreate(pThread, @td(i))
+	Next I
+	For i As Integer = 1 To threadNB
+		ThreadWait(td(i).pHandle)
+	Next I
+	t = Timer - t
+
+	Print "      total time for " & threadNB & " threads in parallel: " & t & " s"
+	Print
+End Sub
+
+Print
+For i As Integer = 1 To 8
+	Print "Each thread using var-len strings, with its built-in functions and operators:"
+	Mythreads(@Thread.thread1, I)
+	Print "Each thread using fix-len zstrings, with user code working on zstring indexes:"
+	Mythreads(@Thread.thread2, I)
+	Print "------------------------------------------------------------------------------"
+	Print
+Next i
+
+Sleep
+%%		Output (for example):
+			%%
+Each thread using var-len strings, with its built-in functions and operators:
+	  total time for 1 threads in parallel: 0.08449090004432946 s
+
+Each thread using fix-len zstrings, with user code working on zstring indexes:
+	  total time for 1 threads in parallel: 0.02201449999120086 s
+
+------------------------------------------------------------------------------
+
+Each thread using var-len strings, with its built-in functions and operators:
+	  total time for 2 threads in parallel: 0.1947050000308082 s
+
+Each thread using fix-len zstrings, with user code working on zstring indexes:
+	  total time for 2 threads in parallel: 0.02090729994233698 s
+
+------------------------------------------------------------------------------
+
+Each thread using var-len strings, with its built-in functions and operators:
+	  total time for 3 threads in parallel: 0.3338784999214113 s
+
+Each thread using fix-len zstrings, with user code working on zstring indexes:
+	  total time for 3 threads in parallel: 0.0279372000368312 s
+
+------------------------------------------------------------------------------
+
+Each thread using var-len strings, with its built-in functions and operators:
+	  total time for 4 threads in parallel: 0.4927077000029385 s
+
+Each thread using fix-len zstrings, with user code working on zstring indexes:
+	  total time for 4 threads in parallel: 0.02361949998885393 s
+
+------------------------------------------------------------------------------
+
+Each thread using var-len strings, with its built-in functions and operators:
+	  total time for 5 threads in parallel: 0.7089884000597522 s
+
+Each thread using fix-len zstrings, with user code working on zstring indexes:
+	  total time for 5 threads in parallel: 0.02638950000982732 s
+
+------------------------------------------------------------------------------
+
+Each thread using var-len strings, with its built-in functions and operators:
+	  total time for 6 threads in parallel: 0.9172402999829501 s
+
+Each thread using fix-len zstrings, with user code working on zstring indexes:
+	  total time for 6 threads in parallel: 0.0310587000567466 s
+
+------------------------------------------------------------------------------
+
+Each thread using var-len strings, with its built-in functions and operators:
+	  total time for 7 threads in parallel: 1.159198799985461 s
+
+Each thread using fix-len zstrings, with user code working on zstring indexes:
+	  total time for 7 threads in parallel: 0.02898070006631315 s
+
+------------------------------------------------------------------------------
+
+Each thread using var-len strings, with its built-in functions and operators:
+	  total time for 8 threads in parallel: 1.403980100061744 s
+
+Each thread using fix-len zstrings, with user code working on zstring indexes:
+	  total time for 8 threads in parallel: 0.03312029992230237 s
+
+------------------------------------------------------------------------------
+%%
+		One can check that the multi-threading performance is strongly penalized by many var-len string manipulation:
+			For the case where the thread uses var-len strings and its built-in functions and operators, there is no longer any gain from multi-threading (and even losses), whereas for the case where the thread uses fix-len zstrings and user code working on zstring indexes only (except 'Asc()' and 'Len()' usage), the gain is almost at the theoretical maximum value.
+
 @@{{anchor name="ProPgMtCriticalSectionsFAQtop|Back to top"}}@@
 
 {{fbdoc item="section" value="See also"}}

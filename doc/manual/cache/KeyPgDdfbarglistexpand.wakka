@@ -1,0 +1,69 @@
+{{fbdoc item="title" value="__FB_ARG_LISTEXPAND__"}}----
+Intrinsic define (macro) performed by the compiler.
+
+{{fbdoc item="syntax"}}##
+	""__FB_ARG_LISTEXPAND__( macroname, macroargcount, args... )""
+##
+{{fbdoc item="param"}}
+	##//macroname//##
+		name of the macro used for extension calls
+	##//macroargcount//##
+		number of parameters for the 'macroname' macro
+		expand the parameter list 'args...' according to the 'macroargcount' value:
+			""-"" 'macroargcount > 0' : pass 'macroargcount' parameters each time
+			""-"" 'macroargcount = 0' : pass all parameters
+			""-"" 'macroargcount < 0' : for each parameter passed, the previous 'macroargcount' parameters are automatically removed on the next pass
+	##//args...//##
+		argument list
+
+{{fbdoc item="desc"}}
+	Expands to one or more 'macroname( .... )' depending on the value of ##//macroargcount//## and number of arguments in the ##//args...//## list.
+	
+	Returns empty string on invalid index, rather than compile error.
+
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/defines/fbarglistexpand.bas"}}%%(freebasic)
+#macro m( arg... )
+	#print "   "##arg
+#endmacro
+
+#print "macroargcount>0 (=1):"
+__FB_ARG_LISTEXPAND__( m, 1, Hello1, Hello2, Hello3, Hello4)
+#print " "
+#print "macroargcount=0 (=0):"
+__FB_ARG_LISTEXPAND__( m, 0, Hello1, Hello2, Hello3, Hello4)
+#print " "
+#print "macroargcount<0 (=-1):"
+__FB_ARG_LISTEXPAND__( m, -1, Hello1, Hello2, Hello3, Hello4)
+
+
+/' Compiler output:
+macroargcount>0 (=1):
+   Hello1
+   Hello2
+   Hello3
+   Hello4
+ 
+macroargcount=0 (=0):
+   Hello1, Hello2, Hello3, Hello4
+ 
+macroargcount<0 (=-1):
+   Hello1, Hello2, Hello3, Hello4
+   Hello2, Hello3, Hello4
+   Hello3, Hello4
+   Hello4
+'/
+%%
+{{fbdoc item="ver"}}
+	- Since fbc 1.20.0
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfbargrightof|__FB_ARG_RIGHTOF__]]##
+	- ##[[KeyPgDdfbargleftof|__FB_ARG_LEFTOF__]]##
+	- ##[[KeyPgDdfbargcount|__FB_ARG_COUNT__]]##
+	- ##[[KeyPgDdfbargextract|__FB_ARG_EXTRACT__]]##
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

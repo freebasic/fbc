@@ -29,6 +29,7 @@ Creates a temporary copy of a user defined type
 	It can also be used as an even shorter shortcut than ##[[KeyPgWith|With]]## (see below) if you are changing all the data-fields (or the n firsts only).
 	
 	A temporary object is destroyed at the end of execution of the statement (where it's defined), but its corresponding allocated memory is not released and remains available (unused) until going out the scope where statement is.
+	In the particular case where a temporary type is used in a ##[[KeyPgWith|With]]## expression, the destruction of the temporary type is deferred to the end of the ##[[KeyPgWith|With]]## scope.
 	
 	Note: ##[[KeyPgStatic|Static]]## qualifier used at procedure definition level does not apply to temporary types.
 
@@ -39,20 +40,20 @@ Type Example
 	As Integer field2
 End Type
 
-Dim ex As Example
+Dim myexample As Example
 
 '' Filling the type by setting each field
-ex.field1 = 1
-ex.field2 = 2
+myexample.field1 = 1
+myexample.field2 = 2
 
 '' Filling the type by setting each field using WITH
-With ex
+With myexample
 	.field1 = 1
 	.field2 = 2
 End With
 
 '' Fill the variable's fields with a  temporary type
-ex = Type( 1, 2 )
+myexample = Type( 1, 2 )
 %%
 
 {{fbdoc item="filename" value="examples/manual/udt/temp-type2.bas"}}%%(freebasic)

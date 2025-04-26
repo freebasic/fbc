@@ -40,11 +40,9 @@ Graphics statement to draw an ellipse or a circle
 	##//start//## and ##//end//## are angles are in [[ProPgRadians|radians]]. These can range ##-2*PI## to ##2*PI##, where ##PI## is the constant &pi;, approximately ##3.141593##; if you specify a negative angle, its value is changed sign and a line is drawn from the center up to that point in the arc. ##//end//## angle can be less than ##//start//##. If you do not specify ##//start//## and ##//end//##, a full circle/ellipse is drawn; if you you specify ##//start//## but not ##//end//##, ##//end//## is assumed to be ##2*PI##; if you specify ##//end//## but not ##//start//##, ##//start//## is assumed to be ##0.0##.
 	
 	##//aspect//## is the aspect ratio, or the ratio of the y radius over the x radius. If omitted, the default for ##[[KeyPgScreenres|ScreenRes]]## modes is ##1.0##, while for ##[[KeyPgScreengraphics|Screen (Graphics)]]## modes the default value is the value required to draw a perfect circle on the screen, keeping the pixel aspect ratio in mind. This value can be calculated as follows:
-	
-	##//ratio// = (//y_radius// / //x_radius//) * //pixel_aspect_ratio//##
-	
-	Where ##//pixel_aspect_ratio//## is the ratio of the current mode width over the current mode height, assuming a 4:3 standard monitor. If aspect ratio is less than ##1.0##, radius is the x radius; if aspect is more or equal to ##1.0##, radius is the y radius.
-	
+		##//ratio// = (//y_radius// / //x_radius//) * //pixel_aspect_ratio//##
+			where ##//pixel_aspect_ratio//## is the ratio of the current mode width over the current mode height, assuming a 4:3 standard monitor. If aspect ratio is less than ##1.0##, radius is the x radius; if aspect is more or equal to ##1.0##, radius is the y radius.
+			
 	##F## is the fill flag. If you specify this flag, the circle/ellipse will be filled with the selected color. This only takes effect if you are drawing a full circle/ellipse.
 	
 	Custom coordinates system set up by ##[[KeyPgWindow|Window]]## and/or ##[[KeyPgViewgraphics|View (Graphics)]]## affect the drawing operation; clipping set by ##[[KeyPgViewgraphics|View]]## also applies. When ##**Circle**## finishes drawing, the current graphics cursor position is set to the supplied center.
@@ -52,7 +50,7 @@ Graphics statement to draw an ellipse or a circle
 	**Note:** Curves drawn with ##**Circle**## can induce pixels overdrawn at some locations. Thus, the resultant (blended) color of these overdrawn pixels is affected if a transparent color (in conjunction with the ##GFX_ALPHA_PRIMITIVES## option flag) is used.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/gfx/circle.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/gfx/circle.bas"}}%%(freebasic)
 ' Set 640x480 mode, 256 colors
 screen 18
 
@@ -69,7 +67,6 @@ sleep
 %%
 
 {{image class="center" title="Circle example output" url="/images/circle.png"}}
-
 {{fbdoc item="diff"}}
 	- ##//target//## is new to ""FreeBASIC""
 	- The ""FreeBASIC"" implementation uses a different algorithm for ellipse/arc drawing than QB, so the result may not be equal to QB for every pixel.

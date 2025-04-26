@@ -31,7 +31,10 @@ Reallocates storage for an existing reserved block of memory
 	
 	When manually allocating memory for ##[[KeyPgString|String]]## descriptors (or ##[[KeyPgType|UDT]]##s that contain one), if ##//count//## is larger than the original size of the memory block, the new extra memory range must be explicitly cleared to zeroes before the first string use (for example, using ##[[KeyPgClear|Clear]]##).  Otherwise accessing the string will cause undefined results (trying to write or read at a random place in memory, or trying to deallocate a random pointer).
 	
-	**NOTE**: Reallocating a pointer inside an object function, when that pointer contains the parent object of the function, is undefined, and will likely result in horrible crashes.
+	**Note:**
+		##**Reallocate**## cannot be used inside a member procedure if ##//pointer//## points to the instance itself of the object, because that could cause horrible crashes:
+			- If ##//pointer//## is modified by ##**Reallocate**## (object data moved into memory), the passed ##[[KeyPgThis|This]]## reference becomes inconsistent, in the same way as a dangling pointer.
+			- In that case, all subsequent accesses to any non-static member field from this member procedure will be erroneous, except if the passed ##[[KeyPgThis|This]]## reference would be readjusted (by means of ##@This = new pointer value##) immediately after executing ##**Reallocate**## in the body of this member procedure.
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/memory/reallocate.bas"}}%%(freebasic)

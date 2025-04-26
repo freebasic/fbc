@@ -45,6 +45,7 @@ print s
 
 {{fbdoc item="see"}}
 	- [[CptAscii|ASCII Character Codes]]
+	- ##[[KeyPgWchr|Wchr]]##
 	- ##[[KeyPgAsc|Asc]]##
 	- ##[[KeyPgStr|Str]]##
 	- ##[[KeyPgVal|Val]]##

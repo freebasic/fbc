@@ -414,6 +414,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDdfbargcount|__FB_ARG_COUNT__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargextract|__FB_ARG_EXTRACT__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargleftof|__FB_ARG_LEFTOF__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbarglistexpand|__FB_ARG_LISTEXPAND__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargrightof|__FB_ARG_RIGHTOF__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargc|__FB_ARGC__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargv|__FB_ARGV__"}}

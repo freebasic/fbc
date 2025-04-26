@@ -338,6 +338,9 @@ Print
 
 Sleep
 %%
+	**Note:**
+		If the shared variable (by reference) is a pointer to any structure (memory buffer, type instance, etc.) then this structure is itself also shared with the library (passing the pointer by reference even allows a dynamic reallocation of the structure).
+
 {{anchor name="IMPORT"}}{{fbdoc item="section" value="Creating import Libraries from def files, or import libraries or def files from DLL files, on Windows"}}
 	When using a third-party dll in ""FreeBASIC"" on Windows, it may be necessary to manually build an import library or a def file to satisfy the linker.
 	

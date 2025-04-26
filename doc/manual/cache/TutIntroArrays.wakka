@@ -85,7 +85,7 @@ You will probably never need to use arrays of more than three dimensions, unless
 
 The arrays described above are static arrays; the array size cannot change during program execution. You can also create dynamic arrays that can change size during execution. Dynamic arrays are useful for creating data structures such as stacks or queues.
 
-Static arrays, the arrays described above, are kept on the heap, but dynamic arrays are allocated from the computer's pool of memory. The compiler dynamically allocates memory for the array based on the requested dimensions of the array.
+Data for dynamic arrays are allocated from the computer's pool of memory called heap. The compiler dynamically allocates memory for array data based on the requested dimensions of the array.
 
 You specify a dynamic array by using the ##""ReDim""## keyword.
 

@@ -103,6 +103,14 @@ DIM c AS clr
 c.red = 255
 c.green = 128
 c.blue = 64
+
+/'
+Alternatively (See 'Type (Temporary)' page) we could use
+Dim c As clr
+c = Type <clr> (255, 128, 64)
+or
+c = Type(255, 128, 64)  '' implicit typename
+'/
 %%
 	And this is an example of a type working as an object:
 		{{fbdoc item="filename" value="examples/manual/udt/type2.bas"}}%%(freebasic)

@@ -34,8 +34,12 @@ Sets miscellaneous or experimental compiler options.
 		
 	{{fbdoc item="subsect" value="-z nobuiltins"}}
 		Instructs fbc to disable all builtin declarations and definitions except those that are strictly necessary to initialize the compiler to a working state when it can begin to parse user code.  The user code must then supply all of the required declarations and definitions needed by fbc internals to allow compilation of user code to succeed.  Note well that using this option requires knowledge of the internal workings of the compiler.  For experimentation and development this allows declaring and defining nearly all fbc builtins in fb user code.  The actual user code declarations required will depend on the contents of the user code to be compiled.  fbc is expected to throw an error if the required supporting declarations or definitions have not been made before they are required by fbc itself while parsing the user source code (fbc may also crash instead).
+		
+	{{fbdoc item="subsect" value="-z optabstract"}}
+		Instructs fbc not to emit unused pure abstract types.
 
 {{fbdoc item="ver"}}
+	- Since fbc 1.20.0: ##optabstract## compiler option
 	- Since fbc 1.20.0: ##nobuiltins## compiler option
 	- Since fbc 1.10.0: ##retinflts## compiler option
 	- Since fbc 1.10.0: ##no-fastcall## compiler option.
