@@ -3653,6 +3653,11 @@ private function hCompileXpm( ) as integer
 	function = TRUE
 end function
 
+#if defined( __FB_WIN32__ )
+	'' LLVM official Windows binary distributions lack llc.exe, use clang instead
+	#define NO_LLC
+#endif
+
 private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as integer
 	dim as string ln, asmfile
 
@@ -3832,13 +3837,34 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		end select
 
 	case FB_BACKEND_LLVM
+		#ifdef NO_LLC
+			ln += "-S "
+			'' Silence "overriding the module target triple" warning. Maybe warning
+			'' that the target should be declared in the .ll instead.
+			ln += "-Wno-override-module "
+			'' Tell clang we're using system as, so don't use extensions in the asm
+			ln += "-no-integrated-as "
+		#endif
+
 		select case( fbGetCpuFamily( ) )
 		case FB_CPUFAMILY_X86
-			ln += "-march=x86 "
+			#ifdef NO_LLC
+				ln += "--target=i686 "
+			#else
+				ln += "-march=x86 "
+			#endif
 		case FB_CPUFAMILY_X86_64
-			ln += "-march=x86-64 "
+			#ifdef NO_LLC
+				ln += "--target=x86_64 "
+			#else
+				ln += "-march=x86-64 "
+			#endif
 		case FB_CPUFAMILY_ARM
-			ln += "-march=arm "
+			#ifdef NO_LLC
+				ln += "--target=armv7a "
+			#else
+				ln += "-march=arm "
+			#endif
 		case FB_CPUFAMILY_AARCH64
 			'' From the GCC manual:
 			'' -march=name
@@ -3872,6 +3898,12 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			'' is tuned to perform well across a range of target
 			'' processors implementing the target architecture.
 
+			#ifdef NO_LLC
+				ln += "--target=armv8a "
+			#else
+				ln += "-march=armv8-a "
+			#endif
+
 			ln += "-march=armv8-a "
 		case FB_CPUFAMILY_PPC
 			ln += "-mcpu=powerpc "
@@ -3890,7 +3922,11 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		select case( fbGetCpuFamily( ) )
 		case FB_CPUFAMILY_X86, FB_CPUFAMILY_X86_64
 			if( fbGetOption( FB_COMPOPT_ASMSYNTAX ) = FB_ASMSYNTAX_INTEL ) then
-				ln += "--x86-asm-syntax=intel "
+				#ifdef NO_LLC
+					ln += "-masm=intel "
+				#else
+					ln += "--x86-asm-syntax=intel "
+				#endif
 			end if
 		end select
 
@@ -3913,7 +3949,11 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		ccompiler = FBCTOOL_CLANG
 		function = fbcRunBin( "compiling C", ccompiler, ln )
 	case FB_BACKEND_LLVM
-		ccompiler = FBCTOOL_LLC
+		#ifdef NO_LLC
+			ccompiler = FBCTOOL_CLANG
+		#else
+			ccompiler = FBCTOOL_LLC
+		#endif
 		function = fbcRunBin( "compiling LLVM IR", ccompiler, ln )
 	end select
 end function
