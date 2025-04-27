@@ -97,7 +97,7 @@ typedef struct _FB_PROFILER_CYCLES
 /* FIXME: creating a library with other sections causes dxe3gen to fail
 **        when building the DXE dynamic link library support for DOS
 */
-#if !defined(HOST_DOS) 
+#if !defined(HOST_DOS)
 
 /* make sure there is at least one record in the profile data section */
 static FB_PROFILE_RECORD_VERSION
