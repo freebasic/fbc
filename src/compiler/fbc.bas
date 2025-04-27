@@ -2979,8 +2979,7 @@ private sub hCheckArgs()
 	''
 	select case( fbGetOption( FB_COMPOPT_FPUTYPE ) )
 	case FB_FPUTYPE_FPU
-		if( fbGetOption( FB_COMPOPT_VECTORIZE ) >= FB_VECTORIZE_NORMAL ) or _
-		    ( fbGetOption( FB_COMPOPT_FPMODE ) = FB_FPMODE_FAST ) then
+		if( fbGetOption( FB_COMPOPT_VECTORIZE ) >= FB_VECTORIZE_NORMAL ) then
 			errReportEx( FB_ERRMSG_OPTIONREQUIRESSSE, "", -1 )
 			fbcEnd( 1 )
 		end if
