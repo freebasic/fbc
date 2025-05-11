@@ -976,9 +976,15 @@ linuxbuild() {
 	make FBC=../tempinstall/bin/fbc FBSHA1=$FBSHA1 $BUILD_BOOTFBCFLAGS
 	cd ..
 
+	echo "copying files to output directory"
 	cd fbc && make bindist FBSHA1=$FBSHA1 $BUILD_BOOTFBCFLAGS && cd ..
 	cp fbc/*.tar.* ../output
-	cp fbc/contrib/manifest/FreeBASIC-$fbtarget.lst ../output
+	if [ ! -z "$user_recipe" ]; then
+		cp fbc/contrib/manifest/FreeBASIC$user_recipe.lst ../output
+	else
+		cp fbc/contrib/manifest/FreeBASIC-$fbtarget.lst ../output
+	fi
+	echo "linux build done"
 }
 
 libffibuild() {

@@ -40,6 +40,8 @@
 #   specify which build recipe to use:
 #     * -freebsd-13.0-x86
 #     * -freebsd-13.0-x86_64
+#     * -freebsd-13.4-x86
+#     * -freebsd-13.4-x86_64
 #
 #   Not all recipes are supported on all targets.
 #
@@ -308,9 +310,15 @@ freebsdbuild() {
 	gmake FBC=../tempinstall/bin/fbc FBSHA1=$FBSHA1 $BUILD_BOOTFBCFLAGS
 	cd ..
 
+	echo "copying files to output directory"
 	cd fbc && gmake bindist FBSHA1=$FBSHA1 $BUILD_BOOTFBCFLAGS && cd ..
 	cp fbc/*.tar.* ../output
-	cp fbc/contrib/manifest/FreeBASIC-$fbtarget.lst ../output
+	if [ ! -z "$user_recipe" ]; then
+		cp fbc/contrib/manifest/FreeBASIC$user_recipe.lst ../output
+	else
+		cp fbc/contrib/manifest/FreeBASIC-$fbtarget.lst ../output
+	fi
+	echo "freebsd build done"
 }
 
 case $fbtarget in
