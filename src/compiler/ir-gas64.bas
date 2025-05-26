@@ -5024,7 +5024,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 		else
 			''int to float
 			asm_info("int to float")
-			asm_code("pxor xmm0,xmm0")
+			asm_code("pxor xmm0, xmm0")
 			select case v2dtype
 				case FB_DATATYPE_ULONGINT
 					if v1dtype=FB_DATATYPE_DOUBLE then
@@ -7296,7 +7296,7 @@ private sub _emitprocend _
 		cfi_windows_asm_code(".seh_pushreg rbp")
 		cfi_asm_code(".cfi_def_cfa_offset 16") '' 16 = return address + this push
 		cfi_asm_code(".cfi_offset 6, -16") '' register 6 = rbp
-		asm_code("mov  rbp,rsp")
+		asm_code("mov rbp, rsp")
 		cfi_windows_asm_code(".seh_setframe rbp, 0") '' 0 = offset into this function's stack alloocation
 		cfi_asm_code(".cfi_def_cfa_register 6")
 
@@ -7373,7 +7373,7 @@ private sub _emitprocend _
 	if symbIsNaked(proc)=false then
 		if restreg<>"" then asm_code(restreg)
 		''not usefull Asm_code("add rsp,XXXXX") as moving rbp to rsp restore the value just after the call and the push rbp
-		asm_code("mov rsp,rbp")
+		asm_code("mov rsp, rbp")
 		asm_code("pop rbp")
 		cfi_asm_code(".cfi_restore 6") '' rbp now back to what it was
 		cfi_asm_code(".cfi_def_cfa 7, 8") '' and the stack frame is back to rsp+8
