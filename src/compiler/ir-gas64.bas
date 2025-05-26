@@ -271,10 +271,10 @@ end enum
 
 '' type for tracking the spilled registers
 type ASM64_SAVEDREG
-	id as long           '' unique id for debugging messages only
-	sdvreg as long       '' the id of the real register spilled??? KREGFREE = FREE
-	sdoffset as long     '' offset into the spilled registers for current stackframe
-	spilbranch1 as long  '' depends ctx.labelbranch2 for tracking spilled registers in second branch???
+	id as integer           '' unique id for debugging messages only
+	sdvreg as integer       '' the id of the real register spilled??? KREGFREE = FREE
+	sdoffset as integer     '' offset into the spilled registers for current stackframe
+	spilbranch1 as integer  '' depends ctx.labelbranch2 for tracking spilled registers in second branch???
 end type
 
 type ASM64_CONTEXT
@@ -301,12 +301,12 @@ type ASM64_CONTEXT
 	stkmax       as longint
 	stkspil      as longint
 	stkcopy      as longint
-	usedreg      as long
+	usedreg      as integer
 	''to save register and virtuel register to be used with jmp reg after a cmp where reg is unmarked
 	''happens when -exx is set   check pointer not null --> cmp r11,0 / je LT_0001 / jmp [r11]
-	jmpreg       as long
-	jmpvreg      as long
-	jmppass      as long
+	jmpreg       as integer
+	jmpvreg      as integer
+	jmppass      as integer
 	'ctors        as string  ''kept here if to be added
 	'dtors        as string
 	ctorcount    as integer
@@ -316,7 +316,7 @@ type ASM64_CONTEXT
 	proccalling  as Boolean
 	''for spilling registers
 	spillvregs   as TFLIST  '' ASM64_SPILLVREG
-	vreg_count   as long    '' required because TFLIST doesn't count allocated items
+	vreg_count   as integer    '' required because TFLIST doesn't count allocated items
 	''to handle iif case
 	labelbranch2 as FBSYMBOL ptr
 	labeljump    as FBSYMBOL ptr
@@ -390,10 +390,10 @@ declare function hGetMagicStructNumber( byval sym as FBSYMBOL ptr ) as integer
 declare sub dbg_addstab(byref txt as string="",byval cod as ubyte,byval desc as short=0,byref value as string="0")
 ''===================== globals ===========================================
 dim shared as DBGCTX        ctxdbg
-dim shared as long          reghandle(KREGUPPER+2)
+dim shared as integer          reghandle(KREGUPPER+2)
 
 type ASM64_REGROOM
-	status as long               '' KROOMFREE, KROOMMARKED, KROOMUSED
+	status as integer               '' KROOMFREE, KROOMMARKED, KROOMUSED
 	vreg as ASM64_SAVEDREG ptr   '' pointer to the spilled vreg
 	savvreg as INTEGER           '' save vreg for KROOMMARKED case
 end type
@@ -459,14 +459,14 @@ dim shared as const zstring ptr regstrb(17)={@"al",@"bl",@"cl",@"dl",@"sil",@"di
 ''priority order (can easily be changed)
 dim shared as const byte reg_prio(0 to ...)={KREG_R11,KREG_R10,KREG_R8,KREG_R9,KREG_RDX,KREG_RCX,KREG_R12,KREG_R13,KREG_R14,KREG_R15,KREG_RBX,KREG_RDI,KREG_RSI}
 ''registers used for parameters + R10/R11 for saving
-dim shared as long listreg(any)
+dim shared as integer listreg(any)
 '' ================== for optimization =========================================================
 private sub check_optim(byref code as string)
 
 	dim as string part1,part2,instruc,newcode
 	static as string prevpart1,prevpart2,previnstruc
-	static as long prevwpos,flag
-	dim as long poschar1,poschar2,writepos
+	static as integer prevwpos,flag
+	dim as integer poschar1,poschar2,writepos
 	if len(code)=0 then
 		prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV ''reinit statics
 		exit sub
@@ -840,7 +840,7 @@ private sub check_optim(byref code as string)
 end sub
 private sub reg_freeable(byref lineasm as string)
 
-	dim as long regfound1,regfound2
+	dim as integer regfound1,regfound2
 	dim as string instruc,lineshort
 
 	instruc=left(Trim(lineasm),3)
@@ -856,7 +856,7 @@ private sub reg_freeable(byref lineasm as string)
 	''remove instruc
 	lineshort=mid(lineasm,instr(lineasm," ")+1,999999)
 
-	for ireg as long =1 To KREGUPPER
+	for ireg as integer =1 To KREGUPPER
 		if reghandle(ireg)=KREGRSVD then continue for ''excluding rbp and rsp
 		regfound1=KNOTFOUND:regfound2=KNOTFOUND
 
@@ -1586,7 +1586,7 @@ end sub
 ''===========================
 ''spilling registers on stack
 ''===========================
-private function asm64_spillREG( byval regspilled as long ) as ASM64_SAVEDREG ptr
+private function asm64_spillREG( byval regspilled as integer ) as ASM64_SAVEDREG ptr
 
 	dim as ASM64_SAVEDREG ptr v = any
 
@@ -1630,7 +1630,7 @@ private function asm64_spillREG( byval regspilled as long ) as ASM64_SAVEDREG pt
 end function
 
 
-private sub reg_spilling(byval regspilled as long)
+private sub reg_spilling(byval regspilled as integer)
 
 	dim as ASM64_SAVEDREG ptr v = asm64_spillREG( regspilled )
 	assert( v )
@@ -1684,14 +1684,14 @@ end sub
 ''===================================================
 ''searching a free reg if none available spilling one
 ''===================================================
-private function reg_findfree(byval vreg as long,byval regparam as integer=-1) as long
-	dim as long regfree=-1,numroom
-	static as long regspill=-1
+private function reg_findfree(byval vreg as integer,byval regparam as integer=-1) as integer
+	dim as integer regfree=-1,numroom
+	static as integer regspill=-1
 
 	''to avoid registers potentially used as param
 	if ctx.proccalling then reg_allowed(false)
 
-	for ireg as long =0 to ubound(reg_prio)
+	for ireg as integer =0 to ubound(reg_prio)
 		if reghandle(reg_prio(ireg))=KREGFREE then regfree=reg_prio(ireg):exit for
 	next
 
@@ -1731,7 +1731,7 @@ end function
 '' op1=-1520[r8] --> op1=-1520[r10] and 'mov r10, r8'  even if r8 will be not be used as parameter
 ''=====================================================================
 private sub reg_callptr(byref op1 as string,byref op3 as string)
-	dim as long regfree
+	dim as integer regfree
 	dim as integer p2=instr(op1,"["),p
 	if p2=0 then
 		p2=1
@@ -1850,9 +1850,9 @@ private sub reg_branch(byval label as FBSYMBOL ptr )
 		asm_code(*symbGetMangledName( label )+":")
 	end if
 end sub
-function reg_findreal(byval vreg as long) as long
-	dim as long realreg
-	for ireg as long =0 To KREGUPPER
+function reg_findreal(byval vreg as integer) as integer
+	dim as integer realreg
+	for ireg as integer =0 To KREGUPPER
 		if reghandle(ireg)=vreg then
 			asm_info("virtual register ="+Str(vreg)+" real register="+*regstrq(ireg))
 			return ireg
@@ -1889,8 +1889,8 @@ end function
 ''return a register used temporary
 ''======================================
 function reg_tempo() as const ZString Ptr
-	dim as long reg
-	static as long counter=9999999
+	dim as integer reg
+	static as integer counter=9999999
 	counter+=1
 	reg=reg_findfree(counter)
 	return regstrq(reg)
@@ -1898,8 +1898,8 @@ end function
 ''=====================================================================
 '' transfer in another register if already in use (parameter register)
 ''=====================================================================
-private sub reg_transfer(byval regtrans as long,byval regsource as long)
-	dim as long regfree
+private sub reg_transfer(byval regtrans as integer,byval regsource as integer)
+	dim as integer regfree
 	''not used or already transfered in reg_callptr so nothing to do
 	if reghandle(regtrans)=KREGFREE or reghandle(regtrans)=KREGLOCK then exit sub
 	''used in source of parameter
@@ -1924,11 +1924,11 @@ end sub
 ''==============================================
 '' MEMFILL size should be known at compile time
 ''==============================================
-private sub memfill(byval bytestofill as Integer,byref dst as string,byval dtyp as long=KUSE_MOV,byval fillchar as integer)
+private sub memfill(byval bytestofill as Integer,byref dst as string,byval dtyp as integer=KUSE_MOV,byval fillchar as integer)
 
 	dim as uinteger nbbytes=CUnsg(bytestofill),nooptim
 	dim as string lname,regdst
-	dim as long nb8,rdst
+	dim as integer nb8,rdst
 	dim as ulongint fill2, fill4
 
 	if instr("rcx rdx rbx rdi rsi r8 r9 r10 r11 r12 r13 r14 r15",dst) then
@@ -1974,11 +1974,11 @@ private sub memfill(byval bytestofill as Integer,byref dst as string,byval dtyp 
 			nbbytes-=nb8*8
 		else
 			if( fill4 = 0 ) then
-				for inb8 as long = 0 To nb8-1
+				for inb8 as integer = 0 To nb8-1
 					asm_code("mov QWORD PTR "+Str(inb8*8)+"["+regdst+"], 0",nooptim)
 				next
 			else
-				for inb8 as long = 0 To nb8-1
+				for inb8 as integer = 0 To nb8-1
 					asm_code("mov DWORD PTR "+Str(inb8*8)+"["+regdst+"], "+Str(fill4),nooptim)
 					asm_code("mov DWORD PTR "+Str(inb8*8+4)+"["+regdst+"], "+Str(fill4),nooptim)
 				next
@@ -2017,11 +2017,11 @@ end sub
 ''=============================================
 '' MEMCOPY size should be known at compile time
 ''=============================================
-private sub memcopy(byval bytestocopy as Integer,byref src as string, byref dst as string,byval styp as long=KUSE_MOV,byval dtyp as long=KUSE_MOV)
+private sub memcopy(byval bytestocopy as Integer,byref src as string, byref dst as string,byval styp as integer=KUSE_MOV,byval dtyp as integer=KUSE_MOV)
 
 	dim as uinteger nbbytes=CUnsg(bytestocopy)
 	dim as string lname,regsrc,regdst,regnbb
-	dim as long nb8,rsrc,rdst,rnbb
+	dim as integer nb8,rsrc,rdst,rnbb
 
 	if( bytestocopy = 0 ) then
 		exit sub
@@ -2070,7 +2070,7 @@ private sub memcopy(byval bytestocopy as Integer,byref src as string, byref dst 
 		asm_code("jnz "+lname)
 		nbbytes-=nb8*8
 	elseif nb8>0 then ''lesser than 8 times
-		for inb8 as long = 0 To nb8-1
+		for inb8 as integer = 0 To nb8-1
 			asm_code("mov rax, "+Str(inb8*8)+"["+regsrc+"]")
 			asm_code("mov "+Str(inb8*8)+"["+regdst+"], rax")
 		next
@@ -2216,7 +2216,7 @@ end sub
 private sub hemitvariable( byval sym as FBSYMBOL ptr )
 	dim as integer is_global = any, length = any,lgt=any,align=any
 	dim as string strg,newstrg
-	dim as long pnew,pold,lenstrg
+	dim as integer pnew,pold,lenstrg
 	asm_info(*symbgetname(sym)+ " "+*symbGetMangledName(sym))
 	asm_info("symbdump="+symbdumpToStr(sym))
 	if symbisarray(sym) then
@@ -2899,7 +2899,7 @@ private function param_analyze(byval dtype as FB_DATATYPE,byval struc as FBSYMBO
 		end if
 	end if
 end function
-private sub reg_fillm(byval ofs as integer,listreg() as long,byval lgt as integer,byval prev as integer=0,byval offst as integer=0)
+private sub reg_fillm(byval ofs as integer,listreg() as integer,byval lgt as integer,byval prev as integer=0,byval offst as integer=0)
 	select case as const lgt-offst
 		case 1
 			asm_code("mov "+Str(ofs+offst)+"[rbp], "+*regstrb(listreg(ctx.arginteg-prev)))
@@ -2929,7 +2929,7 @@ private sub reg_fillm(byval ofs as integer,listreg() as long,byval lgt as intege
 			asm_code("mov "+Str(ofs+offst)+"[rbp], "+*regstrq(listreg(ctx.arginteg-prev)))
 	end select
 end sub
-private sub reg_fillr(byval lgt as integer,byref src as string,byval cptint as integer,listreg() as long,byval reg2 as long)
+private sub reg_fillr(byval lgt as integer,byref src as string,byval cptint as integer,listreg() as integer,byval reg2 as integer)
 
 	dim as const zstring ptr regsrc
 	dim as string regdst=*regstrq(listreg(cptint))
@@ -3011,7 +3011,7 @@ private sub reg_fillx(byval lgt as integer,byref src as string,byval cptfloat as
 end sub
 private sub _procallocarg( byval proc as FBSYMBOL ptr, byval sym as FBSYMBOL ptr )
 
-	dim as long lgt,reg
+	dim as integer lgt,reg
 	dim as integer dtype,paramtype
 	dim subtype as FBSYMBOL Ptr
 	dim as string regstr,regx
@@ -3521,7 +3521,7 @@ private sub bop_float( _
 
 	dim as string lname1,lname2,movreg,movmem,compreg,immreg,addreg,subreg,mulreg,divreg
 	dim as string source0,source1
-	dim as long vrreg
+	dim as integer vrreg
 	dim as FB_DATATYPE v1dtype
 	dim as zstring ptr jmpcode
 
@@ -4482,7 +4482,7 @@ private sub _emitbop _
 end sub
 private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVREG Ptr)
 	dim as string op1,op3,prefix
-	dim as long vrreg,tempo
+	dim as integer vrreg,tempo
 	dim as FB_DATATYPE tempodtype
 
 	#ifdef __GAS64_DEBUG__
@@ -4821,7 +4821,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	dim as FB_DATATYPE v1dtype,v2dtype,v1old
 	dim as string lname1,lname2,regtempo
 	dim as string op1,op2,op3,op4,prefix1,prefix2
-	dim as long regresult,srcreg,reg
+	dim as integer regresult,srcreg,reg
 
 	asm_info("CONVERTING " + vregPretty( v1 ) + " := " + vregPretty( v2 ))
 	asm_info("v1="+vregdumpfull(v1)+" xx "+Str(v1->reg))
@@ -5456,7 +5456,7 @@ end function
 private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 	dim as string op1,op2,op3,op4,prefix,code1,code2,regtempo
-	dim as long tempo
+	dim as integer tempo
 	dim as FB_DATATYPE dtype
 
 	asm_info("store " + vregPretty( v1 ) + " := " + vregPretty( v2 ) )
@@ -6785,7 +6785,7 @@ private sub _emitjmptb _
 	byval span as ulongint _
 	)
 	dim as string lname,op1=Str(v1->ofs)+"[rbp]",op2
-	dim as long idx,regtempo
+	dim as integer idx,regtempo
 	asm_info("jmptb " + vregPretty( v1 ) )
 	asm_info("v1="+vregdumpfull(v1))
 	asm_info("labelcount="+Str(labelcount)+" bias="+Str(bias)+" span="+Str(span))
@@ -6836,7 +6836,7 @@ private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVR
 
 	dim as string op1,op2,op3,lname1,lname2,instruc="mov "
 	dim as const zstring ptr regtempo
-	dim as long desttyp=KUSE_MOV,srctyp=KUSE_MOV,regsrc
+	dim as integer desttyp=KUSE_MOV,srctyp=KUSE_MOV,regsrc
 
 	select case( op )
 		case AST_OP_MEMFILL ''========================== MEMFILL ===========================
@@ -7149,7 +7149,7 @@ private sub _emitvarinibegin( byval sym as FBSYMBOL ptr )
 end sub
 private sub _emitvarinii( byval sym as FBSYMBOL ptr, byval value as longint )
 	dim as string siz
-	dim as long lgt
+	dim as integer lgt
 	'var dtype = typeGetDtOnly(symbGetType( sym ))
 	var dtype = symbGetType( sym )
 
@@ -7267,7 +7267,7 @@ private sub _emitprocend _
 	byval initlabel as FBSYMBOL ptr, _
 	byval exitlabel as FBSYMBOL ptr _
 	)
-	dim as long idx
+	dim as integer idx
 	dim as string restreg,lname
 	asm_info("stk="+Str(ctx.stk))
 	if ctx.stkmax>ctx.stk then ctx.stk=ctx.stkmax
@@ -7492,7 +7492,7 @@ end sub
 
 private sub _emitMacro( byval op as integer,byval v1 as IRVREG ptr, byval v2 as IRVREG ptr, byval vr as IRVREG ptr )
 	dim as IRVREG ptr tempo1,tempo2
-	dim as long savereg,startarg,vreg
+	dim as integer savereg,startarg,vreg
 	dim as string regvalist,lname1,lname2
 	asm_info( "Macro op=" + astdumpopToStr( op ))
 	asm_info("v1="+vregdumpfull(v1))
