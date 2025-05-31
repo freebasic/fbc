@@ -38,6 +38,8 @@
 	#inclib "glu32"
 #elseif defined(__FB_DOS__)
 	#inclib "glu"
+#elseif defined(__FB_DARWIN__)
+	'' FIXME: Somehow include the OpenGL framework
 #else
 	#inclib "GLU"
 #endif

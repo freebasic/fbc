@@ -88,6 +88,7 @@ type FBCCTX
 	'' are multiple lists necessary to allow each module to start fresh
 	'' with the same input libs)
 	finallibs           as TSTRSET
+	finalframeworks     as TSTRSET
 	finallibpaths       as TSTRSET
 
 	outname             as zstring * FB_MAXPATHLEN+1
@@ -214,6 +215,7 @@ private sub fbcInit( )
 	strsetInit( @fbc.excludedlibs, FBC_INITFILES\4 )
 
 	strsetInit(@fbc.finallibs, FBC_INITFILES\2)
+	strsetInit(@fbc.finalframeworks, FBC_INITFILES\2)
 	strsetInit(@fbc.finallibpaths, FBC_INITFILES\2)
 
 	fbGlobalInit()
@@ -1162,9 +1164,9 @@ private function hLinkFiles( ) as integer
 			ldcline += hFindLib( "crt0.o" )
 		end if
 
-	case FB_COMPTARGET_LINUX, FB_COMPTARGET_DARWIN, _
-		FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, _
-		FB_COMPTARGET_NETBSD, FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS
+	case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _,
+		FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD, _,
+		FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS
 
 		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE) then
 			if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
@@ -1286,6 +1288,15 @@ private function hLinkFiles( ) as integer
 		wend
 	end scope
 
+	'' Add frameworks for Darwin
+	scope
+		dim as TSTRSETITEM ptr i = listGetHead(@fbc.finalframeworks.list)
+		while (i)
+			ldcline += " -framework " + i->s
+			i = listGetNext(i)
+		wend
+	end scope
+
 	if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) then
 		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
 			'' End of lib group
@@ -1322,18 +1333,13 @@ private function hLinkFiles( ) as integer
 
 	end select
 
-	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN ) then
-		ldcline += " -macosx_version_min 10.4"
-	end if
-
 	'' This is required for 64-bit modules on *nix-y platforms
 	'' for the unwind tables to have any effect
 	'' Windows doesn't need this option
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
 		FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD, _
-		FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS, _
-		FB_COMPTARGET_DARWIN
+		FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS
 		dim as long outtype = fbGetOption( FB_COMPOPT_OUTTYPE )
 		if outtype = FB_OUTTYPE_EXECUTABLE OrElse outtype = FB_OUTTYPE_DYNAMICLIB Then
 			dim as long cpufamily = fbGetCpuFamily( )
@@ -1403,6 +1409,12 @@ private function hLinkFiles( ) as integer
 			end if
 		end if
 	#endif
+
+	if fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN then
+		dim as string sdkpath = hGet1stOutputLineFromCommand("xcrun --show-sdk-path")
+		ldcline += " -L" + sdkpath + "/usr/lib"
+		ldcline += " -F" + sdkpath + "/System/Library/Frameworks"
+	end if
 
 	'' invoke ld
 	var ld = FBCTOOL_LD
@@ -4201,7 +4213,9 @@ private sub hSetDefaultLibPaths( )
 	case FB_COMPTARGET_JS
 		'' We let emcc handle linking
 	case else
-		fbcAddLibPathFor( "libgcc.a" )
+		if fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN then
+			fbcAddLibPathFor( "libgcc.a" )
+		end if
 
 		#ifndef DISABLE_STDCXX_PATH
 			'' we don't specifically need c++, but for some users that do want to
@@ -4212,6 +4226,8 @@ private sub hSetDefaultLibPaths( )
 				fbcAddLibPathFor( "libc++.so" )
 			case FB_COMPTARGET_DOS
 				fbcAddLibPathFor( "libstdcx.a" )
+			case FB_COMPTARGET_DARWIN
+				fbcAddLibPathFor( "libc++.dylib" )
 			case else
 				fbcAddLibPathFor( "libstdc++.so" )
 			end select
@@ -4235,6 +4251,10 @@ end sub
 
 private sub fbcAddDefLib(byval libname as zstring ptr)
 	strsetAdd(@fbc.finallibs, *libname, TRUE)
+end sub
+
+private sub fbcAddDefFramework(byref framework as string)
+	strsetAdd(@fbc.finalframeworks, framework, TRUE)
 end sub
 
 private function hGetFbLibNameSuffix( ) as string
@@ -4279,7 +4299,14 @@ private sub hAddDefaultLibs( )
 			#endif
 
 			#if defined(__FB_DARWIN__) and defined(ENABLE_XQUARTZ)
-				fbcAddDefLibPAth( "/opt/X11/lib" )
+				fbcAddDefLibPath( "/opt/X11/lib" )
+			#else
+				if fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN then
+					fbcAddDefFramework( "Foundation" )
+					fbcAddDefFramework( "AppKit" )
+					fbcAddDefFramework( "OpenGL" )
+					fbcAddDefFramework( "Cocoa" )
+				end if
 			#endif
 
 			#if (not defined(__FB_DARWIN__)) or defined(ENABLE_XQUARTZ)
@@ -4289,7 +4316,6 @@ private sub hAddDefaultLibs( )
 				fbcAddDefLib( "Xrandr" )
 				fbcAddDefLib( "Xrender" )
 			#endif
-
 		case FB_COMPTARGET_ANDROID
 			errReportEx( FB_ERRMSG_GFXLIBNOTSUPPORTEDFORTARGET, "", -1 )
 
@@ -4309,7 +4335,6 @@ private sub hAddDefaultLibs( )
 		end if
 
 	case FB_COMPTARGET_DARWIN
-		fbcAddDefLib( "gcc" )
 		fbcAddDefLib( "System" )
 		fbcAddDefLib( "pthread" )
 		fbcAddDefLib( "ncurses" )

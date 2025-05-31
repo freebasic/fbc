@@ -8,6 +8,8 @@
 #else
 	#ifdef __FB_DOS__
 		#inclib "stdcx"
+	#elseif defined(__FB_DARWIN__)
+		#inclib "c++"
 	#else
 		#inclib "stdc++"
 	#endif
