@@ -872,10 +872,6 @@ private sub reg_freeable(byref lineasm as string)
 		if lineasm[1]<>asc("m") then
 			exit sub
 		end if
-	elseif lineasm[0]=asc("s") then 'skip setx
-		if lineasm[1]=asc("e") then
-			exit sub
-		end if
 	end if
 
 	schptrb=cast(byte ptr,strptr(lineasm))
@@ -2767,13 +2763,13 @@ private sub hmaybeemitglobalvar( byval sym as FBSYMBOL ptr )
 end sub
 private sub no_roundsd(byval size as zstring ptr)
 	''when the CPU doesn't provide roundsd/roundss (needs see41)
-	asm_code("stmxcsr $mxcsr[rip]")
-	asm_code("push $mxcsr[rip]")
-	asm_code("and dword ptr $mxcsr[rip], 0xFFFF9FFF")
-	asm_code("ldmxcsr $mxcsr[rip]")
-	asm_code("cvts"+*size+"2si rax, xmm0")
-	asm_code("pop $mxcsr[rip]")
-	asm_code("ldmxcsr $mxcsr[rip]")
+	asm_code("stmxcsr $mxcsr[rip]",KNOFREE)
+	asm_code("push $mxcsr[rip],KNOFREE")
+	asm_code("and dword ptr $mxcsr[rip], 0xFFFF9FFF",KNOFREE)
+	asm_code("ldmxcsr $mxcsr[rip]",KNOFREE)
+	asm_code("cvts"+*size+"2si rax, xmm0",KNOFREE)
+	asm_code("pop $mxcsr[rip]",KNOFREE)
+	asm_code("ldmxcsr $mxcsr[rip]",KNOFREE)
 end sub
 
 ''=================== profiling ==============================================
@@ -2813,21 +2809,16 @@ private sub hProfileProcProlog()
 	dim as string proflbl = FB_PROFILE_DATA_NAME + str(ctx.profprcnb)
 
 	asm_info("init time entering proc ---------------------------------------")
-	asm_code("add QWORD ptr "+PROFILE_REC_COUNT+", 1")
-	asm_code("push rax")
-	'asm_code("push rbx")
-	'asm_code("push rcx")
-	asm_code("push rdx")
-	'asm_code("cpuid")
-	asm_code("rdtsc")
-	asm_code("shl rdx,32")
-	asm_code("or rdx,rax")
-	asm_code("mov QWORD ptr "+PROFILE_REC_INIT0+", rdx") ''put in init0
-	asm_code("mov QWORD ptr "+PROFILE_REC_REINIT+", rdx") ''put in init
-	asm_code("pop rdx")
-	'asm_code("pop rcx")
-	'asm_code("pop rbx")
-	asm_code("pop rax")
+	asm_code("add QWORD ptr "+PROFILE_REC_COUNT+", 1",KNOFREE)
+	asm_code("push rax",KNOFREE)
+	asm_code("push rdx",KNOFREE)
+	asm_code("rdtsc",KNOFREE)
+	asm_code("shl rdx,32",KNOFREE)
+	asm_code("or rdx,rax",KNOFREE)
+	asm_code("mov QWORD ptr "+PROFILE_REC_INIT0+", rdx",KNOFREE) ''put in init0
+	asm_code("mov QWORD ptr "+PROFILE_REC_REINIT+", rdx",KNOFREE) ''put in init
+	asm_code("pop rdx",KNOFREE)
+	asm_code("pop rax",KNOFREE)
 	asm_info("---------------------------------------------------------------")
 end sub
 
@@ -2835,20 +2826,18 @@ private sub hProfileProcEpilog()
 	dim as string proflbl = FB_PROFILE_DATA_NAME + str(ctx.profprcnb)
 
 	asm_info("Calculate final time for procedure ------------------------------------------------------")
-	asm_code("push rax") ''saving only rax if return value
-	asm_code("rdtsc")
-	asm_code("shl rdx,32")
-	asm_code("or rdx,rax")
-	asm_code("mov rcx, rdx")
-	asm_code("mov rax, QWORD PTR "+PROFILE_REC_INIT0) ''init0
+	asm_code("push rax",KNOFREE) ''saving only rax if return value
+	asm_code("rdtsc",KNOFREE)
+	asm_code("shl rdx,32",KNOFREE)
+	asm_code("or rdx,rax",KNOFREE)
+	asm_code("mov rcx, rdx,KNOFREE",KNOFREE)
+	asm_code("mov rax, QWORD PTR "+PROFILE_REC_INIT0,KNOFREE) ''init0
 	asm_code("sub rcx, rax")
-	asm_code("add QWORD PTR "+PROFILE_REC_GRANT_TOTAL+", rcx") ''grand total
-
-	asm_code("mov rax, QWORD PTR "+PROFILE_REC_REINIT) ''reinit
-	asm_code("sub rdx, rax")
-	asm_code("add QWORD PTR "+PROFILE_REC_INTERNAL_TOTAL+", rdx") ''internal total
-	'asm_code("cpuid")
-	asm_code("pop rax")
+	asm_code("add QWORD PTR "+PROFILE_REC_GRANT_TOTAL+", rcx",KNOFREE) ''grand total
+	asm_code("mov rax, QWORD PTR "+PROFILE_REC_REINIT,KNOFREE) ''reinit
+	asm_code("sub rdx, rax",KNOFREE)
+	asm_code("add QWORD PTR "+PROFILE_REC_INTERNAL_TOTAL+", rdx",KNOFREE) ''internal total
+	asm_code("pop rax",KNOFREE)
 	asm_info("---------------------------------------------------------------")
 
 end sub
@@ -2857,39 +2846,27 @@ sub hProfileDoCall( byref pname as string )
 	dim as string proflbl = FB_PROFILE_DATA_NAME + str(ctx.profprcnb)
 
 	asm_info("Calculate split time for procedure ------------------------------------------------------")
-	asm_code("push rax")
-	'asm_code("push rbx")
-	'asm_code("push rcx")
-	asm_code("push rdx")
-	asm_code("rdtsc")
-	asm_code("shl rdx,32")
-	asm_code("or rdx,rax")
-	asm_code("mov rax, QWORD PTR "+PROFILE_REC_REINIT) ''reinit
-	asm_code("sub rdx, rax")
-	asm_code("add QWORD PTR "+PROFILE_REC_INTERNAL_TOTAL+", rdx") ''internal total
-	'asm_code("cpuid")
-	asm_code("pop rdx")
-	'asm_code("pop rcx")
-	'asm_code("pop rbx")
-	asm_code("pop rax")
+	asm_code("push rax",KNOFREE)
+	asm_code("push rdx",KNOFREE)
+	asm_code("rdtsc",KNOFREE)
+	asm_code("shl rdx,32",KNOFREE)
+	asm_code("or rdx,rax",KNOFREE)
+	asm_code("mov rax, QWORD PTR "+PROFILE_REC_REINIT,KNOFREE) ''reinit
+	asm_code("sub rdx, rax",KNOFREE)
+	asm_code("add QWORD PTR "+PROFILE_REC_INTERNAL_TOTAL+", rdx",KNOFREE) ''internal total
+	asm_code("pop rdx",KNOFREE)
+	asm_code("pop rax",KNOFREE)
 	asm_info("---------------------------------------------------------------")
-
 	asm_code("call " +pname,KNOALL)
-
 	asm_info("init time returning in proc ---------------------------------------")
-	asm_code("push rax")
-	'asm_code("push rbx")
-	'asm_code("push rcx")
-	asm_code("push rdx")
-	'asm_code("cpuid")
-	asm_code("rdtsc")
-	asm_code("shl rdx,32")
-	asm_code("or rdx,rax")
-	asm_code("mov QWORD ptr "+PROFILE_REC_REINIT+", rdx")''reinit
-	asm_code("pop rdx")
-	'asm_code("pop rcx")
-	'asm_code("pop rbx")
-	asm_code("pop rax")
+	asm_code("push rax",KNOFREE)
+	asm_code("push rdx",KNOFREE)
+	asm_code("rdtsc",KNOFREE)
+	asm_code("shl rdx,32",KNOFREE)
+	asm_code("or rdx,rax",KNOFREE)
+	asm_code("mov QWORD ptr "+PROFILE_REC_REINIT+", rdx",KNOFREE)''reinit
+	asm_code("pop rdx",KNOFREE)
+	asm_code("pop rax",KNOFREE)
 	asm_info("---------------------------------------------------------------")
 end sub
 
@@ -3080,17 +3057,17 @@ private sub _emitend( )
 		asm_section(".text")
 		''is the processor having SSE4_1 feature ?
 		asm_code("$sse41_test:")
-		asm_code("push rbx")
-		asm_code("push rcx")
-		asm_code("push rdx")
-		asm_code("mov  eax, 1")
-		asm_code("cpuid")
-		asm_code("and ecx, 0b10000000000000000000")
-		asm_code("mov $sse41[rip], ecx")
-		asm_code("pop rdx")
-		asm_code("pop rcx")
-		asm_code("pop rbx")
-		asm_code("ret")
+		asm_code("push rbx",KNOFREE)
+		asm_code("push rcx",KNOFREE)
+		asm_code("push rdx",KNOFREE)
+		asm_code("mov  eax, 1",KNOFREE)
+		asm_code("cpuid",KNOFREE)
+		asm_code("and ecx, 0b10000000000000000000",KNOFREE)
+		asm_code("mov $sse41[rip], ecx",KNOFREE)
+		asm_code("pop rdx",KNOFREE)
+		asm_code("pop rcx",KNOFREE)
+		asm_code("pop rbx",KNOFREE)
+		asm_code("ret",KNOFREE)
 	end if
 
 	if( env.clopt.profile = FB_PROFILE_OPT_CYCLES ) then
@@ -4603,7 +4580,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 			asm_code("cmp "+op1+", "+op2)
 
 			if label=0 then
-				asm_code("set"+suffix+" al")
+				asm_code("set"+suffix+" al",KNOFREE)
 				asm_code("movzx "+*regstrq(vrreg)+", al")
 
 				if tempodtype<>FB_DATATYPE_BOOLEAN then
@@ -4683,7 +4660,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 					asm_code("mov edx, 0")
 					asm_code("div "+op2)
 				else
-					asm_code("cdq")
+					asm_code("cdq",KNOFREE)
 					asm_code("idiv "+op2)
 				end if
 
@@ -4740,7 +4717,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 						op2bis=op2bis+"d"
 					End If
 
-					asm_code("cdq")
+					asm_code("cdq",KNOFREE)
 					asm_code("idiv "+op2bis)
 					if op = AST_OP_MOD then
 						asm_code("movsxd rdx, edx")
@@ -4775,18 +4752,18 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 
 					asm_code("mov edx, 0")
 					asm_code("div "+op2bis)
-					asm_code("pop rsi")
+					asm_code("pop rsi",KNOFREE)
 				end if
 
 				asm_code("jmp "+lname_end)
 
 				asm_code(lname_normal+":")
 				if rsipushed=1 then
-					asm_code("pop rsi")
+					asm_code("pop rsi",KNOFREE)
 				end if
 
 				if tempodtype=FB_DATATYPE_LONGINT or tempodtype=FB_DATATYPE_INTEGER then
-					asm_code("cqo")
+					asm_code("cqo",KNOFREE)
 					asm_code("idiv "+op2)
 				else
 					asm_code("mov edx, 0")
@@ -4796,7 +4773,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 				asm_code(lname_end+":")
 
 				if rbxpushed then
-					asm_code("pop rbx")
+					asm_code("pop rbx",KNOFREE)
 					reghandle(KREG_RBX)=rbxpushed
 				end if
 
@@ -4974,8 +4951,8 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 		end if
 
 		if tempodtype=FB_DATATYPE_BOOLEAN then
-			asm_code("test "+op1+", "+op1)
-			asm_code("sete "+op1)
+			asm_code("test "+op1+", "+op1,KNOFREE)
+			asm_code("sete "+op1,KNOFREE)
 		else
 			asm_code("not "+op1)
 		end if
@@ -5008,13 +4985,13 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 			case AST_OP_ATAN
 				save_call("atanf",vr,vrreg)
 			case AST_OP_SQRT
-				asm_code("sqrtss    xmm0, xmm0") ''todo could do directly with op1
+				asm_code("sqrtss xmm0, xmm0",KNOFREE) ''todo could do directly with op1
 				restore_vrreg(vr,vrreg)
 			case AST_OP_ABS
 				asm_code("mov eax, 0x7FFFFFFF")
 				asm_code("movd xmm1, eax")
-				asm_code("andps xmm1, xmm0") ''result xmm1
-				asm_code("movss xmm0, xmm1")''just to keep a standard way after
+				asm_code("andps xmm1, xmm0",KNOFREE) ''result xmm1
+				asm_code("movss xmm0, xmm1",KNOFREE)''just to keep a standard way after
 				restore_vrreg(vr,vrreg)
 			case AST_OP_SGN
 				save_call("fb_SGNSingle",vr,vrreg)
@@ -5027,7 +5004,7 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 			case AST_OP_NEG
 				asm_code("mov eax, "+"0x80000000") ''todo check and exchange if error
 				asm_code("movd xmm1, eax")
-				asm_code("xorps xmm0, xmm1") ''result in xmm0
+				asm_code("xorps xmm0, xmm1",KNOFREE) ''result in xmm0
 				restore_vrreg(vr,vrreg)
 			case else
 				asm_error("in uop not handled for single")
@@ -5055,7 +5032,7 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 			ctx.usedreg Or=(1 Shl KREG_RDX)
 		end if
 
-		asm_code("cqo")
+		asm_code("cqo",KNOFREE)
 		asm_code("xor rax, rdx")
 		asm_code("sub rax, rdx") ''result in rax
 		if vr=0 then
@@ -5171,13 +5148,13 @@ private sub hEmitRoundFloat(byval dtype1 as FB_DATATYPE,byval dtype2 as FB_DATAT
 	asm_code("je "+lname1)
 
 	if dtype1=FB_DATATYPE_DOUBLE then
-		asm_code("roundsd xmm0,xmm0,4")
+		asm_code("roundsd xmm0,xmm0,4",KNOFREE)
 		if dtype2<>FB_DATATYPE_ULONGINT then
 			asm_code("cvttsd2si rax, xmm0")
 		end if
 	else
 	''single
-		asm_code("roundss xmm0,xmm0,4")
+		asm_code("roundss xmm0,xmm0,4",KNOFREE)
 		if dtype2<>FB_DATATYPE_ULONGINT then
 			asm_code("cvttss2si rax, xmm0")
 		end if
@@ -5412,7 +5389,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 		else
 			''int to float
 			asm_info("int to float")
-			asm_code("pxor xmm0, xmm0")
+			asm_code("pxor xmm0, xmm0",KNOFREE)
 			select case v2dtype
 				case FB_DATATYPE_ULONGINT
 					if v1dtype=FB_DATATYPE_DOUBLE then
@@ -5489,7 +5466,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 						asm_code("movsx eax, "+prefix2+op2)
 					elseif v2dtype=FB_DATATYPE_BOOLEAN then
 						asm_code("cmp "+prefix2+op2+", 0")
-						asm_code("setne al")
+						asm_code("setne al",KNOFREE)
 						asm_code("neg al")
 						asm_code("movsx eax, al")
 					else
@@ -5522,7 +5499,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 				hEmitRoundFloat(FB_DATATYPE_DOUBLE,FB_DATATYPE_ULONGINT)
 
-				asm_code("ucomisd xmm0, xmm2")
+				asm_code("ucomisd xmm0, xmm2",KNOFREE)
 				lname1 = *symbUniqueLabel( )
 				asm_code("jnb "+lname1)
 				asm_code("cvttsd2si rax, xmm0")
@@ -5566,7 +5543,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 					if v1dtype=FB_DATATYPE_BOOLEAN then
 						asm_info("Double to boolean, <>0 --> 1")
 						asm_code("cmp rax, 0")
-						asm_code("setne al")
+						asm_code("setne al",KNOFREE)
 						'asm_code("neg al")
 					end if
 					asm_code("mov "+op1+", al")
@@ -5584,7 +5561,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 				hEmitRoundFloat(FB_DATATYPE_SINGLE,FB_DATATYPE_ULONGINT)
 
-				asm_code("ucomiss xmm0, xmm2")
+				asm_code("ucomiss xmm0, xmm2",KNOFREE)
 				lname1 = *symbUniqueLabel( )
 				asm_code("jnb "+lname1)
 				asm_code("cvttss2si rax, xmm0")
@@ -5628,7 +5605,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 					if v1dtype=FB_DATATYPE_BOOLEAN then
 						asm_info("Single to boolean, <>0 --> 1")
 						asm_code("cmp rax, 0")
-						asm_code("setne al")
+						asm_code("setne al",KNOFREE)
 						'asm_code("neg al")
 					end if
 					asm_code("mov "+op1+", al")
@@ -5664,7 +5641,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 			end if
 		else
 			asm_code("cmp "+prefix2+op2+", 0")
-			asm_code("setne al")
+			asm_code("setne al",KNOFREE)
 			asm_code("mov "+op1+", al")
 		end if
 		exit sub
@@ -5673,7 +5650,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	if v2dtype=FB_DATATYPE_BOOLEAN then
 		asm_info("From boolean, 0 or -1")
 		asm_code("cmp "+prefix2+op2+", 0")
-		asm_code("setne al")
+		asm_code("setne al",KNOFREE)
 		asm_code("neg al")
 
 		if typeGetSize( v1dtype )=1 then
@@ -7158,8 +7135,8 @@ private sub _emitbranch( byval op as integer, byval label as FBSYMBOL ptr )
 end sub
 private sub _emitreturn( byval bytestopop as integer )
 	asm_info("return for gosub="+str(bytestopop))
-	asm_code("add rsp, 88 # restore stack for gosub")
-	asm_code("ret")
+	asm_code("add rsp, 88 # restore stack for gosub",KNOFREE)
+	asm_code("ret",KNOFREE)
 end sub
 private sub _emitjmptb _
 	( _
@@ -7283,7 +7260,7 @@ private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVR
 				asm_code(lname2+":")
 
 				if v2->typ=IR_VREGTYPE_VAR and reghandle(KREG_RCX)<>KREGFREE then
-					asm_code("pop rcx")
+					asm_code("pop rcx",KNOFREE)
 				end if
 
 				exit sub
@@ -7762,11 +7739,11 @@ private sub _emitprocend _
 		if restreg<>"" then asm_code(restreg)
 		''not usefull Asm_code("add rsp,XXXXX") as moving rbp to rsp restore the value just after the call and the push rbp
 		asm_code("mov rsp, rbp")
-		asm_code("pop rbp")
+		asm_code("pop rbp",KNOFREE)
 		cfi_asm_code(".cfi_restore 6") '' rbp now back to what it was
 		cfi_asm_code(".cfi_def_cfa 7, 8") '' and the stack frame is back to rsp+8
 	end if
-	asm_code("ret")
+	asm_code("ret",KNOFREE)
 	cfi_asm_code(".cfi_endproc")
 	cfi_windows_asm_code(".seh_endproc")
 
