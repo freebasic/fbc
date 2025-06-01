@@ -1181,7 +1181,7 @@ private sub reg_freeable(byref lineasm as string)
 				regfound22=KREG_RAX
 			elseif *schptrl=&h31317220 then ''r11 r11d r11w r11b
 				regfound22=KREG_R11
-			elseif *schptrl=&h31317220 then
+			elseif *schptrl=&h30317220 then
 				regfound22=KREG_R10
 			elseif *schptrl=&h70627220 then
 				regfound22=KREG_RIP ''rbp just a trick
@@ -1265,7 +1265,7 @@ private sub reg_freeable(byref lineasm as string)
 			reghandle(regfound12)=KREGFREE
 		elseif regfound12=regfound22 then
 			if regfound12<>-1 then
-				if instruc<>KADD then
+				if instruc<>KADD then 'in multiplication optim ("add "+op1+", "+op1)
 					reghandle(regfound12)=KREGFREE
 				end if
 			end if
@@ -2764,7 +2764,7 @@ end sub
 private sub no_roundsd(byval size as zstring ptr)
 	''when the CPU doesn't provide roundsd/roundss (needs see41)
 	asm_code("stmxcsr $mxcsr[rip]",KNOFREE)
-	asm_code("push $mxcsr[rip],KNOFREE")
+	asm_code("push $mxcsr[rip]",KNOFREE)
 	asm_code("and dword ptr $mxcsr[rip], 0xFFFF9FFF",KNOFREE)
 	asm_code("ldmxcsr $mxcsr[rip]",KNOFREE)
 	asm_code("cvts"+*size+"2si rax, xmm0",KNOFREE)
@@ -2832,7 +2832,7 @@ private sub hProfileProcEpilog()
 	asm_code("or rdx,rax",KNOFREE)
 	asm_code("mov rcx, rdx,KNOFREE",KNOFREE)
 	asm_code("mov rax, QWORD PTR "+PROFILE_REC_INIT0,KNOFREE) ''init0
-	asm_code("sub rcx, rax")
+	asm_code("sub rcx, rax",KNOFREE)
 	asm_code("add QWORD PTR "+PROFILE_REC_GRANT_TOTAL+", rcx",KNOFREE) ''grand total
 	asm_code("mov rax, QWORD PTR "+PROFILE_REC_REINIT,KNOFREE) ''reinit
 	asm_code("sub rdx, rax",KNOFREE)
@@ -3884,7 +3884,7 @@ private sub bop_float( _
 	byval options as IR_EMITOPT _
 	)
 
-	dim as string lname1,lname2,movreg,movmem,compreg,immreg,addreg,subreg,mulreg,divreg
+	dim as string lname1,lname2,movreg,movmem,compreg,immreg,opereg
 	dim as string source0,source1
 	dim as integer vrreg
 	dim as FB_DATATYPE v1dtype
@@ -3896,10 +3896,10 @@ private sub bop_float( _
 	v1dtype=typeGetDtAndPtrOnly( v1->dtype )
 	if v1dtype=FB_DATATYPE_DOUBLE then
 		movreg="movq ":movmem="movsd ":compreg="ucomisd ":immreg="rax"
-		addreg="addsd ":subreg="subsd ":mulreg="mulsd ":divreg="divsd "
+		opereg="d "
 	else
 		movreg="movd ":movmem="movss ":compreg="ucomiss ":immreg="eax"
-		addreg="addss ":subreg="subss ":mulreg="mulss ":divreg="divss "
+		opereg="s "
 	end if
 
 	if v1->typ=IR_VREGTYPE_REG then
@@ -4115,17 +4115,23 @@ private sub bop_float( _
 			else
 				select case op
 					case AST_OP_ADD
-						asm_code(addreg+"xmm0, "+source1)
+						opereg="adds"+opereg
 					case AST_OP_SUB
-						asm_code(subreg+"xmm0, "+source1)
+						opereg="subs"+opereg
 					case AST_OP_MUL
-						asm_code(mulreg+"xmm0, "+source1)
+						opereg="muls"+opereg
 					case AST_OP_DIV
-						asm_code(divreg+"xmm0, "+source1)
+						opereg="divs"+opereg
 				end select
+				if v2->typ=IR_VREGTYPE_REG then
+					asm_code(opereg+"xmm0, "+source1,KNOFREE)
+				else
+					asm_code(opereg+"xmm0, "+source1)
+				end if
+
 				if vr->dtype=FB_DATATYPE_DOUBLE then
 					if v1dtype=FB_DATATYPE_SINGLE then
-						asm_code("cvtss2sd xmm0, xmm0")
+						asm_code("cvtss2sd xmm0, xmm0",KNOFREE)
 					end if
 					asm_code("movq "+*regstrq(vrreg)+", xmm0")
 				else
