@@ -838,75 +838,459 @@ private sub check_optim(byref code as string)
 	previnstruc=instruc
 	prevwpos=writepos
 end sub
+
+#macro search(schar)
+	ichar=0
+	while 1
+		if schptrb[ichar] = 0 then
+			ichar=-1
+			exit while
+		end if
+		if schptrb[ichar] = schar then
+			exit while
+		End If
+		ichar+=1
+	wend
+#EndMacro
+
+#define KMOV 1
+#define KLEA 2
+#define KCMP 3
+#define KDIV 4
+#define KADD 5
+
+'======================================================
 private sub reg_freeable(byref lineasm as string)
 
-	dim as integer regfound1,regfound2
-	dim as string instruc,lineshort
+	dim as Integer ichar=any,linstruc=any,instruc=any
+	dim as Integer regfound11=any,regfound12=any,regfound21=any,regfound22=any,regfound3=any
+    dim as long ptr  schptrl=any
+	dim as short ptr schptrs=any
+	dim as byte ptr schptrb=any,bptr=any
 
-	instruc=left(Trim(lineasm),3)
-	if instruc="inc" orelse instruc="dec" orelse instruc="not" orelse instruc="neg" then
-		''inc r11 --> not freeable / inc qword ptr [r11] --> freeable
-		if instr(lineasm,"[")=0 then
-			''******** CHECK marked register for callee **********************************************************
+	if lineasm[0]=asc("j") then 'keep jmp but skip je, jne, etc
+		if lineasm[1]<>asc("m") then
 			exit sub
 		end if
-	else
-		if instr("mov lea cmp add sub imu idiv div shl shr sar and xor or call jmp push test cvt ",instruc)=0 then exit sub
+	elseif lineasm[0]=asc("s") then 'skip setx
+		if lineasm[1]=asc("e") then
+			exit sub
+		end if
 	end if
-	''remove instruc
-	lineshort=mid(lineasm,instr(lineasm," ")+1,999999)
 
-	for ireg as integer =1 To KREGUPPER
-		if reghandle(ireg)=KREGRSVD then continue for ''excluding rbp and rsp
-		regfound1=KNOTFOUND:regfound2=KNOTFOUND
+	schptrb=cast(byte ptr,strptr(lineasm))
+	schptrl=cast(long ptr,schptrb)
+	schptrs=cast(short ptr,schptrb)
+	instruc=KMOV 'default
+	linstruc=4 ''by default 4 characters
+	regfound11=-1
+	regfound12=-1
+	regfound21=-1
+	regfound22=-1
+	regfound3=-1
 
-		if instr(lineshort,*regstrq(ireg)+",") then
-			regfound1=ireg
-		elseif instr(lineshort,*regstrd(ireg)+",") then
-			regfound1=ireg
-		elseif instr(lineshort,*regstrw(ireg)+",") then
-			regfound1=ireg
-		elseif instr(lineshort,*regstrb(ireg)+",") then
-			regfound1=ireg
+	''searching instruction
+	if *schptrs=&h6F6D then 'movxxx
+		bptr=schptrb
+		bptr+=3
+		while *bptr<>32
+			bptr+=1
+		wend
+		linstruc=bptr-schptrb +1
+	elseif *schptrl=&h2061656C then 'lea
+		instruc=KLEA
+	elseif *schptrl=&h20706D63 then 'cmp
+		instruc=KCMP
+	''inc dec not neg
+	elseif *schptrl=&h20636E69 orelse *schptrl=&h20636564 orelse _
+	*schptrl=&h20746F6E orelse *schptrl=&h2067656E then
+	''inc r11 --> not freeable / inc qword ptr [r11] --> freeable
+		search(asc("[")) ''is there a bracket if not not freeable ?
+		if ichar=-1 then
+			exit sub
+		End If
+	elseif *schptrl=&h20646461 then 'add
+		instruc=KADD
+	elseif *schptrl=&h20627573 then 'sub
+	elseif *schptrl=&h6C756D69 then 'imul
+		linstruc=5
+	elseif *schptrl=&h76696469 then 'idiv
+		instruc=KDIV
+		linstruc=5
+	elseif *schptrl=&h20766964 then 'div
+	elseif *schptrl=&h206C6873 then 'shl
+	elseif *schptrl=&h20726873 then 'shr
+	elseif *schptrl=&h20726173 then 'sar
+	elseif *schptrl=&h20646E61 then 'and
+	elseif *schptrl=&h20726F78 then 'xor
+	elseif *schptrl=&h6C6C6163 then 'call
+		linstruc=5
+	elseif *schptrl=&h20706D6A then 'jmp
+	elseif *schptrl=&h68737570 then 'push
+		linstruc=5
+	elseif *schptrl=&h74736574 then 'test
+		linstruc=5
+	elseif *schptrs=&h726F then 'or
+		linstruc=3
+	elseif *schptrl=&h73646461 then 'addss/addsd
+		linstruc=5
+	elseif *schptrl=&h73627573 then 'subss/subsd
+		linstruc=5
+	elseif *schptrl=&h736C756D then 'mulss/mulsd
+		linstruc=5
+	elseif *schptrl=&h73766964 then 'divss/divsd
+		linstruc=5
+	elseif *schptrs=&h7663 then 'cvtxxxx
+		if schptrb[8]=asc(" ") then
+			linstruc=9
+		else
+			linstruc=8
+		end if
+	else
+		exit sub
+	End If
+
+	''searching first operand
+	schptrb+=linstruc
+	schptrl=cast(long ptr,schptrb)
+
+	if *schptrb<asc("a") then ''upper case
+		search(asc("["))
+		if ichar <> -1 then
+			schptrb+=ichar'+1
+			schptrl=cast(long ptr,schptrb)
+			if *schptrl=&h7062725B then ''rbp
+				regfound11=KREG_RIP ''just a trick to avoid canceling rbp/rsp reserved
+			elseif *schptrl=&h3131725B then
+				regfound11=KREG_R11
+			elseif *schptrl=&h3031725B then ''r10 r10d r10w r10b
+				regfound11=KREG_R10
+			elseif *schptrl=&h7861725B then
+				regfound11=KREG_RAX
+			elseif *schptrl=&h3231725B then
+				regfound11=KREG_R12
+			elseif *schptrl=&h3331725B then
+				regfound11=KREG_R13
+			elseif *schptrl=&h3431725B then
+				regfound11=KREG_R14
+			elseif *schptrl=&h3531725B then ''r15
+				regfound11=KREG_R15
+			elseif *schptrl=&h7862725B then ''rbx
+				regfound11=KREG_RBX
+			elseif *schptrl=&h7863725B then
+				regfound11=KREG_RCX
+			elseif *schptrl=&h7864725B then
+				regfound11=KREG_RDX
+			elseif *schptrl=&h6973725B then
+				regfound11=KREG_RSI
+			elseif *schptrl=&h6964725B then
+				regfound11=KREG_RDI
+			elseif *schptrl=&h7073725B then ''rsp
+				regfound11=KREG_RIP ''just a trick
+			elseif *schptrl=&h7069725B then
+				regfound11=KREG_RIP
+			else
+				bptr=schptrb
+				bptr+=1
+				schptrs=cast(short ptr,bptr)
+				if *schptrs=&h3872 then ''r8
+					regfound11=KREG_R8
+				elseif *schptrs=&h3972 then''r9
+					regfound11=KREG_R9
+				end if
+			end if
+		End If
+	else ''lower case
+		schptrb-=1 ''searching including space before operand
+		schptrl=cast(long ptr,schptrb)
+		if *schptrl=&h78617220 then
+			regfound12=KREG_RAX
+		elseif *schptrl=&h31317220 then
+			regfound12=KREG_R11
+		elseif *schptrl=&h30317220 then ''r10 r10d r10w r10b
+			regfound12=KREG_R10
+		elseif *schptrl=&h32317220 then
+			regfound12=KREG_R12
+		elseif *schptrl=&h33317220 then
+			regfound12=KREG_R13
+		elseif *schptrl=&h34317220 then
+			regfound12=KREG_R14
+		elseif *schptrl=&h35317220 then ''r15 r15d r15w r15b
+			regfound12=KREG_R15
+		elseif *schptrl=&h78627220 then ''rbx
+			regfound12=KREG_RBX
+		elseif *schptrl=&h78637220 then
+			regfound12=KREG_RCX
+		elseif *schptrl=&h78647220 then
+			regfound12=KREG_RDX
+		elseif *schptrl=&h69737220 then
+			regfound12=KREG_RSI
+		elseif *schptrl=&h69647220 then
+			regfound12=KREG_RDI
+		elseif *schptrl=&h70627220 then
+			regfound12=KREG_RIP ''rbp just a trick
+		elseif *schptrl=&h70737220 then
+			regfound12=KREG_RIP ''rsp just a trick
+		elseif *schptrl=&h6D6D7820 then
+			regfound12=KREG_RIP ''xmmN just a trick
+		else
+			bptr=schptrb
+			bptr+=1
+			schptrs=cast(short ptr,bptr)
+			if *schptrs=&h3872 then 'r8 r8d r8w r8b
+				regfound12=KREG_R8
+			elseif *schptrs=&h3972 then'r9 r9d r9w r9b
+				regfound12=KREG_R9
+			end if
 		end if
 
-		if regfound1<>KNOTFOUND then
-			if instruc="add" orelse instruc="sub" orelse instruc="imu" then
-				''already inuse and to be used later case 'add r11, xxx'  not 'add qword ptr [r11], xxx'
-				continue for
-			elseif instruc="cmp" then
-				''already inuse but not to be used later except one case (at least) when null-pointer checking
-				ctx.jmpreg=regfound1 ''see their defines
-				ctx.jmpvreg=reghandle(regfound1)
+		if regfound12=KNOTFOUND then
+			if *schptrl=&h78616520 then 'eax
+				regfound12=KREG_RAX
+			elseif *schptrl=&h78626520 then
+				regfound12=KREG_RBX
+			elseif *schptrl=&h78636520 then
+				regfound12=KREG_RCX
+			elseif *schptrl=&h78646520 then
+				regfound12=KREG_RDX
+			elseif *schptrl=&h69736520 then
+				regfound12=KREG_RSI
+			elseif *schptrl=&h69646520 then 'edi
+				regfound12=KREG_RDI
+			end if
+			if regfound12=KNOTFOUND then
+				schptrb+=1
+				schptrs=cast(short ptr,schptrb)
+				if *schptrs=&h7861 or *schptrs=&h7861 then 'ax,al
+					regfound12=KREG_RAX
+				elseif *schptrs=&h7862 or *schptrs=&h6C62 then 'bx,bl
+					regfound12=KREG_RBX
+				elseif *schptrs=&h7863 or *schptrs=&h6C63 then 'cx,cl
+					regfound12=KREG_RCX
+				elseif *schptrs=&h7864 or *schptrs=&h6C64 then 'dx,cl
+					regfound12=KREG_RDX
+				elseif *schptrs=&h6973 then 'si sil
+					regfound12=KREG_RSI
+				elseif *schptrs=&h6964 then 'di dil
+					regfound12=KREG_RDI
+				end if
+			end if
 
-				ctx.jmppass=2
-				reghandle(regfound1)=KREGFREE
-				continue for
+		end if
+	end if
+
+	''searching second operand
+	search(asc(","))
+	if ichar <> -1 then ''found (if not found only one operand)
+		schptrb+=ichar+2 ''skip comma and 1 space
+		if *schptrb<asc("a") then ''upper case
+			search(asc("["))
+			if ichar <> -1 then
+				schptrb+=ichar'+1
+				schptrl=cast(long ptr,schptrb)
+				if *schptrl=&h7062725B then
+					regfound21=KREG_RIP ''rbp just a trick
+				elseif *schptrl=&h3131725B then
+					regfound21=KREG_R11
+				elseif *schptrl=&h3031725B then 'r10 r10d r10w r10b
+					regfound21=KREG_R10
+				elseif *schptrl=&h7861725B then
+					regfound21=KREG_RAX
+				elseif *schptrl=&h3231725B then
+					regfound21=KREG_R12
+				elseif *schptrl=&h3331725B then
+					regfound21=KREG_R13
+				elseif *schptrl=&h3431725B then
+					regfound21=KREG_R14
+				elseif *schptrl=&h3531725B then 'r15
+					regfound21=KREG_R15
+				elseif *schptrl=&h7862725B then 'rbx
+					regfound21=KREG_RBX
+				elseif *schptrl=&h7863725B then
+					regfound21=KREG_RCX
+				elseif *schptrl=&h7864725B then
+					regfound21=KREG_RDX
+				elseif *schptrl=&h6973725B then
+					regfound21=KREG_RSI
+				elseif *schptrl=&h6964725B then
+					regfound21=KREG_RDI
+				elseif *schptrl=&h7073725B then
+					regfound21=KREG_RIP ''rsp just a trick
+				elseif *schptrl=&h7069725B then
+					regfound21=KREG_RIP
+				else
+					bptr=schptrb
+					bptr+=1
+					schptrs=cast(short ptr,bptr)
+					if *schptrs=&h3872 then 'r8
+						regfound21=KREG_R8
+					elseif *schptrs=&h3972 then'r9
+						regfound21=KREG_R9
+					end if
+				end if
+
+				if instruc=KLEA then ''lea can have 3 operands even 2 identical
+					search(asc("+"))
+					if ichar <> -1 then
+						schptrb+=ichar
+						schptrl=cast(long ptr,schptrb)
+						if *schptrl=&h7062722B then
+							regfound3=KREG_RIP ''rbp just a trick
+						elseif *schptrl=&h3131722B then
+							regfound3=KREG_R11
+						elseif *schptrl=&h3031722B then
+							regfound3=KREG_R10
+						elseif *schptrl=&h7861722B then
+							regfound3=KREG_RAX
+						elseif *schptrl=&h3231722B then
+							regfound3=KREG_R12
+						elseif *schptrl=&h3331722B then
+							regfound3=KREG_R13
+						elseif *schptrl=&h3431722B then
+							regfound3=KREG_R14
+						elseif *schptrl=&h3531722B then
+							regfound3=KREG_R15
+						elseif *schptrl=&h7862722B then
+							regfound3=KREG_RBX
+						elseif *schptrl=&h7863722B then
+							regfound3=KREG_RCX
+						elseif *schptrl=&h7864722B then
+							regfound3=KREG_RDX
+						elseif *schptrl=&h6973722B then
+							regfound3=KREG_RSI
+						elseif *schptrl=&h6964722B then
+							regfound3=KREG_RDI
+						elseif *schptrl=&h7073722B then
+							regfound3=KREG_RIP ''rsp just a trick
+						elseif *schptrl=&h7069722B then
+							regfound3=KREG_RIP
+						else
+							bptr=schptrb
+							bptr+=1
+							schptrs=cast(short ptr,bptr)
+							if *schptrs=&h3872 then 'r8
+								regfound3=KREG_R8
+							elseif *schptrs=&h3972 then'r9
+								regfound3=KREG_R9
+							end if
+						end if
+					End If
+				End If
+			End If
+				'===================
+		else ''lower case
+			schptrb-=1 ''searching including space before operand
+			schptrl=cast(long ptr,schptrb)
+			if *schptrl=&h78617220 then
+				regfound22=KREG_RAX
+			elseif *schptrl=&h31317220 then ''r11 r11d r11w r11b
+				regfound22=KREG_R11
+			elseif *schptrl=&h31317220 then
+				regfound22=KREG_R10
+			elseif *schptrl=&h70627220 then
+				regfound22=KREG_RIP ''rbp just a trick
+			elseif *schptrl=&h32317220 then
+				regfound22=KREG_R12
+			elseif *schptrl=&h33317220 then
+				regfound22=KREG_R13
+			elseif *schptrl=&h34317220 then
+				regfound22=KREG_R14
+			elseif *schptrl=&h35317220 then ''r15 r15d r15w r15b
+				regfound22=KREG_R15
+			elseif *schptrl=&h78627220 then ''rbx
+				regfound22=KREG_RBX
+			elseif *schptrl=&h78637220 then
+				regfound22=KREG_RCX
+			elseif *schptrl=&h78647220 then
+				regfound22=KREG_RDX
+			elseif *schptrl=&h69737220 then
+				regfound22=KREG_RSI
+			elseif *schptrl=&h69647220 then
+				regfound22=KREG_RDI
+			elseif *schptrl=&h70737220 then
+				regfound22=KREG_RIP ''rsp just a trick
+			elseif *schptrl=&h6D6D7820 then
+				regfound22=KREG_RIP ''xmmN just a trick
 			else
-				if instr(lineshort,*regstrq(ireg)+", "+*regstrq(ireg)) then
-					''case mov rzz, rzz in hdocall
-					reghandle(regfound1)=KREGFREE
-					exit sub
+				bptr=schptrb
+				bptr+=1
+				schptrs=cast(short ptr,bptr)
+				if *schptrs=&h3872 then ''r8 r8d r8w r8b
+					regfound22=KREG_R8
+				elseif *schptrs=&h3972 then''r9 r9d r9w r9b
+					regfound22=KREG_R9
+				end if
+			end if
+			if regfound22=KNOTFOUND then
+				if *schptrl=&h78616520 then ''eax
+					regfound22=KREG_RAX
+				elseif *schptrl=&h78626520 then
+					regfound22=KREG_RBX
+				elseif *schptrl=&h78636520 then
+					regfound22=KREG_RCX
+				elseif *schptrl=&h78646520 then
+					regfound22=KREG_RDX
+				elseif *schptrl=&h69736520 then
+					regfound22=KREG_RSI
+				elseif *schptrl=&h69646520 then
+					regfound22=KREG_RDI
+				end if
+				if regfound22=KNOTFOUND then
+					schptrb+=1
+					schptrs=cast(short ptr,schptrb)
+					if *schptrs=&h7861 or *schptrs=&h7861 then ''ax,al
+						regfound22=KREG_RAX
+					elseif *schptrs=&h7862 or *schptrs=&h6C62 then ''bx,bl
+						regfound22=KREG_RBX
+					elseif *schptrs=&h7863 or *schptrs=&h6C63 then ''cx,cl
+						regfound22=KREG_RCX
+					elseif *schptrs=&h7864 or *schptrs=&h6C64 then ''dx,cl
+						regfound22=KREG_RDX
+					elseif *schptrs=&h6973 then ''si sil
+						regfound22=KREG_RSI
+					elseif *schptrs=&h6964 then ''di dil
+						regfound22=KREG_RDI
+					end if
 				end if
 			end if
 		end if
+	End If
 
-		if regfound1=KNOTFOUND then
-			if instr(lineshort,*regstrq(ireg)) then
-				regfound2=ireg
-			elseif instr(lineshort,*regstrd(ireg)) then
-				regfound2=ireg
-			elseif instr(lineshort,*regstrw(ireg)) then
-				regfound2=ireg
-			elseif instr(lineshort,*regstrb(ireg)) then
-				regfound2=ireg
+	if regfound11<>-1 then
+		reghandle(regfound11)=KREGFREE
+	else
+		if instruc=KCMP then
+			''already inuse but not to be used later except one case (at least) when null-pointer checking
+			ctx.jmpreg=regfound12 ''see their defines
+			ctx.jmpvreg=reghandle(regfound12)
+			ctx.jmppass=2
+			reghandle(regfound12)=KREGFREE
+		elseif instruc=KDIV then
+			reghandle(regfound12)=KREGFREE
+		elseif regfound12=regfound22 then
+			if regfound12<>-1 then
+				if instruc<>KADD then
+					reghandle(regfound12)=KREGFREE
+				end if
 			end if
-		end if
+		End If
+	End If
 
-		if regfound2<>KNOTFOUND then
-			reghandle(regfound2)=KREGFREE
+	if regfound21<>-1 then
+		if regfound21<>regfound12 then
+			reghandle(regfound21)=KREGFREE
+		End If
+	elseif regfound22<>-1 then
+		if regfound22<>regfound12 then
+			reghandle(regfound22)=KREGFREE
 		end if
-	next
+	End If
+	if regfound3<>-1 then
+		if regfound3<>regfound12 then
+			reghandle(regfound3)=KREGFREE
+		end if
+	End If
+
 end sub
 ''============== end of optim ====================================================
 private function pw2(byval num as integer)as integer ''return the first power of 2 greater than a number ex 24 -->32
@@ -972,7 +1356,11 @@ dim as string ln,lname
 			end if
 		end if
 
-		if opt<>KNOFREE and opt<>KNOALL then reg_freeable(ln)
+		if opt<>KNOFREE and opt<>KNOALL then
+			if ln[0]>=asc("a") then ''skip '.' 'upper case' '_'
+				reg_freeable(ln)
+			end if
+		End If
 		if opt=KNOOPTIM or opt=KNOALL then
 			''just reinit some variables
 			check_optim("")
