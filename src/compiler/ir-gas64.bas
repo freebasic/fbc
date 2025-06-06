@@ -475,7 +475,7 @@ private sub check_optim(byref code as string)
 	if flag=KUSE_JMP then
 		'asm_info("jmp found="+prevpart1)
 		if instr(code,prevpart1+":") then
-			mid(ctx.proc_txt,prevwpos)="#O9"
+			mid(ctx.proc_txt,prevwpos)="#09"
 		end if
 		prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV ''reinit
 		exit sub
@@ -503,7 +503,7 @@ private sub check_optim(byref code as string)
 
 			''cancel mov regx, regx
 			if part1=part2 then
-				code="#O0"+code
+				code="#00"+code
 				prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV
 				exit sub
 			end if
@@ -664,7 +664,7 @@ private sub check_optim(byref code as string)
 			if part2[0]=asc("r") Or part2[0]=asc("e") or (asc(Right(part2,1))>=48 and asc(right(part2,1))<=57) then
 				'asm_info("OPTIMIZATION 4 (lea)")
 				'asm_info("removed =lea "+prevpart1+", "+prevpart2)
-				mid(ctx.proc_txt,prevwpos)="#O4"
+				mid(ctx.proc_txt,prevwpos)="#04"
 
 				'asm_info("removed ="+mov+" "+part1+", "+part2)
 				newcode=instruc+" "+mid(part1,1,instr(part1,"[")-1)+prevpart2+", "+part2
@@ -672,13 +672,13 @@ private sub check_optim(byref code as string)
 				'asm_info("proposed="+newcode)
 
 				writepos=len(ctx.proc_txt)+len(code)+9
-				code="#O4"+code+newline+string( ctx.indent*3, 32 )+newcode+" #Optim 4"
+				code="#04"+code+newline+string( ctx.indent*3, 32 )+newcode+" #Optim 4"
 			end if
 		else
 			if part2=prevpart1 and part1[0]=asc("r") then
 				'asm_info("OPTIMIZATION 5 (lea)")
 				'asm_info("removed =lea "+prevpart1+", "+prevpart2)
-				mid(ctx.proc_txt,prevwpos)="#O5"
+				mid(ctx.proc_txt,prevwpos)="#05"
 
 				'asm_info("removed ="+mov+" "+part1+", "+part2)
 				'newcode=mov+" "+part1+", "+prevpart2
@@ -686,14 +686,14 @@ private sub check_optim(byref code as string)
 				'asm_info("proposed="+newcode)
 
 				writepos=len(ctx.proc_txt)+len(code)+9
-				code="#O5"+code+newline+string( ctx.indent*3, 32 )+newcode+" #Optim 5"
+				code="#05"+code+newline+string( ctx.indent*3, 32 )+newcode+" #Optim 5"
 			else
 				if part1[0]=asc("r") andalso part2="["+prevpart1+"]" then
 					'asm_info("OPTIMIZATION 7 (lea)")
-					mid(ctx.proc_txt,prevwpos)="#O7"
+					mid(ctx.proc_txt,prevwpos)="#07"
 					newcode=instruc+" "+part1+", "+prevpart2
 					writepos=len(ctx.proc_txt)+len(code)+9
-					code="#O7"+code+newline+string( ctx.indent*3, 32 )+newcode+" #Optim 7"
+					code="#07"+code+newline+string( ctx.indent*3, 32 )+newcode+" #Optim 7"
 				else
 					prevpart1=part1
 					prevpart2=part2
@@ -714,9 +714,9 @@ private sub check_optim(byref code as string)
 			if instr(part2,"[")<>0 and (right(part1,1)="d" or part1[0]=asc("e")) then
 				''to avoid issue if after 64bit register is used with xmm
 				writepos=len(ctx.proc_txt)+len(code)+9
-				code="#O1"+code+newline+string( ctx.indent*3, 32 )+"and "+part1+" ,0xFFFFFFFF"
+				code="#01"+code+newline+string( ctx.indent*3, 32 )+"and "+part1+" ,0xFFFFFFFF"
 			else
-				code="#O1 "+code
+				code="#01 "+code
 			End If
 		else
 			if prevpart2="" then ''todo remove me after fixed
@@ -740,7 +740,7 @@ private sub check_optim(byref code as string)
 					end if
 				else
 					'asm_info("OPTIMIZATION 2-2")
-					mid(ctx.proc_txt,prevwpos)="#O2"
+					mid(ctx.proc_txt,prevwpos)="#02"
 					if instruc="movq" or instruc="movd" then
 						previnstruc=instruc
 					elseif instruc="movsx" then
@@ -748,7 +748,7 @@ private sub check_optim(byref code as string)
 					end if
 				end if
 				writepos=len(ctx.proc_txt)+len(code)+9
-				code="#O2"+code+newline+string( ctx.indent*3, 32 )+previnstruc+" "+part1+", "+prevpart2+" #Optim 2"
+				code="#02"+code+newline+string( ctx.indent*3, 32 )+previnstruc+" "+part1+", "+prevpart2+" #Optim 2"
 				part2=prevpart2
 			''xmm register ?
 			elseif prevpart2[0]=asc("x") then
@@ -762,7 +762,7 @@ private sub check_optim(byref code as string)
 					end if
 				else
 					'asm_info("OPTIMIZATION 3-2")
-					mid(ctx.proc_txt,prevwpos)="#O3"
+					mid(ctx.proc_txt,prevwpos)="#03"
 
 					if previnstruc="movq" then
 						if instr(part2,"[") then
@@ -777,14 +777,14 @@ private sub check_optim(byref code as string)
 					end if
 				end if
 				writepos=len(ctx.proc_txt)+len(code)+9
-				code="#O3"+code+newline+string( ctx.indent*3, 32 )+instruc+" "+part1+", "+prevpart2+" #Optim 3"
+				code="#03"+code+newline+string( ctx.indent*3, 32 )+instruc+" "+part1+", "+prevpart2+" #Optim 3"
 				part2=prevpart2
 			elseif ( part1[0]=asc("r") or part1[0]=asc("e") ) and prevpart1=part2 and instr(prevpart1,"[")=0 then
 				'asm_info("OPTIMIZATION 6")
-				mid(ctx.proc_txt,prevwpos)="#O6"
+				mid(ctx.proc_txt,prevwpos)="#06"
 				'asm_info("part1="+part1+" part2="+part2+" prevpart1="+prevpart1+" prevpart2="+prevpart2)
 				writepos=len(ctx.proc_txt)+len(code)+9
-				code="#O6"+code+newline+string( ctx.indent*3, 32 )+previnstruc+" "+part1+", "+prevpart2+" #Optim 6"
+				code="#06"+code+newline+string( ctx.indent*3, 32 )+previnstruc+" "+part1+", "+prevpart2+" #Optim 6"
 				part2=prevpart2
 
 			elseif ( prevpart2[0]=asc("r") or prevpart2[0]=asc("e") ) and prevpart1=part2 then 'and instr(part1,"[")=0
