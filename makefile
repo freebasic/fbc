@@ -343,6 +343,11 @@ ifneq ($(filter 386 486 586 686 i386 i486 i586 i686,$(TARGET_ARCH)),)
   TARGET_ARCH := x86
 endif
 
+# Normalize TARGET_ARCH to aarch64
+ifeq ($(TARGET_ARCH),arm64)
+  TARGET_ARCH := aarch64
+endif
+
 # Normalize TARGET_ARCH to arm
 ifneq ($(filter arm%,$(TARGET_ARCH)),)
   TARGET_ARCH := arm
