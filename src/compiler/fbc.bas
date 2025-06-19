@@ -3062,6 +3062,9 @@ private sub hCheckArgs()
 	if( (fbGetCpuFamily( ) = FB_CPUFAMILY_X86) and _
 		(fbGetOption(FB_COMPOPT_TARGET) <> FB_COMPTARGET_DARWIN) ) then
 		fbSetOption( FB_COMPOPT_BACKEND, FB_BACKEND_GAS )
+	elseif (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN) then
+		'' Use clang backend by default on darwin
+		fbSetOption( FB_COMPOPT_BACKEND, FB_BACKEND_CLANG )
 	else
 		fbSetOption( FB_COMPOPT_BACKEND, FB_BACKEND_GCC )
 	end if
