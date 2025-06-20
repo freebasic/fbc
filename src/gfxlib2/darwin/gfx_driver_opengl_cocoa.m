@@ -434,12 +434,13 @@ void fb_hCocoaWaitVSync() {
 	dispatch_semaphore_wait(vsyncSema, DISPATCH_TIME_FOREVER);
 }
 
-static inline int translate_key(unsigned char key, int scancode) {
-	if (key == 0) {
-		return scancode;
-	} else {
-		return fb_hScancodeToExtendedKey(scancode);
-	}
+// TODO: Handle all extended keys properly
+static inline int translate_key(NSEvent* event, int scancode) {
+	unsigned char key = [event charactersIgnoringModifiers].UTF8String[0];
+	int extendedKey = fb_hScancodeToExtendedKey(scancode);
+	if (extendedKey) return extendedKey;
+
+	return key;
 }
 
 static void driver_poll_events() {
@@ -459,7 +460,7 @@ static void driver_poll_events() {
 					e.scancode = fb_cocoakeycode_to_scancode[event.keyCode];
 					__fb_gfx->key[e.scancode] = TRUE;
 
-					key = translate_key([event charactersIgnoringModifiers].UTF8String[0], e.scancode);
+					key = translate_key(event, e.scancode);
 					if (key) {
 						fb_hPostKey(key);
 						e.ascii = (key > 0 && key < 0xFF) ? key : 0;

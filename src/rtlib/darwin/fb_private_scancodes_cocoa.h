@@ -1,6 +1,6 @@
 #include "../fb.h"
 
-static const int fb_cocoakeycode_to_scancode[] = {
+static const int fb_cocoakeycode_to_scancode[256] = {
 	[0x35] = SC_ESCAPE,
 	[0x7A] = SC_F1,
 	[0x78] = SC_F2,
