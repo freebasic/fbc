@@ -30,7 +30,11 @@ FBTHREAD *fb_ThreadCall( void *proc, int abi, ssize_t stack_size, int num_args, 
 
 #else
 
+#ifdef HOST_DARWIN
+#include <ffi/ffi.h>
+#else
 #include <ffi.h>
+#endif
 
 #define FB_THREADCALL_MAX_ELEMS 1024
 
@@ -65,21 +69,21 @@ static void freeStruct( ffi_type *arg )
 {
     int i = 0;
     ffi_type **elem = arg->elements;
-    
+
     while( *elem != NULL )
     {
         /* cap element count to limit buffer overrun */
         if ( i >= FB_THREADCALL_MAX_ELEMS )
             break;
-        
+
         /* free embedded types */
         if( (*elem)->type == FFI_TYPE_STRUCT )
             freeStruct( *elem );
-            
+
         elem++;
         i++;
     }
-    
+
     free( arg->elements );
     free( arg );
 }
@@ -96,10 +100,10 @@ static ffi_type *getStruct( va_list *args_list )
     ffi_arg->size = 0;
     ffi_arg->alignment = 0;
     ffi_arg->type = FFI_TYPE_STRUCT;
-    ffi_arg->elements = 
+    ffi_arg->elements =
         (ffi_type **)malloc( sizeof( ffi_type * ) * ( num_elems + 1 ) );
     ffi_arg->elements[num_elems] = NULL;
-    
+
     /* scan elements */
     for( i=0; i<num_elems; i++ )
     {
@@ -117,7 +121,7 @@ static ffi_type *getStruct( va_list *args_list )
             return NULL;
         }
     }
-    
+
     return ffi_arg;
 }
 
@@ -151,13 +155,13 @@ FBTHREAD *fb_ThreadCall( void *proc, int abi, ssize_t stack_size, int num_args, 
     void         **values;
     FBTHREADCALL  *param;
     int i, j;
-    
+
     /* initialize lists and arrays */
     ffi_args = (ffi_type **)malloc( sizeof( ffi_type * ) * num_args );
     values = (void **)malloc( sizeof( void * ) * num_args );
-    va_list args_list; 
+    va_list args_list;
     va_start(args_list, num_args);
-    
+
     /* scan arguments and values from var_args */
     for( i=0; i<num_args; i++ )
     {
@@ -177,7 +181,7 @@ FBTHREAD *fb_ThreadCall( void *proc, int abi, ssize_t stack_size, int num_args, 
         values[i] = va_arg( args_list, void * );
     }
     va_end( args_list );
-    
+
     /* pack into thread parameter */
     param = malloc( sizeof( FBTHREADCALL ) );
     param->proc = proc;
@@ -185,7 +189,7 @@ FBTHREAD *fb_ThreadCall( void *proc, int abi, ssize_t stack_size, int num_args, 
     param->num_args = num_args;
     param->ffi_arg_types = ffi_args;
     param->values = values;
-    
+
     /* actually start thread */
     return fb_ThreadCreate( threadproc, (void *)param, stack_size );
 }
@@ -214,18 +218,18 @@ static FBCALL void threadproc( void *param )
     /* prep FFI call interface */
     if( status == FFI_OK )
 #endif
-        status = ffi_prep_cif( 
+        status = ffi_prep_cif(
             &cif,               // handle
             abi,                // ABI (CDECL or STDCALL on x86, host default on x86_64)
             info->num_args,     // number of arguments
             &ffi_type_void,     // return type
             info->ffi_arg_types // argument types
         );
-        
+
     /* execute */
     if( status == FFI_OK )
         ffi_call( &cif, FFI_FN( info->proc ), NULL, info->values );
-    
+
 
     /* free memory and exit */
     for( i=0; i<info->num_args; i++ )

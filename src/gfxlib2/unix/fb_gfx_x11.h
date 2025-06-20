@@ -5,6 +5,7 @@
 #ifndef __FB_GFX_X11_H__
 #define __FB_GFX_X11_H__
 
+#define NARROWPROTO
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/xpm.h>
