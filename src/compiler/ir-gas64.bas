@@ -163,7 +163,12 @@ declare sub cfi_windows_asm_code(byval statement as string)
 	hWriteasm64("#")
 #endmacro
 
-#define NEWLINE2 NEWLINE+string( ctx.indent*3, 32 )
+#ifdef __GAS64_DEBUG__
+	#define NEWLINE2 NEWLINE+"   "
+#else
+	#define NEWLINE2 NEWLINE
+#endif
+
 #define KUSE_MOV 0
 #define KUSE_LEA 1
 #define KUSE_JMP 2
@@ -278,8 +283,6 @@ type ASM64_SAVEDREG
 end type
 
 type ASM64_CONTEXT
-	'' current indentation used by hWriteam64()
-	indent       as integer
 	'' current section to write to
 	section      as integer
 	head_txt     as string
@@ -466,146 +469,127 @@ private sub check_optim(byref code as string)
 	dim as string part1,part2,instruc,newcode
 	static as string prevpart1,prevpart2,previnstruc
 	static as integer prevwpos,flag
-	dim as integer poschar1,poschar2,writepos
+	dim as integer poschar1=any,poschar2=any,writepos=any
+
 	if len(code)=0 then
 		prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV ''reinit statics
 		exit sub
 	end if
 
+	dim as integer ptr textptr=cast(integer ptr,varptr(ctx.proc_txt))+1 ''pointer to lenght of string
+	dim as long ptr schptrl=cast(long ptr,strptr(code))
+
 	if flag=KUSE_JMP then
-		'asm_info("jmp found="+prevpart1)
 		if instr(code,prevpart1+":") then
-			mid(ctx.proc_txt,prevwpos)="#09"
+			'' jmp .L005
+			'' .L005:
+			#ifdef __GAS64_DEBUG__
+				mid(ctx.proc_txt,prevwpos)="#09"
+			#else
+				*textptr=prevwpos-1
+			#endif
+		elseif left(code,3)="jmp" then
+			'' jmp .L005
+			'' jmp .L006
+			#ifdef __GAS64_DEBUG__
+				code="#09"+code
+			#else
+				code=""
+			#endif
 		end if
 		prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV ''reinit
 		exit sub
 	end if
 
-	select case left(code,3)
-		case "mov"
-			writepos=len(ctx.proc_txt)+1
-			poschar1=instr(code," ")
-			instruc=left(code,poschar1-1)
-			poschar2=instr(code,",")
-			if poschar2=0 then
-				''case movsb|w|d|q
-				prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV
-				exit sub
-			End If
-			part1=trim(mid(code,poschar1+1,poschar2-poschar1-1))
-			poschar1=instr(code,"#")
-			if poschar1=0 then
-				poschar1=len(code) ''Add 1 as after removing 2
-			else
-				poschar1-=2
-			end if
-			part2=trim(Mid(code,poschar2+1,poschar1-poschar2))
+	if *schptrl=&h20766F6D then ''mov
+		writepos=len(ctx.proc_txt)+1
+		poschar1=instr(code," ")
+		instruc=left(code,poschar1-1)
+		poschar2=instr(code,",")
+		if poschar2=0 then
+			''case movsb|w|d|q
+			prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV
+			exit sub
+		End If
+		part1=trim(mid(code,poschar1+1,poschar2-poschar1-1))
+		poschar1=instr(code,"#")
+		if poschar1=0 then
+			poschar1=len(code) ''Add 1 as after removing 2
+		else
+			poschar1-=2
+		end if
+		part2=trim(Mid(code,poschar2+1,poschar1-poschar2))
 
-			''cancel mov regx, regx
-			if part1=part2 then
+		''cancel mov regx, regx
+		if part1=part2 then
+			#ifdef __GAS64_DEBUG__
 				code="#00"+code
-				prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV
-				exit sub
-			end if
+			#else
+				code=""
+			#endif
+			prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV
+			exit sub
+		end if
+	elseif *schptrl=&h2061656C then ''lea
+		writepos=len(ctx.proc_txt)+1
+		poschar1=instr(code," ")
+		instruc=left(code,poschar1-1)
+		poschar2=instr(code,",")
+		part1=trim(mid(code,poschar1+1,poschar2-poschar1-1))
+		poschar1=instr(code,"#")
+		if poschar1=0 then
+			poschar1=len(code) ''Add 1 as after removing 2
+		else
+			poschar1-=2
+		end if
+		part2=trim(Mid(code,poschar2+1,poschar1-poschar2))
 
-		case "lea"
-			writepos=len(ctx.proc_txt)+1
-			poschar1=instr(code," ")
-			instruc=left(code,poschar1-1)
-			poschar2=instr(code,",")
-			part1=trim(mid(code,poschar1+1,poschar2-poschar1-1))
-			poschar1=instr(code,"#")
-			if poschar1=0 then
-				poschar1=len(code) ''Add 1 as after removing 2
-			else
-				poschar1-=2
-			end if
-			part2=trim(Mid(code,poschar2+1,poschar1-poschar2))
+		if instr(code,"   add ") then
+			prevpart1="":prevpart2=""
+			exit sub ''case where an add xxx is associated with lea see store for example
+		end if
+		flag=KUSE_LEA
+		prevpart1=part1
+		prevpart2=part2
+		prevwpos=writepos
+		exit sub
+	elseif *schptrl=&h20706D6A then 'jmp
+		writepos=len(ctx.proc_txt)+1
+		poschar1=instr(code," ")
+		instruc=left(code,poschar1-1)
+		poschar2=instr(code,",")
+		part1=trim(mid(code,poschar1+1,poschar2-poschar1-1))
+		poschar1=instr(code,"#")
+		if poschar1=0 then
+			poschar1=len(code) ''Add 1 as after removing 2
+		else
+			poschar1-=2
+		end if
+		part2=trim(Mid(code,poschar2+1,poschar1-poschar2))
 
-			if instr(code,"   add ") then
-				prevpart1="":prevpart2=""
-				exit sub ''case where an add xxx is associated with lea see store for example
-			end if
-			flag=KUSE_LEA
+		if part1=prevpart1 then
+			''mov r11, rax  --> #10mov r11, rax
+			''jmp r11       --> #10jmp r11
+			''              --> jmp rax
+			#ifdef __GAS64_DEBUG__
+				mid(ctx.proc_txt,prevwpos)="#10"
+				code="#10"+code+newline+"   "+"jmp "+prevpart2+" #10"
+			#else
+				*textptr=prevwpos-1 ''new length
+				code="jmp "+prevpart2
+			#endif
+			prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV
+			exit sub
+		else
 			prevpart1=part1
-			prevpart2=part2
+			flag=KUSE_JMP
 			prevwpos=writepos
 			exit sub
-
-		case "jmp"
-			writepos=len(ctx.proc_txt)+1
-			poschar1=instr(code," ")
-			instruc=left(code,poschar1-1)
-			poschar2=instr(code,",")
-			part1=trim(mid(code,poschar1+1,poschar2-poschar1-1))
-			poschar1=instr(code,"#")
-			if poschar1=0 then
-				poschar1=len(code) ''Add 1 as after removing 2
-			else
-				poschar1-=2
-			end if
-			part2=trim(Mid(code,poschar2+1,poschar1-poschar2))
-
-			if part1=prevpart1 then
-				''mov r11, rax  --> #10mov r11, rax
-				''jmp r11       --> #10jmp r11
-				''              --> jmp rax
-				mid(ctx.proc_txt,prevwpos)="#10"
-				code="#10"+code+newline+string( ctx.indent*3, 32 )+"jmp "+prevpart2+" #Optim 10"
-				prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV
-				exit sub
-			else
-				prevpart1=part1
-				flag=KUSE_JMP
-				prevwpos=writepos
-				exit sub
-			end if
-
-		case "cmp"
-			if len(prevpart1) then
-				if flag<>KUSE_LEA then
-					writepos=len(ctx.proc_txt)+1
-					poschar1=instr(code," ")
-					instruc=left(code,poschar1-1)
-					poschar2=instr(code,",")
-					part1=trim(mid(code,poschar1+1,poschar2-poschar1-1))
-					poschar1=instr(code,"#")
-					if poschar1=0 then
-						poschar1=len(code) ''Add 1 as after removing 2
-					else
-						poschar1-=2
-					end if
-					part2=trim(Mid(code,poschar2+1,poschar1-poschar2))
-
-					''mov r11, rax
-					''cmp r11,xx    --> cmp rax, xx
-					''or
-					''mov r11, xx[rbp]
-					''cmp r10, r11  --> cmp r10, xx[rbp]
-					if part1[0]=asc("r") then
-						if part1=prevpart1 and prevpart2[0]=asc("r") then
-
-							if prevpart2="rax" and ctx.jmpreg<>KREG_RAX then
-								asm_info(" Rax assigned to ctx.jmpreg instead "+*regstrq(ctx.jmpreg))
-								ctx.jmpreg=KREG_RAX
-							end if
-
-							if part1[0]=asc("r") and part2="0" then
-								''cmp reg, 0 --> test reg, reg
-								mid(ctx.proc_txt,prevwpos)="#17"
-								code="#17"+code+newline+string( ctx.indent*3, 32 )+"test "+prevpart2+", "+prevpart2+" #Optim 17"
-							else
-								mid(ctx.proc_txt,prevwpos)="#13"
-								code="#13"+code+newline+string( ctx.indent*3, 32 )+"cmp "+prevpart2+", "+part2+" #Optim 13"
-							End If
-						elseif part2=prevpart1 and instr(prevpart2,"[") then
-							mid(ctx.proc_txt,prevwpos)="#14"
-							code="#14"+code+newline+string( ctx.indent*3, 32 )+"cmp "+part1+", "+prevpart2+" #Optim 14"
-						end if
-					end if
-				end if
-				prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV ''reinit
-			else
+		end if
+	elseif *schptrl=&h20706D63 then ''cmp
+		if len(prevpart1) then
+			if flag<>KUSE_LEA then
+				writepos=len(ctx.proc_txt)+1
 				poschar1=instr(code," ")
 				instruc=left(code,poschar1-1)
 				poschar2=instr(code,",")
@@ -616,89 +600,150 @@ private sub check_optim(byref code as string)
 				else
 					poschar1-=2
 				end if
-				''cmp reg, 0 --> test reg, reg
 				part2=trim(Mid(code,poschar2+1,poschar1-poschar2))
-				if part1[0]=asc("r") and part2="0" then
-					code="test "+part1+", "+part1+" #Optim 18"
-					prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV ''reinit
+
+				''mov r11, rax
+				''cmp r11,xx    --> cmp rax, xx
+				''or
+				''mov r11, xx[rbp]
+				''cmp r10, r11  --> cmp r10, xx[rbp]
+				if part1[0]=asc("r") then
+					if part1=prevpart1 and prevpart2[0]=asc("r") then
+
+						if prevpart2="rax" and ctx.jmpreg<>KREG_RAX then
+							asm_info(" Rax assigned to ctx.jmpreg instead "+*regstrq(ctx.jmpreg))
+							ctx.jmpreg=KREG_RAX
+						end if
+
+						if part1[0]=asc("r") and part2="0" then
+							''cmp reg, 0 --> test reg, reg
+							#ifdef __GAS64_DEBUG__
+								mid(ctx.proc_txt,prevwpos)="#17"
+								code="#17"+code+newline+"   "+"test "+prevpart2+", "+prevpart2+" #x17"
+							#else
+								*textptr=prevwpos-1 ''new length
+								code="test "+prevpart2+", "+prevpart2
+							#endif
+						else
+							#ifdef __GAS64_DEBUG__
+								mid(ctx.proc_txt,prevwpos)="#13"
+								code="#13"+code+newline+"   "+"cmp "+prevpart2+", "+part2+" #13"
+							#else
+								*textptr=prevwpos-1 ''new length
+								code="cmp "+prevpart2+", "+part2
+							#endif
+						End If
+					elseif part2=prevpart1 and instr(prevpart2,"[") then
+						#ifdef __GAS64_DEBUG__
+							mid(ctx.proc_txt,prevwpos)="#14"
+							code="#14"+code+newline+"   "+"cmp "+part1+", "+prevpart2+" #14"
+						#else
+							*textptr=prevwpos-1 ''new length
+							code="cmp "+part1+", "+prevpart2
+						#endif
+					end if
 				end if
 			end if
-			exit sub
-		case else
-
-			select case left(code,4)
-				case "adds","subs","muls","divs"
-
-					writepos=len(ctx.proc_txt)+1
-					poschar1=instr(code," ")
-					instruc=left(code,poschar1-1)
-					poschar2=instr(code,",")
-					part1=trim(mid(code,poschar1+1,poschar2-poschar1-1))
-					poschar1=instr(code,"#")
-					if poschar1=0 then
-						poschar1=len(code) ''Add 1 as after removing 2
-					else
-						poschar1-=2
-					end if
-					part2=trim(Mid(code,poschar2+1,poschar1-poschar2))
-
-					if prevpart1=part2 then
-						if instr(prevpart2,"[r") then
-							mid(ctx.proc_txt,prevwpos)="#15"
-							code="#15"+code+newline+string( ctx.indent*3, 32 )+instruc+" "+part1+", "+prevpart2+" #Optim 15"
-						end if
-					end if
-			end select
 			prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV ''reinit
-			exit sub
-	end select
+		else
+			poschar1=instr(code," ")
+			instruc=left(code,poschar1-1)
+			poschar2=instr(code,",")
+			part1=trim(mid(code,poschar1+1,poschar2-poschar1-1))
+			poschar1=instr(code,"#")
+			if poschar1=0 then
+				poschar1=len(code) ''Add 1 as after removing 2
+			else
+				poschar1-=2
+			end if
+			''cmp reg, 0 --> test reg, reg
+			part2=trim(Mid(code,poschar2+1,poschar1-poschar2))
+			if part1[0]=asc("r") and part2="0" then
+				code="test "+part1+", "+part1+" #18"
+				prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV ''reinit
+			end if
+		end if
+		exit sub
+	else
+		select case left(code,4)
+			case "adds","subs","muls","divs"
+				poschar1=instr(code," ")
+				instruc=left(code,poschar1-1)
+				poschar2=instr(code,",")
+				part1=trim(mid(code,poschar1+1,poschar2-poschar1-1))
+				poschar1=instr(code,"#")
+				if poschar1=0 then
+					poschar1=len(code) ''Add 1 as after removing 2
+				else
+					poschar1-=2
+				end if
+				part2=trim(Mid(code,poschar2+1,poschar1-poschar2))
 
-	''todo reactivate but exclude if dest not a register
-	if instruc="movsxd" then prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV :exit sub
-	if instruc="movsx"  then prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV :exit sub
-	if instruc="movzx"  then prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV :exit sub
+				if prevpart1=part2 then
+					if instr(prevpart2,"[r") then
+						#ifdef __GAS64_DEBUG__
+							mid(ctx.proc_txt,prevwpos)="#15"
+							code="#15"+code+newline+"   "+instruc+" "+part1+", "+prevpart2+" #15"
+						#else
+							*textptr=prevwpos-1 ''new length substarcting also final zero
+							code=instruc+" "+part1+", "+prevpart2+" #x15"
+						#endif
+					end if
+				end if
+		end select
+		prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV ''reinit
+		exit sub
+	end if
+	''for now limited to mov if in use exclude if dest not a register
+	'if instruc="movsxd" then prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV :exit sub
+	'if instruc="movsx"  then prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV :exit sub
+	'if instruc="movzx"  then prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV :exit sub
 
 	if flag=KUSE_LEA then
 		if instr(part1,"["+prevpart1+"]") then
 			''check register or immediate
 			if part2[0]=asc("r") Or part2[0]=asc("e") or (asc(Right(part2,1))>=48 and asc(right(part2,1))<=57) then
-				'asm_info("OPTIMIZATION 4 (lea)")
-				'asm_info("removed =lea "+prevpart1+", "+prevpart2)
-				mid(ctx.proc_txt,prevwpos)="#04"
-
-				'asm_info("removed ="+mov+" "+part1+", "+part2)
+				''OPTIMIZATION 4 lea
 				newcode=instruc+" "+mid(part1,1,instr(part1,"[")-1)+prevpart2+", "+part2
-				'newcode="lea "+Mid(part1,1,instr(part1,"[")-1)+prevpart2+", "+part2
-				'asm_info("proposed="+newcode)
-
-				writepos=len(ctx.proc_txt)+len(code)+9
-				code="#04"+code+newline+string( ctx.indent*3, 32 )+newcode+" #Optim 4"
+				#ifdef __GAS64_DEBUG__
+					mid(ctx.proc_txt,prevwpos)="#04"
+					'writepos=len(ctx.proc_txt)+len(code)+9
+					code="#04"+code+newline+"   "+newcode+" #04"
+				#else
+					*textptr=prevwpos-1 ''new length
+					code=newcode+" #x04"
+				#EndIf
 			end if
 		else
 			if part2=prevpart1 and part1[0]=asc("r") then
-				'asm_info("OPTIMIZATION 5 (lea)")
-				'asm_info("removed =lea "+prevpart1+", "+prevpart2)
-				mid(ctx.proc_txt,prevwpos)="#05"
-
-				'asm_info("removed ="+mov+" "+part1+", "+part2)
-				'newcode=mov+" "+part1+", "+prevpart2
+				'#05lea r11, -104[rbp]
+				'#05mov rcx, r11
+				'lea rcx, -104[rbp] #05
 				newcode="lea "+part1+", "+prevpart2
-				'asm_info("proposed="+newcode)
-
-				writepos=len(ctx.proc_txt)+len(code)+9
-				code="#05"+code+newline+string( ctx.indent*3, 32 )+newcode+" #Optim 5"
+				#ifdef __GAS64_DEBUG__
+					mid(ctx.proc_txt,prevwpos)="#05"
+					'writepos=len(ctx.proc_txt)+len(code)+9
+					code="#05"+code+newline+"   "+newcode+" #05"
+				#else
+					*textptr=prevwpos-1 ''new length
+					code=newcode+" #x05"
+				#endif
 			else
 				if part1[0]=asc("r") andalso part2="["+prevpart1+"]" then
-					'asm_info("OPTIMIZATION 7 (lea)")
-					mid(ctx.proc_txt,prevwpos)="#07"
+					''OPTIMIZATION 7 (lea)
 					newcode=instruc+" "+part1+", "+prevpart2
-					writepos=len(ctx.proc_txt)+len(code)+9
-					code="#07"+code+newline+string( ctx.indent*3, 32 )+newcode+" #Optim 7"
+					#ifdef __GAS64_DEBUG__
+						mid(ctx.proc_txt,prevwpos)="#07"
+						code="#07"+code+newline+"   "+newcode+" #07"
+					#else
+						*textptr=prevwpos-1 ''new length
+						code=newcode+" #x07"
+					#endif
 				else
 					prevpart1=part1
 					prevpart2=part2
 					previnstruc=instruc
-					prevwpos=writepos
+					prevwpos=writepos ''A VERIFIER SI VALEUR CORRECTE
 					flag=KUSE_MOV
 					exit sub
 				end if
@@ -713,24 +758,25 @@ private sub check_optim(byref code as string)
 		if part1=prevpart2 then
 			if instr(part2,"[")<>0 and (right(part1,1)="d" or part1[0]=asc("e")) then
 				''to avoid issue if after 64bit register is used with xmm
-				writepos=len(ctx.proc_txt)+len(code)+9
-				code="#01"+code+newline+string( ctx.indent*3, 32 )+"and "+part1+" ,0xFFFFFFFF"
+				#ifdef __GAS64_DEBUG__
+					writepos=len(ctx.proc_txt)+len(code)+9
+					code="#01"+code+newline+"   "+"and "+part1+" ,0xFFFFFFFF"
+				#else
+					writepos=len(ctx.proc_txt)+len(code)+3
+					code="and "+part1+" ,0xFFFFFFFF"
+				#endif
 			else
-				code="#01 "+code
+				#ifdef __GAS64_DEBUG__ ''otherwise no output code
+					code="#01 "+code
+				#else
+					code=""
+				#endif
 			End If
 		else
-			if prevpart2="" then ''todo remove me after fixed
-				asm_error("prev/part empty "+"part1="+part1+" part2="+part2+" prevpart1="+prevpart1+" prevpart2="+prevpart2)
-				asm_info("code="+code)
-				asm_info("part1="+part1+" part2="+part2+" prevpart1="+prevpart1+" prevpart2="+prevpart2)
-				exit sub
-			end if
-
 			''direct simple register ?
 			if prevpart2[0]=asc("r") and right(part1,1)<>"d" and part1[0]<>asc("e") then
 				if instr(prevpart1,"[")<>0 then
-					'asm_info("OPTIMIZATION 2-1")
-					''skip comment
+					''OPTIMIZATION 2-1   with [] so keep the line
 					if part1[0]=asc("x") then
 						if instruc="movss" then
 							previnstruc="movd"
@@ -739,31 +785,44 @@ private sub check_optim(byref code as string)
 						end if
 					end if
 				else
-					'asm_info("OPTIMIZATION 2-2")
-					mid(ctx.proc_txt,prevwpos)="#02"
+					''OPTIMIZATION 2-2   without []
+					#ifdef __GAS64_DEBUG__
+						mid(ctx.proc_txt,prevwpos)="#02"
+					#else
+						*textptr=prevwpos-1 ''new length A VERIFIER UNCOMMENTED
+						writepos=prevwpos
+					#endif
 					if instruc="movq" or instruc="movd" then
 						previnstruc=instruc
 					elseif instruc="movsx" then
 						previnstruc=instruc
 					end if
 				end if
-				writepos=len(ctx.proc_txt)+len(code)+9
-				code="#02"+code+newline+string( ctx.indent*3, 32 )+previnstruc+" "+part1+", "+prevpart2+" #Optim 2"
+				#ifdef __GAS64_DEBUG__
+					writepos=len(ctx.proc_txt)+len(code)+9
+					code="#02"+code+newline+"   "+previnstruc+" "+part1+", "+prevpart2+" #02"
+				#else
+					'writepos=len(ctx.proc_txt)+len(code)+3
+					code=previnstruc+" "+part1+", "+prevpart2+" #x02"
+				#endif
 				part2=prevpart2
 			''xmm register ?
 			elseif prevpart2[0]=asc("x") then
 				if instr(prevpart1,"[")<>0 then
-					'asm_info("OPTIMIZATION 3-1")
-					''skip comment
+					''OPTIMIZATION 3-1
 					if previnstruc="movss" orelse part1[0]=asc("e") orelse right(part1,1)="d" then
 						instruc="movd"
 					else
 						instruc="movq"
 					end if
 				else
-					'asm_info("OPTIMIZATION 3-2")
-					mid(ctx.proc_txt,prevwpos)="#03"
-
+					''OPTIMIZATION 3-2
+					#ifdef __GAS64_DEBUG__
+						mid(ctx.proc_txt,prevwpos)="#03"
+					#else
+						*textptr=prevwpos-1 ''new length
+						writepos=prevwpos
+					#endif
 					if previnstruc="movq" then
 						if instr(part2,"[") then
 							instruc="movsd"
@@ -776,23 +835,36 @@ private sub check_optim(byref code as string)
 						instruc="movss"
 					end if
 				end if
-				writepos=len(ctx.proc_txt)+len(code)+9
-				code="#03"+code+newline+string( ctx.indent*3, 32 )+instruc+" "+part1+", "+prevpart2+" #Optim 3"
+				#ifdef __GAS64_DEBUG__
+					writepos=len(ctx.proc_txt)+len(code)+9
+					code="#03"+code+newline+"   "+instruc+" "+part1+", "+prevpart2+" #03"
+				#else
+					code=instruc+" "+part1+", "+prevpart2+" #x03"
+				#endif
 				part2=prevpart2
 			elseif ( part1[0]=asc("r") or part1[0]=asc("e") ) and prevpart1=part2 and instr(prevpart1,"[")=0 then
-				'asm_info("OPTIMIZATION 6")
-				mid(ctx.proc_txt,prevwpos)="#06"
-				'asm_info("part1="+part1+" part2="+part2+" prevpart1="+prevpart1+" prevpart2="+prevpart2)
-				writepos=len(ctx.proc_txt)+len(code)+9
-				code="#06"+code+newline+string( ctx.indent*3, 32 )+previnstruc+" "+part1+", "+prevpart2+" #Optim 6"
+				''OPTIMIZATION 6
+				#ifdef __GAS64_DEBUG__
+					mid(ctx.proc_txt,prevwpos)="#06"
+					writepos=len(ctx.proc_txt)+len(code)+9
+					code="#06"+code+newline+"   "+previnstruc+" "+part1+", "+prevpart2+" #06"
+				#else
+					*textptr=prevwpos-1 ''new length
+					writepos=prevwpos
+					code=previnstruc+" "+part1+", "+prevpart2+" #x06"
+				#endif
 				part2=prevpart2
-
 			elseif ( prevpart2[0]=asc("r") or prevpart2[0]=asc("e") ) and prevpart1=part2 then 'and instr(part1,"[")=0
-				'asm_info("OPTIMIZATION 16")
+				''OPTIMIZATION 16
 				if instr(prevpart1,"[")=0 then
-					mid(ctx.proc_txt,prevwpos)="#16"
+					#ifdef __GAS64_DEBUG__
+						mid(ctx.proc_txt,prevwpos)="#16"
+						writepos=len(ctx.proc_txt)+len(code)+9
+					#else
+						*textptr=prevwpos-1 ''new length
+						writepos=prevwpos
+					#endif
 				end if
-				'asm_info("part1="+part1+" part2="+part2+" prevpart1="+prevpart1+" prevpart2="+prevpart2)
 				if part1[0]=asc("x") then
 					if prevpart2[0]=asc("e") then '32bit -->xmmN
 						instruc="movd"
@@ -815,18 +887,33 @@ private sub check_optim(byref code as string)
 					end if
 				End If
 
-				writepos=len(ctx.proc_txt)+len(code)+9
-				code="#16"+code+newline+string( ctx.indent*3, 32 )+instruc+" "+part1+", "+prevpart2+" #Optim 16"
+				#ifdef __GAS64_DEBUG__
+					code="#16"+code+newline+"   "+instruc+" "+part1+", "+prevpart2+" #16"
+				#else
+					code=instruc+" "+part1+", "+prevpart2+" #16"
+				#endif
 				part2=prevpart2
 
 			elseif prevpart2[0]>=asc("0") andalso prevpart2[0]<=asc("9") andalso instr(prevpart1,"[") andalso part1[0]<>asc("x") then
 				''mov -40[rbp], 89
 				''mov r11, -40[rbp] --> mov r11, 89 (no memory access) and if value is zero changed by xor r11, r11
-				writepos=len(ctx.proc_txt)+len(code)+9
+				#ifdef __GAS64_DEBUG__
+					writepos=len(ctx.proc_txt)+len(code)+9
+				#else
+					''nothing to do
+				#endif
 				if prevpart2[0]=asc("0") and len(prevpart2)=1 then
-					code="#20"+code+newline+string( ctx.indent*3, 32 )+"xor "+part1+", "+part1+" #Optim 20"
+					#ifdef __GAS64_DEBUG__
+						code="#20"+code+newline+"   "+"xor "+part1+", "+part1+" #20"
+					#else
+						code="xor "+part1+", "+part1+" #20"
+					#endif
 				else
-					code="#19"+code+newline+string( ctx.indent*3, 32 )+instruc+" "+part1+", "+prevpart2+" #Optim 19"
+					#ifdef __GAS64_DEBUG__
+						code="#19"+code+newline+"   "+instruc+" "+part1+", "+prevpart2+" #19"
+					#else
+						code=instruc+" "+part1+", "+prevpart2+" #19"
+					#endif
 					part2=prevpart2
 				end if
 			end if
@@ -1363,8 +1450,8 @@ dim as string ln,lname
 		else
 			check_optim(ln)
 		end if
-		ln = string( ctx.indent*3, 32 ) + ln
 #ifdef __GAS64_DEBUG__
+		ln = "   " + ln
 	end if
 #endif
 	''print ln ''used to display every line when compiler crashes....
@@ -2754,12 +2841,10 @@ end sub
 
 private sub hmaybeemitglobalvar( byval sym as FBSYMBOL ptr )
 	'' Skip DATA descriptor arrays here, they're handled by irForEachDataStmt()
-	ctx.indent +=1
 	asm_info("global var="+*symbGetMangledName(sym))
 	if( symbIsDataDesc( sym ) = FALSE ) then
 		hEmitVariable( sym )
 	end if
-	ctx.indent -=1
 end sub
 private sub no_roundsd(byval size as zstring ptr)
 	''when the CPU doesn't provide roundsd/roundss (needs see41)
@@ -2908,7 +2993,6 @@ private function _emitbegin( ) as integer
 	end if
 
 	'
-	ctx.indent = 0
 	ctx.head_txt = ""
 	ctx.body_txt = ""
 	ctx.foot_txt = ""
@@ -2947,7 +3031,6 @@ private function _emitbegin( ) as integer
 		redim listreg(1 to 6)
 		listreg(1)=KREG_RCX:listreg(2)=KREG_RDX:listreg(3)=KREG_R8:listreg(4)=KREG_R9:listreg(5)=KREG_R10:listreg(6)=KREG_R11
 	end if
-	ctx.indent+=1
 
 	if( env.clopt.debuginfo = true ) then
 		edbgemitheader_asm64( env.inf.name )
@@ -2968,7 +3051,6 @@ private function _emitbegin( ) as integer
 	asm_code( ".intel_syntax noprefix")
 	cfi_windows_asm_code( ".cfi_sections .debug_frame")
 	asm_section(".text")
-	ctx.indent-=1
 
 	if env.clopt.profile = FB_PROFILE_OPT_CYCLES then
 		hProfileEmitSections()
@@ -3017,13 +3099,10 @@ private sub hAddGlobalCtorDtor( byval proc as FBSYMBOL ptr )
 	end if
 end sub
 private sub _emitend( )
-	ctx.indent +=1
 	ctx.section = SECTION_FOOT
 
 	'' the variables
-	ctx.indent -=1 ''+1/-1 also done in hMaybeEmitGlobalVar
 	symbForEachGlobal( FB_SYMBCLASS_VAR, @hMaybeEmitGlobalVar )
-	ctx.indent +=1
 	'' DATA array initializers can reference globals by taking their address,
 	'' so they must be emitted after the other global declarations.
 	irForEachDataStmt( @hEmitVariable )
@@ -3067,7 +3146,7 @@ private sub _emitend( )
 		asm_code("pop rdx",KNOFREE)
 		asm_code("pop rcx",KNOFREE)
 		asm_code("pop rbx",KNOFREE)
-		asm_code("ret",KNOFREE)
+		asm_code("ret",KNOALL)
 	end if
 
 	if( env.clopt.profile = FB_PROFILE_OPT_CYCLES ) then
@@ -7142,7 +7221,7 @@ end sub
 private sub _emitreturn( byval bytestopop as integer )
 	asm_info("return for gosub="+str(bytestopop))
 	asm_code("add rsp, 88 # restore stack for gosub",KNOFREE)
-	asm_code("ret",KNOFREE)
+	asm_code("ret",KNOALL)
 end sub
 private sub _emitjmptb _
 	( _
@@ -7578,7 +7657,6 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 	asm_info("=============================================================================")
 	asm_info("===== Proc begin : "+ *symbGetMangledName( proc )+" =====")
 	asm_info("=============================================================================")
-	ctx.indent+=1
 
 	ctx.arginteg=0 ''nb arg integer
 	ctx.argfloat=0 ''nb arg float
@@ -7619,10 +7697,8 @@ private sub _emitprocbegin(byval proc as FBSYMBOL ptr,byval initlabel as FBSYMBO
 		asm_code(".globl "+*symbGetMangledName( proc ))
 	end if
 	cfi_windows_asm_code(".seh_proc "+*symbGetMangledName( proc ))
-	ctx.indent-=1
 	asm_code(*symbGetMangledName( proc )+":")
 	cfi_asm_code(".cfi_startproc")
-	ctx.indent+=1
 
 	asm_info("stk4="+Str(ctx.stk)+" reserved space for saving registers when proc calls")
 
@@ -7759,7 +7835,6 @@ private sub _emitprocend _
 		asm_code(lname+":")
 	end if
 
-	ctx.indent -= 1
 	asm_info("===== End of proc =====")
 
 	flistReset( @ctx.spillvregs )
