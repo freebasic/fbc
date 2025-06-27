@@ -945,6 +945,7 @@ end sub
 #define KCMP 3
 #define KDIV 4
 #define KADD 5
+#define KCALL 6
 
 '======================================================
 private sub reg_freeable(byref lineasm as string)
@@ -1007,6 +1008,7 @@ private sub reg_freeable(byref lineasm as string)
 	elseif *schptrl=&h20646E61 then 'and
 	elseif *schptrl=&h20726F78 then 'xor
 	elseif *schptrl=&h6C6C6163 then 'call
+		instruc=KCALL
 		linstruc=5
 	elseif *schptrl=&h20706D6A then 'jmp
 	elseif *schptrl=&h68737570 then 'push
@@ -1350,6 +1352,13 @@ private sub reg_freeable(byref lineasm as string)
 			reghandle(regfound12)=KREGFREE
 		elseif instruc=KDIV then
 			reghandle(regfound12)=KREGFREE
+		elseif instruc=KCALL then
+			if regfound11<>-1 then
+				reghandle(regfound11)=KREGFREE ''call [reg]
+			end if
+			if regfound12<>-1 then
+				reghandle(regfound12)=KREGFREE ''call reg
+			end if
 		elseif regfound12=regfound22 then
 			if regfound12<>-1 then
 				if instruc<>KADD then 'in multiplication optim ("add "+op1+", "+op1)
