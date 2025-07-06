@@ -962,7 +962,7 @@ private sub reg_freeable(byref lineasm as string)
 
 	dim as Integer ichar=any,linstruc=any,instruc=any
 	dim as Integer regfound11=any,regfound12=any,regfound21=any,regfound22=any,regfound3=any
-    dim as long ptr  schptrl=any
+	dim as long ptr  schptrl=any
 	dim as short ptr schptrs=any
 	dim as byte ptr schptrb=any,bptr=any
 
