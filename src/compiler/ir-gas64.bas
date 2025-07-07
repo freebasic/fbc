@@ -2480,27 +2480,27 @@ private sub memfill(byval bytestofill as Integer,byref dst as string,byval dtyp 
 	end if
 	if nbbytes>3 then
 		''clear 7/6/5/4 bytes
-		asm_code("mov dword ptr ["+regdst+"], "+Str(fill4),nooptim)
+		asm_code("mov DWORD PTR ["+regdst+"], "+Str(fill4),nooptim)
 		nbbytes-=4
 		if nbbytes>1 then
-			asm_code("mov word ptr 4["+regdst+"], "+Str(fill2),nooptim)
+			asm_code("mov WORD PTR 4["+regdst+"], "+Str(fill2),nooptim)
 			nbbytes-=2
 			if nbbytes>0 then
-				asm_code("mov byte ptr 6["+regdst+"], "+Str(fillchar),nooptim)
+				asm_code("mov BYTE PTR 6["+regdst+"], "+Str(fillchar),nooptim)
 			end if
 		elseif nbbytes>0 then
-			asm_code("mov byte ptr 4["+regdst+"], "+Str(fillchar),nooptim)
+			asm_code("mov BYTE PTR 4["+regdst+"], "+Str(fillchar),nooptim)
 		end if
 	elseif nbbytes>1 then
 		''clear 2/3 bytes
-		asm_code("mov word ptr ["+regdst+"], "+Str(fill2),nooptim)
+		asm_code("mov WORD PTR ["+regdst+"], "+Str(fill2),nooptim)
 		nbbytes-=2
 		if nbbytes>0 then
-			asm_code("mov byte ptr 2["+regdst+"], "+Str(fillchar),nooptim)
+			asm_code("mov BYTE PTR 2["+regdst+"], "+Str(fillchar),nooptim)
 		end if
 	elseif nbbytes>0 then
 		 ''clear 1 byte
-		asm_code("mov byte ptr ["+regdst+"], "+Str(fillchar))
+		asm_code("mov BYTE PTR ["+regdst+"], "+Str(fillchar))
 	end if
 end sub
 ''=============================================
@@ -2572,34 +2572,34 @@ private sub memcopy(byval bytestocopy as Integer,byref src as string, byref dst 
 
 	if nbbytes>3 then
 		''copy 7/6/5/4 bytes
-		asm_code("mov eax, dword ptr ["+regsrc+"]")
-		asm_code("mov dword ptr ["+regdst+"], eax")
+		asm_code("mov eax, DWORD PTR ["+regsrc+"]")
+		asm_code("mov DWORD PTR ["+regdst+"], eax")
 		nbbytes-=4
 		if nbbytes>1 then
 			''copy 3/2 bytes
-			asm_code("mov ax, word ptr 4["+regsrc+"]")
-			asm_code("mov word ptr 4["+regdst+"], ax")
+			asm_code("mov ax, WORD PTR 4["+regsrc+"]")
+			asm_code("mov WORD PTR 4["+regdst+"], ax")
 			nbbytes-=2
 			if nbbytes>0 then
-				asm_code("mov al, byte ptr 6["+regsrc+"]")
-				asm_code("mov byte ptr 6["+regdst+"], al")
+				asm_code("mov al, BYTE PTR 6["+regsrc+"]")
+				asm_code("mov BYTE PTR 6["+regdst+"], al")
 			end if
 		elseif nbbytes>0 then
-				asm_code("mov al, byte ptr 4["+regsrc+"]")
-				asm_code("mov byte ptr 4["+regdst+"], al")
+				asm_code("mov al, BYTE PTR 4["+regsrc+"]")
+				asm_code("mov BYTE PTR 4["+regdst+"], al")
 		end if
 	elseif nbbytes>1 then
 	''copy 3/2 bytes
-		asm_code("mov ax, word ptr ["+regsrc+"]")
-		asm_code("mov word ptr ["+regdst+"], ax")
+		asm_code("mov ax, WORD PTR ["+regsrc+"]")
+		asm_code("mov WORD PTR ["+regdst+"], ax")
 		nbbytes-=2
 		if nbbytes>0 then
-			asm_code("mov al, byte ptr 2["+regsrc+"]")
-			asm_code("mov byte ptr 2["+regdst+"], al")
+			asm_code("mov al, BYTE PTR 2["+regsrc+"]")
+			asm_code("mov BYTE PTR 2["+regdst+"], al")
 		end if
 	elseif nbbytes>0 then
-		asm_code("mov al, byte ptr ["+regsrc+"]")
-		asm_code("mov byte ptr ["+regdst+"], al")
+		asm_code("mov al, BYTE PTR ["+regsrc+"]")
+		asm_code("mov BYTE PTR ["+regdst+"], al")
 	end if
 
 	if regsrc<>src then reghandle(rsrc)=KREGFREE :asm_info("hidden freeing register="+*regstrq(rsrc))''free registers
@@ -2868,7 +2868,7 @@ private sub no_roundsd(byval size as zstring ptr)
 	''when the CPU doesn't provide roundsd/roundss (needs see41)
 	asm_code("stmxcsr $mxcsr[rip]",KNOFREE)
 	asm_code("push $mxcsr[rip]",KNOFREE)
-	asm_code("and dword ptr $mxcsr[rip], 0xFFFF9FFF",KNOFREE)
+	asm_code("and DWORD PTR $mxcsr[rip], 0xFFFF9FFF",KNOFREE)
 	asm_code("ldmxcsr $mxcsr[rip]",KNOFREE)
 	asm_code("cvts"+*size+"2si rax, xmm0",KNOFREE)
 	asm_code("pop $mxcsr[rip]",KNOFREE)
@@ -2912,14 +2912,14 @@ private sub hProfileProcProlog()
 	dim as string proflbl = FB_PROFILE_DATA_NAME + str(ctx.profprcnb)
 
 	asm_info("init time entering proc ---------------------------------------")
-	asm_code("add QWORD ptr "+PROFILE_REC_COUNT+", 1",KNOFREE)
+	asm_code("add QWORD PTR "+PROFILE_REC_COUNT+", 1",KNOFREE)
 	asm_code("push rax",KNOFREE)
 	asm_code("push rdx",KNOFREE)
 	asm_code("rdtsc",KNOFREE)
 	asm_code("shl rdx,32",KNOFREE)
 	asm_code("or rdx,rax",KNOFREE)
-	asm_code("mov QWORD ptr "+PROFILE_REC_INIT0+", rdx",KNOFREE) ''put in init0
-	asm_code("mov QWORD ptr "+PROFILE_REC_REINIT+", rdx",KNOFREE) ''put in init
+	asm_code("mov QWORD PTR "+PROFILE_REC_INIT0+", rdx",KNOFREE) ''put in init0
+	asm_code("mov QWORD PTR "+PROFILE_REC_REINIT+", rdx",KNOFREE) ''put in init
 	asm_code("pop rdx",KNOFREE)
 	asm_code("pop rax",KNOFREE)
 	asm_info("---------------------------------------------------------------")
@@ -2967,7 +2967,7 @@ sub hProfileDoCall( byref pname as string )
 	asm_code("rdtsc",KNOFREE)
 	asm_code("shl rdx,32",KNOFREE)
 	asm_code("or rdx,rax",KNOFREE)
-	asm_code("mov QWORD ptr "+PROFILE_REC_REINIT+", rdx",KNOFREE)''reinit
+	asm_code("mov QWORD PTR "+PROFILE_REC_REINIT+", rdx",KNOFREE)''reinit
 	asm_code("pop rdx",KNOFREE)
 	asm_code("pop rax",KNOFREE)
 	asm_info("---------------------------------------------------------------")
@@ -6675,7 +6675,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 					if v2->typ=IR_VREGTYPE_REG then
 						select case as const lgt
 							case 1
-								asm_code("mov byte PTR "+Str((cptarg-1)*8)+"[rsp], "+op1)
+								asm_code("mov BYTE PTR "+Str((cptarg-1)*8)+"[rsp], "+op1)
 							case 2
 								asm_code("mov WORD PTR "+Str((cptarg-1)*8)+"[rsp], "+op1)
 							case 4
@@ -6687,7 +6687,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 						select case as const lgt
 							case 1
 								asm_code("mov al, "+op1)
-								asm_code("mov byte PTR "+Str((cptarg-1)*8)+"[rsp], al")
+								asm_code("mov BYTE PTR "+Str((cptarg-1)*8)+"[rsp], al")
 							case 2
 								asm_code("mov ax, "+op1)
 								asm_code("mov WORD PTR "+Str((cptarg-1)*8)+"[rsp], ax")
@@ -6883,7 +6883,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 						if v2->typ=IR_VREGTYPE_REG then
 							select case as const lgt
 								case 1
-									asm_code("mov byte PTR "+Str((cptarg-1)*8)+"[rsp], "+op1)
+									asm_code("mov BYTE PTR "+Str((cptarg-1)*8)+"[rsp], "+op1)
 								case 2
 									asm_code("mov WORD PTR "+Str((cptarg-1)*8)+"[rsp], "+op1)
 								case 4
@@ -6895,7 +6895,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 							select case as const lgt
 								case 1
 									asm_code("mov al, "+op1)
-									asm_code("mov byte PTR "+Str((cptarg-1)*8)+"[rsp], al")
+									asm_code("mov BYTE PTR "+Str((cptarg-1)*8)+"[rsp], al")
 								case 2
 									asm_code("mov ax, "+op1)
 									asm_code("mov WORD PTR "+Str((cptarg-1)*8)+"[rsp], ax")
