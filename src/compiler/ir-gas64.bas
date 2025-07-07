@@ -501,7 +501,7 @@ private sub check_optim(byref code as string)
 		exit sub
 	end if
 
-	if *schptrl=&h20766F6D then ''mov
+	if *schptrl=&h20766F6D orelse left(code,3)="mov" then ''mov
 		writepos=len(ctx.proc_txt)+1
 		poschar1=instr(code," ")
 		instruc=left(code,poschar1-1)
@@ -601,7 +601,6 @@ private sub check_optim(byref code as string)
 					poschar1-=2
 				end if
 				part2=trim(Mid(code,poschar2+1,poschar1-poschar2))
-
 				''mov r11, rax
 				''cmp r11,xx    --> cmp rax, xx
 				''or
@@ -641,6 +640,11 @@ private sub check_optim(byref code as string)
 							*textptr=prevwpos-1 ''new length
 							code="cmp "+part1+", "+prevpart2
 						#endif
+					else
+						if part1[0]=asc("r") and part2="0" then
+							code="test "+part1+", "+part1+" #18"
+							prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV ''reinit
+						End If
 					end if
 				end if
 			end if
@@ -695,9 +699,9 @@ private sub check_optim(byref code as string)
 		exit sub
 	end if
 	''for now limited to mov if in use exclude if dest not a register
-	'if instruc="movsxd" then prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV :exit sub
-	'if instruc="movsx"  then prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV :exit sub
-	'if instruc="movzx"  then prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV :exit sub
+	if instruc="movsxd" then prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV :exit sub
+	if instruc="movsx"  then prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV :exit sub
+	if instruc="movzx"  then prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV :exit sub
 
 	if flag=KUSE_LEA then
 		if instr(part1,"["+prevpart1+"]") then
@@ -707,12 +711,17 @@ private sub check_optim(byref code as string)
 				newcode=instruc+" "+mid(part1,1,instr(part1,"[")-1)+prevpart2+", "+part2
 				#ifdef __GAS64_DEBUG__
 					mid(ctx.proc_txt,prevwpos)="#04"
-					'writepos=len(ctx.proc_txt)+len(code)+9
+					writepos=len(ctx.proc_txt)+len(code)+9
 					code="#04"+code+newline+"   "+newcode+" #04"
 				#else
 					*textptr=prevwpos-1 ''new length
 					code=newcode+" #x04"
 				#EndIf
+				prevpart1=mid(part1,1,instr(part1,"[")-1)+prevpart2
+				prevpart2=part2
+				flag=KUSE_MOV
+				prevwpos=writepos
+				exit sub
 			end if
 		else
 			if part2=prevpart1 and part1[0]=asc("r") then
