@@ -955,6 +955,7 @@ end sub
 #define KDIV 4
 #define KADD 5
 #define KCALL 6
+#define KPUSH 7
 
 '======================================================
 private sub reg_freeable(byref lineasm as string)
@@ -1021,6 +1022,7 @@ private sub reg_freeable(byref lineasm as string)
 		linstruc=5
 	elseif *schptrl=&h20706D6A then 'jmp
 	elseif *schptrl=&h68737570 then 'push
+		instruc=KPUSH
 		linstruc=5
 	elseif *schptrl=&h74736574 then 'test
 		linstruc=5
@@ -1360,6 +1362,8 @@ private sub reg_freeable(byref lineasm as string)
 			ctx.jmppass=2
 			reghandle(regfound12)=KREGFREE
 		elseif instruc=KDIV then
+			reghandle(regfound12)=KREGFREE
+		elseif instruc=KPUSH then
 			reghandle(regfound12)=KREGFREE
 		elseif instruc=KCALL then
 			if regfound11<>-1 then
