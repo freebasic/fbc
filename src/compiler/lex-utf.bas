@@ -144,7 +144,7 @@ private function hUTF8ToUTF16LE( ) as integer static
 		'' create surrogate?
 		if( c > UTF16_MAX_BMP ) then
 			if( chars < LEX_MAXBUFFCHARS-1 ) then
-				*dst = (c shr UTF16_HALFSHIFT) + UTF16_SUR_HIGH_START
+				*dst = ((c - UTF16_HALFBASE) shr UTF16_HALFSHIFT) + UTF16_SUR_HIGH_START
 				dst += 1
 				chars += 1
 			end if
@@ -580,7 +580,7 @@ private function hUTF32LEToUTF16LE( ) as integer static
 		'' create surrogate?
 		if( c > UTF16_MAX_BMP ) then
 			if( chars < LEX_MAXBUFFCHARS-1 ) then
-				*dst = (c shr UTF16_HALFSHIFT) + UTF16_SUR_HIGH_START
+				*dst = ((c - UTF16_HALFBASE) shr UTF16_HALFSHIFT) + UTF16_SUR_HIGH_START
 				dst += 1
 				chars += 1
 			end if
@@ -709,7 +709,7 @@ private function hUTF32BEToUTF16LE( ) as integer static
 		'' create surrogate?
 		if( c > UTF16_MAX_BMP ) then
 			if( chars < LEX_MAXBUFFCHARS-1 ) then
-				*dst = (c shr UTF16_HALFSHIFT) + UTF16_SUR_HIGH_START
+				*dst = ((c - UTF16_HALFBASE) shr UTF16_HALFSHIFT) + UTF16_SUR_HIGH_START
 				dst += 1
 				chars += 1
 			end if

@@ -107,7 +107,9 @@ Version 1.20.0
 - gas64: fix optimization prevented converting 32bit memory/register (SARG)
 - fbc: #cmdline "-end" was not resetting the parser, hiding errors and producing a bad executable
 - sf.net #1009: Invalid symbol when accessing indexed PROPERTY arrays BYREF
-- sf.net #795: unsupported \UNNNN escape sequence is miscompiled - expect "\Unnnnnnnn" escape to have 8 digits  
+- sf.net #795: unsupported \UNNNN escape sequence is miscompiled - expect "\Unnnnnnnn" escape to have 8 digits
+- fbc: unicode code points in UTF-8 and UTF-32LE/BE encoded files were incorrectly converted to UTF-16LE/BE surrogate pairs when code point was in a supplementary planes (codepoints greate than U+FFFF)
+- fbc: fix source typo where bitfield FB_UDTOPT_HASFILLEDFIELD was overlapping FB_UDTOPT_VALISTTYPEMASK possibly causing bad code generation for UDT's with STRING*N fields
 
 
 Version 1.10.3

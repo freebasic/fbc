@@ -496,7 +496,10 @@ enum FB_UDTOPT
 	FB_UDTOPT_HASNESTED         = &h00040000
 	FB_UDTOPT_HASZEROEDFIELD    = &h00080000
 	FB_UDTOPT_HASFILLEDFIELD    = &h00100000
-	FB_UDTOPT_VALISTTYPEMASK    = &h00f00000
+	''                          = &h00200000
+	''                          = &h00400000
+	''                          = &h00800000
+	FB_UDTOPT_VALISTTYPEMASK    = &h0f000000
 end enum
 
 type FB_STRUCT_DBG
@@ -2391,8 +2394,8 @@ declare function symbGetWstrLength( byval sym as FBSYMBOL ptr ) as longint
 #define symbSetUdtHasBitfield( s )   (s)->udt.options or= FB_UDTOPT_HASBITFIELD
 #define symbGetUdtHasBitfield( s ) (((s)->udt.options and FB_UDTOPT_HASBITFIELD) <> 0)
 
-#define symbSetUdtValistType( s, t )   (s)->udt.options or= (((t) shl 20) and FB_UDTOPT_VALISTTYPEMASK)
-#define symbGetUdtValistType( s )    (((s)->udt.options and FB_UDTOPT_VALISTTYPEMASK) shr 20)
+#define symbSetUdtValistType( s, t )   (s)->udt.options or= (((t) shl 24) and FB_UDTOPT_VALISTTYPEMASK)
+#define symbGetUdtValistType( s )    (((s)->udt.options and FB_UDTOPT_VALISTTYPEMASK) shr 24)
 
 #define symbSetUdtIsZstring( s )   (s)->udt.options or= FB_UDTOPT_ISZSTRING
 #define symbGetUdtIsZstring( s ) (((s)->udt.options and FB_UDTOPT_ISZSTRING) <> 0 )
