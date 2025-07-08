@@ -1364,7 +1364,9 @@ private sub reg_freeable(byref lineasm as string)
 		elseif instruc=KDIV then
 			reghandle(regfound12)=KREGFREE
 		elseif instruc=KPUSH then
-			reghandle(regfound12)=KREGFREE
+			if regfound12<>-1 then
+				reghandle(regfound12)=KREGFREE
+			end if
 		elseif instruc=KCALL then
 			if regfound11<>-1 then
 				reghandle(regfound11)=KREGFREE ''call [reg]
