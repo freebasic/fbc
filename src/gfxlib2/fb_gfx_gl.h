@@ -1,8 +1,8 @@
 /* internal OpenGL gfx definitions */
 
 #ifndef DISABLE_OPENGL
-
 #ifdef HOST_DARWIN
+	#define GL_SILENCE_DEPRECATION
 	#include <OpenGL/gl.h>
 	/* Mac GL headers don't define APIENTRY, so we do it manually */
 	#define APIENTRY
