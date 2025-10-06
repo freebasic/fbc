@@ -66,7 +66,7 @@
 
       Optionally, you can install a text editor or IDE which will invoke fbc.exe
       for you, for example:
-        WinFBE         https://github.com/PaulSquires/WinFBE/releases
+        Tiko editor:   https://github.com/PaulSquires/tiko/releases
         VisualFBEditor https://github.com/XusinboyBekchanov/VisualFBEditor/releases
        Or even though is older and unmaintained will work (with some effort):
         FBIDE:         https://fbide.freebasic.net/
@@ -281,7 +281,7 @@
     - Hung Nguyen Gia (gh_origin[at]zohomail.com)
         Solaris and DragonFly porting and testing
     - Paul Squires (support[at]planetsquires.com)
-        WinFBE IDE project and fbc compiler distribution bundle
+        Tiko Editor project and fbc compiler distribution bundle
     - Plasma
         FMOD and BASS headers & examples
     - Ralph Versteegen
