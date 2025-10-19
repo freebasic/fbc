@@ -73,8 +73,8 @@ Version 1.20.0
 - fbc: command line option '-z optabstract' to support optimizing purely abstract types, and only preserve used pure abstract types (skyfish)
 - fbc: warning when "\u" or "\U" escape sequences are invalid or truncated
 - fbc: __FB_QUERY_SYMBOL__( fbc.FB_QUERY_SYMBOL.mangleid, symbol ) returns the mangled name of symbol
-- fbc: NEW uses callocate instead allocate + memset(0) as it's faster
-- gas64: memfill calls MEMSET if area size is greater than 64 bytes as it's faster
+- sf.net #1013 : NEW uses callocate instead allocate + memset(0) as it's faster (SARG)
+- sf.net #1013 (gas64) : memfill calls MEMSET if area size is greater than 64 bytes as it's faster (SARG)
 
 [fixed]
 - github #410: give consistent floating point comparisons results involving NaNs.
