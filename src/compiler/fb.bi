@@ -483,7 +483,9 @@ const FB_DEFAULT_CPUTYPE_ASMJS   = FB_CPUTYPE_ASMJS
 	#error Unsupported CPU arch
 #endif
 
-#if defined( __FB_64BIT__ ) or (not defined( __FB_X86__ ))
+#if defined( __FB_DARWIN__ )
+	const FB_DEFAULT_BACKEND = FB_BACKEND_CLANG
+#elseif defined( __FB_64BIT__ ) or (not defined( __FB_X86__ ))
 	const FB_DEFAULT_BACKEND = FB_BACKEND_GCC
 #else
 	const FB_DEFAULT_BACKEND = FB_BACKEND_GAS

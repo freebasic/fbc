@@ -33,6 +33,8 @@
 	#inclib "opengl32"
 #elseif defined(__FB_DOS__)
 	#inclib "gl"
+#elseif defined(__FB_DARWIN__)
+	'' FIXME: Somehow include the OpenGL framework
 #else
 	#inclib "GL"
 #endif
