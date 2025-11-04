@@ -863,6 +863,9 @@ private sub check_optim(byref code as string)
 				part2=prevpart2
 			elseif ( part1[0]=asc("r") or part1[0]=asc("e") ) and prevpart1=part2 and instr(prevpart1,"[")=0 then
 				''OPTIMIZATION 6
+				if prevpart2[0]<>asc("x") then
+					previnstruc="mov"
+				End If
 				#ifdef __GAS64_DEBUG__
 					mid(ctx.proc_txt,prevwpos)="#06"
 					writepos=len(ctx.proc_txt)+len(code)+9
@@ -4451,11 +4454,11 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 
 		case IR_VREGTYPE_VAR ''format varname ofs1   local/static  ofs1 could be zero
 
-			if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB andalso (symbIsCommon(v1->sym)) then
+			if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB andalso (symbIsCommon(v2->sym)) then
 
 				tempo=reg_findfree(999993)
 				regtempo=*regstrq(tempo)
-				op4="mov "+regtempo+", "+*symbGetMangledName(v1->sym)+"@GOTPCREL[rip]"
+				op4="mov "+regtempo+", "+*symbGetMangledName(v2->sym)+"@GOTPCREL[rip]"
 				op2="["+regtempo+"]"
 
 			else
