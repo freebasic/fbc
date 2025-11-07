@@ -7084,6 +7084,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 
 	if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
 		''asm_code("call " +pname+"@PLT",KNOALL)
+		asm_code("call " +pname,KNOALL)
 	else
 		''asm_code("call " +pname,KNOALL)
 
