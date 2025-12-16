@@ -5226,7 +5226,7 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 	if op=AST_OP_SGN And tempodtype <> FB_DATATYPE_DOUBLE then
 		var lname = *symbUniqueLabel( )
 		if v1->typ=IR_VREGTYPE_REG then
-			asm_code("cmp "+op1+", 0")
+			asm_code("test "+op1+", "+op1)
 			asm_code("je "+lname)
 			asm_code("mov "+op1+", 1")
 			asm_code("jg "+lname)
@@ -5237,7 +5237,7 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 			''result in a 64bit register but doesn't matter
 		else
 			asm_code("mov rax, "+op1)
-			asm_code("cmp rax, 0")
+			asm_code("test rax, rax")
 			asm_code("je "+lname)
 			asm_code("mov eax, 1")
 			asm_code("jg "+lname)
