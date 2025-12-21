@@ -997,7 +997,7 @@ private sub reg_freeable(byref lineasm as string)
 	regfound12=-1
 	regfound21=-1
 	regfound22=-1
-	regfound3=-1
+	regfound3=-1 ''used for mov [rbp+rcx*8], xxx / mov xxx, [rbp+rcx*8] / lea xxx, [rbp+rcx*8]
 
 	''searching instruction
 	if *schptrs=cvshort("mo") then 'movxxx
@@ -1112,6 +1112,55 @@ private sub reg_freeable(byref lineasm as string)
 				end if
 			end if
 		End If
+
+		if instruc=KMOV then ''mov can have 3 operands even 2 identical
+			search(asc("+"))
+			if ichar <> -1 then
+				schptrb+=ichar
+				schptrl=cast(long ptr,schptrb)
+				if *schptrl=cvl("+rbp") then
+					regfound3=KREG_RIP ''rbp just a trick
+				elseif *schptrl=cvl("+r11") then
+					regfound3=KREG_R11
+				elseif *schptrl=cvl("+r10") then
+					regfound3=KREG_R10
+				elseif *schptrl=cvl("+rax") then
+					regfound3=KREG_RAX
+				elseif *schptrl=cvl("+r12") then
+					regfound3=KREG_R12
+				elseif *schptrl=cvl("+r13") then
+					regfound3=KREG_R13
+				elseif *schptrl=cvl("+r14") then
+					regfound3=KREG_R14
+				elseif *schptrl=cvl("+r15") then
+					regfound3=KREG_R15
+				elseif *schptrl=cvl("+rbx") then
+					regfound3=KREG_RBX
+				elseif *schptrl=cvl("+rcx") then
+					regfound3=KREG_RCX
+				elseif *schptrl=cvl("+rdx") then
+					regfound3=KREG_RDX
+				elseif *schptrl=cvl("+rsi") then
+					regfound3=KREG_RSI
+				elseif *schptrl=cvl("+rdi") then
+					regfound3=KREG_RDI
+				elseif *schptrl=cvl("+rsp") then
+					regfound3=KREG_RIP ''rsp just a trick
+				elseif *schptrl=cvl("+rip") then
+					regfound3=KREG_RIP
+				else
+					bptr=schptrb
+					bptr+=1
+					schptrs=cast(short ptr,bptr)
+					if *schptrs=cvshort("r8") then
+						regfound3=KREG_R8
+					elseif *schptrs=cvshort("r9") then
+						regfound3=KREG_R9
+					end if
+				end if
+			End If
+		End If
+
 	else ''lower case
 		schptrb-=1 ''searching including space before operand
 		schptrl=cast(long ptr,schptrb)
@@ -1241,7 +1290,7 @@ private sub reg_freeable(byref lineasm as string)
 					end if
 				end if
 
-				if instruc=KLEA then ''lea can have 3 operands even 2 identical
+				if instruc=KLEA or instruc=KMOV then ''lea/mov can have 3 operands even 2 identical
 					search(asc("+"))
 					if ichar <> -1 then
 						schptrb+=ichar
@@ -2469,27 +2518,30 @@ private sub memfill(byval bytestofill as Integer,byref dst as string,byval dtyp 
 	if nbbytes>7 then  ''clear by 8 bytes step
 		nb8=nbbytes\8
 		if nb8>7 then ''more than 7 times 64+
-			dim as integer tempreg
+			dim as integer tempreg,vreg
 			''to avoid the use of rcx/rdi,rdx/rsi and r8/rdx like free registers
 			reg_allowed(false)
 			if ctx.systemv then
 				''if rdi, rsi or rdx are used moved to another register
 				if reghandle(KREG_RDI)<>KREGFREE and reghandle(KREG_RDI)<>KREGLOCK then
-					tempreg=reghandle(KREG_RDI)
-					reg_findfree(tempreg)
-					asm_code("mov "+*regstrq(reg_findreal(tempreg))+", "+*regstrq(KREG_RDI))
+					vreg=reghandle(KREG_RDI)
+					tempreg=reg_findfree(vreg)
+					reghandle(KREG_RDI)=KREGFREE
+					asm_code("mov "+*regstrq(tempreg)+", "+*regstrq(KREG_RDI))
 				end if
 
 				if reghandle(KREG_RSI)<>KREGFREE and reghandle(KREG_RSI)<>KREGLOCK then
-					tempreg=reghandle(KREG_RSI)
-					reg_findfree(tempreg)
-					asm_code("mov "+*regstrq(reg_findreal(tempreg))+", "+*regstrq(KREG_RSI))
+					vreg=reghandle(KREG_RSI)
+					tempreg=reg_findfree(vreg)
+					reghandle(KREG_RSI)=KREGFREE
+					asm_code("mov "+*regstrq(tempreg)+", "+*regstrq(KREG_RSI))
 				end if
 
 				if reghandle(KREG_RDX)<>KREGFREE and reghandle(KREG_RDX)<>KREGLOCK then
-					tempreg=reghandle(KREG_RDX)
-					reg_findfree(tempreg)
-					asm_code("mov "+*regstrq(reg_findreal(tempreg))+", "+*regstrq(KREG_RDX))
+					vreg=reghandle(KREG_RDX)
+					tempreg=reg_findfree(vreg)
+					reghandle(KREG_RDX)=KREGFREE
+					asm_code("mov "+*regstrq(tempreg)+", "+*regstrq(KREG_RDX))
 				end if
 
 				asm_code("mov rdi, "+regdst)
@@ -2498,21 +2550,24 @@ private sub memfill(byval bytestofill as Integer,byref dst as string,byval dtyp 
 			else
 				''if rcx, rdx or r8 are used moved to another register
 				if reghandle(KREG_RCX)<>KREGFREE and reghandle(KREG_RCX)<>KREGLOCK then
-					tempreg=reghandle(KREG_RCX)
-					reg_findfree(tempreg)
-					asm_code("mov "+*regstrq(reg_findreal(tempreg))+", "+*regstrq(KREG_RCX))
+					vreg=reghandle(KREG_RCX)
+					tempreg=reg_findfree(vreg)
+					reghandle(KREG_RCX)=KREGFREE
+					asm_code("mov "+*regstrq(tempreg)+", "+*regstrq(KREG_RCX))
 				end if
 
 				if reghandle(KREG_RDX)<>KREGFREE and reghandle(KREG_RDX)<>KREGLOCK then
-					tempreg=reghandle(KREG_RDX)
-					reg_findfree(tempreg)
-					asm_code("mov "+*regstrq(reg_findreal(tempreg))+", "+*regstrq(KREG_RDX))
+					vreg=reghandle(KREG_RDX)
+					tempreg=reg_findfree(vreg)
+					reghandle(KREG_RDX)=KREGFREE
+					asm_code("mov "+*regstrq(tempreg)+", "+*regstrq(KREG_RDX))
 				end if
 
 				if reghandle(KREG_R8)<>KREGFREE and reghandle(KREG_R8)<>KREGLOCK then
-					tempreg=reghandle(KREG_R8)
-					reg_findfree(tempreg)
-					asm_code("mov "+*regstrq(reg_findreal(tempreg))+", "+*regstrq(KREG_R8))
+					vreg=reghandle(KREG_R8)
+					tempreg=reg_findfree(vreg)
+					reghandle(KREG_R8)=KREGFREE
+					asm_code("mov "+*regstrq(tempreg)+", "+*regstrq(KREG_R8))
 				end if
 
 				asm_code("mov rcx, "+regdst)
@@ -7399,28 +7454,31 @@ private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVR
 
 			if v2->typ=IR_VREGTYPE_REG or v2->typ=IR_VREGTYPE_VAR then
 
-				dim as integer tempreg
+				dim as integer tempreg,vreg
 				''to avoid the use of rcx/rdi,rdx/rsi and r8/rdx like free registers (every free reg locked)
 				reg_allowed(false)
 
 				if ctx.systemv then
 					''if rdi, rsi or rdx are used moved to another register
 					if reghandle(KREG_RDI)<>KREGFREE and reghandle(KREG_RDI)<>KREGLOCK then
-						tempreg=reghandle(KREG_RDI)
-						reg_findfree(tempreg)
-						asm_code("mov "+*regstrq(reg_findreal(tempreg))+", "+*regstrq(KREG_RDI))
+						vreg=reghandle(KREG_RDI)
+						tempreg=reg_findfree(vreg)
+						reghandle(KREG_RDI)=KREGFREE
+						asm_code("mov "+*regstrq(tempreg)+", "+*regstrq(KREG_RDI))
 					end if
 
 					if reghandle(KREG_RSI)<>KREGFREE and reghandle(KREG_RSI)<>KREGLOCK then
-						tempreg=reghandle(KREG_RSI)
-						reg_findfree(tempreg)
-						asm_code("mov "+*regstrq(reg_findreal(tempreg))+", "+*regstrq(KREG_RSI))
+						vreg=reghandle(KREG_RSI)
+						tempreg=reg_findfree(vreg)
+						reghandle(KREG_RSI)=KREGFREE
+						asm_code("mov "+*regstrq(tempreg)+", "+*regstrq(KREG_RSI))
 					end if
 
 					if reghandle(KREG_RDX)<>KREGFREE and reghandle(KREG_RDX)<>KREGLOCK then
-						tempreg=reghandle(KREG_RDX)
-						reg_findfree(tempreg)
-						asm_code("mov "+*regstrq(reg_findreal(tempreg))+", "+*regstrq(KREG_RDX))
+						vreg=reghandle(KREG_RDX)
+						tempreg=reg_findfree(vreg)
+						reghandle(KREG_RDX)=KREGFREE
+						asm_code("mov "+*regstrq(tempreg)+", "+*regstrq(KREG_RDX))
 					end if
 
 
@@ -7445,21 +7503,24 @@ private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVR
 				else
 					''if rcx, rdx or r8 are used moved to another register
 					if reghandle(KREG_RCX)<>KREGLOCK then ''as rcx is used need to transfer its contain to another register
-						tempreg=reghandle(KREG_RCX)
-						reg_findfree(tempreg)
-						asm_code("mov "+*regstrq(reg_findreal(tempreg))+", "+*regstrq(KREG_RCX))
+						vreg=reghandle(KREG_RCX)
+						tempreg=reg_findfree(vreg)
+						reghandle(KREG_RCX)=KREGFREE
+						asm_code("mov "+*regstrq(tempreg)+", "+*regstrq(KREG_RCX))
 					end if
 
 					if reghandle(KREG_RDX)<>KREGLOCK then
-						tempreg=reghandle(KREG_RDX)
-						reg_findfree(tempreg)
-						asm_code("mov "+*regstrq(reg_findreal(tempreg))+", "+*regstrq(KREG_RDX))
+						vreg=reghandle(KREG_RDX)
+						tempreg=reg_findfree(vreg)
+						reghandle(KREG_RDX)=KREGFREE
+						asm_code("mov "+*regstrq(tempreg)+", "+*regstrq(KREG_RDX))
 					end if
 
 					if reghandle(KREG_R8)<>KREGLOCK then
-						tempreg=reghandle(KREG_R8)
-						reg_findfree(tempreg)
-						asm_code("mov "+*regstrq(reg_findreal(tempreg))+", "+*regstrq(KREG_R8))
+						vreg=reghandle(KREG_R8)
+						tempreg=reg_findfree(vreg)
+						reghandle(KREG_R8)=KREGFREE
+						asm_code("mov "+*regstrq(tempreg)+", "+*regstrq(KREG_R8))
 					end if
 
 					if op1<>"rcx" then
