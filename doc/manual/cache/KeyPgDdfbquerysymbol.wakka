@@ -6,6 +6,7 @@ Intrinsic define (macro) performed by the compiler, and its associated sub-macro
 ##
 {{fbdoc item="usage"}}
 	The ##./inc/fbc-int/symbol.bi## header exposes internals of the fbc compiler through the built-in macro **##""__FB_QUERY_SYMBOL__""##**.
+	
 	In addition, many convenient sub-macros with **##'is'##** as name prefix (also defined in the file ##./inc/fbc-int/symbol.bi##) help the user to indirectly call the generic built-in macro **##""__FB_QUERY_SYMBOL__""##**:
 		##
 		#include once "fbc-int/symbol.bi"

@@ -10,7 +10,7 @@ Locates the last occurrence of a substring or character within a string
 ##
 {{fbdoc item="param"}}
 	##//str//##
-		The string to be searched.
+		The string where to search.
 	##//substring//##
 		The substring to find.
 	##//start//##

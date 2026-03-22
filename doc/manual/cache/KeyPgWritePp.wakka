@@ -15,6 +15,10 @@ Outputs a comma-separated list of values to a text file or device
 	
 	If no expression list is given, ##**Write #**## outputs a carriage return (note that the comma after ##//filenum//## is still necessary, even if no expression list is given).
 	The purpose of ##**Write #**## is to create a file that can be read back by using [[KeyPgInputPp|Input #]].
+	
+	**Note:**
+		**""-""** Using **##""Write #""##** is naturally dedicated to Output/Append Access file mode.
+		**""-""** It is also allowed in Binary/Random Access file mode, but this was never well tested and results may vary.
 
 {{fbdoc item="ex"}}
 

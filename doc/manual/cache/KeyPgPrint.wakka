@@ -46,10 +46,10 @@ Print s; " is great!"
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang|-lang qb]]// dialect, an extra space is printed after numbers.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, an extra space is printed after any integer number.
 
 {{fbdoc item="diff"}}
-	- None, when using QBASIC's variable types in //[[CompilerOptlang|-lang qb]]//.
+	- None, when using QBASIC's variable types in //[[CompilerOptlang|-lang qb]]//, except that no extra space is displayed after any floating-point number.
 	- Unsigned numbers are printed without a space before them.
 	- QB did not support casting for UDTs, so didn't allow them to be ##**Print**##ed.
 

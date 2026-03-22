@@ -28,7 +28,9 @@ Returns the short circuit-and (conjunction) of two numeric values
 	
 	The truth table below demonstrates all combinations of a short circuit-and operation, the '-' denotes that the operand is not evaluated.
 	
-	{{table columns="3" cellpadding="2" cells="Lhs Value;Rhs Value;Result;0;-;0;nonzero;0;0;nonzero;nonzero;-1"}}
+	{{table columns="3" cellpadding="2" cells="Lhs Value;Rhs Value;Result;0;(not evaluated);0;nonzero;0;0;nonzero;nonzero;-1"}}
+	**##""AndAlso""##** equivalent to:
+	##Iif( Lhs <> 0, Rhs <> 0, 0 )##
 	
 	Short-circuiting is performed - only expressions needed to calculate the result are evaluated.  The left hand side ##//lhs//## is evaluated first, and only if it evaluates to non-zero (true) is the right hand side ##//rhs//## also evaluated.  If the left hand side evaluation ##//lhs//## returns zero (false), it is known that at that point that the overall condition is false, so the right hand side ##//rhs//## is not evaluated (skipped).
 	
@@ -41,20 +43,21 @@ Returns the short circuit-and (conjunction) of two numeric values
 '' Using the ANDALSO operator to guard against array access
 '' when the index is out of range
 
-dim as integer isprime(1 to 10) = { _
-	_ ' 1  2  3  4  5  6  7  8  9  10
+Dim As Integer isprime(1 To 10) = { _
+	_ ' 1  2  3  4  5  6  7  8  9  10    (2, 3, 5 and 7 are the only prime numbers)
 		0, 1, 1, 0, 1, 0, 1, 0, 0, 0 _
 	}
 
-dim as integer n
-input "Enter a number between 1 and 10: ", n
+Dim As Integer n
+Input "Enter a number between 1 and 10: ", n
 
 '' isprime() array will only be accessed if n is in range
-if (n >= 1 and n <= 10) andalso isprime(n) then
-	print "n is prime"
-else
-	print "n is not prime, or out of range"
-end if
+If (n >= 1 And n <= 10) AndAlso isprime(n) Then
+	Print "n is prime"
+Else
+	Print "n is not prime, or out of range"
+End If
+Sleep
 %%
 
 {{fbdoc item="diff"}}

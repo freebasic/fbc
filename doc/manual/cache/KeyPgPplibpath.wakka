@@ -12,11 +12,10 @@ Preprocessor statement to add a search path for libraries
 	No error is generated if the path does not exist and compilation and linking will continue.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/prepro/libpath.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/prepro/libpath.bas"}}%%(freebasic)
 ' search the lib directory for external libraries
 #libpath "lib"
 %%
-
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
@@ -25,5 +24,7 @@ Preprocessor statement to add a search path for libraries
 	- ##[[KeyPgInclude|#include]]##
 	- [[CompilerOptp|Compiler Option: -p]]
 	- ##[[KeyPgPpcmdline|#cmdline]]##
+	- [[ProPgStaticLibraries|Static Libraries]]
+	- [[ProPgSharedLibraries|Shared Libraries]]
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

@@ -25,6 +25,8 @@ Reads a number of wide-characters from console or file
 	The second version waits for and reads ##//n//## wide characters from a file or device. The file position is updated.
 	
 ~&//Note: FreeBASIC does not currently support reading wide-characters from the console.//
+	
+	**Note:** Using **##""Winput()""##** is dedicated to Input Access file mode, but it is also allowed in Binary/Random Access file mode with some restrictions on the values of ##//num//## (for random mode, ##//num//## must be equal to the record length set by the LEN clause (or implicit value) in the OPEN statement).
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/console/winput.bas"}}%%(freebasic)

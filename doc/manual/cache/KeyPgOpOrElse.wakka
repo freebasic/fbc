@@ -28,7 +28,9 @@ Returns the short circuit-or (Inclusive Disjunction) of two numeric values
 	
 	The truth table below demonstrates all combinations of a short circuit-or operation, the '-' denotes that the operand is not evaluated.
 	
-	{{table columns="3" cellpadding="2" cells="Lhs Value;Rhs Value;Result;0;0;0;0;nonzero;-1;nonzero;-;-1"}}
+	{{table columns="3" cellpadding="2" cells="Lhs Value;Rhs Value;Result;0;0;0;0;nonzero;-1;nonzero;(not evaluated);-1"}}
+	**##""OrElse""##** equivalent to:
+	##Iif( Lhs = 0, Rhs <> 0 , -1 )##
 	
 	Short-circuiting is performed - only expressions needed to calculate the result are evaluated.  The left hand side ##//lhs//## is evaluated first, and only if it evaluates to zero (false) is the right hand side ##//rhs//## also evaluated. If the left hand side evaluation ##//lhs//## returns non-zero (true), it is known that at that point that the overall condition is true, so the right hand side ##//rhs//## is not evaluated (skipped).
 	
@@ -38,14 +40,24 @@ Returns the short circuit-or (Inclusive Disjunction) of two numeric values
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/orelse.bas"}}%%(freebasic)
-' Using the ORELSE operator on two numeric values
-DIM AS INTEGER numeric_value1, numeric_value2
-numeric_value1 = 15
-numeric_value2 = 30
+'' Using the ORELSE operator to test
+'' if a value is out of range
 
-'Result = -1
-PRINT numeric_value1 ORELSE numeric_value2
-SLEEP
+Dim As Integer n
+Input "Enter a number between 1 and 10: ", n
+
+Function test(Byval n As Integer) As Integer
+	Print "expression evaluated"
+	Return n
+End Function
+
+'' print value only if n is in range [1, 10]
+If test(n) < 1 OrElse test(n) > 10 Then  '' if n < 1, second expression is not evaluated
+	Print "   => out of range"
+Else
+	Print "   => n ="; n
+End If
+Sleep
 %%
 
 {{fbdoc item="diff"}}
