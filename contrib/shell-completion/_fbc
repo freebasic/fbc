@@ -1,0 +1,95 @@
+#compdef fbc
+
+# fbc - Zsh completion for the FreeBASIC compiler
+# Place this file in a directory listed in $fpath (e.g. /usr/share/zsh/site-functions/)
+
+_fbc() {
+    local -a arch_types gen_backends lang_dialects warn_opts print_opts z_opts
+
+    arch_types=(
+        native 32 64 x86 x86_64 amd64
+        i386 i486 i586 i686 prescott
+        armv5 armeabi armeabi-v7a armv7 armv7a armv8-a aarch64
+    )
+    gen_backends=(gas gas64 gcc llvm)
+    lang_dialects=(fb deprecated fblite qb)
+    warn_opts=(all pedantic none param escape next signedness constness suffix error upcast)
+    print_opts=(host target fblibdir x sha-1)
+    z_opts=(gosub-setjmp valist-as-ptr no-thiscall no-fastcall fbrt nocmdline)
+
+    _arguments -s \
+        '-a[treat file as .o/.a input]:file:_files' \
+        "-arch[set target architecture]:arch:(${arch_types[*]})" \
+        '-asm[set asm format (gas/gcc/llvm, x86/x86_64 only)]:format:(att intel)' \
+        '-b[treat file as .bas input]:file:_files -g "*.bas"' \
+        '-buildprefix[specify prefix on tool names (as, ar, ld)]:prefix' \
+        '-c[compile only, do not link]' \
+        '-C[preserve temporary .o files]' \
+        '-d[add a global #define]:name\=value' \
+        '-dll[same as -dylib]' \
+        '-dylib[create a DLL or shared library]' \
+        '-e[enable runtime error checking]' \
+        '-earray[enable array bounds checking]' \
+        '-eassert[enable assert() and assertwarn() checking]' \
+        '-edebug[enable __FB_DEBUG__]' \
+        '-edebuginfo[add debug info]' \
+        '-elocation[enable error location reporting]' \
+        '-enullptr[enable null-pointer checking]' \
+        '-eunwind[enable call stack unwind information]' \
+        '-entry[change the entry point of the program]:name' \
+        '-ex[-e plus RESUME support]' \
+        '-exx[-ex plus array bounds/null-pointer checking]' \
+        '-export[export symbols for dynamic linkage]' \
+        '-fbgfx[link to the appropriate libfbgfx variant]' \
+        "-forcelang[override #lang statements in source code]:dialect:(${lang_dialects[*]})" \
+        '-fpmode[select floating-point math accuracy/speed]:mode:(fast precise)' \
+        '-fpu[set target FPU]:fpu:(x87 sse)' \
+        '-g[add debug info, enable __FB_DEBUG__, and enable assert()]' \
+        "-gen[select code generation backend]:backend:(${gen_backends[*]})" \
+        '(--help -help)'{--help,-help}'[show help output]' \
+        '-i[add an include file search path]:path:_files -/' \
+        '-include[pre-#include a file for each input .bas]:file:_files' \
+        '-l[link in a library]:library' \
+        "-lang[select FB dialect]:dialect:(${lang_dialects[*]})" \
+        '-lib[create a static library]' \
+        '-m[specify main module]:name' \
+        '-map[save linking map to file]:file:_files' \
+        '-maxerr[only show n errors]:n' \
+        '-mt[use thread-safe FB runtime]' \
+        '-nodeflibs[do not include the default libraries when linking]' \
+        '-noerrline[do not show source context in error messages]' \
+        '-nolib[do not include the specified libraries]:libraries (comma-separated)' \
+        '-noobjinfo[do not read/write compile-time info from/to .o and .a files]' \
+        '-nostrip[do not strip symbol information from the output file]' \
+        '-o[set .o (or -pp .bas) file name for prev/next input file]:file:_files' \
+        '-O[optimization level (default\: 0)]:level:(0 1 2 3)' \
+        '-p[add a library search path]:path:_files -/' \
+        '-pic[generate position-independent code]' \
+        '-pp[write out preprocessed input file (.pp.bas) only]' \
+        '-prefix[set the compiler prefix path]:path:_files -/' \
+        "-print[display information]:info:(${print_opts[*]})" \
+        '-profile[enable function profiling]' \
+        '-r[write out .asm/.c/.ll only]' \
+        '-R[preserve temporary .asm/.c/.ll/.def files]' \
+        '-rr[write out the final .asm only]' \
+        '-RR[preserve the final .asm file]' \
+        '-s[select win32 subsystem]:subsystem:(console gui)' \
+        '-showincludes[display a tree of file names of #included files]' \
+        '-static[prefer static libraries over dynamic ones when linking]' \
+        '-strip[omit all symbol information from the output file]' \
+        '-t[set .exe stack size in kbytes (default\: 1024)]:size (kbytes)' \
+        '-target[set cross-compilation target]:target' \
+        '-title[set XBE display title (xbox)]:title' \
+        '-v[be verbose]' \
+        '-vec[automatic vectorization level (default\: 0)]:level:(0 1 2)' \
+        '(--version -version)'{--version,-version}'[show compiler version]' \
+        "-w[set min warning level]:warning:(${warn_opts[*]})" \
+        "-Wa[pass options to 'as']:options" \
+        "-Wc[pass options to 'gcc' (-gen gcc) or 'llc' (-gen llvm)]:options" \
+        "-Wl[pass options to 'ld']:options" \
+        '-x[set output executable/library file name]:file:_files' \
+        "-z[set miscellaneous option]:option:(${z_opts[*]})" \
+        '*:source file:_files -g "*.bas"'
+}
+
+_fbc
