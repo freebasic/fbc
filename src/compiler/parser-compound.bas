@@ -478,6 +478,9 @@ private sub cCompoundEnd( )
 	case FB_TK_IF
 		cIfStmtEnd( )
 
+	case FB_TK_WHILE
+		cWhileStmtEnd( )
+
 	case FB_TK_SELECT
 		cSelectStmtEnd( )
 

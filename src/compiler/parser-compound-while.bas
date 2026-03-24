@@ -59,7 +59,10 @@ sub cWhileStmtEnd( )
 		exit sub
 	end if
 
-	'' WEND
+	'' WEND or END WHILE
+	if( lexGetToken() = FB_TK_END ) then
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
+	end if
 	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	if( stk->scopenode <> NULL ) then

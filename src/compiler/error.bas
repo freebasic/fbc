@@ -130,7 +130,7 @@ declare function hMakeParamDesc _
 		/'FB_ERRMSG_RECLEVELTOODEEP                    '/ @"Recursion level too deep", _
 		/'FB_ERRMSG_EXPECTEDPOINTER                    '/ @"Expected pointer", _
 		/'FB_ERRMSG_EXPECTEDLOOP                       '/ @"Expected 'LOOP'", _
-		/'FB_ERRMSG_EXPECTEDWEND                       '/ @"Expected 'WEND'", _
+		/'FB_ERRMSG_EXPECTEDWEND                       '/ @"Expected 'WEND or END WHILE'", _
 		/'FB_ERRMSG_EXPECTEDTHEN                       '/ @"Expected 'THEN'", _
 		/'FB_ERRMSG_EXPECTEDENDIF                      '/ @"Expected 'END IF'", _
 		/'FB_ERRMSG_ILLEGALEND                         '/ @"Illegal 'END'", _
@@ -208,7 +208,7 @@ declare function hMakeParamDesc _
 		/'FB_ERRMSG_BRANCHCROSSINGDYNDATADEF           '/ @"Branch crossing local array, var-len string or object definition", _
 		/'FB_ERRMSG_LOOPWITHOUTDO                      '/ @"LOOP without DO", _
 		/'FB_ERRMSG_NEXTWITHOUTFOR                     '/ @"NEXT without FOR", _
-		/'FB_ERRMSG_WENDWITHOUTWHILE                   '/ @"WEND without WHILE", _
+		/'FB_ERRMSG_WENDWITHOUTWHILE                   '/ @"WEND or END WHILE without WHILE", _
 		/'FB_ERRMSG_ENDWITHWITHOUTWITH                 '/ @"END WITH without WITH", _
 		/'FB_ERRMSG_ENDIFWITHOUTIF                     '/ @"END IF without IF", _
 		/'FB_ERRMSG_ENDSELECTWITHOUTSELECT             '/ @"END SELECT without SELECT", _
