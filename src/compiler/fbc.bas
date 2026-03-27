@@ -394,6 +394,35 @@ private function fbcBuildPathToLibFile( byval file as zstring ptr ) as string
 	end if
 	#endif
 
+	'' FreeBSD: Prefer base system locations for CRT objects.
+	'' Do this *before* invoking gcc -print-file-name, because on some setups
+	'' gcc may return just the basename (no sysroot configured).
+	if( fbGetCpuFamily( ) = FB_CPUFAMILY_PPC64 ) then
+		select case lcase( *file )
+		case "crt1.o", "gcrt1.o", "crti.o", "crtn.o", _
+		     "crtbegin.o", "crtbeginS.o", "crtend.o", "crtendS.o"
+			dim as string tryfile
+
+			tryfile = "/usr/lib/" + *file
+			if( hFileExists( tryfile ) ) then
+				function = tryfile
+				exit function
+			end if
+
+			tryfile = "/usr/lib64/" + *file
+			if( hFileExists( tryfile ) ) then
+				function = tryfile
+				exit function
+			end if
+
+			tryfile = "/lib/" + *file
+			if( hFileExists( tryfile ) ) then
+				function = tryfile
+				exit function
+			end if
+		end select
+	end if
+
 	'' Does it exist in our lib/?
 	if( hFileExists( found ) ) then
 		'' Overrides anything else
@@ -4190,6 +4219,22 @@ private sub hSetDefaultLibPaths( )
 	'' and the current path
 	fbcAddDefLibPath( "." )
 
+	''
+	'' FreeBSD base system libraries live in /usr/lib and /lib.
+	'' When fbc invokes ld directly (not via cc), it must provide these
+	'' search paths explicitly so -lc/-lm/-lpthread/-lncurses/-lgcc can
+	'' be resolved by the linker.
+	''
+	'' Only add them for native builds (no --sysroot); cross builds should
+	'' rely on --sysroot or explicit -p/-P paths.
+	''
+	if( (fbGetCpuFamily( ) = FB_CPUFAMILY_PPC64) andalso (len( fbc.sysroot ) = 0) ) then
+		fbcAddDefLibPath( "/usr/lib" )
+		fbcAddDefLibPath( "/usr/lib64" )
+		fbcAddDefLibPath( "/usr/local/lib" )
+		fbcAddDefLibPath( "/lib" )
+	end if
+
 #ifndef ENABLE_STANDALONE
 	'' Add gcc's private lib directory, to find libgcc
 	'' This is for installing into Unix-like systems, and not for
@@ -4275,6 +4320,7 @@ private sub hAddDefaultLibs( )
 				defined(__FB_OPENBSD__) or _
 				defined(__FB_NETBSD__)
 				fbcAddDefLibPath( "/usr/X11R6/lib" )
+				fbcAddDefLibPath( "/usr/local/lib" )
 			#endif
 
 			#if defined(__FB_DARWIN__) and defined(ENABLE_XQUARTZ)
