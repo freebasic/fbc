@@ -102,6 +102,11 @@ warning expected
 	Suffix ignored in 'while%'
 warning expected
 	Suffix ignored in 'wend%'
+warning expected
+	Suffix ignored in 'while%'
+2 warnings expected
+	Suffix ignored in 'end%'
+	Suffix ignored in 'while%'
 ---- parser-compound-with.bas ----
 2 warnings expected
 	Suffix ignored in 'dim%'

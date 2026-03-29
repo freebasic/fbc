@@ -49,7 +49,7 @@ sub cWhileStmtBegin( )
 	stk->while.endlabel = el
 end sub
 
-'' WhileStmtEnd  =  WEND
+'' WhileStmtEnd  =  WEND | END WHILE
 sub cWhileStmtEnd( )
 	dim as FB_CMPSTMTSTK ptr stk = any
 
@@ -59,7 +59,10 @@ sub cWhileStmtEnd( )
 		exit sub
 	end if
 
-	'' WEND
+	'' WEND or END WHILE
+	if( lexGetToken() = FB_TK_END ) then
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
+	end if
 	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	if( stk->scopenode <> NULL ) then
