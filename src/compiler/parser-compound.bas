@@ -472,7 +472,7 @@ sub cContinueStatement( )
 	astScopeBreak( label )
 end sub
 
-'' CompoundEnd  =  END (IF | SELECT | SUB | FUNCTION | SCOPE | WITH | NAMESPACE | EXTERN)
+'' CompoundEnd  =  END (IF | WHILE | SELECT | SUB | FUNCTION | SCOPE | WITH | NAMESPACE | EXTERN)
 private sub cCompoundEnd( )
 	select case as const lexGetLookAhead( 1 )
 	case FB_TK_IF
@@ -560,7 +560,7 @@ function cCompStmtCheck( ) as integer
 		errmsg = FB_ERRMSG_EXPECTEDLOOP
 
 	case FB_TK_WHILE
-		errmsg = FB_ERRMSG_EXPECTEDWEND
+		errmsg = FB_ERRMSG_EXPECTEDWENDORENDWHILE
 
 	case FB_TK_FOR
 		errmsg = FB_ERRMSG_EXPECTEDNEXT
@@ -665,7 +665,7 @@ function cCompStmtGetTOS _
 					errmsg = FB_ERRMSG_ENDSELECTWITHOUTSELECT
 
 				case FB_TK_WHILE
-					errmsg = FB_ERRMSG_WENDWITHOUTWHILE
+					errmsg = FB_ERRMSG_WENDORENDWHILEWITHOUTWHILE
 
 				case FB_TK_WITH
 					errmsg = FB_ERRMSG_ENDWITHWITHOUTWITH

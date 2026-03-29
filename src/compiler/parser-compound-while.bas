@@ -49,7 +49,7 @@ sub cWhileStmtBegin( )
 	stk->while.endlabel = el
 end sub
 
-'' WhileStmtEnd  =  WEND
+'' WhileStmtEnd  =  WEND | END WHILE
 sub cWhileStmtEnd( )
 	dim as FB_CMPSTMTSTK ptr stk = any
 
