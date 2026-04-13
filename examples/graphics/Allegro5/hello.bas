@@ -6,7 +6,8 @@
 
 var TTF_FONT = exepath() + "/../SDL/data/Vera.ttf"
 
-al_init()
+'' al_init() '' defined with v5.0.11, initialise with current version instead
+al_install_system(al_get_allegro_version(), @atexit)
 al_init_font_addon()
 al_init_ttf_addon()
 
