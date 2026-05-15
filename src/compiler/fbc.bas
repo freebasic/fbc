@@ -305,7 +305,7 @@ private function hGet1stOutputLineFromCommand( byref cmd as string ) as string
 	end if
 
 	dim ln as string
-	input #f, ln
+	line input #f, ln
 
 	close f
 	return ln
@@ -840,6 +840,8 @@ private function hLinkFiles( ) as integer
 		case FB_CPUFAMILY_ARM
 			'' fixme: this is clearly too specific
 			ldcline += "-arch armv6 "
+		case FB_CPUFAMILY_AARCH64
+			ldcline += "-arch arm64 "
 		end select
 	end select
 
@@ -1123,9 +1125,11 @@ private function hLinkFiles( ) as integer
 		wend
 	end scope
 
-	'' And the sysroot
+	'' And the sysroot (Darwin uses -syslibroot, handled separately)
 	if( len( fbc.sysroot ) ) then
-		ldcline += " --sysroot=" + fbc.sysroot
+		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN ) then
+			ldcline += " --sysroot=" + fbc.sysroot
+		end if
 	end if
 
 	'' crt begin objects
@@ -1323,7 +1327,27 @@ private function hLinkFiles( ) as integer
 	end select
 
 	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN ) then
-		ldcline += " -macosx_version_min 10.4"
+		scope
+			dim as string sdkver = "14.0"
+			dim as string sysroot
+			if( len( fbc.sysroot ) > 0 ) then
+				sysroot = fbc.sysroot
+#ifdef __FB_DARWIN__
+			else
+				sysroot = hGet1stOutputLineFromCommand( "xcrun --show-sdk-path" )
+				dim as string v = hGet1stOutputLineFromCommand( "xcrun --show-sdk-version" )
+				if( len( v ) > 0 ) then sdkver = v
+#endif
+			end if
+			if( fbGetCpuFamily( ) = FB_CPUFAMILY_AARCH64 ) then
+				ldcline += " -platform_version macos 11.0.0 " + sdkver
+			else
+				ldcline += " -platform_version macos 10.4.0 " + sdkver
+			end if
+			if( len( sysroot ) > 0 ) then
+				ldcline += " -syslibroot " + QUOTE + sysroot + QUOTE
+			end if
+		end scope
 	end if
 
 	'' This is required for 64-bit modules on *nix-y platforms
@@ -1332,8 +1356,7 @@ private function hLinkFiles( ) as integer
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
 		FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD, _
-		FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS, _
-		FB_COMPTARGET_DARWIN
+		FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS
 		dim as long outtype = fbGetOption( FB_COMPOPT_OUTTYPE )
 		if outtype = FB_OUTTYPE_EXECUTABLE OrElse outtype = FB_OUTTYPE_DYNAMICLIB Then
 			dim as long cpufamily = fbGetCpuFamily( )
@@ -4308,7 +4331,6 @@ private sub hAddDefaultLibs( )
 		end if
 
 	case FB_COMPTARGET_DARWIN
-		fbcAddDefLib( "gcc" )
 		fbcAddDefLib( "System" )
 		fbcAddDefLib( "pthread" )
 		fbcAddDefLib( "ncurses" )
