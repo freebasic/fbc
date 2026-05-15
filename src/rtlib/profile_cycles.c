@@ -97,9 +97,11 @@ typedef struct _FB_PROFILER_CYCLES
 /* FIXME: creating a library with other sections causes dxe3gen to fail
 **        when building the DXE dynamic link library support for DOS
 */
-#if !defined(HOST_DOS)
+#if !defined(HOST_DOS) && !defined(HOST_DARWIN)
 
 /* make sure there is at least one record in the profile data section */
+/* Note: cycle profiling uses ELF section boundary symbols (__start_/__stop_)
+   which are not available on Mach-O. Disabled on Darwin. */
 static FB_PROFILE_RECORD_VERSION
 __attribute__ ((aligned (16))) prof_data_version
 __attribute__((section("fb_profilecycledata"), used)) =
