@@ -305,10 +305,10 @@ private function hGet1stOutputLineFromCommand( byref cmd as string ) as string
 	end if
 
 	dim ln as string
-	input #f, ln
+	line input #f, ln
 
 	close f
-	return ln
+	return trim( ln )
 end function
 
 '' Pass some arguments to gcc/clang and read the results. Returns an empty string on
@@ -840,7 +840,14 @@ private function hLinkFiles( ) as integer
 		case FB_CPUFAMILY_ARM
 			'' fixme: this is clearly too specific
 			ldcline += "-arch armv6 "
+		case FB_CPUFAMILY_AARCH64
+			ldcline += "-arch arm64 "
 		end select
+
+	'' Amiga-like targets: no special ld emulation flags needed
+	case FB_COMPTARGET_AMIGA, FB_COMPTARGET_AROS, _
+		FB_COMPTARGET_MORPHOS, FB_COMPTARGET_AMIGAOS4
+
 	end select
 
 	'' Set executable name
@@ -1123,9 +1130,11 @@ private function hLinkFiles( ) as integer
 		wend
 	end scope
 
-	'' And the sysroot
+	'' And the sysroot (Darwin uses -syslibroot, handled separately)
 	if( len( fbc.sysroot ) ) then
-		ldcline += " --sysroot=" + fbc.sysroot
+		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN ) then
+			ldcline += " --sysroot=" + fbc.sysroot
+		end if
 	end if
 
 	'' crt begin objects
@@ -1167,6 +1176,8 @@ private function hLinkFiles( ) as integer
 		FB_COMPTARGET_NETBSD, FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS
 
 		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE) then
+			'' Darwin doesn't need CRT startup objects on modern macOS
+			if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) then
 			if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
 				select case as const fbGetOption( FB_COMPOPT_TARGET )
 				case FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD
@@ -1181,6 +1192,7 @@ private function hLinkFiles( ) as integer
 				case else
 					ldcline += hFindLib( "crt1.o" )
 				end select
+			end if
 			end if
 		end if
 
@@ -1323,7 +1335,29 @@ private function hLinkFiles( ) as integer
 	end select
 
 	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN ) then
-		ldcline += " -macosx_version_min 10.4"
+		scope
+			'' Fallback SDK version for cross-compilation when xcrun is unavailable.
+		'' Overridden at runtime by xcrun --show-sdk-version on native macOS.
+		dim as string sdkver = "14.0"
+			dim as string sysroot
+			if( len( fbc.sysroot ) > 0 ) then
+				sysroot = fbc.sysroot
+#ifdef __FB_DARWIN__
+			else
+				sysroot = hGet1stOutputLineFromCommand( "xcrun --show-sdk-path" )
+				dim as string v = hGet1stOutputLineFromCommand( "xcrun --show-sdk-version" )
+				if( len( v ) > 0 ) then sdkver = v
+#endif
+			end if
+			if( fbGetCpuFamily( ) = FB_CPUFAMILY_AARCH64 ) then
+				ldcline += " -platform_version macos 11.0.0 " + sdkver
+			else
+				ldcline += " -platform_version macos 10.4.0 " + sdkver
+			end if
+			if( len( sysroot ) > 0 ) then
+				ldcline += " -syslibroot " + QUOTE + sysroot + QUOTE
+			end if
+		end scope
 	end if
 
 	'' This is required for 64-bit modules on *nix-y platforms
@@ -1332,8 +1366,7 @@ private function hLinkFiles( ) as integer
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
 		FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD, _
-		FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS, _
-		FB_COMPTARGET_DARWIN
+		FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS
 		dim as long outtype = fbGetOption( FB_COMPOPT_OUTTYPE )
 		if outtype = FB_OUTTYPE_EXECUTABLE OrElse outtype = FB_OUTTYPE_DYNAMICLIB Then
 			dim as long cpufamily = fbGetCpuFamily( )
@@ -1656,7 +1689,11 @@ dim shared as FBGNUOSINFO gnuosmap(0 to ...) => _
 	(@"solaris"    , FB_COMPTARGET_SOLARIS  ), _
 	(@"netbsd"     , FB_COMPTARGET_NETBSD   ), _
 	(@"openbsd"    , FB_COMPTARGET_OPENBSD  ), _
-	(@"xbox"       , FB_COMPTARGET_XBOX     )  _
+	(@"xbox"       , FB_COMPTARGET_XBOX     ), _
+	(@"amigaos4"   , FB_COMPTARGET_AMIGAOS4 ), _
+	(@"amigaos"    , FB_COMPTARGET_AMIGA    ), _
+	(@"aros"       , FB_COMPTARGET_AROS     ), _
+	(@"morphos"    , FB_COMPTARGET_MORPHOS  )  _
 }
 
 '' Architectures recognized when parsing GNU triplets (-target option)
@@ -1681,7 +1718,8 @@ dim shared as FBGNUARCHINFO gnuarchmap(0 to ...) => _
 	(@"ppc64  "    , FB_DEFAULT_CPUTYPE_PPC64  ), _
 	(@"powerpc64"  , FB_DEFAULT_CPUTYPE_PPC64  ),  _
 	(@"ppc64le  "  , FB_DEFAULT_CPUTYPE_PPC64LE), _
-	(@"powerpc64le", FB_DEFAULT_CPUTYPE_PPC64LE)  _
+	(@"powerpc64le", FB_DEFAULT_CPUTYPE_PPC64LE), _
+	(@"m68k"       , FB_DEFAULT_CPUTYPE_M68K   )  _
 }
 
 '' Identify OS (FB_COMPTARGET_*) and architecture (FB_CPUTYPE_*) in a GNU
@@ -1764,7 +1802,11 @@ dim shared as FBOSARCHINFO fbosarchmap(0 to ...) => _
 	(@"linux"  , FB_COMPTARGET_LINUX  , FB_DEFAULT_CPUTYPE       ), _
 	(@"android", FB_COMPTARGET_ANDROID, FB_CPUTYPE_ARMV7A        ), _
 	(@"netbsd" , FB_COMPTARGET_NETBSD , FB_DEFAULT_CPUTYPE       ), _
-	(@"openbsd", FB_COMPTARGET_OPENBSD, FB_DEFAULT_CPUTYPE       )  _
+	(@"openbsd", FB_COMPTARGET_OPENBSD, FB_DEFAULT_CPUTYPE       ), _
+	(@"amiga"   , FB_COMPTARGET_AMIGA   , FB_DEFAULT_CPUTYPE_M68K ), _
+	(@"aros"    , FB_COMPTARGET_AROS    , FB_DEFAULT_CPUTYPE      ), _
+	(@"morphos" , FB_COMPTARGET_MORPHOS , FB_DEFAULT_CPUTYPE_PPC  ), _
+	(@"amigaos4", FB_COMPTARGET_AMIGAOS4, FB_DEFAULT_CPUTYPE_PPC  )  _
 }
 
 ''
@@ -3684,7 +3726,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			'' GCC doesn't recognize the -march option and PowerPC combination
 			'' and recommendeds the -mcpu option be used for PowerPC.
 			select case fbGetCpuFamily( )
-			case FB_CPUFAMILY_PPC, FB_CPUFAMILY_PPC64, FB_CPUFAMILY_PPC64LE
+			case FB_CPUFAMILY_PPC, FB_CPUFAMILY_PPC64, FB_CPUFAMILY_PPC64LE, FB_CPUFAMILY_M68K
 				if( fbc.cputype_is_native ) then
 					ln += "-mcpu=native "
 				else
@@ -4308,7 +4350,6 @@ private sub hAddDefaultLibs( )
 		end if
 
 	case FB_COMPTARGET_DARWIN
-		fbcAddDefLib( "gcc" )
 		fbcAddDefLib( "System" )
 		fbcAddDefLib( "pthread" )
 		fbcAddDefLib( "ncurses" )
@@ -4426,6 +4467,28 @@ private sub hAddDefaultLibs( )
 		if( fbGetOption( FB_COMPOPT_PROFILE ) = FB_PROFILE_OPT_GMON ) then
 			fbcAddDefLib( "gmon" )
 		end if
+
+	case FB_COMPTARGET_AMIGA
+		fbcAddDefLib( "gcc" )
+		fbcAddDefLib( "amiga" )
+		fbcAddDefLib( "m" )
+
+	case FB_COMPTARGET_AROS
+		fbcAddDefLib( "gcc" )
+		fbcAddDefLib( "arosc" )
+		fbcAddDefLib( "autoinit" )
+		fbcAddDefLib( "m" )
+
+	case FB_COMPTARGET_MORPHOS
+		fbcAddDefLib( "gcc" )
+		fbcAddDefLib( "c" )
+		fbcAddDefLib( "m" )
+
+	case FB_COMPTARGET_AMIGAOS4
+		fbcAddDefLib( "gcc" )
+		fbcAddDefLib( "c" )
+		fbcAddDefLib( "m" )
+		fbcAddDefLib( "auto" )
 
 	end select
 

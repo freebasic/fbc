@@ -233,6 +233,38 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		0   or FB_TARGETOPT_UNIX _
 		    or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 		    or FB_TARGETOPT_RETURNINREGS _
+	), _
+	( _
+		@"amiga", _
+		FB_DATATYPE_ULONG, _
+		FB_FUNCMODE_CDECL, _
+		FB_FUNCMODE_STDCALL_MS, _
+		0   or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
+	), _
+	( _
+		@"aros", _
+		FB_DATATYPE_ULONG, _
+		FB_FUNCMODE_CDECL, _
+		FB_FUNCMODE_STDCALL_MS, _
+		0   or FB_TARGETOPT_UNIX _
+		    or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
+		    or FB_TARGETOPT_ELF _
+	), _
+	( _
+		@"morphos", _
+		FB_DATATYPE_ULONG, _
+		FB_FUNCMODE_CDECL, _
+		FB_FUNCMODE_STDCALL_MS, _
+		0   or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
+		    or FB_TARGETOPT_ELF _
+	), _
+	( _
+		@"amigaos4", _
+		FB_DATATYPE_ULONG, _
+		FB_FUNCMODE_CDECL, _
+		FB_FUNCMODE_STDCALL_MS, _
+		0   or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
+		    or FB_TARGETOPT_ELF _
 	) _
 }
 
@@ -250,7 +282,8 @@ dim shared as FBCPUFAMILYINFO cpufamilyinfo(0 to FB_CPUFAMILY__COUNT-1) = _
 	(@"powerpc"    , FB_DEFAULT_CPUTYPE_PPC    ), _
 	(@"powerpc64"  , FB_DEFAULT_CPUTYPE_PPC64  ), _
 	(@"powerpc64le", FB_DEFAULT_CPUTYPE_PPC64LE), _
-	(@"asmjs"      , FB_DEFAULT_CPUTYPE_ASMJS  )  _
+	(@"asmjs"      , FB_DEFAULT_CPUTYPE_ASMJS  ), _
+	(@"m68k"       , FB_DEFAULT_CPUTYPE_M68K   )  _
 }
 
 type FBCPUTYPEINFO
@@ -286,7 +319,8 @@ dim shared as FBCPUTYPEINFO cputypeinfo(0 to FB_CPUTYPE__COUNT-1) = _
 	( NULL       , @"powerpc"      , FB_CPUFAMILY_PPC    , 32, TRUE  ), _ '' FB_CPUTYPE_PPC
 	( NULL       , @"powerpc64"    , FB_CPUFAMILY_PPC64  , 64, TRUE  ), _ '' FB_CPUTYPE_PPC64
 	( NULL       , @"powerpc64le"  , FB_CPUFAMILY_PPC64LE, 64, FALSE ), _ '' FB_CPUTYPE_PPC64LE
-	( NULL       , @"asmjs"        , FB_CPUFAMILY_ASMJS  , 32, FALSE )  _ '' FB_CPUTYPE_ASMJS
+	( NULL       , @"asmjs"        , FB_CPUFAMILY_ASMJS  , 32, FALSE ), _ '' FB_CPUTYPE_ASMJS
+	( @"68020"   , @"m68k"         , FB_CPUFAMILY_M68K   , 32, TRUE  )  _ '' FB_CPUTYPE_M68K
 }
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
