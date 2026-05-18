@@ -46,6 +46,18 @@
 #elif defined __EMSCRIPTEN__
 	#define HOST_JS
 	#define HOST_UNIX
+#elif defined(__amigaos4__)
+	#define HOST_AMIGAOS4
+	#define HOST_AMIGA
+#elif defined(__AROS__)
+	#define HOST_AROS
+	#define HOST_AMIGA
+#elif defined(__MORPHOS__)
+	#define HOST_MORPHOS
+	#define HOST_AMIGA
+#elif defined(AMIGA) || defined(__amigaos__) || defined(__AMIGA__)
+	#define HOST_AMIGAOS
+	#define HOST_AMIGA
 #else
 	#error "Couldn't identify target system!"
 #endif
@@ -55,7 +67,9 @@
 	#define _FILE_OFFSET_BITS 64
 #endif
 
-#if defined __i386__
+#if defined __m68k__
+	#define HOST_M68K
+#elif defined __i386__
 	#define HOST_X86
 #elif defined __x86_64__
 	#define HOST_X86_64

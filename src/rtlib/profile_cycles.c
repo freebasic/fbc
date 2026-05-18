@@ -31,9 +31,11 @@
 	#endif
 #endif
 
-/* profile section data */
+/* profile section data (ELF section boundary symbols, not available on Mach-O) */
+#if !defined(HOST_DARWIN)
 extern char __start_fb_profilecycledata[];
 extern char __stop_fb_profilecycledata;
+#endif
 
 /* profiler record ids - these indicate what the record is */
 enum FB_PROFILE_REDORD_ID
@@ -97,7 +99,9 @@ typedef struct _FB_PROFILER_CYCLES
 /* FIXME: creating a library with other sections causes dxe3gen to fail
 **        when building the DXE dynamic link library support for DOS
 */
-#if !defined(HOST_DOS)
+#if !defined(HOST_DOS) && !defined(HOST_DARWIN)
+/* Cycle profiling uses ELF __start_/__stop_ section boundary symbols
+   which are not available on Mach-O (Darwin). */
 
 /* make sure there is at least one record in the profile data section */
 static FB_PROFILE_RECORD_VERSION
@@ -301,8 +305,13 @@ static void hProfilerWriteReport( FB_PROFILER_CYCLES *prof )
 		fprintf( f, "Total program execution time: %5.4g seconds\n", fb_Timer() - prof->start_time );
 	}
 
+#if !defined(HOST_DARWIN)
 	data = (unsigned char *)&__start_fb_profilecycledata[0];
 	length = (ssize_t)&__stop_fb_profilecycledata - (ssize_t)&__start_fb_profilecycledata[0];
+#else
+	data = NULL;
+	length = 0;
+#endif
 
 	count = hProfilerCountProcs( data, length );
 	if( count ) {

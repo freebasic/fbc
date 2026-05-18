@@ -85,3 +85,7 @@ FBCALL void fb_InitSignals( void )
 }
 
 #endif
+
+#if defined(HOST_AMIGA)
+FBCALL void fb_InitSignals(void) { }
+#endif
