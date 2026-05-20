@@ -841,6 +841,11 @@ private function hLinkFiles( ) as integer
 			'' fixme: this is clearly too specific
 			ldcline += "-arch armv6 "
 		end select
+
+	'' Amiga-like targets: no special ld emulation flags needed
+	case FB_COMPTARGET_AMIGA, FB_COMPTARGET_AROS, _
+		FB_COMPTARGET_MORPHOS, FB_COMPTARGET_AMIGAOS4
+
 	end select
 
 	'' Set executable name
@@ -1656,7 +1661,11 @@ dim shared as FBGNUOSINFO gnuosmap(0 to ...) => _
 	(@"solaris"    , FB_COMPTARGET_SOLARIS  ), _
 	(@"netbsd"     , FB_COMPTARGET_NETBSD   ), _
 	(@"openbsd"    , FB_COMPTARGET_OPENBSD  ), _
-	(@"xbox"       , FB_COMPTARGET_XBOX     )  _
+	(@"xbox"       , FB_COMPTARGET_XBOX     ), _
+	(@"amigaos4"   , FB_COMPTARGET_AMIGAOS4 ), _
+	(@"amigaos"    , FB_COMPTARGET_AMIGA    ), _
+	(@"aros"       , FB_COMPTARGET_AROS     ), _
+	(@"morphos"    , FB_COMPTARGET_MORPHOS  )  _
 }
 
 '' Architectures recognized when parsing GNU triplets (-target option)
@@ -1681,7 +1690,8 @@ dim shared as FBGNUARCHINFO gnuarchmap(0 to ...) => _
 	(@"ppc64  "    , FB_DEFAULT_CPUTYPE_PPC64  ), _
 	(@"powerpc64"  , FB_DEFAULT_CPUTYPE_PPC64  ),  _
 	(@"ppc64le  "  , FB_DEFAULT_CPUTYPE_PPC64LE), _
-	(@"powerpc64le", FB_DEFAULT_CPUTYPE_PPC64LE)  _
+	(@"powerpc64le", FB_DEFAULT_CPUTYPE_PPC64LE), _
+	(@"m68k"       , FB_DEFAULT_CPUTYPE_M68K   )  _
 }
 
 '' Identify OS (FB_COMPTARGET_*) and architecture (FB_CPUTYPE_*) in a GNU
@@ -1764,7 +1774,11 @@ dim shared as FBOSARCHINFO fbosarchmap(0 to ...) => _
 	(@"linux"  , FB_COMPTARGET_LINUX  , FB_DEFAULT_CPUTYPE       ), _
 	(@"android", FB_COMPTARGET_ANDROID, FB_CPUTYPE_ARMV7A        ), _
 	(@"netbsd" , FB_COMPTARGET_NETBSD , FB_DEFAULT_CPUTYPE       ), _
-	(@"openbsd", FB_COMPTARGET_OPENBSD, FB_DEFAULT_CPUTYPE       )  _
+	(@"openbsd", FB_COMPTARGET_OPENBSD, FB_DEFAULT_CPUTYPE       ), _
+	(@"amiga"   , FB_COMPTARGET_AMIGA   , FB_DEFAULT_CPUTYPE_M68K ), _
+	(@"aros"    , FB_COMPTARGET_AROS    , FB_DEFAULT_CPUTYPE      ), _
+	(@"morphos" , FB_COMPTARGET_MORPHOS , FB_DEFAULT_CPUTYPE_PPC  ), _
+	(@"amigaos4", FB_COMPTARGET_AMIGAOS4, FB_DEFAULT_CPUTYPE_PPC  )  _
 }
 
 ''
@@ -3684,7 +3698,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			'' GCC doesn't recognize the -march option and PowerPC combination
 			'' and recommendeds the -mcpu option be used for PowerPC.
 			select case fbGetCpuFamily( )
-			case FB_CPUFAMILY_PPC, FB_CPUFAMILY_PPC64, FB_CPUFAMILY_PPC64LE
+			case FB_CPUFAMILY_PPC, FB_CPUFAMILY_PPC64, FB_CPUFAMILY_PPC64LE, FB_CPUFAMILY_M68K
 				if( fbc.cputype_is_native ) then
 					ln += "-mcpu=native "
 				else
@@ -4312,6 +4326,24 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "System" )
 		fbcAddDefLib( "pthread" )
 		fbcAddDefLib( "ncurses" )
+
+	case FB_COMPTARGET_AMIGA
+		fbcAddDefLib( "gcc" )
+		fbcAddDefLib( "c" )
+		fbcAddDefLib( "amiga" )
+		fbcAddDefLib( "m" )
+
+	case FB_COMPTARGET_AROS
+		fbcAddDefLib( "gcc" )
+		fbcAddDefLib( "arosc" )
+		fbcAddDefLib( "autoinit" )
+		fbcAddDefLib( "c" )
+		fbcAddDefLib( "m" )
+
+	case FB_COMPTARGET_MORPHOS, FB_COMPTARGET_AMIGAOS4
+		fbcAddDefLib( "gcc" )
+		fbcAddDefLib( "c" )
+		fbcAddDefLib( "m" )
 
 	case FB_COMPTARGET_DOS
 		fbcAddDefLib( "gcc" )

@@ -117,6 +117,8 @@
 	#include "win32/fb_win32.h"
 #elif defined HOST_XBOX
 	#include "xbox/fb_xbox.h"
+#elif defined HOST_AMIGA
+	#include "amiga/fb_amiga.h"
 #endif
 
 #if defined HOST_SOLARIS
