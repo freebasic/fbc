@@ -829,15 +829,10 @@ private sub check_optim(byref code as string)
 			elseif prevpart2[0]=asc("x") then
 				if instr(prevpart1,"[")<>0 then
 					''OPTIMIZATION 3-1
-					if part1[0]=asc("x") then
-						''xmm --> xmm : movd has no xmm, xmm form
-						if previnstruc="movss" orelse previnstruc="movd" then
-							instruc="movss"
-						else
-							instruc="movq"
-						end if
-					elseif previnstruc="movss" orelse part1[0]=asc("e") orelse right(part1,1)="d" then
+					if part1[0]=asc("e") orelse right(part1,1)="d" then
 						instruc="movd"
+					elseif previnstruc="movss" then
+						instruc="movss"
 					else
 						instruc="movq"
 					end if
@@ -4940,7 +4935,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 					asm_code("cmp "+op2bis+", -2147483648")
 					asm_code("jl "+lname_normal)
 
-					if op2bis[2]=asc("x") then
+					if op2bis[2]=asc("x") or op2bis[2]=asc("i") then
 						op2bis="e"+right(op2bis,2)
 					else
 						op2bis=op2bis+"d"
@@ -4973,7 +4968,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 					asm_code("cmp "+op2bis+", rsi")
 					asm_code("ja "+lname_normal)
 
-					if op2bis[2]=asc("x") then
+					if op2bis[2]=asc("x") or op2bis[2]=asc("i") then
 						op2bis="e"+right(op2bis,2)
 					else
 						op2bis=op2bis+"d"
