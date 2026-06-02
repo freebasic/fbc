@@ -5952,60 +5952,68 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	end if
 
 end sub
-private sub emitStoreStruct(byval v1 as IRVREG ptr, byval v2 as IRVREG ptr,byref op1 as string,byref op3 as string)
-	dim as string dest
-	dim as integer lgtv1=v1->sym->lgt ,ofsv2=v2->ofs
+
+private sub emitStoreStruct(byval v2 as IRVREG ptr,byref op1 as string,byref op3 as string)
+	dim as string src
+	dim as integer lgtv
+
+	if v2->sym=0 then
+		lgtv=v2->subtype->lgt
+	else
+		lgtv=v2->sym->lgt
+	End If
+
 	dim as FB_STRUCT_INREG retin2regs=v2->subtype->udt.retin2regs
 
 	if op3<>"" then emitop3_op4(op3)
 
-	''the data is already in either rax/rdx or xmm0/xmm1 or the 2 other combinations
+	''the data is either in rax/rdx or xmm0/xmm1 or the 2 other combinations
+	''and also in memory. However in case where -exx is used the added code modifies rax/rdx
+	''so we can't use them and we have to retrieve the values from memory
+
 	''moving 8 first bytes
 	select case retin2regs
-	case FB_STRUCT_RR
-		asm_code("mov "+op1+", rax")
-	case FB_STRUCT_RX
-		asm_code("mov "+op1+", rax")
-		asm_code("movq rdx, xmm0")
-	case FB_STRUCT_XX
-		asm_code("movq "+op1+", xmm0")
-		asm_code("movq rdx, xmm1")
-	case FB_STRUCT_XR
-		asm_code("movq "+op1+", xmm0")
-		asm_code("movq rdx, rax")
-	case else
-		'' should never happen because hGetReturnTypeGas64Linux() shouldn't
-		'' return FB_DATATYPE_STRUCT unless struct is actually returned in
-		'' 2 registers and _emitstore() checks hIsStructIn2Regs() before
-		'' calling emitStoreStruct() even though udt.retin2regs may contain
-		'' FB_STRUCT_X or FB_STRUCT_R.
-		assert( 0 )
+		case FB_STRUCT_RR,FB_STRUCT_RX
+			asm_code("mov rax,"+str(v2->ofs)+"[rbp]")
+			asm_code("mov "+op1+", rax")
+		case FB_STRUCT_XX,FB_STRUCT_XR
+			asm_code("movq "+op1+", xmm0")
+		case else
+			'' should never happen because hGetReturnTypeGas64Linux() shouldn't
+			'' return FB_DATATYPE_STRUCT unless struct is actually returned in
+			'' 2 registers and _emitstore() checks hIsStructIn2Regs() before
+			'' calling emitStoreStruct() even though udt.retin2regs may contain
+			'' FB_STRUCT_X or FB_STRUCT_R.
+			assert( 0 )
 	end select
 
-	''moving the rest (1 to 8 bytes), assuming rdx not already used
-	if op1[0]=asc("-") and (lgtv1=9 or lgtv1= 10 or lgtv1=12 or lgtv1=16) then
+	''moving the rest (1 to 8 bytes) only from memory even if xmm0/xmm1 are not modified
+	if op1[0]=asc("-") and (lgtv=9 orelse lgtv= 10 orelse lgtv=12 orelse lgtv=16) then
 		''shortcut for move at address -xxx[rbp] + 8
 		op1=str(valint(left(op1,instr(op1,"[rbp]")-1))+8)+"[rbp]"
+		asm_code("mov rax,"+str(v2->ofs+8)+"[rbp]")
 
-		select case as const lgtv1
+		select case as const lgtv
 			case 9
-				dest="dl"
+				src="al"
 			case 10
-				dest="dx"
+				src="ax"
 			case 12
-				dest="edx"
+				src="eax"
 			case 16
-				dest="rdx"
+				src="rax"
 		end select
 
-		asm_code("mov "+op1+", "+dest)
+		asm_code("mov "+op1+", "+src)
 		exit sub
 	end if
 
 	asm_code("lea rax, "+op1)
 	asm_code("add rax, 8")
+	asm_code("push rdx")
+	asm_code("mov rdx,"+str(v2->ofs+8)+"[rbp]")
 
-	select case as const lgtv1
+	select case as const lgtv
 		case 9
 			asm_code("mov [rax], dl")
 		case 10
@@ -6032,7 +6040,10 @@ private sub emitStoreStruct(byval v1 as IRVREG ptr, byval v2 as IRVREG ptr,byref
 			asm_code("mov [rax+6], dl")
 		case 16
 			asm_code("mov [rax], rdx")
-	end select
+	End Select
+
+	asm_code("pop rdx")
+
 end sub
 private function hIsStructIn2Regs( byval v1 as IRVREG ptr ) as integer
 	'' test if the VREG is for a struct that would be returned in 2 registers
@@ -6128,12 +6139,12 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 	if( hIsStructIn2Regs( v2 ) ) then
 		'' for Linux structures can be returned in 2 registers so needs a special handling
-		if ( v1->sym->stats and FB_SYMBSTATS_IMPLICIT ) then
+		if (v1->sym <> 0) andalso ( v1->sym->stats and FB_SYMBSTATS_IMPLICIT ) then
 			asm_info("Replacing  "+str(v1->sym->ofs)+" by "+str(v2->ofs))
 			v1->sym->ofs=v2->ofs
 			asm_info("v1="+vregdumpfull(v1))
 		else
-			emitStoreStruct(v1,v2,op1,op3)
+			emitStoreStruct(v2,op1,op3)
 		end if
 		exit sub
 	end if
@@ -7181,13 +7192,14 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 			ctx.stk+=typeGetSize( FB_DATATYPE_LONGINT )*2 ''reserving 16 bytes
 			vr->ofs=-ctx.stk
 			asm_info("new vr="+vregdumpfull(vr))
+			''mov from rax is made after rdx/xmm0 to allow a possible optimization later
 			select case as const vr->subtype->udt.retin2regs
 				case FB_STRUCT_RR
-					asm_code("mov "+str(vr->ofs)+  "[rbp], rax")
 					asm_code("mov "+str(vr->ofs+8)+"[rbp], rdx")
+					asm_code("mov "+str(vr->ofs)+  "[rbp], rax")
 				case FB_STRUCT_RX
-					asm_code("mov "+str(vr->ofs)+   "[rbp], rax")
 					asm_code("movq "+str(vr->ofs+8)+"[rbp], xmm0")
+					asm_code("mov "+str(vr->ofs)+   "[rbp], rax")
 				case FB_STRUCT_XR
 					asm_code("movq "+str(vr->ofs)+ "[rbp], xmm0")
 					asm_code("mov "+str(vr->ofs+8)+"[rbp], rax")
