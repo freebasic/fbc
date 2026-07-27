@@ -4927,6 +4927,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 							asm_code("push rbx")
 						End If
 						asm_code("mov rbx, "+op2,KNOOPTIM)
+						ctx.usedreg Or=(1 Shl KREG_RBX)
 						op2bis="rbx"
 					End If
 
@@ -4962,6 +4963,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 							asm_code("push rbx")
 						End If
 						asm_code("mov rbx, "+op2,KNOOPTIM)
+						ctx.usedreg Or=(1 Shl KREG_RBX)
 						op2bis="rbx"
 					End If
 
