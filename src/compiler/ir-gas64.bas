@@ -7096,13 +7096,34 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 								asm_code("mov "+*regstrq(listreg(cptint))+", "+op1)
 							case FB_DATATYPE_LONG,FB_DATATYPE_ULONG
 								asm_code("mov "+*regstrd(listreg(cptint))+", "+op1)
-							case FB_DATATYPE_SHORT,FB_DATATYPE_USHORT
-								asm_code("mov "+*regstrw(listreg(cptint))+", "+op1)
-							case FB_DATATYPE_BYTE,FB_DATATYPE_UBYTE,FB_DATATYPE_BOOLEAN,FB_DATATYPE_CHAR
-								asm_code("mov "+*regstrb(listreg(cptint))+", "+op1)
+							case FB_DATATYPE_SHORT
+								if v2->typ = IR_VREGTYPE_REG then
+									asm_code("movsx " + *regstrd(listreg(cptint)) + ", " + op1)
+								else
+									asm_code("movsx " + *regstrd(listreg(cptint)) + ", WORD PTR " + op1)
+								end if
+							case FB_DATATYPE_USHORT
+								if v2->typ = IR_VREGTYPE_REG then
+									asm_code("movzx " + *regstrd(listreg(cptint)) + ", " + op1)
+								else
+									asm_code("movzx " + *regstrd(listreg(cptint)) + ", WORD PTR " + op1)
+								end if
+							case FB_DATATYPE_BYTE
+								if v2->typ = IR_VREGTYPE_REG then
+									asm_code("movsx " + *regstrd(listreg(cptint)) + ", " + op1)
+								else
+									asm_code("movsx " + *regstrd(listreg(cptint)) + ", BYTE PTR " + op1)
+								end if
+							case FB_DATATYPE_UBYTE, FB_DATATYPE_BOOLEAN, FB_DATATYPE_CHAR
+								if v2->typ = IR_VREGTYPE_REG then
+									asm_code("movzx " + *regstrd(listreg(cptint)) + ", " + op1)
+								else
+									asm_code("movzx " + *regstrd(listreg(cptint)) + ", BYTE PTR " + op1)
+								end if
 							case else
 								asm_error("in hdocall datatype not handled 03 ="+typedumpToStr(dtype,0))
 						end select
+
 						if variadic=true and ctx.target=FB_COMPTARGET_WIN32 then
 							asm_code("mov QWORD PTR "+Str((cptarg-1)*8)+"[rsp], "+*regstrq(listreg(cptint)),KNOOPTIM)
 						end if
