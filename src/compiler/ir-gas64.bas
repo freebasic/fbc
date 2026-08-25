@@ -471,6 +471,18 @@ dim shared as string  pushstr(any)
 dim shared as integer pushnbstr
 dim shared as longint pushsize ''counts the *padded* bytes the pending pushes will move RSP by
 dim shared as longint pushpad ''the extra 16-byte realignment.
+
+
+''  Return the KREG_* index of a 64-bit register NAME, or KNOTFOUND.
+''  Used instead of tests like  op2[0] <> asc("r")  ,which also accepts any
+''  rip-relative operand whose mangled symbol name happens to start with 'r' (e.g. "rate[rip+0]").
+private function hRegIndexOf( byref r64 as string ) as integer
+	for i as integer = 0 to KREGUPPER
+		if r64 = *regstrq( i ) then return i
+	next
+	return KNOTFOUND
+end function
+
 '' ================== for optimization =========================================================
 ''see comment in reg_freeable about use of *<var ptr> for comparing string
 
@@ -4916,10 +4928,23 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 				'' if values are in 32bit range use 32bit instruction twice faster
 				var lname_normal = *symbUniqueLabel( )
 				var lname_end = *symbUniqueLabel( )
-				dim as integer rbxpushed,rsipushed
+				dim as integer rbxpushed,rsipushed,rbxsaved=KREGFREE
 				dim as string op2bis=op2
+				dim as integer op2idx=hRegIndexOf(op2)
 
 				asm_code("mov rax, "+op1,KNOOPTIM)
+
+				if op2idx=KNOTFOUND orelse op2idx=KREG_RSI then
+					if reghandle(KREG_RBX)<>KREGFREE and op1<>"rbx" then
+						rbxsaved=reghandle(KREG_RBX)
+						rbxpushed=1
+						asm_code("push rbx")
+					End If
+					ctx.usedreg Or=(1 Shl KREG_RBX)
+					asm_code("mov rbx, "+op2,KNOOPTIM)
+					op2bis="rbx"
+					op2idx=KREG_RBX
+				End If
 
 				'always INTEGER + INTEGER or ULONGINT + ULONGINT
 				if tempodtype=FB_DATATYPE_LONGINT or tempodtype=FB_DATATYPE_INTEGER then
@@ -4928,16 +4953,6 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 					asm_code("jg "+lname_normal)
 					asm_code("cmp rax, -2147483647")
 					asm_code("jl "+lname_normal)
-
-					if op2[0]<>asc("r") then
-						if reghandle(KREG_RBX)<>KREGFREE and op1<>"rbx" then
-							rbxpushed=reghandle(KREG_RBX)
-							asm_code("push rbx")
-						End If
-						asm_code("mov rbx, "+op2,KNOOPTIM)
-						ctx.usedreg Or=(1 Shl KREG_RBX)
-						op2bis="rbx"
-					End If
 
 					asm_code("cmp "+op2bis+", 2147483647")
 					asm_code("jg "+lname_normal)
@@ -4961,19 +4976,11 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 
 					asm_code("push rsi")
 					rsipushed=1
+					ctx.usedreg Or=(1 Shl KREG_RSI)
+
 					asm_code("mov rsi, 4294967295")
 					asm_code("cmp rax, rsi")
 					asm_code("ja "+lname_normal)
-
-					if op2[0]<>asc("r") then
-						if reghandle(KREG_RBX)<>KREGFREE and op1<>"rbx" then
-							rbxpushed=reghandle(KREG_RBX)
-							asm_code("push rbx")
-						End If
-						asm_code("mov rbx, "+op2,KNOOPTIM)
-						ctx.usedreg Or=(1 Shl KREG_RBX)
-						op2bis="rbx"
-					End If
 
 					asm_code("cmp "+op2bis+", rsi")
 					asm_code("ja "+lname_normal)
@@ -4986,29 +4993,28 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 
 					asm_code("mov edx, 0")
 					asm_code("div "+op2bis)
-					asm_code("pop rsi",KNOFREE)
 				end if
 
 				asm_code("jmp "+lname_end)
 
 				asm_code(lname_normal+":")
-				if rsipushed=1 then
-					asm_code("pop rsi",KNOFREE)
-				end if
 
 				if tempodtype=FB_DATATYPE_LONGINT or tempodtype=FB_DATATYPE_INTEGER then
 					asm_code("cqo",KNOFREE)
-					asm_code("idiv "+op2)
+					asm_code("idiv "+op2bis)
 				else
 					asm_code("mov edx, 0")
-					asm_code("div "+op2)
+					asm_code("div "+op2bis)
 				End If
 
 				asm_code(lname_end+":")
 
-				if rbxpushed then
+				if rsipushed=1 then
+					asm_code("pop rsi",KNOFREE)
+				end if
+				if rbxpushed=1 then
 					asm_code("pop rbx",KNOFREE)
-					reghandle(KREG_RBX)=rbxpushed
+					reghandle(KREG_RBX)=rbxsaved
 				end if
 
 				if vr=0 then
@@ -7732,7 +7738,7 @@ private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVR
 					if v2->typ=IR_VREGTYPE_VAR then
 						asm_info("copy to VAR2 use mov")
 						asm_code("mov rax, "+op2)
-						op2="["+*regtempo+"]"
+						regsrc=KREG_RAX
 					elseif v2->typ<>IR_VREGTYPE_REG then
 						asm_code("lea rax, "+op2)
 						regsrc=KREG_RAX
