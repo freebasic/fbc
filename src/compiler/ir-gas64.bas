@@ -186,6 +186,9 @@ declare sub cfi_windows_asm_code(byval statement as string)
 #define KROOMUSED -3
 
 #macro MPUSH(strg)
+	if pushnbstr+1 > ubound(pushstr) then
+		redim preserve pushstr(0 to iif(ubound(pushstr) < 63, 63, (ubound(pushstr)+1)*2-1))
+	end if
 	pushnbstr+=1
 	pushstr(pushnbstr)=strg
 	asm_info("MPUSH="+str(pushnbstr)+" "+pushstr(pushnbstr))
@@ -463,6 +466,11 @@ dim shared as const zstring ptr regstrb(17)={@"al",@"bl",@"cl",@"dl",@"sil",@"di
 dim shared as const byte reg_prio(0 to ...)={KREG_R11,KREG_R10,KREG_R8,KREG_R9,KREG_RDX,KREG_RCX,KREG_R12,KREG_R13,KREG_R14,KREG_R15,KREG_RBX,KREG_RDI,KREG_RSI}
 ''registers used for parameters + R10/R11 for saving
 dim shared as integer listreg(any)
+
+dim shared as string  pushstr(any)
+dim shared as integer pushnbstr
+dim shared as longint pushsize ''counts the *padded* bytes the pending pushes will move RSP by
+dim shared as longint pushpad ''the extra 16-byte realignment.
 '' ================== for optimization =========================================================
 ''see comment in reg_freeable about use of *<var ptr> for comparing string
 
@@ -6621,10 +6629,13 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 	dim as string op1,op3,regtempo
 	dim as boolean tostack
 	dim as integer paramtype,lgt,ofst
-	dim as string pushstr(300)
-	dim as integer pushnbstr,pushsize
 	dim as IRVREG ptr tempo1
 	dim as FB_STRUCT_INREG retin2regs
+
+	''if hdocall ever becomes reentrant these three globals must be saved/restored around the recursive call.	
+	pushnbstr=0
+	pushsize=0
+	pushpad=0
 
 	asm_info("variadic="+str(variadic)+" level="+Str(level))
 
@@ -6741,7 +6752,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 				else
 					if dtype=FB_DATATYPE_STRUCT then
 						lgt=v2->subtype->lgt
-						pushsize+=lgt
+						pushsize+=(clngint(lgt)+7) and (not 7ll)
 						if lgt>8 then
 							ofst=lgt mod 8
 							if  ofst=0 then ofst=8
@@ -7150,8 +7161,8 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 	if pushsize then
 		if pushsize mod 16 then
 			''should be a multiple of 16
-			pushsize=(pushsize\16+1)*16
-			asm_code("sub rsp, 8")
+			pushpad=16-(pushsize mod 16)
+			asm_code("sub rsp, "+str(pushpad))
 		end if
 		for istr as integer =pushnbstr to 1 step -1
 			if right(pushstr(istr),3)="#NO" then
@@ -7193,8 +7204,9 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 
 	''for linux restoring the previous value of rsp in case of parameter put on the stack
 	if pushsize then
-		asm_code("add rsp, "+str(pushsize))
+		asm_code("add rsp, "+str(pushsize+pushpad))
 		pushsize=0
+		pushpad=0
 		pushnbstr=0
 	end if
 
