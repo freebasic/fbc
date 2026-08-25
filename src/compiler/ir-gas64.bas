@@ -7173,12 +7173,14 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 		end if
 	end if
 
-	if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
-		''asm_code("call " +pname+"@PLT",KNOALL)
-		asm_code("call " +pname,KNOALL)
+	''callptr=false is REQUIRED here : _emitcallptr passes an indirect target in pname and "call reg@PLT" is not valid
+	if ctx.systemv=true andalso callptr=false andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
+		if( env.clopt.profile = FB_PROFILE_OPT_CYCLES ) then
+			hProfileDoCall( pname+"@PLT" )
+		else
+			asm_code("call " +pname+"@PLT",KNOALL)
+		end if
 	else
-		''asm_code("call " +pname,KNOALL)
-
 		''====== profiling
 		if( env.clopt.profile = FB_PROFILE_OPT_CYCLES ) then
 			hProfileDoCall( pname )
