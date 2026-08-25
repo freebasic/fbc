@@ -6415,9 +6415,9 @@ private sub _emitloadres(byval v1 as IRVREG ptr,byval vr as IRVREG Ptr)
 		case IR_VREGTYPE_PTR ''format ofs1 <vidx=reg>
 			op1=Str(v1->ofs)+"["+*regstrq(reg_findreal(v1->vidx->reg))+"]"
 
-			'case IR_VREGTYPE_OFS ''format varname ofs1   static  ofs1 could be zero  ''kept as could be used
+		'case IR_VREGTYPE_OFS ''format varname ofs1   static  ofs1 could be zero  ''kept as could be used
 			'op1=*symbGetMangledName(v1->sym)+"[rip+"+str(v1->ofs)+"]"    ''never happens
-			asm_error("in loadres OFS not handled")
+			'asm_error("in loadres OFS not handled")
 
 		case IR_VREGTYPE_REG
 			op1=*regstrq(reg_findreal(v1->reg))
