@@ -3047,6 +3047,7 @@ private sub hProfileEmitModuleName( byref filename as string )
 	ctx.section = SECTION_PROFILE_STRINGS
 	asm_code( modulelbl+":" )
 	asm_code(".ascii """+*hEscape(filename)+$"\0""")
+	ctx.section = previous_section
 end sub
 
 private sub hProfileProcProlog()
@@ -3071,22 +3072,26 @@ private sub hProfileProcEpilog()
 
 	asm_info("Calculate final time for procedure ------------------------------------------------------")
 	asm_code("push rax",KNOFREE) ''saving only rax if return value
+	asm_code("push rdx",KNOFREE)
+	asm_code("push rcx",KNOFREE)
 	asm_code("rdtsc",KNOFREE)
 	asm_code("shl rdx,32",KNOFREE)
 	asm_code("or rdx,rax",KNOFREE)
-	asm_code("mov rcx, rdx,KNOFREE",KNOFREE)
+	asm_code("mov rcx, rdx",KNOFREE)
 	asm_code("mov rax, QWORD PTR "+PROFILE_REC_INIT0,KNOFREE) ''init0
 	asm_code("sub rcx, rax",KNOFREE)
 	asm_code("add QWORD PTR "+PROFILE_REC_GRANT_TOTAL+", rcx",KNOFREE) ''grand total
 	asm_code("mov rax, QWORD PTR "+PROFILE_REC_REINIT,KNOFREE) ''reinit
 	asm_code("sub rdx, rax",KNOFREE)
 	asm_code("add QWORD PTR "+PROFILE_REC_INTERNAL_TOTAL+", rdx",KNOFREE) ''internal total
+	asm_code("pop rcx",KNOFREE)
+	asm_code("pop rdx",KNOFREE)
 	asm_code("pop rax",KNOFREE)
 	asm_info("---------------------------------------------------------------")
 
 end sub
 
-sub hProfileDoCall( byref pname as string )
+private sub hProfileDoCall( byref pname as const string )
 	dim as string proflbl = FB_PROFILE_DATA_NAME + str(ctx.profprcnb)
 
 	asm_info("Calculate split time for procedure ------------------------------------------------------")
