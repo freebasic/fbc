@@ -6025,26 +6025,28 @@ private sub emitStoreStruct(byval v2 as IRVREG ptr,byref op1 as string,byref op3
 			asm_code("mov [rax], dx")
 		case 11
 			asm_code("mov [rax], dx")
-			asm_code("shr rdx, 2")
+			asm_code("shr rdx, 16")
 			asm_code("mov [rax+2], dl")
 		case 12
 			asm_code("mov [rax], edx")
 		case 13
 			asm_code("mov [rax], edx")
-			asm_code("shr rdx, 4")
+			asm_code("shr rdx, 32")
 			asm_code("mov [rax+4], dl")
 		case 14
 			asm_code("mov [rax], edx")
-			asm_code("shr rdx, 4")
+			asm_code("shr rdx, 32")
 			asm_code("mov [rax+4], dx")
 		case 15
 			asm_code("mov [rax], edx")
-			asm_code("shr rdx, 4")
+			asm_code("shr rdx, 32")
 			asm_code("mov [rax+4], dx")
-			asm_code("shr rdx, 2")
+			asm_code("shr rdx, 16")
 			asm_code("mov [rax+6], dl")
 		case 16
 			asm_code("mov [rax], rdx")
+		case else
+			asm_error("emitStoreStruct : unexpected structure size "+str(lgtv))
 	End Select
 
 	asm_code("pop rdx")
