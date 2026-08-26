@@ -483,6 +483,21 @@ private function hRegIndexOf( byref r64 as string ) as integer
 	return KNOTFOUND
 end function
 
+''  Validated "-NNN[rbp] + delta" rewrite.
+''  Returns TRUE and fills outop only when `op` really is exactly
+''  <signed digits>[rbp].  The three original copies of this idiom gated on the
+''  FIRST CHARACTER being '-' and then parsed for the substring "[rbp]"
+''  unconditionally.  prepare_idx routinely produces "-32[rbp+r11*8]",
+''  "-32[r11*8]" and "-16[r11]", for which instr() returned 0, left(op,-1)
+''  gave "", valint("") gave 0, and the operand silently became the literal
+''  "8[rbp]" - the saved RETURN ADDRESS.
+private function hTryRbpOffset( byref op as string, byref outop as string, byval delta as integer ) as integer
+	dim as integer p = instr( op, "[rbp]" )
+	if p <= 1 then return FALSE                  '' no "[rbp]", or nothing before it
+	if p + 4 <> len( op ) then return FALSE      '' "[rbp]" must be the whole tail
+	outop = str( valint( left( op, p - 1 ) ) + delta ) + "[rbp]"
+	return TRUE
+end function
 '' ================== for optimization =========================================================
 ''see comment in reg_freeable about use of *<var ptr> for comparing string
 
@@ -3541,12 +3556,12 @@ private sub reg_fillr(byval lgt as integer,byref src as string,byval cptint as i
 
 	dim as const zstring ptr regsrc
 	dim as string regdst=*regstrq(listreg(cptint))
+	dim as string srctail
 
 	if lgt>8 then
 		lgt-=8
-		if src[0]=asc("-") then
-			''shortcut for move at address -xxx[rbp] + 8
-			src=str(valint(left(src,instr(src,"[rbp]")-1))+8)+"[rbp]"
+		if hTryRbpOffset( src, srctail, 8 ) then
+			src = srctail
 		else
 			asm_code("lea rax, "+src)
 			asm_code("add rax, 8")
@@ -3599,11 +3614,11 @@ private sub reg_fillr(byval lgt as integer,byref src as string,byval cptint as i
 	end select
 end sub
 private sub reg_fillx(byval lgt as integer,byref src as string,byval cptfloat as integer)
+	dim as string srctail
 	if lgt>8 then
 		lgt-=8
-		if src[0]=asc("-") then
-			''shortcut for move at address -xxx[rbp] + 8
-			src=str(valint(left(src,instr(src,"[rbp]")-1))+8)+"[rbp]"
+		if hTryRbpOffset( src, srctail, 8 ) then
+			src = srctail
 		else
 			asm_code("lea rax, "+src)
 			asm_code("add rax, 8")
@@ -4477,7 +4492,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 			prefix1=""
 		case IR_VREGTYPE_VAR ''format varname ofs1   local/static  ofs1 could be zero
 
-			if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB andalso (symbIsCommon(v1->sym)) then ''linux dll common shared
+			if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB andalso v1->sym<>0 andalso (symbIsCommon(v1->sym)) then ''linux dll common shared
 				tempo=reg_findfree(999994)
 				regtempo=*regstrq(tempo)
 				op3="mov "+regtempo+", "+*symbGetMangledName(v1->sym)+"@GOTPCREL[rip]"
@@ -4536,7 +4551,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 
 		case IR_VREGTYPE_VAR ''format varname ofs1   local/static  ofs1 could be zero
 
-			if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB andalso (symbIsCommon(v2->sym)) then
+			if ctx.systemv=true andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB andalso v2->sym<>0 andalso (symbIsCommon(v2->sym)) then
 
 				tempo=reg_findfree(999993)
 				regtempo=*regstrq(tempo)
