@@ -4962,6 +4962,7 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 					End If
 					ctx.usedreg Or=(1 Shl KREG_RBX)
 					asm_code("mov rbx, "+op2,KNOOPTIM)
+					op2="rbx"
 					op2bis="rbx"
 					op2idx=KREG_RBX
 				End If
@@ -5021,10 +5022,10 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 
 				if tempodtype=FB_DATATYPE_LONGINT or tempodtype=FB_DATATYPE_INTEGER then
 					asm_code("cqo",KNOFREE)
-					asm_code("idiv "+op2bis)
+					asm_code("idiv "+op2)
 				else
 					asm_code("mov edx, 0")
-					asm_code("div "+op2bis)
+					asm_code("div "+op2)
 				End If
 
 				asm_code(lname_end+":")
