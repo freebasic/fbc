@@ -6905,7 +6905,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 								ctx.stkcopy+=8-(ctx.stkcopy mod 8)
 								asm_info("stk10="+Str(ctx.stkcopy))
 								memcopy(v2->subtype->lgt,op1,str(-ctx.stkcopy)+"[rbp]",KUSE_MOV,KUSE_LEA)
-								asm_code("mov rax, "+Str(-ctx.stkcopy)+"[rbp]")
+								asm_code("lea rax, "+Str(-ctx.stkcopy)+"[rbp]")
 								asm_code("mov "+Str((cptarg-1)*8)+"[rsp], rax")
 							else
 								asm_code("mov "+Str((cptarg-1)*8)+"[rsp], "+op1)
