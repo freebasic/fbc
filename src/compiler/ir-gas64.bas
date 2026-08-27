@@ -5985,7 +5985,6 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 end sub
 
 private sub emitStoreStruct(byval v2 as IRVREG ptr,byref op1 as string,byref op3 as string)
-	dim as string src
 	dim as integer lgtv
 
 	if v2->sym=0 then
@@ -5994,81 +5993,46 @@ private sub emitStoreStruct(byval v2 as IRVREG ptr,byref op1 as string,byref op3
 		lgtv=v2->sym->lgt
 	End If
 
-	dim as FB_STRUCT_INREG retin2regs=v2->subtype->udt.retin2regs
-
 	if op3<>"" then emitop3_op4(op3)
 
 	''the data is either in rax/rdx or xmm0/xmm1 or the 2 other combinations
 	''and also in memory. However in case where -exx is used the added code modifies rax/rdx
 	''so we can't use them and we have to retrieve the values from memory
 
-	''moving 8 first bytes
-	select case retin2regs
-		case FB_STRUCT_RR,FB_STRUCT_RX
-			asm_code("mov rax,"+str(v2->ofs)+"[rbp]")
-			asm_code("mov "+op1+", rax")
-		case FB_STRUCT_XX,FB_STRUCT_XR
-			asm_code("movq "+op1+", xmm0")
-		case else
-			'' should never happen because hGetReturnTypeGas64Linux() shouldn't
-			'' return FB_DATATYPE_STRUCT unless struct is actually returned in
-			'' 2 registers and _emitstore() checks hIsStructIn2Regs() before
-			'' calling emitStoreStruct() even though udt.retin2regs may contain
-			'' FB_STRUCT_X or FB_STRUCT_R.
-			assert( 0 )
-	end select
-
-	''moving the rest (1 to 8 bytes) only from memory even if xmm0/xmm1 are not modified
-	if op1[0]=asc("-") and (lgtv=9 orelse lgtv= 10 orelse lgtv=12 orelse lgtv=16) then
-		''shortcut for move at address -xxx[rbp] + 8
-		op1=str(valint(left(op1,instr(op1,"[rbp]")-1))+8)+"[rbp]"
-		asm_code("mov rax,"+str(v2->ofs+8)+"[rbp]")
-
-		select case as const lgtv
-			case 9
-				src="al"
-			case 10
-				src="ax"
-			case 12
-				src="eax"
-			case 16
-				src="rax"
-		end select
-
-		asm_code("mov "+op1+", "+src)
-		exit sub
-	end if
-
 	asm_code("lea rax, "+op1)
-	asm_code("add rax, 8")
-	asm_code("push rdx")
+	asm_code("push rdx")  ''not sure useful, same for pop
+	''moving 8 first bytes
+	asm_code("mov rdx,"+str(v2->ofs)+"[rbp]")
+	asm_code("mov [rax], rdx")
+
+	''moving the rest (1 to 8 bytes)
 	asm_code("mov rdx,"+str(v2->ofs+8)+"[rbp]")
 
 	select case as const lgtv
 		case 9
-			asm_code("mov [rax], dl")
+			asm_code("mov [rax+8], dl")
 		case 10
-			asm_code("mov [rax], dx")
+			asm_code("mov [rax+8], dx")
 		case 11
-			asm_code("mov [rax], dx")
+			asm_code("mov [rax+8], dx")
 			asm_code("shr rdx, 16")
-			asm_code("mov [rax+2], dl")
+			asm_code("mov [rax+10], dl")
 		case 12
-			asm_code("mov [rax], edx")
+			asm_code("mov [rax+8], edx")
 		case 13
-			asm_code("mov [rax], edx")
+			asm_code("mov [rax+8], edx")
 			asm_code("shr rdx, 32")
-			asm_code("mov [rax+4], dl")
+			asm_code("mov [rax+12], dl")
 		case 14
-			asm_code("mov [rax], edx")
+			asm_code("mov [rax8], edx")
 			asm_code("shr rdx, 32")
-			asm_code("mov [rax+4], dx")
+			asm_code("mov [rax+12], dx")
 		case 15
-			asm_code("mov [rax], edx")
+			asm_code("mov [rax+8], edx")
 			asm_code("shr rdx, 32")
-			asm_code("mov [rax+4], dx")
+			asm_code("mov [rax+12], dx")
 			asm_code("shr rdx, 16")
-			asm_code("mov [rax+6], dl")
+			asm_code("mov [rax+14], dl")
 		case 16
 			asm_code("mov [rax], rdx")
 		case else
