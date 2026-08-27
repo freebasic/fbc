@@ -508,7 +508,7 @@ private sub check_optim(byref code as string)
 	static as integer prevwpos,flag
 	dim as integer poschar1=any,poschar2=any,writepos=any
 
-	if len(code)=0 then
+	if len(code)=0 or len(code)<4 then
 		prevpart1="":prevpart2="":previnstruc="":flag=KUSE_MOV ''reinit statics
 		exit sub
 	end if
@@ -1017,7 +1017,9 @@ private sub reg_freeable(byref lineasm as string)
 	dim as Integer regfound11=any,regfound12=any,regfound21=any,regfound22=any,regfound3=any
 	dim as long ptr  schptrl=any
 	dim as short ptr schptrs=any
-	dim as byte ptr schptrb=any,bptr=any
+	dim as byte ptr schptrb=any,bptr=any,eptr=any
+
+	if len(lineasm)<4 then exit sub ''at least 4 characters
 
 	if lineasm[0]=asc("j") then 'keep jmp but skip je, jne, etc
 		if lineasm[1]<>asc("m") then
@@ -1038,9 +1040,10 @@ private sub reg_freeable(byref lineasm as string)
 
 	''searching instruction
 	if *schptrs=cvshort("mo") then 'movxxx
+		eptr=schptrb+len(lineasm)
 		bptr=schptrb
 		bptr+=3
-		while *bptr<>32
+		while bptr<eptr andalso *bptr<>32
 			bptr+=1
 		wend
 		linstruc=bptr-schptrb +1
@@ -1090,6 +1093,7 @@ private sub reg_freeable(byref lineasm as string)
 	elseif *schptrl=cvl("divs") then
 		linstruc=5
 	elseif *schptrs=cvshort("cv") then
+		if len(lineasm)<9 then exit sub '' A real cvtXXXX instruction is at least 9 characters long.
 		if schptrb[8]=asc(" ") then
 			linstruc=9
 		else
@@ -6137,7 +6141,7 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 	if( hIsStructIn2Regs( v2 ) ) then
 		'' for Linux structures can be returned in 2 registers so needs a special handling
-		if (v1->sym <> 0) andalso ( v1->sym->stats and FB_SYMBSTATS_IMPLICIT ) then
+		if v1->typ=IR_VREGTYPE_VAR andalso v1->sym<>0 andalso ( v1->sym->stats and FB_SYMBSTATS_IMPLICIT ) then
 			asm_info("Replacing  "+str(v1->sym->ofs)+" by "+str(v2->ofs))
 			v1->sym->ofs=v2->ofs
 			asm_info("v1="+vregdumpfull(v1))
@@ -6455,7 +6459,7 @@ private sub _emitloadres(byval v1 as IRVREG ptr,byval vr as IRVREG Ptr)
 				'' linux       xmm0       xmm0           0       0
 				'' freebsd     xmm0       xmm0           1       1
 				''
-				if symbGetType( v1->sym)<>FB_DATATYPE_STRUCT then
+				if v1->typ<>IR_VREGTYPE_VAR orelse v1->sym=0 orelse symbGetType( v1->sym)<>FB_DATATYPE_STRUCT then
 					asm_code("movq xmm0, "+op1)
 				else
 					if( (env.target.options and FB_TARGETOPT_RETURNINREGS) <> 0 ) then
@@ -6469,7 +6473,7 @@ private sub _emitloadres(byval v1 as IRVREG ptr,byval vr as IRVREG Ptr)
 					end if
 				end if
 			case FB_DATATYPE_SINGLE
-				if symbGetType( v1->sym)<>FB_DATATYPE_STRUCT then
+				if v1->typ<>IR_VREGTYPE_VAR orelse v1->sym=0 orelse symbGetType( v1->sym)<>FB_DATATYPE_STRUCT then
 					asm_code("movd xmm0, "+op1)
 				else
 					if( (env.target.options and FB_TARGETOPT_RETURNINREGS) <> 0 ) then
@@ -7538,7 +7542,7 @@ private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVR
 							asm_code("mov rdx, "+op2)
 						End If
 					else
-						if symbIsStatic(v1->sym) Or symbisshared(v1->sym) then
+						if v2->sym<>0 andalso (symbIsStatic(v2->sym) Or symbisshared(v2->sym)) then
 							asm_code("mov rdx, "+*symbGetMangledName(v2->sym)+"[rip+"+Str(v2->ofs)+"]",KNOALL)
 						else
 							asm_code("mov rdx, "+Str(v2->ofs)+"[rbp]",KNOALL)
@@ -7579,7 +7583,7 @@ private sub _emitmem(byval op as integer,byval v1 as IRVREG ptr,byval v2 as IRVR
 							asm_code("mov r8, "+op2)
 						End If
 					else
-						if symbIsStatic(v1->sym) Or symbisshared(v1->sym) then
+						if v2->sym<>0 andalso (symbIsStatic(v2->sym) Or symbisshared(v2->sym)) then
 							asm_code("mov r8, "+*symbGetMangledName(v2->sym)+"[rip+"+Str(v2->ofs)+"]",KNOALL)
 						else
 							asm_code("mov r8, "+Str(v2->ofs)+"[rbp]",KNOALL)
