@@ -6039,7 +6039,7 @@ private sub emitStoreStruct(byval v2 as IRVREG ptr,byref op1 as string,byref op3
 			asm_code("shr rdx, 16")
 			asm_code("mov [rax+14], dl")
 		case 16
-			asm_code("mov [rax], rdx")
+			asm_code("mov [rax+8], rdx")
 		case else
 			asm_error("emitStoreStruct : unexpected structure size "+str(lgtv))
 	End Select
