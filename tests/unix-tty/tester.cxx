@@ -57,7 +57,10 @@ std::string dump_tty_state(const struct termios &state) {
 	s << "  c_oflag=0x" << std::hex << state.c_oflag << '\n';
 	s << "  c_cflag=0x" << std::hex << state.c_cflag << '\n';
 	s << "  c_lflag=0x" << std::hex << state.c_lflag << '\n';
+#ifdef __linux__
+	// c_line is a Linux extension; the BSDs, Darwin included, have no such field
 	s << "  c_line=0x" << std::hex << static_cast<unsigned int>(state.c_line) << '\n';
+#endif
 	for (size_t i = 0; i < NCCS; ++i) {
 		s << "  c_cc[" << std::dec << i << "]=0x" << std::hex << static_cast<unsigned int>(state.c_cc[i]) << '\n';
 	}
@@ -80,7 +83,9 @@ void check_tty_state_is_equal(const struct termios &a, const struct termios &b) 
 	CHECK(c_oflag);
 	CHECK(c_cflag);
 	CHECK(c_lflag);
+#ifdef __linux__
 	CHECK(c_line);
+#endif
 	for (size_t i = 0; i < NCCS; ++i) {
 		if (a.c_cc[i] != b.c_cc[i]) {
 			std::ostringstream s;
