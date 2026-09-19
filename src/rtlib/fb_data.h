@@ -1,3 +1,14 @@
+/* Mach-O (Darwin) requires pointer-sized relocations to be aligned; the packed
+   layout would place the embedded pointers at 2-byte offsets, which ld64
+   rejects ("pointer not aligned ...", a hard error on arm64).  The compiler
+   emits the matching naturally-aligned layout for Darwin targets, see
+   hCreateDataDesc() in src/compiler/ast-node-data.bas. */
+#if defined(__APPLE__)
+	#define FB_DATADESC_PACKED
+#else
+	#define FB_DATADESC_PACKED FBPACKED
+#endif
+
 struct _FB_DATADESC {
 	short 					len;
 	union {
@@ -6,7 +17,7 @@ struct _FB_DATADESC {
 		void   				*ofs;
 		struct _FB_DATADESC *next;
 	};
-} FBPACKED;
+} FB_DATADESC_PACKED;
 
 typedef struct _FB_DATADESC FB_DATADESC;
 

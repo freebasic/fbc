@@ -342,8 +342,13 @@ ifneq ($(filter 386 486 586 686 i386 i486 i586 i686,$(TARGET_ARCH)),)
   TARGET_ARCH := x86
 endif
 
-# Normalize TARGET_ARCH to arm
-ifneq ($(filter arm%,$(TARGET_ARCH)),)
+# Normalize TARGET_ARCH to aarch64 (macOS reports arm64)
+ifneq ($(filter aarch64 arm64,$(TARGET_ARCH)),)
+  TARGET_ARCH := aarch64
+endif
+
+# Normalize TARGET_ARCH to arm (32-bit only, after aarch64 is handled)
+ifneq ($(filter armv% arm,$(TARGET_ARCH)),)
   TARGET_ARCH := arm
 endif
 
@@ -585,6 +590,10 @@ ifeq ($(TARGET_OS),darwin)
     ALLFBCFLAGS += -d ENABLE_XQUARTZ
   else
     ALLCFLAGS += -DDISABLE_X11
+    # FB's OpenGL support lives in the X11 driver, so without XQuartz there is
+    # no GL driver at all.  gfx_opengl.c otherwise still calls the driver hook
+    # fb_hGL_GetProcAddress(), leaving libfbgfx with an undefined symbol.
+    ALLCFLAGS += -DDISABLE_OPENGL
   endif
 endif
 

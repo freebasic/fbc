@@ -99,10 +99,20 @@ typedef struct _FB_PROFILER_CYCLES
 */
 #if !defined(HOST_DOS)
 
+/* Mach-O section names are limited to 16 characters and, unlike ELF, the
+   linker does not synthesise __start_/__stop_ boundary symbols, so the
+   profiler's section scan cannot work the ELF way there; keep the record as a
+   plain used object instead. */
+#if defined(HOST_DARWIN)
+	#define FB_PROFILE_SECTION_ATTR __attribute__((used))
+#else
+	#define FB_PROFILE_SECTION_ATTR __attribute__((section("fb_profilecycledata"), used))
+#endif
+
 /* make sure there is at least one record in the profile data section */
 static FB_PROFILE_RECORD_VERSION
 __attribute__ ((aligned (16))) prof_data_version
-__attribute__((section("fb_profilecycledata"), used)) =
+FB_PROFILE_SECTION_ATTR =
 	{
 		sizeof( FB_PROFILE_RECORD_VERSION ),
 		FB_PROFILE_RECORD_VERSION_ID,
@@ -301,8 +311,15 @@ static void hProfilerWriteReport( FB_PROFILER_CYCLES *prof )
 		fprintf( f, "Total program execution time: %5.4g seconds\n", fb_Timer() - prof->start_time );
 	}
 
+#if defined(HOST_DARWIN)
+	/* No __start_/__stop_ section symbols on Mach-O; fall back to the single
+	   version record so the report is simply empty. */
+	data = (unsigned char *)&prof_data_version;
+	length = sizeof( prof_data_version );
+#else
 	data = (unsigned char *)&__start_fb_profilecycledata[0];
 	length = (ssize_t)&__stop_fb_profilecycledata - (ssize_t)&__start_fb_profilecycledata[0];
+#endif
 
 	count = hProfilerCountProcs( data, length );
 	if( count ) {
