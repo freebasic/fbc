@@ -266,9 +266,20 @@ end function
 
 private sub hCreateDataDesc( )
 	static as FBARRAYDIM dTB(0)
+	dim as integer byalign
 
-	'' Using FIELD = 1, to pack it as done by the rtlib
-	ast.data.desc = symbStructBegin( NULL, NULL, NULL, "__FB_DATADESC$", NULL, FALSE, 1, FALSE, 0, 0 )
+	'' Using FIELD = 1, to pack it as done by the rtlib -- except on Darwin,
+	'' where the linker requires pointer-sized relocations to be aligned to
+	'' the pointer size.  A packed { short, void* } puts the DATA entries'
+	'' pointers at offset 2 (and every 10 bytes after that), which ld64
+	'' rejects ("pointer not aligned ...", fatal on arm64).  There the layout
+	'' must use the natural pointer alignment, matching src/rtlib/fb_data.h.
+	byalign = 1
+	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN ) then
+		byalign = env.pointersize
+	end if
+
+	ast.data.desc = symbStructBegin( NULL, NULL, NULL, "__FB_DATADESC$", NULL, FALSE, byalign, FALSE, 0, 0 )
 
 	'' type as short
 	symbAddField( ast.data.desc, "type", 0, dTB(), _

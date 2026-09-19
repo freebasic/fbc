@@ -293,7 +293,16 @@ function rtlErrorCheck( byval expr as ASTNODE ptr ) as ASTNODE ptr
 		t = astNewLINK( t, astNewBOP( AST_OP_EQ, expr, astNewCONSTi( 0 ), nxtlabel, AST_OPOPT_NONE ), AST_LINK_RETURN_NONE )
 
 		'' fb_ErrorThrow()
-		t = astNewLINK( t, astNewBRANCH( AST_OP_JUMPPTR, NULL, hErrorThrow( reslabel, nxtlabel ) ), AST_LINK_RETURN_NONE )
+		'' Only -ex (-exx) enables RESUME support, and only then is a resume
+		'' label handed to the throw.  Without one the throw can never return
+		'' a usable jump target, so a plain call is equivalent -- and it keeps
+		'' the generated C acceptable to clang, which rejects `goto *ptr` in
+		'' functions that take no label address.
+		if( env.clopt.resumeerr ) then
+			t = astNewLINK( t, astNewBRANCH( AST_OP_JUMPPTR, NULL, hErrorThrow( reslabel, nxtlabel ) ), AST_LINK_RETURN_NONE )
+		else
+			t = astNewLINK( t, hErrorThrow( reslabel, nxtlabel ), AST_LINK_RETURN_NONE )
+		end if
 
 		'' end if
 		t = astNewLINK( t, astNewLABEL( nxtlabel ), AST_LINK_RETURN_NONE )
@@ -361,7 +370,13 @@ sub rtlErrorThrow _
 	end if
 
 	'' dst
-	astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, proc ) )
+	'' As in rtlErrorCheck(): an indirect jump is only meaningful when RESUME
+	'' support (-ex) is enabled and a resume label was passed along.
+	if( env.clopt.resumeerr ) then
+		astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, proc ) )
+	else
+		astAdd( proc )
+	end if
 
 	astAdd( astNewLABEL( nxtlabel ) )
 end sub
