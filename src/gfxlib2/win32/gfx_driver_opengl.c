@@ -151,7 +151,7 @@ static int GL_init(PIXELFORMATDESCRIPTOR *pfd)
 	}
 	res = fb_hGL_Init(library, wgl_extensions);
 	if (res == 0) {
-		if (fb_hGL_ExtensionSupported("WGL_ARB_pixel_format\n")){
+		if (fb_hGL_ExtensionSupported("WGL_ARB_pixel_format")){
 			fb_wgl.ChoosePixelFormatARB = (WGLCHOOSEPIXELFORMATARB)(void*)fb_wgl.GetProcAddress("wglChoosePixelFormatARB");
 		}
 	}
