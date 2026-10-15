@@ -409,8 +409,15 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 
 	DRIVER_LOCK();
 	fb_hMemCpy(target_pal, palette, palette_entries * sizeof(int));
-	if (!pal)
+	if (!pal) {
 		fb_hRestorePalette();
+		if (palette_entries > 0) {
+			/* The file's palette replaced the screen palette, also when the
+			   image is loaded into a buffer rather than the screen, so the
+			   whole screen must be redrawn (as PALETTE does) */
+			fb_hMemSet(__fb_gfx->dirty, TRUE, __fb_gfx->h);
+		}
+	}
 	size = ((biWidth * BYTES_PER_PIXEL(biBitCount)) + 3) & ~0x3;
 	buffer = (unsigned char *)malloc(size + 1);
 	switch (expand) {
