@@ -17,7 +17,19 @@ function cAliasAttribute( ) as zstring ptr
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
-			aliasid = *lexGetText( )
+			'' Escaped string literal (!"...")? Then the alias is the decoded
+			'' text, not the source spelling: convert to the internal format
+			'' like cStrLiteral() does, then unescape to get the final bytes.
+			if( lexGetToken( ) = FB_TK_STRLIT_ESC ) then
+				dim as integer lgt = lexGetTextLen( ), isunicode = any
+				dim as FB_WARNINGMSG wrnmsg = 0
+				aliasid = *hUnescape( hReEscape( lexGetText( ), lgt, isunicode, wrnmsg ) )
+				if( wrnmsg <> 0 ) then
+					errReportWarn( wrnmsg )
+				end if
+			else
+				aliasid = *lexGetText( )
+			end if
 			lexSkipToken( )
 
 			if( len( aliasid ) > 0 ) then
