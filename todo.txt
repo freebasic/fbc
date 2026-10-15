@@ -377,9 +377,6 @@ o rtlib
     We'd need our own float <-> string routines (PRINT USING/FORMAT may have one
     part of that already) to really fix this.
 
-o gfxlib2 thread-safety
-  - ScreenList() works like Dir(); it should use TLS instead of simple global var
-
 o classes
   - vtable lookup should handle THIS expression with side-effects
 
