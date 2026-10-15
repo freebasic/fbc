@@ -353,7 +353,7 @@ ifneq ($(filter ppc powerpc,$(TARGET_ARCH)),)
 endif
 
 # Normalize TARGET_ARCH to powerpc64
-ifneq ($(filter ppc% powerpc%,$(TARGET_ARCH)),)
+ifneq ($(filter ppc64 powerpc64,$(TARGET_ARCH)),)
   TARGET_ARCH := powerpc64
 endif
 
