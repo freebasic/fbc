@@ -5,8 +5,8 @@
 
 FBCALL unsigned int fb_ConsoleReadXY( int col, int row, int colorflag )
 {
-    TCHAR character;
-    WORD attribute;
+    TCHAR character = 0;
+    WORD attribute = 0;
     DWORD res;
     COORD coord;
 
