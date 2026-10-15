@@ -160,7 +160,13 @@ FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsign
 			y1 = orig_y - y1;
 			fb_GfxLine(target, orig_x, orig_y, x1, y1, orig_color, LINE_TYPE_LINE, 0xFFFF, COORD_TYPE_AA | (flags & ~COORD_TYPE_MASK));
 		}
-		
+
+		/* The radius lines moved the graphics cursor to their end point;
+		   CIRCLE must leave it at the center (fx/fy are absolute after
+		   fb_hFixRelative() above) */
+		context->last_x = fx;
+		context->last_y = fy;
+
 		while (end < start)
 			end += 2 * PI;
 		while (end - start > 2 * PI)
