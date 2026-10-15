@@ -5313,7 +5313,10 @@ end type
 
 type NMDAYSTATE as tagNMDAYSTATE
 type LPNMDAYSTATE as tagNMDAYSTATE ptr
-const MCN_GETDAYSTATE = culng(MCN_FIRST + 3)
+'' mingw-w64 defines MCN_GETDAYSTATE as (MCN_FIRST + 3) = -743, but the Windows
+'' SDK value is -747 (MCN_FIRST - 1 relative to mingw-w64's MCN_FIRST), and that
+'' is what comctl32 sends. See https://github.com/freebasic/fbc/issues/455
+const MCN_GETDAYSTATE = culng(MCN_FIRST - 1)
 type NMSELECT as NMSELCHANGE
 type LPNMSELECT as NMSELCHANGE ptr
 const MCN_SELECT = MCN_FIRST
