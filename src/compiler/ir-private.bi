@@ -16,6 +16,7 @@ end type
 
 type IRHLCONTEXT
 	regcount as integer '' vreg id counter
+	lblcount as integer '' synthetic label id counter, reset per procedure
 	vregs    as TFLIST  '' IRVREG allocation
 	callargs as TLIST   '' IRCALLARG's during irEmitPushArg/irEmitCall[Ptr]
 end type
