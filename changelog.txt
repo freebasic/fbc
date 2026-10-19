@@ -114,6 +114,7 @@ Version 1.20.0
 - sf.net #795: unsupported \UNNNN escape sequence is miscompiled - expect "\Unnnnnnnn" escape to have 8 digits
 - fbc: unicode code points in UTF-8 and UTF-32LE/BE encoded files were incorrectly converted to UTF-16LE/BE surrogate pairs when code point was in a supplementary planes (codepoints greate than U+FFFF)
 - fbc: fix source typo where bitfield FB_UDTOPT_HASFILLEDFIELD was overlapping FB_UDTOPT_VALISTTYPEMASK possibly causing bad code generation for UDT's with STRING*N fields
+- ir-hlc: emit an address-of-label expression in functions using indirect goto; clang rejects the generated code with "indirect goto in function with no address-of-label expressions" when error handling is generated without RESUME support (-e without -ex/-exx)
 
 
 Version 1.10.3

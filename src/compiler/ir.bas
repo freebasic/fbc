@@ -57,6 +57,7 @@ end sub
 
 sub irhlEmitProcBegin( )
 	irhl.regcount = 0
+	irhl.lblcount = 0
 end sub
 
 sub irhlEmitProcEnd( )

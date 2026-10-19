@@ -3246,7 +3246,28 @@ private sub _emitCallPtr _
 end sub
 
 private sub _emitJumpPtr( byval v1 as IRVREG ptr )
+	'' clang rejects an indirect goto in a function that contains no
+	'' address-of-label expression at all, with a hard error rather than a
+	'' warning:
+	''
+	''     error: indirect goto in function with no address-of-label expressions
+	''
+	'' This is reached whenever the runtime error handling is generated
+	'' without RESUME support (-e without -ex/-exx), because then no resume
+	'' label address is ever taken.  The throw still has to be an indirect
+	'' jump: fb_ErrorThrowAt() returns ctx->handler, which is what makes
+	'' ON ERROR GOTO work, and collapsing it into a plain call would drop
+	'' that handler on the floor.
+	''
+	'' So emit a discarded address-of-label and park its label right here.
+	'' Taking a label's address is free and the optimizer discards the
+	'' reference, so this costs nothing at run time.
+	dim as string dummy = "__fb_jumpptr$" + str( irhl.lblcount ) + "$"
+	irhl.lblcount += 1
+
+	hWriteLine( "(void)&&" + dummy + ";" )
 	hWriteLine( "goto *" + exprFlush( exprNewVREG( v1 ), TRUE ) + ";" )
+	hWriteLine( dummy + ":;" )
 end sub
 
 private sub _emitBranch( byval op as integer, byval label as FBSYMBOL ptr )
