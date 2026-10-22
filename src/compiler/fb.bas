@@ -562,6 +562,7 @@ sub fbGlobalInit()
 	'' default settings
 	env.clopt.outtype       = FB_DEFAULT_OUTTYPE
 	env.clopt.pponly        = FALSE
+	env.clopt.syntaxonly    = FALSE
 
 	env.clopt.backend       = FB_DEFAULT_BACKEND
 	env.clopt.target        = FB_DEFAULT_TARGET
@@ -637,6 +638,8 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		env.clopt.outtype = value
 	case FB_COMPOPT_PPONLY
 		env.clopt.pponly = value
+	case FB_COMPOPT_SYNTAXONLY
+		env.clopt.syntaxonly = value
 
 	case FB_COMPOPT_BACKEND
 		env.clopt.backend = value
@@ -756,6 +759,8 @@ function fbGetOption( byval opt as integer ) as integer
 		function = env.clopt.outtype
 	case FB_COMPOPT_PPONLY
 		function = env.clopt.pponly
+	case FB_COMPOPT_SYNTAXONLY
+		function = env.clopt.syntaxonly
 
 	case FB_COMPOPT_BACKEND
 		function = env.clopt.backend
@@ -1316,9 +1321,13 @@ sub fbCompile _
 	env.inf.format = hCheckFileFormat( env.inf.num )
 
 	''
-	if( irEmitBegin( ) = FALSE ) then
-		errReportEx( FB_ERRMSG_FILEACCESSERROR, env.outf.name, -1 )
-		exit sub
+	'' -fsyntax: no output file is created at all, so the backend is never
+	'' opened.  The front end (parsing and semantic checks) runs as usual.
+	if( not fbGetOption( FB_COMPOPT_SYNTAXONLY ) ) then
+		if( irEmitBegin( ) = FALSE ) then
+			errReportEx( FB_ERRMSG_FILEACCESSERROR, env.outf.name, -1 )
+			exit sub
+		end if
 	end if
 
 	if( fbGetOption( FB_COMPOPT_PPONLY ) ) then
@@ -1353,7 +1362,9 @@ sub fbCompile _
 	end if
 
 	'' save
-	irEmitEnd( )
+	if( not fbGetOption( FB_COMPOPT_SYNTAXONLY ) ) then
+		irEmitEnd( )
+	end if
 
 	if( env.ppfile_num > 0 ) then
 		close #env.ppfile_num
