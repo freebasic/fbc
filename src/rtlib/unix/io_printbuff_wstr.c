@@ -10,16 +10,18 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t chars, int mask
 {
 	size_t avail, avail_len;
 	char *temp;
+	ssize_t bytes;
+
+	temp = alloca( chars * 4 + 1 );
 
 	if( !__fb_con.inited )
 	{
-		/* !!!FIXME!!! is this ok or should it be converted to UTF-8 too? */
-		fwrite( buffer, sizeof( FB_WCHAR ), chars, stdout );
+		/* not a terminal (redirected or piped): write UTF-8, not raw wchar_t */
+		fb_WCharToUTF( FB_FILE_ENCOD_UTF8, buffer, chars, temp, &bytes );
+		fwrite( temp, 1, bytes, stdout );
 		fflush( stdout );
 		return;
 	}
-
-	temp = alloca( chars * 4 + 1 );
 
 	BG_LOCK( );
 	fb_hRecheckConsoleSize( TRUE );
@@ -44,8 +46,6 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t chars, int mask
 	        avail_len );
 
 	/* convert wchar_t to UTF-8 */
-	ssize_t bytes;
-
 	fb_WCharToUTF( FB_FILE_ENCOD_UTF8, buffer, chars, temp, &bytes );
 	/* add null-term */
 	temp[bytes] = '\0';
