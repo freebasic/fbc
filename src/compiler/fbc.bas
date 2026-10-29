@@ -819,7 +819,9 @@ private function hLinkFiles( ) as integer
 #endif
 		args &= " -print-libgcc-file-name"
 		var path = fbcQueryCC( args )
-		ldcline &= path & " "
+		'' Pass it inside the lib group, after the objects: ld only takes from an
+		'' archive what earlier files need (e.g. __addtf3 for aarch64 long double)
+		strlistAppend( @fbc.libfiles, path )
 
 		'' androideabi-v7a ABI requires extra linker options; apparently
 		'' others don't. See https://developer.android.com/ndk/guides/standalone_toolchain.html
