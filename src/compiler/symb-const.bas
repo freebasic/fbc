@@ -250,8 +250,9 @@ function symbAllocWStrConst _
 	end if
 
 	'' hEscapeW() can use up to (4 * sizeof(wchar)) ascii chars per unicode char
-	'' (up to one '\ooo' per byte of wchar)
-	if( internalstrlen * ((1+3) * sizeof( wstring )) <= FB_MAXNAMELEN-6 ) then
+	'' (up to one '\ooo' per byte of wchar); the wchar of the target, as hEscapeW() uses it
+	'' (sizeof( wstring ) of the host is smaller when cross compiling e.g. from Windows to Android)
+	if( internalstrlen * ((1+3) * typeGetSize( FB_DATATYPE_WCHAR )) <= FB_MAXNAMELEN-6 ) then
 		id = "{fbwc}"
 		id += *hEscapeW( sname )
 	else
