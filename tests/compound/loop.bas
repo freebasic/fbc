@@ -48,6 +48,52 @@ SUITE( fbc_tests.compound.loop_ )
 		CU_ASSERT( i = -1 )
 	END_TEST
 
+	TEST( testEndWhile )
+		dim as integer i
+
+		i = 0
+		while( i = 0 )
+			i += 1
+		end while
+		CU_ASSERT( i = 1 )
+
+		i = 0
+		while( i = 5 )
+			i += 1
+		end while
+		CU_ASSERT( i = 0 )
+
+		i = 0
+		while( i <> 5 )
+			i += 1
+		end while
+		CU_ASSERT( i = 5 )
+
+		i = 0
+		while( i < 5 )
+			i += 1
+		end while
+		CU_ASSERT( i = 5 )
+
+		i = 0
+		while( i <= 5 )
+			i += 1
+		end while
+		CU_ASSERT( i = 6 )
+
+		i = 5
+		while( i > 0 )
+			i -= 1
+		end while
+		CU_ASSERT( i = 0 )
+
+		i = 5
+		while( i >= 0 )
+			i -= 1
+		end while
+		CU_ASSERT( i = -1 )
+	END_TEST
+
 	TEST( testDoWhile )
 		dim as integer i
 

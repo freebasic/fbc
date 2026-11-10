@@ -15,7 +15,7 @@ FreeBASIC by default, automatically takes care of compiling sources and linking 
 	**Note:** The most reliable cross-platform code is obtained by encoding without BOM in ASCII/UTF-8 characters.
 
 {{fbdoc item="section" value="Implicit main()"}}
-	Some languages require a special ##main()## procedure be defined as an entry point to the program which define the first statements that will be executed when the program starts.  FreeBASIC allows executable statements in module level code and normally the first source file passed to fbc on the command line will be used as the "main" module.  The main module can be explicitly names by passing //-m filename// on the command line, where //filename// is the name of the main module without the .bas extension.
+	Some languages require a special ##main()## procedure be defined as an entry point to the program which define the first statements that will be executed when the program starts.  FreeBASIC allows executable statements in module level code and normally the first source file passed to fbc on the command line will be used as the "main" module.  The main module can be explicitly named by passing //-m filename// on the command line, where //filename// is the name of the main module without the .bas extension.
 {{fbdoc item="filename" value="examples/manual/proguide/sourcefiles.bas"}}%%(freebasic)
 	'' sample.bas
 	declare sub ShowHelp()

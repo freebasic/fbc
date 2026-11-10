@@ -38,6 +38,10 @@ Writes data from a buffer to a file
 		""-"" If a real [w/z]string variable is passed to ##**Put**##, the ##amount## parameter should be forbidden as it is when passing a string. Do not use. Otherwise, it is dangerously used to multiply the string length to be written to the file, but possibly by overflowing outside the provided [w/z]string buffer.
 		""-"" If a dereferenced [w/z]string pointer is passed to ##**Put**##, the ##amount## parameter is not taken into account as it is when passing a dereferenced numeric pointer. Do not use. But instead of respecting the ##amount## parameter, the pointed buffer is written to the file up to the zero element (terminal element which is excluded).
 		""-"" For finer granularity, any [w/z]string variable can be safely passed to ##**Put**## as numeric buffer by providing the first numeric element (an indexed [w/z]string variable, or a dereferenced [w/z]string pointer then indexed) and the number of numeric elements to be processed.//
+		
+	**Note:**
+		**""-""** Using **##""Put #""##** is naturally dedicated to Binary/Random Access file mode.
+		**""-""** It is also allowed in Ouput/Append Access file mode, but this was never well tested and results may vary.
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/fileio/put.bas"}}%%(freebasic)

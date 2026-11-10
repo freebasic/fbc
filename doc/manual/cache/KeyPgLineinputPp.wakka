@@ -24,6 +24,10 @@ Reads one line of text from a file
 	Two syntaxes are available:
 		- The first syntax is only allowed when the string buffer size (provided by ##//string_variable_1//##) is either variable or fixed (and known).
 		- The second syntax with ##//max_length//## parameter is only allowed when the string buffer size (provided by ##//string_variable_2//##) is unknown. This happens for dereferenced ##[[KeyPgZstring|Zstring]]##/##[[KeyPgWstring|Wstring]]## pointers, or ##[[KeyPgZstring|Zstring]]##/##[[KeyPgWstring|Wstring]]## variables passed by reference. This can used to truncate the text line to be read, or avoid overflowing beyond allocated data of the provided string buffer.
+		
+	**Note:**
+		**""-""** Using **##""Line Input #""##** is naturally dedicated to Input Access file mode.
+		**""-""** It is also allowed in Binary/Random Access file mode, but this was never well tested and results may vary.
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/fileio/lineinput.bas"}}%%(freebasic)

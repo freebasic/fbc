@@ -18,6 +18,10 @@ Writes a list of values to a file or device
 	A new-line character is printed after the values in the expression list unless the expression list is followed by a comma or semicolon.
 	
 	Note that the comma (##,##) immediately following the file number is still necessary, even the expression list is empty.  In this case a new-line is printed, just as with a normal expression list that doesn't have a comma or semicolon at the end.
+	
+	**Note:**
+		**""-""** Using **##""Print #""##** is naturally dedicated to Output/Append Access file mode.
+		**""-""** It is also allowed in Binary/Random Access file mode, but this was never well tested and results may vary.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/print.bas"}}%%(freebasic)

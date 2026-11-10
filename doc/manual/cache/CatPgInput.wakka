@@ -8,6 +8,8 @@ Statements and procedures (from runtime library) that get input from the user.
 	Procedures that read individual keys from the keyboard buffer.
 **{{anchor name="READVALUE|Reading values from the keyboard buffer"}}**
 	Procedures that read characters and values from the keyboard buffer.
+**{{anchor name="DETECTKEY|Detecting key status by keyboard scancode"}}**
+	Procedure that detects the status of a key by its scancode.
 
 <<{{anchor name="READVALUE"}}{{fbdoc item="section" value="Reading values from the keyboard buffer"}}
 	=={{fbdoc item="keyword" value="KeyPgInput|INPUT"}}==
@@ -18,11 +20,15 @@ Statements and procedures (from runtime library) that get input from the user.
 		Reads a number of characters from the keyboard buffer, file or device.
 	=={{fbdoc item="keyword" value="KeyPgWinput|WINPUT()"}}==
 		Reads a number of wide characters from the keyboard buffer, file or device.
-<<>>{{anchor name="READKEY"}}{{fbdoc item="section" value="Reading keys from the keyboard buffer"}}
+<<>>{{anchor name="READVALUE"}}{{fbdoc item="section" value="Reading keys from the keyboard buffer"}}
 	=={{fbdoc item="keyword" value="KeyPgInkey|INKEY"}}==
 		Gets the first key, if any, waiting in the keyboard buffer.
 	=={{fbdoc item="keyword" value="KeyPgGetkey|GETKEY"}}==
 		Gets and waits for the first key in the keyboard buffer.
+
+{{anchor name="DETECTKEY"}}{{fbdoc item="section" value="Detecting key status by keyboard scancode"}}
+	=={{fbdoc item="keyword" value="KeyPgMultikey|MULTIKEY"}}==
+		Detects the status of a key by its scancode.
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

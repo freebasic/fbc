@@ -31,6 +31,9 @@ dim buffer as string
 buffer = space(10)
 lset buffer, "91.5"
 print "-[" & buffer & "]-"
+%%	Output:
+%%
+-[91.5      ]-
 %%
 
 {{fbdoc item="filename" value="examples/manual/strings/lset-udt.bas"}}%%(freebasic)

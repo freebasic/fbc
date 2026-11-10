@@ -17,7 +17,15 @@ Selects faster, less accurate or slower, more precise floating-point math.
 	
 	Currently, the only floating point operations that behave differently when using ##-fpmode FAST## are: ##[[KeyPgSin|sin]]()##, ##[[KeyPgCos|cos]]()##, reciprocal, and reciprocal [[KeyPgSqr|square root]], all of which must operate on ##[[KeyPgSingle|Single]]## precision values.
 	
-	Using ##-fpmode FAST## is dependent on the ##[[CompilerOptfpu|-fpu SSE]]## command line option: Using ##-fpmode FAST## without using ##[[CompilerOptfpu|-fpu SSE]]## will generate an error.
+	A number of changes were made to normalize handling of ""NaN's"" (Not a Number) to get consistent results across toolchains and platforms, but that costs extra code, so intention was that ##-fpmode FAST## could allow user to skip that extra code generation if they wanted (and they assume responsibility how things work or do not work across platforms).
+	
+	**Note:**
+		**""-""** for x86 and x86_64, default is ##-fpu x87 -fpmode PRECISE##
+		**""-""** ##-fpmode FAST|PRECISE## controls code generation by fbc only
+		**""-""** for optimizing with '-gen gcc' backend, use '-Wc -ffast-math'
+
+{{fbdoc item="ver"}}
+	- Before fbc-1.20.0, an error message would be displayed if ##-fpmode FAST## was with anything but ##-fpu SSE##.
 
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]

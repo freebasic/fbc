@@ -7,7 +7,7 @@ Add error checking with ##[[KeyPgResume|Resume]]## support and array bounds/dime
 {{fbdoc item="desc"}}
 	The ##**-exx**## compiler option adds error checking with ##[[KeyPgResume|Resume]]## support, array bounds and dimensions, and null-pointer checking (including the procedure pointers), plus stack overflow checking with gas64 backend.
 	
-	Use of the ##**-exx**## option automatically implies ##-e##, ##-exx##, ##-earray##, ##-earraydims##, ##-elocation##, and ##-enullptr##, error checking and code generation options.
+	Use of the ##**-exx**## option automatically implies ##-e##, ##-ex##, ##-earray##, ##-earraydims##, ##-elocation##, and ##-enullptr##, error checking and code generation options.
 
 {{fbdoc item="ver"}}
 	- Before fbc 1.20.0, array dimensions were never checked.

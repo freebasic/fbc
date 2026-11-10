@@ -20,6 +20,8 @@ Returns the floor of a number
 {{fbdoc item="desc"}}
 	 ##**Int**## returns the floor of ##//number//##.  For example, ##**Int**(4.9)## will return ##4.0##, and ##**Int**(-1.3)## will return ##-2.0##.  For integer types, the number is returned unchanged.
 	
+	**Note:** To return the ceiling of ##//number//##, i.e. the smallest integer that is greater than or equal to it, one can use ##**-Int**( **-**//number// )##.
+	
 	The ##**Int**## unary ##[[KeyPgOperator|operator]]## can be overloaded with user defined types.
 
 {{fbdoc item="ex"}}

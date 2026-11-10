@@ -14,9 +14,8 @@ Preprocessor function to test if a symbol has been defined
 {{fbdoc item="desc"}}
 	Given the symbol name, the ##**defined()**## preprocessor function returns true if the symbol has been defined - or false if the symbol is unknown.
 	
-	This is used mainly with ##[[KeyPgPpif|#if]]##.
-	
-	Similar to ##[[KeyPgPpifdef|#ifdef]]## except it allows more than one check to occur because of its flexibility.
+	This is used mainly with ##[[KeyPgPpif|#if]]## (or ##[[KeyPgPpelseif|#elseif]]##).
+	Similar to ##[[KeyPgPpifdef|#ifdef]]## (or ##[[KeyPgPpelseifdef|#elseifdef]]##) except it allows more than one check to occur because of its flexibility.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/prepro/defined.bas"}}%%(freebasic)

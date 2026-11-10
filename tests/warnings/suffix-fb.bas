@@ -155,6 +155,13 @@
 		wend%
 	end scope
 
+	scope
+		WARN( 1 )
+		while% 1
+		WARN( 2 )
+		end% while%
+	end scope
+
 #print ---- parser-compound-with.bas ----
 
 	scope

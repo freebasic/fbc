@@ -10,7 +10,7 @@
 '' when the index is out of range
 
 Dim As Integer isprime(1 To 10) = { _
-	_ ' 1  2  3  4  5  6  7  8  9  10
+	_ ' 1  2  3  4  5  6  7  8  9  10    (2, 3, 5 and 7 are the only prime numbers)
 		0, 1, 1, 0, 1, 0, 1, 0, 0, 0 _
 	}
 
@@ -23,3 +23,4 @@ If (n >= 1 And n <= 10) AndAlso isprime(n) Then
 Else
 	Print "n is not prime, or out of range"
 End If
+Sleep

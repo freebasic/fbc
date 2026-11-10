@@ -3082,9 +3082,9 @@ private sub hCheckArgs()
 	else
 		fbSetOption( FB_COMPOPT_BACKEND, FB_BACKEND_GCC )
 	end if
-	'' gas/gas64 doesn't currently support PIC
-	if( ((fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) or _
-	     (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS64)) and _
+
+	'' gas doesn't currently support PIC
+	if( (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) and _
 	    fbGetOption( FB_COMPOPT_PIC ) ) then
 		fbSetOption( FB_COMPOPT_BACKEND, FB_BACKEND_GCC )
 	end if
@@ -3105,8 +3105,7 @@ private sub hCheckArgs()
 		fbcEnd( 1 )
 	end if
 
-	if( ((fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) or _
-	     (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS64)) and _
+	if( (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) and _
 	    fbGetOption( FB_COMPOPT_PIC ) ) then
 		errReportEx( FB_ERRMSG_GENGASWITHPIC, "", -1 )
 		fbcEnd( 1 )

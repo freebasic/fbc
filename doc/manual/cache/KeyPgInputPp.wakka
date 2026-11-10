@@ -20,6 +20,10 @@ Reads a list of values from a text file
 	To read an entire line into a string, use ##[[KeyPgLineinputPp|Line Input]]## instead.
 	
 	[[KeyPgWritePp|Write #]] can be used to create a file readable with ##**""Input #""**##.
+	
+	**Note:**
+		**""-""** Using **##""Input #""##** is naturally dedicated to Input Access file mode.
+		**""-""** It is also allowed in Binary/Random Access file mode, but this was never well tested and results may vary.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/input.bas"}}%%(freebasic)

@@ -41,6 +41,10 @@ Reads data from a file to a buffer
 		""-"" If a real [w/z]string variable is passed to ##**Get**##, the ##amount## parameter should be forbidden as it is when passing a string. Do not use. Otherwise, it is ignored (except for the '0' value).
 		""-"" If a dereferenced [w/z]string pointer is passed to ##**Get**##, the ##amount## parameter is not taken into account as it is when passing a dereferenced numeric pointer. Do not use. But instead of respecting the ##amount## parameter, the pointed buffer must begin with at least as many non-zero elements as the number of elements to read.
 		""-"" For finer granularity, any [w/z]string variable can be safely passed to ##**Get**## as a numeric buffer by providing the first numeric element (an indexed [w/z]string variable, or a dereferenced [w/z]string pointer then indexed) and the number of numeric elements to be processed.//
+		
+	**Note:**
+		**""-""** Using **##""Get #""##** is naturally dedicated to Binary/Random Access file mode.
+		**""-""** It is also allowed in Input Access file mode, but this was never well tested and results may vary.
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/fileio/get.bas"}}%%(freebasic)

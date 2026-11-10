@@ -116,7 +116,40 @@ The built-in procedures that create, and detach/wait-for the **Threads**.
 		But if the programmer chooses not to wait until the end of the thread (and necessarily detaches it only), then he must make sure that the data accessed by that thread is valid until the thread has finished with it. Otherwise, one may encounter a situation where the 'parent' thread holds pointers/references to local variables and the 'child' thread hasn't finished when the 'parent' thread finishes (the variables being destroyed because becoming out of scope).
 
 {{fbdoc item="section" value="Example"}}
-	The 'Main' thread displays ten "M" characters while the 'Child' thread simultaneously displays ten "C" characters.
+	- Small example proving multi-threading capacity:
+		**""-""** In a non multi-threading code, we cannot do anything else while waiting for the "Line Input" instruction to return.
+		**""-""** Multi-threading makes this possible.
+		{{fbdoc item="filename" value="examples/manual/proguide/multithreading/thread0.bas"}}%%(freebasic)
+Sub thread(Byval p As Any Ptr)
+	Do
+		Static As String t
+		Draw String (0, 16), t, 0
+		t = Time
+		Draw String (0, 16), t
+		Do
+			If *Cast(String Ptr, p) = "quit" Then Exit Sub
+			Sleep 100, 1
+		Loop Until Time <> t  ' to limit flickering
+	Loop
+End Sub
+
+Dim As String s
+Dim As Any Ptr pThread
+
+Screen 12
+Print "Time is updated by thread even while 'Line Input' is waiting for characters:";
+Locate 4, 1
+Print "Enter any character line to test, or 'quit' to finish:"
+pThread = Threadcreate(@thread, @s)
+Do
+	Locate 5, 1
+	Print Space(Len(s));
+	Locate 5, 1
+	Line Input s
+Loop Until s = "quit"
+ThreadWait(pThread)
+%%
+	- The 'Main' thread displays ten "M" characters while the 'Child' thread simultaneously displays ten "C" characters.
 	A //'Sleep x, 1'// tempo is put in the //'For'// loop of each thread (main thread and child thread) to release time-slice allowing the other thread to execute as well.
 	The tempos are set so that the execution time of the child thread //'For'// loop is greater than the one of the main thread //'For'// loop.
 	
@@ -204,7 +237,7 @@ End Sub
 MCMMCMMCMMCMMMCCCCCC
 'Child' thread finishing or finished
 				%%
-	A UDT for a multi-timer feature:
+	- A UDT for a multi-timer feature:
 		**""-""** using internally a joinable thread (##[[KeyPgThreadCreate|Threadcreate]]## ..... ##[[KeyPgThreadWait|ThreadWait]]##) to sequence each timer,
 		**""-""** and call-backing externally a detached thread (##[[KeyPgThreadCreate|Threadcreate]]## + ##[[KeyPgThreadDetach|ThreadDetach]]## .....) as event for user.
 	The user event being triggered by a detached-thread callback from the timer loop, the requested time-out is only biased by the execution time of ##[[KeyPgThreadCreate|Threadcreate]]## + ##[[KeyPgThreadDetach|ThreadDetach]]## (small time about constant) and not by a ##[[KeyPgThreadWait|ThreadWait]]## waiting-for:
