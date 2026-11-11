@@ -4919,6 +4919,17 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 				asm_code("mov rax, "+op1,KNOOPTIM)
 
 				'always INTEGER + INTEGER or ULONGINT + ULONGINT
+				'' rbx belongs to the calling proc: when it is used for the divisor it is saved in the prologue
+				'' (usedreg), a value of this proc in it is pushed before the first jump to lname_normal
+				'' (the pop after lname_end is done on both ways)
+				if op2[0]<>asc("r") then
+					ctx.usedreg Or=(1 Shl KREG_RBX)
+					if reghandle(KREG_RBX)<>KREGFREE and op1<>"rbx" then
+						rbxpushed=reghandle(KREG_RBX)
+						asm_code("push rbx")
+					End If
+				End If
+
 				if tempodtype=FB_DATATYPE_LONGINT or tempodtype=FB_DATATYPE_INTEGER then
 
 					asm_code("cmp rax, 2147483647")
@@ -4927,10 +4938,6 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 					asm_code("jl "+lname_normal)
 
 					if op2[0]<>asc("r") then
-						if reghandle(KREG_RBX)<>KREGFREE and op1<>"rbx" then
-							rbxpushed=reghandle(KREG_RBX)
-							asm_code("push rbx")
-						End If
 						asm_code("mov rbx, "+op2,KNOOPTIM)
 						op2bis="rbx"
 					End If
@@ -4962,10 +4969,6 @@ private sub hloadoperandsandwritebop(byval op as integer,byval v1 as IRVREG ptr,
 					asm_code("ja "+lname_normal)
 
 					if op2[0]<>asc("r") then
-						if reghandle(KREG_RBX)<>KREGFREE and op1<>"rbx" then
-							rbxpushed=reghandle(KREG_RBX)
-							asm_code("push rbx")
-						End If
 						asm_code("mov rbx, "+op2,KNOOPTIM)
 						op2bis="rbx"
 					End If
