@@ -826,7 +826,7 @@ static void D2DEnumOutputModes(IDXGIOutput* pOutput, MiniVector* pDepthModes)
 	while(*pFormats != DXGI_FORMAT_UNKNOWN)	{
 		IDXGIOutput_GetDisplayModeList(pOutput, *pFormats, DXGI_ENUM_MODES_INTERLACED, &numOutputModes, NULL);
 		if(numOutputModes != 0) {
-			DXGI_MODE_DESC* pModeList = calloc(sizeof(*pModeList), numOutputModes);
+			DXGI_MODE_DESC* pModeList = calloc(numOutputModes, sizeof(*pModeList));
 			if(pModeList && (!NOTIFY_FAILED_HR(IDXGIOutput_GetDisplayModeList(pOutput, *pFormats, DXGI_ENUM_MODES_INTERLACED, &numOutputModes, pModeList)))) {
 				UINT i;
 				for(i = 0; i < numOutputModes; ++i) {
