@@ -829,7 +829,14 @@ private sub check_optim(byref code as string)
 			elseif prevpart2[0]=asc("x") then
 				if instr(prevpart1,"[")<>0 then
 					''OPTIMIZATION 3-1
-					if previnstruc="movss" orelse part1[0]=asc("e") orelse right(part1,1)="d" then
+					if part1[0]=asc("x") then
+						''xmm --> xmm : movd has no xmm, xmm form
+						if previnstruc="movss" orelse previnstruc="movd" then
+							instruc="movss"
+						else
+							instruc="movq"
+						end if
+					elseif previnstruc="movss" orelse part1[0]=asc("e") orelse right(part1,1)="d" then
 						instruc="movd"
 					else
 						instruc="movq"
