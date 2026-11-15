@@ -12,7 +12,13 @@ int fb_hShell( char *program )
 	fb_hExitConsole();
 	FB_UNLOCK( );
 
+#ifdef HOST_IOS
+	/* iOS: system() is not available, a program can not start another one */
+	(void)program;
+	errcode = -1;
+#else
 	errcode = system( program );
+#endif
 
 	/* system() result uses same format as the status
 	   returned by waitpid(), or -1 on error */

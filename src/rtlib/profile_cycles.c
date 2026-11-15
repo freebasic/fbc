@@ -32,8 +32,15 @@
 #endif
 
 /* profile section data */
+#if defined(__APPLE__)
+extern char __start_fb_profilecycledata[] __asm("section$start$__DATA$fb_profcycle");
+extern char __stop_fb_profilecycledata __asm("section$end$__DATA$fb_profcycle");
+#define FB_PROFILE_SECTION "__DATA,fb_profcycle"
+#else
 extern char __start_fb_profilecycledata[];
 extern char __stop_fb_profilecycledata;
+#define FB_PROFILE_SECTION "fb_profilecycledata"
+#endif
 
 /* profiler record ids - these indicate what the record is */
 enum FB_PROFILE_REDORD_ID
@@ -102,7 +109,7 @@ typedef struct _FB_PROFILER_CYCLES
 /* make sure there is at least one record in the profile data section */
 static FB_PROFILE_RECORD_VERSION
 __attribute__ ((aligned (16))) prof_data_version
-__attribute__((section("fb_profilecycledata"), used)) =
+__attribute__((section(FB_PROFILE_SECTION), used)) =
 	{
 		sizeof( FB_PROFILE_RECORD_VERSION ),
 		FB_PROFILE_RECORD_VERSION_ID,

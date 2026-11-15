@@ -40,6 +40,18 @@
 #elif defined __APPLE__
 	#define HOST_DARWIN
 	#define HOST_UNIX
+	#include <TargetConditionals.h>
+	#if TARGET_OS_IPHONE
+		/* iOS (the device and the Simulator): no terminal (no termcap/ncurses in its SDK),
+		   a program can not start another one (no system()), no libffi */
+		#define HOST_IOS
+		#ifndef DISABLE_NCURSES
+			#define DISABLE_NCURSES
+		#endif
+		#ifndef DISABLE_FFI
+			#define DISABLE_FFI
+		#endif
+	#endif
 #elif (defined sun || defined __sun) && defined __SVR4
 	#define HOST_SOLARIS
 	#define HOST_UNIX

@@ -76,6 +76,7 @@ Version 1.20.0
 - sf.net #1013 : NEW uses callocate instead allocate + memset(0) as it's faster (SARG)
 - sf.net #1013 (gas64) : memfill calls MEMSET if area size is greater than 64 bytes as it's faster (SARG)
 - fbc: new syntax 'end while' equivalent to 'wend'. wend syntax remains valid (SARG)
+- rtlib: iOS (iPhone, iPad and the iOS Simulator): HOST_IOS when TARGET_OS_IPHONE, the runtime builds with the SDK of iOS without termcap/ncurses and libffi; SHELL returns -1 since iOS has no system()
 
 [fixed]
 - github #410: give consistent floating point comparisons results involving NaNs.
@@ -116,6 +117,9 @@ Version 1.20.0
 - fbc: fix source typo where bitfield FB_UDTOPT_HASFILLEDFIELD was overlapping FB_UDTOPT_VALISTTYPEMASK possibly causing bad code generation for UDT's with STRING*N fields
 - gfxlib2: fix transposed calloc() arguments in gfx_bsave.c and win32/gfx_driver_d2d.c (nmemb, size), silencing gcc -Wcalloc-transposed-args warnings
 - gas64: peephole optimizer emitted invalid 'movd xmm, xmm' (assembler error "operand type mismatch for `movd'") when a SINGLE variable stored from an xmm register was loaded back into another xmm register, e.g. 'x = f() * 1.3 : if x > y then ...'
+- rtlib: darwin: the cycle profiler (-profile) used the __start_/__stop_ section symbols of ELF, Mach-O uses section$start$/section$end$
+- rtlib: darwin: THREADCREATE without a stack size took the tiny minimum of darwin, it takes at least 8 MB now
+- makefile: darwin: ffi.h is taken from usr/include/ffi of the SDK of macOS (there is no /usr/include), and the rtlib is built for the same minimum macOS version as fbc gives to the programs (MACOSX_DEPLOYMENT_TARGET, 11.0 by default)
 
 
 Version 1.10.3

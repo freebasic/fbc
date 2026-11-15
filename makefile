@@ -579,7 +579,12 @@ ifeq ($(TARGET_OS),solaris)
 endif
 
 ifeq ($(TARGET_OS),darwin)
-  ALLCFLAGS += -I/opt/X11/include -I/usr/include/ffi
+  # The same minimum version of macOS as fbc gives to the programs (a newer one would give a warning of ld for each
+  # object of the rtlib); clang takes it only for a target of macOS, not of iOS
+  MACOSX_DEPLOYMENT_TARGET ?= 11.0
+  export MACOSX_DEPLOYMENT_TARGET
+  # ffi.h is in usr/include/ffi of the SDK of macOS (there is no /usr/include since macOS 10.14)
+  ALLCFLAGS += -I/opt/X11/include -I$(shell xcrun --show-sdk-path 2>/dev/null)/usr/include/ffi
 
   ifdef ENABLE_XQUARTZ
     ALLFBCFLAGS += -d ENABLE_XQUARTZ

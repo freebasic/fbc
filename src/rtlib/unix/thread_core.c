@@ -58,7 +58,12 @@ FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, ssize_t stack
 	}
 
 	/* see fb_private_thread.h for defintion of FBTHREAD_STACK_MIN */
+#ifdef HOST_DARWIN
+	/* The minimum of Darwin is tiny: a thread with big procedures would overflow it */
+	stack_size = stack_size >= (ssize_t)(8 * 1024 * 1024) ? stack_size : (ssize_t)(8 * 1024 * 1024);
+#else
 	stack_size = stack_size >= (ssize_t)FBTHREAD_STACK_MIN ? stack_size : (ssize_t)FBTHREAD_STACK_MIN;
+#endif
 
 	pthread_attr_setstacksize( &tattr, stack_size );
 
