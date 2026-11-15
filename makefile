@@ -128,7 +128,7 @@
 #   -d DISABLE_STDCXX_PATH    tells fbc to not search for some libstdc++/libc++ depending on target platform
 #   -d BUILD_FB_DEFAULT_CPUTYPE_X86=<FB_CPUTYPE>    set default x86 cpu type to one of FB_CPUTYPE
 #   -d BUILD_FB_DEFAULT_CPUTYPE_ARM=<FB_CPUTYPE>    set default arm cpu type to one of FB_CPUTYPE
-#   -d FBFORKID="name"     tells fbc to set a custom value for __FB_BUILD_FORK_ID__ 
+#   -d FBFORKID="name"     tells fbc to set a custom value for __FB_BUILD_FORK_ID__
 #
 # internal makefile configuration (but can override):
 #   libsubdir       override the library directory - default is set depending on TARGET
@@ -180,6 +180,7 @@ FBFLAGS := -maxerr 1
 AS = $(BUILD_PREFIX)as
 AR = $(BUILD_PREFIX)ar
 CC = $(BUILD_PREFIX)gcc
+OBJC = $(CC) -x objective-c
 prefix := /usr/local
 
 # Determine the makefile's directory, this may be a relative path when
@@ -340,6 +341,11 @@ endif
 # Normalize TARGET_ARCH to x86
 ifneq ($(filter 386 486 586 686 i386 i486 i586 i686,$(TARGET_ARCH)),)
   TARGET_ARCH := x86
+endif
+
+# Normalize TARGET_ARCH to aarch64
+ifeq ($(TARGET_ARCH),arm64)
+  TARGET_ARCH := aarch64
 endif
 
 # Normalize TARGET_ARCH to arm
@@ -579,9 +585,8 @@ ifeq ($(TARGET_OS),solaris)
 endif
 
 ifeq ($(TARGET_OS),darwin)
-  ALLCFLAGS += -I/opt/X11/include -I/usr/include/ffi
-
   ifdef ENABLE_XQUARTZ
+  	ALLCFLAGS += -I/opt/X11/include
     ALLFBCFLAGS += -d ENABLE_XQUARTZ
   else
     ALLCFLAGS += -DDISABLE_X11
@@ -717,11 +722,14 @@ LIBFBRTMTPIC_C := $(patsubst %,$(libfbmtpicobjdir)/%,$(filter-out $(patsubst $(l
 LIBFBGFX_H := $(sort $(foreach i,$(GFXLIB2_DIRS),$(wildcard $(i)/*.h)) $(LIBFB_H))
 LIBFBGFX_C := $(sort $(foreach i,$(GFXLIB2_DIRS),$(patsubst $(i)/%.c,$(libfbgfxobjdir)/%.o,$(wildcard $(i)/*.c))))
 LIBFBGFX_S := $(sort $(foreach i,$(GFXLIB2_DIRS),$(patsubst $(i)/%.s,$(libfbgfxobjdir)/%.o,$(wildcard $(i)/*.s))))
+LIBFBGFX_M := $(sort $(foreach i,$(GFXLIB2_DIRS),$(patsubst $(i)/%.m,$(libfbgfxobjdir)/%.o,$(wildcard $(i)/*.m))))
 LIBFBGFXPIC_C   := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxpicobjdir)/%,$(LIBFBGFX_C))
+LIBFBGFXPIC_M   := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxpicobjdir)/%,$(LIBFBGFX_M))
 LIBFBGFXMT_C    := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtobjdir)/%,$(LIBFBGFX_C))
 LIBFBGFXMT_S    := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtobjdir)/%,$(LIBFBGFX_S))
+LIBFBGFXMT_M    := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtobjdir)/%,$(LIBFBGFX_M))
 LIBFBGFXMTPIC_C := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtpicobjdir)/%,$(LIBFBGFX_C))
-
+LIBFBGFXMTPIC_M := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtpicobjdir)/%,$(LIBFBGFX_M))
 
 RTL_LIBS := $(libdir)/$(FB_LDSCRIPT)
 ifdef ENABLE_NONPIC
@@ -768,6 +776,7 @@ ifndef V
   QUIET_FBC   = @echo "FBC $@";
   QUIET_LINK  = @echo "LINK $@";
   QUIET_CC    = @echo "CC $@";
+  QUIET_OBJC  = @echo "OBJC $@";
   QUIET_CPPAS = @echo "CPPAS $@";
   QUIET_AS    = @echo "AS $@";
   QUIET_AR    = @echo "AR $@";
@@ -984,29 +993,37 @@ $(LIBFBMTRTPIC_BAS): $(libfbrtmtpicobjdir)/%.o: %.c $(LIBFBRT_BI) | $(libfbrtmtp
 .PHONY: gfxlib2
 gfxlib2: $(GFX_LIBS)
 
-$(libdir)/libfbgfx.a: $(LIBFBGFX_C) $(LIBFBGFX_S) | $(libdir)
+$(libdir)/libfbgfx.a: $(LIBFBGFX_C) $(LIBFBGFX_S) $(LIBFBGFX_M) | $(libdir)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
 $(LIBFBGFX_C): $(libfbgfxobjdir)/%.o: %.c $(LIBFBGFX_H) | $(libfbgfxobjdir)
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
 $(LIBFBGFX_S): $(libfbgfxobjdir)/%.o: %.s $(LIBFBGFX_H) | $(libfbgfxobjdir)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
+$(LIBFBGFX_M): $(libfbgfxobjdir)/%.o: %.m $(LIBFBGFX_H) | $(libfbgfxobjdir)
+	$(QUIET_OBJC)$(OBJC) $(ALLCFLAGS) $(OBJCFLAGS) -c $< -o $@
 
-$(libdir)/libfbgfxpic.a: $(LIBFBGFXPIC_C) | $(libdir)
+$(libdir)/libfbgfxpic.a: $(LIBFBGFXPIC_C) $(LIBFBGFX_M) | $(libdir)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
 $(LIBFBGFXPIC_C): $(libfbgfxpicobjdir)/%.o: %.c $(LIBFBGFX_H) | $(libfbgfxpicobjdir)
 	$(QUIET_CC)$(CC) -fPIC $(ALLCFLAGS) -c $< -o $@
+$(LIBFBGFXPIC_M): $(libfbgfxpicobjdir)/%.o: %.m $(LIBFBGFX_H) | $(libfbgfxpicobjdir)
+	$(QUIET_OBJC)$(OBJC) -fPIC $(ALLCFLAGS) $(OBJCFLAGS) -c $< -o $@
 
-$(libdir)/libfbgfxmt.a: $(LIBFBGFXMT_C) $(LIBFBGFXMT_S) | $(libdir)
+$(libdir)/libfbgfxmt.a: $(LIBFBGFXMT_C) $(LIBFBGFXMT_S) $(LIBFBGFX_M)  | $(libdir)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
 $(LIBFBGFXMT_C): $(libfbgfxmtobjdir)/%.o: %.c $(LIBFBGFX_H) | $(libfbgfxmtobjdir)
 	$(QUIET_CC)$(CC) -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 $(LIBFBGFXMT_S): $(libfbgfxmtobjdir)/%.o: %.s $(LIBFBGFX_H) | $(libfbgfxmtobjdir)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
+$(LIBFBGFXMT_M): $(libfbgfxmtobjdir)/%.o: %.m $(LIBFBGFX_H) | $(libfbgfxmtobjdir)
+	$(QUIET_OBJC)$(OBJC) -DENABLE_MT $(ALLCFLAGS) $(OBJCFLAGS) -c $< -o $@
 
-$(libdir)/libfbgfxmtpic.a: $(LIBFBGFXMTPIC_C) | $(libdir)
+$(libdir)/libfbgfxmtpic.a: $(LIBFBGFXMTPIC_C) $(LIBFBGFX_H) | $(libdir)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
 $(LIBFBGFXMTPIC_C): $(libfbgfxmtpicobjdir)/%.o: %.c $(LIBFBGFX_H) | $(libfbgfxmtpicobjdir)
 	$(QUIET_CC)$(CC) -DENABLE_MT -fPIC $(ALLCFLAGS) -c $< -o $@
+$(LIBFBGFXMTPIC_M): $(libfbgfxmtpicobjdir)/%.o: %.m $(LIBFBGFX_H) | $(libfbgfxmtpicobjdir)
+	$(QUIET_OBJC)$(OBJC) -DENABLE_MT -fPIC $(ALLCFLAGS) $(OBJCFLAGS) -c $< -o $@
 
 ################################################################################
 
@@ -1133,7 +1150,7 @@ gitdist:
 # By default FBPACKTARGET will have been set to FBTARGET.  FBPACKTARGET
 # can be used to override the default package naming allowing alternate
 # packages to be generated for specific systems while retaining all the
-# properties of an FBTARGET based release. 
+# properties of an FBTARGET based release.
 # If FBPACKAGE is defined then FBPACKTARGET has no effect.
 #
 ifndef FBPACKAGE

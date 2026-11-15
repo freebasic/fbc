@@ -12,7 +12,9 @@
 
 #pragma once
 
-#ifdef __FB_UNIX__
+#if defined(__FB_DARWIN__)
+	'' FIXME: Somehow include the GLUT framework
+#elseif defined(__FB_UNIX__)
 	#inclib "glut"
 #elseif defined(__FB_WIN32__)
 	#inclib "glut32"
