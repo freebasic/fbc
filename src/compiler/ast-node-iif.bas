@@ -284,11 +284,13 @@ function astNewIIF _
 		'' as astOptAssignment() will miss it because it's nested
 		'' inside an IIF node
 		truexpr = astBuildFakeWstringAssign( temp, truexpr, AST_OPOPT_ISINI )
-		astDtorListScopeEnd( )
+		'' (it can add the temp var of a WSTRING function result to the
+		'' dtor list: a 0 cookie gets a new one, keep it for the flush below)
+		truecookie = astDtorListScopeEnd( )
 
 		astDtorListScopeBegin( falsecookie )
 		falsexpr = astBuildFakeWstringAssign( temp, falsexpr, AST_OPOPT_ISINI )
-		astDtorListScopeEnd( )
+		falsecookie = astDtorListScopeEnd( )
 	else
 		temp = symbAddTempVar( dtype, subtype )
 
