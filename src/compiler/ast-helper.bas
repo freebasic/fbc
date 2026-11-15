@@ -49,12 +49,33 @@ function astBuildFakeWstringAssign _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr t = any
+	dim as FBSYMBOL ptr res = any
 
 	assert( symbGetIsTemporary( sym ) )
 	t = NULL
 
+	'' WSTRING function result? It's a temporary wstring which must be
+	'' deleted after it was copied, as hAllocTempWstrPtr() does for args:
+	'' keep its pointer in a temp var registered in the dtor list, which
+	'' calls fb_WstrDelete() at the end of the statement, or for iif() at
+	'' the end of its true/false code path (current dtor list scope).
+	'' (otherwise iif( cond, Trim( w ), ... ) leaked the Trim() result)
+	'' A concatenation "w1 & w2" becomes a WstrConcat() CALL here too.
+	expr = astUpdStrConcat( expr )
+	if( astIsCALL( expr ) ) then
+		res = symbAddTempVar( typeAddrOf( FB_DATATYPE_WCHAR ) )
+		symbSetIsTemporary( res )
+		astDtorListAdd( res )
+
+		'' a function returning a "wstring" is actually returning a pointer,
+		'' copy just the pointer
+		astSetType( expr, typeAddrOf( FB_DATATYPE_WCHAR ), NULL )
+		t = astNewASSIGN( astNewVAR( res ), expr, options )
+
+		expr = astBuildFakeWstringAccess( res )
+
 	'' side-effect?
-	if( astHasSideFx( expr ) ) then
+	elseif( astHasSideFx( expr ) ) then
 		t = astNewLINK( t, astRemSideFx( expr ), AST_LINK_RETURN_RIGHT )
 	end if
 
