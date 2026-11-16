@@ -2,7 +2,7 @@
 
 '' test mapping of mangling between c++ derived class and fbc type
 
-#ifdef __FB_FREEBSD__
+#if defined(__FB_FREEBSD__) or defined(__FB_DARWIN__)
 	#inclib "c++"
 #else
 	#ifdef __FB_DOS__
