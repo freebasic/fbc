@@ -76,6 +76,7 @@ Version 1.20.0
 - sf.net #1013 : NEW uses callocate instead allocate + memset(0) as it's faster (SARG)
 - sf.net #1013 (gas64) : memfill calls MEMSET if area size is greater than 64 bytes as it's faster (SARG)
 - fbc: new syntax 'end while' equivalent to 'wend'. wend syntax remains valid (SARG)
+- gas64: darwin-x86_64 (Mach-O, the assembler of clang): __DATA sections, __mod_init_func/__mod_term_func for the constructors/destructors (Mach-O has no priorities, they run in the order of the modules), .balign, power-of-two alignment of .comm/.lcomm, the underscore prefix of the C functions, no @PLT, the System V ABI (UDT results in registers like linux), 8/16-bit arguments extended to 32 bits (clang's callees expect it), inline asm '[var]' and 'offset sym[rip]' written for clang, extern variables (of dylibs, e.g. __stdoutp of libSystem) accessed through the GOT since Mach-O has no copy relocations; '-gen gas64' keeps the intel syntax on darwin
 
 [fixed]
 - github #410: give consistent floating point comparisons results involving NaNs.
@@ -116,6 +117,7 @@ Version 1.20.0
 - fbc: fix source typo where bitfield FB_UDTOPT_HASFILLEDFIELD was overlapping FB_UDTOPT_VALISTTYPEMASK possibly causing bad code generation for UDT's with STRING*N fields
 - gfxlib2: fix transposed calloc() arguments in gfx_bsave.c and win32/gfx_driver_d2d.c (nmemb, size), silencing gcc -Wcalloc-transposed-args warnings
 - gas64: peephole optimizer emitted invalid 'movd xmm, xmm' (assembler error "operand type mismatch for `movd'") when a SINGLE variable stored from an xmm register was loaded back into another xmm register, e.g. 'x = f() * 1.3 : if x > y then ...'
+- gas64: the internal symbols $mxcsr, $sse41 and $sse41_test are named fb_gas64_mxcsr, fb_gas64_sse41 and fb_gas64_sse41_test ($ starts an immediate value for the assembler of clang)
 
 
 Version 1.10.3
