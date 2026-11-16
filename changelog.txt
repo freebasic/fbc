@@ -76,6 +76,7 @@ Version 1.20.0
 - sf.net #1013 : NEW uses callocate instead allocate + memset(0) as it's faster (SARG)
 - sf.net #1013 (gas64) : memfill calls MEMSET if area size is greater than 64 bytes as it's faster (SARG)
 - fbc: new syntax 'end while' equivalent to 'wend'. wend syntax remains valid (SARG)
+- fbc: darwin: #inclib "framework:Name" links with -framework Name (Cocoa, UIKit, ...)
 
 [fixed]
 - github #410: give consistent floating point comparisons results involving NaNs.
@@ -116,6 +117,9 @@ Version 1.20.0
 - fbc: fix source typo where bitfield FB_UDTOPT_HASFILLEDFIELD was overlapping FB_UDTOPT_VALISTTYPEMASK possibly causing bad code generation for UDT's with STRING*N fields
 - gfxlib2: fix transposed calloc() arguments in gfx_bsave.c and win32/gfx_driver_d2d.c (nmemb, size), silencing gcc -Wcalloc-transposed-args warnings
 - gas64: peephole optimizer emitted invalid 'movd xmm, xmm' (assembler error "operand type mismatch for `movd'") when a SINGLE variable stored from an xmm register was loaded back into another xmm register, e.g. 'x = f() * 1.3 : if x > y then ...'
+- fbc: darwin: link with the SDK of macOS (-syslibroot from SDKROOT or xcrun) and -arch arm64 for aarch64; the obsolete -macosx_version_min 10.4 is replaced by one minimum version (MACOSX_DEPLOYMENT_TARGET, 11.0 by default) given to gcc/clang, as and ld (a different one gave a warning of ld for each object)
+- fbc: darwin: no crt objects and no libgcc are linked, the startup code and the runtime of clang are in libSystem
+- fbc: darwin: -dll links with -dylib -install_name and -export with -export_dynamic of the ld of Apple
 
 
 Version 1.10.3

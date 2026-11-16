@@ -764,6 +764,35 @@ private function fbcIsUsingGoldLinker( ) as integer
 	return FALSE
 end function
 
+'' The minimum version of macOS of the program on Darwin: the same one for gcc/clang, as and ld (objects of a newer
+'' version than the link would give a warning of ld for each one)
+private function hDarwinMinVersion( ) as string
+	dim as string minver = environ( "MACOSX_DEPLOYMENT_TARGET" )
+	if( len( minver ) = 0 ) then
+		minver = "11.0"
+	end if
+	function = minver
+end function
+
+'' The SDK and the minimum version of macOS for ld on Darwin
+private function hDarwinLinkerFlags( ) as string
+	dim as string sdk = environ( "SDKROOT" ), minver = hDarwinMinVersion( )
+	#ifdef __FB_DARWIN__
+		if( len( sdk ) = 0 ) then
+			dim as integer f = freefile( )
+			if( open pipe( "xcrun --show-sdk-path", for input, as f ) = 0 ) then
+				line input #f, sdk
+				close f
+			end if
+		end if
+	#endif
+	if( len( sdk ) > 0 ) then
+		function = "-macos_version_min " + minver + " -syslibroot " + QUOTE + sdk + QUOTE + " "
+	else
+		function = "-macos_version_min " + minver + " "
+	end if
+end function
+
 private function hLinkFiles( ) as integer
 	dim as string ldcline, dllname, deffile
 
@@ -840,7 +869,10 @@ private function hLinkFiles( ) as integer
 		case FB_CPUFAMILY_ARM
 			'' fixme: this is clearly too specific
 			ldcline += "-arch armv6 "
+		case FB_CPUFAMILY_AARCH64
+			ldcline += "-arch arm64 "
 		end select
+		ldcline += hDarwinLinkerFlags( )
 	end select
 
 	'' Set executable name
@@ -945,7 +977,11 @@ private function hLinkFiles( ) as integer
 
 		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 			dllname = hStripPath( hStripExt( fbc.outname ) )
-			ldcline += " -shared -h" + hStripPath( fbc.outname )
+			if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN ) then
+				ldcline += " -dylib -install_name " + QUOTE + hStripPath( fbc.outname ) + QUOTE
+			else
+				ldcline += " -shared -h" + hStripPath( fbc.outname )
+			end if
 
 			'' Turn libfoo into foo, so it can be checked against -l foo below
 			if( left( dllname, 3 ) = "lib" ) then
@@ -987,7 +1023,11 @@ private function hLinkFiles( ) as integer
 		if( (fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB) or _
 			fbGetOption( FB_COMPOPT_EXPORT ) ) and _
 			(fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_SOLARIS) then
-			ldcline += " --export-dynamic"
+			if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN ) then
+				ldcline += " -export_dynamic"
+			else
+				ldcline += " --export-dynamic"
+			end if
 		end if
 
 	case FB_COMPTARGET_XBOX
@@ -1162,7 +1202,10 @@ private function hLinkFiles( ) as integer
 			ldcline += hFindLib( "crt0.o" )
 		end if
 
-	case FB_COMPTARGET_LINUX, FB_COMPTARGET_DARWIN, _
+	case FB_COMPTARGET_DARWIN
+		'' The startup code is in libSystem (LC_MAIN), there are no crt objects
+
+	case FB_COMPTARGET_LINUX, _
 		FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, _
 		FB_COMPTARGET_NETBSD, FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS
 
@@ -1280,7 +1323,13 @@ private function hLinkFiles( ) as integer
 			'' or .so's against themselves (ld will fail to read in
 			'' its output file...)
 			if ((checkdllname = FALSE) orelse (i->s <> dllname)) then
-				ldcline += " -l" + i->s
+				'' #inclib "framework:Cocoa" on Darwin
+				if( (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN) andalso _
+				    (left( i->s, 10 ) = "framework:") ) then
+					ldcline += " -framework " + mid( i->s, 11 )
+				else
+					ldcline += " -l" + i->s
+				end if
 			end if
 			i = listGetNext(i)
 		wend
@@ -1322,18 +1371,13 @@ private function hLinkFiles( ) as integer
 
 	end select
 
-	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN ) then
-		ldcline += " -macosx_version_min 10.4"
-	end if
-
 	'' This is required for 64-bit modules on *nix-y platforms
 	'' for the unwind tables to have any effect
 	'' Windows doesn't need this option
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
 		FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD, _
-		FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS, _
-		FB_COMPTARGET_DARWIN
+		FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS
 		dim as long outtype = fbGetOption( FB_COMPOPT_OUTTYPE )
 		if outtype = FB_OUTTYPE_EXECUTABLE OrElse outtype = FB_OUTTYPE_DYNAMICLIB Then
 			dim as long cpufamily = fbGetCpuFamily( )
@@ -3699,6 +3743,10 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			end select
 		end if
 
+		if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN ) then
+			ln += "-mmacosx-version-min=" + hDarwinMinVersion( ) + " "
+		end if
+
 		if( (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_ANDROID) and _
 		    (fbGetOption( FB_COMPOPT_CPUTYPE ) = FB_CPUTYPE_ARMV7A) ) then
 			'' The following options enforce the androideabi-v7a ABI
@@ -3977,6 +4025,9 @@ private function hAssembleModule( byval module as FBCIOFILE ptr ) as integer
 				ln += "--64 "
 			endif
 		end select
+		if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN ) then
+			ln += "-mmacosx-version-min=" + hDarwinMinVersion( ) + " "
+		end if
 
 		if( fbGetOption( FB_COMPOPT_DEBUGINFO ) = FALSE ) then
 			if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) then
@@ -4197,6 +4248,8 @@ private sub hSetDefaultLibPaths( )
 	select case fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_ANDROID
 		'' We don't pass -lgcc to ld (it's probably not called libgcc)
+	case FB_COMPTARGET_DARWIN
+		'' clang's runtime is in libSystem, there is no libgcc
 	case FB_COMPTARGET_JS
 		'' We let emcc handle linking
 	case else
@@ -4308,7 +4361,6 @@ private sub hAddDefaultLibs( )
 		end if
 
 	case FB_COMPTARGET_DARWIN
-		fbcAddDefLib( "gcc" )
 		fbcAddDefLib( "System" )
 		fbcAddDefLib( "pthread" )
 		fbcAddDefLib( "ncurses" )
