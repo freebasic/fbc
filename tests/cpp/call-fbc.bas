@@ -3,7 +3,7 @@
 '' test mapping of mangling and calling convention
 '' between fbc and c/c++ class procedures
 
-#ifdef __FB_FREEBSD__
+#if defined(__FB_FREEBSD__) or defined(__FB_DARWIN__)
 	#inclib "c++"
 #else
 	#ifdef __FB_DOS__
