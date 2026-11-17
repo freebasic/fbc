@@ -3111,7 +3111,8 @@ private sub hCheckArgs()
 	'' most C compilers on OSX seem to be configured without intel syntax support;
 	'' probably because Apple as and llvm-mc have horribly broken intel support.
 	if( (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN) and _
-		(fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS) ) then
+		(fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS) and _
+		(fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS64) ) then
 		fbSetOption( FB_COMPOPT_ASMSYNTAX, FB_ASMSYNTAX_ATT )
 	end if
 

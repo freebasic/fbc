@@ -730,7 +730,7 @@ end function
 private function hGetReturnTypeGas64SystemV( byval sym as FBSYMBOL ptr ) as integer
 
 	assert( env.clopt.backend = FB_BACKEND_GAS64 )
-	assert( (env.clopt.target = FB_COMPTARGET_LINUX) or  (env.clopt.target = FB_COMPTARGET_FREEBSD))
+	assert( (env.clopt.target = FB_COMPTARGET_LINUX) or (env.clopt.target = FB_COMPTARGET_FREEBSD) or (env.clopt.target = FB_COMPTARGET_DARWIN) )
 
 	'' Linux gas64 could use 2 registers
 
@@ -792,9 +792,9 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 	'' 64-bit + gas64 + linux?
 	if( fbIs64Bit() ) then
 		if( env.clopt.backend = FB_BACKEND_GAS64 ) then
-			'' linux 64bit allows structure returned in registers
+			'' linux 64bit allows structure returned in registers (System V ABI, darwin x86_64 too)
 			'' !!!TODO!!! add to target options
-			if( (env.clopt.target = FB_COMPTARGET_LINUX) or (env.clopt.target = FB_COMPTARGET_FREEBSD)) then
+			if( (env.clopt.target = FB_COMPTARGET_LINUX) or (env.clopt.target = FB_COMPTARGET_FREEBSD) or (env.clopt.target = FB_COMPTARGET_DARWIN) ) then
 				return hGetReturnTypeGas64SystemV( sym )
 			end if
 		end if
