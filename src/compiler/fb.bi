@@ -66,6 +66,7 @@ enum FB_COMPOPT
 	'' compiler output file type
 	FB_COMPOPT_OUTTYPE              '' FB_OUTTYPE_*
 	FB_COMPOPT_PPONLY               '' boolean: TRUE for preprocessor-only mode
+	FB_COMPOPT_SYNTAXONLY           '' boolean: TRUE for parse-only mode (no code generation)
 
 	'' backend, target, code generation
 	FB_COMPOPT_BACKEND              '' FB_BACKEND_*
@@ -285,6 +286,7 @@ type FBCMMLINEOPT
 	'' compiler output file type
 	outtype         as FB_OUTTYPE
 	pponly          as integer              '' TRUE for preprocessor-only mode
+	syntaxonly      as integer              '' TRUE for parse-only mode (no code generation)
 
 	'' backend, target, code generation
 	backend         as FB_BACKEND           '' backend (-gen gas/gcc)

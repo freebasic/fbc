@@ -1900,6 +1900,7 @@ enum
 	OPT_FORCELANG
 	OPT_FPMODE
 	OPT_FPU
+	OPT_FSYNTAX
 	OPT_G
 	OPT_GEN
 	OPT_HELP
@@ -1986,6 +1987,7 @@ dim shared as FBC_CMDLINE_OPTION cmdlineOptionTB(0 to (OPT__COUNT - 1)) = _
 	( TRUE , TRUE , TRUE , FALSE ), _ '' OPT_FORCELANG    never allow, command line only
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_FPMODE       affects major initialization, affects code generation
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_FPU          affects major initialization,affects code generation, affects second stage compile, affects link
+	( FALSE, TRUE , FALSE, TRUE  ), _ '' OPT_FSYNTAX       like -pp: stop before assembling/linking
 	( FALSE, TRUE , TRUE , FALSE ), _ '' OPT_G            affects code generation, affects link
 	( TRUE , TRUE , TRUE , TRUE  ), _ '' OPT_GEN          affects major initialization
 	( FALSE, FALSE, FALSE, FALSE ), _ '' OPT_HELP         never allow, real command line only, makes no sense to have in source
@@ -2329,6 +2331,12 @@ private sub handleOpt _
 		fbSetOption( FB_COMPOPT_PPONLY, TRUE )
 		fbc.emitasmonly = TRUE
 
+	case OPT_FSYNTAX
+		'' -fsyntax parses and type-checks but generates no code, so like -pp
+		'' it stops before the assembler and linker.
+		fbSetOption( FB_COMPOPT_SYNTAXONLY, TRUE )
+		fbc.emitasmonly = TRUE
+
 	case OPT_PREFIX
 		fbc.prefix = pathStripDiv(arg)
 		hReplaceSlash( fbc.prefix, asc( FB_HOST_PATHDIV ) )
@@ -2612,6 +2620,7 @@ private function parseOption(byval opt as zstring ptr) as integer
 		CHECK("forcelang", OPT_FORCELANG)
 		CHECK("fpmode", OPT_FPMODE)
 		CHECK("fpu", OPT_FPU)
+		CHECK("fsyntax", OPT_FSYNTAX)
 
 	case asc("g")
 		ONECHAR(OPT_G)
@@ -4490,6 +4499,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -fbgfx           Link to the appropriate libfbgfx variant (normally automatic)"
 	end if
 	print "  -forcelang <name>  Override #lang statements in source code"
+	print "  -fsyntax         Parse and type-check only; generate no output"
 	if( verbose ) then
 	print "  -fpmode fast|precise  Select floating-point math accuracy/speed"
 	print "  -fpu x87|sse|neon  Set target FPU"
