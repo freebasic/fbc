@@ -116,6 +116,7 @@ Version 1.20.0
 - fbc: fix source typo where bitfield FB_UDTOPT_HASFILLEDFIELD was overlapping FB_UDTOPT_VALISTTYPEMASK possibly causing bad code generation for UDT's with STRING*N fields
 - gfxlib2: fix transposed calloc() arguments in gfx_bsave.c and win32/gfx_driver_d2d.c (nmemb, size), silencing gcc -Wcalloc-transposed-args warnings
 - gas64: peephole optimizer emitted invalid 'movd xmm, xmm' (assembler error "operand type mismatch for `movd'") when a SINGLE variable stored from an xmm register was loaded back into another xmm register, e.g. 'x = f() * 1.3 : if x > y then ...'
+- ir-hlc: emit an address-of-label expression in functions using indirect goto; clang rejects the generated code with "indirect goto in function with no address-of-label expressions" when error handling is generated without RESUME support (-e without -ex/-exx)
 
 
 Version 1.10.3
