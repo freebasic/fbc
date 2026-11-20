@@ -1,0 +1,381 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, 'test/**', 'ci/**' ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+env:
+  BOOTSTRAP_VERSION: "1.10.1"
+
+jobs:
+  # ===========================================================================
+  # Linux x86_64
+  # ===========================================================================
+  linux-x86_64:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "Linux x86_64"
+            build_flags: ""
+            test_flags: ""
+          - name: "Linux x86_64 (debug)"
+            build_flags: "FBFLAGS += -g -exx"
+            test_flags: "-g -exx"
+          - name: "Linux x86_64 (gas64)"
+            build_flags: ""
+            test_flags: "-gen gas64"
+
+    name: ${{ matrix.name }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get -qq update
+          sudo apt-get -y --no-install-recommends install \
+            gcc g++ make \
+            libncurses-dev libffi-dev libgl1-mesa-dev libglu1-mesa-dev \
+            libgpm-dev libx11-dev libxext-dev libxpm-dev \
+            libxrender-dev libxrandr-dev libcunit1-dev \
+            libcurl4-openssl-dev libpcre3-dev
+
+      - name: Restore bootstrap cache
+        id: cache-bootstrap
+        uses: actions/cache/restore@v6
+        with:
+          path: bootstrap
+          key: bootstrap-linux-x86_64-${{ env.BOOTSTRAP_VERSION }}
+
+      - name: Download and build bootstrap compiler
+        if: steps.cache-bootstrap.outputs.cache-hit != 'true'
+        run: |
+          BOOTSTRAP_PACKAGE="FreeBASIC-${BOOTSTRAP_VERSION}-source-bootstrap"
+          wget -q "https://github.com/freebasic/fbc/releases/download/${BOOTSTRAP_VERSION}/${BOOTSTRAP_PACKAGE}.tar.xz"
+          tar xf "${BOOTSTRAP_PACKAGE}.tar.xz"
+          cd "${BOOTSTRAP_PACKAGE}"
+          make -j$(nproc) bootstrap
+          cd ..
+          mv "${BOOTSTRAP_PACKAGE}" bootstrap
+
+      - name: Save bootstrap cache
+        if: steps.cache-bootstrap.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: bootstrap
+          key: bootstrap-linux-x86_64-${{ env.BOOTSTRAP_VERSION }}
+
+      - name: Build fbc (pass 1 - using bootstrap)
+        run: |
+          rm -f config.mk
+          printf '%s\n' '${{ matrix.build_flags }}' > config.mk
+          make -j$(nproc) FBC="bootstrap/bin/fbc -i bootstrap/inc" </dev/null
+
+      - name: Rebuild fbc (pass 2 - self-host)
+        run: |
+          mv bin/fbc bin/fbc_pass1
+          make -j$(nproc) clean-compiler
+          make -j$(nproc) compiler FBC='bin/fbc_pass1 -i inc' </dev/null
+          rm bin/fbc_pass1
+
+      - name: Run unit tests
+        run: |
+          cd tests
+          make unit-tests FBC="$PWD/../bin/fbc -i $PWD/../inc ${{ matrix.test_flags }}" </dev/null
+
+      - name: Run log tests
+        run: |
+          cd tests
+          make log-tests FBC="$PWD/../bin/fbc -i $PWD/../inc ${{ matrix.test_flags }}" </dev/null
+
+      - name: Run warning tests
+        if: matrix.test_flags == ''
+        run: |
+          cd tests/warnings
+          FBC="$PWD/../../bin/fbc -i $PWD/../../inc" ./test.sh </dev/null
+          git diff --exit-code -- r/
+
+      - name: Run syntax tests
+        if: matrix.test_flags == ''
+        run: |
+          cd tests/syntax
+          FBC="$PWD/../../bin/fbc -i $PWD/../../inc" ./test.sh </dev/null
+          git diff --exit-code -- r/
+
+      - name: Build documentation tools (fbdoc validation)
+        if: matrix.test_flags == ''
+        run: |
+          cd doc
+          make FBC="$PWD/../bin/fbc -i $PWD/../inc" </dev/null
+
+      - name: Upload fbc binary
+        if: success() && matrix.test_flags == ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: fbc-linux-x86_64
+          path: |
+            bin/fbc
+            lib/freebasic/linux-x86_64/
+            inc/
+
+  # ===========================================================================
+  # Windows (x86 and x64) using MSYS2 + MinGW-w64
+  # ===========================================================================
+  windows:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "Windows x86 (32-bit)"
+            msystem: MINGW32
+            pkg_prefix: mingw-w64-i686
+            fbtarget: win32
+          - name: "Windows x64 (64-bit)"
+            msystem: MINGW64
+            pkg_prefix: mingw-w64-x86_64
+            fbtarget: win64
+
+    name: ${{ matrix.name }}
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.msystem }}
+          update: false
+          install: >-
+            make
+            tar
+            xz
+            ${{ matrix.pkg_prefix }}-gcc
+            ${{ matrix.pkg_prefix }}-binutils
+            ${{ matrix.pkg_prefix }}-libffi
+
+      - name: Restore bootstrap cache
+        id: cache-bootstrap
+        uses: actions/cache/restore@v6
+        with:
+          path: bootstrap
+          key: bootstrap-${{ matrix.fbtarget }}-${{ env.BOOTSTRAP_VERSION }}
+
+      - name: Download and build bootstrap compiler
+        if: steps.cache-bootstrap.outputs.cache-hit != 'true'
+        run: |
+          BOOTSTRAP_PACKAGE="FreeBASIC-${BOOTSTRAP_VERSION}-source-bootstrap"
+          curl -sL "https://github.com/freebasic/fbc/releases/download/${BOOTSTRAP_VERSION}/${BOOTSTRAP_PACKAGE}.tar.xz" -o "${BOOTSTRAP_PACKAGE}.tar.xz"
+          tar xf "${BOOTSTRAP_PACKAGE}.tar.xz"
+          cd "${BOOTSTRAP_PACKAGE}"
+          if [ "${{ matrix.fbtarget }}" = "win64" ]; then
+            echo "TARGET_ARCH := x86_64" > config.mk
+          fi
+          make -j$(nproc) bootstrap
+          cd ..
+          mv "${BOOTSTRAP_PACKAGE}" bootstrap
+
+      - name: Save bootstrap cache
+        if: steps.cache-bootstrap.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: bootstrap
+          key: bootstrap-${{ matrix.fbtarget }}-${{ env.BOOTSTRAP_VERSION }}
+
+      - name: Populate standalone toolchain dirs
+        run: |
+          FBTARGET="${{ matrix.fbtarget }}"
+          GCC_TARGET="$(gcc -dumpmachine)"
+          GCC_VERSION="$(gcc -dumpversion)"
+          GCC_LIBDIR="$(gcc -print-file-name=libgcc.a | sed 's|/libgcc\.a$||')"
+          MINGW_BIN="$(dirname $(which gcc))"
+          MINGW_PREFIX="$MINGW_BIN/.."
+
+          # bin/<fbtarget>/ - assembler, linker, archiver, gcc
+          mkdir -p bin/$FBTARGET
+          for tool in ar as dlltool gprof ld gcc; do
+            cp "$MINGW_BIN/$tool.exe" bin/$FBTARGET/
+          done
+
+          # cc1.exe - gcc searches at ../lib/gcc/<target>/<version>/ relative to itself
+          CC1_DIR="bin/lib/gcc/$GCC_TARGET/$GCC_VERSION"
+          mkdir -p "$CC1_DIR"
+          REAL_CC1="$MINGW_PREFIX/lib/gcc/$GCC_TARGET/$GCC_VERSION/cc1.exe"
+          if [ ! -f "$REAL_CC1" ]; then
+            REAL_CC1="$MINGW_PREFIX/libexec/gcc/$GCC_TARGET/$GCC_VERSION/cc1.exe"
+          fi
+          cp "$REAL_CC1" "$CC1_DIR/"
+
+          # lib/<fbtarget>/ - CRT objects, gcc libs, system import libs
+          mkdir -p lib/$FBTARGET
+
+          copy_file() {
+            path="$(gcc -print-file-name=$1)"
+            if [ "$path" != "$1" ] && [ -f "$path" ]; then
+              cp "$path" "lib/$FBTARGET/$2"
+              return 0
+            fi
+            return 1
+          }
+
+          for f in crt2.o dllcrt2.o gcrt2.o crtbegin.o crtend.o; do
+            copy_file "$f" "$f" || true
+          done
+
+          for f in libgcc.a libgcc_eh.a libsupc++.a libmingw32.a libmingwex.a libmoldname.a; do
+            copy_file "$f" "$f" || true
+          done
+
+          for lib in advapi32 gdi32 kernel32 msvcrt user32 winmm winspool; do
+            copy_file "lib${lib}.a" "lib${lib}.dll.a" || true
+          done
+
+          copy_file "libffi.a" "libffi.a" || true
+
+          # DLL dependencies for gcc.exe and tools
+          for dll in libwinpthread-1.dll libgcc_s_seh-1.dll libgcc_s_sjlj-1.dll \
+                     libgcc_s_dw2-1.dll libiconv-2.dll libintl-8.dll \
+                     zlib1.dll libzstd.dll; do
+            [ -f "$MINGW_BIN/$dll" ] && cp "$MINGW_BIN/$dll" bin/$FBTARGET/
+          done
+
+          # DLL dependencies for cc1.exe
+          for dll in libwinpthread-1.dll libgcc_s_seh-1.dll libgcc_s_sjlj-1.dll \
+                     libgcc_s_dw2-1.dll libgmp-10.dll libiconv-2.dll \
+                     libisl-*.dll libmpc-3.dll libmpfr-6.dll \
+                     libzstd.dll zlib1.dll; do
+            for f in $MINGW_BIN/$dll; do
+              [ -f "$f" ] && cp "$f" "$CC1_DIR/"
+            done
+          done
+
+      - name: Build fbc (pass 1 - using bootstrap)
+        run: |
+          rm -f config.mk
+          echo "ENABLE_STANDALONE := 1" > config.mk
+          if [ "${{ matrix.fbtarget }}" = "win64" ]; then
+            echo "TARGET_ARCH := x86_64" >> config.mk
+          fi
+          make -j$(nproc) FBC="bootstrap/bin/fbc -i bootstrap/inc" </dev/null
+
+      - name: Rebuild fbc (pass 2 - self-host)
+        run: |
+          mv fbc.exe fbc_pass1.exe
+          make -j$(nproc) clean-compiler
+          make -j$(nproc) compiler FBC='./fbc_pass1 -i inc' </dev/null
+          rm -f fbc_pass1.exe
+
+      - name: Verify fbc
+        run: |
+          ./fbc --version
+          echo 'print "Hello from fbc"' > hello.bas
+          ./fbc hello.bas
+          ./hello.exe
+
+      - name: Package standalone compiler
+        run: |
+          FBTARGET="${{ matrix.fbtarget }}"
+          PKGDIR="fbc-$FBTARGET"
+          mkdir -p "$PKGDIR"
+
+          cp fbc.exe "$PKGDIR/"
+          cp -r bin/ "$PKGDIR/bin/"
+          cp -r lib/ "$PKGDIR/lib/"
+          cp -r inc/ "$PKGDIR/inc/"
+
+          cp changelog.txt "$PKGDIR/" 2>/dev/null || true
+          cp readme.txt "$PKGDIR/" 2>/dev/null || true
+
+      - name: Upload compiler package
+        if: success()
+        uses: actions/upload-artifact@v7
+        with:
+          name: fbc-${{ matrix.fbtarget }}
+          path: fbc-${{ matrix.fbtarget }}/
+
+
+  # ===========================================================================
+  # Documentation
+  # ===========================================================================
+  documentation:
+    runs-on: windows-latest
+    needs: windows
+    name: "Documentation"
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Download fbc-win64 artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: fbc-win64
+          path: fbc-win64
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: false
+          install: >-
+            make
+            zip
+            gzip
+            mingw-w64-x86_64-crt-git
+            mingw-w64-x86_64-pcre
+            mingw-w64-x86_64-pcre2
+            mingw-w64-x86_64-curl
+
+      - name: Install HTML Help Workshop
+        shell: cmd
+        run: |
+          curl -sL -o htmlhelp.exe https://web.archive.org/web/20200918004813/https://download.microsoft.com/download/0/A/9/0A939EF6-E31C-430F-A3DF-DFAE7960D564/htmlhelp.exe
+          htmlhelp.exe /Q /T:C:\hhw /C
+          if not exist "C:\hhw\hhc.exe" exit /b 1
+
+      - name: Build documentation tools
+        run: |
+          # Copy libraries that fbdoc needs into fbc's lib/win64/ so the
+          # standalone linker can find them
+          MINGLIB="/$MSYSTEM/lib"
+          for lib in libws2_32.a libmsimg32.a libversion.a libimm32.a \
+                     libpcre.a libpcre2-8.a libcurl.dll.a; do
+            cp "$MINGLIB/$lib" fbc-win64/lib/win64/ 2>/dev/null || true
+          done
+
+          FBC="$PWD/fbc-win64/fbc -i $PWD/fbc-win64/inc"
+          cd doc/libfbdoc
+          make FBC="$FBC" </dev/null
+          cd ../fbdoc
+          make FBC="$FBC" </dev/null
+          cd ../makefbhelp
+          make FBC="$FBC" </dev/null
+
+      - name: Generate documentation (all formats)
+        run: |
+          export PATH="/c/hhw:$PATH"
+          cd doc/manual
+          make all FBDOC="../fbdoc/fbdoc -usecache" </dev/null || true
+          test -f html/fbdoc.chm
+
+      - name: Upload documentation artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: FreeBASIC-manual
+          path: |
+            doc/manual/FB-manual-*
