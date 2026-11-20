@@ -6029,7 +6029,7 @@ private sub emitStoreStruct(byval v2 as IRVREG ptr,byref op1 as string,byref op3
 			asm_code("shr rdx, 32")
 			asm_code("mov [rax+12], dl")
 		case 14
-			asm_code("mov [rax8], edx")
+			asm_code("mov [rax+8], edx")
 			asm_code("shr rdx, 32")
 			asm_code("mov [rax+12], dx")
 		case 15
