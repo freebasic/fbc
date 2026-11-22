@@ -3,6 +3,13 @@
 #include "fb_gfx.h"
 #include "fb_gfx_gl.h"
 
+void *(*fb_hGL_GetProcAddress_ptr)(const char *) = NULL;
+
+void *fb_hGL_GetProcAddress(const char *proc)
+{
+	return fb_hGL_GetProcAddress_ptr ? fb_hGL_GetProcAddress_ptr(proc) : NULL;
+}
+
 #ifdef DISABLE_OPENGL
 
 FBCALL void *fb_GfxGetGLProcAddress(const char *proc)

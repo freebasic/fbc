@@ -4289,6 +4289,22 @@ private sub hAddDefaultLibs( )
 				fbcAddDefLib( "Xrender" )
 			#endif
 
+			'' Wayland (optional)
+			if( (len( fbcFindLibFile( "libwayland-client.so" ) ) > 0) or _
+				(len( fbcFindLibFile( "libwayland-client.a"  ) ) > 0) ) then
+				fbcAddDefLib( "wayland-client" )
+				fbcAddDefLib( "wayland-cursor" )
+				fbcAddDefLib( "xkbcommon" )
+				if( (len( fbcFindLibFile( "libwayland-egl.so" ) ) > 0) or _
+					(len( fbcFindLibFile( "libwayland-egl.a"  ) ) > 0) ) then
+					fbcAddDefLib( "wayland-egl" )
+				end if
+				if( (len( fbcFindLibFile( "libEGL.so" ) ) > 0) or _
+					(len( fbcFindLibFile( "libEGL.a" ) ) > 0) ) then
+					fbcAddDefLib( "EGL" )
+				end if
+			end if
+
 		case FB_COMPTARGET_ANDROID
 			errReportEx( FB_ERRMSG_GFXLIBNOTSUPPORTEDFORTARGET, "", -1 )
 

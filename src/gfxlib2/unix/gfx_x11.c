@@ -2,9 +2,14 @@
 
 #include <sys/types.h>
 
+#include "../fb_gfx.h"
+
+#ifndef DISABLE_WAYLAND
+#include "fb_gfx_wayland.h"
+#endif
+
 #ifndef DISABLE_X11
 
-#include "../fb_gfx.h"
 #include "fb_gfx_x11.h"
 #include "../../rtlib/unix/fb_private_scancodes_x11.h"
 #include <pthread.h>
@@ -887,11 +892,17 @@ int fb_hX11ScreenInfo(ssize_t *width, ssize_t *height, ssize_t *depth, ssize_t *
 
 ssize_t fb_hGetWindowHandle(void)
 {
+#ifndef DISABLE_WAYLAND
+	if (fb_wayland.display) return (ssize_t)fb_wayland.surface;
+#endif
 	return (fb_x11.display ? fb_x11.window : 0);
 }
 
 ssize_t fb_hGetDisplayHandle(void)
 {
+#ifndef DISABLE_WAYLAND
+	if (fb_wayland.display) return (ssize_t)fb_wayland.display;
+#endif
 	return (ssize_t)fb_x11.display;
 }
 
@@ -899,11 +910,17 @@ ssize_t fb_hGetDisplayHandle(void)
 
 ssize_t fb_hGetWindowHandle(void)
 {
+#ifndef DISABLE_WAYLAND
+	if (fb_wayland.display) return (ssize_t)fb_wayland.surface;
+#endif
 	return 0;
 }
 
 ssize_t fb_hGetDisplayHandle(void)
 {
+#ifndef DISABLE_WAYLAND
+	if (fb_wayland.display) return (ssize_t)fb_wayland.display;
+#endif
 	return 0;
 }
 
