@@ -139,4 +139,3 @@ end sub
 	Print #1, "fps:"; fps
 
 	Close #1
-	'screen 0
