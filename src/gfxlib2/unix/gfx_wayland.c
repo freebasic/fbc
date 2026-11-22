@@ -36,8 +36,9 @@ static void add_mode(int w, int h) {
         if (modes_list[i] == w && modes_list[i+1] == h) return;
     }
     if (modes_count + 2 > modes_cap) {
-        modes_cap = modes_cap ? modes_cap * 2 : 64;
-        modes_list = realloc(modes_list, modes_cap * sizeof(int));
+        int new_cap = modes_cap ? modes_cap * 2 : 64;
+        int *tmp = realloc(modes_list, new_cap * sizeof(int));
+        if (tmp) { modes_list = tmp; modes_cap = new_cap; }
     }
     modes_list[modes_count++] = w;
     modes_list[modes_count++] = h;
@@ -94,8 +95,9 @@ static void registry_global(void *data, struct wl_registry *registry, uint32_t n
     } else if (strcmp(interface, wl_output_interface.name) == 0) {
         struct wl_output *o = wl_registry_bind(registry, name, &wl_output_interface, 1);
         if (fb_wayland.num_outputs >= fb_wayland.cap_outputs) {
-            fb_wayland.cap_outputs = fb_wayland.cap_outputs ? fb_wayland.cap_outputs * 2 : 4;
-            fb_wayland.outputs = realloc(fb_wayland.outputs, fb_wayland.cap_outputs * sizeof(struct wl_output*));
+            int new_cap = fb_wayland.cap_outputs ? fb_wayland.cap_outputs * 2 : 4;
+            struct wl_output **tmp = realloc(fb_wayland.outputs, new_cap * sizeof(struct wl_output*));
+            if (tmp) { fb_wayland.outputs = tmp; fb_wayland.cap_outputs = new_cap; }
         }
         fb_wayland.outputs[fb_wayland.num_outputs++] = o;
         wl_output_add_listener(o, &output_listener, o);

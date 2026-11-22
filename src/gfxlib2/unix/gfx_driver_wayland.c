@@ -54,7 +54,7 @@ static int wayland_init(void) {
     blitter = fb_hGetBlitter(32, is_rgb);
     if (!blitter) return -1;
 
-    size_t size = fb_wayland.w * fb_wayland.h * 4;
+    size_t size = (size_t)fb_wayland.w * (size_t)fb_wayland.h * 4;
     shm_fd = memfd_create("fbgfx", MFD_CLOEXEC);
     if (shm_fd < 0) {
         shm_fd = shm_open("/fbgfx", O_RDWR | O_CREAT | O_EXCL, 0600);
