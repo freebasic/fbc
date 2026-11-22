@@ -90,6 +90,10 @@ end sub
 	next
 	palette using pal
 
+	dim driver as string
+	screeninfo , , , , , , driver
+	Print #1, "driver:"; driver
+
 	screenset 1, 0
 	work_page = 1
 
