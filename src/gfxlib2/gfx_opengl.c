@@ -3,12 +3,14 @@
 #include "fb_gfx.h"
 #include "fb_gfx_gl.h"
 
+#if !defined(HOST_WIN32) && !defined(_WIN32) && !defined(__WIN32__)
 void *(*fb_hGL_GetProcAddress_ptr)(const char *) = NULL;
 
 void *fb_hGL_GetProcAddress(const char *proc)
 {
 	return fb_hGL_GetProcAddress_ptr ? fb_hGL_GetProcAddress_ptr(proc) : NULL;
 }
+#endif
 
 #ifdef DISABLE_OPENGL
 

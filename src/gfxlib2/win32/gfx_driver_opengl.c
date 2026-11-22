@@ -116,7 +116,7 @@ static FB_WGL fb_wgl;
 static HGLRC hglrc;
 static HDC hdc;
 
-static void *win32_gl_getproc(const char *proc)
+void *fb_hGL_GetProcAddress(const char *proc)
 {
 	return (void *)fb_wgl.GetProcAddress(proc);
 }
@@ -459,7 +459,6 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 		return fb_hWin32Init(title, w, h, depth, refresh_rate, flags);
 	}
 
-	fb_hGL_GetProcAddress_ptr = win32_gl_getproc;
 	return GL_common_init();
 }
 
