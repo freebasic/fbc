@@ -59,14 +59,13 @@ static FB_DYLIB gl_lib = NULL;
 static GLXFUNCS __fb_glX = { NULL, NULL, NULL, NULL, NULL };
 static GLXContext context;
 
-void *fb_hGL_GetProcAddress(const char *proc)
+static void *x11_gl_getproc(const char *proc)
 {
-	void *addr;
-	
-	if (fb_hDynLoadAlso(gl_lib, &proc, &addr, 1))
-		return NULL;
-	
-	return addr;
+	void *addr = NULL;
+	const char *p = proc;
+	if (gl_lib && !fb_hDynLoadAlso(gl_lib, &p, &addr, 1))
+		return addr;
+	return NULL;
 }
 
 static int opengl_window_init(void)
@@ -201,6 +200,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 		return -1;
 	fb_x11.screen = XDefaultScreen(fb_x11.display);
 	if (!gl_lib) gl_lib = fb_hDynLoad("libGL.so.1", glx_funcs, funcs_ptr);
+	fb_hGL_GetProcAddress_ptr = x11_gl_getproc;
 
 	if (!gl_lib)
 		return -1;

@@ -116,6 +116,7 @@ extern void fb_hGL_NormalizeParameters(int gl_options);
 extern int fb_hGL_Init(FB_DYLIB lib, char *os_extensions);
 extern int fb_hGL_ExtensionSupported(const char *extension);
 extern void *fb_hGL_GetProcAddress(const char *proc);
+extern void *(*fb_hGL_GetProcAddress_ptr)(const char *);
 extern void fb_hGL_SetupProjection(void);
 extern void fb_hGL_ScreenCreate(void);
 
