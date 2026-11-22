@@ -59,7 +59,8 @@ end sub
 	dim pal(256) as integer, r as integer, g as integer, b as integer
 	dim explosion(MAX_EXPLOSIONS) as EXPLOSION_TYPE
 	dim work_page as integer
-	dim frames as integer, t0 as double, t1 as double
+	dim frames as integer, t0 as double, t1 as double, tprev as double
+	dim fmin as double, fmax as double, fsum as double
 
 	Open Cons For Output As #1
 	Print #1, "flame benchmark starting"
@@ -94,6 +95,10 @@ end sub
 
 	frames = 0
 	t0 = timer
+	tprev = t0
+	fmin = 1e9
+	fmax = 0
+	fsum = 0
 	do
 		screencopy 2, work_page
 
@@ -128,8 +133,13 @@ end sub
 		work_page xor= 1
 		screenset work_page, work_page xor 1
 
-		frames += 1
 		t1 = timer
+		dim fdt as double = t1 - tprev
+		fsum += fdt
+		if fdt < fmin then fmin = fdt
+		if fdt > fmax then fmax = fdt
+		tprev = t1
+		frames += 1
 	loop while frames < BENCH_FRAMES
 
 	dim fps as double
@@ -137,5 +147,8 @@ end sub
 	Print #1, "frames:"; frames
 	Print #1, "elapsed:"; (t1 - t0)
 	Print #1, "fps:"; fps
+	Print #1, "avg frame time ms:"; (fsum / frames) * 1000
+	Print #1, "min frame time ms:"; fmin * 1000
+	Print #1, "max frame time ms:"; fmax * 1000
 
 	Close #1
