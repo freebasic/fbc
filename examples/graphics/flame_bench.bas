@@ -145,10 +145,10 @@ end sub
 	dim fps as double
 	fps = frames / (t1 - t0)
 	Print #1, "frames:"; frames
-	Print #1, "elapsed:"; (t1 - t0)
+	Print #1, "elapsed (s):"; (t1 - t0)
 	Print #1, "fps:"; fps
-	Print #1, "avg frame time ms:"; (fsum / frames) * 1000
-	Print #1, "min frame time ms:"; fmin * 1000
-	Print #1, "max frame time ms:"; fmax * 1000
+	Print #1, "avg frame time (ms):"; (fsum / frames) * 1000
+	Print #1, "min frame time (ms):"; fmin * 1000
+	Print #1, "max frame time (ms):"; fmax * 1000
 
 	Close #1
