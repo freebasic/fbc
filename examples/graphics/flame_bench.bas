@@ -6,7 +6,7 @@
 
 #define MAX_EXPLOSIONS     32
 #define MAX_EXPLOSION_SIZE 100
-#define BENCH_SECONDS      10
+#define BENCH_FRAMES       500
 
 #include "fbgfx.bi"
 
@@ -65,7 +65,7 @@ end sub
 	Print #1, "flame benchmark starting"
 
 	screen 14, 8, 3
-	randomize timer
+	randomize 12345, 2
 
 	'' load image and get palette (relative to this example)
 	screenset 2
@@ -130,7 +130,7 @@ end sub
 
 		frames += 1
 		t1 = timer
-	loop while (t1 - t0) < BENCH_SECONDS
+	loop while frames < BENCH_FRAMES
 
 	dim fps as double
 	fps = frames / (t1 - t0)
