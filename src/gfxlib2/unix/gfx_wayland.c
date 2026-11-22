@@ -20,6 +20,7 @@
 #include <stdio.h>
 
 WAYLANDDRIVER fb_wayland;
+static volatile int wayland_ready = 0;
 
 static int has_focus = FALSE, cursor_shown = TRUE, mouse_on = FALSE;
 static int mouse_x = 0, mouse_y = 0, mouse_z = 0, mouse_w = 0, mouse_buttons = 0;
@@ -348,9 +349,14 @@ static void seat_name(void *data, struct wl_seat *seat, const char *name) { (voi
 
 static void *window_thread(void *arg) {
     (void)arg;
+    wayland_ready = 0;
     fb_wayland.is_running = TRUE;
     if (fb_wayland.init && fb_wayland.init())
         fb_wayland.is_running = FALSE;
+    pthread_mutex_lock(&fb_wayland.mutex);
+    wayland_ready = 1;
+    pthread_cond_broadcast(&fb_wayland.cond);
+    pthread_mutex_unlock(&fb_wayland.mutex);
     cursor_shown = TRUE;
     fb_wayland.cursor_shown = TRUE;
     mouse_x = -1;
@@ -474,8 +480,8 @@ int fb_hWaylandInit(char *title, int w, int h, int depth, int refresh_rate, int 
     pthread_cond_init(&fb_wayland.cond, NULL);
     pthread_mutex_lock(&fb_wayland.mutex);
     if (pthread_create(&fb_wayland.thread, NULL, window_thread, NULL) == 0) {
+        if (!wayland_ready) while (!wayland_ready) pthread_cond_wait(&fb_wayland.cond, &fb_wayland.mutex);
         pthread_mutex_unlock(&fb_wayland.mutex);
-        usleep(100000);
         if (fb_wayland.is_running) return 0;
         pthread_join(fb_wayland.thread, NULL);
     } else {
