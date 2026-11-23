@@ -116,6 +116,11 @@ Version 1.20.0
 - fbc: fix source typo where bitfield FB_UDTOPT_HASFILLEDFIELD was overlapping FB_UDTOPT_VALISTTYPEMASK possibly causing bad code generation for UDT's with STRING*N fields
 - gfxlib2: fix transposed calloc() arguments in gfx_bsave.c and win32/gfx_driver_d2d.c (nmemb, size), silencing gcc -Wcalloc-transposed-args warnings
 - gas64: peephole optimizer emitted invalid 'movd xmm, xmm' (assembler error "operand type mismatch for `movd'") when a SINGLE variable stored from an xmm register was loaded back into another xmm register, e.g. 'x = f() * 1.3 : if x > y then ...'
+- gas64: MOD and \ on LONGINT/ULONGINT changed rbx of the calling procedure (the 32-bit fast path used rbx for the divisor without saving it), crashing callers that keep a value in rbx (SARG)
+- gas64: BYTE/UBYTE/SHORT/USHORT/BOOLEAN arguments passed in registers were not extended to 32 bits, the higher bits kept an old value (SARG)
+- gas64: SysV: storing a UDT returned in 2 registers into an array element, through a pointer or with -exx lost or corrupted fields, and fbc crashed on '*p = f()' (SARG)
+- gas64: SysV: UDTs of 14 bytes returned in 2 registers failed to link with "undefined reference to `rax8'"
+- gas64: fixes for profiling (-profile), byval UDTs copied on the stack, '-NNN[rbp] + 8' operands and MPUSH array size (SARG)
 
 
 Version 1.10.3
