@@ -24,7 +24,9 @@ void fb_hRtInit( void )
 #ifdef ENABLE_MT
 	fb_TlsInit( );
 #endif
+	#ifndef HOST_AMIGA
 	fb_AllocateMainFBThread();
+#endif
 
 	/**
 	 * With the default "C" locale (which is just plain 7-bit ASCII),
