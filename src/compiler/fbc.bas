@@ -304,8 +304,12 @@ private function hGet1stOutputLineFromCommand( byref cmd as string ) as string
 		exit function
 	end if
 
+	'' LINE INPUT, not INPUT: a tool prints a path, not a data record, and
+	'' INPUT would end the field at the first comma and strip the quotes
+	'' around it, which is how a path like /opt/gcc,15/lib/libgcc.a loses
+	'' everything from the comma on.
 	dim ln as string
-	input #f, ln
+	line input #f, ln
 
 	close f
 	return ln
@@ -343,8 +347,10 @@ private function fbcQueryCC( byref options as string ) as string
 		exit function
 	end if
 
+	'' LINE INPUT for the same reason as in hGet1stOutputLineFromCommand():
+	'' the answer is a path, and INPUT would cut it at a comma.
 	dim ret as string
-	input #ff, ret
+	line input #ff, ret
 
 	close ff
 
