@@ -17,7 +17,7 @@ ScreenRes SCREEN_W, SCREEN_H, 32
 Dim As cairo_surface_t Ptr surface = _
 	cairo_image_surface_create_for_data(ScreenPtr(), _
 		CAIRO_FORMAT_ARGB32, SCREEN_W, SCREEN_H, _
-		SCREEN_W * SizeOf(Integer))
+		cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, SCREEN_W))
 
 Dim As cairo_t Ptr c = cairo_create(surface)
 cairo_scale(c, SCREEN_W, SCREEN_H)
